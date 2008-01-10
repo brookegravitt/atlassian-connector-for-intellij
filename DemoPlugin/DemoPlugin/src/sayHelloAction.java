@@ -13,6 +13,10 @@ import com.intellij.openapi.application.ApplicationManager;
 public class sayHelloAction extends AnAction {
     public void actionPerformed(AnActionEvent e) {
 
-        
+        Application application = ApplicationManager.getApplication();
+
+        DemoPluginApplicationComponent component = application.getComponent(DemoPluginApplicationComponent.class);
+
+        component.sayHello();
     }
 }
