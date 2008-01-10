@@ -19,8 +19,10 @@ import javax.swing.*;
  * To change this template use File | Settings | File Templates.
  */
 public class ThePluginApplicationComponent implements ApplicationComponent, Configurable {
-    private String phrase;
-    private ThePluginConfigurationForm form;
+    private String phrase = "Compiled Hardcode";
+    private PluginConfigurationForm form;
+    private PluginConfiguration configuration = new PluginConfiguration();
+
 
     @Nls
     public String getDisplayName() {
@@ -63,20 +65,20 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 
     public JComponent createComponent() {
         if (form == null) {
-            form = new ThePluginConfigurationForm();
+            form = new PluginConfigurationForm();
         }
         return form.getRootComponent();
 
     }
 
     public boolean isModified() {
-        return form != null && form.isModified(this);
+        return form != null && form.isModified(configuration);
     }
 
     public void apply() throws ConfigurationException {
         if (form != null) {
             // Get data from form to component
-            form.getData(this);
+            form.getData(configuration);
         }
 
     }
@@ -84,7 +86,7 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
     public void reset() {
         if (form != null) {
             // Reset form data from component
-            form.setData(this);
+            form.setData(configuration);
         }
     }
 
