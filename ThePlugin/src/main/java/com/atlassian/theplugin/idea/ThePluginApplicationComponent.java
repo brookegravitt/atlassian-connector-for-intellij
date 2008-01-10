@@ -4,6 +4,7 @@ import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.ui.Messages;
+import com.atlassian.theplugin.bamboo.configuration.ConfigurationFactory;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -19,7 +20,6 @@ import javax.swing.*;
  * To change this template use File | Settings | File Templates.
  */
 public class ThePluginApplicationComponent implements ApplicationComponent, Configurable {
-    private String phrase = "Compiled Hardcode";
     private PluginConfigurationForm form;
     private PluginConfiguration configuration = new PluginConfiguration();
 
@@ -47,20 +47,11 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
     }
 
     public void initComponent() {
-        //To change body of implemented methods use File | Settings | File Templates.
+        ConfigurationFactory.setConfiguration(configuration.getBambooConfiguration());
     }
 
     public void disposeComponent() {
         //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    void sayHello() {
-        // Show dialog with message
-        Messages.showMessageDialog(
-                phrase,
-                "Sample",
-                Messages.getInformationIcon()
-        );
     }
 
     public JComponent createComponent() {
@@ -94,12 +85,5 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
         form = null;
     }
 
-    public String getPhrase() {
-        return phrase;
-    }
-
-    public void setPhrase(final String phrase) {
-        this.phrase = phrase;
-    }
 }
 

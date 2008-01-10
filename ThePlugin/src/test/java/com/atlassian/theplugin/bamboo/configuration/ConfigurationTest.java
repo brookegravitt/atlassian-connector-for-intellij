@@ -3,6 +3,10 @@ package com.atlassian.theplugin.bamboo.configuration;
 import junit.framework.TestCase;
 
 public class ConfigurationTest extends TestCase {
+    protected void setUp() throws Exception {
+        ConfigurationFactory.setConfiguration(new BambooConfigurationImpl()) ;
+    }
+
     public void testConfiguration() {
         Configuration cfg = ConfigurationFactory.getConfiguration();
         assertNotNull(cfg);
@@ -10,7 +14,7 @@ public class ConfigurationTest extends TestCase {
         Server srv1 = cfg.getServer();
         assertNotNull(srv1);
 
-        ServerImpl srv = new ServerImpl();
+        BambooConfigurationImpl.ServerImpl srv = new BambooConfigurationImpl.ServerImpl();
         srv.setName("dummyName");
         srv.setUrlString("http://dummy.url");
         srv.setUsername("dummyUserName");
