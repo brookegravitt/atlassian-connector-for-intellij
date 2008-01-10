@@ -11,8 +11,7 @@
         </component>
     </application-components>
     <actions>
-        <action id="StoopidAction" class="com.atlassian.theplugin.idea.StoopidActionClass" text="Stoopid Action"
-                description="Just a stupid action">
+        <action id="TestAction" class="com.atlassian.theplugin.idea.TestAction" text="Test Action">
             <add-to-group group-id="HelpMenu" anchor="last"/>
         </action>
     </actions>
