@@ -1,0 +1,25 @@
+<!DOCTYPE idea-plugin PUBLIC "Plugin/DTD" "http://plugins.intellij.net/plugin.dtd">
+<idea-plugin>
+  <name>Plugin name here</name>
+  <description>short description of the plugin</description>
+  <version>1.0</version>
+  <vendor>YourCompany</vendor>
+  <idea-version since-build="7590"/>
+    <application-components>
+        <component>
+            <implementation-class>DemoPluginApplicationComponent</implementation-class>
+        </component>
+    </application-components>
+    <actions>
+        <action id="DemoPlugin" class="com.atlassian.demoPlugin.DemoPlugin" text="Demo Plugin"
+                description="Demo Plugin Description">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt G"/>
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+        </action>
+        <action id="sayHello" class="sayHelloAction" text="Say Hello!">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt F"/>
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+        </action>
+    </actions>
+</idea-plugin>
+   
