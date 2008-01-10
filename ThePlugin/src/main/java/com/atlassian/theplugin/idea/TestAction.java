@@ -17,7 +17,11 @@ public class TestAction extends AnAction {
     public void actionPerformed(AnActionEvent e) {
         Configuration bambooConfiguration = ConfigurationFactory.getConfiguration();
 
-        String msg = "Name: " + bambooConfiguration.getServer().getName() + "\nURL: " + bambooConfiguration.getServer().getUrlString();
+        String msg = "Name: " + bambooConfiguration.getServer().getName();
+        msg += "\nURL: " + bambooConfiguration.getServer().getUrlString();
+        msg += "\nUsername: " + bambooConfiguration.getServer().getUsername();
+        msg += "\nPassword: " + bambooConfiguration.getServer().getPassword();
+
         Messages.showMessageDialog(
                 msg,
                 "Sample",
