@@ -1,3 +1,5 @@
+package com.atlassian.demoPlugin;
+
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.ui.Messages;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +25,7 @@ public class DemoPluginApplicationComponent implements ApplicationComponent {
 
     @NotNull
     public String getComponentName() {
-        return "DemoPluginApplicationComponent";
+        return "com.atlassian.demoPlugin.DemoPluginApplicationComponent";
     }
 
     public void sayHello() {

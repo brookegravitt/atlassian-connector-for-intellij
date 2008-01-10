@@ -7,16 +7,16 @@
   <idea-version since-build="7590"/>
     <application-components>
         <component>
-            <implementation-class>DemoPluginApplicationComponent</implementation-class>
+            <implementation-class>com.atlassian.demoPlugin.DemoPluginApplicationComponent</implementation-class>
         </component>
     </application-components>
     <actions>
-        <action id="DemoPlugin" class="com.atlassian.demoPlugin.DemoPlugin" text="Demo Plugin"
+        <action id="DemoPlugin" class="com.atlassian.demoPlugin.showCursorWordAction" text="Demo Plugin text"
                 description="Demo Plugin Description">
             <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt G"/>
             <add-to-group group-id="ToolsMenu" anchor="last"/>
         </action>
-        <action id="sayHello" class="sayHelloAction" text="Say Hello!">
+        <action id="sayHello" class="com.atlassian.demoPlugin.sayHelloAction" text="Show cursor word">
             <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt F"/>
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
         </action>
