@@ -1,8 +1,19 @@
 <!DOCTYPE idea-plugin PUBLIC "Plugin/DTD" "http://plugins.intellij.net/plugin.dtd">
 <idea-plugin>
-  <name>Plugin name here</name>
+  <name>The Plugin</name>
   <description>short description of the plugin</description>
-  <version>1.0</version>
-  <vendor>YourCompany</vendor>
+  <version>0.1</version>
+  <vendor>Atlassian</vendor>
   <idea-version since-build="3000"/>
+    <application-components>
+        <component>
+            <implementation-class>com.atlassian.theplugin.idea.ThePluginApplicationComponent</implementation-class>
+        </component>
+    </application-components>
+    <actions>
+        <action id="StoopidAction" class="com.atlassian.theplugin.idea.StoopidActionClass" text="Stoopid Action"
+                description="Just a stupid action">
+            <add-to-group group-id="HelpMenu" anchor="last"/>
+        </action>
+    </actions>
 </idea-plugin>
