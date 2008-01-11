@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.bamboo.configuration.Configuration;
 import com.intellij.util.xmlb.annotations.Transient;
 
 /**
@@ -10,7 +9,7 @@ import com.intellij.util.xmlb.annotations.Transient;
  * Time: 4:13:03 PM
  * To change this template use File | Settings | File Templates.
  */
-public class BambooConfiguration implements Configuration {
+public class BambooConfiguration implements com.atlassian.theplugin.bamboo.configuration.BambooConfiguration {
     private ServerImpl server = new ServerImpl();
 
     public ServerImpl getServer() {
