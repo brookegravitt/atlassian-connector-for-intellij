@@ -3,7 +3,7 @@ package com.atlassian.theplugin.idea;
 import com.atlassian.theplugin.bamboo.configuration.Server;
 
 /**
- * Configuration for a single Bamboo server.
+ * BambooConfiguration for a single Bamboo server.
  * User: sginter
  * Date: Jan 10, 2008
  * Time: 11:51:08 AM
