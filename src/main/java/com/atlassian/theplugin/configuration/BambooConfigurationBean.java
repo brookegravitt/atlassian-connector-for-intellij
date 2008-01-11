@@ -12,14 +12,39 @@ import com.intellij.util.xmlb.annotations.Transient;
 public class BambooConfigurationBean implements BambooConfiguration {
     private ServerBean server = new ServerBean();
 
-    public ServerBean getServer() {
+
+    /**
+     * For storage purposes.
+     *
+     * Does not use the JDK1.5 'return a subclass' due to problem with XML serialization.
+     */
+    public ServerBean getServerData() {
         return server;
     }
 
-    public void setServer(ServerBean server) {
+    /**
+     * For storage purposes.
+     *
+     * Does not use the JDK1.5 'return a subclass' due to problem with XML serialization.
+     */
+    public void setServerData(ServerBean server) {
         this.server = server;
     }
 
+
+    /**
+     * Implemnentation for the interface.
+     *
+     * Do not mistake for #getServerData()
+     * 
+     * @return
+     */
+    @Transient
+    public Server getServer() {
+        return server;
+    }
+
+    //TODO: Stuff below is for convenience only, it should disappear once a proper multi server config is ready
     @Transient
     public String getServerName() {
         return server.getName();
