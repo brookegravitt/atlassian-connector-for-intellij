@@ -1,7 +1,5 @@
 package com.atlassian.theplugin.configuration;
 
-import com.atlassian.theplugin.configuration.BambooConfiguration;
-
 /**
  * Provide an instance of Bamboo BambooConfigurationBean.
  * User: sginter
