@@ -101,6 +101,13 @@
     <option name="IS_EMACS_ERRORS_MODE" value="true" />
     <option name="ADDITIONAL_OPTIONS_STRING" value="" />
   </component>
+  <component name="MavenImporterState">
+    <option name="autoImport">
+      <set>
+        <option value="$PROJECT_DIR$/pom.xml" />
+      </set>
+    </option>
+  </component>
   <component name="Palette2">
     <group name="Swing">
       <item class="com.intellij.uiDesigner.HSpacer" tooltip-text="Horizontal Spacer" icon="/com/intellij/uiDesigner/icons/hspacer.png" removable="false" auto-create-binding="false" can-attach-label="false">
@@ -224,9 +231,7 @@
   </component>
   <component name="ProjectFileVersion" converted="true" />
   <component name="ProjectModuleManager">
-    <modules>
-      <module fileurl="file://$PROJECT_DIR$/Plugin.iml" filepath="$PROJECT_DIR$/Plugin.iml" />
-    </modules>
+    <modules />
   </component>
   <component name="ProjectRootManager" version="2" assert-keyword="true" jdk-15="true" project-jdk-name="IDEA 7590" project-jdk-type="IDEA JDK">
     <output url="file://$PROJECT_DIR$/out" />
@@ -249,8 +254,5 @@
     <mapping directory="" vcs="svn" />
   </component>
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
-  <component name="uidesigner-configuration">
-    <option name="DEFAULT_LAYOUT_MANAGER" value="CardLayout" />
-  </component>
 </project>
 
