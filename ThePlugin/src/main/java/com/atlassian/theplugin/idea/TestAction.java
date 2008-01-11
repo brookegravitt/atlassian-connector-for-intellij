@@ -1,10 +1,10 @@
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.theplugin.bamboo.configuration.Configuration;
+import com.atlassian.theplugin.bamboo.configuration.ConfigurationFactory;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.ui.Messages;
-import com.atlassian.theplugin.bamboo.configuration.Configuration;
-import com.atlassian.theplugin.bamboo.configuration.ConfigurationFactory;
 
 /**
  * Created by IntelliJ IDEA.

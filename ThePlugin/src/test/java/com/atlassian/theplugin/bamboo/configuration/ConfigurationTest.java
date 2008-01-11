@@ -20,7 +20,7 @@ public class ConfigurationTest extends TestCase {
         srv.setUsername("dummyUserName");
         srv.setPassword("dummyPassword");
 
-        cfg.setServer(srv);
+        ((BambooConfigurationImpl)cfg).setServer(srv);
 
 
         Server server = cfg.getServer();

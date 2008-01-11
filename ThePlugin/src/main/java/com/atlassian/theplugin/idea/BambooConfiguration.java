@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.bamboo.configuration.Configuration;
-import com.atlassian.theplugin.bamboo.configuration.Server;
+import com.intellij.util.xmlb.annotations.Transient;
 
 /**
  * Created by IntelliJ IDEA.
@@ -11,45 +11,53 @@ import com.atlassian.theplugin.bamboo.configuration.Server;
  * To change this template use File | Settings | File Templates.
  */
 public class BambooConfiguration implements Configuration {
-    private Server server = new ServerImpl();
+    private ServerImpl server = new ServerImpl();
 
-    public Server getServer() {
+    public ServerImpl getServer() {
         return server;
     }
 
-    public void setServer(Server server) {
+    public void setServer(ServerImpl server) {
         this.server = server;
     }
 
+    @Transient
     public String getServerName() {
         return server.getName();
     }
 
     public void setServerName(final String serverName) {
-        server = new ServerImpl(server).setName(serverName);
+        server = new ServerImpl(server);
+        server.setName(serverName);
     }
 
+    @Transient
     public String getServerUrl() {
         return server.getUrlString();
     }
 
     public void setServerUrl(final String serverUrl) {
-        server = new ServerImpl(server).setUrlString(serverUrl);
+        server = new ServerImpl(server);
+        server.setUrlString(serverUrl);
     }
 
+    @Transient
     public String getUsername() {
         return server.getUsername();
     }
 
     public void setUsername(final String username) {
-        server = new ServerImpl(server).setUsername(username);
+        server = new ServerImpl(server);
+        server.setUsername(username);
     }
 
+    @Transient
     public String getPassword() {
         return server.getPassword();
     }
 
     public void setPassword(final String password) {
-        server = new ServerImpl(server).setPassword(password);
+        server = new ServerImpl(server);
+        server.setPassword(password);
     }
 }
