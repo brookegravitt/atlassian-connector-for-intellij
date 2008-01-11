@@ -1,7 +1,5 @@
 package com.atlassian.theplugin.configuration;
 
-import com.atlassian.theplugin.configuration.Server;
-
 /**
  * BambooConfigurationBean for a single Bamboo server.
  * User: sginter
