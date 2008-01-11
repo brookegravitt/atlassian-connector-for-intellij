@@ -7,6 +7,6 @@ package com.atlassian.theplugin.bamboo.configuration;
  * Date: Jan 10, 2008
  * Time: 11:46:29 AM
  */                   
-public interface Configuration {
+public interface BambooConfiguration {
     Server getServer();
 }

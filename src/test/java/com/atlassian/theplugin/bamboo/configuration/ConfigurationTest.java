@@ -8,7 +8,7 @@ public class ConfigurationTest extends TestCase {
     }
 
     public void testConfiguration() {
-        Configuration cfg = ConfigurationFactory.getConfiguration();
+        BambooConfiguration cfg = ConfigurationFactory.getConfiguration();
         assertNotNull(cfg);
 
         Server srv1 = cfg.getServer();

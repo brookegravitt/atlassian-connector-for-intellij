@@ -6,7 +6,7 @@ package com.atlassian.theplugin.bamboo.configuration;
  * Date: Jan 10, 2008
  * Time: 12:00:32 PM
  */
-class BambooConfigurationImpl implements Configuration {
+class BambooConfigurationImpl implements BambooConfiguration {
     ServerImpl server = new ServerImpl();
 
     public Server getServer() {
@@ -18,7 +18,7 @@ class BambooConfigurationImpl implements Configuration {
     }
 
     /**
- * Configuration for a single Bamboo server.
+     * BambooConfiguration for a single Bamboo server.
      * User: sginter
      * Date: Jan 10, 2008
      * Time: 11:51:08 AM

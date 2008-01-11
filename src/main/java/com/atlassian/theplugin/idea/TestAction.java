@@ -1,7 +1,6 @@
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.bamboo.configuration.Configuration;
-import com.atlassian.theplugin.bamboo.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.bamboo.configuration.*;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.ui.Messages;
@@ -15,7 +14,7 @@ import com.intellij.openapi.ui.Messages;
  */
 public class TestAction extends AnAction {
     public void actionPerformed(AnActionEvent e) {
-        Configuration bambooConfiguration = ConfigurationFactory.getConfiguration();
+        com.atlassian.theplugin.bamboo.configuration.BambooConfiguration bambooConfiguration = ConfigurationFactory.getConfiguration();
 
         String msg = "Name: " + bambooConfiguration.getServer().getName();
         msg += "\nURL: " + bambooConfiguration.getServer().getUrlString();
