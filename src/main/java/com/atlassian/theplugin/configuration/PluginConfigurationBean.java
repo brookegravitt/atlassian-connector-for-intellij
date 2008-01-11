@@ -1,7 +1,5 @@
 package com.atlassian.theplugin.configuration;
 
-import com.atlassian.theplugin.configuration.BambooConfigurationBean;
-
 /**
  * Created by IntelliJ IDEA.
  * User: sginter
