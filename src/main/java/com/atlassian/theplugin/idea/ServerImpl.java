@@ -8,7 +8,7 @@ import com.atlassian.theplugin.bamboo.configuration.Server;
  * Date: Jan 10, 2008
  * Time: 11:51:08 AM
  */
-class ServerImpl implements Server {
+public class ServerImpl implements Server {
     private String name;
     private String urlString;
     private String username;
@@ -21,42 +21,38 @@ class ServerImpl implements Server {
         password = s.getPassword();
     }
 
-    ServerImpl() {
+    public ServerImpl() {
     }
 
     public String getName() {
         return name;
     }
 
-    ServerImpl setName(String name) {
+    public void setName(String name) {
         this.name = name;
-        return this;
     }
 
     public String getUrlString() {
         return urlString;
     }
 
-    ServerImpl setUrlString(String urlString) {
+    public void setUrlString(String urlString) {
         this.urlString = urlString;
-        return this;
     }
 
     public String getUsername() {
         return username;
     }
 
-    ServerImpl setUsername(String username) {
+    public void setUsername(String username) {
         this.username = username;
-        return this;
     }
 
     public String getPassword() {
         return password;
     }
 
-    ServerImpl setPassword(String password) {
+    public void setPassword(String password) {
         this.password = password;
-        return this;
     }
 }

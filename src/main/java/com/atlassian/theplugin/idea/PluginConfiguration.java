@@ -14,4 +14,9 @@ public class PluginConfiguration {
     public BambooConfiguration getBambooConfiguration() {
         return bambooConfiguration;
     }
+
+    public void setBambooConfiguration(BambooConfiguration newConfiguration) {
+        bambooConfiguration = newConfiguration;
+
+    }
 }

@@ -1,10 +1,12 @@
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.theplugin.bamboo.configuration.ConfigurationFactory;
 import com.intellij.openapi.components.ApplicationComponent;
+import com.intellij.openapi.components.PersistentStateComponent;
+import com.intellij.openapi.components.State;
+import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
-import com.intellij.openapi.ui.Messages;
-import com.atlassian.theplugin.bamboo.configuration.ConfigurationFactory;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -19,10 +21,11 @@ import javax.swing.*;
  * Time: 2:57:21 PM
  * To change this template use File | Settings | File Templates.
  */
-public class ThePluginApplicationComponent implements ApplicationComponent, Configurable {
+
+@State(name = "ThePluginSettings", storages = {@Storage(id = "thePlugin", file = "$APP_CONFIG$/thePlugin.xml")})
+public class ThePluginApplicationComponent implements ApplicationComponent, Configurable, PersistentStateComponent<PluginConfiguration> {
     private PluginConfigurationForm form;
     private PluginConfiguration configuration = new PluginConfiguration();
-
 
     @Nls
     public String getDisplayName() {
@@ -85,5 +88,11 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
         form = null;
     }
 
-}
+    public PluginConfiguration getState() {
+        return configuration;
+    }
 
+    public void loadState(PluginConfiguration state) {
+        configuration = state;
+    }
+}

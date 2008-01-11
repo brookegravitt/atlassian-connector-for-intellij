@@ -9,5 +9,4 @@ package com.atlassian.theplugin.bamboo.configuration;
  */                   
 public interface Configuration {
     Server getServer();
-    void setServer(Server newConfiguration);
 }
