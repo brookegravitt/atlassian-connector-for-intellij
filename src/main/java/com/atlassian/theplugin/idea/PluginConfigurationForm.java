@@ -20,31 +20,31 @@ public class PluginConfigurationForm {
     private JPasswordField password;
 
     public void setData(PluginConfigurationBean data) {
-        serverName.setText(data.getBambooConfiguration().getServerName());
-        serverUrl.setText(data.getBambooConfiguration().getServerUrl());
-        username.setText(data.getBambooConfiguration().getUsername());
-        password.setText(data.getBambooConfiguration().getPassword());
+        serverName.setText(data.getBambooConfigurationData().getServerName());
+        serverUrl.setText(data.getBambooConfigurationData().getServerUrl());
+        username.setText(data.getBambooConfigurationData().getUsername());
+        password.setText(data.getBambooConfigurationData().getPassword());
     }
 
     public void getData(PluginConfigurationBean data) {
-        data.getBambooConfiguration().setServerName(serverName.getText());
-        data.getBambooConfiguration().setServerUrl(serverUrl.getText());
-        data.getBambooConfiguration().setUsername(username.getText());
-        data.getBambooConfiguration().setPassword(password.getText());
+        data.getBambooConfigurationData().setServerName(serverName.getText());
+        data.getBambooConfigurationData().setServerUrl(serverUrl.getText());
+        data.getBambooConfigurationData().setUsername(username.getText());
+        data.getBambooConfigurationData().setPassword(password.getText());
     }
 
     public boolean isModified(PluginConfigurationBean data) {
-        if (serverName.getText() != null ? !serverName.getText().equals(data.getBambooConfiguration().getServerName()) :
-                data.getBambooConfiguration().getServerName() != null)
+        if (serverName.getText() != null ? !serverName.getText().equals(data.getBambooConfigurationData().getServerName()) :
+                data.getBambooConfigurationData().getServerName() != null)
             return true;
-        if (serverUrl.getText() != null ? !serverUrl.getText().equals(data.getBambooConfiguration().getServerUrl()) :
-                data.getBambooConfiguration().getServerUrl() != null)
+        if (serverUrl.getText() != null ? !serverUrl.getText().equals(data.getBambooConfigurationData().getServerUrl()) :
+                data.getBambooConfigurationData().getServerUrl() != null)
             return true;
-        if (username.getText() != null ? !username.getText().equals(data.getBambooConfiguration().getUsername()) :
-                data.getBambooConfiguration().getUsername() != null)
+        if (username.getText() != null ? !username.getText().equals(data.getBambooConfigurationData().getUsername()) :
+                data.getBambooConfigurationData().getUsername() != null)
             return true;
-        if (password.getText() != null ? !password.getText().equals(data.getBambooConfiguration().getPassword()) :
-                data.getBambooConfiguration().getPassword() != null)
+        if (password.getText() != null ? !password.getText().equals(data.getBambooConfigurationData().getPassword()) :
+                data.getBambooConfigurationData().getPassword() != null)
             return true;
         return false;
     }
