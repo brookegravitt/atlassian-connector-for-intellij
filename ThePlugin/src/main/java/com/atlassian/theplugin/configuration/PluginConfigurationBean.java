@@ -11,12 +11,30 @@ public class PluginConfigurationBean implements PluginConfiguration {
     private BambooConfigurationBean bambooConfiguration = new BambooConfigurationBean();
 
 
-    public BambooConfigurationBean getBambooConfiguration() {
+    /**
+     * For storage purposes.
+     *
+     * Does not use the JDK1.5 'return a subclass' due to problem with XML serialization.
+     */
+    public BambooConfigurationBean getBambooConfigurationData() {
         return bambooConfiguration;
     }
 
-    public void setBambooConfiguration(BambooConfigurationBean newConfiguration) {
+    /**
+     * For storage purposes.
+     *
+     * Does not use the JDK1.5 'return a subclass' due to problem with XML serialization.
+     */
+    public void setBambooConfigurationData(BambooConfigurationBean newConfiguration) {
         bambooConfiguration = newConfiguration;
 
+    }
+    /**
+     * Implemnentation for the interface.
+     *
+     * Do not mistake for #getBambooConfigurationData()
+     */
+    public BambooConfiguration getBambooConfiguration() {
+        return bambooConfiguration;
     }
 }

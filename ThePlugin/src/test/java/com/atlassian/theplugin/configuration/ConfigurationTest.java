@@ -23,7 +23,7 @@ public class ConfigurationTest extends TestCase {
         srv.setUsername("dummyUserName");
         srv.setPassword("dummyPassword");
 
-        ((BambooConfigurationBean)cfg).setServer(srv);
+        ((BambooConfigurationBean)cfg).setServerData(srv);
 
 
         Server server = cfg.getServer();
