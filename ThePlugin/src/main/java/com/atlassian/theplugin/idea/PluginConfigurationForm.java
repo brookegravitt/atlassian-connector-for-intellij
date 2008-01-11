@@ -1,5 +1,7 @@
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.theplugin.configuration.PluginConfigurationBean;
+
 import javax.swing.*;
 
 /**
@@ -17,21 +19,21 @@ public class PluginConfigurationForm {
     private JTextField username;
     private JPasswordField password;
 
-    public void setData(PluginConfiguration data) {
+    public void setData(PluginConfigurationBean data) {
         serverName.setText(data.getBambooConfiguration().getServerName());
         serverUrl.setText(data.getBambooConfiguration().getServerUrl());
         username.setText(data.getBambooConfiguration().getUsername());
         password.setText(data.getBambooConfiguration().getPassword());
     }
 
-    public void getData(PluginConfiguration data) {
+    public void getData(PluginConfigurationBean data) {
         data.getBambooConfiguration().setServerName(serverName.getText());
         data.getBambooConfiguration().setServerUrl(serverUrl.getText());
         data.getBambooConfiguration().setUsername(username.getText());
         data.getBambooConfiguration().setPassword(password.getText());
     }
 
-    public boolean isModified(PluginConfiguration data) {
+    public boolean isModified(PluginConfigurationBean data) {
         if (serverName.getText() != null ? !serverName.getText().equals(data.getBambooConfiguration().getServerName()) :
                 data.getBambooConfiguration().getServerName() != null)
             return true;

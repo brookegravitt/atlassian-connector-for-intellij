@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.bamboo.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
@@ -23,9 +24,9 @@ import javax.swing.*;
  */
 
 @State(name = "ThePluginSettings", storages = {@Storage(id = "thePlugin", file = "$APP_CONFIG$/thePlugin.xml")})
-public class ThePluginApplicationComponent implements ApplicationComponent, Configurable, PersistentStateComponent<PluginConfiguration> {
+public class ThePluginApplicationComponent implements ApplicationComponent, Configurable, PersistentStateComponent<PluginConfigurationBean> {
     private PluginConfigurationForm form;
-    private PluginConfiguration configuration = new PluginConfiguration();
+    private PluginConfigurationBean configuration = new PluginConfigurationBean();
 
     @Nls
     public String getDisplayName() {
@@ -50,7 +51,7 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
     }
 
     public void initComponent() {
-        ConfigurationFactory.setConfiguration(configuration.getBambooConfiguration());
+        ConfigurationFactory.setConfiguration(configuration);
     }
 
     public void disposeComponent() {
@@ -88,11 +89,11 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
         form = null;
     }
 
-    public PluginConfiguration getState() {
+    public PluginConfigurationBean getState() {
         return configuration;
     }
 
-    public void loadState(PluginConfiguration state) {
+    public void loadState(PluginConfigurationBean state) {
         configuration = state;
     }
 }

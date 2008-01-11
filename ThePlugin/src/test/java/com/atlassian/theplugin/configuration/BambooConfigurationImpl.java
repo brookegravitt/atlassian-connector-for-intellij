@@ -1,4 +1,7 @@
-package com.atlassian.theplugin.bamboo.configuration;
+package com.atlassian.theplugin.configuration;
+
+import com.atlassian.theplugin.configuration.Server;
+import com.atlassian.theplugin.configuration.BambooConfiguration;
 
 /**
  * Initial (dummy) implementation of bamboo config
@@ -18,7 +21,7 @@ class BambooConfigurationImpl implements BambooConfiguration {
     }
 
     /**
-     * BambooConfiguration for a single Bamboo server.
+     * BambooConfigurationBean for a single Bamboo server.
      * User: sginter
      * Date: Jan 10, 2008
      * Time: 11:51:08 AM

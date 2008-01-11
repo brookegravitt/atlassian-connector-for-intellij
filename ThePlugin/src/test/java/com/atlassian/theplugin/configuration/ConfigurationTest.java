@@ -1,30 +1,32 @@
-package com.atlassian.theplugin.bamboo.configuration;
+package com.atlassian.theplugin.configuration;
 
 import junit.framework.TestCase;
+import com.atlassian.theplugin.configuration.Server;
+import com.atlassian.theplugin.configuration.BambooConfiguration;
+import com.atlassian.theplugin.configuration.ConfigurationFactory;
 
 public class ConfigurationTest extends TestCase {
     protected void setUp() throws Exception {
-        ConfigurationFactory.setConfiguration(new BambooConfigurationImpl()) ;
+        ConfigurationFactory.setConfiguration(new PluginConfigurationBean()) ;
     }
 
     public void testConfiguration() {
-        BambooConfiguration cfg = ConfigurationFactory.getConfiguration();
+        BambooConfiguration cfg = ConfigurationFactory.getConfiguration().getBambooConfiguration();
         assertNotNull(cfg);
 
         Server srv1 = cfg.getServer();
         assertNotNull(srv1);
 
-        BambooConfigurationImpl.ServerImpl srv = new BambooConfigurationImpl.ServerImpl();
+        ServerBean srv = new ServerBean();
         srv.setName("dummyName");
         srv.setUrlString("http://dummy.url");
         srv.setUsername("dummyUserName");
         srv.setPassword("dummyPassword");
 
-        ((BambooConfigurationImpl)cfg).setServer(srv);
+        ((BambooConfigurationBean)cfg).setServer(srv);
 
 
         Server server = cfg.getServer();
-        assertNotSame(srv, server); /* config should create a copy */
         assertNotSame(srv1, server);
 
         assertEquals("dummyName", server.getName());

@@ -1,4 +1,6 @@
-package com.atlassian.theplugin.bamboo.configuration;
+package com.atlassian.theplugin.configuration;
+
+import com.atlassian.theplugin.configuration.Server;
 
 /**
  * Bamboo global configuration.
