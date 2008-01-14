@@ -27,6 +27,13 @@
 	<description>
     A Intellij IDEA plugin for Atlassian's tools.
   </description>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>atlassian-m2-repository</id>
+			<name>Atlassian Maven 2.x Repository</name>
+			<url>http://repository.atlassian.com/maven2</url>
+		</pluginRepository>
+	</pluginRepositories>
 	<dependencies>
 	<!--
 		<dependency>
@@ -113,6 +120,22 @@
 								<descriptor>${pom.basedir}/idea-plugin-assembly.xml</descriptor>
 							</descriptors>
 						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-clover-plugin</artifactId>
+				<groupId>com.atlassian.maven.plugins</groupId>
+				<configuration>
+					<licenseLocation>${clover.licenseLocation}</licenseLocation>
+					<targetPercentage>60%</targetPercentage>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>pre-site</phase>
+						<goals>
+							<goal>instrument</goal>
+						</goals>
 					</execution>
 				</executions>
 			</plugin>
