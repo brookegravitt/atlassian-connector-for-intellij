@@ -4,6 +4,8 @@ import com.atlassian.theplugin.configuration.BambooConfiguration;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.ex.DataConstantsEx;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 
 /**
@@ -26,5 +28,10 @@ public class TestAction extends AnAction {
                 msg,
                 "Sample",
                 Messages.getInformationIcon());
+
+        Project project = (Project)e.getDataContext().getData(DataConstantsEx.PROJECT);
+        ThePluginModuleComponent tpmc = project.getComponent(ThePluginModuleComponent.class);
+        tpmc.setBambooStatus("Chg", "After change action");
+
     }
 }
