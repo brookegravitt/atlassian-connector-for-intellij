@@ -1,13 +1,13 @@
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.configuration.BambooConnection;
 import com.atlassian.theplugin.configuration.ConnectionException;
+import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import com.intellij.openapi.ui.Messages;
 
 import javax.swing.*;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * Created by IntelliJ IDEA.
