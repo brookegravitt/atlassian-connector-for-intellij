@@ -10,6 +10,11 @@
             <implementation-class>com.atlassian.theplugin.idea.ThePluginApplicationComponent</implementation-class>
         </component>
     </application-components>
+    <project-components>
+        <component>
+            <implementation-class>com.atlassian.theplugin.idea.ThePluginModuleComponent</implementation-class>
+        </component>
+    </project-components>
     <actions>
         <action id="TestAction" class="com.atlassian.theplugin.idea.TestAction" text="Test Action">
             <add-to-group group-id="HelpMenu" anchor="last"/>
