@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module relativePaths="false" type="PLUGIN_MODULE" version="4">
-  <component name="DevKit.ModuleBuildProperties" url="file://$MODULE_DIR$/plugin/META-INF/plugin.xml" />
+  <component name="DevKit.ModuleBuildProperties" url="file://$MODULE_DIR$/src/main/resources/META-INF/plugin.xml" />
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_5" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/target/classes" />
     <exclude-output />
@@ -10,72 +10,62 @@
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/resources" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module-library" exported="">
-      <library name="com.intellij:annotations:6.0.5">
-        <CLASSES>
-          <root url="jar:///Users/new/.m2/repository/com/intellij/annotations/6.0.5/annotations-6.0.5.jar!/" />
-        </CLASSES>
-        <JAVADOC>
-          <root url="jar:///Users/new/.m2/repository/com/intellij/annotations/6.0.5/annotations-6.0.5-javadoc.jar!/" />
-        </JAVADOC>
-        <SOURCES>
-          <root url="jar:///Users/new/.m2/repository/com/intellij/annotations/6.0.5/annotations-6.0.5-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library name="com.intellij:extensions:6.0.5">
-        <CLASSES>
-          <root url="jar:///Users/new/.m2/repository/com/intellij/extensions/6.0.5/extensions-6.0.5.jar!/" />
-        </CLASSES>
-        <JAVADOC>
-          <root url="jar:///Users/new/.m2/repository/com/intellij/extensions/6.0.5/extensions-6.0.5-javadoc.jar!/" />
-        </JAVADOC>
-        <SOURCES>
-          <root url="jar:///Users/new/.m2/repository/com/intellij/extensions/6.0.5/extensions-6.0.5-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library name="com.intellij:openapi:6.0.5">
-        <CLASSES>
-          <root url="jar:///Users/new/.m2/repository/com/intellij/openapi/6.0.5/openapi-6.0.5.jar!/" />
-        </CLASSES>
-        <JAVADOC>
-          <root url="jar:///Users/new/.m2/repository/com/intellij/openapi/6.0.5/openapi-6.0.5-javadoc.jar!/" />
-        </JAVADOC>
-        <SOURCES>
-          <root url="jar:///Users/new/.m2/repository/com/intellij/openapi/6.0.5/openapi-6.0.5-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library name="junit:junit:3.8.1">
+    <orderEntry type="module-library">
+      <library name="junit">
         <CLASSES>
           <root url="jar:///Users/new/.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar!/" />
         </CLASSES>
-        <JAVADOC>
-          <root url="jar:///Users/new/.m2/repository/junit/junit/3.8.1/junit-3.8.1-javadoc.jar!/" />
-        </JAVADOC>
-        <SOURCES>
-          <root url="jar:///Users/new/.m2/repository/junit/junit/3.8.1/junit-3.8.1-sources.jar!/" />
-        </SOURCES>
+        <JAVADOC />
+        <SOURCES />
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
-      <library name="log4j:log4j:1.2.9">
+      <library name="jdom">
+        <CLASSES>
+          <root url="jar:///Users/new/.m2/repository/jdom/jdom/1.0/jdom-1.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="extensions">
+        <CLASSES>
+          <root url="jar:///Users/new/.m2/repository/com/intellij/idea/extensions/7.0/extensions-7.0-7027.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="openapi">
+        <CLASSES>
+          <root url="jar:///Users/new/.m2/repository/com/intellij/idea/openapi/7.0/openapi-7.0-7027.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="log4j">
         <CLASSES>
           <root url="jar:///Users/new/.m2/repository/log4j/log4j/1.2.9/log4j-1.2.9.jar!/" />
         </CLASSES>
-        <JAVADOC>
-          <root url="jar:///Users/new/.m2/repository/log4j/log4j/1.2.9/log4j-1.2.9-javadoc.jar!/" />
-        </JAVADOC>
-        <SOURCES>
-          <root url="jar:///Users/new/.m2/repository/log4j/log4j/1.2.9/log4j-1.2.9-sources.jar!/" />
-        </SOURCES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="annotations">
+        <CLASSES>
+          <root url="jar:///Users/new/.m2/repository/com/intellij/idea/annotations/7.0/annotations-7.0-7027.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
       </library>
     </orderEntry>
     <orderEntryProperties />
