@@ -27,7 +27,7 @@ public class RestApi {
         this.authToken = authToken;
     }
 
-    public static RestApi login(String url, String name, String password) throws Exception {
+    public static RestApi login(String url, String name, String password) throws BambooLoginException {
         SAXBuilder builder = new SAXBuilder();
 
         URL loginUrl = null;

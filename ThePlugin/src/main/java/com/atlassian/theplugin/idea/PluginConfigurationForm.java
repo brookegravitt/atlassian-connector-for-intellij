@@ -1,8 +1,13 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.configuration.BambooConnection;
+import com.atlassian.theplugin.configuration.ConnectionException;
+import com.intellij.openapi.ui.Messages;
 
 import javax.swing.*;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 /**
  * Created by IntelliJ IDEA.
@@ -18,6 +23,22 @@ public class PluginConfigurationForm {
     private JTextField serverUrl;
     private JTextField username;
     private JPasswordField password;
+    private JButton testConnection;
+
+    public PluginConfigurationForm() {
+        testConnection.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+
+                BambooConnection c = new BambooConnection();
+                try {
+                    c.connect(serverUrl.getText(), username.getText(), String.valueOf(password.getPassword()));
+                    Messages.showMessageDialog("Connected successfully", "Connection OK", Messages.getInformationIcon());
+                } catch (ConnectionException e1) {
+                    Messages.showMessageDialog(e1.getMessage(), "Connection Error", Messages.getErrorIcon());
+                }
+            }
+        });
+    }
 
     public void setData(PluginConfigurationBean data) {
         serverName.setText(data.getBambooConfigurationData().getServerName());
