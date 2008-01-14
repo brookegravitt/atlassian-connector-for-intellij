@@ -49,8 +49,10 @@
 			<name>Atlassian Maven 2.x Repository</name>
 			<url>http://repository.atlassian.com/maven2</url>
 		</pluginRepository>
-	</pluginRepositories>
-	<repositories>
+
+    </pluginRepositories>
+
+    <repositories>
 		<repository>
 			<id>codehaus-m2-repository</id>
 			<name>Codehaus Maven 2.x Repository</name>
@@ -115,7 +117,7 @@
 		<dependency>
 			<groupId>jdom</groupId>
 			<artifactId>jdom</artifactId>
-			<version>1.0</version>
+			<version>1.1</version>
 		</dependency>
 	</dependencies>
 
@@ -204,7 +206,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		
+
 	</reporting>
 <!--
 	<distributionManagement>
