@@ -24,9 +24,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 	<name>Atlassian - tool - Intellij IDEA Plugin</name>
-	<description>
-    A Intellij IDEA plugin for Atlassian's tools.
-  </description>
+	<description>An Intellij IDEA plugin for Atlassian's tools.</description>
   	<parent>
 		<groupId>com.atlassian.pom</groupId>
 		<artifactId>atlassian-closedsource-pom</artifactId>
@@ -214,7 +212,7 @@
 				<artifactId>maven-surefire-report-plugin</artifactId>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
+				<groupId>com.atlassian.maven.plugins</groupId>
 				<artifactId>maven-clover-plugin</artifactId>
 				<configuration>
 					<generateHTML>true</generateHTML>
