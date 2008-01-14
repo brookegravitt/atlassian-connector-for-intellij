@@ -90,18 +90,21 @@
 			<artifactId>openapi</artifactId>
 			<version>7.0</version>
 			<classifier>7027</classifier>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.intellij.idea</groupId>
 			<artifactId>annotations</artifactId>
 			<version>7.0</version>
 			<classifier>7027</classifier>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.intellij.idea</groupId>
 			<artifactId>extensions</artifactId>
 			<version>7.0</version>
 			<classifier>7027</classifier>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
@@ -140,11 +143,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<configuration>
-					<archive>
-						<manifestFile>plugin/META-INF/MANIFEST.MF</manifestFile>
-					</archive>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -190,6 +188,20 @@
 					<ideaPlugin>true</ideaPlugin>
 					<jdkName>IDEA 7590</jdkName>
 					<jdkLevel>1.5</jdkLevel>
+					<libraries>
+						<library>
+							<name>openapi</name>
+							<exclude>true</exclude>
+						</library>
+						<library>
+							<name>annotations</name>
+							<exclude>true</exclude>
+						</library>
+						<library>
+							<name>extensions</name>
+							<exclude>true</exclude>
+						</library>
+					</libraries>
 				</configuration>
 			</plugin>
 		</plugins>
