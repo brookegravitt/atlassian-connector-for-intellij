@@ -6,40 +6,6 @@
   <component name="BuildJarProjectSettings">
     <option name="BUILD_JARS_ON_MAKE" value="false" />
   </component>
-  <component name="CloverPlugin" class="com.cenqua.clover.idea7.config.IdeaCloverConfig">
-    <regexpContexts class="java.util.ArrayList" />
-    <flushInterval>5000</flushInterval>
-    <flattenPackages>false</flattenPackages>
-    <coveredHighlight null="true" />
-    <autoRefreshInterval>2000</autoRefreshInterval>
-    <excludes null="true" />
-    <showErrorMarks>true</showErrorMarks>
-    <showInline>true</showInline>
-    <contextFilter class="com.cenqua.clover.context.BlockContextFilter">
-      <filterMask>65535</filterMask>
-    </contextFilter>
-    <showTooltips>true</showTooltips>
-    <languageLevel>1.3</languageLevel>
-    <notCoveredHighlight>-341816</notCoveredHighlight>
-    <notCoveredStripe>-65536</notCoveredStripe>
-    <enabled>true</enabled>
-    <outOfDateStripe>-256</outOfDateStripe>
-    <instrumentTests>false</instrumentTests>
-    <showGutter>true</showGutter>
-    <manualInitString null="true" />
-    <includes null="true" />
-    <useGeneratedInitString>true</useGeneratedInitString>
-    <autoScroll>true</autoScroll>
-    <showSummaryInToolbar>true</showSummaryInToolbar>
-    <outOfDateHighlight>-32</outOfDateHighlight>
-    <showSummaryInToolwindow>true</showSummaryInToolwindow>
-    <relativeInitString>false</relativeInitString>
-    <span>0</span>
-    <flushPolicy>0</flushPolicy>
-    <autoScrollFromSource>false</autoScrollFromSource>
-    <coveredStripe>-16711936</coveredStripe>
-    <autoRefresh>false</autoRefresh>
-  </component>
   <component name="CodeStyleProjectProfileManger">
     <option name="PROJECT_PROFILE" />
     <option name="USE_PROJECT_LEVEL_SETTINGS" value="false" />
