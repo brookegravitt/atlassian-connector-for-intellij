@@ -119,7 +119,12 @@
 			<artifactId>jdom</artifactId>
 			<version>1.0</version>
 		</dependency>
-	</dependencies>
+        <dependency>
+			<groupId>jaxen</groupId>
+			<artifactId>jaxen</artifactId>
+			<version>RELEASE</version>
+		</dependency>
+    </dependencies>
 
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
