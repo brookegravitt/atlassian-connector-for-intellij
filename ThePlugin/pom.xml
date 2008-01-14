@@ -21,12 +21,28 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.atlassian.theplugin</groupId>
 	<artifactId>atlassian-idea-plugin</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.1-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 	<name>Atlassian - tool - Intellij IDEA Plugin</name>
 	<description>
     A Intellij IDEA plugin for Atlassian's tools.
   </description>
+  	<parent>
+		<groupId>com.atlassian.pom</groupId>
+		<artifactId>atlassian-closedsource-pom</artifactId>
+		<version>7</version>
+	</parent>
+	<scm>
+		<connection>
+			scm:svn:https://studio.atlassian.com/svn/PL/trunk/ThePlugin
+		</connection>
+		<developerConnection>
+			scm:svn:https://studio.atlassian.com/svn/PL/trunk/ThePlugin
+		</developerConnection>
+		<url>
+			https://studio.atlassian.com/svn/PL/trunk/ThePlugin
+		</url>
+	</scm>
 	<pluginRepositories>
 		<pluginRepository>
 			<id>atlassian-m2-repository</id>
@@ -39,6 +55,10 @@
 			<id>codehaus-m2-repository</id>
 			<name>Codehaus Maven 2.x Repository</name>
 			<url>http://mevenide.codehaus.org/m2-repository</url>
+		</repository>
+		<repository>
+			<id>atlassian-proxy</id>
+			<url>https://m2proxy.atlassian.com/repository/public</url>
 		</repository>
 	</repositories>
 	<dependencies>
@@ -158,6 +178,25 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-report-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clover-plugin</artifactId>
+				<configuration>
+					<generateHTML>true</generateHTML>
+					<generatePdf>true</generatePdf>
+					<generateXml>true</generateXml>
+				</configuration>
+			</plugin>
+		</plugins>
+		
+	</reporting>
 <!--
 	<distributionManagement>
 		<repository>
