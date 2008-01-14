@@ -91,6 +91,12 @@
 		</dependency>
 		<dependency>
 			<groupId>com.intellij.idea</groupId>
+			<artifactId>annotations</artifactId>
+			<version>7.0</version>
+			<classifier>7027</classifier>
+		</dependency>
+		<dependency>
+			<groupId>com.intellij.idea</groupId>
 			<artifactId>extensions</artifactId>
 			<version>7.0</version>
 			<classifier>7027</classifier>
@@ -175,6 +181,15 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-idea-plugin</artifactId>
+				<configuration>
+					<ideaPlugin>true</ideaPlugin>
+					<jdkName>IDEA 7590</jdkName>
+					<jdkLevel>1.5</jdkLevel>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
