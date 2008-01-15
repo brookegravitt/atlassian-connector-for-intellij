@@ -7,6 +7,8 @@ import com.intellij.openapi.wm.WindowManager;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 /**
  * Created by IntelliJ IDEA.
@@ -20,6 +22,7 @@ public class ThePluginModuleComponent implements ProjectComponent {
     private StatusBar statusBar;
     private JComponent statusBarComponent;
     private JLabel bambooLabel;
+    private Timer timer = null;
 
     public ThePluginModuleComponent(Project project) {
         this.project = project;
@@ -27,18 +30,36 @@ public class ThePluginModuleComponent implements ProjectComponent {
 
     public void initComponent() {
         System.out.println("initComponent");
+        int timeout = 1000;
+        if (timeout > 0) {
+            timer = new Timer(timeout, new ActionListener()
+            {
+                private int counter = 0;
+
+                public void actionPerformed(ActionEvent e) {
+                    bambooLabel.setText("BMB " + String.valueOf(counter++));
+                }
+            });
+
+        }
         bambooLabel = new JLabel();
         bambooLabel.setText("BMB");
         bambooLabel.setToolTipText("ToolTip");
         
         statusBarComponent = bambooLabel;
-
+        if (timer != null) {
+            timer.start();
+        }
     }
 
     public void disposeComponent() {
         System.out.println("disposeComponent");
+        if (timer != null) {
+            timer.stop();
+        }
         statusBarComponent = null;
         bambooLabel = null;
+
     }
 
     @NotNull
