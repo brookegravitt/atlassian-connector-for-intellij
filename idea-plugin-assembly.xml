@@ -25,6 +25,9 @@
         <fileSet>
             <directory>./target/classes</directory>
             <outputDirectory>classes</outputDirectory>
+			<excludes>
+				<exclude>META-INF/**</exclude>
+			</excludes>
      	</fileSet>
         <fileSet>
             <directory>./target/classes/META-INF</directory>
