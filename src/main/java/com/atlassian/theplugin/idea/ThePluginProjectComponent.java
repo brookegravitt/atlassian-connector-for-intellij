@@ -17,14 +17,14 @@ import java.awt.event.ActionEvent;
  * Time: 3:41:28 PM
  * To change this template use File | Settings | File Templates.
  */
-public class ThePluginModuleComponent implements ProjectComponent {
+public class ThePluginProjectComponent implements ProjectComponent {
     private final Project project;
     private StatusBar statusBar;
     private JComponent statusBarComponent;
     private JLabel bambooLabel;
     private Timer timer = null;
 
-    public ThePluginModuleComponent(Project project) {
+    public ThePluginProjectComponent(Project project) {
         this.project = project;
     }
 
@@ -64,7 +64,7 @@ public class ThePluginModuleComponent implements ProjectComponent {
 
     @NotNull
     public String getComponentName() {
-        return "ThePluginModuleComponent";
+        return "ThePluginProjectComponent";
     }
 
     public void projectOpened() {
