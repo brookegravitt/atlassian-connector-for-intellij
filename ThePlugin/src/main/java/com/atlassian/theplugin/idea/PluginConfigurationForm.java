@@ -51,7 +51,7 @@ public class PluginConfigurationForm {
         data.getBambooConfigurationData().setServerName(serverName.getText());
         data.getBambooConfigurationData().setServerUrl(serverUrl.getText());
         data.getBambooConfigurationData().setUsername(username.getText());
-        data.getBambooConfigurationData().setPassword(password.getText());
+        data.getBambooConfigurationData().setPassword(String.valueOf(password.getPassword()));
     }
 
     public boolean isModified(PluginConfigurationBean data) {
@@ -64,7 +64,7 @@ public class PluginConfigurationForm {
         if (username.getText() != null ? !username.getText().equals(data.getBambooConfigurationData().getUsername()) :
                 data.getBambooConfigurationData().getUsername() != null)
             return true;
-        if (password.getText() != null ? !password.getText().equals(data.getBambooConfigurationData().getPassword()) :
+        if (String.valueOf(password.getPassword()) != null ? !String.valueOf(password.getPassword()).equals(data.getBambooConfigurationData().getPassword()) :
                 data.getBambooConfigurationData().getPassword() != null)
             return true;
         return false;
