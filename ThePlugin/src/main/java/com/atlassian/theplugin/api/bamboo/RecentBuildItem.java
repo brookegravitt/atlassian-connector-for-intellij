@@ -1,7 +1,8 @@
 package com.atlassian.theplugin.api.bamboo;
 
-public class RecentBuildItem
-{
+import com.atlassian.theplugin.bamboo.BambooBuildInfo;
+
+public class RecentBuildItem implements BambooBuildInfo {
     private String projectName;
     private String buildName;
     private String buildKey;

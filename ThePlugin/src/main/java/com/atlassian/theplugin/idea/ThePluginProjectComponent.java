@@ -4,6 +4,8 @@ import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.WindowManager;
+import com.atlassian.theplugin.bamboo.BambooStatusRenderer;
+import com.atlassian.theplugin.bamboo.Organik;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -21,8 +23,10 @@ public class ThePluginProjectComponent implements ProjectComponent {
     private final Project project;
     private StatusBar statusBar;
     private JComponent statusBarComponent;
-    private JLabel bambooLabel;
+    private BambooStatusIcon bambooLabel;
     private Timer timer = null;
+    private Organik organik = new Organik();
+    private BambooStatusRenderer renderer;
 
     public ThePluginProjectComponent(Project project) {
         this.project = project;
@@ -30,35 +34,40 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
     public void initComponent() {
         System.out.println("Init ThePlugin status component.");
+
         int timeout = 1000;
         if (timeout > 0) {
             timer = new Timer(timeout, new ActionListener()
             {
-                private int counter = 0;
 
                 public void actionPerformed(ActionEvent e) {
-                    bambooLabel.setText("BMB " + String.valueOf(counter++));
+                    organik.run();
                 }
             });
 
         }
-        bambooLabel = new JLabel();
-        bambooLabel.setText("BMB");
-        bambooLabel.setToolTipText("ToolTip");
-        
+        bambooLabel = new BambooStatusIcon();
+        bambooLabel.updateBambooStatus("BMB", "dupa jasiu");
+
         statusBarComponent = bambooLabel;
         if (timer != null) {
             timer.start();
         }
+
+        renderer = new BambooStatusRenderer(bambooLabel);
+        organik.registerListener(renderer);
     }
 
     public void disposeComponent() {
+        organik.unregisterListener(renderer);
+
         System.out.println("Dispose ThePlugin status component.");
         if (timer != null) {
             timer.stop();
         }
         statusBarComponent = null;
         bambooLabel = null;
+
 
     }
 
