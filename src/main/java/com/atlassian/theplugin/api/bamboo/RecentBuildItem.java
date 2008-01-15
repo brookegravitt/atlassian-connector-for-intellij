@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.api.bamboo;
 
 import com.atlassian.theplugin.bamboo.BambooBuildInfo;
+import com.atlassian.theplugin.bamboo.BuildStatus;
 
 public class RecentBuildItem implements BambooBuildInfo {
     private String projectName;
@@ -136,6 +137,17 @@ public class RecentBuildItem implements BambooBuildInfo {
     public String getBuildCommitComment()
     {
         return buildCommitComment;
+    }
+
+    public BuildStatus getStatus() {
+        if("Successful".equals(buildState)) {
+            return BuildStatus.SUCCESS;
+        } else if ("Failed".equals(buildState)) {
+            return BuildStatus.FAILED;
+        } else {
+            System.out.println("Illegal state : " + buildState);
+            return BuildStatus.ERROR;
+        }
     }
 
     public void setBuildCommitComment(String buildCommitComment)
