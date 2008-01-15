@@ -29,7 +29,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
     }
 
     public void initComponent() {
-        System.out.println("initComponent");
+        System.out.println("Init ThePlugin status component.");
         int timeout = 1000;
         if (timeout > 0) {
             timer = new Timer(timeout, new ActionListener()
@@ -53,7 +53,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
     }
 
     public void disposeComponent() {
-        System.out.println("disposeComponent");
+        System.out.println("Dispose ThePlugin status component.");
         if (timer != null) {
             timer.stop();
         }
