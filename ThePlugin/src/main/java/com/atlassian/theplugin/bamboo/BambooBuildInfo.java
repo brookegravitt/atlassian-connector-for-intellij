@@ -27,4 +27,6 @@ public interface BambooBuildInfo {
     String getBuildTestSummary();
 
     String getBuildCommitComment();
+
+    BuildStatus getStatus();
 }

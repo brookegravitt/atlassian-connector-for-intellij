@@ -1,5 +1,7 @@
 package com.atlassian.theplugin.bamboo;
 
+import static com.atlassian.theplugin.bamboo.BuildStatus.FAILED;
+
 import java.util.Collection;
 
 /**
@@ -19,9 +21,33 @@ public class BambooStatusRenderer implements BambooStatusListener {
     }
 
     public void statusUpdated(Collection<BambooBuildInfo> stats) {
-        String status = "newStatus " + ++counter;
-        String statusExt = "Nowy dlugi status";
+        BuildStatus status = BuildStatus.SUCCESS;
+        StringBuilder sb = new StringBuilder("<html><body><table>");
 
-        displayComponent.updateBambooStatus(status, statusExt);
+        for(BambooBuildInfo buildInfo : stats) {
+            sb.append("<tr><td>");
+            sb.append(buildInfo.getBuildName());
+            sb.append("</td><td>");
+            switch(buildInfo.getStatus()) {
+                case FAILED:
+                    sb.append("<font color=\"red\">build failed</font>");
+                    status = FAILED;
+                    break;
+                case ERROR:
+                    sb.append("<font color=\"ltgray\">error</font>");
+                    if(status != FAILED) {
+                        status = BuildStatus.ERROR;
+                    }
+                    break;
+                case SUCCESS:
+                    sb.append("<font color=\"green\">success</font>");
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected build status encountered");
+            }
+            sb.append("</td></tr>");
+        }
+        sb.append("</table></body></html>");
+        displayComponent.updateBambooStatus(status.toString(), sb.toString());
     }
 }
