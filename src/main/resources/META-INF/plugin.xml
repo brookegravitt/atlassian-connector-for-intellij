@@ -12,7 +12,7 @@
     </application-components>
     <project-components>
         <component>
-            <implementation-class>com.atlassian.theplugin.idea.ThePluginModuleComponent</implementation-class>
+            <implementation-class>com.atlassian.theplugin.idea.ThePluginProjectComponent</implementation-class>
         </component>
     </project-components>
 </idea-plugin>
