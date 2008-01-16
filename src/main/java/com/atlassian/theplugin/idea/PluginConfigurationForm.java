@@ -1,13 +1,14 @@
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.configuration.BambooConnection;
-import com.atlassian.theplugin.configuration.ConnectionException;
-import com.atlassian.theplugin.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.configuration.*;
 import com.intellij.openapi.ui.Messages;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Collection;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Created by IntelliJ IDEA.
@@ -24,6 +25,7 @@ public class PluginConfigurationForm {
     private JTextField username;
     private JPasswordField password;
     private JButton testConnection;
+    private JTextArea buildPlansTextArea;
 
     public PluginConfigurationForm() {
         testConnection.addActionListener(new ActionListener() {
@@ -45,6 +47,7 @@ public class PluginConfigurationForm {
         serverUrl.setText(data.getBambooConfigurationData().getServerUrl());
         username.setText(data.getBambooConfigurationData().getUsername());
         password.setText(data.getBambooConfigurationData().getPassword());
+        buildPlansTextArea.setText(subscribedPlansToString(data.getBambooConfigurationData().getSubscribedPlansData()));
     }
 
     public void getData(PluginConfigurationBean data) {
@@ -52,6 +55,36 @@ public class PluginConfigurationForm {
         data.getBambooConfigurationData().setServerUrl(serverUrl.getText());
         data.getBambooConfigurationData().setUsername(username.getText());
         data.getBambooConfigurationData().setPassword(String.valueOf(password.getPassword()));
+
+        data.getBambooConfigurationData().setSubscribedPlansData(subscribedPlansFromString(
+                data.getBambooConfigurationData().getServer(), buildPlansTextArea.getText()));
+    }
+
+    static String subscribedPlansToString(Collection<SubscribedPlanBean> plans) {
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+        for (SubscribedPlanBean plan : plans) {
+            if (!first) {
+                sb.append(' ');
+            } else {
+                first = false;
+            }
+            sb.append(plan.getPlanId());
+        }
+
+        return sb.toString();
+    }
+
+    static List<SubscribedPlanBean> subscribedPlansFromString(Server server, String planList) {
+        List<SubscribedPlanBean> plans = new ArrayList<SubscribedPlanBean>();
+        for (String planId : planList.split("\\s+")) {
+            SubscribedPlanBean spb = new SubscribedPlanBean();
+            spb.setServer(server);
+            spb.setPlanId(planId);
+            plans.add(spb);
+        }
+
+        return plans;
     }
 
     public boolean isModified(PluginConfigurationBean data) {
