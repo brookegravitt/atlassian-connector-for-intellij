@@ -2,6 +2,9 @@ package com.atlassian.theplugin.configuration;
 
 import com.intellij.util.xmlb.annotations.Transient;
 
+import java.util.Collection;
+import java.util.ArrayList;
+
 /**
  * Created by IntelliJ IDEA.
  * User: sginter
@@ -11,6 +14,7 @@ import com.intellij.util.xmlb.annotations.Transient;
  */
 public class BambooConfigurationBean implements BambooConfiguration {
     private ServerBean server = new ServerBean();
+    private Collection<SubscribedPlanBean> subscribedPlans = new ArrayList<SubscribedPlanBean>();
 
 
     /**
@@ -42,6 +46,16 @@ public class BambooConfigurationBean implements BambooConfiguration {
     @Transient
     public Server getServer() {
         return server;
+    }
+
+    public Collection<SubscribedPlan> getSubscribedPlans() {
+        //TODO: mock implementation
+        Collection<SubscribedPlan> plans = new ArrayList<SubscribedPlan>();
+        SubscribedPlanBean sb1 = new SubscribedPlanBean();
+        sb1.setPlanId("TP-TEST");
+        sb1.setServer(server);
+        plans.add(sb1);
+        return plans;
     }
 
     //TODO: Stuff below is for convenience only, it should disappear once a proper multi server config is ready
