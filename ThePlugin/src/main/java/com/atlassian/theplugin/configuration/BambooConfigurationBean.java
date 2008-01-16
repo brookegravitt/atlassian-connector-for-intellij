@@ -4,6 +4,7 @@ import com.intellij.util.xmlb.annotations.Transient;
 
 import java.util.Collection;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -14,8 +15,7 @@ import java.util.ArrayList;
  */
 public class BambooConfigurationBean implements BambooConfiguration {
     private ServerBean server = new ServerBean();
-    private Collection<SubscribedPlanBean> subscribedPlans = new ArrayList<SubscribedPlanBean>();
-
+    private List<SubscribedPlanBean> subscribedPlans = new ArrayList<SubscribedPlanBean>();
 
     /**
      * For storage purposes.
@@ -48,14 +48,17 @@ public class BambooConfigurationBean implements BambooConfiguration {
         return server;
     }
 
-    public Collection<SubscribedPlan> getSubscribedPlans() {
-        //TODO: mock implementation
-        Collection<SubscribedPlan> plans = new ArrayList<SubscribedPlan>();
-        SubscribedPlanBean sb1 = new SubscribedPlanBean();
-        sb1.setPlanId("TP-TEST");
-        sb1.setServer(server);
-        plans.add(sb1);
-        return plans;
+    @Transient
+    public Collection<? extends SubscribedPlan> getSubscribedPlans() {
+        return subscribedPlans;
+    }
+
+    public List<SubscribedPlanBean> getSubscribedPlansData() {
+        return subscribedPlans;
+    }
+
+    public void setSubscribedPlansData(List<SubscribedPlanBean> subscribedPlansData) {
+        this.subscribedPlans = subscribedPlansData;
     }
 
     //TODO: Stuff below is for convenience only, it should disappear once a proper multi server config is ready
