@@ -166,8 +166,7 @@ public class BambooBuildInfo implements BambooBuild {
             return BuildStatus.SUCCESS;
         } else if ("Failed".equalsIgnoreCase(buildState)) {
             return BuildStatus.FAILED;
-        } else {
-            System.out.println("Illegal state : " + buildState);
+        } else {            
             return BuildStatus.ERROR;
         }
     }
