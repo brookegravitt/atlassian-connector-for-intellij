@@ -18,6 +18,9 @@ public class BambooBuildInfo implements BambooBuild {
     private String buildCommitComment;
     private String message;
 
+    public BambooBuildInfo() {        
+    }
+
     public BambooBuildInfo(String projectName, String buildName, String buildKey, String buildState, String buildNumber, String buildReason,
         String buildRelativeBuildDate, String buildDurationDescription, String buildTestSummary)
     {
@@ -159,9 +162,9 @@ public class BambooBuildInfo implements BambooBuild {
     }
 
     public BuildStatus getStatus() {
-        if("Successful".equals(buildState)) {
+        if("Successful".equalsIgnoreCase(buildState)) {
             return BuildStatus.SUCCESS;
-        } else if ("Failed".equals(buildState)) {
+        } else if ("Failed".equalsIgnoreCase(buildState)) {
             return BuildStatus.FAILED;
         } else {
             System.out.println("Illegal state : " + buildState);
