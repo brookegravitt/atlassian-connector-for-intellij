@@ -57,7 +57,7 @@ public class PluginConfigurationForm {
         data.getBambooConfigurationData().setPassword(String.valueOf(password.getPassword()));
 
         data.getBambooConfigurationData().setSubscribedPlansData(subscribedPlansFromString(
-                data.getBambooConfigurationData().getServer(), buildPlansTextArea.getText()));
+                data.getBambooConfigurationData().getServerData(), buildPlansTextArea.getText()));
     }
 
     static String subscribedPlansToString(Collection<SubscribedPlanBean> plans) {
@@ -75,11 +75,11 @@ public class PluginConfigurationForm {
         return sb.toString();
     }
 
-    static List<SubscribedPlanBean> subscribedPlansFromString(Server server, String planList) {
+    static List<SubscribedPlanBean> subscribedPlansFromString(ServerBean server, String planList) {
         List<SubscribedPlanBean> plans = new ArrayList<SubscribedPlanBean>();
         for (String planId : planList.split("\\s+")) {
             SubscribedPlanBean spb = new SubscribedPlanBean();
-            spb.setServer(server);
+            spb.setServerData(server);
             spb.setPlanId(planId);
             plans.add(spb);
         }
