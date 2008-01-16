@@ -5,6 +5,7 @@ import junit.framework.TestCase;
 import java.util.Collection;
 
 import com.atlassian.theplugin.configuration.*;
+import com.atlassian.theplugin.api.bamboo.BambooLoginException;
 
 /**
  * Created by IntelliJ IDEA.
@@ -32,11 +33,50 @@ public class BambooServerFacadeTest extends TestCase {
     }
 
     public void testSubscribedBuildStatus() throws Exception {
-        BambooServerFactory factory = new BambooServerFactory();
-        BambooServerFacade facade = factory.getBambooServerFacade();
+
+        BambooServerFacade facade = BambooServerFactory.getBambooServerFacade();
         Collection<BambooBuild> plans = facade.getSubscribedPlansResults();
 
         assertNotNull(plans);
         assertFalse(plans.size() == 0);
+    }
+
+    public void testConnectionTest(){
+        BambooServerFacade facade = BambooServerFactory.getBambooServerFacade();
+        Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServer();
+        try {
+            facade.testServerConnection(server.getUrlString(), server.getUsername(), server.getPassword());
+        } catch (BambooLoginException e) {
+            fail();
+        }
+
+        try {
+            facade.testServerConnection("", "", "");
+            fail();
+        } catch (BambooLoginException e) {
+
+        }
+
+        try {
+            facade.testServerConnection(server.getUrlString(), "", "");
+            fail();
+        } catch (BambooLoginException e) {
+
+        }
+
+        try {
+            facade.testServerConnection("", server.getUsername(), "");
+            fail();
+        } catch (BambooLoginException e) {
+
+        }
+
+        try {
+            facade.testServerConnection("", "", server.getPassword());
+            fail();
+        } catch (BambooLoginException e) {
+
+        }
+
     }
 }
