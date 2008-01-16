@@ -14,7 +14,7 @@ public interface BambooServerFacade {
 
     Collection<BambooPlan> getPlanList();
 
-    Collection<BambooBuild> getRecentBuildItems();
+    Collection<BambooBuild> getSubscribedPlansResults();
 
     BambooBuild getLatestBuildForPlan(String planName);
 }
