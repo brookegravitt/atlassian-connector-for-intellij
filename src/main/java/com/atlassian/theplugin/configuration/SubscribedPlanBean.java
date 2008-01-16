@@ -1,5 +1,7 @@
 package com.atlassian.theplugin.configuration;
 
+import com.intellij.util.xmlb.annotations.Transient;
+
 /**
  * Created by IntelliJ IDEA.
  * User: sginter
@@ -8,16 +10,22 @@ package com.atlassian.theplugin.configuration;
  * To change this template use File | Settings | File Templates.
  */
 public class SubscribedPlanBean implements SubscribedPlan {
-    private Server server;
+    private ServerBean server;
     private String planId;
 
+    @Transient
     public Server getServer() {
         return server;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public void setServer(Server server) {
+    public void setServerData(ServerBean server) {
         this.server = server;
     }
+
+    public ServerBean getServerData() {
+        return server;
+    }
+
 
     public String getPlanId() {
         return planId;//"TP-DEF", "TP-TEST", "APITEST-DEVAPI"
