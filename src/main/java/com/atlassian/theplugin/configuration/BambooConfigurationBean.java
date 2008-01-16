@@ -15,7 +15,6 @@ import java.util.List;
  */
 public class BambooConfigurationBean implements BambooConfiguration {
     private ServerBean server = new ServerBean();
-    private List<SubscribedPlanBean> subscribedPlans = new ArrayList<SubscribedPlanBean>();
 
     /**
      * For storage purposes.
@@ -48,57 +47,5 @@ public class BambooConfigurationBean implements BambooConfiguration {
         return server;
     }
 
-    @Transient
-    public Collection<? extends SubscribedPlan> getSubscribedPlans() {
-        return subscribedPlans;
-    }
 
-    public List<SubscribedPlanBean> getSubscribedPlansData() {
-        return subscribedPlans;
-    }
-
-    public void setSubscribedPlansData(List<SubscribedPlanBean> subscribedPlansData) {
-        this.subscribedPlans = subscribedPlansData;
-    }
-
-    //TODO: Stuff below is for convenience only, it should disappear once a proper multi server config is ready
-    @Transient
-    public String getServerName() {
-        return server.getName();
-    }
-
-    public void setServerName(final String serverName) {
-        server = new ServerBean(server);
-        server.setName(serverName);
-    }
-
-    @Transient
-    public String getServerUrl() {
-        return server.getUrlString();
-    }
-
-    public void setServerUrl(final String serverUrl) {
-        server = new ServerBean(server);
-        server.setUrlString(serverUrl);
-    }
-
-    @Transient
-    public String getUsername() {
-        return server.getUsername();
-    }
-
-    public void setUsername(final String username) {
-        server = new ServerBean(server);
-        server.setUsername(username);
-    }
-
-    @Transient
-    public String getPassword() {
-        return server.getPassword();
-    }
-
-    public void setPassword(final String password) {
-        server = new ServerBean(server);
-        server.setPassword(password);
-    }
 }

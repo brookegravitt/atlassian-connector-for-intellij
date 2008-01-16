@@ -44,21 +44,20 @@ public class PluginConfigurationForm {
     }
 
     public void setData(PluginConfigurationBean data) {
-        serverName.setText(data.getBambooConfigurationData().getServerName());
-        serverUrl.setText(data.getBambooConfigurationData().getServerUrl());
-        username.setText(data.getBambooConfigurationData().getUsername());
-        password.setText(data.getBambooConfigurationData().getPassword());
-        buildPlansTextArea.setText(subscribedPlansToString(data.getBambooConfigurationData().getSubscribedPlansData()));
+        serverName.setText(data.getBambooConfigurationData().getServer().getName());
+        serverUrl.setText(data.getBambooConfigurationData().getServer().getUrlString());
+        username.setText(data.getBambooConfigurationData().getServer().getUsername());
+        password.setText(data.getBambooConfigurationData().getServer().getPassword());
+        buildPlansTextArea.setText(subscribedPlansToString(data.getBambooConfigurationData().getServerData().getSubscribedPlansData()));
     }
 
     public void getData(PluginConfigurationBean data) {
-        data.getBambooConfigurationData().setServerName(serverName.getText());
-        data.getBambooConfigurationData().setServerUrl(serverUrl.getText());
-        data.getBambooConfigurationData().setUsername(username.getText());
-        data.getBambooConfigurationData().setPassword(String.valueOf(password.getPassword()));
+        data.getBambooConfigurationData().getServerData().setName(serverName.getText());
+        data.getBambooConfigurationData().getServerData().setUrlString(serverUrl.getText());
+        data.getBambooConfigurationData().getServerData().setUsername(username.getText());
+        data.getBambooConfigurationData().getServerData().setPassword(String.valueOf(password.getPassword()));
 
-        data.getBambooConfigurationData().setSubscribedPlansData(subscribedPlansFromString(
-                data.getBambooConfigurationData().getServerData(), buildPlansTextArea.getText()));
+        data.getBambooConfigurationData().getServerData().setSubscribedPlansData(subscribedPlansFromString(buildPlansTextArea.getText()));
     }
 
     static String subscribedPlansToString(Collection<SubscribedPlanBean> plans) {
@@ -76,11 +75,10 @@ public class PluginConfigurationForm {
         return sb.toString();
     }
 
-    static List<SubscribedPlanBean> subscribedPlansFromString(ServerBean server, String planList) {
+    static List<SubscribedPlanBean> subscribedPlansFromString(String planList) {
         List<SubscribedPlanBean> plans = new ArrayList<SubscribedPlanBean>();
         for (String planId : planList.split("\\s+")) {
             SubscribedPlanBean spb = new SubscribedPlanBean();
-            spb.setServerData(server);
             spb.setPlanId(planId);
             plans.add(spb);
         }
@@ -89,20 +87,20 @@ public class PluginConfigurationForm {
     }
 
     public boolean isModified(PluginConfigurationBean data) {
-        if (serverName.getText() != null ? !serverName.getText().equals(data.getBambooConfigurationData().getServerName()) :
-                data.getBambooConfigurationData().getServerName() != null)
+        if (serverName.getText() != null ? !serverName.getText().equals(data.getBambooConfigurationData().getServer().getName()) :
+                data.getBambooConfigurationData().getServer().getName() != null)
             return true;
-        if (serverUrl.getText() != null ? !serverUrl.getText().equals(data.getBambooConfigurationData().getServerUrl()) :
-                data.getBambooConfigurationData().getServerUrl() != null)
+        if (serverUrl.getText() != null ? !serverUrl.getText().equals(data.getBambooConfigurationData().getServer().getUrlString()) :
+                data.getBambooConfigurationData().getServer().getUrlString() != null)
             return true;
-        if (username.getText() != null ? !username.getText().equals(data.getBambooConfigurationData().getUsername()) :
-                data.getBambooConfigurationData().getUsername() != null)
+        if (username.getText() != null ? !username.getText().equals(data.getBambooConfigurationData().getServer().getUsername()) :
+                data.getBambooConfigurationData().getServer().getUsername() != null)
             return true;
-        if (String.valueOf(password.getPassword()) != null ? !String.valueOf(password.getPassword()).equals(data.getBambooConfigurationData().getPassword()) :
-                data.getBambooConfigurationData().getPassword() != null)
+        if (String.valueOf(password.getPassword()) != null ? !String.valueOf(password.getPassword()).equals(data.getBambooConfigurationData().getServer().getPassword()) :
+                data.getBambooConfigurationData().getServer().getPassword() != null)
             return true;
-        if (buildPlansTextArea.getText() != null ? !username.getText().equals(subscribedPlansToString(data.getBambooConfigurationData().getSubscribedPlansData())) :
-                data.getBambooConfigurationData().getSubscribedPlansData() != null)
+        if (buildPlansTextArea.getText() != null ? !buildPlansTextArea.getText().equals(subscribedPlansToString(data.getBambooConfigurationData().getServerData().getSubscribedPlansData())) :
+                data.getBambooConfigurationData().getServerData().getSubscribedPlansData() != null)
             return true;
         return false;
     }

@@ -11,5 +11,4 @@ import java.util.Collection;
  */                   
 public interface BambooConfiguration {
     Server getServer();
-    Collection<? extends SubscribedPlan> getSubscribedPlans();
 }

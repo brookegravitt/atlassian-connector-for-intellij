@@ -1,5 +1,7 @@
 package com.atlassian.theplugin.configuration;
 
+import java.util.Collection;
+
 /**
  * Bamboo server configuration.
  * User: sginter
@@ -11,4 +13,6 @@ public interface Server {
     String getUrlString();
     String getUsername();
     String getPassword();
+
+    Collection<? extends SubscribedPlan> getSubscribedPlans();
 }
