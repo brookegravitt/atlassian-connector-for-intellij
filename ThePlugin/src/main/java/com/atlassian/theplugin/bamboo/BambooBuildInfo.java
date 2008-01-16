@@ -4,7 +4,9 @@ import com.atlassian.theplugin.bamboo.BambooBuild;
 import com.atlassian.theplugin.bamboo.BuildStatus;
 
 public class BambooBuildInfo implements BambooBuild {
+    private String serverUrl;
     private String projectName;
+    private String projectKey;
     private String buildName;
     private String buildKey;
     private String buildState;
@@ -14,6 +16,7 @@ public class BambooBuildInfo implements BambooBuild {
     private String buildDurationDescription;
     private String buildTestSummary;
     private String buildCommitComment;
+    private String message;
 
     public BambooBuildInfo(String projectName, String buildName, String buildKey, String buildState, String buildNumber, String buildReason,
         String buildRelativeBuildDate, String buildDurationDescription, String buildTestSummary)
@@ -44,6 +47,14 @@ public class BambooBuildInfo implements BambooBuild {
         this.buildCommitComment = buildCommitComment;
     }
 
+    public String getServerUrl() {
+        return this.serverUrl;
+    }
+
+    public void setServerUrl(String serverUrl) {
+        this.serverUrl = serverUrl;
+    }
+
     public String getProjectName()
     {
         return projectName;
@@ -52,6 +63,14 @@ public class BambooBuildInfo implements BambooBuild {
     public void setProjectName(String projectName)
     {
         this.projectName = projectName;
+    }
+
+    public String getProjectKey() {
+        return this.projectKey;
+    }
+
+    public void setProjectKey(String projectKey) {
+        this.projectKey = projectKey;
     }
 
     public String getBuildName()
@@ -150,6 +169,14 @@ public class BambooBuildInfo implements BambooBuild {
         }
     }
 
+    public String getMessage() {
+        return this.message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+        
     public void setBuildCommitComment(String buildCommitComment)
     {
         this.buildCommitComment = buildCommitComment;

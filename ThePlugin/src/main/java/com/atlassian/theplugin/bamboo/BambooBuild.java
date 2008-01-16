@@ -8,7 +8,11 @@ package com.atlassian.theplugin.bamboo;
  * To change this template use File | Settings | File Templates.
  */
 public interface BambooBuild {
+    String getServerUrl();
+
     String getProjectName();
+
+    String getProjectKey();
 
     String getBuildName();
 
@@ -29,4 +33,6 @@ public interface BambooBuild {
     String getBuildCommitComment();
 
     BuildStatus getStatus();
+
+    String getMessage();
 }
