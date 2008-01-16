@@ -59,11 +59,11 @@ public class BambooServerImpl implements BambooServerFacade {
 
 
     public Collection<BambooBuild> getSubscribedPlansResults() {        
-        Collection<? extends SubscribedPlan> plans = ConfigurationFactory.getConfiguration().getBambooConfiguration().getSubscribedPlans();
         Collection<BambooBuild> builds = new ArrayList<BambooBuild>();
 
-        for (SubscribedPlan plan : plans) {
-            Server server = plan.getServer();
+        Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServer();
+
+        for (SubscribedPlan plan : server.getSubscribedPlans()) {
             try {
                 RestApi api = RestApi.login(server.getUrlString(), server.getUsername(), server.getPassword());
                 builds.add(api.getLatestPlanBuild(plan.getPlanId()));

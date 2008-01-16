@@ -23,13 +23,12 @@ class BambooConfigurationImpl implements BambooConfiguration {
         Collection<SubscribedPlan> plans = new ArrayList<SubscribedPlan>();
         SubscribedPlanBean sb1 = new SubscribedPlanBean();
         sb1.setPlanId("TP-TEST");
-        sb1.setServerData(server);
         plans.add(sb1);
 
         return plans;
     }
 
-    public void setServer(Server newConfiguration) {
+    public void setServer(ServerBean newConfiguration) {
         server = new ServerBean(newConfiguration);
     }
 }
