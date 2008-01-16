@@ -1,5 +1,7 @@
 package com.atlassian.theplugin.configuration;
 
+import java.util.Collection;
+
 /**
  * Bamboo global configuration.
  *
@@ -9,4 +11,5 @@ package com.atlassian.theplugin.configuration;
  */                   
 public interface BambooConfiguration {
     Server getServer();
+    Collection<SubscribedPlan> getSubscribedPlans();
 }
