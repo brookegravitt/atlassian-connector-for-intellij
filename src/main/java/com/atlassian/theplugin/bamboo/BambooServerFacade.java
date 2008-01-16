@@ -1,5 +1,7 @@
 package com.atlassian.theplugin.bamboo;
 
+import com.atlassian.theplugin.api.bamboo.BambooLoginException;
+
 import java.util.Collection;
 
 /**
@@ -9,7 +11,10 @@ import java.util.Collection;
  * Time: 5:11:18 PM
  * To change this template use File | Settings | File Templates.
  */
+
 public interface BambooServerFacade {
+    Boolean testServerConnection(String url, String userName, String password) throws BambooLoginException;
+    
     Collection<BambooProject> getProjectList();
 
     Collection<BambooPlan> getPlanList();
