@@ -49,7 +49,7 @@ public class BambooServerImpl implements BambooServerFacade {
 
 
     public Collection<BambooBuild> getSubscribedPlansResults() {        
-        Collection<SubscribedPlan> plans = ConfigurationFactory.getConfiguration().getBambooConfiguration().getSubscribedPlans();
+        Collection<? extends SubscribedPlan> plans = ConfigurationFactory.getConfiguration().getBambooConfiguration().getSubscribedPlans();
         Collection<BambooBuild> builds = new ArrayList<BambooBuild>();
 
         for (SubscribedPlan plan : plans) {
