@@ -101,6 +101,9 @@ public class PluginConfigurationForm {
         if (String.valueOf(password.getPassword()) != null ? !String.valueOf(password.getPassword()).equals(data.getBambooConfigurationData().getPassword()) :
                 data.getBambooConfigurationData().getPassword() != null)
             return true;
+        if (buildPlansTextArea.getText() != null ? !username.getText().equals(subscribedPlansToString(data.getBambooConfigurationData().getSubscribedPlansData())) :
+                data.getBambooConfigurationData().getSubscribedPlansData() != null)
+            return true;
         return false;
     }
 
