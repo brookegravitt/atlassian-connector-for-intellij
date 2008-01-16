@@ -12,7 +12,7 @@ import java.net.MalformedURLException;
 import java.util.List;
 import java.util.ArrayList;
 
-import com.atlassian.theplugin.bamboo.BambooBuildInfo;
+import com.atlassian.theplugin.bamboo.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -67,20 +67,22 @@ public class RestApi {
         retrieveResponse(logoutUrl);
     }
 
-    public List listProjectNames() throws BambooException {
-        String buildResultUrl = baseUrl + "/api/rest//api/rest/listProjectNames.action?auth=" + authToken;
+    public List<BambooProject> listProjectNames() throws BambooException {
+        String buildResultUrl = baseUrl + "/api/rest/listProjectNames.action?auth=" + authToken;
         Document doc = retrieveResponse(buildResultUrl);
 
         XPath xpath = null;
         List projects = new ArrayList();
         List elements = null;
         try {
-            xpath = XPath.newInstance("/response/build");
+            xpath = XPath.newInstance("/response/project");
             elements = xpath.selectNodes(doc);
             if (elements != null) {
                 for (Object element : elements) {
                     Element e = (Element) element;
-                    projects.add(constructBuildItem(e, false));
+                    String name = e.getChild("name").getText();
+                    String key = e.getChild("key").getText();
+                    projects.add(new BambooProjectInfo(name, key));
                 }
             }
         } catch (JDOMException e) {
@@ -90,8 +92,53 @@ public class RestApi {
         return projects;
     }
 
+    public List<BambooPlan> listPlanNames() throws BambooException {
+        String buildResultUrl = baseUrl + "/api/rest/listBuildNames.action?auth=" + authToken;
+        Document doc = retrieveResponse(buildResultUrl);
+
+        XPath xpath = null;
+        List plans = new ArrayList();
+        List elements = null;
+        try {
+            xpath = XPath.newInstance("/response/build");
+            elements = xpath.selectNodes(doc);
+            if (elements != null) {
+                for (Object element : elements) {
+                    Element e = (Element) element;
+                    String name = e.getChild("name").getText();
+                    String key = e.getChild("key").getText();
+                    plans.add(new BambooPlanInfo(name, key));
+                }
+            }
+        } catch (JDOMException e) {
+            throw new BambooException(e.getMessage(), e);
+        }
+
+        return plans;
+    }
+
+    public BambooBuildInfo getLatestPlanBuild(String planKey) throws BambooException {
+        String buildResultUrl = baseUrl + "/api/rest/getLatestBuildResults.action?auth=" + authToken + "&buildKey=" + planKey;
+        Document doc = retrieveResponse(buildResultUrl);
+
+        XPath xpath = null;
+        List elements = null;
+        try {
+            xpath = XPath.newInstance("/response");
+            elements = xpath.selectNodes(doc);
+            if (elements != null && !elements.isEmpty()) {
+                Element e = (Element) elements.iterator().next();
+                return constructBuildItem(e, false);
+            }
+        } catch (JDOMException e) {
+            throw new BambooException(e.getMessage(), e);
+        }
+
+        return null;
+    }
+
     public List getLatestProjectBuilds(String projectKey) throws BambooException {
-        String buildResultUrl = baseUrl + "/api/rest/getLatestBuildResultst.action?auth=" + authToken + "&projectKey=" + projectKey;
+        String buildResultUrl = baseUrl + "/api/rest/getLatestBuildResultsForProject.action?auth=" + authToken + "&projectKey=" + projectKey;
         Document doc = retrieveResponse(buildResultUrl);
 
         XPath xpath = null;
@@ -135,7 +182,9 @@ public class RestApi {
         return new BambooBuildInfo(projectName, buildName, buildKey, buildState, buildNumber, buildReason, buildRelativeBuildDate,
             buildDurationDescription, buildTestSummary);
     }
+
     
+
     private Document retrieveResponse(String url) throws BambooException {
         try {
             URL callUrl = null;
