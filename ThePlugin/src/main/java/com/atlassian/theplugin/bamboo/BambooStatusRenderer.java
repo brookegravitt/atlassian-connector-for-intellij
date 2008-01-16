@@ -26,7 +26,7 @@ public class BambooStatusRenderer implements BambooStatusListener {
 
         for(BambooBuild buildInfo : stats) {
             sb.append("<tr><td>");
-            sb.append(buildInfo.getBuildName());
+            sb.append(buildInfo.getBuildKey());
             sb.append("</td><td>");
             switch(buildInfo.getStatus()) {
                 case FAILED:
@@ -34,7 +34,7 @@ public class BambooStatusRenderer implements BambooStatusListener {
                     status = FAILED;
                     break;
                 case ERROR:
-                    sb.append("<font color=\"ltgray\">error</font>");
+                    sb.append("<font color=\"ltgray\">").append(buildInfo.getMessage()).append("</font>");
                     if(status != FAILED) {
                         status = BuildStatus.ERROR;
                     }

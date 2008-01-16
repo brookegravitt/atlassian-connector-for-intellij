@@ -1,7 +1,10 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.configuration.*;
+import com.atlassian.theplugin.bamboo.BambooServerFactory;
+import com.atlassian.theplugin.api.bamboo.BambooLoginException;
 import com.intellij.openapi.ui.Messages;
+import static com.intellij.openapi.ui.Messages.showMessageDialog;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -29,14 +32,12 @@ public class PluginConfigurationForm {
 
     public PluginConfigurationForm() {
         testConnection.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-
-                BambooConnection c = new BambooConnection();
+            public void actionPerformed(ActionEvent e) {                
                 try {
-                    c.connect(serverUrl.getText(), username.getText(), String.valueOf(password.getPassword()));
-                    Messages.showMessageDialog("Connected successfully", "Connection OK", Messages.getInformationIcon());
-                } catch (ConnectionException e1) {
-                    Messages.showMessageDialog(e1.getMessage(), "Connection Error", Messages.getErrorIcon());
+                    BambooServerFactory.getBambooServerFacade().testServerConnection(serverUrl.getText(), username.getText(), String.valueOf(password.getPassword()));
+                    showMessageDialog("Connected successfully", "Connection OK", Messages.getInformationIcon());
+                } catch (BambooLoginException e1) {
+                    showMessageDialog(e1.getMessage(), "Connection Error", Messages.getErrorIcon());
                 }
             }
         });
