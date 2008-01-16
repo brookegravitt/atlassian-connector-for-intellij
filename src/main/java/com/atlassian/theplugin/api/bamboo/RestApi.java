@@ -11,6 +11,7 @@ import java.net.URL;
 import java.net.MalformedURLException;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import com.atlassian.theplugin.bamboo.*;
 
@@ -206,9 +207,16 @@ public class RestApi {
     private static void checkForLoginErrors(Document doc) throws JDOMException, BambooLoginException {
         XPath xpath = XPath.newInstance("/errors/error");
         List elements = xpath.selectNodes(doc);
+
         if (elements != null && elements.size() > 0) {
-            Element e = (Element) elements.iterator().next();
-            throw new BambooLoginException(e.getText());
+
+            String exceptionMsg = "";
+            for(Iterator i = elements.iterator(); i.hasNext();) {
+                Element e = (Element)  i.next();
+                exceptionMsg += e.getText() + "\n";
+            }
+
+            throw new BambooLoginException(exceptionMsg);
         }
     }
 
