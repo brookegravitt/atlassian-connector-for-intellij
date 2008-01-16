@@ -1,5 +1,11 @@
 package com.atlassian.theplugin.configuration;
 
+import com.intellij.util.xmlb.annotations.Transient;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.ArrayList;
+
 /**
  * BambooConfigurationBean for a single Bamboo server.
  * User: sginter
@@ -12,11 +18,15 @@ public class ServerBean implements Server {
     private String username;
     private String password;
 
-    ServerBean(Server s) {
+    private List<SubscribedPlanBean> subscribedPlans = new ArrayList<SubscribedPlanBean>();
+
+    ServerBean(ServerBean s) {
         name = s.getName();
         urlString = s.getUrlString();
         username = s.getUsername();
         password = s.getPassword();
+
+        subscribedPlans = new ArrayList<SubscribedPlanBean>(s.getSubscribedPlansData());
     }
 
     public ServerBean() {
@@ -53,4 +63,18 @@ public class ServerBean implements Server {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    @Transient
+    public Collection<? extends SubscribedPlan> getSubscribedPlans() {
+        return subscribedPlans;
+    }
+
+    public List<SubscribedPlanBean> getSubscribedPlansData() {
+        return subscribedPlans;
+    }
+
+    public void setSubscribedPlansData(List<SubscribedPlanBean> subscribedPlansData) {
+        this.subscribedPlans = subscribedPlansData;
+    }
+
 }

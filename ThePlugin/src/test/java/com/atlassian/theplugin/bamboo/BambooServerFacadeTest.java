@@ -24,16 +24,16 @@ public class BambooServerFacadeTest extends TestCase {
         server.setName("TestServer");
         server.setUrlString("http://lech.atlassian.pl:8080/atlassian-bamboo-1.2.4/");
         server.setUsername("user");
-        server.setPassword("user");
-        configuration.setServerData(server);
+        server.setPassword("d0n0tch@nge");
 
         ArrayList<SubscribedPlanBean> plans = new ArrayList<SubscribedPlanBean>();
         SubscribedPlanBean plan = new SubscribedPlanBean();
         plan.setPlanId("TP-DEF");
-        plan.setServerData(server);
         plans.add(plan);
-                
-        configuration.setSubscribedPlansData(plans);
+        server.setSubscribedPlansData(plans);
+
+        configuration.setServerData(server);
+
         PluginConfigurationBean pluginConfig = new PluginConfigurationBean();
         pluginConfig.setBambooConfigurationData(configuration);
 
