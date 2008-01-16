@@ -23,8 +23,14 @@
 	<artifactId>atlassian-idea-plugin</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
-	<name>Atlassian - tool - Intellij IDEA Plugin</name>
-	<description>An Intellij IDEA plugin for Atlassian's tools.</description>
+    <properties>
+        <clover.licenseLocation>clover/clover.license</clover.licenseLocation>
+        <clover.database>${basedir}/clover/clover.db</clover.database>
+        <clover.mergeDatabase>${basedir}/clover/cloverMerge.db</clover.mergeDatabase>
+        <jdkLevel>1.5</jdkLevel>
+    </properties>
+    <name>Atlassian-Intellij-IDEA-Plugin</name>
+    <description>An Intellij IDEA plugin for Atlassian's tools.</description>
   	<parent>
 		<groupId>com.atlassian.pom</groupId>
 		<artifactId>atlassian-closedsource-pom</artifactId>
@@ -148,8 +154,8 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>1.5</source>
-					<target>1.5</target>
+					<source>${jdkLevel}</source>
+					<target>${jdkLevel}</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -178,10 +184,11 @@
 				<groupId>com.atlassian.maven.plugins</groupId>
 				<artifactId>maven-clover-plugin</artifactId>
 				<configuration>
-					<licenseLocation>clover/clover.license</licenseLocation>
-					<cloverDatabase>${basedir}/clover/clover.db</cloverDatabase>
-					<cloverMergeDatabase>${basedir}/clover/cloverMerge.db</cloverMergeDatabase>
+                    <licenseLocation>${clover.licenseLocation}</licenseLocation>
+					<cloverDatabase>${clover.database}</cloverDatabase>
+					<cloverMergeDatabase>${clover.mergeDatabase}</cloverMergeDatabase>
 					<targetPercentage>60%</targetPercentage>
+                    <jdkLevel>${jdkLevel}</jdkLevel>
 				</configuration>
 				<executions>
 					<execution>
@@ -199,7 +206,7 @@
 				<configuration>
 					<ideaPlugin>true</ideaPlugin>
 					<jdkName>IDEA 7590</jdkName>
-					<jdkLevel>1.5</jdkLevel>
+					<jdkLevel>${jdkLevel}</jdkLevel>
 					<libraries>
 						<library>
 							<name>openapi</name>
@@ -253,9 +260,10 @@
 				<groupId>com.atlassian.maven.plugins</groupId>
 				<artifactId>maven-clover-plugin</artifactId>
 				<configuration>
-                    <licenseLocation>clover/clover.license</licenseLocation>
-                    <cloverDatabase>${basedir}/clover/clover.db</cloverDatabase>
-                    <cloverMergeDatabase>${basedir}/clover/cloverMerge.db</cloverMergeDatabase>
+                    <licenseLocation>${clover.licenseLocation}</licenseLocation>
+                    <cloverDatabase>${clover.database}</cloverDatabase>
+                    <cloverMergeDatabase>${clover.mergeDatabase}</cloverMergeDatabase>
+                    <jdkLevel>${jdkLevel}</jdkLevel>
 					<generateHTML>true</generateHTML>
 					<generatePdf>true</generatePdf>
 					<generateXml>true</generateXml>
