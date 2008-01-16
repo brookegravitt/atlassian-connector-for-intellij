@@ -25,9 +25,7 @@ public class Organik implements Runnable {
     }
 
     public void run() {
-        BambooServerFacade bamboo = new BambooServerFactory().getBambooServerFacade();
-        Collection<BambooBuild> newStatus = bamboo.getSubscribedPlansResults();
-
+        Collection<BambooBuild> newStatus = BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults();
         for (BambooStatusListener listener : listenerList) {
             listener.statusUpdated(newStatus);
         }

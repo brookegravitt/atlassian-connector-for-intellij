@@ -30,6 +30,16 @@ public class BambooServerImpl implements BambooServerFacade {
     public BambooServerImpl() {
     }
 
+    public Boolean testServerConnection(String url, String userName, String password) throws BambooLoginException {
+        RestApi apiHandler = RestApi.login(url, userName, password);
+        try {
+            apiHandler.logout();
+        } catch (BambooException e) {
+            log.error("Logout failed: " + e.getMessage());
+        }        
+        return true;
+    }
+
     public Collection<BambooProject> getProjectList() {
         Collection<BambooProject> newProject = new ArrayList<BambooProject>();
         newProject.add(new BambooProjectInfo("The Plugin", "TP"));
