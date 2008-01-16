@@ -10,7 +10,11 @@ import java.util.Collection;
  * To change this template use File | Settings | File Templates.
  */
 public interface BambooServerFacade {
+    Collection<BambooProject> getProjectList();
 
+    Collection<BambooPlan> getPlanList();
 
-    Collection<BambooBuildInfo> getRecentBuildItems();
+    Collection<BambooBuild> getRecentBuildItems();
+
+    BambooBuild getLatestBuildForPlan(String planName);
 }
