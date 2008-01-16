@@ -129,7 +129,7 @@ public class RestApi {
             elements = xpath.selectNodes(doc);
             if (elements != null && !elements.isEmpty()) {
                 Element e = (Element) elements.iterator().next();
-                return constructBuildItem(e, false);
+                return constructBuildItem(e);
             }
         } catch (JDOMException e) {
             throw new BambooException(e.getMessage(), e);
@@ -151,7 +151,7 @@ public class RestApi {
             if (elements != null) {
                 for (Object element : elements) {
                     Element e = (Element) element;
-                    builds.add(constructBuildItem(e, false));
+                    builds.add(constructBuildItem(e));
                 }
             }
         } catch (JDOMException e) {
@@ -161,27 +161,30 @@ public class RestApi {
         return builds;
     }
 
-    private static BambooBuildInfo constructBuildItem(Element buildItemNode, boolean isAuthorTriggeredBuilds)
+    private BambooBuildInfo constructBuildItem(Element buildItemNode)
     {
-        String projectName = "";//buildItemNode.getChild("projectName").getText();
-        String buildName = "";//buildItemNode.getChild("buildName").getText();
-        String buildKey = buildItemNode.getChild("buildKey").getText();
-        String buildState = buildItemNode.getChild("buildState").getText().toUpperCase();
-        String buildNumber = buildItemNode.getChild("buildNumber").getText();
-        String buildReason = "";//buildItemNode.getChild("buildReason").getText();
-        String buildRelativeBuildDate = "";//buildItemNode.getChild("buildRelativeBuildDate").getText();
-        String buildDurationDescription = "";//buildItemNode.getChild("buildDurationDescription").getText();
-        String buildTestSummary = "";//buildItemNode.getChild("buildTestSummary").getText();
-
-        if(isAuthorTriggeredBuilds)
-        {
-            String buildCommitComment = "";//buildItemNode.getChild("buildCommitComment").getText();
-            return new BambooBuildInfo(projectName, buildName, buildKey, buildState, buildNumber, buildReason, buildRelativeBuildDate,
-                buildDurationDescription, buildTestSummary, buildCommitComment);
-        }
+        String projectName = getChildText(buildItemNode, "projectName");
+        String buildName = getChildText(buildItemNode, "buildName");
+        String buildKey =getChildText(buildItemNode, "buildKey");
+        String buildState = getChildText(buildItemNode, "buildState");
+        String buildNumber = getChildText(buildItemNode, "buildNumber");
+        String buildReason = getChildText(buildItemNode, "buildReason");
+        String buildRelativeBuildDate = getChildText(buildItemNode, "buildRelativeBuildDate");
+        String buildDurationDescription = getChildText(buildItemNode, "buildDurationDescription");
+        String buildTestSummary = getChildText(buildItemNode, "buildTestSummary");
+        String buildCommitComment = getChildText(buildItemNode, "buildCommitComment");
 
         return new BambooBuildInfo(projectName, buildName, buildKey, buildState, buildNumber, buildReason, buildRelativeBuildDate,
-            buildDurationDescription, buildTestSummary);
+                buildDurationDescription, buildTestSummary, buildCommitComment);
+    }
+
+    private String getChildText(Element node, String childName){
+        try {
+            return node.getChild(childName).getText();
+        } catch (Exception e){
+
+            return "";
+        }
     }
 
     
