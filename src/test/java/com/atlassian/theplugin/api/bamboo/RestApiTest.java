@@ -25,7 +25,7 @@ public class RestApiTest extends TestCase {
   
     public void testWrongPortBambooLogin () throws Exception {
         try {
-            RestApi apiHandler = RestApi.login("http://lech.atlassian.pl:80/atlassian-bamboo-1.2.4/", "user", "user");
+            RestApi apiHandler = RestApi.login("http://lech.atlassian.pl:90/atlassian-bamboo-1.2.4/", "user", "user");
             fail();
         } catch (BambooLoginException ex) {
             System.out.println("Exception: " + ex.getMessage());

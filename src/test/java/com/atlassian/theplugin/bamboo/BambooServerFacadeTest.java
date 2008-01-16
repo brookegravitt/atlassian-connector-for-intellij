@@ -3,6 +3,7 @@ package com.atlassian.theplugin.bamboo;
 import junit.framework.TestCase;
 
 import java.util.Collection;
+import java.util.ArrayList;
 
 import com.atlassian.theplugin.configuration.*;
 import com.atlassian.theplugin.api.bamboo.BambooLoginException;
@@ -26,6 +27,13 @@ public class BambooServerFacadeTest extends TestCase {
         server.setPassword("user");
         configuration.setServerData(server);
 
+        ArrayList<SubscribedPlanBean> plans = new ArrayList<SubscribedPlanBean>();
+        SubscribedPlanBean plan = new SubscribedPlanBean();
+        plan.setPlanId("TP-DEF");
+        plan.setServerData(server);
+        plans.add(plan);
+                
+        configuration.setSubscribedPlansData(plans);
         PluginConfigurationBean pluginConfig = new PluginConfigurationBean();
         pluginConfig.setBambooConfigurationData(configuration);
 
@@ -34,8 +42,8 @@ public class BambooServerFacadeTest extends TestCase {
 
     public void testSubscribedBuildStatus() throws Exception {
 
-        BambooServerFacade facade = BambooServerFactory.getBambooServerFacade();
-        Collection<BambooBuild> plans = facade.getSubscribedPlansResults();
+        
+        Collection<BambooBuild> plans =  BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults();
 
         assertNotNull(plans);
         assertFalse(plans.size() == 0);
