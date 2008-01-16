@@ -8,6 +8,5 @@ package com.atlassian.theplugin.configuration;
  * To change this template use File | Settings | File Templates.
  */
 public interface SubscribedPlan {
-    Server getServer();
     String getPlanId();
 }
