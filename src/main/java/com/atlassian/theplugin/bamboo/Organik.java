@@ -1,7 +1,5 @@
 package com.atlassian.theplugin.bamboo;
 
-import com.atlassian.theplugin.api.bamboo.RecentBuildItem;
-
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,7 +26,7 @@ public class Organik implements Runnable {
 
     public void run() {
         BambooServerFacade bamboo = new BambooServerFactory().getBambooServerFacade();
-        Collection<BambooBuildInfo> newStatus = bamboo.getRecentBuildItems();
+        Collection<BambooBuild> newStatus = bamboo.getRecentBuildItems();
 
         for (BambooStatusListener listener : listenerList) {
             listener.statusUpdated(newStatus);
