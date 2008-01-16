@@ -20,11 +20,11 @@ public class BambooStatusRenderer implements BambooStatusListener {
 
     }
 
-    public void statusUpdated(Collection<BambooBuildInfo> stats) {
+    public void statusUpdated(Collection<BambooBuild> stats) {
         BuildStatus status = BuildStatus.SUCCESS;
         StringBuilder sb = new StringBuilder("<html><body><table>");
 
-        for(BambooBuildInfo buildInfo : stats) {
+        for(BambooBuild buildInfo : stats) {
             sb.append("<tr><td>");
             sb.append(buildInfo.getBuildName());
             sb.append("</td><td>");
