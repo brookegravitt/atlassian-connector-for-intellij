@@ -29,6 +29,10 @@ public class PluginConfigurationFormTest extends TestCase {
         pluginConfigurationForm = new PluginConfigurationForm();
     }
 
+    public void testDummyFail(){
+        fail();
+        
+    }
     public void testSetGetData() throws Exception {
         assertNotNull(pluginConfigurationForm.getRootComponent());
 
