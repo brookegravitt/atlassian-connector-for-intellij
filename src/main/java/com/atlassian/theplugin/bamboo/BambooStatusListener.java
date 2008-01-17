@@ -11,5 +11,5 @@ import java.util.Collection;
  * To change this template use File | Settings | File Templates.
  */
 public interface BambooStatusListener extends EventListener {
-    void statusUpdated(Collection<BambooBuild> stats);
+    void updateBuildStatuses(Collection<BambooBuild> stats);
 }
