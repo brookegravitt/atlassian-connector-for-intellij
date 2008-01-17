@@ -24,19 +24,19 @@
     <fileSets>
         <fileSet>
             <directory>./target/classes</directory>
-            <outputDirectory>classes</outputDirectory>
+            <outputDirectory>${pom.project.artifactId}/classes</outputDirectory>
 			<excludes>
 				<exclude>META-INF/**</exclude>
 			</excludes>
      	</fileSet>
         <fileSet>
             <directory>./target/classes/META-INF</directory>
-            <outputDirectory>META-INF</outputDirectory>
+            <outputDirectory>${pom.project.artifactId}/META-INF</outputDirectory>
      	</fileSet>
     </fileSets>
 	<dependencySets>
         <dependencySet>
-            <outputDirectory>lib</outputDirectory>
+            <outputDirectory>${pom.project.artifactId}/lib</outputDirectory>
 			<scope>runtime</scope>
             <includes>
                 <include>log4j:log4j:jar</include>
