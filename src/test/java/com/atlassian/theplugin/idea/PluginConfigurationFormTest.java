@@ -1,18 +1,16 @@
 package com.atlassian.theplugin.idea;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import junit.framework.TestCase;
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
-import com.atlassian.theplugin.configuration.SubscribedPlanBean;
 import com.atlassian.theplugin.configuration.ServerBean;
+import com.atlassian.theplugin.configuration.SubscribedPlanBean;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
-import java.beans.BeanInfo;
-import java.util.ArrayList;
-import java.lang.reflect.Method;
+import javax.swing.*;
 import java.lang.reflect.Field;
-
-import org.apache.log4j.Logger;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * PluginConfigurationForm Tester.
@@ -68,9 +66,7 @@ public class PluginConfigurationFormTest extends TestCase {
         pluginConfigurationForm.getData(outBean);
         checkBasicBean(outBean);
         assertEquals(2, outBean.getBambooConfigurationData().getServerData().getSubscribedPlansData().size());
-        assertEquals("Plan-1", outBean.getBambooConfigurationData().getServerData().getSubscribedPlansData().get(0).getPlanId());
-        assertEquals("Plan-2", outBean.getBambooConfigurationData().getServerData().getSubscribedPlansData().get(1).getPlanId());
-
+        checkSubscribedPlans(outBean, new String[]{"Plan-1", "Plan-2"});
         /*  */
         inBean.getBambooConfigurationData().getServerData().getSubscribedPlansData().add(new SubscribedPlanBean() {{setPlanId("Plan-3");}});
 
@@ -80,9 +76,7 @@ public class PluginConfigurationFormTest extends TestCase {
         pluginConfigurationForm.getData(outBean);
         checkBasicBean(outBean);
         assertEquals(3, outBean.getBambooConfigurationData().getServerData().getSubscribedPlansData().size());
-        assertEquals("Plan-1", outBean.getBambooConfigurationData().getServerData().getSubscribedPlansData().get(0).getPlanId());
-        assertEquals("Plan-2", outBean.getBambooConfigurationData().getServerData().getSubscribedPlansData().get(1).getPlanId());
-        assertEquals("Plan-3", outBean.getBambooConfigurationData().getServerData().getSubscribedPlansData().get(2).getPlanId());
+        checkSubscribedPlans(outBean, new String[]{"Plan-1", "Plan-2", "Plan-3"});
 
         /*  */
         inBean.getBambooConfigurationData().getServerData().getSubscribedPlansData().clear();
@@ -97,14 +91,13 @@ public class PluginConfigurationFormTest extends TestCase {
 
     }
 
+    @SuppressWarnings({"RedundantStringConstructorCall"})
     public void testIsModified() throws Exception {
         PluginConfigurationBean inBean = createBasicBean();
 
         pluginConfigurationForm.setData(inBean);
 
-        PluginConfigurationBean outBean = new PluginConfigurationBean();
-
-        outBean = createBasicBean();
+        PluginConfigurationBean outBean = createBasicBean();
 
         assertFalse(pluginConfigurationForm.isModified(outBean));
 
@@ -143,6 +136,75 @@ public class PluginConfigurationFormTest extends TestCase {
     }
 
     public void testFieldSetting() throws Exception {
+        PluginConfigurationBean outBean = new PluginConfigurationBean();
+        pluginConfigurationForm.getData(outBean);
+        ServerBean serverData = outBean.getBambooConfigurationData().getServerData();
+        assertEquals("", serverData.getName());
+        assertEquals("", serverData.getUrlString());
+        assertEquals("", serverData.getUsername());
+        assertEquals("", serverData.getPassword());
+        assertEquals(0, serverData.getSubscribedPlansData().size());
+
+        PluginConfigurationFormHelper helper = new PluginConfigurationFormHelper(pluginConfigurationForm);
+
+        helper.serverName.setText("name");
+        helper.password.setText("password");
+        helper.serverUrl.setText("url");
+        helper.username.setText("userName");
+
+        pluginConfigurationForm.getData(outBean);
+        checkBasicBean(outBean);
+
+        assertEquals(0, outBean.getBambooConfigurationData().getServerData().getSubscribedPlansData().size());
+
+        /*  */
+        helper.buildPlansTextArea.setText(" ");
+        pluginConfigurationForm.getData(outBean);
+        checkBasicBean(outBean);
+
+        assertEquals(0, outBean.getBambooConfigurationData().getServerData().getSubscribedPlansData().size());
+
+        /*  */
+        helper.buildPlansTextArea.setText(" \n");
+        pluginConfigurationForm.getData(outBean);
+        checkBasicBean(outBean);
+
+        assertEquals(0, outBean.getBambooConfigurationData().getServerData().getSubscribedPlansData().size());
+
+        /*  */
+        helper.buildPlansTextArea.setText(" \n\r\r\r\n \n \r \t");
+        pluginConfigurationForm.getData(outBean);
+        checkBasicBean(outBean);
+
+        assertEquals(0, outBean.getBambooConfigurationData().getServerData().getSubscribedPlansData().size());
+
+        /*  */
+        helper.buildPlansTextArea.setText("Plan-1");
+        pluginConfigurationForm.getData(outBean);
+        checkBasicBean(outBean);
+        checkSubscribedPlans(outBean, new String[]{"Plan-1"});
+
+        /*  */
+        helper.buildPlansTextArea.setText(" Plan-1 \n");
+        pluginConfigurationForm.getData(outBean);
+        checkBasicBean(outBean);
+        checkSubscribedPlans(outBean, new String[]{"Plan-1"});
+
+        /*  */
+        helper.buildPlansTextArea.setText(" Plan-1 \nPlan-2   Plan-3\tPlan-4\n\rPlan-5\r\nPlan-6");
+        pluginConfigurationForm.getData(outBean);
+        checkBasicBean(outBean);
+        checkSubscribedPlans(outBean, new String[]{"Plan-1", "Plan-2", "Plan-3", "Plan-4", "Plan-5", "Plan-6"});
+
+    }
+
+    private static void checkSubscribedPlans(PluginConfigurationBean config, String[] ids) {
+        assertEquals(ids.length, config.getBambooConfigurationData().getServerData().getSubscribedPlansData().size());
+
+        Iterator<SubscribedPlanBean> i = config.getBambooConfigurationData().getServerData().getSubscribedPlansData().iterator();
+        for (String id : ids) {
+            assertEquals(id, i.next().getPlanId());
+        }
 
     }
 
@@ -179,5 +241,28 @@ public class PluginConfigurationFormTest extends TestCase {
 
     public static Test suite() {
         return new TestSuite(PluginConfigurationFormTest.class);
+    }
+
+    private class PluginConfigurationFormHelper {
+        public JPanel rootComponent;
+        public JTabbedPane tabbedPane1;
+        public JTextField serverName;
+        public JTextField serverUrl;
+        public JTextField username;
+        public JPasswordField password;
+        public JButton testConnection;
+        public JTextArea buildPlansTextArea;
+
+        public PluginConfigurationFormHelper(PluginConfigurationForm pluginConfigurationForm) throws Exception {
+            for (Field f : getClass().getFields()) {
+                String name = f.getName();
+                Field original = pluginConfigurationForm.getClass().getDeclaredField(name);
+                original.setAccessible(true);
+                
+                f.set(this, original.get(pluginConfigurationForm));
+                System.out.println("Copied field " + original.getName());
+
+            }
+        }
     }
 }
