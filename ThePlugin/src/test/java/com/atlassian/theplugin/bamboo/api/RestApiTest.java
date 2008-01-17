@@ -5,7 +5,6 @@ import com.atlassian.theplugin.bamboo.api.BambooLoginException;
 import com.atlassian.theplugin.bamboo.api.RestApi;
 import com.atlassian.theplugin.bamboo.BambooProject;
 import com.atlassian.theplugin.bamboo.BambooPlan;
-import com.atlassian.theplugin.bamboo.BambooBuildInfo;
 import com.atlassian.theplugin.bamboo.BambooBuild;
 
 import java.util.List;
@@ -18,15 +17,26 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class RestApiTest extends TestCase {
+    private static final String SERVER_URL = "http://lech.atlassian.pl:8080/atlassian-bamboo-1.2.4";
+    private static final String USER_NAME = "user";
+    private static final String PASSWORD = "d0n0tch@nge";
+
+
     public void testSuccessBambooLogin () throws Exception {
-        RestApi apiHandler = RestApi.login("http://lech.atlassian.pl:8080/atlassian-bamboo-1.2.4/", "user", "d0n0tch@nge");
+        RestApi apiHandler = RestApi.login(SERVER_URL, USER_NAME, PASSWORD);
         assertNotNull(apiHandler);
+        apiHandler.logout();
     }
 
-  
+    public void testSuccessBambooLoginURLWithSlash () throws Exception {
+        RestApi apiHandler = RestApi.login(SERVER_URL + "/", USER_NAME, PASSWORD);
+        assertNotNull(apiHandler);
+        apiHandler.logout();
+    }
+
     public void testWrongPortBambooLogin () throws Exception {
         try {
-            RestApi apiHandler = RestApi.login("http://lech.atlassian.pl:90/atlassian-bamboo-1.2.4/", "user", "d0n0tch@nge");
+            RestApi apiHandler = RestApi.login(SERVER_URL.replaceAll("8080", "9090"), USER_NAME, PASSWORD);
             fail();
         } catch (BambooLoginException ex) {
             System.out.println("Exception: " + ex.getMessage());
@@ -35,7 +45,7 @@ public class RestApiTest extends TestCase {
 
     public void testWrongUrlBambooLogin () throws Exception {
         try {
-            RestApi apiHandler = RestApi.login("http://lech.atlassian.pl:8080/atlassian-bambooXXX/", "user", "d0n0tch@nge");
+            RestApi apiHandler = RestApi.login(SERVER_URL.replaceAll("bamboo", "xxx"), "user", "d0n0tch@nge");
             fail();
         } catch (BambooLoginException ex) {
             System.out.println("Exception: " + ex.getMessage());
@@ -44,7 +54,7 @@ public class RestApiTest extends TestCase {
 
     public void testWrongUserBambooLogin () throws Exception {
         try {
-            RestApi apiHandler = RestApi.login("http://lech.atlassian.pl:8080/atlassian-bamboo-1.2.4/", "userXXX", "d0n0tch@nge");
+            RestApi apiHandler = RestApi.login(SERVER_URL, USER_NAME + "xxx", PASSWORD);
             fail();
         } catch (BambooLoginException ex) {
             System.out.println("Exception: " + ex.getMessage());
@@ -53,7 +63,16 @@ public class RestApiTest extends TestCase {
 
     public void testWrongPasswordBambooLogin () throws Exception {
         try {
-            RestApi apiHandler = RestApi.login("http://lech.atlassian.pl:8080/atlassian-bamboo-1.2.4/", "user", "userXXX");
+            RestApi apiHandler = RestApi.login(SERVER_URL, USER_NAME, PASSWORD + "xxx");
+            fail();
+        } catch (BambooLoginException ex) {
+            System.out.println("Exception: " + ex.getMessage());
+        }
+    }
+
+    public void testNoPasswordBambooLogin () throws Exception {
+        try {
+            RestApi apiHandler = RestApi.login(SERVER_URL, USER_NAME, "");
             fail();
         } catch (BambooLoginException ex) {
             System.out.println("Exception: " + ex.getMessage());
@@ -70,65 +89,73 @@ public class RestApiTest extends TestCase {
     }
 
     public void testProjectList() throws Exception {
-        RestApi apiHandler = RestApi.login("http://lech.atlassian.pl:8080/atlassian-bamboo-1.2.4/", "user", "d0n0tch@nge");
+        RestApi apiHandler = RestApi.login(SERVER_URL, USER_NAME, PASSWORD);
         List<BambooProject> projects = apiHandler.listProjectNames();
         assertFalse(projects.size() == 0);
+        apiHandler.logout();
     }
 
     public void testPlanList() throws Exception {
-        RestApi apiHandler = RestApi.login("http://lech.atlassian.pl:8080/atlassian-bamboo-1.2.4/", "user", "d0n0tch@nge");
+        RestApi apiHandler = RestApi.login(SERVER_URL, USER_NAME, PASSWORD);
         List<BambooPlan> plans = apiHandler.listPlanNames();
         assertFalse(plans.size() == 0);
+        apiHandler.logout();
     }
 
     public void testBuildForPlan() throws Exception {
-        RestApi apiHandler = RestApi.login("http://lech.atlassian.pl:8080/atlassian-bamboo-1.2.4/", "user", "d0n0tch@nge");
+        RestApi apiHandler = RestApi.login(SERVER_URL, USER_NAME, PASSWORD);
         BambooBuild build = apiHandler.getLatestBuildForPlan("TP-DEF");
         assertNotNull(build);
+        apiHandler.logout();
     }
 
     public void testBuildForNonExistingPlan() throws Exception {
-        RestApi apiHandler = RestApi.login("http://lech.atlassian.pl:8080/atlassian-bamboo-1.2.4/", "user", "d0n0tch@nge");
+        RestApi apiHandler = RestApi.login(SERVER_URL, USER_NAME, PASSWORD);
         try {
             BambooBuild build = apiHandler.getLatestBuildForPlan("TP-DEF-NON-EXISTING");
             fail();
         } catch (BambooException e) {
         }
+        apiHandler.logout();
     }
 
     public void testBuildForEmptyPlan() throws Exception {
-        RestApi apiHandler = RestApi.login("http://lech.atlassian.pl:8080/atlassian-bamboo-1.2.4/", "user", "d0n0tch@nge");
+        RestApi apiHandler = RestApi.login(SERVER_URL, USER_NAME, PASSWORD);
         try {
             BambooBuild build = apiHandler.getLatestBuildForPlan("");
             fail();
         } catch (BambooException e) {
         }
+        apiHandler.logout();
     }
 
     public void testRecentBuilds() throws Exception {
-        RestApi apiHandler = RestApi.login("http://lech.atlassian.pl:8080/atlassian-bamboo-1.2.4/", "user", "d0n0tch@nge");
+        RestApi apiHandler = RestApi.login(SERVER_URL, USER_NAME, PASSWORD);
         List<BambooBuild> builds = apiHandler.getLatestBuildsForProject("TP");
         assertNotNull(builds);
+        apiHandler.logout();
     }
 
     public void testRecentBuildsForNonExistingProject() throws Exception {
-        RestApi apiHandler = RestApi.login("http://lech.atlassian.pl:8080/atlassian-bamboo-1.2.4/", "user", "d0n0tch@nge");
+        RestApi apiHandler = RestApi.login(SERVER_URL, USER_NAME, PASSWORD);
         try {
             List<BambooBuild> builds = apiHandler.getLatestBuildsForProject("TP-NON-EXISTING");
             fail();
         } catch (BambooException e) {
 
         }
+        apiHandler.logout();
     }
 
     public void testRecentBuildsForEmptyProject() throws Exception {
-        RestApi apiHandler = RestApi.login("http://lech.atlassian.pl:8080/atlassian-bamboo-1.2.4/", "user", "d0n0tch@nge");
+        RestApi apiHandler = RestApi.login(SERVER_URL, USER_NAME, PASSWORD);
         try {
             List<BambooBuild> builds = apiHandler.getLatestBuildsForProject("TP-NON-EXISTING");
             fail();
         } catch (BambooException e) {
 
         }
+        apiHandler.logout();
     }
 
 }
