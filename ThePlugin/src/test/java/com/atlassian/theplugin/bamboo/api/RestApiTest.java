@@ -1,8 +1,8 @@
-package com.atlassian.theplugin.api.bamboo;
+package com.atlassian.theplugin.bamboo.api;
 
 import junit.framework.TestCase;
-import com.atlassian.theplugin.api.bamboo.BambooLoginException;
-import com.atlassian.theplugin.api.bamboo.RestApi;
+import com.atlassian.theplugin.bamboo.api.BambooLoginException;
+import com.atlassian.theplugin.bamboo.api.RestApi;
 import com.atlassian.theplugin.bamboo.BambooProject;
 import com.atlassian.theplugin.bamboo.BambooPlan;
 import com.atlassian.theplugin.bamboo.BambooBuildInfo;

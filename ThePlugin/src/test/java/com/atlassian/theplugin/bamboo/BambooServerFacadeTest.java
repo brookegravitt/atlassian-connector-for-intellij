@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.ArrayList;
 
 import com.atlassian.theplugin.configuration.*;
-import com.atlassian.theplugin.api.bamboo.BambooLoginException;
+import com.atlassian.theplugin.bamboo.api.BambooLoginException;
 
 /**
  * Created by IntelliJ IDEA.
