@@ -77,6 +77,8 @@ public class PluginConfigurationForm {
 
     static List<SubscribedPlanBean> subscribedPlansFromString(String planList) {
         List<SubscribedPlanBean> plans = new ArrayList<SubscribedPlanBean>();
+        if (planList.length() == 0) return plans;
+        
         for (String planId : planList.split("\\s+")) {
             SubscribedPlanBean spb = new SubscribedPlanBean();
             spb.setPlanId(planId);
