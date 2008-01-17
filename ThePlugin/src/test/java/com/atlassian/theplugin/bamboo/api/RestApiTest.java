@@ -6,6 +6,7 @@ import com.atlassian.theplugin.bamboo.api.RestApi;
 import com.atlassian.theplugin.bamboo.BambooProject;
 import com.atlassian.theplugin.bamboo.BambooPlan;
 import com.atlassian.theplugin.bamboo.BambooBuildInfo;
+import com.atlassian.theplugin.bamboo.BambooBuild;
 
 import java.util.List;
 
@@ -82,14 +83,52 @@ public class RestApiTest extends TestCase {
 
     public void testBuildForPlan() throws Exception {
         RestApi apiHandler = RestApi.login("http://lech.atlassian.pl:8080/atlassian-bamboo-1.2.4/", "user", "d0n0tch@nge");
-        BambooBuildInfo build = apiHandler.getLatestPlanBuild("TP-DEF");
+        BambooBuild build = apiHandler.getLatestBuildForPlan("TP-DEF");
         assertNotNull(build);
+    }
+
+    public void testBuildForNonExistingPlan() throws Exception {
+        RestApi apiHandler = RestApi.login("http://lech.atlassian.pl:8080/atlassian-bamboo-1.2.4/", "user", "d0n0tch@nge");
+        try {
+            BambooBuild build = apiHandler.getLatestBuildForPlan("TP-DEF-NON-EXISTING");
+            fail();
+        } catch (BambooException e) {
+        }
+    }
+
+    public void testBuildForEmptyPlan() throws Exception {
+        RestApi apiHandler = RestApi.login("http://lech.atlassian.pl:8080/atlassian-bamboo-1.2.4/", "user", "d0n0tch@nge");
+        try {
+            BambooBuild build = apiHandler.getLatestBuildForPlan("");
+            fail();
+        } catch (BambooException e) {
+        }
     }
 
     public void testRecentBuilds() throws Exception {
         RestApi apiHandler = RestApi.login("http://lech.atlassian.pl:8080/atlassian-bamboo-1.2.4/", "user", "d0n0tch@nge");
-        List builds = apiHandler.getLatestProjectBuilds("TP");
+        List<BambooBuild> builds = apiHandler.getLatestBuildsForProject("TP");
         assertNotNull(builds);
+    }
+
+    public void testRecentBuildsForNonExistingProject() throws Exception {
+        RestApi apiHandler = RestApi.login("http://lech.atlassian.pl:8080/atlassian-bamboo-1.2.4/", "user", "d0n0tch@nge");
+        try {
+            List<BambooBuild> builds = apiHandler.getLatestBuildsForProject("TP-NON-EXISTING");
+            fail();
+        } catch (BambooException e) {
+
+        }
+    }
+
+    public void testRecentBuildsForEmptyProject() throws Exception {
+        RestApi apiHandler = RestApi.login("http://lech.atlassian.pl:8080/atlassian-bamboo-1.2.4/", "user", "d0n0tch@nge");
+        try {
+            List<BambooBuild> builds = apiHandler.getLatestBuildsForProject("TP-NON-EXISTING");
+            fail();
+        } catch (BambooException e) {
+
+        }
     }
 
 }
