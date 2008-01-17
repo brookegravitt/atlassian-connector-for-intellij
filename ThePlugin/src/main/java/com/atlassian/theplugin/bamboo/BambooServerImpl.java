@@ -6,9 +6,9 @@ import com.atlassian.theplugin.bamboo.BambooPlanInfo;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.SubscribedPlan;
 import com.atlassian.theplugin.configuration.Server;
-import com.atlassian.theplugin.api.bamboo.RestApi;
-import com.atlassian.theplugin.api.bamboo.BambooLoginException;
-import com.atlassian.theplugin.api.bamboo.BambooException;
+import com.atlassian.theplugin.bamboo.api.RestApi;
+import com.atlassian.theplugin.bamboo.api.BambooLoginException;
+import com.atlassian.theplugin.bamboo.api.BambooException;
 
 import java.util.Collection;
 import java.util.ArrayList;

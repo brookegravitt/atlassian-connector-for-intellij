@@ -2,7 +2,7 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.configuration.*;
 import com.atlassian.theplugin.bamboo.BambooServerFactory;
-import com.atlassian.theplugin.api.bamboo.BambooLoginException;
+import com.atlassian.theplugin.bamboo.api.BambooLoginException;
 import com.intellij.openapi.ui.Messages;
 import static com.intellij.openapi.ui.Messages.showMessageDialog;
 
