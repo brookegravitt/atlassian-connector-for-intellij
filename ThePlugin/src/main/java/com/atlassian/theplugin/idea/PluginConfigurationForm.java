@@ -14,11 +14,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Created by IntelliJ IDEA.
- * User: sginter
- * Date: Jan 10, 2008
- * Time: 4:20:23 PM
- * To change this template use File | Settings | File Templates.
+ * Plugin configuration form.
  */
 public class PluginConfigurationForm {
     private JPanel rootComponent;
@@ -77,9 +73,9 @@ public class PluginConfigurationForm {
 
     static List<SubscribedPlanBean> subscribedPlansFromString(String planList) {
         List<SubscribedPlanBean> plans = new ArrayList<SubscribedPlanBean>();
-        if (planList.length() == 0) return plans;
-        
+
         for (String planId : planList.split("\\s+")) {
+            if (planId.length() == 0) continue;
             SubscribedPlanBean spb = new SubscribedPlanBean();
             spb.setPlanId(planId);
             plans.add(spb);
@@ -101,7 +97,7 @@ public class PluginConfigurationForm {
         if (String.valueOf(password.getPassword()) != null ? !String.valueOf(password.getPassword()).equals(data.getBambooConfigurationData().getServer().getPassword()) :
                 data.getBambooConfigurationData().getServer().getPassword() != null)
             return true;
-        if (buildPlansTextArea.getText() != null ? !buildPlansTextArea.getText().equals(subscribedPlansToString(data.getBambooConfigurationData().getServerData().getSubscribedPlansData())) :
+        if (null != buildPlansTextArea.getText() ? !buildPlansTextArea.getText().equals(subscribedPlansToString(data.getBambooConfigurationData().getServerData().getSubscribedPlansData())) :
                 data.getBambooConfigurationData().getServerData().getSubscribedPlansData() != null)
             return true;
         return false;
