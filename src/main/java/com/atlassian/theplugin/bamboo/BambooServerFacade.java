@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.bamboo;
 
-import com.atlassian.theplugin.api.bamboo.BambooLoginException;
+import com.atlassian.theplugin.bamboo.api.BambooLoginException;
 
 import java.util.Collection;
 
