@@ -145,6 +145,13 @@
 			<artifactId>jaxen</artifactId>
 			<version>RELEASE</version>
 		</dependency>
+        <!--
+        <dependency>
+            <groupId>org.prefuse</groupId>
+            <artifactId>prefuse</artifactId>
+            <version>beta-20060220</version>
+        </dependency>
+        -->
     </dependencies>
 
 	<build>
