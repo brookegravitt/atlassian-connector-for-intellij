@@ -23,8 +23,17 @@ import com.atlassian.theplugin.bamboo.*;
  * To change this template use File | Settings | File Templates.
  */
 public class RestApi {
+    private static final String LOGIN_ACTION = "/api/rest/login.action";
+    private static final String LOGOUT_ACTION = "/api/rest/logout.action";
+    private static final String LIST_PROJECT_ACTION = "/api/rest/listProjectNames.action";
+    private static final String LIST_PLAN_ACTION = "/api/rest/listBuildNames.action";
+    private static final String LATEST_BUILD_FOR_PLAN_ACTION = "/api/rest/getLatestBuildResults.action";
+    private static final String LATEST_BUILDS_FOR_PROJECT_ACTION = "/api/rest/getLatestBuildResultsForProject.action";
+
     private String baseUrl;
     private String authToken;
+
+
 
     private RestApi(String baseUrl, String authToken) {
         this.baseUrl = baseUrl;
@@ -36,7 +45,7 @@ public class RestApi {
 
         URL loginUrl = null;
         try {
-            loginUrl = new URL(url + "/api/rest/login.action?username=" + name + "&password=" + password + "&os_username=" + name + "&os_password=" + password);
+            loginUrl = new URL(url + LOGIN_ACTION + "?username=" + name + "&password=" + password + "&os_username=" + name + "&os_password=" + password);
             // TODO encode URL
         } catch (MalformedURLException e) {
             throw new BambooLoginException(e.getMessage(), e.getCause());
@@ -45,7 +54,7 @@ public class RestApi {
         List elements = null;
         try {
             Document doc = builder.build(loginUrl);
-            checkForLoginErrors(doc);
+            checkForErrors(doc);
             XPath xpath = XPath.newInstance("/response/auth");
             elements = xpath.selectNodes(doc);
             if (elements != null) {
@@ -55,6 +64,8 @@ public class RestApi {
                     return new RestApi(url, authToken);
                 }
             }
+        }catch(BambooException e) {
+            throw new BambooLoginException(e.getMessage());
         }catch(JDOMException e){
             throw new BambooLoginException(e.getMessage(), e);
         }catch(IOException e){
@@ -63,13 +74,17 @@ public class RestApi {
         return null;
     }
 
-    public void logout() throws BambooException {
-        String logoutUrl = baseUrl + "/api/rest/logout.action?auth=" + authToken;
-        retrieveResponse(logoutUrl);
+    public void logout() {
+        String logoutUrl = baseUrl + LOGOUT_ACTION + "?auth=" + authToken;
+        try {
+            retrieveResponse(logoutUrl);
+        } catch (BambooException e) {
+            // exception thrown on logout - not interested in
+        }
     }
 
     public List<BambooProject> listProjectNames() throws BambooException {
-        String buildResultUrl = baseUrl + "/api/rest/listProjectNames.action?auth=" + authToken;
+        String buildResultUrl = baseUrl + LIST_PROJECT_ACTION + "?auth=" + authToken;
         Document doc = retrieveResponse(buildResultUrl);
 
         XPath xpath = null;
@@ -94,7 +109,7 @@ public class RestApi {
     }
 
     public List<BambooPlan> listPlanNames() throws BambooException {
-        String buildResultUrl = baseUrl + "/api/rest/listBuildNames.action?auth=" + authToken;
+        String buildResultUrl = baseUrl + LIST_PLAN_ACTION + "?auth=" + authToken;
         Document doc = retrieveResponse(buildResultUrl);
 
         XPath xpath = null;
@@ -118,8 +133,8 @@ public class RestApi {
         return plans;
     }
 
-    public BambooBuildInfo getLatestPlanBuild(String planKey) throws BambooException {
-        String buildResultUrl = baseUrl + "/api/rest/getLatestBuildResults.action?auth=" + authToken + "&buildKey=" + planKey;
+    public BambooBuildInfo getLatestBuildForPlan(String planKey) throws BambooException {
+        String buildResultUrl = baseUrl + LATEST_BUILD_FOR_PLAN_ACTION + "?auth=" + authToken + "&buildKey=" + planKey;
         Document doc = retrieveResponse(buildResultUrl);
 
         XPath xpath = null;
@@ -138,8 +153,8 @@ public class RestApi {
         return null;
     }
 
-    public List getLatestProjectBuilds(String projectKey) throws BambooException {
-        String buildResultUrl = baseUrl + "/api/rest/getLatestBuildResultsForProject.action?auth=" + authToken + "&projectKey=" + projectKey;
+    public List<BambooBuild> getLatestBuildsForProject(String projectKey) throws BambooException {
+        String buildResultUrl = baseUrl + LATEST_BUILDS_FOR_PROJECT_ACTION + "?auth=" + authToken + "&projectKey=" + projectKey;
         Document doc = retrieveResponse(buildResultUrl);
 
         XPath xpath = null;
@@ -161,8 +176,7 @@ public class RestApi {
         return builds;
     }
 
-    private BambooBuildInfo constructBuildItem(Element buildItemNode)
-    {
+    private BambooBuildInfo constructBuildItem(Element buildItemNode) {
         String projectName = getChildText(buildItemNode, "projectName");
         String buildName = getChildText(buildItemNode, "buildName");
         String buildKey =getChildText(buildItemNode, "buildKey");
@@ -187,8 +201,6 @@ public class RestApi {
         }
     }
 
-    
-
     private Document retrieveResponse(String url) throws BambooException {
         try {
             URL callUrl = null;
@@ -206,29 +218,17 @@ public class RestApi {
         }
     }
 
-
-    private static void checkForLoginErrors(Document doc) throws JDOMException, BambooLoginException {
+    private static void checkForErrors(Document doc) throws JDOMException, BambooException {
         XPath xpath = XPath.newInstance("/errors/error");
         List elements = xpath.selectNodes(doc);
 
         if (elements != null && elements.size() > 0) {
-
             String exceptionMsg = "";
             for(Iterator i = elements.iterator(); i.hasNext();) {
                 Element e = (Element)  i.next();
                 exceptionMsg += e.getText() + "\n";
             }
-
-            throw new BambooLoginException(exceptionMsg);
-        }
-    }
-
-    private static void checkForErrors(Document doc) throws JDOMException, BambooException {
-        XPath xpath = XPath.newInstance("/errors/error");
-        List elements = xpath.selectNodes(doc);
-        if (elements != null && elements.size() > 0) {
-            Element e = (Element) elements.iterator().next();
-            throw new BambooException(e.getText());
+            throw new BambooException(exceptionMsg);
         }
     }
 }

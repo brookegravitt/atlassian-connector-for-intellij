@@ -32,53 +32,72 @@ public class BambooServerImpl implements BambooServerFacade {
 
     public Boolean testServerConnection(String url, String userName, String password) throws BambooLoginException {
         RestApi apiHandler = RestApi.login(url, userName, password);
-        try {
+        if (apiHandler != null) {
             apiHandler.logout();
-        } catch (BambooException e) {
-            log.error("Logout failed: " + e.getMessage());
-        }        
+        }
         return true;
     }
 
     public Collection<BambooProject> getProjectList() {
-        Collection<BambooProject> newProject = new ArrayList<BambooProject>();
-        newProject.add(new BambooProjectInfo("The Plugin", "TP"));
-        newProject.add(new BambooProjectInfo("API Test Project", "APITEST"));
-        return newProject;
+        Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServer();
+
+        RestApi api = null;
+        try {
+            api = RestApi.login(server.getUrlString(), server.getUsername(), server.getPassword());
+            return api.listProjectNames();
+        } catch (BambooException e) {
+            log.error("Bamboo exception: " + e.getMessage());
+        }
+        return null;
     }
 
     public Collection<BambooPlan> getPlanList() {
-        Collection<BambooPlan> newProject = new ArrayList<BambooPlan>();
-        newProject.add(new BambooPlanInfo("Default", "TP-DEF"));
-        newProject.add(new BambooPlanInfo("TestPlan", "TP-TEST"));
-        newProject.add(new BambooPlanInfo("Default", "APITEST-DEF"));
-        return newProject;
+        Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServer();
+
+        RestApi api = null;
+        try {
+            api = RestApi.login(server.getUrlString(), server.getUsername(), server.getPassword());
+            return api.listPlanNames();
+        } catch (BambooException e) {
+            log.error("Bamboo exception: " + e.getMessage());
+        }
+        return null;
     }
-
-
-
 
     public Collection<BambooBuild> getSubscribedPlansResults() {        
         Collection<BambooBuild> builds = new ArrayList<BambooBuild>();
 
         Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServer();
 
+        RestApi api = null;
+        String connectionErrorMessage = null;
+        try {
+            api = RestApi.login(server.getUrlString(), server.getUsername(), server.getPassword());
+        } catch (BambooLoginException e) {
+            log.error("Bamboo login exception: " + e.getMessage());
+            connectionErrorMessage = e.getMessage();
+        }
+
         for (SubscribedPlan plan : server.getSubscribedPlans()) {
-            try {
-                RestApi api = RestApi.login(server.getUrlString(), server.getUsername(), server.getPassword());
-                builds.add(api.getLatestPlanBuild(plan.getPlanId()));
-            } catch (BambooLoginException e) {
-                log.error("Bamboo login exception: " + e.getMessage());
-                builds.add(getErrorBuildInfo(plan.getPlanId(), e.getMessage()));
-            } catch (BambooException e) {
-                log.error("Bamboo exception: " + e.getMessage());
-                builds.add(getErrorBuildInfo(plan.getPlanId(), e.getMessage()));                
+            if (api != null) {
+                try {
+                    builds.add(api.getLatestBuildForPlan(plan.getPlanId()));                
+                } catch (BambooException e) {
+                    log.error("Bamboo exception: " + e.getMessage());
+                    builds.add(getErrorBuildInfo(plan.getPlanId(), e.getMessage()));
+                }
+            } else {
+                builds.add(getErrorBuildInfo(plan.getPlanId(), connectionErrorMessage));
             }
         }
-        
+
+        if (api != null) {
+            api.logout();
+        }
+
         return builds;
     }
-
+    
     private BambooBuild getErrorBuildInfo(String planId, String message) {
         BambooBuildInfo buildInfo = new BambooBuildInfo();
         buildInfo.setBuildKey(planId);
@@ -87,9 +106,4 @@ public class BambooServerImpl implements BambooServerFacade {
 
         return buildInfo;
     }
-
-
-    public BambooBuild getLatestBuildForPlan(String planName) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }    
 }
