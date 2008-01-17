@@ -27,13 +27,16 @@ public class PluginConfigurationForm {
     private JTextArea buildPlansTextArea;
 
     public PluginConfigurationForm() {
+        
         testConnection.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {                
+            public void actionPerformed(ActionEvent e){
+
                 try {
                     BambooServerFactory.getBambooServerFacade().testServerConnection(serverUrl.getText(), username.getText(), String.valueOf(password.getPassword()));
                     showMessageDialog("Connected successfully", "Connection OK", Messages.getInformationIcon());
                 } catch (BambooLoginException e1) {
                     showMessageDialog(e1.getMessage(), "Connection Error", Messages.getErrorIcon());
+                    //throw e1;
                 }
             }
         });
