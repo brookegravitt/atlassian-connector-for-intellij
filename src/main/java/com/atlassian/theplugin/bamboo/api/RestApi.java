@@ -1,4 +1,4 @@
-package com.atlassian.theplugin.api.bamboo;
+package com.atlassian.theplugin.bamboo.api;
 
 import org.jdom.input.SAXBuilder;
 import org.jdom.Document;
