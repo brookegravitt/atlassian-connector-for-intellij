@@ -4,8 +4,9 @@ import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.WindowManager;
-import com.atlassian.theplugin.bamboo.BambooStatusRenderer;
-import com.atlassian.theplugin.bamboo.Organik;
+import com.atlassian.theplugin.bamboo.BambooStatusListenerImpl;
+import com.atlassian.theplugin.bamboo.BambooStatusChecker;
+import com.atlassian.theplugin.bamboo.BuildStatus;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -23,10 +24,10 @@ public class ThePluginProjectComponent implements ProjectComponent {
     private final Project project;
     private StatusBar statusBar;
     private JComponent statusBarComponent;
-    private BambooStatusIcon bambooLabel;
+    private BambooStatusIcon statusBarIcon;
     private Timer timer = null;
-    private Organik organik = new Organik();
-    private BambooStatusRenderer renderer;
+    private BambooStatusChecker bambooStatusChecker = new BambooStatusChecker();
+    private BambooStatusListenerImpl bambooStatusListener;
 
     public ThePluginProjectComponent(Project project) {
         this.project = project;
@@ -41,32 +42,32 @@ public class ThePluginProjectComponent implements ProjectComponent {
             {
 
                 public void actionPerformed(ActionEvent e) {
-                    organik.run();
+                    bambooStatusChecker.run();
                 }
             });
 
         }
-        bambooLabel = new BambooStatusIcon();
-        bambooLabel.updateBambooStatus("BMB", "dupa jasiu");
+        statusBarIcon = new BambooStatusIcon();
+        statusBarIcon.updateBambooStatus(BuildStatus.ERROR, "Waiting for Bamboo build statuses.");
 
-        statusBarComponent = bambooLabel;
+        statusBarComponent = statusBarIcon;
         if (timer != null) {
             timer.start();
         }
 
-        renderer = new BambooStatusRenderer(bambooLabel);
-        organik.registerListener(renderer);
+        bambooStatusListener = new BambooStatusListenerImpl(statusBarIcon);
+        bambooStatusChecker.registerListener(bambooStatusListener);
     }
 
     public void disposeComponent() {
-        organik.unregisterListener(renderer);
+        bambooStatusChecker.unregisterListener(bambooStatusListener);
 
         System.out.println("Dispose ThePlugin status component.");
         if (timer != null) {
             timer.stop();
         }
         statusBarComponent = null;
-        bambooLabel = null;
+        statusBarIcon = null;
 
 
     }
@@ -90,7 +91,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
     }
 
     public void setBambooStatus(String status, String statusDescription) {
-        bambooLabel.setText(status);
-        bambooLabel.setToolTipText(statusDescription);
+        statusBarIcon.setText(status);
+        statusBarIcon.setToolTipText(statusDescription);
     }
 }

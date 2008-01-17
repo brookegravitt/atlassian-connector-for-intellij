@@ -11,7 +11,7 @@ import java.util.Collection;
  * Time: 4:08:48 PM
  * To change this template use File | Settings | File Templates.
  */
-public class Organik implements Runnable {
+public class BambooStatusChecker implements Runnable {
 
     private List<BambooStatusListener> listenerList = new ArrayList<BambooStatusListener>();
 
@@ -27,7 +27,7 @@ public class Organik implements Runnable {
     public void run() {
         Collection<BambooBuild> newStatus = BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults();
         for (BambooStatusListener listener : listenerList) {
-            listener.statusUpdated(newStatus);
+            listener.updateBuildStatuses(newStatus);
         }
 
     }

@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.bamboo;
 
 import static com.atlassian.theplugin.bamboo.BuildStatus.FAILED;
+import com.atlassian.theplugin.idea.BambooStatusIcon;
 
 import java.util.Collection;
 
@@ -11,20 +12,21 @@ import java.util.Collection;
  * Time: 3:49:30 PM
  * To change this template use File | Settings | File Templates.
  */
-public class BambooStatusRenderer implements BambooStatusListener {
+public class BambooStatusListenerImpl implements BambooStatusListener {
     private int counter = 0;
 
-    BambooDisplayComponent displayComponent;
-    public BambooStatusRenderer(BambooDisplayComponent display) {
-        displayComponent = display;
+    BambooStatusIcon statusBarIcon;
 
+    public BambooStatusListenerImpl(BambooStatusIcon icon) {
+        statusBarIcon = icon;
     }
 
-    public void statusUpdated(Collection<BambooBuild> stats) {
+    public void updateBuildStatuses(Collection<BambooBuild> buildStatuses) {
+
         BuildStatus status = BuildStatus.SUCCESS;
         StringBuilder sb = new StringBuilder("<html><body><table>");
 
-        for(BambooBuild buildInfo : stats) {
+        for(BambooBuild buildInfo : buildStatuses) {
             sb.append("<tr><td>");
             sb.append(buildInfo.getBuildKey());
             sb.append("</td><td>");
@@ -48,6 +50,6 @@ public class BambooStatusRenderer implements BambooStatusListener {
             sb.append("</td></tr>");
         }
         sb.append("</table></body></html>");
-        displayComponent.updateBambooStatus(status.toString(), sb.toString());
+        statusBarIcon.updateBambooStatus(status, sb.toString());
     }
 }
