@@ -41,10 +41,19 @@ public class BambooServerFacadeTest extends TestCase {
     }
 
     public void testSubscribedBuildStatus() throws Exception {
-
-        
         Collection<BambooBuild> plans =  BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults();
+        assertNotNull(plans);
+        assertFalse(plans.size() == 0);
+    }
 
+    public void testProjectList() throws Exception {
+        Collection<BambooProject> projects =  BambooServerFactory.getBambooServerFacade().getProjectList();
+        assertNotNull(projects);
+        assertFalse(projects.size() == 0);
+    }
+
+    public void testPlanList() throws Exception {
+        Collection<BambooPlan> plans =  BambooServerFactory.getBambooServerFacade().getPlanList();
         assertNotNull(plans);
         assertFalse(plans.size() == 0);
     }
