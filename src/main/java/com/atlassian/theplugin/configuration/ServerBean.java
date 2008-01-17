@@ -20,15 +20,6 @@ public class ServerBean implements Server {
 
     private List<SubscribedPlanBean> subscribedPlans = new ArrayList<SubscribedPlanBean>();
 
-    ServerBean(ServerBean s) {
-        name = s.getName();
-        urlString = s.getUrlString();
-        username = s.getUsername();
-        password = s.getPassword();
-
-        subscribedPlans = new ArrayList<SubscribedPlanBean>(s.getSubscribedPlansData());
-    }
-
     public ServerBean() {
     }
 
