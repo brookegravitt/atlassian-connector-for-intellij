@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * Date: Jan 10, 2008
  * Time: 11:51:08 AM
  */
-public class ServerBean implements Server {
+public class ServerBean implements Server{
     private String name;
     private String urlString;
     private String username;
@@ -68,4 +68,8 @@ public class ServerBean implements Server {
         this.subscribedPlans = subscribedPlansData;
     }
 
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();    //To change body of overridden methods use File | Settings | File Templates.
+    }
 }

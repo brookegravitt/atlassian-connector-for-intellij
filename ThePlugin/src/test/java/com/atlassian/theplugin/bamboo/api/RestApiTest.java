@@ -1,13 +1,12 @@
 package com.atlassian.theplugin.bamboo.api;
 
-import junit.framework.TestCase;
-import com.atlassian.theplugin.bamboo.api.BambooLoginException;
-import com.atlassian.theplugin.bamboo.api.RestApi;
-import com.atlassian.theplugin.bamboo.BambooProject;
-import com.atlassian.theplugin.bamboo.BambooPlan;
 import com.atlassian.theplugin.bamboo.BambooBuild;
+import com.atlassian.theplugin.bamboo.BambooPlan;
+import com.atlassian.theplugin.bamboo.BambooProject;
+import junit.framework.TestCase;
 
 import java.util.List;
+
 
 /**
  * Created by IntelliJ IDEA.
@@ -158,4 +157,12 @@ public class RestApiTest extends TestCase {
         apiHandler.logout();
     }
 
+    public void testUrlEncodingBambooPassword () throws Exception {
+        try {
+            RestApi apiHandler = RestApi.login(SERVER_URL, "", PASSWORD + "&username=" + USER_NAME);
+            fail();
+        } catch (BambooLoginException ex) {
+            System.out.println("Exception: " + ex.getMessage());
+        }
+    }
 }

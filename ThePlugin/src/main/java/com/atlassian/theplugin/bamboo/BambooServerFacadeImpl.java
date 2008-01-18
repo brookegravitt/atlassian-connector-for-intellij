@@ -1,18 +1,16 @@
 package com.atlassian.theplugin.bamboo;
 
-import com.atlassian.theplugin.bamboo.BambooBuildInfo;
-import com.atlassian.theplugin.configuration.ConfigurationFactory;
-import com.atlassian.theplugin.configuration.SubscribedPlan;
-import com.atlassian.theplugin.configuration.Server;
-import com.atlassian.theplugin.bamboo.api.RestApi;
-import com.atlassian.theplugin.bamboo.api.BambooLoginException;
 import com.atlassian.theplugin.bamboo.api.BambooException;
-
-import java.util.Collection;
-import java.util.ArrayList;
-
+import com.atlassian.theplugin.bamboo.api.BambooLoginException;
+import com.atlassian.theplugin.bamboo.api.RestApi;
+import com.atlassian.theplugin.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.configuration.Server;
+import com.atlassian.theplugin.configuration.SubscribedPlan;
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Created by IntelliJ IDEA.
@@ -106,7 +104,11 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
         }
 
         if (api != null) {
-            api.logout();
+            try {
+                api.logout();
+            } catch (BambooLoginException e) {
+                log.error("Bamboo login exception: " + e.getMessage());
+            }
         }
 
         return builds;
