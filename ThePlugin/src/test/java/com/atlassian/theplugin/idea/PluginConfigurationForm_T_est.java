@@ -22,7 +22,7 @@ import java.util.Collection;
  * @version 1.0
  * @since <pre>01/17/2008</pre>
  */
-public class PluginConfigurationFormTest extends TestCase {
+public class PluginConfigurationForm_T_est extends TestCase {
 
     PluginConfigurationForm pluginConfigurationForm;
     //statuses as strings returned by bamboo Rest API
@@ -247,7 +247,7 @@ public class PluginConfigurationFormTest extends TestCase {
     }
 
     public static Test suite() {
-        return new TestSuite(PluginConfigurationFormTest.class);
+        return new TestSuite(PluginConfigurationForm_T_est.class);
     }
 
     public void testStatusListenerAlgorithm(){
