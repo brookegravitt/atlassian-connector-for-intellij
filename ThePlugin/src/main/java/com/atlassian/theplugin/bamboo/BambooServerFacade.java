@@ -13,7 +13,7 @@ import java.util.Collection;
  */
 
 public interface BambooServerFacade {
-    Boolean testServerConnection(String url, String userName, String password) throws BambooLoginException;
+    void testServerConnection(String url, String userName, String password) throws BambooLoginException;
     
     Collection<BambooProject> getProjectList();
 
