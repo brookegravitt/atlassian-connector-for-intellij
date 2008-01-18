@@ -7,8 +7,10 @@ import org.jdom.Element;
 import org.jdom.xpath.XPath;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.MalformedURLException;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -41,9 +43,15 @@ public class RestApi {
     }
 
     public static RestApi login(String url, String name, String password) throws BambooLoginException {
-        SAXBuilder builder = new SAXBuilder();
+        String loginUrl = null;
+        try {
+            loginUrl = url + LOGIN_ACTION + "?username=" + URLEncoder.encode(name, "UTF-8") + "&password=" +
+                    URLEncoder.encode(password, "UTF-8") + "&os_username=" +
+                    URLEncoder.encode(name,"UTF-8") + "&os_password=" + URLEncoder.encode(password, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new BambooLoginException("URLEncoding problem: " + e.getMessage());
+        }
 
-        String loginUrl = url + LOGIN_ACTION + "?username=" + name + "&password=" + password + "&os_username=" + name + "&os_password=" + password;
         Document doc = null;
         List elements = null;
         try {
@@ -69,17 +77,25 @@ public class RestApi {
         return null;
     }
 
-    public void logout() {
-        String logoutUrl = baseUrl + LOGOUT_ACTION + "?auth=" + authToken;
+    public void logout() throws BambooLoginException {
+        String logoutUrl = null;
         try {
+            logoutUrl = baseUrl + LOGOUT_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8");
             retrieveResponse(logoutUrl);
+        } catch (UnsupportedEncodingException e) {
+            throw new BambooLoginException("URLEncoding problem: " + e.getMessage());
         } catch (BambooException e) {
-            // exception thrown on logout - not interested in
-        }
+            throw new BambooLoginException("URLEncoding problem: " + e.getMessage());
+       }
     }
 
     public List<BambooProject> listProjectNames() throws BambooException {
-        String buildResultUrl = baseUrl + LIST_PROJECT_ACTION + "?auth=" + authToken;
+        String buildResultUrl = null;
+        try {
+            buildResultUrl = baseUrl + LIST_PROJECT_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new BambooLoginException("URLEncoding problem: " + e.getMessage());
+        }
         Document doc = retrieveResponse(buildResultUrl);
 
         XPath xpath = null;
@@ -104,7 +120,12 @@ public class RestApi {
     }
 
     public List<BambooPlan> listPlanNames() throws BambooException {
-        String buildResultUrl = baseUrl + LIST_PLAN_ACTION + "?auth=" + authToken;
+        String buildResultUrl = null;
+        try {
+            buildResultUrl = baseUrl + LIST_PLAN_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new BambooLoginException("URLEncoding problem: " + e.getMessage());
+        }
         Document doc = retrieveResponse(buildResultUrl);
 
         XPath xpath = null;
@@ -129,7 +150,12 @@ public class RestApi {
     }
 
     public BambooBuildInfo getLatestBuildForPlan(String planKey) throws BambooException {
-        String buildResultUrl = baseUrl + LATEST_BUILD_FOR_PLAN_ACTION + "?auth=" + authToken + "&buildKey=" + planKey;
+        String buildResultUrl = null;
+        try {
+            buildResultUrl = baseUrl + LATEST_BUILD_FOR_PLAN_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8") + "&buildKey=" + URLEncoder.encode(planKey, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new BambooLoginException("URLEncoding problem: " + e.getMessage());
+        }
         Document doc = retrieveResponse(buildResultUrl);
 
         XPath xpath = null;
@@ -149,7 +175,12 @@ public class RestApi {
     }
 
     public List<BambooBuild> getLatestBuildsForProject(String projectKey) throws BambooException {
-        String buildResultUrl = baseUrl + LATEST_BUILDS_FOR_PROJECT_ACTION + "?auth=" + authToken + "&projectKey=" + projectKey;
+        String buildResultUrl = null;
+        try {
+            buildResultUrl = baseUrl + LATEST_BUILDS_FOR_PROJECT_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8") + "&projectKey=" + URLEncoder.encode(projectKey, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new BambooLoginException("URLEncoding problem: " + e.getMessage());
+        }
         Document doc = retrieveResponse(buildResultUrl);
 
         XPath xpath = null;
