@@ -33,6 +33,15 @@ public class RestApiTest extends TestCase {
         apiHandler.logout();
     }
 
+    public void testNullParamsLogin() throws Exception {
+        try {
+            RestApi apiHandler = RestApi.login(null, null, null);
+            fail();
+        } catch (BambooLoginException ex) {
+            System.out.println("Exception: " + ex.getMessage());
+        }
+    }
+
     public void testWrongPortBambooLogin () throws Exception {
         try {
             RestApi apiHandler = RestApi.login(SERVER_URL.replaceAll("8080", "9090"), USER_NAME, PASSWORD);
