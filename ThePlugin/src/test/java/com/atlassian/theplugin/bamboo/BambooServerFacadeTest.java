@@ -18,10 +18,11 @@ import com.atlassian.theplugin.bamboo.api.BambooLoginException;
 public class BambooServerFacadeTest extends TestCase {
     private PluginConfigurationBean pluginConfig;
     private PluginConfigurationBean badPluginConfig;
+    private ServerBean server;
 
     public BambooServerFacadeTest() {
         BambooConfigurationBean configuration = new BambooConfigurationBean();
-        ServerBean server = new ServerBean();
+        server = new ServerBean();
         server.setName("TestServer");
         server.setUrlString("http://lech.atlassian.pl:8080/atlassian-bamboo-1.2.4/");
         server.setUsername("user");
@@ -86,7 +87,7 @@ public class BambooServerFacadeTest extends TestCase {
     }
 
     public void testFailedProjectList() throws Exception {
-        ConfigurationFactory.setConfiguration(badPluginConfig);        
+        ConfigurationFactory.setConfiguration(badPluginConfig);
         Collection<BambooProject> projects =  BambooServerFactory.getBambooServerFacade().getProjectList();
         assertNull(projects);
     }
@@ -98,7 +99,7 @@ public class BambooServerFacadeTest extends TestCase {
     }
 
     public void testFailedPlanList() throws Exception {
-        ConfigurationFactory.setConfiguration(badPluginConfig);        
+        ConfigurationFactory.setConfiguration(badPluginConfig);
         Collection<BambooPlan> plans =  BambooServerFactory.getBambooServerFacade().getPlanList();
         assertNull(plans);
     }
@@ -140,5 +141,13 @@ public class BambooServerFacadeTest extends TestCase {
 
         }
 
+    }
+
+
+    public void testBambooConnectionWithEmptyPlan() throws BambooLoginException, CloneNotSupportedException {
+        server.setSubscribedPlansData(new ArrayList<SubscribedPlanBean>());
+        BambooServerFacade facade = new BambooServerFacadeImpl();
+        Collection<BambooBuild> plans = facade.getSubscribedPlansResults();
+        assertEquals(0, plans.size());
     }
 }
