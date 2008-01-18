@@ -50,6 +50,8 @@ public class RestApi {
                     URLEncoder.encode(name,"UTF-8") + "&os_password=" + URLEncoder.encode(password, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             throw new BambooLoginException("URLEncoding problem: " + e.getMessage());
+        } catch (NullPointerException e) {
+            throw new BambooLoginException("Corrupted configuration: " + e.getMessage());
         }
 
         Document doc = null;
