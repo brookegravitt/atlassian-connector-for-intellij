@@ -35,7 +35,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
      */
     public void testServerConnection(String url, String userName, String password) throws BambooLoginException {
         RestApi apiHandler = RestApi.login(url, userName, password);
-        apiHandler.logout();        
+        apiHandler.logout();  
     }
 
     /**
