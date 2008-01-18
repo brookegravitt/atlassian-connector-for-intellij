@@ -20,7 +20,7 @@ public class ConfigurationTest extends TestCase {
         ServerBean srv = new ServerBean();
         srv.setName("dummyName");
         srv.setUrlString("http://dummy.url");
-        srv.setUsername("dummyUserName");
+        srv.setUsername("dummyUserName<a>aa</a>");
         srv.setPassword("dummyPassword");
 
         ((BambooConfigurationBean)cfg).setServerData(srv);
@@ -31,7 +31,7 @@ public class ConfigurationTest extends TestCase {
 
         assertEquals("dummyName", server.getName());
         assertEquals("http://dummy.url", server.getUrlString());
-        assertEquals("dummyUserName", server.getUsername());
+        assertEquals("dummyUserName<a>aa</a>", server.getUsername());
         assertEquals("dummyPassword", server.getPassword());
 
 
