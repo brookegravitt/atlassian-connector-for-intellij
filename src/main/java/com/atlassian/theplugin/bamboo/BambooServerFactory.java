@@ -8,7 +8,7 @@ package com.atlassian.theplugin.bamboo;
  * To change this template use File | Settings | File Templates.
  */
 public class BambooServerFactory {
-    private static BambooServerFacade facade = new BambooServerImpl();
+    private static BambooServerFacade facade = new BambooServerFacadeImpl();
 
     private BambooServerFactory(){
     }
