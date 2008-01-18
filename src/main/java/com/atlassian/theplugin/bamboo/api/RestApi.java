@@ -43,18 +43,16 @@ public class RestApi {
     public static RestApi login(String url, String name, String password) throws BambooLoginException {
         SAXBuilder builder = new SAXBuilder();
 
-        URL loginUrl = null;
-        try {
-            loginUrl = new URL(url + LOGIN_ACTION + "?username=" + name + "&password=" + password + "&os_username=" + name + "&os_password=" + password);
-            // TODO encode URL
-        } catch (MalformedURLException e) {
-            throw new BambooLoginException(e.getMessage(), e.getCause());
-        }
-
+        String loginUrl = url + LOGIN_ACTION + "?username=" + name + "&password=" + password + "&os_username=" + name + "&os_password=" + password;
+        Document doc = null;
         List elements = null;
         try {
-            Document doc = builder.build(loginUrl);
-            checkForErrors(doc);
+            doc = retrieveResponse(loginUrl);
+        } catch(BambooException e) {
+            throw new BambooLoginException(e.getMessage(), e);
+        }
+
+        try {
             XPath xpath = XPath.newInstance("/response/auth");
             elements = xpath.selectNodes(doc);
             if (elements != null) {
@@ -64,13 +62,10 @@ public class RestApi {
                     return new RestApi(url, authToken);
                 }
             }
-        }catch(BambooException e) {
-            throw new BambooLoginException(e.getMessage());
-        }catch(JDOMException e){
-            throw new BambooLoginException(e.getMessage(), e);
-        }catch(IOException e){
+        } catch (JDOMException e) {
             throw new BambooLoginException(e.getMessage(), e);
         }
+             
         return null;
     }
 
@@ -201,7 +196,7 @@ public class RestApi {
         }
     }
 
-    private Document retrieveResponse(String url) throws BambooException {
+    private static Document retrieveResponse(String url) throws BambooException {
         try {
             URL callUrl = null;
             callUrl = new URL(url);
@@ -212,7 +207,7 @@ public class RestApi {
         } catch(JDOMException e){
             throw new BambooException(e.getMessage(), e);
         } catch (MalformedURLException e) {
-            throw new BambooException(e.getMessage(), e.getCause());
+            throw new BambooException(e.getMessage(), e);
         } catch(IOException e){
             throw new BambooException(e.getMessage(), e);
         }
