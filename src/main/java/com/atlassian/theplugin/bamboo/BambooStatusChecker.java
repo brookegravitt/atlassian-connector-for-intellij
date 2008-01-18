@@ -16,15 +16,15 @@ public class BambooStatusChecker implements Runnable {
     private List<BambooStatusListener> listenerList = new ArrayList<BambooStatusListener>();
 
 
-    public void registerListener(BambooStatusListener listener) {
+    public synchronized void registerListener(BambooStatusListener listener) {
         listenerList.add(listener);
     }
 
-    public void unregisterListener(BambooStatusListener listener) {
+    public synchronized void unregisterListener(BambooStatusListener listener) {
         listenerList.remove(listener);
     }
 
-    public void run() {
+    public synchronized void run() {
         Collection<BambooBuild> newStatus = BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults();
         for (BambooStatusListener listener : listenerList) {
             listener.updateBuildStatuses(newStatus);

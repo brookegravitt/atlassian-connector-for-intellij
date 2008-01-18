@@ -28,14 +28,22 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
     public BambooServerFacadeImpl() {
     }
 
-    public Boolean testServerConnection(String url, String userName, String password) throws BambooLoginException {
+    /**
+     * Test connection to Bamboo server
+     * @param url
+     * @param userName
+     * @param password
+     * @throws BambooLoginException on failed login
+     */
+    public void testServerConnection(String url, String userName, String password) throws BambooLoginException {
         RestApi apiHandler = RestApi.login(url, userName, password);
-        if (apiHandler != null) {
-            apiHandler.logout();
-        }
-        return true;
+        apiHandler.logout();        
     }
 
+    /**
+     * List projects defined on Bamboo server
+     * @return list of projects or null on error
+     */
     public Collection<BambooProject> getProjectList() {
         Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServer();
 
@@ -49,6 +57,10 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
         return null;
     }
 
+    /**
+     * List plans defined on Bamboo server
+     * @return list of plans or null on error
+     */
     public Collection<BambooPlan> getPlanList() {
         Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServer();
 
@@ -62,6 +74,10 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
         return null;
     }
 
+    /**
+     * List details on subscribed plans
+     * @return results on subscribed builds
+     */
     public Collection<BambooBuild> getSubscribedPlansResults() {        
         Collection<BambooBuild> builds = new ArrayList<BambooBuild>();
 
