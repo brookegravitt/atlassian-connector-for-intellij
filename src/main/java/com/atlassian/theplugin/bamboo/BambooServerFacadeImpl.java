@@ -1,8 +1,6 @@
 package com.atlassian.theplugin.bamboo;
 
 import com.atlassian.theplugin.bamboo.BambooBuildInfo;
-import com.atlassian.theplugin.bamboo.BambooProjectInfo;
-import com.atlassian.theplugin.bamboo.BambooPlanInfo;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.SubscribedPlan;
 import com.atlassian.theplugin.configuration.Server;
@@ -23,11 +21,11 @@ import org.apache.log4j.Logger;
  * Time: 5:12:27 PM
  * To change this template use File | Settings | File Templates.
  */
-public class BambooServerImpl implements BambooServerFacade {
+public class BambooServerFacadeImpl implements BambooServerFacade {
 
-    private final static Category log = Logger.getInstance(BambooServerImpl.class);
+    private final static Category log = Logger.getInstance(BambooServerFacadeImpl.class);
     
-    public BambooServerImpl() {
+    public BambooServerFacadeImpl() {
     }
 
     public Boolean testServerConnection(String url, String userName, String password) throws BambooLoginException {
