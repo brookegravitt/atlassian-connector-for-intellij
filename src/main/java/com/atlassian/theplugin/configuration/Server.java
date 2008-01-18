@@ -8,7 +8,7 @@ import java.util.Collection;
  * Date: Jan 10, 2008
  * Time: 12:04:40 PM
  */
-public interface Server {
+public interface Server extends Cloneable {
     String getName();
     String getUrlString();
     String getUsername();
