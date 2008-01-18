@@ -3,7 +3,7 @@
   <grid id="27dc6" binding="rootComponent" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="309" height="288"/>
+      <xy x="20" y="20" width="530" height="421"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -11,7 +11,7 @@
       <tabbedpane id="be936" binding="tabbedPane1" default-binding="true">
         <constraints>
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
-            <preferred-size width="200" height="200"/>
+            <preferred-size width="400" height="200"/>
           </grid>
         </constraints>
         <properties/>
@@ -19,12 +19,12 @@
         <children>
           <grid id="c27c1" layout-manager="CardLayout" hgap="0" vgap="0">
             <constraints>
-              <tabbedpane title="&amp;Bamboo"/>
+              <tabbedpane title="Bamboo"/>
             </constraints>
             <properties/>
             <border type="none"/>
             <children>
-              <grid id="a9df3" layout-manager="GridLayoutManager" row-count="7" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+              <grid id="a9df3" layout-manager="GridLayoutManager" row-count="8" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                 <margin top="0" left="0" bottom="0" right="0"/>
                 <constraints>
                   <card name="Card1"/>
@@ -107,44 +107,71 @@
                       <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="5" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <text value="Test Connection"/>
+                      <text value="&amp;Test Connection"/>
                     </properties>
                   </component>
                   <vspacer id="19d23">
                     <constraints>
-                      <grid row="6" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                      <grid row="6" column="1" row-span="1" col-span="1" vsize-policy="4" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
+                        <preferred-size width="11" height="25"/>
+                      </grid>
                     </constraints>
                   </vspacer>
-                  <component id="a5b6f" class="javax.swing.JLabel">
+                  <grid id="a251a" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                    <margin top="5" left="5" bottom="5" right="5"/>
                     <constraints>
-                      <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="5" fill="0" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <labelFor value="79265"/>
-                      <text value="Build plans:"/>
-                    </properties>
-                  </component>
-                  <scrollpane id="55f8b">
-                    <constraints>
-                      <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                      <grid row="5" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                        <preferred-size width="485" height="154"/>
+                      </grid>
                     </constraints>
                     <properties/>
-                    <border type="none"/>
+                    <border type="none" title="Build plans"/>
                     <children>
-                      <component id="79265" class="javax.swing.JTextArea" binding="buildPlansTextArea" default-binding="true">
-                        <constraints/>
+                      <scrollpane id="a2887">
+                        <constraints>
+                          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                            <preferred-size width="469" height="44"/>
+                          </grid>
+                        </constraints>
+                        <properties/>
+                        <border type="none"/>
+                        <children>
+                          <component id="79265" class="javax.swing.JTextArea" binding="buildPlansTextArea" default-binding="true">
+                            <constraints/>
+                            <properties>
+                              <lineWrap value="true"/>
+                              <rows value="0"/>
+                              <text value=""/>
+                              <toolTipText value="Enter whitespace-separated build plan ID's"/>
+                              <wrapStyleWord value="true"/>
+                            </properties>
+                            <clientProperties>
+                              <html.disable class="java.lang.Boolean" value="true"/>
+                            </clientProperties>
+                          </component>
+                        </children>
+                      </scrollpane>
+                      <component id="a5b6f" class="javax.swing.JLabel">
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false">
+                            <preferred-size width="73" height="35"/>
+                          </grid>
+                        </constraints>
                         <properties>
-                          <lineWrap value="true"/>
-                          <text value=""/>
-                          <toolTipText value="Enter whitespace-separated build plan ID's"/>
-                          <wrapStyleWord value="true"/>
+                          <labelFor value="79265"/>
+                          <text value="Please provide space separated &amp;list of build plans that you want to monitor."/>
                         </properties>
-                        <clientProperties>
-                          <html.disable class="java.lang.Boolean" value="true"/>
-                        </clientProperties>
                       </component>
                     </children>
-                  </scrollpane>
+                  </grid>
+                  <component id="8bc5c" class="com.intellij.ui.HyperlinkLabel" binding="openJiraHyperlinkLabel" custom-create="true">
+                    <constraints>
+                      <grid row="7" column="1" row-span="1" col-span="1" vsize-policy="2" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false">
+                        <minimum-size width="-1" height="35"/>
+                      </grid>
+                    </constraints>
+                    <properties/>
+                  </component>
                 </children>
               </grid>
             </children>

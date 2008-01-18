@@ -5,8 +5,12 @@ import com.atlassian.theplugin.bamboo.BambooServerFactory;
 import com.atlassian.theplugin.bamboo.api.BambooLoginException;
 import com.intellij.openapi.ui.Messages;
 import static com.intellij.openapi.ui.Messages.showMessageDialog;
+import com.intellij.ui.HyperlinkLabel;
+import com.intellij.ide.BrowserUtil;
 
 import javax.swing.*;
+import javax.swing.event.HyperlinkListener;
+import javax.swing.event.HyperlinkEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
@@ -25,6 +29,7 @@ public class PluginConfigurationForm {
     private JPasswordField password;
     private JButton testConnection;
     private JTextArea buildPlansTextArea;
+    private HyperlinkLabel openJiraHyperlinkLabel;
 
     public PluginConfigurationForm() {
         
@@ -109,5 +114,20 @@ public class PluginConfigurationForm {
 
     public JComponent getRootComponent() {
         return rootComponent;
+    }
+
+    private void createUIComponents() {
+        // TODO: place custom component creation code here
+        openJiraHyperlinkLabel = new HyperlinkLabel("Report a bug/issue/request.");
+        openJiraHyperlinkLabel.addHyperlinkListener(new HyperlinkListener() {
+            public void hyperlinkUpdate(HyperlinkEvent e) {
+                BrowserUtil.launchBrowser("https://studio.atlassian.com/browse/PL");
+            }
+        });
+
+
+
+
+
     }
 }
