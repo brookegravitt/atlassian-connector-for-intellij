@@ -118,12 +118,12 @@ public class PluginConfigurationForm {
 
     private void createUIComponents() {
         // TODO: place custom component creation code here
-//        openJiraHyperlinkLabel = new HyperlinkLabel("Report a bug/issue/request.");
-//        openJiraHyperlinkLabel.addHyperlinkListener(new HyperlinkListener() {
-//            public void hyperlinkUpdate(HyperlinkEvent e) {
-//                BrowserUtil.launchBrowser("https://studio.atlassian.com/browse/PL");
-//            }
-//        });
+        openJiraHyperlinkLabel = new HyperlinkLabel("Report a bug/issue/request.");
+        openJiraHyperlinkLabel.addHyperlinkListener(new HyperlinkListener() {
+            public void hyperlinkUpdate(HyperlinkEvent e) {
+                BrowserUtil.launchBrowser("https://studio.atlassian.com/browse/PL");
+            }
+        });
 
 
 
