@@ -17,6 +17,7 @@ import java.util.List;
  */
 public class RestApiTest extends TestCase {
     private static final String SERVER_URL = "http://lech.atlassian.pl:8080/atlassian-bamboo-1.2.4";
+    private static final String SERVER_SSL_URL = "https://lech.atlassian.pl/atlassian-bamboo-1.2.4";    
     private static final String USER_NAME = "user";
     private static final String PASSWORD = "d0n0tch@nge";
 
@@ -36,15 +37,6 @@ public class RestApiTest extends TestCase {
     public void testNullParamsLogin() throws Exception {
         try {
             RestApi apiHandler = RestApi.login(null, null, null);
-            fail();
-        } catch (BambooLoginException ex) {
-            System.out.println("Exception: " + ex.getMessage());
-        }
-    }
-
-    public void testWrongPortBambooLogin () throws Exception {
-        try {
-            RestApi apiHandler = RestApi.login(SERVER_URL.replaceAll("8080", "9090"), USER_NAME, PASSWORD);
             fail();
         } catch (BambooLoginException ex) {
             System.out.println("Exception: " + ex.getMessage());
@@ -174,4 +166,11 @@ public class RestApiTest extends TestCase {
             System.out.println("Exception: " + ex.getMessage());
         }
     }
+
+    public void testSuccessBambooLoginOnSSL () throws Exception {
+        RestApi apiHandler = RestApi.login(SERVER_SSL_URL, USER_NAME, PASSWORD);
+        assertNotNull(apiHandler);
+        apiHandler.logout();
+    }
+
 }
