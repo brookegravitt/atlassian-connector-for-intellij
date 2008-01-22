@@ -17,6 +17,8 @@ import java.util.Iterator;
 
 import com.atlassian.theplugin.bamboo.*;
 
+import javax.net.ssl.*;
+
 /**
  * Created by IntelliJ IDEA.
  * User: mwent
@@ -35,7 +37,40 @@ public class RestApi {
     private String baseUrl;
     private String authToken;
 
+    static {
+         TrustManager[] trustAllCerts = new TrustManager[]{
+                new X509TrustManager() {
+                    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                        return null;
+                    }
 
+                    public void checkClientTrusted(
+                            java.security.cert.X509Certificate[] certs, String authType) {
+                    }
+
+                    public void checkServerTrusted(
+                            java.security.cert.X509Certificate[] certs, String authType) {
+                    }
+                }
+        };
+
+        try {
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+            HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+
+                public boolean verify(String s, SSLSession sslSession) {
+                    if (sslSession.getPeerHost().equalsIgnoreCase(s)) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            });
+        } catch (Exception e) {
+        }
+    }
 
     private RestApi(String baseUrl, String authToken) {
         this.baseUrl = baseUrl;
@@ -46,7 +81,7 @@ public class RestApi {
         String loginUrl = null;
         try {
             loginUrl = url + LOGIN_ACTION + "?username=" + URLEncoder.encode(name, "UTF-8") + "&password=" +
-                    URLEncoder.encode(password, "UTF-8") + "&os_username=" +
+                    URLEncoder.encode(password, "UTF-8")  + "&os_username=" +
                     URLEncoder.encode(name,"UTF-8") + "&os_password=" + URLEncoder.encode(password, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             throw new BambooLoginException("URLEncoding problem: " + e.getMessage());
