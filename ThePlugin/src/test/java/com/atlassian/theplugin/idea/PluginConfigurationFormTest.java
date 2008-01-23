@@ -305,7 +305,7 @@ public class PluginConfigurationFormTest extends TestCase {
         BambooBuild  bambooBuild = new BambooBuildInfo("projectName", "buildNameSuccess", "buildKey", BUILD_SUCCESSFUL, "buildNumber", "buildReason",
               "buildRelativeBuildDate", "buildDurationDescription", "buildTestSummary");
 
-            buildStatuses.add(bambooBuild);
+        buildStatuses.add(bambooBuild);
         BambooStatusListener statusListener = new BambooStatusListenerImpl(statusIcon);
 
         statusListener.updateBuildStatuses(buildStatuses);
