@@ -1,4 +1,4 @@
-package com.atlassian.theplugin.bamboo.api;
+package com.atlassian.theplugin.util;
 
 import javax.net.ssl.*;
 import java.net.URLConnection;
@@ -36,28 +36,16 @@ public class HttpConnectionFactory {
     private static SSLSocketFactory getSSLSocketFactory() {
         if (socketFactory == null) {
             TrustManager[] trustAllCerts = new TrustManager[]{
-                    new X509TrustManager() {
-                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                            return null;
-                        }
-
-                        public void checkClientTrusted(
-                                java.security.cert.X509Certificate[] certs, String authType) {
-                        }
-
-                        public void checkServerTrusted(
-                                java.security.cert.X509Certificate[] certs, String authType) {
-                        }
-                    }
+                    new EasyTrustManager()
             };
             SSLContext sc = null;
             try {
                 sc = SSLContext.getInstance("SSL");
                 sc.init(null, trustAllCerts, new java.security.SecureRandom());
             } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                e.printStackTrace();
             } catch (KeyManagementException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                e.printStackTrace();  
             }
 
             socketFactory = sc.getSocketFactory();
@@ -67,11 +55,7 @@ public class HttpConnectionFactory {
 
     private static HostnameVerifier getHostnameVerifier() {
         if (hostnameVerifier == null) {
-            hostnameVerifier = new HostnameVerifier() {
-                public boolean verify(String s, SSLSession sslSession) {
-                    return true;
-                }
-            };
+            hostnameVerifier = new EasyHostnameVerifier();
         }
         return hostnameVerifier;
     }
