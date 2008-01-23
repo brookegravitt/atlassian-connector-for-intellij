@@ -150,13 +150,11 @@
 			<version>1.0.2</version>
 			<scope>test</scope>     
 		</dependency>
-        <!--
         <dependency>
             <groupId>org.prefuse</groupId>
             <artifactId>prefuse</artifactId>
             <version>beta-20060220</version>
         </dependency>
-        -->
     </dependencies>
 
 	<build>
