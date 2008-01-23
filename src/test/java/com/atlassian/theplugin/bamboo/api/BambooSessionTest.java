@@ -15,7 +15,7 @@ import java.util.List;
  * Time: 15:08:11
  * To change this template use File | Settings | File Templates.
  */
-public class RestApiTest extends TestCase {
+public class BambooSessionTest extends TestCase {
     private static final String SERVER_URL = "http://lech.atlassian.pl:8080/atlassian-bamboo-1.2.4";
     private static final String SERVER_SSL_URL = "https://lech.atlassian.pl/atlassian-bamboo-1.2.4";    
     private static final String USER_NAME = "user";
@@ -193,7 +193,6 @@ public class RestApiTest extends TestCase {
     public void testSuccessBambooLoginOnSSL () throws Exception {
         BambooSession apiHandler = new BambooSession(SERVER_SSL_URL);
         apiHandler.login(USER_NAME, PASSWORD.toCharArray());
-        assertNotNull(apiHandler);
         apiHandler.logout();
     }
 
