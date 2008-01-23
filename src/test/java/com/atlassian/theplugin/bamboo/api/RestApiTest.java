@@ -23,20 +23,29 @@ public class RestApiTest extends TestCase {
 
 
     public void testSuccessBambooLogin () throws Exception {
-        RestApi apiHandler = RestApi.login(SERVER_URL, USER_NAME, PASSWORD);
-        assertNotNull(apiHandler);
+        BambooSession apiHandler = new BambooSession(SERVER_URL);
+        apiHandler.login(USER_NAME, PASSWORD.toCharArray());
+        assertTrue(apiHandler.isLoggedIn());
+        apiHandler.logout();
+        assertFalse(apiHandler.isLoggedIn());
+    }
+
+    public void testBambooLogout () throws Exception {
+        BambooSession apiHandler = new BambooSession(SERVER_URL);
+        assertFalse(apiHandler.isLoggedIn());
         apiHandler.logout();
     }
 
     public void testSuccessBambooLoginURLWithSlash () throws Exception {
-        RestApi apiHandler = RestApi.login(SERVER_URL + "/", USER_NAME, PASSWORD);
-        assertNotNull(apiHandler);
+        BambooSession apiHandler = new BambooSession(SERVER_URL + "/");
+        apiHandler.login(USER_NAME, PASSWORD.toCharArray());
         apiHandler.logout();
     }
 
     public void testNullParamsLogin() throws Exception {
         try {
-            RestApi apiHandler = RestApi.login(null, null, null);
+            BambooSession apiHandler = new BambooSession(null);
+            apiHandler.login(null, null);
             fail();
         } catch (BambooLoginException ex) {
             System.out.println("Exception: " + ex.getMessage());
@@ -45,7 +54,8 @@ public class RestApiTest extends TestCase {
 
     public void testWrongUrlBambooLogin () throws Exception {
         try {
-            RestApi apiHandler = RestApi.login(SERVER_URL.replaceAll("bamboo", "xxx"), "user", "d0n0tch@nge");
+            BambooSession apiHandler = new BambooSession(SERVER_URL.replaceAll("bamboo", "xxx"));
+            apiHandler.login(USER_NAME, PASSWORD.toCharArray());           
             fail();
         } catch (BambooLoginException ex) {
             System.out.println("Exception: " + ex.getMessage());
@@ -54,7 +64,8 @@ public class RestApiTest extends TestCase {
 
     public void testWrongUserBambooLogin () throws Exception {
         try {
-            RestApi apiHandler = RestApi.login(SERVER_URL, USER_NAME + "xxx", PASSWORD);
+            BambooSession apiHandler = new BambooSession(SERVER_URL);
+            apiHandler.login(USER_NAME + "XXX", PASSWORD.toCharArray());
             fail();
         } catch (BambooLoginException ex) {
             System.out.println("Exception: " + ex.getMessage());
@@ -63,7 +74,8 @@ public class RestApiTest extends TestCase {
 
     public void testWrongPasswordBambooLogin () throws Exception {
         try {
-            RestApi apiHandler = RestApi.login(SERVER_URL, USER_NAME, PASSWORD + "xxx");
+            BambooSession apiHandler = new BambooSession(SERVER_URL);
+            apiHandler.login(USER_NAME, (PASSWORD + "xxx").toCharArray());
             fail();
         } catch (BambooLoginException ex) {
             System.out.println("Exception: " + ex.getMessage());
@@ -72,7 +84,8 @@ public class RestApiTest extends TestCase {
 
     public void testNoPasswordBambooLogin () throws Exception {
         try {
-            RestApi apiHandler = RestApi.login(SERVER_URL, USER_NAME, "");
+            BambooSession apiHandler = new BambooSession(SERVER_URL);
+            apiHandler.login(USER_NAME, "".toCharArray());
             fail();
         } catch (BambooLoginException ex) {
             System.out.println("Exception: " + ex.getMessage());
@@ -81,7 +94,8 @@ public class RestApiTest extends TestCase {
 
     public void testWrongParamsBambooLogin () throws Exception {
         try {
-            RestApi apiHandler = RestApi.login("", "", "");
+            BambooSession apiHandler = new BambooSession("");
+            apiHandler.login("", "".toCharArray());
             fail();
         } catch (BambooLoginException ex) {
             System.out.println("Exception: " + ex.getMessage());
@@ -89,28 +103,32 @@ public class RestApiTest extends TestCase {
     }
 
     public void testProjectList() throws Exception {
-        RestApi apiHandler = RestApi.login(SERVER_URL, USER_NAME, PASSWORD);
+        BambooSession apiHandler = new BambooSession(SERVER_URL);
+        apiHandler.login(USER_NAME, PASSWORD.toCharArray());
         List<BambooProject> projects = apiHandler.listProjectNames();
         assertFalse(projects.size() == 0);
         apiHandler.logout();
     }
 
     public void testPlanList() throws Exception {
-        RestApi apiHandler = RestApi.login(SERVER_URL, USER_NAME, PASSWORD);
+        BambooSession apiHandler = new BambooSession(SERVER_URL);
+        apiHandler.login(USER_NAME, PASSWORD.toCharArray());
         List<BambooPlan> plans = apiHandler.listPlanNames();
         assertFalse(plans.size() == 0);
         apiHandler.logout();
     }
 
     public void testBuildForPlan() throws Exception {
-        RestApi apiHandler = RestApi.login(SERVER_URL, USER_NAME, PASSWORD);
+        BambooSession apiHandler = new BambooSession(SERVER_URL);
+        apiHandler.login(USER_NAME, PASSWORD.toCharArray());
         BambooBuild build = apiHandler.getLatestBuildForPlan("TP-DEF");
         assertNotNull(build);
         apiHandler.logout();
     }
 
     public void testBuildForNonExistingPlan() throws Exception {
-        RestApi apiHandler = RestApi.login(SERVER_URL, USER_NAME, PASSWORD);
+        BambooSession apiHandler = new BambooSession(SERVER_URL);
+        apiHandler.login(USER_NAME, PASSWORD.toCharArray());
         try {
             BambooBuild build = apiHandler.getLatestBuildForPlan("TP-DEF-NON-EXISTING");
             fail();
@@ -120,7 +138,8 @@ public class RestApiTest extends TestCase {
     }
 
     public void testBuildForEmptyPlan() throws Exception {
-        RestApi apiHandler = RestApi.login(SERVER_URL, USER_NAME, PASSWORD);
+        BambooSession apiHandler = new BambooSession(SERVER_URL);
+        apiHandler.login(USER_NAME, PASSWORD.toCharArray());
         try {
             BambooBuild build = apiHandler.getLatestBuildForPlan("");
             fail();
@@ -130,14 +149,16 @@ public class RestApiTest extends TestCase {
     }
 
     public void testRecentBuilds() throws Exception {
-        RestApi apiHandler = RestApi.login(SERVER_URL, USER_NAME, PASSWORD);
+        BambooSession apiHandler = new BambooSession(SERVER_URL);
+        apiHandler.login(USER_NAME, PASSWORD.toCharArray());
         List<BambooBuild> builds = apiHandler.getLatestBuildsForProject("TP");
         assertNotNull(builds);
         apiHandler.logout();
     }
 
     public void testRecentBuildsForNonExistingProject() throws Exception {
-        RestApi apiHandler = RestApi.login(SERVER_URL, USER_NAME, PASSWORD);
+        BambooSession apiHandler = new BambooSession(SERVER_URL);
+        apiHandler.login(USER_NAME, PASSWORD.toCharArray());
         try {
             List<BambooBuild> builds = apiHandler.getLatestBuildsForProject("TP-NON-EXISTING");
             fail();
@@ -148,7 +169,8 @@ public class RestApiTest extends TestCase {
     }
 
     public void testRecentBuildsForEmptyProject() throws Exception {
-        RestApi apiHandler = RestApi.login(SERVER_URL, USER_NAME, PASSWORD);
+        BambooSession apiHandler = new BambooSession(SERVER_URL);
+        apiHandler.login(USER_NAME, PASSWORD.toCharArray());
         try {
             List<BambooBuild> builds = apiHandler.getLatestBuildsForProject("TP-NON-EXISTING");
             fail();
@@ -160,7 +182,8 @@ public class RestApiTest extends TestCase {
 
     public void testUrlEncodingBambooPassword () throws Exception {
         try {
-            RestApi apiHandler = RestApi.login(SERVER_URL, "", PASSWORD + "&username=" + USER_NAME);
+            BambooSession apiHandler = new BambooSession(SERVER_URL);
+            apiHandler.login("", (PASSWORD + "&username=" + USER_NAME).toCharArray());
             fail();
         } catch (BambooLoginException ex) {
             System.out.println("Exception: " + ex.getMessage());
@@ -168,7 +191,8 @@ public class RestApiTest extends TestCase {
     }
 
     public void testSuccessBambooLoginOnSSL () throws Exception {
-        RestApi apiHandler = RestApi.login(SERVER_SSL_URL, USER_NAME, PASSWORD);
+        BambooSession apiHandler = new BambooSession(SERVER_SSL_URL);
+        apiHandler.login(USER_NAME, PASSWORD.toCharArray());
         assertNotNull(apiHandler);
         apiHandler.logout();
     }

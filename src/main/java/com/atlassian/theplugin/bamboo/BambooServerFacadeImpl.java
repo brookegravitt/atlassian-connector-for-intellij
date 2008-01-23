@@ -2,7 +2,7 @@ package com.atlassian.theplugin.bamboo;
 
 import com.atlassian.theplugin.bamboo.api.BambooException;
 import com.atlassian.theplugin.bamboo.api.BambooLoginException;
-import com.atlassian.theplugin.bamboo.api.RestApi;
+import com.atlassian.theplugin.bamboo.api.BambooSession;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.SubscribedPlan;
@@ -34,7 +34,8 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
      * @throws BambooLoginException on failed login
      */
     public void testServerConnection(String url, String userName, String password) throws BambooLoginException {
-        RestApi apiHandler = RestApi.login(url, userName, password);
+        BambooSession apiHandler = new BambooSession(url);
+        apiHandler.login(userName, password.toCharArray());
         apiHandler.logout();  
     }
 
@@ -45,9 +46,9 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
     public Collection<BambooProject> getProjectList() {
         Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServer();
 
-        RestApi api = null;
         try {
-            api = RestApi.login(server.getUrlString(), server.getUsername(), server.getPassword());
+            BambooSession api = new BambooSession(server.getUrlString());
+            api.login(server.getUsername(), server.getPassword().toCharArray());
             return api.listProjectNames();
         } catch (BambooException e) {
             log.error("Bamboo exception: " + e.getMessage());
@@ -62,9 +63,9 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
     public Collection<BambooPlan> getPlanList() {
         Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServer();
 
-        RestApi api = null;
         try {
-            api = RestApi.login(server.getUrlString(), server.getUsername(), server.getPassword());
+            BambooSession api = new BambooSession(server.getUrlString());
+            api.login(server.getUsername(), server.getPassword().toCharArray());
             return api.listPlanNames();
         } catch (BambooException e) {
             log.error("Bamboo exception: " + e.getMessage());
@@ -81,17 +82,18 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 
         Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServer();
 
-        RestApi api = null;
+        BambooSession api = null;
         String connectionErrorMessage = null;
         try {
-            api = RestApi.login(server.getUrlString(), server.getUsername(), server.getPassword());
+            api = new BambooSession(server.getUrlString());
+            api.login(server.getUsername(), server.getPassword().toCharArray());
         } catch (BambooLoginException e) {
             log.error("Bamboo login exception: " + e.getMessage());
             connectionErrorMessage = e.getMessage();
         }
 
         for (SubscribedPlan plan : server.getSubscribedPlans()) {
-            if (api != null) {
+            if (api.isLoggedIn()) {
                 try {
                     builds.add(api.getLatestBuildForPlan(plan.getPlanId()));                
                 } catch (BambooException e) {
@@ -103,7 +105,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
             }
         }
 
-        if (api != null) {
+        if (api.isLoggedIn()) {
             try {
                 api.logout();
             } catch (BambooLoginException e) {

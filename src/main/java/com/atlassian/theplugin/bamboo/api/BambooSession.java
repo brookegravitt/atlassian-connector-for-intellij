@@ -8,9 +8,11 @@ import org.jdom.xpath.XPath;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.net.URLEncoder;
+import java.net.URLConnection;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -26,8 +28,8 @@ import javax.net.ssl.*;
  * Time: 11:54:01
  * To change this template use File | Settings | File Templates.
  */
-public class RestApi {
-    private static final String LOGIN_ACTION = "/api/rest/login.action";
+public class BambooSession {
+    public  static final String LOGIN_ACTION = "/api/rest/login.action";
     private static final String LOGOUT_ACTION = "/api/rest/logout.action";
     private static final String LIST_PROJECT_ACTION = "/api/rest/listProjectNames.action";
     private static final String LIST_PLAN_ACTION = "/api/rest/listBuildNames.action";
@@ -35,62 +37,34 @@ public class RestApi {
     private static final String LATEST_BUILDS_FOR_PROJECT_ACTION = "/api/rest/getLatestBuildResultsForProject.action";
 
     private String baseUrl;
+    private String userName;
+    private char[] password;
     private String authToken;
 
-    static {
-         TrustManager[] trustAllCerts = new TrustManager[]{
-                new X509TrustManager() {
-                    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                        return null;
-                    }
-
-                    public void checkClientTrusted(
-                            java.security.cert.X509Certificate[] certs, String authType) {
-                    }
-
-                    public void checkServerTrusted(
-                            java.security.cert.X509Certificate[] certs, String authType) {
-                    }
-                }
-        };
-
-        try {
-            SSLContext sc = SSLContext.getInstance("SSL");
-            sc.init(null, trustAllCerts, new java.security.SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-            HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
-
-                public boolean verify(String s, SSLSession sslSession) {
-                    if (sslSession.getPeerHost().equalsIgnoreCase(s)) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-            });
-        } catch (Exception e) {
-        }
-    }
-
-    private RestApi(String baseUrl, String authToken) {
+    public BambooSession(String baseUrl) {
         this.baseUrl = baseUrl;
-        this.authToken = authToken;
     }
 
-    public static RestApi login(String url, String name, String password) throws BambooLoginException {
-        String loginUrl = null;
+    public void login(String name, char[] password) throws BambooLoginException {
+        String loginUrl;
         try {
-            loginUrl = url + LOGIN_ACTION + "?username=" + URLEncoder.encode(name, "UTF-8") + "&password=" +
-                    URLEncoder.encode(password, "UTF-8")  + "&os_username=" +
-                    URLEncoder.encode(name,"UTF-8") + "&os_password=" + URLEncoder.encode(password, "UTF-8");
+            if (baseUrl == null) {
+                throw new BambooLoginException("Corrupted configuration. Url null");
+            }
+            if (name == null || password == null) {
+                throw new BambooLoginException("Corrupted configuration. Username or password null");
+            }
+            String pass = String.valueOf(password);
+            loginUrl = baseUrl + LOGIN_ACTION + "?username=" + URLEncoder.encode(name, "UTF-8") + "&password=" +
+                    URLEncoder.encode(pass, "UTF-8")  + "&os_username=" +
+                    URLEncoder.encode(name,"UTF-8") + "&os_password=" + URLEncoder.encode(pass, "UTF-8");
         } catch (UnsupportedEncodingException e) {
+            // zrzucic error !!!
             throw new BambooLoginException("URLEncoding problem: " + e.getMessage());
-        } catch (NullPointerException e) {
-            throw new BambooLoginException("Corrupted configuration: " + e.getMessage());
         }
-
-        Document doc = null;
-        List elements = null;
+        
+        Document doc;
+        List elements;
         try {
             doc = retrieveResponse(loginUrl);
         } catch(BambooException e) {
@@ -103,27 +77,30 @@ public class RestApi {
             if (elements != null) {
                 for (Object element : elements) {
                     Element e = (Element) element;
-                    String authToken = e.getText();
-                    return new RestApi(url, authToken);
+                    this.authToken = e.getText();
                 }
             }
         } catch (JDOMException e) {
             throw new BambooLoginException(e.getMessage(), e);
         }
-             
-        return null;
     }
 
     public void logout() throws BambooLoginException {
+        if (!isLoggedIn()) {
+            return;
+        }
+
         String logoutUrl = null;
         try {
             logoutUrl = baseUrl + LOGOUT_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8");
             retrieveResponse(logoutUrl);
         } catch (UnsupportedEncodingException e) {
-            throw new BambooLoginException("URLEncoding problem: " + e.getMessage());
+            throw new RuntimeException("URLEncoding problem: " + e.getMessage());
         } catch (BambooException e) {
-            throw new BambooLoginException("URLEncoding problem: " + e.getMessage());
-       }
+            /* ignore error on logout */
+        }
+
+        authToken = null;
     }
 
     public List<BambooProject> listProjectNames() throws BambooException {
@@ -136,7 +113,7 @@ public class RestApi {
         Document doc = retrieveResponse(buildResultUrl);
 
         XPath xpath = null;
-        List projects = new ArrayList();
+        List<BambooProject> projects = new ArrayList<BambooProject>();
         List elements = null;
         try {
             xpath = XPath.newInstance("/response/project");
@@ -166,7 +143,7 @@ public class RestApi {
         Document doc = retrieveResponse(buildResultUrl);
 
         XPath xpath = null;
-        List plans = new ArrayList();
+        List<BambooPlan> plans = new ArrayList<BambooPlan>();
         List elements = null;
         try {
             xpath = XPath.newInstance("/response/build");
@@ -187,7 +164,7 @@ public class RestApi {
     }
 
     public BambooBuildInfo getLatestBuildForPlan(String planKey) throws BambooException {
-        String buildResultUrl = null;
+        String buildResultUrl;
         try {
             buildResultUrl = baseUrl + LATEST_BUILD_FOR_PLAN_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8") + "&buildKey=" + URLEncoder.encode(planKey, "UTF-8");
         } catch (UnsupportedEncodingException e) {
@@ -221,7 +198,7 @@ public class RestApi {
         Document doc = retrieveResponse(buildResultUrl);
 
         XPath xpath = null;
-        List builds = new ArrayList();
+        List<BambooBuild> builds = new ArrayList<BambooBuild>();
         List elements = null;
         try {
             xpath = XPath.newInstance("/response/build");
@@ -264,12 +241,13 @@ public class RestApi {
         }
     }
 
-    private static Document retrieveResponse(String url) throws BambooException {
+    private Document retrieveResponse(String urlString) throws BambooException {
         try {
-            URL callUrl = null;
-            callUrl = new URL(url);
+            URLConnection c = HttpConnectionFactory.getConnection(urlString);
+            InputStream is = c.getInputStream();
+            
             SAXBuilder builder = new SAXBuilder();
-            Document doc = builder.build(url);
+            Document doc = builder.build(is);
             checkForErrors(doc);
             return doc;
         } catch(JDOMException e){
@@ -283,15 +261,18 @@ public class RestApi {
 
     private static void checkForErrors(Document doc) throws JDOMException, BambooException {
         XPath xpath = XPath.newInstance("/errors/error");
-        List elements = xpath.selectNodes(doc);
+        List<Element> elements = xpath.selectNodes(doc);
 
         if (elements != null && elements.size() > 0) {
             String exceptionMsg = "";
-            for(Iterator i = elements.iterator(); i.hasNext();) {
-                Element e = (Element)  i.next();
+            for (Element e : elements) {            
                 exceptionMsg += e.getText() + "\n";
             }
             throw new BambooException(exceptionMsg);
         }
+    }
+
+    public boolean isLoggedIn() {
+        return authToken != null;
     }
 }
