@@ -113,6 +113,15 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="prefuse">
+        <CLASSES>
+          <root url="jar://C:/Users/Jacek/.m2/repository/org/prefuse/prefuse/beta-20060220/prefuse-beta-20060220.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntryProperties />
   </component>
 </module>
