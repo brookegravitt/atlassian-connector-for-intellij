@@ -4,8 +4,6 @@ import javax.net.ssl.*;
 import java.net.URLConnection;
 import java.net.URL;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.security.KeyManagementException;
 
 /**
  * Created by IntelliJ IDEA.
@@ -38,16 +36,13 @@ public class HttpConnectionFactory {
             TrustManager[] trustAllCerts = new TrustManager[]{
                     new EasyTrustManager()
             };
-            SSLContext sc = null;
+            SSLContext sc;
             try {
                 sc = SSLContext.getInstance("SSL");
                 sc.init(null, trustAllCerts, new java.security.SecureRandom());
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            } catch (KeyManagementException e) {
-                e.printStackTrace();  
-            }
-
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            } 
             socketFactory = sc.getSocketFactory();
         }
         return socketFactory;
