@@ -169,14 +169,15 @@ public class PluginStatusBarToolTip extends JFrame {
 			int mousePressX = 0;
 			int mousePressY = 0;
 
-			public void mouseDragged(MouseEvent e) {
-				tooltipWindow.setLocation(e.getXOnScreen() - mousePressX, e.getYOnScreen() - mousePressY);
-			}
-
-			public void mousePressed(MouseEvent e) {
-				mousePressX = e.getX();
-				mousePressY = e.getY();
-			}
+			// @todo find absolute position on the screen in java 1.5
+//			public void mouseDragged(MouseEvent e) {
+//				tooltipWindow.setLocation(e.getXOnScreen() - mousePressX, e.getYOnScreen() - mousePressY);
+//			}
+//
+//			public void mousePressed(MouseEvent e) {
+//				mousePressX = e.getX();
+//				mousePressY = e.getY();
+//			}
 		}
 
 		private class GradientLabel extends JLabel {

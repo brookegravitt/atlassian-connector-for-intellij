@@ -11,6 +11,7 @@ import javax.swing.event.HyperlinkEvent;
 import static javax.swing.event.HyperlinkEvent.EventType.ACTIVATED;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
+import java.awt.*;
 import java.io.IOException;
 
 
@@ -32,7 +33,12 @@ public class BambooStatusIcon extends JLabel {
 		tooltip = new PluginStatusBarToolTip();
 		addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent e) {
-                tooltip.showToltip(e.getXOnScreen(), e.getYOnScreen());
+
+			Window win = SwingUtilities.getWindowAncestor(BambooStatusIcon.this);
+
+
+
+				tooltip.showToltip(win.getX() + win.getWidth() - BambooStatusIcon.this.getX() - 160, win.getY() + win.getHeight() - 30);
             }
         });
 
