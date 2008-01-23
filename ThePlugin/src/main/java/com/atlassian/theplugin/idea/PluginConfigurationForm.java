@@ -20,7 +20,7 @@ import java.util.ArrayList;
 /**
  * Plugin configuration form.
  */
-public class PluginConfigurationForm {
+public class PluginConfigurationForm extends JComponent {
     private JPanel rootComponent;
     private JTabbedPane tabbedPane1;
     private JTextField serverName;

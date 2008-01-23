@@ -4,6 +4,7 @@ import prefuse.util.ui.JCustomTooltip;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
 
 /**
  * Created by IntelliJ IDEA.
@@ -32,4 +33,9 @@ public class PluginStatusBarToolTip extends JCustomTooltip {
         return new Dimension((int)dim.getWidth()+20,(int)dim.getHeight()+20);
     }
     */
+
+   /*  public void mouseExited(MouseEvent e) {
+         this.setVisible(false);
+         
+     }*/
 }
