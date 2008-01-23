@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import com.atlassian.theplugin.bamboo.*;
+import com.atlassian.theplugin.util.HttpConnectionFactory;
 
 /**
  * Created by IntelliJ IDEA.
