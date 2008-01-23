@@ -17,7 +17,8 @@ import com.atlassian.theplugin.bamboo.api.BambooLoginException;
  */
 public class BambooServerFacadeTest extends TestCase {
     private PluginConfigurationBean pluginConfig;
-    private PluginConfigurationBean badPluginConfig;
+    private PluginConfigurationBean badLoginPluginConfig;
+    private PluginConfigurationBean badPlanPluginConfig;
     private ServerBean server;
 
     public BambooServerFacadeTest() {
@@ -40,9 +41,9 @@ public class BambooServerFacadeTest extends TestCase {
 
         BambooConfigurationBean badConfiguration = new BambooConfigurationBean();
         ServerBean badServer = new ServerBean();
-        badServer.setName("TestServer");
-        badServer.setUrlString("http://lech.atlassian.pl:8080/atlassian-bamboo-1.2.4/");
-        badServer.setUsername("user");
+        badServer.setName(server.getUrlString());
+        badServer.setUrlString(server.getUrlString());
+        badServer.setUsername(server.getUsername());
         badServer.setPassword("xxx");
 
         ArrayList<SubscribedPlanBean> badPlans = new ArrayList<SubscribedPlanBean>();
@@ -53,8 +54,21 @@ public class BambooServerFacadeTest extends TestCase {
 
         badConfiguration.setServerData(badServer);
 
-        badPluginConfig = new PluginConfigurationBean();
-        badPluginConfig.setBambooConfigurationData(badConfiguration);
+        BambooConfigurationBean badPlanConfiguration = new BambooConfigurationBean();
+        ServerBean badPlanServer = new ServerBean();
+        badPlanServer.setName(server.getName());
+        badPlanServer.setUrlString(server.getUrlString());
+        badPlanServer.setUsername(server.getUsername());
+        badPlanServer.setPassword(server.getPassword());
+        badPlanServer.setSubscribedPlansData(badPlans);
+
+        badPlanConfiguration.setServerData(badPlanServer);
+
+        badLoginPluginConfig = new PluginConfigurationBean();
+        badLoginPluginConfig.setBambooConfigurationData(badConfiguration);
+
+        badPlanPluginConfig = new PluginConfigurationBean();
+        badPlanPluginConfig.setBambooConfigurationData(badPlanConfiguration);        
     }
 
     protected void setUp() throws Exception {
@@ -69,8 +83,19 @@ public class BambooServerFacadeTest extends TestCase {
         assertFalse(plans.size() == 0);
     }
 
-    public void testFailedSubscribedBuildStatus() throws Exception {
-        ConfigurationFactory.setConfiguration(badPluginConfig);
+    public void testFailedLoginSubscribedBuildStatus() throws Exception {
+        ConfigurationFactory.setConfiguration(badLoginPluginConfig);
+        Collection<BambooBuild> plans =  BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults();
+        assertNotNull(plans);
+        assertEquals(1, plans.size());
+        BambooBuild build = plans.iterator().next();
+        assertEquals(BuildStatus.ERROR, build.getStatus());
+        assertEquals("TP-DEF-BAD", build.getBuildKey());
+        assertEquals("The user does not have sufficient permissions to perform this action.\n", build.getMessage());
+    }
+
+    public void testBadPlansSubscribedBuildStatus() throws Exception {
+        ConfigurationFactory.setConfiguration(badPlanPluginConfig);
         Collection<BambooBuild> plans =  BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults();
         assertNotNull(plans);
         assertEquals(1, plans.size());
@@ -87,7 +112,7 @@ public class BambooServerFacadeTest extends TestCase {
     }
 
     public void testFailedProjectList() throws Exception {
-        ConfigurationFactory.setConfiguration(badPluginConfig);
+        ConfigurationFactory.setConfiguration(badLoginPluginConfig);
         Collection<BambooProject> projects =  BambooServerFactory.getBambooServerFacade().getProjectList();
         assertNull(projects);
     }
@@ -99,7 +124,7 @@ public class BambooServerFacadeTest extends TestCase {
     }
 
     public void testFailedPlanList() throws Exception {
-        ConfigurationFactory.setConfiguration(badPluginConfig);
+        ConfigurationFactory.setConfiguration(badLoginPluginConfig);
         Collection<BambooPlan> plans =  BambooServerFactory.getBambooServerFacade().getPlanList();
         assertNull(plans);
     }
