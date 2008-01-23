@@ -9,17 +9,13 @@ import org.jdom.xpath.XPath;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.io.InputStream;
-import java.net.URL;
 import java.net.MalformedURLException;
 import java.net.URLEncoder;
 import java.net.URLConnection;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import com.atlassian.theplugin.bamboo.*;
-
-import javax.net.ssl.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -29,7 +25,7 @@ import javax.net.ssl.*;
  * To change this template use File | Settings | File Templates.
  */
 public class BambooSession {
-    public  static final String LOGIN_ACTION = "/api/rest/login.action";
+    public static final String LOGIN_ACTION = "/api/rest/login.action";
     private static final String LOGOUT_ACTION = "/api/rest/logout.action";
     private static final String LIST_PROJECT_ACTION = "/api/rest/listProjectNames.action";
     private static final String LIST_PLAN_ACTION = "/api/rest/listBuildNames.action";
@@ -56,18 +52,17 @@ public class BambooSession {
             }
             String pass = String.valueOf(password);
             loginUrl = baseUrl + LOGIN_ACTION + "?username=" + URLEncoder.encode(name, "UTF-8") + "&password=" +
-                    URLEncoder.encode(pass, "UTF-8")  + "&os_username=" +
-                    URLEncoder.encode(name,"UTF-8") + "&os_password=" + URLEncoder.encode(pass, "UTF-8");
+                    URLEncoder.encode(pass, "UTF-8") + "&os_username=" +
+                    URLEncoder.encode(name, "UTF-8") + "&os_password=" + URLEncoder.encode(pass, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            // zrzucic error !!!
-            throw new BambooLoginException("URLEncoding problem: " + e.getMessage());
+            throw new RuntimeException("URLEncoding problem: " + e.getMessage());
         }
-        
+
         Document doc;
         List elements;
         try {
             doc = retrieveResponse(loginUrl);
-        } catch(BambooException e) {
+        } catch (BambooException e) {
             throw new BambooLoginException(e.getMessage(), e);
         }
 
@@ -85,7 +80,7 @@ public class BambooSession {
         }
     }
 
-    public void logout() throws BambooLoginException {
+    public void logout() {
         if (!isLoggedIn()) {
             return;
         }
@@ -108,7 +103,7 @@ public class BambooSession {
         try {
             buildResultUrl = baseUrl + LIST_PROJECT_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            throw new BambooLoginException("URLEncoding problem: " + e.getMessage());
+            throw new RuntimeException("URLEncoding problem: " + e.getMessage());
         }
         Document doc = retrieveResponse(buildResultUrl);
 
@@ -138,7 +133,7 @@ public class BambooSession {
         try {
             buildResultUrl = baseUrl + LIST_PLAN_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            throw new BambooLoginException("URLEncoding problem: " + e.getMessage());
+            throw new RuntimeException("URLEncoding problem: " + e.getMessage());
         }
         Document doc = retrieveResponse(buildResultUrl);
 
@@ -168,7 +163,7 @@ public class BambooSession {
         try {
             buildResultUrl = baseUrl + LATEST_BUILD_FOR_PLAN_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8") + "&buildKey=" + URLEncoder.encode(planKey, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            throw new BambooLoginException("URLEncoding problem: " + e.getMessage());
+            throw new RuntimeException("URLEncoding problem: " + e.getMessage());
         }
         Document doc = retrieveResponse(buildResultUrl);
 
@@ -193,7 +188,7 @@ public class BambooSession {
         try {
             buildResultUrl = baseUrl + LATEST_BUILDS_FOR_PROJECT_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8") + "&projectKey=" + URLEncoder.encode(projectKey, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            throw new BambooLoginException("URLEncoding problem: " + e.getMessage());
+            throw new RuntimeException("URLEncoding problem: " + e.getMessage());
         }
         Document doc = retrieveResponse(buildResultUrl);
 
@@ -219,7 +214,7 @@ public class BambooSession {
     private BambooBuildInfo constructBuildItem(Element buildItemNode) {
         String projectName = getChildText(buildItemNode, "projectName");
         String buildName = getChildText(buildItemNode, "buildName");
-        String buildKey =getChildText(buildItemNode, "buildKey");
+        String buildKey = getChildText(buildItemNode, "buildKey");
         String buildState = getChildText(buildItemNode, "buildState");
         String buildNumber = getChildText(buildItemNode, "buildNumber");
         String buildReason = getChildText(buildItemNode, "buildReason");
@@ -232,11 +227,10 @@ public class BambooSession {
                 buildDurationDescription, buildTestSummary, buildCommitComment);
     }
 
-    private String getChildText(Element node, String childName){
+    private String getChildText(Element node, String childName) {
         try {
             return node.getChild(childName).getText();
-        } catch (Exception e){
-
+        } catch (Exception e) {
             return "";
         }
     }
@@ -245,16 +239,16 @@ public class BambooSession {
         try {
             URLConnection c = HttpConnectionFactory.getConnection(urlString);
             InputStream is = c.getInputStream();
-            
+
             SAXBuilder builder = new SAXBuilder();
             Document doc = builder.build(is);
             checkForErrors(doc);
             return doc;
-        } catch(JDOMException e){
+        } catch (JDOMException e) {
             throw new BambooException(e.getMessage(), e);
         } catch (MalformedURLException e) {
             throw new BambooException(e.getMessage(), e);
-        } catch(IOException e){
+        } catch (IOException e) {
             throw new BambooException(e.getMessage(), e);
         }
     }
@@ -265,7 +259,7 @@ public class BambooSession {
 
         if (elements != null && elements.size() > 0) {
             String exceptionMsg = "";
-            for (Element e : elements) {            
+            for (Element e : elements) {
                 exceptionMsg += e.getText() + "\n";
             }
             throw new BambooException(exceptionMsg);
