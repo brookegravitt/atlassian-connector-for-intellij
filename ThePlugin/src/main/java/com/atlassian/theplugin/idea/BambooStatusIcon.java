@@ -31,6 +31,7 @@ public class BambooStatusIcon extends JLabel {
 
         // show tooltip on mouse over
 		tooltip = new PluginStatusBarToolTip();
+
 		addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent e) {
 
