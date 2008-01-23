@@ -106,11 +106,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
         }
 
         if (api.isLoggedIn()) {
-            try {
-                api.logout();
-            } catch (BambooLoginException e) {
-                log.error("Bamboo login exception: " + e.getMessage());
-            }
+            api.logout();
         }
 
         return builds;
