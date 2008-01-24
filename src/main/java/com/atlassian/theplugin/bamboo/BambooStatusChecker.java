@@ -12,6 +12,7 @@ import static javax.swing.JOptionPane.PLAIN_MESSAGE;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.TimerTask;
 
 
 /**
@@ -21,7 +22,7 @@ import java.util.List;
  * Time: 4:08:48 PM
  * To change this template use File | Settings | File Templates.
  */
-public class BambooStatusChecker implements Runnable {
+public class BambooStatusChecker extends TimerTask {
 
     private List<BambooStatusListener> listenerList = new ArrayList<BambooStatusListener>();
 
@@ -51,7 +52,7 @@ public class BambooStatusChecker implements Runnable {
                 );
                 String password = "";
                 Boolean shouldPasswordBeStored = false;
-                if (answer == JOptionPane.ABORT) {
+                if (answer == JOptionPane.OK_OPTION) {
                     password = dialog.getPasswordString();
                     shouldPasswordBeStored = dialog.getShouldPasswordBeStored();
                 } else {
