@@ -85,7 +85,7 @@ public class BambooStatusListenerImpl implements BambooStatusListener {
         sb.append(buildInfo.getBuildKey());
         sb.append("</a></td><td></td><td>");
         sb.append("<font color=\"ltgray\">").append(buildInfo.getMessage()).append("</font>");
-        sb.append("</td></tr>");
+        sb.append("</td><td></td><td></td></tr>");
 
         return sb.toString();
     }
@@ -99,9 +99,10 @@ public class BambooStatusListenerImpl implements BambooStatusListener {
             sb.append("No plans defined.");            
         } else {
             sb.append("<table>");
+            sb.append("<th>Plan</th><th>Build</th><th>Status</th><th>Last Pooling</th><th>Last Build</th>");
             for (BambooBuild buildInfo : buildStatuses) {
                 switch (buildInfo.getStatus()) {
-                    case FAILED:
+                    case FAILED:                        
                         sb.append(getFailedBuildRow(buildInfo));
                         status = FAILED;
                         break;
