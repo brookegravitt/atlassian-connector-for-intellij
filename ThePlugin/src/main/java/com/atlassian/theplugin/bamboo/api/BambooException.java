@@ -9,6 +9,10 @@ package com.atlassian.theplugin.bamboo.api;
  */
 public class BambooException extends Exception{
 
+    public BambooException(Throwable throwable) {
+        super(throwable);
+    }
+
     public BambooException(String message) {
         super(message);
     }
