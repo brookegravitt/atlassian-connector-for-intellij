@@ -3,7 +3,7 @@ package com.atlassian.theplugin.idea;
 import com.atlassian.theplugin.bamboo.*;
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.configuration.ServerBean;
-import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedExeption;
+import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.configuration.SubscribedPlanBean;
 import com.intellij.openapi.util.IconLoader;
 import junit.framework.Test;
@@ -242,7 +242,7 @@ public class PluginConfigurationFormTest extends TestCase {
         return outBean;
     }
 
-    private static void checkBasicBean(PluginConfigurationBean outBean) throws ServerPasswordNotProvidedExeption {
+    private static void checkBasicBean(PluginConfigurationBean outBean) throws ServerPasswordNotProvidedException {
         assertEquals("name", outBean.getBambooConfigurationData().getServerData().getName());
         assertEquals("password", outBean.getBambooConfigurationData().getServerData().getPasswordString());
         assertEquals("url", outBean.getBambooConfigurationData().getServerData().getUrlString());

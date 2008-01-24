@@ -12,11 +12,11 @@ public interface Server extends Cloneable {
     String getName();
     String getUrlString();
     String getUsername();
-    String getPassword();
+    String getEncryptedPassword();
     Boolean getShouldPasswordBeStored();
     Boolean getIsConfigInitialized();
 
     Collection<? extends SubscribedPlan> getSubscribedPlans();
 
-    String getPasswordString() throws ServerPasswordNotProvidedExeption;
+    String getPasswordString() throws ServerPasswordNotProvidedException;
 }

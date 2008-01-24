@@ -15,11 +15,11 @@ import java.util.List;
 public class ServerBean implements Server{
     private String name;
     private String urlString;
-    //private char[] password = new char[0];
-    private String password;
+    //private char[] encryptedPassword = new char[0];
+    private String encryptedPassword;
     private String username;
-    transient private Boolean shouldPasswordBeStored;
-    private String tmpPassword;
+    private Boolean shouldPasswordBeStored;
+    private String password;
 
 
     private List<SubscribedPlanBean> subscribedPlans = new ArrayList<SubscribedPlanBean>();
@@ -53,23 +53,23 @@ public class ServerBean implements Server{
         this.username = username;
     }
 
-//    public char[] getPassword() {
-//        if(password == null) {
-//            password = new char[0];
+//    public char[] getEncryptedPassword() {
+//        if(encryptedPassword == null) {
+//            encryptedPassword = new char[0];
 //        }
-//        return password;
+//        return encryptedPassword;
 //    }
 
-    public String getPassword() {
-        return password;
+    public String getEncryptedPassword() {
+        return encryptedPassword;
     }
 
 
-//    public void setPassword(char[] password) {
-//        if (password == null) {
-//            this.password = new char[0];
+//    public void setEncryptedPassword(char[] encryptedPassword) {
+//        if (encryptedPassword == null) {
+//            this.encryptedPassword = new char[0];
 //        } else {
-//            this.password = password;
+//            this.encryptedPassword = encryptedPassword;
 //        }
 //    }
 
@@ -82,9 +82,10 @@ public class ServerBean implements Server{
         return str2encode;
     }
 
-    public void setPassword(String password) {
-        tmpPassword = decode(password);
-        this.password = password;
+    public void setEncryptedPassword(String encryptedPassword) {
+        password = decode(encryptedPassword);
+        this.encryptedPassword = encryptedPassword;
+        isConfigInitialized = true;
     }
 
     public Boolean getShouldPasswordBeStored() {
@@ -96,8 +97,8 @@ public class ServerBean implements Server{
     }
 
     @Transient
-    public void setIsConfigInitialized(Boolean hasUSerSessionStarted) {
-        this.isConfigInitialized = hasUSerSessionStarted;
+    public void setIsConfigInitialized(Boolean isConfigInitialized) {
+        this.isConfigInitialized = isConfigInitialized;
     }
 
     public void setShouldPasswordBeStored(Boolean shouldPasswordBeStored) {
@@ -110,26 +111,26 @@ public class ServerBean implements Server{
     }
 
     @Transient
-    public String getPasswordString() throws ServerPasswordNotProvidedExeption {
+    public String getPasswordString() throws ServerPasswordNotProvidedException {
         if (!isConfigInitialized) {
-            throw new ServerPasswordNotProvidedExeption("User password for \""+ name +"\" server not provided.");
+            throw new ServerPasswordNotProvidedException("User password for \""+ name +"\" server not provided.");
         }
-        return tmpPassword;
+        return password;
     }
 
     @Transient
     public void setPasswordString(String password, Boolean shouldBeStoredPermanently) {
         this.shouldPasswordBeStored = shouldBeStoredPermanently;
-        this.tmpPassword = password;
+        this.password = password;
         isConfigInitialized = true;
-//        if (shouldBeStoredPermanently && password != null) {
-//            this.password = new char[password.length()];
-//            password.getChars(0, password.length(), this.password, 0);
+//        if (shouldBeStoredPermanently && encryptedPassword != null) {
+//            this.encryptedPassword = new char[encryptedPassword.length()];
+//            encryptedPassword.getChars(0, encryptedPassword.length(), this.encryptedPassword, 0);
 //        }
         if (shouldBeStoredPermanently) {
-            this.password = encode(password);
+            this.encryptedPassword = encode(password);
         } else {
-            this.password = null;
+            this.encryptedPassword = null;
         }
 
 

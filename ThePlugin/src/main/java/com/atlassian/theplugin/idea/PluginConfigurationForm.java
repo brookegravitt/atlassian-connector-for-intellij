@@ -3,7 +3,7 @@ package com.atlassian.theplugin.idea;
 import com.atlassian.theplugin.bamboo.BambooServerFactory;
 import com.atlassian.theplugin.bamboo.api.BambooLoginException;
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
-import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedExeption;
+import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.configuration.SubscribedPlanBean;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.ui.Messages;
@@ -28,7 +28,7 @@ public class PluginConfigurationForm {
     private JTextField serverName;
     private JTextField serverUrl;
     private JTextField username;
-    private JPasswordField passwordString;
+    private JPasswordField password;
     private JButton testConnection;
     private JTextArea buildPlansTextArea;
     private HyperlinkLabel openJiraHyperlinkLabel;
@@ -40,7 +40,7 @@ public class PluginConfigurationForm {
             public void actionPerformed(ActionEvent e){
 
                 try {
-                    BambooServerFactory.getBambooServerFacade().testServerConnection(serverUrl.getText(), username.getText(), String.valueOf(passwordString.getPassword()));
+                    BambooServerFactory.getBambooServerFacade().testServerConnection(serverUrl.getText(), username.getText(), String.valueOf(password.getPassword()));
                     showMessageDialog("Connected successfully", "Connection OK", Messages.getInformationIcon());
                 } catch (BambooLoginException e1) {
                     showMessageDialog(e1.getMessage(), "Connection Error", Messages.getErrorIcon());
@@ -55,8 +55,8 @@ public class PluginConfigurationForm {
         serverUrl.setText(data.getBambooConfigurationData().getServer().getUrlString());
         username.setText(data.getBambooConfigurationData().getServer().getUsername());
         try {
-            passwordString.setText(data.getBambooConfigurationData().getServer().getPasswordString());
-        } catch (ServerPasswordNotProvidedExeption serverPasswordNotProvidedExeption) {
+            password.setText(data.getBambooConfigurationData().getServer().getPasswordString());
+        } catch (ServerPasswordNotProvidedException serverPasswordNotProvidedException) {
             // swallow - password does not have to be initialized always
         }
         buildPlansTextArea.setText(subscribedPlansToString(data.getBambooConfigurationData().getServerData().getSubscribedPlansData()));
@@ -66,7 +66,7 @@ public class PluginConfigurationForm {
         data.getBambooConfigurationData().getServerData().setName(serverName.getText());
         data.getBambooConfigurationData().getServerData().setUrlString(serverUrl.getText());
         data.getBambooConfigurationData().getServerData().setUsername(username.getText());
-        data.getBambooConfigurationData().getServerData().setPasswordString(String.valueOf(passwordString.getPassword()), chkPasswordRemember.isSelected());
+        data.getBambooConfigurationData().getServerData().setPasswordString(String.valueOf(password.getPassword()), chkPasswordRemember.isSelected());
 
         data.getBambooConfigurationData().getServerData().setSubscribedPlansData(subscribedPlansFromString(buildPlansTextArea.getText()));
     }
@@ -111,12 +111,12 @@ public class PluginConfigurationForm {
         if (username.getText() != null ? !username.getText().equals(data.getBambooConfigurationData().getServer().getUsername()) :
                 data.getBambooConfigurationData().getServer().getUsername() != null)
             return true;
-        if (String.valueOf(passwordString.getPassword()) != null) {
+        if (String.valueOf(password.getPassword()) != null) {
             for (;;) {
                 try {
-                    if (String.valueOf(passwordString.getPassword()).equals(data.getBambooConfigurationData().getServer().getPasswordString()))
+                    if (String.valueOf(password.getPassword()).equals(data.getBambooConfigurationData().getServer().getPasswordString()))
                         break;
-                } catch (ServerPasswordNotProvidedExeption serverPasswordNotProvidedExeption) {
+                } catch (ServerPasswordNotProvidedException serverPasswordNotProvidedException) {
                     // swallow
                 }
                 return true;
