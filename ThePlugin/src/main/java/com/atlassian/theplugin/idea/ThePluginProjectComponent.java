@@ -36,7 +36,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
     public void initComponent() {
         System.out.println("Init ThePlugin status component.");
 
-        int timeout = 1000;
+        int timeout = 20000;
         if (timeout > 0) {
             timer = new Timer(timeout, new ActionListener()
             {
