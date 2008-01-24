@@ -1,16 +1,13 @@
 package com.atlassian.theplugin.configuration;
 
 import junit.framework.TestCase;
-import com.atlassian.theplugin.configuration.Server;
-import com.atlassian.theplugin.configuration.BambooConfiguration;
-import com.atlassian.theplugin.configuration.ConfigurationFactory;
 
 public class ConfigurationTest extends TestCase {
     protected void setUp() throws Exception {
         ConfigurationFactory.setConfiguration(new PluginConfigurationBean()) ;
     }
 
-    public void testConfiguration() {
+    public void testConfiguration() throws ServerPasswordNotProvidedExeption {
         BambooConfiguration cfg = ConfigurationFactory.getConfiguration().getBambooConfiguration();
         assertNotNull(cfg);
 
@@ -21,7 +18,7 @@ public class ConfigurationTest extends TestCase {
         srv.setName("dummyName");
         srv.setUrlString("http://dummy.url");
         srv.setUsername("dummyUserName<a>aa</a>");
-        srv.setPassword("dummyPassword");
+        srv.setPasswordString("dummyPassword", true);
 
         ((BambooConfigurationBean)cfg).setServerData(srv);
 
@@ -32,7 +29,7 @@ public class ConfigurationTest extends TestCase {
         assertEquals("dummyName", server.getName());
         assertEquals("http://dummy.url", server.getUrlString());
         assertEquals("dummyUserName<a>aa</a>", server.getUsername());
-        assertEquals("dummyPassword", server.getPassword());
+        assertEquals("dummyPassword", server.getPasswordString());
 
 
     }

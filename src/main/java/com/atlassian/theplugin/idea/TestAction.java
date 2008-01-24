@@ -2,6 +2,7 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.configuration.BambooConfiguration;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedExeption;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.ex.DataConstantsEx;
@@ -22,7 +23,11 @@ public class TestAction extends AnAction {
         String msg = "Name: " + bambooConfiguration.getServer().getName();
         msg += "\nURL: " + bambooConfiguration.getServer().getUrlString();
         msg += "\nUsername: " + bambooConfiguration.getServer().getUsername();
-        msg += "\nPassword: " + bambooConfiguration.getServer().getPassword();
+        try {
+            msg += "\nPassword: " + bambooConfiguration.getServer().getPasswordString();
+        } catch (ServerPasswordNotProvidedExeption exeption) {
+            msg += "\nPassword: " + exeption.getMessage();
+        }
 
         Messages.showMessageDialog(
                 msg,

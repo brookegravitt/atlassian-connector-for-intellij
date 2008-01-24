@@ -1,12 +1,11 @@
 package com.atlassian.theplugin.bamboo;
 
+import com.atlassian.theplugin.bamboo.api.BambooLoginException;
+import com.atlassian.theplugin.configuration.*;
 import junit.framework.TestCase;
 
-import java.util.Collection;
 import java.util.ArrayList;
-
-import com.atlassian.theplugin.configuration.*;
-import com.atlassian.theplugin.bamboo.api.BambooLoginException;
+import java.util.Collection;
 
 /**
  * Created by IntelliJ IDEA.
@@ -27,7 +26,7 @@ public class BambooServerFacadeTest extends TestCase {
         server.setName("TestServer");
         server.setUrlString("http://lech.atlassian.pl:8080/atlassian-bamboo-1.2.4/");
         server.setUsername("user");
-        server.setPassword("d0n0tch@nge");
+        server.setPasswordString("d0n0tch@nge", true);
 
         ArrayList<SubscribedPlanBean> plans = new ArrayList<SubscribedPlanBean>();
         SubscribedPlanBean plan = new SubscribedPlanBean();
@@ -44,7 +43,7 @@ public class BambooServerFacadeTest extends TestCase {
         badServer.setName(server.getUrlString());
         badServer.setUrlString(server.getUrlString());
         badServer.setUsername(server.getUsername());
-        badServer.setPassword("xxx");
+        badServer.setPasswordString("xxx", true);
 
         ArrayList<SubscribedPlanBean> badPlans = new ArrayList<SubscribedPlanBean>();
         SubscribedPlanBean badPlan = new SubscribedPlanBean();
@@ -59,7 +58,7 @@ public class BambooServerFacadeTest extends TestCase {
         badPlanServer.setName(server.getName());
         badPlanServer.setUrlString(server.getUrlString());
         badPlanServer.setUsername(server.getUsername());
-        badPlanServer.setPassword(server.getPassword());
+        badPlanServer.setPasswordString(server.getPassword(),true);
         badPlanServer.setSubscribedPlansData(badPlans);
 
         badPlanConfiguration.setServerData(badPlanServer);
@@ -68,7 +67,8 @@ public class BambooServerFacadeTest extends TestCase {
         badLoginPluginConfig.setBambooConfigurationData(badConfiguration);
 
         badPlanPluginConfig = new PluginConfigurationBean();
-        badPlanPluginConfig.setBambooConfigurationData(badPlanConfiguration);        
+        badPlanPluginConfig.setBambooConfigurationData(badPlanConfiguration);
+
     }
 
     protected void setUp() throws Exception {
@@ -129,11 +129,11 @@ public class BambooServerFacadeTest extends TestCase {
         assertNull(plans);
     }
 
-    public void testConnectionTest(){
+    public void testConnectionTest() throws ServerPasswordNotProvidedExeption {
         BambooServerFacade facade = BambooServerFactory.getBambooServerFacade();
         Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServer();
         try {
-            facade.testServerConnection(server.getUrlString(), server.getUsername(), server.getPassword());
+            facade.testServerConnection(server.getUrlString(), server.getUsername(), server.getPasswordString());
         } catch (BambooLoginException e) {
             fail();
         }
@@ -160,7 +160,7 @@ public class BambooServerFacadeTest extends TestCase {
         }
 
         try {
-            facade.testServerConnection("", "", server.getPassword());
+            facade.testServerConnection("", "", server.getPasswordString());
             fail();
         } catch (BambooLoginException e) {
 
@@ -169,7 +169,7 @@ public class BambooServerFacadeTest extends TestCase {
     }
 
 
-    public void testBambooConnectionWithEmptyPlan() throws BambooLoginException, CloneNotSupportedException {
+    public void testBambooConnectionWithEmptyPlan() throws BambooLoginException, CloneNotSupportedException, ServerPasswordNotProvidedExeption {
         server.setSubscribedPlansData(new ArrayList<SubscribedPlanBean>());
         BambooServerFacade facade = new BambooServerFacadeImpl();
         Collection<BambooBuild> plans = facade.getSubscribedPlansResults();
