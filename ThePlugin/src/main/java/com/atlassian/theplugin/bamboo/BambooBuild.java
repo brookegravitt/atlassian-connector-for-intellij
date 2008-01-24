@@ -1,5 +1,8 @@
 package com.atlassian.theplugin.bamboo;
 
+import com.atlassian.theplugin.configuration.RequestDataInfo;
+import com.atlassian.theplugin.configuration.RequestData;
+
 /**
  * Created by IntelliJ IDEA.
  * User: sginter
@@ -7,7 +10,7 @@ package com.atlassian.theplugin.bamboo;
  * Time: 3:44:14 PM
  * To change this template use File | Settings | File Templates.
  */
-public interface BambooBuild {
+public interface BambooBuild extends RequestData {
     String getServerUrl();
 
     String getPlanUrl();

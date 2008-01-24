@@ -1,6 +1,9 @@
 package com.atlassian.theplugin.bamboo;
 
 import com.atlassian.theplugin.bamboo.BambooPlan;
+import com.atlassian.theplugin.configuration.RequestDataInfo;
+
+import java.util.Date;
 
 /**
  * Created by IntelliJ IDEA.
@@ -9,13 +12,13 @@ import com.atlassian.theplugin.bamboo.BambooPlan;
  * Time: 09:00:49
  * To change this template use File | Settings | File Templates.
  */
-public class BambooPlanInfo implements BambooPlan {
+public class BambooPlanData  implements BambooPlan {
     private String name;
     private String key;
 
-    public BambooPlanInfo(String name, String key) {
+    public BambooPlanData(String name, String key) {
         this.name = name;
-        this.key = key;
+        this.key = key;        
     }
 
     public String getPlanName() {
