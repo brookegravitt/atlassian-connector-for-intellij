@@ -58,6 +58,14 @@ public class BambooBuildInfo implements BambooBuild {
         this.serverUrl = serverUrl;
     }
 
+    public String getPlanUrl() {
+        return this.serverUrl + "/browse/" + this.buildKey;           
+    }
+
+    public String getBuildUrl() {
+        return this.serverUrl + "/browse/" + this.buildKey + "-" + this.buildNumber;           
+    }
+
     public String getProjectName()
     {
         return projectName;

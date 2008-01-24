@@ -10,6 +10,10 @@ package com.atlassian.theplugin.bamboo;
 public interface BambooBuild {
     String getServerUrl();
 
+    String getPlanUrl();
+
+    String getBuildUrl();
+
     String getProjectName();
 
     String getProjectKey();
