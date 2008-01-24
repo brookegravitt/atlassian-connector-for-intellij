@@ -1,7 +1,5 @@
 package com.atlassian.theplugin.configuration;
 
-import com.intellij.util.xmlb.annotations.Transient;
-
 /**
  * Created by IntelliJ IDEA.
  * User: sginter
