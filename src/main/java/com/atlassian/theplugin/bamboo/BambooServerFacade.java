@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.bamboo;
 
 import com.atlassian.theplugin.bamboo.api.BambooLoginException;
+import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedExeption;
 
 import java.util.Collection;
 
@@ -15,9 +16,9 @@ import java.util.Collection;
 public interface BambooServerFacade {
     void testServerConnection(String url, String userName, String password) throws BambooLoginException;
     
-    Collection<BambooProject> getProjectList();
+    Collection<BambooProject> getProjectList() throws ServerPasswordNotProvidedExeption;
 
-    Collection<BambooPlan> getPlanList();
+    Collection<BambooPlan> getPlanList() throws ServerPasswordNotProvidedExeption;
 
-    Collection<BambooBuild> getSubscribedPlansResults();
+    Collection<BambooBuild> getSubscribedPlansResults() throws ServerPasswordNotProvidedExeption;
 }

@@ -26,7 +26,7 @@ public class BambooStatusListenerImpl implements BambooStatusListener {
         BuildStatus status = BuildStatus.SUCCESS;
         StringBuilder sb = new StringBuilder("<html><body>");
 
-        if(buildStatuses.size()==0) {
+        if (buildStatuses == null || buildStatuses.size() == 0) {
             sb.append("No plans defined.");            
         } else {
             sb.append("<table>");

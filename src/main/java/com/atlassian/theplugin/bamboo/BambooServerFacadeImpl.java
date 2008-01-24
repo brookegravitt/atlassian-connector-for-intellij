@@ -5,6 +5,7 @@ import com.atlassian.theplugin.bamboo.api.BambooLoginException;
 import com.atlassian.theplugin.bamboo.api.BambooSession;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.Server;
+import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedExeption;
 import com.atlassian.theplugin.configuration.SubscribedPlan;
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
@@ -43,12 +44,12 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
      * List projects defined on Bamboo server
      * @return list of projects or null on error
      */
-    public Collection<BambooProject> getProjectList() {
+    public Collection<BambooProject> getProjectList() throws ServerPasswordNotProvidedExeption {
         Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServer();
 
         try {
             BambooSession api = new BambooSession(server.getUrlString());
-            api.login(server.getUsername(), server.getPassword().toCharArray());
+            api.login(server.getUsername(), server.getPasswordString().toCharArray());
             return api.listProjectNames();
         } catch (BambooException e) {
             log.error("Bamboo exception: " + e.getMessage());
@@ -60,12 +61,12 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
      * List plans defined on Bamboo server
      * @return list of plans or null on error
      */
-    public Collection<BambooPlan> getPlanList() {
+    public Collection<BambooPlan> getPlanList() throws ServerPasswordNotProvidedExeption {
         Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServer();
 
         try {
             BambooSession api = new BambooSession(server.getUrlString());
-            api.login(server.getUsername(), server.getPassword().toCharArray());
+            api.login(server.getUsername(), server.getPasswordString().toCharArray());
             return api.listPlanNames();
         } catch (BambooException e) {
             log.error("Bamboo exception: " + e.getMessage());
@@ -77,7 +78,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
      * List details on subscribed plans
      * @return results on subscribed builds
      */
-    public Collection<BambooBuild> getSubscribedPlansResults() {        
+    public Collection<BambooBuild> getSubscribedPlansResults() throws ServerPasswordNotProvidedExeption {
         Collection<BambooBuild> builds = new ArrayList<BambooBuild>();
 
         Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServer();
@@ -86,7 +87,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
         String connectionErrorMessage = null;
         try {
             api = new BambooSession(server.getUrlString());
-            api.login(server.getUsername(), server.getPassword().toCharArray());
+            api.login(server.getUsername(), server.getPasswordString().toCharArray());
         } catch (BambooLoginException e) {
             log.error("Bamboo login exception: " + e.getMessage());
             connectionErrorMessage = e.getMessage();
