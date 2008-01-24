@@ -28,7 +28,7 @@ public class BambooStatusIcon extends JLabel {
         iconRed = IconLoader.getIcon("/icons/red-16.png");
         iconGreen = IconLoader.getIcon("/icons/green-16.png");
         iconGrey = IconLoader.getIcon("/icons/grey-16.png");
-
+        
         // show tooltip on mouse over
 		tooltip = new PluginStatusBarToolTip();
 
