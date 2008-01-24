@@ -1,9 +1,6 @@
 package com.atlassian.theplugin.configuration;
 
 import com.intellij.util.xmlb.annotations.Transient;
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.EncoderException;
-import org.apache.commons.codec.net.BCodec;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,10 +18,8 @@ public class ServerBean implements Server{
     //private char[] password = new char[0];
     private String password;
     private String username;
-    transient String passwordString; // lguminski: for test pursposes - don't touch - see testIsModified
     transient private Boolean shouldPasswordBeStored;
     private String tmpPassword;
-    private BCodec coder = new BCodec();
 
 
     private List<SubscribedPlanBean> subscribedPlans = new ArrayList<SubscribedPlanBean>();
@@ -78,15 +73,18 @@ public class ServerBean implements Server{
 //        }
 //    }
 
+    private String decode(String str2decode) {
+        return str2decode;
+    }
+
+
+    private String encode(String str2encode) {
+        return str2encode;
+    }
+
     public void setPassword(String password) {
-        try {
-            tmpPassword = coder.decode(password);
-            this.password = password;
-        } catch (DecoderException e) {
-            tmpPassword = "";
-            this.password = "";
-            // swallow - otherwise Idea fails
-        }
+        tmpPassword = decode(password);
+        this.password = password;
     }
 
     public Boolean getShouldPasswordBeStored() {
@@ -129,12 +127,7 @@ public class ServerBean implements Server{
 //            password.getChars(0, password.length(), this.password, 0);
 //        }
         if (shouldBeStoredPermanently) {
-            try {
-                this.password = coder.encode(password);
-            } catch (EncoderException e) {
-                this.password = "";
-                throw new IllegalArgumentException("Illegal password format.");
-            }
+            this.password = encode(password);
         } else {
             this.password = null;
         }
