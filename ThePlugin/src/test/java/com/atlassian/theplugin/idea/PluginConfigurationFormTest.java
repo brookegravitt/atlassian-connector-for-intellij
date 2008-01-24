@@ -224,8 +224,11 @@ public class PluginConfigurationFormTest extends TestCase {
         if (f != null) {
             f.setAccessible(true);
             String prev = (String) f.get(serverBean);
-
-            f.set(serverBean, prev + "-chg");
+            if(property.equals("encryptedPassword")) {
+                serverBean.setPasswordString(prev + "-chg", true);
+            } else {
+                f.set(serverBean, prev + "-chg");
+            }
             assertTrue(pluginConfigurationForm.isModified(outBean));
             f.set(serverBean, prev);
         }
