@@ -14,11 +14,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Created by IntelliJ IDEA.
+ * Class used for communication wiht Bamboo Server 
  * User: sginter
  * Date: Jan 15, 2008
  * Time: 5:12:27 PM
- * To change this template use File | Settings | File Templates.
  */
 public class BambooServerFacadeImpl implements BambooServerFacade {
 
@@ -47,14 +46,14 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
     public Collection<BambooProject> getProjectList() throws ServerPasswordNotProvidedExeption {
         Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServer();
 
+        BambooSession api = new BambooSession(server.getUrlString());
         try {
-            BambooSession api = new BambooSession(server.getUrlString());
             api.login(server.getUsername(), server.getPasswordString().toCharArray());
             return api.listProjectNames();
         } catch (BambooException e) {
             log.error("Bamboo exception: " + e.getMessage());
+            return null;
         }
-        return null;
     }
 
     /**
@@ -64,14 +63,14 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
     public Collection<BambooPlan> getPlanList() throws ServerPasswordNotProvidedExeption {
         Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServer();
 
+        BambooSession api = new BambooSession(server.getUrlString());
         try {
-            BambooSession api = new BambooSession(server.getUrlString());
             api.login(server.getUsername(), server.getPasswordString().toCharArray());
             return api.listPlanNames();
         } catch (BambooException e) {
             log.error("Bamboo exception: " + e.getMessage());
+            return null;
         }
-        return null;
     }
 
     /**
@@ -80,14 +79,13 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
      */
     public Collection<BambooBuild> getSubscribedPlansResults() throws ServerPasswordNotProvidedExeption {
         Collection<BambooBuild> builds = new ArrayList<BambooBuild>();
-
         Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServer();
 
-        BambooSession api = null;
-        String connectionErrorMessage = null;
+        BambooSession api = new BambooSession(server.getUrlString());
+        String connectionErrorMessage;
         try {
-            api = new BambooSession(server.getUrlString());
             api.login(server.getUsername(), server.getPasswordString().toCharArray());
+            connectionErrorMessage = "";
         } catch (BambooLoginException e) {
             log.error("Bamboo login exception: " + e.getMessage());
             connectionErrorMessage = e.getMessage();

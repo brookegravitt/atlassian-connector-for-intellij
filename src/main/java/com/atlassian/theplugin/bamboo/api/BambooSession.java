@@ -26,7 +26,7 @@ import com.atlassian.theplugin.util.HttpConnectionFactory;
  * To change this template use File | Settings | File Templates.
  */
 public class BambooSession {
-    public static final String LOGIN_ACTION = "/api/rest/login.action";
+    private static final String LOGIN_ACTION = "/api/rest/login.action";
     private static final String LOGOUT_ACTION = "/api/rest/logout.action";
     private static final String LIST_PROJECT_ACTION = "/api/rest/listProjectNames.action";
     private static final String LIST_PLAN_ACTION = "/api/rest/listBuildNames.action";
@@ -38,10 +38,21 @@ public class BambooSession {
     private char[] password;
     private String authToken;
 
+    /**
+     * Public constructor for BambooSession.
+     * @param baseUrl base URL for Bamboo instance
+     */
     public BambooSession(String baseUrl) {
         this.baseUrl = baseUrl;
     }
 
+    /**
+     * Connects to Bamboo server instance. On successful login authentication token is returned from
+     * server and stored in Bamboo session for subsequent calls
+     * @param name username defined on Bamboo server instance
+     * @param password for username
+     * @throws BambooLoginException on connection or authentication errors
+     */
     public void login(String name, char[] password) throws BambooLoginException {
         String loginUrl;
         try {
@@ -60,16 +71,15 @@ public class BambooSession {
         }
 
         Document doc;
-        List elements;
         try {
             doc = retrieveResponse(loginUrl);
         } catch (BambooException e) {
             throw new BambooLoginException(e.getMessage(), e);
         }
 
-        try {
+        try {            
             XPath xpath = XPath.newInstance("/response/auth");
-            elements = xpath.selectNodes(doc);
+            List elements = xpath.selectNodes(doc);
             if (elements != null) {
                 for (Object element : elements) {
                     Element e = (Element) element;
@@ -77,7 +87,7 @@ public class BambooSession {
                 }
             }
         } catch (JDOMException e) {
-            throw new BambooLoginException(e.getMessage(), e);
+            throw new BambooLoginException(e);
         }
     }
 
@@ -86,12 +96,11 @@ public class BambooSession {
             return;
         }
 
-        String logoutUrl = null;
         try {
-            logoutUrl = baseUrl + LOGOUT_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8");
+            String logoutUrl = baseUrl + LOGOUT_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8");
             retrieveResponse(logoutUrl);
         } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("URLEncoding problem: " + e.getMessage());
+            throw new RuntimeException("URLEncoding problem", e);
         } catch (BambooException e) {
             /* ignore error on logout */
         }
@@ -100,20 +109,18 @@ public class BambooSession {
     }
 
     public List<BambooProject> listProjectNames() throws BambooException {
-        String buildResultUrl = null;
+        String buildResultUrl;
         try {
             buildResultUrl = baseUrl + LIST_PROJECT_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("URLEncoding problem: " + e.getMessage());
+            throw new RuntimeException("URLEncoding problem: ", e);
         }
-        Document doc = retrieveResponse(buildResultUrl);
 
-        XPath xpath = null;
+        Document doc = retrieveResponse(buildResultUrl);        
         List<BambooProject> projects = new ArrayList<BambooProject>();
-        List elements = null;
         try {
-            xpath = XPath.newInstance("/response/project");
-            elements = xpath.selectNodes(doc);
+            XPath xpath = XPath.newInstance("/response/project");
+            List elements = xpath.selectNodes(doc);
             if (elements != null) {
                 for (Object element : elements) {
                     Element e = (Element) element;
@@ -123,27 +130,25 @@ public class BambooSession {
                 }
             }
         } catch (JDOMException e) {
-            throw new BambooException(e.getMessage(), e);
+            throw new BambooException(e);
         }
 
         return projects;
     }
 
     public List<BambooPlan> listPlanNames() throws BambooException {
-        String buildResultUrl = null;
+        String buildResultUrl;
         try {
             buildResultUrl = baseUrl + LIST_PLAN_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("URLEncoding problem: " + e.getMessage());
+            throw new RuntimeException("URLEncoding problem: ", e);
         }
-        Document doc = retrieveResponse(buildResultUrl);
 
-        XPath xpath = null;
+        Document doc = retrieveResponse(buildResultUrl);
         List<BambooPlan> plans = new ArrayList<BambooPlan>();
-        List elements = null;
         try {
-            xpath = XPath.newInstance("/response/build");
-            elements = xpath.selectNodes(doc);
+            XPath xpath = XPath.newInstance("/response/build");
+            List elements = xpath.selectNodes(doc);
             if (elements != null) {
                 for (Object element : elements) {
                     Element e = (Element) element;
@@ -153,7 +158,7 @@ public class BambooSession {
                 }
             }
         } catch (JDOMException e) {
-            throw new BambooException(e.getMessage(), e);
+            throw new BambooException(e);
         }
 
         return plans;
@@ -166,39 +171,35 @@ public class BambooSession {
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException("URLEncoding problem: " + e.getMessage());
         }
-        Document doc = retrieveResponse(buildResultUrl);
 
-        XPath xpath = null;
-        List elements = null;
+        Document doc = retrieveResponse(buildResultUrl);
         try {
-            xpath = XPath.newInstance("/response");
-            elements = xpath.selectNodes(doc);
+            XPath xpath = XPath.newInstance("/response");
+            List elements = xpath.selectNodes(doc);
             if (elements != null && !elements.isEmpty()) {
                 Element e = (Element) elements.iterator().next();
                 return constructBuildItem(e);
+            } else {
+                return null;
             }
         } catch (JDOMException e) {
-            throw new BambooException(e.getMessage(), e);
+            throw new BambooException(e);
         }
-
-        return null;
     }
 
     public List<BambooBuild> getLatestBuildsForProject(String projectKey) throws BambooException {
-        String buildResultUrl = null;
+        String buildResultUrl;
         try {
             buildResultUrl = baseUrl + LATEST_BUILDS_FOR_PROJECT_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8") + "&projectKey=" + URLEncoder.encode(projectKey, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException("URLEncoding problem: " + e.getMessage());
         }
-        Document doc = retrieveResponse(buildResultUrl);
 
-        XPath xpath = null;
+        Document doc = retrieveResponse(buildResultUrl);
         List<BambooBuild> builds = new ArrayList<BambooBuild>();
-        List elements = null;
         try {
-            xpath = XPath.newInstance("/response/build");
-            elements = xpath.selectNodes(doc);
+            XPath xpath = XPath.newInstance("/response/build");
+            List elements = xpath.selectNodes(doc);
             if (elements != null) {
                 for (Object element : elements) {
                     Element e = (Element) element;
@@ -206,7 +207,7 @@ public class BambooSession {
                 }
             }
         } catch (JDOMException e) {
-            throw new BambooException(e.getMessage(), e);
+            throw new BambooException(e);
         }
 
         return builds;

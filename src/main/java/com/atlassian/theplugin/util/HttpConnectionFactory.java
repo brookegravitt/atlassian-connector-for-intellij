@@ -13,8 +13,8 @@ import java.io.IOException;
  * To change this template use File | Settings | File Templates.
  */
 public class HttpConnectionFactory {
-    private static SSLSocketFactory socketFactory;
-    private static HostnameVerifier hostnameVerifier;
+    private static SSLSocketFactory socketFactory = getSSLSocketFactory();
+    private static HostnameVerifier hostnameVerifier = new EasyHostnameVerifier();
 
     public static URLConnection getConnection(String urlString) throws IOException {
         URL url = new URL(urlString);
@@ -25,33 +25,23 @@ public class HttpConnectionFactory {
         URLConnection c = url.openConnection();
         if (c instanceof HttpsURLConnection) {
             HttpsURLConnection cs = (HttpsURLConnection) c;
-            cs.setSSLSocketFactory(getSSLSocketFactory());
-            cs.setHostnameVerifier(getHostnameVerifier());
+            cs.setSSLSocketFactory(socketFactory);
+            cs.setHostnameVerifier(hostnameVerifier);
         }
         return c;
     }
 
     private static SSLSocketFactory getSSLSocketFactory() {
-        if (socketFactory == null) {
-            TrustManager[] trustAllCerts = new TrustManager[]{
-                    new EasyTrustManager()
-            };
-            SSLContext sc;
-            try {
-                sc = SSLContext.getInstance("SSL");
-                sc.init(null, trustAllCerts, new java.security.SecureRandom());
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            } 
-            socketFactory = sc.getSocketFactory();
+        TrustManager[] trustAllCerts = new TrustManager[]{
+                new EasyTrustManager()
+        };
+        SSLContext sc;
+        try {
+            sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        return socketFactory;
-    }
-
-    private static HostnameVerifier getHostnameVerifier() {
-        if (hostnameVerifier == null) {
-            hostnameVerifier = new EasyHostnameVerifier();
-        }
-        return hostnameVerifier;
+        return sc.getSocketFactory();
     }
 }
