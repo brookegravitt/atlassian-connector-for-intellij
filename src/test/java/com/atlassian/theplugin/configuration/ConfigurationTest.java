@@ -7,7 +7,7 @@ public class ConfigurationTest extends TestCase {
         ConfigurationFactory.setConfiguration(new PluginConfigurationBean()) ;
     }
 
-    public void testConfiguration() throws ServerPasswordNotProvidedExeption {
+    public void testConfiguration() throws ServerPasswordNotProvidedException {
         BambooConfiguration cfg = ConfigurationFactory.getConfiguration().getBambooConfiguration();
         assertNotNull(cfg);
 

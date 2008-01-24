@@ -2,8 +2,9 @@ package com.atlassian.theplugin.bamboo;
 
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.ServerBean;
-import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedExeption;
+import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.idea.PasswordDialog;
+import com.atlassian.theplugin.idea.PluginInfo;
 
 import javax.swing.*;
 import static javax.swing.JOptionPane.OK_CANCEL_OPTION;
@@ -11,6 +12,7 @@ import static javax.swing.JOptionPane.PLAIN_MESSAGE;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
 
 /**
  * Created by IntelliJ IDEA.
@@ -38,18 +40,29 @@ public class BambooStatusChecker implements Runnable {
         for (int maxTries = 1; maxTries > 0; maxTries--) {
             try {
                 newStatus = BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults();
-            } catch (ServerPasswordNotProvidedExeption exeption) {
+            } catch (ServerPasswordNotProvidedException exception) {
                 PasswordDialog dialog = new PasswordDialog(ConfigurationFactory.getConfiguration().getBambooConfiguration().getServer());
                 dialog.pack();
                 JPanel panel = dialog.getPasswordPanel();
+
                 int answer = JOptionPane.showConfirmDialog(
-                        null, panel, "Provide password", OK_CANCEL_OPTION,
+                        null, panel, PluginInfo.NAME , OK_CANCEL_OPTION,
                         PLAIN_MESSAGE
                 );
-                if (answer == JOptionPane.YES_OPTION) {
-                    ((ServerBean) (ConfigurationFactory.getConfiguration().getBambooConfiguration().getServer())).setIsConfigInitialized(true);
-                    ((ServerBean) (ConfigurationFactory.getConfiguration().getBambooConfiguration().getServer())).setPasswordString(dialog.getPasswordString(), dialog.getShouldPasswordBeStored());
+                String password = "";
+                Boolean shouldPasswordBeStored = false;
+                if (answer == JOptionPane.ABORT) {
+                    password = dialog.getPasswordString();
+                    shouldPasswordBeStored = dialog.getShouldPasswordBeStored();
+                } else {
+
+                    JOptionPane.showMessageDialog(null, "You can always change password by changing plugin settings (Preferences | IDE Settings | "+ PluginInfo.NAME +")");
                 }
+                // so or so we assume that user provided password
+                ((ServerBean) (ConfigurationFactory.getConfiguration().getBambooConfiguration().getServer()))
+                        .setPasswordString(password, shouldPasswordBeStored);
+                ((ServerBean) (ConfigurationFactory.getConfiguration().getBambooConfiguration().getServer()))
+                        .setIsConfigInitialized(true);
             }
         }
         // end for
@@ -58,4 +71,5 @@ public class BambooStatusChecker implements Runnable {
         }
 
     }
+
 }
