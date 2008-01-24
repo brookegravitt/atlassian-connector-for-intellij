@@ -94,13 +94,15 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
         for (SubscribedPlan plan : server.getSubscribedPlans()) {
             if (api.isLoggedIn()) {
                 try {
-                    builds.add(api.getLatestBuildForPlan(plan.getPlanId()));                
+                    BambooBuildInfo buildInfo = api.getLatestBuildForPlan(plan.getPlanId());
+                    buildInfo.setServerUrl(server.getUrlString());
+                    builds.add(buildInfo);                
                 } catch (BambooException e) {
                     log.error("Bamboo exception: " + e.getMessage());
-                    builds.add(getErrorBuildInfo(plan.getPlanId(), e.getMessage()));
+                    builds.add(getErrorBuildInfo(server, plan.getPlanId(), e.getMessage()));
                 }
             } else {
-                builds.add(getErrorBuildInfo(plan.getPlanId(), connectionErrorMessage));
+                builds.add(getErrorBuildInfo(server, plan.getPlanId(), connectionErrorMessage));
             }
         }
 
@@ -111,8 +113,9 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
         return builds;
     }
     
-    private BambooBuild getErrorBuildInfo(String planId, String message) {
+    private BambooBuild getErrorBuildInfo(Server server, String planId, String message) {
         BambooBuildInfo buildInfo = new BambooBuildInfo();
+        buildInfo.setServerUrl(server.getUrlString());
         buildInfo.setBuildKey(planId);
         buildInfo.setBuildState(BuildStatus.ERROR.toString());
         buildInfo.setMessage(message);
