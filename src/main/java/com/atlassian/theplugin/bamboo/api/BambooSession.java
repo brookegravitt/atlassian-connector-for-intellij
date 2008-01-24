@@ -14,6 +14,7 @@ import java.net.URLEncoder;
 import java.net.URLConnection;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Date;
 
 import com.atlassian.theplugin.bamboo.*;
 import com.atlassian.theplugin.util.HttpConnectionFactory;
@@ -154,7 +155,7 @@ public class BambooSession {
                     Element e = (Element) element;
                     String name = e.getChild("name").getText();
                     String key = e.getChild("key").getText();
-                    plans.add(new BambooPlanInfo(name, key));
+                    plans.add(new BambooPlanData(name, key));
                 }
             }
         } catch (JDOMException e) {
@@ -178,7 +179,7 @@ public class BambooSession {
             List elements = xpath.selectNodes(doc);
             if (elements != null && !elements.isEmpty()) {
                 Element e = (Element) elements.iterator().next();
-                return constructBuildItem(e);
+                return constructBuildItem(e, new Date());
             } else {
                 return null;
             }
@@ -189,6 +190,7 @@ public class BambooSession {
 
     public List<BambooBuild> getLatestBuildsForProject(String projectKey) throws BambooException {
         String buildResultUrl;
+        Date lastPoolingTime = new Date();
         try {
             buildResultUrl = baseUrl + LATEST_BUILDS_FOR_PROJECT_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8") + "&projectKey=" + URLEncoder.encode(projectKey, "UTF-8");
         } catch (UnsupportedEncodingException e) {
@@ -203,7 +205,7 @@ public class BambooSession {
             if (elements != null) {
                 for (Object element : elements) {
                     Element e = (Element) element;
-                    builds.add(constructBuildItem(e));
+                    builds.add(constructBuildItem(e, lastPoolingTime));
                 }
             }
         } catch (JDOMException e) {
@@ -213,7 +215,7 @@ public class BambooSession {
         return builds;
     }
 
-    private BambooBuildInfo constructBuildItem(Element buildItemNode) {
+    private BambooBuildInfo constructBuildItem(Element buildItemNode, Date lastPoolingTime) {
         String projectName = getChildText(buildItemNode, "projectName");
         String buildName = getChildText(buildItemNode, "buildName");
         String buildKey = getChildText(buildItemNode, "buildKey");
@@ -226,7 +228,7 @@ public class BambooSession {
         String buildCommitComment = getChildText(buildItemNode, "buildCommitComment");
 
         return new BambooBuildInfo(projectName, buildName, buildKey, buildState, buildNumber, buildReason, buildRelativeBuildDate,
-                buildDurationDescription, buildTestSummary, buildCommitComment);
+                buildDurationDescription, buildTestSummary, buildCommitComment, lastPoolingTime);
     }
 
     private String getChildText(Element node, String childName) {

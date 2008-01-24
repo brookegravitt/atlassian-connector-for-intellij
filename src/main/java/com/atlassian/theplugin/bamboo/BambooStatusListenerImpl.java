@@ -4,6 +4,9 @@ import static com.atlassian.theplugin.bamboo.BuildStatus.FAILED;
 import com.atlassian.theplugin.idea.BambooStatusIcon;
 
 import java.util.Collection;
+import java.util.Calendar;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 /**
  * Created by IntelliJ IDEA.
@@ -14,11 +17,25 @@ import java.util.Collection;
  */
 public class BambooStatusListenerImpl implements BambooStatusListener {
     private int counter = 0;
+    static final String DEFAULT_DATE_TIME_FROMAT = "";
+    
 
     BambooStatusIcon statusBarIcon;
 
     public BambooStatusListenerImpl(BambooStatusIcon icon) {
         statusBarIcon = icon;
+    }
+
+    private String getLatestPoolAndBuildTime(BambooBuild buildInfo){
+       StringBuilder sb = new StringBuilder("<td>");
+       DateFormat df = DateFormat.getTimeInstance();
+
+        sb.append(df.format(buildInfo.getPoolingTime()) + "</td>");
+        sb.append("<td>"+                       
+                ((buildInfo.getBuildRelativeBuildDate().length() == 0)? "---":  buildInfo.getBuildRelativeBuildDate()) +
+                  "</td>");
+
+        return sb.toString();
     }
 
     private String getSuccessBuildRow(BambooBuild buildInfo) {
@@ -34,7 +51,9 @@ public class BambooStatusListenerImpl implements BambooStatusListener {
         sb.append("</a>");
         sb.append("</td><td>");
         sb.append("<font color=\"green\">success</font>");
-        sb.append("</td></tr>");
+        sb.append("</td>");
+        sb.append(getLatestPoolAndBuildTime(buildInfo));
+        sb.append("</tr>");
 
         return sb.toString();
     }
@@ -52,7 +71,9 @@ public class BambooStatusListenerImpl implements BambooStatusListener {
         sb.append("</a>");
         sb.append("</td><td>");
         sb.append("<font color=\"red\">failed</font>");
-        sb.append("</td></tr>");
+        sb.append("</td>");
+        sb.append(getLatestPoolAndBuildTime(buildInfo));
+        sb.append("</tr>");
 
         return sb.toString();
     }
