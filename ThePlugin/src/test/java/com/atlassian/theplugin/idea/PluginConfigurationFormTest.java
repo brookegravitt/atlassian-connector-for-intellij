@@ -1,9 +1,10 @@
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.theplugin.bamboo.*;
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.configuration.ServerBean;
+import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedExeption;
 import com.atlassian.theplugin.configuration.SubscribedPlanBean;
-import com.atlassian.theplugin.bamboo.*;
 import com.intellij.openapi.util.IconLoader;
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -12,8 +13,8 @@ import junit.framework.TestSuite;
 import javax.swing.*;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * PluginConfigurationForm Tester.
@@ -121,7 +122,7 @@ public class PluginConfigurationFormTest extends TestCase {
         /* equals vs == */
 
         outBean.getBambooConfigurationData().getServerData().setName(new String("name"));
-        outBean.getBambooConfigurationData().getServerData().setPassword(new String("password"));
+        outBean.getBambooConfigurationData().getServerData().setPasswordString(new String("password"), true);
         outBean.getBambooConfigurationData().getServerData().setUrlString(new String("url"));
         outBean.getBambooConfigurationData().getServerData().setUsername(new String("userName"));
         outBean.getBambooConfigurationData().getServerData().setSubscribedPlansData(new ArrayList<SubscribedPlanBean>());
@@ -149,7 +150,7 @@ public class PluginConfigurationFormTest extends TestCase {
         assertEquals("", serverData.getName());
         assertEquals("", serverData.getUrlString());
         assertEquals("", serverData.getUsername());
-        assertEquals("", serverData.getPassword());
+        assertEquals("", serverData.getPasswordString());
         assertEquals(0, serverData.getSubscribedPlansData().size());
 
         PluginConfigurationFormHelper helper = new PluginConfigurationFormHelper(pluginConfigurationForm);
@@ -220,28 +221,30 @@ public class PluginConfigurationFormTest extends TestCase {
         
         ServerBean serverBean = outBean.getBambooConfigurationData().getServerData();
         Field f = serverBean.getClass().getDeclaredField(property);
-        f.setAccessible(true);
-        String prev = (String) f.get(serverBean);
+        if (f != null) {
+            f.setAccessible(true);
+            String prev = (String) f.get(serverBean);
 
-        f.set(serverBean, prev + "-chg");
-        assertTrue(pluginConfigurationForm.isModified(outBean));
-        f.set(serverBean, prev);
+            f.set(serverBean, prev + "-chg");
+            assertTrue(pluginConfigurationForm.isModified(outBean));
+            f.set(serverBean, prev);
+        }
     }
 
     private static PluginConfigurationBean createBasicBean() {
         PluginConfigurationBean outBean = new PluginConfigurationBean();
 
         outBean.getBambooConfigurationData().getServerData().setName("name");
-        outBean.getBambooConfigurationData().getServerData().setPassword("password");
+        outBean.getBambooConfigurationData().getServerData().setPasswordString("password", true);
         outBean.getBambooConfigurationData().getServerData().setUrlString("url");
         outBean.getBambooConfigurationData().getServerData().setUsername("userName");
 
         return outBean;
     }
 
-    private static void checkBasicBean(PluginConfigurationBean outBean) {
+    private static void checkBasicBean(PluginConfigurationBean outBean) throws ServerPasswordNotProvidedExeption {
         assertEquals("name", outBean.getBambooConfigurationData().getServerData().getName());
-        assertEquals("password", outBean.getBambooConfigurationData().getServerData().getPassword());
+        assertEquals("password", outBean.getBambooConfigurationData().getServerData().getPasswordString());
         assertEquals("url", outBean.getBambooConfigurationData().getServerData().getUrlString());
         assertEquals("userName", outBean.getBambooConfigurationData().getServerData().getUsername());
     }
