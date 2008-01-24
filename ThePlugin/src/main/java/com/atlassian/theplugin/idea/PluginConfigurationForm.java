@@ -1,21 +1,23 @@
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.configuration.*;
 import com.atlassian.theplugin.bamboo.BambooServerFactory;
 import com.atlassian.theplugin.bamboo.api.BambooLoginException;
+import com.atlassian.theplugin.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedExeption;
+import com.atlassian.theplugin.configuration.SubscribedPlanBean;
+import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.ui.Messages;
 import static com.intellij.openapi.ui.Messages.showMessageDialog;
 import com.intellij.ui.HyperlinkLabel;
-import com.intellij.ide.BrowserUtil;
 
 import javax.swing.*;
-import javax.swing.event.HyperlinkListener;
 import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  * Plugin configuration form.
@@ -26,10 +28,11 @@ public class PluginConfigurationForm {
     private JTextField serverName;
     private JTextField serverUrl;
     private JTextField username;
-    private JPasswordField password;
+    private JPasswordField passwordString;
     private JButton testConnection;
     private JTextArea buildPlansTextArea;
     private HyperlinkLabel openJiraHyperlinkLabel;
+    private JCheckBox chkPasswordRemember;
 
     public PluginConfigurationForm() {
         
@@ -37,7 +40,7 @@ public class PluginConfigurationForm {
             public void actionPerformed(ActionEvent e){
 
                 try {
-                    BambooServerFactory.getBambooServerFacade().testServerConnection(serverUrl.getText(), username.getText(), String.valueOf(password.getPassword()));
+                    BambooServerFactory.getBambooServerFacade().testServerConnection(serverUrl.getText(), username.getText(), String.valueOf(passwordString.getPassword()));
                     showMessageDialog("Connected successfully", "Connection OK", Messages.getInformationIcon());
                 } catch (BambooLoginException e1) {
                     showMessageDialog(e1.getMessage(), "Connection Error", Messages.getErrorIcon());
@@ -51,7 +54,11 @@ public class PluginConfigurationForm {
         serverName.setText(data.getBambooConfigurationData().getServer().getName());
         serverUrl.setText(data.getBambooConfigurationData().getServer().getUrlString());
         username.setText(data.getBambooConfigurationData().getServer().getUsername());
-        password.setText(data.getBambooConfigurationData().getServer().getPassword());
+        try {
+            passwordString.setText(data.getBambooConfigurationData().getServer().getPasswordString());
+        } catch (ServerPasswordNotProvidedExeption serverPasswordNotProvidedExeption) {
+            // swallow - password does not have to be initialized always
+        }
         buildPlansTextArea.setText(subscribedPlansToString(data.getBambooConfigurationData().getServerData().getSubscribedPlansData()));
     }
 
@@ -59,7 +66,7 @@ public class PluginConfigurationForm {
         data.getBambooConfigurationData().getServerData().setName(serverName.getText());
         data.getBambooConfigurationData().getServerData().setUrlString(serverUrl.getText());
         data.getBambooConfigurationData().getServerData().setUsername(username.getText());
-        data.getBambooConfigurationData().getServerData().setPassword(String.valueOf(password.getPassword()));
+        data.getBambooConfigurationData().getServerData().setPasswordString(String.valueOf(passwordString.getPassword()), chkPasswordRemember.isSelected());
 
         data.getBambooConfigurationData().getServerData().setSubscribedPlansData(subscribedPlansFromString(buildPlansTextArea.getText()));
     }
@@ -93,6 +100,8 @@ public class PluginConfigurationForm {
     }
 
     public boolean isModified(PluginConfigurationBean data) {
+        if (chkPasswordRemember.isSelected() != data.getBambooConfigurationData().getServer().getShouldPasswordBeStored())
+            return true;
         if (serverName.getText() != null ? !serverName.getText().equals(data.getBambooConfigurationData().getServer().getName()) :
                 data.getBambooConfigurationData().getServer().getName() != null)
             return true;
@@ -102,9 +111,17 @@ public class PluginConfigurationForm {
         if (username.getText() != null ? !username.getText().equals(data.getBambooConfigurationData().getServer().getUsername()) :
                 data.getBambooConfigurationData().getServer().getUsername() != null)
             return true;
-        if (String.valueOf(password.getPassword()) != null ? !String.valueOf(password.getPassword()).equals(data.getBambooConfigurationData().getServer().getPassword()) :
-                data.getBambooConfigurationData().getServer().getPassword() != null)
-            return true;
+        if (String.valueOf(passwordString.getPassword()) != null) {
+            for (;;) {
+                try {
+                    if (String.valueOf(passwordString.getPassword()).equals(data.getBambooConfigurationData().getServer().getPasswordString()))
+                        break;
+                } catch (ServerPasswordNotProvidedExeption serverPasswordNotProvidedExeption) {
+                    // swallow
+                }
+                return true;
+            }
+        }
         if (null != buildPlansTextArea.getText() ? !buildPlansTextArea.getText().equals(subscribedPlansToString(data.getBambooConfigurationData().getServerData().getSubscribedPlansData())) :
                 data.getBambooConfigurationData().getServerData().getSubscribedPlansData() != null)
             return true;

@@ -13,6 +13,10 @@ public interface Server extends Cloneable {
     String getUrlString();
     String getUsername();
     String getPassword();
+    Boolean getShouldPasswordBeStored();
+    Boolean getIsConfigInitialized();
 
     Collection<? extends SubscribedPlan> getSubscribedPlans();
+
+    String getPasswordString() throws ServerPasswordNotProvidedExeption;
 }
