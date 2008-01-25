@@ -13,5 +13,5 @@ import javax.net.ssl.SSLSession;
 public class EasyHostnameVerifier implements HostnameVerifier {
     public boolean verify(String s, SSLSession sslSession) {
         return true;
-    }    
+    }
 }

@@ -1,7 +1,5 @@
 package com.atlassian.theplugin.bamboo;
 
-import com.atlassian.theplugin.bamboo.BambooBuild;
-import com.atlassian.theplugin.bamboo.BuildStatus;
 import com.atlassian.theplugin.configuration.RequestDataInfo;
 
 import java.util.Date;
@@ -21,12 +19,12 @@ public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
     private String buildCommitComment;
     private String message;
 
-    public BambooBuildInfo() {        
+    public BambooBuildInfo() {
     }
 
-    public BambooBuildInfo(String projectName, String buildName, String buildKey, String buildState, String buildNumber, String buildReason,
-        String buildRelativeBuildDate, String buildDurationDescription, String buildTestSummary)
-    {
+    public BambooBuildInfo(
+            String projectName, String buildName, String buildKey, String buildState, String buildNumber,
+            String buildReason, String buildRelativeBuildDate, String buildDurationDescription, String buildTestSummary) {
         this.projectName = projectName;
         this.buildName = buildName;
         this.buildKey = buildKey;
@@ -38,9 +36,10 @@ public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
         this.buildTestSummary = buildTestSummary;
     }
 
-    public BambooBuildInfo(String projectName, String buildName, String buildKey, String buildState, String buildNumber, String buildReason,
-        String buildRelativeBuildDate, String buildDurationDescription, String buildTestSummary, String buildCommitComment, Date lastPoolingTime)
-    {
+    public BambooBuildInfo(
+            String projectName, String buildName, String buildKey, String buildState, String buildNumber,
+            String buildReason, String buildRelativeBuildDate, String buildDurationDescription, String buildTestSummary,
+            String buildCommitComment, Date lastPoolingTime) {
         this.projectName = projectName;
         this.buildName = buildName;
         this.buildKey = buildKey;
@@ -63,20 +62,18 @@ public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
     }
 
     public String getPlanUrl() {
-        return this.serverUrl + "/browse/" + this.buildKey;           
+        return this.serverUrl + "/browse/" + this.buildKey;
     }
 
     public String getBuildUrl() {
-        return this.serverUrl + "/browse/" + this.buildKey + "-" + this.buildNumber;           
+        return this.serverUrl + "/browse/" + this.buildKey + "-" + this.buildNumber;
     }
 
-    public String getProjectName()
-    {
+    public String getProjectName() {
         return projectName;
     }
 
-    public void setProjectName(String projectName)
-    {
+    public void setProjectName(String projectName) {
         this.projectName = projectName;
     }
 
@@ -88,97 +85,80 @@ public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
         this.projectKey = projectKey;
     }
 
-    public String getBuildName()
-    {
+    public String getBuildName() {
         return buildName;
     }
 
-    public void setBuildName(String buildName)
-    {
+    public void setBuildName(String buildName) {
         this.buildName = buildName;
     }
 
-    public String getBuildKey()
-    {
+    public String getBuildKey() {
         return buildKey;
     }
 
-    public void setBuildKey(String buildKey)
-    {
+    public void setBuildKey(String buildKey) {
         this.buildKey = buildKey;
     }
 
-    public String getBuildState()
-    {
+    public String getBuildState() {
         return buildState;
     }
 
-    public void setBuildState(String buildState)
-    {
+    public void setBuildState(String buildState) {
         this.buildState = buildState;
     }
 
-    public String getBuildNumber()
-    {
+    public String getBuildNumber() {
         return buildNumber;
     }
 
-    public void setBuildNumber(String buildNumber)
-    {
+    public void setBuildNumber(String buildNumber) {
         this.buildNumber = buildNumber;
     }
 
-    public String getBuildReason()
-    {
+    public String getBuildReason() {
         return buildReason;
     }
 
-    public void setBuildReason(String buildReason)
-    {
+    public void setBuildReason(String buildReason) {
         this.buildReason = buildReason;
     }
 
-    public String getBuildRelativeBuildDate()
-    {
+    public String getBuildRelativeBuildDate() {
         return buildRelativeBuildDate;
     }
 
-    public void setBuildRelativeBuildDate(String buildRelativeBuildDate)
-    {
+    public void setBuildRelativeBuildDate(String buildRelativeBuildDate) {
         this.buildRelativeBuildDate = buildRelativeBuildDate;
     }
 
-    public String getBuildDurationDescription()
-    {
+    public String getBuildDurationDescription() {
         return buildDurationDescription;
     }
 
-    public void setBuildDurationDescription(String buildDurationDescription)
-    {
+    public void setBuildDurationDescription(String buildDurationDescription) {
         this.buildDurationDescription = buildDurationDescription;
     }
 
-    public String getBuildTestSummary()
-    {
+    public String getBuildTestSummary() {
         return buildTestSummary;
     }
 
-    public void setBuildTestSummary(String buildTestSummary)
-    {
+    public void setBuildTestSummary(String buildTestSummary) {
         this.buildTestSummary = buildTestSummary;
     }
 
-    public String getBuildCommitComment()
-    {
+    public String getBuildCommitComment() {
         return buildCommitComment;
     }
 
     public BuildStatus getStatus() {
-        if("Successful".equalsIgnoreCase(buildState)) {
+        if ("Successful".equalsIgnoreCase(buildState)) {
             return BuildStatus.SUCCESS;
         } else if ("Failed".equalsIgnoreCase(buildState)) {
             return BuildStatus.FAILED;
-        } else {            
+        } else {
             return BuildStatus.ERROR;
         }
     }
@@ -190,14 +170,20 @@ public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
     public void setMessage(String message) {
         this.message = message;
     }
-        
-    public void setBuildCommitComment(String buildCommitComment)
-    {
+
+    public void setBuildCommitComment(String buildCommitComment) {
         this.buildCommitComment = buildCommitComment;
     }
 
-    public String toString()
-    {
-        return projectName+" "+buildName+" "+buildKey+" "+buildState+" "+buildReason+" "+buildRelativeBuildDate+" "+buildDurationDescription+" "+buildTestSummary+" "+buildCommitComment;
+    public String toString() {
+        return projectName
+                + " " + buildName
+                + " " + buildKey
+                + " " + buildState
+                + " " + buildReason
+                + " " + buildRelativeBuildDate
+                + " " + buildDurationDescription
+                + " " + buildTestSummary
+                + " " + buildCommitComment;
     }
 }

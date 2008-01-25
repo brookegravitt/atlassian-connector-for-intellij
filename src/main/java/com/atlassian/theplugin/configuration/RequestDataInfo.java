@@ -13,11 +13,11 @@ public class RequestDataInfo implements RequestData {
     private Date lastPoolingTime = new Date(0);
 
     public Date getPoolingTime() {
-           return lastPoolingTime;
-    };
+        return lastPoolingTime;
+    }
 
-   public void setPoolingTime(Date date){
-       lastPoolingTime = date;
-   }
+    public void setPoolingTime(Date date) {
+        lastPoolingTime = date;
+    }
 
 }

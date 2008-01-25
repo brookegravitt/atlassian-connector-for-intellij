@@ -1,6 +1,9 @@
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.bamboo.*;
+import com.atlassian.theplugin.bamboo.BambooBuild;
+import com.atlassian.theplugin.bamboo.BambooBuildInfo;
+import com.atlassian.theplugin.bamboo.BambooStatusListenerImpl;
+import com.atlassian.theplugin.bamboo.BuildStatus;
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
@@ -19,27 +22,27 @@ import java.util.Iterator;
 /**
  * PluginConfigurationForm Tester.
  *
- * @author <Authors name>
+ * @author <Authors NAME>
  * @version 1.0
  * @since <pre>01/17/2008</pre>
  */
 public class PluginConfigurationFormTest extends TestCase {
 
-    PluginConfigurationForm pluginConfigurationForm;
+    private PluginConfigurationForm pluginConfigurationForm;
     //statuses as strings returned by bamboo Rest API
-    public static String BUILD_SUCCESSFUL = "Successful";
-    public static String BUILD_FAILED = "Failed";
+    public static final String BUILD_SUCCESSFUL = "Successful";
+    public static final String BUILD_FAILED = "Failed";
 
     protected void setUp() throws Exception {
         super.setUp();
         pluginConfigurationForm = new PluginConfigurationForm();
     }
 
-/*    public void testDummyFail(){
-        fail();
-        
-    }
- */
+    /*    public void testDummyFail(){
+           fail();
+
+       }
+    */
     public void testSetGetData() throws Exception {
         assertNotNull(pluginConfigurationForm.getRootComponent());
 
@@ -55,18 +58,27 @@ public class PluginConfigurationFormTest extends TestCase {
         assertEquals(0, outBean.getBambooConfigurationData().getServerData().getSubscribedPlansData().size());
 
         /*  */
-        inBean.getBambooConfigurationData().getServerData().getSubscribedPlansData().add(new SubscribedPlanBean() {{setPlanId("Plan-1");}});
+        inBean.getBambooConfigurationData().getServerData().getSubscribedPlansData().add(new SubscribedPlanBean() {
+            {
+                setPlanId("Plan-1");
+            }
+        });
 
         pluginConfigurationForm.setData(inBean);
-        
+
         outBean = new PluginConfigurationBean();
         pluginConfigurationForm.getData(outBean);
         checkBasicBean(outBean);
         assertEquals(1, outBean.getBambooConfigurationData().getServerData().getSubscribedPlansData().size());
-        assertEquals("Plan-1", outBean.getBambooConfigurationData().getServerData().getSubscribedPlansData().get(0).getPlanId());
-        
+        assertEquals("Plan-1",
+                outBean.getBambooConfigurationData().getServerData().getSubscribedPlansData().get(0).getPlanId());
+
         /*  */
-        inBean.getBambooConfigurationData().getServerData().getSubscribedPlansData().add(new SubscribedPlanBean() {{setPlanId("Plan-2");}});
+        inBean.getBambooConfigurationData().getServerData().getSubscribedPlansData().add(new SubscribedPlanBean() {
+            {
+                setPlanId("Plan-2");
+            }
+        });
 
         pluginConfigurationForm.setData(inBean);
 
@@ -74,9 +86,13 @@ public class PluginConfigurationFormTest extends TestCase {
         pluginConfigurationForm.getData(outBean);
         checkBasicBean(outBean);
         assertEquals(2, outBean.getBambooConfigurationData().getServerData().getSubscribedPlansData().size());
-        checkSubscribedPlans(outBean, new String[]{"Plan-1", "Plan-2"});
+        checkSubscribedPlans(outBean, new String[]{ "Plan-1", "Plan-2" });
         /*  */
-        inBean.getBambooConfigurationData().getServerData().getSubscribedPlansData().add(new SubscribedPlanBean() {{setPlanId("Plan-3");}});
+        inBean.getBambooConfigurationData().getServerData().getSubscribedPlansData().add(new SubscribedPlanBean() {
+            {
+                setPlanId("Plan-3");
+            }
+        });
 
         pluginConfigurationForm.setData(inBean);
 
@@ -84,7 +100,7 @@ public class PluginConfigurationFormTest extends TestCase {
         pluginConfigurationForm.getData(outBean);
         checkBasicBean(outBean);
         assertEquals(3, outBean.getBambooConfigurationData().getServerData().getSubscribedPlansData().size());
-        checkSubscribedPlans(outBean, new String[]{"Plan-1", "Plan-2", "Plan-3"});
+        checkSubscribedPlans(outBean, new String[]{ "Plan-1", "Plan-2", "Plan-3" });
 
         /*  */
         inBean.getBambooConfigurationData().getServerData().getSubscribedPlansData().clear();
@@ -99,7 +115,7 @@ public class PluginConfigurationFormTest extends TestCase {
 
     }
 
-    @SuppressWarnings({"RedundantStringConstructorCall"})
+    @SuppressWarnings({ "RedundantStringConstructorCall" })
     public void testIsModified() throws Exception {
         PluginConfigurationBean inBean = createBasicBean();
 
@@ -110,23 +126,35 @@ public class PluginConfigurationFormTest extends TestCase {
         assertFalse(pluginConfigurationForm.isModified(outBean));
 
         /* with arraylist set */
-        inBean.getBambooConfigurationData().getServerData().getSubscribedPlansData().add(new SubscribedPlanBean() {{setPlanId("Plan-1");}});
+        inBean.getBambooConfigurationData().getServerData().getSubscribedPlansData().add(new SubscribedPlanBean() {
+            {
+                setPlanId("Plan-1");
+            }
+        });
 
         pluginConfigurationForm.setData(inBean);
         assertTrue(pluginConfigurationForm.isModified(outBean));
 
-        outBean.getBambooConfigurationData().getServerData().getSubscribedPlansData().add(new SubscribedPlanBean() {{setPlanId("Plan-1");}});
+        outBean.getBambooConfigurationData().getServerData().getSubscribedPlansData().add(new SubscribedPlanBean() {
+            {
+                setPlanId("Plan-1");
+            }
+        });
 
         assertFalse(pluginConfigurationForm.isModified(outBean));
 
         /* equals vs == */
 
-        outBean.getBambooConfigurationData().getServerData().setName(new String("name"));
+        outBean.getBambooConfigurationData().getServerData().setName(new String("NAME"));
         outBean.getBambooConfigurationData().getServerData().setPasswordString(new String("password"), true);
         outBean.getBambooConfigurationData().getServerData().setUrlString(new String("url"));
         outBean.getBambooConfigurationData().getServerData().setUsername(new String("userName"));
         outBean.getBambooConfigurationData().getServerData().setSubscribedPlansData(new ArrayList<SubscribedPlanBean>());
-        outBean.getBambooConfigurationData().getServerData().getSubscribedPlansData().add(new SubscribedPlanBean() {{setPlanId(new String("Plan-1"));}});
+        outBean.getBambooConfigurationData().getServerData().getSubscribedPlansData().add(new SubscribedPlanBean() {
+            {
+                setPlanId(new String("Plan-1"));
+            }
+        });
 
 
         assertFalse(pluginConfigurationForm.isModified(outBean));
@@ -138,7 +166,11 @@ public class PluginConfigurationFormTest extends TestCase {
             }
         }
 
-        outBean.getBambooConfigurationData().getServerData().getSubscribedPlansData().add(new SubscribedPlanBean() {{setPlanId(new String("Plan-2"));}});
+        outBean.getBambooConfigurationData().getServerData().getSubscribedPlansData().add(new SubscribedPlanBean() {
+            {
+                setPlanId(new String("Plan-2"));
+            }
+        });
         assertTrue(pluginConfigurationForm.isModified(outBean));
 
     }
@@ -155,7 +187,7 @@ public class PluginConfigurationFormTest extends TestCase {
 
         PluginConfigurationFormHelper helper = new PluginConfigurationFormHelper(pluginConfigurationForm);
 
-        helper.serverName.setText("name");
+        helper.serverName.setText("NAME");
         helper.password.setText("password");
         helper.serverUrl.setText("url");
         helper.username.setText("userName");
@@ -190,26 +222,27 @@ public class PluginConfigurationFormTest extends TestCase {
         helper.buildPlansTextArea.setText("Plan-1");
         pluginConfigurationForm.getData(outBean);
         checkBasicBean(outBean);
-        checkSubscribedPlans(outBean, new String[]{"Plan-1"});
+        checkSubscribedPlans(outBean, new String[]{ "Plan-1" });
 
         /*  */
         helper.buildPlansTextArea.setText(" Plan-1 \n");
         pluginConfigurationForm.getData(outBean);
         checkBasicBean(outBean);
-        checkSubscribedPlans(outBean, new String[]{"Plan-1"});
+        checkSubscribedPlans(outBean, new String[]{ "Plan-1" });
 
         /*  */
         helper.buildPlansTextArea.setText(" Plan-1 \nPlan-2   Plan-3\tPlan-4\n\rPlan-5\r\nPlan-6");
         pluginConfigurationForm.getData(outBean);
         checkBasicBean(outBean);
-        checkSubscribedPlans(outBean, new String[]{"Plan-1", "Plan-2", "Plan-3", "Plan-4", "Plan-5", "Plan-6"});
+        checkSubscribedPlans(outBean, new String[]{ "Plan-1", "Plan-2", "Plan-3", "Plan-4", "Plan-5", "Plan-6" });
 
     }
 
     private static void checkSubscribedPlans(PluginConfigurationBean config, String[] ids) {
         assertEquals(ids.length, config.getBambooConfigurationData().getServerData().getSubscribedPlansData().size());
 
-        Iterator<SubscribedPlanBean> i = config.getBambooConfigurationData().getServerData().getSubscribedPlansData().iterator();
+        Iterator<SubscribedPlanBean> i =
+                config.getBambooConfigurationData().getServerData().getSubscribedPlansData().iterator();
         for (String id : ids) {
             assertEquals(id, i.next().getPlanId());
         }
@@ -218,13 +251,13 @@ public class PluginConfigurationFormTest extends TestCase {
 
     private void testForChangedString(PluginConfigurationBean outBean, String property) throws Exception {
         System.out.println("Testing field " + property);
-        
+
         ServerBean serverBean = outBean.getBambooConfigurationData().getServerData();
         Field f = serverBean.getClass().getDeclaredField(property);
         if (f != null) {
             f.setAccessible(true);
             String prev = (String) f.get(serverBean);
-            if(property.equals("encryptedPassword")) {
+            if (property.equals("encryptedPassword")) {
                 serverBean.setPasswordString(prev + "-chg", true);
             } else {
                 f.set(serverBean, prev + "-chg");
@@ -237,7 +270,7 @@ public class PluginConfigurationFormTest extends TestCase {
     private static PluginConfigurationBean createBasicBean() {
         PluginConfigurationBean outBean = new PluginConfigurationBean();
 
-        outBean.getBambooConfigurationData().getServerData().setName("name");
+        outBean.getBambooConfigurationData().getServerData().setName("NAME");
         outBean.getBambooConfigurationData().getServerData().setPasswordString("password", true);
         outBean.getBambooConfigurationData().getServerData().setUrlString("url");
         outBean.getBambooConfigurationData().getServerData().setUsername("userName");
@@ -246,7 +279,7 @@ public class PluginConfigurationFormTest extends TestCase {
     }
 
     private static void checkBasicBean(PluginConfigurationBean outBean) throws ServerPasswordNotProvidedException {
-        assertEquals("name", outBean.getBambooConfigurationData().getServerData().getName());
+        assertEquals("NAME", outBean.getBambooConfigurationData().getServerData().getName());
         assertEquals("password", outBean.getBambooConfigurationData().getServerData().getPasswordString());
         assertEquals("url", outBean.getBambooConfigurationData().getServerData().getUrlString());
         assertEquals("userName", outBean.getBambooConfigurationData().getServerData().getUsername());
@@ -256,17 +289,17 @@ public class PluginConfigurationFormTest extends TestCase {
         return new TestSuite(PluginConfigurationFormTest.class);
     }
 
-	// @todo restore test
-	public void StatusListenerAlgorithm(){
+    // @todo restore test
+    public void statusListenerAlgorithm() {
 
 
         BambooStatusIconHelper statusIcon = new BambooStatusIconHelper();
         Collection<BambooBuild> buildStatuses = new ArrayList<BambooBuild>();
 
         //add crap as build status
-        BambooBuild  bambooBuild = new BambooBuildInfo("projectName", "buildNameSuccess", "buildKey", BUILD_SUCCESSFUL, "buildNumber", "buildReason",
-              "buildRelativeBuildDate", "buildDurationDescription", "buildTestSummary");
-
+        BambooBuild bambooBuild = new BambooBuildInfo(
+                "projectName", "buildNameSuccess", "buildKey", BUILD_SUCCESSFUL, "buildNumber", "buildReason",
+                "buildRelativeBuildDate", "buildDurationDescription", "buildTestSummary");
 
 
         buildStatuses.add(bambooBuild);
@@ -275,43 +308,47 @@ public class PluginConfigurationFormTest extends TestCase {
         statusListener.updateBuildStatuses(buildStatuses);
         assertEquals(BuildStatus.SUCCESS, statusIcon.getBuildStatus());
 
-        bambooBuild = new BambooBuildInfo("projectName", "buildNameCrap", "buildKey", "CRAPSTATUS", "buildNumber", "buildReason",
+        bambooBuild = new BambooBuildInfo(
+                "projectName", "buildNameCrap", "buildKey", "CRAPSTATUS", "buildNumber", "buildReason",
                 "buildRelativeBuildDate", "buildDurationDescription", "buildTestSummary");
         buildStatuses.add(bambooBuild);
         statusListener.updateBuildStatuses(buildStatuses);
         assertEquals(BuildStatus.ERROR, statusIcon.getBuildStatus());
 
-        bambooBuild = new BambooBuildInfo("projectName", "buildNameFailed", "buildKey", BuildStatus.FAILED.toString(), "buildNumber", "buildReason",
-                "buildRelativeBuildDate", "buildDurationDescription", "buildTestSummary");
-        buildStatuses.add(bambooBuild);
-        statusListener.updateBuildStatuses(buildStatuses);
-        assertEquals(BuildStatus.FAILED, statusIcon.getBuildStatus());
-        
-        bambooBuild = new BambooBuildInfo("projectName", "buildNameFailed2", "buildKey", BuildStatus.FAILED.toString(), "buildNumber", "buildReason",
+        bambooBuild = new BambooBuildInfo(
+                "projectName", "buildNameFailed", "buildKey", BuildStatus.FAILED.toString(), "buildNumber", "buildReason",
                 "buildRelativeBuildDate", "buildDurationDescription", "buildTestSummary");
         buildStatuses.add(bambooBuild);
         statusListener.updateBuildStatuses(buildStatuses);
         assertEquals(BuildStatus.FAILED, statusIcon.getBuildStatus());
 
-        assertEquals("<html><body>" +
-                      "<table>" +
-                        "<tr><td>buildKey</td><td><font color=\"green\">success</font></td></tr>" +
-                        "<tr><td>buildKey</td><td><font color=\"ltgray\">null</font></td></tr>" +
-                        "<tr><td>buildKey</td><td><font color=\"red\">build failed</font></td></tr>" +
-                        "<tr><td>buildKey</td><td><font color=\"red\">build failed</font></td></tr>" +
-                     "</table>" +
-                    "</body></html>", statusIcon.getFullInfo());
+        bambooBuild = new BambooBuildInfo(
+                "projectName", "buildNameFailed2", "buildKey", BuildStatus.FAILED.toString(), "buildNumber", "buildReason",
+                "buildRelativeBuildDate", "buildDurationDescription", "buildTestSummary");
+        buildStatuses.add(bambooBuild);
+        statusListener.updateBuildStatuses(buildStatuses);
+        assertEquals(BuildStatus.FAILED, statusIcon.getBuildStatus());
+
+        assertEquals("<html><body>"
+                + "<table>"
+                + "<tr><td>buildKey</td><td><font color=\"green\">success</font></td></tr>"
+                + "<tr><td>buildKey</td><td><font color=\"ltgray\">null</font></td></tr>"
+                + "<tr><td>buildKey</td><td><font color=\"red\">build failed</font></td></tr>"
+                + "<tr><td>buildKey</td><td><font color=\"red\">build failed</font></td></tr>"
+                + "</table>"
+                + "</body></html>", statusIcon.getFullInfo());
     }
 
 
-	// @todo restore test
-	public void BambooStatusIcon(){
+    // @todo restore test
+    public void bambooStatusIcon() {
         BambooStatusIcon statusIcon = new BambooStatusIcon();
         Collection<BambooBuild> buildStatuses = new ArrayList<BambooBuild>();
 
         //add crap as build status
-        BambooBuild  bambooBuild = new BambooBuildInfo("projectName", "buildNameSuccess", "buildKey", BUILD_SUCCESSFUL, "buildNumber", "buildReason",
-              "buildRelativeBuildDate", "buildDurationDescription", "buildTestSummary");
+        BambooBuild bambooBuild = new BambooBuildInfo(
+                "projectName", "buildNameSuccess", "buildKey", BUILD_SUCCESSFUL, "buildNumber", "buildReason",
+                "buildRelativeBuildDate", "buildDurationDescription", "buildTestSummary");
 
         buildStatuses.add(bambooBuild);
         BambooStatusListenerImpl statusListener = new BambooStatusListenerImpl(statusIcon);
@@ -319,24 +356,27 @@ public class PluginConfigurationFormTest extends TestCase {
         statusListener.updateBuildStatuses(buildStatuses);
         assertTrue(statusIcon.getIcon().equals(IconLoader.getIcon("/icons/green-16.png")));
 
-        bambooBuild = new BambooBuildInfo("projectName", "buildNameCrap", "buildKey", "CRAPSTATUS", "buildNumber", "buildReason",
+        bambooBuild = new BambooBuildInfo(
+                "projectName", "buildNameCrap", "buildKey", "CRAPSTATUS", "buildNumber", "buildReason",
                 "buildRelativeBuildDate", "buildDurationDescription", "buildTestSummary");
         buildStatuses.add(bambooBuild);
         statusListener.updateBuildStatuses(buildStatuses);
         assertTrue(statusIcon.getIcon().equals(IconLoader.getIcon("/icons/grey-16.png")));
 
-        bambooBuild = new BambooBuildInfo("projectName", "buildNameFailed", "buildKey", BuildStatus.FAILED.toString(), "buildNumber", "buildReason",
+        bambooBuild = new BambooBuildInfo(
+                "projectName", "buildNameFailed", "buildKey", BuildStatus.FAILED.toString(), "buildNumber", "buildReason",
                 "buildRelativeBuildDate", "buildDurationDescription", "buildTestSummary");
         buildStatuses.add(bambooBuild);
         statusListener.updateBuildStatuses(buildStatuses);
         assertTrue(statusIcon.getIcon().equals(IconLoader.getIcon("/icons/red-16.png")));
 
-        bambooBuild = new BambooBuildInfo("projectName", "buildNameFailed2", "buildKey", BuildStatus.FAILED.toString(), "buildNumber", "buildReason",
+        bambooBuild = new BambooBuildInfo(
+                "projectName", "buildNameFailed2", "buildKey", BuildStatus.FAILED.toString(), "buildNumber", "buildReason",
                 "buildRelativeBuildDate", "buildDurationDescription", "buildTestSummary");
         buildStatuses.add(bambooBuild);
         statusListener.updateBuildStatuses(buildStatuses);
         assertTrue(statusIcon.getIcon().equals(IconLoader.getIcon("/icons/red-16.png")));
-       
+
     }
 
     private class PluginConfigurationFormHelper {
@@ -354,7 +394,7 @@ public class PluginConfigurationFormTest extends TestCase {
                 String name = f.getName();
                 Field original = pluginConfigurationForm.getClass().getDeclaredField(name);
                 original.setAccessible(true);
-                
+
                 f.set(this, original.get(pluginConfigurationForm));
                 System.out.println("Copied field " + original.getName());
 
@@ -366,16 +406,17 @@ public class PluginConfigurationFormTest extends TestCase {
         private BuildStatus status;
         private String fullInfo;
 
-        public void updateBambooStatus(BuildStatus status, String fullInfo) {
+        public void updateBambooStatus(BuildStatus buildStatus, String theFullInfo) {
 
-                this.status = status;
-                this.fullInfo = fullInfo;
+            this.status = buildStatus;
+            this.fullInfo = theFullInfo;
         }
 
-        public String getFullInfo(){
+        public String getFullInfo() {
             return fullInfo;
         }
-        public BuildStatus getBuildStatus(){
+
+        public BuildStatus getBuildStatus() {
             return status;
         }
 

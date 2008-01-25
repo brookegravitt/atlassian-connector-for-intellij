@@ -34,7 +34,7 @@ public class TestAction extends AnAction {
                 "Sample",
                 Messages.getInformationIcon());
 
-        Project project = (Project)e.getDataContext().getData(DataConstantsEx.PROJECT);
+        Project project = (Project) e.getDataContext().getData(DataConstantsEx.PROJECT);
         ThePluginProjectComponent tpmc = project.getComponent(ThePluginProjectComponent.class);
         tpmc.setBambooStatus("Chg", "After change action");
 

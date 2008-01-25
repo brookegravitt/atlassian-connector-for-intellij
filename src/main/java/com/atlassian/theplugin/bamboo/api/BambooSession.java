@@ -1,23 +1,22 @@
 package com.atlassian.theplugin.bamboo.api;
 
-import org.jdom.input.SAXBuilder;
+import com.atlassian.theplugin.bamboo.*;
+import com.atlassian.theplugin.util.HttpConnectionFactory;
 import org.jdom.Document;
-import org.jdom.JDOMException;
 import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.net.URLEncoder;
 import java.net.URLConnection;
-import java.util.List;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
-
-import com.atlassian.theplugin.bamboo.*;
-import com.atlassian.theplugin.util.HttpConnectionFactory;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -41,6 +40,7 @@ public class BambooSession {
 
     /**
      * Public constructor for BambooSession.
+     *
      * @param baseUrl base URL for Bamboo instance
      */
     public BambooSession(String baseUrl) {
@@ -50,23 +50,24 @@ public class BambooSession {
     /**
      * Connects to Bamboo server instance. On successful login authentication token is returned from
      * server and stored in Bamboo session for subsequent calls
-     * @param name username defined on Bamboo server instance
-     * @param password for username
+     *
+     * @param name      username defined on Bamboo server instance
+     * @param aPassword for username
      * @throws BambooLoginException on connection or authentication errors
      */
-    public void login(String name, char[] password) throws BambooLoginException {
+    public void login(String name, char[] aPassword) throws BambooLoginException {
         String loginUrl;
         try {
             if (baseUrl == null) {
                 throw new BambooLoginException("Corrupted configuration. Url null");
             }
-            if (name == null || password == null) {
-                throw new BambooLoginException("Corrupted configuration. Username or password null");
+            if (name == null || aPassword == null) {
+                throw new BambooLoginException("Corrupted configuration. Username or aPassword null");
             }
-            String pass = String.valueOf(password);
-            loginUrl = baseUrl + LOGIN_ACTION + "?username=" + URLEncoder.encode(name, "UTF-8") + "&password=" +
-                    URLEncoder.encode(pass, "UTF-8") + "&os_username=" +
-                    URLEncoder.encode(name, "UTF-8") + "&os_password=" + URLEncoder.encode(pass, "UTF-8");
+            String pass = String.valueOf(aPassword);
+            loginUrl = baseUrl + LOGIN_ACTION + "?username=" + URLEncoder.encode(name, "UTF-8") + "&password="
+                    + URLEncoder.encode(pass, "UTF-8") + "&os_username="
+                    + URLEncoder.encode(name, "UTF-8") + "&os_password=" + URLEncoder.encode(pass, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException("URLEncoding problem: " + e.getMessage());
         }
@@ -78,7 +79,7 @@ public class BambooSession {
             throw new BambooLoginException(e.getMessage(), e);
         }
 
-        try {            
+        try {
             XPath xpath = XPath.newInstance("/response/auth");
             List elements = xpath.selectNodes(doc);
             if (elements != null) {
@@ -117,7 +118,7 @@ public class BambooSession {
             throw new RuntimeException("URLEncoding problem: ", e);
         }
 
-        Document doc = retrieveResponse(buildResultUrl);        
+        Document doc = retrieveResponse(buildResultUrl);
         List<BambooProject> projects = new ArrayList<BambooProject>();
         try {
             XPath xpath = XPath.newInstance("/response/project");
@@ -168,7 +169,8 @@ public class BambooSession {
     public BambooBuildInfo getLatestBuildForPlan(String planKey) throws BambooException {
         String buildResultUrl;
         try {
-            buildResultUrl = baseUrl + LATEST_BUILD_FOR_PLAN_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8") + "&buildKey=" + URLEncoder.encode(planKey, "UTF-8");
+            buildResultUrl = baseUrl + LATEST_BUILD_FOR_PLAN_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8")
+                    + "&buildKey=" + URLEncoder.encode(planKey, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException("URLEncoding problem: " + e.getMessage());
         }
@@ -192,7 +194,8 @@ public class BambooSession {
         String buildResultUrl;
         Date lastPoolingTime = new Date();
         try {
-            buildResultUrl = baseUrl + LATEST_BUILDS_FOR_PROJECT_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8") + "&projectKey=" + URLEncoder.encode(projectKey, "UTF-8");
+            buildResultUrl = baseUrl + LATEST_BUILDS_FOR_PROJECT_ACTION + "?auth="
+                    + URLEncoder.encode(authToken, "UTF-8") + "&projectKey=" + URLEncoder.encode(projectKey, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException("URLEncoding problem: " + e.getMessage());
         }
@@ -227,8 +230,9 @@ public class BambooSession {
         String buildTestSummary = getChildText(buildItemNode, "buildTestSummary");
         String buildCommitComment = getChildText(buildItemNode, "buildCommitComment");
 
-        return new BambooBuildInfo(projectName, buildName, buildKey, buildState, buildNumber, buildReason, buildRelativeBuildDate,
-                buildDurationDescription, buildTestSummary, buildCommitComment, lastPoolingTime);
+        return new BambooBuildInfo(projectName, buildName, buildKey, buildState, buildNumber, buildReason,
+                buildRelativeBuildDate, buildDurationDescription,
+                buildTestSummary, buildCommitComment, lastPoolingTime);
     }
 
     private String getChildText(Element node, String childName) {

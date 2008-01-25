@@ -1,9 +1,9 @@
 package com.atlassian.theplugin.util;
 
 import javax.net.ssl.*;
-import java.net.URLConnection;
-import java.net.URL;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
 
 /**
  * Created by IntelliJ IDEA.
@@ -12,7 +12,10 @@ import java.io.IOException;
  * Time: 11:56:09
  * To change this template use File | Settings | File Templates.
  */
-public class HttpConnectionFactory {
+public final class HttpConnectionFactory {
+    private HttpConnectionFactory() {
+    }
+
     private static SSLSocketFactory socketFactory = getSSLSocketFactory();
     private static HostnameVerifier hostnameVerifier = new EasyHostnameVerifier();
 
