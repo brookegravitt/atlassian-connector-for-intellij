@@ -6,13 +6,37 @@
   <component name="BuildJarProjectSettings">
     <option name="BUILD_JARS_ON_MAKE" value="false" />
   </component>
+  <component name="CheckStyle-IDEA">
+    <option name="configuration">
+      <map>
+        <entry key="config-file" value="$PROJECT_DIR$/java-regular.cs.xml" />
+      </map>
+    </option>
+  </component>
   <component name="CodeStyleProjectProfileManger">
     <option name="PROJECT_PROFILE" />
     <option name="USE_PROJECT_LEVEL_SETTINGS" value="false" />
   </component>
   <component name="CodeStyleSettingsManager">
-    <option name="PER_PROJECT_SETTINGS" />
-    <option name="USE_PER_PROJECT_SETTINGS" value="false" />
+    <option name="PER_PROJECT_SETTINGS">
+      <value>
+        <option name="SPACE_WITHIN_ARRAY_INITIALIZER_BRACES" value="true" />
+        <option name="IF_BRACE_FORCE" value="3" />
+        <option name="DOWHILE_BRACE_FORCE" value="3" />
+        <option name="WHILE_BRACE_FORCE" value="3" />
+        <option name="FOR_BRACE_FORCE" value="3" />
+        <ADDITIONAL_INDENT_OPTIONS fileType="js">
+          <option name="INDENT_SIZE" value="4" />
+          <option name="CONTINUATION_INDENT_SIZE" value="8" />
+          <option name="TAB_SIZE" value="4" />
+          <option name="USE_TAB_CHARACTER" value="false" />
+          <option name="SMART_TABS" value="false" />
+          <option name="LABEL_INDENT_SIZE" value="0" />
+          <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+        </ADDITIONAL_INDENT_OPTIONS>
+      </value>
+    </option>
+    <option name="USE_PER_PROJECT_SETTINGS" value="true" />
   </component>
   <component name="CompilerConfiguration">
     <option name="DEFAULT_COMPILER" value="Javac" />
