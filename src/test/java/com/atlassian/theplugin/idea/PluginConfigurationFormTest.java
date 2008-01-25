@@ -270,7 +270,7 @@ public class PluginConfigurationFormTest extends TestCase {
 
 
         buildStatuses.add(bambooBuild);
-        BambooStatusListener statusListener = new BambooStatusListenerImpl(statusIcon);
+        BambooStatusListenerImpl statusListener = new BambooStatusListenerImpl(statusIcon);
 
         statusListener.updateBuildStatuses(buildStatuses);
         assertEquals(BuildStatus.SUCCESS, statusIcon.getBuildStatus());
@@ -314,7 +314,7 @@ public class PluginConfigurationFormTest extends TestCase {
               "buildRelativeBuildDate", "buildDurationDescription", "buildTestSummary");
 
         buildStatuses.add(bambooBuild);
-        BambooStatusListener statusListener = new BambooStatusListenerImpl(statusIcon);
+        BambooStatusListenerImpl statusListener = new BambooStatusListenerImpl(statusIcon);
 
         statusListener.updateBuildStatuses(buildStatuses);
         assertTrue(statusIcon.getIcon().equals(IconLoader.getIcon("/icons/green-16.png")));
