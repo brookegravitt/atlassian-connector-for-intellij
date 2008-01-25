@@ -8,16 +8,16 @@ package com.atlassian.theplugin.configuration;
  */
 public abstract class ConfigurationFactory {
 
-    private ConfigurationFactory() {
-    }
+	private ConfigurationFactory() {
+	}
 
-    private static PluginConfiguration pluginConfiguration;
+	private static PluginConfiguration pluginConfiguration;
 
-    public static PluginConfiguration getConfiguration() {
-        return pluginConfiguration;
-    }
+	public static PluginConfiguration getConfiguration() {
+		return pluginConfiguration;
+	}
 
-    public static void setConfiguration(PluginConfiguration newConfiguration) {
-        pluginConfiguration = newConfiguration;
-    }
+	public static void setConfiguration(PluginConfiguration newConfiguration) {
+		pluginConfiguration = newConfiguration;
+	}
 }
