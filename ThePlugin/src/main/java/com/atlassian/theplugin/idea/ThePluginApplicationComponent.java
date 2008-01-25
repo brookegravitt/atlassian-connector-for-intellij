@@ -71,7 +71,7 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
         ConfigurationFactory.setConfiguration(configuration);
 
 		bambooStatusChecker = new BambooStatusChecker();
-		timer.schedule(bambooStatusChecker, 0, TIMER_TICK);
+		timer.schedule(bambooStatusChecker, TIMER_TICK, TIMER_TICK);
 	}
 
     public void disposeComponent() {
