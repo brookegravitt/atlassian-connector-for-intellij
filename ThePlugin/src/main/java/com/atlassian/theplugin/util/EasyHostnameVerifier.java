@@ -11,7 +11,7 @@ import javax.net.ssl.SSLSession;
  * To change this template use File | Settings | File Templates.
  */
 public class EasyHostnameVerifier implements HostnameVerifier {
-    public boolean verify(String s, SSLSession sslSession) {
-        return true;
-    }
+	public boolean verify(String s, SSLSession sslSession) {
+		return true;
+	}
 }

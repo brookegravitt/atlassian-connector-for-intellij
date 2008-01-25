@@ -8,7 +8,7 @@ package com.atlassian.theplugin.bamboo;
  * To change this template use File | Settings | File Templates.
  */
 public interface BambooProject {
-    String getProjectName();
+	String getProjectName();
 
-    String getProjectKey();
+	String getProjectKey();
 }

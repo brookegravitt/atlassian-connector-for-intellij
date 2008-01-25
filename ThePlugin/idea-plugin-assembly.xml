@@ -17,32 +17,32 @@
   ~ under the License.
   -->
 <assembly>
-    <includeBaseDirectory>false</includeBaseDirectory>
-    <formats>
-        <format>zip</format>
-    </formats>
-    <fileSets>
-        <fileSet>
-            <directory>./target/classes</directory>
-            <outputDirectory>${pom.project.artifactId}/classes</outputDirectory>
-            <excludes>
-                <exclude>META-INF/**</exclude>
-            </excludes>
-        </fileSet>
-        <fileSet>
-            <directory>./target/classes/META-INF</directory>
-            <outputDirectory>${pom.project.artifactId}/META-INF</outputDirectory>
-        </fileSet>
-    </fileSets>
-    <dependencySets>
-        <dependencySet>
-            <outputDirectory>${pom.project.artifactId}/lib</outputDirectory>
-            <scope>runtime</scope>
-            <includes>
-                <include>log4j:log4j:jar</include>
-                <include>jaxen:jaxen:jar</include>
-            </includes>
-        </dependencySet>
-    </dependencySets>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<fileSets>
+		<fileSet>
+			<directory>./target/classes</directory>
+			<outputDirectory>${pom.project.artifactId}/classes</outputDirectory>
+			<excludes>
+				<exclude>META-INF/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>./target/classes/META-INF</directory>
+			<outputDirectory>${pom.project.artifactId}/META-INF</outputDirectory>
+		</fileSet>
+	</fileSets>
+	<dependencySets>
+		<dependencySet>
+			<outputDirectory>${pom.project.artifactId}/lib</outputDirectory>
+			<scope>runtime</scope>
+			<includes>
+				<include>log4j:log4j:jar</include>
+				<include>jaxen:jaxen:jar</include>
+			</includes>
+		</dependencySet>
+	</dependencySets>
 </assembly>
 

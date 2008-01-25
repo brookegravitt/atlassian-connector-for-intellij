@@ -9,19 +9,19 @@ import java.util.Collection;
  * Time: 12:04:40 PM
  */
 public interface Server extends Cloneable {
-    String getName();
+	String getName();
 
-    String getUrlString();
+	String getUrlString();
 
-    String getUsername();
+	String getUsername();
 
-    String getEncryptedPassword();
+	String getEncryptedPassword();
 
-    Boolean getShouldPasswordBeStored();
+	Boolean getShouldPasswordBeStored();
 
-    Boolean getIsConfigInitialized();
+	Boolean getIsConfigInitialized();
 
-    Collection<? extends SubscribedPlan> getSubscribedPlans();
+	Collection<? extends SubscribedPlan> getSubscribedPlans();
 
-    String getPasswordString() throws ServerPasswordNotProvidedException;
+	String getPasswordString() throws ServerPasswordNotProvidedException;
 }

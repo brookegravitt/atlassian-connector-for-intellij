@@ -25,97 +25,97 @@ import java.util.zip.ZipEntry;
  */
 public final class PluginInfo {
 
-    // TODO: jgorycki: fix naming of statics
+	// TODO: jgorycki: fix naming of statics
 
-    private PluginInfo() {
-    }
+	private PluginInfo() {
+	}
 
-    /**
-     * Logger
-     */
-    private static final Category LOGGER = Logger.getInstance(PluginStatusBarToolTip.class);
+	/**
+	 * Logger
+	 */
+	private static final Category LOGGER = Logger.getInstance(PluginStatusBarToolTip.class);
 
-    /**
-     * Plugin NAME
-     */
-    public static String NAME;
+	/**
+	 * Plugin NAME
+	 */
+	public static String NAME;
 
-    /**
-     * Plugin version
-     */
-    public static String VERSION;
+	/**
+	 * Plugin version
+	 */
+	public static String VERSION;
 
-    /**
-     * Plugin vendor
-     */
-    public static String VENDOR;
+	/**
+	 * Plugin vendor
+	 */
+	public static String VENDOR;
 
-    /**
-     * Home of plugin
-     */
-    public static VirtualFile HOME;
+	/**
+	 * Home of plugin
+	 */
+	public static VirtualFile HOME;
 
-    /**
-     * Internal NAME, usual the same as last package NAME of this class
-     */
-    public static String INTERNAL_NAME;
+	/**
+	 * Internal NAME, usual the same as last package NAME of this class
+	 */
+	public static String INTERNAL_NAME;
 
-    /**
-     * Method return current plugin JDOM element of root XML element.
-     *
-     * @return Element "idea-plugin"
-     * @throws java.io.IOException
-     * @throws org.jdom.JDOMException
-     */
-    private static Element getPluginElement() throws IOException, JDOMException {
+	/**
+	 * Method return current plugin JDOM element of root XML element.
+	 *
+	 * @return Element "idea-plugin"
+	 * @throws java.io.IOException
+	 * @throws org.jdom.JDOMException
+	 */
+	private static Element getPluginElement() throws IOException, JDOMException {
 //    ClassLoader classLoader = PluginInfo.class.getClassLoader();
 //    LOGGER.info(classLoader.toString());
 //    URL url = classLoader.getResource("META-INF/plugin.xml");
 
-        if (HOME == null || INTERNAL_NAME == null) {
-            throw new IllegalStateException();
-        }
+		if (HOME == null || INTERNAL_NAME == null) {
+			throw new IllegalStateException();
+		}
 
-        String jarFileName = INTERNAL_NAME + ".jar";
-        VirtualFile jar = HOME.findFileByRelativePath("lib/" + jarFileName);
-        if (jar == null) {
-            throw new FileNotFoundException(jarFileName);
-        }
+		String jarFileName = INTERNAL_NAME + ".jar";
+		VirtualFile jar = HOME.findFileByRelativePath("lib/" + jarFileName);
+		if (jar == null) {
+			throw new FileNotFoundException(jarFileName);
+		}
 
-        String descriptorPath = "META-INF/plugin.xml";
-        JarFile jarFile = new JarFile(jar.getPresentableUrl());
-        ZipEntry pluginDescriptor = jarFile.getJarEntry(descriptorPath);
-        if (pluginDescriptor == null) {
-            throw new FileNotFoundException(descriptorPath);
-        }
+		String descriptorPath = "META-INF/plugin.xml";
+		JarFile jarFile = new JarFile(jar.getPresentableUrl());
+		ZipEntry pluginDescriptor = jarFile.getJarEntry(descriptorPath);
+		if (pluginDescriptor == null) {
+			throw new FileNotFoundException(descriptorPath);
+		}
 
-        SAXBuilder builder = new SAXBuilder(false);
-        Document doc = builder.build(jarFile.getInputStream(pluginDescriptor));
-        return doc.getRootElement();
-    }
+		SAXBuilder builder = new SAXBuilder(false);
+		Document doc = builder.build(jarFile.getInputStream(pluginDescriptor));
+		return doc.getRootElement();
+	}
 
-    static {
-        try {
-            // Internal NAME
-            String[] names = PluginInfo.class.getName().split("\\.");
-            INTERNAL_NAME = names.length > 1 ? names[names.length - 2] : null;
+	static {
+		try {
+			// Internal NAME
+			String[] names = PluginInfo.class.getName().split("\\.");
+			INTERNAL_NAME = names.length > 1 ? names[names.length - 2] : null;
 
-            // Plugin home
-            String pluginHomePath = (
-                    PathManager.getPluginsPath() + File.separatorChar + INTERNAL_NAME).replace(File.separatorChar, '/');
-            HOME = LocalFileSystem.getInstance().findFileByPath(pluginHomePath);
+			// Plugin home
+			String pluginHomePath = (
+					PathManager.getPluginsPath() + File.separatorChar + INTERNAL_NAME).replace(File.separatorChar, '/');
+			HOME = LocalFileSystem.getInstance().findFileByPath(pluginHomePath);
 
-            Element pluginElement = getPluginElement();
-            // Filling
-            NAME = pluginElement.getChildText("NAME");
-            VERSION = pluginElement.getChildText("version");
-            VENDOR = pluginElement.getChildText("vendor");
+			Element pluginElement = getPluginElement();
+			// Filling
+			NAME = pluginElement.getChildText("NAME");
+			VERSION = pluginElement.getChildText("version");
+			VENDOR = pluginElement.getChildText("vendor");
 
-        } catch (Exception e) {
-            LOGGER.error(e);
-        }
+		} catch (Exception e) {
+			LOGGER.error(e);
+		}
 
-    }
+	}
 
 }
 

@@ -21,109 +21,109 @@ import java.util.Collection;
  */
 public class BambooServerFacadeImpl implements BambooServerFacade {
 
-    private static final Category LOG = Logger.getInstance(BambooServerFacadeImpl.class);
+	private static final Category LOG = Logger.getInstance(BambooServerFacadeImpl.class);
 
-    public BambooServerFacadeImpl() {
-    }
+	public BambooServerFacadeImpl() {
+	}
 
-    /**
-     * Test connection to Bamboo server.
-     *
-     * @param url
-     * @param userName
-     * @param password
-     * @throws BambooLoginException on failed login
-     */
-    public void testServerConnection(String url, String userName, String password) throws BambooLoginException {
-        BambooSession apiHandler = new BambooSession(url);
-        apiHandler.login(userName, password.toCharArray());
-        apiHandler.logout();
-    }
+	/**
+	 * Test connection to Bamboo server.
+	 *
+	 * @param url
+	 * @param userName
+	 * @param password
+	 * @throws BambooLoginException on failed login
+	 */
+	public void testServerConnection(String url, String userName, String password) throws BambooLoginException {
+		BambooSession apiHandler = new BambooSession(url);
+		apiHandler.login(userName, password.toCharArray());
+		apiHandler.logout();
+	}
 
-    /**
-     * List projects defined on Bamboo server.
-     *
-     * @return list of projects or null on error
-     */
-    public Collection<BambooProject> getProjectList() throws ServerPasswordNotProvidedException {
-        Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServer();
+	/**
+	 * List projects defined on Bamboo server.
+	 *
+	 * @return list of projects or null on error
+	 */
+	public Collection<BambooProject> getProjectList() throws ServerPasswordNotProvidedException {
+		Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServer();
 
-        BambooSession api = new BambooSession(server.getUrlString());
-        try {
-            api.login(server.getUsername(), server.getPasswordString().toCharArray());
-            return api.listProjectNames();
-        } catch (BambooException e) {
-            LOG.error("Bamboo exception: " + e.getMessage());
-            return null;
-        }
-    }
+		BambooSession api = new BambooSession(server.getUrlString());
+		try {
+			api.login(server.getUsername(), server.getPasswordString().toCharArray());
+			return api.listProjectNames();
+		} catch (BambooException e) {
+			LOG.error("Bamboo exception: " + e.getMessage());
+			return null;
+		}
+	}
 
-    /**
-     * List plans defined on Bamboo server
-     *
-     * @return list of plans or null on error
-     */
-    public Collection<BambooPlan> getPlanList() throws ServerPasswordNotProvidedException {
-        Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServer();
+	/**
+	 * List plans defined on Bamboo server
+	 *
+	 * @return list of plans or null on error
+	 */
+	public Collection<BambooPlan> getPlanList() throws ServerPasswordNotProvidedException {
+		Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServer();
 
-        BambooSession api = new BambooSession(server.getUrlString());
-        try {
-            api.login(server.getUsername(), server.getPasswordString().toCharArray());
-            return api.listPlanNames();
-        } catch (BambooException e) {
-            LOG.error("Bamboo exception: " + e.getMessage());
-            return null;
-        }
-    }
+		BambooSession api = new BambooSession(server.getUrlString());
+		try {
+			api.login(server.getUsername(), server.getPasswordString().toCharArray());
+			return api.listPlanNames();
+		} catch (BambooException e) {
+			LOG.error("Bamboo exception: " + e.getMessage());
+			return null;
+		}
+	}
 
-    /**
-     * List details on subscribed plans
-     *
-     * @return results on subscribed builds
-     */
-    public Collection<BambooBuild> getSubscribedPlansResults() throws ServerPasswordNotProvidedException {
-        Collection<BambooBuild> builds = new ArrayList<BambooBuild>();
-        Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServer();
+	/**
+	 * List details on subscribed plans
+	 *
+	 * @return results on subscribed builds
+	 */
+	public Collection<BambooBuild> getSubscribedPlansResults() throws ServerPasswordNotProvidedException {
+		Collection<BambooBuild> builds = new ArrayList<BambooBuild>();
+		Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServer();
 
-        BambooSession api = new BambooSession(server.getUrlString());
-        String connectionErrorMessage;
-        try {
-            api.login(server.getUsername(), server.getPasswordString().toCharArray());
-            connectionErrorMessage = "";
-        } catch (BambooLoginException e) {
-            LOG.error("Bamboo login exception: " + e.getMessage());
-            connectionErrorMessage = e.getMessage();
-        }
+		BambooSession api = new BambooSession(server.getUrlString());
+		String connectionErrorMessage;
+		try {
+			api.login(server.getUsername(), server.getPasswordString().toCharArray());
+			connectionErrorMessage = "";
+		} catch (BambooLoginException e) {
+			LOG.error("Bamboo login exception: " + e.getMessage());
+			connectionErrorMessage = e.getMessage();
+		}
 
-        for (SubscribedPlan plan : server.getSubscribedPlans()) {
-            if (api.isLoggedIn()) {
-                try {
-                    BambooBuildInfo buildInfo = api.getLatestBuildForPlan(plan.getPlanId());
-                    buildInfo.setServerUrl(server.getUrlString());
-                    builds.add(buildInfo);
-                } catch (BambooException e) {
-                    LOG.error("Bamboo exception: " + e.getMessage());
-                    builds.add(getErrorBuildInfo(server, plan.getPlanId(), e.getMessage()));
-                }
-            } else {
-                builds.add(getErrorBuildInfo(server, plan.getPlanId(), connectionErrorMessage));
-            }
-        }
+		for (SubscribedPlan plan : server.getSubscribedPlans()) {
+			if (api.isLoggedIn()) {
+				try {
+					BambooBuildInfo buildInfo = api.getLatestBuildForPlan(plan.getPlanId());
+					buildInfo.setServerUrl(server.getUrlString());
+					builds.add(buildInfo);
+				} catch (BambooException e) {
+					LOG.error("Bamboo exception: " + e.getMessage());
+					builds.add(getErrorBuildInfo(server, plan.getPlanId(), e.getMessage()));
+				}
+			} else {
+				builds.add(getErrorBuildInfo(server, plan.getPlanId(), connectionErrorMessage));
+			}
+		}
 
-        if (api.isLoggedIn()) {
-            api.logout();
-        }
+		if (api.isLoggedIn()) {
+			api.logout();
+		}
 
-        return builds;
-    }
+		return builds;
+	}
 
-    private BambooBuild getErrorBuildInfo(Server server, String planId, String message) {
-        BambooBuildInfo buildInfo = new BambooBuildInfo();
-        buildInfo.setServerUrl(server.getUrlString());
-        buildInfo.setBuildKey(planId);
-        buildInfo.setBuildState(BuildStatus.ERROR.toString());
-        buildInfo.setMessage(message);
+	private BambooBuild getErrorBuildInfo(Server server, String planId, String message) {
+		BambooBuildInfo buildInfo = new BambooBuildInfo();
+		buildInfo.setServerUrl(server.getUrlString());
+		buildInfo.setBuildKey(planId);
+		buildInfo.setBuildState(BuildStatus.ERROR.toString());
+		buildInfo.setMessage(message);
 
-        return buildInfo;
-    }
+		return buildInfo;
+	}
 }

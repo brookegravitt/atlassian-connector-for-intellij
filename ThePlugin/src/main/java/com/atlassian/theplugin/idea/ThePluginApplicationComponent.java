@@ -29,91 +29,91 @@ import java.util.Timer;
 
 @State(name = "ThePluginSettings", storages = { @Storage(id = "thePlugin", file = "$APP_CONFIG$/thePlugin.xml") })
 public class ThePluginApplicationComponent
-        implements ApplicationComponent, Configurable, PersistentStateComponent<PluginConfigurationBean> {
-    private PluginConfigurationForm form;
-    private PluginConfigurationBean configuration = new PluginConfigurationBean();
+		implements ApplicationComponent, Configurable, PersistentStateComponent<PluginConfigurationBean> {
+	private PluginConfigurationForm form;
+	private PluginConfigurationBean configuration = new PluginConfigurationBean();
 
-    private final Timer timer = new Timer();
-    private static final int TIMER_TICK = 20000;
-    private BambooStatusChecker bambooStatusChecker;
+	private final Timer timer = new Timer();
+	private static final int TIMER_TICK = 20000;
+	private BambooStatusChecker bambooStatusChecker;
 
-    public BambooStatusChecker getBambooStatusChecker() {
-        return bambooStatusChecker;
-    }
+	public BambooStatusChecker getBambooStatusChecker() {
+		return bambooStatusChecker;
+	}
 
-    public Timer getTimer() {
-        return timer;
-    }
+	public Timer getTimer() {
+		return timer;
+	}
 
-    @Nls
-    public String getDisplayName() {
-        return "The Plugin";
-    }
+	@Nls
+	public String getDisplayName() {
+		return "The Plugin";
+	}
 
-    @Nullable
-    public Icon getIcon() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+	@Nullable
+	public Icon getIcon() {
+		return null;  //To change body of implemented methods use File | Settings | File Templates.
+	}
 
-    @Nullable
-    @NonNls
-    public String getHelpTopic() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+	@Nullable
+	@NonNls
+	public String getHelpTopic() {
+		return null;  //To change body of implemented methods use File | Settings | File Templates.
+	}
 
-    @NonNls
-    @NotNull
-    public String getComponentName() {
-        return "ThePluginApplicationComponent";  //To change body of implemented methods use File | Settings | File Templates.
-    }
+	@NonNls
+	@NotNull
+	public String getComponentName() {
+		return "ThePluginApplicationComponent";  //To change body of implemented methods use File | Settings | File Templates.
+	}
 
-    public void initComponent() {
-        ConfigurationFactory.setConfiguration(configuration);
+	public void initComponent() {
+		ConfigurationFactory.setConfiguration(configuration);
 
-        bambooStatusChecker = new BambooStatusChecker();
-        timer.schedule(bambooStatusChecker, TIMER_TICK, TIMER_TICK);
-    }
+		bambooStatusChecker = new BambooStatusChecker();
+		timer.schedule(bambooStatusChecker, TIMER_TICK, TIMER_TICK);
+	}
 
-    public void disposeComponent() {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
+	public void disposeComponent() {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
 
-    public JComponent createComponent() {
-        if (form == null) {
-            form = new PluginConfigurationForm();
-        }
-        return form.getRootComponent();
+	public JComponent createComponent() {
+		if (form == null) {
+			form = new PluginConfigurationForm();
+		}
+		return form.getRootComponent();
 
-    }
+	}
 
-    public boolean isModified() {
-        return form != null && form.isModified(configuration);
-    }
+	public boolean isModified() {
+		return form != null && form.isModified(configuration);
+	}
 
-    public void apply() throws ConfigurationException {
-        if (form != null) {
-            // Get data from form to component
-            form.getData(configuration);
-        }
+	public void apply() throws ConfigurationException {
+		if (form != null) {
+			// Get data from form to component
+			form.getData(configuration);
+		}
 
-    }
+	}
 
-    public void reset() {
-        if (form != null) {
-            // Reset form data from component
-            form.setData(configuration);
-        }
-    }
+	public void reset() {
+		if (form != null) {
+			// Reset form data from component
+			form.setData(configuration);
+		}
+	}
 
-    public void disposeUIResources() {
-        form = null;
-    }
+	public void disposeUIResources() {
+		form = null;
+	}
 
-    public PluginConfigurationBean getState() {
-        return configuration;
-    }
+	public PluginConfigurationBean getState() {
+		return configuration;
+	}
 
-    public void loadState(PluginConfigurationBean state) {
-        configuration = state;
-    }
+	public void loadState(PluginConfigurationBean state) {
+		configuration = state;
+	}
 }
