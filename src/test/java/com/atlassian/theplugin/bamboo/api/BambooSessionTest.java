@@ -17,12 +17,12 @@ import java.util.List;
  */
 public class BambooSessionTest extends TestCase {
     private static final String SERVER_URL = "http://lech.atlassian.pl:8080/atlassian-bamboo-1.2.4";
-    private static final String SERVER_SSL_URL = "https://lech.atlassian.pl/atlassian-bamboo-1.2.4";    
+    private static final String SERVER_SSL_URL = "https://lech.atlassian.pl/atlassian-bamboo-1.2.4";
     private static final String USER_NAME = "user";
     private static final String PASSWORD = "d0n0tch@nge";
 
 
-    public void testSuccessBambooLogin () throws Exception {
+    public void testSuccessBambooLogin() throws Exception {
         BambooSession apiHandler = new BambooSession(SERVER_URL);
         apiHandler.login(USER_NAME, PASSWORD.toCharArray());
         assertTrue(apiHandler.isLoggedIn());
@@ -30,13 +30,13 @@ public class BambooSessionTest extends TestCase {
         assertFalse(apiHandler.isLoggedIn());
     }
 
-    public void testBambooLogout () throws Exception {
+    public void testBambooLogout() throws Exception {
         BambooSession apiHandler = new BambooSession(SERVER_URL);
         assertFalse(apiHandler.isLoggedIn());
         apiHandler.logout();
     }
 
-    public void testSuccessBambooLoginURLWithSlash () throws Exception {
+    public void testSuccessBambooLoginURLWithSlash() throws Exception {
         BambooSession apiHandler = new BambooSession(SERVER_URL + "/");
         apiHandler.login(USER_NAME, PASSWORD.toCharArray());
         apiHandler.logout();
@@ -52,17 +52,17 @@ public class BambooSessionTest extends TestCase {
         }
     }
 
-    public void testWrongUrlBambooLogin () throws Exception {
+    public void testWrongUrlBambooLogin() throws Exception {
         try {
             BambooSession apiHandler = new BambooSession(SERVER_URL.replaceAll("bamboo", "xxx"));
-            apiHandler.login(USER_NAME, PASSWORD.toCharArray());           
+            apiHandler.login(USER_NAME, PASSWORD.toCharArray());
             fail();
         } catch (BambooLoginException ex) {
             System.out.println("Exception: " + ex.getMessage());
         }
     }
 
-    public void testWrongUserBambooLogin () throws Exception {
+    public void testWrongUserBambooLogin() throws Exception {
         try {
             BambooSession apiHandler = new BambooSession(SERVER_URL);
             apiHandler.login(USER_NAME + "XXX", PASSWORD.toCharArray());
@@ -72,7 +72,7 @@ public class BambooSessionTest extends TestCase {
         }
     }
 
-    public void testWrongPasswordBambooLogin () throws Exception {
+    public void testWrongPasswordBambooLogin() throws Exception {
         try {
             BambooSession apiHandler = new BambooSession(SERVER_URL);
             apiHandler.login(USER_NAME, (PASSWORD + "xxx").toCharArray());
@@ -82,7 +82,7 @@ public class BambooSessionTest extends TestCase {
         }
     }
 
-    public void testNoPasswordBambooLogin () throws Exception {
+    public void testNoPasswordBambooLogin() throws Exception {
         try {
             BambooSession apiHandler = new BambooSession(SERVER_URL);
             apiHandler.login(USER_NAME, "".toCharArray());
@@ -92,7 +92,7 @@ public class BambooSessionTest extends TestCase {
         }
     }
 
-    public void testWrongParamsBambooLogin () throws Exception {
+    public void testWrongParamsBambooLogin() throws Exception {
         try {
             BambooSession apiHandler = new BambooSession("");
             apiHandler.login("", "".toCharArray());
@@ -180,7 +180,7 @@ public class BambooSessionTest extends TestCase {
         apiHandler.logout();
     }
 
-    public void testUrlEncodingBambooPassword () throws Exception {
+    public void testUrlEncodingBambooPassword() throws Exception {
         try {
             BambooSession apiHandler = new BambooSession(SERVER_URL);
             apiHandler.login("", (PASSWORD + "&username=" + USER_NAME).toCharArray());
@@ -190,7 +190,7 @@ public class BambooSessionTest extends TestCase {
         }
     }
 
-    public void testSuccessBambooLoginOnSSL () throws Exception {
+    public void testSuccessBambooLoginOnSSL() throws Exception {
         BambooSession apiHandler = new BambooSession(SERVER_SSL_URL);
         apiHandler.login(USER_NAME, PASSWORD.toCharArray());
         apiHandler.logout();

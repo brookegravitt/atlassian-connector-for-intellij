@@ -1,8 +1,8 @@
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.theplugin.bamboo.BambooStatusChecker;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
-import com.atlassian.theplugin.bamboo.BambooStatusChecker;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
@@ -14,8 +14,7 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.Icon;
-import javax.swing.JComponent;
+import javax.swing.*;
 import java.util.Timer;
 
 //import javax.swing.*;
@@ -28,24 +27,25 @@ import java.util.Timer;
  * To change this template use File | Settings | File Templates.
  */
 
-@State(name = "ThePluginSettings", storages = {@Storage(id = "thePlugin", file = "$APP_CONFIG$/thePlugin.xml")})
-public class ThePluginApplicationComponent implements ApplicationComponent, Configurable, PersistentStateComponent<PluginConfigurationBean> {
+@State(name = "ThePluginSettings", storages = { @Storage(id = "thePlugin", file = "$APP_CONFIG$/thePlugin.xml") })
+public class ThePluginApplicationComponent
+        implements ApplicationComponent, Configurable, PersistentStateComponent<PluginConfigurationBean> {
     private PluginConfigurationForm form;
     private PluginConfigurationBean configuration = new PluginConfigurationBean();
 
-	private final Timer timer = new Timer();
-	private final static int TIMER_TICK = 20000;
-	private BambooStatusChecker bambooStatusChecker;
+    private final Timer timer = new Timer();
+    private static final int TIMER_TICK = 20000;
+    private BambooStatusChecker bambooStatusChecker;
 
-	public BambooStatusChecker getBambooStatusChecker() {
-		return bambooStatusChecker;
-	}
+    public BambooStatusChecker getBambooStatusChecker() {
+        return bambooStatusChecker;
+    }
 
-	public Timer getTimer() {
-		return timer;
-	}
+    public Timer getTimer() {
+        return timer;
+    }
 
-	@Nls
+    @Nls
     public String getDisplayName() {
         return "The Plugin";
     }
@@ -70,9 +70,9 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
     public void initComponent() {
         ConfigurationFactory.setConfiguration(configuration);
 
-		bambooStatusChecker = new BambooStatusChecker();
-		timer.schedule(bambooStatusChecker, TIMER_TICK, TIMER_TICK);
-	}
+        bambooStatusChecker = new BambooStatusChecker();
+        timer.schedule(bambooStatusChecker, TIMER_TICK, TIMER_TICK);
+    }
 
     public void disposeComponent() {
         //To change body of implemented methods use File | Settings | File Templates.

@@ -3,12 +3,9 @@ package com.atlassian.theplugin.bamboo;
 import static com.atlassian.theplugin.bamboo.BuildStatus.FAILED;
 import com.atlassian.theplugin.idea.BambooStatusIcon;
 
-import java.util.Collection;
-import java.util.Calendar;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Created by IntelliJ IDEA.
@@ -22,26 +19,26 @@ public class BambooStatusListenerImpl implements Runnable {
     static final String DEFAULT_DATE_TIME_FROMAT = "";
 
 
-    BambooStatusIcon statusBarIcon;
+    private BambooStatusIcon statusBarIcon;
 
-	Collection<BambooBuild> builds = new ArrayList<BambooBuild>();
+    private Collection<BambooBuild> builds = new ArrayList<BambooBuild>();
 
-	synchronized public void setBuilds(Collection<BambooBuild> builds) {
-		this.builds = builds;
-	}
+    public synchronized void setBuilds(Collection<BambooBuild> builds) {
+        this.builds = builds;
+    }
 
-	public BambooStatusListenerImpl(BambooStatusIcon icon) {
+    public BambooStatusListenerImpl(BambooStatusIcon icon) {
         statusBarIcon = icon;
     }
 
-    private String getLatestPoolAndBuildTime(BambooBuild buildInfo){
-       StringBuilder sb = new StringBuilder("<td>");
-       DateFormat df = DateFormat.getTimeInstance();
+    private String getLatestPoolAndBuildTime(BambooBuild buildInfo) {
+        StringBuilder sb = new StringBuilder("<td>");
+        DateFormat df = DateFormat.getTimeInstance();
 
         sb.append(df.format(buildInfo.getPoolingTime()) + "</td>");
-        sb.append("<td>"+
-                ((buildInfo.getBuildRelativeBuildDate().length() == 0)? "---":  buildInfo.getBuildRelativeBuildDate()) +
-                  "</td>");
+        sb.append("<td>"
+                + ((buildInfo.getBuildRelativeBuildDate().length() == 0) ? "---" : buildInfo.getBuildRelativeBuildDate())
+                + "</td>");
 
         return sb.toString();
     }
@@ -133,7 +130,7 @@ public class BambooStatusListenerImpl implements Runnable {
         statusBarIcon.updateBambooStatus(status, sb.toString());
     }
 
-	public void run() {
-		updateBuildStatuses(builds);
-	}
+    public void run() {
+        updateBuildStatuses(builds);
+    }
 }

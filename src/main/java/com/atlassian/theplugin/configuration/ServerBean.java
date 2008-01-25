@@ -12,7 +12,7 @@ import java.util.List;
  * Date: Jan 10, 2008
  * Time: 11:51:08 AM
  */
-public class ServerBean implements Server{
+public class ServerBean implements Server {
     private String name;
     private String urlString;
     //private char[] encryptedPassword = new char[0];
@@ -64,7 +64,6 @@ public class ServerBean implements Server{
         return encryptedPassword;
     }
 
-
 //    public void setEncryptedPassword(char[] encryptedPassword) {
 //        if (encryptedPassword == null) {
 //            this.encryptedPassword = new char[0];
@@ -113,22 +112,22 @@ public class ServerBean implements Server{
     @Transient
     public synchronized String getPasswordString() throws ServerPasswordNotProvidedException {
         if (!isConfigInitialized) {
-            throw new ServerPasswordNotProvidedException("User password for \""+ name +"\" server not provided.");
+            throw new ServerPasswordNotProvidedException("User password for \"" + name + "\" server not provided.");
         }
         return password;
     }
 
     @Transient
-    public synchronized void setPasswordString(String password, Boolean shouldBeStoredPermanently) {
+    public synchronized void setPasswordString(String aPassword, Boolean shouldBeStoredPermanently) {
         this.shouldPasswordBeStored = shouldBeStoredPermanently;
-        this.password = password;
+        this.password = aPassword;
         isConfigInitialized = true;
 //        if (shouldBeStoredPermanently && encryptedPassword != null) {
 //            this.encryptedPassword = new char[encryptedPassword.length()];
 //            encryptedPassword.getChars(0, encryptedPassword.length(), this.encryptedPassword, 0);
 //        }
         if (shouldBeStoredPermanently) {
-            this.encryptedPassword = encode(password);
+            this.encryptedPassword = encode(aPassword);
         } else {
             this.encryptedPassword = null;
         }

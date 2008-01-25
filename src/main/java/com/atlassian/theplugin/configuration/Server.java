@@ -10,10 +10,15 @@ import java.util.Collection;
  */
 public interface Server extends Cloneable {
     String getName();
+
     String getUrlString();
+
     String getUsername();
+
     String getEncryptedPassword();
+
     Boolean getShouldPasswordBeStored();
+
     Boolean getIsConfigInitialized();
 
     Collection<? extends SubscribedPlan> getSubscribedPlans();

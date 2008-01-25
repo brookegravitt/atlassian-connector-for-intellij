@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 
 public class ConfigurationTest extends TestCase {
     protected void setUp() throws Exception {
-        ConfigurationFactory.setConfiguration(new PluginConfigurationBean()) ;
+        ConfigurationFactory.setConfiguration(new PluginConfigurationBean());
     }
 
     public void testConfiguration() throws ServerPasswordNotProvidedException {
@@ -20,7 +20,7 @@ public class ConfigurationTest extends TestCase {
         srv.setUsername("dummyUserName<a>aa</a>");
         srv.setPasswordString("dummyPassword", true);
 
-        ((BambooConfigurationBean)cfg).setServerData(srv);
+        ((BambooConfigurationBean) cfg).setServerData(srv);
 
 
         Server server = cfg.getServer();
