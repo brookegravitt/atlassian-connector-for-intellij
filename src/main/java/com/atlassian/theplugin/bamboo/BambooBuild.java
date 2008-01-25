@@ -10,35 +10,35 @@ import com.atlassian.theplugin.configuration.RequestData;
  * To change this template use File | Settings | File Templates.
  */
 public interface BambooBuild extends RequestData {
-    String getServerUrl();
+	String getServerUrl();
 
-    String getPlanUrl();
+	String getPlanUrl();
 
-    String getBuildUrl();
+	String getBuildUrl();
 
-    String getProjectName();
+	String getProjectName();
 
-    String getProjectKey();
+	String getProjectKey();
 
-    String getBuildName();
+	String getBuildName();
 
-    String getBuildKey();
+	String getBuildKey();
 
-    String getBuildState();
+	String getBuildState();
 
-    String getBuildNumber();
+	String getBuildNumber();
 
-    String getBuildReason();
+	String getBuildReason();
 
-    String getBuildRelativeBuildDate();
+	String getBuildRelativeBuildDate();
 
-    String getBuildDurationDescription();
+	String getBuildDurationDescription();
 
-    String getBuildTestSummary();
+	String getBuildTestSummary();
 
-    String getBuildCommitComment();
+	String getBuildCommitComment();
 
-    BuildStatus getStatus();
+	BuildStatus getStatus();
 
-    String getMessage();
+	String getMessage();
 }
