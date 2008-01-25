@@ -1,7 +1,5 @@
 package com.atlassian.theplugin.bamboo;
 
-import com.atlassian.theplugin.bamboo.BambooProject;
-
 /**
  * Created by IntelliJ IDEA.
  * User: mwent

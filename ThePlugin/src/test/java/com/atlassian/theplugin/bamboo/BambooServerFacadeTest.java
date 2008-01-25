@@ -58,7 +58,7 @@ public class BambooServerFacadeTest extends TestCase {
         badPlanServer.setName(server.getName());
         badPlanServer.setUrlString(server.getUrlString());
         badPlanServer.setUsername(server.getUsername());
-        badPlanServer.setPasswordString(server.getEncryptedPassword(),true);
+        badPlanServer.setPasswordString(server.getEncryptedPassword(), true);
         badPlanServer.setSubscribedPlansData(badPlans);
 
         badPlanConfiguration.setServerData(badPlanServer);
@@ -78,14 +78,14 @@ public class BambooServerFacadeTest extends TestCase {
     }
 
     public void testSubscribedBuildStatus() throws Exception {
-        Collection<BambooBuild> plans =  BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults();
+        Collection<BambooBuild> plans = BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults();
         assertNotNull(plans);
         assertFalse(plans.size() == 0);
     }
 
     public void testFailedLoginSubscribedBuildStatus() throws Exception {
         ConfigurationFactory.setConfiguration(badLoginPluginConfig);
-        Collection<BambooBuild> plans =  BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults();
+        Collection<BambooBuild> plans = BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults();
         assertNotNull(plans);
         assertEquals(1, plans.size());
         BambooBuild build = plans.iterator().next();
@@ -96,7 +96,7 @@ public class BambooServerFacadeTest extends TestCase {
 
     public void testBadPlansSubscribedBuildStatus() throws Exception {
         ConfigurationFactory.setConfiguration(badPlanPluginConfig);
-        Collection<BambooBuild> plans =  BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults();
+        Collection<BambooBuild> plans = BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults();
         assertNotNull(plans);
         assertEquals(1, plans.size());
         BambooBuild build = plans.iterator().next();
@@ -106,34 +106,34 @@ public class BambooServerFacadeTest extends TestCase {
     }
 
     public void testProjectList() throws Exception {
-        Collection<BambooProject> projects =  BambooServerFactory.getBambooServerFacade().getProjectList();
+        Collection<BambooProject> projects = BambooServerFactory.getBambooServerFacade().getProjectList();
         assertNotNull(projects);
         assertFalse(projects.size() == 0);
     }
 
     public void testFailedProjectList() throws Exception {
         ConfigurationFactory.setConfiguration(badLoginPluginConfig);
-        Collection<BambooProject> projects =  BambooServerFactory.getBambooServerFacade().getProjectList();
+        Collection<BambooProject> projects = BambooServerFactory.getBambooServerFacade().getProjectList();
         assertNull(projects);
     }
 
     public void testPlanList() throws Exception {
-        Collection<BambooPlan> plans =  BambooServerFactory.getBambooServerFacade().getPlanList();
+        Collection<BambooPlan> plans = BambooServerFactory.getBambooServerFacade().getPlanList();
         assertNotNull(plans);
         assertFalse(plans.size() == 0);
     }
 
     public void testFailedPlanList() throws Exception {
         ConfigurationFactory.setConfiguration(badLoginPluginConfig);
-        Collection<BambooPlan> plans =  BambooServerFactory.getBambooServerFacade().getPlanList();
+        Collection<BambooPlan> plans = BambooServerFactory.getBambooServerFacade().getPlanList();
         assertNull(plans);
     }
 
     public void testConnectionTest() throws ServerPasswordNotProvidedException {
         BambooServerFacade facade = BambooServerFactory.getBambooServerFacade();
-        Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServer();
+        Server aServer = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServer();
         try {
-            facade.testServerConnection(server.getUrlString(), server.getUsername(), server.getPasswordString());
+            facade.testServerConnection(aServer.getUrlString(), aServer.getUsername(), aServer.getPasswordString());
         } catch (BambooLoginException e) {
             fail();
         }
@@ -146,21 +146,21 @@ public class BambooServerFacadeTest extends TestCase {
         }
 
         try {
-            facade.testServerConnection(server.getUrlString(), "", "");
+            facade.testServerConnection(aServer.getUrlString(), "", "");
             fail();
         } catch (BambooLoginException e) {
 
         }
 
         try {
-            facade.testServerConnection("", server.getUsername(), "");
+            facade.testServerConnection("", aServer.getUsername(), "");
             fail();
         } catch (BambooLoginException e) {
 
         }
 
         try {
-            facade.testServerConnection("", "", server.getPasswordString());
+            facade.testServerConnection("", "", aServer.getPasswordString());
             fail();
         } catch (BambooLoginException e) {
 
@@ -169,7 +169,8 @@ public class BambooServerFacadeTest extends TestCase {
     }
 
 
-    public void testBambooConnectionWithEmptyPlan() throws BambooLoginException, CloneNotSupportedException, ServerPasswordNotProvidedException {
+    public void testBambooConnectionWithEmptyPlan()
+            throws BambooLoginException, CloneNotSupportedException, ServerPasswordNotProvidedException {
         server.setSubscribedPlansData(new ArrayList<SubscribedPlanBean>());
         BambooServerFacade facade = new BambooServerFacadeImpl();
         Collection<BambooBuild> plans = facade.getSubscribedPlansResults();

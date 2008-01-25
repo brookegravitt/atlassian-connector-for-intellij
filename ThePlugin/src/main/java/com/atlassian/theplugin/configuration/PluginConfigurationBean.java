@@ -13,7 +13,7 @@ public class PluginConfigurationBean implements PluginConfiguration {
 
     /**
      * For storage purposes.
-     *
+     * <p/>
      * Does not use the JDK1.5 'return a subclass' due to problem with XML serialization.
      */
     public BambooConfigurationBean getBambooConfigurationData() {
@@ -22,16 +22,17 @@ public class PluginConfigurationBean implements PluginConfiguration {
 
     /**
      * For storage purposes.
-     *
+     * <p/>
      * Does not use the JDK1.5 'return a subclass' due to problem with XML serialization.
      */
     public void setBambooConfigurationData(BambooConfigurationBean newConfiguration) {
         bambooConfiguration = newConfiguration;
 
     }
+
     /**
      * Implemnentation for the interface.
-     *
+     * <p/>
      * Do not mistake for #getBambooConfigurationData()
      */
     public BambooConfiguration getBambooConfiguration() {

@@ -2,10 +2,6 @@ package com.atlassian.theplugin.configuration;
 
 import com.intellij.util.xmlb.annotations.Transient;
 
-import java.util.Collection;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by IntelliJ IDEA.
  * User: sginter
@@ -18,7 +14,7 @@ public class BambooConfigurationBean implements BambooConfiguration {
 
     /**
      * For storage purposes.
-     *
+     * <p/>
      * Does not use the JDK1.5 'return a subclass' due to problem with XML serialization.
      */
     public ServerBean getServerData() {
@@ -27,19 +23,19 @@ public class BambooConfigurationBean implements BambooConfiguration {
 
     /**
      * For storage purposes.
-     *
+     * <p/>
      * Does not use the JDK1.5 'return a subclass' due to problem with XML serialization.
      */
-    public void setServerData(ServerBean server) {
-        this.server = server;
+    public void setServerData(ServerBean aServer) {
+        this.server = aServer;
     }
 
 
     /**
      * Implemnentation for the interface.
-     *
+     * <p/>
      * Do not mistake for #getServerData()
-     * 
+     *
      * @return
      */
     @Transient

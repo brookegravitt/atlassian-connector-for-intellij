@@ -1,18 +1,16 @@
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.theplugin.bamboo.BambooStatusChecker;
+import com.atlassian.theplugin.bamboo.BambooStatusListenerImpl;
+import com.atlassian.theplugin.bamboo.BuildStatus;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.WindowManager;
-import com.intellij.openapi.application.ApplicationManager;
-import com.atlassian.theplugin.bamboo.BambooStatusListenerImpl;
-import com.atlassian.theplugin.bamboo.BambooStatusChecker;
-import com.atlassian.theplugin.bamboo.BuildStatus;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.JComponent;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+import javax.swing.*;
 import java.util.Timer;
 
 /**
@@ -29,8 +27,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
     private BambooStatusIcon statusBarIcon;
     private Timer timer = null;
 
-	BambooStatusChecker bambooStatusChecker;
-	private BambooStatusListenerImpl bambooStatusListener;
+    private BambooStatusChecker bambooStatusChecker;
+    private BambooStatusListenerImpl bambooStatusListener;
 
     public ThePluginProjectComponent(Project project) {
         this.project = project;
@@ -39,20 +37,20 @@ public class ThePluginProjectComponent implements ProjectComponent {
     public void initComponent() {
         System.out.println("Init ThePlugin status component.");
 
-		ThePluginApplicationComponent appComponent =
-				ApplicationManager.getApplication().getComponent(ThePluginApplicationComponent.class);
+        ThePluginApplicationComponent appComponent =
+                ApplicationManager.getApplication().getComponent(ThePluginApplicationComponent.class);
 
-		Timer timer = appComponent.getTimer();
-		bambooStatusChecker = appComponent.getBambooStatusChecker();
+        timer = appComponent.getTimer();
+        bambooStatusChecker = appComponent.getBambooStatusChecker();
 
-		statusBarIcon = new BambooStatusIcon();
+        statusBarIcon = new BambooStatusIcon();
         statusBarIcon.updateBambooStatus(BuildStatus.ERROR, "Waiting for Bamboo build statuses.");
 
         statusBarComponent = statusBarIcon;
 
         bambooStatusListener = new BambooStatusListenerImpl(statusBarIcon);
         bambooStatusChecker.registerListener(bambooStatusListener);
-	}
+    }
 
     public void disposeComponent() {
         bambooStatusChecker.unregisterListener(bambooStatusListener);

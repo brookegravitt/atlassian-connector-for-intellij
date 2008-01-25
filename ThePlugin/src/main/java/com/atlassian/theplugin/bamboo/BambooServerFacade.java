@@ -15,7 +15,7 @@ import java.util.Collection;
 
 public interface BambooServerFacade {
     void testServerConnection(String url, String userName, String password) throws BambooLoginException;
-    
+
     Collection<BambooProject> getProjectList() throws ServerPasswordNotProvidedException;
 
     Collection<BambooPlan> getPlanList() throws ServerPasswordNotProvidedException;
