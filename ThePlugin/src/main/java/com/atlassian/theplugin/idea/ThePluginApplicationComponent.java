@@ -34,7 +34,7 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
     private PluginConfigurationBean configuration = new PluginConfigurationBean();
 
 	private final Timer timer = new Timer();
-	private final static int TIMER_TICK = 5000;
+	private final static int TIMER_TICK = 20000;
 	private BambooStatusChecker bambooStatusChecker;
 
 	public BambooStatusChecker getBambooStatusChecker() {
