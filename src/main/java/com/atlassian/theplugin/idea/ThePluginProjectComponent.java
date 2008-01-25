@@ -21,70 +21,70 @@ import java.util.Timer;
  * To change this template use File | Settings | File Templates.
  */
 public class ThePluginProjectComponent implements ProjectComponent {
-    private final Project project;
-    private StatusBar statusBar;
-    private JComponent statusBarComponent;
-    private BambooStatusIcon statusBarIcon;
-    private Timer timer = null;
+	private final Project project;
+	private StatusBar statusBar;
+	private JComponent statusBarComponent;
+	private BambooStatusIcon statusBarIcon;
+	private Timer timer = null;
 
-    private BambooStatusChecker bambooStatusChecker;
-    private BambooStatusListenerImpl bambooStatusListener;
+	private BambooStatusChecker bambooStatusChecker;
+	private BambooStatusListenerImpl bambooStatusListener;
 
-    public ThePluginProjectComponent(Project project) {
-        this.project = project;
-    }
+	public ThePluginProjectComponent(Project project) {
+		this.project = project;
+	}
 
-    public void initComponent() {
-        System.out.println("Init ThePlugin status component.");
+	public void initComponent() {
+		System.out.println("Init ThePlugin status component.");
 
-        ThePluginApplicationComponent appComponent =
-                ApplicationManager.getApplication().getComponent(ThePluginApplicationComponent.class);
+		ThePluginApplicationComponent appComponent =
+				ApplicationManager.getApplication().getComponent(ThePluginApplicationComponent.class);
 
-        timer = appComponent.getTimer();
-        bambooStatusChecker = appComponent.getBambooStatusChecker();
+		timer = appComponent.getTimer();
+		bambooStatusChecker = appComponent.getBambooStatusChecker();
 
-        statusBarIcon = new BambooStatusIcon();
-        statusBarIcon.updateBambooStatus(BuildStatus.ERROR, "Waiting for Bamboo build statuses.");
+		statusBarIcon = new BambooStatusIcon();
+		statusBarIcon.updateBambooStatus(BuildStatus.ERROR, "Waiting for Bamboo build statuses.");
 
-        statusBarComponent = statusBarIcon;
+		statusBarComponent = statusBarIcon;
 
-        bambooStatusListener = new BambooStatusListenerImpl(statusBarIcon);
-        bambooStatusChecker.registerListener(bambooStatusListener);
-    }
+		bambooStatusListener = new BambooStatusListenerImpl(statusBarIcon);
+		bambooStatusChecker.registerListener(bambooStatusListener);
+	}
 
-    public void disposeComponent() {
-        bambooStatusChecker.unregisterListener(bambooStatusListener);
+	public void disposeComponent() {
+		bambooStatusChecker.unregisterListener(bambooStatusListener);
 
-        System.out.println("Dispose ThePlugin status component.");
-        if (timer != null) {
-            timer.cancel();
-        }
-        statusBarComponent = null;
-        statusBarIcon = null;
+		System.out.println("Dispose ThePlugin status component.");
+		if (timer != null) {
+			timer.cancel();
+		}
+		statusBarComponent = null;
+		statusBarIcon = null;
 
 
-    }
+	}
 
-    @NotNull
-    public String getComponentName() {
-        return "ThePluginProjectComponent";
-    }
+	@NotNull
+	public String getComponentName() {
+		return "ThePluginProjectComponent";
+	}
 
-    public void projectOpened() {
-        statusBar = WindowManager.getInstance().getStatusBar(project);
-        statusBar.addCustomIndicationComponent(statusBarComponent);
-        System.out.println("projectOpened");
-    }
+	public void projectOpened() {
+		statusBar = WindowManager.getInstance().getStatusBar(project);
+		statusBar.addCustomIndicationComponent(statusBarComponent);
+		System.out.println("projectOpened");
+	}
 
-    public void projectClosed() {
-        statusBar.setInfo("disposeComponent");
-        statusBar.removeCustomIndicationComponent(statusBarComponent);
-        System.out.println("projectClosed");
+	public void projectClosed() {
+		statusBar.setInfo("disposeComponent");
+		statusBar.removeCustomIndicationComponent(statusBarComponent);
+		System.out.println("projectClosed");
 
-    }
+	}
 
-    public void setBambooStatus(String status, String statusDescription) {
-        statusBarIcon.setText(status);
-        statusBarIcon.setToolTipText(statusDescription);
-    }
+	public void setBambooStatus(String status, String statusDescription) {
+		statusBarIcon.setText(status);
+		statusBarIcon.setToolTipText(statusDescription);
+	}
 }

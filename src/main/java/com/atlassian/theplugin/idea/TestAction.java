@@ -17,26 +17,26 @@ import com.intellij.openapi.ui.Messages;
  * To change this template use File | Settings | File Templates.
  */
 public class TestAction extends AnAction {
-    public void actionPerformed(AnActionEvent e) {
-        BambooConfiguration bambooConfiguration = ConfigurationFactory.getConfiguration().getBambooConfiguration();
+	public void actionPerformed(AnActionEvent e) {
+		BambooConfiguration bambooConfiguration = ConfigurationFactory.getConfiguration().getBambooConfiguration();
 
-        String msg = "Name: " + bambooConfiguration.getServer().getName();
-        msg += "\nURL: " + bambooConfiguration.getServer().getUrlString();
-        msg += "\nUsername: " + bambooConfiguration.getServer().getUsername();
-        try {
-            msg += "\nPassword: " + bambooConfiguration.getServer().getPasswordString();
-        } catch (ServerPasswordNotProvidedException exception) {
-            msg += "\nPassword: " + exception.getMessage();
-        }
+		String msg = "Name: " + bambooConfiguration.getServer().getName();
+		msg += "\nURL: " + bambooConfiguration.getServer().getUrlString();
+		msg += "\nUsername: " + bambooConfiguration.getServer().getUsername();
+		try {
+			msg += "\nPassword: " + bambooConfiguration.getServer().getPasswordString();
+		} catch (ServerPasswordNotProvidedException exception) {
+			msg += "\nPassword: " + exception.getMessage();
+		}
 
-        Messages.showMessageDialog(
-                msg,
-                "Sample",
-                Messages.getInformationIcon());
+		Messages.showMessageDialog(
+				msg,
+				"Sample",
+				Messages.getInformationIcon());
 
-        Project project = (Project) e.getDataContext().getData(DataConstantsEx.PROJECT);
-        ThePluginProjectComponent tpmc = project.getComponent(ThePluginProjectComponent.class);
-        tpmc.setBambooStatus("Chg", "After change action");
+		Project project = (Project) e.getDataContext().getData(DataConstantsEx.PROJECT);
+		ThePluginProjectComponent tpmc = project.getComponent(ThePluginProjectComponent.class);
+		tpmc.setBambooStatus("Chg", "After change action");
 
-    }
+	}
 }

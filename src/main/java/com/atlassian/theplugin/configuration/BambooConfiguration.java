@@ -8,5 +8,5 @@ package com.atlassian.theplugin.configuration;
  * Time: 11:46:29 AM
  */
 public interface BambooConfiguration {
-    Server getServer();
+	Server getServer();
 }

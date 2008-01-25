@@ -8,7 +8,7 @@ package com.atlassian.theplugin.configuration;
  * To change this template use File | Settings | File Templates.
  */
 public class ServerPasswordNotProvidedException extends Exception {
-    public ServerPasswordNotProvidedException(String message) {
-        super(message);
-    }
+	public ServerPasswordNotProvidedException(String message) {
+		super(message);
+	}
 }

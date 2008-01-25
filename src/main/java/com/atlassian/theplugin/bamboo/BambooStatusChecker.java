@@ -20,44 +20,44 @@ import java.util.TimerTask;
  */
 public class BambooStatusChecker extends TimerTask {
 
-    private static final Category LOGGER = Logger.getInstance(BambooStatusChecker.class);
+	private static final Category LOGGER = Logger.getInstance(BambooStatusChecker.class);
 
-    private List<BambooStatusListenerImpl> listenerList = new ArrayList<BambooStatusListenerImpl>();
+	private List<BambooStatusListenerImpl> listenerList = new ArrayList<BambooStatusListenerImpl>();
 
 
-    public synchronized void registerListener(BambooStatusListenerImpl listener) {
-        listenerList.add(listener);
-    }
+	public synchronized void registerListener(BambooStatusListenerImpl listener) {
+		listenerList.add(listener);
+	}
 
-    public synchronized void unregisterListener(BambooStatusListenerImpl listener) {
-        listenerList.remove(listener);
-    }
+	public synchronized void unregisterListener(BambooStatusListenerImpl listener) {
+		listenerList.remove(listener);
+	}
 
-    public synchronized void run() {
-        // for each server
-        Collection<BambooBuild> newStatus = null;
-        for (int maxTries = 1; maxTries > 0; maxTries--) {
-            try {
-                newStatus = BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults();
-            } catch (ServerPasswordNotProvidedException exception) {
-                showBlockingDialog();
-            }
-        }
+	public synchronized void run() {
+		// for each server
+		Collection<BambooBuild> newStatus = null;
+		for (int maxTries = 1; maxTries > 0; maxTries--) {
+			try {
+				newStatus = BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults();
+			} catch (ServerPasswordNotProvidedException exception) {
+				showBlockingDialog();
+			}
+		}
 
-        for (BambooStatusListenerImpl listener : listenerList) {
-            //listener.updateBuildStatuses(newStatus);
+		for (BambooStatusListenerImpl listener : listenerList) {
+			//listener.updateBuildStatuses(newStatus);
 
-            listener.setBuilds(newStatus);
-            EventQueue.invokeLater(listener);
-        }
+			listener.setBuilds(newStatus);
+			EventQueue.invokeLater(listener);
+		}
 
-    }
+	}
 
-    private void showBlockingDialog() {
+	private void showBlockingDialog() {
 
-        MissingPasswordHandler handler = new MissingPasswordHandler();
+		MissingPasswordHandler handler = new MissingPasswordHandler();
 
-        EventQueue.invokeLater(handler);
+		EventQueue.invokeLater(handler);
 
 //		try {
 //			EventQueue.invokeAndWait(handler);
@@ -66,6 +66,6 @@ public class BambooStatusChecker extends TimerTask {
 //		} catch (InvocationTargetException e) {
 //			LOGGER.warn("Missing password dialog problem", e);
 //		}
-    }
+	}
 
 }

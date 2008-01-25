@@ -8,7 +8,7 @@ package com.atlassian.theplugin.bamboo;
  * To change this template use File | Settings | File Templates.
  */
 public interface BambooPlan {
-    String getPlanName();
+	String getPlanName();
 
-    String getPlanKey();
+	String getPlanKey();
 }

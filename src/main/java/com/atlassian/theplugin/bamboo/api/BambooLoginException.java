@@ -9,15 +9,15 @@ package com.atlassian.theplugin.bamboo.api;
  */
 public class BambooLoginException extends BambooException {
 
-    public BambooLoginException(Throwable throwable) {
-        super(throwable);
-    }
+	public BambooLoginException(Throwable throwable) {
+		super(throwable);
+	}
 
-    public BambooLoginException(String message) {
-        super(message);
-    }
+	public BambooLoginException(String message) {
+		super(message);
+	}
 
-    public BambooLoginException(String message, Throwable throwable) {
-        super(message, throwable);
-    }
+	public BambooLoginException(String message, Throwable throwable) {
+		super(message, throwable);
+	}
 }

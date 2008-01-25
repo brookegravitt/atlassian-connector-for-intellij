@@ -8,13 +8,13 @@ package com.atlassian.theplugin.configuration;
  * To change this template use File | Settings | File Templates.
  */
 public class SubscribedPlanBean implements SubscribedPlan {
-    private String planId;
+	private String planId;
 
-    public String getPlanId() {
-        return planId;
-    }
+	public String getPlanId() {
+		return planId;
+	}
 
-    public void setPlanId(String planId) {
-        this.planId = planId;
-    }
+	public void setPlanId(String planId) {
+		this.planId = planId;
+	}
 }

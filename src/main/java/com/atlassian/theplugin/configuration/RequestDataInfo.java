@@ -10,14 +10,14 @@ import java.util.Date;
  * To change this template use File | Settings | File Templates.
  */
 public class RequestDataInfo implements RequestData {
-    private Date lastPoolingTime = new Date(0);
+	private Date lastPoolingTime = new Date(0);
 
-    public Date getPoolingTime() {
-        return lastPoolingTime;
-    }
+	public Date getPoolingTime() {
+		return lastPoolingTime;
+	}
 
-    public void setPoolingTime(Date date) {
-        lastPoolingTime = date;
-    }
+	public void setPoolingTime(Date date) {
+		lastPoolingTime = date;
+	}
 
 }

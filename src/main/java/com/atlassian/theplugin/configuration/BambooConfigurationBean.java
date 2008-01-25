@@ -10,38 +10,38 @@ import com.intellij.util.xmlb.annotations.Transient;
  * To change this template use File | Settings | File Templates.
  */
 public class BambooConfigurationBean implements BambooConfiguration {
-    private ServerBean server = new ServerBean();
+	private ServerBean server = new ServerBean();
 
-    /**
-     * For storage purposes.
-     * <p/>
-     * Does not use the JDK1.5 'return a subclass' due to problem with XML serialization.
-     */
-    public ServerBean getServerData() {
-        return server;
-    }
+	/**
+	 * For storage purposes.
+	 * <p/>
+	 * Does not use the JDK1.5 'return a subclass' due to problem with XML serialization.
+	 */
+	public ServerBean getServerData() {
+		return server;
+	}
 
-    /**
-     * For storage purposes.
-     * <p/>
-     * Does not use the JDK1.5 'return a subclass' due to problem with XML serialization.
-     */
-    public void setServerData(ServerBean aServer) {
-        this.server = aServer;
-    }
+	/**
+	 * For storage purposes.
+	 * <p/>
+	 * Does not use the JDK1.5 'return a subclass' due to problem with XML serialization.
+	 */
+	public void setServerData(ServerBean aServer) {
+		this.server = aServer;
+	}
 
 
-    /**
-     * Implemnentation for the interface.
-     * <p/>
-     * Do not mistake for #getServerData()
-     *
-     * @return
-     */
-    @Transient
-    public Server getServer() {
-        return server;
-    }
+	/**
+	 * Implemnentation for the interface.
+	 * <p/>
+	 * Do not mistake for #getServerData()
+	 *
+	 * @return
+	 */
+	@Transient
+	public Server getServer() {
+		return server;
+	}
 
 
 }
