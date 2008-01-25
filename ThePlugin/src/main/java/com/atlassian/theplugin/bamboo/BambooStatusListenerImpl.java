@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.Calendar;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.ArrayList;
 
 /**
  * Created by IntelliJ IDEA.
@@ -15,14 +17,20 @@ import java.text.SimpleDateFormat;
  * Time: 3:49:30 PM
  * To change this template use File | Settings | File Templates.
  */
-public class BambooStatusListenerImpl implements BambooStatusListener {
+public class BambooStatusListenerImpl implements Runnable {
     private int counter = 0;
     static final String DEFAULT_DATE_TIME_FROMAT = "";
-    
+
 
     BambooStatusIcon statusBarIcon;
 
-    public BambooStatusListenerImpl(BambooStatusIcon icon) {
+	Collection<BambooBuild> builds = new ArrayList<BambooBuild>();
+
+	synchronized public void setBuilds(Collection<BambooBuild> builds) {
+		this.builds = builds;
+	}
+
+	public BambooStatusListenerImpl(BambooStatusIcon icon) {
         statusBarIcon = icon;
     }
 
@@ -31,7 +39,7 @@ public class BambooStatusListenerImpl implements BambooStatusListener {
        DateFormat df = DateFormat.getTimeInstance();
 
         sb.append(df.format(buildInfo.getPoolingTime()) + "</td>");
-        sb.append("<td>"+                       
+        sb.append("<td>"+
                 ((buildInfo.getBuildRelativeBuildDate().length() == 0)? "---":  buildInfo.getBuildRelativeBuildDate()) +
                   "</td>");
 
@@ -96,13 +104,13 @@ public class BambooStatusListenerImpl implements BambooStatusListener {
         StringBuilder sb = new StringBuilder("<html><body>");
 
         if (buildStatuses == null || buildStatuses.size() == 0) {
-            sb.append("No plans defined.");            
+            sb.append("No plans defined.");
         } else {
             sb.append("<table>");
             sb.append("<th>Plan</th><th>Build</th><th>Status</th><th>Last Pooling</th><th>Last Build</th>");
             for (BambooBuild buildInfo : buildStatuses) {
                 switch (buildInfo.getStatus()) {
-                    case FAILED:                        
+                    case FAILED:
                         sb.append(getFailedBuildRow(buildInfo));
                         status = FAILED;
                         break;
@@ -124,4 +132,8 @@ public class BambooStatusListenerImpl implements BambooStatusListener {
         sb.append("</body></html>");
         statusBarIcon.updateBambooStatus(status, sb.toString());
     }
+
+	public void run() {
+		updateBuildStatuses(builds);
+	}
 }
