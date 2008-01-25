@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.bamboo;
 
-import com.atlassian.theplugin.configuration.RequestDataInfo;
 import com.atlassian.theplugin.configuration.RequestData;
 
 /**

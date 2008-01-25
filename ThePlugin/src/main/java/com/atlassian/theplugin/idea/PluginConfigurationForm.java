@@ -35,12 +35,13 @@ public class PluginConfigurationForm {
     private JCheckBox chkPasswordRemember;
 
     public PluginConfigurationForm() {
-        
+
         testConnection.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e){
+            public void actionPerformed(ActionEvent e) {
 
                 try {
-                    BambooServerFactory.getBambooServerFacade().testServerConnection(serverUrl.getText(), username.getText(), String.valueOf(password.getPassword()));
+                    BambooServerFactory.getBambooServerFacade().testServerConnection(serverUrl.getText(),
+                            username.getText(), String.valueOf(password.getPassword()));
                     showMessageDialog("Connected successfully", "Connection OK", Messages.getInformationIcon());
                 } catch (BambooLoginException e1) {
                     showMessageDialog(e1.getMessage(), "Connection Error", Messages.getErrorIcon());
@@ -59,16 +60,19 @@ public class PluginConfigurationForm {
         } catch (ServerPasswordNotProvidedException serverPasswordNotProvidedException) {
             // swallow - password does not have to be initialized always
         }
-        buildPlansTextArea.setText(subscribedPlansToString(data.getBambooConfigurationData().getServerData().getSubscribedPlansData()));
+        buildPlansTextArea.setText(
+                subscribedPlansToString(data.getBambooConfigurationData().getServerData().getSubscribedPlansData()));
     }
 
     public void getData(PluginConfigurationBean data) {
         data.getBambooConfigurationData().getServerData().setName(serverName.getText());
         data.getBambooConfigurationData().getServerData().setUrlString(serverUrl.getText());
         data.getBambooConfigurationData().getServerData().setUsername(username.getText());
-        data.getBambooConfigurationData().getServerData().setPasswordString(String.valueOf(password.getPassword()), chkPasswordRemember.isSelected());
+        data.getBambooConfigurationData().getServerData().setPasswordString(
+                String.valueOf(password.getPassword()), chkPasswordRemember.isSelected());
 
-        data.getBambooConfigurationData().getServerData().setSubscribedPlansData(subscribedPlansFromString(buildPlansTextArea.getText()));
+        data.getBambooConfigurationData().getServerData().setSubscribedPlansData(
+                subscribedPlansFromString(buildPlansTextArea.getText()));
     }
 
     static String subscribedPlansToString(Collection<SubscribedPlanBean> plans) {
@@ -90,7 +94,9 @@ public class PluginConfigurationForm {
         List<SubscribedPlanBean> plans = new ArrayList<SubscribedPlanBean>();
 
         for (String planId : planList.split("\\s+")) {
-            if (planId.length() == 0) continue;
+            if (planId.length() == 0) {
+                continue;
+            }
             SubscribedPlanBean spb = new SubscribedPlanBean();
             spb.setPlanId(planId);
             plans.add(spb);
@@ -100,31 +106,42 @@ public class PluginConfigurationForm {
     }
 
     public boolean isModified(PluginConfigurationBean data) {
-        if (chkPasswordRemember.isSelected() != data.getBambooConfigurationData().getServer().getShouldPasswordBeStored())
+        if (chkPasswordRemember.isSelected() != data.getBambooConfigurationData().getServer().getShouldPasswordBeStored()) {
             return true;
-        if (serverName.getText() != null ? !serverName.getText().equals(data.getBambooConfigurationData().getServer().getName()) :
-                data.getBambooConfigurationData().getServer().getName() != null)
+        }
+        if (serverName.getText() != null
+                ? !serverName.getText().equals(data.getBambooConfigurationData().getServer().getName())
+                : data.getBambooConfigurationData().getServer().getName() != null) {
             return true;
-        if (serverUrl.getText() != null ? !serverUrl.getText().equals(data.getBambooConfigurationData().getServer().getUrlString()) :
-                data.getBambooConfigurationData().getServer().getUrlString() != null)
+        }
+        if (serverUrl.getText() != null
+                ? !serverUrl.getText().equals(data.getBambooConfigurationData().getServer().getUrlString())
+                : data.getBambooConfigurationData().getServer().getUrlString() != null) {
             return true;
-        if (username.getText() != null ? !username.getText().equals(data.getBambooConfigurationData().getServer().getUsername()) :
-                data.getBambooConfigurationData().getServer().getUsername() != null)
+        }
+        if (username.getText() != null
+                ? !username.getText().equals(data.getBambooConfigurationData().getServer().getUsername())
+                : data.getBambooConfigurationData().getServer().getUsername() != null) {
             return true;
+        }
         if (String.valueOf(password.getPassword()) != null) {
-            for (;;) {
+            while (true) {
                 try {
-                    if (String.valueOf(password.getPassword()).equals(data.getBambooConfigurationData().getServer().getPasswordString()))
+                    if (String.valueOf(password.getPassword()).equals(
+                            data.getBambooConfigurationData().getServer().getPasswordString())) {
                         break;
+                    }
                 } catch (ServerPasswordNotProvidedException serverPasswordNotProvidedException) {
                     // swallow
                 }
                 return true;
             }
         }
-        if (null != buildPlansTextArea.getText() ? !buildPlansTextArea.getText().equals(subscribedPlansToString(data.getBambooConfigurationData().getServerData().getSubscribedPlansData())) :
-                data.getBambooConfigurationData().getServerData().getSubscribedPlansData() != null)
+        if (null != buildPlansTextArea.getText() ? !buildPlansTextArea.getText().equals(
+                subscribedPlansToString(data.getBambooConfigurationData().getServerData().getSubscribedPlansData()))
+                : data.getBambooConfigurationData().getServerData().getSubscribedPlansData() != null) {
             return true;
+        }
         return false;
     }
 
@@ -141,9 +158,6 @@ public class PluginConfigurationForm {
                 BrowserUtil.launchBrowser("https://studio.atlassian.com/browse/PL");
             }
         });
-
-
-
 
 
     }

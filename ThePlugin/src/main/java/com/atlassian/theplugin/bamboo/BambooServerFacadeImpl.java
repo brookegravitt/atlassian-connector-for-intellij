@@ -14,20 +14,21 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Class used for communication wiht Bamboo Server 
+ * Class used for communication wiht Bamboo Server.
  * User: sginter
  * Date: Jan 15, 2008
  * Time: 5:12:27 PM
  */
 public class BambooServerFacadeImpl implements BambooServerFacade {
 
-    private final static Category log = Logger.getInstance(BambooServerFacadeImpl.class);
-    
+    private static final Category LOG = Logger.getInstance(BambooServerFacadeImpl.class);
+
     public BambooServerFacadeImpl() {
     }
 
     /**
-     * Test connection to Bamboo server
+     * Test connection to Bamboo server.
+     *
      * @param url
      * @param userName
      * @param password
@@ -36,11 +37,12 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
     public void testServerConnection(String url, String userName, String password) throws BambooLoginException {
         BambooSession apiHandler = new BambooSession(url);
         apiHandler.login(userName, password.toCharArray());
-        apiHandler.logout();  
+        apiHandler.logout();
     }
 
     /**
-     * List projects defined on Bamboo server
+     * List projects defined on Bamboo server.
+     *
      * @return list of projects or null on error
      */
     public Collection<BambooProject> getProjectList() throws ServerPasswordNotProvidedException {
@@ -51,13 +53,14 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
             api.login(server.getUsername(), server.getPasswordString().toCharArray());
             return api.listProjectNames();
         } catch (BambooException e) {
-            log.error("Bamboo exception: " + e.getMessage());
+            LOG.error("Bamboo exception: " + e.getMessage());
             return null;
         }
     }
 
     /**
      * List plans defined on Bamboo server
+     *
      * @return list of plans or null on error
      */
     public Collection<BambooPlan> getPlanList() throws ServerPasswordNotProvidedException {
@@ -68,13 +71,14 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
             api.login(server.getUsername(), server.getPasswordString().toCharArray());
             return api.listPlanNames();
         } catch (BambooException e) {
-            log.error("Bamboo exception: " + e.getMessage());
+            LOG.error("Bamboo exception: " + e.getMessage());
             return null;
         }
     }
 
     /**
      * List details on subscribed plans
+     *
      * @return results on subscribed builds
      */
     public Collection<BambooBuild> getSubscribedPlansResults() throws ServerPasswordNotProvidedException {
@@ -87,7 +91,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
             api.login(server.getUsername(), server.getPasswordString().toCharArray());
             connectionErrorMessage = "";
         } catch (BambooLoginException e) {
-            log.error("Bamboo login exception: " + e.getMessage());
+            LOG.error("Bamboo login exception: " + e.getMessage());
             connectionErrorMessage = e.getMessage();
         }
 
@@ -96,9 +100,9 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
                 try {
                     BambooBuildInfo buildInfo = api.getLatestBuildForPlan(plan.getPlanId());
                     buildInfo.setServerUrl(server.getUrlString());
-                    builds.add(buildInfo);                
+                    builds.add(buildInfo);
                 } catch (BambooException e) {
-                    log.error("Bamboo exception: " + e.getMessage());
+                    LOG.error("Bamboo exception: " + e.getMessage());
                     builds.add(getErrorBuildInfo(server, plan.getPlanId(), e.getMessage()));
                 }
             } else {
@@ -112,7 +116,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 
         return builds;
     }
-    
+
     private BambooBuild getErrorBuildInfo(Server server, String planId, String message) {
         BambooBuildInfo buildInfo = new BambooBuildInfo();
         buildInfo.setServerUrl(server.getUrlString());

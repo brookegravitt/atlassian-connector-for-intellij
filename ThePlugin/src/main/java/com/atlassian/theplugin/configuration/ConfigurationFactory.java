@@ -7,6 +7,10 @@ package com.atlassian.theplugin.configuration;
  * Time: 11:58:42 AM
  */
 public abstract class ConfigurationFactory {
+
+    private ConfigurationFactory() {
+    }
+
     private static PluginConfiguration pluginConfiguration;
 
     public static PluginConfiguration getConfiguration() {

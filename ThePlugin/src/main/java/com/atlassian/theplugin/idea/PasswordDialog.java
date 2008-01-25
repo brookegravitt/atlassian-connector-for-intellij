@@ -45,7 +45,8 @@ public class PasswordDialog extends JDialog {
                             getPasswordString());
                     showMessageDialog("Connected successfully", "Connection OK", Messages.getInformationIcon());
                 } catch (BambooLoginException e1) {
-                    showMessageDialog(e1.getMessage(), "Connection Error" + server.getUrlString() + "-" + getPasswordString(), Messages.getErrorIcon());
+                    showMessageDialog(e1.getMessage(), "Connection Error" + server.getUrlString()
+                            + "-" + getPasswordString(), Messages.getErrorIcon());
                 }
             }
         });

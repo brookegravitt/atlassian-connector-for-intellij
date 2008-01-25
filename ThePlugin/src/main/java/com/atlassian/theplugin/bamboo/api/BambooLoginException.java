@@ -7,7 +7,7 @@ package com.atlassian.theplugin.bamboo.api;
  * Time: 14:31:38
  * To change this template use File | Settings | File Templates.
  */
-public class BambooLoginException extends BambooException{
+public class BambooLoginException extends BambooException {
 
     public BambooLoginException(Throwable throwable) {
         super(throwable);
@@ -16,7 +16,7 @@ public class BambooLoginException extends BambooException{
     public BambooLoginException(String message) {
         super(message);
     }
-    
+
     public BambooLoginException(String message, Throwable throwable) {
         super(message, throwable);
     }
