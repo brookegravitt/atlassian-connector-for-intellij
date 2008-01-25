@@ -2,6 +2,7 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.bamboo.BambooStatusChecker;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
@@ -13,7 +14,11 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
+import javax.swing.Icon;
+import javax.swing.JComponent;
+import java.util.Timer;
+
+//import javax.swing.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -28,7 +33,19 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
     private PluginConfigurationForm form;
     private PluginConfigurationBean configuration = new PluginConfigurationBean();
 
-    @Nls
+	private final Timer timer = new Timer();
+	private final static int TIMER_TICK = 5000;
+	private BambooStatusChecker bambooStatusChecker;
+
+	public BambooStatusChecker getBambooStatusChecker() {
+		return bambooStatusChecker;
+	}
+
+	public Timer getTimer() {
+		return timer;
+	}
+
+	@Nls
     public String getDisplayName() {
         return "The Plugin";
     }
@@ -52,7 +69,10 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 
     public void initComponent() {
         ConfigurationFactory.setConfiguration(configuration);
-    }
+
+		bambooStatusChecker = new BambooStatusChecker();
+		timer.schedule(bambooStatusChecker, 0, TIMER_TICK);
+	}
 
     public void disposeComponent() {
         //To change body of implemented methods use File | Settings | File Templates.
