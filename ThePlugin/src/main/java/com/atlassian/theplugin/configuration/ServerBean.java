@@ -29,27 +29,27 @@ public class ServerBean implements Server{
     public ServerBean() {
     }
 
-    public String getName() {
+    public synchronized String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public synchronized void setName(String name) {
         this.name = name;
     }
 
-    public String getUrlString() {
+    public synchronized String getUrlString() {
         return urlString;
     }
 
-    public void setUrlString(String urlString) {
+    public synchronized void setUrlString(String urlString) {
         this.urlString = urlString;
     }
 
-    public String getUsername() {
+    public synchronized String getUsername() {
         return username;
     }
 
-    public void setUsername(String username) {
+    public synchronized void setUsername(String username) {
         this.username = username;
     }
 
@@ -60,7 +60,7 @@ public class ServerBean implements Server{
 //        return encryptedPassword;
 //    }
 
-    public String getEncryptedPassword() {
+    public synchronized String getEncryptedPassword() {
         return encryptedPassword;
     }
 
@@ -73,45 +73,45 @@ public class ServerBean implements Server{
 //        }
 //    }
 
-    private String decode(String str2decode) {
+    private synchronized String decode(String str2decode) {
         return str2decode;
     }
 
 
-    private String encode(String str2encode) {
+    private synchronized String encode(String str2encode) {
         return str2encode;
     }
 
-    public void setEncryptedPassword(String encryptedPassword) {
+    public synchronized void setEncryptedPassword(String encryptedPassword) {
         password = decode(encryptedPassword);
         this.encryptedPassword = encryptedPassword;
         isConfigInitialized = true;
     }
 
-    public Boolean getShouldPasswordBeStored() {
+    public synchronized Boolean getShouldPasswordBeStored() {
         return shouldPasswordBeStored;
     }
 
-    public Boolean getIsConfigInitialized() {
+    public synchronized Boolean getIsConfigInitialized() {
         return isConfigInitialized;
     }
 
     @Transient
-    public void setIsConfigInitialized(Boolean isConfigInitialized) {
+    public synchronized void setIsConfigInitialized(Boolean isConfigInitialized) {
         this.isConfigInitialized = isConfigInitialized;
     }
 
-    public void setShouldPasswordBeStored(Boolean shouldPasswordBeStored) {
+    public synchronized void setShouldPasswordBeStored(Boolean shouldPasswordBeStored) {
         this.shouldPasswordBeStored = shouldPasswordBeStored;
     }
 
     @Transient
-    public Collection<? extends SubscribedPlan> getSubscribedPlans() {
+    public synchronized Collection<? extends SubscribedPlan> getSubscribedPlans() {
         return subscribedPlans;
     }
 
     @Transient
-    public String getPasswordString() throws ServerPasswordNotProvidedException {
+    public synchronized String getPasswordString() throws ServerPasswordNotProvidedException {
         if (!isConfigInitialized) {
             throw new ServerPasswordNotProvidedException("User password for \""+ name +"\" server not provided.");
         }
@@ -119,7 +119,7 @@ public class ServerBean implements Server{
     }
 
     @Transient
-    public void setPasswordString(String password, Boolean shouldBeStoredPermanently) {
+    public synchronized void setPasswordString(String password, Boolean shouldBeStoredPermanently) {
         this.shouldPasswordBeStored = shouldBeStoredPermanently;
         this.password = password;
         isConfigInitialized = true;
@@ -136,16 +136,16 @@ public class ServerBean implements Server{
 
     }
 
-    public List<SubscribedPlanBean> getSubscribedPlansData() {
+    public synchronized List<SubscribedPlanBean> getSubscribedPlansData() {
         return subscribedPlans;
     }
 
-    public void setSubscribedPlansData(List<SubscribedPlanBean> subscribedPlansData) {
+    public synchronized void setSubscribedPlansData(List<SubscribedPlanBean> subscribedPlansData) {
         this.subscribedPlans = subscribedPlansData;
     }
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
+    public synchronized Object clone() throws CloneNotSupportedException {
         return super.clone();    //To change body of overridden methods use File | Settings | File Templates.
     }
 }
