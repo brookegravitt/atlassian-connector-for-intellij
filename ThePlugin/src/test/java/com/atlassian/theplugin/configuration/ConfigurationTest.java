@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.configuration;
 
+import static com.atlassian.theplugin.idea.PluginInfo.NAME;
 import junit.framework.TestCase;
 
 public class ConfigurationTest extends TestCase {
@@ -33,4 +34,9 @@ public class ConfigurationTest extends TestCase {
 
 
 	}
+
+
+    public void testProjectSettings() {
+        assertEquals("The Plugin", NAME);
+    }
 }
