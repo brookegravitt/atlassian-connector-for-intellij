@@ -36,7 +36,7 @@ public class MissingPasswordHandler implements Runnable {
 			//WindowManager.getInstance().getAllFrames();
 
 			int answer = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(), panel,
-					PluginInfo.NAME, OK_CANCEL_OPTION, PLAIN_MESSAGE);
+					PluginInfo.getName(), OK_CANCEL_OPTION, PLAIN_MESSAGE);
 
 			String password = "";
 			Boolean shouldPasswordBeStored = false;
@@ -47,7 +47,7 @@ public class MissingPasswordHandler implements Runnable {
 
 				JOptionPane.showMessageDialog(null,
 						"You can always change password by changing plugin settings (Preferences | IDE Settings | "
-								+ PluginInfo.NAME + ")");
+								+ PluginInfo.getName() + ")");
 			}
 			// so or so we assume that user provided password
 			conf.setPasswordString(password, shouldPasswordBeStored);
