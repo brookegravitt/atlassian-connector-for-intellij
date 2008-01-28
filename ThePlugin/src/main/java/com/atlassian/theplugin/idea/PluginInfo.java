@@ -24,28 +24,31 @@ import java.util.zip.ZipFile;
 public final class PluginInfo {
     private static final Category LOGGER = Logger.getInstance(PluginStatusBarToolTip.class);
 
-    private static final String BASEDIR = PathUtil.getJarPathForClass(PluginInfo.class);
+    private String baseDir = PathUtil.getJarPathForClass(PluginInfo.class);
 
-    private static final Document PLUGIN_DOC = setDoc();
+    private Document doc = setDoc();
 
-    private PluginInfo() {
+	private PluginInfo() {
+		super();
+	}
+
+	public static String getName() {
+		// TODO lguminski: to make the application reading plugin.xml settings
+		return "The Plugin";
+		// return getConfigValue("/idea-plugin/name");
     }
 
-    public static String getName() {
-        return getConfigValue("/idea-plugin/name");
-    }
-
-    public static String getVersion() {
+    public String getVersion() {
         return getConfigValue("/idea-plugin/version");
     }
 
-    public static String getVendor() {
+    public String getVendor() {
         return getConfigValue("/idea-plugin/vendor");
     }
 
-    private static Document setDoc() {
+    private Document setDoc() {
         Document doc = null;
-        File base = new File(BASEDIR);
+        File base = new File(baseDir);
         if (base.isDirectory()) {
             File file = new File(base.getAbsolutePath(), "META-INF/plugin.xml");
             try {
@@ -71,12 +74,12 @@ public final class PluginInfo {
         return doc;
     }
 
-    private static String getConfigValue(String path) {
+    private String getConfigValue(String path) {
         String result = null;
         XPath xpath = null;
         try {
             xpath = XPath.newInstance(path);
-            Element element = (Element) xpath.selectSingleNode(PLUGIN_DOC);
+            Element element = (Element) xpath.selectSingleNode(doc);
             if (element != null) {
                 result = element.getValue();
             }

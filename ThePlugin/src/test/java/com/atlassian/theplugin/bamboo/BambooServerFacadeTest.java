@@ -108,7 +108,7 @@ public class BambooServerFacadeTest extends TestCase {
 		assertNotNull(plans);
         assertEquals(1, plans.size());
         BambooBuild build = plans.iterator().next();
-        assertEquals(BuildStatus.ERROR, build.getStatus());
+        assertEquals(BuildStatus.UNKNOWN, build.getStatus());
         assertEquals("TP-DEF-BAD", build.getBuildKey());
         assertEquals("Login exception: The user does not have sufficient permissions to perform this action.\n", build.getMessage());
     }
@@ -123,7 +123,7 @@ public class BambooServerFacadeTest extends TestCase {
 		assertNotNull(plans);
         assertEquals(1, plans.size());
         BambooBuild build = plans.iterator().next();
-        assertEquals(BuildStatus.ERROR, build.getStatus());
+        assertEquals(BuildStatus.UNKNOWN, build.getStatus());
         assertEquals("TP-DEF-BAD", build.getBuildKey());
         assertEquals("The user does not have sufficient permissions to perform this action.\n", build.getMessage());
     }

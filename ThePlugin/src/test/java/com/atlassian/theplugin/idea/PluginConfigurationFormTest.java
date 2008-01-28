@@ -1,6 +1,9 @@
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.bamboo.*;
+import com.atlassian.theplugin.bamboo.BambooBuild;
+import com.atlassian.theplugin.bamboo.BambooBuildInfo;
+import com.atlassian.theplugin.bamboo.BambooStatusListenerImpl;
+import com.atlassian.theplugin.bamboo.BuildStatus;
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
@@ -286,25 +289,25 @@ public class PluginConfigurationFormTest extends TestCase {
         BambooStatusListenerImpl statusListener = new BambooStatusListenerImpl(statusIcon);
 
         statusListener.updateBuildStatuses(buildStatuses);
-        assertEquals(BuildStatus.SUCCESS, statusIcon.getBuildStatus());
+        assertEquals(BuildStatus.BUILD_SUCCEED, statusIcon.getBuildStatus());
 
         bambooBuild = new BambooBuildInfo("projectName", "buildNameCrap", "buildKey", "CRAPSTATUS", "buildNumber", "buildReason",
                 "buildRelativeBuildDate", "buildDurationDescription", "buildTestSummary");
         buildStatuses.add(bambooBuild);
         statusListener.updateBuildStatuses(buildStatuses);
-        assertEquals(BuildStatus.ERROR, statusIcon.getBuildStatus());
+        assertEquals(BuildStatus.UNKNOWN, statusIcon.getBuildStatus());
 
-        bambooBuild = new BambooBuildInfo("projectName", "buildNameFailed", "buildKey", BuildStatus.FAILED.toString(), "buildNumber", "buildReason",
+        bambooBuild = new BambooBuildInfo("projectName", "buildNameFailed", "buildKey", BuildStatus.BUILD_FAILED.toString(), "buildNumber", "buildReason",
                 "buildRelativeBuildDate", "buildDurationDescription", "buildTestSummary");
         buildStatuses.add(bambooBuild);
         statusListener.updateBuildStatuses(buildStatuses);
-        assertEquals(BuildStatus.FAILED, statusIcon.getBuildStatus());
+        assertEquals(BuildStatus.BUILD_FAILED, statusIcon.getBuildStatus());
 
-        bambooBuild = new BambooBuildInfo("projectName", "buildNameFailed2", "buildKey", BuildStatus.FAILED.toString(), "buildNumber", "buildReason",
+        bambooBuild = new BambooBuildInfo("projectName", "buildNameFailed2", "buildKey", BuildStatus.BUILD_FAILED.toString(), "buildNumber", "buildReason",
                 "buildRelativeBuildDate", "buildDurationDescription", "buildTestSummary");
         buildStatuses.add(bambooBuild);
         statusListener.updateBuildStatuses(buildStatuses);
-        assertEquals(BuildStatus.FAILED, statusIcon.getBuildStatus());
+        assertEquals(BuildStatus.BUILD_FAILED, statusIcon.getBuildStatus());
 
         assertEquals("<html><body>" +
                       "<table>" +
@@ -338,13 +341,13 @@ public class PluginConfigurationFormTest extends TestCase {
         statusListener.updateBuildStatuses(buildStatuses);
         assertTrue(statusIcon.getIcon().equals(IconLoader.getIcon("/icons/grey-16.png")));
 
-        bambooBuild = new BambooBuildInfo("projectName", "buildNameFailed", "buildKey", BuildStatus.FAILED.toString(), "buildNumber", "buildReason",
+        bambooBuild = new BambooBuildInfo("projectName", "buildNameFailed", "buildKey", BuildStatus.BUILD_FAILED.toString(), "buildNumber", "buildReason",
                 "buildRelativeBuildDate", "buildDurationDescription", "buildTestSummary");
         buildStatuses.add(bambooBuild);
         statusListener.updateBuildStatuses(buildStatuses);
         assertTrue(statusIcon.getIcon().equals(IconLoader.getIcon("/icons/red-16.png")));
 
-        bambooBuild = new BambooBuildInfo("projectName", "buildNameFailed2", "buildKey", BuildStatus.FAILED.toString(), "buildNumber", "buildReason",
+        bambooBuild = new BambooBuildInfo("projectName", "buildNameFailed2", "buildKey", BuildStatus.BUILD_FAILED.toString(), "buildNumber", "buildReason",
                 "buildRelativeBuildDate", "buildDurationDescription", "buildTestSummary");
         buildStatuses.add(bambooBuild);
         statusListener.updateBuildStatuses(buildStatuses);
@@ -353,7 +356,7 @@ public class PluginConfigurationFormTest extends TestCase {
     }
 
     private class PluginConfigurationFormHelper {
-        public JPanel rootComponent;        
+        public JPanel rootComponent;
         public JTextField serverName;
         public JTextField serverUrl;
         public JTextField username;

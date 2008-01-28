@@ -127,8 +127,8 @@ public class BambooSessionTest extends TestCase {
 		assertEquals("TP-DEF", build.getBuildKey());
 		assertNotNull(build.getBuildNumber());
 		assertNotNull(build.getStatus());
-		assertFalse(BuildStatus.ERROR.equals(build.getStatus()));
-		assertTrue(BuildStatus.SUCCESS.equals(build.getStatus()) || BuildStatus.FAILED.equals(build.getStatus()));
+		assertFalse(BuildStatus.UNKNOWN.equals(build.getStatus()));
+		assertTrue(BuildStatus.BUILD_SUCCEED.equals(build.getStatus()) || BuildStatus.BUILD_FAILED.equals(build.getStatus()));
 		assertTrue(build.getPollingTime().getTime() - System.currentTimeMillis() < 5000);
 		assertEquals(SERVER_URL, build.getServerUrl());
 		assertTrue(build.getBuildUrl().startsWith(SERVER_URL + "/browse/" + "TP-DEF" + "-"));
@@ -141,7 +141,7 @@ public class BambooSessionTest extends TestCase {
 		BambooSession apiHandler = new BambooSession(SERVER_URL);
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
 		BambooBuild build = apiHandler.getLatestBuildForPlan("TP-DEF-NON-EXISTING");
-		assertEquals(BuildStatus.ERROR, build.getStatus());
+		assertEquals(BuildStatus.UNKNOWN, build.getStatus());
 		apiHandler.logout();
 	}
 
@@ -149,7 +149,7 @@ public class BambooSessionTest extends TestCase {
 		BambooSession apiHandler = new BambooSession(SERVER_URL);
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
 		BambooBuild build = apiHandler.getLatestBuildForPlan("");
-		assertEquals(BuildStatus.ERROR, build.getStatus());
+		assertEquals(BuildStatus.UNKNOWN, build.getStatus());
 		apiHandler.logout();
 	}
 
