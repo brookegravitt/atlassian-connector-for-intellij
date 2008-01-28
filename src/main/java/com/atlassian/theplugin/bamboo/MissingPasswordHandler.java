@@ -43,14 +43,15 @@ public class MissingPasswordHandler implements Runnable {
 			if (answer == JOptionPane.OK_OPTION) {
 				password = dialog.getPasswordString();
 				shouldPasswordBeStored = dialog.getShouldPasswordBeStored();
-			} else {
+                conf.setPasswordString(password, shouldPasswordBeStored);
+            } else {
 
 				JOptionPane.showMessageDialog(null,
 						"You can always change password by changing plugin settings (Preferences | IDE Settings | "
 								+ PluginInfo.getName() + ")");
 			}
 			// so or so we assume that user provided password
-			conf.setPasswordString(password, shouldPasswordBeStored);
+
 			conf.setIsConfigInitialized(true);
 		}
 
