@@ -1,6 +1,8 @@
 package com.atlassian.theplugin.bamboo;
 
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.configuration.Server;
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 
@@ -35,19 +37,21 @@ public class BambooStatusChecker extends TimerTask {
 
 	public synchronized void run() {
 		// for each server
-		Collection<BambooBuild> newStatus = null;
+		Collection<BambooBuild> newServerBuildsStatus = new ArrayList<BambooBuild>();
 		for (int maxTries = 1; maxTries > 0; maxTries--) {
 			try {
-				newStatus = BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults();
+				for (Server server: ConfigurationFactory.getConfiguration().getBambooConfiguration().getServers()) {
+					newServerBuildsStatus.addAll(BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults(server));
+				}
 			} catch (ServerPasswordNotProvidedException exception) {
 				showBlockingDialog();
 			}
 		}
 
 		for (BambooStatusListenerImpl listener : listenerList) {
-			//listener.updateBuildStatuses(newStatus);
+			//listener.updateBuildStatuses(newServerBuildsStatus);
 
-			listener.setBuilds(newStatus);
+			listener.setBuilds(newServerBuildsStatus);
 			EventQueue.invokeLater(listener);
 		}
 
