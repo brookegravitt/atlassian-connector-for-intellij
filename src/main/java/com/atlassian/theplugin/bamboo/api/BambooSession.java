@@ -243,7 +243,7 @@ public class BambooSession {
 
 		buildInfo.setServerUrl(baseUrl);
 		buildInfo.setBuildKey(planId);
-		buildInfo.setBuildState(BuildStatus.ERROR.toString());
+		buildInfo.setBuildState(BuildStatus.UNKNOWN.toString());
 		buildInfo.setMessage(message);
 		buildInfo.setPollingTime(lastPollingTime);
 

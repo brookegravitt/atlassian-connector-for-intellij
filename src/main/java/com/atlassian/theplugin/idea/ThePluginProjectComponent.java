@@ -49,7 +49,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		bambooStatusChecker = appComponent.getBambooStatusChecker();
 
 		statusBarIcon = new BambooStatusIcon();
-		statusBarIcon.updateBambooStatus(BuildStatus.ERROR, "Waiting for Bamboo build statuses.");
+		statusBarIcon.updateBambooStatus(BuildStatus.UNKNOWN, "Waiting for Bamboo build statuses.");
 
 		statusBarComponent = statusBarIcon;
 

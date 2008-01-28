@@ -1,8 +1,8 @@
 package com.atlassian.theplugin.bamboo;
 
-import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.Server;
+import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 
@@ -20,14 +20,21 @@ import java.util.TimerTask;
  * Time: 4:08:48 PM
  * To change this template use File | Settings | File Templates.
  */
-public class BambooStatusChecker extends TimerTask {
+public class BambooStatusChecker extends TimerTask implements Cloneable {
 
 	private static final Category LOGGER = Logger.getInstance(BambooStatusChecker.class);
 
-	private List<BambooStatusListenerImpl> listenerList = new ArrayList<BambooStatusListenerImpl>();
+    private List<BambooStatusListenerImpl> listenerList = new ArrayList<BambooStatusListenerImpl>();
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        BambooStatusChecker result = new BambooStatusChecker();
+        result.listenerList = listenerList;
+        return result;
+    }
 
 
-	public synchronized void registerListener(BambooStatusListenerImpl listener) {
+    public synchronized void registerListener(BambooStatusListenerImpl listener) {
 		listenerList.add(listener);
 	}
 

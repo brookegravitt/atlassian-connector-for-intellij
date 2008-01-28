@@ -81,12 +81,10 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 	 */
 	public Collection<BambooBuild> getSubscribedPlansResults(Server bambooServer) throws ServerPasswordNotProvidedException {
 		Collection<BambooBuild> builds = new ArrayList<BambooBuild>();
-
-
+        assert(bambooServer != null);
 		BambooSession api = new BambooSession(bambooServer.getUrlString());
 		String connectionErrorMessage;
 		try {
-			assert(bambooServer != null);
 			assert(bambooServer.getUsername() != null);
 			assert(bambooServer.getPasswordString() != null);
 
@@ -117,7 +115,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 		BambooBuildInfo buildInfo = new BambooBuildInfo();
 		buildInfo.setServerUrl(server.getUrlString());
 		buildInfo.setBuildKey(planId);
-		buildInfo.setBuildState(BuildStatus.ERROR.toString());
+		buildInfo.setBuildState(BuildStatus.UNKNOWN.toString());
 		buildInfo.setMessage(message);
 
 		return buildInfo;
@@ -128,7 +126,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 
 		buildInfo.setServerUrl(serverUrl);
 		buildInfo.setBuildKey(planId);
-		buildInfo.setBuildState(BuildStatus.ERROR.toString());
+		buildInfo.setBuildState(BuildStatus.UNKNOWN.toString());
 		buildInfo.setMessage(message);
 		buildInfo.setPollingTime(new Date());
 
