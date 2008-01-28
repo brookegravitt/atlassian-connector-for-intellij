@@ -30,6 +30,7 @@ import java.util.Timer;
 @State(name = "ThePluginSettings", storages = { @Storage(id = "thePlugin", file = "$APP_CONFIG$/thePlugin.xml") })
 public class ThePluginApplicationComponent
 		implements ApplicationComponent, Configurable, PersistentStateComponent<PluginConfigurationBean> {
+	
 	private PluginConfigurationForm form;
 	private PluginConfigurationBean configuration = new PluginConfigurationBean();
 
