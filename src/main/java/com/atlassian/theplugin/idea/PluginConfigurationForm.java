@@ -55,6 +55,7 @@ public class PluginConfigurationForm {
 		serverName.setText(data.getBambooConfigurationData().getServer().getName());
 		serverUrl.setText(data.getBambooConfigurationData().getServer().getUrlString());
 		username.setText(data.getBambooConfigurationData().getServer().getUsername());
+		this.chkPasswordRemember.setSelected(data.getBambooConfigurationData().getServer().getShouldPasswordBeStored());
 		try {
 			password.setText(data.getBambooConfigurationData().getServer().getPasswordString());
 		} catch (ServerPasswordNotProvidedException serverPasswordNotProvidedException) {
