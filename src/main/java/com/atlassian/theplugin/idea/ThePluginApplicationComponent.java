@@ -76,6 +76,7 @@ public class ThePluginApplicationComponent
 
 	public void disposeComponent() {
 		//To change body of implemented methods use File | Settings | File Templates.
+		timer.cancel();
 	}
 
 	public JComponent createComponent() {
