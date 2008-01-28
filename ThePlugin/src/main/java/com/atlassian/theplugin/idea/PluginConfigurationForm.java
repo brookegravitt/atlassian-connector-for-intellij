@@ -4,6 +4,7 @@ import com.atlassian.theplugin.bamboo.BambooServerFactory;
 import com.atlassian.theplugin.bamboo.api.BambooLoginException;
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.configuration.*;
 import com.atlassian.theplugin.configuration.SubscribedPlanBean;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.ui.Messages;
@@ -51,28 +52,38 @@ public class PluginConfigurationForm {
 	}
 
 	public void setData(PluginConfigurationBean data) {
-		serverName.setText(data.getBambooConfigurationData().getServer().getName());
-		serverUrl.setText(data.getBambooConfigurationData().getServer().getUrlString());
-		username.setText(data.getBambooConfigurationData().getServer().getUsername());
-		this.chkPasswordRemember.setSelected(data.getBambooConfigurationData().getServer().getShouldPasswordBeStored());
-		try {
-			password.setText(data.getBambooConfigurationData().getServer().getPasswordString());
-		} catch (ServerPasswordNotProvidedException serverPasswordNotProvidedException) {
-			// swallow - password does not have to be initialized always
+		for (ServerBean server: data.getBambooConfigurationData().getServersData()){
+			serverName.setText(server.getName());
+			serverUrl.setText(server.getUrlString());
+			username.setText(server.getUsername());
+			this.chkPasswordRemember.setSelected(server.getShouldPasswordBeStored());
+			try {
+				password.setText(server.getPasswordString());
+			} catch (ServerPasswordNotProvidedException serverPasswordNotProvidedException) {
+				// swallow - password does not have to be initialized always
+			}
+
+			buildPlansTextArea.setText(subscribedPlansToString(server.getSubscribedPlansData()));
 		}
-		buildPlansTextArea.setText(
-				subscribedPlansToString(data.getBambooConfigurationData().getServerData().getSubscribedPlansData()));
 	}
 
 	public void getData(PluginConfigurationBean data) {
-		data.getBambooConfigurationData().getServerData().setName(serverName.getText());
-		data.getBambooConfigurationData().getServerData().setUrlString(serverUrl.getText());
-		data.getBambooConfigurationData().getServerData().setUsername(username.getText());
-		data.getBambooConfigurationData().getServerData().setPasswordString(
-				String.valueOf(password.getPassword()), chkPasswordRemember.isSelected());
+	ServerBean serverBean = null;
 
-		data.getBambooConfigurationData().getServerData().setSubscribedPlansData(
-				subscribedPlansFromString(buildPlansTextArea.getText()));
+		data.getBambooConfigurationData().getServersData().clear();
+
+		//@todo loop here to add all bamboo servers from gui
+
+		//for (){
+		    serverBean = new ServerBean();
+			serverBean.setName(serverName.getText());
+			serverBean.setUrlString(serverUrl.getText());
+			serverBean.setUsername(username.getText());
+			serverBean.setPasswordString(String.valueOf(password.getPassword()), chkPasswordRemember.isSelected());
+
+			serverBean.setSubscribedPlansData(subscribedPlansFromString(buildPlansTextArea.getText()));
+			data.getBambooConfigurationData().getServersData().add(serverBean);
+		//}
 	}
 
 	static String subscribedPlansToString(Collection<SubscribedPlanBean> plans) {
@@ -105,45 +116,42 @@ public class PluginConfigurationForm {
 		return plans;
 	}
 
-	public boolean isModified(PluginConfigurationBean data) {
-		if (chkPasswordRemember.isSelected() != data.getBambooConfigurationData().getServer().getShouldPasswordBeStored()) {
-			return true;
-		}
-		if (serverName.getText() != null
-				? !serverName.getText().equals(data.getBambooConfigurationData().getServer().getName())
-				: data.getBambooConfigurationData().getServer().getName() != null) {
-			return true;
-		}
-		if (serverUrl.getText() != null
-				? !serverUrl.getText().equals(data.getBambooConfigurationData().getServer().getUrlString())
-				: data.getBambooConfigurationData().getServer().getUrlString() != null) {
-			return true;
-		}
-		if (username.getText() != null
-				? !username.getText().equals(data.getBambooConfigurationData().getServer().getUsername())
-				: data.getBambooConfigurationData().getServer().getUsername() != null) {
-			return true;
-		}
-		if (String.valueOf(password.getPassword()) != null) {
-			while (true) {
-				try {
-					if (String.valueOf(password.getPassword()).equals(
-							data.getBambooConfigurationData().getServer().getPasswordString())) {
-						break;
-					}
-				} catch (ServerPasswordNotProvidedException serverPasswordNotProvidedException) {
-					// swallow
-				}
-				return true;
-			}
-		}
-		if (null != buildPlansTextArea.getText() ? !buildPlansTextArea.getText().equals(
-				subscribedPlansToString(data.getBambooConfigurationData().getServerData().getSubscribedPlansData()))
-				: data.getBambooConfigurationData().getServerData().getSubscribedPlansData() != null) {
-			return true;
-		}
-		return false;
-	}
+public boolean isModified(PluginConfigurationBean data) {
+		 boolean isModified = false;
+		 ServerBean server = null;
+		 //@todo synchronize with gui
+		 if (data.getBambooConfigurationData().getServersData().size() == 0) {
+			 return true;
+
+		 } else {
+			 server = data.getBambooConfigurationData().getServersData().iterator().next();
+		 }
+			 if (chkPasswordRemember.isSelected() != server.getShouldPasswordBeStored())
+				 return true;
+			 if (serverName.getText() != null ? !serverName.getText().equals(server.getName()) : server.getName() != null)
+				 return true;
+			 if (serverUrl.getText() != null ? !serverUrl.getText().equals(server.getUrlString()) : server.getUrlString() != null)
+				 return true;
+			 if (username.getText() != null ? !username.getText().equals(server.getUsername()) : server.getUsername() != null)
+				 return true;
+			 if (String.valueOf(password.getPassword()) != null) {
+				 while (true) {
+					 try {
+						 if (String.valueOf(password.getPassword()).equals(server.getPasswordString()))
+							 break;
+					 } catch (ServerPasswordNotProvidedException serverPasswordNotProvidedException) {
+						 // swallow
+					 }
+					 return true;
+				 }
+			 }
+			 if (null != buildPlansTextArea.getText() ? !buildPlansTextArea.getText().equals(subscribedPlansToString(server.getSubscribedPlansData())) :
+					 server.getSubscribedPlansData() != null)
+				 return true;
+
+
+		 return isModified;
+	 }
 
 
 	public JComponent getRootComponent() {

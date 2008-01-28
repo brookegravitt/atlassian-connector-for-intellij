@@ -2,6 +2,7 @@ package com.atlassian.theplugin.bamboo;
 
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.ServerBean;
+import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.idea.PasswordDialog;
 import com.atlassian.theplugin.idea.PluginInfo;
 
@@ -22,24 +23,28 @@ public class MissingPasswordHandler implements Runnable {
 
 	public void run() {
 
-		ServerBean conf = (ServerBean) (ConfigurationFactory.getConfiguration().getBambooConfiguration().getServer());
+		//ServerBean conf = (ServerBean) (ConfigurationFactory.getConfiguration().getBambooConfiguration().getServer());
 
 		if (!isDialogShown) {
 
 			isDialogShown = true;
 
-			PasswordDialog dialog = new PasswordDialog(
-					ConfigurationFactory.getConfiguration().getBambooConfiguration().getServer());
-			dialog.pack();
-			JPanel panel = dialog.getPasswordPanel();
+			for(Server server: ConfigurationFactory.getConfiguration().getBambooConfiguration().getServers()){
+				PasswordDialog dialog = new PasswordDialog(server);
+				dialog.pack();
+				JPanel panel = dialog.getPasswordPanel();
 
 			//WindowManager.getInstance().getAllFrames();
 
 			int answer = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(), panel,
 					PluginInfo.getName(), OK_CANCEL_OPTION, PLAIN_MESSAGE);
 
+			String password = "";
+			Boolean shouldPasswordBeStored = false;
 			if (answer == JOptionPane.OK_OPTION) {
-                conf.setPasswordString(dialog.getPasswordString(), dialog.getShouldPasswordBeStored());
+				password = dialog.getPasswordString();
+				shouldPasswordBeStored = dialog.getShouldPasswordBeStored();
+                ((ServerBean)server).setPasswordString(password, shouldPasswordBeStored);
             } else {
 
 				JOptionPane.showMessageDialog(null,
@@ -48,7 +53,8 @@ public class MissingPasswordHandler implements Runnable {
 			}
 			// so or so we assume that user provided password
 
-			conf.setIsConfigInitialized(true);
+			((ServerBean) server).setIsConfigInitialized(true);
+			}
 		}
 
 	}
