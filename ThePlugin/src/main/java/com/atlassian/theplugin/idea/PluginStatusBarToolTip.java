@@ -14,6 +14,8 @@ import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 /**
  * Created by IntelliJ IDEA.
@@ -70,32 +72,39 @@ public class PluginStatusBarToolTip extends JFrame {
         this.getContentPane().add(titleBar, BorderLayout.NORTH);
         this.getContentPane().add(htmlView, BorderLayout.CENTER);
 
-    }
+		// hide when focus lost
+		this.addWindowFocusListener(new WindowAdapter() {
+			public void windowLostFocus(WindowEvent e) {
+				setVisible(false);
+			}
+		});
 
-    /**
+	}
+
+
+	/**
      * Shows tooltip in the place where mouse pointer is located.
      *
-     * @param xMouse current horizontal position of the mouse pointer
-     * @param yMouse current vertical position of the mouse pointer
+     * @param xMouse current horizontal position of the mouse pointer (right corner of the tooltip)
+     * @param yMouse current vertical position of the mouse pointer (bottom corner of the tooltip)
      */
     public void showToltip(int xMouse, int yMouse) {
 
-        if (!this.isVisible()) {
-            int startX = xMouse - SIZE_X;
-            int startY = yMouse - SIZE_Y;
 
-            if (startX < 0) {
-                startX = xMouse;
-            }
+		int startX = xMouse - SIZE_X;
+		int startY = yMouse - SIZE_Y;
 
-            if (startY < 0) {
-                startY = yMouse;
-            }
+		if (startX < 0) {
+			startX = xMouse;
+		}
 
-            this.setLocation(startX, startY);
-        }
+		if (startY < 0) {
+			startY = yMouse;
+		}
 
-        this.setVisible(true);
+		this.setLocation(startX, startY);
+
+		this.setVisible(true);
         this.requestFocus();
     }
 
