@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 /**
  * Class used for communication wiht Bamboo Server.
@@ -77,9 +78,15 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 	}
 
 	/**
-	 * List details on subscribed plans
+	 * Returns build results of subscribed plans.
+	 * <p>
+	 * Method iterates through configured Bamboo servers and retrieves build info in the form of {@link BambooBuild}
+	 * objects.<p>
+	 * The build result may include failure description if the status cannot be retrieved.
 	 *
-	 * @return results on subscribed builds
+	 * @return all subscribed plan build results.
+	 * @throws ServerPasswordNotProvidedException when the password for a server has not been stored in configuration or
+	 * 			provided by the user.
 	 */
 	public Collection<BambooBuild> getSubscribedPlansResults() throws ServerPasswordNotProvidedException {
 		Collection<BambooBuild> builds = new ArrayList<BambooBuild>();
@@ -102,16 +109,10 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 
 		for (SubscribedPlan plan : server.getSubscribedPlans()) {
 			if (api.isLoggedIn()) {
-				try {
-					BambooBuildInfo buildInfo = api.getLatestBuildForPlan(plan.getPlanId());
-					buildInfo.setServerUrl(server.getUrlString());
-					builds.add(buildInfo);
-				} catch (BambooException e) {
-					LOG.error("Bamboo exception: " + e.getMessage());
-					builds.add(getErrorBuildInfo(server, plan.getPlanId(), e.getMessage()));
-				}
+				BambooBuild buildInfo = api.getLatestBuildForPlan(plan.getPlanId());
+				builds.add(buildInfo);
 			} else {
-				builds.add(getErrorBuildInfo(server, plan.getPlanId(), connectionErrorMessage));
+				builds.add(constructBuildErrorInfo(server.getUrlString(), plan.getPlanId(), connectionErrorMessage));
 			}
 		}
 
@@ -122,13 +123,17 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 		return builds;
 	}
 
-	private BambooBuild getErrorBuildInfo(Server server, String planId, String message) {
+	BambooBuild constructBuildErrorInfo(String serverUrl, String planId, String message) {
 		BambooBuildInfo buildInfo = new BambooBuildInfo();
-		buildInfo.setServerUrl(server.getUrlString());
+
+		buildInfo.setServerUrl(serverUrl);
 		buildInfo.setBuildKey(planId);
 		buildInfo.setBuildState(BuildStatus.ERROR.toString());
 		buildInfo.setMessage(message);
+		buildInfo.setPollingTime(new Date());
 
 		return buildInfo;
 	}
+
+
 }
