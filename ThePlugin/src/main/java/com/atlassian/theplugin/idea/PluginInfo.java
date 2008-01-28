@@ -28,15 +28,20 @@ public final class PluginInfo {
 
 	private static final Document PLUGIN_DOC = setDoc();
 
-	public static final String NAME = getConfigValue("/idea-plugin/name");
-
-	public static final String VERSION = getConfigValue("/idea-plugin/version");
-
-	public static final String VENDOR = getConfigValue("/idea-plugin/vendor");
-
 	private PluginInfo() {
 	}
 
+	public static String getName() {
+		return getConfigValue("/idea-plugin/name");
+	}
+
+	public static String getVersion() {
+		return getConfigValue("/idea-plugin/version");
+	}
+
+	public static String getVendor() {
+		return getConfigValue("/idea-plugin/vendor");
+	}
 
 	private static Document setDoc() {
 		Document doc = null;
@@ -56,7 +61,7 @@ public final class PluginInfo {
 				doc = JDOMUtil.loadDocument(in);
 				in.close();
 			} catch (Exception e) {
-				e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+				LOGGER.error("Error accessing plugin.xml file.");
 			}
 		}
 		return doc;
