@@ -15,7 +15,7 @@ import java.util.Collection;
  * To change this template use File | Settings | File Templates.
  */
 public class BambooStatusListenerImpl implements Runnable {
-	private int counter = 0;
+//	private int counter = 0;
 	static final String DEFAULT_DATE_TIME_FROMAT = "";
 
 
@@ -35,7 +35,7 @@ public class BambooStatusListenerImpl implements Runnable {
 		StringBuilder sb = new StringBuilder("<td>");
 		DateFormat df = DateFormat.getTimeInstance();
 
-		sb.append(df.format(buildInfo.getPoolingTime()) + "</td>");
+		sb.append(df.format(buildInfo.getPollingTime()) + "</td>");
 		sb.append("<td>"
 				+ ((buildInfo.getBuildRelativeBuildDate().length() == 0) ? "---" : buildInfo.getBuildRelativeBuildDate())
 				+ "</td>");

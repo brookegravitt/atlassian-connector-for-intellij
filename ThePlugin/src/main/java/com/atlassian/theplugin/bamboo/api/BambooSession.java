@@ -34,8 +34,8 @@ public class BambooSession {
 	private static final String LATEST_BUILDS_FOR_PROJECT_ACTION = "/api/rest/getLatestBuildResultsForProject.action";
 
 	private String baseUrl;
-	private String userName;
-	private char[] password;
+//	private String userName;
+//	private char[] password;
 	private String authToken;
 
 	/**
@@ -266,11 +266,12 @@ public class BambooSession {
 		List<Element> elements = xpath.selectNodes(doc);
 
 		if (elements != null && elements.size() > 0) {
-			String exceptionMsg = "";
+			StringBuffer exceptionMsg = new StringBuffer();
 			for (Element e : elements) {
-				exceptionMsg += e.getText() + "\n";
+				exceptionMsg.append(e.getText());
+                exceptionMsg.append("\n");
 			}
-			throw new BambooException(exceptionMsg);
+			throw new BambooException(exceptionMsg.toString());
 		}
 	}
 
