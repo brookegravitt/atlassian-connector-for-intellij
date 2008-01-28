@@ -32,7 +32,12 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 	public ThePluginProjectComponent(Project project) {
 		this.project = project;
-	}
+        
+        // make findBugs happy
+        bambooStatusChecker = null;
+        statusBar = null;
+        statusBarIcon = null;
+    }
 
 	public void initComponent() {
 		System.out.println("Init ThePlugin status component.");
