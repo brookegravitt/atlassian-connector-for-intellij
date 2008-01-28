@@ -3,6 +3,7 @@ package com.atlassian.theplugin.bamboo.api;
 import com.atlassian.theplugin.bamboo.BambooBuild;
 import com.atlassian.theplugin.bamboo.BambooPlan;
 import com.atlassian.theplugin.bamboo.BambooProject;
+import com.atlassian.theplugin.bamboo.BuildStatus;
 import junit.framework.TestCase;
 
 import java.util.List;
@@ -123,62 +124,69 @@ public class BambooSessionTest extends TestCase {
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
 		BambooBuild build = apiHandler.getLatestBuildForPlan("TP-DEF");
 		assertNotNull(build);
+		assertEquals("TP-DEF", build.getBuildKey());
+		assertNotNull(build.getBuildNumber());
+		assertNotNull(build.getStatus());
+		assertFalse(BuildStatus.ERROR.equals(build.getStatus()));
+		assertTrue(BuildStatus.SUCCESS.equals(build.getStatus()) || BuildStatus.FAILED.equals(build.getStatus()));
+		assertTrue(build.getPollingTime().getTime() - System.currentTimeMillis() < 5000);
+		assertEquals(SERVER_URL, build.getServerUrl());
+		assertTrue(build.getBuildUrl().startsWith(SERVER_URL + "/browse/" + "TP-DEF" + "-"));
+		assertEquals(SERVER_URL + "/browse/" + "TP-DEF", build.getPlanUrl());
+		assertNull(build.getMessage());
 		apiHandler.logout();
 	}
 
 	public void testBuildForNonExistingPlan() throws Exception {
 		BambooSession apiHandler = new BambooSession(SERVER_URL);
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
-		try {
-			BambooBuild build = apiHandler.getLatestBuildForPlan("TP-DEF-NON-EXISTING");
-			fail();
-		} catch (BambooException e) {
-		}
+		BambooBuild build = apiHandler.getLatestBuildForPlan("TP-DEF-NON-EXISTING");
+		assertEquals(BuildStatus.ERROR, build.getStatus());
 		apiHandler.logout();
 	}
 
 	public void testBuildForEmptyPlan() throws Exception {
 		BambooSession apiHandler = new BambooSession(SERVER_URL);
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
-		try {
-			BambooBuild build = apiHandler.getLatestBuildForPlan("");
-			fail();
-		} catch (BambooException e) {
-		}
+		BambooBuild build = apiHandler.getLatestBuildForPlan("");
+		assertEquals(BuildStatus.ERROR, build.getStatus());
 		apiHandler.logout();
 	}
 
-	public void testRecentBuilds() throws Exception {
-		BambooSession apiHandler = new BambooSession(SERVER_URL);
-		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
-		List<BambooBuild> builds = apiHandler.getLatestBuildsForProject("TP");
-		assertNotNull(builds);
-		apiHandler.logout();
-	}
-
-	public void testRecentBuildsForNonExistingProject() throws Exception {
-		BambooSession apiHandler = new BambooSession(SERVER_URL);
-		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
-		try {
-			List<BambooBuild> builds = apiHandler.getLatestBuildsForProject("TP-NON-EXISTING");
-			fail();
-		} catch (BambooException e) {
-
-		}
-		apiHandler.logout();
-	}
-
-	public void testRecentBuildsForEmptyProject() throws Exception {
-		BambooSession apiHandler = new BambooSession(SERVER_URL);
-		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
-		try {
-			List<BambooBuild> builds = apiHandler.getLatestBuildsForProject("TP-NON-EXISTING");
-			fail();
-		} catch (BambooException e) {
-
-		}
-		apiHandler.logout();
-	}
+//  commented because nobody actually uses this method, and the unit test does not really test anything, so we
+//	don't even know if the method works
+//	
+// public void testRecentBuilds() throws Exception {
+//		BambooSession apiHandler = new BambooSession(SERVER_URL);
+//		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
+//		List<BambooBuild> builds = apiHandler.getLatestBuildsForProject("TP");
+//		assertNotNull(builds);
+//		apiHandler.logout();
+//	}
+//
+//	public void testRecentBuildsForNonExistingProject() throws Exception {
+//		BambooSession apiHandler = new BambooSession(SERVER_URL);
+//		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
+//		try {
+//			List<BambooBuild> builds = apiHandler.getLatestBuildsForProject("TP-NON-EXISTING");
+//			fail();
+//		} catch (BambooException e) {
+//
+//		}
+//		apiHandler.logout();
+//	}
+//
+//	public void testRecentBuildsForEmptyProject() throws Exception {
+//		BambooSession apiHandler = new BambooSession(SERVER_URL);
+//		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
+//		try {
+//			List<BambooBuild> builds = apiHandler.getLatestBuildsForProject("TP-NON-EXISTING");
+//			fail();
+//		} catch (BambooException e) {
+//
+//		}
+//		apiHandler.logout();
+//	}
 
 	public void testUrlEncodingBambooPassword() throws Exception {
 		try {
