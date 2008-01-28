@@ -88,6 +88,11 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 		BambooSession api = new BambooSession(server.getUrlString());
 		String connectionErrorMessage;
 		try {
+			assert(server != null);
+			assert(server.getUsername() != null);
+			assert(server.getPasswordString() != null);
+
+
 			api.login(server.getUsername(), server.getPasswordString().toCharArray());
 			connectionErrorMessage = "";
 		} catch (BambooLoginException e) {
