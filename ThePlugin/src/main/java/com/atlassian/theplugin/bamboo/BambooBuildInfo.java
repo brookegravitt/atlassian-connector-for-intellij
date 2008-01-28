@@ -50,7 +50,7 @@ public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
 		this.buildDurationDescription = buildDurationDescription;
 		this.buildTestSummary = buildTestSummary;
 		this.buildCommitComment = buildCommitComment;
-		setPoolingTime(lastPoolingTime);
+		setPollingTime(lastPoolingTime);
 	}
 
 	public String getServerUrl() {

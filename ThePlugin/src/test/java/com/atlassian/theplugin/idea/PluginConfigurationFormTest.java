@@ -381,7 +381,6 @@ public class PluginConfigurationFormTest extends TestCase {
 
 	private class PluginConfigurationFormHelper {
 		public JPanel rootComponent;
-		public JTabbedPane tabbedPane1;
 		public JTextField serverName;
 		public JTextField serverUrl;
 		public JTextField username;

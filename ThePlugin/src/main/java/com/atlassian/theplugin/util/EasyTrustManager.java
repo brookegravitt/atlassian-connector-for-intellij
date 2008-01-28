@@ -1,5 +1,7 @@
 package com.atlassian.theplugin.util;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 import javax.net.ssl.X509TrustManager;
 
 /**
@@ -11,7 +13,7 @@ import javax.net.ssl.X509TrustManager;
  */
 public class EasyTrustManager implements X509TrustManager {
 	public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	public void checkClientTrusted(
