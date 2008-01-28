@@ -22,7 +22,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.atlassian.theplugin</groupId>
 	<artifactId>atlassian-idea-plugin</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.1.0-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 	<properties>
 		<clover.licenseLocation>clover/clover.license</clover.licenseLocation>
