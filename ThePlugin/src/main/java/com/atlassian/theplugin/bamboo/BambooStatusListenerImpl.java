@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.bamboo;
 
-import static com.atlassian.theplugin.bamboo.BuildStatus.FAILED;
+import static com.atlassian.theplugin.bamboo.BuildStatus.BUILD_FAILED;
 import com.atlassian.theplugin.idea.BambooStatusIcon;
 
 import java.text.DateFormat;
@@ -97,7 +97,7 @@ public class BambooStatusListenerImpl implements Runnable {
 
 	public void updateBuildStatuses(Collection<BambooBuild> buildStatuses) {
 
-		BuildStatus status = BuildStatus.SUCCESS;
+		BuildStatus status = BuildStatus.BUILD_SUCCEED;
 		StringBuilder sb = new StringBuilder("<html><body>");
 
 		if (buildStatuses == null || buildStatuses.size() == 0) {
@@ -107,17 +107,17 @@ public class BambooStatusListenerImpl implements Runnable {
 			sb.append("<th>Plan</th><th>Build</th><th>Status</th><th>Last Pooling</th><th>Last Build</th>");
 			for (BambooBuild buildInfo : buildStatuses) {
 				switch (buildInfo.getStatus()) {
-					case FAILED:
+					case BUILD_FAILED:
 						sb.append(getFailedBuildRow(buildInfo));
-						status = FAILED;
+						status = BUILD_FAILED;
 						break;
-					case ERROR:
+					case UNKNOWN:
 						sb.append(getErrorBuildRow(buildInfo));
-						if (status != FAILED) {
-							status = BuildStatus.ERROR;
+						if (status != BUILD_FAILED) {
+							status = BuildStatus.UNKNOWN;
 						}
 						break;
-					case SUCCESS:
+					case BUILD_SUCCEED:
 						sb.append(getSuccessBuildRow(buildInfo));
 						break;
 					default:

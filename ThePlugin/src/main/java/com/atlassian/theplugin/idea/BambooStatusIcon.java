@@ -51,15 +51,17 @@ public class BambooStatusIcon extends JLabel {
         tooltip.setHtmlContent(fullInfo);
 
         switch (status) {
-            case FAILED:
-            case ERROR:
+            case BUILD_FAILED:
                 setIcon(iconRed);
                 break;
-            case SUCCESS:
+            case UNKNOWN:
+                setIcon(iconGrey);
+                break;
+            case BUILD_SUCCEED:
                 setIcon(iconGreen);
                 break;
             default:
-                setIcon(iconGrey);
+                throw new IllegalArgumentException("Illegal state of build.");
         }
     }
 

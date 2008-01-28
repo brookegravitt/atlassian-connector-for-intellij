@@ -155,11 +155,11 @@ public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
 
 	public BuildStatus getStatus() {
 		if ("Successful".equalsIgnoreCase(buildState)) {
-			return BuildStatus.SUCCESS;
+			return BuildStatus.BUILD_SUCCEED;
 		} else if ("Failed".equalsIgnoreCase(buildState)) {
-			return BuildStatus.FAILED;
+			return BuildStatus.BUILD_FAILED;
 		} else {
-			return BuildStatus.ERROR;
+			return BuildStatus.UNKNOWN;
 		}
 	}
 

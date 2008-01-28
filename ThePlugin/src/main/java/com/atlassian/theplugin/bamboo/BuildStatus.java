@@ -8,7 +8,7 @@ package com.atlassian.theplugin.bamboo;
  * To change this template use File | Settings | File Templates.
  */
 public enum BuildStatus {
-	SUCCESS,
-	FAILED,  // build error
-	ERROR   // ststus retrieval error
+    BUILD_SUCCEED,
+    BUILD_FAILED,  // build error
+    UNKNOWN   // ststus retrieval error
 }
