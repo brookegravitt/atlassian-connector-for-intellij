@@ -15,10 +15,10 @@ import java.util.Collection;
  * To change this template use File | Settings | File Templates.
  */
 public class BambooServerFacadeTest extends TestCase {
-	private PluginConfigurationBean pluginConfig;
-	private PluginConfigurationBean badLoginPluginConfig;
-	private PluginConfigurationBean badPlanPluginConfig;
-	private ServerBean server;
+	private final PluginConfigurationBean pluginConfig;
+	private final PluginConfigurationBean badLoginPluginConfig;
+	private final PluginConfigurationBean badPlanPluginConfig;
+	private final ServerBean server;
 
 	public BambooServerFacadeTest() {
 		BambooConfigurationBean configuration = new BambooConfigurationBean();
@@ -91,7 +91,7 @@ public class BambooServerFacadeTest extends TestCase {
 		BambooBuild build = plans.iterator().next();
 		assertEquals(BuildStatus.ERROR, build.getStatus());
 		assertEquals("TP-DEF-BAD", build.getBuildKey());
-		assertEquals("The user does not have sufficient permissions to perform this action.\n", build.getMessage());
+		assertEquals("Login exception: The user does not have sufficient permissions to perform this action.\n", build.getMessage());
 	}
 
 	public void testBadPlansSubscribedBuildStatus() throws Exception {
