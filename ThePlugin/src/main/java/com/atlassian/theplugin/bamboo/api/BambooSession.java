@@ -11,7 +11,6 @@ import org.jdom.xpath.XPath;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -33,7 +32,7 @@ public class BambooSession {
 	private static final String LATEST_BUILD_FOR_PLAN_ACTION = "/api/rest/getLatestBuildResults.action";
 	private static final String LATEST_BUILDS_FOR_PROJECT_ACTION = "/api/rest/getLatestBuildResultsForProject.action";
 
-	private String baseUrl;
+	private final String baseUrl;
 //	private String userName;
 //	private char[] password;
 	private String authToken;
@@ -72,24 +71,25 @@ public class BambooSession {
 			throw new RuntimeException("URLEncoding problem: " + e.getMessage());
 		}
 
-		Document doc;
 		try {
-			doc = retrieveResponse(loginUrl);
-		} catch (BambooException e) {
-			throw new BambooLoginException(e.getMessage(), e);
-		}
-
-		try {
+			Document doc = retrieveResponse(loginUrl);
+			String exception = getExceptionMessages(doc);
+			if (null != exception) {
+				throw new BambooLoginException("Login exception: " + exception);
+			}
 			XPath xpath = XPath.newInstance("/response/auth");
 			List elements = xpath.selectNodes(doc);
-			if (elements != null) {
-				for (Object element : elements) {
-					Element e = (Element) element;
-					this.authToken = e.getText();
-				}
+			if (elements == null) {
+				throw new BambooLoginException("Server did not return any authentication token");
 			}
+			if (elements.size() != 1) {
+				throw new BambooLoginException("Server did returned excess authentication tokens (" + elements.size() + ")");
+			}
+			this.authToken = ((Element)elements.get(0)).getText();
+		} catch (IOException e) {
+			throw new BambooLoginException("IOException during login", e);
 		} catch (JDOMException e) {
-			throw new BambooLoginException(e);
+			throw new BambooLoginException("JDOMException during login", e);
 		}
 	}
 
@@ -103,8 +103,8 @@ public class BambooSession {
 			retrieveResponse(logoutUrl);
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("URLEncoding problem", e);
-		} catch (BambooException e) {
-			/* ignore error on logout */
+		} catch (Exception e) {
+			/* ignore errors on logout */
 		}
 
 		authToken = null;
@@ -118,21 +118,22 @@ public class BambooSession {
 			throw new RuntimeException("URLEncoding problem: ", e);
 		}
 
-		Document doc = retrieveResponse(buildResultUrl);
 		List<BambooProject> projects = new ArrayList<BambooProject>();
 		try {
+			Document doc = retrieveResponse(buildResultUrl);
 			XPath xpath = XPath.newInstance("/response/project");
-			List elements = xpath.selectNodes(doc);
+			List<Element> elements = xpath.selectNodes(doc);
 			if (elements != null) {
-				for (Object element : elements) {
-					Element e = (Element) element;
-					String name = e.getChild("name").getText();
-					String key = e.getChild("key").getText();
+				for (Element element : elements) {
+					String name = element.getChild("name").getText();
+					String key = element.getChild("key").getText();
 					projects.add(new BambooProjectInfo(name, key));
 				}
 			}
 		} catch (JDOMException e) {
-			throw new BambooException(e);
+			throw new BambooException("JDOMException getting project names", e);
+		} catch (IOException e) {
+			throw new BambooException("IOException getting project names", e);
 		}
 
 		return projects;
@@ -146,27 +147,36 @@ public class BambooSession {
 			throw new RuntimeException("URLEncoding problem: ", e);
 		}
 
-		Document doc = retrieveResponse(buildResultUrl);
 		List<BambooPlan> plans = new ArrayList<BambooPlan>();
 		try {
+			Document doc = retrieveResponse(buildResultUrl);
 			XPath xpath = XPath.newInstance("/response/build");
-			List elements = xpath.selectNodes(doc);
+			List<Element> elements = xpath.selectNodes(doc);
 			if (elements != null) {
-				for (Object element : elements) {
-					Element e = (Element) element;
-					String name = e.getChild("name").getText();
-					String key = e.getChild("key").getText();
+				for (Element element : elements) {
+					String name = element.getChild("name").getText();
+					String key = element.getChild("key").getText();
 					plans.add(new BambooPlanData(name, key));
 				}
 			}
 		} catch (JDOMException e) {
-			throw new BambooException(e);
+			throw new BambooException("JDOMException getting plan names", e);
+		} catch (IOException e) {
+			throw new BambooException("IOException getting plan names", e);
 		}
 
 		return plans;
 	}
 
-	public BambooBuildInfo getLatestBuildForPlan(String planKey) throws BambooException {
+	/**
+	 * Returns a {@link com.atlassian.theplugin.bamboo.BambooBuild} information about the latest build in a plan.
+	 * <p>
+	 * Returned structure contains either the information about the build or an error message if the connection fails.
+	 *
+	 * @param planKey ID of the plan to get info about
+	 * @return Information about the last build or error message
+	 */
+	public BambooBuild getLatestBuildForPlan(String planKey) {
 		String buildResultUrl;
 		try {
 			buildResultUrl = baseUrl + LATEST_BUILD_FOR_PLAN_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8")
@@ -175,64 +185,91 @@ public class BambooSession {
 			throw new RuntimeException("URLEncoding problem: " + e.getMessage());
 		}
 
-		Document doc = retrieveResponse(buildResultUrl);
+
 		try {
+			Document doc = retrieveResponse(buildResultUrl);
+			String exception = getExceptionMessages(doc);
+			if (null != exception) {
+				return constructBuildErrorInfo(planKey, exception, new Date());
+			}
+
 			XPath xpath = XPath.newInstance("/response");
 			List elements = xpath.selectNodes(doc);
 			if (elements != null && !elements.isEmpty()) {
 				Element e = (Element) elements.iterator().next();
 				return constructBuildItem(e, new Date());
 			} else {
-				return null;
+				return constructBuildErrorInfo(planKey, "Malformed server reply: no response element", new Date());
 			}
+		} catch (IOException e) {
+			return constructBuildErrorInfo(planKey, "IOException accessing the server" + e.getMessage(), new Date());
 		} catch (JDOMException e) {
-			throw new BambooException(e);
+			return constructBuildErrorInfo(planKey, "JDOMException parsing the response: " + e.getMessage(), new Date());
 		}
 	}
 
-	public List<BambooBuild> getLatestBuildsForProject(String projectKey) throws BambooException {
-		String buildResultUrl;
-		Date lastPoolingTime = new Date();
-		try {
-			buildResultUrl = baseUrl + LATEST_BUILDS_FOR_PROJECT_ACTION + "?auth="
-					+ URLEncoder.encode(authToken, "UTF-8") + "&projectKey=" + URLEncoder.encode(projectKey, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException("URLEncoding problem: " + e.getMessage());
-		}
+//  commented because nobody actually uses this method, and the unit test does not really test anything, so we
+//	don't even know if the method works
+	
+//	public List<BambooBuild> getLatestBuildsForProject(String projectKey) throws BambooException {
+//		String buildResultUrl;
+//		Date lastPoolingTime = new Date();
+//		try {
+//			buildResultUrl = baseUrl + LATEST_BUILDS_FOR_PROJECT_ACTION + "?auth="
+//					+ URLEncoder.encode(authToken, "UTF-8") + "&projectKey=" + URLEncoder.encode(projectKey, "UTF-8");
+//		} catch (UnsupportedEncodingException e) {
+//			throw new RuntimeException("URLEncoding problem: " + e.getMessage());
+//		}
+//
+//		Document doc = retrieveResponse(buildResultUrl);
+//		List<BambooBuild> builds = new ArrayList<BambooBuild>();
+//		try {
+//			XPath xpath = XPath.newInstance("/response/build");
+//			List elements = xpath.selectNodes(doc);
+//			if (elements != null) {
+//				for (Object element : elements) {
+//					Element e = (Element) element;
+//					builds.add(constructBuildItem(e, lastPoolingTime));
+//				}
+//			}
+//		} catch (JDOMException e) {
+//			throw new BambooException(e);
+//		}
+//
+//		return builds;
+//	}
+	BambooBuild constructBuildErrorInfo(String planId, String message, Date lastPollingTime) {
+		BambooBuildInfo buildInfo = new BambooBuildInfo();
 
-		Document doc = retrieveResponse(buildResultUrl);
-		List<BambooBuild> builds = new ArrayList<BambooBuild>();
-		try {
-			XPath xpath = XPath.newInstance("/response/build");
-			List elements = xpath.selectNodes(doc);
-			if (elements != null) {
-				for (Object element : elements) {
-					Element e = (Element) element;
-					builds.add(constructBuildItem(e, lastPoolingTime));
-				}
-			}
-		} catch (JDOMException e) {
-			throw new BambooException(e);
-		}
+		buildInfo.setServerUrl(baseUrl);
+		buildInfo.setBuildKey(planId);
+		buildInfo.setBuildState(BuildStatus.ERROR.toString());
+		buildInfo.setMessage(message);
+		buildInfo.setPollingTime(lastPollingTime);
 
-		return builds;
+		return buildInfo;
 	}
 
-	private BambooBuildInfo constructBuildItem(Element buildItemNode, Date lastPoolingTime) {
-		String projectName = getChildText(buildItemNode, "projectName");
-		String buildName = getChildText(buildItemNode, "buildName");
-		String buildKey = getChildText(buildItemNode, "buildKey");
-		String buildState = getChildText(buildItemNode, "buildState");
-		String buildNumber = getChildText(buildItemNode, "buildNumber");
-		String buildReason = getChildText(buildItemNode, "buildReason");
-		String buildRelativeBuildDate = getChildText(buildItemNode, "buildRelativeBuildDate");
-		String buildDurationDescription = getChildText(buildItemNode, "buildDurationDescription");
-		String buildTestSummary = getChildText(buildItemNode, "buildTestSummary");
-		String buildCommitComment = getChildText(buildItemNode, "buildCommitComment");
+	private BambooBuildInfo constructBuildItem(Element buildItemNode, Date lastPollingTime) {
+		BambooBuildInfo buildInfo = new BambooBuildInfo();
 
-		return new BambooBuildInfo(projectName, buildName, buildKey, buildState, buildNumber, buildReason,
-				buildRelativeBuildDate, buildDurationDescription,
-				buildTestSummary, buildCommitComment, lastPoolingTime);
+		buildInfo.setServerUrl(baseUrl);
+
+		buildInfo.setProjectName(getChildText(buildItemNode, "projectName"));
+		buildInfo.setBuildName(getChildText(buildItemNode, "buildName"));
+		buildInfo.setBuildKey(getChildText(buildItemNode, "buildKey"));
+		buildInfo.setBuildState(getChildText(buildItemNode, "buildState"));
+		buildInfo.setBuildNumber(getChildText(buildItemNode, "buildNumber"));
+		buildInfo.setBuildReason(getChildText(buildItemNode, "buildReason"));
+		buildInfo.setBuildRelativeBuildDate(getChildText(buildItemNode, "buildRelativeBuildDate"));
+		buildInfo.setBuildDurationDescription(getChildText(buildItemNode, "buildDurationDescription"));
+		buildInfo.setBuildTestSummary(getChildText(buildItemNode, "buildTestSummary"));
+		buildInfo.setBuildCommitComment(getChildText(buildItemNode, "buildCommitComment"));
+
+		buildInfo.setPollingTime(lastPollingTime);
+
+
+		return buildInfo;
 	}
 
 	private String getChildText(Element node, String childName) {
@@ -243,25 +280,15 @@ public class BambooSession {
 		}
 	}
 
-	private Document retrieveResponse(String urlString) throws BambooException {
-		try {
-			URLConnection c = HttpConnectionFactory.getConnection(urlString);
-			InputStream is = c.getInputStream();
+	private Document retrieveResponse(String urlString) throws IOException, JDOMException {
+		URLConnection c = HttpConnectionFactory.getConnection(urlString);
+		InputStream is = c.getInputStream();
 
-			SAXBuilder builder = new SAXBuilder();
-			Document doc = builder.build(is);
-			checkForErrors(doc);
-			return doc;
-		} catch (JDOMException e) {
-			throw new BambooException(e.getMessage(), e);
-		} catch (MalformedURLException e) {
-			throw new BambooException(e.getMessage(), e);
-		} catch (IOException e) {
-			throw new BambooException(e.getMessage(), e);
-		}
+		SAXBuilder builder = new SAXBuilder();
+		return builder.build(is);
 	}
 
-	private static void checkForErrors(Document doc) throws JDOMException, BambooException {
+	private static String getExceptionMessages(Document doc) throws JDOMException {
 		XPath xpath = XPath.newInstance("/errors/error");
 		List<Element> elements = xpath.selectNodes(doc);
 
@@ -271,7 +298,10 @@ public class BambooSession {
 				exceptionMsg.append(e.getText());
                 exceptionMsg.append("\n");
 			}
-			throw new BambooException(exceptionMsg.toString());
+			return exceptionMsg.toString();
+		} else {
+			/* no exception */
+			return null;
 		}
 	}
 
