@@ -10,8 +10,8 @@ import java.util.Date;
  * To change this template use File | Settings | File Templates.
  */
 public interface RequestData {
-	void setPoolingTime(Date date);
+	void setPollingTime(Date date);
 
-	Date getPoolingTime();
+	Date getPollingTime();
 
 }

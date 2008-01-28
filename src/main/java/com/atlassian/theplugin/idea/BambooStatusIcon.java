@@ -11,54 +11,56 @@ import java.awt.event.MouseEvent;
 
 public class BambooStatusIcon extends JLabel {
 
-	private Icon iconRed, iconGreen, iconGrey;
-
-	private PluginStatusBarToolTip tooltip;
-
-	private static final int X_OFFSET = 160;
-	private static final int Y_OFFSET = 30;
-
-	BambooStatusIcon() {
-
-		// load icons
-		iconRed = IconLoader.getIcon("/icons/red-16.png");
-		iconGreen = IconLoader.getIcon("/icons/green-16.png");
-		iconGrey = IconLoader.getIcon("/icons/grey-16.png");
-
-		// show tooltip on mouse over
-		tooltip = new PluginStatusBarToolTip();
-
-		addMouseListener(new MouseAdapter() {
-			public void mouseEntered(MouseEvent e) {
-
-				Window win = SwingUtilities.getWindowAncestor(BambooStatusIcon.this);
+    private static Icon iconRed;
+    private static Icon iconGreen;
+    private static Icon iconGrey;
 
 
-				tooltip.showToltip(
-						win.getX() + win.getWidth()
-								- BambooStatusIcon.this.getX() - X_OFFSET, win.getY() + win.getHeight() - Y_OFFSET);
-			}
-		});
+    static {
+        iconRed = IconLoader.getIcon("/icons/red-16.png");
+        iconGreen = IconLoader.getIcon("/icons/green-16.png");
+        iconGrey = IconLoader.getIcon("/icons/grey-16.png");
+    }
 
-	}
+   private PluginStatusBarToolTip tooltip;
 
-	public void updateBambooStatus(BuildStatus status, String fullInfo) {
+    private static final int X_OFFSET = 160;
+    private static final int Y_OFFSET = 30;
 
-		tooltip.setHtmlContent(fullInfo);
+    BambooStatusIcon() {
 
-		switch (status) {
-			case ERROR:
-				setIcon(iconGrey);
-				break;
-			case FAILED:
-				setIcon(iconRed);
-				break;
-			case SUCCESS:
-				setIcon(iconGreen);
-				break;
-			default:
-				setIcon(iconGrey);
-		}
-	}
+        // show tooltip on mouse over
+        tooltip = new PluginStatusBarToolTip();
+
+        addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+
+                Window win = SwingUtilities.getWindowAncestor(BambooStatusIcon.this);
+
+
+                tooltip.showToltip(
+                        win.getX() + win.getWidth()
+                                - BambooStatusIcon.this.getX() - X_OFFSET, win.getY() + win.getHeight() - Y_OFFSET);
+            }
+        });
+
+    }
+
+    public void updateBambooStatus(BuildStatus status, String fullInfo) {
+
+        tooltip.setHtmlContent(fullInfo);
+
+        switch (status) {
+            case FAILED:
+            case ERROR:
+                setIcon(iconRed);
+                break;
+            case SUCCESS:
+                setIcon(iconGreen);
+                break;
+            default:
+                setIcon(iconGrey);
+        }
+    }
 
 }

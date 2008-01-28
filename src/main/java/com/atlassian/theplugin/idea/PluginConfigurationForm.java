@@ -23,9 +23,8 @@ import java.util.List;
  * Plugin configuration form.
  */
 public class PluginConfigurationForm {
-	private JPanel rootComponent;
-	private JTabbedPane tabbedPane1;
-	private JTextField serverName;
+    private JPanel rootComponent;
+    private JTextField serverName;
 	private JTextField serverUrl;
 	private JTextField username;
 	private JPasswordField password;
