@@ -38,12 +38,8 @@ public class MissingPasswordHandler implements Runnable {
 			int answer = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(), panel,
 					PluginInfo.getName(), OK_CANCEL_OPTION, PLAIN_MESSAGE);
 
-			String password = "";
-			Boolean shouldPasswordBeStored = false;
 			if (answer == JOptionPane.OK_OPTION) {
-				password = dialog.getPasswordString();
-				shouldPasswordBeStored = dialog.getShouldPasswordBeStored();
-                conf.setPasswordString(password, shouldPasswordBeStored);
+                conf.setPasswordString(dialog.getPasswordString(), dialog.getShouldPasswordBeStored());
             } else {
 
 				JOptionPane.showMessageDialog(null,

@@ -1,0 +1,29 @@
+<!--jgorycki: TODO: The fact that we need this file is generally stupid. We should be putting findBugs exclusions-->
+<!--as annotations in the source code. But these annotations are currently not documented sufficiently for me-->
+<!--to bother looking them up wherever they are described. Hopefully in the future we will deprecate this file-->
+
+<FindBugsFilter>
+
+    <!--ctor of $$$setupUI$$$ is generated automagically from the form, skipping -->
+    <Match>
+        <Class name="com.atlassian.theplugin.idea.PluginConfigurationForm" />
+        <Bug pattern="DM_BOOLEAN_CTOR" />
+    </Match>
+
+    <!--stupid findBugs does not like multithreading apparently :)-->
+    <Match>
+       <Class name="com.atlassian.theplugin.bamboo.BambooStatusListenerImpl" />
+       <Bug pattern="IS2_INCONSISTENT_SYNC" />
+    </Match>
+
+    <!-- findBugs has something against in-place created anonymous listener classes for swing. Specifically -->
+    <!-- problematic class seems to be the one derived from javax.swing.event.HyperlinkListener. Go figure -->
+    <Match>
+       <Or>
+           <Class name="com.atlassian.theplugin.idea.PluginConfigurationForm$2" />
+           <Class name="com.atlassian.theplugin.idea.PluginStatusBarToolTip$1" />
+       </Or>
+       <Bug pattern="SIC_INNER_SHOULD_BE_STATIC_ANON" />
+    </Match>
+
+</FindBugsFilter>
