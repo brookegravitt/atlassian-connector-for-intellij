@@ -13,13 +13,13 @@ import java.util.List;
  * Time: 11:51:08 AM
  */
 public class ServerBean implements Server {
-	private String name;
-	private String urlString;
+	private String name = "";
+	private String urlString = "";
 	//private char[] encryptedPassword = new char[0];
-	private String encryptedPassword;
-	private String username;
-	private Boolean shouldPasswordBeStored;
-	private String password;
+	private String encryptedPassword = "";
+	private String username = "";
+	private Boolean shouldPasswordBeStored = false;
+	private String password = "";
 
 
 	private List<SubscribedPlanBean> subscribedPlans = new ArrayList<SubscribedPlanBean>();
@@ -81,6 +81,7 @@ public class ServerBean implements Server {
 		return str2encode;
 	}
 
+	
 	public synchronized void setEncryptedPassword(String encryptedPassword) {
 		password = decode(encryptedPassword);
 		this.encryptedPassword = encryptedPassword;
@@ -129,7 +130,7 @@ public class ServerBean implements Server {
 		if (shouldBeStoredPermanently) {
 			this.encryptedPassword = encode(aPassword);
 		} else {
-			this.encryptedPassword = null;
+			this.encryptedPassword = "";
 		}
 
 
