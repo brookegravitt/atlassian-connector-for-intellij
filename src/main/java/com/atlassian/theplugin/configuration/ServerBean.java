@@ -24,7 +24,7 @@ public class ServerBean implements Server {
 
 	private List<SubscribedPlanBean> subscribedPlans = new ArrayList<SubscribedPlanBean>();
 
-	private Boolean isConfigInitialized = false;
+	transient private Boolean isConfigInitialized = false;
 
 	public ServerBean() {
 	}

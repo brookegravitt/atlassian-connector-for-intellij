@@ -48,7 +48,7 @@ public class ThePluginApplicationComponent
 
 	@Nls
 	public String getDisplayName() {
-		return "The Plugin";
+		return PluginInfo.getName();
 	}
 
 	@Nullable
@@ -96,7 +96,15 @@ public class ThePluginApplicationComponent
 		if (form != null) {
 			// Get data from form to component
 			form.getData(configuration);
-		}
+            bambooStatusChecker.cancel();
+            timer.purge();
+            try {
+                bambooStatusChecker = (BambooStatusChecker) bambooStatusChecker.clone();
+            } catch (CloneNotSupportedException e) {
+                throw new ConfigurationException(e.getMessage(), "Error while restarting timer.");
+            }
+            timer.schedule(bambooStatusChecker, 0, TIMER_TICK);
+        }
 
 	}
 
