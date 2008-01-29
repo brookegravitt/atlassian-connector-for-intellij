@@ -16,7 +16,8 @@ public class PasswordDialog extends JDialog {
     private JPasswordField password;
     private JButton testConnectionButton;
     private JLabel lblCommand;
-    private transient Server server;
+	private JTextField username;
+	private transient Server server;
 
     public PasswordDialog(final Server server) {
         this.server = server;
@@ -69,4 +70,15 @@ public class PasswordDialog extends JDialog {
         return chkRememberPassword.isSelected();
     }
 
+	public void setUserName(String username) {
+		this.username.setText(username);
+	}
+
+	public String getUserName() {
+		return this.username.getText();
+	}
+
+	private void createUIComponents() {
+		// TODO: place custom component creation code here 
+	}
 }
