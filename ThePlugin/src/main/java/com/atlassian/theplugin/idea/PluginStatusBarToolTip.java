@@ -31,8 +31,8 @@ public class PluginStatusBarToolTip extends Window {
     // title bar of the tooltip
     private final ToolTipTitleBar titleBar;
 
-    private static final int SIZE_X = 600;
-    private static final int SIZE_Y = 300;
+    private static final int INITIAL_SIZE_X = 600;
+    private static final int INITIAL_SIZE_Y = 300;
     private static final int SIZE_TITLE_BAR_Y = 260;
     private static final Color BACKGROUND_COLOR = new Color(253, 254, 226);
 	private JScrollPane scrollPane;
@@ -61,23 +61,17 @@ public class PluginStatusBarToolTip extends Window {
             throw new RuntimeException(e);
         }
         titleBar.setTitle(" " + "Bamboo builds status");
-        titleBar.setSize(SIZE_X, SIZE_TITLE_BAR_Y);
-        titleBar.setMaximumSize(new Dimension(SIZE_X, SIZE_TITLE_BAR_Y));
-        titleBar.setMinimumSize(new Dimension(SIZE_X, SIZE_TITLE_BAR_Y));
+        titleBar.setSize(INITIAL_SIZE_X, SIZE_TITLE_BAR_Y);
+        titleBar.setMaximumSize(new Dimension(INITIAL_SIZE_X, SIZE_TITLE_BAR_Y));
+        titleBar.setMinimumSize(new Dimension(INITIAL_SIZE_X, SIZE_TITLE_BAR_Y));
 
 		// add scroll facility to the html area
 		scrollPane = new JScrollPane(htmlView,
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setWheelScrollingEnabled(true);
-//		scrollPane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
-//			public void adjustmentValueChanged(AdjustmentEvent e) {
-//				System.out.println(PluginStatusBarToolTip.this.scrollPane.getViewport().getView().getLocation().getX());
-//				System.out.println(PluginStatusBarToolTip.this.scrollPane.getVerticalScrollBar().getValue());
-//			}
-//		});
 
 		// put components on the main window
-		this.setSize(SIZE_X, SIZE_Y);
+		this.setSize(INITIAL_SIZE_X, INITIAL_SIZE_Y);
         this.setLayout(new BorderLayout());
         this.add(titleBar, BorderLayout.NORTH);
 		this.add(scrollPane, BorderLayout.CENTER);
@@ -99,8 +93,8 @@ public class PluginStatusBarToolTip extends Window {
     public void showToltip(int xMouse, int yMouse) {
 
 
-		int startX = xMouse - SIZE_X;
-		int startY = yMouse - SIZE_Y;
+		int startX = xMouse - (int) this.getSize().getWidth();
+		int startY = yMouse - (int) this.getSize().getHeight();
 
 		if (startX < 0) {
 			startX = xMouse;
@@ -124,12 +118,14 @@ public class PluginStatusBarToolTip extends Window {
 		htmlView.setCaretPosition(0);
 	}
 
-    private static class ToolTipTitleBar extends JPanel {
+    private class ToolTipTitleBar extends JPanel {
 
-        private static Icon closeButtonIcon = IconLoader.getIcon("/icons/close_icon_30x15.png");
-        private static Icon closeButtonIconHover = IconLoader.getIcon("/icons/close_icon_30x15_hover.png");
+        private Icon closeButtonIcon = IconLoader.getIcon("/icons/close_icon_30x15.png");
+        private Icon closeButtonIconHover = IconLoader.getIcon("/icons/close_icon_30x15_hover.png");
 
-        // title label
+		// resize label
+		private final JLabel resizeLabel = new JLabel(" ");
+		// title label
         private final GradientLabel titleLabel = new GradientLabel();
         // close icon container (top-right corner)
         private final JLabel closeIconLabel = new JLabel();
@@ -151,9 +147,10 @@ public class PluginStatusBarToolTip extends Window {
 
             closeIconLabel.setIcon(closeButtonIcon);
 
-            // add title and close icon to title bar
+            // add resize label, title and close icon to title bar
             this.setLayout(new BorderLayout());
-            this.add(titleLabel, BorderLayout.CENTER);
+			this.add(resizeLabel, BorderLayout.WEST);
+			this.add(titleLabel, BorderLayout.CENTER);
             this.add(closeIconLabel, BorderLayout.EAST);
 
             // hide tooltip when clicked on close icon
@@ -172,31 +169,100 @@ public class PluginStatusBarToolTip extends Window {
             });
 
             // move tooltip when draging title label
-            MouseInputAdapterExt l = new MouseInputAdapterExt();
-            titleLabel.addMouseMotionListener(l);
-            titleLabel.addMouseListener(l);
+            ToolTipMoveHandler moveHandler = new ToolTipMoveHandler();
+            titleLabel.addMouseMotionListener(moveHandler);
+            titleLabel.addMouseListener(moveHandler);
 
-        }
+			// resize tooltip
+			ToolTipResizeHandler resizeHandler = new ToolTipResizeHandler();
+			resizeLabel.addMouseListener(resizeHandler);
+			resizeLabel.addMouseMotionListener(resizeHandler);
+
+		}
 
         public void setTitle(String title) {
             titleLabel.setText(title);
         }
-    }
 
-    private static class MouseInputAdapterExt extends MouseInputAdapter {
-//			private int mousePressX = 0;
-//			private int mousePressY = 0;
+	}
 
-        // @todo find absolute position on the screen in java 1.5
-//			public void mouseDragged(MouseEvent e) {
-//				tooltipWindow.setLocation(e.getXOnScreen() - mousePressX, e.getYOnScreen() - mousePressY);
-//			}
-//
-//			public void mousePressed(MouseEvent e) {
-//				mousePressX = e.getX();
-//				mousePressY = e.getY();
-//			}
-    }
+	private class ToolTipResizeHandler extends MouseInputAdapter {
+		private static final int MINIMUM_X_SIZE = 200;
+		private static final int MINIMUM_Y_SIZE = 100;
+
+		private int mousePressAbsoluteX;
+		private int mousePressAbsoluteY;
+		private int initialWindowXSize;
+		private int initialWindowYSize;
+		private int initialWindowXPosition;
+		private int initialWindowYPosition;
+
+		public void mouseEntered(MouseEvent e) {
+			Cursor c = new Cursor(Cursor.NW_RESIZE_CURSOR);
+			((JComponent) e.getSource()).setCursor(c);
+		}
+
+		public void mouseDragged(MouseEvent e) {
+
+			int changedX = mousePressAbsoluteX - (int) (MouseInfo.getPointerInfo().getLocation().getX());
+			int changedY = mousePressAbsoluteY - (int) (MouseInfo.getPointerInfo().getLocation().getY());
+
+			int newXSize = initialWindowXSize + changedX;
+			int newYSize = initialWindowYSize + changedY;
+
+			if (newXSize > MINIMUM_X_SIZE) {
+				int currentYPosition = (int) PluginStatusBarToolTip.this.getLocation().getY();
+				int currentYSize = (int) PluginStatusBarToolTip.this.getSize().getHeight();
+
+				PluginStatusBarToolTip.this.setSize(
+						initialWindowXSize + changedX,
+						currentYSize);
+
+				PluginStatusBarToolTip.this.setLocation(
+						initialWindowXPosition - changedX,
+						currentYPosition);
+			}
+			if (newYSize > MINIMUM_Y_SIZE) {
+				int currentXPosition = (int) PluginStatusBarToolTip.this.getLocation().getX();
+				int currentXSize = (int) PluginStatusBarToolTip.this.getSize().getWidth();
+
+				PluginStatusBarToolTip.this.setSize(
+						currentXSize,
+						initialWindowYSize + changedY);
+
+				PluginStatusBarToolTip.this.setLocation(
+						currentXPosition,
+						initialWindowYPosition - changedY);
+			}
+		}
+
+		public void mousePressed(MouseEvent e) {
+			mousePressAbsoluteX = (int) (MouseInfo.getPointerInfo().getLocation().getX());
+			mousePressAbsoluteY = (int) (MouseInfo.getPointerInfo().getLocation().getY());
+
+			initialWindowXSize = (int) PluginStatusBarToolTip.this.getSize().getWidth();
+			initialWindowYSize = (int) PluginStatusBarToolTip.this.getSize().getHeight();
+
+			initialWindowXPosition = (int) PluginStatusBarToolTip.this.getLocation().getX();
+			initialWindowYPosition = (int) PluginStatusBarToolTip.this.getLocation().getY(); 
+		}
+	}
+
+	private class ToolTipMoveHandler extends MouseInputAdapter {
+		private int mousePressRelativeX = 0;
+		private int mousePressRelativeY = 0;
+
+		public void mouseDragged(MouseEvent e) {
+			PluginStatusBarToolTip.this.setLocation(
+					(int) (MouseInfo.getPointerInfo().getLocation().getX() - mousePressRelativeX),
+					(int) (MouseInfo.getPointerInfo().getLocation().getY() - mousePressRelativeY));
+		}
+
+		public void mousePressed(MouseEvent e) {
+			mousePressRelativeX = e.getX();
+			mousePressRelativeY = e.getY();
+		}
+	}
 
     private static class GradientLabel extends JLabel {
 
@@ -214,5 +280,4 @@ public class PluginStatusBarToolTip extends Window {
             super.paintComponent(g);
         }
     }
-
 }
