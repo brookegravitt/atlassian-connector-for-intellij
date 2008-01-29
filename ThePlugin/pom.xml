@@ -230,7 +230,13 @@
 					<ideaPlugin>true</ideaPlugin>
 					<jdkName>IDEA 7590</jdkName>
 					<jdkLevel>${jdkLevel}</jdkLevel>
+					<wildcardResourcePatterns>!?*.java</wildcardResourcePatterns>
+					<downloadSources>true</downloadSources>
 					<libraries>
+						<library>
+							<name>Clover</name>
+							<exclude>false</exclude>
+						</library>
 						<library>
 							<name>openapi</name>
 							<exclude>true</exclude>
