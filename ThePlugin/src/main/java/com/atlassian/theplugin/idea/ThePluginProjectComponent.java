@@ -11,7 +11,6 @@ import com.intellij.openapi.wm.WindowManager;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import java.util.Timer;
 
 /**
  * Created by IntelliJ IDEA.
@@ -25,49 +24,24 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	private StatusBar statusBar;
 	private JComponent statusBarComponent;
 	private BambooStatusIcon statusBarIcon;
-	private Timer timer = null;
-
 	private BambooStatusChecker bambooStatusChecker;
 	private BambooStatusListenerImpl bambooStatusListener;
 
 	public ThePluginProjectComponent(Project project) {
 		this.project = project;
-        
-        // make findBugs happy
-        bambooStatusChecker = null;
-        statusBar = null;
-        statusBarIcon = null;
-    }
+
+		// make findBugs happy
+		bambooStatusChecker = null;
+		statusBar = null;
+		statusBarIcon = null;
+	}
 
 	public void initComponent() {
 		System.out.println("Init ThePlugin status component.");
-
-		ThePluginApplicationComponent appComponent =
-				ApplicationManager.getApplication().getComponent(ThePluginApplicationComponent.class);
-
-		timer = appComponent.getTimer();
-		bambooStatusChecker = appComponent.getBambooStatusChecker();
-
-		statusBarIcon = new BambooStatusIcon();
-		statusBarIcon.updateBambooStatus(BuildStatus.UNKNOWN, "Waiting for Bamboo build statuses.");
-
-		statusBarComponent = statusBarIcon;
-
-		bambooStatusListener = new BambooStatusListenerImpl(statusBarIcon);
-		bambooStatusChecker.registerListener(bambooStatusListener);
 	}
 
 	public void disposeComponent() {
-		bambooStatusChecker.unregisterListener(bambooStatusListener);
-
-		System.out.println("Dispose ThePlugin status component.");
-		if (timer != null) {
-			timer.cancel();
-		}
-		statusBarComponent = null;
-		statusBarIcon = null;
-
-
+		statusBar.setInfo("disposeComponent");
 	}
 
 	@NotNull
@@ -76,16 +50,34 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	}
 
 	public void projectOpened() {
+		ThePluginApplicationComponent appComponent =
+				ApplicationManager.getApplication().getComponent(ThePluginApplicationComponent.class);
+
+		bambooStatusChecker = appComponent.getBambooStatusChecker();
+
+		statusBarIcon = new BambooStatusIcon(project);
+		statusBarIcon.updateBambooStatus(BuildStatus.UNKNOWN, "Waiting for Bamboo build statuses.");
+
+		statusBarComponent = statusBarIcon;
+
+		bambooStatusListener = new BambooStatusListenerImpl(statusBarIcon);
+		bambooStatusChecker.registerListener(bambooStatusListener);
+
 		statusBar = WindowManager.getInstance().getStatusBar(project);
 		statusBar.addCustomIndicationComponent(statusBarComponent);
+
 		System.out.println("projectOpened");
 	}
 
 	public void projectClosed() {
-		statusBar.setInfo("disposeComponent");
-		statusBar.removeCustomIndicationComponent(statusBarComponent);
+
 		System.out.println("projectClosed");
 
+		statusBar.removeCustomIndicationComponent(statusBarComponent);
+		bambooStatusChecker.unregisterListener(bambooStatusListener);
+
+		statusBarComponent = null;
+		statusBarIcon = null;
 	}
 
 	public void setBambooStatus(String status, String statusDescription) {

@@ -1,7 +1,9 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.bamboo.BuildStatus;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.openapi.wm.WindowManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,8 +17,10 @@ public class BambooStatusIcon extends JLabel {
     private static Icon iconGreen;
     private static Icon iconGrey;
 
+	private Project project;
 
-    static {
+
+	static {
         iconRed = IconLoader.getIcon("/icons/red-16.png");
         iconGreen = IconLoader.getIcon("/icons/green-16.png");
         iconGrey = IconLoader.getIcon("/icons/grey-16.png");
@@ -27,10 +31,15 @@ public class BambooStatusIcon extends JLabel {
     private static final int X_OFFSET = 160;
     private static final int Y_OFFSET = 30;
 
-    BambooStatusIcon() {
+	/**
+	 *
+	 * @param aProject reference to the project 
+	 */
+	BambooStatusIcon(Project aProject) {
 
-        // show tooltip on mouse over
-        tooltip = new PluginStatusBarToolTip();
+
+		// show tooltip on mouse over
+        tooltip = new PluginStatusBarToolTip(WindowManager.getInstance().getFrame(aProject));
 
         addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent e) {

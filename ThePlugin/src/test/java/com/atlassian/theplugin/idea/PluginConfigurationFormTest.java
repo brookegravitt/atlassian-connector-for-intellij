@@ -322,7 +322,7 @@ public class PluginConfigurationFormTest extends TestCase {
 
 	// @todo restore test
 	public void BambooStatusIcon(){
-        BambooStatusIcon statusIcon = new BambooStatusIcon();
+        BambooStatusIcon statusIcon = new BambooStatusIcon(null);
         Collection<BambooBuild> buildStatuses = new ArrayList<BambooBuild>();
 
         //add crap as build status
@@ -381,7 +381,11 @@ public class PluginConfigurationFormTest extends TestCase {
         private BuildStatus status;
         private String fullInfo;
 
-        public void updateBambooStatus(BuildStatus status, String fullInfo) {
+		private BambooStatusIconHelper() {
+			super(null);
+		}
+
+		public void updateBambooStatus(BuildStatus status, String fullInfo) {
 
                 this.status = status;
                 this.fullInfo = fullInfo;
