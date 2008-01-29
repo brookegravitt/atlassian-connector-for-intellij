@@ -28,7 +28,8 @@ public class BambooStatusIcon extends JLabel {
 
    private PluginStatusBarToolTip tooltip;
 
-    private static final int X_OFFSET = 160;
+
+	private static final int X_OFFSET = 160;
     private static final int Y_OFFSET = 30;
 
 	/**
@@ -46,10 +47,9 @@ public class BambooStatusIcon extends JLabel {
 
                 Window win = SwingUtilities.getWindowAncestor(BambooStatusIcon.this);
 
-
-                tooltip.showToltip(
-                        win.getX() + win.getWidth()
-                                - BambooStatusIcon.this.getX() - X_OFFSET, win.getY() + win.getHeight() - Y_OFFSET);
+				tooltip.showToltip(
+						(int) MouseInfo.getPointerInfo().getLocation().getX(),
+						(int) MouseInfo.getPointerInfo().getLocation().getY());
             }
         });
 
