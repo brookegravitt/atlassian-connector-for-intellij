@@ -49,29 +49,23 @@ public final class PluginInfo {
     private Document setDoc() {
         Document doc = null;
         File base = new File(baseDir);
-        if (base.isDirectory()) {
-            File file = new File(base.getAbsolutePath(), "META-INF/plugin.xml");
-            try {
-                doc = JDOMUtil.loadDocument(file);
-            } catch (IOException e) {
-                LOGGER.error("Error accessing plugin.xml file.");
-            } catch (JDOMException e) {
-                LOGGER.error("Error accessing plugin.xml file.");
-            }
-        } else {
-            ZipFile zip = null;
-            try {
+		try {
+        	if (base.isDirectory()) {
+	            File file = new File(base.getAbsolutePath(), "META-INF/plugin.xml");
+    	        doc = JDOMUtil.loadDocument(file);
+        	} else {
+	            ZipFile zip = null;
                 zip = new ZipFile(base);
                 InputStream in = zip.getInputStream(zip.getEntry("META-INF/plugin.xml"));
                 doc = JDOMUtil.loadDocument(in);
                 in.close();
-            } catch (IOException e) {
-                LOGGER.error("Error accessing plugin.xml file.");
-            } catch (JDOMException e) {
-                LOGGER.error("Error accessing plugin.xml file.");
-            }
-        }
-        return doc;
+    	    }
+		} catch (IOException e) {
+			 LOGGER.error("Error accessing plugin.xml file.");
+		} catch (JDOMException e) {
+			 LOGGER.error("Error accessing plugin.xml file.");
+		 }
+         return doc;
     }
 
     private String getConfigValue(String path) {

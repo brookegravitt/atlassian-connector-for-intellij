@@ -1,8 +1,8 @@
 package com.atlassian.theplugin.bamboo;
 
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
-import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.configuration.Server;
+import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.idea.PasswordDialog;
 import com.atlassian.theplugin.idea.PluginInfo;
 
@@ -29,31 +29,34 @@ public class MissingPasswordHandler implements Runnable {
 
 			isDialogShown = true;
 
-			for(Server server: ConfigurationFactory.getConfiguration().getBambooConfiguration().getServers()){
+			for (Server server : ConfigurationFactory.getConfiguration().getBambooConfiguration().getServers()) {
+				ServerBean serverBean = (ServerBean) server;
 				PasswordDialog dialog = new PasswordDialog(server);
+				dialog.setUserName(serverBean.getUsername());
 				dialog.pack();
 				JPanel panel = dialog.getPasswordPanel();
 
-			//WindowManager.getInstance().getAllFrames();
+				//WindowManager.getInstance().getAllFrames();
 
-			int answer = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(), panel,
-					PluginInfo.getName(), OK_CANCEL_OPTION, PLAIN_MESSAGE);
+				int answer = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(), panel,
+						PluginInfo.getName(), OK_CANCEL_OPTION, PLAIN_MESSAGE);
 
-			String password = "";
-			Boolean shouldPasswordBeStored = false;
-			if (answer == JOptionPane.OK_OPTION) {
-				password = dialog.getPasswordString();
-				shouldPasswordBeStored = dialog.getShouldPasswordBeStored();
-                ((ServerBean)server).setPasswordString(password, shouldPasswordBeStored);
-            } else {
+				String password = "";
+				Boolean shouldPasswordBeStored = false;
+				if (answer == JOptionPane.OK_OPTION) {
+					password = dialog.getPasswordString();
+					shouldPasswordBeStored = dialog.getShouldPasswordBeStored();
+					serverBean.setPasswordString(password, shouldPasswordBeStored);
+					serverBean.setUsername(dialog.getUserName());
+				} else {
 
-				JOptionPane.showMessageDialog(null,
-						"You can always change password by changing plugin settings (Preferences | IDE Settings | "
-								+ PluginInfo.getName() + ")");
-			}
-			// so or so we assume that user provided password
+					JOptionPane.showMessageDialog(null,
+							"You can always change password by changing plugin settings (Preferences | IDE Settings | "
+									+ PluginInfo.getName() + ")");
+				}
+				// so or so we assume that user provided password
 
-			((ServerBean) server).setIsConfigInitialized(true);
+				serverBean.setIsConfigInitialized(true);
 			}
 		}
 
