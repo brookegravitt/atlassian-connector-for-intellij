@@ -12,10 +12,7 @@ import static javax.swing.event.HyperlinkEvent.EventType.ACTIVATED;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -24,7 +21,7 @@ import java.awt.event.WindowEvent;
  * Time: 11:40:02
  * To change this template use File | Settings | File Templates.
  */
-public class PluginStatusBarToolTip extends JFrame {
+public class PluginStatusBarToolTip extends Window {
 
     private static final Category LOG = Logger.getInstance(PluginStatusBarToolTip.class);
 
@@ -39,9 +36,11 @@ public class PluginStatusBarToolTip extends JFrame {
     private static final int SIZE_TITLE_BAR_Y = 260;
     private static final Color BACKGROUND_COLOR = new Color(253, 254, 226);
 
-    public PluginStatusBarToolTip() {
+    public PluginStatusBarToolTip(JFrame frame) {
 
-        // html view is the main view of the tooltip
+		super(frame);
+
+		// html view is the main view of the tooltip
         htmlView.setEditable(false);
         htmlView.setContentType("text/html");
         htmlView.setBackground(BACKGROUND_COLOR);
@@ -51,7 +50,6 @@ public class PluginStatusBarToolTip extends JFrame {
                 if (e.getEventType().equals(ACTIVATED)) {
                     BrowserUtil.launchBrowser(e.getURL().toString());
                 }
-                //System.out.println(e.getEventType().toString());
             }
         });
 
@@ -73,11 +71,9 @@ public class PluginStatusBarToolTip extends JFrame {
 
 		// put components on the main window
 		this.setSize(SIZE_X, SIZE_Y);
-        this.setUndecorated(true);
-        this.getContentPane().setLayout(new BorderLayout());
-        this.getContentPane().add(titleBar, BorderLayout.NORTH);
-        //this.getContentPane().add(htmlView, BorderLayout.CENTER);
-		this.getContentPane().add(scroll, BorderLayout.CENTER);
+        this.setLayout(new BorderLayout());
+        this.add(titleBar, BorderLayout.NORTH);
+		this.add(scroll, BorderLayout.CENTER);
 
 		// hide when focus lost
 		this.addWindowFocusListener(new WindowAdapter() {
@@ -85,6 +81,7 @@ public class PluginStatusBarToolTip extends JFrame {
 				setVisible(false);
 			}
 		});
+
 	}
 
 	/**
@@ -111,7 +108,9 @@ public class PluginStatusBarToolTip extends JFrame {
 
 		this.setVisible(true);
         this.requestFocus();
-    }
+		this.toFront();
+
+	}
 
     public void setHtmlContent(String html) {
         htmlView.setText(html);
