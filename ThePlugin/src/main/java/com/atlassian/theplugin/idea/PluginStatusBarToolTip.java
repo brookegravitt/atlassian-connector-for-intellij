@@ -35,8 +35,9 @@ public class PluginStatusBarToolTip extends Window {
     private static final int SIZE_Y = 300;
     private static final int SIZE_TITLE_BAR_Y = 260;
     private static final Color BACKGROUND_COLOR = new Color(253, 254, 226);
+	private JScrollPane scrollPane;
 
-    public PluginStatusBarToolTip(JFrame frame) {
+	public PluginStatusBarToolTip(JFrame frame) {
 
 		super(frame);
 
@@ -65,30 +66,35 @@ public class PluginStatusBarToolTip extends Window {
         titleBar.setMinimumSize(new Dimension(SIZE_X, SIZE_TITLE_BAR_Y));
 
 		// add scroll facility to the html area
-		JScrollPane scroll = new JScrollPane(htmlView,
+		scrollPane = new JScrollPane(htmlView,
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		scroll.setWheelScrollingEnabled(true);
+		scrollPane.setWheelScrollingEnabled(true);
+//		scrollPane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+//			public void adjustmentValueChanged(AdjustmentEvent e) {
+//				System.out.println(PluginStatusBarToolTip.this.scrollPane.getViewport().getView().getLocation().getX());
+//				System.out.println(PluginStatusBarToolTip.this.scrollPane.getVerticalScrollBar().getValue());
+//			}
+//		});
 
 		// put components on the main window
 		this.setSize(SIZE_X, SIZE_Y);
         this.setLayout(new BorderLayout());
         this.add(titleBar, BorderLayout.NORTH);
-		this.add(scroll, BorderLayout.CENTER);
+		this.add(scrollPane, BorderLayout.CENTER);
 
-		// hide when focus lost
+		// hide tooltip when focus lost
 		this.addWindowFocusListener(new WindowAdapter() {
 			public void windowLostFocus(WindowEvent e) {
 				setVisible(false);
 			}
 		});
-
 	}
 
 	/**
      * Shows tooltip in the place where mouse pointer is located.
      *
-     * @param xMouse current horizontal position of the mouse pointer (right corner of the tooltip)
-     * @param yMouse current vertical position of the mouse pointer (bottom corner of the tooltip)
+     * @param xMouse current horizontal position of the mouse pointer (x of right-bottom corner of the tooltip)
+     * @param yMouse current vertical position of the mouse pointer (y of right-bottom corner of the tooltip)
      */
     public void showToltip(int xMouse, int yMouse) {
 
@@ -109,12 +115,14 @@ public class PluginStatusBarToolTip extends Window {
 		this.setVisible(true);
         this.requestFocus();
 		this.toFront();
-
 	}
 
     public void setHtmlContent(String html) {
         htmlView.setText(html);
-    }
+		//scrollPane.getVerticalScrollBar().setValue(0);
+		// move scroll bar to the top
+		htmlView.setCaretPosition(0);
+	}
 
     private static class ToolTipTitleBar extends JPanel {
 
@@ -173,8 +181,6 @@ public class PluginStatusBarToolTip extends Window {
         public void setTitle(String title) {
             titleLabel.setText(title);
         }
-
-
     }
 
     private static class MouseInputAdapterExt extends MouseInputAdapter {
