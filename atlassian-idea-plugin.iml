@@ -17,7 +17,7 @@
     <orderEntry type="module-library">
       <library name="junit">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar!/" />
+          <root url="jar:///Users/sginter/.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -26,7 +26,7 @@
     <orderEntry type="module-library" exported="">
       <library name="log4j">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/log4j/log4j/1.2.9/log4j-1.2.9.jar!/" />
+          <root url="jar:///Users/sginter/.m2/repository/log4j/log4j/1.2.9/log4j-1.2.9.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -35,7 +35,7 @@
     <orderEntry type="module-library" exported="">
       <library name="jdom">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/jdom/jdom/1.0/jdom-1.0.jar!/" />
+          <root url="jar:///Users/sginter/.m2/repository/jdom/jdom/1.0/jdom-1.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -44,7 +44,7 @@
     <orderEntry type="module-library">
       <library name="icu4j">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/com/ibm/icu/icu4j/2.6.1/icu4j-2.6.1.jar!/" />
+          <root url="jar:///Users/sginter/.m2/repository/com/ibm/icu/icu4j/2.6.1/icu4j-2.6.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -53,7 +53,7 @@
     <orderEntry type="module-library" exported="">
       <library name="jaxen">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/jaxen/jaxen/1.1.1/jaxen-1.1.1.jar!/" />
+          <root url="jar:///Users/sginter/.m2/repository/jaxen/jaxen/1.1.1/jaxen-1.1.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -62,7 +62,7 @@
     <orderEntry type="module-library">
       <library name="xom">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/xom/xom/1.0/xom-1.0.jar!/" />
+          <root url="jar:///Users/sginter/.m2/repository/xom/xom/1.0/xom-1.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -71,7 +71,7 @@
     <orderEntry type="module-library">
       <library name="forms">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/com/jgoodies/forms/1.0.7/forms-1.0.7.jar!/" />
+          <root url="jar:///Users/sginter/.m2/repository/com/jgoodies/forms/1.0.7/forms-1.0.7.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -80,7 +80,7 @@
     <orderEntry type="module-library">
       <library name="asm-tree">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/asm/asm-tree/2.2.3/asm-tree-2.2.3.jar!/" />
+          <root url="jar:///Users/sginter/.m2/repository/asm/asm-tree/2.2.3/asm-tree-2.2.3.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -89,7 +89,7 @@
     <orderEntry type="module-library">
       <library name="ant">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/ant/ant/1.6.5/ant-1.6.5.jar!/" />
+          <root url="jar:///Users/sginter/.m2/repository/ant/ant/1.6.5/ant-1.6.5.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -98,7 +98,7 @@
     <orderEntry type="module-library">
       <library name="asm">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/asm/asm/2.2.3/asm-2.2.3.jar!/" />
+          <root url="jar:///Users/sginter/.m2/repository/asm/asm/2.2.3/asm-2.2.3.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -107,12 +107,13 @@
     <orderEntry type="module-library">
       <library name="asm-commons">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/asm/asm-commons/2.2.3/asm-commons-2.2.3.jar!/" />
+          <root url="jar:///Users/sginter/.m2/repository/asm/asm-commons/2.2.3/asm-commons-2.2.3.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" exported="" name="Clover" level="application" />
     <orderEntryProperties />
   </component>
 </module>
