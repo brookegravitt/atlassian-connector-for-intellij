@@ -45,7 +45,7 @@ public class PluginStatusBarToolTip extends JFrame {
         htmlView.setEditable(false);
         htmlView.setContentType("text/html");
         htmlView.setBackground(BACKGROUND_COLOR);
-        htmlView.addHyperlinkListener(new HyperlinkListener() {
+		htmlView.addHyperlinkListener(new HyperlinkListener() {
 
             public void hyperlinkUpdate(HyperlinkEvent e) {
                 if (e.getEventType().equals(ACTIVATED)) {
@@ -66,11 +66,18 @@ public class PluginStatusBarToolTip extends JFrame {
         titleBar.setMaximumSize(new Dimension(SIZE_X, SIZE_TITLE_BAR_Y));
         titleBar.setMinimumSize(new Dimension(SIZE_X, SIZE_TITLE_BAR_Y));
 
-        this.setSize(SIZE_X, SIZE_Y);
+		// add scroll facility to the html area
+		JScrollPane scroll = new JScrollPane(htmlView,
+				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		scroll.setWheelScrollingEnabled(true);
+
+		// put components on the main window
+		this.setSize(SIZE_X, SIZE_Y);
         this.setUndecorated(true);
         this.getContentPane().setLayout(new BorderLayout());
         this.getContentPane().add(titleBar, BorderLayout.NORTH);
-        this.getContentPane().add(htmlView, BorderLayout.CENTER);
+        //this.getContentPane().add(htmlView, BorderLayout.CENTER);
+		this.getContentPane().add(scroll, BorderLayout.CENTER);
 
 		// hide when focus lost
 		this.addWindowFocusListener(new WindowAdapter() {
@@ -78,9 +85,7 @@ public class PluginStatusBarToolTip extends JFrame {
 				setVisible(false);
 			}
 		});
-
 	}
-
 
 	/**
      * Shows tooltip in the place where mouse pointer is located.
