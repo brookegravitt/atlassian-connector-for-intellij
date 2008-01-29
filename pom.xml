@@ -72,8 +72,19 @@
 			<id>atlassian-proxy</id>
 			<url>https://m2proxy.atlassian.com/repository/public</url>
 		</repository>
+		<repository>
+			<id>ddsteps.org</id>
+			<name>DDSteps Repo</name>
+			<url>http://repo.ddsteps.org/maven/release/</url>
+		</repository>
 	</repositories>
 	<dependencies>
+		<dependency>
+			<groupId>org.ddsteps</groupId>
+			<artifactId>ddsteps-httpserver-mock</artifactId>
+			<version>1.0-m1</version>
+			<scope>test</scope>
+		</dependency>
 		<!--
 				  <dependency>
 					  <groupId>org.apache.maven</groupId>
@@ -329,13 +340,13 @@
 					<configLocation>java-regular.cs.xml</configLocation>
 				</configuration>
 			</plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
-                <configuration>
-                    <excludeFilterFile>findbugs-exclude.xml</excludeFilterFile>
-                </configuration>
-            </plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+				<configuration>
+					<excludeFilterFile>findbugs-exclude.xml</excludeFilterFile>
+				</configuration>
+			</plugin>
 
 		</plugins>
 

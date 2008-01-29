@@ -4,43 +4,72 @@ import com.atlassian.theplugin.bamboo.BambooBuild;
 import com.atlassian.theplugin.bamboo.BambooPlan;
 import com.atlassian.theplugin.bamboo.BambooProject;
 import com.atlassian.theplugin.bamboo.BuildStatus;
+import com.atlassian.theplugin.bamboo.api.bamboomock.*;
 import junit.framework.TestCase;
+import org.ddsteps.mock.httpserver.JettyMockServer;
+import org.mortbay.jetty.Server;
 
+import java.util.Iterator;
 import java.util.List;
 
 
 /**
- * Created by IntelliJ IDEA.
- * User: mwent
- * Date: 2008-01-11
- * Time: 15:08:11
- * To change this template use File | Settings | File Templates.
+ * Test case for {#link BambooSession}
  */
 public class BambooSessionTest extends TestCase {
-	private static final String SERVER_URL = "http://lech.atlassian.pl:8080/atlassian-bamboo-1.2.4";
-	private static final String SERVER_SSL_URL = "https://lech.atlassian.pl/atlassian-bamboo-1.2.4";
-	private static final String USER_NAME = "user";
-	private static final String PASSWORD = "d0n0tch@nge";
+	private static final String USER_NAME = "someUser";
+	private static final String PASSWORD = "somePassword";
 
+	private Server server;
+	private JettyMockServer mockServer;
+	private String mockBaseUrl;
+
+	protected void setUp() throws Exception {
+		server = new Server(0);
+		server.start();
+
+		mockBaseUrl = "http://localhost:" + server.getConnectors()[0].getLocalPort();
+
+		mockServer = new JettyMockServer(server);
+	}
+
+	protected void tearDown() throws Exception {
+		mockServer = null;
+		mockBaseUrl = null;
+		server.stop();
+	}
 
 	public void testSuccessBambooLogin() throws Exception {
-		BambooSession apiHandler = new BambooSession(SERVER_URL);
+
+		BambooSession apiHandler = new BambooSession(mockBaseUrl);
+
+		String[] usernames = { "user", "+-=&;<>", "", "a;&username=other", "!@#$%^&*()_-+=T " };
+		String[] passwords = { "password", "+-=&;<>", "", "&password=other", ",./';[]\t\\ |}{\":><?" };
+
+		for (int i = 0; i < usernames.length; ++i) {
+			mockServer.expect("/api/rest/login.action", new LoginCallback(usernames[i], passwords[i]));
+			mockServer.expect("/api/rest/logout.action", new LogoutCallback());
+
+			apiHandler.login(usernames[i], passwords[i].toCharArray());
+			assertTrue(apiHandler.isLoggedIn());
+			apiHandler.logout();
+			assertFalse(apiHandler.isLoggedIn());
+		}
+
+		mockServer.verify();
+	}
+
+	public void testSuccessBambooLoginURLWithSlash() throws Exception {
+		mockServer.expect("//api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("//api/rest/logout.action", new LogoutCallback(LoginCallback.AUTH_TOKEN));
+
+		BambooSession apiHandler = new BambooSession(mockBaseUrl + "/");
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
 		assertTrue(apiHandler.isLoggedIn());
 		apiHandler.logout();
 		assertFalse(apiHandler.isLoggedIn());
-	}
 
-	public void testBambooLogout() throws Exception {
-		BambooSession apiHandler = new BambooSession(SERVER_URL);
-		assertFalse(apiHandler.isLoggedIn());
-		apiHandler.logout();
-	}
-
-	public void testSuccessBambooLoginURLWithSlash() throws Exception {
-		BambooSession apiHandler = new BambooSession(SERVER_URL + "/");
-		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
-		apiHandler.logout();
+		mockServer.verify();
 	}
 
 	public void testNullParamsLogin() throws Exception {
@@ -54,44 +83,32 @@ public class BambooSessionTest extends TestCase {
 	}
 
 	public void testWrongUrlBambooLogin() throws Exception {
+		mockServer.expect("/wrongurl/api/rest/login.action", new ErrorResponse(400));
+
 		try {
-			BambooSession apiHandler = new BambooSession(SERVER_URL.replaceAll("bamboo", "xxx"));
+			BambooSession apiHandler = new BambooSession(mockBaseUrl + "/wrongurl");
 			apiHandler.login(USER_NAME, PASSWORD.toCharArray());
 			fail();
 		} catch (BambooLoginException ex) {
 			System.out.println("Exception: " + ex.getMessage());
 		}
+		mockServer.verify();
 	}
 
 	public void testWrongUserBambooLogin() throws Exception {
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
+
 		try {
-			BambooSession apiHandler = new BambooSession(SERVER_URL);
-			apiHandler.login(USER_NAME + "XXX", PASSWORD.toCharArray());
+			BambooSession apiHandler = new BambooSession(mockBaseUrl);
+			apiHandler.login(USER_NAME, PASSWORD.toCharArray()); // mock will fail this
 			fail();
 		} catch (BambooLoginException ex) {
 			System.out.println("Exception: " + ex.getMessage());
 		}
+
+		mockServer.verify();
 	}
 
-	public void testWrongPasswordBambooLogin() throws Exception {
-		try {
-			BambooSession apiHandler = new BambooSession(SERVER_URL);
-			apiHandler.login(USER_NAME, (PASSWORD + "xxx").toCharArray());
-			fail();
-		} catch (BambooLoginException ex) {
-			System.out.println("Exception: " + ex.getMessage());
-		}
-	}
-
-	public void testNoPasswordBambooLogin() throws Exception {
-		try {
-			BambooSession apiHandler = new BambooSession(SERVER_URL);
-			apiHandler.login(USER_NAME, "".toCharArray());
-			fail();
-		} catch (BambooLoginException ex) {
-			System.out.println("Exception: " + ex.getMessage());
-		}
-	}
 
 	public void testWrongParamsBambooLogin() throws Exception {
 		try {
@@ -103,54 +120,129 @@ public class BambooSessionTest extends TestCase {
 		}
 	}
 
+
+	private static final String[][] expectedProjects = {
+			{ "PO", "Project One" },
+			{ "PT", "Project Two" },
+			{ "PEMPTY", "Project Three - Empty" }
+	};
+
 	public void testProjectList() throws Exception {
-		BambooSession apiHandler = new BambooSession(SERVER_URL);
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/listProjectNames.action", new ProjectListCallback());
+		mockServer.expect("/api/rest/logout.action", new LogoutCallback());
+
+		BambooSession apiHandler = new BambooSession(mockBaseUrl);
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
 		List<BambooProject> projects = apiHandler.listProjectNames();
-		assertFalse(projects.size() == 0);
 		apiHandler.logout();
+
+		assertEquals(expectedProjects.length, projects.size());
+
+		Iterator<BambooProject> iterator = projects.iterator();
+		for (String[] pair : expectedProjects) {
+			BambooProject project = iterator.next();
+			assertEquals(pair[0], project.getProjectKey());
+			assertEquals(pair[1], project.getProjectName());
+		}
+
+		mockServer.verify();
 	}
+
+	private static final String[][] expectedPlans = {
+			{ "PO-FP", "First Project - First Plan" },
+			{ "PO-SECPLAN", "First Project - Second Plan" },
+			{ "PO-TP", "First Project - Third Plan" },
+			{ "PT-TOP", "Second Project - The Only Plan" }
+	};
 
 	public void testPlanList() throws Exception {
-		BambooSession apiHandler = new BambooSession(SERVER_URL);
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/listBuildNames.action", new PlanListCallback());
+		mockServer.expect("/api/rest/logout.action", new LogoutCallback());
+
+		BambooSession apiHandler = new BambooSession(mockBaseUrl);
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
 		List<BambooPlan> plans = apiHandler.listPlanNames();
-		assertFalse(plans.size() == 0);
 		apiHandler.logout();
+
+		assertEquals(expectedPlans.length, plans.size());
+		Iterator<BambooPlan> iterator = plans.iterator();
+		for (String[] pair : expectedPlans) {
+			BambooPlan plan = iterator.next();
+			assertEquals(pair[0], plan.getPlanKey());
+			assertEquals(pair[1], plan.getPlanName());
+		}
+
+		mockServer.verify();
 	}
 
-	public void testBuildForPlan() throws Exception {
-		BambooSession apiHandler = new BambooSession(SERVER_URL);
+	public void testBuildForPlanSuccess() throws Exception {
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/getLatestBuildResults.action", new LatestBuildResultCallback());
+		mockServer.expect("/api/rest/logout.action", new LogoutCallback());
+
+		BambooSession apiHandler = new BambooSession(mockBaseUrl);
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
 		BambooBuild build = apiHandler.getLatestBuildForPlan("TP-DEF");
+		apiHandler.logout();
+
 		assertNotNull(build);
 		assertEquals("TP-DEF", build.getBuildKey());
-		assertNotNull(build.getBuildNumber());
-		assertNotNull(build.getStatus());
-		assertFalse(BuildStatus.UNKNOWN.equals(build.getStatus()));
-		assertTrue(BuildStatus.BUILD_SUCCEED.equals(build.getStatus()) || BuildStatus.BUILD_FAILED.equals(build.getStatus()));
+		assertEquals("140", build.getBuildNumber());
+		//todo: sginter: What should go here? bamboo-provided status or the BuildStatus.toString()
+		//assertEquals("Successful", build.getStatus());
+		assertSame(BuildStatus.BUILD_SUCCEED, build.getStatus());
 		assertTrue(build.getPollingTime().getTime() - System.currentTimeMillis() < 5000);
-		assertEquals(SERVER_URL, build.getServerUrl());
-		assertTrue(build.getBuildUrl().startsWith(SERVER_URL + "/browse/" + "TP-DEF" + "-"));
-		assertEquals(SERVER_URL + "/browse/" + "TP-DEF", build.getPlanUrl());
+		assertEquals(mockBaseUrl, build.getServerUrl());
+		assertEquals(mockBaseUrl + "/browse/TP-DEF-140", build.getBuildUrl());
+		assertEquals(mockBaseUrl + "/browse/TP-DEF", build.getPlanUrl());
 		assertNull(build.getMessage());
+
+		mockServer.verify();
+	}
+
+	public void testBuildForPlanFailure() throws Exception {
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/getLatestBuildResults.action", new LatestBuildResultCallback("FAILED"));
+		mockServer.expect("/api/rest/logout.action", new LogoutCallback());
+
+		BambooSession apiHandler = new BambooSession(mockBaseUrl);
+		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
+		BambooBuild build = apiHandler.getLatestBuildForPlan("TP-DEF");
 		apiHandler.logout();
+
+		assertNotNull(build);
+		assertEquals("TP-DEF", build.getBuildKey());
+		assertEquals("141", build.getBuildNumber());
+		//todo: sginter: What should go here? bamboo-provided status or the BuildStatus.toString()
+		//assertEquals("Failed", build.getStatus());
+		assertSame(BuildStatus.BUILD_FAILED, build.getStatus());
+		assertTrue(build.getPollingTime().getTime() - System.currentTimeMillis() < 5000);
+		assertEquals(mockBaseUrl, build.getServerUrl());
+		assertEquals(mockBaseUrl + "/browse/TP-DEF-141", build.getBuildUrl());
+		assertEquals(mockBaseUrl + "/browse/TP-DEF", build.getPlanUrl());
+		assertNull(build.getMessage());
+
+		mockServer.verify();
 	}
 
 	public void testBuildForNonExistingPlan() throws Exception {
-		BambooSession apiHandler = new BambooSession(SERVER_URL);
-		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
-		BambooBuild build = apiHandler.getLatestBuildForPlan("TP-DEF-NON-EXISTING");
-		assertEquals(BuildStatus.UNKNOWN, build.getStatus());
-		apiHandler.logout();
-	}
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/getLatestBuildResults.action", new LatestBuildResultCallback("WRONG"));
+		mockServer.expect("/api/rest/logout.action", new LogoutCallback());
 
-	public void testBuildForEmptyPlan() throws Exception {
-		BambooSession apiHandler = new BambooSession(SERVER_URL);
+		BambooSession apiHandler = new BambooSession(mockBaseUrl);
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
-		BambooBuild build = apiHandler.getLatestBuildForPlan("");
-		assertEquals(BuildStatus.UNKNOWN, build.getStatus());
+		BambooBuild build = apiHandler.getLatestBuildForPlan("TP-DEF");
 		apiHandler.logout();
+
+		assertSame(BuildStatus.UNKNOWN, build.getStatus());
+		assertTrue(build.getPollingTime().getTime() - System.currentTimeMillis() < 5000);
+
+		assertEquals("The user does not have sufficient permissions to perform this action.\n", build.getMessage());
+
+		mockServer.verify();
 	}
 
 //  commented because nobody actually uses this method, and the unit test does not really test anything, so we
@@ -187,21 +279,5 @@ public class BambooSessionTest extends TestCase {
 //		}
 //		apiHandler.logout();
 //	}
-
-	public void testUrlEncodingBambooPassword() throws Exception {
-		try {
-			BambooSession apiHandler = new BambooSession(SERVER_URL);
-			apiHandler.login("", (PASSWORD + "&username=" + USER_NAME).toCharArray());
-			fail();
-		} catch (BambooLoginException ex) {
-			System.out.println("Exception: " + ex.getMessage());
-		}
-	}
-
-	public void testSuccessBambooLoginOnSSL() throws Exception {
-		BambooSession apiHandler = new BambooSession(SERVER_SSL_URL);
-		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
-		apiHandler.logout();
-	}
 
 }
