@@ -104,7 +104,7 @@ public class BambooStatusListenerImpl implements Runnable {
 			sb.append("No plans defined.");
 		} else {
 			sb.append("<table>");
-			sb.append("<th>Plan</th><th>Build</th><th>Status</th><th>Last Pooling</th><th>Last Build</th>");
+			sb.append("<th>Plan</th><th>Build</th><th>Status</th><th>Last Polling</th><th>Last Build</th>");
 			for (BambooBuild buildInfo : buildStatuses) {
 				switch (buildInfo.getStatus()) {
 					case BUILD_FAILED:
