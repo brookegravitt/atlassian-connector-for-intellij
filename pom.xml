@@ -85,6 +85,12 @@
 			<version>1.0-m1</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.htmlunit</groupId>
+			<artifactId>htmlunit</artifactId>
+			<version>1.14</version>
+			<scope>test</scope>
+		</dependency>
 		<!--
 				  <dependency>
 					  <groupId>org.apache.maven</groupId>
