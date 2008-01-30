@@ -36,11 +36,13 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	}
 
 	public void initComponent() {
-		System.out.println("Init ThePlugin status component.");
+		System.out.println("Start: Init ThePlugin project component.");
+		System.out.println("End: Init ThePlugin project component.");
 	}
 
 	public void disposeComponent() {
-		statusBar.setInfo("disposeComponent");
+		statusBar.setInfo("Start: Dispose ThePlugin project component");
+		statusBar.setInfo("End: Dispose ThePlugin project component");
 	}
 
 	@NotNull
@@ -49,6 +51,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	}
 
 	public void projectOpened() {
+		System.out.println("Start: Project open");
+
 		ThePluginApplicationComponent appComponent =
 				ApplicationManager.getApplication().getComponent(ThePluginApplicationComponent.class);
 
@@ -65,18 +69,20 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		statusBar = WindowManager.getInstance().getStatusBar(project);
 		statusBar.addCustomIndicationComponent(statusBarComponent);
 
-		System.out.println("projectOpened");
+		System.out.println("End: Project open");
 	}
 
 	public void projectClosed() {
 
-		System.out.println("projectClosed");
+		System.out.println("Start: Project close");
 
 		statusBar.removeCustomIndicationComponent(statusBarComponent);
 		bambooStatusChecker.unregisterListener(htmlBambooStatusListener);
 
 		statusBarComponent = null;
 		statusBarIcon = null;
+
+		System.out.println("End: Project close");
 	}
 
 	public void setBambooStatus(String status, String statusDescription) {
