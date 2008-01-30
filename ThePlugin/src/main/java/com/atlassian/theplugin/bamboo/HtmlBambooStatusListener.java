@@ -94,7 +94,9 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 		sb.append(buildInfo.getBuildKey());
 		sb.append("</a></td><td></td><td>");
 		sb.append("<font color=\"ltgray\">").append(buildInfo.getMessage()).append("</font>");
-		sb.append("</td><td></td><td></td></tr>");
+		sb.append("</td>");
+		sb.append(formatLatestPollAndBuildTime(buildInfo));
+		sb.append("</tr>");
 
 		return sb.toString();
 	}
