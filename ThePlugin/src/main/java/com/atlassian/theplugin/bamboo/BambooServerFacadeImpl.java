@@ -53,6 +53,8 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 		} catch (BambooException e) {
 			LOG.error("Bamboo exception: " + e.getMessage());
 			return null;
+		} finally {
+			api.logout();
 		}
 	}
 
@@ -71,6 +73,8 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 		} catch (BambooException e) {
 			LOG.error("Bamboo exception: " + e.getMessage());
 			return null;
+		} finally {
+			api.logout();
 		}
 	}
 
@@ -111,15 +115,6 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 		return builds;
 	}
 
-	private BambooBuild getErrorBuildInfo(Server server, String planId, String message) {
-		BambooBuildInfo buildInfo = new BambooBuildInfo();
-		buildInfo.setServerUrl(server.getUrlString());
-		buildInfo.setBuildKey(planId);
-		buildInfo.setBuildState(BuildStatus.UNKNOWN.toString());
-		buildInfo.setMessage(message);
-
-		return buildInfo;
-	}
 
 	BambooBuild constructBuildErrorInfo(String serverUrl, String planId, String message) {
 		BambooBuildInfo buildInfo = new BambooBuildInfo();
