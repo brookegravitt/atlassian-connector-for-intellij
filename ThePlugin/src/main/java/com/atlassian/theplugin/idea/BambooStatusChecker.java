@@ -32,15 +32,23 @@ public class BambooStatusChecker extends TimerTask implements Cloneable {
 	}
 
 
-	public synchronized void registerListener(BambooStatusListener listener) {
-		listenerList.add(listener);
+	public void registerListener(BambooStatusListener listener) {
+		synchronized(listenerList) {
+			listenerList.add(listener);
+		}
 	}
 
-	public synchronized void unregisterListener(BambooStatusListener listener) {
-		listenerList.remove(listener);
+	public void unregisterListener(BambooStatusListener listener) {
+		synchronized(listenerList) {
+			listenerList.remove(listener);
+		}
 	}
 
-	public synchronized void run() {
+	/**
+	 * DO NOT use that method in 'dispatching thread' of IDEA. It can block GUI for several seconds.
+	 * The method should be call in a separate thread (currently called by timer set in ApplicationComponent) 
+	 */
+	public void run() {
 		// for each server
 		final Collection<BambooBuild> newServerBuildsStatus = new ArrayList<BambooBuild>();
 		for (int maxTries = 1; maxTries > 0; maxTries--) {
@@ -55,8 +63,10 @@ public class BambooStatusChecker extends TimerTask implements Cloneable {
 
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				for (BambooStatusListener listener : listenerList) {
-					listener.updateBuildStatuses(newServerBuildsStatus);
+				synchronized(listenerList) {
+					for (BambooStatusListener listener : listenerList) {
+						listener.updateBuildStatuses(newServerBuildsStatus);
+					}
 				}
 			}
 		});
