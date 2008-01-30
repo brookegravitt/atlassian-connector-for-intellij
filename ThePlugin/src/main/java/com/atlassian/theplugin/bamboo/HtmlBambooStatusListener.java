@@ -106,6 +106,7 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 
 		if (buildStatuses == null || buildStatuses.size() == 0) {
 			sb.append("No plans defined.");
+			status = BuildStatus.UNKNOWN;
 		} else {
 			sb.append("<table>");
 			sb.append("<th>Plan</th><th>Build</th><th>Status</th><th>Last Polling</th><th>Last Build</th>");
