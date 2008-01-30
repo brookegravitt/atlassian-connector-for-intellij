@@ -1,8 +1,7 @@
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.bamboo.BambooStatusChecker;
-import com.atlassian.theplugin.bamboo.BambooStatusListenerImpl;
 import com.atlassian.theplugin.bamboo.BuildStatus;
+import com.atlassian.theplugin.bamboo.HtmlBambooStatusListener;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.project.Project;
@@ -25,7 +24,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	private JComponent statusBarComponent;
 	private BambooStatusIcon statusBarIcon;
 	private BambooStatusChecker bambooStatusChecker;
-	private BambooStatusListenerImpl bambooStatusListener;
+	private HtmlBambooStatusListener htmlBambooStatusListener;
 
 	public ThePluginProjectComponent(Project project) {
 		this.project = project;
@@ -60,8 +59,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 		statusBarComponent = statusBarIcon;
 
-		bambooStatusListener = new BambooStatusListenerImpl(statusBarIcon);
-		bambooStatusChecker.registerListener(bambooStatusListener);
+		htmlBambooStatusListener = new HtmlBambooStatusListener(statusBarIcon);
+		bambooStatusChecker.registerListener(htmlBambooStatusListener);
 
 		statusBar = WindowManager.getInstance().getStatusBar(project);
 		statusBar.addCustomIndicationComponent(statusBarComponent);
@@ -74,7 +73,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		System.out.println("projectClosed");
 
 		statusBar.removeCustomIndicationComponent(statusBarComponent);
-		bambooStatusChecker.unregisterListener(bambooStatusListener);
+		bambooStatusChecker.unregisterListener(htmlBambooStatusListener);
 
 		statusBarComponent = null;
 		statusBarIcon = null;
