@@ -11,4 +11,6 @@ import java.util.Collection;
  */
 public interface BambooConfiguration {
     Collection<Server> getServers();
+	void addServer(Server server);
+	void setServers(Collection<Server> servers);
 }

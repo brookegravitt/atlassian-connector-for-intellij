@@ -2,9 +2,8 @@ package com.atlassian.theplugin.configuration;
 
 import com.intellij.util.xmlb.annotations.Transient;
 
-import java.util.Collection;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Created by IntelliJ IDEA.
@@ -13,7 +12,7 @@ import java.util.List;
  * Time: 4:13:03 PM
  * To change this template use File | Settings | File Templates.
  */
-public class BambooConfigurationBean implements BambooConfiguration {
+public class BambooConfigurationBean implements BambooConfiguration, Cloneable {
     private Collection<ServerBean> servers = new ArrayList<ServerBean>();
 
     /**
@@ -49,5 +48,25 @@ public class BambooConfigurationBean implements BambooConfiguration {
         return iservers;
     }
 
+	@Transient
+	public void addServer(Server server) {
+		servers.add((ServerBean)server);
+	}
 
+	public void setServers(Collection<Server> servers) {
+		this.servers.clear();
+	 	for(Server server: servers) {
+			 this.servers.add((ServerBean)server);
+		 }
+
+	}
+
+	protected Object clone() throws CloneNotSupportedException {
+		BambooConfigurationBean bambooBean = new BambooConfigurationBean();
+
+		bambooBean.setServers(this.getServers());
+
+		return bambooBean;
+
+	}
 }
