@@ -7,7 +7,7 @@ package com.atlassian.theplugin.configuration;
  * Time: 4:16:46 PM
  * To change this template use File | Settings | File Templates.
  */
-public class PluginConfigurationBean implements PluginConfiguration {
+public class PluginConfigurationBean implements PluginConfiguration, Cloneable {
 	private BambooConfigurationBean bambooConfiguration = new BambooConfigurationBean();
 
 
@@ -38,4 +38,14 @@ public class PluginConfigurationBean implements PluginConfiguration {
 	public BambooConfiguration getBambooConfiguration() {
 		return bambooConfiguration;
 	}
+
+	public Object clone() throws CloneNotSupportedException {
+		PluginConfigurationBean cfgBean = new PluginConfigurationBean();
+
+		cfgBean.setBambooConfigurationData((BambooConfigurationBean)this.getBambooConfigurationData().clone());
+
+		return cfgBean;	//To change body of overridden methods use File | Settings | File Templates.
+	}
+
+
 }
