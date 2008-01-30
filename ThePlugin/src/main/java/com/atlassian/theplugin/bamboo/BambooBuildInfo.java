@@ -22,6 +22,7 @@ public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
 	public BambooBuildInfo() {
 	}
 
+	//todo: wywalic
 	public BambooBuildInfo(
 			String projectName, String buildName, String buildKey, String buildState, String buildNumber,
 			String buildReason, String buildRelativeBuildDate, String buildDurationDescription, String buildTestSummary) {
@@ -101,9 +102,9 @@ public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
 		this.buildKey = buildKey;
 	}
 
-	public String getBuildState() {
-		return buildState;
-	}
+//	public String getBuildState() {
+//		return buildState;
+//	}
 
 	public void setBuildState(String buildState) {
 		this.buildState = buildState;
@@ -165,6 +166,21 @@ public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
 
 	public String getMessage() {
 		return this.message;
+	}
+
+	public int getTestsPassed() {
+		//TODO: implement method getTestsPassed
+		throw new UnsupportedOperationException("method getTestsPassed not implemented");
+	}
+
+	public int getTestsFailed() {
+		//TODO: implement method getTestsFailed
+		throw new UnsupportedOperationException("method getTestsFailed not implemented");
+	}
+
+	public Date getBuildTime() {
+		//TODO: implement method getBuildTime
+		throw new UnsupportedOperationException("method getBuildTime not implemented");
 	}
 
 	public void setMessage(String message) {

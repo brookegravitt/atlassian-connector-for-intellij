@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.bamboo.BambooStatusChecker;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import com.intellij.openapi.components.ApplicationComponent;
@@ -30,7 +29,7 @@ import java.util.Timer;
 @State(name = "ThePluginSettings", storages = { @Storage(id = "thePlugin", file = "$APP_CONFIG$/thePlugin.xml") })
 public class ThePluginApplicationComponent
 		implements ApplicationComponent, Configurable, PersistentStateComponent<PluginConfigurationBean> {
-	
+
 	private PluginConfigurationForm form;
 	private PluginConfigurationBean configuration = new PluginConfigurationBean();
 
@@ -53,13 +52,13 @@ public class ThePluginApplicationComponent
 
 	@Nullable
 	public Icon getIcon() {
-		return null;  //To change body of implemented methods use File | Settings | File Templates.
+		return null;  //nothing to return
 	}
 
 	@Nullable
 	@NonNls
 	public String getHelpTopic() {
-		return null;  //To change body of implemented methods use File | Settings | File Templates.
+		return null; //nothing to return
 	}
 
 	@NonNls
@@ -96,15 +95,15 @@ public class ThePluginApplicationComponent
 		if (form != null) {
 			// Get data from form to component
 			form.getData(configuration);
-            bambooStatusChecker.cancel();
-            timer.purge();
-            try {
-                bambooStatusChecker = (BambooStatusChecker) bambooStatusChecker.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new ConfigurationException(e.getMessage(), "Error while restarting timer.");
-            }
-            timer.schedule(bambooStatusChecker, 0, TIMER_TICK);
-        }
+			bambooStatusChecker.cancel();
+			timer.purge();
+			try {
+				bambooStatusChecker = (BambooStatusChecker) bambooStatusChecker.clone();
+			} catch (CloneNotSupportedException e) {
+				throw new ConfigurationException(e.getMessage(), "Error while restarting timer.");
+			}
+			timer.schedule(bambooStatusChecker, 0, TIMER_TICK);
+		}
 
 	}
 
