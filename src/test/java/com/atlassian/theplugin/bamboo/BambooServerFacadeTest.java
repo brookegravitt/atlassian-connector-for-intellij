@@ -1,218 +1,203 @@
 package com.atlassian.theplugin.bamboo;
 
 import com.atlassian.theplugin.bamboo.api.BambooLoginException;
+import com.atlassian.theplugin.bamboo.api.bamboomock.*;
 import com.atlassian.theplugin.configuration.*;
 import junit.framework.TestCase;
+import org.ddsteps.mock.httpserver.JettyMockServer;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
- * Created by IntelliJ IDEA.
- * User: mwent
- * Date: 2008-01-16
- * Time: 11:48:22
- * To change this template use File | Settings | File Templates.
+ * {@link com.atlassian.theplugin.bamboo.BambooServerFacadeImpl} test.
  */
 public class BambooServerFacadeTest extends TestCase {
-    private PluginConfigurationBean pluginConfig;
-    private PluginConfigurationBean badLoginPluginConfig;
-    private PluginConfigurationBean badPlanPluginConfig;
-    private ServerBean server;
 
-    public BambooServerFacadeTest() {
-        BambooConfigurationBean configuration = new BambooConfigurationBean();
-        Collection<ServerBean> servers = new ArrayList<ServerBean>();
-		server = new ServerBean();
+	private static final String USER_NAME = "someUser";
+	private static final String PASSWORD = "somePassword";
+	private static final String PLAN_ID = "TP-DEF"; // always the same - mock does the logic
+
+
+	private org.mortbay.jetty.Server httpServer;
+	private JettyMockServer mockServer;
+	private String mockBaseUrl;
+
+	protected void setUp() throws Exception {
+		httpServer = new org.mortbay.jetty.Server(0);
+		httpServer.start();
+
+		mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort();
+
+		mockServer = new JettyMockServer(httpServer);
+		ConfigurationFactory.setConfiguration(createBambooTestConfiguration(mockBaseUrl));
+	}
+
+	private static PluginConfiguration createBambooTestConfiguration(String serverUrl) {
+		BambooConfigurationBean configuration = new BambooConfigurationBean();
+
+		Collection<ServerBean> servers = new ArrayList<ServerBean>();
+		ServerBean server = new ServerBean();
 
 		server.setName("TestServer");
-        server.setUrlString("http://lech.atlassian.pl:8080/atlassian-bamboo-1.2.4/");
-        server.setUsername("user");
-        server.setPasswordString("d0n0tch@nge", true);
+		server.setUrlString(serverUrl);
+		server.setUsername(USER_NAME);
+		server.setPasswordString(PASSWORD, true);
 		servers.add(server);
 
 		ArrayList<SubscribedPlanBean> plans = new ArrayList<SubscribedPlanBean>();
-        SubscribedPlanBean plan = new SubscribedPlanBean();
-        plan.setPlanId("TP-DEF");
-        plans.add(plan);
-        server.setSubscribedPlansData(plans);
-
-        configuration.setServersData(servers);
-        pluginConfig = new PluginConfigurationBean();
-        pluginConfig.setBambooConfigurationData(configuration);
-
-        BambooConfigurationBean badConfiguration = new BambooConfigurationBean();
-		Collection<ServerBean> badServers = new ArrayList<ServerBean>();
-		ServerBean badServer = new ServerBean();
-        badServer.setName(server.getUrlString());
-        badServer.setUrlString(server.getUrlString());
-        badServer.setUsername(server.getUsername());
-        badServer.setPasswordString("xxx", true);
-		badServers.add(badServer);
-
-		ArrayList<SubscribedPlanBean> badPlans = new ArrayList<SubscribedPlanBean>();
-        SubscribedPlanBean badPlan = new SubscribedPlanBean();
-        badPlan.setPlanId("TP-DEF-BAD");
-        badPlans.add(badPlan);
-        badServer.setSubscribedPlansData(badPlans);
-
-        badConfiguration.setServersData(badServers);
-
-        BambooConfigurationBean badPlanConfiguration = new BambooConfigurationBean();
-		Collection<ServerBean> badPlanServers = new ArrayList<ServerBean>();
-		ServerBean badPlanServer = new ServerBean();
-        badPlanServer.setName(server.getName());
-        badPlanServer.setUrlString(server.getUrlString());
-        badPlanServer.setUsername(server.getUsername());
-        badPlanServer.setPasswordString(server.getEncryptedPassword(),true);
-        badPlanServer.setSubscribedPlansData(badPlans);
-
-		badPlanServers.add(badPlanServer);
-		badPlanConfiguration.setServersData(badPlanServers);
-
-        badLoginPluginConfig = new PluginConfigurationBean();
-        badLoginPluginConfig.setBambooConfigurationData(badConfiguration);
-
-        badPlanPluginConfig = new PluginConfigurationBean();
-        badPlanPluginConfig.setBambooConfigurationData(badPlanConfiguration);
-
-    }
-
-    protected void setUp() throws Exception {
-        super.setUp();
-
-        ConfigurationFactory.setConfiguration(pluginConfig);
-    }
-
-    public void testSubscribedBuildStatus() throws Exception {
-
-		Collection<BambooBuild> plans =  null;
-		Collection<Server> servers = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServers();
-
-		if (servers.iterator().hasNext()) {
-			plans = BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults(servers.iterator().next());
+		for (int i = 1; i <= 3; ++i) {
+			SubscribedPlanBean plan = new SubscribedPlanBean();
+			plan.setPlanId(PLAN_ID);
+			plans.add(plan);
 		}
 
+		server.setSubscribedPlansData(plans);
+
+		configuration.setServersData(servers);
+		PluginConfigurationBean pluginConfig = new PluginConfigurationBean();
+		pluginConfig.setBambooConfigurationData(configuration);
+
+		return pluginConfig;
+	}
+
+	protected void tearDown() throws Exception {
+		mockServer = null;
+		mockBaseUrl = null;
+		httpServer.stop();
+	}
+
+	public void testSubscribedBuildStatus() throws Exception {
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/getLatestBuildResults.action", new LatestBuildResultCallback());
+		mockServer.expect("/api/rest/getLatestBuildResults.action", new LatestBuildResultCallback("FAILED"));
+		mockServer.expect("/api/rest/getLatestBuildResults.action", new LatestBuildResultCallback("WRONG"));
+		mockServer.expect("/api/rest/logout.action", new LogoutCallback());
+
+		Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServers().iterator().next();
+
+		Collection<BambooBuild> plans = BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults(server);
 		assertNotNull(plans);
-        assertFalse(plans.size() == 0);
-    }
+		assertEquals(3, plans.size());
+		Iterator<BambooBuild> iterator = plans.iterator();
+		Util.verifySuccessfulBuildResult(iterator.next(), mockBaseUrl);
+		Util.verifyFailedBuildResult(iterator.next(), mockBaseUrl);
+		Util.verifyErrorBuildResult(iterator.next(), mockBaseUrl);
 
-    public void testFailedLoginSubscribedBuildStatus() throws Exception {
-		Collection<BambooBuild> plans =  null;
+		mockServer.verify();
+	}
 
-		ConfigurationFactory.setConfiguration(badLoginPluginConfig);
-		Collection<Server> servers = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServers();
+	public void testFailedLoginSubscribedBuildStatus() throws Exception {
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
 
-		if (servers.iterator().hasNext()) plans = BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults(servers.iterator().next());
+		Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServers().iterator().next();
 
+		Collection<BambooBuild> plans = BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults(server);
 		assertNotNull(plans);
-        assertEquals(1, plans.size());
-        BambooBuild build = plans.iterator().next();
-        assertEquals(BuildStatus.UNKNOWN, build.getStatus());
-        assertEquals("TP-DEF-BAD", build.getBuildKey());
-        assertEquals("Login exception: The user does not have sufficient permissions to perform this action.\n", build.getMessage());
-    }
+		assertEquals(3, plans.size());
+		Iterator<BambooBuild> iterator = plans.iterator();
+		Util.verifyLoginErrorBuildResult(iterator.next(), mockBaseUrl);
+		Util.verifyLoginErrorBuildResult(iterator.next(), mockBaseUrl);
+		Util.verifyLoginErrorBuildResult(iterator.next(), mockBaseUrl);
 
-    public void testBadPlansSubscribedBuildStatus() throws Exception {
-		Collection<BambooBuild> plans =  null;
+		mockServer.verify();
+	}
 
-		ConfigurationFactory.setConfiguration(badPlanPluginConfig);
-		Collection<Server> servers = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServers();
-		if (servers.iterator().hasNext()) plans = BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults(servers.iterator().next());
+	public void testProjectList() throws Exception {
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/listProjectNames.action", new ProjectListCallback());
+		mockServer.expect("/api/rest/logout.action", new LogoutCallback());
 
-		assertNotNull(plans);
-        assertEquals(1, plans.size());
-        BambooBuild build = plans.iterator().next();
-        assertEquals(BuildStatus.UNKNOWN, build.getStatus());
-        assertEquals("TP-DEF-BAD", build.getBuildKey());
-        assertEquals("The user does not have sufficient permissions to perform this action.\n", build.getMessage());
-    }
+		Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServers().iterator().next();
 
-    public void testProjectList() throws Exception {
-		Collection<BambooProject> projects =  null;
-		Collection<Server> servers = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServers();
+		Collection<BambooProject> projects = BambooServerFactory.getBambooServerFacade().getProjectList(server);
+		Util.verifyProjectListResult(projects);
 
-		if (servers.iterator().hasNext()) projects =  BambooServerFactory.getBambooServerFacade().getProjectList(servers.iterator().next());
-        assertNotNull(projects);
-        assertFalse(projects.size() == 0);
-    }
+		mockServer.verify();
+	}
 
-    public void testFailedProjectList() throws Exception {
-        ConfigurationFactory.setConfiguration(badLoginPluginConfig);
-		Collection<BambooProject> projects =  null;
-		Collection<Server> servers = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServers();
+	public void testFailedProjectList() throws Exception {
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
+		Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServers().iterator().next();
 
-		if (servers.iterator().hasNext()) projects =  BambooServerFactory.getBambooServerFacade().getProjectList(servers.iterator().next());
-        assertNull(projects);
-    }
+		Collection<BambooProject> projects = BambooServerFactory.getBambooServerFacade().getProjectList(server);
+		assertNull(projects);
+		mockServer.verify();
+	}
 
-    public void testPlanList() throws Exception {
-		Collection<BambooPlan> plans =  null;
+	public void testPlanList() throws Exception {
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/listBuildNames.action", new PlanListCallback());
+		mockServer.expect("/api/rest/logout.action", new LogoutCallback());
 
-		ConfigurationFactory.setConfiguration(badPlanPluginConfig);
-		Collection<Server> servers = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServers();
-		if (servers.iterator().hasNext()) plans = BambooServerFactory.getBambooServerFacade().getPlanList(servers.iterator().next());
+		Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServers().iterator().next();
 
-        assertNotNull(plans);
-        assertFalse(plans.size() == 0);
-    }
+		Collection<BambooPlan> plans = BambooServerFactory.getBambooServerFacade().getPlanList(server);
+		Util.verifyPlanListResult(plans);
 
-    public void testFailedPlanList() throws Exception {
-		Collection<BambooPlan> plans = null;
-		ConfigurationFactory.setConfiguration(badLoginPluginConfig);
-		Collection<Server> servers = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServers();
+		mockServer.verify();
+	}
 
-		if (servers.iterator().hasNext()) {
-			plans =  BambooServerFactory.getBambooServerFacade().getPlanList(servers.iterator().next());
+	public void testFailedPlanList() throws Exception {
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
 
+		Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServers().iterator().next();
+
+		Collection<BambooPlan> plans = BambooServerFactory.getBambooServerFacade().getPlanList(server);
+		assertNull(plans);
+
+		mockServer.verify();
+	}
+
+	public void testConnectionTest() throws Exception {
+		BambooServerFacade facade = BambooServerFactory.getBambooServerFacade();
+
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/logout.action", new LogoutCallback());
+		facade.testServerConnection(mockBaseUrl, USER_NAME, PASSWORD);
+
+		try {
+			facade.testServerConnection("", "", "");
+			fail();
+		} catch (BambooLoginException e) {
+			// expected
 		}
-        assertNull(plans);
-    }
 
-    public void testConnectionTest() throws ServerPasswordNotProvidedException {
-        BambooServerFacade facade = BambooServerFactory.getBambooServerFacade();
-        Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServers().iterator().next();
-        try {
-            facade.testServerConnection(server.getUrlString(), server.getUsername(), server.getPasswordString());
-        } catch (BambooLoginException e) {
-            fail();
-        }
+		mockServer.expect("/api/rest/login.action", new LoginCallback("", "", LoginCallback.ALWAYS_FAIL));
+		try {
+			facade.testServerConnection(mockBaseUrl, "", "");
+			fail();
+		} catch (BambooLoginException e) {
+			//expected
+		}
 
-        try {
-            facade.testServerConnection("", "", "");
-            fail();
-        } catch (BambooLoginException e) {
+		try {
+			facade.testServerConnection("", USER_NAME, "");
+			fail();
+		} catch (BambooLoginException e) {
+			//expected
+		}
 
-        }
-
-        try {
-            facade.testServerConnection(server.getUrlString(), "", "");
-            fail();
-        } catch (BambooLoginException e) {
-
-        }
-
-        try {
-            facade.testServerConnection("", server.getUsername(), "");
-            fail();
-        } catch (BambooLoginException e) {
-
-        }
-
-        try {
-            facade.testServerConnection("", "", server.getPasswordString());
-            fail();
-        } catch (BambooLoginException e) {
-
-        }
-
-    }
+		try {
+			facade.testServerConnection("", "", PASSWORD);
+			fail();
+		} catch (BambooLoginException e) {
+			//expected
+		}
+		mockServer.verify();
+	}
 
 
-    public void testBambooConnectionWithEmptyPlan() throws BambooLoginException, CloneNotSupportedException, ServerPasswordNotProvidedException {
-        server.setSubscribedPlansData(new ArrayList<SubscribedPlanBean>());
-        BambooServerFacade facade = new BambooServerFacadeImpl();
+	public void testBambooConnectionWithEmptyPlan() throws BambooLoginException, CloneNotSupportedException, ServerPasswordNotProvidedException {
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/logout.action", new LogoutCallback());
+		Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServers().iterator().next();
+        server.getSubscribedPlans().clear();
+		BambooServerFacade facade = new BambooServerFacadeImpl();
         Collection<BambooBuild> plans = facade.getSubscribedPlansResults(server);
         assertEquals(0, plans.size());
-    }
+
+		mockServer.verify();
+	}
 }
