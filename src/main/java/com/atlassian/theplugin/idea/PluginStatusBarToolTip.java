@@ -31,8 +31,8 @@ public class PluginStatusBarToolTip extends Window {
     // title bar of the tooltip
     private final ToolTipTitleBar titleBar;
 
-    private static final int INITIAL_SIZE_X = 600;
-    private static final int INITIAL_SIZE_Y = 300;
+    private static final int INITIAL_SIZE_X = 400;
+    private static final int INITIAL_SIZE_Y = 200;
     private static final int SIZE_TITLE_BAR_Y = 260;
     private static final Color BACKGROUND_COLOR = new Color(253, 254, 226);
 	private JScrollPane scrollPane;

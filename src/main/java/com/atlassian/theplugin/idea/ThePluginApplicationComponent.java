@@ -52,30 +52,29 @@ public class ThePluginApplicationComponent
 
 	@Nullable
 	public Icon getIcon() {
-		return null;  //nothing to return
+		return null;
 	}
 
 	@Nullable
 	@NonNls
 	public String getHelpTopic() {
-		return null; //nothing to return
+		return null;
 	}
 
 	@NonNls
 	@NotNull
 	public String getComponentName() {
-		return "ThePluginApplicationComponent";  //To change body of implemented methods use File | Settings | File Templates.
+		return "ThePluginApplicationComponent";
 	}
 
 	public void initComponent() {
 		ConfigurationFactory.setConfiguration(configuration);
 
 		bambooStatusChecker = new BambooStatusChecker();
-		timer.schedule(bambooStatusChecker, TIMER_TICK, TIMER_TICK);
+		timer.schedule(bambooStatusChecker, 0, TIMER_TICK);
 	}
 
 	public void disposeComponent() {
-		//To change body of implemented methods use File | Settings | File Templates.
 		timer.cancel();
 	}
 
