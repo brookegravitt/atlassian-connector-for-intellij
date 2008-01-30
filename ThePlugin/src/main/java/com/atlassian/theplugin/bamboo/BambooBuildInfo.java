@@ -19,6 +19,8 @@ public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
 	private String buildCommitComment;
 	private String message;
 
+	private Date buildTime;
+
 	public BambooBuildInfo() {
 	}
 
@@ -178,9 +180,12 @@ public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
 		throw new UnsupportedOperationException("method getTestsFailed not implemented");
 	}
 
+	public void setBuildTime(Date buildTime) {
+		this.buildTime = buildTime;
+	}
+
 	public Date getBuildTime() {
-		//TODO: implement method getBuildTime
-		throw new UnsupportedOperationException("method getBuildTime not implemented");
+		return buildTime;
 	}
 
 	public void setMessage(String message) {
@@ -202,4 +207,5 @@ public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
 				+ " " + buildTestSummary
 				+ " " + buildCommitComment;
 	}
+
 }
