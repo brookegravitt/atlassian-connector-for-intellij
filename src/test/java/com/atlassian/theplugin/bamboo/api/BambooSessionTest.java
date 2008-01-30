@@ -3,13 +3,11 @@ package com.atlassian.theplugin.bamboo.api;
 import com.atlassian.theplugin.bamboo.BambooBuild;
 import com.atlassian.theplugin.bamboo.BambooPlan;
 import com.atlassian.theplugin.bamboo.BambooProject;
-import com.atlassian.theplugin.bamboo.BuildStatus;
 import com.atlassian.theplugin.bamboo.api.bamboomock.*;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 import org.mortbay.jetty.Server;
 
-import java.util.Iterator;
 import java.util.List;
 
 
@@ -121,11 +119,6 @@ public class BambooSessionTest extends TestCase {
 	}
 
 
-	private static final String[][] expectedProjects = {
-			{ "PO", "Project One" },
-			{ "PT", "Project Two" },
-			{ "PEMPTY", "Project Three - Empty" }
-	};
 
 	public void testProjectList() throws Exception {
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
@@ -137,24 +130,10 @@ public class BambooSessionTest extends TestCase {
 		List<BambooProject> projects = apiHandler.listProjectNames();
 		apiHandler.logout();
 
-		assertEquals(expectedProjects.length, projects.size());
-
-		Iterator<BambooProject> iterator = projects.iterator();
-		for (String[] pair : expectedProjects) {
-			BambooProject project = iterator.next();
-			assertEquals(pair[0], project.getProjectKey());
-			assertEquals(pair[1], project.getProjectName());
-		}
+		Util.verifyProjectListResult(projects);
 
 		mockServer.verify();
 	}
-
-	private static final String[][] expectedPlans = {
-			{ "PO-FP", "First Project - First Plan" },
-			{ "PO-SECPLAN", "First Project - Second Plan" },
-			{ "PO-TP", "First Project - Third Plan" },
-			{ "PT-TOP", "Second Project - The Only Plan" }
-	};
 
 	public void testPlanList() throws Exception {
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
@@ -166,14 +145,7 @@ public class BambooSessionTest extends TestCase {
 		List<BambooPlan> plans = apiHandler.listPlanNames();
 		apiHandler.logout();
 
-		assertEquals(expectedPlans.length, plans.size());
-		Iterator<BambooPlan> iterator = plans.iterator();
-		for (String[] pair : expectedPlans) {
-			BambooPlan plan = iterator.next();
-			assertEquals(pair[0], plan.getPlanKey());
-			assertEquals(pair[1], plan.getPlanName());
-		}
-
+		Util.verifyPlanListResult(plans);
 		mockServer.verify();
 	}
 
@@ -187,20 +159,11 @@ public class BambooSessionTest extends TestCase {
 		BambooBuild build = apiHandler.getLatestBuildForPlan("TP-DEF");
 		apiHandler.logout();
 
-		assertNotNull(build);
-		assertEquals("TP-DEF", build.getBuildKey());
-		assertEquals("140", build.getBuildNumber());
-		//todo: sginter: What should go here? bamboo-provided status or the BuildStatus.toString()
-		//assertEquals("Successful", build.getStatus());
-		assertSame(BuildStatus.BUILD_SUCCEED, build.getStatus());
-		assertTrue(build.getPollingTime().getTime() - System.currentTimeMillis() < 5000);
-		assertEquals(mockBaseUrl, build.getServerUrl());
-		assertEquals(mockBaseUrl + "/browse/TP-DEF-140", build.getBuildUrl());
-		assertEquals(mockBaseUrl + "/browse/TP-DEF", build.getPlanUrl());
-		assertNull(build.getMessage());
+		Util.verifySuccessfulBuildResult(build, mockBaseUrl);
 
 		mockServer.verify();
 	}
+
 
 	public void testBuildForPlanFailure() throws Exception {
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
@@ -212,17 +175,7 @@ public class BambooSessionTest extends TestCase {
 		BambooBuild build = apiHandler.getLatestBuildForPlan("TP-DEF");
 		apiHandler.logout();
 
-		assertNotNull(build);
-		assertEquals("TP-DEF", build.getBuildKey());
-		assertEquals("141", build.getBuildNumber());
-		//todo: sginter: What should go here? bamboo-provided status or the BuildStatus.toString()
-		//assertEquals("Failed", build.getStatus());
-		assertSame(BuildStatus.BUILD_FAILED, build.getStatus());
-		assertTrue(build.getPollingTime().getTime() - System.currentTimeMillis() < 5000);
-		assertEquals(mockBaseUrl, build.getServerUrl());
-		assertEquals(mockBaseUrl + "/browse/TP-DEF-141", build.getBuildUrl());
-		assertEquals(mockBaseUrl + "/browse/TP-DEF", build.getPlanUrl());
-		assertNull(build.getMessage());
+		Util.verifyFailedBuildResult(build, mockBaseUrl);
 
 		mockServer.verify();
 	}
@@ -237,11 +190,8 @@ public class BambooSessionTest extends TestCase {
 		BambooBuild build = apiHandler.getLatestBuildForPlan("TP-DEF");
 		apiHandler.logout();
 
-		assertSame(BuildStatus.UNKNOWN, build.getStatus());
-		assertTrue(build.getPollingTime().getTime() - System.currentTimeMillis() < 5000);
-
-		assertEquals("The user does not have sufficient permissions to perform this action.\n", build.getMessage());
-
+		Util.verifyErrorBuildResult(build, mockBaseUrl);
+		
 		mockServer.verify();
 	}
 
