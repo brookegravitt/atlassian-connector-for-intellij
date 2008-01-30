@@ -13,6 +13,8 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -33,8 +35,8 @@ public class BambooSession {
 	private static final String LATEST_BUILDS_FOR_PROJECT_ACTION = "/api/rest/getLatestBuildResultsForProject.action";
 
 	private final String baseUrl;
-//	private String userName;
-//	private char[] password;
+	//	private String userName;
+	//	private char[] password;
 	private String authToken;
 
 	/**
@@ -85,7 +87,7 @@ public class BambooSession {
 			if (elements.size() != 1) {
 				throw new BambooLoginException("Server did returned excess authentication tokens (" + elements.size() + ")");
 			}
-			this.authToken = ((Element)elements.get(0)).getText();
+			this.authToken = ((Element) elements.get(0)).getText();
 		} catch (IOException e) {
 			throw new BambooLoginException("IOException during login", e);
 		} catch (JDOMException e) {
@@ -170,7 +172,7 @@ public class BambooSession {
 
 	/**
 	 * Returns a {@link com.atlassian.theplugin.bamboo.BambooBuild} information about the latest build in a plan.
-	 * <p>
+	 * <p/>
 	 * Returned structure contains either the information about the build or an error message if the connection fails.
 	 *
 	 * @param planKey ID of the plan to get info about
@@ -210,7 +212,7 @@ public class BambooSession {
 
 //  commented because nobody actually uses this method, and the unit test does not really test anything, so we
 //	don't even know if the method works
-	
+
 //	public List<BambooBuild> getLatestBuildsForProject(String projectKey) throws BambooException {
 //		String buildResultUrl;
 //		Date lastPoolingTime = new Date();
@@ -237,7 +239,9 @@ public class BambooSession {
 //		}
 //
 //		return builds;
-//	}
+
+	//	}
+
 	BambooBuild constructBuildErrorInfo(String planId, String message, Date lastPollingTime) {
 		BambooBuildInfo buildInfo = new BambooBuildInfo();
 
@@ -261,15 +265,26 @@ public class BambooSession {
 		buildInfo.setBuildState(getChildText(buildItemNode, "buildState"));
 		buildInfo.setBuildNumber(getChildText(buildItemNode, "buildNumber"));
 		buildInfo.setBuildReason(getChildText(buildItemNode, "buildReason"));
-		buildInfo.setBuildRelativeBuildDate(getChildText(buildItemNode, "buildRelativeBuildDate"));
 		buildInfo.setBuildDurationDescription(getChildText(buildItemNode, "buildDurationDescription"));
 		buildInfo.setBuildTestSummary(getChildText(buildItemNode, "buildTestSummary"));
 		buildInfo.setBuildCommitComment(getChildText(buildItemNode, "buildCommitComment"));
+
+		buildInfo.setBuildTime(parseBuildTime(getChildText(buildItemNode, "buildTime")));
 
 		buildInfo.setPollingTime(lastPollingTime);
 
 
 		return buildInfo;
+	}
+
+	private SimpleDateFormat buildTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+	private Date parseBuildTime(String date) {
+		try {
+			return buildTimeFormat.parse(date);
+		} catch (ParseException e) {
+			return null;
+		}
 	}
 
 	private String getChildText(Element node, String childName) {
@@ -296,7 +311,7 @@ public class BambooSession {
 			StringBuffer exceptionMsg = new StringBuffer();
 			for (Element e : elements) {
 				exceptionMsg.append(e.getText());
-                exceptionMsg.append("\n");
+				exceptionMsg.append("\n");
 			}
 			return exceptionMsg.toString();
 		} else {
