@@ -15,7 +15,6 @@ import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 
 /**
- * 
  * User: mwent
  * Date: 2008-01-26
  * Time: 13:01:18
@@ -96,7 +95,7 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 
 	public void removeServer() {
 		if (selectedNode != null) {
-			if (selectedNode instanceof BambooServerNode) {				
+			if (selectedNode instanceof BambooServerNode) {
 				int response = JOptionPane.showConfirmDialog(this,
 						"Are you sure you want to delete the selected server?",
 						"Confirm server delete",
@@ -107,7 +106,7 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 				if (response != 0) {
 					return;
 				}
-				this.pluginConfiguration.getBambooConfiguration().removeServer(((BambooServerNode)selectedNode).getServer());
+				this.pluginConfiguration.getBambooConfiguration().removeServer(((BambooServerNode) selectedNode).getServer());
 				updateTreeConfiguration();
 			}
 		}
@@ -124,7 +123,7 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 		model.reload();
 
 		for (Server server : pluginConfiguration.getBambooConfiguration().getServers()) {
-			BambooServerNode child = new BambooServerNode(server);
+			BambooServerNode child = new BambooServerNode((ServerBean)server);
 			model.insertNodeInto(child, serverType, serverType.getChildCount());
 		}
 
@@ -134,6 +133,14 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 		TreePath path = e.getNewLeadSelectionPath();
 
 		if (path != null) {
+			TreePath oldPath = e.getOldLeadSelectionPath();
+			if (oldPath != null) {
+				DefaultMutableTreeNode oldNode = (DefaultMutableTreeNode) oldPath.getLastPathComponent();
+				if (oldNode != null && oldNode instanceof BambooServerNode) {
+					ServerConfigPanel.getInstance().storeBambooServer(((BambooServerNode) oldNode).getServer());
+//					pluginConfiguration.getBambooConfiguration().storeServer(((BambooServerNode) oldNode).getServer());
+				}
+			}
 			selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
 			if (selectedNode instanceof BambooServerNode) {
 				ServerConfigPanel.getInstance().editBambooServer(((BambooServerNode) selectedNode).getServer());
@@ -141,7 +148,7 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 				ServerConfigPanel.getInstance().showEmptyPanel();
 			}
 		} else {
-			ServerConfigPanel.getInstance().showEmptyPanel();	
+			ServerConfigPanel.getInstance().showEmptyPanel();
 		}
 
 	}

@@ -34,7 +34,7 @@ public class PluginConfigurationForm {
 	private HyperlinkLabel openJiraHyperlinkLabel;
 	private JCheckBox chkPasswordRemember;
 
-	private Server server;
+	private ServerBean server;
 
 	public PluginConfigurationForm() {
 
@@ -54,13 +54,17 @@ public class PluginConfigurationForm {
 		});
 	}
 
-	public void setData(Server server) {
-		this.server = server;
+	public void setData(ServerBean server) {
+		try {
+			this.server = (ServerBean) server.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+		}
 
 		serverName.setText(server.getName());
 		serverUrl.setText(server.getUrlString());
 		username.setText(server.getUsername());
-		this.chkPasswordRemember.setSelected(server.getShouldPasswordBeStored());
+		chkPasswordRemember.setSelected(server.getShouldPasswordBeStored());
 		try {
 			password.setText(server.getPasswordString());
 		} catch (ServerPasswordNotProvidedException serverPasswordNotProvidedException) {
@@ -70,15 +74,12 @@ public class PluginConfigurationForm {
 		buildPlansTextArea.setText(subscribedPlansToString(server.getSubscribedPlans()));
 	}
 
-	public Server getData() {
-		//ServerBean serverBean = new ServerBean();
-		((ServerBean) server).setName(serverName.getText());
-		((ServerBean) server).setUrlString(serverUrl.getText());
-		((ServerBean) server).setUsername(username.getText());
-		((ServerBean) server).setPasswordString(String.valueOf(password.getPassword()), chkPasswordRemember.isSelected());
-
-		((ServerBean) server).setSubscribedPlansData(subscribedPlansFromString(buildPlansTextArea.getText()));
-
+	public ServerBean getData() {		
+		server.setName(serverName.getText());
+		server.setUrlString(serverUrl.getText());
+		server.setUsername(username.getText());
+		server.setPasswordString(String.valueOf(password.getPassword()), chkPasswordRemember.isSelected());
+		server.setSubscribedPlansData(subscribedPlansFromString(buildPlansTextArea.getText()));
 		return server;
 	}
 
@@ -146,7 +147,9 @@ public class PluginConfigurationForm {
 			}
 		}
 
-
+		if (!isModified) {
+			System.out.println("Same window config");
+		}
 		return isModified;
 	}
 

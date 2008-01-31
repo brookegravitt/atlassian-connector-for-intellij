@@ -1,11 +1,8 @@
 package com.atlassian.theplugin.idea.serverconfig;
 
-import com.atlassian.theplugin.configuration.ConfigurationFactory;
-import com.atlassian.theplugin.configuration.PluginConfiguration;
-import com.atlassian.theplugin.configuration.PluginConfigurationBean;
-import com.atlassian.theplugin.configuration.Server;
-import com.atlassian.theplugin.idea.PluginConfigurationForm;
+import com.atlassian.theplugin.configuration.*;
 import com.atlassian.theplugin.idea.GridBackConstraints;
+import com.atlassian.theplugin.idea.PluginConfigurationForm;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.ui.Splitter;
@@ -58,17 +55,14 @@ public class ServerConfigPanel extends JPanel {
 
 
 	private void initLayout() {
-        //setBorder(getEnabledBorder());
-
         GridBagLayout gb = new GridBagLayout();
 
 		setLayout(gb);
 
-        Splitter splitter = new Splitter(false, 0.2f);
+        Splitter splitter = new Splitter(false, 0.3f);
         splitter.setShowDividerControls(true);
         splitter.setFirstComponent(createSelectPane());
         splitter.setSecondComponent(createEditPane());
-        splitter.setProportion(.3f);
 		
 		add(splitter, new GridBackConstraints(1, 1).setFill(GridBackConstraints.BOTH).setWeight(1.0, 1.0));
     }
@@ -125,15 +119,25 @@ public class ServerConfigPanel extends JPanel {
     }
 
     public boolean isModified() {
+		if (!this.pluginConfiguration.equals(ConfigurationFactory.getConfiguration())) {
+			System.out.println("Changed configuration");
+			return true;
+		}
 		if (bambooEditForm != null) {
+			System.out.println("Checking window configuration");
 			return bambooEditForm.isModified();
 		}
+		System.out.println("Same configuration");
 		return false;
 	}
 
     public void getData() {
 		if (isModified()) {
-			ConfigurationFactory.getConfiguration().getBambooConfiguration().storeServer(bambooEditForm.getData());
+			pluginConfiguration.getBambooConfiguration().storeServer(bambooEditForm.getData());
+			for (Server server : pluginConfiguration.getBambooConfiguration().getServers()) {
+				ConfigurationFactory.getConfiguration().getBambooConfiguration().storeServer(server);
+			}
+			//ConfigurationFactory.getConfiguration().getBambooConfiguration().storeServer(bambooEditForm.getData());
 			this.treePanel.setData(pluginConfiguration);			
 		}
 	}
@@ -159,7 +163,22 @@ public class ServerConfigPanel extends JPanel {
 		treePanel.copyServer();
 	}
 
-	public void editBambooServer(Server server) {
+	public void storeBambooServer(ServerBean server) {
+
+		ServerBean tempValue = (ServerBean) bambooEditForm.getData();
+
+		server.setName(tempValue.getName());
+		server.setUsername(tempValue.getUsername());
+		try {
+			server.setPasswordString(tempValue.getPasswordString(), tempValue.getShouldPasswordBeStored());
+		} catch (ServerPasswordNotProvidedException e) {
+			// ignore here
+		}
+		server.setUrlString(tempValue.getUrlString());
+		server.setSubscribedPlansData(tempValue.getSubscribedPlansData());		
+	}
+
+	public void editBambooServer(ServerBean server) {
 		blankPanel.setVisible(false);
 		bambooEditForm.setVisible(true);
 		bambooEditForm.setData(server);
