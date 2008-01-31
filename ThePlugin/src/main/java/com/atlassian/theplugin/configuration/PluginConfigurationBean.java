@@ -41,10 +41,8 @@ public class PluginConfigurationBean implements PluginConfiguration, Cloneable {
 
 	public Object clone() throws CloneNotSupportedException {
 		PluginConfigurationBean cfgBean = new PluginConfigurationBean();
-
 		cfgBean.setBambooConfigurationData((BambooConfigurationBean)this.getBambooConfigurationData().clone());
-
-		return cfgBean;	//To change body of overridden methods use File | Settings | File Templates.
+		return cfgBean;	
 	}
 
 
