@@ -1,7 +1,6 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.bamboo.*;
-import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.configuration.SubscribedPlanBean;
@@ -43,148 +42,143 @@ public class PluginConfigurationFormTest extends TestCase {
 	public void testSetGetData() throws Exception {
 		assertNotNull(pluginConfigurationForm.getRootComponent());
 
-		PluginConfigurationBean inBean = createBasicBean();
+		ServerBean inServerBean = createServerBean();
+		ServerBean outServerBean = null;
 
-		pluginConfigurationForm.setData(inBean);
+		pluginConfigurationForm.setData(inServerBean);
 
-		PluginConfigurationBean outBean = new PluginConfigurationBean();
-		pluginConfigurationForm.getData(outBean);
 
-		assertNotSame(inBean, outBean);
-		checkBasicBean(outBean);
-		ServerBean outServer = outBean.getBambooConfigurationData().getServersData().iterator().next();
-		assertEquals(0, outServer.getSubscribedPlansData().size());
+		outServerBean = (ServerBean)pluginConfigurationForm.getData();
+
+		assertSame(inServerBean, outServerBean);
+		checkServerBean(outServerBean);
+		assertEquals(0, outServerBean.getSubscribedPlansData().size());
 
 		/*  */
-		ServerBean inServer = inBean.getBambooConfigurationData().getServersData().iterator().next();
-		inServer.getSubscribedPlansData().add(new SubscribedPlanBean() {
+
+		inServerBean.getSubscribedPlansData().add(new SubscribedPlanBean() {
 			{
 				setPlanId("Plan-1");
 			}
 		});
 
-		pluginConfigurationForm.setData(inBean);
-		//@todo fix this test after GUI redesign
-		outBean = new PluginConfigurationBean();
-		pluginConfigurationForm.getData(outBean);
-		checkBasicBean(outBean);
-		outServer = outBean.getBambooConfigurationData().getServersData().iterator().next();
-		assertEquals(1, outServer.getSubscribedPlansData().size());
-		assertEquals("Plan-1", outServer.getSubscribedPlansData().get(0).getPlanId());
+		pluginConfigurationForm.setData(inServerBean);
+		outServerBean = (ServerBean) pluginConfigurationForm.getData();
+		checkServerBean(outServerBean);
+		assertEquals(1, outServerBean.getSubscribedPlansData().size());
+		assertEquals("Plan-1", outServerBean.getSubscribedPlansData().get(0).getPlanId());
 
 		/*  */
-		inServer.getSubscribedPlansData().add(new SubscribedPlanBean() {
+		inServerBean.getSubscribedPlansData().add(new SubscribedPlanBean() {
 			{
 				setPlanId("Plan-2");
 			}
 		});
 
-		pluginConfigurationForm.setData(inBean);
+		pluginConfigurationForm.setData(inServerBean);
 
-		outBean = new PluginConfigurationBean();
-		pluginConfigurationForm.getData(outBean);
-		checkBasicBean(outBean);
-		outServer = outBean.getBambooConfigurationData().getServersData().iterator().next();
-		assertEquals(2, outServer.getSubscribedPlansData().size());
-		checkSubscribedPlans(outBean, new String[]{ "Plan-1", "Plan-2" });
+
+		outServerBean = (ServerBean)pluginConfigurationForm.getData();
+		checkServerBean(outServerBean);
+		assertEquals(2, outServerBean.getSubscribedPlansData().size());
+		checkSubscribedPlans(outServerBean, new String[]{ "Plan-1", "Plan-2" });
 		/*  */
-		inServer.getSubscribedPlansData().add(new SubscribedPlanBean() {
+		inServerBean.getSubscribedPlansData().add(new SubscribedPlanBean() {
 			{
 				setPlanId("Plan-3");
 			}
 		});
 
-		pluginConfigurationForm.setData(inBean);
+		pluginConfigurationForm.setData(inServerBean);
 
-		outBean = new PluginConfigurationBean();
-		pluginConfigurationForm.getData(outBean);
-		checkBasicBean(outBean);
-		outServer = outBean.getBambooConfigurationData().getServersData().iterator().next();
-		assertEquals(3, outServer.getSubscribedPlansData().size());
-		checkSubscribedPlans(outBean, new String[]{ "Plan-1", "Plan-2", "Plan-3" });
+
+		outServerBean = (ServerBean)pluginConfigurationForm.getData();
+		checkServerBean(outServerBean);
+
+		assertEquals(3, outServerBean.getSubscribedPlansData().size());
+		checkSubscribedPlans(outServerBean, new String[]{ "Plan-1", "Plan-2", "Plan-3" });
 
 		/*  */
-		inServer.getSubscribedPlansData().clear();
+		inServerBean.getSubscribedPlansData().clear();
 
-		pluginConfigurationForm.setData(inBean);
+		pluginConfigurationForm.setData(inServerBean);
 
-		outBean = new PluginConfigurationBean();
-		pluginConfigurationForm.getData(outBean);
 
-		checkBasicBean(outBean);
-		outServer = outBean.getBambooConfigurationData().getServersData().iterator().next();
-		assertEquals(0, outServer.getSubscribedPlansData().size());
+		outServerBean = (ServerBean)pluginConfigurationForm.getData();
+
+		checkServerBean(outServerBean);
+
+		assertEquals(0, outServerBean.getSubscribedPlansData().size());
 
 	}
 
 	@SuppressWarnings({ "RedundantStringConstructorCall" })
 	public void testIsModified() throws Exception {
-		PluginConfigurationBean inBean = createBasicBean();
+		ServerBean inServerBean = createServerBean();
 
-		pluginConfigurationForm.setData(inBean);
+		pluginConfigurationForm.setData(inServerBean);
 
-		PluginConfigurationBean outBean = createBasicBean();
+		ServerBean outServerBean = createServerBean();
 
-		assertFalse(pluginConfigurationForm.isModified(outBean));
+		assertFalse(pluginConfigurationForm.isModified());
 
 		/* with arraylist set */
-		ServerBean inServer = inBean.getBambooConfigurationData().getServersData().iterator().next();
-		inServer.getSubscribedPlansData().add(new SubscribedPlanBean() {
+
+	
+		outServerBean.getSubscribedPlansData().add(new SubscribedPlanBean() {
 			{
 				setPlanId("Plan-1");
 			}
 		});
 
-		pluginConfigurationForm.setData(inBean);
-		assertTrue(pluginConfigurationForm.isModified(outBean));
-		ServerBean outServer = outBean.getBambooConfigurationData().getServersData().iterator().next();
-		outServer.getSubscribedPlansData().add(new SubscribedPlanBean() {
-			{
-				setPlanId("Plan-1");
-			}
-		});
-
-		assertFalse(pluginConfigurationForm.isModified(outBean));
+		pluginConfigurationForm.setData(outServerBean);
+		assertFalse(pluginConfigurationForm.isModified());
 
 		/* equals vs == */
 
-		outServer.setName(new String("name"));
-		outServer.setPasswordString(new String("password"), true);
-		outServer.setUrlString(new String("url"));
-		outServer.setUsername(new String("userName"));
-		outServer.setSubscribedPlansData(new ArrayList<SubscribedPlanBean>());
-		outServer.getSubscribedPlansData().add(new SubscribedPlanBean() {
+		outServerBean.setName(new String("name"));
+		outServerBean.setPasswordString(new String("password"), true);
+		outServerBean.setUrlString(new String("url"));
+		outServerBean.setUsername(new String("userName"));
+		outServerBean.setSubscribedPlansData(new ArrayList<SubscribedPlanBean>());
+		outServerBean.getSubscribedPlansData().add(new SubscribedPlanBean() {
 			{
 				setPlanId(new String("Plan-1"));
 			}
 		});
 
 
-		assertFalse(pluginConfigurationForm.isModified(outBean));
+		pluginConfigurationForm.setData(outServerBean);
+		assertFalse(pluginConfigurationForm.isModified());
+
+		PluginConfigurationFormHelper formHelper = new PluginConfigurationFormHelper(pluginConfigurationForm);
+
+		formHelper.serverName.setText(outServerBean.getName() + "-chg");
+		assertTrue(pluginConfigurationForm.isModified());
+		formHelper.serverName.setText(outServerBean.getName());
+
+		formHelper.serverUrl.setText(outServerBean.getUrlString() + "-chg");
+		assertTrue(pluginConfigurationForm.isModified());
+		formHelper.serverUrl.setText(outServerBean.getUrlString());
+
+		formHelper.username.setText(outServerBean.getUsername() + "-chg");
+		assertTrue(pluginConfigurationForm.isModified());
+		formHelper.username.setText(outServerBean.getUsername());
 
 
-		for (Field f : outServer.getClass().getDeclaredFields()) {
-			if (f.getType().equals(String.class)) {
-				testForChangedString(outBean, f.getName());
-			}
-		}
+		formHelper.password.setText(outServerBean.getName() + "-chg");
+		assertTrue(pluginConfigurationForm.isModified());
+		formHelper.password.setText(outServerBean.getPasswordString());
 
-		outServer.getSubscribedPlansData().add(new SubscribedPlanBean() {
-			{
-				setPlanId(new String("Plan-2"));
-			}
-		});
-		assertTrue(pluginConfigurationForm.isModified(outBean));
 
+		formHelper.buildPlansTextArea.setText("-chg");
+		assertTrue(pluginConfigurationForm.isModified());				
 	}
 
 	public void testFieldSetting() throws Exception {
-		PluginConfigurationBean outBean = new PluginConfigurationBean();
-		pluginConfigurationForm.getData(outBean);
+		pluginConfigurationForm.setData(new ServerBean());
 
-		assertEquals(1, outBean.getBambooConfigurationData().getServersData().size());
-
-		ServerBean outServer = outBean.getBambooConfigurationData().getServersData().iterator().next();
+		ServerBean outServer = (ServerBean)pluginConfigurationForm.getData();
 		assertEquals("", outServer.getName());
 		assertEquals("", outServer.getUrlString());
 		assertEquals("", outServer.getUsername());
@@ -198,54 +192,50 @@ public class PluginConfigurationFormTest extends TestCase {
 		helper.serverUrl.setText("url");
 		helper.username.setText("userName");
 
-		pluginConfigurationForm.getData(outBean);
-		checkBasicBean(outBean);
-		outServer = outBean.getBambooConfigurationData().getServersData().iterator().next();
+		outServer = (ServerBean)pluginConfigurationForm.getData();
+		checkServerBean(outServer);
 		assertEquals(0, outServer.getSubscribedPlansData().size());
 
 		/*  */
 		helper.buildPlansTextArea.setText(" ");
-		pluginConfigurationForm.getData(outBean);
-		checkBasicBean(outBean);
-		outServer = outBean.getBambooConfigurationData().getServersData().iterator().next();
+		outServer = (ServerBean)pluginConfigurationForm.getData();
+		checkServerBean(outServer);
 		assertEquals(0, outServer.getSubscribedPlansData().size());
 
 		/*  */
 		helper.buildPlansTextArea.setText(" \n");
-		pluginConfigurationForm.getData(outBean);
-		checkBasicBean(outBean);
-		outServer = outBean.getBambooConfigurationData().getServersData().iterator().next();
+		outServer = (ServerBean) pluginConfigurationForm.getData();
+		checkServerBean(outServer);
 		assertEquals(0, outServer.getSubscribedPlansData().size());
 
 		/*  */
 		helper.buildPlansTextArea.setText(" \n\r\r\r\n \n \r \t");
-		pluginConfigurationForm.getData(outBean);
-		checkBasicBean(outBean);
+		outServer = (ServerBean)pluginConfigurationForm.getData();
+		checkServerBean(outServer);
 
 		assertEquals(0, outServer.getSubscribedPlansData().size());
 
 		/*  */
 		helper.buildPlansTextArea.setText("Plan-1");
-		pluginConfigurationForm.getData(outBean);
-		checkBasicBean(outBean);
-		checkSubscribedPlans(outBean, new String[]{ "Plan-1" });
+		outServer = (ServerBean)pluginConfigurationForm.getData();
+		checkServerBean(outServer);
+		checkSubscribedPlans(outServer, new String[]{ "Plan-1" });
 
 		/*  */
 		helper.buildPlansTextArea.setText(" Plan-1 \n");
-		pluginConfigurationForm.getData(outBean);
-		checkBasicBean(outBean);
-		checkSubscribedPlans(outBean, new String[]{ "Plan-1" });
+		outServer =  (ServerBean) pluginConfigurationForm.getData();
+		checkServerBean(outServer);
+		checkSubscribedPlans(outServer, new String[]{ "Plan-1" });
 
 		/*  */
 		helper.buildPlansTextArea.setText(" Plan-1 \nPlan-2   Plan-3\tPlan-4\n\rPlan-5\r\nPlan-6");
-		pluginConfigurationForm.getData(outBean);
-		checkBasicBean(outBean);
-		checkSubscribedPlans(outBean, new String[]{ "Plan-1", "Plan-2", "Plan-3", "Plan-4", "Plan-5", "Plan-6" });
+		outServer = (ServerBean) pluginConfigurationForm.getData();
+		checkServerBean(outServer);
+		checkSubscribedPlans(outServer, new String[]{ "Plan-1", "Plan-2", "Plan-3", "Plan-4", "Plan-5", "Plan-6" });
 
 	}
 
-	private static void checkSubscribedPlans(PluginConfigurationBean config, String[] ids) {
-		ServerBean server = config.getBambooConfigurationData().getServersData().iterator().next();
+	private static void checkSubscribedPlans(ServerBean server, String[] ids) {
 		assertEquals(ids.length, server.getSubscribedPlansData().size());
 
 		Iterator<SubscribedPlanBean> i = server.getSubscribedPlansData().iterator();
@@ -255,38 +245,21 @@ public class PluginConfigurationFormTest extends TestCase {
 
 	}
 
-	private void testForChangedString(PluginConfigurationBean outBean, String property) throws Exception {
-		System.out.println("Testing field " + property);
 
-		ServerBean serverBean = outBean.getBambooConfigurationData().getServersData().iterator().next();
-		Field f = serverBean.getClass().getDeclaredField(property);
-		if (f != null) {
-			f.setAccessible(true);
-			String prev = (String) f.get(serverBean);
-			if (property.equals("encryptedPassword")) {
-				serverBean.setPasswordString(prev + "-chg", true);
-			} else {
-				f.set(serverBean, prev + "-chg");
-			}
-			assertTrue(pluginConfigurationForm.isModified(outBean));
-			f.set(serverBean, prev);
-		}
-	}
+	private static ServerBean createServerBean() {
 
-	private static PluginConfigurationBean createBasicBean() {
-		PluginConfigurationBean outBean = new PluginConfigurationBean();
 		ServerBean outServer = new ServerBean();
 		outServer.setName("name");
 		outServer.setPasswordString("password", true);
 		outServer.setUrlString("url");
 		outServer.setUsername("userName");
 
-		outBean.getBambooConfigurationData().getServersData().add(outServer);
-		return outBean;
+
+		return outServer;
 	}
 
-	private static void checkBasicBean(PluginConfigurationBean outBean) throws ServerPasswordNotProvidedException {
-		ServerBean outServer = outBean.getBambooConfigurationData().getServersData().iterator().next();
+	private static void checkServerBean(ServerBean outServer) throws ServerPasswordNotProvidedException {
+
 		assertEquals("name", outServer.getName());
 		assertEquals("password", outServer.getPasswordString());
 		assertEquals("url", outServer.getUrlString());
