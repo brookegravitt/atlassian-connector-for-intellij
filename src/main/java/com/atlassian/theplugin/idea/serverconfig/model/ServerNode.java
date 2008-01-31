@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.serverconfig.model;
 
-import com.atlassian.theplugin.configuration.Server;
+import com.atlassian.theplugin.configuration.ServerBean;
+
 import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
@@ -10,17 +11,17 @@ import javax.swing.tree.DefaultMutableTreeNode;
  * Time: 09:49:47
  */
 public class ServerNode extends DefaultMutableTreeNode {
-	private Server server;
+	private ServerBean server;
 
-	public ServerNode(Server aServer) {
+	public ServerNode(ServerBean aServer) {
 		this.server = aServer;
 	}
 
-	public Server getServer() {
+	public ServerBean getServer() {
 		return server;
 	}
 
-	public void setServer(Server server) {
+	public void setServer(ServerBean server) {
 		this.server = server;
 	}
 
