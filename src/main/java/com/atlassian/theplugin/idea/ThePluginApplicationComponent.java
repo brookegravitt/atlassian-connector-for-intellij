@@ -2,6 +2,7 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.idea.serverconfig.ServerConfigPanel;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
@@ -30,7 +31,7 @@ import java.util.Timer;
 public class ThePluginApplicationComponent
 		implements ApplicationComponent, Configurable, PersistentStateComponent<PluginConfigurationBean> {
 
-	private PluginConfigurationForm form;
+	private ServerConfigPanel form;
 	private PluginConfigurationBean configuration = new PluginConfigurationBean();
 
 	private final Timer timer = new Timer();
@@ -79,21 +80,22 @@ public class ThePluginApplicationComponent
 	}
 
 	public JComponent createComponent() {
-		if (form == null) {
-			form = new PluginConfigurationForm();
-		}
-		return form.getRootComponent();
+		form = ServerConfigPanel.getInstance();
+		return form;
+	}
 
+	public ServerConfigPanel getConfigDialog() {
+		return form;
 	}
 
 	public boolean isModified() {
-		return form != null && form.isModified(configuration);
+		return form != null && form.isModified();
 	}
 
 	public void apply() throws ConfigurationException {
 		if (form != null) {
 			// Get data from form to component
-			form.getData(configuration);
+			form.getData();
 			bambooStatusChecker.cancel();
 			timer.purge();
 			try {
@@ -109,7 +111,7 @@ public class ThePluginApplicationComponent
 	public void reset() {
 		if (form != null) {
 			// Reset form data from component
-			form.setData(configuration);
+			form.setData();
 		}
 	}
 
