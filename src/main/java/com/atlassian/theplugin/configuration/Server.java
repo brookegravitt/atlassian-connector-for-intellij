@@ -15,8 +15,6 @@ public interface Server extends Cloneable {
 
 	String getUsername();
 
-	String getEncryptedPassword();
-
 	Boolean getShouldPasswordBeStored();
 
 	Boolean getIsConfigInitialized();
