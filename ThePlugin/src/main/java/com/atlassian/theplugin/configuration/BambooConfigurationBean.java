@@ -89,6 +89,14 @@ public class BambooConfigurationBean implements BambooConfiguration, Cloneable {
 
 	}
 
+	public void removeServer(Server server) {
+		for(ServerBean serverBean: servers){
+			if (serverBean.equals((ServerBean)server)){
+				servers.remove(serverBean);
+			}
+		}
+	}
+
 	protected Object clone() throws CloneNotSupportedException {
 		BambooConfigurationBean bambooBean = new BambooConfigurationBean();
 
