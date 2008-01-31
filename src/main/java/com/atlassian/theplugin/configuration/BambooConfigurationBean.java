@@ -49,8 +49,36 @@ public class BambooConfigurationBean implements BambooConfiguration, Cloneable {
     }
 
 	@Transient
-	public void addServer(Server server) {
-		servers.add((ServerBean)server);
+	public Server getServer(Server aServer) {
+		for (Server server: servers) {
+			if (server.equals(aServer)) {
+				return server;
+			}
+		}
+		return null;
+	}
+	@Transient
+	public void addOrUpdateServer(Server server) {
+
+		ServerBean foundServer = (ServerBean)getServer(server);
+			if (foundServer == null){
+				servers.add((ServerBean)server);
+			} else {
+				foundServer.setName(server.getName());
+				try {
+					foundServer.setPasswordString(server.getPasswordString(),((ServerBean)server).getShouldPasswordBeStored());
+				} catch (ServerPasswordNotProvidedException e) {
+					e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+				}
+				foundServer.getSubscribedPlansData().clear();
+				for(SubscribedPlan plan: foundServer.getSubscribedPlansData()){
+					foundServer.getSubscribedPlansData().add((SubscribedPlanBean)plan);
+				}
+				foundServer.setUrlString(server.getUrlString());
+				foundServer.setUsername(server.getUsername());
+			}
+
+
 	}
 
 	public void setServers(Collection<Server> servers) {
