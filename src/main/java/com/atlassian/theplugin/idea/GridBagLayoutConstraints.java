@@ -6,14 +6,14 @@ import java.awt.GridBagConstraints;
  This class simplifies the use of the GridBagConstraints
  class.
  */
-public class GridBackConstraints extends GridBagConstraints {
+public class GridBagLayoutConstraints extends GridBagConstraints {
     /**
-     Constructs a GridBackConstraints with a given gridx and gridy position and
+     Constructs a GridBagLayoutConstraints with a given gridx and gridy position and
      all other grid bag constraint values set to the default.
      @param gridx the gridx position
      @param gridy the gridy position
      */
-    public GridBackConstraints(int gridx, int gridy) {
+    public GridBagLayoutConstraints(int gridx, int gridy) {
         this.gridx = gridx;
         this.gridy = gridy;
     }
@@ -24,7 +24,7 @@ public class GridBackConstraints extends GridBagConstraints {
      @param gridheight the cell span in y-direction
      @return this object for further modification
      */
-    public GridBackConstraints setSpan(int gridwidth, int gridheight) {
+    public GridBagLayoutConstraints setSpan(int gridwidth, int gridheight) {
         this.gridwidth = gridwidth;
         this.gridheight = gridheight;
         return this;
@@ -35,7 +35,7 @@ public class GridBackConstraints extends GridBagConstraints {
      @param anchor the anchor value
      @return this object for further modification
      */
-    public GridBackConstraints setAnchor(int anchor) {
+    public GridBagLayoutConstraints setAnchor(int anchor) {
         this.anchor = anchor;
         return this;
     }
@@ -45,7 +45,7 @@ public class GridBackConstraints extends GridBagConstraints {
      @param fill the fill direction
      @return this object for further modification
      */
-    public GridBackConstraints setFill(int fill) {
+    public GridBagLayoutConstraints setFill(int fill) {
         this.fill = fill;
         return this;
     }
@@ -56,7 +56,7 @@ public class GridBackConstraints extends GridBagConstraints {
      @param weighty the cell weight in y-direction
      @return this object for further modification
      */
-    public GridBackConstraints setWeight(double weightx, double weighty) {
+    public GridBagLayoutConstraints setWeight(double weightx, double weighty) {
         this.weightx = weightx;
         this.weighty = weighty;
         return this;
@@ -67,7 +67,7 @@ public class GridBackConstraints extends GridBagConstraints {
      @param distance the spacing to use in all directions
      @return this object for further modification
      */
-    public GridBackConstraints setInsets(int distance) {
+    public GridBagLayoutConstraints setInsets(int distance) {
         this.insets = new java.awt.Insets(
                 distance, distance, distance, distance);
         return this;
@@ -81,7 +81,7 @@ public class GridBackConstraints extends GridBagConstraints {
      @param right the spacing to use to the right
      @return this object for further modification
      */
-    public GridBackConstraints setInsets(int top, int left, int bottom, int right) {
+    public GridBagLayoutConstraints setInsets(int top, int left, int bottom, int right) {
         this.insets = new java.awt.Insets(
                 top, left, bottom, right);
         return this;
@@ -93,7 +93,7 @@ public class GridBackConstraints extends GridBagConstraints {
      @param ipady the internal padding in y-direction
      @return this object for further modification
      */
-    public GridBackConstraints setIpad(int ipadx, int ipady) {
+    public GridBagLayoutConstraints setIpad(int ipadx, int ipady) {
         this.ipadx = ipadx;
         this.ipady = ipady;
         return this;
