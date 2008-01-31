@@ -4,6 +4,7 @@ import com.intellij.util.xmlb.annotations.Transient;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -13,6 +14,8 @@ import java.util.List;
  * Time: 11:51:08 AM
  */
 public class ServerBean implements Server {
+
+	private long uid = 0;
 	private String name = "";
 	private String urlString = "";
 	//private char[] encryptedPassword = new char[0];
@@ -27,6 +30,7 @@ public class ServerBean implements Server {
 	transient private Boolean isConfigInitialized = false;
 
 	public ServerBean() {
+		uid =  (new Date()).getTime();
 	}
 
 	public synchronized String getName() {
@@ -147,5 +151,44 @@ public class ServerBean implements Server {
 	@Override
 	public synchronized Object clone() throws CloneNotSupportedException {
 		return super.clone();	//To change body of overridden methods use File | Settings | File Templates.
+	}
+
+	public long getUid() {
+		return uid;
+	}
+
+	public void setUid(long uid) {
+		this.uid = uid;
+	}
+
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+
+		ServerBean that = (ServerBean) o;
+
+		if (uid != that.uid) {
+			return false;
+		}
+
+		return true;
+	}
+
+	public int hashCode() {
+		int result;
+		result = (int) (uid ^ (uid >>> 32));
+		result = 31 * result + (name != null ? name.hashCode() : 0);
+		result = 31 * result + (urlString != null ? urlString.hashCode() : 0);
+		result = 31 * result + (encryptedPassword != null ? encryptedPassword.hashCode() : 0);
+		result = 31 * result + (username != null ? username.hashCode() : 0);
+		result = 31 * result + (shouldPasswordBeStored != null ? shouldPasswordBeStored.hashCode() : 0);
+		result = 31 * result + (password != null ? password.hashCode() : 0);
+		result = 31 * result + (subscribedPlans != null ? subscribedPlans.hashCode() : 0);
+		result = 31 * result + (isConfigInitialized != null ? isConfigInitialized.hashCode() : 0);
+		return result;
 	}
 }
