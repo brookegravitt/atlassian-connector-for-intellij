@@ -46,4 +46,24 @@ public class PluginConfigurationBean implements PluginConfiguration, Cloneable {
 	}
 
 
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+
+		PluginConfigurationBean that = (PluginConfigurationBean) o;
+
+		if (!bambooConfiguration.equals(that.bambooConfiguration)) {
+			return false;
+		}
+
+		return true;
+	}
+
+	public int hashCode() {
+		return bambooConfiguration.hashCode();
+	}
 }

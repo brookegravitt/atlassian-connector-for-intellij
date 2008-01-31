@@ -52,7 +52,7 @@ public class BambooConfigurationBean implements BambooConfiguration, Cloneable {
 	@Transient
 	public Server getServer(Server aServer) {
 		for (Server server : servers) {
-			if (server.equals(aServer)) {
+			if (((ServerBean)server).getUid() == ((ServerBean)aServer).getUid()) {
 				return server;
 			}
 		}
@@ -109,5 +109,26 @@ public class BambooConfigurationBean implements BambooConfiguration, Cloneable {
 
 		return bambooBean;
 
+	}
+
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+
+		BambooConfigurationBean that = (BambooConfigurationBean) o;
+
+		if (servers != null ? !servers.equals(that.servers) : that.servers != null) {
+			return false;
+		}
+
+		return true;
+	}
+
+	public int hashCode() {
+		return (servers != null ? servers.hashCode() : 0);
 	}
 }
