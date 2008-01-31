@@ -164,8 +164,14 @@ public class ServerBean implements Server {
 
 	@Override
 	public synchronized Object clone() throws CloneNotSupportedException {
-		ServerBean serverBean = (ServerBean) super.clone();	//To change body of overridden methods use File | Settings | File Templates.
-		serverBean.setSubscribedPlansData(this.getSubscribedPlansData());
+		ServerBean serverBean =  (ServerBean) super.clone();
+		List<SubscribedPlanBean> plans = new ArrayList<SubscribedPlanBean>();
+		for (SubscribedPlanBean plan : this.getSubscribedPlansData()) {
+			SubscribedPlanBean newPlan = new SubscribedPlanBean();
+			newPlan.setPlanId(plan.getPlanId());
+			plans.add(newPlan);
+		}
+		serverBean.setSubscribedPlansData(plans);
 
 		return (Object) serverBean;
 	}

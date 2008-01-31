@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.idea.serverconfig.model;
 
-import com.atlassian.theplugin.configuration.Server;
+import com.atlassian.theplugin.configuration.ServerBean;
 
 /**
  * Represents Bambbo server on servers JTree
@@ -9,7 +9,7 @@ import com.atlassian.theplugin.configuration.Server;
  * Time: 09:25:29
  */
 public class BambooServerNode extends ServerNode {
-	public BambooServerNode(Server aServer) {
+	public BambooServerNode(ServerBean aServer) {
 		super(aServer);
 	}
 }
