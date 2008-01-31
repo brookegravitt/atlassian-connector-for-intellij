@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.idea.serverconfig.model;
 
-import com.atlassian.theplugin.configuration.Server;
+import com.atlassian.theplugin.configuration.ServerBean;
 
 /**
  * Represents Crucible Server in servers JTree
@@ -9,7 +9,7 @@ import com.atlassian.theplugin.configuration.Server;
  * Time: 09:51:00
  */
 public class CrucibleServerNode extends ServerNode {
-	public CrucibleServerNode(Server aServer) {
+	public CrucibleServerNode(ServerBean aServer) {
 		super(aServer);
 	}
 }
