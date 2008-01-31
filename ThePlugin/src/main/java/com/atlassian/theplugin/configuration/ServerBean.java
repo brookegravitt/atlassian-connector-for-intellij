@@ -1,7 +1,9 @@
 package com.atlassian.theplugin.configuration;
 
 import com.intellij.util.xmlb.annotations.Transient;
+import thirdparty.net.iharder.base64.Base64;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -30,7 +32,7 @@ public class ServerBean implements Server {
 	transient private Boolean isConfigInitialized = false;
 
 	public ServerBean() {
-		uid =  (new Date()).getTime();
+		uid = (new Date()).getTime();
 	}
 
 	public synchronized String getName() {
@@ -64,33 +66,45 @@ public class ServerBean implements Server {
 //        return encryptedPassword;
 //    }
 
-	public synchronized String getEncryptedPassword() {
-		return encryptedPassword;
-	}
-
-//    public void setEncryptedPassword(char[] encryptedPassword) {
-//        if (encryptedPassword == null) {
-//            this.encryptedPassword = new char[0];
-//        } else {
-//            this.encryptedPassword = encryptedPassword;
-//        }
-//    }
 
 	private synchronized String decode(String str2decode) {
-		return str2decode;
+		try {
+			return new String(Base64.decode(str2decode), "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException("UTF-8 is not supported", e);
+		}
 	}
-
 
 	private synchronized String encode(String str2encode) {
-		return str2encode;
+		try {
+			return Base64.encodeBytes(str2encode.getBytes("UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException("UTF-8 is not supported", e);
+		}
 	}
 
-	
-	public synchronized void setEncryptedPassword(String encryptedPassword) {
+	/**
+	 * This one should be used by persistence logic ONLY.
+	 * <p/>
+	 * From the code you must use {@link #setPasswordString(String, Boolean)}, unless you really know what you are doing.
+	 *
+	 * @param encryptedPassword encrypted (encoded actually) version of the password
+	 */
+	public void setEncryptedPassword(String encryptedPassword) {
 		password = decode(encryptedPassword);
 		this.encryptedPassword = encryptedPassword;
 		isConfigInitialized = true;
 	}
+
+	/**
+	 * This one should be used by persistence logic ONLY.
+	 *
+	 * @return encoded version of the password.
+	 */
+	public String getEncryptedPassword() {
+		return encryptedPassword;
+	}
+
 
 	public synchronized Boolean getShouldPasswordBeStored() {
 		return shouldPasswordBeStored;
@@ -150,10 +164,10 @@ public class ServerBean implements Server {
 
 	@Override
 	public synchronized Object clone() throws CloneNotSupportedException {
-		ServerBean serverBean =  (ServerBean)super.clone();	//To change body of overridden methods use File | Settings | File Templates.
+		ServerBean serverBean = (ServerBean) super.clone();	//To change body of overridden methods use File | Settings | File Templates.
 		serverBean.setSubscribedPlansData(this.getSubscribedPlansData());
 
-		return (Object)serverBean;
+		return (Object) serverBean;
 	}
 
 	public long getUid() {
