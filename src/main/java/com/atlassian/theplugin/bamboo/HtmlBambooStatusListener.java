@@ -12,10 +12,10 @@ import java.util.Date;
  */
 public class HtmlBambooStatusListener implements BambooStatusListener {
 
-	private final BambooStatusDisplay statusBarIcon;
+	private final BambooStatusDisplay display;
 
-	public HtmlBambooStatusListener(BambooStatusDisplay icon) {
-		statusBarIcon = icon;
+	public HtmlBambooStatusListener(BambooStatusDisplay aDisplay) {
+		display = aDisplay;
 	}
 
 	private String formatLatestPollAndBuildTime(BambooBuild buildInfo) {
@@ -134,6 +134,6 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 			sb.append("</table>");
 		}
 		sb.append("</body></html>");
-		statusBarIcon.updateBambooStatus(status, sb.toString());
+		display.updateBambooStatus(status, sb.toString());
 	}
 }
