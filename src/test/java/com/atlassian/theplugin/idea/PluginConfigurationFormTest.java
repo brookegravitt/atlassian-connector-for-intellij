@@ -50,7 +50,8 @@ public class PluginConfigurationFormTest extends TestCase {
 
 		outServerBean = (ServerBean)pluginConfigurationForm.getData();
 
-		assertSame(inServerBean, outServerBean);
+		// form use cloned instance
+		assertNotSame(inServerBean, outServerBean);
 		checkServerBean(outServerBean);
 		assertEquals(0, outServerBean.getSubscribedPlansData().size());
 
