@@ -150,7 +150,10 @@ public class ServerBean implements Server {
 
 	@Override
 	public synchronized Object clone() throws CloneNotSupportedException {
-		return super.clone();	//To change body of overridden methods use File | Settings | File Templates.
+		ServerBean serverBean =  (ServerBean)super.clone();	//To change body of overridden methods use File | Settings | File Templates.
+		serverBean.setSubscribedPlansData(this.getSubscribedPlansData());
+
+		return (Object)serverBean;
 	}
 
 	public long getUid() {
