@@ -1,4 +1,4 @@
-package com.atlassian.theplugin.idea;
+package com.atlassian.theplugin.idea.serverconfig;
 
 import com.atlassian.theplugin.bamboo.BambooServerFactory;
 import com.atlassian.theplugin.bamboo.api.BambooLoginException;
@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * Plugin configuration form.
  */
-public class PluginConfigurationForm {
+public class BambooServerConfigForm {
 	private JPanel rootComponent;
 	private JTextField serverName;
 	private JTextField serverUrl;
@@ -36,7 +36,7 @@ public class PluginConfigurationForm {
 
 	private ServerBean server;
 
-	public PluginConfigurationForm() {
+	public BambooServerConfigForm() {
 
 		$$$setupUI$$$();
 		testConnection.addActionListener(new ActionListener() {
@@ -145,10 +145,6 @@ public class PluginConfigurationForm {
 					((ServerBean) server).getSubscribedPlansData() != null) {
 				return true;
 			}
-		}
-
-		if (!isModified) {
-			System.out.println("Same window config");
 		}
 		return isModified;
 	}
