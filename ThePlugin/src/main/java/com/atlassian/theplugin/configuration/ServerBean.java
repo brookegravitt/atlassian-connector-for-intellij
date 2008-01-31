@@ -178,22 +178,6 @@ public class ServerBean implements Server {
 		this.uid = uid;
 	}
 
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
-
-		ServerBean that = (ServerBean) o;
-
-		if (uid != that.uid) {
-			return false;
-		}
-
-		return true;
-	}
 
 	public int hashCode() {
 		int result;
@@ -207,5 +191,46 @@ public class ServerBean implements Server {
 		result = 31 * result + (subscribedPlans != null ? subscribedPlans.hashCode() : 0);
 		result = 31 * result + (isConfigInitialized != null ? isConfigInitialized.hashCode() : 0);
 		return result;
+	}
+
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+
+		ServerBean that = (ServerBean) o;
+
+		if (uid != that.uid) {
+			return false;
+		}
+		if (encryptedPassword != null ? !encryptedPassword.equals(that.encryptedPassword) : that.encryptedPassword != null) {
+			return false;
+		}
+		if (isConfigInitialized != null ? !isConfigInitialized.equals(that.isConfigInitialized) : that.isConfigInitialized != null) {
+			return false;
+		}
+		if (name != null ? !name.equals(that.name) : that.name != null) {
+			return false;
+		}
+		if (password != null ? !password.equals(that.password) : that.password != null) {
+			return false;
+		}
+		if (shouldPasswordBeStored != null ? !shouldPasswordBeStored.equals(that.shouldPasswordBeStored) : that.shouldPasswordBeStored != null) {
+			return false;
+		}
+		if (subscribedPlans != null ? !subscribedPlans.equals(that.subscribedPlans) : that.subscribedPlans != null) {
+			return false;
+		}
+		if (urlString != null ? !urlString.equals(that.urlString) : that.urlString != null) {
+			return false;
+		}
+		if (username != null ? !username.equals(that.username) : that.username != null) {
+			return false;
+		}
+
+		return true;
 	}
 }
