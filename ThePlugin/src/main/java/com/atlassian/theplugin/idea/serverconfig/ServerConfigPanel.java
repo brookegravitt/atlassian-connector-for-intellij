@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.serverconfig;
 
 import com.atlassian.theplugin.configuration.*;
-import com.atlassian.theplugin.idea.GridBackConstraints;
+import com.atlassian.theplugin.idea.GridBagLayoutConstraints;
 import com.atlassian.theplugin.idea.serverconfig.BambooServerConfigForm;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -64,7 +64,7 @@ public class ServerConfigPanel extends JPanel {
         splitter.setFirstComponent(createSelectPane());
         splitter.setSecondComponent(createEditPane());
 		
-		add(splitter, new GridBackConstraints(1, 1).setFill(GridBackConstraints.BOTH).setWeight(1.0, 1.0));
+		add(splitter, new GridBagLayoutConstraints(1, 1).setFill(GridBagLayoutConstraints.BOTH).setWeight(1.0, 1.0));
     }
 
     public void update(Observable o, Object arg) {
@@ -74,8 +74,8 @@ public class ServerConfigPanel extends JPanel {
     private JPanel createSelectPane() {
         JPanel selectPane = new JPanel();
         selectPane.setLayout(new BorderLayout());
-        selectPane.add(createToolbar(), BorderLayout.NORTH);//, new GridBackConstraints(1, 1).setAnchor(GridBackConstraints.NORTHWEST).setWeight(1.0, 0.0));
-        selectPane.add(getTreePanel(), BorderLayout.CENTER);//, new GridBackConstraints(1, 2).setAnchor(GridBackConstraints.NORTHWEST).setFill(GridBackConstraints.BOTH).setWeight(0.0, 1.0));
+        selectPane.add(createToolbar(), BorderLayout.NORTH);//, new GridBagLayoutConstraints(1, 1).setAnchor(GridBagLayoutConstraints.NORTHWEST).setWeight(1.0, 0.0));
+        selectPane.add(getTreePanel(), BorderLayout.CENTER);//, new GridBagLayoutConstraints(1, 2).setAnchor(GridBagLayoutConstraints.NORTHWEST).setFill(GridBagLayoutConstraints.BOTH).setWeight(0.0, 1.0));
         return selectPane;
     }
 
@@ -95,8 +95,8 @@ public class ServerConfigPanel extends JPanel {
     private JPanel createEditPane() {
         JPanel editPane = new JPanel();
         editPane.setLayout(new VerticalFlowLayout());
-		editPane.add(getBambooServerPanel());//, new GridBackConstraints(1, 1).setAnchor(GridBackConstraints.EAST).setFill(GridBackConstraints.BOTH).setWeight(1.0, 1.0));
-        editPane.add(getBlankPanel());//, new GridBackConstraints(1, 1).setAnchor(GridBackConstraints.EAST).setFill(GridBackConstraints.BOTH).setWeight(1.0, 1.0));
+		editPane.add(getBambooServerPanel());//, new GridBagLayoutConstraints(1, 1).setAnchor(GridBagLayoutConstraints.EAST).setFill(GridBagLayoutConstraints.BOTH).setWeight(1.0, 1.0));
+        editPane.add(getBlankPanel());//, new GridBagLayoutConstraints(1, 1).setAnchor(GridBagLayoutConstraints.EAST).setFill(GridBagLayoutConstraints.BOTH).setWeight(1.0, 1.0));
 
         blankPanel.setVisible(true);
 		bambooEditForm.setVisible(false);
@@ -215,8 +215,8 @@ public class ServerConfigPanel extends JPanel {
             pane.setEditable(false);
             pane.setVisible(true);
 
-            add(pane, new GridBackConstraints(1, 1).setAnchor(GridBackConstraints.NORTHWEST).setFill(GridBackConstraints.BOTH).setWeight(0.01, 0.0));
-            add(new JPanel(), new GridBackConstraints(1, 2).setFill(GridBackConstraints.BOTH).setWeight(0.0, 1.0));
+            add(pane, new GridBagLayoutConstraints(1, 1).setAnchor(GridBagLayoutConstraints.NORTHWEST).setFill(GridBagLayoutConstraints.BOTH).setWeight(0.01, 0.0));
+            add(new JPanel(), new GridBagLayoutConstraints(1, 2).setFill(GridBagLayoutConstraints.BOTH).setWeight(0.0, 1.0));
         }
 
 
