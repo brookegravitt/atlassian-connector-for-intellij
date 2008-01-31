@@ -82,6 +82,16 @@ public class PluginStatusBarToolTip extends Window {
 				setVisible(false);
 			}
 		});
+
+		// pas key events to main window
+//		this.addKeyListener(new KeyAdapter() {
+//			public void keyTyped(KeyEvent e) {
+//
+//				e.setSource(PluginStatusBarToolTip.this.getOwner());
+//				java.awt.Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(e);
+//				PluginStatusBarToolTip.this.getOwner().dispatchEvent(e);
+//			}
+//		});
 	}
 
 	/**

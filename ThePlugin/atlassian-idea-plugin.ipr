@@ -296,5 +296,8 @@
     <mapping directory="" vcs="svn" />
   </component>
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
+  <UsedPathMacros>
+    <macro name="CLASSPATH" />
+  </UsedPathMacros>
 </project>
 
