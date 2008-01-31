@@ -2,7 +2,7 @@ package com.atlassian.theplugin.idea.serverconfig;
 
 import com.atlassian.theplugin.configuration.*;
 import com.atlassian.theplugin.idea.GridBackConstraints;
-import com.atlassian.theplugin.idea.PluginConfigurationForm;
+import com.atlassian.theplugin.idea.serverconfig.BambooServerConfigForm;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.ui.Splitter;
@@ -32,7 +32,7 @@ public class ServerConfigPanel extends JPanel {
     private BlankPanel blankPanel = null;
 
 	private JComponent bambooServerPanel = null;
-	private PluginConfigurationForm bambooEditForm = null;
+	private BambooServerConfigForm bambooEditForm = null;
 
 	public String getTitle() {
         return "Servers";
@@ -113,21 +113,18 @@ public class ServerConfigPanel extends JPanel {
 
     private JComponent getBambooServerPanel() {
 		if (bambooEditForm == null) {
-			bambooEditForm = new PluginConfigurationForm();
+			bambooEditForm = new BambooServerConfigForm();
 		}
 		return bambooEditForm.getRootComponent();
     }
 
     public boolean isModified() {
 		if (!this.pluginConfiguration.equals(ConfigurationFactory.getConfiguration())) {
-			System.out.println("Changed configuration");
 			return true;
 		}
 		if (bambooEditForm != null) {
-			System.out.println("Checking window configuration");
 			return bambooEditForm.isModified();
 		}
-		System.out.println("Same configuration");
 		return false;
 	}
 

@@ -4,6 +4,7 @@ import com.atlassian.theplugin.bamboo.*;
 import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.configuration.SubscribedPlanBean;
+import com.atlassian.theplugin.idea.serverconfig.BambooServerConfigForm;
 import com.intellij.openapi.util.IconLoader;
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -16,7 +17,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * PluginConfigurationForm Tester.
+ * BambooServerConfigForm Tester.
  *
  * @author <Authors name>
  * @version 1.0
@@ -24,14 +25,14 @@ import java.util.Iterator;
  */
 public class PluginConfigurationFormTest extends TestCase {
 
-	PluginConfigurationForm pluginConfigurationForm;
+	BambooServerConfigForm pluginConfigurationForm;
 	//statuses as strings returned by bamboo Rest API
 	public static String BUILD_SUCCESSFUL = "Successful";
 	public static String BUILD_FAILED = "Failed";
 
 	protected void setUp() throws Exception {
 		super.setUp();
-		pluginConfigurationForm = new PluginConfigurationForm();
+		pluginConfigurationForm = new BambooServerConfigForm();
 	}
 
 	/*    public void testDummyFail(){
@@ -362,7 +363,7 @@ public class PluginConfigurationFormTest extends TestCase {
 		public JButton testConnection;
 		public JTextArea buildPlansTextArea;
 
-		public PluginConfigurationFormHelper(PluginConfigurationForm pluginConfigurationForm) throws Exception {
+		public PluginConfigurationFormHelper(BambooServerConfigForm pluginConfigurationForm) throws Exception {
 			for (Field f : getClass().getFields()) {
 				String name = f.getName();
 				Field original = pluginConfigurationForm.getClass().getDeclaredField(name);
