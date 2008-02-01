@@ -17,10 +17,15 @@ public class ToolWindowPanel extends JPanel {
 		super(new BorderLayout());
 
 		// create and add bamboo content
+		// add scroll facility to the html area
 		bambooContent = new ToolWindowBambooContent();
 		bambooContent.setText("Waiting for Bamboo build statuses.");
 
-		add(bambooContent, BorderLayout.NORTH);
+		JScrollPane scrollPane = new JScrollPane(bambooContent,
+				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.setWheelScrollingEnabled(true);
+
+		add(scrollPane, BorderLayout.CENTER);
 	}
 
 	public ToolWindowBambooContent getBambooContent() {
