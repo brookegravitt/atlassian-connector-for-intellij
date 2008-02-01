@@ -67,7 +67,7 @@ public class PluginStatusBarToolTip extends Window {
 
 		// add scroll facility to the html area
 		scrollPane = new JScrollPane(htmlView,
-				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setWheelScrollingEnabled(true);
 
 		// put components on the main window
