@@ -2,7 +2,6 @@ package com.atlassian.theplugin.idea.serverconfig;
 
 import com.atlassian.theplugin.configuration.*;
 import com.atlassian.theplugin.idea.GridBagLayoutConstraints;
-import com.atlassian.theplugin.idea.serverconfig.BambooServerConfigForm;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.ui.Splitter;
@@ -130,11 +129,15 @@ public class ServerConfigPanel extends JPanel {
 
     public void getData() {
 		if (isModified()) {
-			pluginConfiguration.getBambooConfiguration().storeServer(bambooEditForm.getData());
+			if (((BambooConfigurationBean)pluginConfiguration.getBambooConfiguration()).getServer(bambooEditForm.getData()) != null) {
+				pluginConfiguration.getBambooConfiguration().storeServer(bambooEditForm.getData());
+			}
+			ConfigurationFactory.getConfiguration().getBambooConfiguration().setServers(pluginConfiguration.getBambooConfiguration().getServers());
+/*
 			for (Server server : pluginConfiguration.getBambooConfiguration().getServers()) {
 				ConfigurationFactory.getConfiguration().getBambooConfiguration().storeServer(server);
 			}
-			//ConfigurationFactory.getConfiguration().getBambooConfiguration().storeServer(bambooEditForm.getData());
+		*/
 			this.treePanel.setData(pluginConfiguration);			
 		}
 	}
