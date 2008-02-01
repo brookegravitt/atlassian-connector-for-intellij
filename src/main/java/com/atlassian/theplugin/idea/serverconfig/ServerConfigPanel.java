@@ -133,11 +133,7 @@ public class ServerConfigPanel extends JPanel {
 				pluginConfiguration.getBambooConfiguration().storeServer(bambooEditForm.getData());
 			}
 			ConfigurationFactory.getConfiguration().getBambooConfiguration().setServers(pluginConfiguration.getBambooConfiguration().getServers());
-/*
-			for (Server server : pluginConfiguration.getBambooConfiguration().getServers()) {
-				ConfigurationFactory.getConfiguration().getBambooConfiguration().storeServer(server);
-			}
-		*/
+
 			this.treePanel.setData(pluginConfiguration);			
 		}
 	}
@@ -159,6 +155,7 @@ public class ServerConfigPanel extends JPanel {
 		treePanel.removeServer();
 	}
 
+	
 	public void copyServer() {
 		treePanel.copyServer();
 	}
