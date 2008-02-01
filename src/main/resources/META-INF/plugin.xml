@@ -21,8 +21,8 @@
         <action id="ThePlugin.RemoveServerAction" class="com.atlassian.theplugin.idea.serverconfig.action.RemoveServerAction" text="Remove (Delete)" description="Remove an existing server" icon="/general/remove.png"/>
         <action id="ThePlugin.CopyServerAction" class="com.atlassian.theplugin.idea.serverconfig.action.CopyServerAction" text="Copy" description="Copy the selected server" icon="/general/copy.png"/>
 
-        <action id="ThePlugin.AddBambooServerAction" class="com.atlassian.theplugin.idea.serverconfig.action.AddBambooServerAction" text="Bamboo Server" description="Add a new Bamboo server" icon="/icons/grey-16.png"/>
-        <action id="ThePlugin.AddCrucibleServerAction" class="com.atlassian.theplugin.idea.serverconfig.action.AddCrucibleServerAction" text="Crucible Server" description="Add a new Crucible server" icon="/general/add.png"/>
+        <action id="ThePlugin.AddBambooServerAction" class="com.atlassian.theplugin.idea.serverconfig.action.AddBambooServerAction" text="Bamboo Server" description="Add a new Bamboo server" icon="/icons/blue-16.png"/>
+        <action id="ThePlugin.AddCrucibleServerAction" class="com.atlassian.theplugin.idea.serverconfig.action.AddCrucibleServerAction" text="Crucible Server" description="Add a new Crucible server" icon="/icons/crucible-16.png"/>
 
 		<group id="ThePlugin.ServerConfigToolBar" popup="false" text="Ala">
             <reference id="ThePlugin.AddServerAction"/>
