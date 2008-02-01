@@ -69,7 +69,18 @@ public class ServerBean implements Server {
 
 	private synchronized String decode(String str2decode) {
 		try {
-			return new String(Base64.decode(str2decode), "UTF-8");
+
+			byte[] passwordBytes = Base64.decode(str2decode);
+
+			 /*if passwordBytes is null means that we tried to decode password with
+			 * not supported characters or just password hasn't been encoded yet
+			 * in this situation clear password*/
+			if (passwordBytes == null) {
+				shouldPasswordBeStored = false;
+				return new String();
+			}
+
+			return new String(passwordBytes, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("UTF-8 is not supported", e);
 		}
@@ -93,6 +104,7 @@ public class ServerBean implements Server {
 	public void setEncryptedPassword(String encryptedPassword) {
 		password = decode(encryptedPassword);
 		this.encryptedPassword = encryptedPassword;
+		this.
 		isConfigInitialized = true;
 	}
 
