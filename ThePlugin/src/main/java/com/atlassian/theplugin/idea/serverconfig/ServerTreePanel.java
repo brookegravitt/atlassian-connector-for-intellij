@@ -109,8 +109,11 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 				if (response != 0) {
 					return;
 				}
+				TreePath path = new TreePath(((DefaultMutableTreeNode) selectedNode.getParent()).getPath());
 				this.pluginConfiguration.getBambooConfiguration().removeServer(((BambooServerNode) selectedNode).getServer());
 				updateTreeConfiguration();
+				
+				serverTree.expandPath(path);
 			}
 		}
 	}
