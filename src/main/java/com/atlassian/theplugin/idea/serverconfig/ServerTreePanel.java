@@ -122,10 +122,28 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 		serverType.removeAllChildren();
 		model.reload();
 
+		DefaultMutableTreeNode newSelectedNode = null;
 		for (Server server : pluginConfiguration.getBambooConfiguration().getServers()) {
 			BambooServerNode child = new BambooServerNode((ServerBean)server);
 			model.insertNodeInto(child, serverType, serverType.getChildCount());
+
+			if (selectedNode != null && selectedNode instanceof BambooServerNode) {
+				if (child.getServer().equals(((BambooServerNode)selectedNode).getServer())) {
+					newSelectedNode = child;
+				}
+			}
 		}
+
+		if (newSelectedNode != null) {
+			selectedNode = newSelectedNode;
+			TreePath path = new TreePath(selectedNode.getPath());
+			serverTree.scrollPathToVisible(path);
+			serverTree.setSelectionPath(path);
+		} else {
+			selectedNode = null;
+			ServerConfigPanel.getInstance().showEmptyPanel();
+		}
+
 
 	}
 

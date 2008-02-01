@@ -9,6 +9,8 @@ import java.util.Collection;
  * Time: 12:04:40 PM
  */
 public interface Server extends Cloneable {
+	long getUid();
+
 	String getName();
 
 	String getUrlString();

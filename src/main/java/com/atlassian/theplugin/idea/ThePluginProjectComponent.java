@@ -44,8 +44,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	}
 
 	public void disposeComponent() {
-		statusBar.setInfo("Start: Dispose ThePlugin project component");
-		statusBar.setInfo("End: Dispose ThePlugin project component");
+		System.out.println("Start: Dispose ThePlugin project component");
+		System.out.println("End: Dispose ThePlugin project component");
 	}
 
 	@NotNull
