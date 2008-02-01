@@ -27,8 +27,7 @@
 		<group id="ThePlugin.ServerConfigToolBar" popup="false" text="Ala">
             <reference id="ThePlugin.AddServerAction"/>
             <reference id="ThePlugin.RemoveServerAction"/>
-            <reference id="ThePlugin.CopyServerAction"/>
-<!--            <add-to-group group-id="ThePluginConfigToolBar" anchor="last"/> -->
+<!--            <reference id="ThePlugin.CopyServerAction"/> -->
         </group>
 
 		<group id="ThePlugin.ServerTypePopup">
