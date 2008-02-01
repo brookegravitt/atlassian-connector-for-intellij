@@ -93,6 +93,7 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 */
 	}
 
+
 	public void removeServer() {
 		if (selectedNode != null) {
 			if (selectedNode instanceof BambooServerNode) {
