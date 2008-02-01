@@ -93,6 +93,7 @@ public class ServerBean implements Server {
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("UTF-8 is not supported", e);
 		}
+		
 	}
 
 	private synchronized String encode(String str2encode) {
