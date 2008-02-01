@@ -121,7 +121,23 @@ public class PluginStatusBarToolTip extends Window {
 		this.toFront();
 	}
 
-    public void setHtmlContent(String html) {
+//	/**
+//	 * Shows tooltip in the place where was visible before
+//	 */
+//	public void showTooltip() {
+//		this.setVisible(true);
+//        this.requestFocus();
+//		this.toFront();
+//	}
+//
+//	/**
+//	 * Hides tooltip
+//	 */
+//	public void hideTooltip() {
+//		this.setVisible(false);
+//	}
+
+	public void setHtmlContent(String html) {
         htmlView.setText(html);
 		//scrollPane.getVerticalScrollBar().setValue(0);
 		// move scroll bar to the top

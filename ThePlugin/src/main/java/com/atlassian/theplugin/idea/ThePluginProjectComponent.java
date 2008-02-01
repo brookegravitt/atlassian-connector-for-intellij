@@ -5,14 +5,13 @@ import com.atlassian.theplugin.bamboo.HtmlBambooStatusListener;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.wm.*;
+import com.intellij.openapi.util.IconLoader;
 import com.intellij.peer.PeerFactory;
 import com.intellij.ui.content.Content;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import java.awt.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -24,10 +23,14 @@ import java.awt.*;
 public class ThePluginProjectComponent implements ProjectComponent {
 	private final Project project;
 	private StatusBar statusBar;
-	private JComponent statusBarComponent;
 	private BambooStatusIcon statusBarIcon;
 	private BambooStatusChecker bambooStatusChecker;
 	private HtmlBambooStatusListener iconBambooStatusListener;
+	private ToolWindowManager toolWindowManager;
+	private static final String TOOL_WINDOW_NAME = "ThePlugin";
+	private ToolWindow toolWindow;
+	private static final String THE_PLUGIN_TOOL_WINDOW_ICON = "/icons/thePlugin_15x10.png";
+	private HtmlBambooStatusListener toolWindowBambooListener;
 
 	public ThePluginProjectComponent(Project project) {
 		this.project = project;
@@ -59,39 +62,37 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		ThePluginApplicationComponent appComponent =
 				ApplicationManager.getApplication().getComponent(ThePluginApplicationComponent.class);
 
-		// create status bar icon
-		statusBarIcon = new BambooStatusIcon(project);
-		statusBarIcon.updateBambooStatus(BuildStatus.UNKNOWN, "Waiting for Bamboo build statuses.");
-		statusBarComponent = statusBarIcon;
-
-		// add listener to bamboo checker thread
-		iconBambooStatusListener = new HtmlBambooStatusListener(statusBarIcon);
 		bambooStatusChecker = appComponent.getBambooStatusChecker();
+
+
+		// create tool window on the right
+		toolWindowManager = ToolWindowManager.getInstance(project);
+		toolWindow = toolWindowManager.registerToolWindow(TOOL_WINDOW_NAME, true, ToolWindowAnchor.RIGHT);
+		Icon toolWindowIcon = IconLoader.getIcon(THE_PLUGIN_TOOL_WINDOW_ICON);
+		toolWindow.setIcon(toolWindowIcon);
+
+		// create tool window content
+		ToolWindowPanel toolWindowPanel = new ToolWindowPanel();
+		PeerFactory peerFactory = PeerFactory.getInstance();
+		Content toolWindowContent = peerFactory.getContentFactory().createContent(toolWindowPanel, "", false);
+		toolWindow.getContentManager().addContent(toolWindowContent);
+
+		// add tool window bamboo content listener to bamboo checker thread
+		toolWindowBambooListener = new HtmlBambooStatusListener(toolWindowPanel.getBambooContent());
+		bambooStatusChecker.registerListener(toolWindowBambooListener);
+
+		// create status bar icon
+		statusBarIcon = new BambooStatusIcon(this);
+		statusBarIcon.updateBambooStatus(BuildStatus.UNKNOWN, "Waiting for Bamboo build statuses.");
+
+		// add icon listener to bamboo checker thread
+		iconBambooStatusListener = new HtmlBambooStatusListener(statusBarIcon);
 		bambooStatusChecker.registerListener(iconBambooStatusListener);
 
 		// add icon to status bar
 		statusBar = WindowManager.getInstance().getStatusBar(project);
-		statusBar.addCustomIndicationComponent(statusBarComponent);
+		statusBar.addCustomIndicationComponent(statusBarIcon);
 
-		// create tool window on the right
-		ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
-		ToolWindow toolWindow = toolWindowManager.registerToolWindow("ThePlugin", true, ToolWindowAnchor.RIGHT);
-		Icon toolWindowIcon = IconLoader.getIcon("/icons/thePlugin_15x10.png");
-		toolWindow.setIcon(toolWindowIcon);
-
-		JPanel toolWindowPanel = new JPanel(new BorderLayout());
-		ToolWindowContent xxx = new ToolWindowContent();
-		toolWindowPanel.add(xxx, BorderLayout.NORTH);
-		xxx.setText("example content");
-
-		PeerFactory peerFactory = PeerFactory.getInstance();
-		Content toolWindowContent = peerFactory.getContentFactory().createContent(toolWindowPanel, "", false);
-
-		toolWindow.getContentManager().addContent(toolWindowContent);
-
-		HtmlBambooStatusListener toolWindowStatusListener = new HtmlBambooStatusListener(xxx);
-		bambooStatusChecker.registerListener(toolWindowStatusListener);
-		
 
 		System.out.println("End: Project open");
 	}
@@ -100,17 +101,27 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 		System.out.println("Start: Project close");
 
-		statusBar.removeCustomIndicationComponent(statusBarComponent);
-		bambooStatusChecker.unregisterListener(iconBambooStatusListener);
-
-		statusBarComponent = null;
+		// remove icon from status bar
+		statusBar.removeCustomIndicationComponent(statusBarIcon);
 		statusBarIcon = null;
+
+		// remove tool window
+		toolWindowManager.unregisterToolWindow(TOOL_WINDOW_NAME);
+		toolWindow = null;
+
+		// unregister listeners
+		bambooStatusChecker.unregisterListener(iconBambooStatusListener);
+		bambooStatusChecker.unregisterListener(toolWindowBambooListener);
 
 		System.out.println("End: Project close");
 	}
 
-	public void setBambooStatus(String status, String statusDescription) {
-		statusBarIcon.setText(status);
-		statusBarIcon.setToolTipText(statusDescription);
+	public Project getProject() {
+		return project;
+	}
+
+
+	public ToolWindow getToolWindow() {
+		return toolWindow;
 	}
 }

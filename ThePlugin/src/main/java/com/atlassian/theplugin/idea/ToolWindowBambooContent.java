@@ -16,9 +16,9 @@ import static javax.swing.event.HyperlinkEvent.EventType.ACTIVATED;
  * Time: 17:36:10
  * To change this template use File | Settings | File Templates.
  */
-public class ToolWindowContent extends JEditorPane implements BambooStatusDisplay {
+public class ToolWindowBambooContent extends JEditorPane implements BambooStatusDisplay {
 
-	ToolWindowContent () {
+	ToolWindowBambooContent() {
 		setEditable(false);
         setContentType("text/html");
 		addHyperlinkListener(new HyperlinkListener() {

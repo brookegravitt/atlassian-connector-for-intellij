@@ -2,8 +2,8 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.bamboo.BambooStatusDisplay;
 import com.atlassian.theplugin.bamboo.BuildStatus;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.WindowManager;
 
 import javax.swing.*;
@@ -27,12 +27,12 @@ public class BambooStatusIcon extends JLabel implements BambooStatusDisplay {
 	private PluginStatusBarToolTip tooltip;
 
 	/**
-	 * @param aProject reference to the project
+	 * @param aProjectComponent reference to the project component
 	 */
-	BambooStatusIcon(Project aProject) {
+	BambooStatusIcon(final ThePluginProjectComponent aProjectComponent) {
 
 		// show tooltip on mouse over
-		tooltip = new PluginStatusBarToolTip(WindowManager.getInstance().getFrame(aProject));
+		tooltip = new PluginStatusBarToolTip(WindowManager.getInstance().getFrame(aProjectComponent.getProject()));
 
 		addMouseListener(new MouseAdapter() {
 			public void mouseEntered(MouseEvent e) {
@@ -40,6 +40,20 @@ public class BambooStatusIcon extends JLabel implements BambooStatusDisplay {
 				tooltip.showToltip(
 						(int) MouseInfo.getPointerInfo().getLocation().getX(),
 						(int) MouseInfo.getPointerInfo().getLocation().getY());
+			}
+
+			// show/hide toolbar on click
+			public void mouseClicked(MouseEvent e) {
+				ToolWindow toolWindow = aProjectComponent.getToolWindow();
+
+				if (toolWindow.isVisible())	{
+					toolWindow.hide(null);
+					//tooltip.showTooltip();
+				} else {
+					toolWindow.show(null);
+					//tooltip.hideTooltip();
+				}
+
 			}
 		});
 
