@@ -43,14 +43,14 @@ public class BambooConfigurationBean implements BambooConfiguration, Cloneable {
 	 * @return
 	 */
 	@Transient
-	public Collection<Server> getServers() {
+	public synchronized Collection<Server> getServers() {
 		ArrayList<Server> iservers = new ArrayList<Server>();
 		iservers.addAll(servers);
 		return iservers;
 	}
 
 	@Transient
-	public Server getServer(Server aServer) {
+	public synchronized Server getServer(Server aServer) {
 		for (Server server : servers) {
 			if (((ServerBean)server).getUid() == ((ServerBean)aServer).getUid()) {
 				return server;
@@ -89,14 +89,17 @@ public class BambooConfigurationBean implements BambooConfiguration, Cloneable {
 
 	}
 
-	public void removeServer(Server server) {
+	@Transient
+	public synchronized void removeServer(Server server) {
 		for (ServerBean serverBean : servers) {
-			if (serverBean.equals((ServerBean) server)) {
+			if (serverBean.getUid() == server.getUid()) {
 				servers.remove(serverBean);
+				break;
 			}
 		}
 	}
 
+	@Transient
 	public Object clone() throws CloneNotSupportedException {
 		BambooConfigurationBean bambooBean = new BambooConfigurationBean();
 
@@ -111,6 +114,7 @@ public class BambooConfigurationBean implements BambooConfiguration, Cloneable {
 
 	}
 
+	@Transient
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
@@ -128,6 +132,7 @@ public class BambooConfigurationBean implements BambooConfiguration, Cloneable {
 		return true;
 	}
 
+	@Transient
 	public int hashCode() {
 		return (servers != null ? servers.hashCode() : 0);
 	}
