@@ -52,6 +52,8 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 			serverTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 			serverTree.setVisibleRowCount(7);
 			serverTree.addTreeSelectionListener(this);
+
+			serverTree.setCellRenderer(new ServerTreeRenderer());
 		}
 		return serverTree;
 	}
