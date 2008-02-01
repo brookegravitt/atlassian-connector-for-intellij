@@ -25,6 +25,7 @@ public class ServerBean implements Server {
 	private String username = "";
 	private Boolean shouldPasswordBeStored = false;
 	private String password = "";
+	private Boolean enabled = true;
 
 
 	private List<SubscribedPlanBean> subscribedPlans = new ArrayList<SubscribedPlanBean>();
@@ -57,6 +58,14 @@ public class ServerBean implements Server {
 
 	public synchronized void setUsername(String username) {
 		this.username = username;
+	}
+
+	public synchronized Boolean getEnabled() {
+		return this.enabled;
+	}
+
+	public synchronized void setEnabled(Boolean enabled) {
+		this.enabled =  enabled;
 	}
 
 //    public char[] getEncryptedPassword() {
@@ -237,6 +246,9 @@ public class ServerBean implements Server {
 			return false;
 		}
 		if (shouldPasswordBeStored != null ? !shouldPasswordBeStored.equals(that.shouldPasswordBeStored) : that.shouldPasswordBeStored != null) {
+			return false;
+		}
+		if (enabled != null ? !enabled.equals(that.enabled) : that.enabled != null) {
 			return false;
 		}
 		if (subscribedPlans != null ? !subscribedPlans.equals(that.subscribedPlans) : that.subscribedPlans != null) {
