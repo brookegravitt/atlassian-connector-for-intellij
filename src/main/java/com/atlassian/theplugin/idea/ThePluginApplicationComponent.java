@@ -98,6 +98,8 @@ public class ThePluginApplicationComponent
 			form.getData();
 			bambooStatusChecker.cancel();
 			timer.purge();
+			// we cannot re-schedule the same instance of bambooStatusChecker, because we get an exception.
+			// So we create another copy so it's get scheduled properly
 			try {
 				bambooStatusChecker = (BambooStatusChecker) bambooStatusChecker.clone();
 			} catch (CloneNotSupportedException e) {
