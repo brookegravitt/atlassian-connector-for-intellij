@@ -36,6 +36,7 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 
 	private void initLayout() {
 		setLayout(new BorderLayout());
+		setMinimumSize(new Dimension(100,250));
 		add(new JScrollPane(getServerTree()), BorderLayout.CENTER);
 	}
 
