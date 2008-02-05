@@ -21,6 +21,7 @@ public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
 
 	private Date buildTime;
 
+
 	public BambooBuildInfo() {
 	}
 
@@ -202,7 +203,7 @@ public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
 				+ " " + buildKey
 				+ " " + buildState
 				+ " " + buildReason
-				+ " " + buildRelativeBuildDate
+				+ " " + buildTime
 				+ " " + buildDurationDescription
 				+ " " + buildTestSummary
 				+ " " + buildCommitComment;

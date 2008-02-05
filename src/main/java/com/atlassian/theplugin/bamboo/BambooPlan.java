@@ -11,4 +11,6 @@ public interface BambooPlan {
 	String getPlanName();
 
 	String getPlanKey();
+
+	boolean isFavourite();
 }
