@@ -1,7 +1,9 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.configuration.*;
-import com.atlassian.theplugin.idea.GridBagLayoutConstraints;
+import com.atlassian.theplugin.idea.config.ConfigPanel;
+import com.atlassian.theplugin.idea.config.FooterPanel;
+import com.atlassian.theplugin.idea.config.HeaderPanel;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.ui.Splitter;
@@ -16,10 +18,6 @@ import javax.swing.text.StyleConstants;
 import java.awt.*;
 
 public class ServerConfigPanel extends JPanel {
-	private static ServerConfigPanel instance;
-
-	private PluginConfiguration pluginConfiguration = null;
-
 	private ServerTreePanel treePanel = null;
 	private BlankPanel blankPanel = null;
 
@@ -32,15 +30,8 @@ public class ServerConfigPanel extends JPanel {
 	private static final String BAMBOO_SERVER_EDIT_CARD = "Bamboo server card";
 	private static final String BLANK_CARD = "Blank card";
 
-	private ServerConfigPanel() {
+	public ServerConfigPanel() {
 		initLayout();
-	}
-
-	public static ServerConfigPanel getInstance() {
-		if (instance == null) {
-			instance = new ServerConfigPanel();
-		}
-		return instance;
 	}
 
 	private void initLayout() {
@@ -52,13 +43,7 @@ public class ServerConfigPanel extends JPanel {
 		splitter.setSecondComponent(createEditPane());
 		splitter.setHonorComponentsMinimumSize(true);
 
-		JTabbedPane tabs = new JTabbedPane();
-		tabs.add("Servers", splitter);
-
-		add(getHeaderPanel(), BorderLayout.NORTH);
-		add(tabs, BorderLayout.CENTER);
-		add(getFooterPanel(), BorderLayout.SOUTH);
-
+		add(splitter, BorderLayout.CENTER);
 	}
 
 	private JComponent createSelectPane() {
@@ -92,20 +77,6 @@ public class ServerConfigPanel extends JPanel {
 		return editPane;
 	}
 
-	private JPanel getHeaderPanel() {
-		if (headerPanel == null) {
-			headerPanel = new HeaderPanel();
-		}
-		return headerPanel;
-	}
-
-	private JPanel getFooterPanel() {
-		if (footerPanel == null) {
-			footerPanel = new FooterPanel();
-		}
-		return footerPanel;
-	}
-
 	private JComponent getBlankPanel() {
 		if (blankPanel == null) {
 			blankPanel = new BlankPanel();
@@ -121,7 +92,7 @@ public class ServerConfigPanel extends JPanel {
 	}
 
 	public boolean isModified() {
-		if (!this.pluginConfiguration.equals(ConfigurationFactory.getConfiguration())) {
+		if (!getPluginConfiguration().equals(ConfigurationFactory.getConfiguration())) {
 			return true;
 		}
 		if (bambooEditForm != null) {
@@ -133,17 +104,16 @@ public class ServerConfigPanel extends JPanel {
 
 	public void getData() {
 		if (isModified()) {
-			if (((BambooConfigurationBean) pluginConfiguration.getBambooConfiguration()).getServer(bambooEditForm.getData()) != null) {
-				pluginConfiguration.getBambooConfiguration().storeServer(bambooEditForm.getData());
+			if (((BambooConfigurationBean) getPluginConfiguration().getBambooConfiguration()).getServer(bambooEditForm.getData()) != null) {
+				getPluginConfiguration().getBambooConfiguration().storeServer(bambooEditForm.getData());
 			}
-			ConfigurationFactory.getConfiguration().getBambooConfiguration().setServers(pluginConfiguration.getBambooConfiguration().getServers());
+			ConfigurationFactory.getConfiguration().getBambooConfiguration().setServers(getPluginConfiguration().getBambooConfiguration().getServers());
 
-			this.treePanel.setData(pluginConfiguration);
+			this.treePanel.setData(getPluginConfiguration());
 		}
 	}
 
-	public void setData() {
-		clonePluginConfiguration();
+	public void setData(PluginConfiguration pluginConfiguration) {
 		this.treePanel.setData(pluginConfiguration);
 	}
 
@@ -196,7 +166,7 @@ public class ServerConfigPanel extends JPanel {
 
 		private void initLayout() {
 
-			setLayout(new GridBagLayout());
+			setLayout(new BorderLayout());
 
 			DefaultStyledDocument doc = new DefaultStyledDocument();
 			Style s = doc.addStyle(null, null);
@@ -217,27 +187,13 @@ public class ServerConfigPanel extends JPanel {
 			pane.setEditable(false);
 			pane.setVisible(true);
 
-			add(pane, new GridBagLayoutConstraints(1, 1).setAnchor(GridBagLayoutConstraints.NORTHWEST).setFill(GridBagLayoutConstraints.BOTH).setWeight(0.01, 0.0));
-			add(new JPanel(), new GridBagLayoutConstraints(1, 2).setFill(GridBagLayoutConstraints.BOTH).setWeight(0.0, 1.0));
+			add(pane, BorderLayout.NORTH);
 		}
 
 
 	}
 
 	public PluginConfiguration getPluginConfiguration() {
-		return pluginConfiguration;
+		return ConfigPanel.getInstance().getPluginConfiguration();
 	}
-
-	public void setPluginConfiguration(PluginConfiguration pluginConfiguration) {
-		this.pluginConfiguration = pluginConfiguration;
-	}
-
-	synchronized private void clonePluginConfiguration() {
-		try {
-			this.pluginConfiguration = (PluginConfiguration) ((PluginConfigurationBean) ConfigurationFactory.getConfiguration()).clone();
-		} catch (CloneNotSupportedException e) {
-			e.printStackTrace();
-		}
-	}
-
 }
