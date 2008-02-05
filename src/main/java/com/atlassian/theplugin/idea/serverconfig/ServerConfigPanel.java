@@ -29,22 +29,22 @@ public class ServerConfigPanel extends JPanel {
 	private PluginConfiguration pluginConfiguration = null;
 
 	private ServerTreePanel treePanel = null;
-    private BlankPanel blankPanel = null;
+	private BlankPanel blankPanel = null;
 	private FooterPanel footerPanel = null;
 
 	private JComponent bambooServerPanel = null;
 	private BambooServerConfigForm bambooEditForm = null;
 
 	public String getTitle() {
-        return "Servers";
-    }
+		return "Servers";
+	}
 
-    public void enableConfig(boolean b) {
-    }
+	public void enableConfig(boolean b) {
+	}
 
-    private ServerConfigPanel() {
+	private ServerConfigPanel() {
 		initLayout();
-    }
+	}
 
 	public static ServerConfigPanel getInstance() {
 		if (instance == null) {
@@ -56,81 +56,76 @@ public class ServerConfigPanel extends JPanel {
 
 
 	private void initLayout() {
-        GridBagLayout gb = new GridBagLayout();
-
-		setLayout(gb);
-
-        Splitter splitter = new Splitter(false, 0.3f);
-        splitter.setShowDividerControls(true);
-        splitter.setFirstComponent(createSelectPane());
-        splitter.setSecondComponent(createEditPane());
+		setLayout(new VerticalFlowLayout(true, true));
+		Splitter splitter = new Splitter(false, 0.3f);
+		splitter.setShowDividerControls(true);
+		splitter.setFirstComponent(createSelectPane());
+		splitter.setSecondComponent(createEditPane());
 		splitter.setHonorComponentsMinimumSize(true);
-		
-		add(splitter, new GridBagLayoutConstraints(1, 1).setFill(GridBagLayoutConstraints.BOTH).setWeight(1.0, 1.0));
-		add(getFooterPanel(), new GridBagLayoutConstraints(1, 2).setAnchor(GridBagLayoutConstraints.SOUTH).setFill(GridBagLayoutConstraints.HORIZONTAL).setWeight(0.0, 0.1));
 
-		setMinimumSize(new Dimension(550, 350));
+		add(splitter);//new GridBagLayoutConstraints(1, 1).setFill(GridBagLayoutConstraints.BOTH).setWeight(1.0, 1.0));
+		add(getFooterPanel());//new GridBagLayoutConstraints(1, 2).setAnchor(GridBagLayoutConstraints.SOUTH).setFill(GridBagLayoutConstraints.HORIZONTAL).setWeight(0.0, 0.1));
 	}
 
-    public void update(Observable o, Object arg) {
-        blankPanel.setVisible(true);
-    }
+	public void update(Observable o, Object arg) {
+		blankPanel.setVisible(true);
+	}
 
-    private JPanel createSelectPane() {
-        JPanel selectPane = new JPanel();
-        selectPane.setLayout(new BorderLayout());
-        selectPane.add(createToolbar(), BorderLayout.NORTH);//, new GridBagLayoutConstraints(1, 1).setAnchor(GridBagLayoutConstraints.NORTHWEST).setWeight(1.0, 0.0));
-        selectPane.add(getTreePanel(), BorderLayout.CENTER);//, new GridBagLayoutConstraints(1, 2).setAnchor(GridBagLayoutConstraints.NORTHWEST).setFill(GridBagLayoutConstraints.BOTH).setWeight(0.0, 1.0));
+	private JComponent createSelectPane() {
+		JPanel selectPane = new JPanel();
+		selectPane.setLayout(new VerticalFlowLayout(true, true));
+		selectPane.add(createToolbar());//, BorderLayout.NORTH);//, new GridBagLayoutConstraints(1, 1).setAnchor(GridBagLayoutConstraints.NORTHWEST).setWeight(1.0, 0.0));
+		selectPane.add(getTreePanel());//, BorderLayout.CENTER);//, new GridBagLayoutConstraints(1, 2).setAnchor(GridBagLayoutConstraints.NORTHWEST).setFill(GridBagLayoutConstraints.BOTH).setWeight(0.0, 1.0));
 		return selectPane;
-    }
+	}
 
-    private Component getTreePanel() {
-        if (treePanel == null) {
-            treePanel = new ServerTreePanel();
+	private JComponent getTreePanel() {
+		if (treePanel == null) {
+			treePanel = new ServerTreePanel();
 		}
-        return treePanel;
-    }
+		return treePanel;
+	}
 
-    private JComponent createToolbar() {
-        ActionManager actionManager = ActionManager.getInstance();
-        ActionGroup actionGroup = (ActionGroup) actionManager.getAction("ThePlugin.ServerConfigToolBar");
-        return actionManager.createActionToolbar("ThePluginConfig", actionGroup, true).getComponent();
-    }
+	private JComponent createToolbar() {
+		ActionManager actionManager = ActionManager.getInstance();
+		ActionGroup actionGroup = (ActionGroup) actionManager.getAction("ThePlugin.ServerConfigToolBar");
+		return actionManager.createActionToolbar("ThePluginConfig", actionGroup, true).getComponent();
+	}
 
-    private JPanel createEditPane() {
-        JPanel editPane = new JPanel();
-        editPane.setLayout(new VerticalFlowLayout());
+	private JComponent createEditPane() {
+		JPanel editPane = new JPanel();
+		editPane.setLayout(new VerticalFlowLayout());
 		editPane.add(getBambooServerPanel());//, new GridBagLayoutConstraints(1, 1).setAnchor(GridBagLayoutConstraints.EAST).setFill(GridBagLayoutConstraints.BOTH).setWeight(1.0, 1.0));
-        editPane.add(getBlankPanel());//, new GridBagLayoutConstraints(1, 1).setAnchor(GridBagLayoutConstraints.EAST).setFill(GridBagLayoutConstraints.BOTH).setWeight(1.0, 1.0));
+		editPane.add(getBlankPanel());//, new GridBagLayoutConstraints(1, 1).setAnchor(GridBagLayoutConstraints.EAST).setFill(GridBagLayoutConstraints.BOTH).setWeight(1.0, 1.0));
 
-        blankPanel.setVisible(true);
+		blankPanel.setVisible(true);
 		bambooEditForm.setVisible(false);
 
 		return editPane;
-    }
+	}
 
 	private JPanel getFooterPanel() {
-        if (footerPanel == null) {
-            footerPanel = new FooterPanel();
+		if (footerPanel == null) {
+			footerPanel = new FooterPanel();
 		}
-        return footerPanel;
+		return footerPanel;
 	}
 
 	private JComponent getBlankPanel() {
-        if (blankPanel == null) {
-            blankPanel = new BlankPanel();
-        }
-        return blankPanel;
-    }
+		if (blankPanel == null) {
+			blankPanel = new BlankPanel();
+		}
+		return blankPanel;
+	}
 
-    private JComponent getBambooServerPanel() {
+	private JComponent getBambooServerPanel() {
 		if (bambooEditForm == null) {
 			bambooEditForm = new BambooServerConfigForm();
 		}
 		return bambooEditForm.getRootComponent();
-    }
+	}
 
-    public boolean isModified() {
+	public boolean isModified() {
 		if (!this.pluginConfiguration.equals(ConfigurationFactory.getConfiguration())) {
 			return true;
 		}
@@ -140,18 +135,18 @@ public class ServerConfigPanel extends JPanel {
 		return false;
 	}
 
-    public void getData() {
+	public void getData() {
 		if (isModified()) {
-			if (((BambooConfigurationBean)pluginConfiguration.getBambooConfiguration()).getServer(bambooEditForm.getData()) != null) {
+			if (((BambooConfigurationBean) pluginConfiguration.getBambooConfiguration()).getServer(bambooEditForm.getData()) != null) {
 				pluginConfiguration.getBambooConfiguration().storeServer(bambooEditForm.getData());
 			}
 			ConfigurationFactory.getConfiguration().getBambooConfiguration().setServers(pluginConfiguration.getBambooConfiguration().getServers());
 
-			this.treePanel.setData(pluginConfiguration);			
+			this.treePanel.setData(pluginConfiguration);
 		}
 	}
 
-    public void setData() {
+	public void setData() {
 		clonePluginConfiguration();
 		this.treePanel.setData(pluginConfiguration);
 	}
@@ -168,7 +163,7 @@ public class ServerConfigPanel extends JPanel {
 		treePanel.removeServer();
 	}
 
-	
+
 	public void copyServer() {
 		treePanel.copyServer();
 	}
@@ -185,7 +180,7 @@ public class ServerConfigPanel extends JPanel {
 			// ignore here
 		}
 		server.setUrlString(tempValue.getUrlString());
-		server.setSubscribedPlansData(tempValue.getSubscribedPlansData());		
+		server.setSubscribedPlansData(tempValue.getSubscribedPlansData());
 	}
 
 	public void editBambooServer(ServerBean server) {
@@ -201,36 +196,36 @@ public class ServerConfigPanel extends JPanel {
 
 	static class BlankPanel extends JPanel {
 
-        public BlankPanel() {
-            initLayout();
-        }
+		public BlankPanel() {
+			initLayout();
+		}
 
-        private void initLayout() {
+		private void initLayout() {
 
-            setLayout(new GridBagLayout());
+			setLayout(new GridBagLayout());
 
-            DefaultStyledDocument doc = new DefaultStyledDocument();
-            Style s = doc.addStyle(null, null);
-            StyleConstants.setIcon(s, IconLoader.getIcon("/general/add.png"));
-            Style d = doc.addStyle(null, null);
-            StyleConstants.setFontFamily(d, getFont().getFamily());
-            StyleConstants.setFontSize(d, getFont().getSize());
-            try {
-                doc.insertString(0, "Press the ", d);
-                doc.insertString(10, " ", s);
-                doc.insertString(11, " button to define a new Server configuration.", d);
-            } catch (BadLocationException e) {
-                e.printStackTrace();
-            }
-            JTextPane pane = new JTextPane();
-            pane.setBackground(getBackground());
-            pane.setDocument(doc);
-            pane.setEditable(false);
-            pane.setVisible(true);
+			DefaultStyledDocument doc = new DefaultStyledDocument();
+			Style s = doc.addStyle(null, null);
+			StyleConstants.setIcon(s, IconLoader.getIcon("/general/add.png"));
+			Style d = doc.addStyle(null, null);
+			StyleConstants.setFontFamily(d, getFont().getFamily());
+			StyleConstants.setFontSize(d, getFont().getSize());
+			try {
+				doc.insertString(0, "Press the ", d);
+				doc.insertString(10, " ", s);
+				doc.insertString(11, " button to define a new Server configuration.", d);
+			} catch (BadLocationException e) {
+				e.printStackTrace();
+			}
+			JTextPane pane = new JTextPane();
+			pane.setBackground(getBackground());
+			pane.setDocument(doc);
+			pane.setEditable(false);
+			pane.setVisible(true);
 
-            add(pane, new GridBagLayoutConstraints(1, 1).setAnchor(GridBagLayoutConstraints.NORTHWEST).setFill(GridBagLayoutConstraints.BOTH).setWeight(0.01, 0.0));
-            add(new JPanel(), new GridBagLayoutConstraints(1, 2).setFill(GridBagLayoutConstraints.BOTH).setWeight(0.0, 1.0));
-        }
+			add(pane, new GridBagLayoutConstraints(1, 1).setAnchor(GridBagLayoutConstraints.NORTHWEST).setFill(GridBagLayoutConstraints.BOTH).setWeight(0.01, 0.0));
+			add(new JPanel(), new GridBagLayoutConstraints(1, 2).setFill(GridBagLayoutConstraints.BOTH).setWeight(0.0, 1.0));
+		}
 
 
 	}
