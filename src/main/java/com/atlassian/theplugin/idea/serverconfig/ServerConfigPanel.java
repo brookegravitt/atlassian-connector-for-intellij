@@ -14,15 +14,7 @@ import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import java.awt.*;
-import java.util.Observable;
 
-/**
- * Created by IntelliJ IDEA.
- * User: mwent
- * Date: 2008-01-26
- * Time: 12:23:08
- * To change this template use File | Settings | File Templates.
- */
 public class ServerConfigPanel extends JPanel {
 	private static ServerConfigPanel instance;
 
@@ -35,6 +27,10 @@ public class ServerConfigPanel extends JPanel {
 	private FooterPanel footerPanel = null;
 
 	private BambooServerConfigForm bambooEditForm = null;
+	private CardLayout editPaneCardLayout;
+	private JPanel editPane;
+	private static final String BAMBOO_SERVER_EDIT_CARD = "Bamboo server card";
+	private static final String BLANK_CARD = "Blank card";
 
 	private ServerConfigPanel() {
 		initLayout();
@@ -48,19 +44,6 @@ public class ServerConfigPanel extends JPanel {
 	}
 
 	private void initLayout() {
-/*
-		setLayout(new VerticalFlowLayout(true, true));
-		Splitter splitter = new Splitter(false, 0.3f);
-		splitter.setShowDividerControls(true);
-		splitter.setFirstComponent(createSelectPane());
-		splitter.setSecondComponent(createEditPane());
-		splitter.setHonorComponentsMinimumSize(true);
-
-		add(splitter);//new GridBagLayoutConstraints(1, 1).setFill(GridBagLayoutConstraints.BOTH).setWeight(1.0, 1.0));
-		add(getFooterPanel());//new GridBagLayoutConstraints(1, 2).setAnchor(GridBagLayoutConstraints.SOUTH).setFill(GridBagLayoutConstraints.HORIZONTAL).setWeight(0.0, 0.1));
-*/
-
-
 		setLayout(new BorderLayout());
 
 		Splitter splitter = new Splitter(false, 0.3f);
@@ -76,10 +59,6 @@ public class ServerConfigPanel extends JPanel {
 		add(tabs, BorderLayout.CENTER);
 		add(getFooterPanel(), BorderLayout.SOUTH);
 
-	}
-
-	public void update(Observable o, Object arg) {
-		blankPanel.setVisible(true);
 	}
 
 	private JComponent createSelectPane() {
@@ -104,13 +83,11 @@ public class ServerConfigPanel extends JPanel {
 	}
 
 	private JComponent createEditPane() {
-		JPanel editPane = new JPanel();
-		editPane.setLayout(new VerticalFlowLayout());
-		editPane.add(getBambooServerPanel());
-		editPane.add(getBlankPanel());
-
-		blankPanel.setVisible(true);
-		bambooEditForm.setVisible(false);
+		editPane = new JPanel();
+		editPaneCardLayout = new CardLayout();
+		editPane.setLayout(editPaneCardLayout);
+		editPane.add(getBambooServerPanel(), BAMBOO_SERVER_EDIT_CARD);
+		editPane.add(getBlankPanel(), BLANK_CARD);
 
 		return editPane;
 	}
@@ -149,8 +126,9 @@ public class ServerConfigPanel extends JPanel {
 		}
 		if (bambooEditForm != null) {
 			return bambooEditForm.isModified();
+		} else {
+			return false;
 		}
-		return false;
 	}
 
 	public void getData() {
@@ -188,7 +166,7 @@ public class ServerConfigPanel extends JPanel {
 
 	public void storeBambooServer(ServerBean server) {
 
-		ServerBean tempValue = (ServerBean) bambooEditForm.getData();
+		ServerBean tempValue = bambooEditForm.getData();
 
 		server.setName(tempValue.getName());
 		server.setUsername(tempValue.getUsername());
@@ -202,14 +180,12 @@ public class ServerConfigPanel extends JPanel {
 	}
 
 	public void editBambooServer(ServerBean server) {
-		blankPanel.setVisible(false);
-		bambooEditForm.setVisible(true);
+		editPaneCardLayout.show(editPane, BAMBOO_SERVER_EDIT_CARD);
 		bambooEditForm.setData(server);
 	}
 
 	public void showEmptyPanel() {
-		blankPanel.setVisible(true);
-		bambooEditForm.setVisible(false);
+		editPaneCardLayout.show(editPane, BLANK_CARD);
 	}
 
 	static class BlankPanel extends JPanel {
@@ -260,7 +236,7 @@ public class ServerConfigPanel extends JPanel {
 		try {
 			this.pluginConfiguration = (PluginConfiguration) ((PluginConfigurationBean) ConfigurationFactory.getConfiguration()).clone();
 		} catch (CloneNotSupportedException e) {
-			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+			e.printStackTrace();
 		}
 	}
 
