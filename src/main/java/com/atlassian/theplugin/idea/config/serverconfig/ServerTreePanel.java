@@ -1,10 +1,10 @@
-package com.atlassian.theplugin.idea.serverconfig;
+package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerBean;
-import com.atlassian.theplugin.idea.serverconfig.model.*;
-import com.atlassian.theplugin.idea.serverconfig.util.ServerNameUtil;
+import com.atlassian.theplugin.idea.config.serverconfig.model.*;
+import com.atlassian.theplugin.idea.config.serverconfig.util.ServerNameUtil;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;

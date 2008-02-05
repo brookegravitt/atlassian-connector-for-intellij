@@ -1,6 +1,6 @@
-package com.atlassian.theplugin.idea.serverconfig.action;
+package com.atlassian.theplugin.idea.config.serverconfig.action;
 
-import com.atlassian.theplugin.idea.serverconfig.ServerConfigPanel;
+import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
