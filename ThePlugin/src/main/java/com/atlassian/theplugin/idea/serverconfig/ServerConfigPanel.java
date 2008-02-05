@@ -32,15 +32,7 @@ public class ServerConfigPanel extends JPanel {
 	private BlankPanel blankPanel = null;
 	private FooterPanel footerPanel = null;
 
-	private JComponent bambooServerPanel = null;
 	private BambooServerConfigForm bambooEditForm = null;
-
-	public String getTitle() {
-		return "Servers";
-	}
-
-	public void enableConfig(boolean b) {
-	}
 
 	private ServerConfigPanel() {
 		initLayout();
@@ -49,22 +41,20 @@ public class ServerConfigPanel extends JPanel {
 	public static ServerConfigPanel getInstance() {
 		if (instance == null) {
 			instance = new ServerConfigPanel();
-
 		}
 		return instance;
 	}
 
-
 	private void initLayout() {
-		setLayout(new VerticalFlowLayout(true, true));
+		setLayout(new BorderLayout());
 		Splitter splitter = new Splitter(false, 0.3f);
 		splitter.setShowDividerControls(true);
 		splitter.setFirstComponent(createSelectPane());
 		splitter.setSecondComponent(createEditPane());
 		splitter.setHonorComponentsMinimumSize(true);
 
-		add(splitter);//new GridBagLayoutConstraints(1, 1).setFill(GridBagLayoutConstraints.BOTH).setWeight(1.0, 1.0));
-		add(getFooterPanel());//new GridBagLayoutConstraints(1, 2).setAnchor(GridBagLayoutConstraints.SOUTH).setFill(GridBagLayoutConstraints.HORIZONTAL).setWeight(0.0, 0.1));
+		add(splitter, BorderLayout.CENTER);
+		add(getFooterPanel(), BorderLayout.SOUTH);
 	}
 
 	public void update(Observable o, Object arg) {
@@ -74,8 +64,8 @@ public class ServerConfigPanel extends JPanel {
 	private JComponent createSelectPane() {
 		JPanel selectPane = new JPanel();
 		selectPane.setLayout(new VerticalFlowLayout(true, true));
-		selectPane.add(createToolbar());//, BorderLayout.NORTH);//, new GridBagLayoutConstraints(1, 1).setAnchor(GridBagLayoutConstraints.NORTHWEST).setWeight(1.0, 0.0));
-		selectPane.add(getTreePanel());//, BorderLayout.CENTER);//, new GridBagLayoutConstraints(1, 2).setAnchor(GridBagLayoutConstraints.NORTHWEST).setFill(GridBagLayoutConstraints.BOTH).setWeight(0.0, 1.0));
+		selectPane.add(createToolbar());
+		selectPane.add(getTreePanel());
 		return selectPane;
 	}
 
@@ -95,8 +85,8 @@ public class ServerConfigPanel extends JPanel {
 	private JComponent createEditPane() {
 		JPanel editPane = new JPanel();
 		editPane.setLayout(new VerticalFlowLayout());
-		editPane.add(getBambooServerPanel());//, new GridBagLayoutConstraints(1, 1).setAnchor(GridBagLayoutConstraints.EAST).setFill(GridBagLayoutConstraints.BOTH).setWeight(1.0, 1.0));
-		editPane.add(getBlankPanel());//, new GridBagLayoutConstraints(1, 1).setAnchor(GridBagLayoutConstraints.EAST).setFill(GridBagLayoutConstraints.BOTH).setWeight(1.0, 1.0));
+		editPane.add(getBambooServerPanel());
+		editPane.add(getBlankPanel());
 
 		blankPanel.setVisible(true);
 		bambooEditForm.setVisible(false);
