@@ -1,8 +1,8 @@
 package com.atlassian.theplugin.idea.config.serverconfig.action;
 
+import com.atlassian.theplugin.idea.config.ConfigPanel;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
 
 /**
  * Created by IntelliJ IDEA.
@@ -13,7 +13,6 @@ import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
  */
 public class RemoveServerAction extends AnAction {
     public void actionPerformed(AnActionEvent event) {
-		ServerConfigPanel form = ServerConfigPanel.getInstance();
-		form.removeServer();
+		ConfigPanel.getInstance().removeServer();		
     }
 }
