@@ -36,7 +36,7 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 
 	private void initLayout() {
 		setLayout(new BorderLayout());
-		setMinimumSize(new Dimension(100,250));
+		setMinimumSize(new Dimension(150, 250));
 		add(new JScrollPane(getServerTree()), BorderLayout.CENTER);
 	}
 
@@ -115,7 +115,7 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 				TreePath path = new TreePath(((DefaultMutableTreeNode) selectedNode.getParent()).getPath());
 				this.pluginConfiguration.getBambooConfiguration().removeServer(((BambooServerNode) selectedNode).getServer());
 				updateTreeConfiguration();
-				
+
 				serverTree.expandPath(path);
 			}
 		}
@@ -134,14 +134,14 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 		DefaultMutableTreeNode newSelectedNode = null;
 		DefaultMutableTreeNode firstServer = null;
 		for (Server server : pluginConfiguration.getBambooConfiguration().getServers()) {
-			BambooServerNode child = new BambooServerNode((ServerBean)server);
+			BambooServerNode child = new BambooServerNode((ServerBean) server);
 			model.insertNodeInto(child, serverType, serverType.getChildCount());
 			if (firstServer == null) {
 				firstServer = child;
 			}
 
 			if (selectedNode != null && selectedNode instanceof BambooServerNode) {
-				if (child.getServer().equals(((BambooServerNode)selectedNode).getServer())) {
+				if (child.getServer().equals(((BambooServerNode) selectedNode).getServer())) {
 					newSelectedNode = child;
 				}
 			}
