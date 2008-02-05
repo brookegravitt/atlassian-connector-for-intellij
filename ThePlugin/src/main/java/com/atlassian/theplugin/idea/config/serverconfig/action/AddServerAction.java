@@ -1,9 +1,8 @@
-package com.atlassian.theplugin.idea.serverconfig.action;
+package com.atlassian.theplugin.idea.config.serverconfig.action;
 
 import com.intellij.openapi.actionSystem.*;
 
 import javax.swing.*;
-import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 
 /**

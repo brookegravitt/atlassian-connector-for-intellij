@@ -1,4 +1,4 @@
-package com.atlassian.theplugin.idea.serverconfig;
+package com.atlassian.theplugin.idea.config.serverconfig;
 
 import javax.swing.*;
 import java.awt.*;

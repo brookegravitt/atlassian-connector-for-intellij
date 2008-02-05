@@ -1,4 +1,4 @@
-package com.atlassian.theplugin.idea.serverconfig;
+package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.bamboo.BambooServerFactory;
 import com.atlassian.theplugin.bamboo.api.BambooLoginException;

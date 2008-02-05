@@ -1,4 +1,4 @@
-package com.atlassian.theplugin.idea.serverconfig;
+package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.intellij.ide.BrowserUtil;
 import com.intellij.ui.HyperlinkLabel;
