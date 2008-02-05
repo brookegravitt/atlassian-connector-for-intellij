@@ -2,17 +2,16 @@ package com.atlassian.theplugin.idea.serverconfig;
 
 import com.atlassian.theplugin.bamboo.BambooServerFactory;
 import com.atlassian.theplugin.bamboo.api.BambooLoginException;
-import com.atlassian.theplugin.configuration.*;
-import com.intellij.ide.BrowserUtil;
+import com.atlassian.theplugin.configuration.ServerBean;
+import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.configuration.SubscribedPlan;
+import com.atlassian.theplugin.configuration.SubscribedPlanBean;
 import com.intellij.openapi.ui.Messages;
 import static com.intellij.openapi.ui.Messages.showMessageDialog;
-import com.intellij.ui.HyperlinkLabel;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 
 import javax.swing.*;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -31,7 +30,6 @@ public class BambooServerConfigForm {
 	private JPasswordField password;
 	private JButton testConnection;
 	private JTextArea buildPlansTextArea;
-	private HyperlinkLabel openJiraHyperlinkLabel;
 	private JCheckBox chkPasswordRemember;
 
 	private ServerBean server;
@@ -159,15 +157,6 @@ public class BambooServerConfigForm {
 	}
 
 	private void createUIComponents() {
-		// TODO: place custom component creation code here
-		openJiraHyperlinkLabel = new HyperlinkLabel("Report a bug/issue/request.");
-		openJiraHyperlinkLabel.addHyperlinkListener(new HyperlinkListener() {
-			public void hyperlinkUpdate(HyperlinkEvent e) {
-				BrowserUtil.launchBrowser("https://studio.atlassian.com/browse/PL");
-			}
-		});
-
-
 	}
 
 	/**
@@ -221,7 +210,6 @@ public class BambooServerConfigForm {
 		testConnection.setMnemonic('T');
 		testConnection.setDisplayedMnemonicIndex(0);
 		panel2.add(testConnection, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-		panel2.add(openJiraHyperlinkLabel, new GridConstraints(7, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 35), null, null, 0, false));
 		final JPanel panel3 = new JPanel();
 		panel3.setLayout(new GridLayoutManager(2, 1, new Insets(5, 5, 5, 5), -1, -1));
 		panel2.add(panel3, new GridConstraints(6, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(485, 154), null, 0, false));

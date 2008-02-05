@@ -27,8 +27,10 @@ public class ServerConfigPanel extends JPanel {
 	private static ServerConfigPanel instance;
 
 	private PluginConfiguration pluginConfiguration = null;
+
 	private ServerTreePanel treePanel = null;
     private BlankPanel blankPanel = null;
+	private FooterPanel footerPanel = null;
 
 	private JComponent bambooServerPanel = null;
 	private BambooServerConfigForm bambooEditForm = null;
@@ -62,9 +64,13 @@ public class ServerConfigPanel extends JPanel {
         splitter.setShowDividerControls(true);
         splitter.setFirstComponent(createSelectPane());
         splitter.setSecondComponent(createEditPane());
+		splitter.setHonorComponentsMinimumSize(true);
 		
 		add(splitter, new GridBagLayoutConstraints(1, 1).setFill(GridBagLayoutConstraints.BOTH).setWeight(1.0, 1.0));
-    }
+		add(getFooterPanel(), new GridBagLayoutConstraints(1, 2).setAnchor(GridBagLayoutConstraints.SOUTH).setFill(GridBagLayoutConstraints.HORIZONTAL).setWeight(0.0, 0.1));
+
+		setMinimumSize(new Dimension(550, 350));
+	}
 
     public void update(Observable o, Object arg) {
         blankPanel.setVisible(true);
@@ -75,7 +81,7 @@ public class ServerConfigPanel extends JPanel {
         selectPane.setLayout(new BorderLayout());
         selectPane.add(createToolbar(), BorderLayout.NORTH);//, new GridBagLayoutConstraints(1, 1).setAnchor(GridBagLayoutConstraints.NORTHWEST).setWeight(1.0, 0.0));
         selectPane.add(getTreePanel(), BorderLayout.CENTER);//, new GridBagLayoutConstraints(1, 2).setAnchor(GridBagLayoutConstraints.NORTHWEST).setFill(GridBagLayoutConstraints.BOTH).setWeight(0.0, 1.0));
-        return selectPane;
+		return selectPane;
     }
 
     private Component getTreePanel() {
@@ -103,7 +109,14 @@ public class ServerConfigPanel extends JPanel {
 		return editPane;
     }
 
-    private JComponent getBlankPanel() {
+	private JPanel getFooterPanel() {
+        if (footerPanel == null) {
+            footerPanel = new FooterPanel();
+		}
+        return footerPanel;
+	}
+
+	private JComponent getBlankPanel() {
         if (blankPanel == null) {
             blankPanel = new BlankPanel();
         }
