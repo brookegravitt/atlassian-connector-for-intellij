@@ -1,10 +1,41 @@
 <!DOCTYPE idea-plugin PUBLIC "Plugin/DTD" "http://plugins.intellij.net/plugin.dtd">
-<idea-plugin>
+<idea-plugin url="http://www.atlassian.com">
+
 	<name>The Plugin</name>
-	<description>short description of the plugin</description>
-	<version>0.0.1-SNAPSHOT</version>
-	<vendor>Atlassian</vendor>
-	<idea-version since-build="3000"/>
+
+	<description>
+		<![CDATA[
+		The plugin providing IDEA IDE integration for the following Atlassian products:
+		<ul>
+			<li>Bamboo (2.0 and above)</li>
+			<li>Crucible</li>
+			<li>Fisheye</li>
+			<li>Jira</li>
+			<li>Confluence</li>
+		</ul>
+		]]>
+	</description>
+
+	<version>0.2.0-SNAPSHOT</version>
+
+	<!--no email link for now - we don't have the plugin email alias yet-->
+	<!--<vendor url="http://www.atlassian.com" email="support@atlassian.com">Atlassian</vendor>-->
+	<vendor url="http://www.atlassian.com">Atlassian</vendor>
+
+	<!--we will only support IDEAs newer than 7.0 for now - the one we are testing on -->
+	<!--jgorycki: I hope 7126 is the first build of 7.0. This is at least what the checkstyle plugin uses-->
+	<idea-version since-build="7126"/>
+
+	<change-notes>
+		<![CDATA[
+		<ul>
+			<li>0.1.0: A much more stable version with a nicely working bamboo build status support,
+			but crappy visuals</li>
+			<li>0.0.1: Initial version with minimal functionality and many annoyng bugs</li>
+		</ul>
+		]]>
+	</change-notes>
+
 	<application-components>
 		<component>
 			<implementation-class>com.atlassian.theplugin.idea.ThePluginApplicationComponent</implementation-class>
