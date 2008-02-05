@@ -51,6 +51,7 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 			serverTree.setRootVisible(false);
 			serverTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 			serverTree.setVisibleRowCount(7);
+
 			serverTree.addTreeSelectionListener(this);
 
 			serverTree.setCellRenderer(new ServerTreeRenderer());
@@ -76,6 +77,7 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 		TreePath path = new TreePath(child.getPath());
 		serverTree.scrollPathToVisible(path);
 		serverTree.setSelectionPath(path);
+		serverTree.expandPath(path);
 
 		return newServer.getName();
 	}
@@ -129,9 +131,13 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 		model.reload();
 
 		DefaultMutableTreeNode newSelectedNode = null;
+		DefaultMutableTreeNode firstServer = null;
 		for (Server server : pluginConfiguration.getBambooConfiguration().getServers()) {
 			BambooServerNode child = new BambooServerNode((ServerBean)server);
 			model.insertNodeInto(child, serverType, serverType.getChildCount());
+			if (firstServer == null) {
+				firstServer = child;
+			}
 
 			if (selectedNode != null && selectedNode instanceof BambooServerNode) {
 				if (child.getServer().equals(((BambooServerNode)selectedNode).getServer())) {
@@ -145,9 +151,16 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 			TreePath path = new TreePath(selectedNode.getPath());
 			serverTree.scrollPathToVisible(path);
 			serverTree.setSelectionPath(path);
+			serverTree.expandPath(path);
 		} else {
 			selectedNode = null;
 			ServerConfigPanel.getInstance().showEmptyPanel();
+			if (firstServer != null) {
+				TreePath path = new TreePath(firstServer.getPath());
+				serverTree.scrollPathToVisible(path);
+				serverTree.setSelectionPath(path);
+				serverTree.expandPath(path);
+			}
 		}
 
 
