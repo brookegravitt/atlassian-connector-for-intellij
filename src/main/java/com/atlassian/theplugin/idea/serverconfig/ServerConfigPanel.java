@@ -46,6 +46,18 @@ public class ServerConfigPanel extends JPanel {
 	}
 
 	private void initLayout() {
+		setLayout(new VerticalFlowLayout(true, true));
+		Splitter splitter = new Splitter(false, 0.3f);
+		splitter.setShowDividerControls(true);
+		splitter.setFirstComponent(createSelectPane());
+		splitter.setSecondComponent(createEditPane());
+		splitter.setHonorComponentsMinimumSize(true);
+
+		add(splitter);//new GridBagLayoutConstraints(1, 1).setFill(GridBagLayoutConstraints.BOTH).setWeight(1.0, 1.0));
+		add(getFooterPanel());//new GridBagLayoutConstraints(1, 2).setAnchor(GridBagLayoutConstraints.SOUTH).setFill(GridBagLayoutConstraints.HORIZONTAL).setWeight(0.0, 0.1));
+
+/*
+
 		setLayout(new BorderLayout());
 		Splitter splitter = new Splitter(false, 0.3f);
 		splitter.setShowDividerControls(true);
@@ -55,6 +67,7 @@ public class ServerConfigPanel extends JPanel {
 
 		add(splitter, BorderLayout.CENTER);
 		add(getFooterPanel(), BorderLayout.SOUTH);
+*/		
 	}
 
 	public void update(Observable o, Object arg) {
