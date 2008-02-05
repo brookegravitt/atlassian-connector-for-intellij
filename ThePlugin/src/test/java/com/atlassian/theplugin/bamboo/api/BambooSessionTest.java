@@ -149,6 +149,20 @@ public class BambooSessionTest extends TestCase {
 		mockServer.verify();
 	}
 
+	public void testFavouritePlanList() throws Exception {
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/getLatestUserBuilds.action", new FavouritePlanListCallback());
+		mockServer.expect("/api/rest/logout.action", new LogoutCallback());
+
+		BambooSession apiHandler = new BambooSession(mockBaseUrl);
+		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
+		List<String> plans = apiHandler.getFavouriteUserPlans();
+		apiHandler.logout();
+
+		Util.verifyFavouriteListResult(plans);
+		mockServer.verify();
+	}
+
 	public void testBuildForPlanSuccess() throws Exception {
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
 		mockServer.expect("/api/rest/getLatestBuildResults.action", new LatestBuildResultCallback());

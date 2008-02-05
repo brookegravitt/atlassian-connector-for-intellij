@@ -108,4 +108,39 @@ public abstract class Util {
 			assertEquals(pair[1], plan.getPlanName());
 		}
 	}
+
+	private static final String[][] expectedFavouritePlans = {
+			{ "PO-FP", "First Project - First Plan" },
+			{ "PT-TOP", "Second Project - The Only Plan" }
+	};
+
+	public static void verifyFavouriteListResult(Collection<String> plans) {
+		assertEquals(expectedFavouritePlans.length, plans.size());
+		Iterator<String> iterator = plans.iterator();
+		for (String[] pair : expectedFavouritePlans) {
+			String plan = iterator.next();
+			assertEquals(pair[0], plan);
+		}
+	}
+
+	private static final String[][] expectedPlansWithFavourites = {
+			{ "PO-FP", "First Project - First Plan", "true" },
+			{ "PO-SECPLAN", "First Project - Second Plan", "false" },
+			{ "PO-TP", "First Project - Third Plan", "false" },
+			{ "PT-TOP", "Second Project - The Only Plan", "true" }
+	};
+
+	public static void verifyPlanListWithFavouritesResult(Collection<BambooPlan> plans) {
+		assertEquals(expectedPlansWithFavourites.length, plans.size());
+		Iterator<BambooPlan> iterator = plans.iterator();
+		for (String[] pair : expectedPlansWithFavourites) {
+			BambooPlan plan = iterator.next();
+			assertEquals(pair[0], plan.getPlanKey());
+			assertEquals(pair[1], plan.getPlanName());
+			if ("true".equalsIgnoreCase(pair[2])) {
+				Assert.assertTrue(plan.isFavourite());
+			}
+		}
+	}
+
 }
