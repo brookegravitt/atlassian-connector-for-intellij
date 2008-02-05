@@ -3,6 +3,7 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerBean;
+import com.atlassian.theplugin.idea.config.ConfigPanel;
 import com.atlassian.theplugin.idea.config.serverconfig.model.*;
 import com.atlassian.theplugin.idea.config.serverconfig.util.ServerNameUtil;
 
@@ -155,7 +156,7 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 			serverTree.expandPath(path);
 		} else {
 			selectedNode = null;
-			ServerConfigPanel.getInstance().showEmptyPanel();
+			ConfigPanel.getInstance().getServerConfigPanel().showEmptyPanel();
 			if (firstServer != null) {
 				TreePath path = new TreePath(firstServer.getPath());
 				serverTree.scrollPathToVisible(path);
@@ -175,17 +176,17 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 			if (oldPath != null) {
 				DefaultMutableTreeNode oldNode = (DefaultMutableTreeNode) oldPath.getLastPathComponent();
 				if (oldNode != null && oldNode instanceof BambooServerNode) {
-					ServerConfigPanel.getInstance().storeBambooServer(((BambooServerNode) oldNode).getServer());
+					ConfigPanel.getInstance().storeBambooServer(((BambooServerNode) oldNode).getServer());
 				}
 			}
 			selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
 			if (selectedNode instanceof BambooServerNode) {
-				ServerConfigPanel.getInstance().editBambooServer(((BambooServerNode) selectedNode).getServer());
+				ConfigPanel.getInstance().getServerConfigPanel().editBambooServer(((BambooServerNode) selectedNode).getServer());
 			} else {
-				ServerConfigPanel.getInstance().showEmptyPanel();
+				ConfigPanel.getInstance().getServerConfigPanel().showEmptyPanel();
 			}
 		} else {
-			ServerConfigPanel.getInstance().showEmptyPanel();
+			ConfigPanel.getInstance().getServerConfigPanel().showEmptyPanel();
 		}
 
 	}
