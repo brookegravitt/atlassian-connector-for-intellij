@@ -1,4 +1,4 @@
-package com.atlassian.theplugin.idea.serverconfig.model;
+package com.atlassian.theplugin.idea.config.serverconfig.model;
 
 import com.atlassian.theplugin.configuration.ServerBean;
 
