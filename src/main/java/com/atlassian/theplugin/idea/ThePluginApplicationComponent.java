@@ -9,6 +9,7 @@ import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
+import com.intellij.openapi.util.IconLoader;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -30,6 +31,12 @@ import java.util.Timer;
 @State(name = "ThePluginSettings", storages = { @Storage(id = "thePlugin", file = "$APP_CONFIG$/thePlugin.xml") })
 public class ThePluginApplicationComponent
 		implements ApplicationComponent, Configurable, PersistentStateComponent<PluginConfigurationBean> {
+
+	private static Icon pluginSettingsIcon;
+
+	static {
+		pluginSettingsIcon = IconLoader.getIcon("/icons/atlassian_icon-32.png");
+	}
 
 	private ServerConfigPanel form;
 	private PluginConfigurationBean configuration = new PluginConfigurationBean();
@@ -53,7 +60,7 @@ public class ThePluginApplicationComponent
 
 	@Nullable
 	public Icon getIcon() {
-		return null;
+		return pluginSettingsIcon;
 	}
 
 	@Nullable
