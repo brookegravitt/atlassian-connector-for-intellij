@@ -1,8 +1,8 @@
-package com.atlassian.theplugin.idea.serverconfig;
+package com.atlassian.theplugin.idea.config.serverconfig;
 
-import com.atlassian.theplugin.idea.serverconfig.model.BambooServerNode;
-import com.atlassian.theplugin.idea.serverconfig.model.CrucibleServerNode;
-import com.atlassian.theplugin.idea.serverconfig.model.ServerTypeNode;
+import com.atlassian.theplugin.idea.config.serverconfig.model.BambooServerNode;
+import com.atlassian.theplugin.idea.config.serverconfig.model.CrucibleServerNode;
+import com.atlassian.theplugin.idea.config.serverconfig.model.ServerTypeNode;
 import com.intellij.openapi.util.IconLoader;
 
 import javax.swing.*;
