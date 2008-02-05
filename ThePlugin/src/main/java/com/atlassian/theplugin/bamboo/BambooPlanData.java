@@ -10,6 +10,7 @@ package com.atlassian.theplugin.bamboo;
 public class BambooPlanData implements BambooPlan {
 	private String name;
 	private String key;
+	private boolean favourite;
 
 	public BambooPlanData(String name, String key) {
 		this.name = name;
@@ -30,5 +31,13 @@ public class BambooPlanData implements BambooPlan {
 
 	public void setKey(String key) {
 		this.key = key;
+	}
+
+	public boolean isFavourite() {
+		return favourite;
+	}
+
+	public void setFavourite(boolean favourite) {
+		this.favourite = favourite;
 	}
 }
