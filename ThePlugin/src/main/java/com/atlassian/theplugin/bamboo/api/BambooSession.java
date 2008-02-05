@@ -33,6 +33,7 @@ public class BambooSession {
 	private static final String LIST_PLAN_ACTION = "/api/rest/listBuildNames.action";
 	private static final String LATEST_BUILD_FOR_PLAN_ACTION = "/api/rest/getLatestBuildResults.action";
 	private static final String LATEST_BUILDS_FOR_PROJECT_ACTION = "/api/rest/getLatestBuildResultsForProject.action";
+	private static final String LATEST_USER_BUILDS_ACTION = "/api/rest/getLatestUserBuilds.action";	
 
 	private final String baseUrl;
 	//	private String userName;
@@ -210,6 +211,44 @@ public class BambooSession {
 		}
 	}
 
+	public List<String> getFavouriteUserPlans() {
+		List<String> builds = new ArrayList<String>();
+		String buildResultUrl;
+		Date lastPoolingTime = new Date();
+		try {
+			buildResultUrl = baseUrl + LATEST_USER_BUILDS_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException("URLEncoding problem: " + e.getMessage());
+		}
+
+
+		try {
+			Document doc = retrieveResponse(buildResultUrl);
+			String exception = getExceptionMessages(doc);
+			if (null != exception) {
+				return builds;
+			}
+
+			XPath xpath = XPath.newInstance("/response/build");
+			List elements = xpath.selectNodes(doc);
+			if (elements != null) {
+				for (Object element : elements) {
+					Element e = (Element) element;
+					builds.add(e.getChildText("key"));
+				}
+				return builds;
+			} else {
+				return builds;
+			}
+		} catch (IOException e) {
+			return builds;
+		} catch (JDOMException e) {
+			return builds;
+		}
+	}
+
+
+
 //  commented because nobody actually uses this method, and the unit test does not really test anything, so we
 //	don't even know if the method works
 
@@ -270,9 +309,7 @@ public class BambooSession {
 		buildInfo.setBuildCommitComment(getChildText(buildItemNode, "buildCommitComment"));
 
 		buildInfo.setBuildTime(parseBuildTime(getChildText(buildItemNode, "buildTime")));
-
 		buildInfo.setPollingTime(lastPollingTime);
-
 
 		return buildInfo;
 	}

@@ -33,4 +33,6 @@ public interface BambooBuild extends RequestData {
 	int getTestsFailed();
 
 	Date getBuildTime();
+
+	String getBuildRelativeBuildDate();
 }
