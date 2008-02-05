@@ -129,12 +129,13 @@ public class BambooServerFacadeTest extends TestCase {
 	public void testPlanList() throws Exception {
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
 		mockServer.expect("/api/rest/listBuildNames.action", new PlanListCallback());
+		mockServer.expect("/api/rest/getLatestUserBuilds.action", new FavouritePlanListCallback());		
 		mockServer.expect("/api/rest/logout.action", new LogoutCallback());
 
 		Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServers().iterator().next();
 
 		Collection<BambooPlan> plans = BambooServerFactory.getBambooServerFacade().getPlanList(server);
-		Util.verifyPlanListResult(plans);
+		Util.verifyPlanListWithFavouritesResult(plans);
 
 		mockServer.verify();
 	}

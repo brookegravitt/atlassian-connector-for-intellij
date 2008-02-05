@@ -1,0 +1,10 @@
+<response>
+	<build>
+		<name>First Project - First Plan</name>
+		<key>PO-FP</key>
+	</build>
+	<build>
+		<name>Second Project - The Only Plan</name>
+		<key>PT-TOP</key>
+	</build>
+</response>
