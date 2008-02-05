@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Class used for communication wiht Bamboo Server.
@@ -64,12 +65,21 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 	 * @return list of plans or null on error
 	 */
 	public Collection<BambooPlan> getPlanList(Server bambooServer) throws ServerPasswordNotProvidedException {
-
-
 		BambooSession api = new BambooSession(bambooServer.getUrlString());
 		try {
 			api.login(bambooServer.getUsername(), bambooServer.getPasswordString().toCharArray());
-			return api.listPlanNames();
+			List<BambooPlan> plans = api.listPlanNames();
+			List<String> favPlans = api.getFavouriteUserPlans();
+
+			for (String fav : favPlans) {
+				for (BambooPlan plan : plans) {
+					if (plan.getPlanKey().equalsIgnoreCase(fav)) {
+						((BambooPlanData)plan).setFavourite(true);
+						break;
+					}
+				}
+			}
+			return plans;
 		} catch (BambooException e) {
 			LOG.error("Bamboo exception: " + e.getMessage());
 			return null;
