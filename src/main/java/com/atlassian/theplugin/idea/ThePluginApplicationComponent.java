@@ -2,7 +2,7 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
-import com.atlassian.theplugin.idea.serverconfig.ServerConfigPanel;
+import com.atlassian.theplugin.idea.config.ConfigPanel;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
@@ -38,7 +38,7 @@ public class ThePluginApplicationComponent
 		pluginSettingsIcon = IconLoader.getIcon("/icons/atlassian_icon-32.png");
 	}
 
-	private ServerConfigPanel form;
+	private ConfigPanel form;
 	private PluginConfigurationBean configuration = new PluginConfigurationBean();
 
 	private final Timer timer = new Timer();
@@ -87,11 +87,11 @@ public class ThePluginApplicationComponent
 	}
 
 	public JComponent createComponent() {
-		form = ServerConfigPanel.getInstance();
+		form = ConfigPanel.getInstance();
 		return form;
 	}
 
-	public ServerConfigPanel getConfigDialog() {
+	public ConfigPanel getConfigDialog() {
 		return form;
 	}
 
