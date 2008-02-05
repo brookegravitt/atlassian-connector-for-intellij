@@ -176,7 +176,6 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 				DefaultMutableTreeNode oldNode = (DefaultMutableTreeNode) oldPath.getLastPathComponent();
 				if (oldNode != null && oldNode instanceof BambooServerNode) {
 					ServerConfigPanel.getInstance().storeBambooServer(((BambooServerNode) oldNode).getServer());
-//					pluginConfiguration.getBambooConfiguration().storeServer(((BambooServerNode) oldNode).getServer());
 				}
 			}
 			selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
