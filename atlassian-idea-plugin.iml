@@ -300,6 +300,24 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="axis">
+        <CLASSES>
+          <root url="jar://C:/Users/Jacek/.m2/repository/org/apache/axis/axis/1.4/axis-1.4.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="jaxrpc-api">
+        <CLASSES>
+          <root url="jar://C:/Users/Jacek/.m2/repository/javax/xml/jaxrpc-api/1.1/jaxrpc-api-1.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntryProperties />
   </component>
 </module>
