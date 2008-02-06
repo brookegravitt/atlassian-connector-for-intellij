@@ -43,6 +43,7 @@ public class ThePluginApplicationComponent
 
 	private final Timer timer = new Timer();
 	private static final int TIMER_TICK = 20000;
+	private static final int TIMER_START_DELAY = 15000;
 	private BambooStatusChecker bambooStatusChecker;
 
 	public BambooStatusChecker getBambooStatusChecker() {
@@ -55,7 +56,7 @@ public class ThePluginApplicationComponent
 
 	@Nls
 	public String getDisplayName() {
-		return PluginInfo.getName();
+		return PluginInfoUtil.getName();
 	}
 
 	@Nullable
@@ -79,7 +80,7 @@ public class ThePluginApplicationComponent
 		ConfigurationFactory.setConfiguration(configuration);
 
 		bambooStatusChecker = new BambooStatusChecker();
-		timer.schedule(bambooStatusChecker, 0, TIMER_TICK);
+		timer.schedule(bambooStatusChecker, TIMER_START_DELAY, TIMER_TICK);
 	}
 
 	public void disposeComponent() {
