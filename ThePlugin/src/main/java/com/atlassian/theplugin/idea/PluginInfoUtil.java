@@ -10,6 +10,7 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.ZipFile;
@@ -44,15 +45,31 @@ public final class PluginInfoUtil {
     }
 
     private static Document setDoc() {
-        Document doc = null;
         File base = new File(baseDir);
 		SAXBuilder builder = new SAXBuilder();
 		builder.setValidation(false);
 		try {
         	if (base.isDirectory()) {
-	            File file = new File(base.getAbsolutePath(), "META-INF/plugin.xml");
-    	        doc = builder.build(file);
-        	} else {
+				File file =null;
+				file = new File(base.getAbsolutePath(), "META-INF/plugin.xml");
+				// magic: we try to find plugin.xml, which is not so simple
+				// beacuase structure of project and structure of the package
+				// made by maven are different
+				int i = 0;
+				for (;;) {
+					try {
+						doc = builder.build(file);
+					} catch (FileNotFoundException e) {
+						if (i == 1) {
+							throw e;
+						}
+						i++;
+						file = new File(base.getAbsolutePath(), "../META-INF/plugin.xml");
+						continue;
+					}
+					break;
+				}
+			} else {
 	            ZipFile zip = null;
                 zip = new ZipFile(base);
                 InputStream in = zip.getInputStream(zip.getEntry("META-INF/plugin.xml"));
@@ -61,9 +78,12 @@ public final class PluginInfoUtil {
     	    }
 		} catch (IOException e) {
 			 LOGGER.error("Error accessing plugin.xml file.");
+			throw new UnsupportedOperationException(e);
 		} catch (JDOMException e) {
 			 LOGGER.error("Error accessing plugin.xml file.");
+			 throw new UnsupportedOperationException(e);
 		 }
+
          return doc;
     }
 
