@@ -11,8 +11,10 @@ import org.jdom.xpath.XPath;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -20,11 +22,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA.
- * User: mwent
- * Date: 2008-01-11
- * Time: 11:54:01
- * To change this template use File | Settings | File Templates.
+ * Communication stub for Bamboo REST API.
  */
 public class BambooSession {
 	private static final String LOGIN_ACTION = "/api/rest/login.action";
@@ -32,12 +30,10 @@ public class BambooSession {
 	private static final String LIST_PROJECT_ACTION = "/api/rest/listProjectNames.action";
 	private static final String LIST_PLAN_ACTION = "/api/rest/listBuildNames.action";
 	private static final String LATEST_BUILD_FOR_PLAN_ACTION = "/api/rest/getLatestBuildResults.action";
-	private static final String LATEST_BUILDS_FOR_PROJECT_ACTION = "/api/rest/getLatestBuildResultsForProject.action";
-	private static final String LATEST_USER_BUILDS_ACTION = "/api/rest/getLatestUserBuilds.action";	
+	//private static final String LATEST_BUILDS_FOR_PROJECT_ACTION = "/api/rest/getLatestBuildResultsForProject.action";
+	private static final String LATEST_USER_BUILDS_ACTION = "/api/rest/getLatestUserBuilds.action";
 
 	private final String baseUrl;
-	//	private String userName;
-	//	private char[] password;
 	private String authToken;
 
 	/**
@@ -89,10 +85,14 @@ public class BambooSession {
 				throw new BambooLoginException("Server did returned excess authentication tokens (" + elements.size() + ")");
 			}
 			this.authToken = ((Element) elements.get(0)).getText();
+		} catch (MalformedURLException e) {
+			throw new BambooLoginException("Malformed server URL: " + baseUrl, e);
+		} catch (UnknownHostException e) {
+			throw new BambooLoginException("Unknown host: " + e.getMessage(), e);
 		} catch (IOException e) {
-			throw new BambooLoginException("IOException during login", e);
+			throw new BambooLoginException(e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new BambooLoginException("JDOMException during login", e);
+			throw new BambooLoginException("Server returned malformed response", e);
 		}
 	}
 
@@ -125,6 +125,7 @@ public class BambooSession {
 		try {
 			Document doc = retrieveResponse(buildResultUrl);
 			XPath xpath = XPath.newInstance("/response/project");
+			@SuppressWarnings("unchecked")
 			List<Element> elements = xpath.selectNodes(doc);
 			if (elements != null) {
 				for (Element element : elements) {
@@ -134,9 +135,9 @@ public class BambooSession {
 				}
 			}
 		} catch (JDOMException e) {
-			throw new BambooException("JDOMException getting project names", e);
+			throw new BambooException("Server returned malformed response", e);
 		} catch (IOException e) {
-			throw new BambooException("IOException getting project names", e);
+			throw new BambooException(e.getMessage(), e);
 		}
 
 		return projects;
@@ -154,6 +155,7 @@ public class BambooSession {
 		try {
 			Document doc = retrieveResponse(buildResultUrl);
 			XPath xpath = XPath.newInstance("/response/build");
+			@SuppressWarnings("unchecked")
 			List<Element> elements = xpath.selectNodes(doc);
 			if (elements != null) {
 				for (Element element : elements) {
@@ -163,9 +165,9 @@ public class BambooSession {
 				}
 			}
 		} catch (JDOMException e) {
-			throw new BambooException("JDOMException getting plan names", e);
+			throw new BambooException("Server returned malformed response", e);
 		} catch (IOException e) {
-			throw new BambooException("IOException getting plan names", e);
+			throw new BambooException(e.getMessage(), e);
 		}
 
 		return plans;
@@ -205,16 +207,15 @@ public class BambooSession {
 				return constructBuildErrorInfo(planKey, "Malformed server reply: no response element", new Date());
 			}
 		} catch (IOException e) {
-			return constructBuildErrorInfo(planKey, "IOException accessing the server" + e.getMessage(), new Date());
+			return constructBuildErrorInfo(planKey, e.getMessage(), new Date());
 		} catch (JDOMException e) {
-			return constructBuildErrorInfo(planKey, "JDOMException parsing the response: " + e.getMessage(), new Date());
+			return constructBuildErrorInfo(planKey, "Server returned malformed response", new Date());
 		}
 	}
 
 	public List<String> getFavouriteUserPlans() {
 		List<String> builds = new ArrayList<String>();
 		String buildResultUrl;
-		Date lastPoolingTime = new Date();
 		try {
 			buildResultUrl = baseUrl + LATEST_USER_BUILDS_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
@@ -246,8 +247,6 @@ public class BambooSession {
 			return builds;
 		}
 	}
-
-
 
 //  commented because nobody actually uses this method, and the unit test does not really test anything, so we
 //	don't even know if the method works
@@ -342,6 +341,7 @@ public class BambooSession {
 
 	private static String getExceptionMessages(Document doc) throws JDOMException {
 		XPath xpath = XPath.newInstance("/errors/error");
+		@SuppressWarnings("unchecked")
 		List<Element> elements = xpath.selectNodes(doc);
 
 		if (elements != null && elements.size() > 0) {
