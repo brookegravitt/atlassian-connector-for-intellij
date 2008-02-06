@@ -6,6 +6,7 @@ import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 /**
  * Renders Bamboo build results as HTML and passes it to configured {@link BambooStatusDisplay}
@@ -87,13 +88,16 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 		return sb.toString();
 	}
 
+	Pattern lineSeparator = Pattern.compile("$", Pattern.MULTILINE);
+
 	private String getErrorBuildRow(BambooBuild buildInfo) {
 		StringBuilder sb = new StringBuilder("<tr><td><a href='");
 		sb.append(buildInfo.getPlanUrl());
 		sb.append("'>");
 		sb.append(buildInfo.getBuildKey());
 		sb.append("</a></td><td></td><td>");
-		sb.append("<font color=\"ltgray\">").append(buildInfo.getMessage()).append("</font>");
+		String shortMessage = buildInfo.getMessage() != null ? lineSeparator.split(buildInfo.getMessage(), 2)[0] : null;
+		sb.append("<font color=\"ltgray\">").append(shortMessage).append("</font>");
 		sb.append("</td>");
 		sb.append(formatLatestPollAndBuildTime(buildInfo));
 		sb.append("</tr>");
