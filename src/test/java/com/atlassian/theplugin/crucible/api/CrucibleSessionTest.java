@@ -31,7 +31,7 @@ public class CrucibleSessionTest extends TestCase {
 
 	public void testSuccessCrucibleLogin() {
 
-		CrucibleSession session = new CrucibleSession(mockUrl);
+		//CrucibleSession session = new CrucibleSession(mockUrl);
 
 		String userName = "username";
 		String password = "password";

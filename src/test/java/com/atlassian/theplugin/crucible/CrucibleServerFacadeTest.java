@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.crucible;
 
 import junit.framework.TestCase;
-import org.easymock.MockControl;
+import com.atlassian.theplugin.crucible.api.CrucibleException;
 
 /**
  * Created by IntelliJ IDEA.
@@ -13,15 +13,23 @@ import org.easymock.MockControl;
 public class CrucibleServerFacadeTest extends TestCase {
 
 	private CrucibleServerFacade facade;
-	private MockControl control;
+	//private MockControl control;
 	//private Collaborator collaborator;
 
 	public void testConnectionTest() {
 
-		control = MockControl.createControl(CrucibleServerFacade.class);
+		//control = MockControl.createControl(CrucibleServerFacade.class);
 
-		facade = (CrucibleServerFacade) control.getMock();
+		//facade = (CrucibleServerFacade) control.getMock();
 
 		//facade
+
+		CrucibleServerFacade fasade = CrucibleServerFactory.getCrucibleServerFacade();
+
+		try {
+			fasade.testServerConnection("http://lech.atlassian.pl:8060", "test", "d0n0tch@nge");
+		} catch (CrucibleException e) {
+			fail("testServerConnection failed");
+		}
 	}
 }

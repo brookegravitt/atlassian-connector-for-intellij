@@ -296,5 +296,56 @@
     <mapping directory="" vcs="svn" />
   </component>
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
+  <component name="libraryTable">
+    <library name="Axis">
+      <CLASSES>
+        <root url="jar://C:/Users/Jacek/.IntelliJIdea70/system/webservices/axis-1.4.0/axis.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
+    <library name="Commons Discovery">
+      <CLASSES>
+        <root url="jar://C:/Users/Jacek/.IntelliJIdea70/system/webservices/axis-1.4.0/commons-discovery-0.2.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
+    <library name="Commons Logging">
+      <CLASSES>
+        <root url="jar://C:/Users/Jacek/.IntelliJIdea70/system/webservices/axis-1.4.0/commons-logging-1.0.4.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
+    <library name="JAX RPC">
+      <CLASSES>
+        <root url="jar://C:/Users/Jacek/.IntelliJIdea70/system/webservices/axis-1.4.0/jaxrpc.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
+    <library name="SAAJ">
+      <CLASSES>
+        <root url="jar://C:/Users/Jacek/.IntelliJIdea70/system/webservices/axis-1.4.0/saaj.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
+    <library name="Log4J">
+      <CLASSES>
+        <root url="jar://C:/Users/Jacek/.IntelliJIdea70/system/webservices/axis-1.4.0/log4j-1.2.8.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
+    <library name="WSDL4J">
+      <CLASSES>
+        <root url="jar://C:/Users/Jacek/.IntelliJIdea70/system/webservices/axis-1.4.0/wsdl4j-1.5.1.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
+  </component>
 </project>
 
