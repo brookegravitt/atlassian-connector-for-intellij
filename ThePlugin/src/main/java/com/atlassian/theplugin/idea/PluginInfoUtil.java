@@ -22,11 +22,11 @@ import java.util.zip.ZipFile;
  * Time: 11:50:18 AM
  */
 public final class PluginInfoUtil {
-    private static final Category LOGGER = Logger.getInstance(PluginStatusBarToolTip.class);
+	private static final Category LOGGER = Logger.getInstance(PluginStatusBarToolTip.class);
 
-    private static String baseDir = PathUtil.getJarPathForClass(PluginInfoUtil.class);
+	private static String baseDir = PathUtil.getJarPathForClass(PluginInfoUtil.class);
 
-    private static Document doc = setDoc();
+	private static Document doc = setDoc();
 
 	private PluginInfoUtil() {
 		super();
@@ -34,73 +34,73 @@ public final class PluginInfoUtil {
 
 	public static String getName() {
 		return getConfigValue("/idea-plugin/name");
-    }
+	}
 
-    public static String getVersion() {
-        return getConfigValue("/idea-plugin/version");
-    }
+	public static String getVersion() {
+		return getConfigValue("/idea-plugin/version");
+	}
 
-    public static String getVendor() {
-        return getConfigValue("/idea-plugin/vendor");
-    }
+	public static String getVendor() {
+		return getConfigValue("/idea-plugin/vendor");
+	}
 
-    private static Document setDoc() {
-        File base = new File(baseDir);
+	private static Document setDoc() {
+		File base = new File(baseDir);
 		SAXBuilder builder = new SAXBuilder();
 		builder.setValidation(false);
 		try {
-        	if (base.isDirectory()) {
-				File file =null;
-				file = new File(base.getAbsolutePath(), "META-INF/plugin.xml");
+			if (base.isDirectory()) {
+				File file = null;
+				file = new File(base.getAbsolutePath(), "../META-INF/plugin.xml");
 				// magic: we try to find plugin.xml, which is not so simple
 				// beacuase structure of project and structure of the package
 				// made by maven are different
 				int i = 0;
-				for (;;) {
+				while (true) {
 					try {
 						doc = builder.build(file);
 					} catch (FileNotFoundException e) {
 						if (i == 1) {
 							throw e;
 						}
-						i++;
-						file = new File(base.getAbsolutePath(), "../META-INF/plugin.xml");
+						++i;
+						file = new File(base.getAbsolutePath(), "META-INF/plugin.xml");
 						continue;
 					}
 					break;
 				}
 			} else {
-	            ZipFile zip = null;
-                zip = new ZipFile(base);
-                InputStream in = zip.getInputStream(zip.getEntry("META-INF/plugin.xml"));
-                doc = builder.build(in);
-                in.close();
-    	    }
+				ZipFile zip = null;
+				zip = new ZipFile(base);
+				InputStream in = zip.getInputStream(zip.getEntry("META-INF/plugin.xml"));
+				doc = builder.build(in);
+				in.close();
+			}
 		} catch (IOException e) {
-			 LOGGER.error("Error accessing plugin.xml file.");
+			LOGGER.error("Error accessing plugin.xml file.");
 			throw new UnsupportedOperationException(e);
 		} catch (JDOMException e) {
-			 LOGGER.error("Error accessing plugin.xml file.");
-			 throw new UnsupportedOperationException(e);
-		 }
+			LOGGER.error("Error accessing plugin.xml file.");
+			throw new UnsupportedOperationException(e);
+		}
 
-         return doc;
-    }
+		return doc;
+	}
 
-    private static String getConfigValue(String path) {
-        String result = null;
-        XPath xpath = null;
-        try {
-            xpath = XPath.newInstance(path);
-            Element element = (Element) xpath.selectSingleNode(doc);
-            if (element != null) {
-                result = element.getValue();
-            }
-        } catch (JDOMException e) {
-            LOGGER.error("Error while retrieving plugin name.");
-        }
-        return result;
-    }
+	private static String getConfigValue(String path) {
+		String result = null;
+		XPath xpath = null;
+		try {
+			xpath = XPath.newInstance(path);
+			Element element = (Element) xpath.selectSingleNode(doc);
+			if (element != null) {
+				result = element.getValue();
+			}
+		} catch (JDOMException e) {
+			LOGGER.error("Error while retrieving plugin name.");
+		}
+		return result;
+	}
 
 }
 
