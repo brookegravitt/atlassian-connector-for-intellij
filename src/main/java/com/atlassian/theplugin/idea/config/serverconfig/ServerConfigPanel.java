@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.configuration.*;
+import com.atlassian.theplugin.idea.config.AbstractContentPanel;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
 import com.atlassian.theplugin.idea.config.FooterPanel;
 import com.atlassian.theplugin.idea.config.HeaderPanel;
@@ -17,7 +18,7 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import java.awt.*;
 
-public class ServerConfigPanel extends JPanel {
+public class ServerConfigPanel extends AbstractContentPanel {
 	private ServerTreePanel treePanel = null;
 	private BlankPanel blankPanel = null;
 
@@ -91,6 +92,10 @@ public class ServerConfigPanel extends JPanel {
 		return bambooEditForm.getRootComponent();
 	}
 
+	public boolean isEnabled() {
+		return true;
+	}
+
 	public boolean isModified() {
 		if (!getPluginConfiguration().equals(ConfigurationFactory.getConfiguration())) {
 			return true;
@@ -100,6 +105,10 @@ public class ServerConfigPanel extends JPanel {
 		} else {
 			return false;
 		}
+	}
+
+	public String getTitle() {
+		return "Servers";
 	}
 
 	public void getData() {

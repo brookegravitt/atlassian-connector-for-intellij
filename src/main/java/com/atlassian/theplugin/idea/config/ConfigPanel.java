@@ -33,7 +33,8 @@ public class ConfigPanel extends JPanel {
 		add(getHeaderPanel(), BorderLayout.NORTH);
 
 		contentPanel = new JTabbedPane();
-		contentPanel.add("Servers", getServerConfigPanel());
+		serverConfigPanel = getServerConfigPanel();
+		contentPanel.add(serverConfigPanel.getTitle(), serverConfigPanel);
 		add(contentPanel, BorderLayout.CENTER);
 
 		add(getFooterPanel(), BorderLayout.SOUTH);
