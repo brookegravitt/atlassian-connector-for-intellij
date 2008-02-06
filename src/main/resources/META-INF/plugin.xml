@@ -1,4 +1,6 @@
-<!DOCTYPE idea-plugin PUBLIC "Plugin/DTD" "http://plugins.intellij.net/plugin.dtd">
+<!--jgorycki: putting DOCTYPE here does evil things to the parser - it tries to parse the -->
+		<!--downloaded DTD file which happens to be corrupt (JetBrain sucks?)-->
+<!--<!DOCTYPE idea-plugin PUBLIC "Plugin/DTD" "http://plugins.intellij.net/plugin.dtd">-->
 <idea-plugin url="http://www.atlassian.com">
 
 	<name>The Plugin</name>
@@ -16,7 +18,7 @@
 		]]>
 	</description>
 
-	<version>0.2.0-SNAPSHOT</version>
+	<version>${project.version}, ${buildNumber}</version>
 
 	<!--no email link for now - we don't have the plugin email alias yet-->
 	<!--<vendor url="http://www.atlassian.com" email="support@atlassian.com">Atlassian</vendor>-->
