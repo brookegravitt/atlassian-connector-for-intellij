@@ -8,6 +8,9 @@ import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 import org.mortbay.jetty.Server;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.UnknownHostException;
 import java.util.List;
 
 
@@ -82,15 +85,55 @@ public class BambooSessionTest extends TestCase {
 
 	public void testWrongUrlBambooLogin() throws Exception {
 		mockServer.expect("/wrongurl/api/rest/login.action", new ErrorResponse(400));
+		BambooLoginException exception = null;
 
 		try {
 			BambooSession apiHandler = new BambooSession(mockBaseUrl + "/wrongurl");
 			apiHandler.login(USER_NAME, PASSWORD.toCharArray());
-			fail();
 		} catch (BambooLoginException ex) {
-			System.out.println("Exception: " + ex.getMessage());
+			exception = ex;
 		}
 		mockServer.verify();
+
+		assertNotNull("Exception expected", exception);
+		assertNotNull("Exception should have a cause", exception.getCause());
+		assertSame(IOException.class, exception.getCause().getClass());
+		assertTrue(exception.getMessage().startsWith(
+				"Server returned HTTP response code: 400 for URL: "
+						+ mockBaseUrl + "/wrongurl/api/rest/login.action"));
+
+	}
+
+	public void testNonExistingServerBambooLogin() throws Exception {
+		BambooLoginException exception = null;
+
+		try {
+			BambooSession apiHandler = new BambooSession("http://non.existing.server.utest");
+			apiHandler.login(USER_NAME, PASSWORD.toCharArray());
+		} catch (BambooLoginException ex) {
+			exception = ex;
+		}
+
+		assertNotNull("Exception expected", exception);
+		assertNotNull("Exception should have a cause", exception.getCause());
+		assertSame("UnknownHostException expected", UnknownHostException.class, exception.getCause().getClass());
+		assertEquals("Checking exception message", "Unknown host: non.existing.server.utest", exception.getMessage());
+	}
+
+	public void testMalformedUrlBambooLogin() throws Exception {
+		BambooLoginException exception = null;
+		try {
+			BambooSession apiHandler = new BambooSession("noprotocol.url/path");
+			apiHandler.login(USER_NAME, PASSWORD.toCharArray());
+		} catch (BambooLoginException e) {
+			exception = e;
+		}
+
+		assertNotNull("Exception expected", exception);
+		assertNotNull("Exception should have a cause", exception.getCause());
+		assertSame("MalformedURLException expected", MalformedURLException.class, exception.getCause().getClass());
+		assertEquals("Malformed server URL: noprotocol.url/path", exception.getMessage());
+
 	}
 
 	public void testWrongUserBambooLogin() throws Exception {
@@ -117,7 +160,6 @@ public class BambooSessionTest extends TestCase {
 			System.out.println("Exception: " + ex.getMessage());
 		}
 	}
-
 
 
 	public void testProjectList() throws Exception {
@@ -205,43 +247,8 @@ public class BambooSessionTest extends TestCase {
 		apiHandler.logout();
 
 		Util.verifyErrorBuildResult(build, mockBaseUrl);
-		
+
 		mockServer.verify();
 	}
-
-//  commented because nobody actually uses this method, and the unit test does not really test anything, so we
-//	don't even know if the method works
-//	
-// public void testRecentBuilds() throws Exception {
-//		BambooSession apiHandler = new BambooSession(SERVER_URL);
-//		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
-//		List<BambooBuild> builds = apiHandler.getLatestBuildsForProject("TP");
-//		assertNotNull(builds);
-//		apiHandler.logout();
-//	}
-//
-//	public void testRecentBuildsForNonExistingProject() throws Exception {
-//		BambooSession apiHandler = new BambooSession(SERVER_URL);
-//		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
-//		try {
-//			List<BambooBuild> builds = apiHandler.getLatestBuildsForProject("TP-NON-EXISTING");
-//			fail();
-//		} catch (BambooException e) {
-//
-//		}
-//		apiHandler.logout();
-//	}
-//
-//	public void testRecentBuildsForEmptyProject() throws Exception {
-//		BambooSession apiHandler = new BambooSession(SERVER_URL);
-//		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
-//		try {
-//			List<BambooBuild> builds = apiHandler.getLatestBuildsForProject("TP-NON-EXISTING");
-//			fail();
-//		} catch (BambooException e) {
-//
-//		}
-//		apiHandler.logout();
-//	}
 
 }
