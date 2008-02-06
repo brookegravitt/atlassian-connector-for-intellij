@@ -10,7 +10,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/main/resources" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/resources" isTestSource="true" />
-      <excludeFolder url="file://$MODULE_DIR$/.clover" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
@@ -284,12 +283,14 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
-      <library>
+      <library name="easymock">
         <CLASSES>
-          <root url="jar://$CLASSPATH$!/" />
+          <root url="jar://C:/Users/Jacek/.m2/repository/easymock/easymock/1.2_Java1.5/easymock-1.2_Java1.5.jar!/" />
         </CLASSES>
         <JAVADOC />
-        <SOURCES />
+        <SOURCES>
+          <root url="jar://C:/Users/Jacek/.m2/repository/easymock/easymock/1.2_Java1.5/easymock-1.2_Java1.5-sources.jar!/" />
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntryProperties />
