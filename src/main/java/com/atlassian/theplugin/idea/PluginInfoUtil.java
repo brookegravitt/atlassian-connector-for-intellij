@@ -9,8 +9,10 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.zip.ZipFile;
 
 /**
  * Created by IntelliJ IDEA.
@@ -30,7 +32,6 @@ public final class PluginInfoUtil {
 	}
 
 	public static String getName() {
-		// TODO lguminski: to make the application reading plugin.xml settings
 		return getConfigValue("/idea-plugin/name");
     }
 
@@ -44,11 +45,20 @@ public final class PluginInfoUtil {
 
     private static Document setDoc() {
         Document doc = null;
-		InputStream is = PluginInfoUtil.class.getResourceAsStream("/META-INF/plugin.xml");
+        File base = new File(baseDir);
 		SAXBuilder builder = new SAXBuilder();
 		builder.setValidation(false);
 		try {
-			doc = builder.build(is);
+        	if (base.isDirectory()) {
+	            File file = new File(base.getAbsolutePath(), "META-INF/plugin.xml");
+    	        doc = builder.build(file);
+        	} else {
+	            ZipFile zip = null;
+                zip = new ZipFile(base);
+                InputStream in = zip.getInputStream(zip.getEntry("META-INF/plugin.xml"));
+                doc = builder.build(in);
+                in.close();
+    	    }
 		} catch (IOException e) {
 			 LOGGER.error("Error accessing plugin.xml file.");
 		} catch (JDOMException e) {
