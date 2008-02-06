@@ -199,6 +199,11 @@
 			<artifactId>axis-wsdl4j</artifactId>
 			<version>1.5.1</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.axis</groupId>
+			<artifactId>axis-saaj</artifactId>
+			<version>1.4</version>
+		</dependency>
 		
 	</dependencies>
 
