@@ -4,7 +4,7 @@ import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.idea.PasswordDialog;
-import com.atlassian.theplugin.idea.PluginInfo;
+import com.atlassian.theplugin.idea.PluginInfoUtil;
 
 import javax.swing.*;
 import static javax.swing.JOptionPane.OK_CANCEL_OPTION;
@@ -39,7 +39,7 @@ public class MissingPasswordHandler implements Runnable {
 				//WindowManager.getInstance().getAllFrames();
 
 				int answer = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(), panel,
-						PluginInfo.getName(), OK_CANCEL_OPTION, PLAIN_MESSAGE);
+						PluginInfoUtil.getName(), OK_CANCEL_OPTION, PLAIN_MESSAGE);
 
 				String password = "";
 				Boolean shouldPasswordBeStored = false;
@@ -52,7 +52,7 @@ public class MissingPasswordHandler implements Runnable {
 
 					JOptionPane.showMessageDialog(null,
 							"You can always change password by changing plugin settings (Preferences | IDE Settings | "
-									+ PluginInfo.getName() + ")");
+									+ PluginInfoUtil.getName() + ")");
 				}
 				// so or so we assume that user provided password
 
