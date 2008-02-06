@@ -1,19 +1,13 @@
 package com.atlassian.theplugin.idea.config;
 
+import com.atlassian.theplugin.idea.PluginInfoUtil;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.ui.HyperlinkLabel;
-import org.jdom.Document;
-import org.jdom.JDOMException;
-import org.jdom.Element;
-import org.jdom.xpath.XPath;
-import org.jdom.input.SAXBuilder;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import java.awt.*;
-import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * Created by IntelliJ IDEA.
@@ -35,25 +29,7 @@ public class FooterPanel extends JPanel {
 
 		BorderLayout gb = new BorderLayout();
 		setLayout(gb);
-
-		InputStream is = getClass().getResourceAsStream("/META-INF/plugin.xml");
-		SAXBuilder builder = new SAXBuilder();
-		builder.setValidation(false);
-		try {
-			Document doc = builder.build(is);
-			XPath xpath = XPath.newInstance("/idea-plugin/version");
-			@SuppressWarnings("unchecked")
-			Element element = (Element) xpath.selectSingleNode(doc);
-			if (element != null) {
-				versionName = element.getText();
-			}
-		} catch (JDOMException e) {
-			versionName = "unknown - /META-INF/plugin.xml file is corrupt";
-		} catch (IOException e) {
-			versionName = "unknown - can't read /META-INF/plugien.xml";
-		}
-
-
+		versionName = PluginInfoUtil.getVersion();
 		versionLabel = new JLabel(versionName);
 
 		openJiraHyperlinkLabel = new HyperlinkLabel("Report a bug/issue/request.");
