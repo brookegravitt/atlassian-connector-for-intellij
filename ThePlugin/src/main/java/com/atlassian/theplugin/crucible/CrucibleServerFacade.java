@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.crucible;
 
-import com.atlassian.theplugin.crucible.api.CrucibleLoginException;
+import com.atlassian.theplugin.crucible.api.CrucibleException;
 
 /**
  * Created by IntelliJ IDEA.
@@ -10,5 +10,5 @@ import com.atlassian.theplugin.crucible.api.CrucibleLoginException;
  * To change this template use File | Settings | File Templates.
  */
 public interface CrucibleServerFacade {
-	public void testServerConnection(String serverUrl, String userName, String password) throws CrucibleLoginException;
+	public void testServerConnection(String serverUrl, String userName, String password) throws CrucibleException;
 }

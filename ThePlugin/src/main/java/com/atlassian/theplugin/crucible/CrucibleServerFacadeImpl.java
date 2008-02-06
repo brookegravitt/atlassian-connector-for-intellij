@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.crucible;
 
-import com.atlassian.theplugin.crucible.api.CrucibleLoginException;
+import com.atlassian.theplugin.crucible.api.CrucibleException;
 import com.atlassian.theplugin.crucible.api.CrucibleSession;
 
 /**
@@ -17,7 +17,7 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 		//crucibleSession = session;
 	}
 
-	public void testServerConnection(String serverUrl, String userName, String password) throws CrucibleLoginException {
+	public void testServerConnection(String serverUrl, String userName, String password) throws CrucibleException {
 		CrucibleSession session = crucibleSession;
 
 		if (session == null) {
