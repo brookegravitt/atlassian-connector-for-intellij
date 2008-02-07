@@ -29,12 +29,30 @@ public class CrucibleSessionTest extends TestCase {
 		httpServer.stop();
 	}
 
-	public void testSuccessCrucibleLogin() {
+	public void ftestSuccessCrucibleLogin() {
 
-		//CrucibleSessionImpl session = new CrucibleSessionImpl(mockUrl);
+		CrucibleSessionImpl session = null;
 
-		String userName = "username";
-		String password = "password";
+		try {
+			session = new CrucibleSessionImpl("");
+		} catch (CrucibleException e) {
+			
+		}
+
+		String userName = "test";
+		String password = "asdfsfsfs";
+
+		try {
+			session.login(userName, password);
+		} catch (CrucibleLoginException e) {
+			fail("login failed: " + e.getMessage());
+		}
+
+		try {
+			session.logout();
+		} catch (CrucibleLogoutException e) {
+			fail("logout failed: " + e.getMessage());
+		}
 
 //		try {
 //			session.login(userName, password);
