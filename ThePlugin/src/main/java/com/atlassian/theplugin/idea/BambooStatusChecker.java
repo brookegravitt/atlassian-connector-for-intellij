@@ -7,6 +7,7 @@ import com.atlassian.theplugin.bamboo.MissingPasswordHandler;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.idea.config.serverconfig.model.ServerType;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -45,7 +46,7 @@ public class BambooStatusChecker {
 	private void doRun() {
 		// collect build info from each server
 		final Collection<BambooBuild> newServerBuildsStatus = new ArrayList<BambooBuild>();
-		for (Server server : ConfigurationFactory.getConfiguration().getBambooConfiguration().getServers()) {
+		for (Server server : ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers()) {
 			try {
 				newServerBuildsStatus.addAll(BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults(server));
 			} catch (ServerPasswordNotProvidedException exception) {
