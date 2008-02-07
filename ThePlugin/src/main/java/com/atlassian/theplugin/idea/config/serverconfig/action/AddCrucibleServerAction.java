@@ -3,7 +3,7 @@ package com.atlassian.theplugin.idea.config.serverconfig.action;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
-import com.atlassian.theplugin.idea.config.serverconfig.model.ServerType;
+import com.atlassian.theplugin.ServerType;
 
 /**
  * Created by IntelliJ IDEA.

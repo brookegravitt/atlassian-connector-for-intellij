@@ -1,4 +1,4 @@
-package com.atlassian.theplugin.idea.config.serverconfig.model;
+package com.atlassian.theplugin;
 
 /**
  * Represents server types
