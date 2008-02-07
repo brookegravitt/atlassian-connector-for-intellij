@@ -6,6 +6,7 @@ import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
 import com.atlassian.theplugin.idea.config.serverconfig.model.*;
 import com.atlassian.theplugin.idea.config.serverconfig.util.ServerNameUtil;
+import com.atlassian.theplugin.ServerType;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;

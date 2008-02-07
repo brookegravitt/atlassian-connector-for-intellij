@@ -3,7 +3,7 @@ package com.atlassian.theplugin.bamboo;
 import com.atlassian.theplugin.bamboo.api.BambooLoginException;
 import com.atlassian.theplugin.bamboo.api.bamboomock.*;
 import com.atlassian.theplugin.configuration.*;
-import com.atlassian.theplugin.idea.config.serverconfig.model.ServerType;
+import com.atlassian.theplugin.ServerType;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 

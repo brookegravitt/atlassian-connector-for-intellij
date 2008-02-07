@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.configuration;
 
-import com.atlassian.theplugin.idea.config.serverconfig.model.ServerType;
+import com.atlassian.theplugin.ServerType;
 
 /**
  * Created by IntelliJ IDEA.

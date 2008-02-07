@@ -3,7 +3,7 @@ package com.atlassian.theplugin.idea.config;
 import com.atlassian.theplugin.configuration.*;
 import com.atlassian.theplugin.idea.config.serverconfig.*;
 import com.atlassian.theplugin.idea.config.serverconfig.model.ServerNode;
-import com.atlassian.theplugin.idea.config.serverconfig.model.ServerType;
+import com.atlassian.theplugin.ServerType;
 
 import javax.swing.*;
 import java.awt.*;

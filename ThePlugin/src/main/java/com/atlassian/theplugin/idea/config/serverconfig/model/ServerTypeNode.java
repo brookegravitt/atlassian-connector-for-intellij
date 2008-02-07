@@ -1,5 +1,7 @@
 package com.atlassian.theplugin.idea.config.serverconfig.model;
 
+import com.atlassian.theplugin.ServerType;
+
 import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
