@@ -7,11 +7,8 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA.
- * User: sginter
- * Date: Jan 10, 2008
- * Time: 4:13:03 PM
- * To change this template use File | Settings | File Templates.
+ * Bean soring information about Bamboo servers etc.<p>
+ * The class serves both as a configuration provider for plugin logic and Bean for persistence.
  */
 public class BambooConfigurationBean implements BambooConfiguration, Cloneable {
 	private Collection<ServerBean> servers = new ArrayList<ServerBean>();
@@ -29,6 +26,8 @@ public class BambooConfigurationBean implements BambooConfiguration, Cloneable {
 	 * For storage purposes.
 	 * <p/>
 	 * Does not use the JDK1.5 'return a subclass' due to problem with XML serialization.
+	 *
+	 * @param servers Collection of servers to substitute for the current one.
 	 */
 	public void setServersData(Collection<ServerBean> servers) {
 		this.servers = servers;
@@ -40,7 +39,7 @@ public class BambooConfigurationBean implements BambooConfiguration, Cloneable {
 	 * <p/>
 	 * Do not mistake for #getServerData()
 	 *
-	 * @return
+	 * @return Collection of Servers
 	 */
 	@Transient
 	public synchronized Collection<Server> getServers() {
@@ -52,7 +51,7 @@ public class BambooConfigurationBean implements BambooConfiguration, Cloneable {
 	@Transient
 	public synchronized Server getServer(Server aServer) {
 		for (Server server : servers) {
-			if (((ServerBean)server).getUid() == ((ServerBean)aServer).getUid()) {
+			if (server.getUid() == aServer.getUid()) {
 				return server;
 			}
 		}
@@ -67,11 +66,7 @@ public class BambooConfigurationBean implements BambooConfiguration, Cloneable {
 			servers.add((ServerBean) server);
 		} else {
 			foundServer.setName(server.getName());
-			try {
-				foundServer.setPasswordString(server.getPasswordString(), ((ServerBean) server).getShouldPasswordBeStored());
-			} catch (ServerPasswordNotProvidedException e) {
-				e.printStackTrace();
-			}
+			foundServer.setPasswordString(server.getPasswordString(), server.getShouldPasswordBeStored());
 			foundServer.getSubscribedPlansData().clear();
 			for (SubscribedPlan plan : server.getSubscribedPlans()) {
 				foundServer.getSubscribedPlansData().add((SubscribedPlanBean) plan);

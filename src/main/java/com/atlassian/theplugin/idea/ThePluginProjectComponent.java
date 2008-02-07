@@ -5,8 +5,8 @@ import com.atlassian.theplugin.bamboo.HtmlBambooStatusListener;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.wm.*;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.openapi.wm.*;
 import com.intellij.peer.PeerFactory;
 import com.intellij.ui.content.Content;
 import org.jetbrains.annotations.NotNull;
@@ -64,7 +64,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 		bambooStatusChecker = appComponent.getBambooStatusChecker();
 
-
 		// create tool window on the right
 		toolWindowManager = ToolWindowManager.getInstance(project);
 		toolWindow = toolWindowManager.registerToolWindow(TOOL_WINDOW_NAME, true, ToolWindowAnchor.RIGHT);
@@ -93,6 +92,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		statusBar = WindowManager.getInstance().getStatusBar(project);
 		statusBar.addCustomIndicationComponent(statusBarIcon);
 
+		appComponent.triggerBambooStatusChecker();
 
 		System.out.println("End: Project open");
 	}

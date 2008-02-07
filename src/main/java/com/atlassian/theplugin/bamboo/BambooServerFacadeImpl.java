@@ -2,6 +2,7 @@ package com.atlassian.theplugin.bamboo;
 
 import com.atlassian.theplugin.bamboo.api.BambooException;
 import com.atlassian.theplugin.bamboo.api.BambooLoginException;
+import com.atlassian.theplugin.bamboo.api.BambooLoginFailedException;
 import com.atlassian.theplugin.bamboo.api.BambooSession;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
@@ -30,21 +31,26 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 	/**
 	 * Test connection to Bamboo server.
 	 *
-	 * @param url
-	 * @param userName
-	 * @param password
+	 * @param url	  Bamboo server base URL
+	 * @param userName Bamboo user name
+	 * @param password Bamboo password
 	 * @throws BambooLoginException on failed login
+	 * @see BambooLoginFailedException
 	 */
 	public void testServerConnection(String url, String userName, String password) throws BambooLoginException {
 		BambooSession apiHandler = new BambooSession(url);
 		apiHandler.login(userName, password.toCharArray());
 		apiHandler.logout();
 	}
-    /**
-     * List projects defined on Bamboo server
-	 * @param bambooServer
-     * @return list of projects or null on error
-     */
+
+	/**
+	 * List projects defined on Bamboo server.
+	 *
+	 * @param bambooServer Bamboo server information
+	 * @return list of projects or null on error
+	 * @throws ServerPasswordNotProvidedException
+	 *          when invoked for Server that has not had the password set yet
+	 */
 	public Collection<BambooProject> getProjectList(Server bambooServer) throws ServerPasswordNotProvidedException {
 
 		BambooSession api = new BambooSession(bambooServer.getUrlString());
@@ -60,9 +66,12 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 	}
 
 	/**
-	 * List plans defined on Bamboo server
+	 * List plans defined on Bamboo server.
 	 *
+	 * @param bambooServer Bamboo server information
 	 * @return list of plans or null on error
+	 * @throws ServerPasswordNotProvidedException
+	 *          when invoked for Server that has not had the password set yet
 	 */
 	public Collection<BambooPlan> getPlanList(Server bambooServer) throws ServerPasswordNotProvidedException {
 		BambooSession api = new BambooSession(bambooServer.getUrlString());
@@ -74,7 +83,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 			for (String fav : favPlans) {
 				for (BambooPlan plan : plans) {
 					if (plan.getPlanKey().equalsIgnoreCase(fav)) {
-						((BambooPlanData)plan).setFavourite(true);
+						((BambooPlanData) plan).setFavourite(true);
 						break;
 					}
 				}
@@ -89,21 +98,34 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 	}
 
 	/**
-	 * List details on subscribed plans
+	 * List details on subscribed plans.<p>
+	 * <p/>
+	 * Returns info on all subscribed plans including information about failed attempt.<p>
+	 * <p/>
+	 * Throws ServerPasswordNotProvidedException when invoked for Server that has not had the password set, when the server
+	 * returns a meaningful exception response.
 	 *
+	 * @param bambooServer Bamboo server information
 	 * @return results on subscribed builds
+	 * @throws ServerPasswordNotProvidedException
+	 *          when invoked for Server that has not had the password set yet
+	 * @see com.atlassian.theplugin.bamboo.api.BambooSession#login(String, char[])
 	 */
 	public Collection<BambooBuild> getSubscribedPlansResults(Server bambooServer) throws ServerPasswordNotProvidedException {
 		Collection<BambooBuild> builds = new ArrayList<BambooBuild>();
-        assert(bambooServer != null);
 		BambooSession api = new BambooSession(bambooServer.getUrlString());
 		String connectionErrorMessage;
 		try {
-			assert(bambooServer.getUsername() != null);
-			assert(bambooServer.getPasswordString() != null);
-
 			api.login(bambooServer.getUsername(), bambooServer.getPasswordString().toCharArray());
 			connectionErrorMessage = "";
+		} catch (BambooLoginFailedException e) {
+			if (bambooServer.getIsConfigInitialized()) {
+				LOG.error("Bamboo login exception: " + e.getMessage());
+				connectionErrorMessage = e.getMessage();
+			} else {
+				throw new ServerPasswordNotProvidedException();
+			}
+
 		} catch (BambooLoginException e) {
 			LOG.error("Bamboo login exception: " + e.getMessage());
 			connectionErrorMessage = e.getMessage();
@@ -126,7 +148,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 	}
 
 
-	BambooBuild constructBuildErrorInfo(String serverUrl, String planId, String message) {
+	private BambooBuild constructBuildErrorInfo(String serverUrl, String planId, String message) {
 		BambooBuildInfo buildInfo = new BambooBuildInfo();
 
 		buildInfo.setServerUrl(serverUrl);
