@@ -9,15 +9,15 @@ package com.atlassian.theplugin.crucible.api;
  */
 public class CrucibleLoginException extends CrucibleException {
 
-	CrucibleLoginException(String message) {
+	public CrucibleLoginException(String message) {
 		super(message);
 	}
 
-	CrucibleLoginException(Throwable throwable) {
+	public CrucibleLoginException(Throwable throwable) {
 		super(throwable);
 	}
 
-	CrucibleLoginException(String message, Throwable throwable) {
+	public CrucibleLoginException(String message, Throwable throwable) {
 		super(message, throwable);
 	}
 }
