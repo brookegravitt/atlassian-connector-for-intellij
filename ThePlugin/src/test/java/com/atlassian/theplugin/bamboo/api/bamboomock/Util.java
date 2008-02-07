@@ -1,12 +1,12 @@
 package com.atlassian.theplugin.bamboo.api.bamboomock;
 
 import com.atlassian.theplugin.bamboo.BambooBuild;
+import com.atlassian.theplugin.bamboo.BambooPlan;
 import com.atlassian.theplugin.bamboo.BambooProject;
 import com.atlassian.theplugin.bamboo.BuildStatus;
-import com.atlassian.theplugin.bamboo.BambooPlan;
 import junit.framework.Assert;
-import static junit.framework.Assert.fail;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.fail;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -62,17 +62,25 @@ public abstract class Util {
 		Assert.assertNull(build.getMessage());
 	}
 
-	public static void verifyErrorBuildResult(BambooBuild build, String baseUrl) {
+	public static void verifyErrorBuildResult(BambooBuild build) {
 		Assert.assertSame(BuildStatus.UNKNOWN, build.getStatus());
 		Assert.assertTrue(build.getPollingTime().getTime() - System.currentTimeMillis() < 5000);
 		Assert.assertEquals("The user does not have sufficient permissions to perform this action.\n", build.getMessage());
 	}
 
-	public static void verifyLoginErrorBuildResult(BambooBuild build, String baseUrl) {
+	public static void verifyLoginErrorBuildResult(BambooBuild build) {
 		Assert.assertSame(BuildStatus.UNKNOWN, build.getStatus());
 		Assert.assertTrue(build.getPollingTime().getTime() - System.currentTimeMillis() < 5000);
-		Assert.assertEquals("Login exception: The user does not have sufficient permissions to perform this action.\n", build.getMessage());
+		Assert.assertEquals("The user does not have sufficient permissions to perform this action.\n", build.getMessage());
 	}
+
+	public static void verifyError400BuildResult(BambooBuild build, String baseUrl) {
+		Assert.assertSame(BuildStatus.UNKNOWN, build.getStatus());
+		Assert.assertTrue(build.getPollingTime().getTime() - System.currentTimeMillis() < 5000);
+		Assert.assertTrue(build.getMessage().startsWith(
+				"Server returned HTTP response code: 400 for URL: " + baseUrl));
+	}
+
 
 	private static final String[][] expectedProjects = {
 			{ "PO", "Project One" },
