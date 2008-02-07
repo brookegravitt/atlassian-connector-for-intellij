@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.crucible;
 
 import com.atlassian.theplugin.crucible.api.CrucibleException;
+import com.atlassian.theplugin.crucible.api.CrucibleSession;
 
 /**
  * Created by IntelliJ IDEA.
@@ -11,4 +12,8 @@ import com.atlassian.theplugin.crucible.api.CrucibleException;
  */
 public interface CrucibleServerFacade {
 	public void testServerConnection(String serverUrl, String userName, String password) throws CrucibleException;
+
+	public void createReview();
+
+	void setCrucibleSession(CrucibleSession crucibleSession);
 }
