@@ -36,6 +36,21 @@ public class ServerBean implements Server {
 		uid = (new Date()).getTime();
 	}
 
+	public ServerBean(Server cfg) {
+		this.setName(cfg.getName());
+		this.setUid(cfg.getUid());
+		this.setUsername(cfg.getUsername());
+		this.setPasswordString(cfg.getPasswordString(), cfg.getShouldPasswordBeStored());		
+		this.setUrlString(cfg.getUrlString());
+		this.setEnabled(cfg.getEnabled());
+		this.setIsConfigInitialized(cfg.getIsConfigInitialized());
+
+		for (SubscribedPlan plan : cfg.getSubscribedPlans()) {
+			SubscribedPlanBean newPlan = new SubscribedPlanBean(plan);
+			subscribedPlans.add(newPlan);
+		}
+	}
+
 	public synchronized String getName() {
 		return name;
 	}
@@ -65,7 +80,7 @@ public class ServerBean implements Server {
 	}
 
 	public synchronized void setEnabled(Boolean enabled) {
-		this.enabled = enabled;
+		this.enabled =  enabled;
 	}
 
 //    public char[] getEncryptedPassword() {
@@ -81,9 +96,9 @@ public class ServerBean implements Server {
 
 			byte[] passwordBytes = Base64.decode(str2decode);
 
-			/*if passwordBytes is null means that we tried to decode password with
-						 * not supported characters or just password hasn't been encoded yet
-						 * in this situation clear password*/
+			 /*if passwordBytes is null means that we tried to decode password with
+			 * not supported characters or just password hasn't been encoded yet
+			 * in this situation clear password*/
 			if (passwordBytes == null) {
 				shouldPasswordBeStored = false;
 				return "";
@@ -115,7 +130,7 @@ public class ServerBean implements Server {
 		password = decode(encryptedPassword);
 		this.encryptedPassword = encryptedPassword;
 		this.
-				isConfigInitialized = true;
+		isConfigInitialized = true;
 	}
 
 	/**
@@ -179,20 +194,6 @@ public class ServerBean implements Server {
 
 	public synchronized void setSubscribedPlansData(List<SubscribedPlanBean> subscribedPlansData) {
 		this.subscribedPlans = subscribedPlansData;
-	}
-
-	@Override
-	public synchronized Object clone() throws CloneNotSupportedException {
-		ServerBean serverBean = (ServerBean) super.clone();
-		List<SubscribedPlanBean> plans = new ArrayList<SubscribedPlanBean>();
-		for (SubscribedPlanBean plan : this.getSubscribedPlansData()) {
-			SubscribedPlanBean newPlan = new SubscribedPlanBean();
-			newPlan.setPlanId(plan.getPlanId());
-			plans.add(newPlan);
-		}
-		serverBean.setSubscribedPlansData(plans);
-
-		return serverBean;
 	}
 
 	public long getUid() {

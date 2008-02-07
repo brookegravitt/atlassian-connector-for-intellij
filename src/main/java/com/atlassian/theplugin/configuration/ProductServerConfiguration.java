@@ -9,9 +9,10 @@ import java.util.Collection;
  * Date: Jan 10, 2008
  * Time: 11:46:29 AM
  */
-public interface BambooConfiguration {
+public interface ProductServerConfiguration {
     Collection<Server> getServers();
-	void storeServer(Server server);
+    Server getServer(Server aServer);
+    void storeServer(Server server);
 	void setServers(Collection<Server> servers);
 	void removeServer(Server server);
 }

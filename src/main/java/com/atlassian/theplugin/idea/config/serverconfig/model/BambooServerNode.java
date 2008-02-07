@@ -12,4 +12,8 @@ public class BambooServerNode extends ServerNode {
 	public BambooServerNode(ServerBean aServer) {
 		super(aServer);
 	}
+
+    public ServerType getServerType() {
+        return ServerType.BAMBOO_SERVER;
+    }
 }
