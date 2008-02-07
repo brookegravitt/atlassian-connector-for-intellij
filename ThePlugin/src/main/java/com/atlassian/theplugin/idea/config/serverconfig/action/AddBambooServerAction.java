@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.config.serverconfig.action;
 
 import com.atlassian.theplugin.idea.config.ConfigPanel;
+import com.atlassian.theplugin.idea.config.serverconfig.model.ServerType;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
@@ -13,6 +14,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  */
 public class AddBambooServerAction extends AnAction {	
 	public void actionPerformed(AnActionEvent event) {
-        ConfigPanel.getInstance().addBambooServer();		
+        ConfigPanel.getInstance().addServer(ServerType.BAMBOO_SERVER);		
 	}
 }

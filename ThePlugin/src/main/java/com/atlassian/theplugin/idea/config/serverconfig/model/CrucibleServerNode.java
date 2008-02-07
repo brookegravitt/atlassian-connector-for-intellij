@@ -12,4 +12,8 @@ public class CrucibleServerNode extends ServerNode {
 	public CrucibleServerNode(ServerBean aServer) {
 		super(aServer);
 	}
+
+    public ServerType getServerType() {
+        return ServerType.CRUCIBLE_SERVER;
+    }
 }

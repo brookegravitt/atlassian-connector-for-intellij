@@ -2,6 +2,8 @@ package com.atlassian.theplugin.idea.config;
 
 import com.atlassian.theplugin.configuration.*;
 import com.atlassian.theplugin.idea.config.serverconfig.*;
+import com.atlassian.theplugin.idea.config.serverconfig.model.ServerNode;
+import com.atlassian.theplugin.idea.config.serverconfig.model.ServerType;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,7 +11,7 @@ import java.awt.*;
 public class ConfigPanel extends JPanel {
 	private static ConfigPanel instance;
 
-	private PluginConfiguration pluginConfiguration = null;
+	private PluginConfigurationBean pluginConfiguration = null;
 
 	private HeaderPanel headerPanel = null;
 	private FooterPanel footerPanel = null;
@@ -64,28 +66,26 @@ public class ConfigPanel extends JPanel {
 
 	public boolean isModified() {
 		if (!this.pluginConfiguration.equals(ConfigurationFactory.getConfiguration())) {
-			return true;
+            return true;
 		}
-		return serverConfigPanel.isModified();
+		return serverConfigPanel.isModified() || headerPanel.isModified();
 	}
 
 	public void getData() {
 		if (isModified()) {
+			headerPanel.getData();
 			serverConfigPanel.getData();
 		}
 	}
 
 	public void setData() {
-		clonePluginConfiguration();
-		serverConfigPanel.setData(pluginConfiguration);
+		this.pluginConfiguration = new PluginConfigurationBean(ConfigurationFactory.getConfiguration());
+		headerPanel.setData();
+		serverConfigPanel.setData();
 	}
 
-	public void addBambooServer() {
-		serverConfigPanel.addBambooServer();
-	}
-
-	public void addCrucibleServer() {
-		serverConfigPanel.addCrucibleServer();
+	public void addServer(ServerType serverType) {
+		serverConfigPanel.addServer(serverType);
 	}
 
 	public void removeServer() {
@@ -97,24 +97,15 @@ public class ConfigPanel extends JPanel {
 		serverConfigPanel.copyServer();
 	}
 
-	public void storeBambooServer(ServerBean server) {
-		serverConfigPanel.storeBambooServer(server);
-	}
+    public void storeServer(ServerNode serverNode) {
+        serverConfigPanel.storeServer(serverNode);
+    }
 
-	public PluginConfiguration getPluginConfiguration() {
+    public PluginConfigurationBean getPluginConfiguration() {
 		return pluginConfiguration;
 	}
 
-	public void setPluginConfiguration(PluginConfiguration pluginConfiguration) {
+	public void setPluginConfiguration(PluginConfigurationBean pluginConfiguration) {
 		this.pluginConfiguration = pluginConfiguration;
 	}
-
-	synchronized private void clonePluginConfiguration() {
-		try {
-			this.pluginConfiguration = (PluginConfiguration) ((PluginConfigurationBean) ConfigurationFactory.getConfiguration()).clone();
-		} catch (CloneNotSupportedException e) {
-			e.printStackTrace();
-		}
-	}
-
 }

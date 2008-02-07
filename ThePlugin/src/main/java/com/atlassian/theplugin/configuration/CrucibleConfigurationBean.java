@@ -6,16 +6,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Bean storing information about Bamboo servers etc.<p>
- * The class serves both as a configuration provider for plugin logic and Bean for persistence.
+ * Created by IntelliJ IDEA.
+ * User: sginter
+ * Date: Jan 10, 2008
+ * Time: 4:13:03 PM
+ * To change this template use File | Settings | File Templates.
  */
-public class BambooConfigurationBean implements ProductServerConfiguration {
+public class CrucibleConfigurationBean implements ProductServerConfiguration {
 	private Collection<ServerBean> servers = new ArrayList<ServerBean>();
 
-	public BambooConfigurationBean() {
+	public CrucibleConfigurationBean() {
 	}
 
-	public BambooConfigurationBean(ProductServerConfiguration cfg) {
+	public CrucibleConfigurationBean(ProductServerConfiguration cfg) {
 		for (Server server : cfg.getServers()) {
 			ServerBean newServer = new ServerBean(server);
 			servers.add(newServer);
@@ -35,8 +38,6 @@ public class BambooConfigurationBean implements ProductServerConfiguration {
 	 * For storage purposes.
 	 * <p/>
 	 * Does not use the JDK1.5 'return a subclass' due to problem with XML serialization.
-	 *
-	 * @param servers Collection of servers to substitute for the current one.
 	 */
 	public void setServersData(Collection<ServerBean> servers) {
 		this.servers = servers;
@@ -48,7 +49,7 @@ public class BambooConfigurationBean implements ProductServerConfiguration {
 	 * <p/>
 	 * Do not mistake for #getServerData()
 	 *
-	 * @return Collection of Servers
+	 * @return
 	 */
 	@Transient
 	public synchronized Collection<Server> getServers() {
@@ -75,11 +76,7 @@ public class BambooConfigurationBean implements ProductServerConfiguration {
 			servers.add((ServerBean) server);
 		} else {
 			foundServer.setName(server.getName());
-			foundServer.setPasswordString(server.getPasswordString(), server.getShouldPasswordBeStored());
-			foundServer.getSubscribedPlansData().clear();
-			for (SubscribedPlan plan : server.getSubscribedPlans()) {
-				foundServer.getSubscribedPlansData().add((SubscribedPlanBean) plan);
-			}
+		    foundServer.setPasswordString(server.getPasswordString(), server.getShouldPasswordBeStored());
 			foundServer.setUrlString(server.getUrlString());
 			foundServer.setUsername(server.getUsername());
 		}
@@ -112,7 +109,7 @@ public class BambooConfigurationBean implements ProductServerConfiguration {
 			return false;
 		}
 
-		BambooConfigurationBean that = (BambooConfigurationBean) o;
+		CrucibleConfigurationBean that = (CrucibleConfigurationBean) o;
 
 		if (servers != null ? !servers.equals(that.servers) : that.servers != null) {
 			return false;
