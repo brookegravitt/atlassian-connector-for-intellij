@@ -13,4 +13,6 @@ public abstract class AbstractContentPanel extends JPanel {
 	public abstract boolean isEnabled();
 	public abstract boolean isModified();
 	public abstract String getTitle();
+	public abstract void getData();
+	public abstract void setData();
 }

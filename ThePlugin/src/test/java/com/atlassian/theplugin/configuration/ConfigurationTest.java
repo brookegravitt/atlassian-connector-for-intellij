@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.configuration;
 
 import com.atlassian.theplugin.idea.PluginInfoUtil;
+import com.atlassian.theplugin.idea.config.serverconfig.model.ServerType;
 import junit.framework.TestCase;
 
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ public class ConfigurationTest extends TestCase {
     }
 
     public void testConfiguration() throws ServerPasswordNotProvidedException {
-        BambooConfiguration cfg = ConfigurationFactory.getConfiguration().getBambooConfiguration();
+        ProductServerConfiguration cfg = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER);
 
 		Collection<ServerBean> serversData = new ArrayList<ServerBean>();
 
@@ -52,7 +53,7 @@ public class ConfigurationTest extends TestCase {
 		plans.add(plan);
 		srv.setSubscribedPlansData(plans);
 
-		ServerBean clonedBean = (ServerBean) srv.clone();
+		ServerBean clonedBean = new ServerBean(srv);
 
 		assertNotSame(srv, clonedBean);
 		assertEquals(srv, clonedBean);
@@ -60,37 +61,37 @@ public class ConfigurationTest extends TestCase {
 		assertTrue(srv.equals(srv));
 		assertFalse(srv.equals(null));
 
-		ServerBean clonedBean2 = (ServerBean) srv.clone();
+		ServerBean clonedBean2 = new ServerBean(srv);
 		clonedBean2.setUid(0);
 		assertFalse(srv.equals(clonedBean2));
 		clonedBean2.setUid(srv.getUid());
 		assertTrue(srv.equals(clonedBean2));
 
-		clonedBean2 = (ServerBean) srv.clone();
+		clonedBean2 = new ServerBean(srv);
 		clonedBean2.setUsername("");
 		assertFalse(srv.equals(clonedBean2));
 
-		clonedBean2 = (ServerBean) srv.clone();
+		clonedBean2 = new ServerBean(srv);
 		clonedBean2.setUrlString("");
 		assertFalse(srv.equals(clonedBean2));
 
-		clonedBean2 = (ServerBean) srv.clone();
+		clonedBean2 = new ServerBean(srv);
 		clonedBean2.setEncryptedPassword("");
 		assertFalse(srv.equals(clonedBean2));
 
-		clonedBean2 = (ServerBean) srv.clone();
+		clonedBean2 = new ServerBean(srv);
 		clonedBean2.setName("");
 		assertFalse(srv.equals(clonedBean2));
 
-		clonedBean2 = (ServerBean) srv.clone();
+		clonedBean2 = new ServerBean(srv);
 		clonedBean2.setPasswordString("", true);
 		assertFalse(srv.equals(clonedBean2));
 
-		clonedBean2 = (ServerBean) srv.clone();
+		clonedBean2 = new ServerBean(srv);
 		clonedBean2.getSubscribedPlansData().clear();
 		assertFalse(srv.equals(clonedBean2));
 
-		clonedBean2 = (ServerBean) srv.clone();
+		clonedBean2 = new ServerBean(srv);
 		clonedBean2.setShouldPasswordBeStored(!srv.getShouldPasswordBeStored());
 		assertFalse(srv.equals(clonedBean2));
 	}

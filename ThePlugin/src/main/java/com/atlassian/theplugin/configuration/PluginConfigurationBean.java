@@ -1,5 +1,7 @@
 package com.atlassian.theplugin.configuration;
 
+import com.atlassian.theplugin.idea.config.serverconfig.model.ServerType;
+
 /**
  * Created by IntelliJ IDEA.
  * User: sginter
@@ -7,16 +9,27 @@ package com.atlassian.theplugin.configuration;
  * Time: 4:16:46 PM
  * To change this template use File | Settings | File Templates.
  */
-public class PluginConfigurationBean implements PluginConfiguration, Cloneable {
+public class PluginConfigurationBean implements PluginConfiguration {
+	private boolean pluginEnabled = true;
 	private BambooConfigurationBean bambooConfiguration = new BambooConfigurationBean();
+	private CrucibleConfigurationBean crucibleConfiguration = new CrucibleConfigurationBean();
 
+	public PluginConfigurationBean() {
+	}
+
+	public PluginConfigurationBean(PluginConfiguration cfg) {
+		this.setPluginEnabled(cfg.isPluginEnabled());
+		this.setBambooConfigurationData(new BambooConfigurationBean(cfg.getProductServers(ServerType.BAMBOO_SERVER)));
+		this.setCrucibleConfigurationData(new CrucibleConfigurationBean(cfg.getProductServers(ServerType.CRUCIBLE_SERVER)));
+	}
 
 	/**
 	 * For storage purposes.
 	 * <p/>
 	 * Does not use the JDK1.5 'return a subclass' due to problem with XML serialization.
-	 */
-	public BambooConfigurationBean getBambooConfigurationData() {
+	*/
+
+    public BambooConfigurationBean getBambooConfigurationData() {
 		return bambooConfiguration;
 	}
 
@@ -31,22 +44,48 @@ public class PluginConfigurationBean implements PluginConfiguration, Cloneable {
 	}
 
 	/**
+	 * For storage purposes.
+	 * <p/>
+	 * Does not use the JDK1.5 'return a subclass' due to problem with XML serialization.
+	 */
+	public CrucibleConfigurationBean getCrucibleConfigurationData() {
+		return crucibleConfiguration;
+	}
+
+	/**
+	 * For storage purposes.
+	 * <p/>
+	 * Does not use the JDK1.5 'return a subclass' due to problem with XML serialization.
+	 */
+	public void setCrucibleConfigurationData(CrucibleConfigurationBean newConfiguration) {
+		crucibleConfiguration = newConfiguration;
+
+	}
+
+	public boolean isPluginEnabled() {
+		return pluginEnabled;
+	}
+
+	public void setPluginEnabled(boolean value) {
+		pluginEnabled = value;
+	}
+
+    /**
 	 * Implemnentation for the interface.
 	 * <p/>
 	 * Do not mistake for #getBambooConfigurationData()
 	 */
-	public BambooConfiguration getBambooConfiguration() {
-		return bambooConfiguration;
-	}
+    public ProductServerConfiguration getProductServers(ServerType serverType) {
+        switch (serverType) {
+            case BAMBOO_SERVER:
+                return bambooConfiguration;
+            case CRUCIBLE_SERVER:
+                return crucibleConfiguration;
+        }
+        return null;
+    }
 
-	public Object clone() throws CloneNotSupportedException {
-		PluginConfigurationBean cfgBean = new PluginConfigurationBean();
-		cfgBean.setBambooConfigurationData((BambooConfigurationBean)this.getBambooConfigurationData().clone());
-		return cfgBean;	
-	}
-
-
-	public boolean equals(Object o) {
+    public boolean equals(Object o) {
 		if (this == o) {
 			return true;
 		}
@@ -60,7 +99,11 @@ public class PluginConfigurationBean implements PluginConfiguration, Cloneable {
 			return false;
 		}
 
-		return true;
+        if (!crucibleConfiguration.equals(that.crucibleConfiguration)) {
+			return false;
+		}
+
+        return true;
 	}
 
 	public int hashCode() {

@@ -1,5 +1,7 @@
 package com.atlassian.theplugin.configuration;
 
+import com.atlassian.theplugin.idea.config.serverconfig.model.ServerType;
+
 /**
  * Created by IntelliJ IDEA.
  * User: sginter
@@ -8,5 +10,7 @@ package com.atlassian.theplugin.configuration;
  * To change this template use File | Settings | File Templates.
  */
 public interface PluginConfiguration {
-	BambooConfiguration getBambooConfiguration();
+	boolean isPluginEnabled();
+	void setPluginEnabled(boolean value);
+	ProductServerConfiguration getProductServers(ServerType serverType);
 }

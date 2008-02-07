@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * Plugin configuration form.
  */
-public class BambooServerConfigForm {
+public class BambooServerConfigForm extends AbstractServerPanel {
 	private JPanel rootComponent;
 	private JTextField serverName;
 	private JTextField serverUrl;
@@ -52,11 +52,7 @@ public class BambooServerConfigForm {
 	}
 
 	public void setData(ServerBean server) {
-		try {
-			this.server = (ServerBean) server.clone();
-		} catch (CloneNotSupportedException e) {
-			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-		}
+		this.server = new ServerBean(server);
 
 		serverName.setText(server.getName());
 		serverUrl.setText(server.getUrlString());
@@ -64,7 +60,7 @@ public class BambooServerConfigForm {
 		chkPasswordRemember.setSelected(server.getShouldPasswordBeStored());
 		password.setText(server.getPasswordString());
 
-		buildPlansTextArea.setText(subscribedPlansToString(server.getSubscribedPlans()));
+        buildPlansTextArea.setText(subscribedPlansToString(server.getSubscribedPlans()));
 	}
 
 	public ServerBean getData() {
@@ -122,15 +118,10 @@ public class BambooServerConfigForm {
 			if (username.getText() != null ? !username.getText().equals(server.getUsername()) : server.getUsername() != null) {
 				return true;
 			}
-			if (String.valueOf(password.getPassword()) != null) {
-				//TODO: sginter: WTF is this supposed to be?
-				while (true) {
-					if (String.valueOf(password.getPassword()).equals(server.getPasswordString())) {
-						break;
-					}
-					return true;
-				}
-			}
+            String pass = String.valueOf(password.getPassword());
+            if (pass != null ? !pass.equals(server.getPasswordString()) : server.getPasswordString() != null) {
+				    return true;
+            }            
 			if (null != buildPlansTextArea.getText() ? !buildPlansTextArea.getText().equals(subscribedPlansToString(server.getSubscribedPlansData())) :
 					server.getSubscribedPlansData() != null) {
 				return true;
