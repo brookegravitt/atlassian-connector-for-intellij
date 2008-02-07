@@ -2,6 +2,8 @@ package com.atlassian.theplugin.idea.config.serverconfig.action;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.atlassian.theplugin.idea.config.ConfigPanel;
+import com.atlassian.theplugin.idea.config.serverconfig.model.ServerType;
 
 /**
  * Created by IntelliJ IDEA.
@@ -12,6 +14,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  */
 public class AddCrucibleServerAction extends AnAction {
     public void actionPerformed(AnActionEvent event) {
-        //To change body of implemented methods use File | Settings | File Templates.
+		ConfigPanel.getInstance().addServer(ServerType.CRUCIBLE_SERVER);
     }
 }

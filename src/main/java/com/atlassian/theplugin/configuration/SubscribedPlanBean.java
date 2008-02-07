@@ -10,6 +10,13 @@ package com.atlassian.theplugin.configuration;
 public class SubscribedPlanBean implements SubscribedPlan {
 	private String planId;
 
+	public SubscribedPlanBean() {
+	}
+
+	public SubscribedPlanBean(SubscribedPlan cfg) {
+		this.setPlanId(cfg.getPlanId());
+	}
+
 	public String getPlanId() {
 		return planId;
 	}

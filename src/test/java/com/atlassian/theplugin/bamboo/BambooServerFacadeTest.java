@@ -3,6 +3,7 @@ package com.atlassian.theplugin.bamboo;
 import com.atlassian.theplugin.bamboo.api.BambooLoginException;
 import com.atlassian.theplugin.bamboo.api.bamboomock.*;
 import com.atlassian.theplugin.configuration.*;
+import com.atlassian.theplugin.idea.config.serverconfig.model.ServerType;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 
@@ -77,7 +78,7 @@ public class BambooServerFacadeTest extends TestCase {
 		mockServer.expect("/api/rest/getLatestBuildResults.action", new LatestBuildResultCallback("WRONG"));
 		mockServer.expect("/api/rest/logout.action", new LogoutCallback());
 
-		Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServers().iterator().next();
+		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
 
 		Collection<BambooBuild> plans = BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults(server);
 		assertNotNull(plans);
@@ -93,7 +94,7 @@ public class BambooServerFacadeTest extends TestCase {
 	public void testFailedLoginSubscribedBuildStatus() throws Exception {
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
 
-		Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServers().iterator().next();
+		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
 
 		Collection<BambooBuild> plans = BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults(server);
 		assertNotNull(plans);
@@ -109,7 +110,7 @@ public class BambooServerFacadeTest extends TestCase {
 	public void testUninitializedPassword() throws Exception {
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, "", LoginCallback.ALWAYS_FAIL));
 		ConfigurationFactory.setConfiguration(createBambooTestConfiguration(mockBaseUrl, false));
-		Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServers().iterator().next();
+		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
 		try {
 			BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults(server);
 			fail("Testing uninitialized password");
@@ -146,7 +147,7 @@ public class BambooServerFacadeTest extends TestCase {
 		mockServer.expect("/api/rest/listProjectNames.action", new ProjectListCallback());
 		mockServer.expect("/api/rest/logout.action", new LogoutCallback());
 
-		Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServers().iterator().next();
+		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
 
 		Collection<BambooProject> projects = BambooServerFactory.getBambooServerFacade().getProjectList(server);
 		Util.verifyProjectListResult(projects);
@@ -156,7 +157,7 @@ public class BambooServerFacadeTest extends TestCase {
 
 	public void testFailedProjectList() throws Exception {
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
-		Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServers().iterator().next();
+		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
 
 		Collection<BambooProject> projects = BambooServerFactory.getBambooServerFacade().getProjectList(server);
 		assertNull(projects);
@@ -169,7 +170,7 @@ public class BambooServerFacadeTest extends TestCase {
 		mockServer.expect("/api/rest/getLatestUserBuilds.action", new FavouritePlanListCallback());
 		mockServer.expect("/api/rest/logout.action", new LogoutCallback());
 
-		Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServers().iterator().next();
+		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
 
 		Collection<BambooPlan> plans = BambooServerFactory.getBambooServerFacade().getPlanList(server);
 		Util.verifyPlanListWithFavouritesResult(plans);
@@ -180,7 +181,7 @@ public class BambooServerFacadeTest extends TestCase {
 	public void testFailedPlanList() throws Exception {
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
 
-		Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServers().iterator().next();
+		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
 
 		Collection<BambooPlan> plans = BambooServerFactory.getBambooServerFacade().getPlanList(server);
 		assertNull(plans);
@@ -230,7 +231,7 @@ public class BambooServerFacadeTest extends TestCase {
 	public void testBambooConnectionWithEmptyPlan() throws BambooLoginException, CloneNotSupportedException, ServerPasswordNotProvidedException {
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
 		mockServer.expect("/api/rest/logout.action", new LogoutCallback());
-		Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServers().iterator().next();
+		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
 		server.getSubscribedPlans().clear();
 		BambooServerFacade facade = new BambooServerFacadeImpl();
 		Collection<BambooBuild> plans = facade.getSubscribedPlansResults(server);

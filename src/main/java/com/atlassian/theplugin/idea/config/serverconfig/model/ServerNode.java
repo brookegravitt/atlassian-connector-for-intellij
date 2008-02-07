@@ -10,14 +10,16 @@ import javax.swing.tree.DefaultMutableTreeNode;
  * Date: 2008-01-29
  * Time: 09:49:47
  */
-public class ServerNode extends DefaultMutableTreeNode {
+public abstract class ServerNode extends DefaultMutableTreeNode {
 	private ServerBean server;
 
 	public ServerNode(ServerBean aServer) {
 		this.server = aServer;
 	}
 
-	public ServerBean getServer() {
+    public abstract ServerType getServerType();
+
+    public ServerBean getServer() {
 		return server;
 	}
 
