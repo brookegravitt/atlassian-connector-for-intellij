@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.configuration;
 
 import com.atlassian.theplugin.idea.PluginInfoUtil;
-import com.atlassian.theplugin.idea.config.serverconfig.model.ServerType;
+import com.atlassian.theplugin.ServerType;
 import junit.framework.TestCase;
 
 import java.util.ArrayList;

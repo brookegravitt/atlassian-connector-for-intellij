@@ -7,7 +7,7 @@ import com.atlassian.theplugin.bamboo.MissingPasswordHandler;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
-import com.atlassian.theplugin.idea.config.serverconfig.model.ServerType;
+import com.atlassian.theplugin.ServerType;
 
 import java.awt.*;
 import java.util.ArrayList;
