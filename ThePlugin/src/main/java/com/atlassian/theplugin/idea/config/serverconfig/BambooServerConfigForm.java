@@ -3,7 +3,6 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 import com.atlassian.theplugin.bamboo.BambooServerFactory;
 import com.atlassian.theplugin.bamboo.api.BambooLoginException;
 import com.atlassian.theplugin.configuration.ServerBean;
-import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.configuration.SubscribedPlan;
 import com.atlassian.theplugin.configuration.SubscribedPlanBean;
 import com.intellij.openapi.ui.Messages;
@@ -63,16 +62,12 @@ public class BambooServerConfigForm {
 		serverUrl.setText(server.getUrlString());
 		username.setText(server.getUsername());
 		chkPasswordRemember.setSelected(server.getShouldPasswordBeStored());
-		try {
-			password.setText(server.getPasswordString());
-		} catch (ServerPasswordNotProvidedException serverPasswordNotProvidedException) {
-			// swallow - password does not have to be initialized always
-		}
+		password.setText(server.getPasswordString());
 
 		buildPlansTextArea.setText(subscribedPlansToString(server.getSubscribedPlans()));
 	}
 
-	public ServerBean getData() {		
+	public ServerBean getData() {
 		server.setName(serverName.getText());
 		server.setUrlString(serverUrl.getText());
 		server.setUsername(username.getText());
@@ -128,19 +123,16 @@ public class BambooServerConfigForm {
 				return true;
 			}
 			if (String.valueOf(password.getPassword()) != null) {
+				//TODO: sginter: WTF is this supposed to be?
 				while (true) {
-					try {
-						if (String.valueOf(password.getPassword()).equals(server.getPasswordString())) {
-							break;
-						}
-					} catch (ServerPasswordNotProvidedException serverPasswordNotProvidedException) {
-						// swallow
+					if (String.valueOf(password.getPassword()).equals(server.getPasswordString())) {
+						break;
 					}
 					return true;
 				}
 			}
-			if (null != buildPlansTextArea.getText() ? !buildPlansTextArea.getText().equals(subscribedPlansToString(((ServerBean) server).getSubscribedPlansData())) :
-					((ServerBean) server).getSubscribedPlansData() != null) {
+			if (null != buildPlansTextArea.getText() ? !buildPlansTextArea.getText().equals(subscribedPlansToString(server.getSubscribedPlansData())) :
+					server.getSubscribedPlansData() != null) {
 				return true;
 			}
 		}

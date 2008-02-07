@@ -65,7 +65,7 @@ public class ServerBean implements Server {
 	}
 
 	public synchronized void setEnabled(Boolean enabled) {
-		this.enabled =  enabled;
+		this.enabled = enabled;
 	}
 
 //    public char[] getEncryptedPassword() {
@@ -81,19 +81,19 @@ public class ServerBean implements Server {
 
 			byte[] passwordBytes = Base64.decode(str2decode);
 
-			 /*if passwordBytes is null means that we tried to decode password with
-			 * not supported characters or just password hasn't been encoded yet
-			 * in this situation clear password*/
+			/*if passwordBytes is null means that we tried to decode password with
+						 * not supported characters or just password hasn't been encoded yet
+						 * in this situation clear password*/
 			if (passwordBytes == null) {
 				shouldPasswordBeStored = false;
-				return new String();
+				return "";
 			}
 
 			return new String(passwordBytes, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("UTF-8 is not supported", e);
 		}
-		
+
 	}
 
 	private synchronized String encode(String str2encode) {
@@ -115,7 +115,7 @@ public class ServerBean implements Server {
 		password = decode(encryptedPassword);
 		this.encryptedPassword = encryptedPassword;
 		this.
-		isConfigInitialized = true;
+				isConfigInitialized = true;
 	}
 
 	/**
@@ -151,10 +151,7 @@ public class ServerBean implements Server {
 	}
 
 	@Transient
-	public synchronized String getPasswordString() throws ServerPasswordNotProvidedException {
-		if (!isConfigInitialized) {
-			throw new ServerPasswordNotProvidedException("User password for \"" + name + "\" server not provided.");
-		}
+	public synchronized String getPasswordString() {
 		return password;
 	}
 
@@ -186,7 +183,7 @@ public class ServerBean implements Server {
 
 	@Override
 	public synchronized Object clone() throws CloneNotSupportedException {
-		ServerBean serverBean =  (ServerBean) super.clone();
+		ServerBean serverBean = (ServerBean) super.clone();
 		List<SubscribedPlanBean> plans = new ArrayList<SubscribedPlanBean>();
 		for (SubscribedPlanBean plan : this.getSubscribedPlansData()) {
 			SubscribedPlanBean newPlan = new SubscribedPlanBean();
@@ -195,7 +192,7 @@ public class ServerBean implements Server {
 		}
 		serverBean.setSubscribedPlansData(plans);
 
-		return (Object) serverBean;
+		return serverBean;
 	}
 
 	public long getUid() {
