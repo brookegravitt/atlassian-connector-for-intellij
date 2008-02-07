@@ -5,9 +5,9 @@
  * by the Apache Axis 1.4 Apr 22, 2006 (06:55:48 PDT) WSDL2Java emitter.
  */
 
-package com.atlassian.theplugin.crucible.api.soap;
+package com.atlassian.theplugin.crucible.api.soap.axis;
 
-public class AuthLocator extends org.apache.axis.client.Service implements com.atlassian.theplugin.crucible.api.soap.Auth {
+public class AuthLocator extends org.apache.axis.client.Service implements Auth {
 
     public AuthLocator() {
     }
@@ -39,7 +39,7 @@ public class AuthLocator extends org.apache.axis.client.Service implements com.a
         AuthPortWSDDServiceName = name;
     }
 
-    public com.atlassian.theplugin.crucible.api.soap.RpcAuthServiceName getAuthPort() throws javax.xml.rpc.ServiceException {
+    public RpcAuthServiceName getAuthPort() throws javax.xml.rpc.ServiceException {
        java.net.URL endpoint;
         try {
             endpoint = new java.net.URL(AuthPort_address);
@@ -50,9 +50,9 @@ public class AuthLocator extends org.apache.axis.client.Service implements com.a
         return getAuthPort(endpoint);
     }
 
-    public com.atlassian.theplugin.crucible.api.soap.RpcAuthServiceName getAuthPort(java.net.URL portAddress) throws javax.xml.rpc.ServiceException {
+    public RpcAuthServiceName getAuthPort(java.net.URL portAddress) throws javax.xml.rpc.ServiceException {
         try {
-            com.atlassian.theplugin.crucible.api.soap.AuthSoapBindingStub _stub = new com.atlassian.theplugin.crucible.api.soap.AuthSoapBindingStub(portAddress, this);
+            AuthSoapBindingStub _stub = new AuthSoapBindingStub(portAddress, this);
             _stub.setPortName(getAuthPortWSDDServiceName());
             return _stub;
         }
@@ -72,8 +72,8 @@ public class AuthLocator extends org.apache.axis.client.Service implements com.a
      */
     public java.rmi.Remote getPort(Class serviceEndpointInterface) throws javax.xml.rpc.ServiceException {
         try {
-            if (com.atlassian.theplugin.crucible.api.soap.RpcAuthServiceName.class.isAssignableFrom(serviceEndpointInterface)) {
-                com.atlassian.theplugin.crucible.api.soap.AuthSoapBindingStub _stub = new com.atlassian.theplugin.crucible.api.soap.AuthSoapBindingStub(new java.net.URL(AuthPort_address), this);
+            if (RpcAuthServiceName.class.isAssignableFrom(serviceEndpointInterface)) {
+                AuthSoapBindingStub _stub = new AuthSoapBindingStub(new java.net.URL(AuthPort_address), this);
                 _stub.setPortName(getAuthPortWSDDServiceName());
                 return _stub;
             }
