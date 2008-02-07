@@ -47,7 +47,12 @@ public class BambooSession {
 
 	/**
 	 * Connects to Bamboo server instance. On successful login authentication token is returned from
-	 * server and stored in Bamboo session for subsequent calls
+	 * server and stored in Bamboo session for subsequent calls.
+	 * <p/>
+	 * The exception returned may have the getCause() examined for to get the actual exception reason.<br>
+	 * If the exception is caused by a valid error response from the server (no IOEXception, UnknownHostException,
+	 * MalformedURLException or JDOMException), the {@link com.atlassian.theplugin.bamboo.api.BambooLoginFailedException}
+	 * is actually thrown. This may be used as a hint that the password is invalid.
 	 *
 	 * @param name	  username defined on Bamboo server instance
 	 * @param aPassword for username
@@ -74,7 +79,7 @@ public class BambooSession {
 			Document doc = retrieveResponse(loginUrl);
 			String exception = getExceptionMessages(doc);
 			if (null != exception) {
-				throw new BambooLoginException("Login exception: " + exception);
+				throw new BambooLoginFailedException(exception);
 			}
 			XPath xpath = XPath.newInstance("/response/auth");
 			List elements = xpath.selectNodes(doc);

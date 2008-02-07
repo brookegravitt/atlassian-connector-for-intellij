@@ -23,7 +23,7 @@ public interface Server extends Cloneable {
 
 	Collection<? extends SubscribedPlan> getSubscribedPlans();
 
-	String getPasswordString() throws ServerPasswordNotProvidedException;
+	String getPasswordString();
 
 	Boolean getEnabled();
 }

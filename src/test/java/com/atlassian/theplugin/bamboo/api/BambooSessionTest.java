@@ -246,7 +246,7 @@ public class BambooSessionTest extends TestCase {
 		BambooBuild build = apiHandler.getLatestBuildForPlan("TP-DEF");
 		apiHandler.logout();
 
-		Util.verifyErrorBuildResult(build, mockBaseUrl);
+		Util.verifyErrorBuildResult(build);
 
 		mockServer.verify();
 	}

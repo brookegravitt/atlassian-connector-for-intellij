@@ -5,17 +5,15 @@ import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.idea.PasswordDialog;
 import com.atlassian.theplugin.idea.PluginInfoUtil;
+import com.atlassian.theplugin.idea.ThePluginApplicationComponent;
+import com.intellij.openapi.application.ApplicationManager;
 
 import javax.swing.*;
 import static javax.swing.JOptionPane.OK_CANCEL_OPTION;
 import static javax.swing.JOptionPane.PLAIN_MESSAGE;
 
 /**
- * Created by IntelliJ IDEA.
- * User: Jacek
- * Date: 2008-01-25
- * Time: 11:20:12
- * To change this template use File | Settings | File Templates.
+ * Shows a dialog for each Bamboo server that has not the password set.
  */
 public class MissingPasswordHandler implements Runnable {
 
@@ -23,29 +21,26 @@ public class MissingPasswordHandler implements Runnable {
 
 	public void run() {
 
-		//ServerBean conf = (ServerBean) (ConfigurationFactory.getConfiguration().getBambooConfiguration().getServer());
-
 		if (!isDialogShown) {
 
 			isDialogShown = true;
 
 			for (Server server : ConfigurationFactory.getConfiguration().getBambooConfiguration().getServers()) {
+				if (server.getIsConfigInitialized()) {
+					continue;
+				}
 				ServerBean serverBean = (ServerBean) server;
 				PasswordDialog dialog = new PasswordDialog(server);
 				dialog.setUserName(serverBean.getUsername());
 				dialog.pack();
 				JPanel panel = dialog.getPasswordPanel();
 
-				//WindowManager.getInstance().getAllFrames();
-
 				int answer = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(), panel,
 						PluginInfoUtil.getName(), OK_CANCEL_OPTION, PLAIN_MESSAGE);
 
-				String password = "";
-				Boolean shouldPasswordBeStored = false;
 				if (answer == JOptionPane.OK_OPTION) {
-					password = dialog.getPasswordString();
-					shouldPasswordBeStored = dialog.getShouldPasswordBeStored();
+					String password = dialog.getPasswordString();
+					Boolean shouldPasswordBeStored = dialog.getShouldPasswordBeStored();
 					serverBean.setPasswordString(password, shouldPasswordBeStored);
 					serverBean.setUsername(dialog.getUserName());
 				} else {
@@ -58,6 +53,11 @@ public class MissingPasswordHandler implements Runnable {
 
 				serverBean.setIsConfigInitialized(true);
 			}
+			ThePluginApplicationComponent appComponent =
+					ApplicationManager.getApplication().getComponent(ThePluginApplicationComponent.class);
+			appComponent.triggerBambooStatusChecker();
+
+			isDialogShown = false;
 		}
 
 	}

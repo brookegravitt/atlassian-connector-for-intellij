@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.util.Timer;
+import java.util.TimerTask;
 
 //import javax.swing.*;
 
@@ -45,6 +46,7 @@ public class ThePluginApplicationComponent
 	private static final int TIMER_TICK = 20000;
 	private static final int TIMER_START_DELAY = 15000;
 	private BambooStatusChecker bambooStatusChecker;
+	private TimerTask bambooStatusCheckerTask;
 
 	public BambooStatusChecker getBambooStatusChecker() {
 		return bambooStatusChecker;
@@ -80,7 +82,8 @@ public class ThePluginApplicationComponent
 		ConfigurationFactory.setConfiguration(configuration);
 
 		bambooStatusChecker = new BambooStatusChecker();
-		timer.schedule(bambooStatusChecker, TIMER_START_DELAY, TIMER_TICK);
+		bambooStatusCheckerTask = bambooStatusChecker.newTimerTask();
+		timer.schedule(bambooStatusCheckerTask, TIMER_START_DELAY, TIMER_TICK);
 	}
 
 	public void disposeComponent() {
@@ -100,20 +103,21 @@ public class ThePluginApplicationComponent
 		return form != null && form.isModified();
 	}
 
+	/**
+	 * Reschedule the BambooStatusChecker with immediate execution trigger.
+	 */
+	public void triggerBambooStatusChecker() {
+		bambooStatusCheckerTask.cancel();
+		timer.purge();
+		bambooStatusCheckerTask = bambooStatusChecker.newTimerTask();
+		timer.schedule(bambooStatusCheckerTask, 0, TIMER_TICK);
+	}
+
 	public void apply() throws ConfigurationException {
 		if (form != null) {
 			// Get data from form to component
 			form.getData();
-			bambooStatusChecker.cancel();
-			timer.purge();
-			// we cannot re-schedule the same instance of bambooStatusChecker, because we get an exception.
-			// So we create another copy so it's get scheduled properly
-			try {
-				bambooStatusChecker = (BambooStatusChecker) bambooStatusChecker.clone();
-			} catch (CloneNotSupportedException e) {
-				throw new ConfigurationException(e.getMessage(), "Error while restarting timer.");
-			}
-			timer.schedule(bambooStatusChecker, 0, TIMER_TICK);
+			triggerBambooStatusChecker();
 		}
 
 	}

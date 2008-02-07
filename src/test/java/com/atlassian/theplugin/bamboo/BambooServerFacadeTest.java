@@ -31,10 +31,10 @@ public class BambooServerFacadeTest extends TestCase {
 		mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort();
 
 		mockServer = new JettyMockServer(httpServer);
-		ConfigurationFactory.setConfiguration(createBambooTestConfiguration(mockBaseUrl));
+		ConfigurationFactory.setConfiguration(createBambooTestConfiguration(mockBaseUrl, true));
 	}
 
-	private static PluginConfiguration createBambooTestConfiguration(String serverUrl) {
+	private static PluginConfiguration createBambooTestConfiguration(String serverUrl, boolean isPassInitialized) {
 		BambooConfigurationBean configuration = new BambooConfigurationBean();
 
 		Collection<ServerBean> servers = new ArrayList<ServerBean>();
@@ -43,7 +43,9 @@ public class BambooServerFacadeTest extends TestCase {
 		server.setName("TestServer");
 		server.setUrlString(serverUrl);
 		server.setUsername(USER_NAME);
-		server.setPasswordString(PASSWORD, true);
+
+		server.setPasswordString(isPassInitialized ? PASSWORD : "", isPassInitialized);
+		server.setIsConfigInitialized(isPassInitialized);
 		servers.add(server);
 
 		ArrayList<SubscribedPlanBean> plans = new ArrayList<SubscribedPlanBean>();
@@ -83,7 +85,7 @@ public class BambooServerFacadeTest extends TestCase {
 		Iterator<BambooBuild> iterator = plans.iterator();
 		Util.verifySuccessfulBuildResult(iterator.next(), mockBaseUrl);
 		Util.verifyFailedBuildResult(iterator.next(), mockBaseUrl);
-		Util.verifyErrorBuildResult(iterator.next(), mockBaseUrl);
+		Util.verifyErrorBuildResult(iterator.next());
 
 		mockServer.verify();
 	}
@@ -97,11 +99,46 @@ public class BambooServerFacadeTest extends TestCase {
 		assertNotNull(plans);
 		assertEquals(3, plans.size());
 		Iterator<BambooBuild> iterator = plans.iterator();
-		Util.verifyLoginErrorBuildResult(iterator.next(), mockBaseUrl);
-		Util.verifyLoginErrorBuildResult(iterator.next(), mockBaseUrl);
-		Util.verifyLoginErrorBuildResult(iterator.next(), mockBaseUrl);
+		Util.verifyLoginErrorBuildResult(iterator.next());
+		Util.verifyLoginErrorBuildResult(iterator.next());
+		Util.verifyLoginErrorBuildResult(iterator.next());
 
 		mockServer.verify();
+	}
+
+	public void testUninitializedPassword() throws Exception {
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, "", LoginCallback.ALWAYS_FAIL));
+		ConfigurationFactory.setConfiguration(createBambooTestConfiguration(mockBaseUrl, false));
+		Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServers().iterator().next();
+		try {
+			BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults(server);
+			fail("Testing uninitialized password");
+
+		} catch (ServerPasswordNotProvidedException e) {
+			// ok: connection succeeded but server returned error
+		}
+
+		mockServer.expect("/api/rest/login.action", new ErrorResponse(400));
+		// connection error, just report without asking for the pass
+		Collection<BambooBuild> plans = BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults(server);
+		assertNotNull(plans);
+		assertEquals(3, plans.size());
+		Iterator<BambooBuild> iterator = plans.iterator();
+		Util.verifyError400BuildResult(iterator.next(), mockBaseUrl);
+		Util.verifyError400BuildResult(iterator.next(), mockBaseUrl);
+		Util.verifyError400BuildResult(iterator.next(), mockBaseUrl);
+
+		((ServerBean) server).setUrlString("malformed");
+		plans = BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults(server);
+		assertNotNull(plans);
+		assertEquals(3, plans.size());
+		iterator = plans.iterator();
+		assertEquals("Malformed server URL: malformed", iterator.next().getMessage());
+		assertEquals("Malformed server URL: malformed", iterator.next().getMessage());
+		assertEquals("Malformed server URL: malformed", iterator.next().getMessage());
+
+		mockServer.verify();
+
 	}
 
 	public void testProjectList() throws Exception {
@@ -129,7 +166,7 @@ public class BambooServerFacadeTest extends TestCase {
 	public void testPlanList() throws Exception {
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
 		mockServer.expect("/api/rest/listBuildNames.action", new PlanListCallback());
-		mockServer.expect("/api/rest/getLatestUserBuilds.action", new FavouritePlanListCallback());		
+		mockServer.expect("/api/rest/getLatestUserBuilds.action", new FavouritePlanListCallback());
 		mockServer.expect("/api/rest/logout.action", new LogoutCallback());
 
 		Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServers().iterator().next();
@@ -194,10 +231,10 @@ public class BambooServerFacadeTest extends TestCase {
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
 		mockServer.expect("/api/rest/logout.action", new LogoutCallback());
 		Server server = ConfigurationFactory.getConfiguration().getBambooConfiguration().getServers().iterator().next();
-        server.getSubscribedPlans().clear();
+		server.getSubscribedPlans().clear();
 		BambooServerFacade facade = new BambooServerFacadeImpl();
-        Collection<BambooBuild> plans = facade.getSubscribedPlansResults(server);
-        assertEquals(0, plans.size());
+		Collection<BambooBuild> plans = facade.getSubscribedPlansResults(server);
+		assertEquals(0, plans.size());
 
 		mockServer.verify();
 	}

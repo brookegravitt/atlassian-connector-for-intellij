@@ -1,6 +1,9 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
-import com.atlassian.theplugin.configuration.*;
+import com.atlassian.theplugin.configuration.BambooConfigurationBean;
+import com.atlassian.theplugin.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.configuration.PluginConfiguration;
+import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.idea.config.AbstractContentPanel;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
 import com.atlassian.theplugin.idea.config.FooterPanel;
@@ -149,11 +152,7 @@ public class ServerConfigPanel extends AbstractContentPanel {
 
 		server.setName(tempValue.getName());
 		server.setUsername(tempValue.getUsername());
-		try {
-			server.setPasswordString(tempValue.getPasswordString(), tempValue.getShouldPasswordBeStored());
-		} catch (ServerPasswordNotProvidedException e) {
-			// ignore here
-		}
+		server.setPasswordString(tempValue.getPasswordString(), tempValue.getShouldPasswordBeStored());
 		server.setUrlString(tempValue.getUrlString());
 		server.setSubscribedPlansData(tempValue.getSubscribedPlansData());
 	}

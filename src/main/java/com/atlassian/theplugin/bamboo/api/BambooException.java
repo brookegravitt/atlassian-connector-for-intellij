@@ -1,17 +1,9 @@
 package com.atlassian.theplugin.bamboo.api;
 
 /**
- * Created by IntelliJ IDEA.
- * User: mwent
- * Date: 2008-01-11
- * Time: 14:31:38
- * To change this template use File | Settings | File Templates.
+ * Generic Bamboo Excepion.
  */
 public class BambooException extends Exception {
-
-	public BambooException(Throwable throwable) {
-		super(throwable);
-	}
 
 	public BambooException(String message) {
 		super(message);
