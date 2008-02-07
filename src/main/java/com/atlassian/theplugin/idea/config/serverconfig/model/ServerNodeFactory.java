@@ -2,6 +2,7 @@ package com.atlassian.theplugin.idea.config.serverconfig.model;
 
 import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.configuration.Server;
+import com.atlassian.theplugin.ServerType;
 
 /**
  * Created by IntelliJ IDEA.

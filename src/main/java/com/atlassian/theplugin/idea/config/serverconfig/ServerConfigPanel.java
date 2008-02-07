@@ -4,7 +4,7 @@ import com.atlassian.theplugin.configuration.*;
 import com.atlassian.theplugin.idea.config.AbstractContentPanel;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
 import com.atlassian.theplugin.idea.config.serverconfig.model.ServerNode;
-import com.atlassian.theplugin.idea.config.serverconfig.model.ServerType;
+import com.atlassian.theplugin.ServerType;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.ui.Splitter;
