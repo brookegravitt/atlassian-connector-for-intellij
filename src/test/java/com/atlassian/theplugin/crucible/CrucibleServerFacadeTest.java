@@ -1,7 +1,10 @@
 package com.atlassian.theplugin.crucible;
 
+import com.atlassian.theplugin.crucible.api.*;
 import junit.framework.TestCase;
-import com.atlassian.theplugin.crucible.api.CrucibleException;
+import org.easymock.EasyMock;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.replay;
 
 /**
  * Created by IntelliJ IDEA.
@@ -13,23 +16,60 @@ import com.atlassian.theplugin.crucible.api.CrucibleException;
 public class CrucibleServerFacadeTest extends TestCase {
 
 	private CrucibleServerFacade facade;
-	//private MockControl control;
-	//private Collaborator collaborator;
+	private CrucibleSession crucibleSessionMock;
 
-	public void testConnectionTest() {
+	protected void setUp() {
 
-		//control = MockControl.createControl(CrucibleServerFacade.class);
+		crucibleSessionMock = createMock(CrucibleSession.class);
 
-		//facade = (CrucibleServerFacade) control.getMock();
+		facade = CrucibleServerFactory.getCrucibleServerFacade();
+		facade.setCrucibleSession(crucibleSessionMock);
 
-		//facade
+	}
 
-		CrucibleServerFacade fasade = CrucibleServerFactory.getCrucibleServerFacade();
+	public void testConnectionTestFailed() {
 
 		try {
-			fasade.testServerConnection("http://lech.atlassian.pl:8060", "test", "d0n0tch@nge");
+			crucibleSessionMock.login("badUserName", "badPassword");
+			EasyMock.expectLastCall().andThrow(new CrucibleLoginException(""));
+		} catch (CrucibleLoginException e) {
+			fail("recording mock failed for login");
+		}
+
+		replay(crucibleSessionMock);
+
+		try {
+			facade.testServerConnection("some adress", "badUserName", "badPassword");
+			fail("testServerConnection failed");
+		} catch (CrucibleException e) {
+			//
+		} finally {
+			EasyMock.verify(crucibleSessionMock);
+		}
+	}
+
+	public void testConnectionTestSucceed() {
+
+		try {
+			crucibleSessionMock.login("CorrectUserName", "CorrectPassword");
+		} catch (CrucibleLoginException e) {
+			fail("recording mock failed for login");
+		}
+
+		try {
+			crucibleSessionMock.logout();
+		} catch (CrucibleLogoutException e) {
+			fail("recording mock failed for logout");
+		}
+
+		replay(crucibleSessionMock);
+
+		try {
+			facade.testServerConnection("some adress", "CorrectUserName", "CorrectPassword");
 		} catch (CrucibleException e) {
 			fail("testServerConnection failed");
+		} finally {
+			EasyMock.verify(crucibleSessionMock);
 		}
 	}
 }
