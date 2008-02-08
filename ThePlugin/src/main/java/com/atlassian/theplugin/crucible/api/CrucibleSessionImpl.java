@@ -1,12 +1,8 @@
 package com.atlassian.theplugin.crucible.api;
 
-import com.atlassian.theplugin.crucible.api.soap.axis.AuthSoapBindingStub;
-import com.atlassian.theplugin.crucible.api.soap.xfire.Auth;
 import com.atlassian.theplugin.crucible.api.soap.xfire.RpcAuthServiceName;
 
-import javax.xml.namespace.QName;
-import java.net.MalformedURLException;
-import java.net.URL;
+import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 
 /**
  * Created by IntelliJ IDEA.
@@ -17,12 +13,12 @@ import java.net.URL;
  */
 public class CrucibleSessionImpl implements CrucibleSession {
 	private String crucibleAuthUrl;
-	private AuthSoapBindingStub service;
+
 
 	private String authToken;
+    RpcAuthServiceName authService;
 
-	private static final String SERVICE_AUTH_SUFFIX = "service/auth";
-	private RpcAuthServiceName port;
+    private static final String SERVICE_AUTH_SUFFIX = "service/auth";
 
 	/**
 	 *
@@ -37,49 +33,20 @@ public class CrucibleSessionImpl implements CrucibleSession {
 		} else {
 			crucibleAuthUrl = baseUrl + "/" + SERVICE_AUTH_SUFFIX;
 		}
-
-		QName SERVICE_NAME = new QName("http://rpc.spi.crucible.atlassian.com/", "Auth");
-
-		Auth ss = null;
-		try {
-			ss = new Auth(new URL("http://lech.atlassian.pl:8060/service/auth?wsdl"), SERVICE_NAME);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-		}
-		port = ss.getAuthPort();
-
 	}
 
-//		public CrucibleSessionImpl(String baseUrl) throws CrucibleException {
-//		crucibleAuthUrl = baseUrl;
-//
-//		if (baseUrl.endsWith("/")) {
-//			crucibleAuthUrl = baseUrl + SERVICE_AUTH_SUFFIX;
-//		} else {
-//			crucibleAuthUrl = baseUrl + "/" + SERVICE_AUTH_SUFFIX;
-//		}
-//
-//		try {
-//			service = (AuthSoapBindingStub) new AuthLocator().getAuthPort(new URL(crucibleAuthUrl));
-//			//service.setTimeout(3000);
-//		} catch (ServiceException e) {
-//			throw new CrucibleException("Soap binding problem", e);
-//		} catch (MalformedURLException e) {
-//			throw new CrucibleException("Invalid URL", e);
-//		}
-//	}
-
 	public void login(String userName, String password) throws CrucibleLoginException {
-			authToken = port.login(userName, password);
-			//authToken = service.login(userName, password);
+        JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
+        factory.setServiceClass(RpcAuthServiceName.class);
+        factory.setAddress("http://lech.atlassian.pl:8060/service/auth");
+        authService = (RpcAuthServiceName) factory.create();
+        authToken = authService.login(userName, password);
 	}
 
 	public void logout() throws CrucibleLogoutException {
 		if (authToken != null) {
-				port.logout(authToken);
+				authService.logout(authToken);
 		}
-		
 		authToken = null;
-
 	}
 }
