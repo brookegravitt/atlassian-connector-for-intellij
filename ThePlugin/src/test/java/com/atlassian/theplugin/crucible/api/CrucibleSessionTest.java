@@ -29,7 +29,7 @@ public class CrucibleSessionTest extends TestCase {
 		httpServer.stop();
 	}
 
-	public void ftestSuccessCrucibleLogin() {
+	public void testSuccessCrucibleLogin() {
 
 		CrucibleSessionImpl session = null;
 
@@ -39,8 +39,8 @@ public class CrucibleSessionTest extends TestCase {
 			
 		}
 
-		String userName = "test";
-		String password = "asdfsfsfs";
+		String userName = "mwent";
+		String password = "d0n0tch@nge";
 
 		try {
 			session.login(userName, password);
