@@ -232,7 +232,7 @@
 			<artifactId>axis-saaj</artifactId>
 			<version>1.4</version>
 		</dependency>
-	<dependency>
+		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-core</artifactId>
 			<version>${cxf.version}</version>

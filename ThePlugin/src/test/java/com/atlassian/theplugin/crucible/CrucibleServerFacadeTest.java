@@ -42,7 +42,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 			facade.testServerConnection("some adress", "badUserName", "badPassword");
 			fail("testServerConnection failed");
 		} catch (CrucibleException e) {
-			//
+			// testServerConnection succeed
 		} finally {
 			EasyMock.verify(crucibleSessionMock);
 		}
