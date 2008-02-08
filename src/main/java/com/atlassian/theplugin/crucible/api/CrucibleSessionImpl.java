@@ -1,7 +1,6 @@
 package com.atlassian.theplugin.crucible.api;
 
 import com.atlassian.theplugin.crucible.api.soap.xfire.RpcAuthServiceName;
-
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 
 /**
@@ -25,7 +24,7 @@ public class CrucibleSessionImpl implements CrucibleSession {
 	 * @param baseUrl url to the Crucible installation (without /service/auth suffix)
 	 * @throws CrucibleException if URL is invalid or SOAP binding failed
 	 */
-	public CrucibleSessionImpl(String baseUrl) throws CrucibleException {
+	public CrucibleSessionImpl(String baseUrl) {
 		crucibleAuthUrl = baseUrl;
 
 		if (baseUrl.endsWith("/")) {
@@ -33,17 +32,23 @@ public class CrucibleSessionImpl implements CrucibleSession {
 		} else {
 			crucibleAuthUrl = baseUrl + "/" + SERVICE_AUTH_SUFFIX;
 		}
+
+		JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
+        factory.setServiceClass(RpcAuthServiceName.class);
+        factory.setAddress(crucibleAuthUrl);
+        authService = (RpcAuthServiceName) factory.create();
 	}
 
 	public void login(String userName, String password) throws CrucibleLoginException {
-        JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
-        factory.setServiceClass(RpcAuthServiceName.class);
-        factory.setAddress("http://lech.atlassian.pl:8060/service/auth");
-        authService = (RpcAuthServiceName) factory.create();
+
         authToken = authService.login(userName, password);
+
+	    if (authToken == null || authToken.length() == 0) {
+			throw new CrucibleLoginException("Login failed");
+		}
 	}
 
-	public void logout() throws CrucibleLogoutException {
+	public void logout() {
 		if (authToken != null) {
 				authService.logout(authToken);
 		}

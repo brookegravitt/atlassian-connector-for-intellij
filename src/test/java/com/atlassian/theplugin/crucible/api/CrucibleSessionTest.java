@@ -1,7 +1,9 @@
 package com.atlassian.theplugin.crucible.api;
 
+import com.atlassian.theplugin.crucible.api.soap.xfire.RpcAuthServiceName;
 import junit.framework.TestCase;
 import org.mortbay.jetty.Server;
+import org.apache.cxf.jaxws.JaxWsServerFactoryBean;
 
 /**
  * Created by IntelliJ IDEA.
@@ -12,35 +14,51 @@ import org.mortbay.jetty.Server;
  */
 public class CrucibleSessionTest extends TestCase {
 
-	private String mockUrl;
 	private Server httpServer;
 
 	protected void setUp() throws Exception {
-		super.setUp();
 
-		httpServer = new Server(0);
-		httpServer.start();
+		CxfAuthServiceMockImpl authServiceMock = new CxfAuthServiceMockImpl();
 
-		mockUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort();
+		JaxWsServerFactoryBean serverFactory = new JaxWsServerFactoryBean();
+		serverFactory.setServiceClass(RpcAuthServiceName.class);
+		serverFactory.setAddress(CxfAuthServiceMockImpl.VALID_URL + "/service/auth");
+		serverFactory.setServiceBean(authServiceMock);
+		serverFactory.create();
 	}
 
 	protected void tearDown() throws Exception {
-		mockUrl = null;
-		httpServer.stop();
 	}
 
 	public void testSuccessCrucibleLogin() {
 
-		CrucibleSessionImpl session = null;
+		CrucibleSessionImpl crucibleSession = new CrucibleSessionImpl(CxfAuthServiceMockImpl.VALID_URL);
 
 		try {
-			session = new CrucibleSessionImpl("");
-		} catch (CrucibleException e) {
-			
+			crucibleSession.login(CxfAuthServiceMockImpl.VALID_LOGIN, CxfAuthServiceMockImpl.VALID_PASSWORD);
+		} catch (CrucibleLoginException e) {
+			fail("Login failed while expected success: " + e.getMessage());
 		}
+	}
 
-		String userName = "mwent";
-		String password = "d0n0tch@nge";
+	public void testFailedCrucibleLogin() {
+		CrucibleSessionImpl crucibleSession = new CrucibleSessionImpl(CxfAuthServiceMockImpl.VALID_URL);
+
+		try {
+			crucibleSession.login(CxfAuthServiceMockImpl.INVALID_LOGIN, CxfAuthServiceMockImpl.INVALID_PASSWORD);
+			fail("Login succeeded while expected failure.");
+		} catch (CrucibleLoginException e) {
+
+		}
+	}
+
+	private void xtestCxf() {
+		CrucibleSessionImpl session = null;
+
+		session = new CrucibleSessionImpl("http://lech.atlassian.pl:8060");
+
+		String userName = "test";
+		String password = "test";
 
 		try {
 			session.login(userName, password);
@@ -48,24 +66,6 @@ public class CrucibleSessionTest extends TestCase {
 			fail("login failed: " + e.getMessage());
 		}
 
-		try {
-			session.logout();
-		} catch (CrucibleLogoutException e) {
-			fail("logout failed: " + e.getMessage());
-		}
-
-//		try {
-//			session.login(userName, password);
-//		} catch (CrucibleLoginException e) {
-//			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//		}
-
-		// create and use mock for login here
-
-		//fail("Not yet implemented");
-	}
-
-	public void testFailedCrucibleLogin() {
-		//fail("Not yet implemented");
+		session.logout();
 	}
 }
