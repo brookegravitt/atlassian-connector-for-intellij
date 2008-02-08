@@ -6,6 +6,8 @@ package com.atlassian.theplugin.crucible.api.soap.xfire;
  * This class is not complete
  */
 
+import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
+
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -33,43 +35,13 @@ public final class RpcAuthServiceName_AuthPort_Client {
 
     public static void main(String args[]) throws Exception {
 
-		args = new String[] {"http://lech.atlassian.pl:8060/service/auth?wsdl"};
+        JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
+        factory.setServiceClass(RpcAuthServiceName.class);
+        factory.setAddress("http://lech.atlassian.pl:8060/service/auth");
+        RpcAuthServiceName client = (RpcAuthServiceName) factory.create();
 
-		if (args.length == 0) {
-            System.out.println("please specify wsdl");
-            System.exit(1); 
-        }
-        URL wsdlURL = null;
-        File wsdlFile = new File(args[0]);
-        try {
-            if (wsdlFile.exists()) {
-                wsdlURL = wsdlFile.toURL();
-            } else {
-                wsdlURL = new URL(args[0]);
-            }
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-      
-        Auth ss = new Auth(wsdlURL, SERVICE_NAME);
-        RpcAuthServiceName port = ss.getAuthPort();  
-        
-        {
-        System.out.println("Invoking login...");
-        java.lang.String _login_arg0 = "";
-        java.lang.String _login_arg1 = "";
-        java.lang.String _login__return = port.login(_login_arg0, _login_arg1);
-        System.out.println("login.result=" + _login__return);
-
-
-        }
-        {
-        System.out.println("Invoking logout...");
-        java.lang.String _logout_arg0 = "";
-        port.logout(_logout_arg0);
-
-
-        }
+        String reply = client.login("mwent", "d0n0tch@nge");
+        System.out.println("Token:" + reply);
 
         System.exit(0);
     }
