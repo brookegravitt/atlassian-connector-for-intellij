@@ -3,6 +3,7 @@ package com.atlassian.theplugin.crucible.api;
 import com.atlassian.theplugin.crucible.api.soap.xfire.RpcAuthServiceName;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 
+
 /**
  * Created by IntelliJ IDEA.
  * User: Jacek
@@ -22,7 +23,6 @@ public class CrucibleSessionImpl implements CrucibleSession {
 	/**
 	 *
 	 * @param baseUrl url to the Crucible installation (without /service/auth suffix)
-	 * @throws CrucibleException if URL is invalid or SOAP binding failed
 	 */
 	public CrucibleSessionImpl(String baseUrl) {
 		crucibleAuthUrl = baseUrl;
@@ -33,14 +33,14 @@ public class CrucibleSessionImpl implements CrucibleSession {
 			crucibleAuthUrl = baseUrl + "/" + SERVICE_AUTH_SUFFIX;
 		}
 
-		JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
+    	JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
         factory.setServiceClass(RpcAuthServiceName.class);
         factory.setAddress(crucibleAuthUrl);
+        Thread.currentThread().setContextClassLoader(factory.getClass().getClassLoader());
         authService = (RpcAuthServiceName) factory.create();
-	}
+    }
 
 	public void login(String userName, String password) throws CrucibleLoginException {
-
         authToken = authService.login(userName, password);
 
 	    if (authToken == null || authToken.length() == 0) {
