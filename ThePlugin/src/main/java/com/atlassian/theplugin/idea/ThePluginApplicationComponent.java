@@ -9,6 +9,8 @@ import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.util.IconLoader;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
@@ -49,6 +51,9 @@ public class ThePluginApplicationComponent
 	private TimerTask bambooStatusCheckerTask;
 
 	public BambooStatusChecker getBambooStatusChecker() {
+		if (bambooStatusChecker == null) {
+			bambooStatusChecker = new BambooStatusChecker();
+		}
 		return bambooStatusChecker;
 	}
 
@@ -81,9 +86,9 @@ public class ThePluginApplicationComponent
 	public void initComponent() {
 		ConfigurationFactory.setConfiguration(configuration);
 
-		bambooStatusChecker = new BambooStatusChecker();
-		bambooStatusCheckerTask = bambooStatusChecker.newTimerTask();
-		timer.schedule(bambooStatusCheckerTask, TIMER_START_DELAY, TIMER_TICK);
+		if (configuration.isPluginEnabled()) {
+			triggerBambooStatusChecker();
+		}
 	}
 
 	public void disposeComponent() {
@@ -103,21 +108,40 @@ public class ThePluginApplicationComponent
 		return form != null && form.isModified();
 	}
 
+	private void disableTimers() {
+		if (bambooStatusCheckerTask != null) {
+			bambooStatusCheckerTask.cancel();
+		}
+		timer.purge();
+	}
+
 	/**
 	 * Reschedule the BambooStatusChecker with immediate execution trigger.
 	 */
 	public void triggerBambooStatusChecker() {
-		bambooStatusCheckerTask.cancel();
-		timer.purge();
-		bambooStatusCheckerTask = bambooStatusChecker.newTimerTask();
-		timer.schedule(bambooStatusCheckerTask, 0, TIMER_TICK);
+		bambooStatusCheckerTask = getBambooStatusChecker().newTimerTask();
+		timer.schedule(bambooStatusCheckerTask, TIMER_START_DELAY, TIMER_TICK);
 	}
 
 	public void apply() throws ConfigurationException {
 		if (form != null) {
 			// Get data from form to component
 			form.getData();
-			triggerBambooStatusChecker();
+
+			disableTimers();
+			if (configuration.isPluginEnabled()) {
+				for (Project pr : ProjectManager.getInstance().getOpenProjects()) {
+					ThePluginProjectComponent pc = pr.getComponent(ThePluginProjectComponent.class);
+					pc.enablePlugin();
+				}
+				triggerBambooStatusChecker();
+			} else {
+				for (Project pr : ProjectManager.getInstance().getOpenProjects()) {
+					ThePluginProjectComponent pc = pr.getComponent(ThePluginProjectComponent.class);
+					pc.disablePlugin();
+				}
+				bambooStatusChecker = null;
+			}			
 		}
 
 	}
