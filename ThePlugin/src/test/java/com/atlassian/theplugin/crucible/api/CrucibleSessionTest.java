@@ -21,7 +21,7 @@ public class CrucibleSessionTest extends TestCase {
 		CxfAuthServiceMockImpl authServiceMock = new CxfAuthServiceMockImpl();
 
 		JaxWsServerFactoryBean serverFactory = new JaxWsServerFactoryBean();
-		serverFactory.setServiceClass(RpcAuthServiceName.class);
+        serverFactory.setServiceClass(RpcAuthServiceName.class);
 		serverFactory.setAddress(CxfAuthServiceMockImpl.VALID_URL + "/service/auth");
 		serverFactory.setServiceBean(authServiceMock);
 		serverFactory.create();
@@ -32,9 +32,10 @@ public class CrucibleSessionTest extends TestCase {
 
 	public void testSuccessCrucibleLogin() {
 
-		CrucibleSessionImpl crucibleSession = new CrucibleSessionImpl(CxfAuthServiceMockImpl.VALID_URL);
+        CrucibleSessionImpl crucibleSession = null;
+        crucibleSession = new CrucibleSessionImpl(CxfAuthServiceMockImpl.VALID_URL);
 
-		try {
+        try {
 			crucibleSession.login(CxfAuthServiceMockImpl.VALID_LOGIN, CxfAuthServiceMockImpl.VALID_PASSWORD);
 		} catch (CrucibleLoginException e) {
 			fail("Login failed while expected success: " + e.getMessage());
@@ -42,9 +43,10 @@ public class CrucibleSessionTest extends TestCase {
 	}
 
 	public void testFailedCrucibleLogin() {
-		CrucibleSessionImpl crucibleSession = new CrucibleSessionImpl(CxfAuthServiceMockImpl.VALID_URL);
+        CrucibleSessionImpl crucibleSession = null;
+        crucibleSession = new CrucibleSessionImpl(CxfAuthServiceMockImpl.VALID_URL);
 
-		try {
+        try {
 			crucibleSession.login(CxfAuthServiceMockImpl.INVALID_LOGIN, CxfAuthServiceMockImpl.INVALID_PASSWORD);
 			fail("Login succeeded while expected failure.");
 		} catch (CrucibleLoginException e) {
@@ -52,7 +54,7 @@ public class CrucibleSessionTest extends TestCase {
 		}
 	}
 
-	private void xtestCxf() {
+	private void xtestCxf() throws CrucibleException {
 		CrucibleSessionImpl session = null;
 
 		session = new CrucibleSessionImpl("http://lech.atlassian.pl:8060");
