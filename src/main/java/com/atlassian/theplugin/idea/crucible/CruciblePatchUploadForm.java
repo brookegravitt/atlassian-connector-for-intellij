@@ -52,6 +52,7 @@ public class CruciblePatchUploadForm extends DialogWrapper {
 		patchPreview = new JTextArea();
 		patchPreview.setEditable(false);
 		patchPreview.setEnabled(true);
+		patchPreview.setFont(new Font("Monospaced", patchPreview.getFont().getStyle(), patchPreview.getFont().getSize()));
 		patchPreview.setText("");
 		scrollPane1.setViewportView(patchPreview);
 	}
