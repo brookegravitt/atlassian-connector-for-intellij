@@ -10,7 +10,10 @@ import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vcs.changes.CommitSession;
 import com.intellij.openapi.vcs.changes.ContentRevision;
 import com.intellij.openapi.vcs.history.VcsRevisionNumber;
+import com.intellij.openapi.vfs.VfsUtil;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.diff.Diff;
+import com.intellij.vcsUtil.VcsUtil;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -106,9 +109,15 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 		return new LineTokenizer(content).execute();
 	}
 
-	private static String getPath(ContentRevision revision) {
+	private String getPath(ContentRevision revision) {
 		FilePath filePath = revision.getFile();
-		return filePath.getPath();
+		VirtualFile vcsRoot = VcsUtil.getVcsRootFor(project, filePath);
+		String path = VfsUtil.getRelativePath(filePath.getVirtualFile(), vcsRoot, '/');
+		if (path == null) {
+			path = "";
+		}
+
+		return path;
 	}
 
 	private static String getRevisionStr(ContentRevision revision) {
