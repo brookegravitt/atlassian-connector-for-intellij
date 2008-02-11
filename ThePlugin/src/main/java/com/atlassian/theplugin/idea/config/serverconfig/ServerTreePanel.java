@@ -132,7 +132,7 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 	private void updateServerTree(ServerType serverType) {
 		Collection<Server> servers = pluginConfiguration.getProductServers(serverType).getServers();
 
-		// !servers.isEmpty()
+		// !servers.isEmpty() because:
 		// if server list is empty, don't create server type node,
 		// otherwise create node - it would be required
 		ServerTypeNode serverTypeNode = model.getServerTypeNode(serverType, !servers.isEmpty());
@@ -160,6 +160,7 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 
 	private void updateTreeConfiguration() {
 		firstServerNode = null;
+		((DefaultMutableTreeNode)model.getRoot()).removeAllChildren();
 		updateServerTree(ServerType.BAMBOO_SERVER);
 		updateServerTree(ServerType.CRUCIBLE_SERVER);
 
