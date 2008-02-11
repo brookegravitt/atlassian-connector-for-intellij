@@ -1,7 +1,10 @@
 package com.atlassian.theplugin.idea.crucible;
 
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.diff.LineTokenizer;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vcs.FilePath;
 import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vcs.changes.CommitSession;
@@ -22,6 +25,7 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 		LOG.setLevel(Level.ALL);
 	}
 
+	@SuppressWarnings("unused")
 	private final Project project;
 
 	public CruciblePatchSubmitCommitSession(Project project) {
@@ -44,33 +48,23 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 
 	public void execute(Collection<Change> changes, String commitMessage) {
 		System.out.println("Sending to the Crucible server: " + commitMessage);
+		StringBuilder sb = new StringBuilder();
 		for (Change fileChange : changes) {
-			StringBuilder sb = new StringBuilder();
-
 			ContentRevision beforeRevision = fileChange.getBeforeRevision();
 			ContentRevision afterRevision = fileChange.getAfterRevision();
-			String[] beforeLines;
-			try {
-				beforeLines = new LineTokenizer(beforeRevision.getContent()).execute();
-			} catch (VcsException e) {
-				beforeLines = new String[]{ };
-			}
-			String[] afterLines;
-			try {
-				afterLines = new LineTokenizer(afterRevision.getContent()).execute();
-			} catch (VcsException e) {
-				afterLines = new String[]{ };
-			}
 
-			String beforePath = beforeRevision.getFile().getPath();
-			String afterPath = afterRevision.getFile().getPath();
+			String[] beforeLines = getLines(beforeRevision);
+			String[] afterLines = getLines(afterRevision);
+
+			String beforePath = getPath(beforeRevision);
+			String afterPath = getPath(afterRevision);
 			sb.append("Index: ");
 			sb.append(beforePath).append('\n');
 			sb.append("===================================================================\n");
 			sb.append("--- ").append(beforePath).append("\t(");
-			sb.append(getRevisionStr(beforeRevision.getRevisionNumber())).append(")\n");
+			sb.append(getRevisionStr(beforeRevision)).append(")\n");
 			sb.append("+++ ").append(afterPath).append("\t(");
-			sb.append(getRevisionStr(afterRevision.getRevisionNumber())).append(")\n");
+			sb.append(getRevisionStr(afterRevision)).append(")\n");
 
 
 			Diff.Change change = Diff.buildChanges(beforeLines, afterLines);
@@ -91,18 +85,38 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 					sb.append(afterLines[change.line1 + i]);
 				}
 
-				System.out.println(sb);
 				change = change.link;
 			}
-
 		}
+		ApplicationManager.getApplication().invokeAndWait(new CruciblePatchUploader(sb.toString()), ModalityState.defaultModalityState());
 	}
 
-	private static String getRevisionStr(VcsRevisionNumber revision) {
-		if (revision == VcsRevisionNumber.NULL) {
+	private static final String[] EMPTY_STR_ARRAY = new String[0];
+
+	private static String[] getLines(ContentRevision revision) {
+		String content;
+		try {
+			content = revision.getContent();
+			if (content == null) {
+				return EMPTY_STR_ARRAY;
+			}
+		} catch (VcsException e) {
+			return EMPTY_STR_ARRAY;
+		}
+		return new LineTokenizer(content).execute();
+	}
+
+	private static String getPath(ContentRevision revision) {
+		FilePath filePath = revision.getFile();
+		return filePath.getPath();
+	}
+
+	private static String getRevisionStr(ContentRevision revision) {
+		VcsRevisionNumber revisionNumber = revision.getRevisionNumber();
+		if (revisionNumber == VcsRevisionNumber.NULL) {
 			return "working copy";
 		} else {
-			return "revision " + revision.asString();
+			return "revision " + revisionNumber.asString();
 		}
 	}
 
