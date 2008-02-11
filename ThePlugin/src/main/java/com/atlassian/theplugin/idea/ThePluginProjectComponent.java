@@ -2,10 +2,12 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.bamboo.BuildStatus;
 import com.atlassian.theplugin.bamboo.HtmlBambooStatusListener;
+import com.atlassian.theplugin.idea.crucible.CruciblePatchSubmitExecutor;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.wm.*;
 import com.intellij.peer.PeerFactory;
 import com.intellij.ui.content.Content;
@@ -44,6 +46,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	public void initComponent() {
 		System.out.println("Start: Init ThePlugin project component.");
 		System.out.println("End: Init ThePlugin project component.");
+		ChangeListManager.getInstance(project).registerCommitExecutor(new CruciblePatchSubmitExecutor(project));
 	}
 
 	public void disposeComponent() {
