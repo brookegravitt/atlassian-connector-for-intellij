@@ -443,6 +443,7 @@
 				<artifactId>maven-checkstyle-plugin</artifactId>
 				<configuration>
 					<configLocation>java-regular.cs.xml</configLocation>
+					<excludes>thirdparty/net/iharder/base64/Base64.java</excludes>
 				</configuration>
 			</plugin>
 			<plugin>
