@@ -1,10 +1,13 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
-import com.atlassian.theplugin.configuration.*;
+import com.atlassian.theplugin.ServerType;
+import com.atlassian.theplugin.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.configuration.PluginConfiguration;
+import com.atlassian.theplugin.configuration.Server;
+import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.idea.config.AbstractContentPanel;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
 import com.atlassian.theplugin.idea.config.serverconfig.model.ServerNode;
-import com.atlassian.theplugin.ServerType;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.ui.Splitter;
@@ -17,6 +20,7 @@ import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import java.awt.*;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -132,8 +136,9 @@ public class ServerConfigPanel extends AbstractContentPanel {
                     if (getPluginConfiguration().getProductServers(type).getServer(serverPanels.get(type).getData()) != null) {
                         getPluginConfiguration().getProductServers(type).storeServer(serverPanels.get(type).getData());
                     }
-                    ConfigurationFactory.getConfiguration().getProductServers(type).setServers(getPluginConfiguration().getProductServers(type).getServers());
-                }
+				}
+				Collection<Server> s = getPluginConfiguration().getProductServers(type).getServers();
+				ConfigurationFactory.getConfiguration().getProductServers(type).setServers(s);                
             }
 
             this.treePanel.setData(getPluginConfiguration());
