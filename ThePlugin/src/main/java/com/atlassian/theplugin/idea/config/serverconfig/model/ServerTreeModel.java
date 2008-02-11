@@ -2,6 +2,7 @@ package com.atlassian.theplugin.idea.config.serverconfig.model;
 
 import com.atlassian.theplugin.ServerType;
 
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
 /**
@@ -14,16 +15,22 @@ public class ServerTreeModel extends DefaultTreeModel {
 
 	public ServerTreeModel(RootNode root) {
 		super(root);
-
-		insertNodeInto(new ServerTypeNode(ServerType.BAMBOO_SERVER), root, root.getChildCount());
-		insertNodeInto(new ServerTypeNode(ServerType.CRUCIBLE_SERVER), root, root.getChildCount());
 	}
 
-	public ServerTypeNode getServerTypeNode(ServerType serverType) {
+	public ServerTypeNode getServerTypeNode(ServerType serverType, boolean addIfMissing) {
 		for (int i = 0; i < root.getChildCount(); ++i) {
 			ServerTypeNode serverTypeNode = (ServerTypeNode) root.getChildAt(i);
 			if (serverTypeNode.getServerType() == serverType) {
 				return serverTypeNode;
+			}
+		}
+		if (addIfMissing) {
+			insertNodeInto(new ServerTypeNode(serverType), (DefaultMutableTreeNode) root, root.getChildCount());
+			for (int i = 0; i < root.getChildCount(); ++i) {
+				ServerTypeNode serverTypeNode = (ServerTypeNode) root.getChildAt(i);
+				if (serverTypeNode.getServerType() == serverType) {
+					return serverTypeNode;
+				}
 			}
 		}
 		return null;
