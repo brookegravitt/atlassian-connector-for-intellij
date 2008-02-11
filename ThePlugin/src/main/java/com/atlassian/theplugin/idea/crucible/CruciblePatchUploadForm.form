@@ -20,6 +20,7 @@
             <properties>
               <editable value="false"/>
               <enabled value="true"/>
+              <font name="Monospaced"/>
               <text value=""/>
             </properties>
           </component>
