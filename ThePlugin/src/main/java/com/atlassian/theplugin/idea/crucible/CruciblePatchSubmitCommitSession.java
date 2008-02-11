@@ -88,7 +88,7 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 				change = change.link;
 			}
 		}
-		ApplicationManager.getApplication().invokeAndWait(new CruciblePatchUploader(sb.toString()), ModalityState.defaultModalityState());
+		ApplicationManager.getApplication().invokeAndWait(new CruciblePatchUploader(commitMessage, sb.toString()), ModalityState.defaultModalityState());
 	}
 
 	private static final String[] EMPTY_STR_ARRAY = new String[0];
