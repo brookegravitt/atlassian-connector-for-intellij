@@ -30,6 +30,7 @@
 		<jdkLevel>1.5</jdkLevel>
 		<currentVersion>${project.version}</currentVersion>
 		<artifactZip>${project.build.finalName}.zip</artifactZip>
+		<downloadDir>download</downloadDir>
 		<cxf.version>2.0.4-incubator</cxf.version>
 	</properties>
 	<parent>
