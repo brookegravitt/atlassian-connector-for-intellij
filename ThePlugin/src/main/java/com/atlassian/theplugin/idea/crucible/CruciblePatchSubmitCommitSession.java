@@ -4,6 +4,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.diff.LineTokenizer;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vcs.FilePath;
 import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vcs.changes.Change;
@@ -61,6 +62,15 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 
 			String beforePath = getPath(beforeRevision);
 			String afterPath = getPath(afterRevision);
+
+			if (afterPath == null) {
+				afterPath = beforePath;
+			}
+			if (beforePath == null) {
+				beforePath = afterPath;
+			}
+
+
 			sb.append("Index: ");
 			sb.append(beforePath).append('\n');
 			sb.append("===================================================================\n");
@@ -97,6 +107,9 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 	private static final String[] EMPTY_STR_ARRAY = new String[0];
 
 	private static String[] getLines(ContentRevision revision) {
+		if (revision == null) {
+			return EMPTY_STR_ARRAY;
+		}
 		String content;
 		try {
 			content = revision.getContent();
@@ -110,17 +123,18 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 	}
 
 	private String getPath(ContentRevision revision) {
+		if (revision == null) {
+			return null;
+		}
 		FilePath filePath = revision.getFile();
 		VirtualFile vcsRoot = VcsUtil.getVcsRootFor(project, filePath);
-		String path = VfsUtil.getRelativePath(filePath.getVirtualFile(), vcsRoot, '/');
-		if (path == null) {
-			path = "";
-		}
-
-		return path;
+		return FileUtil.getRelativePath(VfsUtil.virtualToIoFile(vcsRoot), filePath.getIOFile());
 	}
 
 	private static String getRevisionStr(ContentRevision revision) {
+		if (revision == null) {
+			return "working copy";
+		}
 		VcsRevisionNumber revisionNumber = revision.getRevisionNumber();
 		if (revisionNumber == VcsRevisionNumber.NULL) {
 			return "working copy";
