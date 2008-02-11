@@ -17,7 +17,8 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.atlassian.theplugin</groupId>
 	<artifactId>atlassian-idea-plugin</artifactId>
@@ -33,6 +34,8 @@
 		<downloadDir>download</downloadDir>
 		<cxf.version>2.0.4-incubator</cxf.version>
 	</properties>
+	<name>Atlassian-Intellij-IDEA-Plugin</name>
+	<description>An Intellij IDEA plugin for Atlassian's tools.</description>
 	<parent>
 		<groupId>com.atlassian.pom</groupId>
 		<artifactId>atlassian-closedsource-pom</artifactId>
@@ -61,14 +64,13 @@
 	</pluginRepositories>
 
 
-
 	<repositories>
 		<!--  for CXF -->
 		<repository>
 			<id>atlassian-proxy</id>
 			<url>https://m2proxy.atlassian.com/repository/public</url>
-		</repository>        
-        <repository>
+		</repository>
+		<repository>
 			<id>apache.incubating.releases</id>
 			<name>Apache Incubating Release Distribution Repository</name>
 			<url>http://people.apache.org/repo/m2-incubating-repository</url>
@@ -79,7 +81,7 @@
 			<name>JBOSS repository</name>
 			<url>http://repository.jboss.com/maven2</url>
 		</repository>
-				<!-- for jaxb-impl 2.0.5 used by CXF -->
+		<!-- for jaxb-impl 2.0.5 used by CXF -->
 		<repository>
 			<id>java.net</id>
 			<url>http://download.java.net/maven/1</url>
@@ -96,9 +98,6 @@
 			<url>http://repo.ddsteps.org/maven/release/</url>
 		</repository>
 	</repositories>
-
-
-
 	<dependencies>
 		<dependency>
 			<groupId>org.ddsteps</groupId>
@@ -112,12 +111,12 @@
 			<version>1.14</version>
 			<scope>test</scope>
 		</dependency>
-    <dependency>
-		  <groupId>net.sourceforge.cssparser</groupId>
+		<dependency>
+			<groupId>net.sourceforge.cssparser</groupId>
 			<artifactId>cssparser</artifactId>
 			<version>0.9.4</version>
 			<scope>test</scope>
-		</dependency>		
+		</dependency>
 		<dependency>
 			<groupId>com.intellij.idea</groupId>
 			<artifactId>openapi</artifactId>
@@ -186,13 +185,13 @@
 			<version>2.3</version>
 			<scope>test</scope>
 		</dependency>
-<!--
-		<dependency>
-			<groupId>org.easymock</groupId>
-			<artifactId>easymockclassextension</artifactId>
-			<version>2.3</version>
-		</dependency>
--->
+		<!--
+		  <dependency>
+			  <groupId>org.easymock</groupId>
+			  <artifactId>easymockclassextension</artifactId>
+			  <version>2.3</version>
+		  </dependency>
+  -->
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-core</artifactId>
@@ -203,7 +202,7 @@
 			<artifactId>cxf-api</artifactId>
 			<version>${cxf.version}</version>
 		</dependency>
-        <dependency>
+		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-frontend-simple</artifactId>
 			<version>${cxf.version}</version>
@@ -218,12 +217,12 @@
 			<artifactId>cxf-rt-bindings-soap</artifactId>
 			<version>${cxf.version}</version>
 		</dependency>
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-databinding-jaxb</artifactId>
-            <version>${cxf.version}</version>
-        </dependency>        
-        <dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-databinding-jaxb</artifactId>
+			<version>${cxf.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-transports-http</artifactId>
 			<version>${cxf.version}</version>
@@ -232,20 +231,19 @@
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-transports-http-jetty</artifactId>
 			<version>${cxf.version}</version>
-		</dependency>		
+		</dependency>
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-common-utilities</artifactId>
 			<version>${cxf.version}</version>
 		</dependency>
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-tools-common</artifactId>
-            <version>${cxf.version}</version>
-        </dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-tools-common</artifactId>
+			<version>${cxf.version}</version>
+		</dependency>
 
-
-    </dependencies>
+	</dependencies>
 
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
@@ -296,12 +294,6 @@
 						</goals>
 					</execution>
 				</executions>
-				<!--<configuration>-->
-					<!--<format> {0,date}, {0,time} </format>-->
-					<!--<items>-->
-						<!--<item>timestamp</item>-->
-					<!--</items>-->
-				<!--</configuration>-->
 			</plugin>
 
 			<plugin>
@@ -401,11 +393,11 @@
 							<name>trove</name>
 							<exclude>true</exclude>
 						</library>
-                        <library>                        
+						<library>
 							<name>cssparser</name>
 							<exclude>true</exclude>
 						</library>
-                    </libraries>
+					</libraries>
 				</configuration>
 			</plugin>
 			<plugin>
