@@ -53,10 +53,15 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 	}
 
 	public void execute(Collection<Change> changes, String commitMessage) {
-		int linesOfContext = LINES_OF_CONTEXT;
-
-
 		System.out.println("Sending to the Crucible server: " + commitMessage);
+		String patch = generateUnifiedDiff(changes);
+
+		ApplicationManager.getApplication().invokeAndWait(new CruciblePatchUploader(commitMessage, patch), ModalityState.defaultModalityState());
+	}
+
+	String generateUnifiedDiff(Collection<Change> changes) {
+		final int linesOfContext = LINES_OF_CONTEXT;
+
 		StringBuilder sb = new StringBuilder();
 		for (Change fileChange : changes) {
 			ContentRevision beforeRevision = fileChange.getBeforeRevision();
@@ -84,17 +89,15 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 			sb.append("+++ ").append(afterPath).append("\t(");
 			sb.append(getRevisionStr(afterRevision)).append(")\n");
 
-			 Diff.Change diff = null;
-			  if (beforeLines != null && afterLines != null) {
+			Diff.Change diff = null;
+			if (beforeLines != null && afterLines != null) {
 				diff = Diff.buildChanges(beforeLines, afterLines);
-			 }
+			}
 
 			sb = generateUnifiedDiffBody(diff, beforeLines, afterLines, linesOfContext);
 
 		}
-
-
-			ApplicationManager.getApplication().invokeAndWait(new CruciblePatchUploader(commitMessage, sb.toString()), ModalityState.defaultModalityState());
+		return sb.toString();
 	}
 
 	private StringBuilder generateUnifiedDiffBody(Diff.Change diff, String[] beforeLines, String[] afterLines, int linesOfContext) {
@@ -107,55 +110,56 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 		int lastLine = 0;
 		String strChange = "";
 		StringBuilder sb = new StringBuilder();
-		
+
 
 		while (diff != null) {
 
-		  origStart = diff.line0;
-		  afterStart = diff.line1;
-		  origSpan = 0;
-		  afterSpan = 0;
-		  lastLine = diff.line0 - linesOfContext;
+			origStart = diff.line0;
+			afterStart = diff.line1;
+			origSpan = 0;
+			afterSpan = 0;
+			lastLine = diff.line0 - linesOfContext;
 
 			do {
 
-				  i = Math.max(lastLine, diff.line0 - linesOfContext);
+				i = Math.max(lastLine, diff.line0 - linesOfContext);
 
-				  // Display the unaltered lines (skipping some if there's too many)
-				  for (; i < diff.line0; i++) {
-					  strChange += " " + beforeLines[i];
-					  origSpan += 1;
-						afterSpan += 1;
-				  }
+				// Display the unaltered lines (skipping some if there's too many)
+				for (; i < diff.line0; i++) {
+					strChange += " " + beforeLines[i];
+					origSpan += 1;
+					afterSpan += 1;
+				}
 
-				  // Display the deleted and/or inserted lines for this difference
-				  for (i = 0; i < diff.deleted; i++) {
+				// Display the deleted and/or inserted lines for this difference
+				for (i = 0; i < diff.deleted; i++) {
 					strChange += "-" + beforeLines[diff.line0 + i];
-				  }
-				  for (i = 0; i < diff.inserted; i++) {
-					strChange +="+" + afterLines[diff.line1 + i];
-				  };
+				}
+				for (i = 0; i < diff.inserted; i++) {
+					strChange += "+" + afterLines[diff.line1 + i];
+				}
+				;
 
-				  previousLine = diff.line0 + diff.deleted;
-				  origSpan += diff.deleted;
-				  afterSpan += diff.inserted;
-					// Display any remaining lines (plus skip some if there's too many)
+				previousLine = diff.line0 + diff.deleted;
+				origSpan += diff.deleted;
+				afterSpan += diff.inserted;
+				// Display any remaining lines (plus skip some if there's too many)
 
-				  if (diff.link != null){
-					  lastLine = Math.min(previousLine + linesOfContext, diff.link.line0);
+				if (diff.link != null) {
+					lastLine = Math.min(previousLine + linesOfContext, diff.link.line0);
 
-				  } else {
-					  lastLine = previousLine + linesOfContext;
-				  }
+				} else {
+					lastLine = previousLine + linesOfContext;
+				}
 
-				  lastLine = Math.min(beforeLines.length, lastLine);
-					  for (i = previousLine; i < lastLine ; i++) {
-						  strChange += " " + beforeLines[i];
-						  origSpan += 1;
-							  afterSpan += 1;
+				lastLine = Math.min(beforeLines.length, lastLine);
+				for (i = previousLine; i < lastLine; i++) {
+					strChange += " " + beforeLines[i];
+					origSpan += 1;
+					afterSpan += 1;
 
-					  }
-				  diff = diff.link;
+				}
+				diff = diff.link;
 			} while (diff != null && lastLine >= diff.line0 - linesOfContext);
 
 			sb.append(String.format("@@ -%d,%d +%d,%d @@\n", origStart, origSpan, afterStart, afterSpan));
