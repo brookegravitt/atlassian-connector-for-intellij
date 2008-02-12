@@ -58,6 +58,17 @@ public class BambooConfigurationBean implements ProductServerConfiguration {
 	}
 
 	@Transient
+	public synchronized Collection<Server> getEnabledServers() {
+		ArrayList<Server> iservers = new ArrayList<Server>();
+		for (Server s : servers) {
+			if (s.getEnabled()) {
+				iservers.add(s);
+			}
+		}
+		return iservers;
+	}
+
+	@Transient
 	public synchronized Server getServer(Server aServer) {
 		for (Server server : servers) {
 			if (server.getUid() == aServer.getUid()) {
@@ -82,6 +93,7 @@ public class BambooConfigurationBean implements ProductServerConfiguration {
 			}
 			foundServer.setUrlString(server.getUrlString());
 			foundServer.setUsername(server.getUsername());
+			foundServer.setEnabled(server.getEnabled());
 		}
 	}
 
