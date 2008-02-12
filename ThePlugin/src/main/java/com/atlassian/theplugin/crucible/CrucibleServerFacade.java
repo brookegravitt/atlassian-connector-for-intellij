@@ -26,7 +26,7 @@ public interface CrucibleServerFacade {
 	 * @param server object with Url and other server data
 	 * @return list of all reviews
 	 */
-	public List<Object> getAllReviews(Server server) throws CrucibleLoginException;
+	public List<Object> getAllReviews(Server server) throws CrucibleException;
 
 	void setCrucibleSession(CrucibleSession crucibleSession);
 
