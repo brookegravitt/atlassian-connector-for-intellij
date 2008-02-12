@@ -28,8 +28,9 @@ public class ObjectFactory {
     private final static QName _GetReview_QNAME = new QName("http://rpc.spi.crucible.atlassian.com/", "getReview");
     private final static QName _AddGeneralCommentResponse_QNAME = new QName("http://rpc.spi.crucible.atlassian.com/", "addGeneralCommentResponse");
     private final static QName _GetChildReviewsResponse_QNAME = new QName("http://rpc.spi.crucible.atlassian.com/", "getChildReviewsResponse");
-    private final static QName _GetChildReviews_QNAME = new QName("http://rpc.spi.crucible.atlassian.com/", "getChildReviews");
+    private final static QName _CreateReviewFromPatchResponse_QNAME = new QName("http://rpc.spi.crucible.atlassian.com/", "createReviewFromPatchResponse");
     private final static QName _RemoveReviewItem_QNAME = new QName("http://rpc.spi.crucible.atlassian.com/", "removeReviewItem");
+    private final static QName _GetChildReviews_QNAME = new QName("http://rpc.spi.crucible.atlassian.com/", "getChildReviews");
     private final static QName _ChangeState_QNAME = new QName("http://rpc.spi.crucible.atlassian.com/", "changeState");
     private final static QName _GetReviewers_QNAME = new QName("http://rpc.spi.crucible.atlassian.com/", "getReviewers");
     private final static QName _GetReviewItemsForReviewResponse_QNAME = new QName("http://rpc.spi.crucible.atlassian.com/", "getReviewItemsForReviewResponse");
@@ -44,150 +45,23 @@ public class ObjectFactory {
     private final static QName _GetGeneralComments_QNAME = new QName("http://rpc.spi.crucible.atlassian.com/", "getGeneralComments");
     private final static QName _AddFisheyeDiff_QNAME = new QName("http://rpc.spi.crucible.atlassian.com/", "addFisheyeDiff");
     private final static QName _GetReviewersResponse_QNAME = new QName("http://rpc.spi.crucible.atlassian.com/", "getReviewersResponse");
-    private final static QName _AddGeneralComment_QNAME = new QName("http://rpc.spi.crucible.atlassian.com/", "addGeneralComment");
     private final static QName _GetReviewResponse_QNAME = new QName("http://rpc.spi.crucible.atlassian.com/", "getReviewResponse");
+    private final static QName _AddGeneralComment_QNAME = new QName("http://rpc.spi.crucible.atlassian.com/", "addGeneralComment");
     private final static QName _AddCommentResponse_QNAME = new QName("http://rpc.spi.crucible.atlassian.com/", "addCommentResponse");
     private final static QName _GetAllReviews_QNAME = new QName("http://rpc.spi.crucible.atlassian.com/", "getAllReviews");
     private final static QName _GetGeneralCommentsResponse_QNAME = new QName("http://rpc.spi.crucible.atlassian.com/", "getGeneralCommentsResponse");
     private final static QName _GetVersionedCommentsResponse_QNAME = new QName("http://rpc.spi.crucible.atlassian.com/", "getVersionedCommentsResponse");
     private final static QName _GetAllRevisionCommentsResponse_QNAME = new QName("http://rpc.spi.crucible.atlassian.com/", "getAllRevisionCommentsResponse");
+    private final static QName _CreateReviewFromPatch_QNAME = new QName("http://rpc.spi.crucible.atlassian.com/", "createReviewFromPatch");
     private final static QName _CreateReview_QNAME = new QName("http://rpc.spi.crucible.atlassian.com/", "createReview");
-    private final static QName _GetReviewsInStates_QNAME = new QName("http://rpc.spi.crucible.atlassian.com/", "getReviewsInStates");
     private final static QName _RemoveReviewItemResponse_QNAME = new QName("http://rpc.spi.crucible.atlassian.com/", "removeReviewItemResponse");
+    private final static QName _GetReviewsInStates_QNAME = new QName("http://rpc.spi.crucible.atlassian.com/", "getReviewsInStates");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: com.atlassian.theplugin.crucible.api.soap.xfire.review
      * 
      */
     public ObjectFactory() {
-    }
-
-    /**
-     * Create an instance of {@link AddComment }
-     * 
-     */
-    public AddComment createAddComment() {
-        return new AddComment();
-    }
-
-    /**
-     * Create an instance of {@link GetAllRevisionCommentsResponse }
-     * 
-     */
-    public GetAllRevisionCommentsResponse createGetAllRevisionCommentsResponse() {
-        return new GetAllRevisionCommentsResponse();
-    }
-
-    /**
-     * Create an instance of {@link GetReviewItemsForReview }
-     * 
-     */
-    public GetReviewItemsForReview createGetReviewItemsForReview() {
-        return new GetReviewItemsForReview();
-    }
-
-    /**
-     * Create an instance of {@link GetReview }
-     * 
-     */
-    public GetReview createGetReview() {
-        return new GetReview();
-    }
-
-    /**
-     * Create an instance of {@link GetAllReviewsResponse }
-     * 
-     */
-    public GetAllReviewsResponse createGetAllReviewsResponse() {
-        return new GetAllReviewsResponse();
-    }
-
-    /**
-     * Create an instance of {@link CreateReview }
-     * 
-     */
-    public CreateReview createCreateReview() {
-        return new CreateReview();
-    }
-
-    /**
-     * Create an instance of {@link GetGeneralComments }
-     * 
-     */
-    public GetGeneralComments createGetGeneralComments() {
-        return new GetGeneralComments();
-    }
-
-    /**
-     * Create an instance of {@link RemoveReviewItemResponse }
-     * 
-     */
-    public RemoveReviewItemResponse createRemoveReviewItemResponse() {
-        return new RemoveReviewItemResponse();
-    }
-
-    /**
-     * Create an instance of {@link ReviewData }
-     * 
-     */
-    public ReviewData createReviewData() {
-        return new ReviewData();
-    }
-
-    /**
-     * Create an instance of {@link AddCommentResponse }
-     * 
-     */
-    public AddCommentResponse createAddCommentResponse() {
-        return new AddCommentResponse();
-    }
-
-    /**
-     * Create an instance of {@link CreateReviewResponse }
-     * 
-     */
-    public CreateReviewResponse createCreateReviewResponse() {
-        return new CreateReviewResponse();
-    }
-
-    /**
-     * Create an instance of {@link PermId }
-     * 
-     */
-    public PermId createPermId() {
-        return new PermId();
-    }
-
-    /**
-     * Create an instance of {@link ChangeStateResponse }
-     * 
-     */
-    public ChangeStateResponse createChangeStateResponse() {
-        return new ChangeStateResponse();
-    }
-
-    /**
-     * Create an instance of {@link AddFisheyeDiffResponse }
-     * 
-     */
-    public AddFisheyeDiffResponse createAddFisheyeDiffResponse() {
-        return new AddFisheyeDiffResponse();
-    }
-
-    /**
-     * Create an instance of {@link GetReviewResponse }
-     * 
-     */
-    public GetReviewResponse createGetReviewResponse() {
-        return new GetReviewResponse();
-    }
-
-    /**
-     * Create an instance of {@link GetGeneralCommentsResponse }
-     * 
-     */
-    public GetGeneralCommentsResponse createGetGeneralCommentsResponse() {
-        return new GetGeneralCommentsResponse();
     }
 
     /**
@@ -199,11 +73,155 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link GetVersionedCommentsResponse }
+     * Create an instance of {@link AddGeneralCommentResponse }
      * 
      */
-    public GetVersionedCommentsResponse createGetVersionedCommentsResponse() {
-        return new GetVersionedCommentsResponse();
+    public AddGeneralCommentResponse createAddGeneralCommentResponse() {
+        return new AddGeneralCommentResponse();
+    }
+
+    /**
+     * Create an instance of {@link CreateReviewFromPatch }
+     * 
+     */
+    public CreateReviewFromPatch createCreateReviewFromPatch() {
+        return new CreateReviewFromPatch();
+    }
+
+    /**
+     * Create an instance of {@link GetChildReviews }
+     * 
+     */
+    public GetChildReviews createGetChildReviews() {
+        return new GetChildReviews();
+    }
+
+    /**
+     * Create an instance of {@link RemoveReviewItem }
+     * 
+     */
+    public RemoveReviewItem createRemoveReviewItem() {
+        return new RemoveReviewItem();
+    }
+
+    /**
+     * Create an instance of {@link AddCommentResponse }
+     * 
+     */
+    public AddCommentResponse createAddCommentResponse() {
+        return new AddCommentResponse();
+    }
+
+    /**
+     * Create an instance of {@link GetReviewItemsForReview }
+     * 
+     */
+    public GetReviewItemsForReview createGetReviewItemsForReview() {
+        return new GetReviewItemsForReview();
+    }
+
+    /**
+     * Create an instance of {@link AddFisheyeDiff }
+     * 
+     */
+    public AddFisheyeDiff createAddFisheyeDiff() {
+        return new AddFisheyeDiff();
+    }
+
+    /**
+     * Create an instance of {@link PermId }
+     * 
+     */
+    public PermId createPermId() {
+        return new PermId();
+    }
+
+    /**
+     * Create an instance of {@link GetGeneralCommentsResponse }
+     * 
+     */
+    public GetGeneralCommentsResponse createGetGeneralCommentsResponse() {
+        return new GetGeneralCommentsResponse();
+    }
+
+    /**
+     * Create an instance of {@link GetReviewersResponse }
+     * 
+     */
+    public GetReviewersResponse createGetReviewersResponse() {
+        return new GetReviewersResponse();
+    }
+
+    /**
+     * Create an instance of {@link GetReview }
+     * 
+     */
+    public GetReview createGetReview() {
+        return new GetReview();
+    }
+
+    /**
+     * Create an instance of {@link CreateReviewFromPatchResponse }
+     * 
+     */
+    public CreateReviewFromPatchResponse createCreateReviewFromPatchResponse() {
+        return new CreateReviewFromPatchResponse();
+    }
+
+    /**
+     * Create an instance of {@link AddFisheyeDiffResponse }
+     * 
+     */
+    public AddFisheyeDiffResponse createAddFisheyeDiffResponse() {
+        return new AddFisheyeDiffResponse();
+    }
+
+    /**
+     * Create an instance of {@link GetVersionedComments }
+     * 
+     */
+    public GetVersionedComments createGetVersionedComments() {
+        return new GetVersionedComments();
+    }
+
+    /**
+     * Create an instance of {@link GetChildReviewsResponse }
+     * 
+     */
+    public GetChildReviewsResponse createGetChildReviewsResponse() {
+        return new GetChildReviewsResponse();
+    }
+
+    /**
+     * Create an instance of {@link CreateReview }
+     * 
+     */
+    public CreateReview createCreateReview() {
+        return new CreateReview();
+    }
+
+    /**
+     * Create an instance of {@link AddComment }
+     * 
+     */
+    public AddComment createAddComment() {
+        return new AddComment();
+    }
+
+    /**
+     * Create an instance of {@link AddGeneralComment }
+     * 
+     */
+    public AddGeneralComment createAddGeneralComment() {
+        return new AddGeneralComment();
+    }
+
+    /**
+     * Create an instance of {@link CreateReviewResponse }
+     * 
+     */
+    public CreateReviewResponse createCreateReviewResponse() {
+        return new CreateReviewResponse();
     }
 
     /**
@@ -223,6 +241,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link GetReviewsInStates }
+     * 
+     */
+    public GetReviewsInStates createGetReviewsInStates() {
+        return new GetReviewsInStates();
+    }
+
+    /**
      * Create an instance of {@link ChangeState }
      * 
      */
@@ -231,11 +257,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link GetReviewsInStates }
+     * Create an instance of {@link ChangeStateResponse }
      * 
      */
-    public GetReviewsInStates createGetReviewsInStates() {
-        return new GetReviewsInStates();
+    public ChangeStateResponse createChangeStateResponse() {
+        return new ChangeStateResponse();
     }
 
     /**
@@ -247,19 +273,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link GetChildReviews }
+     * Create an instance of {@link GetVersionedCommentsResponse }
      * 
      */
-    public GetChildReviews createGetChildReviews() {
-        return new GetChildReviews();
+    public GetVersionedCommentsResponse createGetVersionedCommentsResponse() {
+        return new GetVersionedCommentsResponse();
     }
 
     /**
-     * Create an instance of {@link GetReviewersResponse }
+     * Create an instance of {@link RemoveReviewItemResponse }
      * 
      */
-    public GetReviewersResponse createGetReviewersResponse() {
-        return new GetReviewersResponse();
+    public RemoveReviewItemResponse createRemoveReviewItemResponse() {
+        return new RemoveReviewItemResponse();
     }
 
     /**
@@ -271,51 +297,43 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link AddFisheyeDiff }
+     * Create an instance of {@link ReviewData }
      * 
      */
-    public AddFisheyeDiff createAddFisheyeDiff() {
-        return new AddFisheyeDiff();
+    public ReviewData createReviewData() {
+        return new ReviewData();
     }
 
     /**
-     * Create an instance of {@link AddGeneralCommentResponse }
+     * Create an instance of {@link GetAllRevisionCommentsResponse }
      * 
      */
-    public AddGeneralCommentResponse createAddGeneralCommentResponse() {
-        return new AddGeneralCommentResponse();
+    public GetAllRevisionCommentsResponse createGetAllRevisionCommentsResponse() {
+        return new GetAllRevisionCommentsResponse();
     }
 
     /**
-     * Create an instance of {@link GetChildReviewsResponse }
+     * Create an instance of {@link GetReviewResponse }
      * 
      */
-    public GetChildReviewsResponse createGetChildReviewsResponse() {
-        return new GetChildReviewsResponse();
+    public GetReviewResponse createGetReviewResponse() {
+        return new GetReviewResponse();
     }
 
     /**
-     * Create an instance of {@link RemoveReviewItem }
+     * Create an instance of {@link GetGeneralComments }
      * 
      */
-    public RemoveReviewItem createRemoveReviewItem() {
-        return new RemoveReviewItem();
+    public GetGeneralComments createGetGeneralComments() {
+        return new GetGeneralComments();
     }
 
     /**
-     * Create an instance of {@link GetVersionedComments }
+     * Create an instance of {@link GetAllReviewsResponse }
      * 
      */
-    public GetVersionedComments createGetVersionedComments() {
-        return new GetVersionedComments();
-    }
-
-    /**
-     * Create an instance of {@link AddGeneralComment }
-     * 
-     */
-    public AddGeneralComment createAddGeneralComment() {
-        return new AddGeneralComment();
+    public GetAllReviewsResponse createGetAllReviewsResponse() {
+        return new GetAllReviewsResponse();
     }
 
     /**
@@ -355,12 +373,12 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link GetChildReviews }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link CreateReviewFromPatchResponse }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://rpc.spi.crucible.atlassian.com/", name = "getChildReviews")
-    public JAXBElement<GetChildReviews> createGetChildReviews(GetChildReviews value) {
-        return new JAXBElement<GetChildReviews>(_GetChildReviews_QNAME, GetChildReviews.class, null, value);
+    @XmlElementDecl(namespace = "http://rpc.spi.crucible.atlassian.com/", name = "createReviewFromPatchResponse")
+    public JAXBElement<CreateReviewFromPatchResponse> createCreateReviewFromPatchResponse(CreateReviewFromPatchResponse value) {
+        return new JAXBElement<CreateReviewFromPatchResponse>(_CreateReviewFromPatchResponse_QNAME, CreateReviewFromPatchResponse.class, null, value);
     }
 
     /**
@@ -370,6 +388,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://rpc.spi.crucible.atlassian.com/", name = "removeReviewItem")
     public JAXBElement<RemoveReviewItem> createRemoveReviewItem(RemoveReviewItem value) {
         return new JAXBElement<RemoveReviewItem>(_RemoveReviewItem_QNAME, RemoveReviewItem.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetChildReviews }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://rpc.spi.crucible.atlassian.com/", name = "getChildReviews")
+    public JAXBElement<GetChildReviews> createGetChildReviews(GetChildReviews value) {
+        return new JAXBElement<GetChildReviews>(_GetChildReviews_QNAME, GetChildReviews.class, null, value);
     }
 
     /**
@@ -499,21 +526,21 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link AddGeneralComment }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://rpc.spi.crucible.atlassian.com/", name = "addGeneralComment")
-    public JAXBElement<AddGeneralComment> createAddGeneralComment(AddGeneralComment value) {
-        return new JAXBElement<AddGeneralComment>(_AddGeneralComment_QNAME, AddGeneralComment.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link GetReviewResponse }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "http://rpc.spi.crucible.atlassian.com/", name = "getReviewResponse")
     public JAXBElement<GetReviewResponse> createGetReviewResponse(GetReviewResponse value) {
         return new JAXBElement<GetReviewResponse>(_GetReviewResponse_QNAME, GetReviewResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link AddGeneralComment }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://rpc.spi.crucible.atlassian.com/", name = "addGeneralComment")
+    public JAXBElement<AddGeneralComment> createAddGeneralComment(AddGeneralComment value) {
+        return new JAXBElement<AddGeneralComment>(_AddGeneralComment_QNAME, AddGeneralComment.class, null, value);
     }
 
     /**
@@ -562,6 +589,15 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link CreateReviewFromPatch }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://rpc.spi.crucible.atlassian.com/", name = "createReviewFromPatch")
+    public JAXBElement<CreateReviewFromPatch> createCreateReviewFromPatch(CreateReviewFromPatch value) {
+        return new JAXBElement<CreateReviewFromPatch>(_CreateReviewFromPatch_QNAME, CreateReviewFromPatch.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link CreateReview }{@code >}}
      * 
      */
@@ -571,21 +607,21 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link GetReviewsInStates }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://rpc.spi.crucible.atlassian.com/", name = "getReviewsInStates")
-    public JAXBElement<GetReviewsInStates> createGetReviewsInStates(GetReviewsInStates value) {
-        return new JAXBElement<GetReviewsInStates>(_GetReviewsInStates_QNAME, GetReviewsInStates.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link RemoveReviewItemResponse }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "http://rpc.spi.crucible.atlassian.com/", name = "removeReviewItemResponse")
     public JAXBElement<RemoveReviewItemResponse> createRemoveReviewItemResponse(RemoveReviewItemResponse value) {
         return new JAXBElement<RemoveReviewItemResponse>(_RemoveReviewItemResponse_QNAME, RemoveReviewItemResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetReviewsInStates }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://rpc.spi.crucible.atlassian.com/", name = "getReviewsInStates")
+    public JAXBElement<GetReviewsInStates> createGetReviewsInStates(GetReviewsInStates value) {
+        return new JAXBElement<GetReviewsInStates>(_GetReviewsInStates_QNAME, GetReviewsInStates.class, null, value);
     }
 
 }
