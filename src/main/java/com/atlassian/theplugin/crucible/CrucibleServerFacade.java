@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.crucible;
 
 import com.atlassian.theplugin.configuration.Server;
+import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.crucible.api.CrucibleException;
 import com.atlassian.theplugin.crucible.api.CrucibleLoginException;
 import com.atlassian.theplugin.crucible.api.CrucibleSession;
@@ -28,4 +29,6 @@ public interface CrucibleServerFacade {
 	public List<Object> getAllReviews(Server server) throws CrucibleLoginException;
 
 	void setCrucibleSession(CrucibleSession crucibleSession);
+
+	ReviewData createReviewFromPatch(ServerBean server, ReviewData reviewData, String patch) throws CrucibleException;
 }
