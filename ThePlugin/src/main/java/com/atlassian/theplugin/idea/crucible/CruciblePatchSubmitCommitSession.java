@@ -94,7 +94,7 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 				diff = Diff.buildChanges(beforeLines, afterLines);
 			}
 
-			sb = generateUnifiedDiffBody(diff, beforeLines, afterLines, linesOfContext);
+			sb.append(generateUnifiedDiffBody(diff, beforeLines, afterLines, linesOfContext));
 
 		}
 		return sb.toString();
@@ -113,12 +113,11 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 
 
 		while (diff != null) {
-
-			origStart = diff.line0;
-			afterStart = diff.line1;
+			lastLine = 0;
+			origStart = Math.max(lastLine, diff.line0 - linesOfContext);
+			afterStart = Math.max(lastLine, diff.line1 - linesOfContext);
 			origSpan = 0;
 			afterSpan = 0;
-			lastLine = diff.line0 - linesOfContext;
 
 			do {
 
@@ -170,7 +169,9 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 
 		return sb;
 
-	}
+
+        ///
+    }
 
 
 	private static final String[] EMPTY_STR_ARRAY = new String[0];
