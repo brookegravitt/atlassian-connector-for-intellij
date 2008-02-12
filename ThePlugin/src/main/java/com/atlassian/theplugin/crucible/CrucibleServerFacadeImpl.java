@@ -64,10 +64,7 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 
 		session.login(server.getUsername(), server.getPasswordString());
 
-		JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
-		factory.setServiceClass(RpcReviewServiceName.class);
-		factory.setAddress(formatUrl(server.getUrlString()));
-		RpcReviewServiceName crucibleService = (RpcReviewServiceName) factory.create();
+		RpcReviewServiceName crucibleService = createServiceProxy(server);
 
 		ReviewData ret;
 
@@ -100,10 +97,7 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 
 		session.login(server.getUsername(), server.getPasswordString());
 
-		JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
-		factory.setServiceClass(RpcReviewServiceName.class);
-		factory.setAddress(formatUrl(server.getUrlString()));
-		RpcReviewServiceName crucibleService = (RpcReviewServiceName) factory.create();
+		RpcReviewServiceName crucibleService = createServiceProxy(server);
 
 		ReviewData ret;
 
@@ -124,7 +118,7 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	 * @param server server object with Url, Login and Password to connect to 
 	 * @return List of reviews (empty list in case there is no review)
 	 */
-	public List<Object> getAllReviews(Server server) throws CrucibleLoginException {
+	public List<Object> getAllReviews(Server server) throws CrucibleException {
 		CrucibleSession session = crucibleSession;
 
 		if (session == null) {
@@ -133,16 +127,30 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 
 		session.login(server.getUsername(), server.getPasswordString());
 
-		JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
-		factory.setServiceClass(RpcReviewServiceName.class);
-		factory.setAddress(formatUrl(server.getUrlString()));
-		RpcReviewServiceName crucibleService = (RpcReviewServiceName) factory.create();
+		RpcReviewServiceName crucibleServiceProxy = createServiceProxy(server);
 
-		List<Object> allReviews = crucibleService.getAllReviews(session.getAuthToken());
+		List<Object> allReviews;
+
+		try {
+			allReviews = crucibleServiceProxy.getAllReviews(session.getAuthToken());
+		} catch (RuntimeException e) {
+			LOG.error(e.getMessage());
+			throw new CrucibleException(e.getMessage(), e);
+		}
 
 		session.logout();
 
 		return allReviews;
+	}
+
+	private RpcReviewServiceName createServiceProxy(Server server) {
+
+		JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
+		factory.setServiceClass(RpcReviewServiceName.class);
+		factory.setAddress(formatUrl(server.getUrlString()));
+		RpcReviewServiceName crucibleService = (RpcReviewServiceName) factory.create();
+		
+		return crucibleService;
 	}
 
 	private String formatUrl(String url) {
