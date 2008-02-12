@@ -32,7 +32,6 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 	@SuppressWarnings("unused")
 	private final Project project;
 	private static final int LINES_OF_CONTEXT = 3;
-	private static final String WHITE_SPACE = " ";
 
 	public CruciblePatchSubmitCommitSession(Project project) {
 		this.project = project;
@@ -94,7 +93,7 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 				diff = Diff.buildChanges(beforeLines, afterLines);
 			}
 
-			sb.append(generateUnifiedDiffBody(diff, beforeLines, afterLines, linesOfContext));
+			generateUnifiedDiffBody(sb, diff, beforeLines, afterLines, linesOfContext);
 
 		}
 		return sb.toString();
@@ -102,52 +101,46 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 
 	/**
 	 * Creates new review in Crucible
-	 * @param diff starting change in file
-	 * @param beforeLines lines of oryginal file
-	 * @param afterLines lines of changed file
-	 * @param linesOfContext number of lines that should preceed and follow change
-	 * @return formatted as unified diff text body without oryginal and changed file name header
+	 *
+	 * @param sb			 StringBuilder to add stuff to
+	 * @param diff		   starting change in file
+	 * @param beforeLines	lines of oryginal file
+	 * @param afterLines	 lines of changed file
+	 * @param linesOfContext number of lines that should preceed and follow change @return formatted as unified diff text
+	 *                       body without oryginal and changed file name header
 	 */
 
-	private StringBuilder generateUnifiedDiffBody(Diff.Change diff, String[] beforeLines, String[] afterLines, int linesOfContext) {
-		int previousLine;
-		int origStart;
-		int origSpan;
-		int afterStart;
-		int afterSpan;
-		int i;
-		int lastLine;
-		String strChange = "";
-		StringBuilder sb = new StringBuilder();
-
+	private void generateUnifiedDiffBody(StringBuilder sb, Diff.Change diff, String[] beforeLines, String[] afterLines, int linesOfContext) {
 
 		while (diff != null) {
-			lastLine = 0;
-			origStart = Math.max(lastLine, diff.line0 - linesOfContext + 1);
-			afterStart = Math.max(lastLine, diff.line1 - linesOfContext+ 1);
-			origSpan = 0;
-			afterSpan = 0;
+			int lastLine = 1;
+			final int origStart = beforeLines.length == 0 ? 0 : Math.max(lastLine, diff.line0 - linesOfContext + 1);
+			final int afterStart = afterLines.length == 0 ? 0 : Math.max(lastLine, diff.line1 - linesOfContext + 1);
+			int origSpan = 0;
+			int afterSpan = 0;
+
+			final int atLineInsertionPoint = sb.length();
 
 			do {
 
-				i = Math.max(lastLine, diff.line0 - linesOfContext);
+				int i = Math.max(lastLine, diff.line0 - linesOfContext);
 
 				// Display the unaltered lines (skipping some if there's too many)
 				for (; i < diff.line0; i++) {
-					strChange += " " + beforeLines[i];
+					sb.append(' ').append(beforeLines[i]);
 					origSpan += 1;
 					afterSpan += 1;
 				}
 
 				// Display the deleted and/or inserted lines for this difference
 				for (i = 0; i < diff.deleted; i++) {
-					strChange += "-" + beforeLines[diff.line0 + i];
+					sb.append('-').append(beforeLines[diff.line0 + i]);
 				}
 				for (i = 0; i < diff.inserted; i++) {
-					strChange += "+" + afterLines[diff.line1 + i];
+					sb.append('+').append(afterLines[diff.line1 + i]);
 				}
 
-				previousLine = diff.line0 + diff.deleted;
+				final int previousLine = diff.line0 + diff.deleted;
 				origSpan += diff.deleted;
 				afterSpan += diff.inserted;
 				// Display any remaining lines (plus skip some if there's too many)
@@ -162,7 +155,7 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 
 				lastLine = Math.min(beforeLines.length, lastLine);
 				for (i = previousLine; i < lastLine; i++) {
-					strChange += " " + beforeLines[i];
+					sb.append(' ').append(beforeLines[i]);
 					origSpan += 1;
 					afterSpan += 1;
 
@@ -170,14 +163,9 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 				diff = diff.link;
 			} while (diff != null && lastLine >= diff.line0 - linesOfContext);
 
-			sb.append(String.format("@@ -%d,%d +%d,%d @@\n", origStart, origSpan, afterStart, afterSpan));
-			sb.append(strChange);
-			strChange = "";
-
+			sb.insert(atLineInsertionPoint, String.format("@@ -%d,%d +%d,%d @@\n", origStart, origSpan, afterStart, afterSpan));
 		}
-
-		return sb;        
-    }
+	}
 
 
 	private static final String[] EMPTY_STR_ARRAY = new String[0];
@@ -198,7 +186,8 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 		return new LineTokenizer(content).execute();
 	}
 
-	private String getPath(ContentRevision revision) {
+	/* made it protected so that unit test may override */
+	protected String getPath(ContentRevision revision) {
 		if (revision == null) {
 			return null;
 		}
