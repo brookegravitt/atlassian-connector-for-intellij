@@ -46,7 +46,7 @@ public class BambooStatusChecker {
 	private void doRun() {
 		// collect build info from each server
 		final Collection<BambooBuild> newServerBuildsStatus = new ArrayList<BambooBuild>();
-		for (Server server : ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers()) {
+		for (Server server : ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getEnabledServers()) {
 			try {
 				newServerBuildsStatus.addAll(BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults(server));
 			} catch (ServerPasswordNotProvidedException exception) {
@@ -64,7 +64,6 @@ public class BambooStatusChecker {
 				}
 			}
 		});
-
 	}
 
 	/**

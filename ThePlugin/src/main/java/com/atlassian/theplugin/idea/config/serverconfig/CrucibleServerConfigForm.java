@@ -24,8 +24,9 @@ public class CrucibleServerConfigForm extends AbstractServerPanel {
     private JPasswordField password;
     private JButton testConnection;
     private JCheckBox chkPasswordRemember;
+	private JCheckBox cbEnabled;
 
-    private ServerBean server;
+	private ServerBean server;
 
     public CrucibleServerConfigForm() {
 
@@ -51,14 +52,16 @@ public class CrucibleServerConfigForm extends AbstractServerPanel {
         username.setText(server.getUsername());
         chkPasswordRemember.setSelected(server.getShouldPasswordBeStored());
         password.setText(server.getPasswordString());
-    }
+		cbEnabled.setSelected(server.getEnabled());
+	}
 
     public ServerBean getData() {
         server.setName(serverName.getText());
         server.setUrlString(serverUrl.getText());
         server.setUsername(username.getText());
         server.setPasswordString(String.valueOf(password.getPassword()), chkPasswordRemember.isSelected());
-        return server;
+		server.setEnabled(cbEnabled.isSelected());
+		return server;
     }
 
     public boolean isModified() {
@@ -71,7 +74,10 @@ public class CrucibleServerConfigForm extends AbstractServerPanel {
             if (serverName.getText() != null ? !serverName.getText().equals(server.getName()) : server.getName() != null) {
                 return true;
             }
-            if (serverUrl.getText() != null ? !serverUrl.getText().equals(server.getUrlString()) : server.getUrlString() != null) {
+			if (cbEnabled.isSelected() != server.getEnabled()) {
+				return true;
+			}			
+			if (serverUrl.getText() != null ? !serverUrl.getText().equals(server.getUrlString()) : server.getUrlString() != null) {
                 return true;
             }
             if (username.getText() != null ? !username.getText().equals(server.getUsername()) : server.getUsername() != null) {

@@ -30,6 +30,7 @@ public class BambooServerConfigForm extends AbstractServerPanel {
 	private JButton testConnection;
 	private JTextArea buildPlansTextArea;
 	private JCheckBox chkPasswordRemember;
+	private JCheckBox cbEnabled;
 
 	private ServerBean server;
 
@@ -59,8 +60,9 @@ public class BambooServerConfigForm extends AbstractServerPanel {
 		username.setText(server.getUsername());
 		chkPasswordRemember.setSelected(server.getShouldPasswordBeStored());
 		password.setText(server.getPasswordString());
+		cbEnabled.setSelected(server.getEnabled());
 
-        buildPlansTextArea.setText(subscribedPlansToString(server.getSubscribedPlans()));
+		buildPlansTextArea.setText(subscribedPlansToString(server.getSubscribedPlans()));
 	}
 
 	public ServerBean getData() {
@@ -68,6 +70,7 @@ public class BambooServerConfigForm extends AbstractServerPanel {
 		server.setUrlString(serverUrl.getText());
 		server.setUsername(username.getText());
 		server.setPasswordString(String.valueOf(password.getPassword()), chkPasswordRemember.isSelected());
+		server.setEnabled(cbEnabled.isSelected());
 		server.setSubscribedPlansData(subscribedPlansFromString(buildPlansTextArea.getText()));
 		return server;
 	}
@@ -107,6 +110,9 @@ public class BambooServerConfigForm extends AbstractServerPanel {
 
 		if (server != null) {
 			if (chkPasswordRemember.isSelected() != server.getShouldPasswordBeStored()) {
+				return true;
+			}
+			if (cbEnabled.isSelected() != server.getEnabled()) {
 				return true;
 			}
 			if (serverName.getText() != null ? !serverName.getText().equals(server.getName()) : server.getName() != null) {
