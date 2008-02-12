@@ -50,14 +50,26 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 		testedListener.updateBuildStatuses(null);
 		assertEquals(1, output.count);
 		assertSame(BuildStatus.UNKNOWN, output.buildStatus);
-		assertEquals("<html><body>No plans defined. <a href=\"http://theplugin-config\">Configure</a>.</body></html>", output.htmlPage);
+		assertEquals(
+                "<html>"
+                + HtmlBambooStatusListener.BODY_WITH_STYLE
+                + "No plans defined. "
+                + HtmlBambooStatusListener.CONFIGURE_PLUGIN_LINK
+                + "</body></html>",
+                output.htmlPage);
 	}
 
 	public void testEmptyStatusCollection() throws Exception {
 		testedListener.updateBuildStatuses(new ArrayList<BambooBuild>());
 		assertEquals(1, output.count);
 		assertSame(BuildStatus.UNKNOWN, output.buildStatus);
-		assertEquals("<html><body>No plans defined. <a href=\"http://theplugin-config\">Configure</a>.</body></html>", output.htmlPage);
+        assertEquals(
+                "<html>"
+                + HtmlBambooStatusListener.BODY_WITH_STYLE
+                + "No plans defined. "
+                + HtmlBambooStatusListener.CONFIGURE_PLUGIN_LINK
+                + "</body></html>",
+                output.htmlPage);
 	}
 
 	public void testSingleSuccessResult() throws Exception {
