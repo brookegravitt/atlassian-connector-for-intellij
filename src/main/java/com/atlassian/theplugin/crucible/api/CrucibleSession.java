@@ -10,5 +10,7 @@ package com.atlassian.theplugin.crucible.api;
 public interface CrucibleSession {
 	void login(String userName, String password) throws CrucibleLoginException;
 
-	void logout() throws CrucibleLogoutException;
+	void logout();
+
+	String getAuthToken();
 }
