@@ -3,6 +3,9 @@ package com.atlassian.theplugin.idea;
 import com.atlassian.theplugin.exception.ThePluginException;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.openapi.options.ShowSettingsUtil;
+import com.intellij.openapi.project.ProjectManager;
+import com.intellij.openapi.application.ApplicationManager;
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 
@@ -49,7 +52,14 @@ public class PluginStatusBarToolTip extends Window {
 
             public void hyperlinkUpdate(HyperlinkEvent e) {
                 if (e.getEventType().equals(ACTIVATED)) {
-                    BrowserUtil.launchBrowser(e.getURL().toString());
+					if (e.getURL().toExternalForm().equals(ThePluginApplicationComponent.PLUGIN_CONFIG_URL))
+					{
+						ShowSettingsUtil.getInstance().editConfigurable(ProjectManager.getInstance().getDefaultProject(), ApplicationManager.getApplication().getComponent(ThePluginApplicationComponent.class));
+					}
+					else
+					{
+						BrowserUtil.launchBrowser(e.getURL().toString());
+					}
                 }
             }
         });

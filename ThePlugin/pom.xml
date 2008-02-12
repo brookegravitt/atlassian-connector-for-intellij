@@ -65,6 +65,11 @@
 
 
 	<repositories>
+		<repository>
+			<id>atlassian-proxy</id>
+			<url>https://m2proxy.atlassian.com/repository/public</url>
+		</repository>
+		
 		<!--  for CXF -->
 		<repository>
 			<id>atlassian-proxy</id>
