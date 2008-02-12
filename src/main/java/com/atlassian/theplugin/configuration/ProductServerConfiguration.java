@@ -11,7 +11,8 @@ import java.util.Collection;
  */
 public interface ProductServerConfiguration {
     Collection<Server> getServers();
-    Server getServer(Server aServer);
+	Collection<Server> getEnabledServers();
+	Server getServer(Server aServer);
     void storeServer(Server server);
 	void setServers(Collection<Server> servers);
 	void removeServer(Server server);

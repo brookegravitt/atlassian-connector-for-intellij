@@ -18,16 +18,19 @@ import java.awt.*;
  */
 public class ServerTreeRenderer extends DefaultTreeCellRenderer {
 	private static Icon bambooServersIcon;
-	private static Icon bambooServerIcon;
+	private static Icon bambooServerEnabledIcon;
+	private static Icon bambooServerDisabledIcon;
 	private static Icon crucibleServersIcon;
-	private static Icon crucibleServerIcon;
-
+	private static Icon crucibleServerEnabledIcon;
+	private static Icon crucibleServerDisabledIcon;
 
 	static {
-		bambooServersIcon = IconLoader.getIcon("/icons/blue-16.png");
-		bambooServerIcon = IconLoader.getIcon("/icons/grey-16.png");
-		crucibleServersIcon = IconLoader.getIcon("/icons/crucible-16.png");
-		crucibleServerIcon = IconLoader.getIcon("/icons/crucible-16.png");		
+		bambooServersIcon = IconLoader.getIcon("/icons/bamboo-blue-16.png");
+		bambooServerEnabledIcon = IconLoader.getIcon("/icons/bamboo-blue-16.png");
+		bambooServerDisabledIcon = IconLoader.getIcon("/icons/bamboo-grey-16.png");
+		crucibleServersIcon = IconLoader.getIcon("/icons/crucible-blue-16.png");
+		crucibleServerEnabledIcon = IconLoader.getIcon("/icons/crucible-blue-16.png");
+		crucibleServerDisabledIcon = IconLoader.getIcon("/icons/crucible-grey-16.png");
 	}
 
 	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
@@ -45,11 +48,19 @@ public class ServerTreeRenderer extends DefaultTreeCellRenderer {
 		}
 
 		if (value instanceof BambooServerNode) {
-			label.setIcon(bambooServerIcon);
+			if (((BambooServerNode)value).getServer().getEnabled()) {
+				label.setIcon(bambooServerEnabledIcon);
+			} else {
+				label.setIcon(bambooServerDisabledIcon);
+			}
 		}
 
 		if (value instanceof CrucibleServerNode) {
-			label.setIcon(crucibleServerIcon);
+			if (((BambooServerNode)value).getServer().getEnabled()) {
+				label.setIcon(crucibleServerEnabledIcon);
+			} else {
+				label.setIcon(crucibleServerDisabledIcon);
+			}
 		}
 
 
