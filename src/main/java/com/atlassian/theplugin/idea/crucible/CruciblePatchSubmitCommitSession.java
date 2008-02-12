@@ -110,13 +110,13 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 	 */
 
 	private StringBuilder generateUnifiedDiffBody(Diff.Change diff, String[] beforeLines, String[] afterLines, int linesOfContext) {
-		int previousLine = 0;
-		int origStart = 0;
-		int origSpan = 0;
-		int afterStart = 0;
-		int afterSpan = 0;
-		int i = 0;
-		int lastLine = 0;
+		int previousLine;
+		int origStart;
+		int origSpan;
+		int afterStart;
+		int afterSpan;
+		int i;
+		int lastLine;
 		String strChange = "";
 		StringBuilder sb = new StringBuilder();
 
