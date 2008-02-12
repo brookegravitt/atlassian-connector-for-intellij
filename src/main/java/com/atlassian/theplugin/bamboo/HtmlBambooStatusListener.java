@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.bamboo;
 
 import static com.atlassian.theplugin.bamboo.BuildStatus.BUILD_FAILED;
+import com.atlassian.theplugin.idea.ThePluginApplicationComponent;
 
 import java.text.DateFormat;
 import java.util.Calendar;
@@ -14,6 +15,7 @@ import java.util.regex.Pattern;
 public class HtmlBambooStatusListener implements BambooStatusListener {
 
 	private final BambooStatusDisplay display;
+	private static final String configurePluginLink = "<a href=\"" + ThePluginApplicationComponent.PLUGIN_CONFIG_URL + "\">Configure</a>.";
 
 	public HtmlBambooStatusListener(BambooStatusDisplay aDisplay) {
 		display = aDisplay;
@@ -111,7 +113,7 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 		StringBuilder sb = new StringBuilder("<html><body>");
 
 		if (buildStatuses == null || buildStatuses.size() == 0) {
-			sb.append("No plans defined.");
+			sb.append("No plans defined. " + configurePluginLink);
 			status = BuildStatus.UNKNOWN;
 		} else {
 			sb.append("<table>");
@@ -136,6 +138,7 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 				}
 			}
 			sb.append("</table>");
+			sb.append("<p>" + configurePluginLink + "</p>");
 		}
 		sb.append("</body></html>");
 		display.updateBambooStatus(status, sb.toString());

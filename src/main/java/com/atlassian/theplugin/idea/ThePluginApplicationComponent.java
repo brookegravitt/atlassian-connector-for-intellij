@@ -49,6 +49,7 @@ public class ThePluginApplicationComponent
 	private static final int TIMER_START_DELAY = 15000;
 	private BambooStatusChecker bambooStatusChecker;
 	private TimerTask bambooStatusCheckerTask;
+	public static final String PLUGIN_CONFIG_URL = "http://theplugin-config";
 
 	public BambooStatusChecker getBambooStatusChecker() {
 		if (bambooStatusChecker == null) {
