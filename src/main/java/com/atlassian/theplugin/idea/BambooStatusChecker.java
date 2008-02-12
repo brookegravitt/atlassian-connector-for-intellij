@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.theplugin.ServerType;
 import com.atlassian.theplugin.bamboo.BambooBuild;
 import com.atlassian.theplugin.bamboo.BambooServerFactory;
 import com.atlassian.theplugin.bamboo.BambooStatusListener;
@@ -7,7 +8,8 @@ import com.atlassian.theplugin.bamboo.MissingPasswordHandler;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
-import com.atlassian.theplugin.ServerType;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -50,7 +52,7 @@ public class BambooStatusChecker {
 			try {
 				newServerBuildsStatus.addAll(BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults(server));
 			} catch (ServerPasswordNotProvidedException exception) {
-				EventQueue.invokeLater(new MissingPasswordHandler());
+				ApplicationManager.getApplication().invokeLater(new MissingPasswordHandler(), ModalityState.defaultModalityState());
 			}
 		}
 
