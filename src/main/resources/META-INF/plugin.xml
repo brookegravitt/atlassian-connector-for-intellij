@@ -63,10 +63,6 @@
 <!--            <reference id="ThePlugin.CopyServerAction"/> -->
         </group>
 
-		<group id="ThePlugin.ServerTypePopup">
-            <reference id="ThePlugin.AddBambooServerAction"/>
-            <reference id="ThePlugin.AddCrucibleServerAction"/>
-		</group>
-
-    </actions>
+	
+	</actions>
 </idea-plugin>
