@@ -1,10 +1,17 @@
 package com.atlassian.theplugin.crucible;
 
+import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.crucible.api.*;
+import com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData;
+import com.atlassian.theplugin.crucible.api.soap.xfire.review.RpcReviewServiceName;
+import com.atlassian.theplugin.crucible.api.soap.xfire.review.State;
 import junit.framework.TestCase;
+import org.apache.cxf.jaxws.JaxWsServerFactoryBean;
 import org.easymock.EasyMock;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.replay;
+
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -24,6 +31,15 @@ public class CrucibleServerFacadeTest extends TestCase {
 
 		facade = CrucibleServerFactory.getCrucibleServerFacade();
 		facade.setCrucibleSession(crucibleSessionMock);
+
+
+		CxfReviewServiceMockImpl reviewServiceMock = new CxfReviewServiceMockImpl();
+
+		JaxWsServerFactoryBean serverFactory = new JaxWsServerFactoryBean();
+		serverFactory.setServiceClass(RpcReviewServiceName.class);
+		serverFactory.setAddress(CxfReviewServiceMockImpl.VALID_URL + "/service/review");
+		serverFactory.setServiceBean(reviewServiceMock);
+		serverFactory.create();
 
 	}
 
@@ -56,11 +72,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 			fail("recording mock failed for login");
 		}
 
-		try {
-			crucibleSessionMock.logout();
-		} catch (CrucibleLogoutException e) {
-			fail("recording mock failed for logout");
-		}
+		crucibleSessionMock.logout();
 
 		replay(crucibleSessionMock);
 
@@ -71,5 +83,108 @@ public class CrucibleServerFacadeTest extends TestCase {
 		} finally {
 			EasyMock.verify(crucibleSessionMock);
 		}
+	}
+
+	public void testCreateReview() {
+
+		try {
+			crucibleSessionMock.login(CxfReviewServiceMockImpl.VALID_LOGIN, CxfReviewServiceMockImpl.VALID_PASSWORD);
+		} catch (CrucibleLoginException e) {
+			fail("recording mock failed for login");
+		}
+
+		crucibleSessionMock.getAuthToken();
+		EasyMock.expectLastCall().andReturn("some token");
+		crucibleSessionMock.logout();
+
+		replay(crucibleSessionMock);
+
+		ServerBean server = new ServerBean();
+		server.setUrlString(CxfReviewServiceMockImpl.VALID_URL);
+		server.setUsername(CxfReviewServiceMockImpl.VALID_LOGIN);
+		server.setPasswordString(CxfReviewServiceMockImpl.VALID_PASSWORD, false);
+
+		ReviewData reviewData = new ReviewData();
+		reviewData.setAuthor(CxfReviewServiceMockImpl.VALID_LOGIN);
+		reviewData.setCreator(CxfReviewServiceMockImpl.VALID_LOGIN);
+		reviewData.setDescription("Test description");
+		reviewData.setName("TEST");
+		reviewData.setState(State.DRAFT);
+		reviewData.setProjectKey("TEST");
+
+		ReviewData ret;
+
+		try {
+			ret = facade.createReview(server, reviewData);
+
+			assertNotNull(ret);
+			assertNotNull(ret.getPermaId());
+			assertNotNull(ret.getPermaId().getId());
+			assertTrue(ret.getPermaId().getId().length() > 0);
+
+			assertEquals(reviewData.getAuthor(), ret.getAuthor());
+			assertEquals(reviewData.getCreator(), ret.getCreator());
+			assertEquals(reviewData.getDescription(), ret.getDescription());
+			assertEquals(reviewData.getName(), ret.getName());
+			assertEquals(reviewData.getState(), ret.getState());
+			assertEquals(reviewData.getProjectKey(), ret.getProjectKey());
+
+			EasyMock.verify(crucibleSessionMock);
+
+		} catch (CrucibleException e) {
+			fail(e.getMessage());
+		}
+
+	}
+
+	public void _testCreateReviewHardcoded() {
+
+		facade.setCrucibleSession(null);
+
+		ServerBean server = new ServerBean();
+		server.setUrlString("http://lech.atlassian.pl:8060");
+		server.setUsername("test");
+		server.setPasswordString("test", false);
+
+		ReviewData reviewData = new ReviewData();
+		reviewData.setAuthor("test");
+		reviewData.setCreator("test");
+		reviewData.setDescription("XXX test description");
+		reviewData.setName("XXX");
+		reviewData.setState(State.DRAFT);
+		reviewData.setProjectKey("TEST");
+
+		ReviewData ret;
+
+		try {
+			ret = facade.createReview(server, reviewData);
+			assertNotNull(ret);
+			assertNotNull(ret.getPermaId());
+			assertNotNull(ret.getPermaId().getId());
+			assertTrue(ret.getPermaId().getId().length() > 0);
+		} catch (CrucibleException e) {
+			fail(e.getMessage());
+		}
+	}
+
+	public void _testGetAllReviewsHardcoded() {
+		facade.setCrucibleSession(null);
+
+		ServerBean server = new ServerBean();
+		server.setUrlString("http://lech.atlassian.pl:8060");
+		server.setUsername("test");
+		server.setPasswordString("test", false);
+
+		List<Object> list = null;
+
+		try {
+			list = facade.getAllReviews(server);
+			assertNotNull(list);
+			assertTrue(list.size() > 0)  ;
+		} catch (CrucibleLoginException e) {
+			fail(e.getMessage());
+		}
+
+
 	}
 }

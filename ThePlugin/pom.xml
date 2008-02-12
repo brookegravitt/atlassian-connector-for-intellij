@@ -23,7 +23,7 @@
 	<groupId>com.atlassian.theplugin</groupId>
 	<artifactId>atlassian-idea-plugin</artifactId>
 	<version>0.2.0-SNAPSHOT</version>
-	<packaging>maven-plugin</packaging>
+	<packaging>jar</packaging>
 	<properties>
 		<clover.licenseLocation>clover/clover.license</clover.licenseLocation>
 		<clover.database>${basedir}/clover/clover.db</clover.database>
@@ -270,6 +270,13 @@
 				<version>2.0-beta-6</version>
 			</plugin>
 			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+				<executions>
+					<execution></execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
@@ -294,6 +301,12 @@
 						</goals>
 					</execution>
 				</executions>
+				<!--<configuration>-->
+					<!--<format> {0,date}, {0,time} </format>-->
+					<!--<items>-->
+						<!--<item>timestamp</item>-->
+					<!--</items>-->
+				<!--</configuration>-->
 			</plugin>
 
 			<plugin>

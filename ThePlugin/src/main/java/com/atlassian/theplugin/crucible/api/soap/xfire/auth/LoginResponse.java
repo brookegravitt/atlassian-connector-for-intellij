@@ -1,5 +1,5 @@
 
-package com.atlassian.theplugin.crucible.api.soap.xfire;
+package com.atlassian.theplugin.crucible.api.soap.xfire.auth;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
