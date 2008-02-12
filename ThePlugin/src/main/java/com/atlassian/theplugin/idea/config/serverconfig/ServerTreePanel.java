@@ -56,8 +56,9 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 
 			serverTree.setRootVisible(false);
 			serverTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-			serverTree.setExpandsSelectedPaths(true);
+			//serverTree.setExpandsSelectedPaths(true);
 			serverTree.setVisibleRowCount(7);
+			serverTree.setShowsRootHandles(true);
 
 			serverTree.addTreeSelectionListener(this);
 

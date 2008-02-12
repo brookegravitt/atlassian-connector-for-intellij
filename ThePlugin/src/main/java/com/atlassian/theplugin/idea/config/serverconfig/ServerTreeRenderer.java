@@ -56,7 +56,7 @@ public class ServerTreeRenderer extends DefaultTreeCellRenderer {
 		}
 
 		if (value instanceof CrucibleServerNode) {
-			if (((BambooServerNode)value).getServer().getEnabled()) {
+			if (((CrucibleServerNode)value).getServer().getEnabled()) {
 				label.setIcon(crucibleServerEnabledIcon);
 			} else {
 				label.setIcon(crucibleServerDisabledIcon);
