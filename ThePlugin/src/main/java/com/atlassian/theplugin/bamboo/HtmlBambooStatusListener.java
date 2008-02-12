@@ -15,7 +15,14 @@ import java.util.regex.Pattern;
 public class HtmlBambooStatusListener implements BambooStatusListener {
 
 	private final BambooStatusDisplay display;
-	private static final String configurePluginLink = "<a href=\"" + ThePluginApplicationComponent.PLUGIN_CONFIG_URL + "\">Configure</a>.";
+    // jgorycki: crap. IDEA HTML rendered does not really understand CSS. We have to resort to <hr> ugliness
+    private static final String configurePluginLink =
+            "<div style=\"text-align:center\""
+            + "<hr width=90%>"
+            + "<p>"
+            + "<a href=\"" + ThePluginApplicationComponent.PLUGIN_CONFIG_URL + "\">Configure</a>"
+            + "</p>"
+            + "</div>";
 
 	public HtmlBambooStatusListener(BambooStatusDisplay aDisplay) {
 		display = aDisplay;
@@ -98,7 +105,10 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 		sb.append("'>");
 		sb.append(buildInfo.getBuildKey());
 		sb.append("</a></td><td></td><td>");
-		String shortMessage = buildInfo.getMessage() != null ? lineSeparator.split(buildInfo.getMessage(), 2)[0] : null;
+        // TODO: jgorycki: this generates bug PL-95
+        // In case of bamboo error garbage is displayed in the tooltip
+        String shortMessage = buildInfo.getMessage() != null ?
+                lineSeparator.split(buildInfo.getMessage(), 2)[0] : null;
 		sb.append("<font color=\"ltgray\">").append(shortMessage).append("</font>");
 		sb.append("</td>");
 		sb.append(formatLatestPollAndBuildTime(buildInfo));
@@ -110,7 +120,9 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 	public void updateBuildStatuses(Collection<BambooBuild> buildStatuses) {
 
 		BuildStatus status = BuildStatus.BUILD_SUCCEED;
-		StringBuilder sb = new StringBuilder("<html><body>");
+		StringBuilder sb = new StringBuilder(
+                "<html>"
+                + "<body style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">");
 
 		if (buildStatuses == null || buildStatuses.size() == 0) {
 			sb.append("No plans defined. " + configurePluginLink);
