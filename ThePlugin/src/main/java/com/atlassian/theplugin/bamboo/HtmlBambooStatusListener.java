@@ -16,7 +16,7 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 
 	private final BambooStatusDisplay display;
     // jgorycki: crap. IDEA HTML rendered does not really understand CSS. We have to resort to <hr> ugliness
-    private static final String configurePluginLink =
+    public static final String CONFIGURE_PLUGIN_LINK =
             "<div style=\"text-align:center\""
             + "<hr width=90%>"
             + "<p>"
@@ -24,7 +24,10 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
             + "</p>"
             + "</div>";
 
-	public HtmlBambooStatusListener(BambooStatusDisplay aDisplay) {
+    public static final String BODY_WITH_STYLE =
+            "<body style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">";
+
+    public HtmlBambooStatusListener(BambooStatusDisplay aDisplay) {
 		display = aDisplay;
 	}
 
@@ -120,12 +123,10 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 	public void updateBuildStatuses(Collection<BambooBuild> buildStatuses) {
 
 		BuildStatus status = BuildStatus.BUILD_SUCCEED;
-		StringBuilder sb = new StringBuilder(
-                "<html>"
-                + "<body style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">");
+		StringBuilder sb = new StringBuilder("<html>" + BODY_WITH_STYLE);
 
 		if (buildStatuses == null || buildStatuses.size() == 0) {
-			sb.append("No plans defined. " + configurePluginLink);
+			sb.append("No plans defined. " + CONFIGURE_PLUGIN_LINK);
 			status = BuildStatus.UNKNOWN;
 		} else {
 			sb.append("<table>");
@@ -150,7 +151,7 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 				}
 			}
 			sb.append("</table>");
-			sb.append("<p>" + configurePluginLink + "</p>");
+			sb.append("<p>" + CONFIGURE_PLUGIN_LINK + "</p>");
 		}
 		sb.append("</body></html>");
 		display.updateBambooStatus(status, sb.toString());
