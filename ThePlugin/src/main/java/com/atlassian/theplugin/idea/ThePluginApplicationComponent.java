@@ -120,7 +120,7 @@ public class ThePluginApplicationComponent
 	 */
 	public void triggerBambooStatusChecker() {
 		bambooStatusCheckerTask = getBambooStatusChecker().newTimerTask();
-		timer.schedule(bambooStatusCheckerTask, TIMER_START_DELAY, TIMER_TICK);
+		timer.schedule(bambooStatusCheckerTask, 0, TIMER_TICK);
 	}
 
 	public void apply() throws ConfigurationException {
