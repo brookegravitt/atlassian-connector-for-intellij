@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.crucible;
 
 import com.atlassian.theplugin.configuration.Server;
+import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.crucible.api.CrucibleException;
 import com.atlassian.theplugin.crucible.api.CrucibleLoginException;
 import com.atlassian.theplugin.crucible.api.CrucibleSession;
@@ -83,6 +84,42 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	}
 
 	/**
+	 * Creates new review in Crucible
+	 * @param server
+	 * @param reviewData data for new review to create (some fields have to be set e.g. projectKey)
+	 * @param patch patch to assign with the review
+	 * @return created revew date
+	 * @throws CrucibleException in case of createReview error or CrucibleLoginException in case of login error
+	 */
+	public ReviewData createReviewFromPatch(ServerBean server, ReviewData reviewData, String patch) throws CrucibleException {
+		CrucibleSession session = crucibleSession;
+
+		if (session == null) {
+			session = new CrucibleSessionImpl(server.getUrlString());
+		}
+
+		session.login(server.getUsername(), server.getPasswordString());
+
+		JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
+		factory.setServiceClass(RpcReviewServiceName.class);
+		factory.setAddress(formatUrl(server.getUrlString()));
+		RpcReviewServiceName crucibleService = (RpcReviewServiceName) factory.create();
+
+		ReviewData ret;
+
+		try {
+			ret = crucibleService.createReviewFromPatch(session.getAuthToken(), reviewData, patch);
+		} catch (RuntimeException e) {
+			LOG.error(e.getMessage());
+			throw new CrucibleException(e.getMessage(), e);
+		} finally {
+			session.logout();
+		}
+
+		return ret;
+	}
+
+	/**
 	 *
 	 * @param server server object with Url, Login and Password to connect to 
 	 * @return List of reviews (empty list in case there is no review)
@@ -127,4 +164,6 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	public void setCrucibleSession(CrucibleSession crucibleSession) {
 		this.crucibleSession = crucibleSession;
 	}
+
+
 }
