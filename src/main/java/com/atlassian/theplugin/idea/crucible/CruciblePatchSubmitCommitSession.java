@@ -31,6 +31,8 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 
 	@SuppressWarnings("unused")
 	private final Project project;
+	private static final int LINES_OF_CONTEXT = 3;
+	private static final String WHITE_SPACE = " ";
 
 	public CruciblePatchSubmitCommitSession(Project project) {
 		this.project = project;
@@ -51,6 +53,9 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 	}
 
 	public void execute(Collection<Change> changes, String commitMessage) {
+		int linesOfContext = LINES_OF_CONTEXT;
+
+
 		System.out.println("Sending to the Crucible server: " + commitMessage);
 		StringBuilder sb = new StringBuilder();
 		for (Change fileChange : changes) {
@@ -79,30 +84,90 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 			sb.append("+++ ").append(afterPath).append("\t(");
 			sb.append(getRevisionStr(afterRevision)).append(")\n");
 
+			 Diff.Change diff = null;
+			  if (beforeLines != null && afterLines != null) {
+				diff = Diff.buildChanges(beforeLines, afterLines);
+			 }
 
-			Diff.Change change = Diff.buildChanges(beforeLines, afterLines);
-			while (null != change) {
-				int origStart = change.line0;
-				int origSpan = change.deleted;
-				int afterStart = change.line1;
-				int afterSpan = change.inserted;
+			sb = generateUnifiedDiffBody(diff, beforeLines, afterLines, linesOfContext);
 
-				sb.append(String.format("@@ -%d,%d +%d,%d @@\n", origStart, origSpan, afterStart, afterSpan));
-
-				for (int i = 0; i < change.deleted; ++i) {
-					sb.append("-");
-					sb.append(beforeLines[change.line0 + i]);
-				}
-				for (int i = 0; i < change.inserted; ++i) {
-					sb.append("+");
-					sb.append(afterLines[change.line1 + i]);
-				}
-
-				change = change.link;
-			}
 		}
-		ApplicationManager.getApplication().invokeAndWait(new CruciblePatchUploader(commitMessage, sb.toString()), ModalityState.defaultModalityState());
+
+
+			ApplicationManager.getApplication().invokeAndWait(new CruciblePatchUploader(commitMessage, sb.toString()), ModalityState.defaultModalityState());
 	}
+
+	private StringBuilder generateUnifiedDiffBody(Diff.Change diff, String[] beforeLines, String[] afterLines, int linesOfContext) {
+		int previousLine = 0;
+		int origStart = 0;
+		int origSpan = 0;
+		int afterStart = 0;
+		int afterSpan = 0;
+		int i = 0;
+		int lastLine = 0;
+		String strChange = "";
+		StringBuilder sb = new StringBuilder();
+		
+
+		while (diff != null) {
+
+		  origStart = diff.line0;
+		  afterStart = diff.line1;
+		  origSpan = 0;
+		  afterSpan = 0;
+		  lastLine = diff.line0 - linesOfContext;
+
+			do {
+
+				  i = Math.max(lastLine, diff.line0 - linesOfContext);
+
+				  // Display the unaltered lines (skipping some if there's too many)
+				  for (; i < diff.line0; i++) {
+					  strChange += " " + beforeLines[i];
+					  origSpan += 1;
+						afterSpan += 1;
+				  }
+
+				  // Display the deleted and/or inserted lines for this difference
+				  for (i = 0; i < diff.deleted; i++) {
+					strChange += "-" + beforeLines[diff.line0 + i];
+				  }
+				  for (i = 0; i < diff.inserted; i++) {
+					strChange +="+" + afterLines[diff.line1 + i];
+				  };
+
+				  previousLine = diff.line0 + diff.deleted;
+				  origSpan += diff.deleted;
+				  afterSpan += diff.inserted;
+					// Display any remaining lines (plus skip some if there's too many)
+
+				  if (diff.link != null){
+					  lastLine = Math.min(previousLine + linesOfContext, diff.link.line0);
+
+				  } else {
+					  lastLine = previousLine + linesOfContext;
+				  }
+
+				  lastLine = Math.min(beforeLines.length, lastLine);
+					  for (i = previousLine; i < lastLine ; i++) {
+						  strChange += " " + beforeLines[i];
+						  origSpan += 1;
+							  afterSpan += 1;
+
+					  }
+				  diff = diff.link;
+			} while (diff != null && lastLine >= diff.line0 - linesOfContext);
+
+			sb.append(String.format("@@ -%d,%d +%d,%d @@\n", origStart, origSpan, afterStart, afterSpan));
+			sb.append(strChange);
+			strChange = "";
+
+		}
+
+		return sb;
+
+	}
+
 
 	private static final String[] EMPTY_STR_ARRAY = new String[0];
 
@@ -145,4 +210,6 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 
 	public void executionCanceled() {
 	}
+
+
 }
