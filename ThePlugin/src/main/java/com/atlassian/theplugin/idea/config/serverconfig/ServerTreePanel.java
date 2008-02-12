@@ -45,7 +45,13 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 		add(new JScrollPane(getServerTree()), BorderLayout.CENTER);
 	}
 
-	private JTree getServerTree() {
+    private void expandAllPaths() {
+        for (int i = 0; i < serverTree.getRowCount(); ++i) {
+                 serverTree.expandRow(i);
+        }
+    }
+
+    private JTree getServerTree() {
 		if (serverTree == null) {
 			serverTree = new JTree();
 			serverTree.setName("Server tree");
@@ -56,7 +62,6 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 
 			serverTree.setRootVisible(false);
 			serverTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-			//serverTree.setExpandsSelectedPaths(true);
 			serverTree.setVisibleRowCount(7);
 			serverTree.setShowsRootHandles(true);
 
@@ -126,9 +131,14 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 	}
 
 	public void setData(PluginConfiguration aPluginConfiguration) {
-		this.pluginConfiguration = aPluginConfiguration;
+        // jgorycki: I assume this method will only be called at the beginning of the dialog's lifecycle.
+        // I want to expand all paths in the tree and not select any nodes - hence showing an empty panel
+        this.pluginConfiguration = aPluginConfiguration;
 		updateTreeConfiguration();
-	}
+        expandAllPaths();
+        serverTree.setSelectionPath(null);
+        ConfigPanel.getInstance().getServerConfigPanel().showEmptyPanel();
+    }
 
 	private void updateServerTree(ServerType serverType) {
 		Collection<Server> servers = pluginConfiguration.getProductServers(serverType).getServers();
@@ -165,9 +175,9 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 		updateServerTree(ServerType.BAMBOO_SERVER);
 		updateServerTree(ServerType.CRUCIBLE_SERVER);
 
-		if (newSelectedNode != null) {
+        if (newSelectedNode != null) {
 			selectedNode = newSelectedNode;
-			TreePath path = new TreePath(selectedNode.getPath());
+            TreePath path = new TreePath(selectedNode.getPath());
 			serverTree.scrollPathToVisible(path);
 			serverTree.setSelectionPath(path);
 			serverTree.expandPath(path);
