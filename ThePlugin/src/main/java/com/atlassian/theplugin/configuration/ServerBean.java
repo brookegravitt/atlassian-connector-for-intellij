@@ -129,8 +129,7 @@ public class ServerBean implements Server {
 	public void setEncryptedPassword(String encryptedPassword) {
 		password = decode(encryptedPassword);
 		this.encryptedPassword = encryptedPassword;
-		this.
-		isConfigInitialized = true;
+		this.isConfigInitialized = true;
 	}
 
 	/**
