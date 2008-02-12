@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.crucible.api;
 
-import com.atlassian.theplugin.crucible.api.soap.xfire.RpcAuthServiceName;
+import com.atlassian.theplugin.crucible.api.soap.xfire.auth.RpcAuthServiceName;
 
 import javax.xml.ws.ResponseWrapper;
 import javax.xml.ws.RequestWrapper;
@@ -24,8 +24,8 @@ public class CxfAuthServiceMockImpl implements RpcAuthServiceName {
 	public static final String VALID_PASSWORD = "validPassword";
 	public static final String VALID_URL = "http://localhost:9000";
 
-	@ResponseWrapper(localName = "loginResponse", targetNamespace = "http://rpc.spi.crucible.atlassian.com/", className = "com.atlassian.theplugin.crucible.api.soap.xfire.LoginResponse")
-	@RequestWrapper(localName = "login", targetNamespace = "http://rpc.spi.crucible.atlassian.com/", className = "com.atlassian.theplugin.crucible.api.soap.xfire.Login")
+	@ResponseWrapper(localName = "loginResponse", targetNamespace = "http://rpc.spi.crucible.atlassian.com/", className = "com.atlassian.theplugin.crucible.api.soap.xfire.auth.LoginResponse")
+	@RequestWrapper(localName = "login", targetNamespace = "http://rpc.spi.crucible.atlassian.com/", className = "com.atlassian.theplugin.crucible.api.soap.xfire.auth.Login")
 	@WebResult(name = "return", targetNamespace = "")
 	@WebMethod
 	public String login(@WebParam(name = "arg0", targetNamespace = "")
@@ -41,8 +41,8 @@ public class CxfAuthServiceMockImpl implements RpcAuthServiceName {
 		}
 	}
 
-	@ResponseWrapper(localName = "logoutResponse", targetNamespace = "http://rpc.spi.crucible.atlassian.com/", className = "com.atlassian.theplugin.crucible.api.soap.xfire.LogoutResponse")
-	@RequestWrapper(localName = "logout", targetNamespace = "http://rpc.spi.crucible.atlassian.com/", className = "com.atlassian.theplugin.crucible.api.soap.xfire.Logout")
+	@ResponseWrapper(localName = "logoutResponse", targetNamespace = "http://rpc.spi.crucible.atlassian.com/", className = "com.atlassian.theplugin.crucible.api.soap.xfire.auth.LogoutResponse")
+	@RequestWrapper(localName = "logout", targetNamespace = "http://rpc.spi.crucible.atlassian.com/", className = "com.atlassian.theplugin.crucible.api.soap.xfire.auth.Logout")
 	@WebMethod
 	public void logout(@WebParam(name = "arg0", targetNamespace = "")
 	String arg0) {

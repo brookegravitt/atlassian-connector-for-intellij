@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.crucible.api;
 
-import com.atlassian.theplugin.crucible.api.soap.xfire.RpcAuthServiceName;
+import com.atlassian.theplugin.crucible.api.soap.xfire.auth.RpcAuthServiceName;
 import junit.framework.TestCase;
 import org.mortbay.jetty.Server;
 import org.apache.cxf.jaxws.JaxWsServerFactoryBean;
