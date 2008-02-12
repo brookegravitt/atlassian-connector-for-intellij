@@ -1,5 +1,5 @@
 
-package com.atlassian.theplugin.crucible.api.soap.xfire;
+package com.atlassian.theplugin.crucible.api.soap.xfire.auth;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -19,8 +19,8 @@ import javax.xml.ws.ResponseWrapper;
 
 public interface RpcAuthServiceName {
 
-    @ResponseWrapper(localName = "loginResponse", targetNamespace = "http://rpc.spi.crucible.atlassian.com/", className = "com.atlassian.theplugin.crucible.api.soap.xfire.LoginResponse")
-    @RequestWrapper(localName = "login", targetNamespace = "http://rpc.spi.crucible.atlassian.com/", className = "com.atlassian.theplugin.crucible.api.soap.xfire.Login")
+    @ResponseWrapper(localName = "loginResponse", targetNamespace = "http://rpc.spi.crucible.atlassian.com/", className = "com.atlassian.theplugin.crucible.api.soap.xfire.auth.LoginResponse")
+    @RequestWrapper(localName = "login", targetNamespace = "http://rpc.spi.crucible.atlassian.com/", className = "com.atlassian.theplugin.crucible.api.soap.xfire.auth.Login")
     @WebResult(name = "return", targetNamespace = "")
     @WebMethod
     public java.lang.String login(
@@ -30,8 +30,8 @@ public interface RpcAuthServiceName {
         java.lang.String arg1
     );
 
-    @ResponseWrapper(localName = "logoutResponse", targetNamespace = "http://rpc.spi.crucible.atlassian.com/", className = "com.atlassian.theplugin.crucible.api.soap.xfire.LogoutResponse")
-    @RequestWrapper(localName = "logout", targetNamespace = "http://rpc.spi.crucible.atlassian.com/", className = "com.atlassian.theplugin.crucible.api.soap.xfire.Logout")
+    @ResponseWrapper(localName = "logoutResponse", targetNamespace = "http://rpc.spi.crucible.atlassian.com/", className = "com.atlassian.theplugin.crucible.api.soap.xfire.auth.LogoutResponse")
+    @RequestWrapper(localName = "logout", targetNamespace = "http://rpc.spi.crucible.atlassian.com/", className = "com.atlassian.theplugin.crucible.api.soap.xfire.auth.Logout")
     @WebMethod
     public void logout(
         @WebParam(name = "arg0", targetNamespace = "")
