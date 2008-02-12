@@ -99,22 +99,13 @@ public class CrucibleServerFacadeTest extends TestCase {
 
 		replay(crucibleSessionMock);
 
-		ServerBean server = new ServerBean();
-		server.setUrlString(CxfReviewServiceMockImpl.VALID_URL);
-		server.setUsername(CxfReviewServiceMockImpl.VALID_LOGIN);
-		server.setPasswordString(CxfReviewServiceMockImpl.VALID_PASSWORD, false);
-
-		ReviewData reviewData = new ReviewData();
-		reviewData.setAuthor(CxfReviewServiceMockImpl.VALID_LOGIN);
-		reviewData.setCreator(CxfReviewServiceMockImpl.VALID_LOGIN);
-		reviewData.setDescription("Test description");
-		reviewData.setName("TEST");
-		reviewData.setState(State.DRAFT);
-		reviewData.setProjectKey("TEST");
+		ServerBean server = prepareServerBean();
+		ReviewData reviewData = prepareReviewData();
 
 		ReviewData ret;
 
 		try {
+			// test call
 			ret = facade.createReview(server, reviewData);
 
 			assertNotNull(ret);
@@ -151,24 +142,15 @@ public class CrucibleServerFacadeTest extends TestCase {
 
 		replay(crucibleSessionMock);
 
-		ServerBean server = new ServerBean();
-		server.setUrlString(CxfReviewServiceMockImpl.VALID_URL);
-		server.setUsername(CxfReviewServiceMockImpl.VALID_LOGIN);
-		server.setPasswordString(CxfReviewServiceMockImpl.VALID_PASSWORD, false);
-
-		ReviewData reviewData = new ReviewData();
-		reviewData.setAuthor(CxfReviewServiceMockImpl.VALID_LOGIN);
-		reviewData.setCreator(CxfReviewServiceMockImpl.VALID_LOGIN);
-		reviewData.setDescription("Test description");
-		reviewData.setName("TEST");
-		reviewData.setState(State.DRAFT);
-		reviewData.setProjectKey("TEST");
+		ServerBean server = prepareServerBean();
+		ReviewData reviewData = prepareReviewData();
 
 		String patch = "some patch";
 
 		ReviewData ret;
 
 		try {
+			// test call
 			ret = facade.createReviewFromPatch(server, reviewData, patch);
 
 			assertNotNull(ret);
@@ -189,6 +171,26 @@ public class CrucibleServerFacadeTest extends TestCase {
 			fail(e.getMessage());
 		}
 
+	}
+
+
+	private ReviewData prepareReviewData() {
+		ReviewData reviewData = new ReviewData();
+		reviewData.setAuthor(CxfReviewServiceMockImpl.VALID_LOGIN);
+		reviewData.setCreator(CxfReviewServiceMockImpl.VALID_LOGIN);
+		reviewData.setDescription("Test description");
+		reviewData.setName("TEST");
+		reviewData.setState(State.DRAFT);
+		reviewData.setProjectKey("TEST");
+		return reviewData;
+	}
+
+	private ServerBean prepareServerBean() {
+		ServerBean server = new ServerBean();
+		server.setUrlString(CxfReviewServiceMockImpl.VALID_URL);
+		server.setUsername(CxfReviewServiceMockImpl.VALID_LOGIN);
+		server.setPasswordString(CxfReviewServiceMockImpl.VALID_PASSWORD, false);
+		return server;
 	}
 
 	public void _testCreateReviewHardcoded() {
@@ -235,10 +237,8 @@ public class CrucibleServerFacadeTest extends TestCase {
 			list = facade.getAllReviews(server);
 			assertNotNull(list);
 			assertTrue(list.size() > 0)  ;
-		} catch (CrucibleLoginException e) {
+		} catch (CrucibleException e) {
 			fail(e.getMessage());
 		}
-
-
 	}
 }
