@@ -100,6 +100,15 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 		return sb.toString();
 	}
 
+	/**
+	 * Creates new review in Crucible
+	 * @param diff starting change in file
+	 * @param beforeLines lines of oryginal file
+	 * @param afterLines lines of changed file
+	 * @param linesOfContext number of lines that should preceed and follow change
+	 * @return formatted as unified diff text body without oryginal and changed file name header
+	 */
+
 	private StringBuilder generateUnifiedDiffBody(Diff.Change diff, String[] beforeLines, String[] afterLines, int linesOfContext) {
 		int previousLine = 0;
 		int origStart = 0;
@@ -137,17 +146,17 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 				for (i = 0; i < diff.inserted; i++) {
 					strChange += "+" + afterLines[diff.line1 + i];
 				}
-				;
 
 				previousLine = diff.line0 + diff.deleted;
 				origSpan += diff.deleted;
 				afterSpan += diff.inserted;
 				// Display any remaining lines (plus skip some if there's too many)
 
+				//select place where rest of context (after change) should ends
 				if (diff.link != null) {
 					lastLine = Math.min(previousLine + linesOfContext, diff.link.line0);
 
-				} else {
+				} else { //this is a last change so ......
 					lastLine = previousLine + linesOfContext;
 				}
 
