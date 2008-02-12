@@ -36,10 +36,10 @@ public class CrucibleServerConfigForm extends AbstractServerPanel {
                 try {
                     CrucibleServerFactory.getCrucibleServerFacade().testServerConnection(serverUrl.getText(),
                             username.getText(), String.valueOf(password.getPassword()));
+                    showMessageDialog("Connected successfully", "Connection OK", Messages.getInformationIcon());
                 } catch (CrucibleException e1) {
                     showMessageDialog(e1.getMessage(), "Connection Error", Messages.getErrorIcon());
-                }
-                showMessageDialog("Connected successfully", "Connection OK", Messages.getInformationIcon());
+                }                
             }
         });
     }
