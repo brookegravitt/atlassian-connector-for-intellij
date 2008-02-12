@@ -118,6 +118,26 @@ public class CxfReviewServiceMockImpl implements RpcReviewServiceName {
 	}
 
 	@WebResult(name = "return", targetNamespace = "")
+	@RequestWrapper(localName = "createReviewFromPatch", targetNamespace = "http://rpc.spi.crucible.atlassian.com/", className = "com.atlassian.theplugin.crucible.api.soap.xfire.review.CreateReviewFromPatch")
+	@ResponseWrapper(localName = "createReviewFromPatchResponse", targetNamespace = "http://rpc.spi.crucible.atlassian.com/", className = "com.atlassian.theplugin.crucible.api.soap.xfire.review.CreateReviewFromPatchResponse")
+	@WebMethod
+	public ReviewData createReviewFromPatch(@WebParam(name = "token", targetNamespace = "")
+	String token, @WebParam(name = "review", targetNamespace = "")
+	ReviewData review, @WebParam(name = "patch", targetNamespace = "")
+	String patch) {
+
+		if (token == null || token.length() == 0) {
+			throw new RuntimeException("auth token invalid");
+		}
+
+		PermId permId = new PermId();
+		permId.setId("some id");
+		review.setPermaId(permId);
+
+		return review;
+	}
+
+	@WebResult(name = "return", targetNamespace = "")
 	@RequestWrapper(localName = "getReviewItemsForReview", targetNamespace = "http://rpc.spi.crucible.atlassian.com/", className = "com.atlassian.theplugin.crucible.api.soap.xfire.review.GetReviewItemsForReview")
 	@ResponseWrapper(localName = "getReviewItemsForReviewResponse", targetNamespace = "http://rpc.spi.crucible.atlassian.com/", className = "com.atlassian.theplugin.crucible.api.soap.xfire.review.GetReviewItemsForReviewResponse")
 	@WebMethod
