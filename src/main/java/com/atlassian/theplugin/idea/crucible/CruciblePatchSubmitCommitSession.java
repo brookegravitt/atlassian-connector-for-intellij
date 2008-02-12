@@ -114,8 +114,8 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 
 		while (diff != null) {
 			lastLine = 0;
-			origStart = Math.max(lastLine, diff.line0 - linesOfContext);
-			afterStart = Math.max(lastLine, diff.line1 - linesOfContext);
+			origStart = Math.max(lastLine, diff.line0 - linesOfContext + 1);
+			afterStart = Math.max(lastLine, diff.line1 - linesOfContext+ 1);
 			origSpan = 0;
 			afterSpan = 0;
 
@@ -167,10 +167,7 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 
 		}
 
-		return sb;
-
-
-        ///
+		return sb;        
     }
 
 
