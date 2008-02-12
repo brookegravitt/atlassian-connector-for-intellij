@@ -127,7 +127,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 			}
 
 		} catch (BambooLoginException e) {
-			LOG.error("Bamboo login exception: " + e.getMessage());
+            LOG.error("Bamboo login exception: " + e.getMessage());
 			connectionErrorMessage = e.getMessage();
 		}
 
