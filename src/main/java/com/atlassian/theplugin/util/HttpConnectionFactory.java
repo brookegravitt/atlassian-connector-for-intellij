@@ -2,15 +2,13 @@ package com.atlassian.theplugin.util;
 
 import javax.net.ssl.*;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
 /**
- * Created by IntelliJ IDEA.
- * User: mwent
- * Date: 2008-01-23
- * Time: 11:56:09
- * To change this template use File | Settings | File Templates.
+ * Handle https connections without verifying the certificates.
  */
 public final class HttpConnectionFactory {
 	private HttpConnectionFactory() {
@@ -26,6 +24,12 @@ public final class HttpConnectionFactory {
 
 	public static URLConnection getConnection(URL url) throws IOException {
 		URLConnection c = url.openConnection();
+		if (c instanceof HttpURLConnection) {
+			// both Http and Https will match here
+			if (url.getHost().length() == 0) {
+				throw new MalformedURLException("Url must contain valid host.");
+			}
+		}
 		if (c instanceof HttpsURLConnection) {
 			HttpsURLConnection cs = (HttpsURLConnection) c;
 			cs.setSSLSocketFactory(socketFactory);

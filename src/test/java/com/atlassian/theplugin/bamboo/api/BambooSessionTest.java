@@ -120,10 +120,34 @@ public class BambooSessionTest extends TestCase {
 		assertEquals("Checking exception message", "Unknown host: non.existing.server.utest", exception.getMessage());
 	}
 
-	public void testMalformedUrlBambooLogin() throws Exception {
+	public void testMalformedUrlBambooLogin() {
+		tryMalformedUrl("noprotocol.url/path");
+		tryMalformedUrl("http:localhost/path");
+		tryMalformedUrl("http:/localhost/path");
+		tryMalformedUrl("http:///localhost/path");
+		tryMalformedUrl("http:localhost");
+		tryMalformedUrl("http:/localhost");
+		tryMalformedUrl("http:///localhost");
+		tryMalformedUrl("http://");
+		tryMalformedUrl("ncxvx:/localhost/path");
+		tryMalformedUrl("ncxvx:///localhost/path");
+		tryMalformedUrl("ncxvx://localhost/path");
+		tryMalformedUrl("ncxvx:///localhost/path");
+		tryMalformedUrl("https:localhost/path");
+		tryMalformedUrl("https:/localhost/path");
+		tryMalformedUrl("https:///localhost/path");
+		tryMalformedUrl("https:localhost");
+		tryMalformedUrl("https:/localhost");
+		tryMalformedUrl("https:///localhost");
+		tryMalformedUrl("https://");
+		tryMalformedUrl("http::localhost/path");
+		tryMalformedUrl("http://loca:lhost/path");
+	}
+
+	private void tryMalformedUrl(final String url) {
 		BambooLoginException exception = null;
 		try {
-			BambooSession apiHandler = new BambooSession("noprotocol.url/path");
+			BambooSession apiHandler = new BambooSession(url);
 			apiHandler.login(USER_NAME, PASSWORD.toCharArray());
 		} catch (BambooLoginException e) {
 			exception = e;
@@ -131,9 +155,8 @@ public class BambooSessionTest extends TestCase {
 
 		assertNotNull("Exception expected", exception);
 		assertNotNull("Exception should have a cause", exception.getCause());
-		assertSame("MalformedURLException expected", MalformedURLException.class, exception.getCause().getClass());
-		assertEquals("Malformed server URL: noprotocol.url/path", exception.getMessage());
-
+		assertTrue("MalformedURLException expected", exception.getCause() instanceof MalformedURLException);
+		assertEquals("Malformed server URL: " + url, exception.getMessage());
 	}
 
 	public void testWrongUserBambooLogin() throws Exception {
