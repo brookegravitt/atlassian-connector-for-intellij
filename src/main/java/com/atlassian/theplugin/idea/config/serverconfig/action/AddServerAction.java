@@ -21,5 +21,5 @@ public class AddServerAction extends AnAction {
 
         JPopupMenu jPopupMenu = popup.getComponent();
         jPopupMenu.show(me.getComponent(), me.getX(), me.getY());
-    }
+	}
 }
