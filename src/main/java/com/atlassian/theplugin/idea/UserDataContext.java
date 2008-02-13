@@ -30,7 +30,6 @@ public class UserDataContext implements CrucibleStatusListener {
 			JComponent popup = new JLabel(newReviews.size() + " new reviews!");
 			popup.addMouseListener(new MouseAdapter() {
 				public void mouseClicked(MouseEvent e) {
-					System.out.println("UserDataContext.mouseClicked");
 					ToolWindow toolWindow = ToolWindowManager.getInstance(project).getToolWindow(ThePluginProjectComponent.TOOL_WINDOW_NAME);
 					ContentManager contentManager = toolWindow.getContentManager();
 					toolWindow.activate(null);
