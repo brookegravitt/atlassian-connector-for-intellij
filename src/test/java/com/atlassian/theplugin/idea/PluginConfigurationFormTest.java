@@ -5,6 +5,7 @@ import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.configuration.SubscribedPlanBean;
 import com.atlassian.theplugin.idea.config.serverconfig.BambooServerConfigForm;
+import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
 import com.intellij.openapi.util.IconLoader;
 import junit.framework.Test;
 import junit.framework.TestCase;

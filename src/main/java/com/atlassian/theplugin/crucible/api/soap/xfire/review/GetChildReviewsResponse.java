@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="return" type="{http://www.w3.org/2001/XMLSchema}anyType" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="return" type="{http://rpc.spi.crucible.atlassian.com/}reviewData" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlType;
 public class GetChildReviewsResponse {
 
     @XmlElement(name = "return", required = true)
-    protected List<Object> _return;
+    protected List<ReviewData> _return;
 
     /**
      * Gets the value of the return property.
@@ -55,13 +55,13 @@ public class GetChildReviewsResponse {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Object }
+     * {@link ReviewData }
      * 
      * 
      */
-    public List<Object> getReturn() {
+    public List<ReviewData> getReturn() {
         if (_return == null) {
-            _return = new ArrayList<Object>();
+            _return = new ArrayList<ReviewData>();
         }
         return this._return;
     }

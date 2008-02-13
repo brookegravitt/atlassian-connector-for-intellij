@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.crucible;
 
 import com.atlassian.theplugin.configuration.Server;
+import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.crucible.api.CrucibleException;
 import com.atlassian.theplugin.crucible.api.CrucibleLoginException;
@@ -8,11 +9,14 @@ import com.atlassian.theplugin.crucible.api.CrucibleSession;
 import com.atlassian.theplugin.crucible.api.CrucibleSessionImpl;
 import com.atlassian.theplugin.crucible.api.soap.xfire.review.RpcReviewServiceName;
 import com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData;
+import com.atlassian.theplugin.crucible.api.soap.xfire.review.State;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Created by IntelliJ IDEA.
@@ -118,7 +122,7 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	 * @param server server object with Url, Login and Password to connect to 
 	 * @return List of reviews (empty list in case there is no review)
 	 */
-	public List<Object> getAllReviews(Server server) throws CrucibleException {
+	public List<ReviewData> getAllReviews(Server server) throws CrucibleException {
 		CrucibleSession session = crucibleSession;
 
 		if (session == null) {
@@ -129,7 +133,7 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 
 		RpcReviewServiceName crucibleServiceProxy = createServiceProxy(server);
 
-		List<Object> allReviews;
+		List<ReviewData> allReviews;
 
 		try {
 			allReviews = crucibleServiceProxy.getAllReviews(session.getAuthToken());
@@ -173,5 +177,28 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 		this.crucibleSession = crucibleSession;
 	}
 
+    public List<RemoteReview> getActiveReviewsForUser(Server server) throws CrucibleLoginException, ServerPasswordNotProvidedException {
+        CrucibleSession session = crucibleSession;
+
+        if (session == null) {
+			session = new CrucibleSessionImpl(server.getUrlString());
+		}
+
+		session.login(server.getUsername(), server.getPasswordString());
+
+        List<State> states = new ArrayList<State>();
+		states.add(State.REVIEW);
+        List<ReviewData> reviews = session.getReviewsInStates(states);
+        List<RemoteReview> remoteReviews = new ArrayList<RemoteReview>(0);//reviews.size());
+
+        for (Iterator<ReviewData> iterator = reviews.iterator(); iterator.hasNext();) {
+            ReviewData reviewData = iterator.next();
+            List<String> reviewers = session.getReviewers(reviewData.getPermaId());
+            remoteReviews.add(new RemoteReview(reviewData, reviewers, server.getUrlString()));
+        }
+
+		session.logout();
+		return remoteReviews;
+    }
 
 }
