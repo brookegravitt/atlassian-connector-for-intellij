@@ -47,15 +47,7 @@ public class BambooStatusIcon extends JLabel implements BambooStatusDisplay {
 			// show/hide toolbar on click
 			public void mouseClicked(MouseEvent e) {
 				ToolWindow toolWindow = aProjectComponent.getToolWindow();
-
-				if (toolWindow.isVisible())	{
-					toolWindow.hide(null);
-					//tooltip.showTooltip();
-				} else {
-					toolWindow.show(null);
-					//tooltip.hideTooltip();
-				}
-
+				toolWindow.activate(null);
 			}
 		});
 
