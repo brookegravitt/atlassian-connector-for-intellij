@@ -10,7 +10,7 @@ import java.util.List;
 
 public class ConfigurationTest extends TestCase {
     protected void setUp() throws Exception {
-        ConfigurationFactory.setConfiguration(new PluginConfigurationBean()) ;
+        ConfigurationFactory.setConfiguration(new PluginConfigurationBean());
     }
 
     public void testConfiguration() throws ServerPasswordNotProvidedException {
@@ -29,7 +29,7 @@ public class ConfigurationTest extends TestCase {
 
 		serversData.add(srv);
 
-		((BambooConfigurationBean)cfg).setServersData(serversData);
+		((BambooConfigurationBean) cfg).setServersData(serversData);
 
         Server server = cfg.getServers().iterator().next();
 		assertNotNull(server);

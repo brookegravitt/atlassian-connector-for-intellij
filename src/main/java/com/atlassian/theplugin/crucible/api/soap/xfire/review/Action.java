@@ -53,7 +53,7 @@ public enum Action {
     }
 
     public static Action fromValue(String v) {
-        for (Action c: Action.values()) {
+        for (Action c : Action.values()) {
             if (c.value.equals(v)) {
                 return c;
             }

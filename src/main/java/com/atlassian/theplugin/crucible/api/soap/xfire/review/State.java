@@ -56,7 +56,7 @@ public enum State {
     }
 
     public static State fromValue(String v) {
-        for (State c: State.values()) {
+        for (State c : State.values()) {
             if (c.value.equals(v)) {
                 return c;
             }

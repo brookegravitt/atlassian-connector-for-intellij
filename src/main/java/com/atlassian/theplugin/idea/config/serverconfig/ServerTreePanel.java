@@ -31,7 +31,11 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 	private DefaultMutableTreeNode newSelectedNode = null;
 	private DefaultMutableTreeNode firstServerNode = null;
 
-	public void setModel(ServerTreeModel model) {
+    private static final int WIDTH = 250;
+    private static final int HEIGHT = 150;
+    private static final int VISIBLE_ROW_COUNT = 7;
+
+    public void setModel(ServerTreeModel model) {
 		this.model = model;
 	}
 
@@ -41,7 +45,7 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 
 	private void initLayout() {
 		setLayout(new BorderLayout());
-		setMinimumSize(new Dimension(150, 250));
+		setMinimumSize(new Dimension(HEIGHT, WIDTH));
 		add(new JScrollPane(getServerTree()), BorderLayout.CENTER);
 	}
 
@@ -62,7 +66,7 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 
 			serverTree.setRootVisible(false);
 			serverTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-			serverTree.setVisibleRowCount(7);
+			serverTree.setVisibleRowCount(VISIBLE_ROW_COUNT);
 			serverTree.setShowsRootHandles(true);
 
 			serverTree.addTreeSelectionListener(this);
@@ -122,7 +126,8 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 					return;
 				}
 				TreePath path = new TreePath(((DefaultMutableTreeNode) selectedNode.getParent()).getPath());
-				this.pluginConfiguration.getProductServers(((ServerNode) selectedNode).getServerType()).removeServer(((ServerNode) selectedNode).getServer());
+				this.pluginConfiguration.getProductServers(
+                        ((ServerNode) selectedNode).getServerType()).removeServer(((ServerNode) selectedNode).getServer());
 				updateTreeConfiguration();
 
 				serverTree.expandPath(path);
@@ -171,7 +176,7 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 
 	private void updateTreeConfiguration() {
 		firstServerNode = null;
-		((DefaultMutableTreeNode)model.getRoot()).removeAllChildren();
+		((DefaultMutableTreeNode) model.getRoot()).removeAllChildren();
 		updateServerTree(ServerType.BAMBOO_SERVER);
 		updateServerTree(ServerType.CRUCIBLE_SERVER);
 
@@ -206,7 +211,8 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 			}
 			selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
 			if (selectedNode instanceof ServerNode) {
-				ConfigPanel.getInstance().getServerConfigPanel().editServer(((ServerNode) selectedNode).getServerType(), ((ServerNode) selectedNode).getServer());
+				ConfigPanel.getInstance().getServerConfigPanel().editServer(
+                        ((ServerNode) selectedNode).getServerType(), ((ServerNode) selectedNode).getServer());
 			} else {
 				ConfigPanel.getInstance().getServerConfigPanel().showEmptyPanel();
 			}

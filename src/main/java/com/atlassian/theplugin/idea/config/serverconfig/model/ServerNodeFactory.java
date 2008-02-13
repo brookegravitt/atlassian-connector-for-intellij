@@ -11,14 +11,17 @@ import com.atlassian.theplugin.ServerType;
  * Time: 20:02:47
  * To change this template use File | Settings | File Templates.
  */
-public class ServerNodeFactory {
+public final class ServerNodeFactory {
+    private ServerNodeFactory() { }
+
     public static ServerNode getServerNode(ServerType serverType, Server server) {
         switch (serverType) {
             case BAMBOO_SERVER:
-                return new BambooServerNode((ServerBean)server);
+                return new BambooServerNode((ServerBean) server);
             case CRUCIBLE_SERVER:
-                return new CrucibleServerNode((ServerBean)server);
+                return new CrucibleServerNode((ServerBean) server);
+            default:
+                return null;
         }
-        return null;
     }
 }

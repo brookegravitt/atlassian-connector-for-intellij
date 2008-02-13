@@ -55,7 +55,8 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 		System.out.println("Sending to the Crucible server: " + commitMessage);
 		String patch = generateUnifiedDiff(changes);
 
-		ApplicationManager.getApplication().invokeAndWait(new CruciblePatchUploader(commitMessage, patch), ModalityState.defaultModalityState());
+		ApplicationManager.getApplication().invokeAndWait(
+                new CruciblePatchUploader(commitMessage, patch), ModalityState.defaultModalityState());
 	}
 
 	String generateUnifiedDiff(Collection<Change> changes) {
@@ -110,7 +111,8 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 	 *                       body without oryginal and changed file name header
 	 */
 
-	private void generateUnifiedDiffBody(StringBuilder sb, Diff.Change diff, String[] beforeLines, String[] afterLines, int linesOfContext) {
+	private void generateUnifiedDiffBody(
+            StringBuilder sb, Diff.Change diff, String[] beforeLines, String[] afterLines, int linesOfContext) {
 
 		while (diff != null) {
 			int lastLine = 1;

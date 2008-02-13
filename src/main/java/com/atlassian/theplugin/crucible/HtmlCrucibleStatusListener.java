@@ -1,18 +1,7 @@
 package com.atlassian.theplugin.crucible;
 
-import static com.atlassian.theplugin.bamboo.BuildStatus.BUILD_FAILED;
-import com.atlassian.theplugin.bamboo.BambooStatusListener;
-import com.atlassian.theplugin.bamboo.BambooStatusDisplay;
-import com.atlassian.theplugin.bamboo.BambooBuild;
-import com.atlassian.theplugin.bamboo.BuildStatus;
-import com.atlassian.theplugin.idea.ThePluginApplicationComponent;
-
-import java.text.DateFormat;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
-import java.util.regex.Pattern;
 
 /**
  * Renders Crucible reviews as HTML and passes it to configured {@link CrucibleStatusDisplay}

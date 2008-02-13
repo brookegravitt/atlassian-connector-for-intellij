@@ -33,22 +33,25 @@ public class ServerTreeRenderer extends DefaultTreeCellRenderer {
 		crucibleServerDisabledIcon = IconLoader.getIcon("/icons/crucible-grey-16.png");
 	}
 
-	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+	public Component getTreeCellRendererComponent(
+            JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
 		JLabel label = (JLabel) super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
 
 		if (value instanceof ServerTypeNode) {
-			switch (((ServerTypeNode)value).getServerType()) {
+			switch (((ServerTypeNode) value).getServerType()) {
 				case BAMBOO_SERVER:
                     label.setIcon(bambooServersIcon);
 					break;
 				case CRUCIBLE_SERVER:
 					label.setIcon(crucibleServersIcon);
 					break;
-			}		
+                default:
+                    break;
+            }
 		}
 
 		if (value instanceof BambooServerNode) {
-			if (((BambooServerNode)value).getServer().getEnabled()) {
+			if (((BambooServerNode) value).getServer().getEnabled()) {
 				label.setIcon(bambooServerEnabledIcon);
 			} else {
 				label.setIcon(bambooServerDisabledIcon);
@@ -56,7 +59,7 @@ public class ServerTreeRenderer extends DefaultTreeCellRenderer {
 		}
 
 		if (value instanceof CrucibleServerNode) {
-			if (((CrucibleServerNode)value).getServer().getEnabled()) {
+			if (((CrucibleServerNode) value).getServer().getEnabled()) {
 				label.setIcon(crucibleServerEnabledIcon);
 			} else {
 				label.setIcon(crucibleServerDisabledIcon);

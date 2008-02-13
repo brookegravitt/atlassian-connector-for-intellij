@@ -72,16 +72,19 @@ public class CrucibleServerConfigForm extends AbstractServerPanel {
 			if (chkPasswordRemember.isSelected() != server.getShouldPasswordBeStored()) {
 				return true;
 			}
-			if (serverName.getText() != null ? !serverName.getText().equals(server.getName()) : server.getName() != null) {
+			if (serverName.getText() != null
+					? !serverName.getText().equals(server.getName()) : server.getName() != null) {
 				return true;
 			}
 			if (cbEnabled.isSelected() != server.getEnabled()) {
 				return true;
 			}
-			if (serverUrl.getText() != null ? !serverUrl.getText().equals(server.getUrlString()) : server.getUrlString() != null) {
+			if (serverUrl.getText() != null
+                    ? !serverUrl.getText().equals(server.getUrlString()) : server.getUrlString() != null) {
 				return true;
 			}
-			if (username.getText() != null ? !username.getText().equals(server.getUsername()) : server.getUsername() != null) {
+			if (username.getText() != null
+					? !username.getText().equals(server.getUsername()) : server.getUsername() != null) {
 				return true;
 			}
 			String pass = String.valueOf(password.getPassword());

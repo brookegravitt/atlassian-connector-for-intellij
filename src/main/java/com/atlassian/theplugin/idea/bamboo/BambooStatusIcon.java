@@ -13,7 +13,6 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-
 public class BambooStatusIcon extends JLabel implements BambooStatusDisplay {
 
 	private static Icon iconRed;
