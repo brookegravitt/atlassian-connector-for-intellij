@@ -117,7 +117,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 			// add simple bamboo listener to bamboo checker thread
 			// this listener shows idea tooltip when buld failed
-			simpleBambooStatusListener = new BambooStatusListenerImpl(WindowManager.getInstance().getStatusBar(project));
+			simpleBambooStatusListener = new BambooStatusListenerImpl(project);
 			bambooStatusChecker.registerListener(simpleBambooStatusListener);
 
 			// add icon to status bar
@@ -159,6 +159,10 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		System.out.println("Start: Project open");
 		enablePlugin();
 		System.out.println("End: Project open");
+
+
+
+		//WindowManager.getInstance().getStatusBar(project).fireNotificationPopup(panel, null);
 	}
 
 	public void projectClosed() {
