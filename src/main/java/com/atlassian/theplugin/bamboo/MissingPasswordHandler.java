@@ -26,8 +26,8 @@ public class MissingPasswordHandler implements Runnable {
 
 			isDialogShown = true;
 
-			for (Server server :
-                    ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers()) {
+			for (Server server
+					: ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers()) {
 				if (server.getIsConfigInitialized()) {
 					continue;
 				}
