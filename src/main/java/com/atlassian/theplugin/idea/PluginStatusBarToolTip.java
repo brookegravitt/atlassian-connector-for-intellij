@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.exception.ThePluginException;
+import com.atlassian.theplugin.util.ClasspathHTMLEditorKit;
 import com.intellij.openapi.util.IconLoader;
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
@@ -40,7 +41,7 @@ public class PluginStatusBarToolTip extends Window {
         htmlView.setContentType("text/html");
         htmlView.setBackground(BACKGROUND_COLOR);
 		htmlView.addHyperlinkListener(new GenericHyperlinkListener());
-
+        htmlView.setEditorKit(new ClasspathHTMLEditorKit());
         // title bar of the tooltip
         try {
             titleBar = new ToolTipTitleBar(this);
