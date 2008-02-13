@@ -43,7 +43,6 @@ public class ThePluginApplicationComponent
     private CrucibleStatusChecker crucibleStatusChecker;
 	private TimerTask bambooStatusCheckerTask;
 	private TimerTask crucibleStatusCheckerTask;
-	public static final String PLUGIN_CONFIG_URL = "http://theplugin-config";
 
     public BambooStatusChecker getBambooStatusChecker() {
 		if (bambooStatusChecker == null) {
