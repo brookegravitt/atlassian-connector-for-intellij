@@ -4,7 +4,6 @@ import com.atlassian.theplugin.bamboo.BambooBuild;
 import com.atlassian.theplugin.bamboo.BambooStatusListener;
 import com.atlassian.theplugin.bamboo.BuildStatus;
 import static com.atlassian.theplugin.bamboo.BuildStatus.BUILD_FAILED;
-import com.gargoylesoftware.htmlunit.javascript.host.MouseEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowManager;
@@ -14,6 +13,7 @@ import com.intellij.ui.content.ContentManager;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -86,7 +86,7 @@ public class BambooStatusListenerImpl implements BambooStatusListener {
 			content.setText(tooltipContent);
 
 			content.addMouseListener(new MouseAdapter() {
-					public void mouseClicked(MouseEvent e) {
+					public void mouseClicked(MouseEvent	e) {
 						ToolWindow toolWindow = ToolWindowManager.getInstance(project).getToolWindow(ThePluginProjectComponent.TOOL_WINDOW_NAME);
 						ContentManager contentManager = toolWindow.getContentManager();
 						toolWindow.activate(null);
