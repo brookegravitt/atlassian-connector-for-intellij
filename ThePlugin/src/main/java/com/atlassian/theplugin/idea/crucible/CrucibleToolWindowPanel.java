@@ -8,8 +8,7 @@ import com.atlassian.theplugin.util.ClasspathHTMLEditorKit;
 import javax.swing.*;
 import java.awt.*;
 
-public class CrucibleToolWindowPanel extends JPanel
-{
+public class CrucibleToolWindowPanel extends JPanel {
     private ToolWindowCrucibleContent crucibleContent;
 
     public CrucibleToolWindowPanel() {
@@ -18,18 +17,21 @@ public class CrucibleToolWindowPanel extends JPanel
 		setBackground(UIUtil.getTreeTextBackground());
 
 		ActionManager actionManager = ActionManager.getInstance();
-		ActionGroup toolbar = (ActionGroup)actionManager.getAction("ThePlugin.ToolWindowToolBar");
-		add(actionManager.createActionToolbar("atlassian.toolwindow.toolbar", toolbar, true).getComponent(), BorderLayout.NORTH);
+		ActionGroup toolbar = (ActionGroup) actionManager.getAction("ThePlugin.ToolWindowToolBar");
+		add(actionManager.createActionToolbar(
+                "atlassian.toolwindow.toolbar", toolbar, true).getComponent(), BorderLayout.NORTH);
 
-        crucibleContent= new ToolWindowCrucibleContent();
+        crucibleContent = new ToolWindowCrucibleContent();
         crucibleContent.setEditorKit(new ClasspathHTMLEditorKit());
         JScrollPane pane = setupPane(crucibleContent, "No reviews at this time.");
         add(pane, BorderLayout.CENTER);
     }
 
     private JScrollPane setupPane(JEditorPane editorPane, String initialText) {
-        editorPane.setText("<div style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">" + initialText + "</div>");
-        JScrollPane scrollPane = new JScrollPane(editorPane, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        editorPane.setText(
+                "<div style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">" + initialText + "</div>");
+        JScrollPane scrollPane = new JScrollPane(
+                editorPane, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setWheelScrollingEnabled(true);
         return scrollPane;
     }

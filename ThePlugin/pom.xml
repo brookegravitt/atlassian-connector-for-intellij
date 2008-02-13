@@ -465,8 +465,15 @@
 				<artifactId>maven-checkstyle-plugin</artifactId>
 				<configuration>
 					<configLocation>java-regular.cs.xml</configLocation>
-					<excludes>thirdparty/net/iharder/base64/Base64.java</excludes>
-				</configuration>
+					<excludes>
+                        **/Base64.java,
+                        **/serverconfig/CrucibleServerConfigForm.java,
+                        **/serverconfig/BambooServerConfigForm.java,
+                        **/idea/PasswordDialog.java,
+                        **/crucible/CruciblePatchUploadForm.java,
+                        **/soap/xfire/**/*.java
+                    </excludes>
+                </configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>

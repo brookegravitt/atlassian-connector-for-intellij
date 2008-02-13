@@ -52,17 +52,17 @@ public class BambooServerConfigForm extends AbstractServerPanel {
 		});
 	}
 
-	public void setData(ServerBean server) {
-		this.server = new ServerBean(server);
+	public void setData(ServerBean aServer) {
+		this.server = new ServerBean(aServer);
 
-		serverName.setText(server.getName());
-		serverUrl.setText(server.getUrlString());
-		username.setText(server.getUsername());
-		chkPasswordRemember.setSelected(server.getShouldPasswordBeStored());
-		password.setText(server.getPasswordString());
-		cbEnabled.setSelected(server.getEnabled());
+		serverName.setText(aServer.getName());
+		serverUrl.setText(aServer.getUrlString());
+		username.setText(aServer.getUsername());
+		chkPasswordRemember.setSelected(aServer.getShouldPasswordBeStored());
+		password.setText(aServer.getPasswordString());
+		cbEnabled.setSelected(aServer.getEnabled());
 
-		buildPlansTextArea.setText(subscribedPlansToString(server.getSubscribedPlans()));
+		buildPlansTextArea.setText(subscribedPlansToString(aServer.getSubscribedPlans()));
 	}
 
 	public ServerBean getData() {
@@ -115,21 +115,25 @@ public class BambooServerConfigForm extends AbstractServerPanel {
 			if (cbEnabled.isSelected() != server.getEnabled()) {
 				return true;
 			}
-			if (serverName.getText() != null ? !serverName.getText().equals(server.getName()) : server.getName() != null) {
+			if (serverName.getText() != null
+                    ? !serverName.getText().equals(server.getName()) : server.getName() != null) {
 				return true;
 			}
-			if (serverUrl.getText() != null ? !serverUrl.getText().equals(server.getUrlString()) : server.getUrlString() != null) {
+			if (serverUrl.getText() != null
+                    ? !serverUrl.getText().equals(server.getUrlString()) : server.getUrlString() != null) {
 				return true;
 			}
-			if (username.getText() != null ? !username.getText().equals(server.getUsername()) : server.getUsername() != null) {
+			if (username.getText() != null
+                    ? !username.getText().equals(server.getUsername()) : server.getUsername() != null) {
 				return true;
 			}
 			String pass = String.valueOf(password.getPassword());
 			if (pass != null ? !pass.equals(server.getPasswordString()) : server.getPasswordString() != null) {
 				return true;
 			}
-			if (null != buildPlansTextArea.getText() ? !buildPlansTextArea.getText().equals(subscribedPlansToString(server.getSubscribedPlansData())) :
-					server.getSubscribedPlansData() != null) {
+			if (null != buildPlansTextArea.getText()
+                    ? !buildPlansTextArea.getText().equals(subscribedPlansToString(server.getSubscribedPlansData()))
+                    : server.getSubscribedPlansData() != null) {
 				return true;
 			}
 		}

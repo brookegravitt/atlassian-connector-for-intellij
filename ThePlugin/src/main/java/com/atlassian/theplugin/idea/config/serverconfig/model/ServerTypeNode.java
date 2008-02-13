@@ -11,7 +11,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
  * Time: 09:32:04
  */
 public class ServerTypeNode extends DefaultMutableTreeNode {
-	ServerType serverType;
+	private ServerType serverType;
 
 	public ServerTypeNode(ServerType aServerType) {
 		this.serverType = aServerType;

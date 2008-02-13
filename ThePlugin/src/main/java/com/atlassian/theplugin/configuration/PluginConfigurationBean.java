@@ -81,8 +81,9 @@ public class PluginConfigurationBean implements PluginConfiguration {
                 return bambooConfiguration;
             case CRUCIBLE_SERVER:
                 return crucibleConfiguration;
+            default:
+                return null;
         }
-        return null;
     }
 
     public boolean equals(Object o) {

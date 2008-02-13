@@ -8,7 +8,7 @@ import com.atlassian.theplugin.ServerType;
 import javax.swing.*;
 import java.awt.*;
 
-public class ConfigPanel extends JPanel {
+public final class ConfigPanel extends JPanel {
 	private static ConfigPanel instance;
 
 	private PluginConfigurationBean pluginConfiguration = null;
