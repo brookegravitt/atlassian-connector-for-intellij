@@ -3,13 +3,14 @@ package com.atlassian.theplugin.idea;
 import com.atlassian.theplugin.exception.ThePluginException;
 import com.atlassian.theplugin.util.ClasspathHTMLEditorKit;
 import com.intellij.openapi.util.IconLoader;
-import org.apache.log4j.Category;
-import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 /**
  * Created by IntelliJ IDEA.

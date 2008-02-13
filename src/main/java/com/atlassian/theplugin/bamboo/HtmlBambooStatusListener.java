@@ -15,6 +15,8 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 
 	private final BambooStatusDisplay display;
 
+    private static final int TIME_OFFSET = -12;
+
     public static final String BODY_WITH_STYLE =
             "<body style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">";
 
@@ -37,7 +39,7 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 
 	private String formatBuildTime(Date date) {
 		Calendar barrier = Calendar.getInstance();
-		barrier.add(Calendar.HOUR_OF_DAY, -12);
+		barrier.add(Calendar.HOUR_OF_DAY, TIME_OFFSET);
 
 		DateFormat buildDateFormat;
 

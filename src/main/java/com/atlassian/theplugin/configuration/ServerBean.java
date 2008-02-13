@@ -30,7 +30,7 @@ public class ServerBean implements Server {
 
 	private List<SubscribedPlanBean> subscribedPlans = new ArrayList<SubscribedPlanBean>();
 
-	transient private Boolean isConfigInitialized = false;
+	private transient Boolean isConfigInitialized = false;
 
 	public ServerBean() {
 		uid = (new Date()).getTime();
@@ -204,17 +204,20 @@ public class ServerBean implements Server {
 	}
 
 
-	public int hashCode() {
+    private static final int ONE_EFF = 31;
+    private static final int TWO_ZERO = 32;
+
+    public int hashCode() {
 		int result;
-		result = (int) (uid ^ (uid >>> 32));
-		result = 31 * result + (name != null ? name.hashCode() : 0);
-		result = 31 * result + (urlString != null ? urlString.hashCode() : 0);
-		result = 31 * result + (encryptedPassword != null ? encryptedPassword.hashCode() : 0);
-		result = 31 * result + (username != null ? username.hashCode() : 0);
-		result = 31 * result + (shouldPasswordBeStored != null ? shouldPasswordBeStored.hashCode() : 0);
-		result = 31 * result + (password != null ? password.hashCode() : 0);
-		result = 31 * result + (subscribedPlans != null ? subscribedPlans.hashCode() : 0);
-		result = 31 * result + (isConfigInitialized != null ? isConfigInitialized.hashCode() : 0);
+		result = (int) (uid ^ (uid >>> TWO_ZERO));
+		result = ONE_EFF * result + (name != null ? name.hashCode() : 0);
+		result = ONE_EFF * result + (urlString != null ? urlString.hashCode() : 0);
+		result = ONE_EFF * result + (encryptedPassword != null ? encryptedPassword.hashCode() : 0);
+		result = ONE_EFF * result + (username != null ? username.hashCode() : 0);
+		result = ONE_EFF * result + (shouldPasswordBeStored != null ? shouldPasswordBeStored.hashCode() : 0);
+		result = ONE_EFF * result + (password != null ? password.hashCode() : 0);
+		result = ONE_EFF * result + (subscribedPlans != null ? subscribedPlans.hashCode() : 0);
+		result = ONE_EFF * result + (isConfigInitialized != null ? isConfigInitialized.hashCode() : 0);
 		return result;
 	}
 
@@ -234,7 +237,8 @@ public class ServerBean implements Server {
 		if (encryptedPassword != null ? !encryptedPassword.equals(that.encryptedPassword) : that.encryptedPassword != null) {
 			return false;
 		}
-		if (isConfigInitialized != null ? !isConfigInitialized.equals(that.isConfigInitialized) : that.isConfigInitialized != null) {
+		if (isConfigInitialized != null
+                ? !isConfigInitialized.equals(that.isConfigInitialized) : that.isConfigInitialized != null) {
 			return false;
 		}
 		if (name != null ? !name.equals(that.name) : that.name != null) {
@@ -243,7 +247,8 @@ public class ServerBean implements Server {
 		if (password != null ? !password.equals(that.password) : that.password != null) {
 			return false;
 		}
-		if (shouldPasswordBeStored != null ? !shouldPasswordBeStored.equals(that.shouldPasswordBeStored) : that.shouldPasswordBeStored != null) {
+		if (shouldPasswordBeStored != null
+                ? !shouldPasswordBeStored.equals(that.shouldPasswordBeStored) : that.shouldPasswordBeStored != null) {
 			return false;
 		}
 		if (enabled != null ? !enabled.equals(that.enabled) : that.enabled != null) {

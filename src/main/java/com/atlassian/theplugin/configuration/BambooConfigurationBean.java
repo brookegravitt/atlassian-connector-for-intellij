@@ -36,10 +36,10 @@ public class BambooConfigurationBean implements ProductServerConfiguration {
 	 * <p/>
 	 * Does not use the JDK1.5 'return a subclass' due to problem with XML serialization.
 	 *
-	 * @param servers Collection of servers to substitute for the current one.
+	 * @param theServers Collection of theServers to substitute for the current one.
 	 */
-	public void setServersData(Collection<ServerBean> servers) {
-		this.servers = servers;
+	public void setServersData(Collection<ServerBean> theServers) {
+		this.servers = theServers;
 	}
 
 

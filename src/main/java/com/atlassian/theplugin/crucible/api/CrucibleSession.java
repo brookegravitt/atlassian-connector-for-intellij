@@ -21,9 +21,9 @@ public interface CrucibleSession {
 
 	String getAuthToken();
 
-	public List<ReviewData> getReviewsInStates(List<State> arg1);
+	List<ReviewData> getReviewsInStates(List<State> arg1);
 
-    public List<ReviewData> getAllReviews();
+    List<ReviewData> getAllReviews();
 
     List<String> getReviewers(PermId arg1);
 }

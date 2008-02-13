@@ -1,7 +1,5 @@
 package com.atlassian.theplugin.util;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import javax.net.ssl.X509TrustManager;
 
 /**

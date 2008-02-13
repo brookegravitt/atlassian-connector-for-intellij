@@ -1,12 +1,11 @@
 package com.atlassian.theplugin.crucible.api;
 
 import com.atlassian.theplugin.crucible.api.soap.xfire.auth.RpcAuthServiceName;
+import com.atlassian.theplugin.crucible.api.soap.xfire.review.PermId;
+import com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData;
 import com.atlassian.theplugin.crucible.api.soap.xfire.review.RpcReviewServiceName;
 import com.atlassian.theplugin.crucible.api.soap.xfire.review.State;
-import com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData;
-import com.atlassian.theplugin.crucible.api.soap.xfire.review.PermId;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
-import org.apache.cxf.bus.CXFBusFactory;
 
 import javax.xml.ws.soap.SOAPFaultException;
 import java.util.List;
@@ -25,8 +24,8 @@ public class CrucibleSessionImpl implements CrucibleSession {
 
 
 	private String authToken;
-    RpcAuthServiceName authService;
-	RpcReviewServiceName reviewService;
+    private RpcAuthServiceName authService;
+	private RpcReviewServiceName reviewService;
 
 	private static final String SERVICE_AUTH_SUFFIX = "service/auth";
 	private static final String SERVICE_REVIEW_SUFFIX = "service/reviewtmp";

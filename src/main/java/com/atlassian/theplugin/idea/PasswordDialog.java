@@ -73,8 +73,8 @@ public class PasswordDialog extends JDialog {
 		return chkRememberPassword.isSelected();
 	}
 
-	public void setUserName(String username) {
-		this.username.setText(username);
+	public void setUserName(String anUsername) {
+		this.username.setText(anUsername);
 	}
 
 	public String getUserName() {

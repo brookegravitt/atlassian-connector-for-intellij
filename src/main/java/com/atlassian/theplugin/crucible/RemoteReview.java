@@ -8,9 +8,9 @@ import java.util.List;
  * A simple POJO to represent all elements of a remote review. 
  */
 public class RemoteReview {
-    ReviewData reviewData;
-    List<String> reviewers;
-    String serverUrl;
+    private ReviewData reviewData;
+    private List<String> reviewers;
+    private String serverUrl;
 
     public RemoteReview(ReviewData reviewData, List<String> reviewers, String serverUrl) {
         this.reviewData = reviewData;

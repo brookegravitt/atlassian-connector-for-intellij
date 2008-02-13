@@ -30,7 +30,7 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	private static final Category LOG = Logger.getInstance(CrucibleServerFacadeImpl.class);
 	private static final String SERVICE_REVIEW_SUFFIX = "service/review";
 
-	public CrucibleServerFacadeImpl () {
+	public CrucibleServerFacadeImpl() {
 
 	}
 
@@ -177,7 +177,8 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 		this.crucibleSession = crucibleSession;
 	}
 
-    public List<RemoteReview> getActiveReviewsForUser(Server server) throws CrucibleLoginException, ServerPasswordNotProvidedException {
+    public List<RemoteReview> getActiveReviewsForUser(Server server)
+            throws CrucibleLoginException, ServerPasswordNotProvidedException {
         CrucibleSession session = crucibleSession;
 
         if (session == null) {
@@ -189,7 +190,7 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
         List<State> states = new ArrayList<State>();
 		states.add(State.REVIEW);
         List<ReviewData> reviews = session.getReviewsInStates(states);
-        List<RemoteReview> remoteReviews = new ArrayList<RemoteReview>(0);//reviews.size());
+        List<RemoteReview> remoteReviews = new ArrayList<RemoteReview>(0); //reviews.size());
 
         for (Iterator<ReviewData> iterator = reviews.iterator(); iterator.hasNext();) {
             ReviewData reviewData = iterator.next();
