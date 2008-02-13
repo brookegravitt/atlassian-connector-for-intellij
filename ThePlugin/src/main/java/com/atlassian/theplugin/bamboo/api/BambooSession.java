@@ -311,6 +311,7 @@ public class BambooSession {
 		buildInfo.setBuildDurationDescription(getChildText(buildItemNode, "buildDurationDescription"));
 		buildInfo.setBuildTestSummary(getChildText(buildItemNode, "buildTestSummary"));
 		buildInfo.setBuildCommitComment(getChildText(buildItemNode, "buildCommitComment"));
+		buildInfo.setBuildRelativeBuildDate(getChildText(buildItemNode, "buildRelativeBuildDate"));
 
 		buildInfo.setBuildTime(parseBuildTime(getChildText(buildItemNode, "buildTime")));
 		buildInfo.setPollingTime(lastPollingTime);

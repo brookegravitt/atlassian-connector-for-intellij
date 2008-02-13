@@ -31,7 +31,13 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 		sb.append(pollTimeDateFormat.format(buildInfo.getPollingTime())).append("</td>");
 
 		Date buildTime = buildInfo.getBuildTime();
-		String buildTimeStr = (null == buildTime) ? "&nbsp;" : formatBuildTime(buildTime);
+		String relativeBuildDate = buildInfo.getBuildRelativeBuildDate();
+		String buildTimeStr;
+		if (!relativeBuildDate.equals("")) {
+			buildTimeStr = buildInfo.getBuildRelativeBuildDate();
+		} else {
+			buildTimeStr = (null == buildTime) ? "&nbsp;" : formatBuildTime(buildTime);
+		}
 		sb.append("<td nowrap align=\"right\">").append(buildTimeStr).append("</td>");
 
 		return sb.toString();
