@@ -15,14 +15,6 @@ import java.util.regex.Pattern;
 public class HtmlBambooStatusListener implements BambooStatusListener {
 
 	private final BambooStatusDisplay display;
-    // jgorycki: crap. IDEA HTML rendered does not really understand CSS. We have to resort to <hr> ugliness
-    public static final String CONFIGURE_PLUGIN_LINK =
-            "<div style=\"text-align:center\""
-            + "<hr width=90%>"
-            + "<p>"
-            + "<a href=\"" + ThePluginApplicationComponent.PLUGIN_CONFIG_URL + "\">Configure</a>"
-            + "</p>"
-            + "</div>";
 
     public static final String BODY_WITH_STYLE =
             "<body style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">";
@@ -126,7 +118,7 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 		StringBuilder sb = new StringBuilder("<html>" + BODY_WITH_STYLE);
 
 		if (buildStatuses == null || buildStatuses.size() == 0) {
-			sb.append("No plans defined. " + CONFIGURE_PLUGIN_LINK);
+			sb.append("No plans defined.");
 			status = BuildStatus.UNKNOWN;
 		} else {
 			sb.append("<table>");
@@ -151,7 +143,6 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 				}
 			}
 			sb.append("</table>");
-			sb.append("<p>" + CONFIGURE_PLUGIN_LINK + "</p>");
 		}
 		sb.append("</body></html>");
 		display.updateBambooStatus(status, sb.toString());
