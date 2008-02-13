@@ -61,8 +61,7 @@ public class CrucibleSessionTest extends TestCase {
 	}
 
 	public void testGetReviewsInStates() throws Exception {
-//		CrucibleSession session = new CrucibleSessionImpl("http://lech.atlassian.pl:8060");
-		CrucibleSession session = new CrucibleSessionImpl("http://192.168.157.245:8060");
+		CrucibleSession session = new CrucibleSessionImpl("http://lech.atlassian.pl:8060");
 		session.login("mwent", "d0n0tch@nge");
 
 		List<State> states = new ArrayList<State>();
