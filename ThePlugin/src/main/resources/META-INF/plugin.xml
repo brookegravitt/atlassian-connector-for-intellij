@@ -60,7 +60,16 @@
         <action id="ThePlugin.ShowSettings" class="com.atlassian.theplugin.idea.action.ShowSettingsAction" text="Configure" description="Show plugin configuration" icon="/general/ideOptions.png"/>
         <!--<action id="ThePlugin.RefreshAll" class="com.atlassian.theplugin.idea.action.RefreshAction" text="Refresh All" description="Refresh all data now" icon="/actions/sync.png"/>-->
 
-        <group id="ThePlugin.ServerConfigToolBar" popup="false" text="Ala">
+		<action id="ThePlugin.ReviewScope" class="com.atlassian.theplugin.idea.action.ReviewScope" text="Review scope" description="Select eview scope"/>
+		<action id="ThePlugin.ReviewScopeAll" class="com.atlassian.theplugin.idea.action.ReviewScopeAll" text="All Reviews" description="Show all reviews"/>
+		<action id="ThePlugin.ReviewScopeMy" class="com.atlassian.theplugin.idea.action.ReviewScopeMy" text="My Reviews" description="Show my reviews"/>
+
+		<group id="ThePlugin.ReviewScopeCombo">
+            <reference id="ThePlugin.ReviewScopeAll"/>
+            <reference id="ThePlugin.ReviewScopeMy"/>
+		</group>
+				
+		<group id="ThePlugin.ServerConfigToolBar" popup="false" text="">
             <reference id="ThePlugin.AddServerAction"/>
             <reference id="ThePlugin.RemoveServerAction"/>
 <!--            <reference id="ThePlugin.CopyServerAction"/> -->
@@ -71,9 +80,10 @@
             <reference id="ThePlugin.AddCrucibleServerAction"/>
 		</group>
 
-        <group id="ThePlugin.ToolWindowToolBar" popup="false" text="Ala">
+		<group id="ThePlugin.ToolWindowToolBar" popup="false" text="">
             <reference id="ThePlugin.ShowSettings" />
-            <!--<reference id="ThePlugin.RefreshAll"/>-->
+			<reference id="ThePlugin.ReviewScope"/>
+			<!--<reference id="ThePlugin.RefreshAll"/>-->
         </group>
     </actions>
 </idea-plugin>
