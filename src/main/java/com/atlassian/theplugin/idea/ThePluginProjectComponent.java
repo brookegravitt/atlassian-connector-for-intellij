@@ -37,7 +37,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
     private HtmlCrucibleStatusListener toolWindowCrucibleListener;
 
 	private ToolWindowManager toolWindowManager;
-	private static final String TOOL_WINDOW_NAME = "Atlassian";
+	public static final String TOOL_WINDOW_NAME = "Atlassian";
 	private ToolWindow toolWindow;
 	private static final String THE_PLUGIN_TOOL_WINDOW_ICON = "/icons/thePlugin_15x10.png";
 	private boolean enabled;
@@ -72,7 +72,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	public void enablePlugin() {
 		ThePluginApplicationComponent appComponent =
 				ApplicationManager.getApplication().getComponent(ThePluginApplicationComponent.class);
-				
+
 		if (appComponent.getState().isPluginEnabled() && !enabled) {
 
 			// create tool window on the right
@@ -128,8 +128,9 @@ public class ThePluginProjectComponent implements ProjectComponent {
             crucibleStatusChecker = appComponent.getCrucibleStatusChecker();
             toolWindowCrucibleListener = new HtmlCrucibleStatusListener(crucibleToolWindowPanel.getCrucibleContent());
             crucibleStatusChecker.registerListener(toolWindowCrucibleListener);
+			crucibleStatusChecker.registerListener(appComponent.getUserDataContext());
 
-            // now fire all status checkers
+			// now fire all status checkers
             appComponent.triggerStatusCheckers();
             enabled = true;
 		}
@@ -169,7 +170,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	public Project getProject() {
 		return project;
 	}
-
 
 	public ToolWindow getToolWindow() {
 		return toolWindow;
