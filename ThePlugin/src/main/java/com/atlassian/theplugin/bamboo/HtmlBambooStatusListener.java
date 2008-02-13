@@ -33,7 +33,7 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 		Date buildTime = buildInfo.getBuildTime();
 		String relativeBuildDate = buildInfo.getBuildRelativeBuildDate();
 		String buildTimeStr;
-		if (!relativeBuildDate.equals("")) {
+		if (relativeBuildDate != null && !relativeBuildDate.equals("")) {
 			buildTimeStr = buildInfo.getBuildRelativeBuildDate();
 		} else {
 			buildTimeStr = (null == buildTime) ? "&nbsp;" : formatBuildTime(buildTime);
