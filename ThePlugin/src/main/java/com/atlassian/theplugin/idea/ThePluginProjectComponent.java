@@ -88,11 +88,13 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			BambooToolWindowPanel bambooToolWindowPanel = new BambooToolWindowPanel();
 			PeerFactory peerFactory = PeerFactory.getInstance();
 
-            Content toolWindowContent = peerFactory.getContentFactory().createContent(bambooToolWindowPanel, "Bamboo", false);
-            toolWindow.getContentManager().addContent(toolWindowContent);
+            Content bambooToolWindow = peerFactory.getContentFactory().createContent(bambooToolWindowPanel, "Bamboo", false);
+            bambooToolWindow.setIcon(IconLoader.getIcon("/icons/bamboo-blue-16.png"));
+            toolWindow.getContentManager().addContent(bambooToolWindow);
 
             CrucibleToolWindowPanel crucibleToolWindowPanel = new CrucibleToolWindowPanel();
             Content crucibleToolWindow = peerFactory.getContentFactory().createContent(crucibleToolWindowPanel, "Crucible", false);
+            crucibleToolWindow.setIcon(IconLoader.getIcon("/icons/crucible-blue-16.png"));
             toolWindow.getContentManager().addContent(crucibleToolWindow);
 
             bambooStatusChecker = appComponent.getBambooStatusChecker();
