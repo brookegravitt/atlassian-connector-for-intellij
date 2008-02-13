@@ -3,6 +3,7 @@ package com.atlassian.theplugin.idea.crucible;
 import com.intellij.util.ui.UIUtil;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionGroup;
+import com.atlassian.theplugin.util.ClasspathHTMLEditorKit;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,6 +22,7 @@ public class CrucibleToolWindowPanel extends JPanel
 		add(actionManager.createActionToolbar("atlassian.toolwindow.toolbar", toolbar, true).getComponent(), BorderLayout.NORTH);
 
         crucibleContent= new ToolWindowCrucibleContent();
+        crucibleContent.setEditorKit(new ClasspathHTMLEditorKit());
         JScrollPane pane = setupPane(crucibleContent, "No reviews at this time.");
         add(pane, BorderLayout.CENTER);
     }

@@ -43,8 +43,8 @@ public abstract class Util {
 		Assert.assertSame(BuildStatus.BUILD_SUCCEED, build.getStatus());
 		Assert.assertTrue(build.getPollingTime().getTime() - System.currentTimeMillis() < 5000);
 		Assert.assertEquals(baseUrl, build.getServerUrl());
-		Assert.assertEquals(baseUrl + "/browse/TP-DEF-140", build.getBuildUrl());
-		Assert.assertEquals(baseUrl + "/browse/TP-DEF", build.getPlanUrl());
+		Assert.assertEquals(baseUrl + "/browse/TP-DEF-140", build.getBuildResultUrl());
+		Assert.assertEquals(baseUrl + "/browse/TP-DEF", build.getBuildUrl());
 		Assert.assertNull(build.getMessage());
 	}
 
@@ -57,8 +57,8 @@ public abstract class Util {
 		Assert.assertSame(BuildStatus.BUILD_FAILED, build.getStatus());
 		Assert.assertTrue(build.getPollingTime().getTime() - System.currentTimeMillis() < 5000);
 		Assert.assertEquals(baseUrl, build.getServerUrl());
-		Assert.assertEquals(baseUrl + "/browse/TP-DEF-141", build.getBuildUrl());
-		Assert.assertEquals(baseUrl + "/browse/TP-DEF", build.getPlanUrl());
+		Assert.assertEquals(baseUrl + "/browse/TP-DEF-141", build.getBuildResultUrl());
+		Assert.assertEquals(baseUrl + "/browse/TP-DEF", build.getBuildUrl());
 		Assert.assertNull(build.getMessage());
 	}
 

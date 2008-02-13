@@ -10,10 +10,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * HtmlBambooStatusListener Tester.
@@ -29,11 +26,13 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 
 	private static final String DEFAULT_PLAN_ID = "PLAN-ID";
 	private static final int DEFAULT_BUILD_NO = 777;
-	private static final String DEFAULT_BUILD_NAME = "Plan name";
+	private static final String DEFAULT_BUILD_NAME = "Default Plan";
 	private static final String DEFAULT_ERROR_MESSAGE = "default error message";
+    private static final String DEFAULT_SERVER_URL = "http://test.atlassian.com/bamboo";
+    private static final String DEFAULT_PROJECT_NAME = "ThePlugin";
 
 
-	protected void tearDown() throws Exception {
+    protected void tearDown() throws Exception {
 		output = null;
 		testedListener = null;
 		super.tearDown();
@@ -51,10 +50,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 		assertEquals(1, output.count);
 		assertSame(BuildStatus.UNKNOWN, output.buildStatus);
 		assertEquals(
-                "<html>"
-                + HtmlBambooStatusListener.BODY_WITH_STYLE
-                + "No plans defined. "
-                + "</body></html>",
+                "<html>" + HtmlBambooStatusListener.BODY_WITH_STYLE + "No plans defined.</body></html>",
                 output.htmlPage);
 	}
 
@@ -63,10 +59,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 		assertEquals(1, output.count);
 		assertSame(BuildStatus.UNKNOWN, output.buildStatus);
         assertEquals(
-                "<html>"
-                + HtmlBambooStatusListener.BODY_WITH_STYLE
-                + "No plans defined. "
-                + "</body></html>",
+                "<html>" + HtmlBambooStatusListener.BODY_WITH_STYLE + "No plans defined.</body></html>",
                 output.htmlPage);
 	}
 
@@ -75,7 +68,10 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 
 		buildInfo.add(generateBuildInfo(BuildStatus.BUILD_SUCCEED));
 		testedListener.updateBuildStatuses(buildInfo);
-		assertSame(BuildStatus.BUILD_SUCCEED, output.buildStatus);
+
+        System.out.println("output.getHtmlPage() = " + output.getHtmlPage());
+        
+        assertSame(BuildStatus.BUILD_SUCCEED, output.buildStatus);
 
 		HtmlTable table = output.response.getTheTable();
 		assertEquals(2, table.getRowCount());
@@ -113,52 +109,58 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 	@SuppressWarnings("unchecked")
 	private static void testSuccessRow(HtmlTableRow tableRow) throws Exception {
 		List<HtmlTableCell> cells = tableRow.getCells();
-		assertEquals(5, cells.size());
+		assertEquals(4, cells.size());
 
-		assertEquals(DEFAULT_PLAN_ID, cells.get(0).asText());
-		assertEquals("build " + DEFAULT_BUILD_NO, cells.get(1).asText());
-		assertEquals("success", cells.get(2).asText());
+        assertEquals("<td><a href=\"" + DEFAULT_SERVER_URL + "/browse/PLAN-ID\"><img src=\"/icons/icn_plan_passed.gif\" height=\"16\" width=\"16\" border=\"0\" align=\"absmiddle\"/></a></td>", trimWhitespace(cells.get(0).asXml()));
+		assertEquals(DEFAULT_PROJECT_NAME + " " + DEFAULT_BUILD_NAME + " > PLAN-ID-777", cells.get(1).asText());
 
-		String pollTime = cells.get(3).asText().trim();
+		String pollTime = cells.get(2).asText().trim();
 		assertTrue(pollTime.length() > 1);
 		assertFalse("---".equals(pollTime));
 
-		String buildTime = cells.get(4).asText().trim();
+		String buildTime = cells.get(3).asText().trim();
 		assertTrue(buildTime.length() > 1);
 		assertFalse("---".equals(buildTime));
 	}
 
-	@SuppressWarnings("unchecked")
+    private static String trimWhitespace(String s)
+    {
+        StringBuffer result = new StringBuffer("");
+        for (StringTokenizer stringTokenizer = new StringTokenizer(s, "\n"); stringTokenizer.hasMoreTokens();)
+        {
+            result.append(stringTokenizer.nextToken().trim());
+        }
+        return result.toString();
+    }
+
+    @SuppressWarnings("unchecked")
 	private static void testFailedRow(HtmlTableRow tableRow) throws Exception {
 		List<HtmlTableCell> cells = tableRow.getCells();
-		assertEquals(5, cells.size());
+		assertEquals(4, cells.size());
 
-		assertEquals(DEFAULT_PLAN_ID, cells.get(0).asText());
-		assertEquals("build " + DEFAULT_BUILD_NO, cells.get(1).asText());
-		assertEquals("failed", cells.get(2).asText());
+        assertEquals("<td><a href=\"" + DEFAULT_SERVER_URL + "/browse/PLAN-ID\"><img src=\"/icons/icn_plan_failed.gif\" height=\"16\" width=\"16\" border=\"0\" align=\"absmiddle\"/></a></td>", trimWhitespace(cells.get(0).asXml()));
+		assertEquals(DEFAULT_PROJECT_NAME + " " + DEFAULT_BUILD_NAME + " > PLAN-ID-777", cells.get(1).asText());
 
-		String pollTime = cells.get(3).asText().trim();
-		assertTrue(pollTime.length() > 1);
-		assertFalse("---".equals(pollTime));
+		String pollTime = cells.get(2).asText().trim();
+		assertFalse("&nbsp;".equals(pollTime));
 
-		String buildTime = cells.get(4).asText().trim();
-		assertTrue(buildTime.length() > 1);
-		assertFalse("---".equals(buildTime));
+		String buildTime = cells.get(3).asText().trim();
+		assertFalse("&nbsp;".equals(buildTime));
 	}
 
 	@SuppressWarnings("unchecked")
 	private static void testErrorRow(HtmlTableRow tableRow) throws Exception {
 		List<HtmlTableCell> cells = tableRow.getCells();
-		assertEquals(5, cells.size());
+		assertEquals(4, cells.size());
 
-		assertEquals(DEFAULT_PLAN_ID, cells.get(0).asText());
-		assertEquals("", cells.get(1).asText());
-		assertEquals(DEFAULT_ERROR_MESSAGE, cells.get(2).asText());
+        assertEquals("<td><a href=\"" + DEFAULT_SERVER_URL + "/browse/PLAN-ID\"><img src=\"/icons/icn_plan_disabled.gif\" height=\"16\" width=\"16\" border=\"0\" align=\"absmiddle\"/></a></td>", trimWhitespace(cells.get(0).asXml()));
+		assertEquals(DEFAULT_ERROR_MESSAGE, cells.get(1).asText());
+        assertEquals("<td><font color=\"ltgrey\">" + DEFAULT_ERROR_MESSAGE + "</font></td>", trimWhitespace(cells.get(1).asXml()));
 
-		String pollTime = cells.get(3).asText().trim();
+		String pollTime = cells.get(2).asText().trim();
 		assertTrue(pollTime.length() > 1);
 
-		assertEquals("---", cells.get(4).asText().trim());
+		assertEquals("", cells.get(3).asText().trim());
 	}
 
 
@@ -168,8 +170,10 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 		buildInfo.setBuildKey(DEFAULT_PLAN_ID);
 		buildInfo.setBuildName(DEFAULT_BUILD_NAME);
 		buildInfo.setBuildNumber(String.valueOf(DEFAULT_BUILD_NO));
+        buildInfo.setProjectName(DEFAULT_PROJECT_NAME);
+        buildInfo.setServerUrl(DEFAULT_SERVER_URL);
 
-		switch (status) {
+        switch (status) {
 			case UNKNOWN:
 				buildInfo.setBuildState("Unknown");
 				buildInfo.setMessage(DEFAULT_ERROR_MESSAGE);
@@ -215,7 +219,10 @@ class StatusListenerResultCatcher implements BambooStatusDisplay {
 		}
 	}
 
-
+    public String getHtmlPage()
+    {
+        return htmlPage;
+    }
 }
 
 class ResponseWrapper {
