@@ -54,7 +54,6 @@ public class HtmlBambooStatusListenerTest extends TestCase {
                 "<html>"
                 + HtmlBambooStatusListener.BODY_WITH_STYLE
                 + "No plans defined. "
-                + HtmlBambooStatusListener.CONFIGURE_PLUGIN_LINK
                 + "</body></html>",
                 output.htmlPage);
 	}
@@ -67,7 +66,6 @@ public class HtmlBambooStatusListenerTest extends TestCase {
                 "<html>"
                 + HtmlBambooStatusListener.BODY_WITH_STYLE
                 + "No plans defined. "
-                + HtmlBambooStatusListener.CONFIGURE_PLUGIN_LINK
                 + "</body></html>",
                 output.htmlPage);
 	}
