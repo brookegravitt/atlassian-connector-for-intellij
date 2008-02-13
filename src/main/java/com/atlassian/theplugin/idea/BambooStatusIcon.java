@@ -12,70 +12,77 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 
-public class BambooStatusIcon extends JLabel implements BambooStatusDisplay {
+public class BambooStatusIcon extends JLabel implements BambooStatusDisplay
+{
 
-	private static Icon iconRed;
-	private static Icon iconGreen;
-	private static Icon iconGrey;
+    private static Icon iconRed;
+    private static Icon iconGreen;
+    private static Icon iconGrey;
 
-	static {
-		iconRed = IconLoader.getIcon("/icons/red-16.png");
-		iconGreen = IconLoader.getIcon("/icons/green-16.png");
-		iconGrey = IconLoader.getIcon("/icons/grey-16.png");
-	}
+    static
+    {
+        iconRed = IconLoader.getIcon("/icons/red-16.png");
+        iconGreen = IconLoader.getIcon("/icons/green-16.png");
+        iconGrey = IconLoader.getIcon("/icons/grey-16.png");
+    }
 
-	private PluginStatusBarToolTip tooltip;
+    private PluginStatusBarToolTip tooltip;
 
-	/**
-	 * @param aProjectComponent reference to the project component
-	 */
-	BambooStatusIcon(final ThePluginProjectComponent aProjectComponent) {
+    /**
+     * @param aProjectComponent reference to the project component
+     */
+    BambooStatusIcon(final ThePluginProjectComponent aProjectComponent)
+    {
 
-		// show tooltip on mouse over
-		tooltip = new PluginStatusBarToolTip(WindowManager.getInstance().getFrame(aProjectComponent.getProject()));
+        // show tooltip on mouse over
+        tooltip = new PluginStatusBarToolTip(WindowManager.getInstance().getFrame(aProjectComponent.getProject()));
 
-		addMouseListener(new MouseAdapter() {
-			public void mouseEntered(MouseEvent e) {
+        addMouseListener(new MouseAdapter()
+        {
+            public void mouseEntered(MouseEvent e)
+            {
 
-				tooltip.showToltip(
-						(int) MouseInfo.getPointerInfo().getLocation().getX(),
-						(int) MouseInfo.getPointerInfo().getLocation().getY());
-			}
+                tooltip.showToltip(
+                        (int) MouseInfo.getPointerInfo().getLocation().getX(),
+                        (int) MouseInfo.getPointerInfo().getLocation().getY());
+            }
 
-			// show/hide toolbar on click
-			public void mouseClicked(MouseEvent e) {
-				ToolWindow toolWindow = aProjectComponent.getToolWindow();
+            // show/hide toolbar on click
+            public void mouseClicked(MouseEvent e)
+            {
+                ToolWindow toolWindow = aProjectComponent.getToolWindow();
 
-				if (toolWindow.isVisible())	{
-					toolWindow.hide(null);
-					//tooltip.showTooltip();
-				} else {
-					toolWindow.show(null);
-					//tooltip.hideTooltip();
-				}
+                if (!toolWindow.isVisible())
+                {
+                    toolWindow.activate(null);
+//					ContentManager contentManager = toolWindow.getContentManager();
+//					contentManager.requestFocus(contentManager.getContent(toolWindow.getComponent()));
+                }
 
-			}
-		});
+            }
+        });
 
-	}
+    }
 
-	public void updateBambooStatus(BuildStatus status, String fullInfo) {
+    public void updateBambooStatus(BuildStatus status, String fullInfo)
+    {
 
-		tooltip.setHtmlContent(fullInfo);
+        tooltip.setHtmlContent(fullInfo);
 
-		switch (status) {
-			case BUILD_FAILED:
-				setIcon(iconRed);
-				break;
-			case UNKNOWN:
-				setIcon(iconGrey);
-				break;
-			case BUILD_SUCCEED:
-				setIcon(iconGreen);
-				break;
-			default:
-				throw new IllegalArgumentException("Illegal state of build.");
-		}
-	}
+        switch (status)
+        {
+            case BUILD_FAILED:
+                setIcon(iconRed);
+                break;
+            case UNKNOWN:
+                setIcon(iconGrey);
+                break;
+            case BUILD_SUCCEED:
+                setIcon(iconGreen);
+                break;
+            default:
+                throw new IllegalArgumentException("Illegal state of build.");
+        }
+    }
 
 }

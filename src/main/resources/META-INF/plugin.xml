@@ -57,12 +57,20 @@
         <action id="ThePlugin.AddBambooServerAction" class="com.atlassian.theplugin.idea.config.serverconfig.action.AddBambooServerAction" text="Bamboo Server" description="Add a new Bamboo server" icon="/icons/blue-16.png"/>
         <action id="ThePlugin.AddCrucibleServerAction" class="com.atlassian.theplugin.idea.config.serverconfig.action.AddCrucibleServerAction" text="Crucible Server" description="Add a new Crucible server" icon="/icons/crucible-16.png"/>
 
-		<group id="ThePlugin.ServerConfigToolBar" popup="false" text="Ala">
+        <action id="ThePlugin.ShowSettings" class="com.atlassian.theplugin.idea.action.ShowSettingsAction" text="Configure" description="Show plugin configuration" icon="/general/ideOptions.png"/>
+
+        <!--<action id="ThePlugin.RefreshAll" class="com.atlassian.theplugin.idea.action.RefreshAction" text="Refresh All" description="Refresh all data now" icon="/actions/sync.png"/>-->
+
+        <group id="ThePlugin.ServerConfigToolBar" popup="false" text="Ala">
             <reference id="ThePlugin.AddServerAction"/>
             <reference id="ThePlugin.RemoveServerAction"/>
 <!--            <reference id="ThePlugin.CopyServerAction"/> -->
         </group>
 
-	
-	</actions>
+        <group id="ThePlugin.ToolWindowToolBar" popup="false" text="Ala">
+            <reference id="ThePlugin.ShowSettings" />
+            <!--<reference id="ThePlugin.RefreshAll"/>-->
+        </group>      
+
+    </actions>
 </idea-plugin>
