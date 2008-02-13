@@ -15,14 +15,7 @@ import javax.swing.event.HyperlinkEvent;
 public class GenericHyperlinkListener implements HyperlinkListener {
     public void hyperlinkUpdate(HyperlinkEvent e) {
         if (e.getEventType().equals(javax.swing.event.HyperlinkEvent.EventType.ACTIVATED)) {
-            if (e.getURL().toExternalForm().equals(ThePluginApplicationComponent.PLUGIN_CONFIG_URL))
-            {
-                ShowSettingsUtil.getInstance().editConfigurable(ProjectManager.getInstance().getDefaultProject(), ApplicationManager.getApplication().getComponent(ThePluginApplicationComponent.class));
-            }
-            else
-            {
-                BrowserUtil.launchBrowser(e.getURL().toString());
-            }
+            BrowserUtil.launchBrowser(e.getURL().toString());
         }
     }
 }
