@@ -32,21 +32,25 @@ public class HtmlCrucibleStatusListener implements CrucibleStatusListener {
 		if (reviews == null || reviews.size() == 0) {
 			sb.append("No reviews at this time.");
 		} else {
-			sb.append("<table>");
+			sb.append("<table width=\"100%\">");
 			sb.append("<th>Key</th><th>Summary</th><th>Author</th><th>State</th><th>Reviewers</th>");
 			for (RemoteReview review : reviews) {
-                sb.append("<tr><td><a href='");
+                sb.append("<tr><td valign=\"top\"><a href='");
                 sb.append(review.getReviewUrl());
                 sb.append("'>");
-                sb.append(review.getReviewData().getPermaId());
+                sb.append(review.getReviewData().getPermaId().getId());
                 sb.append("</a></td>");
-                sb.append("<td>" + review.getReviewData().getDescription() + "</td>");
-                sb.append("<td>" + review.getReviewData().getAuthor() + "</td>");
-                sb.append("<td>" + review.getReviewData().getState() + "</td>");
-                sb.append("<td>");
+                sb.append("<td valign=\"top\">" + review.getReviewData().getName() + "</td>");
+                sb.append("<td valign=\"top\">" + review.getReviewData().getAuthor() + "</td>");
+                sb.append("<td valign=\"top\">" + review.getReviewData().getState() + "</td>");
+                sb.append("<td valign=\"top\">");
                 for (Iterator<String> iterator = review.getReviewers().iterator(); iterator.hasNext();) {
                     String reviewer = iterator.next();
-                    sb.append(reviewer + "<br>");
+                    sb.append(reviewer);
+                    if (iterator.hasNext())
+                    {
+                        sb.append("<br>");
+                    }
                 }
                 sb.append("</td></tr>");
 			}

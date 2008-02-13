@@ -65,11 +65,11 @@ public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
 		this.serverUrl = serverUrl;
 	}
 
-	public String getPlanUrl() {
+	public String getBuildUrl() {
 		return this.serverUrl + "/browse/" + this.buildKey;
 	}
 
-	public String getBuildUrl() {
+	public String getBuildResultUrl() {
 		return this.serverUrl + "/browse/" + this.buildKey + "-" + this.buildNumber;
 	}
 
@@ -85,7 +85,12 @@ public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
 		return this.projectKey;
 	}
 
-	public void setProjectKey(String projectKey) {
+    public String getProjectUrl()
+    {
+        return this.getServerUrl() + "/browse/" + this.projectKey;
+    }
+
+    public void setProjectKey(String projectKey) {
 		this.projectKey = projectKey;
 	}
 

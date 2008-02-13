@@ -2,6 +2,7 @@ package com.atlassian.theplugin.idea.bamboo;
 
 import com.atlassian.theplugin.idea.bamboo.ToolWindowBambooContent;
 import com.atlassian.theplugin.idea.crucible.ToolWindowCrucibleContent;
+import com.atlassian.theplugin.util.ClasspathHTMLEditorKit;
 import com.intellij.util.ui.UIUtil;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionGroup;
@@ -22,6 +23,7 @@ public class BambooToolWindowPanel extends JPanel {
         add(actionManager.createActionToolbar("atlassian.toolwindow.toolbar", toolbar, true).getComponent(), BorderLayout.NORTH);
 
         bambooContent = new ToolWindowBambooContent();
+        bambooContent.setEditorKit(new ClasspathHTMLEditorKit());
         JScrollPane pane = setupPane(bambooContent, "Waiting for Bamboo build statuses.");
         add(pane, BorderLayout.CENTER);
     }
