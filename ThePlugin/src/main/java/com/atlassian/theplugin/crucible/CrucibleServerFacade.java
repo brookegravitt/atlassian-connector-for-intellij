@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.crucible;
 
 import com.atlassian.theplugin.configuration.Server;
+import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.crucible.api.CrucibleException;
 import com.atlassian.theplugin.crucible.api.CrucibleLoginException;
@@ -8,6 +9,7 @@ import com.atlassian.theplugin.crucible.api.CrucibleSession;
 import com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData;
 
 import java.util.List;
+import java.util.Collection;
 
 /**
  * Created by IntelliJ IDEA.
@@ -26,9 +28,11 @@ public interface CrucibleServerFacade {
 	 * @param server object with Url and other server data
 	 * @return list of all reviews
 	 */
-	public List<Object> getAllReviews(Server server) throws CrucibleException;
+	public List<ReviewData> getAllReviews(Server server) throws CrucibleException;
 
 	void setCrucibleSession(CrucibleSession crucibleSession);
 
 	ReviewData createReviewFromPatch(ServerBean server, ReviewData reviewData, String patch) throws CrucibleException;
+	
+    List<RemoteReview> getActiveReviewsForUser(Server server) throws CrucibleLoginException, ServerPasswordNotProvidedException;	
 }

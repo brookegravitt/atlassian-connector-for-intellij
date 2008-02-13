@@ -3,6 +3,10 @@ package com.atlassian.theplugin.idea;
 import com.atlassian.theplugin.bamboo.BuildStatus;
 import com.atlassian.theplugin.bamboo.HtmlBambooStatusListener;
 import com.atlassian.theplugin.idea.crucible.CruciblePatchSubmitExecutor;
+import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
+import com.atlassian.theplugin.idea.bamboo.BambooStatusChecker;
+import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
+import com.atlassian.theplugin.crucible.HtmlCrucibleStatusListener;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.project.Project;
@@ -27,20 +31,25 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	private StatusBar statusBar;
 	private BambooStatusIcon statusBarIcon;
 	private BambooStatusChecker bambooStatusChecker;
-	private HtmlBambooStatusListener iconBambooStatusListener;
+    private HtmlBambooStatusListener iconBambooStatusListener;
+    private HtmlBambooStatusListener toolWindowBambooListener;
+
+    private CrucibleStatusChecker crucibleStatusChecker;
+    private HtmlCrucibleStatusListener toolWindowCrucibleListener;
+
 	private ToolWindowManager toolWindowManager;
 	private static final String TOOL_WINDOW_NAME = "ThePlugin";
 	private ToolWindow toolWindow;
 	private static final String THE_PLUGIN_TOOL_WINDOW_ICON = "/icons/thePlugin_15x10.png";
-	private HtmlBambooStatusListener toolWindowBambooListener;
 	private boolean enabled;
 
-	public ThePluginProjectComponent(Project project) {
+    public ThePluginProjectComponent(Project project) {
 		this.project = project;
 
 		// make findBugs happy
 		bambooStatusChecker = null;
-		statusBar = null;
+        crucibleStatusChecker = null;
+        statusBar = null;
 		statusBarIcon = null;
 		enabled = false;
 	}
@@ -66,7 +75,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 				ApplicationManager.getApplication().getComponent(ThePluginApplicationComponent.class);
 				
 		if (appComponent.getState().isPluginEnabled() && !enabled) {
-			bambooStatusChecker = appComponent.getBambooStatusChecker();
 
 			// create tool window on the right
 			toolWindowManager = ToolWindowManager.getInstance(project);
@@ -80,7 +88,9 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			Content toolWindowContent = peerFactory.getContentFactory().createContent(toolWindowPanel, "", false);
 			toolWindow.getContentManager().addContent(toolWindowContent);
 
-			// add tool window bamboo content listener to bamboo checker thread
+            bambooStatusChecker = appComponent.getBambooStatusChecker();
+
+            // add tool window bamboo content listener to bamboo checker thread
 			toolWindowBambooListener = new HtmlBambooStatusListener(toolWindowPanel.getBambooContent());
 			bambooStatusChecker.registerListener(toolWindowBambooListener);
 
@@ -99,9 +109,14 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			statusBar = WindowManager.getInstance().getStatusBar(project);
 			statusBar.addCustomIndicationComponent(statusBarIcon);
 
-			appComponent.triggerBambooStatusChecker();
+            // setup Crucible status checker and listeners
+            crucibleStatusChecker = appComponent.getCrucibleStatusChecker();
+            toolWindowCrucibleListener = new HtmlCrucibleStatusListener(toolWindowPanel.getCrucibleContent());
+            crucibleStatusChecker.registerListener(toolWindowCrucibleListener);
 
-			enabled = true;
+            // now fire all status checkers
+            appComponent.triggerStatusCheckers();
+            enabled = true;
 		}
 	}
 
@@ -118,7 +133,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			// unregister listeners
 			bambooStatusChecker.unregisterListener(iconBambooStatusListener);
 			bambooStatusChecker.unregisterListener(toolWindowBambooListener);
-
+            crucibleStatusChecker.unregisterListener(toolWindowCrucibleListener);
 			enabled = false;
 		}
 	}

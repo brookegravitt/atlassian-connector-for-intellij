@@ -20,17 +20,6 @@
 <xs:element minOccurs="0" name="state" type="tns:state"/>
 </xs:sequence>
 </xs:complexType>
-<xs:simpleType name="action">
-<xs:restriction base="xs:string">
-<xs:enumeration value="Recover"/>
-<xs:enumeration value="Reopen"/>
-<xs:enumeration value="Close"/>
-<xs:enumeration value="Summarize"/>
-<xs:enumeration value="Reject"/>
-<xs:enumeration value="Delete"/>
-<xs:enumeration value="Approve"/>
-</xs:restriction>
-</xs:simpleType>
 <xs:simpleType name="state">
 <xs:restriction base="xs:string">
 <xs:enumeration value="Unknown"/>
@@ -43,181 +32,17 @@
 <xs:enumeration value="Draft"/>
 </xs:restriction>
 </xs:simpleType>
-<xs:element name="getChildReviews" type="tns:getChildReviews"/>
-<xs:complexType name="getChildReviews">
-<xs:sequence>
-<xs:element minOccurs="0" name="token" type="xs:string"/>
-<xs:element minOccurs="0" name="arg1" type="tns:permId"/>
-</xs:sequence>
-</xs:complexType>
-<xs:element name="getChildReviewsResponse" type="tns:getChildReviewsResponse"/>
-<xs:complexType name="getChildReviewsResponse">
-<xs:sequence>
-<xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="xs:anyType"/>
-</xs:sequence>
-</xs:complexType>
-<xs:element name="getAllRevisionComments" type="tns:getAllRevisionComments"/>
-<xs:complexType name="getAllRevisionComments">
-<xs:sequence>
-<xs:element minOccurs="0" name="token" type="xs:string"/>
-<xs:element minOccurs="0" name="arg1" type="tns:permId"/>
-</xs:sequence>
-</xs:complexType>
-<xs:element name="getAllRevisionCommentsResponse" type="tns:getAllRevisionCommentsResponse"/>
-<xs:complexType name="getAllRevisionCommentsResponse">
-<xs:sequence>
-<xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="xs:anyType"/>
-</xs:sequence>
-</xs:complexType>
-<xs:element name="removeReviewItem" type="tns:removeReviewItem"/>
-<xs:complexType name="removeReviewItem">
-<xs:sequence>
-<xs:element minOccurs="0" name="token" type="xs:string"/>
-<xs:element minOccurs="0" name="arg1" type="tns:permId"/>
-<xs:element minOccurs="0" name="arg2" type="tns:permId"/>
-</xs:sequence>
-</xs:complexType>
-<xs:element name="removeReviewItemResponse" type="tns:removeReviewItemResponse"/>
-<xs:complexType name="removeReviewItemResponse">
-<xs:sequence/>
-</xs:complexType>
-<xs:element name="getAllReviews" type="tns:getAllReviews"/>
-<xs:complexType name="getAllReviews">
-<xs:sequence>
-<xs:element minOccurs="0" name="token" type="xs:string"/>
-</xs:sequence>
-</xs:complexType>
-<xs:element name="getAllReviewsResponse" type="tns:getAllReviewsResponse"/>
-<xs:complexType name="getAllReviewsResponse">
-<xs:sequence>
-<xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="xs:anyType"/>
-</xs:sequence>
-</xs:complexType>
-<xs:element name="addFisheyeDiff" type="tns:addFisheyeDiff"/>
-<xs:complexType name="addFisheyeDiff">
-<xs:sequence>
-<xs:element minOccurs="0" name="token" type="xs:string"/>
-<xs:element minOccurs="0" name="arg1" type="tns:permId"/>
-<xs:element minOccurs="0" name="arg2" type="xs:string"/>
-<xs:element minOccurs="0" name="arg3" type="xs:string"/>
-<xs:element minOccurs="0" name="arg4" type="xs:string"/>
-<xs:element minOccurs="0" name="arg5" type="xs:string"/>
-<xs:element minOccurs="0" name="arg6" type="xs:string"/>
-</xs:sequence>
-</xs:complexType>
-<xs:element name="addFisheyeDiffResponse" type="tns:addFisheyeDiffResponse"/>
-<xs:complexType name="addFisheyeDiffResponse">
-<xs:sequence>
-<xs:element minOccurs="0" name="return"/>
-</xs:sequence>
-</xs:complexType>
-<xs:element name="getVersionedComments" type="tns:getVersionedComments"/>
-<xs:complexType name="getVersionedComments">
-<xs:sequence>
-<xs:element minOccurs="0" name="token" type="xs:string"/>
-<xs:element minOccurs="0" name="arg1" type="tns:permId"/>
-</xs:sequence>
-</xs:complexType>
-<xs:element name="getVersionedCommentsResponse" type="tns:getVersionedCommentsResponse"/>
-<xs:complexType name="getVersionedCommentsResponse">
-<xs:sequence>
-<xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="xs:anyType"/>
-</xs:sequence>
-</xs:complexType>
-<xs:element name="addComment" type="tns:addComment"/>
-<xs:complexType name="addComment">
-<xs:sequence>
-<xs:element minOccurs="0" name="token" type="xs:string"/>
-<xs:element minOccurs="0" name="arg1" type="tns:permId"/>
-<xs:element minOccurs="0" name="arg2"/>
-</xs:sequence>
-</xs:complexType>
-<xs:element name="addCommentResponse" type="tns:addCommentResponse"/>
-<xs:complexType name="addCommentResponse">
-<xs:sequence>
-<xs:element minOccurs="0" name="return"/>
-</xs:sequence>
-</xs:complexType>
-<xs:element name="getReviewers" type="tns:getReviewers"/>
-<xs:complexType name="getReviewers">
-<xs:sequence>
-<xs:element minOccurs="0" name="token" type="xs:string"/>
-<xs:element minOccurs="0" name="arg1" type="tns:permId"/>
-</xs:sequence>
-</xs:complexType>
-<xs:element name="getReviewersResponse" type="tns:getReviewersResponse"/>
-<xs:complexType name="getReviewersResponse">
-<xs:sequence>
-<xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="xs:anyType"/>
-</xs:sequence>
-</xs:complexType>
-<xs:element name="addGeneralComment" type="tns:addGeneralComment"/>
-<xs:complexType name="addGeneralComment">
-<xs:sequence>
-<xs:element minOccurs="0" name="token" type="xs:string"/>
-<xs:element minOccurs="0" name="arg1" type="tns:permId"/>
-<xs:element minOccurs="0" name="arg2"/>
-</xs:sequence>
-</xs:complexType>
-<xs:element name="addGeneralCommentResponse" type="tns:addGeneralCommentResponse"/>
-<xs:complexType name="addGeneralCommentResponse">
-<xs:sequence>
-<xs:element minOccurs="0" name="return"/>
-</xs:sequence>
-</xs:complexType>
-<xs:element name="getReviewItemsForReview" type="tns:getReviewItemsForReview"/>
-<xs:complexType name="getReviewItemsForReview">
-<xs:sequence>
-<xs:element minOccurs="0" name="token" type="xs:string"/>
-<xs:element minOccurs="0" name="arg1" type="tns:permId"/>
-</xs:sequence>
-</xs:complexType>
-<xs:element name="getReviewItemsForReviewResponse" type="tns:getReviewItemsForReviewResponse"/>
-<xs:complexType name="getReviewItemsForReviewResponse">
-<xs:sequence>
-<xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="xs:anyType"/>
-</xs:sequence>
-</xs:complexType>
-<xs:element name="changeState" type="tns:changeState"/>
-<xs:complexType name="changeState">
-<xs:sequence>
-<xs:element minOccurs="0" name="token" type="xs:string"/>
-<xs:element minOccurs="0" name="arg1" type="tns:permId"/>
-<xs:element minOccurs="0" name="arg2" type="tns:action"/>
-</xs:sequence>
-</xs:complexType>
-<xs:element name="changeStateResponse" type="tns:changeStateResponse"/>
-<xs:complexType name="changeStateResponse">
-<xs:sequence>
-<xs:element minOccurs="0" name="return" type="tns:reviewData"/>
-</xs:sequence>
-</xs:complexType>
-<xs:element name="getReview" type="tns:getReview"/>
-<xs:complexType name="getReview">
-<xs:sequence>
-<xs:element minOccurs="0" name="token" type="xs:string"/>
-<xs:element minOccurs="0" name="arg1" type="tns:permId"/>
-</xs:sequence>
-</xs:complexType>
-<xs:element name="getReviewResponse" type="tns:getReviewResponse"/>
-<xs:complexType name="getReviewResponse">
-<xs:sequence>
-<xs:element minOccurs="0" name="return" type="tns:reviewData"/>
-</xs:sequence>
-</xs:complexType>
-<xs:element name="getReviewsInStates" type="tns:getReviewsInStates"/>
-<xs:complexType name="getReviewsInStates">
-<xs:sequence>
-<xs:element minOccurs="0" name="token" type="xs:string"/>
-<xs:element maxOccurs="unbounded" minOccurs="0" name="arg1" type="tns:state"/>
-</xs:sequence>
-</xs:complexType>
-<xs:element name="getReviewsInStatesResponse" type="tns:getReviewsInStatesResponse"/>
-<xs:complexType name="getReviewsInStatesResponse">
-<xs:sequence>
-<xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="xs:anyType"/>
-</xs:sequence>
-</xs:complexType>
+<xs:simpleType name="action">
+<xs:restriction base="xs:string">
+<xs:enumeration value="Recover"/>
+<xs:enumeration value="Reopen"/>
+<xs:enumeration value="Close"/>
+<xs:enumeration value="Summarize"/>
+<xs:enumeration value="Reject"/>
+<xs:enumeration value="Delete"/>
+<xs:enumeration value="Approve"/>
+</xs:restriction>
+</xs:simpleType>
 <xs:element name="createReview" type="tns:createReview"/>
 <xs:complexType name="createReview">
 <xs:sequence>
@@ -241,172 +66,339 @@
 <xs:element name="getGeneralCommentsResponse" type="tns:getGeneralCommentsResponse"/>
 <xs:complexType name="getGeneralCommentsResponse">
 <xs:sequence>
-<xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="xs:anyType"/>
+<xs:element maxOccurs="unbounded" minOccurs="0" name="return"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="getReviewers" type="tns:getReviewers"/>
+<xs:complexType name="getReviewers">
+<xs:sequence>
+<xs:element minOccurs="0" name="token" type="xs:string"/>
+<xs:element minOccurs="0" name="arg1" type="tns:permId"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="getReviewersResponse" type="tns:getReviewersResponse"/>
+<xs:complexType name="getReviewersResponse">
+<xs:sequence>
+<xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="addGeneralComment" type="tns:addGeneralComment"/>
+<xs:complexType name="addGeneralComment">
+<xs:sequence>
+<xs:element minOccurs="0" name="token" type="xs:string"/>
+<xs:element minOccurs="0" name="arg1" type="tns:permId"/>
+<xs:element minOccurs="0" name="arg2"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="addGeneralCommentResponse" type="tns:addGeneralCommentResponse"/>
+<xs:complexType name="addGeneralCommentResponse">
+<xs:sequence>
+<xs:element minOccurs="0" name="return"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="removeReviewItem" type="tns:removeReviewItem"/>
+<xs:complexType name="removeReviewItem">
+<xs:sequence>
+<xs:element minOccurs="0" name="token" type="xs:string"/>
+<xs:element minOccurs="0" name="arg1" type="tns:permId"/>
+<xs:element minOccurs="0" name="arg2" type="tns:permId"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="removeReviewItemResponse" type="tns:removeReviewItemResponse"/>
+<xs:complexType name="removeReviewItemResponse">
+<xs:sequence/>
+</xs:complexType>
+<xs:element name="getChildReviews" type="tns:getChildReviews"/>
+<xs:complexType name="getChildReviews">
+<xs:sequence>
+<xs:element minOccurs="0" name="token" type="xs:string"/>
+<xs:element minOccurs="0" name="arg1" type="tns:permId"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="getChildReviewsResponse" type="tns:getChildReviewsResponse"/>
+<xs:complexType name="getChildReviewsResponse">
+<xs:sequence>
+<xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="tns:reviewData"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="getReviewItemsForReview" type="tns:getReviewItemsForReview"/>
+<xs:complexType name="getReviewItemsForReview">
+<xs:sequence>
+<xs:element minOccurs="0" name="token" type="xs:string"/>
+<xs:element minOccurs="0" name="arg1" type="tns:permId"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="getReviewItemsForReviewResponse" type="tns:getReviewItemsForReviewResponse"/>
+<xs:complexType name="getReviewItemsForReviewResponse">
+<xs:sequence>
+<xs:element maxOccurs="unbounded" minOccurs="0" name="return"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="createReviewFromPatch" type="tns:createReviewFromPatch"/>
+<xs:complexType name="createReviewFromPatch">
+<xs:sequence>
+<xs:element minOccurs="0" name="token" type="xs:string"/>
+<xs:element minOccurs="0" name="review" type="tns:reviewData"/>
+<xs:element minOccurs="0" name="patch" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="createReviewFromPatchResponse" type="tns:createReviewFromPatchResponse"/>
+<xs:complexType name="createReviewFromPatchResponse">
+<xs:sequence>
+<xs:element minOccurs="0" name="return" type="tns:reviewData"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="getAllRevisionComments" type="tns:getAllRevisionComments"/>
+<xs:complexType name="getAllRevisionComments">
+<xs:sequence>
+<xs:element minOccurs="0" name="token" type="xs:string"/>
+<xs:element minOccurs="0" name="arg1" type="tns:permId"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="getAllRevisionCommentsResponse" type="tns:getAllRevisionCommentsResponse"/>
+<xs:complexType name="getAllRevisionCommentsResponse">
+<xs:sequence>
+<xs:element maxOccurs="unbounded" minOccurs="0" name="return"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="getAllReviews" type="tns:getAllReviews"/>
+<xs:complexType name="getAllReviews">
+<xs:sequence>
+<xs:element minOccurs="0" name="token" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="getAllReviewsResponse" type="tns:getAllReviewsResponse"/>
+<xs:complexType name="getAllReviewsResponse">
+<xs:sequence>
+<xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="tns:reviewData"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="changeState" type="tns:changeState"/>
+<xs:complexType name="changeState">
+<xs:sequence>
+<xs:element minOccurs="0" name="token" type="xs:string"/>
+<xs:element minOccurs="0" name="arg1" type="tns:permId"/>
+<xs:element minOccurs="0" name="arg2" type="tns:action"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="changeStateResponse" type="tns:changeStateResponse"/>
+<xs:complexType name="changeStateResponse">
+<xs:sequence>
+<xs:element minOccurs="0" name="return" type="tns:reviewData"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="getVersionedComments" type="tns:getVersionedComments"/>
+<xs:complexType name="getVersionedComments">
+<xs:sequence>
+<xs:element minOccurs="0" name="token" type="xs:string"/>
+<xs:element minOccurs="0" name="arg1" type="tns:permId"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="getVersionedCommentsResponse" type="tns:getVersionedCommentsResponse"/>
+<xs:complexType name="getVersionedCommentsResponse">
+<xs:sequence>
+<xs:element maxOccurs="unbounded" minOccurs="0" name="return"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="getReview" type="tns:getReview"/>
+<xs:complexType name="getReview">
+<xs:sequence>
+<xs:element minOccurs="0" name="token" type="xs:string"/>
+<xs:element minOccurs="0" name="arg1" type="tns:permId"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="getReviewResponse" type="tns:getReviewResponse"/>
+<xs:complexType name="getReviewResponse">
+<xs:sequence>
+<xs:element minOccurs="0" name="return" type="tns:reviewData"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="addFisheyeDiff" type="tns:addFisheyeDiff"/>
+<xs:complexType name="addFisheyeDiff">
+<xs:sequence>
+<xs:element minOccurs="0" name="token" type="xs:string"/>
+<xs:element minOccurs="0" name="arg1" type="tns:permId"/>
+<xs:element minOccurs="0" name="arg2" type="xs:string"/>
+<xs:element minOccurs="0" name="arg3" type="xs:string"/>
+<xs:element minOccurs="0" name="arg4" type="xs:string"/>
+<xs:element minOccurs="0" name="arg5" type="xs:string"/>
+<xs:element minOccurs="0" name="arg6" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="addFisheyeDiffResponse" type="tns:addFisheyeDiffResponse"/>
+<xs:complexType name="addFisheyeDiffResponse">
+<xs:sequence>
+<xs:element minOccurs="0" name="return"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="addComment" type="tns:addComment"/>
+<xs:complexType name="addComment">
+<xs:sequence>
+<xs:element minOccurs="0" name="token" type="xs:string"/>
+<xs:element minOccurs="0" name="arg1" type="tns:permId"/>
+<xs:element minOccurs="0" name="arg2"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="addCommentResponse" type="tns:addCommentResponse"/>
+<xs:complexType name="addCommentResponse">
+<xs:sequence>
+<xs:element minOccurs="0" name="return"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="getReviewsInStates" type="tns:getReviewsInStates"/>
+<xs:complexType name="getReviewsInStates">
+<xs:sequence>
+<xs:element minOccurs="0" name="token" type="xs:string"/>
+<xs:element maxOccurs="unbounded" minOccurs="0" name="arg1" type="tns:state"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="getReviewsInStatesResponse" type="tns:getReviewsInStatesResponse"/>
+<xs:complexType name="getReviewsInStatesResponse">
+<xs:sequence>
+<xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="tns:reviewData"/>
 </xs:sequence>
 </xs:complexType>
 </xs:schema>
   </wsdl:types>
-  <wsdl:message name="changeStateResponse">
-    <wsdl:part element="tns:changeStateResponse" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="addGeneralCommentResponse">
-    <wsdl:part element="tns:addGeneralCommentResponse" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getReview">
-    <wsdl:part element="tns:getReview" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getChildReviewsResponse">
-    <wsdl:part element="tns:getChildReviewsResponse" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="removeReviewItem">
-    <wsdl:part element="tns:removeReviewItem" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getChildReviews">
-    <wsdl:part element="tns:getChildReviews" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="changeState">
-    <wsdl:part element="tns:changeState" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getReviewers">
-    <wsdl:part element="tns:getReviewers" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getReviewItemsForReviewResponse">
-    <wsdl:part element="tns:getReviewItemsForReviewResponse" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
   <wsdl:message name="addFisheyeDiffResponse">
     <wsdl:part element="tns:addFisheyeDiffResponse" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="createReviewResponse">
-    <wsdl:part element="tns:createReviewResponse" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getAllReviewsResponse">
-    <wsdl:part element="tns:getAllReviewsResponse" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getAllRevisionComments">
-    <wsdl:part element="tns:getAllRevisionComments" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getVersionedComments">
-    <wsdl:part element="tns:getVersionedComments" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getReviewItemsForReview">
-    <wsdl:part element="tns:getReviewItemsForReview" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getReviewsInStatesResponse">
-    <wsdl:part element="tns:getReviewsInStatesResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="getGeneralComments">
     <wsdl:part element="tns:getGeneralComments" name="parameters">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="addComment">
-    <wsdl:part element="tns:addComment" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="addFisheyeDiff">
-    <wsdl:part element="tns:addFisheyeDiff" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getReviewersResponse">
-    <wsdl:part element="tns:getReviewersResponse" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="addGeneralComment">
-    <wsdl:part element="tns:addGeneralComment" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getReviewResponse">
-    <wsdl:part element="tns:getReviewResponse" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="addCommentResponse">
-    <wsdl:part element="tns:addCommentResponse" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getGeneralCommentsResponse">
-    <wsdl:part element="tns:getGeneralCommentsResponse" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getAllReviews">
-    <wsdl:part element="tns:getAllReviews" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getVersionedCommentsResponse">
-    <wsdl:part element="tns:getVersionedCommentsResponse" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="getAllRevisionCommentsResponse">
-    <wsdl:part element="tns:getAllRevisionCommentsResponse" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="createReview">
-    <wsdl:part element="tns:createReview" name="parameters">
+  <wsdl:message name="addGeneralCommentResponse">
+    <wsdl:part element="tns:addGeneralCommentResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="removeReviewItemResponse">
     <wsdl:part element="tns:removeReviewItemResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="getReviewsInStatesResponse">
+    <wsdl:part element="tns:getReviewsInStatesResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getChildReviewsResponse">
+    <wsdl:part element="tns:getChildReviewsResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getReview">
+    <wsdl:part element="tns:getReview" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getChildReviews">
+    <wsdl:part element="tns:getChildReviews" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getReviewers">
+    <wsdl:part element="tns:getReviewers" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:message name="getReviewsInStates">
     <wsdl:part element="tns:getReviewsInStates" name="parameters">
     </wsdl:part>
   </wsdl:message>
+  <wsdl:message name="addComment">
+    <wsdl:part element="tns:addComment" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="createReview">
+    <wsdl:part element="tns:createReview" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getAllRevisionCommentsResponse">
+    <wsdl:part element="tns:getAllRevisionCommentsResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="changeState">
+    <wsdl:part element="tns:changeState" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getAllReviewsResponse">
+    <wsdl:part element="tns:getAllReviewsResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getVersionedComments">
+    <wsdl:part element="tns:getVersionedComments" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getReviewResponse">
+    <wsdl:part element="tns:getReviewResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getReviewItemsForReview">
+    <wsdl:part element="tns:getReviewItemsForReview" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getGeneralCommentsResponse">
+    <wsdl:part element="tns:getGeneralCommentsResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="addFisheyeDiff">
+    <wsdl:part element="tns:addFisheyeDiff" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="changeStateResponse">
+    <wsdl:part element="tns:changeStateResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getVersionedCommentsResponse">
+    <wsdl:part element="tns:getVersionedCommentsResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="addCommentResponse">
+    <wsdl:part element="tns:addCommentResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="removeReviewItem">
+    <wsdl:part element="tns:removeReviewItem" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getAllRevisionComments">
+    <wsdl:part element="tns:getAllRevisionComments" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getAllReviews">
+    <wsdl:part element="tns:getAllReviews" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="createReviewResponse">
+    <wsdl:part element="tns:createReviewResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getReviewItemsForReviewResponse">
+    <wsdl:part element="tns:getReviewItemsForReviewResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="addGeneralComment">
+    <wsdl:part element="tns:addGeneralComment" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="createReviewFromPatch">
+    <wsdl:part element="tns:createReviewFromPatch" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="createReviewFromPatchResponse">
+    <wsdl:part element="tns:createReviewFromPatchResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getReviewersResponse">
+    <wsdl:part element="tns:getReviewersResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
   <wsdl:portType name="rpcReviewServiceName">
-    <wsdl:operation name="getChildReviews">
-      <wsdl:input message="tns:getChildReviews" name="getChildReviews">
+    <wsdl:operation name="createReview">
+      <wsdl:input message="tns:createReview" name="createReview">
     </wsdl:input>
-      <wsdl:output message="tns:getChildReviewsResponse" name="getChildReviewsResponse">
+      <wsdl:output message="tns:createReviewResponse" name="createReviewResponse">
     </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="getAllRevisionComments">
-      <wsdl:input message="tns:getAllRevisionComments" name="getAllRevisionComments">
+    <wsdl:operation name="getGeneralComments">
+      <wsdl:input message="tns:getGeneralComments" name="getGeneralComments">
     </wsdl:input>
-      <wsdl:output message="tns:getAllRevisionCommentsResponse" name="getAllRevisionCommentsResponse">
-    </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="removeReviewItem">
-      <wsdl:input message="tns:removeReviewItem" name="removeReviewItem">
-    </wsdl:input>
-      <wsdl:output message="tns:removeReviewItemResponse" name="removeReviewItemResponse">
-    </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getAllReviews">
-      <wsdl:input message="tns:getAllReviews" name="getAllReviews">
-    </wsdl:input>
-      <wsdl:output message="tns:getAllReviewsResponse" name="getAllReviewsResponse">
-    </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="addFisheyeDiff">
-      <wsdl:input message="tns:addFisheyeDiff" name="addFisheyeDiff">
-    </wsdl:input>
-      <wsdl:output message="tns:addFisheyeDiffResponse" name="addFisheyeDiffResponse">
-    </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getVersionedComments">
-      <wsdl:input message="tns:getVersionedComments" name="getVersionedComments">
-    </wsdl:input>
-      <wsdl:output message="tns:getVersionedCommentsResponse" name="getVersionedCommentsResponse">
-    </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="addComment">
-      <wsdl:input message="tns:addComment" name="addComment">
-    </wsdl:input>
-      <wsdl:output message="tns:addCommentResponse" name="addCommentResponse">
+      <wsdl:output message="tns:getGeneralCommentsResponse" name="getGeneralCommentsResponse">
     </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="getReviewers">
@@ -421,10 +413,40 @@
       <wsdl:output message="tns:addGeneralCommentResponse" name="addGeneralCommentResponse">
     </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="removeReviewItem">
+      <wsdl:input message="tns:removeReviewItem" name="removeReviewItem">
+    </wsdl:input>
+      <wsdl:output message="tns:removeReviewItemResponse" name="removeReviewItemResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getChildReviews">
+      <wsdl:input message="tns:getChildReviews" name="getChildReviews">
+    </wsdl:input>
+      <wsdl:output message="tns:getChildReviewsResponse" name="getChildReviewsResponse">
+    </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="getReviewItemsForReview">
       <wsdl:input message="tns:getReviewItemsForReview" name="getReviewItemsForReview">
     </wsdl:input>
       <wsdl:output message="tns:getReviewItemsForReviewResponse" name="getReviewItemsForReviewResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createReviewFromPatch">
+      <wsdl:input message="tns:createReviewFromPatch" name="createReviewFromPatch">
+    </wsdl:input>
+      <wsdl:output message="tns:createReviewFromPatchResponse" name="createReviewFromPatchResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getAllRevisionComments">
+      <wsdl:input message="tns:getAllRevisionComments" name="getAllRevisionComments">
+    </wsdl:input>
+      <wsdl:output message="tns:getAllRevisionCommentsResponse" name="getAllRevisionCommentsResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getAllReviews">
+      <wsdl:input message="tns:getAllReviews" name="getAllReviews">
+    </wsdl:input>
+      <wsdl:output message="tns:getAllReviewsResponse" name="getAllReviewsResponse">
     </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="changeState">
@@ -433,10 +455,28 @@
       <wsdl:output message="tns:changeStateResponse" name="changeStateResponse">
     </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="getVersionedComments">
+      <wsdl:input message="tns:getVersionedComments" name="getVersionedComments">
+    </wsdl:input>
+      <wsdl:output message="tns:getVersionedCommentsResponse" name="getVersionedCommentsResponse">
+    </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="getReview">
       <wsdl:input message="tns:getReview" name="getReview">
     </wsdl:input>
       <wsdl:output message="tns:getReviewResponse" name="getReviewResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="addFisheyeDiff">
+      <wsdl:input message="tns:addFisheyeDiff" name="addFisheyeDiff">
+    </wsdl:input>
+      <wsdl:output message="tns:addFisheyeDiffResponse" name="addFisheyeDiffResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="addComment">
+      <wsdl:input message="tns:addComment" name="addComment">
+    </wsdl:input>
+      <wsdl:output message="tns:addCommentResponse" name="addCommentResponse">
     </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="getReviewsInStates">
@@ -445,81 +485,24 @@
       <wsdl:output message="tns:getReviewsInStatesResponse" name="getReviewsInStatesResponse">
     </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="createReview">
-      <wsdl:input message="tns:createReview" name="createReview">
-    </wsdl:input>
-      <wsdl:output message="tns:createReviewResponse" name="createReviewResponse">
-    </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getGeneralComments">
-      <wsdl:input message="tns:getGeneralComments" name="getGeneralComments">
-    </wsdl:input>
-      <wsdl:output message="tns:getGeneralCommentsResponse" name="getGeneralCommentsResponse">
-    </wsdl:output>
-    </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="ReviewSoapBinding" type="tns:rpcReviewServiceName">
     <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
-    <wsdl:operation name="getChildReviews">
+    <wsdl:operation name="createReview">
       <soap:operation soapAction="" style="document"/>
-      <wsdl:input name="getChildReviews">
+      <wsdl:input name="createReview">
         <soap:body use="literal"/>
       </wsdl:input>
-      <wsdl:output name="getChildReviewsResponse">
+      <wsdl:output name="createReviewResponse">
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="getAllRevisionComments">
+    <wsdl:operation name="getGeneralComments">
       <soap:operation soapAction="" style="document"/>
-      <wsdl:input name="getAllRevisionComments">
+      <wsdl:input name="getGeneralComments">
         <soap:body use="literal"/>
       </wsdl:input>
-      <wsdl:output name="getAllRevisionCommentsResponse">
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="removeReviewItem">
-      <soap:operation soapAction="" style="document"/>
-      <wsdl:input name="removeReviewItem">
-        <soap:body use="literal"/>
-      </wsdl:input>
-      <wsdl:output name="removeReviewItemResponse">
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="addFisheyeDiff">
-      <soap:operation soapAction="" style="document"/>
-      <wsdl:input name="addFisheyeDiff">
-        <soap:body use="literal"/>
-      </wsdl:input>
-      <wsdl:output name="addFisheyeDiffResponse">
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getAllReviews">
-      <soap:operation soapAction="" style="document"/>
-      <wsdl:input name="getAllReviews">
-        <soap:body use="literal"/>
-      </wsdl:input>
-      <wsdl:output name="getAllReviewsResponse">
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getVersionedComments">
-      <soap:operation soapAction="" style="document"/>
-      <wsdl:input name="getVersionedComments">
-        <soap:body use="literal"/>
-      </wsdl:input>
-      <wsdl:output name="getVersionedCommentsResponse">
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="addComment">
-      <soap:operation soapAction="" style="document"/>
-      <wsdl:input name="addComment">
-        <soap:body use="literal"/>
-      </wsdl:input>
-      <wsdl:output name="addCommentResponse">
+      <wsdl:output name="getGeneralCommentsResponse">
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
@@ -541,12 +524,57 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="getChildReviews">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="getChildReviews">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getChildReviewsResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="removeReviewItem">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="removeReviewItem">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="removeReviewItemResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="getReviewItemsForReview">
       <soap:operation soapAction="" style="document"/>
       <wsdl:input name="getReviewItemsForReview">
         <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="getReviewItemsForReviewResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createReviewFromPatch">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="createReviewFromPatch">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="createReviewFromPatchResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getAllReviews">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="getAllReviews">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getAllReviewsResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getAllRevisionComments">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="getAllRevisionComments">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getAllRevisionCommentsResponse">
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
@@ -559,12 +587,39 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="getVersionedComments">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="getVersionedComments">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getVersionedCommentsResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="addFisheyeDiff">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="addFisheyeDiff">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="addFisheyeDiffResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="getReview">
       <soap:operation soapAction="" style="document"/>
       <wsdl:input name="getReview">
         <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="getReviewResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="addComment">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="addComment">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="addCommentResponse">
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
@@ -577,28 +632,10 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="createReview">
-      <soap:operation soapAction="" style="document"/>
-      <wsdl:input name="createReview">
-        <soap:body use="literal"/>
-      </wsdl:input>
-      <wsdl:output name="createReviewResponse">
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="getGeneralComments">
-      <soap:operation soapAction="" style="document"/>
-      <wsdl:input name="getGeneralComments">
-        <soap:body use="literal"/>
-      </wsdl:input>
-      <wsdl:output name="getGeneralCommentsResponse">
-        <soap:body use="literal"/>
-      </wsdl:output>
-    </wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="Review">
     <wsdl:port binding="tns:ReviewSoapBinding" name="ReviewPort">
-      <soap:address location="http://lech.atlassian.pl:8060/service/review"/>
+      <soap:address location="http://192.168.157.245:8060/service/review"/>
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

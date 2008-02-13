@@ -231,7 +231,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 		server.setUsername("test");
 		server.setPasswordString("test", false);
 
-		List<Object> list = null;
+		List<ReviewData> list = null;
 
 		try {
 			list = facade.getAllReviews(server);
