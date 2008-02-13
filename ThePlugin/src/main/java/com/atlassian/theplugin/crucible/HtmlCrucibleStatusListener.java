@@ -36,8 +36,7 @@ public class HtmlCrucibleStatusListener implements CrucibleStatusListener {
                 for (Iterator<String> iterator = review.getReviewers().iterator(); iterator.hasNext();) {
                     String reviewer = iterator.next();
                     sb.append(reviewer);
-                    if (iterator.hasNext())
-                    {
+                    if (iterator.hasNext()) {
                         sb.append("<br>");
                     }
                 }

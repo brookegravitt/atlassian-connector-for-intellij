@@ -85,9 +85,9 @@ public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
 		return this.projectKey;
 	}
 
-    public String getProjectUrl()
-    {
-        return this.getServerUrl() + "/browse/" + (projectKey == null ? buildKey.substring(0, buildKey.indexOf("-")) : projectKey);
+    public String getProjectUrl() {
+        return this.getServerUrl() + "/browse/"
+				+ (projectKey == null ? buildKey.substring(0, buildKey.indexOf("-")) : projectKey);
     }
 
     public void setProjectKey(String projectKey) {
