@@ -113,8 +113,9 @@ public class PasswordDialog extends JDialog {
 		testConnectionButton.setDisplayedMnemonicIndex(0);
 		panel1.add(testConnectionButton, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		chkRememberPassword = new JCheckBox();
-		chkRememberPassword.setSelected(true);
-		chkRememberPassword.setText("Remember password for future logins");
+		chkRememberPassword.setEnabled(true);
+		chkRememberPassword.setSelected(false);
+		chkRememberPassword.setText("Store password in configuration");
 		panel1.add(chkRememberPassword, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		lblCommand = new JLabel();
 		lblCommand.setText("");
