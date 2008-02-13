@@ -471,8 +471,9 @@
                         **/serverconfig/BambooServerConfigForm.java,
                         **/idea/PasswordDialog.java,
                         **/crucible/CruciblePatchUploadForm.java,
-                        **/soap/xfire/**/*.java
-                    </excludes>
+                        **/soap/xfire/**/*.java,
+						**/ClasspathImageView.java
+					</excludes>
                 </configuration>
 			</plugin>
 			<plugin>

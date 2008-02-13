@@ -21,7 +21,7 @@ public class BambooStatusListenerImpl implements BambooStatusListener {
 	private StatusBar projectStatusBar;
 
 	private Map buildPrevStatus = new HashMap<String, BuildStatus>(0);
-	private static final Color BACKGROUND_COLOR = new Color(255,214,214);
+	private static final Color BACKGROUND_COLOR = new Color(255, 214, 214);
 
 	/**
 	 *
@@ -43,10 +43,15 @@ public class BambooStatusListenerImpl implements BambooStatusListener {
 					case BUILD_FAILED:
 						if (buildPrevStatus.containsKey(buildInfo.getBuildKey())) {
 							if (buildPrevStatus.get(buildInfo.getBuildKey()) == BuildStatus.BUILD_SUCCEED) {
-								// build has changes status from SUCCEED to FAILE
+								// build has changes status from SUCCEED to FAILED
 								status = BUILD_FAILED;
 								// prepare information
-								tooltipContent += "Build " + buildInfo.getBuildKey() + "-" + buildInfo.getBuildNumber() + " failed.\n";
+								tooltipContent +=
+										"Build "
+										+ buildInfo.getBuildKey()
+										+ "-"
+										+ buildInfo.getBuildNumber()
+										+ " failed.\n";
 							}
 							buildPrevStatus.remove(buildInfo.getBuildKey());
 						}
@@ -65,7 +70,14 @@ public class BambooStatusListenerImpl implements BambooStatusListener {
 						buildPrevStatus.put(buildInfo.getBuildKey(), buildInfo.getStatus());
 
 						// prepare information
-						//tooltipContent += "Build " + buildInfo.getBuildKey() + "/" + buildInfo.getBuildName() + "/" + buildInfo.getBuildNumber() + " succeed.\n";
+						//tooltipContent +=
+						// 		"Build "
+						// 		+ buildInfo.getBuildKey()
+						// 		+ "/"
+						// 		+ buildInfo.getBuildName()
+						// 		+ "/"
+						// 		+ buildInfo.getBuildNumber()
+						// 		+ " succeed.\n";
 
 						break;
 					default:

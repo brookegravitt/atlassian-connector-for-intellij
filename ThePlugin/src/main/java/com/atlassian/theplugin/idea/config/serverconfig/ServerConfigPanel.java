@@ -100,7 +100,9 @@ public class ServerConfigPanel extends AbstractContentPanel {
                 case CRUCIBLE_SERVER:
                     serverPanels.put(ServerType.CRUCIBLE_SERVER, new CrucibleServerConfigForm());
                     break;
-            }
+				default:
+					break;
+			}
         }
         return serverPanels.get(serverType).getRootComponent();
     }
@@ -197,9 +199,12 @@ public class ServerConfigPanel extends AbstractContentPanel {
             initLayout();
         }
 
-        private void initLayout() {
+		private static final String TEXT_BEGIN = "Press the ";
+		private static final String TEXT_END = " button to define a new Server configuration.";
 
-            setLayout(new BorderLayout());
+		private void initLayout() {
+
+			setLayout(new BorderLayout());
 
             DefaultStyledDocument doc = new DefaultStyledDocument();
             Style s = doc.addStyle(null, null);
@@ -208,9 +213,9 @@ public class ServerConfigPanel extends AbstractContentPanel {
             StyleConstants.setFontFamily(d, getFont().getFamily());
             StyleConstants.setFontSize(d, getFont().getSize());
             try {
-                doc.insertString(0, "Press the ", d);
-                doc.insertString(10, " ", s);
-                doc.insertString(11, " button to define a new Server configuration.", d);
+				doc.insertString(0, TEXT_BEGIN, d);
+                doc.insertString(TEXT_BEGIN.length(), " ", s);
+                doc.insertString(TEXT_BEGIN.length() + 1, TEXT_END, d);
             } catch (BadLocationException e) {
                 e.printStackTrace();
             }
