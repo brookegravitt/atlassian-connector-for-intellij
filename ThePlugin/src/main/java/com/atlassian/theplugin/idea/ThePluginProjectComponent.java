@@ -4,8 +4,10 @@ import com.atlassian.theplugin.bamboo.BuildStatus;
 import com.atlassian.theplugin.bamboo.HtmlBambooStatusListener;
 import com.atlassian.theplugin.idea.crucible.CruciblePatchSubmitExecutor;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
+import com.atlassian.theplugin.idea.crucible.CrucibleToolWindowPanel;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusChecker;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
+import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
 import com.atlassian.theplugin.crucible.HtmlCrucibleStatusListener;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ProjectComponent;
@@ -38,7 +40,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
     private HtmlCrucibleStatusListener toolWindowCrucibleListener;
 
 	private ToolWindowManager toolWindowManager;
-	private static final String TOOL_WINDOW_NAME = "ThePlugin";
+	private static final String TOOL_WINDOW_NAME = "Atlassian";
 	private ToolWindow toolWindow;
 	private static final String THE_PLUGIN_TOOL_WINDOW_ICON = "/icons/thePlugin_15x10.png";
 	private boolean enabled;
@@ -83,15 +85,20 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			toolWindow.setIcon(toolWindowIcon);
 
 			// create tool window content
-			ToolWindowPanel toolWindowPanel = new ToolWindowPanel();
+			BambooToolWindowPanel bambooToolWindowPanel = new BambooToolWindowPanel();
 			PeerFactory peerFactory = PeerFactory.getInstance();
-			Content toolWindowContent = peerFactory.getContentFactory().createContent(toolWindowPanel, "", false);
-			toolWindow.getContentManager().addContent(toolWindowContent);
+
+            Content toolWindowContent = peerFactory.getContentFactory().createContent(bambooToolWindowPanel, "Bamboo", false);
+            toolWindow.getContentManager().addContent(toolWindowContent);
+
+            CrucibleToolWindowPanel crucibleToolWindowPanel = new CrucibleToolWindowPanel();
+            Content crucibleToolWindow = peerFactory.getContentFactory().createContent(crucibleToolWindowPanel, "Crucible", false);
+            toolWindow.getContentManager().addContent(crucibleToolWindow);
 
             bambooStatusChecker = appComponent.getBambooStatusChecker();
 
             // add tool window bamboo content listener to bamboo checker thread
-			toolWindowBambooListener = new HtmlBambooStatusListener(toolWindowPanel.getBambooContent());
+			toolWindowBambooListener = new HtmlBambooStatusListener(bambooToolWindowPanel.getBambooContent());
 			bambooStatusChecker.registerListener(toolWindowBambooListener);
 
 			// create status bar icon
@@ -111,7 +118,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
             // setup Crucible status checker and listeners
             crucibleStatusChecker = appComponent.getCrucibleStatusChecker();
-            toolWindowCrucibleListener = new HtmlCrucibleStatusListener(toolWindowPanel.getCrucibleContent());
+            toolWindowCrucibleListener = new HtmlCrucibleStatusListener(crucibleToolWindowPanel.getCrucibleContent());
             crucibleStatusChecker.registerListener(toolWindowCrucibleListener);
 
             // now fire all status checkers
