@@ -31,6 +31,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	private BambooStatusChecker bambooStatusChecker;
     private HtmlBambooStatusListener iconBambooStatusListener;
     private HtmlBambooStatusListener toolWindowBambooListener;
+	private BambooStatusListenerImpl simpleBambooStatusListener;
 
     private CrucibleStatusChecker crucibleStatusChecker;
     private HtmlCrucibleStatusListener toolWindowCrucibleListener;
@@ -114,6 +115,11 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			iconBambooStatusListener = new HtmlBambooStatusListener(statusBarIcon);
 			bambooStatusChecker.registerListener(iconBambooStatusListener);
 
+			// add simple bamboo listener to bamboo checker thread
+			// this listener shows idea tooltip when buld failed
+			simpleBambooStatusListener = new BambooStatusListenerImpl(WindowManager.getInstance().getStatusBar(project));
+			bambooStatusChecker.registerListener(simpleBambooStatusListener);
+
 			// add icon to status bar
 			statusBar = WindowManager.getInstance().getStatusBar(project);
 			statusBar.addCustomIndicationComponent(statusBarIcon);
@@ -142,7 +148,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			// unregister listeners
 			bambooStatusChecker.unregisterListener(iconBambooStatusListener);
 			bambooStatusChecker.unregisterListener(toolWindowBambooListener);
-            crucibleStatusChecker.unregisterListener(toolWindowCrucibleListener);
+			bambooStatusChecker.unregisterListener(simpleBambooStatusListener);
+			crucibleStatusChecker.unregisterListener(toolWindowCrucibleListener);
 			enabled = false;
 		}
 	}
