@@ -2,13 +2,13 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.bamboo.BuildStatus;
 import com.atlassian.theplugin.bamboo.HtmlBambooStatusListener;
-import com.atlassian.theplugin.idea.crucible.CruciblePatchSubmitExecutor;
-import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
-import com.atlassian.theplugin.idea.crucible.CrucibleToolWindowPanel;
+import com.atlassian.theplugin.crucible.HtmlCrucibleStatusListener;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusChecker;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
 import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
-import com.atlassian.theplugin.crucible.HtmlCrucibleStatusListener;
+import com.atlassian.theplugin.idea.crucible.CruciblePatchSubmitExecutor;
+import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
+import com.atlassian.theplugin.idea.crucible.CrucibleToolWindowPanel;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.project.Project;
@@ -22,11 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 
 /**
- * Created by IntelliJ IDEA.
- * User: sginter
- * Date: Jan 14, 2008
- * Time: 3:41:28 PM
- * To change this template use File | Settings | File Templates.
+ * Per-project plugin component.
  */
 public class ThePluginProjectComponent implements ProjectComponent {
 	private final Project project;
@@ -91,15 +87,17 @@ public class ThePluginProjectComponent implements ProjectComponent {
             Content bambooToolWindow = peerFactory.getContentFactory().createContent(
 					bambooToolWindowPanel, "Bamboo", false);
             bambooToolWindow.setIcon(IconLoader.getIcon("/icons/bamboo-blue-16.png"));
-            toolWindow.getContentManager().addContent(bambooToolWindow);
+			bambooToolWindow.putUserData(ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
+			toolWindow.getContentManager().addContent(bambooToolWindow);
 
             CrucibleToolWindowPanel crucibleToolWindowPanel = new CrucibleToolWindowPanel();
             Content crucibleToolWindow = peerFactory.getContentFactory().createContent(
                     crucibleToolWindowPanel, "Crucible", false);
             crucibleToolWindow.setIcon(IconLoader.getIcon("/icons/crucible-blue-16.png"));
-            toolWindow.getContentManager().addContent(crucibleToolWindow);
+			crucibleToolWindow.putUserData(ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
+			toolWindow.getContentManager().addContent(crucibleToolWindow);
 
-            bambooStatusChecker = appComponent.getBambooStatusChecker();
+			bambooStatusChecker = appComponent.getBambooStatusChecker();
 
             // add tool window bamboo content listener to bamboo checker thread
 			toolWindowBambooListener = new HtmlBambooStatusListener(bambooToolWindowPanel.getBambooContent());
