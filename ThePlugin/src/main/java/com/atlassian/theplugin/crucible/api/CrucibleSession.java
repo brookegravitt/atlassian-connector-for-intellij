@@ -1,5 +1,12 @@
 package com.atlassian.theplugin.crucible.api;
 
+import com.atlassian.theplugin.crucible.api.soap.xfire.review.State;
+import com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData;
+import com.atlassian.theplugin.crucible.api.soap.xfire.review.PermId;
+
+import java.util.List;
+
+
 /**
  * Created by IntelliJ IDEA.
  * User: Jacek
@@ -13,4 +20,10 @@ public interface CrucibleSession {
 	void logout();
 
 	String getAuthToken();
+
+	public List<ReviewData> getReviewsInStates(List<State> arg1);
+
+    public List<ReviewData> getAllReviews();
+
+    List<String> getReviewers(PermId arg1);
 }

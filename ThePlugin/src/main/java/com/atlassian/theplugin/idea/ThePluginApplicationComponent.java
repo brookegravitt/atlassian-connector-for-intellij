@@ -3,6 +3,8 @@ package com.atlassian.theplugin.idea;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
+import com.atlassian.theplugin.idea.bamboo.BambooStatusChecker;
+import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
@@ -21,16 +23,6 @@ import javax.swing.*;
 import java.util.Timer;
 import java.util.TimerTask;
 
-//import javax.swing.*;
-
-/**
- * Created by IntelliJ IDEA.
- * User: sginter
- * Date: Jan 10, 2008
- * Time: 2:57:21 PM
- * To change this template use File | Settings | File Templates.
- */
-
 @State(name = "ThePluginSettings", storages = { @Storage(id = "thePlugin", file = "$APP_CONFIG$/thePlugin.xml") })
 public class ThePluginApplicationComponent
 		implements ApplicationComponent, Configurable, PersistentStateComponent<PluginConfigurationBean> {
@@ -48,10 +40,12 @@ public class ThePluginApplicationComponent
 	private static final int TIMER_TICK = 20000;
 	private static final int TIMER_START_DELAY = 15000;
 	private BambooStatusChecker bambooStatusChecker;
+    private CrucibleStatusChecker crucibleStatusChecker;
 	private TimerTask bambooStatusCheckerTask;
+	private TimerTask crucibleStatusCheckerTask;
 	public static final String PLUGIN_CONFIG_URL = "http://theplugin-config";
 
-	public BambooStatusChecker getBambooStatusChecker() {
+    public BambooStatusChecker getBambooStatusChecker() {
 		if (bambooStatusChecker == null) {
 			bambooStatusChecker = new BambooStatusChecker();
 		}
@@ -88,7 +82,7 @@ public class ThePluginApplicationComponent
 		ConfigurationFactory.setConfiguration(configuration);
 
 		if (configuration.isPluginEnabled()) {
-			triggerBambooStatusChecker();
+			triggerStatusCheckers();
 		}
 	}
 
@@ -113,15 +107,20 @@ public class ThePluginApplicationComponent
 		if (bambooStatusCheckerTask != null) {
 			bambooStatusCheckerTask.cancel();
 		}
+		if (crucibleStatusCheckerTask != null) {
+			crucibleStatusCheckerTask.cancel();
+		}
 		timer.purge();
 	}
 
 	/**
 	 * Reschedule the BambooStatusChecker with immediate execution trigger.
 	 */
-	public void triggerBambooStatusChecker() {
+	public void triggerStatusCheckers() {
 		bambooStatusCheckerTask = getBambooStatusChecker().newTimerTask();
-		timer.schedule(bambooStatusCheckerTask, 0, TIMER_TICK);
+        timer.schedule(bambooStatusCheckerTask, 0, TIMER_TICK);
+		crucibleStatusCheckerTask = getCrucibleStatusChecker().newTimerTask();
+        timer.schedule(crucibleStatusCheckerTask, 0, TIMER_TICK);
 	}
 
 	public void apply() throws ConfigurationException {
@@ -135,14 +134,15 @@ public class ThePluginApplicationComponent
 					ThePluginProjectComponent pc = pr.getComponent(ThePluginProjectComponent.class);
 					pc.enablePlugin();
 				}
-				triggerBambooStatusChecker();
+				triggerStatusCheckers();
 			} else {
 				for (Project pr : ProjectManager.getInstance().getOpenProjects()) {
 					ThePluginProjectComponent pc = pr.getComponent(ThePluginProjectComponent.class);
 					pc.disablePlugin();
 				}
 				bambooStatusChecker = null;
-			}			
+                crucibleStatusChecker = null;
+            }
 		}
 
 	}
@@ -165,4 +165,11 @@ public class ThePluginApplicationComponent
 	public void loadState(PluginConfigurationBean state) {
 		configuration = state;
 	}
+
+    public CrucibleStatusChecker getCrucibleStatusChecker() {
+        if (crucibleStatusChecker == null) {
+            crucibleStatusChecker = new CrucibleStatusChecker();
+        }
+        return crucibleStatusChecker;
+    }
 }

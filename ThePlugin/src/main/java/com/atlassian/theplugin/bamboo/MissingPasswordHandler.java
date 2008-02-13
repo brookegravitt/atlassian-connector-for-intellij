@@ -56,7 +56,7 @@ public class MissingPasswordHandler implements Runnable {
 			}
 			ThePluginApplicationComponent appComponent =
 					ApplicationManager.getApplication().getComponent(ThePluginApplicationComponent.class);
-			appComponent.triggerBambooStatusChecker();
+			appComponent.triggerStatusCheckers();
 
 			isDialogShown = false;
 		}

@@ -1,18 +1,11 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.exception.ThePluginException;
-import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.util.IconLoader;
-import com.intellij.openapi.options.ShowSettingsUtil;
-import com.intellij.openapi.project.ProjectManager;
-import com.intellij.openapi.application.ApplicationManager;
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
-import javax.swing.event.HyperlinkEvent;
-import static javax.swing.event.HyperlinkEvent.EventType.ACTIVATED;
-import javax.swing.event.HyperlinkListener;
 import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
 import java.awt.event.*;
@@ -25,8 +18,6 @@ import java.awt.event.*;
  * To change this template use File | Settings | File Templates.
  */
 public class PluginStatusBarToolTip extends Window {
-
-    private static final Category LOG = Logger.getInstance(PluginStatusBarToolTip.class);
 
     // htmlView panel shows HTML content
     private final JEditorPane htmlView = new JEditorPane();
@@ -48,21 +39,7 @@ public class PluginStatusBarToolTip extends Window {
         htmlView.setEditable(false);
         htmlView.setContentType("text/html");
         htmlView.setBackground(BACKGROUND_COLOR);
-		htmlView.addHyperlinkListener(new HyperlinkListener() {
-
-            public void hyperlinkUpdate(HyperlinkEvent e) {
-                if (e.getEventType().equals(ACTIVATED)) {
-					if (e.getURL().toExternalForm().equals(ThePluginApplicationComponent.PLUGIN_CONFIG_URL))
-					{
-						ShowSettingsUtil.getInstance().editConfigurable(ProjectManager.getInstance().getDefaultProject(), ApplicationManager.getApplication().getComponent(ThePluginApplicationComponent.class));
-					}
-					else
-					{
-						BrowserUtil.launchBrowser(e.getURL().toString());
-					}
-                }
-            }
-        });
+		htmlView.addHyperlinkListener(new GenericHyperlinkListener());
 
         // title bar of the tooltip
         try {

@@ -1,9 +1,15 @@
 package com.atlassian.theplugin.crucible.api;
 
 import com.atlassian.theplugin.crucible.api.soap.xfire.auth.RpcAuthServiceName;
+import com.atlassian.theplugin.crucible.api.soap.xfire.review.State;
+import com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData;
 import junit.framework.TestCase;
-import org.mortbay.jetty.Server;
 import org.apache.cxf.jaxws.JaxWsServerFactoryBean;
+import org.mortbay.jetty.Server;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Iterator;
 
 /**
  * Created by IntelliJ IDEA.
@@ -53,6 +59,31 @@ public class CrucibleSessionTest extends TestCase {
 
 		}
 	}
+
+	public void testGetReviewsInStates() throws Exception {
+//		CrucibleSession session = new CrucibleSessionImpl("http://lech.atlassian.pl:8060");
+		CrucibleSession session = new CrucibleSessionImpl("http://192.168.157.245:8060");
+		session.login("mwent", "d0n0tch@nge");
+
+		List<State> states = new ArrayList<State>();
+		states.add(State.REVIEW);
+
+        List<ReviewData> reviews = session.getReviewsInStates(states);
+        System.out.println("reviews.size() = " + reviews.size());
+        
+        for (Iterator<ReviewData> iterator = reviews.iterator(); iterator.hasNext();) {
+            ReviewData reviewData = iterator.next();
+            System.out.println("reviewData.getPermaId() = " + reviewData.getPermaId().getId());
+            System.out.println("reviewData.getProjectKey() = " + reviewData.getProjectKey());
+            System.out.println("reviewData.getAuthor() = " + reviewData.getAuthor());
+            System.out.println("reviewData.getState() = " + reviewData.getState());
+            List<String> reviewers = session.getReviewers(reviewData.getPermaId());
+            for (Iterator<String> stringIterator = reviewers.iterator(); stringIterator.hasNext();) {
+                String reviewer = stringIterator.next();
+                System.out.println("reviewer = " + reviewer);
+            }
+        }
+    }
 
 	private void xtestCxf() throws CrucibleException {
 		CrucibleSessionImpl session = null;
