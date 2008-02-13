@@ -90,7 +90,7 @@ public class BambooStatusListenerImpl implements BambooStatusListener {
 						ToolWindow toolWindow = ToolWindowManager.getInstance(project).getToolWindow(ThePluginProjectComponent.TOOL_WINDOW_NAME);
 						ContentManager contentManager = toolWindow.getContentManager();
 						toolWindow.activate(null);
-						contentManager.setSelectedContent(contentManager.getContent(1));
+						contentManager.setSelectedContent(contentManager.getContent(0));
 					}
 				});
 
