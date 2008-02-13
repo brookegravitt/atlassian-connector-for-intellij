@@ -39,8 +39,8 @@ public class CrucibleConfigurationBean implements ProductServerConfiguration {
 	 * <p/>
 	 * Does not use the JDK1.5 'return a subclass' due to problem with XML serialization.
 	 */
-	public void setServersData(Collection<ServerBean> servers) {
-		this.servers = servers;
+	public void setServersData(Collection<ServerBean> theServers) {
+		this.servers = theServers;
 	}
 
 

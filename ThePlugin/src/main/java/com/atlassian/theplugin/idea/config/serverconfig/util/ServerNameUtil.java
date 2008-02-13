@@ -15,8 +15,11 @@ import java.text.MessageFormat;
  * Time: 10:15:24
  * To change this template use File | Settings | File Templates.
  */
-public class ServerNameUtil {
-	/**
+public final class ServerNameUtil {
+
+    private ServerNameUtil() { }
+    
+    /**
 	 * Suggest a name to be used as the default for a new regexp context.
 	 *
 	 * @return

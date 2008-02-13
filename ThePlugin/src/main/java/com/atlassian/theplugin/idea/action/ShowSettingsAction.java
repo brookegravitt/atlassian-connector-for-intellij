@@ -10,9 +10,10 @@ import com.atlassian.theplugin.idea.ThePluginApplicationComponent;
 /**
  * Simple action to show the settings for the plugin.
  */
-public class ShowSettingsAction extends AnAction
-{
+public class ShowSettingsAction extends AnAction {
 	public void actionPerformed(AnActionEvent event) {
-		ShowSettingsUtil.getInstance().editConfigurable(ProjectManager.getInstance().getDefaultProject(), ApplicationManager.getApplication().getComponent(ThePluginApplicationComponent.class));
+		ShowSettingsUtil.getInstance().editConfigurable(
+                ProjectManager.getInstance().getDefaultProject(),
+                ApplicationManager.getApplication().getComponent(ThePluginApplicationComponent.class));
 	}
 }

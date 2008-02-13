@@ -206,14 +206,14 @@ class StatusListenerResultCatcher implements BambooStatusDisplay {
 
 	public int count;
 
-	public void updateBambooStatus(BuildStatus generalBuildStatus, String htmlPage) {
+	public void updateBambooStatus(BuildStatus generalBuildStatus, String aHtmlPage) {
 		buildStatus = generalBuildStatus;
-		this.htmlPage = htmlPage;
+		this.htmlPage = aHtmlPage;
 
 		++count;
 
 		try {
-			response = new ResponseWrapper(htmlPage);
+			response = new ResponseWrapper(aHtmlPage);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

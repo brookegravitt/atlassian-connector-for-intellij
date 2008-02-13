@@ -26,7 +26,8 @@ public class MissingPasswordHandler implements Runnable {
 
 			isDialogShown = true;
 
-			for (Server server : ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers()) {
+			for (Server server :
+                    ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers()) {
 				if (server.getIsConfigInitialized()) {
 					continue;
 				}
@@ -47,8 +48,8 @@ public class MissingPasswordHandler implements Runnable {
 				} else {
 
 					JOptionPane.showMessageDialog(null,
-												  "You can always change password by changing plugin settings (Preferences | IDE Settings | "
-														  + PluginInfoUtil.getName() + ")");
+                            "You can always change password by changing plugin settings (Preferences | IDE Settings | "
+							+ PluginInfoUtil.getName() + ")");
 				}
 				// so or so we assume that user provided password
 

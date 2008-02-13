@@ -1,7 +1,5 @@
 package com.atlassian.theplugin.crucible;
 
-import com.atlassian.theplugin.bamboo.BuildStatus;
-
 /**
  * Created by IntelliJ IDEA.
  * User: mwent

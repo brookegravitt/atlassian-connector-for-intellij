@@ -1,12 +1,9 @@
 package com.atlassian.theplugin.idea;
 
-import com.intellij.openapi.options.ShowSettingsUtil;
-import com.intellij.openapi.project.ProjectManager;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.ide.BrowserUtil;
 
-import javax.swing.event.HyperlinkListener;
 import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 
 /**
  * A generic HyperlinkListener which catches plugin configuration URLs and opens the settings panel.

@@ -31,6 +31,7 @@ public class ServerConfigPanel extends AbstractContentPanel {
     private CardLayout editPaneCardLayout;
     private JPanel editPane;
     private static final String BLANK_CARD = "Blank card";
+    private static final float SPLIT_RATIO = 0.3f;
 
     private Map<ServerType, AbstractServerPanel> serverPanels;
 
@@ -42,7 +43,7 @@ public class ServerConfigPanel extends AbstractContentPanel {
     private void initLayout() {
         setLayout(new BorderLayout());
 
-        Splitter splitter = new Splitter(false, 0.3f);
+        Splitter splitter = new Splitter(false, SPLIT_RATIO);
         splitter.setShowDividerControls(true);
         splitter.setFirstComponent(createSelectPane());
         splitter.setSecondComponent(createEditPane());
