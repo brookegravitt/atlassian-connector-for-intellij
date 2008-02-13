@@ -1,9 +1,16 @@
 package com.atlassian.theplugin.crucible.api;
 
 import com.atlassian.theplugin.crucible.api.soap.xfire.auth.RpcAuthServiceName;
+import com.atlassian.theplugin.crucible.api.soap.xfire.review.RpcReviewServiceName;
+import com.atlassian.theplugin.crucible.api.soap.xfire.review.State;
+import com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData;
+import com.atlassian.theplugin.crucible.api.soap.xfire.review.PermId;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
+import org.apache.cxf.bus.CXFBusFactory;
 
 import javax.xml.ws.soap.SOAPFaultException;
+import java.util.List;
+
 
 /**
  * Created by IntelliJ IDEA.
@@ -14,12 +21,15 @@ import javax.xml.ws.soap.SOAPFaultException;
  */
 public class CrucibleSessionImpl implements CrucibleSession {
 	private String crucibleAuthUrl;
+	private String crucibleReviewUrl;
 
 
 	private String authToken;
     RpcAuthServiceName authService;
+	RpcReviewServiceName reviewService;
 
-    private static final String SERVICE_AUTH_SUFFIX = "service/auth";
+	private static final String SERVICE_AUTH_SUFFIX = "service/auth";
+	private static final String SERVICE_REVIEW_SUFFIX = "service/reviewtmp";
 
 	/**
 	 *
@@ -30,16 +40,24 @@ public class CrucibleSessionImpl implements CrucibleSession {
 
 		if (baseUrl.endsWith("/")) {
 			crucibleAuthUrl = baseUrl + SERVICE_AUTH_SUFFIX;
+			crucibleReviewUrl = baseUrl + SERVICE_REVIEW_SUFFIX;
 		} else {
 			crucibleAuthUrl = baseUrl + "/" + SERVICE_AUTH_SUFFIX;
+			crucibleReviewUrl = baseUrl + "/" + SERVICE_REVIEW_SUFFIX;
 		}
 
     	JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
+        Thread.currentThread().setContextClassLoader(factory.getClass().getClassLoader());
+//        factory.setBus(CXFBusFactory.newInstance(CXFBusFactory.DEFAULT_BUS_FACTORY).createBus());
         factory.setServiceClass(RpcAuthServiceName.class);
         factory.setAddress(crucibleAuthUrl);
-        Thread.currentThread().setContextClassLoader(factory.getClass().getClassLoader());
         authService = (RpcAuthServiceName) factory.create();
-    }
+
+		JaxWsProxyFactoryBean reviewFactory = new JaxWsProxyFactoryBean();
+		reviewFactory.setServiceClass(RpcReviewServiceName.class);
+		reviewFactory.setAddress(crucibleReviewUrl);
+		reviewService = (RpcReviewServiceName) reviewFactory.create();
+	}
 
 	public void login(String userName, String password) throws CrucibleLoginException {
 
@@ -64,4 +82,16 @@ public class CrucibleSessionImpl implements CrucibleSession {
 	public String getAuthToken() {
 		return authToken;
 	}
+
+    public List<ReviewData> getReviewsInStates(List<State> arg1) {
+		return reviewService.getReviewsInStates(authToken, arg1);
+    }
+
+    public List<ReviewData> getAllReviews() {
+        return reviewService.getAllReviews(authToken);
+    }
+
+    public List<String> getReviewers(PermId arg1) {
+        return reviewService.getReviewers(authToken, arg1);
+    }
 }

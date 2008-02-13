@@ -25,7 +25,7 @@ public class CxfReviewServiceMockImpl implements RpcReviewServiceName {
 	@RequestWrapper(localName = "getChildReviews", targetNamespace = "http://rpc.spi.crucible.atlassian.com/", className = "com.atlassian.theplugin.crucible.api.soap.xfire.review.GetChildReviews")
 	@ResponseWrapper(localName = "getChildReviewsResponse", targetNamespace = "http://rpc.spi.crucible.atlassian.com/", className = "com.atlassian.theplugin.crucible.api.soap.xfire.review.GetChildReviewsResponse")
 	@WebMethod
-	public List<Object> getChildReviews(@WebParam(name = "token", targetNamespace = "")
+	public List<ReviewData> getChildReviews(@WebParam(name = "token", targetNamespace = "")
 	String token, @WebParam(name = "arg1", targetNamespace = "")
 	PermId arg1) {
 		return null;  //To change body of implemented methods use File | Settings | File Templates.
@@ -70,7 +70,7 @@ public class CxfReviewServiceMockImpl implements RpcReviewServiceName {
 	@RequestWrapper(localName = "getAllReviews", targetNamespace = "http://rpc.spi.crucible.atlassian.com/", className = "com.atlassian.theplugin.crucible.api.soap.xfire.review.GetAllReviews")
 	@ResponseWrapper(localName = "getAllReviewsResponse", targetNamespace = "http://rpc.spi.crucible.atlassian.com/", className = "com.atlassian.theplugin.crucible.api.soap.xfire.review.GetAllReviewsResponse")
 	@WebMethod
-	public List<Object> getAllReviews(@WebParam(name = "token", targetNamespace = "")
+	public List<ReviewData> getAllReviews(@WebParam(name = "token", targetNamespace = "")
 	String token) {
 		return null;  //To change body of implemented methods use File | Settings | File Templates.
 	}
@@ -100,7 +100,7 @@ public class CxfReviewServiceMockImpl implements RpcReviewServiceName {
 	@RequestWrapper(localName = "getReviewers", targetNamespace = "http://rpc.spi.crucible.atlassian.com/", className = "com.atlassian.theplugin.crucible.api.soap.xfire.review.GetReviewers")
 	@ResponseWrapper(localName = "getReviewersResponse", targetNamespace = "http://rpc.spi.crucible.atlassian.com/", className = "com.atlassian.theplugin.crucible.api.soap.xfire.review.GetReviewersResponse")
 	@WebMethod
-	public List<Object> getReviewers(@WebParam(name = "token", targetNamespace = "")
+	public List<String> getReviewers(@WebParam(name = "token", targetNamespace = "")
 	String token, @WebParam(name = "arg1", targetNamespace = "")
 	PermId arg1) {
 		return null;  //To change body of implemented methods use File | Settings | File Templates.
@@ -172,7 +172,7 @@ public class CxfReviewServiceMockImpl implements RpcReviewServiceName {
 	@RequestWrapper(localName = "getReviewsInStates", targetNamespace = "http://rpc.spi.crucible.atlassian.com/", className = "com.atlassian.theplugin.crucible.api.soap.xfire.review.GetReviewsInStates")
 	@ResponseWrapper(localName = "getReviewsInStatesResponse", targetNamespace = "http://rpc.spi.crucible.atlassian.com/", className = "com.atlassian.theplugin.crucible.api.soap.xfire.review.GetReviewsInStatesResponse")
 	@WebMethod
-	public List<Object> getReviewsInStates(@WebParam(name = "token", targetNamespace = "")
+	public List<ReviewData> getReviewsInStates(@WebParam(name = "token", targetNamespace = "")
 	String token, @WebParam(name = "arg1", targetNamespace = "")
 	List<State> arg1) {
 		return null;  //To change body of implemented methods use File | Settings | File Templates.

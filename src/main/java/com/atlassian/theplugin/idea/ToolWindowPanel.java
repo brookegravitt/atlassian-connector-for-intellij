@@ -1,5 +1,8 @@
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.theplugin.idea.bamboo.ToolWindowBambooContent;
+import com.atlassian.theplugin.idea.crucible.ToolWindowCrucibleContent;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -12,26 +15,31 @@ import java.awt.*;
  */
 public class ToolWindowPanel extends JPanel {
 	private ToolWindowBambooContent bambooContent;
+	private ToolWindowCrucibleContent crucibleContent;
 
 	ToolWindowPanel() {
 		super(new BorderLayout());
 
-		// create and add bamboo content
-		// add scroll facility to the html area
-		bambooContent = new ToolWindowBambooContent();
-		bambooContent.setText(
-			"<div style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">"
-			+ "Waiting for Bamboo build statuses."
-			+ "</div>");
+        JTabbedPane tabs = new JTabbedPane();
+        bambooContent = new ToolWindowBambooContent();
+        tabs.add("Bamboo", setupPane(bambooContent, "Waiting for Bamboo build statuses."));
+        crucibleContent = new ToolWindowCrucibleContent();
+        tabs.add("Crucible", setupPane(crucibleContent, "Waiting for Crucible review data."));
+        add(tabs, BorderLayout.CENTER);
+    }
 
-		JScrollPane scrollPane = new JScrollPane(bambooContent,
-				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		scrollPane.setWheelScrollingEnabled(true);
+    private JScrollPane setupPane(JEditorPane editorPane, String initialText) {
+        editorPane.setText("<div style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">" + initialText + "</div>");
+        JScrollPane scrollPane = new JScrollPane(editorPane, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setWheelScrollingEnabled(true);
+        return scrollPane;
+    }
 
-		add(scrollPane, BorderLayout.CENTER);
-	}
-
-	public ToolWindowBambooContent getBambooContent() {
+    public ToolWindowBambooContent getBambooContent() {
 		return bambooContent;
 	}
+
+    public ToolWindowCrucibleContent getCrucibleContent() {
+        return crucibleContent;
+    }
 }
