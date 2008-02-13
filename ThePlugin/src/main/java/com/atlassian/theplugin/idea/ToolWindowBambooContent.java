@@ -24,23 +24,10 @@ public class ToolWindowBambooContent extends JEditorPane implements BambooStatus
 	ToolWindowBambooContent() {
 		setEditable(false);
         setContentType("text/html");
-		addHyperlinkListener(new HyperlinkListener() {
-
-            public void hyperlinkUpdate(HyperlinkEvent e) {
-                if (e.getEventType().equals(ACTIVATED)) {
-					if (e.getURL().toExternalForm().equals(ThePluginApplicationComponent.PLUGIN_CONFIG_URL))
-					{
-						ShowSettingsUtil.getInstance().editConfigurable(ProjectManager.getInstance().getDefaultProject(), ApplicationManager.getApplication().getComponent(ThePluginApplicationComponent.class));
-					}
-					else
-					{
-						BrowserUtil.launchBrowser(e.getURL().toString());
-					}
-				}
-            }
-        });
+		addHyperlinkListener(new GenericHyperlinkListener());
 	}
-	public void updateBambooStatus(BuildStatus generalBuildStatus, String htmlPage) {
+
+    public void updateBambooStatus(BuildStatus generalBuildStatus, String htmlPage) {
 		this.setText(htmlPage);
 	}
 	
