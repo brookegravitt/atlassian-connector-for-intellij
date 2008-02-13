@@ -4,10 +4,16 @@ import com.atlassian.theplugin.bamboo.BambooBuild;
 import com.atlassian.theplugin.bamboo.BambooStatusListener;
 import com.atlassian.theplugin.bamboo.BuildStatus;
 import static com.atlassian.theplugin.bamboo.BuildStatus.BUILD_FAILED;
-import com.intellij.openapi.wm.StatusBar;
+import com.gargoylesoftware.htmlunit.javascript.host.MouseEvent;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.wm.ToolWindow;
+import com.intellij.openapi.wm.ToolWindowManager;
+import com.intellij.openapi.wm.WindowManager;
+import com.intellij.ui.content.ContentManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,18 +24,18 @@ import java.util.Map;
 public class BambooStatusListenerImpl implements BambooStatusListener {
 
 	//private BambooStatusDisplay bambooDisplay;
-	private StatusBar projectStatusBar;
+	private Project project;
 
 	private Map buildPrevStatus = new HashMap<String, BuildStatus>(0);
 	private static final Color BACKGROUND_COLOR = new Color(255, 214, 214);
 
 	/**
 	 *
-	 * @param statusBar reference to status bar needed to call fireNotificationPopup method
+	 * @param aProject reference to project
 	 */
-	public BambooStatusListenerImpl(StatusBar statusBar /*BambooStatusDisplay display*/) {
+	public BambooStatusListenerImpl(Project aProject /*BambooStatusDisplay display*/) {
 		//bambooDisplay = display;
-		projectStatusBar = statusBar;
+		this.project = aProject;
 	}
 
 	public void updateBuildStatuses(Collection<BambooBuild> buildStatuses) {
@@ -46,12 +52,7 @@ public class BambooStatusListenerImpl implements BambooStatusListener {
 								// build has changes status from SUCCEED to FAILED
 								status = BUILD_FAILED;
 								// prepare information
-								tooltipContent +=
-										"Build "
-										+ buildInfo.getBuildKey()
-										+ "-"
-										+ buildInfo.getBuildNumber()
-										+ " failed.\n";
+								tooltipContent += createHtmlRow(buildInfo.getBuildKey(), buildInfo.getBuildNumber(), buildInfo.getBuildResultUrl());
 							}
 							buildPrevStatus.remove(buildInfo.getBuildKey());
 						}
@@ -69,16 +70,6 @@ public class BambooStatusListenerImpl implements BambooStatusListener {
 						}
 						buildPrevStatus.put(buildInfo.getBuildKey(), buildInfo.getStatus());
 
-						// prepare information
-						//tooltipContent +=
-						// 		"Build "
-						// 		+ buildInfo.getBuildKey()
-						// 		+ "/"
-						// 		+ buildInfo.getBuildName()
-						// 		+ "/"
-						// 		+ buildInfo.getBuildNumber()
-						// 		+ " succeed.\n";
-
 						break;
 					default:
 						throw new IllegalStateException("Unexpected build status encountered");
@@ -87,10 +78,38 @@ public class BambooStatusListenerImpl implements BambooStatusListener {
 		}
 
 		if (status == BuildStatus.BUILD_FAILED) {
+
+			JEditorPane content = new JEditorPane();
+			content.setEditable(false);
+			content.setContentType("text/html");
+			content.setBackground(BACKGROUND_COLOR);
+			content.setText(tooltipContent);
+
+			content.addMouseListener(new MouseAdapter() {
+					public void mouseClicked(MouseEvent e) {
+						ToolWindow toolWindow = ToolWindowManager.getInstance(project).getToolWindow(ThePluginProjectComponent.TOOL_WINDOW_NAME);
+						ContentManager contentManager = toolWindow.getContentManager();
+						toolWindow.activate(null);
+						contentManager.setSelectedContent(contentManager.getContent(1));
+					}
+				});
+
+			content.addHyperlinkListener(new GenericHyperlinkListener());
+
+			JPanel panel = new JPanel();
+			panel.setLayout(new BorderLayout());
+			panel.add(content, BorderLayout.CENTER);
+
 			// fire notification popup
-			projectStatusBar.fireNotificationPopup(new JLabel(tooltipContent), BACKGROUND_COLOR);
+			WindowManager.getInstance().getStatusBar(project).fireNotificationPopup(panel, null);
 		}
 
 		//bambooDisplay.updateBambooStatus(status, "");
+	}
+
+	private String createHtmlRow(String buildKey, String buildNumber, String url) {
+
+		return "<div style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif; font-weight: bold; color: red\">" + "<a href=\"" + url + "\">" + buildKey + "-" + buildNumber + "</a> failed" +"</div><br />";
+
 	}
 }
