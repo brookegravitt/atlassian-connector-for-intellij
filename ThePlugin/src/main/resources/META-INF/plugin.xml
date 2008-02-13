@@ -71,5 +71,9 @@
             <reference id="ThePlugin.AddCrucibleServerAction"/>
 		</group>
 
+        <group id="ThePlugin.ToolWindowToolBar" popup="false" text="Ala">
+            <reference id="ThePlugin.ShowSettings" />
+            <!--<reference id="ThePlugin.RefreshAll"/>-->
+        </group>
     </actions>
 </idea-plugin>
