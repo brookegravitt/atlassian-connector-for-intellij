@@ -65,31 +65,54 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 		return drawRow(buildInfo, "ltgrey", "icn_plan_disabled.gif");
 	}
 
-	private String drawRow(BambooBuild buildInfo, String colour, String icon)
-	{
+	private String drawRow(BambooBuild buildInfo, String colour, String icon) {
 		StringBuilder sb = new StringBuilder("<tr>");
-		sb.append("<td><a href='" + buildInfo.getBuildUrl() + "'><img src=\"/icons/" + icon + "\" height=\"16\" width=\"16\" border=\"0\" align=\"absmiddle\"></a></td>");
-		if (buildInfo.getStatus() == BuildStatus.UNKNOWN)
-		{
+		sb.append(
+				"<td><a href='"
+				+ buildInfo.getBuildUrl()
+				+ "'><img src=\"/icons/"
+				+ icon
+				+ "\" height=\"16\" width=\"16\" border=\"0\" align=\"absmiddle\"></a></td>");
+		if (buildInfo.getStatus() == BuildStatus.UNKNOWN) {
 			// TODO: jgorycki: this generates bug PL-95
 			// In case of bamboo error garbage is displayed in the tooltip
-			String shortMessage = buildInfo.getMessage() != null ? lineSeparator.split(buildInfo.getMessage(), 2)[0] : null;
+			String shortMessage = buildInfo.getMessage() != null
+					? lineSeparator.split(buildInfo.getMessage(), 2)[0] : null;
 			sb.append("<td><font color=\"" + colour + "\">").append(shortMessage).append("</font></td>");
-		}
-		else
-		{
+		} else {
             String font = "<font color=\"" + colour + "\">";
             boolean bamboo2 = !buildInfo.getProjectName().equals("");
                 sb.append("<td width=\"1%\" nowrap>");
-                if (bamboo2)
-                {
+                if (bamboo2) {
                     sb.append("<b>");
-                    sb.append("<a href='" + buildInfo.getProjectUrl() + "'>" + font + buildInfo.getProjectName() + "</font></a>&nbsp;&nbsp;");
-                    sb.append("<a href='" + buildInfo.getBuildUrl() + "'>" + font + buildInfo.getBuildName() + "</font></a>");
+                    sb.append(
+							"<a href='"
+							+ buildInfo.getProjectUrl()
+							+ "'>"
+							+ font
+							+ buildInfo.getProjectName()
+							+ "</font></a>&nbsp;&nbsp;");
+                    sb.append(
+							"<a href='"
+							+ buildInfo.getBuildUrl()
+							+ "'>"
+							+ font
+							+ buildInfo.getBuildName()
+							+ "</font></a>");
                     sb.append(font + " &gt; </font>");
                     sb.append("</b>");
                 }
-                sb.append("<a href='" + buildInfo.getBuildResultUrl() + "'>" + font + "<b>" + buildInfo.getBuildKey() + "-" + buildInfo.getBuildNumber() + "</b></font></a></td>");
+                sb.append(
+						"<a href='"
+						+ buildInfo.getBuildResultUrl()
+						+ "'>"
+						+ font
+						+ "<b>"
+						+ buildInfo.getBuildKey()
+						+
+						"-"
+						+ buildInfo.getBuildNumber()
+						+ "</b></font></a></td>");
 		}
 		sb.append(formatLatestPollAndBuildTime(buildInfo));
 		sb.append("</tr>");
@@ -97,7 +120,7 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 		return sb.toString();
 	}
 
-	Pattern lineSeparator = Pattern.compile("$", Pattern.MULTILINE);
+	private Pattern lineSeparator = Pattern.compile("$", Pattern.MULTILINE);
 
 
 	public void updateBuildStatuses(Collection<BambooBuild> buildStatuses) {
@@ -110,7 +133,11 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 			status = BuildStatus.UNKNOWN;
 		} else {
 			sb.append("<table width=\"100%\">");
-			sb.append("<th width=\"1%\"></th><th width=\"100%\" align=\"left\">Build</th><th width=\"1%\">Last Polling</th><th width=\"1%\">Last Build</th>");
+			sb.append(
+					"<th width=\"1%\"></th>"
+					+ "<th width=\"100%\" align=\"left\">Build</th>"
+					+ "<th width=\"1%\">Last Polling</th>"
+					+ "<th width=\"1%\">Last Build</th>");
 			for (BambooBuild buildInfo : buildStatuses) {
 				switch (buildInfo.getStatus()) {
 					case BUILD_FAILED:

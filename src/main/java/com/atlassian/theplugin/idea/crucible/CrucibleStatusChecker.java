@@ -49,8 +49,8 @@ public class CrucibleStatusChecker {
 	private void doRun() {
 		// collect build info from each server
 		final Collection<RemoteReview> reviews = new ArrayList<RemoteReview>();
-		for (Server server :
-                ConfigurationFactory.getConfiguration().getProductServers(
+		for (Server server
+				: ConfigurationFactory.getConfiguration().getProductServers(
                         ServerType.CRUCIBLE_SERVER).getEnabledServers()) {
                             try {
                                 reviews.addAll(
