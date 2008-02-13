@@ -10,19 +10,21 @@ import java.util.Date;
 public interface BambooBuild extends RequestData {
 	String getServerUrl();
 
-	String getPlanUrl();
+    String getProjectName();
+
+    String getProjectKey();
+
+    String getProjectUrl();
 
 	String getBuildUrl();
 
-	String getProjectName();
-
-	String getProjectKey();
-
-	String getBuildName();
+    String getBuildName();
 
 	String getBuildKey();
 
 	String getBuildNumber();
+
+    String getBuildResultUrl();
 
 	BuildStatus getStatus();
 

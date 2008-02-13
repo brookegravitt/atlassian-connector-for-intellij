@@ -1,0 +1,33 @@
+package com.atlassian.theplugin.util;
+
+import javax.swing.text.html.*;
+import javax.swing.text.*;
+
+/**
+ * A simple extension to HTMLEditorKit which allows for loading of images absolutely off the classpath.
+ *
+ * To load an image, simply specify <img src="/image/foo.gif"> where the image is anywhere on the classpath in /image.
+ *
+ * @see com.atlassian.theplugin.util.ClasspathImageView
+ */
+public class ClasspathHTMLEditorKit extends HTMLEditorKit {
+
+	public ViewFactory getViewFactory() {
+		return new HTMLFactoryX();
+	}
+
+	public static class HTMLFactoryX extends HTMLFactory
+			implements ViewFactory {
+
+		public View create(Element elem) {
+			Object o = elem.getAttributes().getAttribute(StyleConstants.NameAttribute);
+			if (o instanceof HTML.Tag) {
+				HTML.Tag kind = (HTML.Tag) o;
+				if (kind == HTML.Tag.IMG) {
+					return new ClasspathImageView(elem);
+				}
+			}
+			return super.create(elem);
+		}
+	}
+}

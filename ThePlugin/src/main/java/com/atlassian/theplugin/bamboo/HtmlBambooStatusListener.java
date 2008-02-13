@@ -1,7 +1,6 @@
 package com.atlassian.theplugin.bamboo;
 
 import static com.atlassian.theplugin.bamboo.BuildStatus.BUILD_FAILED;
-import com.atlassian.theplugin.idea.ThePluginApplicationComponent;
 
 import java.text.DateFormat;
 import java.util.Calendar;
@@ -24,14 +23,14 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 	}
 
 	private String formatLatestPollAndBuildTime(BambooBuild buildInfo) {
-		StringBuilder sb = new StringBuilder("<td>");
+		StringBuilder sb = new StringBuilder("<td nowrap align=\"right\">");
 		DateFormat pollTimeDateFormat = DateFormat.getTimeInstance();
 
 		sb.append(pollTimeDateFormat.format(buildInfo.getPollingTime())).append("</td>");
 
 		Date buildTime = buildInfo.getBuildTime();
-		String buildTimeStr = (null == buildTime) ? "---" : formatBuildTime(buildTime);
-		sb.append("<td>").append(buildTimeStr).append("</td>");
+		String buildTimeStr = (null == buildTime) ? "&nbsp;" : formatBuildTime(buildTime);
+		sb.append("<td nowrap align=\"right\">").append(buildTimeStr).append("</td>");
 
 		return sb.toString();
 	}
@@ -53,39 +52,43 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 	}
 
 	private String getSuccessBuildRow(BambooBuild buildInfo) {
-		StringBuilder sb = new StringBuilder("<tr><td><a href='");
-		sb.append(buildInfo.getPlanUrl());
-		sb.append("'>");
-		sb.append(buildInfo.getBuildKey());
-		sb.append("</a></td><td><a href='");
-		sb.append(buildInfo.getBuildUrl());
-		sb.append("'>");
-		sb.append("build ");
-		sb.append(buildInfo.getBuildNumber());
-		sb.append("</a>");
-		sb.append("</td><td>");
-		sb.append("<font color=\"green\">success</font>");
-		sb.append("</td>");
-		sb.append(formatLatestPollAndBuildTime(buildInfo));
-		sb.append("</tr>");
-
-		return sb.toString();
+		return drawRow(buildInfo, "green", "icn_plan_passed.gif");
 	}
 
 	private String getFailedBuildRow(BambooBuild buildInfo) {
-		StringBuilder sb = new StringBuilder("<tr><td><a href='");
-		sb.append(buildInfo.getPlanUrl());
-		sb.append("'>");
-		sb.append(buildInfo.getBuildKey());
-		sb.append("</a></td><td><a href='");
-		sb.append(buildInfo.getBuildUrl());
-		sb.append("'>");
-		sb.append("build ");
-		sb.append(buildInfo.getBuildNumber());
-		sb.append("</a>");
-		sb.append("</td><td>");
-		sb.append("<font color=\"red\">failed</font>");
-		sb.append("</td>");
+		return drawRow(buildInfo, "red", "icn_plan_failed.gif");
+	}
+
+	private String getErrorBuildRow(BambooBuild buildInfo) {
+		return drawRow(buildInfo, "ltgrey", "icn_plan_disabled.gif");
+	}
+
+	private String drawRow(BambooBuild buildInfo, String colour, String icon)
+	{
+		StringBuilder sb = new StringBuilder("<tr>");
+		sb.append("<td><a href='" + buildInfo.getBuildUrl() + "'><img src=\"/icons/" + icon + "\" height=\"16\" width=\"16\" border=\"0\" align=\"absmiddle\"></a></td>");
+		if (buildInfo.getStatus() == BuildStatus.UNKNOWN)
+		{
+			// TODO: jgorycki: this generates bug PL-95
+			// In case of bamboo error garbage is displayed in the tooltip
+			String shortMessage = buildInfo.getMessage() != null ? lineSeparator.split(buildInfo.getMessage(), 2)[0] : null;
+			sb.append("<td><font color=\"" + colour + "\">").append(shortMessage).append("</font></td>");
+		}
+		else
+		{
+            String font = "<font color=\"" + colour + "\">";
+            boolean bamboo2 = !buildInfo.getProjectName().equals("");
+                sb.append("<td width=\"1%\" nowrap>");
+                if (bamboo2)
+                {
+                    sb.append("<b>");
+                    sb.append("<a href='" + buildInfo.getProjectUrl() + "'>" + font + buildInfo.getProjectName() + "</font></a>&nbsp;&nbsp;");
+                    sb.append("<a href='" + buildInfo.getBuildUrl() + "'>" + font + buildInfo.getBuildName() + "</font></a>");
+                    sb.append(font + " &gt; </font>");
+                    sb.append("</b>");
+                }
+                sb.append("<a href='" + buildInfo.getBuildResultUrl() + "'>" + font + "<b>" + buildInfo.getBuildKey() + "-" + buildInfo.getBuildNumber() + "</b></font></a></td>");
+		}
 		sb.append(formatLatestPollAndBuildTime(buildInfo));
 		sb.append("</tr>");
 
@@ -94,23 +97,6 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 
 	Pattern lineSeparator = Pattern.compile("$", Pattern.MULTILINE);
 
-	private String getErrorBuildRow(BambooBuild buildInfo) {
-		StringBuilder sb = new StringBuilder("<tr><td><a href='");
-		sb.append(buildInfo.getPlanUrl());
-		sb.append("'>");
-		sb.append(buildInfo.getBuildKey());
-		sb.append("</a></td><td></td><td>");
-        // TODO: jgorycki: this generates bug PL-95
-        // In case of bamboo error garbage is displayed in the tooltip
-        String shortMessage = buildInfo.getMessage() != null ?
-                lineSeparator.split(buildInfo.getMessage(), 2)[0] : null;
-		sb.append("<font color=\"ltgray\">").append(shortMessage).append("</font>");
-		sb.append("</td>");
-		sb.append(formatLatestPollAndBuildTime(buildInfo));
-		sb.append("</tr>");
-
-		return sb.toString();
-	}
 
 	public void updateBuildStatuses(Collection<BambooBuild> buildStatuses) {
 
@@ -121,8 +107,8 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 			sb.append("No plans defined.");
 			status = BuildStatus.UNKNOWN;
 		} else {
-			sb.append("<table>");
-			sb.append("<th>Plan</th><th>Build</th><th>Status</th><th>Last Polling</th><th>Last Build</th>");
+			sb.append("<table width=\"100%\">");
+			sb.append("<th width=\"1%\"></th><th width=\"100%\" align=\"left\">Build</th><th width=\"1%\">Last Polling</th><th width=\"1%\">Last Build</th>");
 			for (BambooBuild buildInfo : buildStatuses) {
 				switch (buildInfo.getStatus()) {
 					case BUILD_FAILED:
