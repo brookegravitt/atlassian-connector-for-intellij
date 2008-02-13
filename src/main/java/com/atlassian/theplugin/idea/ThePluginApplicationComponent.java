@@ -44,7 +44,9 @@ public class ThePluginApplicationComponent
 	private TimerTask bambooStatusCheckerTask;
 	private TimerTask crucibleStatusCheckerTask;
 
-    public BambooStatusChecker getBambooStatusChecker() {
+	private UserDataContext userDataContext;
+
+	public BambooStatusChecker getBambooStatusChecker() {
 		if (bambooStatusChecker == null) {
 			bambooStatusChecker = new BambooStatusChecker();
 		}
@@ -77,7 +79,13 @@ public class ThePluginApplicationComponent
 		return "ThePluginApplicationComponent";
 	}
 
+	public UserDataContext getUserDataContext() {
+		return userDataContext;
+	}
+
 	public void initComponent() {
+		userDataContext = new UserDataContext();
+
 		ConfigurationFactory.setConfiguration(configuration);
 
 		if (configuration.isPluginEnabled()) {

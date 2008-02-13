@@ -80,10 +80,17 @@
             <reference id="ThePlugin.AddCrucibleServerAction"/>
 		</group>
 
-		<group id="ThePlugin.ToolWindowToolBar" popup="false" text="">
+		<group id="ThePlugin.BambooToolWindowToolBar" popup="false" text="">
             <reference id="ThePlugin.ShowSettings" />
+			<!--<reference id="ThePlugin.RefreshAll"/>-->
+        </group>
+
+		<group id="ThePlugin.CrucibleToolWindowToolBar" popup="false" text="">
+            <reference id="ThePlugin.ShowSettings" />
+			<separator /> n			
 			<reference id="ThePlugin.ReviewScope"/>
 			<!--<reference id="ThePlugin.RefreshAll"/>-->
         </group>
-    </actions>
+
+	</actions>
 </idea-plugin>

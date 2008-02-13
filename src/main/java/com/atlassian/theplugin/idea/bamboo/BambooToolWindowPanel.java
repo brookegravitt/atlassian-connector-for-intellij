@@ -17,7 +17,7 @@ public class BambooToolWindowPanel extends JPanel {
         setBackground(UIUtil.getTreeTextBackground());
 
         ActionManager actionManager = ActionManager.getInstance();
-        ActionGroup toolbar = (ActionGroup) actionManager.getAction("ThePlugin.ToolWindowToolBar");
+        ActionGroup toolbar = (ActionGroup) actionManager.getAction("ThePlugin.BambooToolWindowToolBar");
         add(actionManager.createActionToolbar(
                 "atlassian.toolwindow.toolbar", toolbar, true).getComponent(), BorderLayout.NORTH);
 
