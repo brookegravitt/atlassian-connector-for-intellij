@@ -49,7 +49,7 @@
 	<!--third party code-->
 	<Match>
 		<Or>
-			<!--<Package name="thirdparty.net.iharder.base64"/>-->
+			<Package name="thirdparty.net.iharder.base64"/>
 			<Class   name="com.atlassian.theplugin.util.ClasspathImageView"/>
 		</Or>
 	</Match>
