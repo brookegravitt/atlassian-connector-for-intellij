@@ -92,7 +92,7 @@ public class BambooConfigurationBean implements ProductServerConfiguration {
 				foundServer.getSubscribedPlansData().add((SubscribedPlanBean) plan);
 			}
 			foundServer.setUrlString(server.getUrlString());
-			foundServer.setUsername(server.getUsername());
+			foundServer.setUserName(server.getUserName());
 			foundServer.setEnabled(server.getEnabled());
 		}
 	}

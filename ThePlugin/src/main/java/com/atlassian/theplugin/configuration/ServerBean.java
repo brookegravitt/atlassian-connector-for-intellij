@@ -39,7 +39,7 @@ public class ServerBean implements Server {
 	public ServerBean(Server cfg) {
 		this.setName(cfg.getName());
 		this.setUid(cfg.getUid());
-		this.setUsername(cfg.getUsername());
+		this.setUserName(cfg.getUserName());
 		this.setPasswordString(cfg.getPasswordString(), cfg.getShouldPasswordBeStored());		
 		this.setUrlString(cfg.getUrlString());
 		this.setEnabled(cfg.getEnabled());
@@ -67,11 +67,11 @@ public class ServerBean implements Server {
 		this.urlString = urlString;
 	}
 
-	public synchronized String getUsername() {
+	public synchronized String getUserName() {
 		return username;
 	}
 
-	public synchronized void setUsername(String username) {
+	public synchronized void setUserName(String username) {
 		this.username = username;
 	}
 

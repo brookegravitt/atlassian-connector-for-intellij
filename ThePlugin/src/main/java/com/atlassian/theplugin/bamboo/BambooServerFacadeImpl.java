@@ -55,7 +55,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 
 		BambooSession api = new BambooSession(bambooServer.getUrlString());
 		try {
-			api.login(bambooServer.getUsername(), bambooServer.getPasswordString().toCharArray());
+			api.login(bambooServer.getUserName(), bambooServer.getPasswordString().toCharArray());
 			return api.listProjectNames();
 		} catch (BambooException e) {
 			LOG.error("Bamboo exception: " + e.getMessage());
@@ -76,7 +76,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 	public Collection<BambooPlan> getPlanList(Server bambooServer) throws ServerPasswordNotProvidedException {
 		BambooSession api = new BambooSession(bambooServer.getUrlString());
 		try {
-			api.login(bambooServer.getUsername(), bambooServer.getPasswordString().toCharArray());
+			api.login(bambooServer.getUserName(), bambooServer.getPasswordString().toCharArray());
 			List<BambooPlan> plans = api.listPlanNames();
 			List<String> favPlans = api.getFavouriteUserPlans();
 
@@ -116,7 +116,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 		BambooSession api = new BambooSession(bambooServer.getUrlString());
 		String connectionErrorMessage;
 		try {
-			api.login(bambooServer.getUsername(), bambooServer.getPasswordString().toCharArray());
+			api.login(bambooServer.getUserName(), bambooServer.getPasswordString().toCharArray());
 			connectionErrorMessage = "";
 		} catch (BambooLoginFailedException e) {
 			if (bambooServer.getIsConfigInitialized()) {

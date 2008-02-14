@@ -16,18 +16,35 @@
 		<Bug pattern="IS2_INCONSISTENT_SYNC"/>
 	</Match>
 
-	<!-- findBugs has something against in-place created anonymous listener classes for swing. Specifically -->
-	<!-- problematic class seems to be the one derived from javax.swing.event.HyperlinkListener. Go figure -->
+	<!-- findBugs has something against in-place created anonymous listener classes for swing. -->
 	<Match>
 		<Or>
 			<Class name="com.atlassian.theplugin.idea.PluginConfigurationForm$2"/>
 			<Class name="com.atlassian.theplugin.idea.PluginStatusBarToolTip$1"/>
+			<Class name="com.atlassian.theplugin.idea.UserDataContext$1"/>
 		</Or>
 		<Bug pattern="SIC_INNER_SHOULD_BE_STATIC_ANON"/>
 	</Match>
 
+	<!--third party code-->
 	<Match>
-		<Package name="thirdparty.net.iharder.base64"/>
+		<Or>
+			<Package name="thirdparty.net.iharder.base64"/>
+			<Class   name="com.atlassian.theplugin.util.ClasspathImageView"/>
+		</Or>
+	</Match>
+
+	<!--genereated from WSDL-->
+	<Match>
+		<Or>
+			<Package name="com.atlassian.theplugin.crucible.api.soap.xfire.review"/>
+			<Package name="com.atlassian.theplugin.crucible.api.soap.xfire.auth"/>
+		</Or>
+	</Match>
+
+	<!--reflection is used to call these-->
+	<Match>
+		<Method name="createUIComponents"/>
 	</Match>
 
 </FindBugsFilter>

@@ -66,7 +66,7 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 			session = new CrucibleSessionImpl(server.getUrlString());
 		}
 
-		session.login(server.getUsername(), server.getPasswordString());
+		session.login(server.getUserName(), server.getPasswordString());
 
 		RpcReviewServiceName crucibleService = createServiceProxy(server);
 
@@ -99,7 +99,7 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 			session = new CrucibleSessionImpl(server.getUrlString());
 		}
 
-		session.login(server.getUsername(), server.getPasswordString());
+		session.login(server.getUserName(), server.getPasswordString());
 
 		RpcReviewServiceName crucibleService = createServiceProxy(server);
 
@@ -129,7 +129,7 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 			session = new CrucibleSessionImpl(server.getUrlString());
 		}
 
-		session.login(server.getUsername(), server.getPasswordString());
+		session.login(server.getUserName(), server.getPasswordString());
 
 		RpcReviewServiceName crucibleServiceProxy = createServiceProxy(server);
 
@@ -185,7 +185,7 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 			session = new CrucibleSessionImpl(server.getUrlString());
 		}
 
-		session.login(server.getUsername(), server.getPasswordString());
+		session.login(server.getUserName(), server.getPasswordString());
 
         List<State> states = new ArrayList<State>();
 		states.add(State.REVIEW);
@@ -196,7 +196,7 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
             ReviewData reviewData = iterator.next();
             List<String> reviewers = session.getReviewers(reviewData.getPermaId());
 			
-			if (reviewers.contains(server.getUsername()))
+			if (reviewers.contains(server.getUserName()))
 			{
 				remoteReviews.add(new RemoteReview(reviewData, reviewers, server));
 			}
