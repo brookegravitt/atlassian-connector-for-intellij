@@ -2,26 +2,26 @@
 <!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.2//EN"
 		"http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
 <module name="Checker">
-	<property name="severity" value="warning"/>
+	<property name="severity" value="error"/>
 	<module name="TreeWalker">
 		<property name="tabWidth" value="4"/>
-		<module name="JavadocMethod">
-			<property name="severity" value="info"/>
-			<property name="scope" value="public"/>
-			<property name="allowThrowsTagsForSubclasses" value="true"/>
-			<property name="allowMissingPropertyJavadoc" value="true"/>
-		</module>
-		<module name="JavadocType">
-			<property name="severity" value="info"/>
-			<property name="scope" value="package"/>
-		</module>
-		<module name="JavadocVariable">
-			<property name="severity" value="ignore"/>
-		</module>
-		<module name="JavadocStyle">
-			<property name="severity" value="info"/>
-			<property name="checkEmptyJavadoc" value="true"/>
-		</module>
+		<!--<module name="JavadocMethod">-->
+			<!--<property name="severity" value="info"/>-->
+			<!--<property name="scope" value="public"/>-->
+			<!--<property name="allowThrowsTagsForSubclasses" value="true"/>-->
+			<!--<property name="allowMissingPropertyJavadoc" value="true"/>-->
+		<!--</module>-->
+		<!--<module name="JavadocType">-->
+			<!--<property name="severity" value="info"/>-->
+			<!--<property name="scope" value="package"/>-->
+		<!--</module>-->
+		<!--<module name="JavadocVariable">-->
+			<!--<property name="severity" value="ignore"/>-->
+		<!--</module>-->
+		<!--<module name="JavadocStyle">-->
+			<!--<property name="severity" value="info"/>-->
+			<!--<property name="checkEmptyJavadoc" value="true"/>-->
+		<!--</module>-->
 		<module name="ConstantName"/>
 		<module name="LocalFinalVariableName">
 			<property name="severity" value="ignore"/>

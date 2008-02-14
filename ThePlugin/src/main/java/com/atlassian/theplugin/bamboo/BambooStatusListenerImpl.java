@@ -97,8 +97,11 @@ public class BambooStatusListenerImpl implements BambooStatusListener {
 		sb.append("<tr><td valign=bottom width=16>");
 		sb.append("<img src=\"/icons/" + icon + "\" height=16 width=16 border=0 valing=bottom/>&nbsp;");
 		sb.append("</td><td ñowrap valign=top align=left>");
-		sb.append("<span style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif; font-weight: bold; color: " + color + "\">");
-		sb.append( "<a href=\"" + url + "\">" + buildKey + "-" + buildNumber + "</a> " + status + "</span>");
+		sb.append(
+				"<span style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif; font-weight: bold; color: "
+				+ color
+				+ "\">");
+		sb.append("<a href=\"" + url + "\">" + buildKey + "-" + buildNumber + "</a> " + status + "</span>");
 		sb.append("</td></tr></table>");
 
 		return sb.toString();
