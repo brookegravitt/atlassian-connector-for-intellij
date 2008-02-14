@@ -68,10 +68,12 @@ public class RemoteReview {
 		return true;
 	}
 
+	private static final int ONE_EFF = 31;
+
 	public int hashCode() {
 		int result;
 		result = reviewData.getPermaId().getId().hashCode();
-		result = 31 * result + (server != null ? server.hashCode() : 0);
+		result = ONE_EFF * result + (server != null ? server.hashCode() : 0);
 		return result;
 	}
 }

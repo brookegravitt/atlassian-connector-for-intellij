@@ -196,8 +196,7 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
             ReviewData reviewData = iterator.next();
             List<String> reviewers = session.getReviewers(reviewData.getPermaId());
 			
-			if (reviewers.contains(server.getUserName()))
-			{
+			if (reviewers.contains(server.getUserName())) {
 				remoteReviews.add(new RemoteReview(reviewData, reviewers, server));
 			}
 		}
