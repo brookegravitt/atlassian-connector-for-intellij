@@ -15,17 +15,11 @@ import java.awt.event.MouseEvent;
 
 public class BambooStatusIcon extends JLabel implements BambooStatusDisplay {
 
-	private static Icon iconRed;
-	private static Icon iconGreen;
-	private static Icon iconGrey;
+	private static final Icon ICON_RED = IconLoader.getIcon("/icons/red-16.png");
+	private static final Icon ICON_GREEN = IconLoader.getIcon("/icons/green-16.png");
+	private static final Icon ICON_GREY = IconLoader.getIcon("/icons/grey-16.png");
 
-	static {
-		iconRed = IconLoader.getIcon("/icons/red-16.png");
-		iconGreen = IconLoader.getIcon("/icons/green-16.png");
-		iconGrey = IconLoader.getIcon("/icons/grey-16.png");
-	}
-
-	private PluginStatusBarToolTip tooltip;
+	private final PluginStatusBarToolTip tooltip;
 
 	/**
 	 * @param aProjectComponent reference to the project component
@@ -52,19 +46,20 @@ public class BambooStatusIcon extends JLabel implements BambooStatusDisplay {
 
 	}
 
+
 	public void updateBambooStatus(BuildStatus status, String fullInfo) {
 
 		tooltip.setHtmlContent(fullInfo);
 
 		switch (status) {
 			case BUILD_FAILED:
-				setIcon(iconRed);
+				setIcon(ICON_RED);
 				break;
 			case UNKNOWN:
-				setIcon(iconGrey);
+				setIcon(ICON_GREY);
 				break;
 			case BUILD_SUCCEED:
-				setIcon(iconGreen);
+				setIcon(ICON_GREEN);
 				break;
 			default:
 				throw new IllegalArgumentException("Illegal state of build.");
