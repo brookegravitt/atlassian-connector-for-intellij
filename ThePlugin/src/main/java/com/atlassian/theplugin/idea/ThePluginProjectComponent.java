@@ -8,7 +8,7 @@ import com.atlassian.theplugin.crucible.HtmlCrucibleStatusListener;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusChecker;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
 import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
-import com.atlassian.theplugin.idea.bamboo.ToolTipFailed;
+import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;
 import com.atlassian.theplugin.idea.crucible.CruciblePatchSubmitExecutor;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.idea.crucible.CrucibleToolWindowPanel;
@@ -121,7 +121,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 			// add simple bamboo listener to bamboo checker thread
 			// this listener shows idea tooltip when buld failed
-			buildFailedToolTip = new ToolTipFailed(project);
+			buildFailedToolTip = new BuildStatusChangedToolTip(project);
 			simpleBambooStatusListener = new BambooStatusListenerImpl(buildFailedToolTip);
 			bambooStatusChecker.registerListener(simpleBambooStatusListener);
 
