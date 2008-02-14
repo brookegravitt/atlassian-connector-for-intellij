@@ -30,8 +30,7 @@ public class UserDataContext implements CrucibleStatusListener {
 	private static final int B = 200;
 
 	public void updateReviews(Collection<RemoteReview> incomingReviews) {
-		if (reviews.size() > 0 && !reviews.containsAll(incomingReviews))
-		{
+		if (reviews.size() > 0 && !reviews.containsAll(incomingReviews)) {
 			newReviews = new ArrayList(incomingReviews);
 			newReviews.removeAll(reviews);
 
