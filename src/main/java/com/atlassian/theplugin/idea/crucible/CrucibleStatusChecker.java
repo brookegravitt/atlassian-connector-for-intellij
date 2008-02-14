@@ -47,46 +47,54 @@ public class CrucibleStatusChecker {
 	 * DO NOT use that method in 'dispatching thread' of IDEA. It can block GUI for several seconds.
 	 */
 	private void doRun() {
-		// collect build info from each server
-		final Collection<RemoteReview> reviews = new ArrayList<RemoteReview>();
-		for (Server server
-				: ConfigurationFactory.getConfiguration().getProductServers(
-                        ServerType.CRUCIBLE_SERVER).getEnabledServers()) {
-                            try {
-                                reviews.addAll(
-                                        CrucibleServerFactory.getCrucibleServerFacade().getActiveReviewsForUser(server));
-                            } catch (ServerPasswordNotProvidedException exception) {
-                                ApplicationManager.getApplication().invokeLater(
-                                        new MissingPasswordHandler(), ModalityState.defaultModalityState());
-                            } catch (CrucibleLoginException e) {
-                                // @todo
-                                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        try
+        {
+            // collect build info from each server
+            final Collection<RemoteReview> reviews = new ArrayList<RemoteReview>();
+            for (Server server
+                    : ConfigurationFactory.getConfiguration().getProductServers(
+                            ServerType.CRUCIBLE_SERVER).getEnabledServers()) {
+                                try {
+                                    reviews.addAll(
+                                            CrucibleServerFactory.getCrucibleServerFacade().getActiveReviewsForUser(server));
+                                } catch (ServerPasswordNotProvidedException exception) {
+                                    ApplicationManager.getApplication().invokeLater(
+                                            new MissingPasswordHandler(), ModalityState.defaultModalityState());
+                                } catch (CrucibleLoginException e) {
+                                    // @todo
+                                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                                }
                             }
+
+            // dispatch to the listeners
+            EventQueue.invokeLater(new Runnable() {
+                public void run() {
+                    synchronized (listenerList) {
+                        for (CrucibleStatusListener listener : listenerList) {
+                            listener.updateReviews(reviews);
                         }
+                    }
+                }
+            });
+	    }
+        catch (Throwable t)
+        {
+            t.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
 
-		// dispatch to the listeners
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				synchronized (listenerList) {
-					for (CrucibleStatusListener listener : listenerList) {
-						listener.updateReviews(reviews);
-					}
-				}
-			}
-		});
-	}
 
-	/**
+    /**
 	 * Create a new instance of {@link java.util.TimerTask} for {@link java.util.Timer} re-scheduling purposes.
 	 *
 	 * @return new instance of TimerTask
 	 */
 	public TimerTask newTimerTask() {
-		return new TimerTask() {
-			public void run() {
-				doRun();
-			}
-		};
+        return new TimerTask() {
+            public void run() {
+                doRun();
+            }
+        };
 	}
 
 
