@@ -4,11 +4,10 @@ import com.atlassian.theplugin.ServerType;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerBean;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PasswordDialog;
 import com.atlassian.theplugin.idea.PluginInfoUtil;
 import com.atlassian.theplugin.idea.ThePluginApplicationComponent;
-import com.atlassian.theplugin.idea.IdeaHelper;
-import com.intellij.openapi.application.ApplicationManager;
 
 import javax.swing.*;
 import static javax.swing.JOptionPane.OK_CANCEL_OPTION;
