@@ -12,6 +12,8 @@ public class BambooStatusListenerImpl implements BambooStatusListener {
 
 	private Map buildPrevStatus = new HashMap<String, BuildStatus>(0);
 	private BambooStatusDisplay display;
+	private static final String ICON_PLAN_PASSED = "icn_plan_passed.gif";
+	private static final String ICON_PLAN_FAILED = "icn_plan_failed.gif";
 
 	/**
 	 *
@@ -26,7 +28,6 @@ public class BambooStatusListenerImpl implements BambooStatusListener {
 
 		BuildStatus status = null;
 		boolean fireTooltip = false;
-
 
 		if (buildStatuses != null && buildStatuses.size() > 0) {
 			for (BambooBuild buildInfo : buildStatuses) {
@@ -44,7 +45,7 @@ public class BambooStatusListenerImpl implements BambooStatusListener {
 						}
 
 						buildPrevStatus.put(buildInfo.getBuildKey(), buildInfo.getStatus());
-					
+
 						break;
 					case UNKNOWN:
 						// no action here
@@ -72,7 +73,7 @@ public class BambooStatusListenerImpl implements BambooStatusListener {
 			}
 		}
 
-		if (fireTooltip == true) {
+		if (fireTooltip == true && status != null) {
 			display.updateBambooStatus(status, tooltipContent.toString());
 		}
 	}
@@ -80,26 +81,27 @@ public class BambooStatusListenerImpl implements BambooStatusListener {
 	private String createHtmlRow(String buildKey, String buildNumber, String url, BuildStatus buildStatus) {
 		String color = "grey";
 		String status = "unknown";
+		String icon = "";
 
 		if (buildStatus == BuildStatus.BUILD_FAILED) {
 			color = "red";
 			status = "failed";
+			icon = ICON_PLAN_FAILED;
 		} else if (buildStatus == BuildStatus.BUILD_SUCCEED) {
 			color = "green";
 			status = "succeed";
+			icon = ICON_PLAN_PASSED;
 		}
 
-		return "<div style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif; font-weight: bold; color: "
-				+ color + "\">"
-				+ "<a href=\""
-				+ url
-				+ "\">"
-				+ buildKey
-				+ "-"
-				+ buildNumber
-				+ "</a> "
-				+ status
-				+ "</div><br />";
+		StringBuffer sb = new StringBuffer("<table width=\"100%\">");
+		sb.append("<tr><td valign=bottom width=16>");
+		sb.append("<img src=\"/icons/" + icon + "\" height=16 width=16 border=0 valing=bottom/>&nbsp;");
+		sb.append("</td><td ñowrap valign=top align=left>");
+		sb.append("<span style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif; font-weight: bold; color: " + color + "\">");
+		sb.append( "<a href=\"" + url + "\">" + buildKey + "-" + buildNumber + "</a> " + status + "</span>");
+		sb.append("</td></tr></table>");
+
+		return sb.toString();
 	}
 
 }
