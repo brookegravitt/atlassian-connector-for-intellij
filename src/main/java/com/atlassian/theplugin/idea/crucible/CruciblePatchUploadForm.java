@@ -8,6 +8,7 @@ import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.crucible.CrucibleServerFactory;
 import com.atlassian.theplugin.crucible.api.CrucibleException;
 import com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData;
+import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import static com.intellij.openapi.ui.Messages.showMessageDialog;
@@ -17,6 +18,8 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class CruciblePatchUploadForm extends DialogWrapper {
 	private JTextArea patchPreview;
@@ -25,7 +28,7 @@ public class CruciblePatchUploadForm extends DialogWrapper {
 	private JComboBox crucibleServersComboBox;
 	private JTextField projectKeyText;
 	private JTextArea statementArea;
-
+	private JCheckBox openBrowserToCompleteCheckBox;
 
 	protected CruciblePatchUploadForm(String commitMessage) {
 		super(false);
@@ -34,26 +37,10 @@ public class CruciblePatchUploadForm extends DialogWrapper {
 		fillInCrucibleServers();
 		statementArea.setText(commitMessage);
 		getOKAction().putValue(Action.NAME, "Create review...");
-		titleText.requestFocusInWindow();
-		/*
-		this.addKeyListener(new KeyListener() {
+	}
 
-			public void keyTyped(KeyEvent event) {
-
-				getOKAction().setEnabled(isValid());
-			}
-
-			public void keyPressed(KeyEvent event) {
-				//To change body of implemented methods use File | Settings | File Templates.
-			}
-
-			public void keyReleased(KeyEvent event) {
-				//To change body of implemented methods use File | Settings | File Templates.
-			}
-		}); */
-
-		//ProjectLevelVcsManager.getInstance(project).getVcsFor()
-
+	public JComponent getPreferredFocusedComponent() {
+		return titleText;
 	}
 
 	private void fillInCrucibleServers() {
@@ -100,7 +87,10 @@ public class CruciblePatchUploadForm extends DialogWrapper {
 			reviewData.setProjectKey(projectKeyText.getText());
 
 			try {
-				CrucibleServerFactory.getCrucibleServerFacade().createReviewFromPatch(serverBean, reviewData, patchPreview.getText());
+				ReviewData draftReviewData = CrucibleServerFactory.getCrucibleServerFacade().createReviewFromPatch(serverBean, reviewData, patchPreview.getText());
+				if (openBrowserToCompleteCheckBox.isSelected()) {
+					BrowserUtil.launchBrowser(serverBean.getUrlString() + "/cru/" + draftReviewData.getPermaId().getId());
+				}
 				super.doOKAction();
 			} catch (CrucibleException e) {
 				showMessageDialog(e.getMessage(), "Error creating review: " + serverBean.getUrlString(), Messages.getErrorIcon());
@@ -142,7 +132,7 @@ public class CruciblePatchUploadForm extends DialogWrapper {
 		rootComponent.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
 		rootComponent.setMinimumSize(new Dimension(760, 505));
 		final JPanel panel1 = new JPanel();
-		panel1.setLayout(new GridLayoutManager(6, 4, new Insets(1, 1, 1, 1), -1, -1));
+		panel1.setLayout(new GridLayoutManager(7, 4, new Insets(1, 1, 1, 1), -1, -1));
 		rootComponent.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
 		crucibleServersComboBox = new JComboBox();
 		panel1.add(crucibleServersComboBox, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -184,6 +174,10 @@ public class CruciblePatchUploadForm extends DialogWrapper {
 		final JLabel label5 = new JLabel();
 		label5.setText("Patch:");
 		panel1.add(label5, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		openBrowserToCompleteCheckBox = new JCheckBox();
+		openBrowserToCompleteCheckBox.setSelected(true);
+		openBrowserToCompleteCheckBox.setText("Open browser to complete review creation");
+		panel1.add(openBrowserToCompleteCheckBox, new GridConstraints(6, 0, 1, 4, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		label1.setLabelFor(crucibleServersComboBox);
 		label2.setLabelFor(projectKeyText);
 		label3.setLabelFor(titleText);
