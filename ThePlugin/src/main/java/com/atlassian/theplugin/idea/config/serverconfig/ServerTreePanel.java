@@ -1,16 +1,15 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
+import com.atlassian.theplugin.ServerType;
 import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
 import com.atlassian.theplugin.idea.config.serverconfig.model.*;
 import com.atlassian.theplugin.idea.config.serverconfig.util.ServerNameUtil;
-import com.atlassian.theplugin.ServerType;
 
 import javax.swing.*;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
+import javax.swing.event.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
@@ -31,8 +30,8 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 	private DefaultMutableTreeNode newSelectedNode = null;
 	private DefaultMutableTreeNode firstServerNode = null;
 
-    private static final int WIDTH = 250;
-    private static final int HEIGHT = 150;
+    private static final int HEIGHT = 250;
+    private static final int WIDTH = 150;
     private static final int VISIBLE_ROW_COUNT = 7;
 
     public void setModel(ServerTreeModel model) {
@@ -45,7 +44,7 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 
 	private void initLayout() {
 		setLayout(new BorderLayout());
-		setMinimumSize(new Dimension(HEIGHT, WIDTH));
+		setMinimumSize(new Dimension(WIDTH, HEIGHT));
 		add(new JScrollPane(getServerTree()), BorderLayout.CENTER);
 	}
 
@@ -71,6 +70,25 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 
 			serverTree.addTreeSelectionListener(this);
 
+			serverTree.addTreeExpansionListener(new TreeExpansionListener () {
+				public void treeExpanded(TreeExpansionEvent e) {
+
+				}
+
+				public void treeCollapsed(TreeExpansionEvent e) {
+					// this never gets called when the model is refilled and reloaded
+				}
+			});
+
+			serverTree.addTreeWillExpandListener(new TreeWillExpandListener() {
+				public void treeWillExpand(TreeExpansionEvent e) {
+
+				}
+
+				public void treeWillCollapse(TreeExpansionEvent e) {
+					// this never gets called when the model is refilled and reloaded
+				}
+			});
 			serverTree.setCellRenderer(new ServerTreeRenderer());
 		}
 		return serverTree;
@@ -91,12 +109,12 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 		ServerNode child = ServerNodeFactory.getServerNode(serverType, newServer);
 		ServerTypeNode serverTypeNode = model.getServerTypeNode(serverType, true);
 		model.insertNodeInto(child, serverTypeNode, serverTypeNode.getChildCount());
-		model.reload();
+//		model.reload();
 
 		TreePath path = new TreePath(child.getPath());
 		serverTree.scrollPathToVisible(path);
 		serverTree.setSelectionPath(path);
-		serverTree.expandPath(path);
+//		serverTree.expandPath(path);
 
 		return newServer.getName();
 	}
@@ -130,7 +148,7 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
                         ((ServerNode) selectedNode).getServerType()).removeServer(((ServerNode) selectedNode).getServer());
 				updateTreeConfiguration();
 
-				serverTree.expandPath(path);
+//				serverTree.expandPath(path);
 			}
 		}
 	}
@@ -155,6 +173,7 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 		if (serverTypeNode != null) {
 			serverTypeNode.removeAllChildren();
 		}
+		// this seems to collapse the "crucible" branch of the tree
 		model.reload();
 
 		for (Server server : servers) {
