@@ -7,6 +7,7 @@ import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.idea.PasswordDialog;
 import com.atlassian.theplugin.idea.PluginInfoUtil;
 import com.atlassian.theplugin.idea.ThePluginApplicationComponent;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.application.ApplicationManager;
 
 import javax.swing.*;
@@ -53,8 +54,7 @@ public class MissingPasswordHandler implements Runnable {
 
 				serverBean.setIsConfigInitialized(true);
 			}
-			ThePluginApplicationComponent appComponent =
-					ApplicationManager.getApplication().getComponent(ThePluginApplicationComponent.class);
+			ThePluginApplicationComponent appComponent = IdeaHelper.getAppComponent();
 			appComponent.triggerStatusCheckers();
 
 			if (wasCanceled) {
