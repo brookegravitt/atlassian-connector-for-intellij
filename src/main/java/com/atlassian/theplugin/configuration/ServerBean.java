@@ -71,8 +71,8 @@ public class ServerBean implements Server {
 		return username;
 	}
 
-	public synchronized void setUserName(String username) {
-		this.username = username;
+	public synchronized void setUserName(String anUsername) {
+		this.username = anUsername;
 	}
 
 	public synchronized Boolean getEnabled() {
