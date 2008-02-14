@@ -4,8 +4,6 @@ import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.crucible.api.CrucibleException;
-import com.atlassian.theplugin.crucible.api.CrucibleLoginException;
-import com.atlassian.theplugin.crucible.api.CrucibleSession;
 import com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData;
 
 import java.util.List;
@@ -20,18 +18,11 @@ import java.util.List;
 public interface CrucibleServerFacade {
 	void testServerConnection(String serverUrl, String userName, String password) throws CrucibleException;
 
-	ReviewData createReview(Server server, ReviewData review) throws CrucibleException;
+	ReviewData createReview(Server server, ReviewData review) throws CrucibleException, ServerPasswordNotProvidedException;
 
-	/**
-	 *
-	 * @param server object with Url and other server data
-	 * @return list of all reviews
-	 */
-	List<ReviewData> getAllReviews(Server server) throws CrucibleException;
+	List<ReviewData> getAllReviews(Server server) throws CrucibleException, ServerPasswordNotProvidedException;
 
-	void setCrucibleSession(CrucibleSession crucibleSession);
+	List<RemoteReview> getActiveReviewsForUser(Server server) throws CrucibleException, ServerPasswordNotProvidedException;
 
-	ReviewData createReviewFromPatch(ServerBean server, ReviewData reviewData, String patch) throws CrucibleException;
-	
-    List<RemoteReview> getActiveReviewsForUser(Server server) throws CrucibleLoginException, ServerPasswordNotProvidedException;
+	ReviewData createReviewFromPatch(ServerBean server, ReviewData reviewData, String patch) throws CrucibleException, ServerPasswordNotProvidedException;
 }

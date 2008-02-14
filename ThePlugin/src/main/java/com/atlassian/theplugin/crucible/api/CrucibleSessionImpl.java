@@ -24,14 +24,13 @@ public class CrucibleSessionImpl implements CrucibleSession {
 
 
 	private String authToken;
-    private RpcAuthServiceName authService;
+	private RpcAuthServiceName authService;
 	private RpcReviewServiceName reviewService;
 
 	private static final String SERVICE_AUTH_SUFFIX = "service/auth";
 	private static final String SERVICE_REVIEW_SUFFIX = "service/reviewtmp";
 
 	/**
-	 *
 	 * @param baseUrl url to the Crucible installation (without /service/auth suffix)
 	 */
 	public CrucibleSessionImpl(String baseUrl) {
@@ -45,17 +44,12 @@ public class CrucibleSessionImpl implements CrucibleSession {
 			crucibleReviewUrl = baseUrl + "/" + SERVICE_REVIEW_SUFFIX;
 		}
 
-    	JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
+		JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
 		Thread.currentThread().setContextClassLoader(factory.getClass().getClassLoader());
-//        factory.setBus(CXFBusFactory.newInstance(CXFBusFactory.DEFAULT_BUS_FACTORY).createBus());
 		factory.setServiceClass(RpcAuthServiceName.class);
 		factory.setAddress(crucibleAuthUrl);
-        authService = (RpcAuthServiceName) factory.create();		
-		/*
-		TODO lgminski our URLConnection somehow needs to be injected in the code - below some not working attempt
-		Client client = ClientProxy.getClient(authService);
-		HTTPConduit conduit = (HTTPConduit) client.getConduit();
-         */
+		authService = (RpcAuthServiceName) factory.create();
+
 		JaxWsProxyFactoryBean reviewFactory = new JaxWsProxyFactoryBean();
 		reviewFactory.setServiceClass(RpcReviewServiceName.class);
 		reviewFactory.setAddress(crucibleReviewUrl);
@@ -67,7 +61,7 @@ public class CrucibleSessionImpl implements CrucibleSession {
 		try {
 			authToken = authService.login(userName, password);
 		} catch (SOAPFaultException e) {
-			throw new CrucibleLoginException("Login failed");
+			throw new CrucibleLoginException("Login failed", e);
 		}
 
 		if (authToken == null || authToken.length() == 0) {
@@ -77,24 +71,50 @@ public class CrucibleSessionImpl implements CrucibleSession {
 
 	public void logout() {
 		if (authToken != null) {
-				authService.logout(authToken);
+			authService.logout(authToken);
 		}
 		authToken = null;
 	}
 
-	public String getAuthToken() {
-		return authToken;
+	public ReviewData createReview(ReviewData reviewData) throws CrucibleException {
+		try {
+			return reviewService.createReview(authToken, reviewData);
+		} catch (RuntimeException e) {
+			throw new CrucibleException("createReview", e);
+		}
 	}
 
-    public List<ReviewData> getReviewsInStates(List<State> arg1) {
-		return reviewService.getReviewsInStates(authToken, arg1);
-    }
+	public ReviewData createReviewFromPatch(ReviewData reviewData, String patch) throws CrucibleException {
+		try {
+			return reviewService.createReviewFromPatch(authToken, reviewData, patch);
+		} catch (RuntimeException e) {
+			throw new CrucibleException("createReviewFromPatch", e);
+		}
 
-    public List<ReviewData> getAllReviews() {
-        return reviewService.getAllReviews(authToken);
-    }
+	}
 
-    public List<String> getReviewers(PermId arg1) {
-        return reviewService.getReviewers(authToken, arg1);
-    }
+	public List<ReviewData> getReviewsInStates(List<State> arg1) throws CrucibleException {
+		try {
+			return reviewService.getReviewsInStates(authToken, arg1);
+		} catch (RuntimeException e) {
+			throw new CrucibleException("getReviewInStates", e);
+		}
+	}
+
+	public List<ReviewData> getAllReviews() throws CrucibleException {
+		try {
+			return reviewService.getAllReviews(authToken);
+		} catch (RuntimeException e) {
+			throw new CrucibleException("getAllReviews", e);
+		}
+
+	}
+
+	public List<String> getReviewers(PermId arg1) throws CrucibleException {
+		try {
+			return reviewService.getReviewers(authToken, arg1);
+		} catch (RuntimeException e) {
+			throw new CrucibleException("getReviewers", e);
+		}
+	}
 }

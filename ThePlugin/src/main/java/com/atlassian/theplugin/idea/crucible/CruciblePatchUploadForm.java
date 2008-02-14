@@ -1,10 +1,7 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.ServerType;
-import com.atlassian.theplugin.configuration.ConfigurationFactory;
-import com.atlassian.theplugin.configuration.CrucibleConfigurationBean;
-import com.atlassian.theplugin.configuration.Server;
-import com.atlassian.theplugin.configuration.ServerBean;
+import com.atlassian.theplugin.configuration.*;
 import com.atlassian.theplugin.crucible.CrucibleServerFactory;
 import com.atlassian.theplugin.crucible.api.CrucibleException;
 import com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData;
@@ -91,19 +88,20 @@ public class CruciblePatchUploadForm extends DialogWrapper {
 								serverBean, reviewData, patchPreview.getText());
 				if (openBrowserToCompleteCheckBox.isSelected()) {
 					BrowserUtil.launchBrowser(serverBean.getUrlString()
-					+ "/cru/"
-					+ draftReviewData.getPermaId().getId());
+							+ "/cru/"
+							+ draftReviewData.getPermaId().getId());
 				}
 				super.doOKAction();
 			} catch (CrucibleException e) {
 				showMessageDialog(e.getMessage(),
 						"Error creating review: " + serverBean.getUrlString(), Messages.getErrorIcon());
+			} catch (ServerPasswordNotProvidedException e) {
+				showMessageDialog(e.getMessage(), "Error creating review: " + serverBean.getUrlString(), Messages.getErrorIcon());
 			}
 
 
 		}
 	}
-
 
 //	private boolean isValid() {
 //
