@@ -15,7 +15,7 @@ public interface Server {
 
 	String getUrlString();
 
-	String getUsername();
+	String getUserName();
 
 	Boolean getShouldPasswordBeStored();
 

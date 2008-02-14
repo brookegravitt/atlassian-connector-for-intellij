@@ -7,7 +7,10 @@ import java.awt.GridBagConstraints;
  class.
  */
 public class GridBagLayoutConstraints extends GridBagConstraints {
-    /**
+
+	static final long serialVersionUID = 3992743098660874985L;
+
+	/**
      Constructs a GridBagLayoutConstraints with a given gridx and gridy position and
      all other grid bag constraint values set to the default.
      @param gridx the gridx position

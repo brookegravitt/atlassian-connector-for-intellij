@@ -144,9 +144,7 @@ public class ServerConfigPanel extends AbstractContentPanel {
 				ConfigurationFactory.getConfiguration().getProductServers(type).setServers(s);                
             }
 
-            // TODO: jgorycki - mwent to review. Calling setData() in getData() causes fuckups with the "Apply" button
-            // can I disable the line below?
-//            this.treePanel.setData(getPluginConfiguration());
+            this.treePanel.setData(getPluginConfiguration());
         }
     }
 
@@ -178,7 +176,7 @@ public class ServerConfigPanel extends AbstractContentPanel {
                 break;
         }
         server.setName(tempValue.getName());
-        server.setUsername(tempValue.getUsername());
+        server.setUserName(tempValue.getUserName());
         server.setPasswordString(tempValue.getPasswordString(), tempValue.getShouldPasswordBeStored());
 
         server.setUrlString(tempValue.getUrlString());

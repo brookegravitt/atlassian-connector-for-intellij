@@ -34,7 +34,7 @@ public class MissingPasswordHandler implements Runnable {
 				}
 				ServerBean serverBean = (ServerBean) server;
 				PasswordDialog dialog = new PasswordDialog(server);
-				dialog.setUserName(serverBean.getUsername());
+				dialog.setUserName(serverBean.getUserName());
 				dialog.pack();
 				JPanel panel = dialog.getPasswordPanel();
 
@@ -45,7 +45,7 @@ public class MissingPasswordHandler implements Runnable {
 					String password = dialog.getPasswordString();
 					Boolean shouldPasswordBeStored = dialog.getShouldPasswordBeStored();
 					serverBean.setPasswordString(password, shouldPasswordBeStored);
-					serverBean.setUsername(dialog.getUserName());
+					serverBean.setUserName(dialog.getUserName());
 				} else {
 					wasCanceled = true;
 				}
