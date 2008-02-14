@@ -190,7 +190,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 	private ServerBean prepareServerBean() {
 		ServerBean server = new ServerBean();
 		server.setUrlString(CxfReviewServiceMockImpl.VALID_URL);
-		server.setUsername(CxfReviewServiceMockImpl.VALID_LOGIN);
+		server.setUserName(CxfReviewServiceMockImpl.VALID_LOGIN);
 		server.setPasswordString(CxfReviewServiceMockImpl.VALID_PASSWORD, false);
 		return server;
 	}
@@ -201,7 +201,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 
 		ServerBean server = new ServerBean();
 		server.setUrlString("http://lech.atlassian.pl:8060");
-		server.setUsername("test");
+		server.setUserName("test");
 		server.setPasswordString("test", false);
 
 		ReviewData reviewData = new ReviewData();
@@ -230,7 +230,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 
 		ServerBean server = new ServerBean();
 		server.setUrlString("http://lech.atlassian.pl:8060");
-		server.setUsername("test");
+		server.setUserName("test");
 		server.setPasswordString("test", false);
 
 		List<ReviewData> list = null;

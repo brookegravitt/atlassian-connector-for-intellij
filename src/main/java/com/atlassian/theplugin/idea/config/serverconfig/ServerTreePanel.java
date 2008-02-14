@@ -31,8 +31,8 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 	private DefaultMutableTreeNode newSelectedNode = null;
 	private DefaultMutableTreeNode firstServerNode = null;
 
-    private static final int WIDTH = 250;
-    private static final int HEIGHT = 150;
+    private static final int WIDTH = 150;
+    private static final int HEIGHT = 250;
     private static final int VISIBLE_ROW_COUNT = 7;
 
     public void setModel(ServerTreeModel model) {
@@ -45,15 +45,15 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 
 	private void initLayout() {
 		setLayout(new BorderLayout());
-		setMinimumSize(new Dimension(HEIGHT, WIDTH));
+		setMinimumSize(new Dimension(WIDTH, HEIGHT));
 		add(new JScrollPane(getServerTree()), BorderLayout.CENTER);
 	}
 
-    private void expandAllPaths() {
-        for (int i = 0; i < serverTree.getRowCount(); ++i) {
-                 serverTree.expandRow(i);
-        }
-    }
+//    private void expandAllPaths() {
+//        for (int i = 0; i < serverTree.getRowCount(); ++i) {
+//                 serverTree.expandRow(i);
+//        }
+//    }
 
     private JTree getServerTree() {
 		if (serverTree == null) {
@@ -66,6 +66,7 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 
 			serverTree.setRootVisible(false);
 			serverTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+			//serverTree.setExpandsSelectedPaths(true);
 			serverTree.setVisibleRowCount(VISIBLE_ROW_COUNT);
 			serverTree.setShowsRootHandles(true);
 
@@ -140,9 +141,9 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
         // I want to expand all paths in the tree and not select any nodes - hence showing an empty panel
         this.pluginConfiguration = aPluginConfiguration;
 		updateTreeConfiguration();
-        expandAllPaths();
-        serverTree.setSelectionPath(null);
-        ConfigPanel.getInstance().getServerConfigPanel().showEmptyPanel();
+        //expandAllPaths();
+        //serverTree.setSelectionPath(null);
+        //ConfigPanel.getInstance().getServerConfigPanel().showEmptyPanel();
     }
 
 	private void updateServerTree(ServerType serverType) {

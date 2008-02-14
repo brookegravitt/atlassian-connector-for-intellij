@@ -45,7 +45,7 @@ public class PasswordDialog extends JDialog {
 				try {
 					BambooServerFactory.getBambooServerFacade().testServerConnection(
 							server.getUrlString(),
-							server.getUsername(),
+							server.getUserName(),
 							getPasswordString());
 					showMessageDialog("Connected successfully", "Connection OK", Messages.getInformationIcon());
 				} catch (BambooLoginException e1) {

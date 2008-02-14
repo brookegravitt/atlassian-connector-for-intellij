@@ -89,7 +89,7 @@ public class CrucibleConfigurationBean implements ProductServerConfiguration {
 			foundServer.setName(server.getName());
 		    foundServer.setPasswordString(server.getPasswordString(), server.getShouldPasswordBeStored());
 			foundServer.setUrlString(server.getUrlString());
-			foundServer.setUsername(server.getUsername());
+			foundServer.setUserName(server.getUserName());
 			foundServer.setEnabled(server.getEnabled());
 		}
 	}

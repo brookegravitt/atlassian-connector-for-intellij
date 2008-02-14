@@ -142,7 +142,7 @@ public class PluginConfigurationFormTest extends TestCase {
 		outServerBean.setName(new String("name"));
 		outServerBean.setPasswordString(new String("password"), true);
 		outServerBean.setUrlString(new String("url"));
-		outServerBean.setUsername(new String("userName"));
+		outServerBean.setUserName(new String("userName"));
 		outServerBean.setSubscribedPlansData(new ArrayList<SubscribedPlanBean>());
 		outServerBean.getSubscribedPlansData().add(new SubscribedPlanBean() {
 			{
@@ -164,9 +164,9 @@ public class PluginConfigurationFormTest extends TestCase {
 		assertTrue(pluginConfigurationForm.isModified());
 		formHelper.serverUrl.setText(outServerBean.getUrlString());
 
-		formHelper.username.setText(outServerBean.getUsername() + "-chg");
+		formHelper.username.setText(outServerBean.getUserName() + "-chg");
 		assertTrue(pluginConfigurationForm.isModified());
-		formHelper.username.setText(outServerBean.getUsername());
+		formHelper.username.setText(outServerBean.getUserName());
 
 
 		formHelper.password.setText(outServerBean.getName() + "-chg");
@@ -184,7 +184,7 @@ public class PluginConfigurationFormTest extends TestCase {
 		ServerBean outServer = (ServerBean)pluginConfigurationForm.getData();
 		assertEquals("", outServer.getName());
 		assertEquals("", outServer.getUrlString());
-		assertEquals("", outServer.getUsername());
+		assertEquals("", outServer.getUserName());
 		assertEquals("", outServer.getPasswordString());
 		assertEquals(0, outServer.getSubscribedPlansData().size());
 
@@ -255,7 +255,7 @@ public class PluginConfigurationFormTest extends TestCase {
 		outServer.setName("name");
 		outServer.setPasswordString("password", true);
 		outServer.setUrlString("url");
-		outServer.setUsername("userName");
+		outServer.setUserName("userName");
 
 
 		return outServer;
@@ -266,7 +266,7 @@ public class PluginConfigurationFormTest extends TestCase {
 		assertEquals("name", outServer.getName());
 		assertEquals("password", outServer.getPasswordString());
 		assertEquals("url", outServer.getUrlString());
-		assertEquals("userName", outServer.getUsername());
+		assertEquals("userName", outServer.getUserName());
 	}
 
 	public static Test suite() {

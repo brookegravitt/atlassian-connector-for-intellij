@@ -18,8 +18,6 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 public class CruciblePatchUploadForm extends DialogWrapper {
 	private JTextArea patchPreview;
@@ -80,8 +78,8 @@ public class CruciblePatchUploadForm extends DialogWrapper {
 		ReviewData reviewData = new ReviewData();
 		ServerBean serverBean = (ServerBean) crucibleServersComboBox.getSelectedItem();
 		if (serverBean != null) {
-			reviewData.setAuthor(serverBean.getUsername());
-			reviewData.setCreator(serverBean.getUsername());
+			reviewData.setAuthor(serverBean.getUserName());
+			reviewData.setCreator(serverBean.getUserName());
 			reviewData.setDescription(statementArea.getText());
 			reviewData.setName(titleText.getText());
 			reviewData.setProjectKey(projectKeyText.getText());

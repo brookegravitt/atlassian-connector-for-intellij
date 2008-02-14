@@ -111,7 +111,9 @@ public class BambooSession {
 			retrieveResponse(logoutUrl);
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("URLEncoding problem", e);
-		} catch (Exception e) {
+		} catch (IOException e) {
+			/* ignore errors on logout */
+		} catch (JDOMException e) {
 			/* ignore errors on logout */
 		}
 
