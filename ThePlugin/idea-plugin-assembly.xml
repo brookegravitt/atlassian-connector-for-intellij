@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one
   ~ or more contributor license agreements. See the NOTICE file
@@ -17,43 +18,43 @@
   ~ under the License.
   -->
 <assembly>
-	<includeBaseDirectory>false</includeBaseDirectory>
-	<formats>
-		<format>zip</format>
-	</formats>
-	<fileSets>
-		<fileSet>
-			<directory>./target/classes</directory>
-			<outputDirectory>${pom.project.artifactId}/classes</outputDirectory>
-			<excludes>
-				<exclude>META-INF/**</exclude>
-			</excludes>
-		</fileSet>
-		<fileSet>
-			<directory>./target/classes/META-INF</directory>
-			<outputDirectory>${pom.project.artifactId}/META-INF</outputDirectory>
-		</fileSet>
-	</fileSets>
-	<dependencySets>
-		<dependencySet>
-			<outputDirectory>${pom.project.artifactId}/lib</outputDirectory>
-			<scope>runtime</scope>
-			<includes>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <fileSets>
+    <fileSet>
+      <directory>./target/classes</directory>
+      <outputDirectory>${pom.project.artifactId}/classes</outputDirectory>
+      <excludes>
+        <exclude>META-INF/**</exclude>
+      </excludes>
+    </fileSet>
+    <fileSet>
+      <directory>./target/classes/META-INF</directory>
+      <outputDirectory>${pom.project.artifactId}/META-INF</outputDirectory>
+    </fileSet>
+  </fileSets>
+  <dependencySets>
+    <dependencySet>
+      <outputDirectory>${pom.project.artifactId}/lib</outputDirectory>
+      <scope>runtime</scope>
+      <includes>
         <include>org.apache.cxf:cxf-rt-core:jar</include>
         <include>org.apache.cxf:cxf-rt-frontend-jaxws:jar</include>
         <include>org.apache.cxf:cxf-rt-frontend-simple:jar</include>
         <include>org.apache.cxf:cxf-api:jar</include>
-        <include>org.apache.cxf:cxf-tools-common:jar</include>        
-        <include>org.apache.cxf:cxf-common-utilities:jar</include>  
+        <include>org.apache.cxf:cxf-tools-common:jar</include>
+        <include>org.apache.cxf:cxf-common-utilities:jar</include>
         <include>org.apache.cxf:cxf-rt-transports-http:jar</include>
-        <include>org.apache.cxf:cxf-rt-transports-http-jetty:jar</include>          
+        <include>org.apache.cxf:cxf-rt-transports-http-jetty:jar</include>
         <include>org.apache.cxf:cxf-rt-bindings-soap:jar</include>
-        <include>org.apache.cxf:cxf-rt-databinding-jaxb:jar</include>        
-        <include>org.apache.ws.commons.schema:XmlSchema:jar</include>        
+        <include>org.apache.cxf:cxf-rt-databinding-jaxb:jar</include>
+        <include>org.apache.ws.commons.schema:XmlSchema:jar</include>
         <include>com.sun.xml.bind:jaxb-impl:jar</include>
-        <include>wsdl4j:wsdl4j:jar</include>                                                                            
+        <include>wsdl4j:wsdl4j:jar</include>
+        <include>org.codehaus.woodstox:wstx-asl:jar</include>
       </includes>
-		</dependencySet>
-	</dependencySets>
+    </dependencySet>
+  </dependencySets>
 </assembly>
-
