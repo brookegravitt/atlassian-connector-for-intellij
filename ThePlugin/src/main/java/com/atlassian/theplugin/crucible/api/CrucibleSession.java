@@ -1,8 +1,8 @@
 package com.atlassian.theplugin.crucible.api;
 
-import com.atlassian.theplugin.crucible.api.soap.xfire.review.State;
-import com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData;
 import com.atlassian.theplugin.crucible.api.soap.xfire.review.PermId;
+import com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData;
+import com.atlassian.theplugin.crucible.api.soap.xfire.review.State;
 
 import java.util.List;
 
@@ -19,11 +19,13 @@ public interface CrucibleSession {
 
 	void logout();
 
-	String getAuthToken();
+	ReviewData createReview(ReviewData reviewData) throws CrucibleException;
 
-	List<ReviewData> getReviewsInStates(List<State> arg1);
+	ReviewData createReviewFromPatch(ReviewData reviewData, String patch) throws CrucibleException;
 
-    List<ReviewData> getAllReviews();
+	List<ReviewData> getReviewsInStates(List<State> arg1) throws CrucibleException;
 
-    List<String> getReviewers(PermId arg1);
+	List<ReviewData> getAllReviews() throws CrucibleException;
+
+	List<String> getReviewers(PermId arg1) throws CrucibleException;
 }
