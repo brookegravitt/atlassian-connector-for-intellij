@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.crucible;
 
-import com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData;
 import com.atlassian.theplugin.configuration.Server;
+import com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData;
 
 import java.util.List;
 
@@ -40,7 +40,12 @@ public class RemoteReview {
 	}
 
 	public String getReviewUrl() {
-        return server.getUrlString() + "/cru/" + reviewData.getPermaId().getId();
+		String baseUrl = server.getUrlString();
+		while (baseUrl.charAt(baseUrl.length() - 1) == '/') {
+			// quite ineffective, I know ...
+			baseUrl = baseUrl.substring(0,  baseUrl.length() - 1);
+		}
+		return baseUrl + "/cru/" + reviewData.getPermaId().getId();
     }
 
 	public boolean equals(Object o) {
