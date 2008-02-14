@@ -46,12 +46,16 @@ public class CrucibleSessionImpl implements CrucibleSession {
 		}
 
     	JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
-        Thread.currentThread().setContextClassLoader(factory.getClass().getClassLoader());
+		Thread.currentThread().setContextClassLoader(factory.getClass().getClassLoader());
 //        factory.setBus(CXFBusFactory.newInstance(CXFBusFactory.DEFAULT_BUS_FACTORY).createBus());
-        factory.setServiceClass(RpcAuthServiceName.class);
-        factory.setAddress(crucibleAuthUrl);
-        authService = (RpcAuthServiceName) factory.create();
-
+		factory.setServiceClass(RpcAuthServiceName.class);
+		factory.setAddress(crucibleAuthUrl);
+        authService = (RpcAuthServiceName) factory.create();		
+		/*
+		TODO lgminski our URLConnection somehow needs to be injected in the code - below some not working attempt
+		Client client = ClientProxy.getClient(authService);
+		HTTPConduit conduit = (HTTPConduit) client.getConduit();
+         */
 		JaxWsProxyFactoryBean reviewFactory = new JaxWsProxyFactoryBean();
 		reviewFactory.setServiceClass(RpcReviewServiceName.class);
 		reviewFactory.setAddress(crucibleReviewUrl);
