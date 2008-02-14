@@ -1,7 +1,10 @@
 package com.atlassian.theplugin.crucible;
 
 import com.atlassian.theplugin.configuration.ServerBean;
-import com.atlassian.theplugin.crucible.api.*;
+import com.atlassian.theplugin.crucible.api.CrucibleException;
+import com.atlassian.theplugin.crucible.api.CrucibleLoginException;
+import com.atlassian.theplugin.crucible.api.CrucibleSession;
+import com.atlassian.theplugin.crucible.api.CxfReviewServiceMockImpl;
 import com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData;
 import com.atlassian.theplugin.crucible.api.soap.xfire.review.RpcReviewServiceName;
 import com.atlassian.theplugin.crucible.api.soap.xfire.review.State;
@@ -10,7 +13,6 @@ import org.apache.cxf.jaxws.JaxWsServerFactoryBean;
 import org.easymock.EasyMock;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.replay;
-
 import java.util.List;
 
 /**
