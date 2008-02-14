@@ -25,6 +25,7 @@ public class MissingPasswordHandler implements Runnable {
 		if (!isDialogShown) {
 
 			isDialogShown = true;
+			boolean wasCanceled = false;
 
 			for (Server server
 					: ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers()) {
@@ -38,7 +39,7 @@ public class MissingPasswordHandler implements Runnable {
 				JPanel panel = dialog.getPasswordPanel();
 
 				int answer = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(), panel,
-														   PluginInfoUtil.getName(), OK_CANCEL_OPTION, PLAIN_MESSAGE);
+						PluginInfoUtil.getName(), OK_CANCEL_OPTION, PLAIN_MESSAGE);
 
 				if (answer == JOptionPane.OK_OPTION) {
 					String password = dialog.getPasswordString();
@@ -46,10 +47,7 @@ public class MissingPasswordHandler implements Runnable {
 					serverBean.setPasswordString(password, shouldPasswordBeStored);
 					serverBean.setUsername(dialog.getUserName());
 				} else {
-
-					JOptionPane.showMessageDialog(null,
-                            "You can always change password by changing plugin settings (Preferences | IDE Settings | "
-							+ PluginInfoUtil.getName() + ")");
+					wasCanceled = true;
 				}
 				// so or so we assume that user provided password
 
@@ -59,6 +57,11 @@ public class MissingPasswordHandler implements Runnable {
 					ApplicationManager.getApplication().getComponent(ThePluginApplicationComponent.class);
 			appComponent.triggerStatusCheckers();
 
+			if (wasCanceled) {
+				JOptionPane.showMessageDialog(null,
+						"You can always change password by changing plugin settings (Preferences | IDE Settings | "
+								+ PluginInfoUtil.getName() + ")");
+			}
 			isDialogShown = false;
 		}
 
