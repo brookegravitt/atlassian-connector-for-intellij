@@ -89,7 +89,17 @@ public class BambooStatusListenerImpl implements BambooStatusListener {
 			status = "succeed";
 		}
 
-		return "<div style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif; font-weight: bold; color: " + color + "\">" + "<a href=\"" + url + "\">" + buildKey + "-" + buildNumber + "</a> " + status + "</div><br />";
+		return "<div style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif; font-weight: bold; color: "
+				+ color + "\">"
+				+ "<a href=\""
+				+ url
+				+ "\">"
+				+ buildKey
+				+ "-"
+				+ buildNumber
+				+ "</a> "
+				+ status
+				+ "</div><br />";
 	}
 
 }
