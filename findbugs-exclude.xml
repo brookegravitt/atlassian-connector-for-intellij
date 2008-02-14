@@ -35,6 +35,7 @@
 			<Class name="com.atlassian.theplugin.idea.config.FooterPanel$2"/>
 			<Class name="com.atlassian.theplugin.idea.crucible.CruciblePatchUploadForm$1"/>
 			<Class name="com.atlassian.theplugin.bamboo.HtmlBambooStatusListener$1"/>
+			<Class name="com.atlassian.theplugin.idea.bamboo.BambooStatusIcon$1"/>
 		</Or>
 		<Bug pattern="SIC_INNER_SHOULD_BE_STATIC_ANON"/>
 	</Match>
