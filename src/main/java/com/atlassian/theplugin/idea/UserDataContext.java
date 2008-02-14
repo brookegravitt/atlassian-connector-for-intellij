@@ -34,7 +34,7 @@ public class UserDataContext implements CrucibleStatusListener {
 			final Project project = ProjectManager.getInstance().getOpenProjects()[0];
 
 			StringBuffer sb = new StringBuffer("<table width=\"100%\"><tr><td width=20><img src=\"/icons/crucible-blue-16.png\" height=16 width=16 border=0></td>" +
-					"<td colspan=2><b>" + newReviews.size() + " New Crucible Review" + (newReviews.size() == 1 ? "s" : "") + "</b></td></tr>");
+					"<td colspan=2><b>" + newReviews.size() + " New Crucible Review" + (newReviews.size() != 1 ? "s" : "") + "</b></td></tr>");
 
 			for (RemoteReview newReview : newReviews) {
 				String id = newReview.getReviewData().getPermaId().getId();
