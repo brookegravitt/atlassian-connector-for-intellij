@@ -28,7 +28,7 @@ public class BuildStatusChangedToolTip extends JPanel implements BambooStatusDis
 	private static final Color BACKGROUND_COLOR_SUCCEED = new Color(214, 255, 214);
 
 	private Project projectComponent;
-	JEditorPane content;
+	private JEditorPane content;
 
 	public BuildStatusChangedToolTip(Project project) {
 
@@ -40,7 +40,8 @@ public class BuildStatusChangedToolTip extends JPanel implements BambooStatusDis
 
 		content.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-				ToolWindow toolWindow = ToolWindowManager.getInstance(projectComponent).getToolWindow(ThePluginProjectComponent.TOOL_WINDOW_NAME);
+				ToolWindow toolWindow = ToolWindowManager.getInstance(
+						projectComponent).getToolWindow(ThePluginProjectComponent.TOOL_WINDOW_NAME);
 				ContentManager contentManager = toolWindow.getContentManager();
 				toolWindow.activate(null);
 				contentManager.setSelectedContent(contentManager.getContent(0));
