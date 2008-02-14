@@ -194,7 +194,7 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 		display.updateBambooStatus(status, sb.toString());
 	}
 
-    private Server getServerFromUrl(String serverUrl)
+    protected Server getServerFromUrl(String serverUrl)
     {
         ProductServerConfiguration productServers = IdeaHelper.getAppComponent().getState().getProductServers(ServerType.BAMBOO_SERVER);
         for (Iterator<Server> iterator = productServers.getEnabledServers().iterator(); iterator.hasNext();)

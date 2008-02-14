@@ -4,6 +4,8 @@ import com.gargoylesoftware.htmlunit.StringWebResponse;
 import com.gargoylesoftware.htmlunit.TopLevelWindow;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.*;
+import com.atlassian.theplugin.configuration.Server;
+import com.atlassian.theplugin.configuration.ServerBean;
 import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -43,7 +45,14 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 		super.setUp();
 
 		output = new StatusListenerResultCatcher();
-		testedListener = new HtmlBambooStatusListener(output);
+        final ServerBean server = new ServerBean();
+        server.setName("Test Server");
+        testedListener = new HtmlBambooStatusListener(output) {
+            protected Server getServerFromUrl(String serverUrl)
+            {
+                return server;
+            }
+        };
 	}
 
 	public void testNullStatusCollection() throws Exception {
@@ -110,16 +119,12 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 	@SuppressWarnings("unchecked")
 	private static void testSuccessRow(HtmlTableRow tableRow) throws Exception {
 		List<HtmlTableCell> cells = tableRow.getCells();
-		assertEquals(4, cells.size());
+		assertEquals(3, cells.size());
 
-        assertEquals("<td><a href=\"" + DEFAULT_SERVER_URL + "/browse/PLAN-ID\"><img src=\"/icons/icn_plan_passed.gif\" height=\"16\" width=\"16\" border=\"0\" align=\"absmiddle\"/></a></td>", trimWhitespace(cells.get(0).asXml()));
+        assertEquals("<td width=\"1%\"><a href=\"" + DEFAULT_SERVER_URL + "/browse/PLAN-ID\"><img src=\"/icons/icn_plan_passed.gif\" height=\"16\" width=\"16\" border=\"0\" align=\"absmiddle\"/></a></td>", trimWhitespace(cells.get(0).asXml()));
 		assertEquals(DEFAULT_PROJECT_NAME + " " + DEFAULT_BUILD_NAME + " > PLAN-ID-777", cells.get(1).asText());
 
-		String pollTime = cells.get(2).asText().trim();
-		assertTrue(pollTime.length() > 1);
-		assertFalse("---".equals(pollTime));
-
-		String buildTime = cells.get(3).asText().trim();
+		String buildTime = cells.get(2).asText().trim();
 		assertTrue(buildTime.length() > 1);
 		assertFalse("---".equals(buildTime));
 	}
@@ -137,31 +142,25 @@ public class HtmlBambooStatusListenerTest extends TestCase {
     @SuppressWarnings("unchecked")
 	private static void testFailedRow(HtmlTableRow tableRow) throws Exception {
 		List<HtmlTableCell> cells = tableRow.getCells();
-		assertEquals(4, cells.size());
+		assertEquals(3, cells.size());
 
-        assertEquals("<td><a href=\"" + DEFAULT_SERVER_URL + "/browse/PLAN-ID\"><img src=\"/icons/icn_plan_failed.gif\" height=\"16\" width=\"16\" border=\"0\" align=\"absmiddle\"/></a></td>", trimWhitespace(cells.get(0).asXml()));
+        assertEquals("<td width=\"1%\"><a href=\"" + DEFAULT_SERVER_URL + "/browse/PLAN-ID\"><img src=\"/icons/icn_plan_failed.gif\" height=\"16\" width=\"16\" border=\"0\" align=\"absmiddle\"/></a></td>", trimWhitespace(cells.get(0).asXml()));
 		assertEquals(DEFAULT_PROJECT_NAME + " " + DEFAULT_BUILD_NAME + " > PLAN-ID-777", cells.get(1).asText());
 
-		String pollTime = cells.get(2).asText().trim();
-		assertFalse("&nbsp;".equals(pollTime));
-
-		String buildTime = cells.get(3).asText().trim();
+		String buildTime = cells.get(2).asText().trim();
 		assertFalse("&nbsp;".equals(buildTime));
 	}
 
 	@SuppressWarnings("unchecked")
 	private static void testErrorRow(HtmlTableRow tableRow) throws Exception {
 		List<HtmlTableCell> cells = tableRow.getCells();
-		assertEquals(4, cells.size());
+		assertEquals(3, cells.size());
 
-        assertEquals("<td><a href=\"" + DEFAULT_SERVER_URL + "/browse/PLAN-ID\"><img src=\"/icons/icn_plan_disabled.gif\" height=\"16\" width=\"16\" border=\"0\" align=\"absmiddle\"/></a></td>", trimWhitespace(cells.get(0).asXml()));
+        assertEquals("<td width=\"1%\"><a href=\"" + DEFAULT_SERVER_URL + "/browse/PLAN-ID\"><img src=\"/icons/icn_plan_disabled.gif\" height=\"16\" width=\"16\" border=\"0\" align=\"absmiddle\"/></a></td>", trimWhitespace(cells.get(0).asXml()));
 		assertEquals(DEFAULT_ERROR_MESSAGE, cells.get(1).asText());
-        assertEquals("<td><font color=\"ltgrey\">" + DEFAULT_ERROR_MESSAGE + "</font></td>", trimWhitespace(cells.get(1).asXml()));
+        assertEquals("<td width=\"100%\"><font color=\"#999999\">" + DEFAULT_ERROR_MESSAGE + "</font></td>", trimWhitespace(cells.get(1).asXml()));
 
-		String pollTime = cells.get(2).asText().trim();
-		assertTrue(pollTime.length() > 1);
-
-		assertEquals("", cells.get(3).asText().trim());
+		assertEquals("", cells.get(2).asText().trim());
 	}
 
 
