@@ -22,7 +22,8 @@ public class HtmlCrucibleStatusListener implements CrucibleStatusListener {
 			sb.append("No reviews at this time.");
 		} else {
 			sb.append("<table width=\"100%\">");
-			sb.append("<th>Key</th><th>Summary</th><th>Author</th><th>State</th><th>Reviewers</th>");
+			sb.append("<tr><td colspan=5>Currently <b>" + reviews.size() + " open code reviews</b> for you.<br>&nbsp;</td></tr>");
+			sb.append("<tr><th>Key</th><th>Summary</th><th>Author</th><th>State</th><th>Reviewers</th></tr>");
 			for (RemoteReview review : reviews) {
                 sb.append("<tr><td valign=\"top\"><a href='");
                 sb.append(review.getReviewUrl());
