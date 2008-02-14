@@ -9,6 +9,9 @@ import java.util.Iterator;
 public class HtmlCrucibleStatusListener implements CrucibleStatusListener {
 
 	private final CrucibleStatusDisplay display;
+	private static final String BODY_WITH_STYLE = "<body style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">";
+
+
 	public HtmlCrucibleStatusListener(CrucibleStatusDisplay aDisplay) {
 		display = aDisplay;
 	}
@@ -16,7 +19,7 @@ public class HtmlCrucibleStatusListener implements CrucibleStatusListener {
     public void updateReviews(Collection<RemoteReview> reviews) {
 		StringBuilder sb = new StringBuilder(
                 "<html>"
-                + "<body style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">");
+                + BODY_WITH_STYLE);
 
 		if (reviews == null || reviews.size() == 0) {
 			sb.append("No reviews at this time.");
@@ -25,11 +28,11 @@ public class HtmlCrucibleStatusListener implements CrucibleStatusListener {
 			sb.append("<tr><td colspan=5>Currently <b>" + reviews.size() + " open code reviews</b> for you.<br>&nbsp;</td></tr>");
 			sb.append("<tr><th>Key</th><th>Summary</th><th>Author</th><th>State</th><th>Reviewers</th></tr>");
 			for (RemoteReview review : reviews) {
-                sb.append("<tr><td valign=\"top\"><a href='");
+                sb.append("<tr><td valign=\"top\"><b><font color=blue><a href='");
                 sb.append(review.getReviewUrl());
                 sb.append("'>");
                 sb.append(review.getReviewData().getPermaId().getId());
-                sb.append("</a></td>");
+                sb.append("</a></font></b></td>");
                 sb.append("<td valign=\"top\">" + review.getReviewData().getName() + "</td>");
                 sb.append("<td valign=\"top\">" + review.getReviewData().getAuthor() + "</td>");
                 sb.append("<td valign=\"top\">" + review.getReviewData().getState() + "</td>");
