@@ -3,29 +3,130 @@
   <grid id="27dc6" binding="rootComponent" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="488" height="354"/>
+      <xy x="20" y="20" width="780" height="535"/>
     </constraints>
-    <properties/>
+    <properties>
+      <minimumSize width="760" height="505"/>
+    </properties>
     <border type="none"/>
     <children>
-      <scrollpane id="12ddb">
+      <grid id="e6dc9" layout-manager="GridLayoutManager" row-count="6" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="1" left="1" bottom="1" right="1"/>
         <constraints>
-          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
         <border type="none"/>
         <children>
-          <component id="ffa59" class="javax.swing.JTextArea" binding="patchPreview">
-            <constraints/>
+          <component id="f1801" class="javax.swing.JComboBox" binding="crucibleServersComboBox">
+            <constraints>
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties/>
+          </component>
+          <component id="342c8" class="javax.swing.JTextField" binding="titleText">
+            <constraints>
+              <grid row="1" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="-1"/>
+              </grid>
+            </constraints>
+            <properties/>
+          </component>
+          <component id="3f219" class="javax.swing.JTextField" binding="projectKeyText">
+            <constraints>
+              <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="-1"/>
+              </grid>
+            </constraints>
             <properties>
-              <editable value="false"/>
-              <enabled value="true"/>
-              <font name="Monospaced"/>
-              <text value=""/>
+              <text value="CR"/>
+              <toolTipText value="Project Key the same as in Crucible added manually here"/>
+            </properties>
+          </component>
+          <component id="64703" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <labelFor value="f1801"/>
+              <text value="Server:"/>
+            </properties>
+          </component>
+          <component id="fd29c" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <inheritsPopupMenu value="false"/>
+              <labelFor value="3f219"/>
+              <text value="Project Key:"/>
+            </properties>
+          </component>
+          <component id="cea6e" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <labelFor value="342c8"/>
+              <text value="Title:"/>
+            </properties>
+          </component>
+          <component id="1679e" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="2" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <labelFor value="84cd6"/>
+              <text value="Statement of Objectives:"/>
+            </properties>
+          </component>
+          <scrollpane id="12ddb">
+            <constraints>
+              <grid row="5" column="0" row-span="1" col-span="4" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <component id="ffa59" class="javax.swing.JTextArea" binding="patchPreview">
+                <constraints/>
+                <properties>
+                  <editable value="false"/>
+                  <enabled value="true"/>
+                  <font name="Monospaced"/>
+                  <lineWrap value="true"/>
+                  <rows value="5"/>
+                  <text value=""/>
+                </properties>
+              </component>
+            </children>
+          </scrollpane>
+          <scrollpane id="15c69">
+            <constraints>
+              <grid row="3" column="0" row-span="1" col-span="4" vsize-policy="1" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <component id="84cd6" class="javax.swing.JTextArea" binding="statementArea">
+                <constraints/>
+                <properties>
+                  <lineWrap value="true"/>
+                  <rows value="5"/>
+                </properties>
+              </component>
+            </children>
+          </scrollpane>
+          <component id="ccf8a" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <labelFor value="ffa59"/>
+              <text value="Patch:"/>
             </properties>
           </component>
         </children>
-      </scrollpane>
+      </grid>
     </children>
   </grid>
 </form>
