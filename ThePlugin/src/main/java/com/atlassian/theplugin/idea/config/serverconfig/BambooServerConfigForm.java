@@ -57,7 +57,7 @@ public class BambooServerConfigForm extends AbstractServerPanel {
 
 		serverName.setText(aServer.getName());
 		serverUrl.setText(aServer.getUrlString());
-		username.setText(aServer.getUsername());
+		username.setText(aServer.getUserName());
 		chkPasswordRemember.setSelected(aServer.getShouldPasswordBeStored());
 		password.setText(aServer.getPasswordString());
 		cbEnabled.setSelected(aServer.getEnabled());
@@ -68,7 +68,7 @@ public class BambooServerConfigForm extends AbstractServerPanel {
 	public ServerBean getData() {
 		server.setName(serverName.getText());
 		server.setUrlString(serverUrl.getText());
-		server.setUsername(username.getText());
+		server.setUserName(username.getText());
 		server.setPasswordString(String.valueOf(password.getPassword()), chkPasswordRemember.isSelected());
 		server.setEnabled(cbEnabled.isSelected());
 		server.setSubscribedPlansData(subscribedPlansFromString(buildPlansTextArea.getText()));
@@ -124,7 +124,7 @@ public class BambooServerConfigForm extends AbstractServerPanel {
 				return true;
 			}
 			if (username.getText() != null
-                    ? !username.getText().equals(server.getUsername()) : server.getUsername() != null) {
+                    ? !username.getText().equals(server.getUserName()) : server.getUserName() != null) {
 				return true;
 			}
 			String pass = String.valueOf(password.getPassword());

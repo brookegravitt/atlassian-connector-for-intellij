@@ -50,6 +50,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		this.project = project;
 
 		// make findBugs happy
+		toolWindowManager = null;
 		bambooStatusChecker = null;
         crucibleStatusChecker = null;
         statusBar = null;

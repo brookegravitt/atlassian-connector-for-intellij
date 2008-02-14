@@ -24,7 +24,7 @@ public class ConfigurationTest extends TestCase {
         ServerBean srv = new ServerBean();
         srv.setName("dummyName");
         srv.setUrlString("http://dummy.url");
-        srv.setUsername("dummyUserName<a>aa</a>");
+        srv.setUserName("dummyUserName<a>aa</a>");
         srv.setPasswordString("dummyPassword", true);
 
 		serversData.add(srv);
@@ -36,7 +36,7 @@ public class ConfigurationTest extends TestCase {
 
         assertEquals("dummyName", server.getName());
         assertEquals("http://dummy.url", server.getUrlString());
-        assertEquals("dummyUserName<a>aa</a>", server.getUsername());
+        assertEquals("dummyUserName<a>aa</a>", server.getUserName());
         assertEquals("dummyPassword", server.getPasswordString());
 	}
 
@@ -44,7 +44,7 @@ public class ConfigurationTest extends TestCase {
 		ServerBean srv = new ServerBean();
 		srv.setName("dummyName");
 		srv.setUrlString("http://dummy.url");
-		srv.setUsername("dummyUserName<a>aa</a>");
+		srv.setUserName("dummyUserName<a>aa</a>");
 		srv.setPasswordString("dummyPassword", true);
 
 		List<SubscribedPlanBean> plans = new ArrayList<SubscribedPlanBean>();
@@ -68,7 +68,7 @@ public class ConfigurationTest extends TestCase {
 		assertTrue(srv.equals(clonedBean2));
 
 		clonedBean2 = new ServerBean(srv);
-		clonedBean2.setUsername("");
+		clonedBean2.setUserName("");
 		assertFalse(srv.equals(clonedBean2));
 
 		clonedBean2 = new ServerBean(srv);

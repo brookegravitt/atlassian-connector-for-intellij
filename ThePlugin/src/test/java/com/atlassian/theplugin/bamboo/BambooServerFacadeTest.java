@@ -1,13 +1,12 @@
 package com.atlassian.theplugin.bamboo;
 
-import com.atlassian.theplugin.ServerType;
 import com.atlassian.theplugin.bamboo.api.BambooLoginException;
 import com.atlassian.theplugin.bamboo.api.bamboomock.*;
 import com.atlassian.theplugin.configuration.*;
+import com.atlassian.theplugin.ServerType;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -44,7 +43,7 @@ public class BambooServerFacadeTest extends TestCase {
 
 		server.setName("TestServer");
 		server.setUrlString(serverUrl);
-		server.setUsername(USER_NAME);
+		server.setUserName(USER_NAME);
 
 		server.setPasswordString(isPassInitialized ? PASSWORD : "", isPassInitialized);
 		server.setIsConfigInitialized(isPassInitialized);
@@ -225,36 +224,6 @@ public class BambooServerFacadeTest extends TestCase {
 		} catch (BambooLoginException e) {
 			//expected
 		}
-
-		try {
-			facade.testServerConnection("xcxxxc://localhost", USER_NAME, PASSWORD);
-			fail();
-		} catch (BambooLoginException e) {
-			assertTrue("MalformedURLException expected", e.getCause() instanceof MalformedURLException);
-		}
-
-		try {
-			facade.testServerConnection("http:/localhost", USER_NAME, PASSWORD);
-			fail();
-		} catch (BambooLoginException e) {
-			assertTrue("MalformedURLException expected", e.getCause() instanceof MalformedURLException);
-		}
-
-		try {
-			facade.testServerConnection("http:///localhost", USER_NAME, PASSWORD);
-			fail();
-		} catch (BambooLoginException e) {
-			assertTrue("MalformedURLException expected", e.getCause() instanceof MalformedURLException);
-		}
-
-		try {
-			facade.testServerConnection("http://", USER_NAME, PASSWORD);
-			fail();
-		} catch (BambooLoginException e) {
-			assertTrue("MalformedURLException expected", e.getCause() instanceof MalformedURLException);
-		}
-
-
 		mockServer.verify();
 	}
 
