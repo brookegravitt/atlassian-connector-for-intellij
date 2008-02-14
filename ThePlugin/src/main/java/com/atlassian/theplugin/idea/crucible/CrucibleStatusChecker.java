@@ -47,8 +47,7 @@ public class CrucibleStatusChecker {
 	 * DO NOT use that method in 'dispatching thread' of IDEA. It can block GUI for several seconds.
 	 */
 	private void doRun() {
-        try
-        {
+        try {
             // collect build info from each server
             final Collection<RemoteReview> reviews = new ArrayList<RemoteReview>();
             for (Server server
@@ -62,7 +61,7 @@ public class CrucibleStatusChecker {
                                             new MissingPasswordHandler(), ModalityState.defaultModalityState());
                                 } catch (CrucibleLoginException e) {
                                     // @todo
-                                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                                    e.printStackTrace();
                                 }
                             }
 
@@ -76,9 +75,7 @@ public class CrucibleStatusChecker {
                     }
                 }
             });
-	    }
-        catch (Throwable t)
-        {
+	    } catch (Throwable t) {
             t.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
     }
