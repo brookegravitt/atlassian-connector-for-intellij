@@ -142,8 +142,7 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 		} else {
             List<BambooBuild> sortedStatuses = new ArrayList<BambooBuild>(buildStatuses);
             Collections.sort(sortedStatuses, new Comparator<BambooBuild>() {
-                public int compare(BambooBuild b1, BambooBuild b2)
-                {
+                public int compare(BambooBuild b1, BambooBuild b2) {
                     return b1.getServerUrl().compareTo(b2.getServerUrl());
                 }
             });
@@ -152,21 +151,28 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
             String lastServer = null;
 
             for (BambooBuild buildInfo : buildStatuses) {
-                if (!buildInfo.getServerUrl().equals(lastServer))
-                {
+                if (!buildInfo.getServerUrl().equals(lastServer)) {
                     Server server = getServerFromUrl(buildInfo.getServerUrl());
 
-                    if (lastServer != null) // don't put space before the first row
-                    {
+                    if (lastServer != null) {
                         sb.append("<tr><td colspan=3>&nbsp;</td></tr>");                        
                     }
                     sb.append("<tr><td colspan=3>");
-                    sb.append("<table width=100% cellpadding=0 cellspacing=0>" +
-                            "<tr>" +
-//                            "<td width=1%><a href='" + server.getUrlString() + "'><img src=/icons/bamboo-blue-32.png height=32 width=32 border=0></a></td>" +
-                            "<td width=100%><b><a href='" + server.getUrlString() + "'>" + server.getName() + "</a></b><br>" +
-                            "<font style=\"font-size: 10pt;\" color=#999999>LAST UPDATE: " + TIME_DF.format(buildInfo.getPollingTime()) + "</font></td>" +
-                            "<td width=1% nowrap align=right valign=bottom style=\"font-size:10pt ;\"></td></tr></table>");
+                    sb.append(
+							"<table width=100% cellpadding=0 cellspacing=0>"
+							+ "<tr>"
+//                          + "<td width=1%><a href='"
+// 							+ server.getUrlString()
+// 							+ "'><img src=/icons/bamboo-blue-32.png height=32 width=32 border=0></a></td>"
+                            + "<td width=100%><b><a href='"
+							+ server.getUrlString()
+							+ "'>"
+							+ server.getName()
+							+ "</a></b><br>"
+                            + "<font style=\"font-size: 10pt;\" color=#999999>LAST UPDATE: "
+							+ TIME_DF.format(buildInfo.getPollingTime()) + "</font></td>"
+							+ "<td width=1% nowrap align=right valign=bottom style=\"font-size:10pt ;\">"
+							+ "</td></tr></table>");
                     sb.append("</td></tr>");
                 }
                 switch (buildInfo.getStatus()) {
@@ -194,15 +200,15 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 		display.updateBambooStatus(status, sb.toString());
 	}
 
-    protected Server getServerFromUrl(String serverUrl)
-    {
-        ProductServerConfiguration productServers = IdeaHelper.getAppComponent().getState().getProductServers(ServerType.BAMBOO_SERVER);
-        for (Iterator<Server> iterator = productServers.getEnabledServers().iterator(); iterator.hasNext();)
-        {
+    protected Server getServerFromUrl(String serverUrl) {
+        ProductServerConfiguration productServers =
+				IdeaHelper.getAppComponent().getState().getProductServers(ServerType.BAMBOO_SERVER);
+        for (Iterator<Server> iterator = productServers.getEnabledServers().iterator(); iterator.hasNext();) {
             Server server = iterator.next();
-            if (serverUrl.equals(server.getUrlString()))
+            if (serverUrl.equals(server.getUrlString())) {
                 return server;
-        }
+			}
+		}
 
         return null;
     }
