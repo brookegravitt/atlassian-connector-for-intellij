@@ -47,9 +47,11 @@
 	</Match>
 
 	<!--third party code-->
+	<!--TODO: we should probably narrow it down to specific bug codes, or some bugs may slip through-->
+	<!--when objects of these classes are called somewhere else-->
 	<Match>
 		<Or>
-			<!--<Package name="thirdparty.net.iharder.base64"/>-->
+			<Package name="thirdparty.net.iharder.base64"/>
 			<Class   name="com.atlassian.theplugin.util.ClasspathImageView"/>
 		</Or>
 	</Match>
