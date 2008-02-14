@@ -26,6 +26,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 
 	private CrucibleServerFacade facade;
 	private CrucibleSession crucibleSessionMock;
+	public static final String INVALID_PROJECT_KEY = "INVALID project key";
 
 	protected void setUp() {
 
@@ -129,6 +130,41 @@ public class CrucibleServerFacadeTest extends TestCase {
 		}
 
 	}
+	public void testCreateReviewWithInvalidProjectKey() {
+
+		try {
+			crucibleSessionMock.login(CxfReviewServiceMockImpl.VALID_LOGIN, CxfReviewServiceMockImpl.VALID_PASSWORD);
+		} catch (CrucibleLoginException e) {
+			fail("recording mock failed for login");
+		}
+
+		crucibleSessionMock.getAuthToken();
+		EasyMock.expectLastCall().andReturn("some token");
+		//EasyMock.expectLastCall().andThrow(new CrucibleException(""));
+		crucibleSessionMock.logout();
+
+		replay(crucibleSessionMock);
+
+		ServerBean server = prepareServerBean();
+		ReviewData reviewData = prepareReviewData();
+
+		ReviewData ret;
+
+		try {
+			reviewData.setProjectKey(INVALID_PROJECT_KEY);
+			// test call
+			ret = facade.createReview(server, reviewData);
+
+
+			fail("creating review with invalid key should throw an CrucibleException()");
+
+		} catch (CrucibleException e) {
+
+		} finally {
+			EasyMock.verify(crucibleSessionMock);
+		}
+
+	}
 
 	public void testCreateReviewFromPatch() {
 
@@ -175,6 +211,41 @@ public class CrucibleServerFacadeTest extends TestCase {
 
 	}
 
+	public void testCreateReviewFromPatchWithInvalidProjectKey() {
+
+		try {
+			crucibleSessionMock.login(CxfReviewServiceMockImpl.VALID_LOGIN, CxfReviewServiceMockImpl.VALID_PASSWORD);
+		} catch (CrucibleLoginException e) {
+			fail("recording mock failed for login");
+		}
+
+		crucibleSessionMock.getAuthToken();
+		EasyMock.expectLastCall().andReturn("some token");
+		crucibleSessionMock.logout();
+
+		replay(crucibleSessionMock);
+
+		ServerBean server = prepareServerBean();
+		ReviewData reviewData = prepareReviewData();
+
+		String patch = "some patch";
+
+		ReviewData ret;
+
+		try {
+
+			reviewData.setProjectKey(INVALID_PROJECT_KEY);
+			// test call
+			ret = facade.createReviewFromPatch(server, reviewData, patch);
+
+			fail("creating review with patch with invalid key should throw an CrucibleException()");
+		} catch (CrucibleException e) {			
+		} finally {
+			EasyMock.verify(crucibleSessionMock);
+
+		};
+
+	}
 
 	private ReviewData prepareReviewData() {
 		ReviewData reviewData = new ReviewData();
