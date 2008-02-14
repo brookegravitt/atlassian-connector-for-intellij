@@ -22,7 +22,7 @@ import java.awt.event.MouseEvent;
  * Time: 09:45:33
  * To change this template use File | Settings | File Templates.
  */
-public class ToolTipFailed extends JPanel implements BambooStatusDisplay {
+public class BuildStatusChangedToolTip extends JPanel implements BambooStatusDisplay {
 
 	private static final Color BACKGROUND_COLOR_FAILED = new Color(255, 214, 214);
 	private static final Color BACKGROUND_COLOR_SUCCEED = new Color(214, 255, 214);
@@ -30,7 +30,7 @@ public class ToolTipFailed extends JPanel implements BambooStatusDisplay {
 	private Project projectComponent;
 	JEditorPane content;
 
-	public ToolTipFailed(Project project) {
+	public BuildStatusChangedToolTip(Project project) {
 
 		projectComponent = project;
 
