@@ -46,30 +46,36 @@ public class BambooStatusChecker {
 	 * DO NOT use that method in 'dispatching thread' of IDEA. It can block GUI for several seconds.
 	 */
 	private void doRun() {
-		// collect build info from each server
-		final Collection<BambooBuild> newServerBuildsStatus = new ArrayList<BambooBuild>();
-		for (Server server : ConfigurationFactory.getConfiguration().getProductServers(
-                ServerType.BAMBOO_SERVER).getEnabledServers()) {
-                    try {
-                        newServerBuildsStatus.addAll(
-                                BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults(server));
-                    } catch (ServerPasswordNotProvidedException exception) {
-                        ApplicationManager.getApplication().invokeLater(
-                                new MissingPasswordHandler(), ModalityState.defaultModalityState());
+        try {
+            // collect build info from each server
+            final Collection<BambooBuild> newServerBuildsStatus = new ArrayList<BambooBuild>();
+            for (Server server : ConfigurationFactory.getConfiguration().getProductServers(
+                    ServerType.BAMBOO_SERVER).getEnabledServers()) {
+                        try {
+                            newServerBuildsStatus.addAll(
+                                    BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults(server));
+                        } catch (ServerPasswordNotProvidedException exception) {
+                            ApplicationManager.getApplication().invokeLater(
+                                    new MissingPasswordHandler(), ModalityState.defaultModalityState());
+                        }
+                    }
+
+            // dispatch to the listeners
+            EventQueue.invokeLater(new Runnable() {
+                public void run() {
+                    synchronized (listenerList) {
+                        for (BambooStatusListener listener : listenerList) {
+                            listener.updateBuildStatuses(newServerBuildsStatus);
+                        }
                     }
                 }
-
-		// dispatch to the listeners
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				synchronized (listenerList) {
-					for (BambooStatusListener listener : listenerList) {
-						listener.updateBuildStatuses(newServerBuildsStatus);
-					}
-				}
-			}
-		});
-	}
+            });
+        }
+        catch (Throwable t)
+        {
+            t.printStackTrace();
+        }
+    }
 
 	/**
 	 * Create a new instance of {@link java.util.TimerTask} for {@link java.util.Timer} re-scheduling purposes.
