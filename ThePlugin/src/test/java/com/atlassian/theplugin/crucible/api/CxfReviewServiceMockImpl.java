@@ -1,10 +1,11 @@
 package com.atlassian.theplugin.crucible.api;
 
+import com.atlassian.theplugin.crucible.CrucibleServerFacadeTest;
 import com.atlassian.theplugin.crucible.api.soap.xfire.review.*;
 
-import javax.jws.WebResult;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
+import javax.jws.WebResult;
 import javax.xml.ws.RequestWrapper;
 import javax.xml.ws.ResponseWrapper;
 import java.util.List;
@@ -133,6 +134,9 @@ public class CxfReviewServiceMockImpl implements RpcReviewServiceName {
 		PermId permId = new PermId();
 		permId.setId("some id");
 		review.setPermaId(permId);
+		if (review.getProjectKey().equals(CrucibleServerFacadeTest.INVALID_PROJECT_KEY)){
+					throw new RuntimeException("Invalid project key");
+		}
 
 		return review;
 	}
@@ -193,6 +197,9 @@ public class CxfReviewServiceMockImpl implements RpcReviewServiceName {
 		PermId permId = new PermId();
 		permId.setId("some id");
 		review.setPermaId(permId);
+		if (review.getProjectKey().equals(CrucibleServerFacadeTest.INVALID_PROJECT_KEY)){
+					throw new RuntimeException("Invalid project key");
+		}
 
 		return review;
 	}
