@@ -27,7 +27,7 @@ public class CrucibleServerConfigForm extends AbstractServerPanel {
 	private JCheckBox chkPasswordRemember;
 	private JCheckBox cbEnabled;
 
-	private ServerBean server;
+	private transient ServerBean server;
 
 	public CrucibleServerConfigForm() {
 

@@ -43,7 +43,8 @@ public class CruciblePatchUploadForm extends DialogWrapper {
 
 	private void fillInCrucibleServers() {
 		CrucibleConfigurationBean crucibleConfigurationBean =
-				(CrucibleConfigurationBean) ConfigurationFactory.getConfiguration().getProductServers(ServerType.CRUCIBLE_SERVER);
+				(CrucibleConfigurationBean) ConfigurationFactory.getConfiguration().getProductServers(
+						ServerType.CRUCIBLE_SERVER);
 
 		crucibleServersComboBox.setRenderer(new ListCellRenderer() {
 			public Component getListCellRendererComponent(JList jList, Object o, int i, boolean b, boolean b1) {
@@ -85,13 +86,18 @@ public class CruciblePatchUploadForm extends DialogWrapper {
 			reviewData.setProjectKey(projectKeyText.getText());
 
 			try {
-				ReviewData draftReviewData = CrucibleServerFactory.getCrucibleServerFacade().createReviewFromPatch(serverBean, reviewData, patchPreview.getText());
+				ReviewData draftReviewData =
+						CrucibleServerFactory.getCrucibleServerFacade().createReviewFromPatch(
+								serverBean, reviewData, patchPreview.getText());
 				if (openBrowserToCompleteCheckBox.isSelected()) {
-					BrowserUtil.launchBrowser(serverBean.getUrlString() + "/cru/" + draftReviewData.getPermaId().getId());
+					BrowserUtil.launchBrowser(serverBean.getUrlString()
+					+ "/cru/"
+					+ draftReviewData.getPermaId().getId());
 				}
 				super.doOKAction();
 			} catch (CrucibleException e) {
-				showMessageDialog(e.getMessage(), "Error creating review: " + serverBean.getUrlString(), Messages.getErrorIcon());
+				showMessageDialog(e.getMessage(),
+						"Error creating review: " + serverBean.getUrlString(), Messages.getErrorIcon());
 			}
 
 

@@ -32,7 +32,7 @@ public class BambooServerConfigForm extends AbstractServerPanel {
 	private JCheckBox chkPasswordRemember;
 	private JCheckBox cbEnabled;
 
-	private ServerBean server;
+	private transient ServerBean server;
 
 	public BambooServerConfigForm() {
 
