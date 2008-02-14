@@ -2,15 +2,12 @@ package com.atlassian.theplugin.idea.bamboo;
 
 import com.atlassian.theplugin.bamboo.BambooStatusDisplay;
 import com.atlassian.theplugin.bamboo.BuildStatus;
-import com.atlassian.theplugin.idea.PluginStatusBarToolTip;
 import com.atlassian.theplugin.idea.ThePluginProjectComponent;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.wm.ToolWindow;
-import com.intellij.openapi.wm.WindowManager;
 import com.intellij.ui.content.ContentManager;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 

@@ -70,9 +70,7 @@ public class BambooStatusChecker {
                     }
                 }
             });
-        }
-        catch (Throwable t)
-        {
+        } catch (Throwable t) {
             t.printStackTrace();
         }
     }
