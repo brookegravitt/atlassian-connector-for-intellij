@@ -12,6 +12,7 @@ import javax.swing.tree.DefaultTreeModel;
  * Time: 16:52:54
  */
 public class ServerTreeModel extends DefaultTreeModel {
+	static final long serialVersionUID = 1631701743528670523L;
 
 	public ServerTreeModel(RootNode root) {
 		super(root);

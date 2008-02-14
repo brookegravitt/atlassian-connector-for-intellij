@@ -88,7 +88,7 @@ public class CrucibleServerConfigForm extends AbstractServerPanel {
 				return true;
 			}
 			String pass = String.valueOf(password.getPassword());
-			if (pass != null ? !pass.equals(server.getPasswordString()) : server.getPasswordString() != null) {
+			if (!pass.equals(server.getPasswordString())) {
 				return true;
 			}
 

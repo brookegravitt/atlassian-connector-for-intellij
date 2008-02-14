@@ -99,19 +99,19 @@ public class CruciblePatchUploadForm extends DialogWrapper {
 	}
 
 
-	private boolean isValid() {
-
-		if (crucibleServersComboBox.getSelectedItem() == null ||
-				patchPreview.getText().length() == 0 ||
-				titleText.getText().length() == 0 ||
-				projectKeyText.getText().length() == 0 ||
-				statementArea.getText().length() == 0) {
-			return false;
-		}
-
-		return true;
-
-	}
+//	private boolean isValid() {
+//
+//		if (crucibleServersComboBox.getSelectedItem() == null ||
+//				patchPreview.getText().length() == 0 ||
+//				titleText.getText().length() == 0 ||
+//				projectKeyText.getText().length() == 0 ||
+//				statementArea.getText().length() == 0) {
+//			return false;
+//		}
+//
+//		return true;
+//
+//	}
 
 	private void createUIComponents() {
 		// TODO: place custom component creation code here
