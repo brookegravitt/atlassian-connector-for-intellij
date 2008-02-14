@@ -4,6 +4,7 @@ import com.atlassian.theplugin.bamboo.BambooStatusDisplay;
 import com.atlassian.theplugin.bamboo.BuildStatus;
 import com.atlassian.theplugin.idea.GenericHyperlinkListener;
 import com.atlassian.theplugin.idea.ThePluginProjectComponent;
+import com.atlassian.theplugin.util.ClasspathHTMLEditorKit;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowManager;
@@ -15,13 +16,6 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-/**
- * Created by IntelliJ IDEA.
- * User: Jacek
- * Date: 2008-02-14
- * Time: 09:45:33
- * To change this template use File | Settings | File Templates.
- */
 public class BuildStatusChangedToolTip extends JPanel implements BambooStatusDisplay {
 
 	private static final Color BACKGROUND_COLOR_FAILED = new Color(255, 214, 214);
@@ -37,6 +31,7 @@ public class BuildStatusChangedToolTip extends JPanel implements BambooStatusDis
 		content = new JEditorPane();
 		content.setEditable(false);
 		content.setContentType("text/html");
+		content.setEditorKit(new ClasspathHTMLEditorKit());
 
 		content.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
@@ -44,19 +39,17 @@ public class BuildStatusChangedToolTip extends JPanel implements BambooStatusDis
 						projectComponent).getToolWindow(ThePluginProjectComponent.TOOL_WINDOW_NAME);
 				ContentManager contentManager = toolWindow.getContentManager();
 				toolWindow.activate(null);
-				contentManager.setSelectedContent(contentManager.getContent(0));
+				contentManager.setSelectedContent(contentManager.findContent("Bamboo"));
 			}
 		});
 
 		content.addHyperlinkListener(new GenericHyperlinkListener());
-
 		this.setLayout(new BorderLayout());
 		this.add(content, BorderLayout.CENTER);
 
 	}
 
 	public void updateBambooStatus(BuildStatus generalBuildStatus, String htmlPage) {
-
 		content.setText(htmlPage);
 
 		switch (generalBuildStatus) {
@@ -70,6 +63,8 @@ public class BuildStatusChangedToolTip extends JPanel implements BambooStatusDis
 		}
 
 		// fire notification popup
-		WindowManager.getInstance().getStatusBar(projectComponent).fireNotificationPopup(this, null);
+		content.setCaretPosition(0);
+		JScrollPane scrollPane = new JScrollPane(content);
+		WindowManager.getInstance().getStatusBar(projectComponent).fireNotificationPopup(scrollPane, null);
 	}
 }
