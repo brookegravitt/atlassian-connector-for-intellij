@@ -2,10 +2,13 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.bamboo.BuildStatus;
 import com.atlassian.theplugin.bamboo.HtmlBambooStatusListener;
+import com.atlassian.theplugin.bamboo.BambooStatusDisplay;
+import com.atlassian.theplugin.bamboo.BambooStatusListenerImpl;
 import com.atlassian.theplugin.crucible.HtmlCrucibleStatusListener;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusChecker;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
 import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
+import com.atlassian.theplugin.idea.bamboo.ToolTipFailed;
 import com.atlassian.theplugin.idea.crucible.CruciblePatchSubmitExecutor;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.idea.crucible.CrucibleToolWindowPanel;
@@ -41,8 +44,9 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	private ToolWindow toolWindow;
 	private static final String THE_PLUGIN_TOOL_WINDOW_ICON = "/icons/thePlugin_15x10.png";
 	private boolean enabled;
+	private BambooStatusDisplay buildFailedToolTip;
 
-    public ThePluginProjectComponent(Project project) {
+	public ThePluginProjectComponent(Project project) {
 		this.project = project;
 
 		// make findBugs happy
@@ -117,7 +121,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 			// add simple bamboo listener to bamboo checker thread
 			// this listener shows idea tooltip when buld failed
-			simpleBambooStatusListener = new BambooStatusListenerImpl(project);
+			buildFailedToolTip = new ToolTipFailed(project);
+			simpleBambooStatusListener = new BambooStatusListenerImpl(buildFailedToolTip);
 			bambooStatusChecker.registerListener(simpleBambooStatusListener);
 
 			// add icon to status bar

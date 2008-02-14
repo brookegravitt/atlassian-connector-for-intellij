@@ -30,9 +30,10 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 	private static final String DEFAULT_ERROR_MESSAGE = "default error message";
     private static final String DEFAULT_SERVER_URL = "http://test.atlassian.com/bamboo";
     private static final String DEFAULT_PROJECT_NAME = "ThePlugin";
+	private static final String DEFAULT_PLAN_ID_2 = "PLAN2-ID";
 
 
-    protected void tearDown() throws Exception {
+	protected void tearDown() throws Exception {
 		output = null;
 		testedListener = null;
 		super.tearDown();
@@ -164,10 +165,38 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 	}
 
 
-	private static BambooBuild generateBuildInfo(BuildStatus status) {
+	public static BambooBuild generateBuildInfo(BuildStatus status) {
 		BambooBuildInfo buildInfo = new BambooBuildInfo();
 
 		buildInfo.setBuildKey(DEFAULT_PLAN_ID);
+		buildInfo.setBuildName(DEFAULT_BUILD_NAME);
+		buildInfo.setBuildNumber(String.valueOf(DEFAULT_BUILD_NO));
+        buildInfo.setProjectName(DEFAULT_PROJECT_NAME);
+        buildInfo.setServerUrl(DEFAULT_SERVER_URL);
+
+        switch (status) {
+			case UNKNOWN:
+				buildInfo.setBuildState("Unknown");
+				buildInfo.setMessage(DEFAULT_ERROR_MESSAGE);
+				break;
+			case BUILD_SUCCEED:
+				buildInfo.setBuildState("Successful");
+				buildInfo.setBuildTime(new Date());
+				break;
+			case BUILD_FAILED:
+				buildInfo.setBuildState("Failed");
+				buildInfo.setBuildTime(new Date());
+				break;
+		}
+		buildInfo.setPollingTime(new Date());
+
+		return buildInfo;
+	}
+
+	public static BambooBuild generateBuildInfo2(BuildStatus status) {
+		BambooBuildInfo buildInfo = new BambooBuildInfo();
+
+		buildInfo.setBuildKey(DEFAULT_PLAN_ID_2);
 		buildInfo.setBuildName(DEFAULT_BUILD_NAME);
 		buildInfo.setBuildNumber(String.valueOf(DEFAULT_BUILD_NO));
         buildInfo.setProjectName(DEFAULT_PROJECT_NAME);
