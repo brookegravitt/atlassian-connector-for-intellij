@@ -60,8 +60,6 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 	}
 
 	String generateUnifiedDiff(Collection<Change> changes) {
-		final int linesOfContext = LINES_OF_CONTEXT;
-
 		StringBuilder sb = new StringBuilder();
 		for (Change fileChange : changes) {
 			ContentRevision beforeRevision = fileChange.getBeforeRevision();
@@ -94,7 +92,7 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 				diff = Diff.buildChanges(beforeLines, afterLines);
 			}
 
-			generateUnifiedDiffBody(sb, diff, beforeLines, afterLines, linesOfContext);
+			generateUnifiedDiffBody(sb, diff, beforeLines, afterLines, LINES_OF_CONTEXT);
 
 		}
 		return sb.toString();

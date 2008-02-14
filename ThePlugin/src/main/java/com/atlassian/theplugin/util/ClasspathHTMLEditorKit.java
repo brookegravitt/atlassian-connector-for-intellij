@@ -11,13 +11,13 @@ import javax.swing.text.*;
  * @see com.atlassian.theplugin.util.ClasspathImageView
  */
 public class ClasspathHTMLEditorKit extends HTMLEditorKit {
+	static final long serialVersionUID = -6514354184056679038L;
 
 	public ViewFactory getViewFactory() {
 		return new HTMLFactoryX();
 	}
 
-	public static class HTMLFactoryX extends HTMLFactory
-			implements ViewFactory {
+	public static class HTMLFactoryX extends HTMLFactory {
 
 		public View create(Element elem) {
 			Object o = elem.getAttributes().getAttribute(StyleConstants.NameAttribute);

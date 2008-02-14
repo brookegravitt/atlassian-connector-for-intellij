@@ -27,7 +27,7 @@ public class BuildStatusChangedToolTip extends JPanel implements BambooStatusDis
 	private static final Color BACKGROUND_COLOR_FAILED = new Color(255, 214, 214);
 	private static final Color BACKGROUND_COLOR_SUCCEED = new Color(214, 255, 214);
 
-	private Project projectComponent;
+	private transient Project projectComponent;
 	private JEditorPane content;
 
 	public BuildStatusChangedToolTip(Project project) {
@@ -64,8 +64,6 @@ public class BuildStatusChangedToolTip extends JPanel implements BambooStatusDis
 				content.setBackground(BACKGROUND_COLOR_SUCCEED);
 				break;
 			case BUILD_FAILED:
-				content.setBackground(BACKGROUND_COLOR_FAILED);
-				break;
 			default:
 				content.setBackground(BACKGROUND_COLOR_FAILED);
 				break;
