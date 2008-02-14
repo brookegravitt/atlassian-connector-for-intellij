@@ -10,6 +10,8 @@ import com.atlassian.theplugin.ServerType;
  * Time: 09:25:29
  */
 public class BambooServerNode extends ServerNode {
+	static final long serialVersionUID = -6944317541000292469L;
+	
 	public BambooServerNode(ServerBean aServer) {
 		super(aServer);
 	}

@@ -55,6 +55,6 @@ public final class ServerNameUtil {
 				}
 			}
 		}
-		return MessageFormat.format(template, new Object[]{ new Long(maxIndex + 1) });
+		return MessageFormat.format(template, new Object[]{ Long.valueOf(maxIndex + 1) });
 	}	
 }

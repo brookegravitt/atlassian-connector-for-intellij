@@ -10,4 +10,5 @@ import javax.swing.tree.DefaultMutableTreeNode;
  * To change this template use File | Settings | File Templates.
  */
 public class RootNode extends DefaultMutableTreeNode {
+	static final long serialVersionUID = -5409514192457000262L;
 }
