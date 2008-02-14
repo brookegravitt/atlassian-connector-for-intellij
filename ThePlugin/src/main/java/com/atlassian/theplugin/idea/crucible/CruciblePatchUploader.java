@@ -10,9 +10,9 @@ public class CruciblePatchUploader implements Runnable {
 	}
 
 	public void run() {
-		final CruciblePatchUploadForm patchUploadForm = new CruciblePatchUploadForm();
+		final CruciblePatchUploadForm patchUploadForm = new CruciblePatchUploadForm(commitMessage);
 		patchUploadForm.setPatchPreview(patch);
-		patchUploadForm.setTitle(commitMessage);
+		patchUploadForm.setTitle("Create Patch Review");
 		patchUploadForm.show();
 	}
 }
