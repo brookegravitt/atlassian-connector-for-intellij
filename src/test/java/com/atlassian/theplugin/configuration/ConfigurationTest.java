@@ -98,6 +98,6 @@ public class ConfigurationTest extends TestCase {
 
 
 	public void testProjectSettings() {
-        assertEquals("The Plugin", PluginInfoUtil.getName());
+        assertEquals("Atlassian", PluginInfoUtil.getName());
     }
 }
