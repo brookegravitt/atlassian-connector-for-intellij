@@ -25,7 +25,7 @@ import java.util.Collection;
 public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 
 	private JTree serverTree = null;
-	private PluginConfiguration pluginConfiguration = null;
+	private transient PluginConfiguration pluginConfiguration = null;
 	private ServerTreeModel model;
 	private DefaultMutableTreeNode selectedNode = null;
 	private DefaultMutableTreeNode newSelectedNode = null;
