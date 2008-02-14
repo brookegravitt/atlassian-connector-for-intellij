@@ -165,10 +165,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		System.out.println("Start: Project open");
 		enablePlugin();
 		System.out.println("End: Project open");
-
-
-
-		//WindowManager.getInstance().getStatusBar(project).fireNotificationPopup(panel, null);
 	}
 
 	public void projectClosed() {
