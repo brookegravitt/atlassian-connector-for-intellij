@@ -11,6 +11,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
  * Time: 09:32:04
  */
 public class ServerTypeNode extends DefaultMutableTreeNode {
+	static final long serialVersionUID = -1192703287399203299L;
+	
 	private ServerType serverType;
 
 	public ServerTypeNode(ServerType aServerType) {

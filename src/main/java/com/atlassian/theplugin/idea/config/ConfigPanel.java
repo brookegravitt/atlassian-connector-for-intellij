@@ -11,7 +11,7 @@ import java.awt.*;
 public final class ConfigPanel extends JPanel {
 	private static ConfigPanel instance;
 
-	private PluginConfigurationBean pluginConfiguration = null;
+	private transient PluginConfigurationBean pluginConfiguration = null;
 
 	private HeaderPanel headerPanel = null;
 	private FooterPanel footerPanel = null;
