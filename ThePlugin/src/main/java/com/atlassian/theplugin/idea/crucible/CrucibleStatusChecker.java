@@ -67,8 +67,7 @@ public class CrucibleStatusChecker {
 
             // dispatch to the listeners
             EventQueue.invokeLater(new Runnable() {
-                public void run()
-				{
+                public void run() {
                     synchronized (listenerList) {
                         for (CrucibleStatusListener listener : listenerList) {
                             listener.updateReviews(reviews);
