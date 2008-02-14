@@ -14,5 +14,5 @@ public class GenericHyperlinkListener implements HyperlinkListener {
         if (e.getEventType().equals(javax.swing.event.HyperlinkEvent.EventType.ACTIVATED)) {
             BrowserUtil.launchBrowser(e.getURL().toString());
         }
-    }
+	}
 }
