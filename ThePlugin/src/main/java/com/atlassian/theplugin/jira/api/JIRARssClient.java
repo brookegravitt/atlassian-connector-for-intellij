@@ -8,73 +8,67 @@ package com.atlassian.theplugin.jira.api;
 
 import com.intellij.openapi.diagnostic.Logger;
 import org.jdom.Document;
-import org.jdom.JDOMException;
 import org.jdom.Element;
+import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
 import java.io.*;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
-public class JIRARssClient
-{
+public class JIRARssClient {
     private static final Logger LOGGER = Logger.getInstance(JIRARssClient.class.getName());
 
     private String serverUrl;
     private String userName;
     private String password;
 
-    public JIRARssClient(String url)
-    {
+    public JIRARssClient(String url) {
         this.serverUrl = url;
     }
 
-    public JIRARssClient(String url, String userName, String password)
-    {
+    public JIRARssClient(String url, String userName, String password) {
         this.serverUrl = url;
         this.userName = userName;
         this.password = password;
     }
 
-    public List getAssignedIssues(String assignee) throws JIRAException
-    {
+    public List getAssignedIssues(String assignee) throws JIRAException {
         String url = serverUrl + "/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml?resolution=-1&assignee=" + URLEncoder.encode(assignee) + "&sorter/field=updated&sorter/order=DESC&tempMax=100" + appendAuthentication();
 //        System.out.println("url = " + url);
-        try
-        {
+        try {
             Document doc = buildFeed(url);
             Element root = doc.getRootElement();
             Element channel = root.getChild("channel");
-            if (channel != null && !channel.getChildren("item").isEmpty())
-            {
+            if (channel != null && !channel.getChildren("item").isEmpty()) {
                 return makeIssues(channel.getChildren("item"));
             }
 
             return Collections.EMPTY_LIST;
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             throw new JIRAException(e.getMessage(), e);
         }
     }
 
-    private List makeIssues(List issueElements)
-    {
+    private List makeIssues(List issueElements) {
         List<JIRAIssue> result = new ArrayList<JIRAIssue>(issueElements.size());
-        for (Iterator iterator = issueElements.iterator(); iterator.hasNext();)
-        {
+        for (Iterator iterator = issueElements.iterator(); iterator.hasNext();) {
             result.add(new JIRAIssueBean(serverUrl, (Element) iterator.next()));
         }
         return result;
     }
 
-    private String appendAuthentication()
-    {
+    private String appendAuthentication() {
         if (userName != null)
 
+        {
             return "&os_username=" + URLEncoder.encode(userName) + "&os_password=" + URLEncoder.encode(password);
+        }
         return "";
     }
 
