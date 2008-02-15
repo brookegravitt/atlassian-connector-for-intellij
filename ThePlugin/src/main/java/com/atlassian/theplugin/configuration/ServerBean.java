@@ -6,7 +6,6 @@ import thirdparty.net.iharder.base64.Base64;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 /**
