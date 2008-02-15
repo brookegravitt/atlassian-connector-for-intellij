@@ -1,6 +1,12 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.ServerType;
+import com.atlassian.theplugin.bamboo.api.BambooLoginException;
+import com.atlassian.theplugin.jira.JIRAServerFactory;
+import com.atlassian.theplugin.jira.api.JIRALoginException;
+import com.atlassian.theplugin.exception.ThePluginException;
+import com.atlassian.theplugin.crucible.CrucibleServerFactory;
+import com.atlassian.theplugin.crucible.api.CrucibleException;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.atlassian.theplugin.configuration.Server;
@@ -77,8 +83,11 @@ public class ServerConfigPanel extends AbstractContentPanel {
         editPane = new JPanel();
         editPaneCardLayout = new CardLayout();
         editPane.setLayout(editPaneCardLayout);
-        editPane.add(getServerPanel(ServerType.BAMBOO_SERVER), ServerType.BAMBOO_SERVER.toString());
-        editPane.add(getServerPanel(ServerType.CRUCIBLE_SERVER), ServerType.CRUCIBLE_SERVER.toString());
+        for (int i = 0; i < ServerType.values().length; i++)
+        {
+            ServerType serverType = ServerType.values()[i];
+            editPane.add(getServerPanel(serverType), serverType.toString());
+        }
         editPane.add(getBlankPanel(), BLANK_CARD);
 
         return editPane;
@@ -98,7 +107,33 @@ public class ServerConfigPanel extends AbstractContentPanel {
                     serverPanels.put(ServerType.BAMBOO_SERVER, new BambooServerConfigForm());
                     break;
                 case CRUCIBLE_SERVER:
-                    serverPanels.put(ServerType.CRUCIBLE_SERVER, new CrucibleServerConfigForm());
+                    serverPanels.put(ServerType.CRUCIBLE_SERVER, new GenericServerConfigForm(new ConnectionTester() {
+                        public void testConnection(String username, String password, String server) throws ThePluginException
+                        {
+                            try
+                            {
+                                CrucibleServerFactory.getCrucibleServerFacade().testServerConnection(server, username, password);
+                            }
+                            catch (CrucibleException e)
+                            {
+                                throw new ThePluginException(e.getMessage());
+                            }
+                        }
+                    }));
+                    break;
+                case JIRA_SERVER:
+                    serverPanels.put(ServerType.JIRA_SERVER, new GenericServerConfigForm(new ConnectionTester() {
+                        public void testConnection(String username, String password, String server) throws ThePluginException
+                        {
+                            try {
+                                JIRAServerFactory.getJIRAServerFacade().testServerConnection(server, username, password);
+                            }
+                            catch (JIRALoginException e)
+                            {
+                                throw new ThePluginException(e.getMessage());
+                            }
+                        }
+                    }));
                     break;
 				default:
 					break;
