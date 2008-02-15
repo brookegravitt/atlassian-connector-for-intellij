@@ -37,8 +37,8 @@ public class ThePluginApplicationComponent
 	private PluginConfigurationBean configuration = new PluginConfigurationBean();
 
 	private final Timer timer = new Timer();
-	private static final int TIMER_TICK = 20000;
-	private static final int TIMER_START_DELAY = 15000;
+	private static final int TIMER_TICK = 120000;
+	private static final int TIMER_START_DELAY = 30000;
 	private BambooStatusChecker bambooStatusChecker;
     private CrucibleStatusChecker crucibleStatusChecker;
 	private TimerTask bambooStatusCheckerTask;
@@ -125,9 +125,9 @@ public class ThePluginApplicationComponent
 	 */
 	public void triggerStatusCheckers() {
 		bambooStatusCheckerTask = getBambooStatusChecker().newTimerTask();
-        timer.schedule(bambooStatusCheckerTask, 0, TIMER_TICK);
+        timer.schedule(bambooStatusCheckerTask, TIMER_START_DELAY, TIMER_TICK);
 		crucibleStatusCheckerTask = getCrucibleStatusChecker().newTimerTask();
-        timer.schedule(crucibleStatusCheckerTask, 0, TIMER_TICK);
+        timer.schedule(crucibleStatusCheckerTask, TIMER_START_DELAY, TIMER_TICK);
 	}
 
 	public void apply() throws ConfigurationException {
