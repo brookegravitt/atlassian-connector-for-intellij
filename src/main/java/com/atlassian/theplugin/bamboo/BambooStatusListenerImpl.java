@@ -10,7 +10,7 @@ import java.util.Map;
 public class BambooStatusListenerImpl implements BambooStatusListener {
 
 
-	private Map buildPrevStatus = new HashMap<String, BuildStatus>(0);
+	private Map<String, BambooBuild> prevBuildStatuses = new HashMap<String, BambooBuild>(0);
 	private BambooStatusDisplay display;
 	private static final String ICON_PLAN_PASSED = "icn_plan_passed.gif";
 	private static final String ICON_PLAN_FAILED = "icn_plan_failed.gif";
@@ -23,28 +23,39 @@ public class BambooStatusListenerImpl implements BambooStatusListener {
 		this.display = display;
 	}
 
-	public void updateBuildStatuses(Collection<BambooBuild> buildStatuses) {
+	public void updateBuildStatuses(Collection<BambooBuild> newBuildStatuses) {
 		StringBuilder tooltipContent = new StringBuilder();
 
 		BuildStatus status = null;
 		boolean fireTooltip = false;
 
-		if (buildStatuses != null && buildStatuses.size() > 0) {
-			for (BambooBuild buildInfo : buildStatuses) {
-				switch (buildInfo.getStatus()) {
+		if (newBuildStatuses != null && newBuildStatuses.size() > 0) {
+
+			for (BambooBuild currentBuild : newBuildStatuses) {
+
+				switch (currentBuild.getStatus()) {
+
 					case BUILD_FAILED:
-						if (buildPrevStatus.containsKey(buildInfo.getBuildKey())) {
-							if (buildPrevStatus.get(buildInfo.getBuildKey()) == BuildStatus.BUILD_SUCCEED) {
+
+						if (prevBuildStatuses.containsKey(currentBuild.getBuildKey())) {
+
+							BambooBuild prevBuild = prevBuildStatuses.get(currentBuild.getBuildKey());
+
+							if (prevBuild.getStatus() == BuildStatus.BUILD_SUCCEED ||
+									(prevBuild.getStatus() == BuildStatus.BUILD_FAILED &&
+									!prevBuild.getBuildNumber().equals(currentBuild.getBuildNumber()))) {
+								
 								// build has changes status from SUCCEED to FAILED
+								// or this is new build and still failed 
 								fireTooltip = true;
 								status = BuildStatus.BUILD_FAILED;
 								// prepare information
-								tooltipContent.append(createHtmlRow(buildInfo.getBuildKey(), buildInfo.getBuildNumber(),
-										buildInfo.getBuildResultUrl(), BuildStatus.BUILD_FAILED));
+								tooltipContent.append(createHtmlRow(currentBuild.getBuildKey(), currentBuild.getBuildNumber(),
+										currentBuild.getBuildResultUrl(), BuildStatus.BUILD_FAILED));
 							}
 						}
 
-						buildPrevStatus.put(buildInfo.getBuildKey(), buildInfo.getStatus());
+						prevBuildStatuses.put(currentBuild.getBuildKey(), currentBuild);
 
 						break;
 					case UNKNOWN:
@@ -52,19 +63,19 @@ public class BambooStatusListenerImpl implements BambooStatusListener {
 						break;
 					case BUILD_SUCCEED:
 
-						if (buildPrevStatus.containsKey(buildInfo.getBuildKey())) {
-							if (buildPrevStatus.get(buildInfo.getBuildKey()) == BuildStatus.BUILD_FAILED) {
+						if (prevBuildStatuses.containsKey(currentBuild.getBuildKey())) {
+							if (prevBuildStatuses.get(currentBuild.getBuildKey()).getStatus() == BuildStatus.BUILD_FAILED) {
 								// build has changes status from FAILED to SUCCEED
 								fireTooltip = true;
 								if (status == null) {
 									status = BuildStatus.BUILD_SUCCEED;
 								}
 								// prepare information
-								tooltipContent.append(createHtmlRow(buildInfo.getBuildKey(),
-										buildInfo.getBuildNumber(), buildInfo.getBuildResultUrl(), BuildStatus.BUILD_SUCCEED));
+								tooltipContent.append(createHtmlRow(currentBuild.getBuildKey(),
+										currentBuild.getBuildNumber(), currentBuild.getBuildResultUrl(), BuildStatus.BUILD_SUCCEED));
 							}
 						}
-						buildPrevStatus.put(buildInfo.getBuildKey(), buildInfo.getStatus());
+						prevBuildStatuses.put(currentBuild.getBuildKey(), currentBuild);
 
 						break;
 					default:
