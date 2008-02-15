@@ -10,8 +10,7 @@ public class SubscribedPlanBean implements SubscribedPlan {
 		this.setPlanId(cfg.getPlanId());
 	}
 
-    public SubscribedPlanBean(String planId)
-    {
+    public SubscribedPlanBean(String planId) {
         this.planId = planId;
     }
 
