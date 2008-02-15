@@ -89,7 +89,7 @@ public class ThePluginApplicationComponent
 		ConfigurationFactory.setConfiguration(configuration);
 
 		if (configuration.isPluginEnabled()) {
-			triggerStatusCheckers();
+			triggerStatusCheckers(false);
 		}
 	}
 
@@ -123,11 +123,15 @@ public class ThePluginApplicationComponent
 	/**
 	 * Reschedule the BambooStatusChecker with immediate execution trigger.
 	 */
-	public void triggerStatusCheckers() {
+	public void triggerStatusCheckers(Boolean rightNow) {
+		int delay = TIMER_START_DELAY;
+		if (rightNow) {
+			delay = 0;
+		}
 		bambooStatusCheckerTask = getBambooStatusChecker().newTimerTask();
-        timer.schedule(bambooStatusCheckerTask, TIMER_START_DELAY, TIMER_TICK);
+		timer.schedule(bambooStatusCheckerTask, delay, TIMER_TICK);
 		crucibleStatusCheckerTask = getCrucibleStatusChecker().newTimerTask();
-        timer.schedule(crucibleStatusCheckerTask, TIMER_START_DELAY, TIMER_TICK);
+		timer.schedule(crucibleStatusCheckerTask, delay, TIMER_TICK);
 	}
 
 	public void apply() throws ConfigurationException {
@@ -141,7 +145,7 @@ public class ThePluginApplicationComponent
 					ThePluginProjectComponent pc = pr.getComponent(ThePluginProjectComponent.class);
 					pc.enablePlugin();
 				}
-				triggerStatusCheckers();
+				triggerStatusCheckers(true);
 			} else {
 				for (Project pr : ProjectManager.getInstance().getOpenProjects()) {
 					ThePluginProjectComponent pc = pr.getComponent(ThePluginProjectComponent.class);

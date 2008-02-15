@@ -88,12 +88,13 @@ public class ClasspathImageView extends View implements ImageObserver, MouseList
 				URL imageUrl = ClasspathImageView.class.getResource(src);
 //				System.out.println("imageUrl.toExternalForm() = " + imageUrl.toExternalForm());
 				fImage = Toolkit.getDefaultToolkit().createImage(imageUrl);
-				try {
-					waitForImage();
-				}
-				catch (InterruptedException e) {
-					fImage = null;
-				}
+				// @todo MCB / LG - this seems to lock up idea every so often. Commenting out and images still seem to load.
+//				try {
+//					waitForImage();
+//				}
+//				catch (InterruptedException e) {
+//					fImage = null;
+//				}
 				/******************************************************/
 
 			}
