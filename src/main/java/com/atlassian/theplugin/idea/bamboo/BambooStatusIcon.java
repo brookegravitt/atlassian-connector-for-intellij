@@ -53,7 +53,7 @@ public class BambooStatusIcon extends JLabel implements BambooStatusDisplay {
 //		tooltip.setHtmlContent(fullInfo);
 		switch (status) {
 			case BUILD_FAILED:
-                setToolTipText("Click to see failing builds.");
+                setToolTipText("Some builds failed. Click to see details.");
 				setIcon(ICON_RED);
                 break;
 			case UNKNOWN:
