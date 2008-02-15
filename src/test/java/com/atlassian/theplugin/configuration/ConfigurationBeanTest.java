@@ -6,6 +6,7 @@ import org.jdom.Element;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collection;
 
 public class ConfigurationBeanTest extends TestCase
 {
@@ -66,10 +67,17 @@ public class ConfigurationBeanTest extends TestCase
         // now add the ServerBean to a BambooConfigurationBean
         BambooConfigurationBean bambooConfig = new BambooConfigurationBean();
         bambooConfig.storeServer(server);
-        e = XmlSerializer.serialize(bambooConfig);
+		e = XmlSerializer.serialize(bambooConfig);
         assertEquals(bambooConfig, XmlSerializer.deserialize(e, BambooConfigurationBean.class));
 
-        // now roll that up into the global configuration
+		List<SubscribedPlanBean> plans2 = new ArrayList<SubscribedPlanBean>(plans);
+		ServerBean server2 = new ServerBean(server);
+		plans2.add(new SubscribedPlanBean("FOO-TEST2"));
+		server2.setSubscribedPlansData(plans2);
+		bambooConfig.storeServer(server2);
+		Collection<Server> servers = bambooConfig.getServers();
+		assertEquals(server2.getSubscribedPlans().size(), servers.iterator().next().getSubscribedPlans().size());
+		// now roll that up into the global configuration
         PluginConfigurationBean config = new PluginConfigurationBean();
         config.setBambooConfigurationData(bambooConfig);
         e = XmlSerializer.serialize(config);
