@@ -37,6 +37,6 @@ public class ConfigurationBeanTest extends TestCase
         assertTrue(config.getServers().contains(server2));
         
         // now check our persisted data is right
-        assertEquals(config.getServers(), ((AbstractConfigurationBean)config).getServersData());
+        assertEquals(config.getServers(), ((BambooConfigurationBean)config).getServersData());
     }
 }
