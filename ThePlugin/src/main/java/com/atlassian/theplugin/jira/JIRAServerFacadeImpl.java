@@ -8,24 +8,20 @@ import com.atlassian.theplugin.configuration.Server;
 
 import java.util.List;
 
-public class JIRAServerFacadeImpl implements JIRAServerFacade
-{
-    public void testServerConnection(String url, String userName, String password) throws JIRALoginException
-    {
+public class JIRAServerFacadeImpl implements JIRAServerFacade {
+    public void testServerConnection(String url, String userName, String password) throws JIRALoginException {
         JIRAXmlRpcClient client = new JIRAXmlRpcClient(url);
-        try
-        {
-            if (!client.login(userName, password))
+        try {
+            if (!client.login(userName, password)) {
                 throw new JIRALoginException("Bad credentials");
+            }
         }
-        catch (JIRAException e)
-        {
+        catch (JIRAException e) {
             throw new JIRALoginException("Error logging in", e);
         }
     }
 
-    public List getAssignedIssues(Server server, String username) throws JIRAException
-    {
+    public List getAssignedIssues(Server server, String username) throws JIRAException {
         JIRARssClient rss = new JIRARssClient(server.getUrlString(), server.getUserName(), server.getPasswordString());
         return rss.getAssignedIssues(username);
     }

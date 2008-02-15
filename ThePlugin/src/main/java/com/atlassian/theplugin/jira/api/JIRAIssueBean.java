@@ -3,18 +3,16 @@ package com.atlassian.theplugin.jira.api;
 import org.jdom.Element;
 
 public class JIRAIssueBean implements JIRAIssue {
-    String serverUrl;
-    String key;
-    String summary;
-    String type;
-    String typeUrl;
-    
-    public JIRAIssueBean()
-    {
+    private String serverUrl;
+    private String key;
+    private String summary;
+    private String type;
+    private String typeUrl;
+
+    public JIRAIssueBean() {
     }
 
-    public JIRAIssueBean(String serverUrl, Element e)
-    {
+    public JIRAIssueBean(String serverUrl, Element e) {
         this.serverUrl = serverUrl;
         this.summary = getTextSafely(e, "summary");
         this.key = getTextSafely(e, "key");
@@ -22,22 +20,22 @@ public class JIRAIssueBean implements JIRAIssue {
         this.typeUrl = getAttributeSafely(e, "type", "iconUrl");
     }
 
-    private String getTextSafely(Element e, String name)
-    {
+    private String getTextSafely(Element e, String name) {
         Element child = e.getChild(name);
 
-        if (child == null)
+        if (child == null) {
             return null;
+        }
 
         return child.getText();
     }
 
-    private String getAttributeSafely(Element e, String elementName, String attributeName)
-    {
+    private String getAttributeSafely(Element e, String elementName, String attributeName) {
         Element child = e.getChild(elementName);
 
-        if (child == null || child.getAttribute(attributeName) == null)
+        if (child == null || child.getAttribute(attributeName) == null) {
             return null;
+        }
 
         return child.getAttributeValue(attributeName);
     }
@@ -61,7 +59,7 @@ public class JIRAIssueBean implements JIRAIssue {
     public String getProjectKey() {
         return key.substring(0, key.indexOf("-"));
     }
-    
+
     public String getKey() {
         return key;
     }
@@ -86,22 +84,30 @@ public class JIRAIssueBean implements JIRAIssue {
         this.summary = summary;
     }
 
-    public boolean equals(Object o)
-    {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         JIRAIssueBean that = (JIRAIssueBean) o;
 
-        if (key != null ? !key.equals(that.key) : that.key != null) return false;
-        if (serverUrl != null ? !serverUrl.equals(that.serverUrl) : that.serverUrl != null) return false;
-        if (summary != null ? !summary.equals(that.summary) : that.summary != null) return false;
+        if (key != null ? !key.equals(that.key) : that.key != null) {
+            return false;
+        }
+        if (serverUrl != null ? !serverUrl.equals(that.serverUrl) : that.serverUrl != null) {
+            return false;
+        }
+        if (summary != null ? !summary.equals(that.summary) : that.summary != null) {
+            return false;
+        }
 
         return true;
     }
 
-    public int hashCode()
-    {
+    public int hashCode() {
         int result;
         result = (serverUrl != null ? serverUrl.hashCode() : 0);
         result = 31 * result + (key != null ? key.hashCode() : 0);
