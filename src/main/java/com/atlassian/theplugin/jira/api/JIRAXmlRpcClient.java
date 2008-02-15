@@ -44,8 +44,8 @@ public class JIRAXmlRpcClient {
             token = (String) client.execute("jira1.login", params);
 
             loggedIn = token != null && token.length() > 0;
-        } catch (Exception e) {
-            throw new JIRAException("RPC Not Supported: " + e.getMessage());
+        } catch (Throwable e) { // ugly exceptions get thrown here - catch 'em all.
+            throw new JIRAException("RPC not supported or remote error: " + e.getMessage());
         }
 
         return loggedIn;
