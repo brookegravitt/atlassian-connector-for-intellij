@@ -41,7 +41,7 @@ public interface RpcReviewServiceName {
         com.atlassian.theplugin.crucible.api.soap.xfire.review.PermId arg1
     );
 
-    @RequestWrapper(localName = "removeReviewItem", targetNamespace = "http://rpc.spi.crucible.atlassian.com/", className = "com.atlassian.theplugin.crucible.api.soap.xfire.review.RemoveReviewItem")
+    @RequestWrapper(localName = "removeReviewItem", targetNamespace = "http://rpc.spi.crucible.atlassian.com/", className = "com.atlassian.theplugin.crucible.api.CrucibleSessionImpl.RemoveReviewItem")
     @ResponseWrapper(localName = "removeReviewItemResponse", targetNamespace = "http://rpc.spi.crucible.atlassian.com/", className = "com.atlassian.theplugin.crucible.api.soap.xfire.review.RemoveReviewItemResponse")
     @WebMethod
     public void removeReviewItem(
