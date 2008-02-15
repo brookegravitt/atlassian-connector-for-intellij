@@ -24,22 +24,21 @@ public class UserDataContext implements CrucibleStatusListener {
 	private List<RemoteReview> reviews = new ArrayList<RemoteReview>();
 
 
-	CrucibleStatusIcon display;
+	private CrucibleStatusIcon display;
 
 	public void setDisplay(CrucibleStatusIcon display) {
 		this.display = display;
 	}
-
-
-
-	// a set containing the 'last new reviews' that we saw (for painting nicely)
-	private List<RemoteReview> newReviews = new ArrayList<RemoteReview>();
 
 	private static final int R = 255;
 	private static final int G = 255;
 	private static final int B = 200;
 
 	public void updateReviews(Collection<RemoteReview> incomingReviews) {
+
+		// a set containing the 'last new reviews' that we saw (for painting nicely)
+		List<RemoteReview> newReviews = new ArrayList<RemoteReview>();
+		
 		if (!reviews.containsAll(incomingReviews)) {
 			newReviews = new ArrayList(incomingReviews);
 			newReviews.removeAll(reviews);
