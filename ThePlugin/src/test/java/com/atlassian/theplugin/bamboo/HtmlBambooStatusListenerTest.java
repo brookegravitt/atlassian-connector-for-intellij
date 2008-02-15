@@ -48,8 +48,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
         final ServerBean server = new ServerBean();
         server.setName("Test Server");
         testedListener = new HtmlBambooStatusListener(output) {
-            protected Server getServerFromUrl(String serverUrl)
-            {
+            protected Server getServerFromUrl(String serverUrl)   {
                 return server;
             }
         };
@@ -62,6 +61,8 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 		assertEquals(
                 "<html>" + HtmlBambooStatusListener.BODY_WITH_STYLE + "No plans defined.</body></html>",
                 output.htmlPage);
+
+		int i=1;
 	}
 
 	public void testEmptyStatusCollection() throws Exception {
