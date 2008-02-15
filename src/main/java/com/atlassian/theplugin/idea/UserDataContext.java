@@ -45,7 +45,7 @@ public class UserDataContext implements CrucibleStatusListener {
 
 			// notify display
 			if (newReviews.size() > 0) {
-				display.triggerNewReviewAction();
+				display.triggerNewReviewAction(newReviews.size());
 			}
 
 
@@ -86,6 +86,8 @@ public class UserDataContext implements CrucibleStatusListener {
 					ContentManager contentManager = toolWindow.getContentManager();
 					toolWindow.activate(null);
 					contentManager.setSelectedContent(contentManager.findContent("Crucible"));
+
+					display.setStandardIcon();
 				}
 			});
 			content.setCaretPosition(0); // do thi to make sure scroll pane is always at the top / header

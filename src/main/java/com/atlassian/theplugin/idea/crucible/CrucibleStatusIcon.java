@@ -43,13 +43,15 @@ public class CrucibleStatusIcon extends JLabel {
 		});
 	}
 
-	public void triggerNewReviewAction() {
+	public void triggerNewReviewAction(int numOfNewReviews) {
 		this.setIcon(ICON_NEW);
 		this.setToolTipText(NEW_REVIEWS);
+		this.setText(new Integer(numOfNewReviews).toString());
 	}
 
 	public void setStandardIcon() {
 		this.setIcon(ICON_STANDARD);
 		this.setToolTipText(NO_NEW_REVIEWS);
+		this.setText(null);
 	}
 }
