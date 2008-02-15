@@ -20,15 +20,7 @@ public class BambooProjectInfo implements BambooProject {
 		return this.name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	public String getProjectKey() {
 		return this.key;
-	}
-
-	public void setKey(String key) {
-		this.key = key;
 	}
 }
