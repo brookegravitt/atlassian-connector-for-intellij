@@ -5,12 +5,10 @@ import com.intellij.util.xmlb.annotations.Transient;
 import java.util.Collection;
 import java.util.ArrayList;
 
-public class AbstractConfigurationBean implements ProductServerConfiguration
-{
+public class AbstractConfigurationBean implements ProductServerConfiguration {
     protected Collection<ServerBean> servers = new ArrayList<ServerBean>();
 
-    public AbstractConfigurationBean()
-    {
+    public AbstractConfigurationBean() {
     }
 
     public AbstractConfigurationBean(ProductServerConfiguration cfg) {
@@ -105,14 +103,19 @@ public class AbstractConfigurationBean implements ProductServerConfiguration
     }
 
     @Transient
-    public boolean equals(Object o)
-    {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         AbstractConfigurationBean that = (AbstractConfigurationBean) o;
 
-        if (!servers.equals(that.servers)) return false;
+        if (!servers.equals(that.servers)) {
+            return false;
+        }
 
         return true;
     }

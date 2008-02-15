@@ -1,7 +1,6 @@
 package com.atlassian.theplugin.configuration;
 
-public class CrucibleConfigurationBean extends AbstractConfigurationBean
-{
+public class CrucibleConfigurationBean extends AbstractConfigurationBean {
     public CrucibleConfigurationBean() {
         super();
     }
