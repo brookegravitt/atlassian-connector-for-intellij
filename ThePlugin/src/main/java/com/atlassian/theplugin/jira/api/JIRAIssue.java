@@ -1,20 +1,19 @@
 package com.atlassian.theplugin.jira.api;
 
-public interface JIRAIssue
-{
-    public String getServerUrl();
+public interface JIRAIssue {
+    String getServerUrl();
 
-    public String getProjectUrl();
+    String getProjectUrl();
 
-    public String getIssueUrl();
+    String getIssueUrl();
 
-    public String getKey();
+    String getKey();
 
-    public String getProjectKey();
+    String getProjectKey();
 
-    public String getSummary();
+    String getSummary();
 
-    public String getType();
+    String getType();
 
-    public String getTypeIconUrl();
+    String getTypeIconUrl();
 }
