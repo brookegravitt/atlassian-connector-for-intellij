@@ -2,9 +2,8 @@ package com.atlassian.theplugin.configuration;
 
 import com.intellij.util.xmlb.annotations.Transient;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Bean storing information about Bamboo servers etc.<p>
