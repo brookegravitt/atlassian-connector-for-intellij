@@ -40,23 +40,6 @@ public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
 		this.buildTestSummary = buildTestSummary;
 	}
 
-	public BambooBuildInfo(
-			String projectName, String buildName, String buildKey, String buildState, String buildNumber,
-			String buildReason, String buildRelativeBuildDate, String buildDurationDescription, String buildTestSummary,
-			String buildCommitComment, Date lastPoolingTime) {
-		this.projectName = projectName;
-		this.buildName = buildName;
-		this.buildKey = buildKey;
-		this.buildState = buildState;
-		this.buildNumber = buildNumber;
-		this.buildReason = buildReason;
-		this.buildRelativeBuildDate = buildRelativeBuildDate;
-		this.buildDurationDescription = buildDurationDescription;
-		this.buildTestSummary = buildTestSummary;
-		this.buildCommitComment = buildCommitComment;
-		setPollingTime(lastPoolingTime);
-	}
-
 	public String getServerUrl() {
 		return this.serverUrl;
 	}
