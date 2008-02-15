@@ -478,8 +478,7 @@
 					<configLocation>java-regular.cs.xml</configLocation>
 					<excludes>
                         **/Base64.java,
-                        **/serverconfig/CrucibleServerConfigForm.java,
-                        **/serverconfig/BambooServerConfigForm.java,
+                        **/serverconfig/*Form.java,
                         **/idea/PasswordDialog.java,
                         **/crucible/CruciblePatchUploadForm.java,
                         **/soap/xfire/**/*.java,
