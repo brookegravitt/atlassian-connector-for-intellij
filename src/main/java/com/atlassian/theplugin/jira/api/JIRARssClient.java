@@ -38,7 +38,8 @@ public class JIRARssClient {
     }
 
     public List getAssignedIssues(String assignee) throws JIRAException {
-        String url = serverUrl + "/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml?resolution=-1&assignee=" + URLEncoder.encode(assignee) + "&sorter/field=updated&sorter/order=DESC&tempMax=100" + appendAuthentication();
+        String url = serverUrl + "/sr/jira.issueviews:searchrequest-xml" +
+                "/temp/SearchRequest.xml?resolution=-1&assignee=" + URLEncoder.encode(assignee) + "&sorter/field=updated&sorter/order=DESC&tempMax=100" + appendAuthentication();
 //        System.out.println("url = " + url);
         try {
             Document doc = buildFeed(url);
@@ -49,8 +50,7 @@ public class JIRARssClient {
             }
 
             return Collections.EMPTY_LIST;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new JIRAException(e.getMessage(), e);
         }
     }
@@ -64,10 +64,9 @@ public class JIRARssClient {
     }
 
     private String appendAuthentication() {
-        if (userName != null)
-
-        {
-            return "&os_username=" + URLEncoder.encode(userName) + "&os_password=" + URLEncoder.encode(password);
+        if (userName != null) {
+            return "&os_username=" + URLEncoder.encode(userName) +
+                    "&os_password=" + URLEncoder.encode(password);
         }
         return "";
     }
