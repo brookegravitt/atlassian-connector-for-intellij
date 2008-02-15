@@ -17,8 +17,8 @@ import java.util.Arrays;
  */
 public class BambooStatusListenerTest extends TestCase {
 
-	BambooStatusDisplay displayMock;
-	BambooStatusListenerImpl listenerImpl;
+	private BambooStatusDisplay displayMock;
+	private BambooStatusListenerImpl listenerImpl;
 
 	protected void setUp() throws Exception {
 		super.setUp();

@@ -3,6 +3,7 @@ package com.atlassian.theplugin.idea;
 import com.atlassian.theplugin.bamboo.HtmlBambooStatusListener;
 import com.atlassian.theplugin.crucible.CrucibleStatusListener;
 import com.atlassian.theplugin.crucible.RemoteReview;
+import com.atlassian.theplugin.idea.crucible.CrucibleStatusIcon;
 import thirdparty.javaworld.ClasspathHTMLEditorKit;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
@@ -22,6 +23,15 @@ import java.util.List;
 public class UserDataContext implements CrucibleStatusListener {
 	private List<RemoteReview> reviews = new ArrayList<RemoteReview>();
 
+
+	CrucibleStatusIcon display;
+
+	public void setDisplay(CrucibleStatusIcon display) {
+		this.display = display;
+	}
+
+
+
 	// a set containing the 'last new reviews' that we saw (for painting nicely)
 	private List<RemoteReview> newReviews = new ArrayList<RemoteReview>();
 
@@ -30,9 +40,15 @@ public class UserDataContext implements CrucibleStatusListener {
 	private static final int B = 200;
 
 	public void updateReviews(Collection<RemoteReview> incomingReviews) {
-		if (reviews.size() > 0 && !reviews.containsAll(incomingReviews)) {
+		if (!reviews.containsAll(incomingReviews)) {
 			newReviews = new ArrayList(incomingReviews);
 			newReviews.removeAll(reviews);
+
+			// notify display
+			if (newReviews.size() > 0) {
+				display.triggerNewReviewAction();
+			}
+
 
 			final Project project = ProjectManager.getInstance().getOpenProjects()[0];
 
