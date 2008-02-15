@@ -17,11 +17,6 @@ import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 import java.util.Collection;
 
-/**
- * User: mwent
- * Date: 2008-01-26
- * Time: 13:01:18
- */
 public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 
 	private JTree serverTree = null;
@@ -178,8 +173,12 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 	private void updateTreeConfiguration() {
 		firstServerNode = null;
 		((DefaultMutableTreeNode) model.getRoot()).removeAllChildren();
-		updateServerTree(ServerType.BAMBOO_SERVER);
-		updateServerTree(ServerType.CRUCIBLE_SERVER);
+
+        for (int i = 0; i < ServerType.values().length; i++)
+        {
+            ServerType serverType = ServerType.values()[i];
+            updateServerTree(serverType);
+        }
 
         if (newSelectedNode != null) {
 			selectedNode = newSelectedNode;
