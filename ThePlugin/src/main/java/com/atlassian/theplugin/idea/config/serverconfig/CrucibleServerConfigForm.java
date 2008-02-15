@@ -80,7 +80,7 @@ public class CrucibleServerConfigForm extends AbstractServerPanel {
 				return true;
 			}
 			if (serverUrl.getText() != null
-                    ? !serverUrl.getText().equals(server.getUrlString()) : server.getUrlString() != null) {
+					? !serverUrl.getText().equals(server.getUrlString()) : server.getUrlString() != null) {
 				return true;
 			}
 			if (username.getText() != null
@@ -162,9 +162,9 @@ public class CrucibleServerConfigForm extends AbstractServerPanel {
 		chkPasswordRemember.setDisplayedMnemonicIndex(0);
 		panel1.add(chkPasswordRemember, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		final JLabel label5 = new JLabel();
-		label5.setText("Enabled");
+		label5.setText("Server Enabled");
 		label5.setDisplayedMnemonic('E');
-		label5.setDisplayedMnemonicIndex(0);
+		label5.setDisplayedMnemonicIndex(7);
 		panel1.add(label5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		cbEnabled = new JCheckBox();
 		cbEnabled.setText("");

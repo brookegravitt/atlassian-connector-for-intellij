@@ -82,8 +82,9 @@ public class CxfReviewServiceMockImpl implements RpcReviewServiceName {
 		List<ReviewData> reviews = new ArrayList<ReviewData>();
 		int i = 1;
 		for (State state : arg1) {
-			reviews.add(prepareReviewData("test" + i++, state));
-			reviews.add(prepareReviewData("test" + i++, state));
+
+//			reviews.add(prepareReviewData("test" + i++, state));
+//			reviews.add(prepareReviewData("test" + i++, state));
 		}
 		return reviews;
 	}
@@ -108,14 +109,5 @@ public class CxfReviewServiceMockImpl implements RpcReviewServiceName {
 		return null; 
 	}
 
-	private ReviewData prepareReviewData(String name, State state) {
-		ReviewData reviewData = new ReviewData();
-		reviewData.setAuthor(CxfReviewServiceMockImpl.VALID_LOGIN);
-		reviewData.setCreator(CxfReviewServiceMockImpl.VALID_LOGIN);
-		reviewData.setDescription("Test description");
-		reviewData.setName(name);
-		reviewData.setState(state);
-		reviewData.setProjectKey("TEST");
-		return reviewData;
-	}
+
 }
