@@ -7,7 +7,9 @@ import com.atlassian.theplugin.ServerType;
  * Represents JIRA Server in servers JTree
  */
 public class JIRAServerNode extends ServerNode {
-	public JIRAServerNode(ServerBean aServer) {
+    static final long serialVersionUID = -6944317541000292469L;
+
+    public JIRAServerNode(ServerBean aServer) {
 		super(aServer);
 	}
 

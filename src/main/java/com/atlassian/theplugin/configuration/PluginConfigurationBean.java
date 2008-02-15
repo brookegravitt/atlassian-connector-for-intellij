@@ -125,12 +125,13 @@ public class PluginConfigurationBean implements PluginConfiguration {
         return jiraConfiguration.equals(that.jiraConfiguration);
     }
 
+    private static final int ONE_EFF = 31;
     public int hashCode() {
         int result;
         result = (pluginEnabled ? 1 : 0);
-        result = 31 * result + (bambooConfiguration != null ? bambooConfiguration.hashCode() : 0);
-        result = 31 * result + (crucibleConfiguration != null ? crucibleConfiguration.hashCode() : 0);
-        result = 31 * result + (jiraConfiguration != null ? jiraConfiguration.hashCode() : 0);
+        result = ONE_EFF * result + (bambooConfiguration != null ? bambooConfiguration.hashCode() : 0);
+        result = ONE_EFF * result + (crucibleConfiguration != null ? crucibleConfiguration.hashCode() : 0);
+        result = ONE_EFF * result + (jiraConfiguration != null ? jiraConfiguration.hashCode() : 0);
         return result;
     }
 }
