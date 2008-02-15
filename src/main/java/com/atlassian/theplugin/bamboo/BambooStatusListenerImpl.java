@@ -73,7 +73,8 @@ public class BambooStatusListenerImpl implements BambooStatusListener {
 								}
 								// prepare information
 								tooltipContent.append(createHtmlRow(currentBuild.getBuildKey(),
-										currentBuild.getBuildNumber(), currentBuild.getBuildResultUrl(), BuildStatus.BUILD_SUCCEED));
+										currentBuild.getBuildNumber(), currentBuild.getBuildResultUrl(),
+                                        BuildStatus.BUILD_SUCCEED));
 							}
 						}
 						prevBuildStatuses.put(currentBuild.getBuildKey(), currentBuild);

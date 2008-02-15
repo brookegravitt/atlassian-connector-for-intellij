@@ -38,8 +38,9 @@ public class JIRARssClient {
     }
 
     public List getAssignedIssues(String assignee) throws JIRAException {
-        String url = serverUrl + "/sr/jira.issueviews:searchrequest-xml" +
-                "/temp/SearchRequest.xml?resolution=-1&assignee=" + URLEncoder.encode(assignee) + "&sorter/field=updated&sorter/order=DESC&tempMax=100" + appendAuthentication();
+        String url = serverUrl + "/sr/jira.issueviews:searchrequest-xml"
+                + "/temp/SearchRequest.xml?resolution=-1&assignee=" + URLEncoder.encode(assignee)
+                + "&sorter/field=updated&sorter/order=DESC&tempMax=100" + appendAuthentication();
 //        System.out.println("url = " + url);
         try {
             Document doc = buildFeed(url);
@@ -65,15 +66,15 @@ public class JIRARssClient {
 
     private String appendAuthentication() {
         if (userName != null) {
-            return "&os_username=" + URLEncoder.encode(userName) +
-                    "&os_password=" + URLEncoder.encode(password);
+            return "&os_username=" + URLEncoder.encode(userName)
+                    + "&os_password=" + URLEncoder.encode(password);
         }
         return "";
     }
 
     protected Document buildFeed(String url) throws IOException, JDOMException {
-
-        // LOGGER.info("Refeshing issues from: " + url); // be careful about logging as we might leak the user's password - nasty!
+        // be careful about logging as we might leak the user's password - nasty!
+        // LOGGER.info("Refeshing issues from: " + url);
         String feedContent = getUrlContent(url);
         SAXBuilder builder = new SAXBuilder();
         builder.setValidation(false);
