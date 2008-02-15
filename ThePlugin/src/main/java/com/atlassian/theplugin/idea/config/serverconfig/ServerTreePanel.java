@@ -185,8 +185,7 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
             serverTree.scrollPathToVisible(path);
             serverTree.setSelectionPath(path);
             serverTree.expandPath(path);
-        }
-        else {
+        } else {
             selectedNode = null;
             ConfigPanel.getInstance().getServerConfigPanel().showEmptyPanel();
             if (firstServerNode != null) {
@@ -213,12 +212,10 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
             if (selectedNode instanceof ServerNode) {
                 ConfigPanel.getInstance().getServerConfigPanel().editServer(
                         ((ServerNode) selectedNode).getServerType(), ((ServerNode) selectedNode).getServer());
-            }
-            else {
+            } else {
                 ConfigPanel.getInstance().getServerConfigPanel().showEmptyPanel();
             }
-        }
-        else {
+        } else {
             ConfigPanel.getInstance().getServerConfigPanel().showEmptyPanel();
         }
 

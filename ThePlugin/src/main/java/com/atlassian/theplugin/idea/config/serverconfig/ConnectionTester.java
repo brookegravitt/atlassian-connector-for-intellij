@@ -11,5 +11,5 @@ public interface ConnectionTester {
      * @param server
      * @throws ThePluginException If the connection failed.
      */
-    public void testConnection(String username, String password, String server) throws ThePluginException;
+    void testConnection(String username, String password, String server) throws ThePluginException;
 }
