@@ -10,10 +10,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * BambooConfigurationBean for a single Bamboo server.
- * User: sginter
- * Date: Jan 10, 2008
- * Time: 11:51:08 AM
+ * Bean representing a single server.
  */
 public class ServerBean implements Server {
 
@@ -33,7 +30,7 @@ public class ServerBean implements Server {
 	private transient Boolean isConfigInitialized = false;
 
 	public ServerBean() {
-		uid = (new Date()).getTime();
+		uid = (new Date()).getTime() + (long)(Math.random() * 1000d);
 	}
 
 	public ServerBean(Server cfg) {
