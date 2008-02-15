@@ -51,7 +51,9 @@ public class JIRARssClient {
             }
 
             return Collections.EMPTY_LIST;
-        } catch (Exception e) {
+        } catch (IOException e) {
+            throw new JIRAException(e.getMessage(), e);
+        } catch (JDOMException e) {
             throw new JIRAException(e.getMessage(), e);
         }
     }
