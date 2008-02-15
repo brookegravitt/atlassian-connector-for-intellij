@@ -3,6 +3,7 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.crucible.CrucibleServerFactory;
 import com.atlassian.theplugin.crucible.api.CrucibleException;
+import com.atlassian.theplugin.exception.ThePluginException;
 import com.intellij.openapi.ui.Messages;
 import static com.intellij.openapi.ui.Messages.showMessageDialog;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -17,7 +18,7 @@ import java.awt.event.ActionListener;
 /**
  * Plugin configuration form.
  */
-public class CrucibleServerConfigForm extends AbstractServerPanel {
+public class GenericServerConfigForm extends AbstractServerPanel {
 	private JPanel rootComponent;
 	private JTextField serverName;
 	private JTextField serverUrl;
@@ -27,18 +28,17 @@ public class CrucibleServerConfigForm extends AbstractServerPanel {
 	private JCheckBox chkPasswordRemember;
 	private JCheckBox cbEnabled;
 
-	private transient ServerBean server;
+	private ServerBean server;
 
-	public CrucibleServerConfigForm() {
+	public GenericServerConfigForm(final ConnectionTester tester) {
 
 		$$$setupUI$$$();
 		testConnection.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					CrucibleServerFactory.getCrucibleServerFacade().testServerConnection(serverUrl.getText(),
-							username.getText(), String.valueOf(password.getPassword()));
-					showMessageDialog("Connected successfully", "Connection OK", Messages.getInformationIcon());
-				} catch (CrucibleException e1) {
+                    tester.testConnection(username.getText(), String.valueOf(password.getPassword()), serverUrl.getText());
+                    showMessageDialog("Connected successfully", "Connection OK", Messages.getInformationIcon());
+                } catch (ThePluginException e1) {
 					showMessageDialog(e1.getMessage(), "Connection Error", Messages.getErrorIcon());
 				}
 			}
@@ -80,7 +80,7 @@ public class CrucibleServerConfigForm extends AbstractServerPanel {
 				return true;
 			}
 			if (serverUrl.getText() != null
-					? !serverUrl.getText().equals(server.getUrlString()) : server.getUrlString() != null) {
+                    ? !serverUrl.getText().equals(server.getUrlString()) : server.getUrlString() != null) {
 				return true;
 			}
 			if (username.getText() != null
@@ -88,7 +88,7 @@ public class CrucibleServerConfigForm extends AbstractServerPanel {
 				return true;
 			}
 			String pass = String.valueOf(password.getPassword());
-			if (!pass.equals(server.getPasswordString())) {
+			if (pass != null ? !pass.equals(server.getPasswordString()) : server.getPasswordString() != null) {
 				return true;
 			}
 
@@ -162,9 +162,9 @@ public class CrucibleServerConfigForm extends AbstractServerPanel {
 		chkPasswordRemember.setDisplayedMnemonicIndex(0);
 		panel1.add(chkPasswordRemember, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		final JLabel label5 = new JLabel();
-		label5.setText("Server Enabled");
+		label5.setText("Enabled");
 		label5.setDisplayedMnemonic('E');
-		label5.setDisplayedMnemonicIndex(7);
+		label5.setDisplayedMnemonicIndex(0);
 		panel1.add(label5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		cbEnabled = new JCheckBox();
 		cbEnabled.setText("");
