@@ -107,11 +107,12 @@ public class JIRAIssueBean implements JIRAIssue {
         return true;
     }
 
+    private static final int ONE_EFF = 31;
     public int hashCode() {
         int result;
         result = (serverUrl != null ? serverUrl.hashCode() : 0);
-        result = 31 * result + (key != null ? key.hashCode() : 0);
-        result = 31 * result + (summary != null ? summary.hashCode() : 0);
+        result = ONE_EFF * result + (key != null ? key.hashCode() : 0);
+        result = ONE_EFF * result + (summary != null ? summary.hashCode() : 0);
         return result;
     }
 }
