@@ -52,7 +52,7 @@
 	<Match>
 		<Or>
 			<Package name="thirdparty.net.iharder.base64"/>
-			<Class   name="com.atlassian.theplugin.util.ClasspathImageView"/>
+			<Class   name="thirdparty.javaworld.ClasspathImageView"/>
 		</Or>
 	</Match>
 
