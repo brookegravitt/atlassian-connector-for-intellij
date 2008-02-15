@@ -26,8 +26,7 @@ public class JIRAXmlRpcClient {
     public XmlRpcClient getClient() throws JIRAException {
         try {
             return new XmlRpcClient(serverUrl + "/rpc/xmlrpc");
-        }
-        catch (MalformedURLException e) {
+        } catch (MalformedURLException e) {
             throw new JIRAException(e.getMessage());
         }
     }
@@ -45,8 +44,7 @@ public class JIRAXmlRpcClient {
             token = (String) client.execute("jira1.login", params);
 
             loggedIn = token != null && token.length() > 0;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new JIRAException("RPC Not Supported: " + e.getMessage());
         }
 
