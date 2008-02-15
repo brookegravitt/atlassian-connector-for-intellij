@@ -3,19 +3,13 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 import com.atlassian.theplugin.idea.config.serverconfig.model.BambooServerNode;
 import com.atlassian.theplugin.idea.config.serverconfig.model.CrucibleServerNode;
 import com.atlassian.theplugin.idea.config.serverconfig.model.ServerTypeNode;
+import com.atlassian.theplugin.idea.config.serverconfig.model.JIRAServerNode;
 import com.intellij.openapi.util.IconLoader;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import java.awt.*;
 
-/**
- * Created by IntelliJ IDEA.
- * User: mwent
- * Date: 2008-02-01
- * Time: 11:20:32
- * To change this template use File | Settings | File Templates.
- */
 public class ServerTreeRenderer extends DefaultTreeCellRenderer {
 	private static Icon bambooServersIcon;
 	private static Icon bambooServerEnabledIcon;
@@ -23,6 +17,9 @@ public class ServerTreeRenderer extends DefaultTreeCellRenderer {
 	private static Icon crucibleServersIcon;
 	private static Icon crucibleServerEnabledIcon;
 	private static Icon crucibleServerDisabledIcon;
+	private static Icon jiraServersIcon;
+	private static Icon jiraServerEnabledIcon;
+	private static Icon jiraServerDisabledIcon;
 
 	static {
 		bambooServersIcon = IconLoader.getIcon("/icons/bamboo-blue-16.png");
@@ -31,6 +28,9 @@ public class ServerTreeRenderer extends DefaultTreeCellRenderer {
 		crucibleServersIcon = IconLoader.getIcon("/icons/crucible-blue-16.png");
 		crucibleServerEnabledIcon = IconLoader.getIcon("/icons/crucible-blue-16.png");
 		crucibleServerDisabledIcon = IconLoader.getIcon("/icons/crucible-grey-16.png");
+		jiraServersIcon = IconLoader.getIcon("/icons/jira-blue-16.png");
+		jiraServerEnabledIcon = IconLoader.getIcon("/icons/jira-blue-16.png");
+		jiraServerDisabledIcon = IconLoader.getIcon("/icons/jira-blue-16.png");
 	}
 
 	public Component getTreeCellRendererComponent(
@@ -45,6 +45,9 @@ public class ServerTreeRenderer extends DefaultTreeCellRenderer {
 				case CRUCIBLE_SERVER:
 					label.setIcon(crucibleServersIcon);
 					break;
+				case JIRA_SERVER:
+					label.setIcon(jiraServersIcon);
+					break;
                 default:
                     break;
             }
@@ -55,6 +58,13 @@ public class ServerTreeRenderer extends DefaultTreeCellRenderer {
 				label.setIcon(bambooServerEnabledIcon);
 			} else {
 				label.setIcon(bambooServerDisabledIcon);
+			}
+		}
+		if (value instanceof JIRAServerNode) {
+			if (((JIRAServerNode) value).getServer().getEnabled()) {
+				label.setIcon(jiraServerEnabledIcon);
+			} else {
+				label.setIcon(jiraServerDisabledIcon);
 			}
 		}
 
