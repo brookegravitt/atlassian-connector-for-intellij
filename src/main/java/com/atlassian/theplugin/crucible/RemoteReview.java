@@ -23,16 +23,8 @@ public class RemoteReview {
         return reviewData;
     }
 
-    public void setReviewData(ReviewData reviewData) {
-        this.reviewData = reviewData;
-    }
-
     public List<String> getReviewers() {
         return reviewers;
-    }
-
-    public void setReviewers(List<String> reviewers) {
-        this.reviewers = reviewers;
     }
 
 	public Server getServer() {
