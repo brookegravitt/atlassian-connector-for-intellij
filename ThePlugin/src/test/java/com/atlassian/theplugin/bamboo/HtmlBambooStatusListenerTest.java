@@ -80,8 +80,6 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 		buildInfo.add(generateBuildInfo(BuildStatus.BUILD_SUCCEED));
 		testedListener.updateBuildStatuses(buildInfo);
 
-        System.out.println("output.getHtmlPage() = " + output.getHtmlPage());
-        
         assertSame(BuildStatus.BUILD_SUCCEED, output.buildStatus);
 
 		HtmlTable table = output.response.getTheTable();
