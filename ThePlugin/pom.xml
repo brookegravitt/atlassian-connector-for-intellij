@@ -96,7 +96,7 @@
 			<name>DDSteps Repo</name>
 			<url>http://repo.ddsteps.org/maven/release/</url>
 		</repository>
-        <!-- for XML-RPC, but this should come from m2proxy? No idea why not found -->
+        <!-- for XML-RPC, but this should come from m2proxy? No idea why not found in Atlassian's repository when it appears to be there fine? -->
         <repository>
 			<id>repo1</id>
             <name>Maven2</name>
