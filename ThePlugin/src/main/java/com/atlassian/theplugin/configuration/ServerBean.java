@@ -28,9 +28,11 @@ public class ServerBean implements Server {
 	private List<SubscribedPlanBean> subscribedPlans = new ArrayList<SubscribedPlanBean>();
 
 	private transient Boolean isConfigInitialized = false;
+    private static final double ID_DISCRIMINATOR = 1000d;
 
-	public ServerBean() {
-		uid = (new Date()).getTime() + (long)(Math.random() * 1000d);
+    public ServerBean() {
+        
+        uid = System.currentTimeMillis() + (long) (Math.random() * ID_DISCRIMINATOR);
 	}
 
 	public ServerBean(Server cfg) {
