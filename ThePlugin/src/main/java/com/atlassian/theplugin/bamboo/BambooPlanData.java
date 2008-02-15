@@ -1,12 +1,5 @@
 package com.atlassian.theplugin.bamboo;
 
-/**
- * Created by IntelliJ IDEA.
- * User: mwent
- * Date: 2008-01-16
- * Time: 09:00:49
- * To change this template use File | Settings | File Templates.
- */
 public class BambooPlanData implements BambooPlan {
 	private String name;
 	private String key;
