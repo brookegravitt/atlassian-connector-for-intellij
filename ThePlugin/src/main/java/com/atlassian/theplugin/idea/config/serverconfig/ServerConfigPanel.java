@@ -83,8 +83,7 @@ public class ServerConfigPanel extends AbstractContentPanel {
         editPane = new JPanel();
         editPaneCardLayout = new CardLayout();
         editPane.setLayout(editPaneCardLayout);
-        for (int i = 0; i < ServerType.values().length; i++)
-        {
+        for (int i = 0; i < ServerType.values().length; i++) {
             ServerType serverType = ServerType.values()[i];
             editPane.add(getServerPanel(serverType), serverType.toString());
         }
@@ -108,14 +107,11 @@ public class ServerConfigPanel extends AbstractContentPanel {
                     break;
                 case CRUCIBLE_SERVER:
                     serverPanels.put(ServerType.CRUCIBLE_SERVER, new GenericServerConfigForm(new ConnectionTester() {
-                        public void testConnection(String username, String password, String server) throws ThePluginException
-                        {
-                            try
-                            {
+                        public void testConnection(String username, String password, String server) throws ThePluginException {
+                            try {
                                 CrucibleServerFactory.getCrucibleServerFacade().testServerConnection(server, username, password);
                             }
-                            catch (CrucibleException e)
-                            {
+                            catch (CrucibleException e) {
                                 throw new ThePluginException(e.getMessage());
                             }
                         }
@@ -123,21 +119,19 @@ public class ServerConfigPanel extends AbstractContentPanel {
                     break;
                 case JIRA_SERVER:
                     serverPanels.put(ServerType.JIRA_SERVER, new GenericServerConfigForm(new ConnectionTester() {
-                        public void testConnection(String username, String password, String server) throws ThePluginException
-                        {
+                        public void testConnection(String username, String password, String server) throws ThePluginException {
                             try {
                                 JIRAServerFactory.getJIRAServerFacade().testServerConnection(server, username, password);
                             }
-                            catch (JIRALoginException e)
-                            {
+                            catch (JIRALoginException e) {
                                 throw new ThePluginException(e.getMessage());
                             }
                         }
                     }));
                     break;
-				default:
-					break;
-			}
+                default:
+                    break;
+            }
         }
         return serverPanels.get(serverType).getRootComponent();
     }
@@ -174,9 +168,9 @@ public class ServerConfigPanel extends AbstractContentPanel {
                     if (getPluginConfiguration().getProductServers(type).getServer(serverPanels.get(type).getData()) != null) {
                         getPluginConfiguration().getProductServers(type).storeServer(serverPanels.get(type).getData());
                     }
-				}
-				Collection<Server> s = getPluginConfiguration().getProductServers(type).getServers();
-				ConfigurationFactory.getConfiguration().getProductServers(type).setServers(s);                
+                }
+                Collection<Server> s = getPluginConfiguration().getProductServers(type).getServers();
+                ConfigurationFactory.getConfiguration().getProductServers(type).setServers(s);
             }
 
             this.treePanel.setData(getPluginConfiguration());
@@ -232,12 +226,12 @@ public class ServerConfigPanel extends AbstractContentPanel {
             initLayout();
         }
 
-		private static final String TEXT_BEGIN = "Press the ";
-		private static final String TEXT_END = " button to define a new Server configuration.";
+        private static final String TEXT_BEGIN = "Press the ";
+        private static final String TEXT_END = " button to define a new Server configuration.";
 
-		private void initLayout() {
+        private void initLayout() {
 
-			setLayout(new BorderLayout());
+            setLayout(new BorderLayout());
 
             DefaultStyledDocument doc = new DefaultStyledDocument();
             Style s = doc.addStyle(null, null);
@@ -246,10 +240,11 @@ public class ServerConfigPanel extends AbstractContentPanel {
             StyleConstants.setFontFamily(d, getFont().getFamily());
             StyleConstants.setFontSize(d, getFont().getSize());
             try {
-				doc.insertString(0, TEXT_BEGIN, d);
+                doc.insertString(0, TEXT_BEGIN, d);
                 doc.insertString(TEXT_BEGIN.length(), " ", s);
                 doc.insertString(TEXT_BEGIN.length() + 1, TEXT_END, d);
-            } catch (BadLocationException e) {
+            }
+            catch (BadLocationException e) {
                 e.printStackTrace();
             }
             JTextPane pane = new JTextPane();
