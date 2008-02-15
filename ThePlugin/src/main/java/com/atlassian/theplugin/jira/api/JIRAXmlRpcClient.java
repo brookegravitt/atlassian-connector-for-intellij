@@ -12,40 +12,32 @@ import org.apache.xmlrpc.XmlRpcClient;
 import java.net.MalformedURLException;
 import java.util.*;
 
-public class JIRAXmlRpcClient
-{
+public class JIRAXmlRpcClient {
     private static final Logger LOGGER = Logger.getInstance(JIRAXmlRpcClient.class.getName());
 
     private String serverUrl;
     private String token;
     private boolean loggedIn;
 
-    public JIRAXmlRpcClient(String url)
-    {
+    public JIRAXmlRpcClient(String url) {
         this.serverUrl = url;
     }
 
-    public XmlRpcClient getClient() throws JIRAException
-    {
-        try
-        {
+    public XmlRpcClient getClient() throws JIRAException {
+        try {
             return new XmlRpcClient(serverUrl + "/rpc/xmlrpc");
         }
-        catch (MalformedURLException e)
-        {
+        catch (MalformedURLException e) {
             throw new JIRAException(e.getMessage());
         }
     }
 
-    public String getToken()
-    {
+    public String getToken() {
         return token;
     }
 
-    public boolean login(String username, String password) throws JIRAException
-    {
-        try
-        {
+    public boolean login(String username, String password) throws JIRAException {
+        try {
             XmlRpcClient client = getClient();
             Vector params = new Vector();
             params.add(username);
@@ -54,11 +46,10 @@ public class JIRAXmlRpcClient
 
             loggedIn = token != null && token.length() > 0;
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             throw new JIRAException("RPC Not Supported: " + e.getMessage());
         }
-        
+
         return loggedIn;
     }
 
