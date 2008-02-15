@@ -3,7 +3,7 @@ package com.atlassian.theplugin.idea.crucible;
 import com.intellij.util.ui.UIUtil;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionGroup;
-import com.atlassian.theplugin.util.ClasspathHTMLEditorKit;
+import thirdparty.javaworld.ClasspathHTMLEditorKit;
 
 import javax.swing.*;
 import java.awt.*;

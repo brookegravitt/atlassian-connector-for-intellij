@@ -4,7 +4,7 @@ import com.atlassian.theplugin.bamboo.BambooStatusDisplay;
 import com.atlassian.theplugin.bamboo.BuildStatus;
 import com.atlassian.theplugin.idea.GenericHyperlinkListener;
 import com.atlassian.theplugin.idea.ThePluginProjectComponent;
-import com.atlassian.theplugin.util.ClasspathHTMLEditorKit;
+import thirdparty.javaworld.ClasspathHTMLEditorKit;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowManager;

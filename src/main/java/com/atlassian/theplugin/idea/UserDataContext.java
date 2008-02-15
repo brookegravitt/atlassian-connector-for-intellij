@@ -3,7 +3,7 @@ package com.atlassian.theplugin.idea;
 import com.atlassian.theplugin.bamboo.HtmlBambooStatusListener;
 import com.atlassian.theplugin.crucible.CrucibleStatusListener;
 import com.atlassian.theplugin.crucible.RemoteReview;
-import com.atlassian.theplugin.util.ClasspathHTMLEditorKit;
+import thirdparty.javaworld.ClasspathHTMLEditorKit;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.wm.ToolWindow;
