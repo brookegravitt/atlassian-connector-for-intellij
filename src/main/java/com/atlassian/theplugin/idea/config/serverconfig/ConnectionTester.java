@@ -2,10 +2,10 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.exception.ThePluginException;
 
-public interface ConnectionTester
-{
+public interface ConnectionTester {
     /**
      * Test a connection. Throws exception on failure, nothing on success.
+     *
      * @param username
      * @param password
      * @param server
