@@ -2,17 +2,11 @@ package com.atlassian.theplugin.configuration;
 
 import com.atlassian.theplugin.ServerType;
 
-/**
- * Created by IntelliJ IDEA.
- * User: sginter
- * Date: Jan 10, 2008
- * Time: 4:16:46 PM
- * To change this template use File | Settings | File Templates.
- */
 public class PluginConfigurationBean implements PluginConfiguration {
 	private boolean pluginEnabled = true;
 	private BambooConfigurationBean bambooConfiguration = new BambooConfigurationBean();
 	private CrucibleConfigurationBean crucibleConfiguration = new CrucibleConfigurationBean();
+	private JIRAConfigurationBean jiraConfiguration = new JIRAConfigurationBean();
 
 	public PluginConfigurationBean() {
 	}
@@ -21,6 +15,7 @@ public class PluginConfigurationBean implements PluginConfiguration {
 		this.setPluginEnabled(cfg.isPluginEnabled());
 		this.setBambooConfigurationData(new BambooConfigurationBean(cfg.getProductServers(ServerType.BAMBOO_SERVER)));
 		this.setCrucibleConfigurationData(new CrucibleConfigurationBean(cfg.getProductServers(ServerType.CRUCIBLE_SERVER)));
+		this.setJIRAConfigurationData(new JIRAConfigurationBean(cfg.getProductServers(ServerType.JIRA_SERVER)));
 	}
 
 	/**
@@ -28,7 +23,6 @@ public class PluginConfigurationBean implements PluginConfiguration {
 	 * <p/>
 	 * Does not use the JDK1.5 'return a subclass' due to problem with XML serialization.
 	*/
-
     public BambooConfigurationBean getBambooConfigurationData() {
 		return bambooConfiguration;
 	}
@@ -62,6 +56,24 @@ public class PluginConfigurationBean implements PluginConfiguration {
 
 	}
 
+    /**
+	 * For storage purposes.
+	 * <p/>
+	 * Does not use the JDK1.5 'return a subclass' due to problem with XML serialization.
+	 */
+	public JIRAConfigurationBean getJIRAConfigurationData() {
+		return jiraConfiguration;
+	}
+
+	/**
+	 * For storage purposes.
+	 * <p/>
+	 * Does not use the JDK1.5 'return a subclass' due to problem with XML serialization.
+	 */
+	public void setJIRAConfigurationData(JIRAConfigurationBean newConfiguration) {
+		jiraConfiguration = newConfiguration;
+	}
+
 	public boolean isPluginEnabled() {
 		return pluginEnabled;
 	}
@@ -71,7 +83,7 @@ public class PluginConfigurationBean implements PluginConfiguration {
 	}
 
     /**
-	 * Implemnentation for the interface.
+	 * Implementation for the interface.
 	 * <p/>
 	 * Do not mistake for #getBambooConfigurationData()
 	 */
@@ -81,6 +93,8 @@ public class PluginConfigurationBean implements PluginConfiguration {
                 return bambooConfiguration;
             case CRUCIBLE_SERVER:
                 return crucibleConfiguration;
+            case JIRA_SERVER:
+                return jiraConfiguration;
             default:
                 return null;
         }
@@ -96,7 +110,10 @@ public class PluginConfigurationBean implements PluginConfiguration {
 
 		PluginConfigurationBean that = (PluginConfigurationBean) o;
 
-		if (!bambooConfiguration.equals(that.bambooConfiguration)) {
+        if (pluginEnabled != that.pluginEnabled)
+            return false;
+        
+        if (!bambooConfiguration.equals(that.bambooConfiguration)) {
 			return false;
 		}
 
@@ -104,10 +121,16 @@ public class PluginConfigurationBean implements PluginConfiguration {
 			return false;
 		}
 
-        return true;
-	}
+        return jiraConfiguration.equals(that.jiraConfiguration);
+    }
 
-	public int hashCode() {
-		return bambooConfiguration.hashCode();
-	}
+    public int hashCode()
+    {
+        int result;
+        result = (pluginEnabled ? 1 : 0);
+        result = 31 * result + (bambooConfiguration != null ? bambooConfiguration.hashCode() : 0);
+        result = 31 * result + (crucibleConfiguration != null ? crucibleConfiguration.hashCode() : 0);
+        result = 31 * result + (jiraConfiguration != null ? jiraConfiguration.hashCode() : 0);
+        return result;
+    }
 }
