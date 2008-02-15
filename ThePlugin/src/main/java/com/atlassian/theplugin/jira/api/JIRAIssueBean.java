@@ -6,6 +6,8 @@ public class JIRAIssueBean implements JIRAIssue {
     String serverUrl;
     String key;
     String summary;
+    String type;
+    String typeUrl;
     
     public JIRAIssueBean()
     {
@@ -16,6 +18,8 @@ public class JIRAIssueBean implements JIRAIssue {
         this.serverUrl = serverUrl;
         this.summary = getTextSafely(e, "summary");
         this.key = getTextSafely(e, "key");
+        this.type = getTextSafely(e, "type");
+        this.typeUrl = getAttributeSafely(e, "type", "iconUrl");
     }
 
     private String getTextSafely(Element e, String name)
@@ -26,6 +30,16 @@ public class JIRAIssueBean implements JIRAIssue {
             return null;
 
         return child.getText();
+    }
+
+    private String getAttributeSafely(Element e, String elementName, String attributeName)
+    {
+        Element child = e.getChild(elementName);
+
+        if (child == null || child.getAttribute(attributeName) == null)
+            return null;
+
+        return child.getAttributeValue(attributeName);
     }
 
     public String getServerUrl() {
@@ -58,6 +72,14 @@ public class JIRAIssueBean implements JIRAIssue {
 
     public String getSummary() {
         return summary;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getTypeIconUrl() {
+        return typeUrl;
     }
 
     public void setSummary(String summary) {
