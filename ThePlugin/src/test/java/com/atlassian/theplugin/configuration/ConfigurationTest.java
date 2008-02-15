@@ -38,7 +38,11 @@ public class ConfigurationTest extends TestCase {
         assertEquals("http://dummy.url", server.getUrlString());
         assertEquals("dummyUserName<a>aa</a>", server.getUserName());
         assertEquals("dummyPassword", server.getPasswordString());
-	}
+
+        // now let's test cloning a configuration
+        PluginConfigurationBean newConfig = new PluginConfigurationBean(ConfigurationFactory.getConfiguration());
+        assertEquals(ConfigurationFactory.getConfiguration(), newConfig);
+    }
 
 	public void testServerBeanClone() throws Exception {
 		ServerBean srv = new ServerBean();
