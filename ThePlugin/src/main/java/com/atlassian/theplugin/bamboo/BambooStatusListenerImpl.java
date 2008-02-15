@@ -42,7 +42,8 @@ public class BambooStatusListenerImpl implements BambooStatusListener {
 							BambooBuild prevBuild = prevBuildStatuses.get(currentBuild.getBuildKey());
 
 							if (prevBuild.getStatus() == BuildStatus.BUILD_SUCCEED ||
-									(prevBuild.getStatus() == BuildStatus.BUILD_FAILED &&
+									(prevBuild.getStatus() == BuildStatus.BUILD_FAILED
+                                    &&
 									!prevBuild.getBuildNumber().equals(currentBuild.getBuildNumber()))) {
 								
 								// build has changes status from SUCCEED to FAILED

@@ -15,8 +15,7 @@ public class JIRAServerFacadeImpl implements JIRAServerFacade {
             if (!client.login(userName, password)) {
                 throw new JIRALoginException("Bad credentials");
             }
-        }
-        catch (JIRAException e) {
+        } catch (JIRAException e) {
             throw new JIRALoginException("Error logging in", e);
         }
     }

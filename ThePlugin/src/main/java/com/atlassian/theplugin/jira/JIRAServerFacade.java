@@ -9,5 +9,5 @@ import java.util.List;
 public interface JIRAServerFacade {
     void testServerConnection(String url, String userName, String password) throws JIRALoginException;
 
-    public List getAssignedIssues(Server server, String username) throws JIRAException;
+    List getAssignedIssues(Server server, String username) throws JIRAException;
 }

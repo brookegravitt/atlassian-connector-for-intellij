@@ -1,19 +1,18 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.ServerType;
-import com.atlassian.theplugin.bamboo.api.BambooLoginException;
-import com.atlassian.theplugin.jira.JIRAServerFactory;
-import com.atlassian.theplugin.jira.api.JIRALoginException;
-import com.atlassian.theplugin.exception.ThePluginException;
-import com.atlassian.theplugin.crucible.CrucibleServerFactory;
-import com.atlassian.theplugin.crucible.api.CrucibleException;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerBean;
+import com.atlassian.theplugin.crucible.CrucibleServerFactory;
+import com.atlassian.theplugin.crucible.api.CrucibleException;
+import com.atlassian.theplugin.exception.ThePluginException;
 import com.atlassian.theplugin.idea.config.AbstractContentPanel;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
 import com.atlassian.theplugin.idea.config.serverconfig.model.ServerNode;
+import com.atlassian.theplugin.jira.JIRAServerFactory;
+import com.atlassian.theplugin.jira.api.JIRALoginException;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.ui.Splitter;
@@ -109,9 +108,9 @@ public class ServerConfigPanel extends AbstractContentPanel {
                     serverPanels.put(ServerType.CRUCIBLE_SERVER, new GenericServerConfigForm(new ConnectionTester() {
                         public void testConnection(String username, String password, String server) throws ThePluginException {
                             try {
-                                CrucibleServerFactory.getCrucibleServerFacade().testServerConnection(server, username, password);
-                            }
-                            catch (CrucibleException e) {
+                                CrucibleServerFactory.getCrucibleServerFacade()
+                                        .testServerConnection(server, username, password);
+                            } catch (CrucibleException e) {
                                 throw new ThePluginException(e.getMessage());
                             }
                         }
@@ -122,8 +121,7 @@ public class ServerConfigPanel extends AbstractContentPanel {
                         public void testConnection(String username, String password, String server) throws ThePluginException {
                             try {
                                 JIRAServerFactory.getJIRAServerFacade().testServerConnection(server, username, password);
-                            }
-                            catch (JIRALoginException e) {
+                            } catch (JIRALoginException e) {
                                 throw new ThePluginException(e.getMessage());
                             }
                         }
@@ -243,8 +241,7 @@ public class ServerConfigPanel extends AbstractContentPanel {
                 doc.insertString(0, TEXT_BEGIN, d);
                 doc.insertString(TEXT_BEGIN.length(), " ", s);
                 doc.insertString(TEXT_BEGIN.length() + 1, TEXT_END, d);
-            }
-            catch (BadLocationException e) {
+            } catch (BadLocationException e) {
                 e.printStackTrace();
             }
             JTextPane pane = new JTextPane();
