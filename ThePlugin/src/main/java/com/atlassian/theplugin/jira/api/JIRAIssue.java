@@ -13,4 +13,8 @@ public interface JIRAIssue
     public String getProjectKey();
 
     public String getSummary();
+
+    public String getType();
+
+    public String getTypeIconUrl();
 }
