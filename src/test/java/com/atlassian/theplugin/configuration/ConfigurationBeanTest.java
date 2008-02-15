@@ -1,6 +1,11 @@
 package com.atlassian.theplugin.configuration;
 
+import com.intellij.util.xmlb.XmlSerializer;
 import junit.framework.TestCase;
+import org.jdom.Element;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ConfigurationBeanTest extends TestCase
 {
@@ -38,5 +43,36 @@ public class ConfigurationBeanTest extends TestCase
         
         // now check our persisted data is right
         assertEquals(config.getServers(), ((BambooConfigurationBean)config).getServersData());
+    }
+
+    public void testPersistence() throws Exception
+    {
+        // first, test a single ServerBean
+        ServerBean server = new ServerBean();
+        server.setUrlString("http://www.poland.pl");
+        server.setUserName("sopot");
+        server.setPasswordString("gdansk", true);
+        Element e = XmlSerializer.serialize(server);
+        assertEquals(server, XmlSerializer.deserialize(e, ServerBean.class));
+
+        // now add a plan to the server and try again
+        List plans = new ArrayList();
+        SubscribedPlanBean plan = new SubscribedPlanBean("FOO-TESTS");
+        plans.add(plan);
+        server.setSubscribedPlansData(plans);
+        e = XmlSerializer.serialize(server);
+        assertEquals(server, XmlSerializer.deserialize(e, ServerBean.class));
+
+        // now add the ServerBean to a BambooConfigurationBean
+        BambooConfigurationBean bambooConfig = new BambooConfigurationBean();
+        bambooConfig.storeServer(server);
+        e = XmlSerializer.serialize(bambooConfig);
+        assertEquals(bambooConfig, XmlSerializer.deserialize(e, BambooConfigurationBean.class));
+
+        // now roll that up into the global configuration
+        PluginConfigurationBean config = new PluginConfigurationBean();
+        config.setBambooConfigurationData(bambooConfig);
+        e = XmlSerializer.serialize(config);
+        assertEquals(config, XmlSerializer.deserialize(e, PluginConfigurationBean.class));
     }
 }
