@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.exception.ThePluginException;
-import com.atlassian.theplugin.util.ClasspathHTMLEditorKit;
+import thirdparty.javaworld.ClasspathHTMLEditorKit;
 import com.intellij.openapi.util.IconLoader;
 
 import javax.swing.*;

@@ -2,7 +2,7 @@ package com.atlassian.theplugin.idea.bamboo;
 
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
-import com.atlassian.theplugin.util.ClasspathHTMLEditorKit;
+import thirdparty.javaworld.ClasspathHTMLEditorKit;
 import com.intellij.util.ui.UIUtil;
 
 import javax.swing.*;
