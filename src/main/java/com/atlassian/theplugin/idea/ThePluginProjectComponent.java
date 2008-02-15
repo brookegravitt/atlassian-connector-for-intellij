@@ -43,10 +43,10 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 	private ToolWindowManager toolWindowManager;
 	public static final String TOOL_WINDOW_NAME = "Atlassian";
-	private ToolWindow toolWindow;
 	private static final String THE_PLUGIN_TOOL_WINDOW_ICON = "/icons/thePlugin_15x10.png";
 	private boolean enabled;
 	private BambooStatusDisplay buildFailedToolTip;
+	private ToolWindow toolWindow;
 	private UserDataContext crucibleUserContext;
 
 	public ThePluginProjectComponent(Project project) {
@@ -82,7 +82,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		ThePluginApplicationComponent appComponent =
 				ApplicationManager.getApplication().getComponent(ThePluginApplicationComponent.class);
 
-		if (appComponent.getState().isPluginEnabled() && !enabled) {
+		if (!enabled) {
 
 			// create tool window on the right
 			toolWindowManager = ToolWindowManager.getInstance(project);
@@ -94,22 +94,22 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			BambooToolWindowPanel bambooToolWindowPanel = new BambooToolWindowPanel();
 			PeerFactory peerFactory = PeerFactory.getInstance();
 
-            Content bambooToolWindow = peerFactory.getContentFactory().createContent(
+			Content bambooToolWindow = peerFactory.getContentFactory().createContent(
 					bambooToolWindowPanel, "Bamboo", false);
-            bambooToolWindow.setIcon(IconLoader.getIcon("/icons/bamboo-blue-16.png"));
+			bambooToolWindow.setIcon(IconLoader.getIcon("/icons/bamboo-blue-16.png"));
 			bambooToolWindow.putUserData(ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
 			toolWindow.getContentManager().addContent(bambooToolWindow);
 
-            CrucibleToolWindowPanel crucibleToolWindowPanel = new CrucibleToolWindowPanel();
-            Content crucibleToolWindow = peerFactory.getContentFactory().createContent(
-                    crucibleToolWindowPanel, "Crucible", false);
-            crucibleToolWindow.setIcon(IconLoader.getIcon("/icons/crucible-blue-16.png"));
+			CrucibleToolWindowPanel crucibleToolWindowPanel = new CrucibleToolWindowPanel();
+			Content crucibleToolWindow = peerFactory.getContentFactory().createContent(
+					crucibleToolWindowPanel, "Crucible", false);
+			crucibleToolWindow.setIcon(IconLoader.getIcon("/icons/crucible-blue-16.png"));
 			crucibleToolWindow.putUserData(ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
 			toolWindow.getContentManager().addContent(crucibleToolWindow);
 
 			bambooStatusChecker = appComponent.getBambooStatusChecker();
 
-            // add tool window bamboo content listener to bamboo checker thread
+			// add tool window bamboo content listener to bamboo checker thread
 			toolWindowBambooListener = new HtmlBambooStatusListener(bambooToolWindowPanel.getBambooContent());
 			bambooStatusChecker.registerListener(toolWindowBambooListener);
 
@@ -117,8 +117,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			statusBarBambooIcon = new BambooStatusIcon(this);
 			statusBarBambooIcon.updateBambooStatus(BuildStatus.UNKNOWN,
 					"<div style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">"
-					+ "Waiting for Bamboo build statuses."
-					+ "</div>");
+							+ "Waiting for Bamboo build statuses."
+							+ "</div>");
 
 			// add icon listener to bamboo checker thread
 			iconBambooStatusListener = new HtmlBambooStatusListener(statusBarBambooIcon);
@@ -144,12 +144,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			crucibleUserContext = appComponent.getUserDataContext();
 			crucibleUserContext.setDisplay(statusBarCrucibleIcon);
 			crucibleStatusChecker.registerListener(crucibleUserContext);
-
 			// add crucible icon to status bar
 			statusBar.addCustomIndicationComponent(statusBarCrucibleIcon);
-
-			// now fire all status checkers
-            appComponent.triggerStatusCheckers();
             enabled = true;
 		}
 	}
@@ -162,9 +158,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			statusBar.removeCustomIndicationComponent(statusBarCrucibleIcon);
 			statusBarCrucibleIcon = null;
 
-			// remove tool window
-			toolWindowManager.unregisterToolWindow(TOOL_WINDOW_NAME);
-			toolWindow = null;
 
 			// unregister listeners
 			bambooStatusChecker.unregisterListener(iconBambooStatusListener);
@@ -172,6 +165,10 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			bambooStatusChecker.unregisterListener(simpleBambooStatusListener);
 			crucibleStatusChecker.unregisterListener(toolWindowCrucibleListener);
 			crucibleStatusChecker.unregisterListener(crucibleUserContext);
+
+			// remove tool window
+			toolWindowManager.unregisterToolWindow(TOOL_WINDOW_NAME);
+			toolWindow = null;
 			enabled = false;
 		}
 	}
