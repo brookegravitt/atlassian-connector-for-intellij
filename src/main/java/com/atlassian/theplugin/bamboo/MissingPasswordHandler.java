@@ -54,7 +54,7 @@ public class MissingPasswordHandler implements Runnable {
 				serverBean.setIsConfigInitialized(true);
 			}
 			ThePluginApplicationComponent appComponent = IdeaHelper.getAppComponent();
-			appComponent.triggerStatusCheckers();
+			appComponent.triggerStatusCheckers(true);
 
 			if (wasCanceled) {
 				JOptionPane.showMessageDialog(null,
