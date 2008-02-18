@@ -18,7 +18,7 @@ import java.awt.event.MouseEvent;
  */
 public class CrucibleStatusIcon extends JLabel {
 
-	private ThePluginProjectComponent projectComponent;
+	private transient ThePluginProjectComponent projectComponent;
 
 	private static final Icon ICON_NEW = IconLoader.getIcon("/icons/crucible-blue-16.png");
 	private static final Icon ICON_STANDARD = IconLoader.getIcon("/icons/crucible-grey-16.png");
@@ -46,7 +46,7 @@ public class CrucibleStatusIcon extends JLabel {
 	public void triggerNewReviewAction(int numOfNewReviews) {
 		this.setIcon(ICON_NEW);
 		this.setToolTipText(NEW_REVIEWS);
-		this.setText(new Integer(numOfNewReviews).toString());
+		this.setText(Integer.toString(numOfNewReviews));
 	}
 
 	public void setStandardIcon() {

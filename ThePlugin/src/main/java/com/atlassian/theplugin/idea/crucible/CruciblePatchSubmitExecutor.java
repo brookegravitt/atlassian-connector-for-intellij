@@ -31,7 +31,6 @@ public class CruciblePatchSubmitExecutor implements CommitExecutor {
 		return "Creates a patch from the files that would be commited and sends it for review to the Crucible server.";
 	}
 
-	@NotNull
 	public CommitSession createCommitSession() {
 		return new CruciblePatchSubmitCommitSession(project);
 	}
