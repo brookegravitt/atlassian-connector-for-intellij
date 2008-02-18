@@ -437,7 +437,7 @@
 							<exclude>true</exclude>
 						</library>
 						<library>
-							<name>trove</name>
+							<name>xmlrpc</name>
 							<exclude>true</exclude>
 						</library>
 						<library>
