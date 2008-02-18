@@ -2,24 +2,13 @@ package com.atlassian.theplugin.crucible;
 
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerBean;
-import com.atlassian.theplugin.crucible.api.CrucibleException;
-import com.atlassian.theplugin.crucible.api.CrucibleSession;
-import com.atlassian.theplugin.crucible.api.CrucibleSessionImpl;
-import com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData;
-import com.atlassian.theplugin.crucible.api.soap.xfire.review.State;
+import com.atlassian.theplugin.crucible.api.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by IntelliJ IDEA.
- * User: Jacek
- * Date: 2008-02-05
- * Time: 16:27:35
- * To change this template use File | Settings | File Templates.
- */
 public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	private Map<String, CrucibleSession> sessions = new HashMap<String, CrucibleSession>();
 
@@ -92,19 +81,25 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	 * @param server server object with Url, Login and Password to connect to
 	 * @return List of reviews (empty list in case there is no review)
 	 */
-	public List<ReviewData> getAllReviews(Server server) throws CrucibleException {
+	public List<ReviewDataInfo> getAllReviews(Server server) throws CrucibleException {
 		CrucibleSession session = getSession(server.getUrlString());
 
 		session.login(server.getUserName(), server.getPasswordString());
 
 		try {
-			return session.getAllReviews();
+			List<ReviewData> res = session.getAllReviews();
+			List<ReviewDataInfo> result = new ArrayList<ReviewDataInfo>(res.size());
+			for (ReviewData review : res) {
+				List<String> reviewers = session.getReviewers(review.getPermaId());
+				result.add(new ReviewDataInfoImpl(review, reviewers, server));
+			}
+			return result;
 		} finally {
 			session.logout();
 		}
 	}
 
-	public List<RemoteReview> getActiveReviewsForUser(Server server)
+	public List<ReviewDataInfo> getActiveReviewsForUser(Server server)
 			throws CrucibleException {
 		CrucibleSession session = getSession(server.getUrlString());
 
@@ -114,16 +109,16 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 		states.add(State.REVIEW);
 		try {
 			List<ReviewData> reviews = session.getReviewsInStates(states);
-			List<RemoteReview> remoteReviews = new ArrayList<RemoteReview>(0);
+			List<ReviewDataInfo> result = new ArrayList<ReviewDataInfo>(reviews.size());
 
 			for (ReviewData reviewData : reviews) {
 				List<String> reviewers = session.getReviewers(reviewData.getPermaId());
 
 				if (reviewers.contains(server.getUserName())) {
-					remoteReviews.add(new RemoteReview(reviewData, reviewers, server));
+					result.add(new ReviewDataInfoImpl(reviewData, reviewers, server));
 				}
 			}
-			return remoteReviews;
+			return result;
 		} finally {
 			session.logout();
 		}
