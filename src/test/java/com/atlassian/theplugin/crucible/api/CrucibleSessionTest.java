@@ -1,10 +1,7 @@
 package com.atlassian.theplugin.crucible.api;
 
 import com.atlassian.theplugin.crucible.api.soap.xfire.auth.RpcAuthServiceName;
-import com.atlassian.theplugin.crucible.api.soap.xfire.review.PermId;
-import com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData;
-import com.atlassian.theplugin.crucible.api.soap.xfire.review.RpcReviewServiceName;
-import com.atlassian.theplugin.crucible.api.soap.xfire.review.State;
+import com.atlassian.theplugin.crucible.api.soap.xfire.review.*;
 import junit.framework.TestCase;
 import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.jaxws.JaxWsServerFactoryBean;
@@ -138,7 +135,7 @@ public class CrucibleSessionTest extends TestCase {
 	}
 
 	public void testMethodCallWithoutLogin() throws Exception {
-		CrucibleSessionImpl crucibleSession = new CrucibleSessionImpl(CxfReviewServiceMockImpl.VALID_URL);
+		CrucibleSessionImpl crucibleSession = new CrucibleSessionImpl(VALID_URL);
 		List<State> states = new ArrayList<State>();
 		try {
 			crucibleSession.getReviewsInStates(states);
@@ -153,21 +150,21 @@ public class CrucibleSessionTest extends TestCase {
 			//expected
 		}
 		try {
-			crucibleSession.getReviewers(new PermId());
+			crucibleSession.getReviewers(null);
 			fail();
 		} catch (IllegalStateException e) {
 			//expected
 		}
 
 		try {
-			crucibleSession.createReview(new ReviewData());
+			crucibleSession.createReview(null);
 			fail();
 		} catch (IllegalStateException e) {
 			//expected
 		}
 
 		try {
-			crucibleSession.createReviewFromPatch(new ReviewData(), "patch");
+			crucibleSession.createReviewFromPatch(null, "patch");
 			fail();
 		} catch (IllegalStateException e) {
 			//expected
@@ -189,8 +186,18 @@ public class CrucibleSessionTest extends TestCase {
 				prepareReviewData("review1", State.REVIEW),
 				prepareReviewData("review2", State.REVIEW));
 
-		reviewServiceMock.getReviewsInStates("test token", states);
-		EasyMock.expectLastCall().andReturn(reviews);
+		List<com.atlassian.theplugin.crucible.api.soap.xfire.review.State> cxfStates = new ArrayList<com.atlassian.theplugin.crucible.api.soap.xfire.review.State>();
+		for (State s: states) {
+			cxfStates.add(CrucibleSessionImpl.translateToCxfState(s));
+		}
+
+		List<com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData> cxfReviews = new ArrayList<com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData>();
+		for (ReviewData rd : reviews) {
+			cxfReviews.add(CrucibleSessionImpl.translateToCxfReviewData(rd));
+		}
+
+		reviewServiceMock.getReviewsInStates("test token", cxfStates);
+		EasyMock.expectLastCall().andReturn(cxfReviews);
 		EasyMock.replay(reviewServiceMock);
 
 		crucibleSession.login(VALID_LOGIN, VALID_PASSWORD);
@@ -212,17 +219,51 @@ public class CrucibleSessionTest extends TestCase {
 
 	}
 
-	private ReviewData prepareReviewData(String name, State state) {
-		ReviewData reviewData = new ReviewData();
-		PermId id = new PermId();
-		id.setId(name + "TestId");
-		reviewData.setPermaId(id);
-		reviewData.setAuthor(CxfReviewServiceMockImpl.VALID_LOGIN);
-		reviewData.setCreator(CxfReviewServiceMockImpl.VALID_LOGIN);
-		reviewData.setDescription("Test description");
-		reviewData.setName(name);
-		reviewData.setState(state);
-		reviewData.setProjectKey("TEST");
-		return reviewData;
+	private ReviewData prepareReviewData(final String name, final State state) {
+		return new ReviewData() {
+			public String getAuthor() {
+				return VALID_LOGIN;
+			}
+
+			public String getCreator() {
+				return VALID_LOGIN;
+			}
+
+			public String getDescription() {
+				return "Test description";
+			}
+
+			public String getModerator() {
+				return VALID_LOGIN;
+			}
+
+			public String getName() {
+				return name;
+			}
+
+			public PermId getParentReview() {
+				return null;
+			}
+
+			public PermId getPermaId() {
+				return new PermId(){
+					public String getId() {
+						return name + "TestId";
+					}
+				};
+			}
+
+			public String getProjectKey() {
+				return "TEST";
+			}
+
+			public String getRepoName() {
+				return null;
+			}
+
+			public State getState() {
+				return state;
+			}
+		};
 	}
 }

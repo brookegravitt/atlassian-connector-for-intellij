@@ -1,8 +1,8 @@
 package com.atlassian.theplugin.crucible;
 
 import com.atlassian.theplugin.configuration.Server;
-import com.atlassian.theplugin.crucible.api.soap.xfire.review.PermId;
-import com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData;
+import com.atlassian.theplugin.crucible.api.PermId;
+import com.atlassian.theplugin.crucible.api.ReviewData;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -11,8 +11,8 @@ import org.easymock.EasyMock;
 /**
  * RemoteReview Tester.
  */
-public class RemoteReviewTest extends TestCase {
-    public RemoteReviewTest(String name) {
+public class ReviewDataInfoImplTest extends TestCase {
+    public ReviewDataInfoImplTest(String name) {
         super(name);
     }
 
@@ -46,20 +46,25 @@ public class RemoteReviewTest extends TestCase {
 				.andReturn("http://url//")
 				.andReturn("http://url/////");
 
-		ReviewData rd = new ReviewData();
-		PermId pid = new PermId();
-		pid.setId("ID");
-		rd.setPermaId(pid);
+		ReviewData rd = EasyMock.createMock(ReviewData.class);
+		rd.getPermaId();
+		EasyMock.expectLastCall().andReturn(new PermId() {
+			public String getId() {
+				return "ID";
+			}
+		}).anyTimes();
 
 		EasyMock.replay(server);
-		RemoteReview rr = new RemoteReview(rd, null, server);
-		assertEquals("http://url/cru/ID", rr.getReviewUrl());
-		assertEquals("http://url/cru/ID", rr.getReviewUrl());
-		assertEquals("http://url/cru/ID", rr.getReviewUrl());
-		assertEquals("http://url/cru/ID", rr.getReviewUrl());
+		EasyMock.replay(rd);
+
+		ReviewDataInfoImpl tested = new ReviewDataInfoImpl(rd, null, server);
+		assertEquals("http://url/cru/ID", tested.getReviewUrl());
+		assertEquals("http://url/cru/ID", tested.getReviewUrl());
+		assertEquals("http://url/cru/ID", tested.getReviewUrl());
+		assertEquals("http://url/cru/ID", tested.getReviewUrl());
 	}
 
     public static Test suite() {
-        return new TestSuite(RemoteReviewTest.class);
+        return new TestSuite(ReviewDataInfoImplTest.class);
     }
 }

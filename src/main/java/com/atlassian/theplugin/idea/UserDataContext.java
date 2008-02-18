@@ -2,15 +2,15 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.bamboo.HtmlBambooStatusListener;
 import com.atlassian.theplugin.crucible.CrucibleStatusListener;
-import com.atlassian.theplugin.crucible.RemoteReview;
+import com.atlassian.theplugin.crucible.ReviewDataInfo;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusIcon;
-import thirdparty.javaworld.ClasspathHTMLEditorKit;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.ui.content.ContentManager;
+import thirdparty.javaworld.ClasspathHTMLEditorKit;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class UserDataContext implements CrucibleStatusListener {
-	private List<RemoteReview> reviews = new ArrayList<RemoteReview>();
+	private List<ReviewDataInfo> reviews = new ArrayList<ReviewDataInfo>();
 
 
 	private CrucibleStatusIcon display;
@@ -34,13 +34,12 @@ public class UserDataContext implements CrucibleStatusListener {
 	private static final int G = 255;
 	private static final int B = 200;
 
-	public void updateReviews(Collection<RemoteReview> incomingReviews) {
+	public void updateReviews(Collection<ReviewDataInfo> incomingReviews) {
 
-		// a set containing the 'last new reviews' that we saw (for painting nicely)
-		List<RemoteReview> newReviews = new ArrayList<RemoteReview>();
-		
+
 		if (!reviews.containsAll(incomingReviews)) {
-			newReviews = new ArrayList(incomingReviews);
+			// a set containing the 'last new reviews' that we saw (for painting nicely)
+			List<ReviewDataInfo> newReviews = new ArrayList<ReviewDataInfo>(incomingReviews);
 			newReviews.removeAll(reviews);
 
 			// notify display
@@ -60,14 +59,14 @@ public class UserDataContext implements CrucibleStatusListener {
 					+ (newReviews.size() != 1 ? "s" : "")
 					+ "</b></td></tr>");
 
-			for (RemoteReview newReview : newReviews) {
-				String id = newReview.getReviewData().getPermaId().getId();
+			for (ReviewDataInfo newReview : newReviews) {
+				String id = newReview.getPermaId().getId();
 				sb.append(
 						"<tr><td colspan=2 width=\"1%\" nowrap valign=top><a href=\""
 						+ newReview.getReviewUrl() + "\">"
 						+ id
 						+ "</a></td><td>"
-						+ newReview.getReviewData().getName()
+						+ newReview.getName()
 						+ "</td></tr>");
 			}
 			sb.append("</table>");
@@ -95,6 +94,6 @@ public class UserDataContext implements CrucibleStatusListener {
 					new JScrollPane(content), new Color(R, G, B));
 		}
 
-		reviews = new ArrayList<RemoteReview>(incomingReviews);
+		reviews = new ArrayList<ReviewDataInfo>(incomingReviews);
 	}
 }

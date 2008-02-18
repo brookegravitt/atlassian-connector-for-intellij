@@ -1,8 +1,6 @@
 
 package com.atlassian.theplugin.crucible.api.soap.xfire.review;
 
-import com.atlassian.theplugin.crucible.api.CrucibleSessionImpl;
-
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
@@ -168,14 +166,6 @@ public class ObjectFactory {
      */
     public GetAllReviews createGetAllReviews() {
         return new GetAllReviews();
-    }
-
-    /**
-     * Create an instance of {@link com.atlassian.theplugin.crucible.api.CrucibleSessionImpl.RemoveReviewItem }
-     * 
-     */
-    public CrucibleSessionImpl.RemoveReviewItem createRemoveReviewItem() {
-        return new CrucibleSessionImpl.RemoveReviewItem();
     }
 
     /**
@@ -381,15 +371,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://rpc.spi.crucible.atlassian.com/", name = "createReviewFromPatchResponse")
     public JAXBElement<CreateReviewFromPatchResponse> createCreateReviewFromPatchResponse(CreateReviewFromPatchResponse value) {
         return new JAXBElement<CreateReviewFromPatchResponse>(_CreateReviewFromPatchResponse_QNAME, CreateReviewFromPatchResponse.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link com.atlassian.theplugin.crucible.api.CrucibleSessionImpl.RemoveReviewItem }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://rpc.spi.crucible.atlassian.com/", name = "removeReviewItem")
-    public JAXBElement<CrucibleSessionImpl.RemoveReviewItem> createRemoveReviewItem(CrucibleSessionImpl.RemoveReviewItem value) {
-        return new JAXBElement<CrucibleSessionImpl.RemoveReviewItem>(_RemoveReviewItem_QNAME, CrucibleSessionImpl.RemoveReviewItem.class, null, value);
     }
 
     /**
