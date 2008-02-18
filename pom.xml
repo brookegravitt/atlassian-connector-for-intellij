@@ -369,6 +369,7 @@
 					<jdkLevel>${jdkLevel}</jdkLevel>
 					<excludes>
 						<exclude>**/thirdparty/**/*.*</exclude>
+						<exclude>**/soap/xfire/**/*.*</exclude>
 					</excludes>
 				</configuration>
 				<executions>
@@ -490,12 +491,11 @@
 				<configuration>
 					<configLocation>java-regular.cs.xml</configLocation>
 					<excludes>
-                        **/Base64.java,
                         **/serverconfig/*Form.java,
                         **/idea/PasswordDialog.java,
                         **/crucible/CruciblePatchUploadForm.java,
                         **/soap/xfire/**/*.java,
-						**/ClasspathImageView.java
+						**/thirdparty/**.*
 					</excludes>
 					<!--<failsOnError>true</failsOnError>-->
 					<!--<linkXRef>false</linkXRef>-->
