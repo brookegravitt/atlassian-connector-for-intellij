@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "permId", propOrder = {
     "id"
 })
-public class PermId {
+public class PermId implements com.atlassian.theplugin.crucible.api.PermId {
 
     protected String id;
 
