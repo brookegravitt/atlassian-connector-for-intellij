@@ -7,7 +7,7 @@ import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.crucible.CrucibleServerFactory;
 import com.atlassian.theplugin.crucible.CrucibleStatusListener;
-import com.atlassian.theplugin.crucible.RemoteReview;
+import com.atlassian.theplugin.crucible.ReviewDataInfo;
 import com.atlassian.theplugin.crucible.api.CrucibleLoginException;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
@@ -49,7 +49,7 @@ public class CrucibleStatusChecker {
 	private void doRun() {
         try {
             // collect build info from each server
-            final Collection<RemoteReview> reviews = new ArrayList<RemoteReview>();
+            final Collection<ReviewDataInfo> reviews = new ArrayList<ReviewDataInfo>();
             for (Server server
                     : ConfigurationFactory.getConfiguration().getProductServers(
                             ServerType.CRUCIBLE_SERVER).getEnabledServers()) {
@@ -76,7 +76,7 @@ public class CrucibleStatusChecker {
                 }
             });
 	    } catch (Throwable t) {
-            t.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            t.printStackTrace();  
         }
     }
 
