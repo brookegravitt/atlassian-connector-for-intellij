@@ -24,9 +24,9 @@
 	<version>0.3.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<properties>
-		<clover.licenseLocation>clover/clover.license</clover.licenseLocation>
-		<clover.database>${basedir}/clover/clover.db</clover.database>
-		<clover.mergeDatabase>${basedir}/clover/cloverMerge.db</clover.mergeDatabase>
+		<clover.licenseLocation>${basedir}/clover/clover.license</clover.licenseLocation>
+		<clover.database>${basedir}/target/clover/clover.db</clover.database>
+		<clover.mergeDatabase>${basedir}/target/clover/cloverMerge.db</clover.mergeDatabase>
 		<jdkLevel>1.5</jdkLevel>
 		<currentVersion>${project.version}</currentVersion>
 		<artifactZip>${project.build.finalName}.zip</artifactZip>
