@@ -84,18 +84,21 @@ public class JIRARssClient {
     }
 
     protected String getUrlContent(String url) throws IOException {
-        BufferedReader in = new BufferedReader(new InputStreamReader(getUrlAsStream(url)));
+		BufferedReader in = null;
+		try {
+			in = new BufferedReader(new InputStreamReader(getUrlAsStream(url)));
 
-        String inputLine;
-        StringBuffer buffer = new StringBuffer();
-        while ((inputLine = in.readLine()) != null) {
-            buffer.append(inputLine);
-            buffer.append('\n');
-        }
+			String inputLine;
+			StringBuffer buffer = new StringBuffer();
+			while ((inputLine = in.readLine()) != null) {
+				buffer.append(inputLine);
+				buffer.append('\n');
 
-        in.close();
-
-        return buffer.toString();
+			}
+			return buffer.toString();
+		} finally {
+			in.close();
+		}
     }
 
     // protected so that we can easily write tests by simply returning XML from a file instead of a URL!

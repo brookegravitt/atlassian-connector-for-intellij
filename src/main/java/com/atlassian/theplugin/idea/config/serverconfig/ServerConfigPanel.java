@@ -106,7 +106,8 @@ public class ServerConfigPanel extends AbstractContentPanel {
                     break;
                 case CRUCIBLE_SERVER:
                     serverPanels.put(ServerType.CRUCIBLE_SERVER, new GenericServerConfigForm(new ConnectionTester() {
-                        public void testConnection(String username, String password, String server) throws ThePluginException {
+                        public void testConnection(String username, String password, String server)
+								throws ThePluginException {
                             try {
                                 CrucibleServerFactory.getCrucibleServerFacade()
                                         .testServerConnection(server, username, password);
@@ -118,7 +119,8 @@ public class ServerConfigPanel extends AbstractContentPanel {
                     break;
                 case JIRA_SERVER:
                     serverPanels.put(ServerType.JIRA_SERVER, new GenericServerConfigForm(new ConnectionTester() {
-                        public void testConnection(String username, String password, String server) throws ThePluginException {
+                        public void testConnection(String username, String password, String server)
+								throws ThePluginException {
                             try {
                                 JIRAServerFactory.getJIRAServerFacade().testServerConnection(server, username, password);
                             } catch (JIRALoginException e) {
