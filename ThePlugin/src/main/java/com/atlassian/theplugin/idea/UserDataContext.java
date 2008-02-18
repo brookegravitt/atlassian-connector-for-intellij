@@ -24,7 +24,7 @@ public class UserDataContext implements CrucibleStatusListener {
 	private List<ReviewDataInfo> reviews = new ArrayList<ReviewDataInfo>();
 
 
-	private CrucibleStatusIcon display;
+	private CrucibleStatusIcon display = null;
 
 	public void setDisplay(CrucibleStatusIcon display) {
 		this.display = display;

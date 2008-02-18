@@ -82,7 +82,8 @@ public class CrucibleSessionImpl implements CrucibleSession {
 	public ReviewData createReviewFromPatch(ReviewData reviewData, String patch) throws CrucibleException {
 		String token = getAuthToken();
 		try {
-			return translateFromCxfReviewData(reviewService.createReviewFromPatch(token, translateToCxfReviewData(reviewData), patch));
+			return translateFromCxfReviewData(
+					reviewService.createReviewFromPatch(token, translateToCxfReviewData(reviewData), patch));
 		} catch (RuntimeException e) {
 			throw new CrucibleException("createReviewFromPatch", e);
 		}
@@ -92,11 +93,13 @@ public class CrucibleSessionImpl implements CrucibleSession {
 	public List<ReviewData> getReviewsInStates(List<State> arg1) throws CrucibleException {
 		String token = getAuthToken();
 		try {
-			List<com.atlassian.theplugin.crucible.api.soap.xfire.review.State> states = new ArrayList<com.atlassian.theplugin.crucible.api.soap.xfire.review.State>();
+			List<com.atlassian.theplugin.crucible.api.soap.xfire.review.State> states =
+					new ArrayList<com.atlassian.theplugin.crucible.api.soap.xfire.review.State>();
 			for (State state : arg1) {
 				states.add(translateToCxfState(state));
 			}
-			List<com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData> result = reviewService.getReviewsInStates(token, states);
+			List<com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData> result =
+					reviewService.getReviewsInStates(token, states);
 			List<ReviewData> r = new ArrayList<ReviewData>();
 			for (com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData review : result) {
 				r.add(translateFromCxfReviewData(review));
@@ -110,7 +113,8 @@ public class CrucibleSessionImpl implements CrucibleSession {
 	public List<ReviewData> getAllReviews() throws CrucibleException {
 		String token = getAuthToken();
 		try {
-			List<com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData> result = reviewService.getAllReviews(token);
+			List<com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData> result =
+					reviewService.getAllReviews(token);
 			List<ReviewData> r = new ArrayList<ReviewData>();
 			for (com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData review : result) {
 				r.add(translateFromCxfReviewData(review));
@@ -154,9 +158,9 @@ public class CrucibleSessionImpl implements CrucibleSession {
 			case SUMMARIZE:
 				return com.atlassian.theplugin.crucible.api.soap.xfire.review.State.SUMMARIZE;
 			case UNKNOWN:
+			default:
 				return com.atlassian.theplugin.crucible.api.soap.xfire.review.State.UNKNOWN;
 		}
-		return com.atlassian.theplugin.crucible.api.soap.xfire.review.State.UNKNOWN;
 	}
 
 	static State translateFromCxfState(com.atlassian.theplugin.crucible.api.soap.xfire.review.State state) {
@@ -176,22 +180,25 @@ public class CrucibleSessionImpl implements CrucibleSession {
 			case SUMMARIZE:
 				return State.SUMMARIZE;
 			case UNKNOWN:
+			default:
 				return State.UNKNOWN;
 		}
-		return State.UNKNOWN;
 	}
 
 	static com.atlassian.theplugin.crucible.api.soap.xfire.review.PermId translateToCxfPermId(PermId permId) {
 		if (permId == null) {
 			return null;
 		}
-		com.atlassian.theplugin.crucible.api.soap.xfire.review.PermId newPerm = new com.atlassian.theplugin.crucible.api.soap.xfire.review.PermId();
+		com.atlassian.theplugin.crucible.api.soap.xfire.review.PermId newPerm =
+				new com.atlassian.theplugin.crucible.api.soap.xfire.review.PermId();
 		newPerm.setId(permId.getId());
 		return newPerm;
 	}
 
-	static com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData translateToCxfReviewData(ReviewData reviewData) {
-		com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData newReview = new com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData();
+	static
+	com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData translateToCxfReviewData(ReviewData reviewData) {
+		com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData newReview =
+				new com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData();
 		newReview.setPermaId(translateToCxfPermId(reviewData.getPermaId()));
 		newReview.setAuthor(reviewData.getAuthor());
 		newReview.setCreator(reviewData.getCreator());
@@ -205,7 +212,8 @@ public class CrucibleSessionImpl implements CrucibleSession {
 		return newReview;
 	}
 
-	static ReviewData translateFromCxfReviewData(com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData reviewData) {
+	static
+	ReviewData translateFromCxfReviewData(com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData reviewData) {
 		ReviewDataBean newReview = new ReviewDataBean();
 		newReview.setPermaId(translateToCxfPermId(reviewData.getPermaId()));
 		newReview.setAuthor(reviewData.getAuthor());

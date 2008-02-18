@@ -1,8 +1,6 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.configuration.ServerBean;
-import com.atlassian.theplugin.crucible.CrucibleServerFactory;
-import com.atlassian.theplugin.crucible.api.CrucibleException;
 import com.atlassian.theplugin.exception.ThePluginException;
 import com.intellij.openapi.ui.Messages;
 import static com.intellij.openapi.ui.Messages.showMessageDialog;
@@ -28,7 +26,7 @@ public class GenericServerConfigForm extends AbstractServerPanel {
 	private JCheckBox chkPasswordRemember;
 	private JCheckBox cbEnabled;
 
-	private ServerBean server;
+	private transient ServerBean server;
 
 	public GenericServerConfigForm(final ConnectionTester tester) {
 
@@ -88,7 +86,7 @@ public class GenericServerConfigForm extends AbstractServerPanel {
 				return true;
 			}
 			String pass = String.valueOf(password.getPassword());
-			if (pass != null ? !pass.equals(server.getPasswordString()) : server.getPasswordString() != null) {
+			if (!pass.equals(server.getPasswordString())) {
 				return true;
 			}
 

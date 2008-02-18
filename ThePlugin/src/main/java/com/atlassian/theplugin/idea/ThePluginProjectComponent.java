@@ -1,9 +1,9 @@
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.bamboo.BuildStatus;
-import com.atlassian.theplugin.bamboo.HtmlBambooStatusListener;
 import com.atlassian.theplugin.bamboo.BambooStatusDisplay;
 import com.atlassian.theplugin.bamboo.BambooStatusListenerImpl;
+import com.atlassian.theplugin.bamboo.BuildStatus;
+import com.atlassian.theplugin.bamboo.HtmlBambooStatusListener;
 import com.atlassian.theplugin.crucible.HtmlCrucibleStatusListener;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusChecker;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
@@ -11,8 +11,8 @@ import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
 import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;
 import com.atlassian.theplugin.idea.crucible.CruciblePatchSubmitExecutor;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
-import com.atlassian.theplugin.idea.crucible.CrucibleToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusIcon;
+import com.atlassian.theplugin.idea.crucible.CrucibleToolWindowPanel;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.project.Project;
@@ -21,7 +21,6 @@ import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.wm.*;
 import com.intellij.peer.PeerFactory;
 import com.intellij.ui.content.Content;
-import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
@@ -73,7 +72,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		System.out.println("End: Dispose ThePlugin project component");
 	}
 
-	@NotNull
 	public String getComponentName() {
 		return "ThePluginProjectComponent";
 	}
