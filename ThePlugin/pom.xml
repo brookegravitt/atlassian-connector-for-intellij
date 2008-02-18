@@ -283,6 +283,11 @@
 					<artifactId>maven-site-plugin</artifactId>
 					<version>RELEASE</version>
 				</plugin>
+				<plugin>
+					<groupId>com.atlassian.maven.plugins</groupId>
+					<artifactId>maven-clover-plugin</artifactId>
+					<version>3.6</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 		<plugins>
@@ -362,6 +367,9 @@
 					<cloverMergeDatabase>${clover.mergeDatabase}</cloverMergeDatabase>
 					<targetPercentage>60%</targetPercentage>
 					<jdkLevel>${jdkLevel}</jdkLevel>
+					<excludes>
+						<exclude>**/thirdparty/**/*.*</exclude>
+					</excludes>
 				</configuration>
 				<executions>
 					<execution>
