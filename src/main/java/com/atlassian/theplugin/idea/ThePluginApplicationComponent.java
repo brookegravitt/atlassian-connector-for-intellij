@@ -2,8 +2,8 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
-import com.atlassian.theplugin.idea.config.ConfigPanel;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusChecker;
+import com.atlassian.theplugin.idea.config.ConfigPanel;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.components.PersistentStateComponent;
@@ -16,7 +16,6 @@ import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.util.IconLoader;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -74,7 +73,6 @@ public class ThePluginApplicationComponent
 	}
 
 	@NonNls
-	@NotNull
 	public String getComponentName() {
 		return "ThePluginApplicationComponent";
 	}
