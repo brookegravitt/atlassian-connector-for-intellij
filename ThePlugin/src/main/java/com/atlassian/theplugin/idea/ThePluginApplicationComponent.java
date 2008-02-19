@@ -46,13 +46,7 @@ public class ThePluginApplicationComponent
 
 	private UserDataContext userDataContext;
     private JIRAServer currentJIRAServer;
-
-    public BambooStatusChecker getBambooStatusChecker() {
-		if (bambooStatusChecker == null) {
-			bambooStatusChecker = new BambooStatusChecker();
-		}
-		return bambooStatusChecker;
-	}
+	private static final long PLUGIN_UPDATE_ATTEMPT_DELAY = 20000;
 
 	public Timer getTimer() {
 		return timer;
@@ -128,11 +122,16 @@ public class ThePluginApplicationComponent
 		if (rightNow) {
 			delay = 0;
 		}
-		bambooStatusCheckerTask = getBambooStatusChecker().newTimerTask();
+		bambooStatusCheckerTask = BambooStatusChecker.getInstance().newTimerTask();
 		timer.schedule(bambooStatusCheckerTask, delay, TIMER_TICK);
-		crucibleStatusCheckerTask = getCrucibleStatusChecker().newTimerTask();
+		crucibleStatusCheckerTask = CrucibleStatusChecker.getIntance().newTimerTask();
 		timer.schedule(crucibleStatusCheckerTask, delay, TIMER_TICK);
+
+		TimerTask updatePluginTimerTask = UpdateServiceChecker.getInstance().newTimerTask();
+		timer.schedule(updatePluginTimerTask, PLUGIN_UPDATE_ATTEMPT_DELAY);
 	}
+
+
 
 	public void apply() throws ConfigurationException {
 		if (form != null) {
@@ -177,14 +176,7 @@ public class ThePluginApplicationComponent
 		configuration = state;
 	}
 
-    public CrucibleStatusChecker getCrucibleStatusChecker() {
-        if (crucibleStatusChecker == null) {
-            crucibleStatusChecker = new CrucibleStatusChecker();
-        }
-        return crucibleStatusChecker;
-    }
-
-    public JIRAServer getCurrentJIRAServer() {
+	public JIRAServer getCurrentJIRAServer() {
         return currentJIRAServer;
     }
 
