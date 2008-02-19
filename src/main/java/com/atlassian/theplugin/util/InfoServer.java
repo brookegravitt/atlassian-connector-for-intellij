@@ -22,6 +22,8 @@ import com.atlassian.theplugin.exception.VersionServiceException;
 public class InfoServer {
 	private String serviceUrl;
 	private long uid;
+	// todo lguminski/jjaroczynski change to real server's instance
+	public static final String INFO_SERVER_URL = "http://xxx.com";
 
 	public InfoServer(String serviceUrl, long uid) {
 		this.serviceUrl = serviceUrl;

@@ -111,7 +111,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			crucibleToolWindow.putUserData(ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
 			toolWindow.getContentManager().addContent(crucibleToolWindow);
 
-            bambooStatusChecker = appComponent.getBambooStatusChecker();
+			bambooStatusChecker = BambooStatusChecker.getInstance();
 
             JIRAToolWindowPanel jiraToolWindowPanel = new JIRAToolWindowPanel();
             Content jiraToolWindow = peerFactory.getContentFactory().createContent(
@@ -150,7 +150,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			statusBarCrucibleIcon = new CrucibleStatusIcon();
 
 			// setup Crucible status checker and listeners
-            crucibleStatusChecker = appComponent.getCrucibleStatusChecker();
+            crucibleStatusChecker = CrucibleStatusChecker.getIntance();
             toolWindowCrucibleListener = new HtmlCrucibleStatusListener(crucibleToolWindowPanel.getCrucibleContent());
             crucibleStatusChecker.registerListener(toolWindowCrucibleListener);
 			crucibleUserContext = appComponent.getUserDataContext();
