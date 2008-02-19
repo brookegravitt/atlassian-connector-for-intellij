@@ -59,18 +59,8 @@
         <action id="ThePlugin.AddCrucibleServerAction" class="com.atlassian.theplugin.idea.config.serverconfig.action.AddCrucibleServerAction" text="Crucible Server" description="Add a new Crucible server" icon="/icons/crucible-16.png"/>
 
         <action id="ThePlugin.ShowSettings" class="com.atlassian.theplugin.idea.action.ShowSettingsAction" text="Configure" description="Show plugin configuration" icon="/general/ideOptions.png"/>
-        <!--<action id="ThePlugin.RefreshAll" class="com.atlassian.theplugin.idea.action.RefreshAction" text="Refresh All" description="Refresh all data now" icon="/actions/sync.png"/>-->
 
-        <action id="ThePlugin.ReviewScope" class="com.atlassian.theplugin.idea.action.ReviewScope" text="Review scope" description="Select review scope"/>
-		<action id="ThePlugin.ReviewScopeAll" class="com.atlassian.theplugin.idea.action.ReviewScopeAll" text="All Reviews" description="Show all reviews"/>
-		<action id="ThePlugin.ReviewScopeMy" class="com.atlassian.theplugin.idea.action.ReviewScopeMy" text="My Reviews" description="Show my reviews"/>
-
-		<group id="ThePlugin.ReviewScopeCombo">
-            <reference id="ThePlugin.ReviewScopeAll"/>
-            <reference id="ThePlugin.ReviewScopeMy"/>
-		</group>
-				
-		<group id="ThePlugin.ServerConfigToolBar" popup="false" text="">
+        <group id="ThePlugin.ServerConfigToolBar" popup="false" text="">
             <reference id="ThePlugin.AddServerAction"/>
             <reference id="ThePlugin.RemoveServerAction"/>
 <!--            <reference id="ThePlugin.CopyServerAction"/> -->
@@ -81,30 +71,83 @@
             <reference id="ThePlugin.AddCrucibleServerAction"/>
 		</group>
 
+
+        <!-- Bamboo tool window panel related actions -->
 		<group id="ThePlugin.BambooToolWindowToolBar" popup="false" text="">
             <reference id="ThePlugin.ShowSettings" />
-			<!--<reference id="ThePlugin.RefreshAll"/>-->
         </group>
 
-        <action id="ThePlugin.JIRAServerScope" class="com.atlassian.theplugin.idea.action.JIRAServerScopeAction" text="Select JIRA server" description="Select JIRA server"/>
-        <action id="ThePlugin.JIRARefreshIssuesAction" class="com.atlassian.theplugin.idea.action.JIRARefreshIssuesAction" text="Refresh assigned JIRA issues"  icon="/actions/sync.png"/>
+
+
+        <!-- Crucible tool window panel related actions -->
+        <action id="ThePlugin.ReviewScope" class="com.atlassian.theplugin.idea.action.ReviewScope" text="Review scope" description="Select review scope"/>
+		<action id="ThePlugin.ReviewScopeAll" class="com.atlassian.theplugin.idea.action.ReviewScopeAll" text="All Reviews" description="Show all reviews"/>
+		<action id="ThePlugin.ReviewScopeMy" class="com.atlassian.theplugin.idea.action.ReviewScopeMy" text="My Reviews" description="Show my reviews"/>
+
+		<group id="ThePlugin.ReviewScopeCombo">
+            <reference id="ThePlugin.ReviewScopeAll"/>
+            <reference id="ThePlugin.ReviewScopeMy"/>
+		</group>
+        
+        <group id="ThePlugin.CrucibleToolWindowToolBar" popup="false" text="">
+            <reference id="ThePlugin.ShowSettings" />
+			<!--<separator />-->
+			<!--<reference id="ThePlugin.ReviewScope"/>-->
+        </group>
+
+
+
+        <!-- JIRA tool window panel related actions -->
+        <action id="ThePlugin.JIRA.RefreshIssues" class="com.atlassian.theplugin.idea.action.JIRARefreshIssuesAction" text="Refresh assigned JIRA issues"  icon="/actions/sync.png"/>
+        <action id="ThePlugin.JIRA.QuickSearch" class="com.atlassian.theplugin.idea.action.jira.QuickSearchAction" text="Search JIRA issues"  icon="/actions/find.png">
+            <keyboard-shortcut first-keystroke="alt S" keymap="$default"/>
+        </action>
+        <action id="ThePlugin.JIRA.CommentIssueAction" class="com.atlassian.theplugin.idea.action.jira.CommentIssueAction" text="Comment on JIRA issue">
+            <keyboard-shortcut first-keystroke="alt M" keymap="$default"/>
+        </action>
+
+        <action id="ThePlugin.JIRA.CreateIssue" class="com.atlassian.theplugin.idea.action.jira.CreateIssueAction" text="Create JIRA Issue"  icon="/general/add.png">
+            <keyboard-shortcut first-keystroke="alt C" keymap="$default"/>            
+        </action>
+
+        <action id="ThePlugin.JIRA.MyIssues" class="com.atlassian.theplugin.idea.action.jira.MyIssuesAction" text="Mine"/>
+        <action id="ThePlugin.JIRA.UnresolvedIssues" class="com.atlassian.theplugin.idea.action.jira.UnresolvedIssuesAction" text="Unresolved"/>
+        <action id="ThePlugin.JIRA.ServerCombo" class="com.atlassian.theplugin.idea.action.jira.SelectJIRAAction" text="JIRA Server" />
+        <action id="ThePlugin.JIRA.ProjectCombo" class="com.atlassian.theplugin.idea.action.jira.ProjectComboAction" text="Any Project" />
+        <action id="ThePlugin.JIRA.StatusCombo" class="com.atlassian.theplugin.idea.action.jira.StatusComboAction" text="Any Status" />
+        <action id="ThePlugin.JIRA.TypeCombo" class="com.atlassian.theplugin.idea.action.jira.IssueTypeComboAction" text="Any Issue Type"/>
+
+        <action id="ThePlugin.JIRA.VersionCombo" class="com.atlassian.theplugin.idea.action.jira.SelectJIRAAction" text="Any Version" />
+        <action id="ThePlugin.JIRA.ComponentCombo" class="com.atlassian.theplugin.idea.action.jira.SelectJIRAAction" text="Any Component" />
 
         <action id="ThePlugin.AddJIRAServerAction" class="com.atlassian.theplugin.idea.config.serverconfig.action.AddJIRAServerAction" text="JIRA Server" description="Add a new JIRA server" icon="/icons/jira-blue-16.png">
             <add-to-group group-id="ThePlugin.ServerTypePopup" anchor="last"/>
         </action>
         
-        <group id="ThePlugin.JIRAToolWindowToolBar" popup="false" text="">
-            <reference id="ThePlugin.JIRAServerScope"/>
-            <reference id="ThePlugin.JIRARefreshIssuesAction" />
+        <group id="ThePlugin.JIRA.ServerToolBar" popup="false">
+            <reference id="ThePlugin.JIRA.ServerCombo"/>
+            <separator />
+            <reference id="ThePlugin.JIRA.CreateIssue" />
+            <reference id="ThePlugin.JIRA.QuickSearch" />
             <separator />
             <reference id="ThePlugin.ShowSettings" />
         </group>
 
-		<group id="ThePlugin.CrucibleToolWindowToolBar" popup="false" text="">
-            <reference id="ThePlugin.ShowSettings" />
-			<!--<separator />-->
-			<!--<reference id="ThePlugin.ReviewScope"/>-->
-			<!--<reference id="ThePlugin.RefreshAll"/>-->
+        <group id="ThePlugin.JIRA.FilterToolBarTop" popup="false">
+            <reference id="ThePlugin.JIRA.ProjectCombo"/>
+            <reference id="ThePlugin.JIRA.StatusCombo"/>
+            <reference id="ThePlugin.JIRA.TypeCombo"/>
         </group>
+
+        <group id="ThePlugin.JIRA.FilterToolBarBottom" popup="true" >
+            <reference id="ThePlugin.JIRA.VersionCombo"/>
+            <reference id="ThePlugin.JIRA.ComponentCombo"/>
+            <separator />
+            <reference id="ThePlugin.JIRA.MyIssues" />
+            <reference id="ThePlugin.JIRA.UnresolvedIssues" />
+            <separator />
+            <reference id="ThePlugin.JIRA.RefreshIssues" />
+        </group>
+
     </actions>
 </idea-plugin>

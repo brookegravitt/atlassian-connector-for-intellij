@@ -37,6 +37,38 @@ public class JIRARssClient {
         this.password = password;
     }
 
+    public List getIssues(List<JIRAQueryFragment> fragments, String sortBy, String sortOrder, int max) throws JIRAException {
+
+        StringBuffer url = new StringBuffer(serverUrl + "/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml?");
+
+        for (JIRAQueryFragment fragment : fragments) {
+            if (fragment.getQueryStringFragment() != null) {
+                url.append("&").append(fragment.getQueryStringFragment());
+            }
+        }
+
+        url.append("&sorter/field=" + sortBy + "&sorter/order=" + sortOrder + "&tempMax=" + max);
+        url.append(appendAuthentication());
+
+//        System.out.println("url = " + url);
+        
+        try {
+            Document doc = buildFeed(url.toString());
+            Element root = doc.getRootElement();
+            Element channel = root.getChild("channel");
+            if (channel != null && !channel.getChildren("item").isEmpty()) {
+                return makeIssues(channel.getChildren("item"));
+            }
+
+            return Collections.EMPTY_LIST;
+        } catch (IOException e) {
+            throw new JIRAException(e.getMessage(), e);
+        } catch (JDOMException e) {
+            throw new JIRAException(e.getMessage(), e);
+        }
+
+    }
+
     public List getAssignedIssues(String assignee) throws JIRAException {
         String url = serverUrl + "/sr/jira.issueviews:searchrequest-xml"
                 + "/temp/SearchRequest.xml?resolution=-1&assignee=" + URLEncoder.encode(assignee)
@@ -103,6 +135,7 @@ public class JIRARssClient {
 
     // protected so that we can easily write tests by simply returning XML from a file instead of a URL!
     protected InputStream getUrlAsStream(String url) throws IOException {
+//        return new FileInputStream("/Users/mike/svn/pazu-trunk/src/test/resources/jira/api/assignedIssues.xml");
         return new URL(url).openConnection().getInputStream();
     }
 }

@@ -8,7 +8,7 @@ import java.util.List;
 
 public class JIRARssClientTest extends TestCase
 {
-    String mostRecentUrl;
+    private String mostRecentUrl;
 
     public void testAssignedIssues() throws Exception {
         JIRARssClient rss = getClasspathJIRARssClient("http://www.server.com", null, null, "/jira/api/assignedIssues.xml");
