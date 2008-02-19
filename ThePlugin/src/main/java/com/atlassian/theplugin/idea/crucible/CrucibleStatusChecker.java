@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.ServerType;
+import com.atlassian.theplugin.idea.bamboo.BambooStatusChecker;
 import com.atlassian.theplugin.bamboo.MissingPasswordHandler;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.Server;
@@ -30,6 +31,11 @@ import java.util.TimerTask;
 public class CrucibleStatusChecker {
 
 	private final List<CrucibleStatusListener> listenerList = new ArrayList<CrucibleStatusListener>();
+	private static CrucibleStatusChecker instance;
+
+	private CrucibleStatusChecker() {
+		super();
+	}
 
 	public void registerListener(CrucibleStatusListener listener) {
 		synchronized (listenerList) {
@@ -95,4 +101,10 @@ public class CrucibleStatusChecker {
 	}
 
 
+	public static synchronized CrucibleStatusChecker getIntance() {
+		if(instance == null) {
+			instance = new CrucibleStatusChecker();
+		}
+		return instance;
+	}
 }
