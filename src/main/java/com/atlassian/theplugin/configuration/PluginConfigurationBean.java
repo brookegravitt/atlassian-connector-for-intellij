@@ -7,8 +7,10 @@ public class PluginConfigurationBean implements PluginConfiguration {
     private BambooConfigurationBean bambooConfiguration = new BambooConfigurationBean();
     private CrucibleConfigurationBean crucibleConfiguration = new CrucibleConfigurationBean();
     private JIRAConfigurationBean jiraConfiguration = new JIRAConfigurationBean();
+	private static final double ID_DISCRIMINATOR = 1e3d;
+	private long uid = 0;
 
-    public PluginConfigurationBean() {
+	public PluginConfigurationBean() {
     }
 
     public PluginConfigurationBean(PluginConfiguration cfg) {
@@ -99,6 +101,17 @@ public class PluginConfigurationBean implements PluginConfiguration {
                 return null;
         }
     }
+
+	public long getUid() {
+		if (uid == 0)  {
+			uid = System.currentTimeMillis() + (long) (Math.random() * ID_DISCRIMINATOR);
+		}
+		return uid;
+	}
+
+	public void setUid(long uid) {
+		this.uid = uid;
+	}
 
     public boolean equals(Object o) {
         if (this == o) {
