@@ -112,6 +112,16 @@
       <item index="3" class="java.lang.String" itemvalue="ERROR" />
     </list>
   </component>
+  <component name="IssueNavigationConfiguration">
+    <option name="links">
+      <list>
+        <IssueNavigationLink>
+          <option name="issueRegexp" value="[A-Z]+\-\d+" />
+          <option name="linkRegexp" value="https://studio.atlassian.com/browse/$0" />
+        </IssueNavigationLink>
+      </list>
+    </option>
+  </component>
   <component name="JUnitProjectSettings">
     <option name="TEST_RUNNER" value="UI" />
   </component>
