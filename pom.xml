@@ -495,7 +495,7 @@
                         **/idea/PasswordDialog.java,
                         **/crucible/CruciblePatchUploadForm.java,
                         **/soap/xfire/**/*.java,
-						**/thirdparty/**.*
+						**/thirdparty/**/*.*
 					</excludes>
 					<!--<failsOnError>true</failsOnError>-->
 					<!--<linkXRef>false</linkXRef>-->
