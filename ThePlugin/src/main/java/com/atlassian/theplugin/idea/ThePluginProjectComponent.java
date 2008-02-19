@@ -13,7 +13,7 @@ import com.atlassian.theplugin.idea.crucible.CruciblePatchSubmitExecutor;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusIcon;
 import com.atlassian.theplugin.idea.crucible.CrucibleToolWindowPanel;
-import com.intellij.openapi.application.ApplicationManager;
+import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
@@ -28,6 +28,8 @@ import javax.swing.*;
  * Per-project plugin component.
  */
 public class ThePluginProjectComponent implements ProjectComponent {
+    private static final String THE_PLUGIN_TOOL_WINDOW_ICON = "/icons/thePlugin_15x10.png";
+
 	private final Project project;
 	private StatusBar statusBar;
 	private BambooStatusIcon statusBarBambooIcon;
@@ -41,8 +43,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
     private HtmlCrucibleStatusListener toolWindowCrucibleListener;
 
 	private ToolWindowManager toolWindowManager;
-	public static final String TOOL_WINDOW_NAME = "Atlassian";
-	private static final String THE_PLUGIN_TOOL_WINDOW_ICON = "/icons/thePlugin_15x10.png";
 	private boolean enabled;
 	private BambooStatusDisplay buildFailedToolTip;
 	private ToolWindow toolWindow;
@@ -77,14 +77,20 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	}
 
 	public void enablePlugin() {
-		ThePluginApplicationComponent appComponent =
-				ApplicationManager.getApplication().getComponent(ThePluginApplicationComponent.class);
+        // unregister changelistmanager?
+        // only open tool windows for each application that's registered
+        // show something nice if there are non
+        // swap listener for dataretrievedlistener and datachangelisteners
+        // store bamboo between runs in UDC
+        // clean up object model confusion
+
+        ThePluginApplicationComponent appComponent = IdeaHelper.getAppComponent();
 
 		if (!enabled) {
 
 			// create tool window on the right
 			toolWindowManager = ToolWindowManager.getInstance(project);
-			toolWindow = toolWindowManager.registerToolWindow(TOOL_WINDOW_NAME, true, ToolWindowAnchor.RIGHT);
+			toolWindow = toolWindowManager.registerToolWindow(IdeaHelper.TOOL_WINDOW_NAME, true, ToolWindowAnchor.RIGHT);
 			Icon toolWindowIcon = IconLoader.getIcon(THE_PLUGIN_TOOL_WINDOW_ICON);
 			toolWindow.setIcon(toolWindowIcon);
 
@@ -93,21 +99,29 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			PeerFactory peerFactory = PeerFactory.getInstance();
 
 			Content bambooToolWindow = peerFactory.getContentFactory().createContent(
-					bambooToolWindowPanel, "Bamboo", false);
+					bambooToolWindowPanel, IdeaHelper.TOOLWINDOW_PANEL_BAMBOO, false);
 			bambooToolWindow.setIcon(IconLoader.getIcon("/icons/bamboo-blue-16.png"));
 			bambooToolWindow.putUserData(ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
 			toolWindow.getContentManager().addContent(bambooToolWindow);
 
 			CrucibleToolWindowPanel crucibleToolWindowPanel = new CrucibleToolWindowPanel();
 			Content crucibleToolWindow = peerFactory.getContentFactory().createContent(
-					crucibleToolWindowPanel, "Crucible", false);
+					crucibleToolWindowPanel, IdeaHelper.TOOLWINDOW_PANEL_CRUCIBLE, false);
 			crucibleToolWindow.setIcon(IconLoader.getIcon("/icons/crucible-blue-16.png"));
 			crucibleToolWindow.putUserData(ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
 			toolWindow.getContentManager().addContent(crucibleToolWindow);
 
-			bambooStatusChecker = appComponent.getBambooStatusChecker();
+            bambooStatusChecker = appComponent.getBambooStatusChecker();
 
-			// add tool window bamboo content listener to bamboo checker thread
+            JIRAToolWindowPanel jiraToolWindowPanel = new JIRAToolWindowPanel();
+            Content jiraToolWindow = peerFactory.getContentFactory().createContent(
+                    jiraToolWindowPanel, IdeaHelper.TOOLWINDOW_PANEL_JIRA, false);
+            jiraToolWindow.setIcon(IconLoader.getIcon("/icons/jira-blue-16.png"));
+			jiraToolWindow.putUserData(ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
+			toolWindow.getContentManager().addContent(jiraToolWindow);
+            toolWindow.getContentManager().setSelectedContent(jiraToolWindow);
+
+            // add tool window bamboo content listener to bamboo checker thread
 			toolWindowBambooListener = new HtmlBambooStatusListener(bambooToolWindowPanel.getBambooContent());
 			bambooStatusChecker.registerListener(toolWindowBambooListener);
 
@@ -133,7 +147,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			statusBar.addCustomIndicationComponent(statusBarBambooIcon);
 
 			// create crucible status bar icon
-			statusBarCrucibleIcon = new CrucibleStatusIcon(this);
+			statusBarCrucibleIcon = new CrucibleStatusIcon();
 
 			// setup Crucible status checker and listeners
             crucibleStatusChecker = appComponent.getCrucibleStatusChecker();
@@ -165,7 +179,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			crucibleStatusChecker.unregisterListener(crucibleUserContext);
 
 			// remove tool window
-			toolWindowManager.unregisterToolWindow(TOOL_WINDOW_NAME);
+			toolWindowManager.unregisterToolWindow(IdeaHelper.TOOL_WINDOW_NAME);
 			toolWindow = null;
 			enabled = false;
 		}

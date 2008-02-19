@@ -2,10 +2,9 @@ package com.atlassian.theplugin.idea.bamboo;
 
 import com.atlassian.theplugin.bamboo.BambooStatusDisplay;
 import com.atlassian.theplugin.bamboo.BuildStatus;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ThePluginProjectComponent;
 import com.intellij.openapi.util.IconLoader;
-import com.intellij.openapi.wm.ToolWindow;
-import com.intellij.ui.content.ContentManager;
 
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
@@ -39,10 +38,7 @@ public class BambooStatusIcon extends JLabel implements BambooStatusDisplay {
 
 			// show/hide toolbar on click
 			public void mouseClicked(MouseEvent e) {
-				ToolWindow toolWindow = aProjectComponent.getToolWindow();
-                ContentManager contentManager = toolWindow.getContentManager();
-                toolWindow.activate(null);
-                contentManager.setSelectedContent(contentManager.findContent("Bamboo"));
+                IdeaHelper.focusPanel(IdeaHelper.TOOLWINDOW_PANEL_BAMBOO);
             }
 		});
 
