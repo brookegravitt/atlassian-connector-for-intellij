@@ -127,7 +127,7 @@ public class ThePluginApplicationComponent
 		crucibleStatusCheckerTask = CrucibleStatusChecker.getIntance().newTimerTask();
 		timer.schedule(crucibleStatusCheckerTask, delay, TIMER_TICK);
 
-		TimerTask updatePluginTimerTask = UpdateServiceChecker.getInstance().newTimerTask();
+		TimerTask updatePluginTimerTask = NewVersionChecker.getInstance().newTimerTask();
 		timer.schedule(updatePluginTimerTask, PLUGIN_UPDATE_ATTEMPT_DELAY);
 	}
 

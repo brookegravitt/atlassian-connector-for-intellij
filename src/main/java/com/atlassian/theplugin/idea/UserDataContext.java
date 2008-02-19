@@ -74,7 +74,7 @@ public class UserDataContext implements CrucibleStatusListener {
 
 			content.addMouseListener(new MouseAdapter() {
 				public void mouseClicked(MouseEvent e) {
-                    display.setStandardIcon();
+                    display.resetIcon();
                     IdeaHelper.focusPanel(IdeaHelper.TOOLWINDOW_PANEL_CRUCIBLE);
 				}
 			});
