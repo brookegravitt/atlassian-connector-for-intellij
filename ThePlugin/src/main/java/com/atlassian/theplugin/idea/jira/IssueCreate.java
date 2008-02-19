@@ -20,106 +20,166 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
+import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.intellij.uiDesigner.core.GridConstraints;
 import org.jetbrains.annotations.Nullable;
 import thirdparty.javaworld.ClasspathHTMLEditorKit;
 
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.*;
 
 public class IssueCreate extends DialogWrapper {
-    private static final Logger LOGGER = Logger.getInstance("IssueCreate");
+	private static final Logger LOGGER = Logger.getInstance("IssueCreate");
 
-    private JPanel mainPanel;
-    private JTextArea description;
-    private JComboBox projectComboBox;
-    private JComboBox typeComboBox;
-    private JTextField summary;
-    private JIRAServer jiraServer;
+	private JPanel mainPanel;
+	private JTextArea description;
+	private JComboBox projectComboBox;
+	private JComboBox typeComboBox;
+	private JTextField summary;
+	private JIRAServer jiraServer;
 
-    public IssueCreate(final JIRAServer jiraServer) {
-        super(false);
-        init();
-        this.jiraServer = jiraServer;
-        setTitle("Create JIRA Issue");
+	public IssueCreate(final JIRAServer jiraServer) {
+		super(false);
+		init();
+		this.jiraServer = jiraServer;
+		setTitle("Create JIRA Issue");
 
-        projectComboBox.setRenderer(new ColoredListCellRenderer() {
-            protected void customizeCellRenderer(JList list, Object value, int index, boolean selected, boolean hasFocus) {
-                append(((JIRAProject) value).getName(), SimpleTextAttributes.SIMPLE_CELL_ATTRIBUTES);
-            }
-        });
+		projectComboBox.setRenderer(new ColoredListCellRenderer() {
+			protected void customizeCellRenderer(JList list, Object value, int index, boolean selected, boolean hasFocus) {
+				append(((JIRAProject) value).getName(), SimpleTextAttributes.SIMPLE_CELL_ATTRIBUTES);
+			}
+		});
 
-        typeComboBox.setRenderer(new ColoredListCellRenderer() {
-            protected void customizeCellRenderer(JList list, Object value, int index, boolean selected, boolean hasFocus) {
-                JIRAConstant type = (JIRAConstant) value;
-                append(type.getName(), SimpleTextAttributes.SIMPLE_CELL_ATTRIBUTES);
-                setIcon(new ImageIcon(type.getIconUrl()));
-            }
-        });
+		typeComboBox.setRenderer(new ColoredListCellRenderer() {
+			protected void customizeCellRenderer(JList list, Object value, int index, boolean selected, boolean hasFocus) {
+				JIRAConstant type = (JIRAConstant) value;
+				append(type.getName(), SimpleTextAttributes.SIMPLE_CELL_ATTRIBUTES);
+				setIcon(new ImageIcon(type.getIconUrl()));
+			}
+		});
 
-        for (JIRAProject project : jiraServer.getProjects()) {
-            projectComboBox.addItem(project);
-        }
+		for (JIRAProject project : jiraServer.getProjects()) {
+			projectComboBox.addItem(project);
+		}
 
-        for (JIRAConstant constant : jiraServer.getIssueTypes()) {
-            typeComboBox.addItem(constant);
-        }
+		for (JIRAConstant constant : jiraServer.getIssueTypes()) {
+			typeComboBox.addItem(constant);
+		}
 
-        getOKAction().putValue(Action.NAME, "Create");
-    }
+		getOKAction().putValue(Action.NAME, "Create");
+	}
 
-    protected void doOKAction() {
-        JIRAServerFacade facade = JIRAServerFactory.getJIRAServerFacade();
-        JIRAIssueBean issueProxy = new JIRAIssueBean();
-        issueProxy.setSummary(summary.getText());
-        issueProxy.setProjectKey(((JIRAProject) projectComboBox.getSelectedItem()).getKey());
-        issueProxy.setType(((JIRAConstant) typeComboBox.getSelectedItem()));
-        issueProxy.setDescription(description.getText());
-        JEditorPane content = new JEditorPane();
+	protected void doOKAction() {
+		JIRAServerFacade facade = JIRAServerFactory.getJIRAServerFacade();
+		JIRAIssueBean issueProxy = new JIRAIssueBean();
+		issueProxy.setSummary(summary.getText());
+		issueProxy.setProjectKey(((JIRAProject) projectComboBox.getSelectedItem()).getKey());
+		issueProxy.setType(((JIRAConstant) typeComboBox.getSelectedItem()));
+		issueProxy.setDescription(description.getText());
+		JEditorPane content = new JEditorPane();
 
-        JIRAIssue newIssue = null;
+		JIRAIssue newIssue = null;
 
-        String message = null;
-        try {
-            newIssue = facade.createIssue(jiraServer.getServer(), issueProxy);
-        } catch (JIRAException e) {
-            message = "Issue created failed?<br>" + e.getMessage();
-            content.setBackground(BuildStatusChangedToolTip.BACKGROUND_COLOR_FAILED);
-            e.printStackTrace();
-        }
+		String message = null;
+		try {
+			newIssue = facade.createIssue(jiraServer.getServer(), issueProxy);
+		} catch (JIRAException e) {
+			message = "Issue created failed?<br>" + e.getMessage();
+			content.setBackground(BuildStatusChangedToolTip.BACKGROUND_COLOR_FAILED);
+			e.printStackTrace();
+		}
 
-        if (newIssue != null) {
-            message = "<table width=100% height=100%><tr><td valign=center align=center>"
-                    + "<b style=\"font-size: 24pt;\"><a href='" + newIssue.getIssueUrl() + "'>"
-                    + newIssue.getKey() + "</a><br>created</b></td></tr></table>";
-            content.setBackground(BuildStatusChangedToolTip.BACKGROUND_COLOR_SUCCEED);
-        }
+		if (newIssue != null) {
+			message = "<table width=100% height=100%><tr><td valign=center align=center>"
+					+ "<b style=\"font-size: 24pt;\"><a href='" + newIssue.getIssueUrl() + "'>"
+					+ newIssue.getKey() + "</a><br>created</b></td></tr></table>";
+			content.setBackground(BuildStatusChangedToolTip.BACKGROUND_COLOR_SUCCEED);
+		}
 
-        final JIRAIssue innerIssue = newIssue;
+		final JIRAIssue innerIssue = newIssue;
 
-        content.setEditable(false);
-        content.setContentType("text/html");
-        content.setEditorKit(new ClasspathHTMLEditorKit());
-        content.setText("<html>" + HtmlBambooStatusListener.BODY_WITH_STYLE + message + "</body></html>");
-        content.addHyperlinkListener(new GenericHyperlinkListener());
-        content.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                BrowserUtil.launchBrowser(innerIssue.getIssueUrl());
-            }
-        });
-        content.setCaretPosition(0); // do thi to make sure scroll pane is always at the top / header
-        WindowManager.getInstance().getStatusBar(IdeaHelper.getCurrentProject()).fireNotificationPopup(
-                new JScrollPane(content), null);
+		content.setEditable(false);
+		content.setContentType("text/html");
+		content.setEditorKit(new ClasspathHTMLEditorKit());
+		content.setText("<html>" + HtmlBambooStatusListener.BODY_WITH_STYLE + message + "</body></html>");
+		content.addHyperlinkListener(new GenericHyperlinkListener());
+		content.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				BrowserUtil.launchBrowser(innerIssue.getIssueUrl());
+			}
+		});
+		content.setCaretPosition(0); // do thi to make sure scroll pane is always at the top / header
+		WindowManager.getInstance().getStatusBar(IdeaHelper.getCurrentProject()).fireNotificationPopup(
+				new JScrollPane(content), null);
 
-        super.doOKAction();
-    }
+		super.doOKAction();
+	}
 
-    public JComponent getPreferredFocusedComponent() {
-        return summary;
-    }
+	public JComponent getPreferredFocusedComponent() {
+		return summary;
+	}
 
-    @Nullable
-    protected JComponent createCenterPanel() {
-        return mainPanel;
-    }
+	@Nullable
+	protected JComponent createCenterPanel() {
+		return mainPanel;
+	}
+
+	{
+// GUI initializer generated by IntelliJ IDEA GUI Designer
+// >>> IMPORTANT!! <<<
+// DO NOT EDIT OR ADD ANY CODE HERE!
+		$$$setupUI$$$();
+	}
+
+	/**
+	 * Method generated by IntelliJ IDEA GUI Designer
+	 * >>> IMPORTANT!! <<<
+	 * DO NOT edit this method OR call it in your code!
+	 *
+	 * @noinspection ALL
+	 */
+	private void $$$setupUI$$$() {
+		mainPanel = new JPanel();
+		mainPanel.setLayout(new GridLayoutManager(4, 4, new Insets(5, 5, 5, 5), -1, -1));
+		mainPanel.setMinimumSize(new Dimension(400, 100));
+		final JScrollPane scrollPane1 = new JScrollPane();
+		mainPanel.add(scrollPane1, new GridConstraints(3, 0, 1, 4, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+		description = new JTextArea();
+		description.setLineWrap(true);
+		description.setMinimumSize(new Dimension(439, 120));
+		description.setPreferredSize(new Dimension(439, 120));
+		description.setWrapStyleWord(true);
+		scrollPane1.setViewportView(description);
+		final JLabel label1 = new JLabel();
+		label1.setText("Summary:");
+		mainPanel.add(label1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		final JLabel label2 = new JLabel();
+		label2.setText("Project:");
+		mainPanel.add(label2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		projectComboBox = new JComboBox();
+		mainPanel.add(projectComboBox, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		summary = new JTextField();
+		mainPanel.add(summary, new GridConstraints(1, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+		final JLabel label3 = new JLabel();
+		label3.setText("Type:");
+		mainPanel.add(label3, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		typeComboBox = new JComboBox();
+		mainPanel.add(typeComboBox, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		final JLabel label4 = new JLabel();
+		label4.setText("Description:");
+		mainPanel.add(label4, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		label1.setLabelFor(summary);
+		label2.setLabelFor(projectComboBox);
+		label3.setLabelFor(typeComboBox);
+		label4.setLabelFor(description);
+	}
+
+	/**
+	 * @noinspection ALL
+	 */
+	public JComponent $$$getRootComponent$$$() {
+		return mainPanel;
+	}
 }

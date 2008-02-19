@@ -1,21 +1,15 @@
 package com.atlassian.theplugin.idea;
 
-import junit.framework.TestCase;
-import static junit.framework.Assert.assertEquals;
-import org.ddsteps.mock.httpserver.JettyMockServer;
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
-import com.atlassian.theplugin.bamboo.api.bamboomock.LoginCallback;
-import com.atlassian.theplugin.bamboo.api.bamboomock.Util;
-import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.exception.VersionServiceException;
+import com.atlassian.theplugin.util.InfoServer;
+import junit.framework.TestCase;
+import org.ddsteps.mock.httpserver.JettyMockServer;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletOutputStream;
-import java.io.OutputStream;
-import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.util.Arrays;
 
 /**
  * Created by IntelliJ IDEA.
@@ -24,7 +18,7 @@ import java.util.Arrays;
  * Time: 10:06:09 AM
  * To change this template use File | Settings | File Templates.
  */
-public class PingVersionTest extends TestCase {
+public class NewVersionCheckerTest extends TestCase {
 	private org.mortbay.jetty.Server httpServer;
 	private JettyMockServer mockServer;
 	private PluginConfigurationBean config;
@@ -77,7 +71,7 @@ public class PingVersionTest extends TestCase {
 
 			final String uid = uids[0];
 
-			assertEquals(uid, String.valueOf(PingVersionTest.this.uid));
+			assertEquals(uid, String.valueOf(NewVersionCheckerTest.this.uid));
 
 			createResponse(response.getOutputStream());
 			response.getOutputStream().flush();
@@ -86,7 +80,7 @@ public class PingVersionTest extends TestCase {
 		private void createResponse(ServletOutputStream outputStream) {
 			StringBuffer sb = new StringBuffer();
 			sb.append("<response><latestVersion>");
-			sb.append(PingVersionTest.this.VERSION);
+			sb.append(NewVersionCheckerTest.this.VERSION);
 			sb.append("</latestVersion></response>");
 			try {
 				outputStream.write(sb.toString().getBytes("UTF-8"));
