@@ -140,9 +140,9 @@
         </group>
 
         <group id="ThePlugin.JIRA.FilterToolBarBottom" popup="true" >
-            <reference id="ThePlugin.JIRA.VersionCombo"/>
-            <reference id="ThePlugin.JIRA.ComponentCombo"/>
-            <separator />
+            <!--<reference id="ThePlugin.JIRA.VersionCombo"/>-->
+            <!--<reference id="ThePlugin.JIRA.ComponentCombo"/>-->
+            <!--<separator />-->
             <reference id="ThePlugin.JIRA.MyIssues" />
             <reference id="ThePlugin.JIRA.UnresolvedIssues" />
             <separator />
