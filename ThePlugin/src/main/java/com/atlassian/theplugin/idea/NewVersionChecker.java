@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.exception.VersionServiceException;
@@ -8,27 +7,30 @@ import com.atlassian.theplugin.exception.VersionServiceException;
 import java.util.TimerTask;
 
 /**
- * Created by IntelliJ IDEA.
- * User: lguminski
- * Date: Feb 19, 2008
- * Time: 3:06:18 PM
- * To change this template use File | Settings | File Templates.
+ * Provides functionality to check for new version and update plugin
  */
-public class UpdateServiceChecker {
+public class NewVersionChecker {
 
-	private static UpdateServiceChecker instance;
+	private static NewVersionChecker instance;
 
-	private UpdateServiceChecker() {
+	private NewVersionChecker() {
 		super();
 	}
 
-	public static synchronized UpdateServiceChecker getInstance() {
-		if(instance == null) {
-			instance = new UpdateServiceChecker();
+	/**
+	 * @return reference to the object of the class (singleton)
+	 */
+	public static synchronized NewVersionChecker getInstance() {
+		if (instance == null) {
+			instance = new NewVersionChecker();
 		}
 		return instance;
 	}
 
+	/**
+	 * Connects to the server, checks for new version and updates if necessary
+	 * @return new TimerTask to be scheduled
+	 */
 	public TimerTask newTimerTask() {
 		return new TimerTask() {
 			public void run() {
@@ -43,7 +45,8 @@ public class UpdateServiceChecker {
 			String version = server.getLatestPluginVersion();
 			// todo lguminski display dialog for update if newer version exists
 		} catch (VersionServiceException e) {
-			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+			// todo handle exception
+			e.printStackTrace();
 		}
 	}
 }

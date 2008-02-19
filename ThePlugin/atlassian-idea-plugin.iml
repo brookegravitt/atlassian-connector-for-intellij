@@ -676,6 +676,15 @@
     </orderEntry>
     <orderEntry type="library" name="Clover" level="project" />
     <orderEntry type="library" exported="" name="Clover" level="application" />
+    <orderEntry type="module-library" exported="">
+      <library name="xmlrpc">
+        <CLASSES>
+          <root url="jar://C:/Users/Jacek/.m2/repository/xmlrpc/xmlrpc/2.0/xmlrpc-2.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntryProperties />
   </component>
 </module>

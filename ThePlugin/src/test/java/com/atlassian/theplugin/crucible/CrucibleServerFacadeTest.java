@@ -22,6 +22,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 	private CrucibleSession crucibleSessionMock;
 	public static final String INVALID_PROJECT_KEY = "INVALID project key";
 
+	@SuppressWarnings("unchecked")
 	protected void setUp() {
 
 		crucibleSessionMock = createMock(CrucibleSession.class);
@@ -31,6 +32,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 		try {
 			Field f = CrucibleServerFacadeImpl.class.getDeclaredField("sessions");
 			f.setAccessible(true);
+
 			((Map<String, CrucibleSession>) f.get(facade)).put(VALID_URL, crucibleSessionMock);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
