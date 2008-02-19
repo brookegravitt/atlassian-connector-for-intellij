@@ -5,6 +5,7 @@ import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusChecker;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
+import com.atlassian.theplugin.jira.JIRAServer;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
@@ -36,16 +37,17 @@ public class ThePluginApplicationComponent
 	private PluginConfigurationBean configuration = new PluginConfigurationBean();
 
 	private final Timer timer = new Timer();
-	private static final int TIMER_TICK = 120000;
-	private static final int TIMER_START_DELAY = 30000;
+	private static final int TIMER_TICK = 20000;
+	private static final int TIMER_START_DELAY = 0;
 	private BambooStatusChecker bambooStatusChecker;
     private CrucibleStatusChecker crucibleStatusChecker;
 	private TimerTask bambooStatusCheckerTask;
 	private TimerTask crucibleStatusCheckerTask;
 
 	private UserDataContext userDataContext;
+    private JIRAServer currentJIRAServer;
 
-	public BambooStatusChecker getBambooStatusChecker() {
+    public BambooStatusChecker getBambooStatusChecker() {
 		if (bambooStatusChecker == null) {
 			bambooStatusChecker = new BambooStatusChecker();
 		}
@@ -180,5 +182,13 @@ public class ThePluginApplicationComponent
             crucibleStatusChecker = new CrucibleStatusChecker();
         }
         return crucibleStatusChecker;
+    }
+
+    public JIRAServer getCurrentJIRAServer() {
+        return currentJIRAServer;
+    }
+
+    public void setCurrentJIRAServer(JIRAServer currentJIRAServer) {
+        this.currentJIRAServer = currentJIRAServer;
     }
 }

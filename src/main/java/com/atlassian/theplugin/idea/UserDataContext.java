@@ -5,11 +5,7 @@ import com.atlassian.theplugin.crucible.CrucibleStatusListener;
 import com.atlassian.theplugin.crucible.ReviewDataInfo;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusIcon;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.project.ProjectManager;
-import com.intellij.openapi.wm.ToolWindow;
-import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.openapi.wm.WindowManager;
-import com.intellij.ui.content.ContentManager;
 import thirdparty.javaworld.ClasspathHTMLEditorKit;
 
 import javax.swing.*;
@@ -35,8 +31,6 @@ public class UserDataContext implements CrucibleStatusListener {
 	private static final int B = 200;
 
 	public void updateReviews(Collection<ReviewDataInfo> incomingReviews) {
-
-
 		if (!reviews.containsAll(incomingReviews)) {
 			// a set containing the 'last new reviews' that we saw (for painting nicely)
 			List<ReviewDataInfo> newReviews = new ArrayList<ReviewDataInfo>(incomingReviews);
@@ -48,7 +42,7 @@ public class UserDataContext implements CrucibleStatusListener {
 			}
 
 
-			final Project project = ProjectManager.getInstance().getOpenProjects()[0];
+			final Project project = IdeaHelper.getCurrentProject();
 
 			StringBuffer sb = new StringBuffer(
 					"<table width=\"100%\">"
@@ -80,13 +74,8 @@ public class UserDataContext implements CrucibleStatusListener {
 
 			content.addMouseListener(new MouseAdapter() {
 				public void mouseClicked(MouseEvent e) {
-					ToolWindow toolWindow = ToolWindowManager.getInstance(project).getToolWindow(
-							ThePluginProjectComponent.TOOL_WINDOW_NAME);
-					ContentManager contentManager = toolWindow.getContentManager();
-					toolWindow.activate(null);
-					contentManager.setSelectedContent(contentManager.findContent("Crucible"));
-
-					display.setStandardIcon();
+                    display.setStandardIcon();
+                    IdeaHelper.focusPanel(IdeaHelper.TOOLWINDOW_PANEL_CRUCIBLE);
 				}
 			});
 			content.setCaretPosition(0); // do thi to make sure scroll pane is always at the top / header

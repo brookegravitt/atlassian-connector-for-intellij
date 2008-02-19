@@ -1,5 +1,7 @@
 package com.atlassian.theplugin.jira.api;
 
+import java.net.URL;
+
 public interface JIRAIssue {
     String getServerUrl();
 
@@ -15,5 +17,13 @@ public interface JIRAIssue {
 
     String getType();
 
-    String getTypeIconUrl();
+    URL getTypeIconUrl();
+
+    String getDescription();
+
+    JIRAConstant getTypeConstant();
+
+    String getAssignee();
+
+    void setAssignee(String assignee);
 }
