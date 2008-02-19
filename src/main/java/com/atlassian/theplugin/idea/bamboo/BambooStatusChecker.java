@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.bamboo;
 
 import com.atlassian.theplugin.ServerType;
+import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.bamboo.BambooBuild;
 import com.atlassian.theplugin.bamboo.BambooServerFactory;
 import com.atlassian.theplugin.bamboo.BambooStatusListener;
@@ -29,6 +30,11 @@ import java.util.TimerTask;
 public class BambooStatusChecker {
 
 	private final List<BambooStatusListener> listenerList = new ArrayList<BambooStatusListener>();
+	private static BambooStatusChecker instance;
+
+	private BambooStatusChecker() {
+		super();
+	}
 
 	public void registerListener(BambooStatusListener listener) {
 		synchronized (listenerList) {
@@ -89,4 +95,10 @@ public class BambooStatusChecker {
 	}
 
 
+	public static synchronized BambooStatusChecker getInstance() {
+		if (instance == null) {
+			instance = new BambooStatusChecker();
+		}
+		return instance;
+	}
 }
