@@ -1,7 +1,5 @@
 package com.atlassian.theplugin.exception;
 
-import java.io.IOException;
-
 /**
  * Created by IntelliJ IDEA.
  * User: lguminski
