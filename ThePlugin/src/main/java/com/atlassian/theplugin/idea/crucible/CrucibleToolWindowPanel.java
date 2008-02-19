@@ -1,8 +1,8 @@
 package com.atlassian.theplugin.idea.crucible;
 
-import com.intellij.util.ui.UIUtil;
-import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.util.ui.UIUtil;
 import thirdparty.javaworld.ClasspathHTMLEditorKit;
 
 import javax.swing.*;
@@ -12,13 +12,13 @@ public class CrucibleToolWindowPanel extends JPanel {
     private ToolWindowCrucibleContent crucibleContent;
 
     public CrucibleToolWindowPanel() {
-		super(new BorderLayout());
+        super(new BorderLayout());
 
-		setBackground(UIUtil.getTreeTextBackground());
+        setBackground(UIUtil.getTreeTextBackground());
 
-		ActionManager actionManager = ActionManager.getInstance();
-		ActionGroup toolbar = (ActionGroup) actionManager.getAction("ThePlugin.CrucibleToolWindowToolBar");
-		add(actionManager.createActionToolbar(
+        ActionManager actionManager = ActionManager.getInstance();
+        ActionGroup toolbar = (ActionGroup) actionManager.getAction("ThePlugin.CrucibleToolWindowToolBar");
+        add(actionManager.createActionToolbar(
                 "atlassian.toolwindow.toolbar", toolbar, true).getComponent(), BorderLayout.NORTH);
 
         crucibleContent = new ToolWindowCrucibleContent();

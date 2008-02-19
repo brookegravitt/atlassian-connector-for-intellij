@@ -2,12 +2,20 @@ package com.atlassian.theplugin.jira.api;
 
 import org.jdom.Element;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Map;
+
 public class JIRAIssueBean implements JIRAIssue {
     private String serverUrl;
     private String key;
     private String summary;
     private String type;
-    private String typeUrl;
+    private URL typeUrl;
+    private String description;
+    private String projectKey;
+    private JIRAConstant typeConstant;
+    private String assignee;
 
     public JIRAIssueBean() {
     }
@@ -16,8 +24,32 @@ public class JIRAIssueBean implements JIRAIssue {
         this.serverUrl = serverUrl;
         this.summary = getTextSafely(e, "summary");
         this.key = getTextSafely(e, "key");
+        updateProjectKey();
+        this.description = getTextSafely(e, "description");
         this.type = getTextSafely(e, "type");
-        this.typeUrl = getAttributeSafely(e, "type", "iconUrl");
+        String typeUrlString = getAttributeSafely(e, "type", "iconUrl");
+        if (typeUrlString != null) {
+            try {
+                typeUrl = new URL(typeUrlString);
+            } catch (MalformedURLException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
+
+    public JIRAIssueBean(String serverUrl, Map params) {
+        this.serverUrl = serverUrl;
+        this.summary = (String) params.get("summary");
+        this.key = (String) params.get("key");
+        updateProjectKey();
+        this.description = (String) params.get("description");
+        this.type = (String) params.get("type");
+    }
+
+    private void updateProjectKey() {
+        if (key != null) {
+            projectKey = key.substring(0, key.indexOf("-"));
+        }
     }
 
     private String getTextSafely(Element e, String name) {
@@ -57,7 +89,7 @@ public class JIRAIssueBean implements JIRAIssue {
     }
 
     public String getProjectKey() {
-        return key.substring(0, key.indexOf("-"));
+        return projectKey;
     }
 
     public String getKey() {
@@ -76,8 +108,16 @@ public class JIRAIssueBean implements JIRAIssue {
         return type;
     }
 
-    public String getTypeIconUrl() {
+    public JIRAConstant getTypeConstant() {
+        return typeConstant;
+    }
+
+    public URL getTypeIconUrl() {
         return typeUrl;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public void setSummary(String summary) {
@@ -114,5 +154,26 @@ public class JIRAIssueBean implements JIRAIssue {
         result = ONE_EFF * result + (key != null ? key.hashCode() : 0);
         result = ONE_EFF * result + (summary != null ? summary.hashCode() : 0);
         return result;
+    }
+
+    public void setProjectKey(String projectKey) {
+        this.projectKey = projectKey;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setType(JIRAConstant type) {
+        this.type = type.getName();
+        this.typeConstant = type;
+    }
+
+    public String getAssignee() {
+        return assignee;
+    }
+
+    public void setAssignee(String assignee) {
+        this.assignee = assignee;
     }
 }
