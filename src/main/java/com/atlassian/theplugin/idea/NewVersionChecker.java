@@ -9,7 +9,7 @@ import java.util.TimerTask;
 /**
  * Provides functionality to check for new version and update plugin
  */
-public class NewVersionChecker {
+public final class NewVersionChecker {
 
 	private static NewVersionChecker instance;
 
