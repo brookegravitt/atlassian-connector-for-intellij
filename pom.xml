@@ -508,6 +508,8 @@
                         **/idea/PasswordDialog.java,
                         **/crucible/CruciblePatchUploadForm.java,
                         **/soap/xfire/**/*.java,
+						**/IssueComment.java,
+						**/IssueCreate.java,
 						**/thirdparty/**/*.*
 					</excludes>
 					<!--<failsOnError>true</failsOnError>-->
