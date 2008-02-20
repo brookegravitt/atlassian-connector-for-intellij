@@ -39,8 +39,6 @@ public class ThePluginApplicationComponent
 	private final Timer timer = new Timer();
 	private static final int TIMER_TICK = 20000;
 	private static final int TIMER_START_DELAY = 0;
-	private BambooStatusChecker bambooStatusChecker;
-    private CrucibleStatusChecker crucibleStatusChecker;
 	private TimerTask bambooStatusCheckerTask;
 	private TimerTask crucibleStatusCheckerTask;
 
@@ -150,8 +148,6 @@ public class ThePluginApplicationComponent
 					ThePluginProjectComponent pc = pr.getComponent(ThePluginProjectComponent.class);
 					pc.disablePlugin();
 				}
-				bambooStatusChecker = null;
-                crucibleStatusChecker = null;
             }
 		}
 

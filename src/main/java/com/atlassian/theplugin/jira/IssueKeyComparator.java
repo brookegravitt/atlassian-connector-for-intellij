@@ -6,7 +6,9 @@ import java.util.Comparator;
 import java.io.Serializable;
 
 public class IssueKeyComparator implements Comparator, Serializable {
-    public int compare(Object o, Object o1) {
+	static final long serialVersionUID = 903490105978352608L;
+	
+	public int compare(Object o, Object o1) {
         JIRAIssue issue = (JIRAIssue) o;
         String key = issue.getKey();
         JIRAIssue issue1 = (JIRAIssue) o1;
