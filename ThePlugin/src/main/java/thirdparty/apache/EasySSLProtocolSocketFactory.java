@@ -89,7 +89,9 @@ import java.net.*;
 
 public class EasySSLProtocolSocketFactory implements SecureProtocolSocketFactory {
 
-    /** Log object for this class. */
+	public final static int SSL_PORT = 443;
+
+	/** Log object for this class. */
     private static final Log LOG = LogFactory.getLog(EasySSLProtocolSocketFactory.class);
 
     private SSLContext sslcontext = null;
