@@ -8,11 +8,17 @@ import javax.servlet.http.HttpServletResponse;
 public class ErrorResponse implements JettyMockServer.Callback {
 	private final int errorCode;
 
+	private final static String ERROR_MESSAGE = "error text";
+
 	public ErrorResponse(int error) {
 		this.errorCode = error;
 	}
 
 	public void onExpectedRequest(String target, HttpServletRequest request, HttpServletResponse response) throws Exception {
-		response.sendError(errorCode, "error text");
+		response.sendError(errorCode, ERROR_MESSAGE);
+	}
+
+	public static String getErrorMessage() {
+		return ERROR_MESSAGE;
 	}
 }
