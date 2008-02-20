@@ -1,18 +1,16 @@
 package com.atlassian.theplugin.bamboo.api;
 
 import com.atlassian.theplugin.bamboo.*;
+import com.atlassian.theplugin.util.HttpClientFactory;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.protocol.Protocol;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
-import thirdparty.apache.EasySSLProtocolSocketFactory;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -363,10 +361,7 @@ public class BambooSession {
 		}
 
 		if (client == null) {
-			Protocol.registerProtocol("https", new Protocol(
-					"https", new EasySSLProtocolSocketFactory(), EasySSLProtocolSocketFactory.SSL_PORT));
-			MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
-			client = new HttpClient(connectionManager);
+			client = HttpClientFactory.getClient();
 		}
 
 		GetMethod method = new GetMethod(urlString);
