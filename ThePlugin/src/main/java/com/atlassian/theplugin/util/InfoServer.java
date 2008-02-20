@@ -1,16 +1,16 @@
 package com.atlassian.theplugin.util;
 
-import org.jdom.input.SAXBuilder;
-import org.jdom.JDOMException;
+import com.atlassian.theplugin.exception.VersionServiceException;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
 
-import java.net.URLConnection;
-import java.io.InputStream;
 import java.io.IOException;
-
-import com.atlassian.theplugin.exception.VersionServiceException;
+import java.io.InputStream;
 
 /**
  * Created by IntelliJ IDEA.
@@ -31,10 +31,15 @@ public class InfoServer {
 	}
 
 	public String getLatestPluginVersion() throws VersionServiceException {
-		URLConnection c = null;
-		try {
-			c = HttpConnectionFactory.getConnection(serviceUrl + "?uid=" + uid);
-			InputStream is = c.getInputStream();
+		try {			
+			HttpClient client = new HttpClient();
+			GetMethod method = new GetMethod(serviceUrl + "?uid=" + uid);
+			try {
+				client.executeMethod(method);
+			} catch (IllegalArgumentException e) {
+				throw new VersionServiceException("Connection error while retriving the latest plugin version", e);
+			}
+			InputStream is = method.getResponseBodyAsStream();
 			SAXBuilder builder = new SAXBuilder();
 			Document doc = builder.build(is);
 			return getVersion(doc);
