@@ -24,13 +24,13 @@ public class ProjectComboAction extends ComboBoxAction {
         comboBox = (ComboBoxButton) jComponent;
         DefaultActionGroup group = new DefaultActionGroup();
 
-        group.add(new MyAnAction(null, comboBox));
+        group.add(new MyAnAction(null, comboBox, this));
 
         ThePluginApplicationComponent app = IdeaHelper.getAppComponent();
         JIRAServer server = app.getCurrentJIRAServer();
         for (Iterator iterator = server.getProjects().iterator(); iterator.hasNext();) {
             JIRAProject project = (JIRAProject) iterator.next();
-            group.add(new MyAnAction(project, comboBox));
+            group.add(new MyAnAction(project, comboBox, this));
         }
         return group;
     }
@@ -39,12 +39,12 @@ public class ProjectComboAction extends ComboBoxAction {
         return "Any Project";
     }
 
-    private class MyAnAction extends AnAction {
+    private static class MyAnAction extends AnAction {
         private final JIRAProject project;
         private final ComboBoxButton comboBox;
 
-        public MyAnAction(JIRAProject project, ComboBoxButton comboBox) {
-            super((project != null ? project.getName() : ProjectComboAction.this.getDefaultText()));
+        public MyAnAction(JIRAProject project, ComboBoxButton comboBox, ProjectComboAction parent) {
+            super((project != null ? project.getName() : parent.getDefaultText()));
             this.project = project;
             this.comboBox = comboBox;
         }

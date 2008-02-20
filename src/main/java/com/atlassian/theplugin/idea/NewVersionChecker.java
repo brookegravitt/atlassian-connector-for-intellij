@@ -1,9 +1,5 @@
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.util.InfoServer;
-import com.atlassian.theplugin.configuration.ConfigurationFactory;
-import com.atlassian.theplugin.exception.VersionServiceException;
-
 import java.util.TimerTask;
 
 /**
@@ -40,13 +36,13 @@ public final class NewVersionChecker {
 	}
 
 	private void doRun() {
-		InfoServer server = new InfoServer(InfoServer.INFO_SERVER_URL, ConfigurationFactory.getConfiguration().getUid());
-		try {
-			String version = server.getLatestPluginVersion();
-			// todo lguminski display dialog for update if newer version exists
-		} catch (VersionServiceException e) {
-			// todo handle exception
-			e.printStackTrace();
-		}
+//		InfoServer server = new InfoServer(InfoServer.INFO_SERVER_URL, ConfigurationFactory.getConfiguration().getUid());
+//		try {
+//			String version = server.getLatestPluginVersion();
+//			// todo lguminski display dialog for update if newer version exists
+//		} catch (VersionServiceException e) {
+//			// todo handle exception
+//			e.printStackTrace();
+//		}
 	}
 }
