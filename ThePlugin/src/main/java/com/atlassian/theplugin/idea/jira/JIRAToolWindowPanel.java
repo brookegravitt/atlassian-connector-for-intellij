@@ -53,7 +53,8 @@ public class JIRAToolWindowPanel extends JPanel {
         toolBarPanel = new JPanel(new BorderLayout());
         ActionManager aManager = ActionManager.getInstance();
         ActionGroup serverToolBar = (ActionGroup) aManager.getAction("ThePlugin.JIRA.ServerToolBar");
-        ActionToolbar actionToolbar = aManager.createActionToolbar("atlassian.toolwindow.serverToolBar", serverToolBar, true);
+        ActionToolbar actionToolbar = aManager.createActionToolbar(
+				"atlassian.toolwindow.serverToolBar", serverToolBar, true);
         toolBarPanel.add(actionToolbar.getComponent(), BorderLayout.NORTH);
 
         add(toolBarPanel, BorderLayout.NORTH);
@@ -172,7 +173,8 @@ public class JIRAToolWindowPanel extends JPanel {
     private JPopupMenu createContextMenu(JIRAIssue issue) {
         JPopupMenu contextMenu = new JPopupMenu();
         contextMenu.add(makeWebUrlMenu("View", issue.getIssueUrl()));
-        contextMenu.add(makeWebUrlMenu("Edit", issue.getServerUrl() + "/secure/EditIssue!default.jspa?key=" + issue.getKey()));
+        contextMenu.add(makeWebUrlMenu("Edit",
+				issue.getServerUrl() + "/secure/EditIssue!default.jspa?key=" + issue.getKey()));
         contextMenu.addSeparator();
         contextMenu.add(new JMenuItem(new CommentIssueAction()));
         contextMenu.add(makeWebUrlMenu("Log Work", issue.getServerUrl()
@@ -318,7 +320,8 @@ public class JIRAToolWindowPanel extends JPanel {
 
         public void actionPerformed(ActionEvent e) {
             JIRAIssue issue = (JIRAIssue) table.getSelectedObject();
-            IssueComment issueComment = new IssueComment(IdeaHelper.getAppComponent().getCurrentJIRAServer(), getIssues());
+            IssueComment issueComment = new IssueComment(
+					IdeaHelper.getAppComponent().getCurrentJIRAServer(), getIssues());
             issueComment.setIssue(issue);
             issueComment.show();
         }

@@ -12,7 +12,9 @@ import java.util.Collections;
 import java.util.List;
 
 public class JIRATableModel extends AbstractTableModel {
-    private List<JIRAIssue> issues = Collections.EMPTY_LIST;
+	static final long serialVersionUID = 8583198513106993199L;
+	
+	private List<JIRAIssue> issues = Collections.EMPTY_LIST;
     private static final int NUM_COLUMNS = 3;
 
     public void setIssues(List<JIRAIssue> issues) {

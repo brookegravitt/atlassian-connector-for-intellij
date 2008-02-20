@@ -20,26 +20,9 @@
 		<Bug pattern="IS2_INCONSISTENT_SYNC"/>
 	</Match>
 
-	<!--this class cannot be static as it does need reference to its parent through usage of sibling inner classes-->
-	<Match>
-		<Class name="com.atlassian.theplugin.idea.PluginStatusBarToolTip$ToolTipTitleBar"/>
-		<Bug pattern="SIC_INNER_SHOULD_BE_STATIC_NEEDS_THIS"/>
-	</Match>
-
 	<!-- findBugs has something against in-place created anonymous inner classes -->
 	<Match>
-		<Or>
-			<Class name="com.atlassian.theplugin.idea.PluginConfigurationForm$2"/>
-			<Class name="com.atlassian.theplugin.idea.PluginStatusBarToolTip$1"/>
-			<Class name="com.atlassian.theplugin.idea.UserDataContext$1"/>
-			<Class name="com.atlassian.theplugin.idea.config.FooterPanel$1"/>
-			<Class name="com.atlassian.theplugin.idea.config.FooterPanel$2"/>
-			<Class name="com.atlassian.theplugin.idea.crucible.CruciblePatchUploadForm$1"/>
-			<Class name="com.atlassian.theplugin.bamboo.HtmlBambooStatusListener$1"/>
-			<Class name="com.atlassian.theplugin.idea.bamboo.BambooStatusIcon$1"/>
-			<Class name="com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel$1"/>
-			<Class name="com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel$2"/>
-		</Or>
+		<Class name="~.*\$\d+"/>
 		<Bug pattern="SIC_INNER_SHOULD_BE_STATIC_ANON"/>
 	</Match>
 
