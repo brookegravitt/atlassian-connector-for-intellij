@@ -74,11 +74,11 @@ public abstract class Util {
 		Assert.assertEquals("The user does not have sufficient permissions to perform this action.\n", build.getMessage());
 	}
 
-	public static void verifyError400BuildResult(BambooBuild build, String baseUrl) {
+	public static void verifyError400BuildResult(BambooBuild build) {
 		Assert.assertSame(BuildStatus.UNKNOWN, build.getStatus());
 		Assert.assertTrue(build.getPollingTime().getTime() - System.currentTimeMillis() < 5000);
 		Assert.assertTrue(build.getMessage().startsWith(
-				"Server returned HTTP response code: 400 for URL: " + baseUrl));
+				ErrorResponse.getErrorMessage()));
 	}
 
 

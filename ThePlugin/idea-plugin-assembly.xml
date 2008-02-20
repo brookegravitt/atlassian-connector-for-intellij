@@ -54,7 +54,8 @@
         <include>com.sun.xml.bind:jaxb-impl:jar</include>
         <include>wsdl4j:wsdl4j:jar</include>
         <include>org.codehaus.woodstox:wstx-asl:jar</include>
-      </includes>
+		<include>commons-httpclient:commons-httpclient:jar</include>	  
+	  </includes>
     </dependencySet>
   </dependencySets>
 </assembly>

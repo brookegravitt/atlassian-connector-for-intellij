@@ -1,18 +1,23 @@
 package com.atlassian.theplugin.bamboo.api;
 
 import com.atlassian.theplugin.bamboo.*;
-import com.atlassian.theplugin.util.HttpConnectionFactory;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.cookie.CookiePolicy;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.protocol.Protocol;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
+import thirdparty.apache.EasySSLProtocolSocketFactory;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.net.URLConnection;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.text.ParseException;
@@ -35,6 +40,8 @@ public class BambooSession {
 
 	private final String baseUrl;
 	private String authToken;
+
+	private HttpClient client = null;
 
 	/**
 	 * Public constructor for BambooSession.
@@ -63,6 +70,9 @@ public class BambooSession {
 		try {
 			if (baseUrl == null) {
 				throw new BambooLoginException("Corrupted configuration. Url null");
+			}
+			if ("".equals(baseUrl)) {
+				throw new BambooLoginException("Corrupted configuration. Url empty");
 			}
 			if (name == null || aPassword == null) {
 				throw new BambooLoginException("Corrupted configuration. Username or aPassword null");
@@ -118,6 +128,7 @@ public class BambooSession {
 		}
 
 		authToken = null;
+		client = null;
 	}
 
 	public List<BambooProject> listProjectNames() throws BambooException {
@@ -340,11 +351,38 @@ public class BambooSession {
 	}
 
 	private Document retrieveResponse(String urlString) throws IOException, JDOMException {
-		URLConnection c = HttpConnectionFactory.getConnection(urlString);
-		InputStream is = c.getInputStream();
+		// validate URL first
+		try {
+			URL url = new URL(urlString);
+			// check the host name
+			if (url.getHost().length() == 0) {
+				throw new MalformedURLException("Url must contain valid host.");				
+			}
+		} catch (MalformedURLException e) {
+			throw new MalformedURLException("Url must contain valid host.");
+		}
 
+		if (client == null) {
+			Protocol.registerProtocol("https", new Protocol("https", new EasySSLProtocolSocketFactory(), 443));
+			MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
+			client = new HttpClient(connectionManager);
+		}
+
+		GetMethod method = new GetMethod(urlString);
+		method.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
+
+		client.executeMethod(method);
+
+		if (method.getStatusCode() !=  HttpStatus.SC_OK) {
+			throw new IOException(method.getStatusText());
+		}
+				
 		SAXBuilder builder = new SAXBuilder();
-		return builder.build(is);
+		Document doc = builder.build(method.getResponseBodyAsStream());
+
+		method.releaseConnection();
+		
+		return doc;
 	}
 
 	private static String getExceptionMessages(Document doc) throws JDOMException {

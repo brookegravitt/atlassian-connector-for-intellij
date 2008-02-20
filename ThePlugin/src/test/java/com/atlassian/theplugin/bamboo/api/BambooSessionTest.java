@@ -98,10 +98,7 @@ public class BambooSessionTest extends TestCase {
 		assertNotNull("Exception expected", exception);
 		assertNotNull("Exception should have a cause", exception.getCause());
 		assertSame(IOException.class, exception.getCause().getClass());
-		assertTrue(exception.getMessage().startsWith(
-				"Server returned HTTP response code: 400 for URL: "
-						+ mockBaseUrl + "/wrongurl/api/rest/login.action"));
-
+		assertTrue(exception.getMessage().startsWith(ErrorResponse.getErrorMessage()));
 	}
 
 	public void testNonExistingServerBambooLogin() throws Exception {
