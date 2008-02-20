@@ -44,43 +44,45 @@ public class UserDataContext implements CrucibleStatusListener {
 
 			final Project project = IdeaHelper.getCurrentProject();
 
-			StringBuffer sb = new StringBuffer(
-					"<table width=\"100%\">"
-					+ "<tr><td width=20><img src=\"/icons/crucible-blue-16.png\" height=16 width=16 border=0></td>"
-					+ "<td colspan=2><b>"
-					+ newReviews.size()
-					+ " New Crucible Review"
-					+ (newReviews.size() != 1 ? "s" : "")
-					+ "</b></td></tr>");
+			if (project != null) {
+				StringBuffer sb = new StringBuffer(
+						"<table width=\"100%\">"
+						+ "<tr><td width=20><img src=\"/icons/crucible-blue-16.png\" height=16 width=16 border=0></td>"
+						+ "<td colspan=2><b>"
+						+ newReviews.size()
+						+ " New Crucible Review"
+						+ (newReviews.size() != 1 ? "s" : "")
+						+ "</b></td></tr>");
 
-			for (ReviewDataInfo newReview : newReviews) {
-				String id = newReview.getPermaId().getId();
-				sb.append(
-						"<tr><td colspan=2 width=\"1%\" nowrap valign=top><a href=\""
-						+ newReview.getReviewUrl() + "\">"
-						+ id
-						+ "</a></td><td>"
-						+ newReview.getName()
-						+ "</td></tr>");
-			}
-			sb.append("</table>");
-			JEditorPane content = new JEditorPane();
-			content.setEditable(false);
-			content.setContentType("text/html");
-			content.setEditorKit(new ClasspathHTMLEditorKit());
-			content.setText("<html>" + HtmlBambooStatusListener.BODY_WITH_STYLE + sb.toString() + "</body></html>");
-			content.setBackground(new Color(R, G, B));
-			content.addHyperlinkListener(new GenericHyperlinkListener());
-
-			content.addMouseListener(new MouseAdapter() {
-				public void mouseClicked(MouseEvent e) {
-                    display.resetIcon();
-                    IdeaHelper.focusPanel(IdeaHelper.TOOLWINDOW_PANEL_CRUCIBLE);
+				for (ReviewDataInfo newReview : newReviews) {
+					String id = newReview.getPermaId().getId();
+					sb.append(
+							"<tr><td colspan=2 width=\"1%\" nowrap valign=top><a href=\""
+							+ newReview.getReviewUrl() + "\">"
+							+ id
+							+ "</a></td><td>"
+							+ newReview.getName()
+							+ "</td></tr>");
 				}
-			});
-			content.setCaretPosition(0); // do thi to make sure scroll pane is always at the top / header
-			WindowManager.getInstance().getStatusBar(project).fireNotificationPopup(
-					new JScrollPane(content), new Color(R, G, B));
+				sb.append("</table>");
+				JEditorPane content = new JEditorPane();
+				content.setEditable(false);
+				content.setContentType("text/html");
+				content.setEditorKit(new ClasspathHTMLEditorKit());
+				content.setText("<html>" + HtmlBambooStatusListener.BODY_WITH_STYLE + sb.toString() + "</body></html>");
+				content.setBackground(new Color(R, G, B));
+				content.addHyperlinkListener(new GenericHyperlinkListener());
+
+				content.addMouseListener(new MouseAdapter() {
+					public void mouseClicked(MouseEvent e) {
+						display.resetIcon();
+						IdeaHelper.focusPanel(IdeaHelper.TOOLWINDOW_PANEL_CRUCIBLE);
+					}
+				});
+				content.setCaretPosition(0); // do thi to make sure scroll pane is always at the top / header
+				WindowManager.getInstance().getStatusBar(project).fireNotificationPopup(
+						new JScrollPane(content), new Color(R, G, B));
+			}
 		}
 
 		reviews = new ArrayList<ReviewDataInfo>(incomingReviews);
