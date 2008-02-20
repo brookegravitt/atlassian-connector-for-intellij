@@ -12,7 +12,7 @@ public final class HttpClientFactory {
 	static {
 		Protocol.registerProtocol("https", new Protocol(
 				"https", (ProtocolSocketFactory) new EasySSLProtocolSocketFactory(), EasySSLProtocolSocketFactory.SSL_PORT));
-		connectionManager = new MultiThreadedHttpConnectionManager();
+		connectionManager =	new MultiThreadedHttpConnectionManager();
 	}
 
 	private HttpClientFactory() {		
