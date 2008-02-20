@@ -363,7 +363,8 @@ public class BambooSession {
 		}
 
 		if (client == null) {
-			Protocol.registerProtocol("https", new Protocol("https", new EasySSLProtocolSocketFactory(), 443));
+			Protocol.registerProtocol("https", new Protocol(
+					"https", new EasySSLProtocolSocketFactory(), EasySSLProtocolSocketFactory.SSL_PORT));
 			MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
 			client = new HttpClient(connectionManager);
 		}
