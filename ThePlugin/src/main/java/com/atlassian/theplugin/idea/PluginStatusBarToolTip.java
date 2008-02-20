@@ -12,13 +12,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-/**
- * Created by IntelliJ IDEA.
- * User: Jacek
- * Date: 2008-01-16
- * Time: 11:40:02
- * To change this template use File | Settings | File Templates.
- */
 public class PluginStatusBarToolTip extends Window {
 
     // htmlView panel shows HTML content
@@ -133,7 +126,7 @@ public class PluginStatusBarToolTip extends Window {
 		htmlView.setCaretPosition(0);
 	}
 
-    private class ToolTipTitleBar extends JPanel {
+	private static class ToolTipTitleBar extends JPanel {
 
         private Icon closeButtonIcon = IconLoader.getIcon("/icons/close_icon_30x15.png");
         private Icon closeButtonIconHover = IconLoader.getIcon("/icons/close_icon_30x15_hover.png");
@@ -184,12 +177,12 @@ public class PluginStatusBarToolTip extends Window {
             });
 
             // move tooltip when draging title label
-            ToolTipMoveHandler moveHandler = new ToolTipMoveHandler();
+            ToolTipMoveHandler moveHandler = window.getNewMoveHandler();
             titleLabel.addMouseMotionListener(moveHandler);
             titleLabel.addMouseListener(moveHandler);
 
 			// resize tooltip
-			ToolTipResizeHandler resizeHandler = new ToolTipResizeHandler();
+			ToolTipResizeHandler resizeHandler = window.getNewResizeHandler();
 			resizeLabel.addMouseListener(resizeHandler);
 			resizeLabel.addMouseMotionListener(resizeHandler);
 
@@ -199,6 +192,10 @@ public class PluginStatusBarToolTip extends Window {
             titleLabel.setText(title);
         }
 
+	}
+
+	private ToolTipResizeHandler getNewResizeHandler() {
+		return new ToolTipResizeHandler();
 	}
 
 	private class ToolTipResizeHandler extends MouseInputAdapter {
@@ -261,6 +258,10 @@ public class PluginStatusBarToolTip extends Window {
 			initialWindowXPosition = (int) PluginStatusBarToolTip.this.getLocation().getX();
 			initialWindowYPosition = (int) PluginStatusBarToolTip.this.getLocation().getY(); 
 		}
+	}
+
+	private ToolTipMoveHandler getNewMoveHandler() {
+		return new ToolTipMoveHandler();
 	}
 
 	private class ToolTipMoveHandler extends MouseInputAdapter {
