@@ -134,7 +134,7 @@ public class GenericServerConfigForm extends AbstractServerPanel {
 		password = new JPasswordField();
 		panel1.add(password, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
 		final JLabel label2 = new JLabel();
-		label2.setText("Server Url");
+		label2.setText("Server URL");
 		label2.setDisplayedMnemonic('U');
 		label2.setDisplayedMnemonicIndex(7);
 		panel1.add(label2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));

@@ -1,5 +1,12 @@
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.theplugin.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.exception.VersionServiceException;
+import com.atlassian.theplugin.util.InfoServer;
+import com.intellij.openapi.application.ApplicationManager;
+import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
+
 import java.util.TimerTask;
 
 /**
@@ -8,6 +15,7 @@ import java.util.TimerTask;
 public final class NewVersionChecker {
 
 	private static NewVersionChecker instance;
+	private static final Category LOG = Logger.getInstance(NewVersionChecker.class);
 
 	private NewVersionChecker() {
 		super();
@@ -30,19 +38,22 @@ public final class NewVersionChecker {
 	public TimerTask newTimerTask() {
 		return new TimerTask() {
 			public void run() {
-				doRun();
+				try {
+					doRun();
+				} catch (VersionServiceException e) {
+					LOG.error("Error checking for new version", e);
+				}
 			}
 		};
 	}
 
-	private void doRun() {
-//		InfoServer server = new InfoServer(InfoServer.INFO_SERVER_URL, ConfigurationFactory.getConfiguration().getUid());
-//		try {
-//			String version = server.getLatestPluginVersion();
-//			// todo lguminski display dialog for update if newer version exists
-//		} catch (VersionServiceException e) {
-//			// todo handle exception
-//			e.printStackTrace();
-//		}
+	private void doRun() throws VersionServiceException {
+		InfoServer server = new InfoServer(InfoServer.INFO_SERVER_URL, ConfigurationFactory.getConfiguration().getUid());
+		String version = server.getLatestPluginVersion();
+
+		// simple version difference check
+		if (!version.equals(PluginInfoUtil.getVersion())) {
+			ApplicationManager.getApplication().invokeLater(new ConfirmPluginUpdateHandler(version));
+		}
 	}
 }
