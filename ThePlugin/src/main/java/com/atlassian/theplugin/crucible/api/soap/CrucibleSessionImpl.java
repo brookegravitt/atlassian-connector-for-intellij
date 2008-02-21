@@ -142,7 +142,7 @@ public class CrucibleSessionImpl implements CrucibleSession {
 		return authToken;
 	}
 
-	static com.atlassian.theplugin.crucible.api.soap.xfire.review.State translateToCxfState(State state) {
+	public static com.atlassian.theplugin.crucible.api.soap.xfire.review.State translateToCxfState(State state) {
 		switch (state) {
 			case APPROVAL:
 				return com.atlassian.theplugin.crucible.api.soap.xfire.review.State.APPROVAL;
@@ -164,7 +164,7 @@ public class CrucibleSessionImpl implements CrucibleSession {
 		}
 	}
 
-	static State translateFromCxfState(com.atlassian.theplugin.crucible.api.soap.xfire.review.State state) {
+	public static State translateFromCxfState(com.atlassian.theplugin.crucible.api.soap.xfire.review.State state) {
 		switch (state) {
 			case APPROVAL:
 				return State.APPROVAL;
@@ -196,7 +196,7 @@ public class CrucibleSessionImpl implements CrucibleSession {
 		return newPerm;
 	}
 
-	static
+	public static
 	com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData translateToCxfReviewData(ReviewData reviewData) {
 		com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData newReview =
 				new com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData();
@@ -213,7 +213,7 @@ public class CrucibleSessionImpl implements CrucibleSession {
 		return newReview;
 	}
 
-	static
+	public static
 	ReviewData translateFromCxfReviewData(com.atlassian.theplugin.crucible.api.soap.xfire.review.ReviewData reviewData) {
 		ReviewDataBean newReview = new ReviewDataBean();
 		newReview.setPermaId(translateToCxfPermId(reviewData.getPermaId()));
