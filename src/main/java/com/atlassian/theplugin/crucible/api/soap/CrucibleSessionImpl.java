@@ -1,9 +1,11 @@
-package com.atlassian.theplugin.crucible.api;
+package com.atlassian.theplugin.crucible.api.soap;
 
 import com.atlassian.theplugin.crucible.api.soap.xfire.auth.RpcAuthServiceName;
 import com.atlassian.theplugin.crucible.api.soap.xfire.review.RpcReviewServiceName;
+import com.atlassian.theplugin.crucible.api.*;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 
+import javax.xml.ws.soap.SOAPFaultException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,7 +54,7 @@ public class CrucibleSessionImpl implements CrucibleSession {
 		}
 		try {
 			authToken = authService.login(userName, password);
-		} catch (RuntimeException e) {
+		} catch (SOAPFaultException e) {
 			throw new CrucibleLoginException("Login failed", e);
 		}
 
