@@ -114,11 +114,18 @@
 			<artifactId>htmlunit</artifactId>
 			<version>1.14</version>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>net.sourceforge.cssparser</groupId>
+					<artifactId>cssparser</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.cssparser</groupId>
 			<artifactId>cssparser</artifactId>
 			<version>0.9.4</version>
+			<classifier>jdk15</classifier>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -443,10 +450,6 @@
 						</library>
 						<library>
 							<name>xmlrpc</name>
-							<exclude>true</exclude>
-						</library>
-						<library>
-							<name>cssparser</name>
 							<exclude>true</exclude>
 						</library>
 					</libraries>
