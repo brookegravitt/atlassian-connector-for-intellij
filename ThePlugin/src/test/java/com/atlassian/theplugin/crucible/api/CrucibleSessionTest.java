@@ -1,7 +1,8 @@
 package com.atlassian.theplugin.crucible.api;
 
+import com.atlassian.theplugin.crucible.api.soap.CrucibleSessionImpl;
 import com.atlassian.theplugin.crucible.api.soap.xfire.auth.RpcAuthServiceName;
-import com.atlassian.theplugin.crucible.api.soap.xfire.review.*;
+import com.atlassian.theplugin.crucible.api.soap.xfire.review.RpcReviewServiceName;
 import junit.framework.TestCase;
 import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.jaxws.JaxWsServerFactoryBean;
