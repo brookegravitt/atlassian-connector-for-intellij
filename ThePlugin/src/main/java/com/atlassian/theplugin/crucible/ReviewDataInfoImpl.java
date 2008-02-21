@@ -21,7 +21,7 @@ public class ReviewDataInfoImpl implements ReviewDataInfo {
 
 	public String getReviewUrl() {
 		String baseUrl = server.getUrlString();
-		while (baseUrl.charAt(baseUrl.length() - 1) == '/') {
+		while (baseUrl.length() > 0 && baseUrl.charAt(baseUrl.length() - 1) == '/') {
 			// quite ineffective, I know ...
 			baseUrl = baseUrl.substring(0,  baseUrl.length() - 1);
 		}

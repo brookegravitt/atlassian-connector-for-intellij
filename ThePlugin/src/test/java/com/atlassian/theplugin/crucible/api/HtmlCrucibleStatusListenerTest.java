@@ -1,7 +1,5 @@
 package com.atlassian.theplugin.crucible.api;
 
-import com.atlassian.theplugin.bamboo.HtmlBambooStatusListener;
-import com.atlassian.theplugin.bamboo.HtmlBambooStatusListenerTest;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.crucible.CrucibleStatusDisplay;
@@ -19,10 +17,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -38,20 +33,17 @@ public class HtmlCrucibleStatusListenerTest extends TestCase {
 	final static ServerBean server = new ServerBean();
 
 	private static final String DEFAULT_ERROR_MESSAGE = "default error message";
-    private static final String DEFAULT_SERVER_URL = "http://test.atlassian.com/crucible";
+    private static final String DEFAULT_SERVER_URL = "http://test.atlassian.com/crucible/";
     private static final String DEFAULT_PROJECT_NAME = "CR";
 	private static final String DEFAULT_PLAN_ID_2 = "CR-ID";
 	private static final String DEFAULT_AUTHOR = "AUTHOR1";
 	private static final String DEFAULT_CREATOR = "DEFAULT_CREATOR";
 	private static final String DEFAULT_DESCRIPTION = "DEFAULT_DESCRIPTION";
 	private static final String DEFAULT_MODERATOR = "DEFAULT_MODERATOR";
-	private static PermId DEFAULT_PERM_ID;
+	private static final String DEFAULT_REVIEW_NAME = "DEFAULT_REVIEW_NAME";
+	private static final String DEFAULT_REVIEWER = "DEFAULT_REVIEWER";
 
-	static {
-		DEFAULT_PERM_ID = new PermId();
-		DEFAULT_PERM_ID.setId("CR-0001");
-	}
-
+	private static final String DEFAULT_PERM_ID = "CR-";
 
 
 	private static final String DEFAULT_PROJECT_KEY = "DEFAULT_PROJECT_KEY";
@@ -69,7 +61,8 @@ public class HtmlCrucibleStatusListenerTest extends TestCase {
 
 		output = new StatusListenerResultCatcher();
         server.setName("Test Server");
-        testedListener = new HtmlCrucibleStatusListener(output) {
+		server.setUrlString(DEFAULT_SERVER_URL);
+		testedListener = new HtmlCrucibleStatusListener(output) {
             protected Server getServerFromUrl(String serverUrl)   {
                 return server;
             }
@@ -90,41 +83,57 @@ public class HtmlCrucibleStatusListenerTest extends TestCase {
 		testedListener.updateReviews(new ArrayList<ReviewDataInfo>());
 		assertEquals(1, output.count);
         assertEquals(
-                "<html>" + HtmlBambooStatusListener.BODY_WITH_STYLE + "\"No reviews at this time.</body></html>",
+                "<html>" + HtmlCrucibleStatusListener.BODY_WITH_STYLE + "No reviews at this time.</body></html>",
                 output.htmlPage);
 	}
 
 	public void testSingleSuccessResult() throws Exception {
 		Collection<ReviewDataInfo> reviewInfo = new ArrayList<ReviewDataInfo>();
 
-		reviewInfo.add(generateReviewDataInfo(""));
+		reviewInfo.add(generateReviewDataInfo("1"));
 		testedListener.updateReviews(reviewInfo);
 
 
 		HtmlTable table = output.response.getTheTable();
-		assertEquals(2, table.getRowCount());
 
-		testReviewRow(table.getRow(1));
+
+		testReviewTable(table, 1);
 
 	}
 
 	/*@todo: change */
 	@SuppressWarnings("unchecked")
-	private static void testReviewRow(HtmlTableRow tableRow) throws Exception {
-		List<HtmlTableCell> cells = tableRow.getCells();
-		assertEquals(3, cells.size());
+	private static void testReviewTable(HtmlTable table, int numberOfReviews) throws Exception {
+		StringBuilder sb = new StringBuilder();
+		//first two are information about number of reviews + table header 
+		for (int i = 2; i < table.getRowCount(); i++) {
+			assertEquals(5, table.getRow(i).getCells().size());
+		}
 
-         /*assertEquals("<tr><td valign=\"top\"><b><font color=blue><a href='\" + DEFAULT_SERVER_URL + "'>" + PERM_ID + "</a></font></b></td>" +
-			"<td valign=\"top\">" + REVIEW_NAME + "</td>" +
-			"<td valign=\"top\">" + REVIEW_AUTHOR + "</td>" +
-			"<td valign=\"top\">" + REVIEW_STATE + "</td>",
-					trimWhitespace(cells.get(0).asXml());
+		assertEquals(table.getRowCount(), numberOfReviews + 2);
 
-		assertEquals(DEFAULT_PROJECT_NAME + " " + DEFAULT_BUILD_NAME + " > PLAN-ID-777", cells.get(1).asText());
 
-		String buildTime = cells.get(2).asText().trim();
-		assertTrue(buildTime.length() > 1);
-		assertFalse("---".equals(buildTime));*/
+		if (table.getRowCount() > 0) {
+			assertEquals("<tr><td colspan=\"5\">Currently<b>" + numberOfReviews + " open code reviews</b>for you.<br/>&#160;</td></tr>", trimWhitespace(table.getRow(0).asXml()));
+			assertEquals("<tr><th>Key</th><th>Summary</th><th>Author</th><th>State</th><th>Reviewers</th></tr>", trimWhitespace(table.getRow(1).asXml()));
+		}
+		for (int i = 1; i <= numberOfReviews; i++) {
+			/*sb.append("<tr><td valign=\"top\"><b><font color=\"blue\"><a href=\"");
+			sb.append(DEFAULT_SERVER_URL);
+			sb.append("\">");
+			sb.append(DEFAULT_PERM_ID + i);
+			sb.append("</a></font></b></td>");
+			sb.append("<td valign=\"top\">" + DEFAULT_REVIEW_NAME + i + "</td>");
+			sb.append("<td valign=\"top\">" + DEFAULT_AUTHOR + i + "</td>");
+			sb.append("<td valign=\"top\">" + DEFAULT_STATE + "</td>");
+			sb.append("<td valign=\"top\">");
+			sb.append(DEFAULT_REVIEWER);
+			sb.append("</td></tr>");
+
+			assertEquals(sb.toString(), trimWhitespace(table.getRow(i + 2 - 1).asXml()));*/
+
+		}
+
 
 	}
 
@@ -141,17 +150,19 @@ public class HtmlCrucibleStatusListenerTest extends TestCase {
 	public static ReviewDataInfo generateReviewDataInfo(String suffix) {
 		ReviewDataBean rd = new ReviewDataBean();
 		rd.setAuthor(DEFAULT_AUTHOR + suffix);
-		rd.setCreator(DEFAULT_CREATOR + suffix);
-		rd.setDescription(DEFAULT_DESCRIPTION + suffix);
-		rd.setModerator(DEFAULT_MODERATOR + suffix);
-		rd.setName(DEFAULT_PROJECT_NAME + suffix);
-		rd.setPermaId(DEFAULT_PERM_ID);
+		rd.setCreator(DEFAULT_CREATOR);
+		rd.setDescription(DEFAULT_DESCRIPTION);
+		rd.setModerator(DEFAULT_MODERATOR);
+		rd.setName(DEFAULT_PROJECT_NAME);
+
+		PermId permId = new PermId();
+		permId.setId(DEFAULT_PERM_ID + suffix);
+		rd.setPermaId(permId);
 		rd.setProjectKey(DEFAULT_PROJECT_KEY + suffix);
 		rd.setState(DEFAULT_STATE);
 
 		ArrayList reviewers = new ArrayList<String>();
-		reviewers.add("ala1");
-		reviewers.add("ala2");
+		reviewers.add(DEFAULT_REVIEW_NAME + suffix);
 
 		ReviewDataInfoImpl rdi = new ReviewDataInfoImpl(rd, reviewers, server);
 		return rdi;
@@ -160,7 +171,7 @@ public class HtmlCrucibleStatusListenerTest extends TestCase {
 
 
 	public static Test suite() {
-		return new TestSuite(HtmlBambooStatusListenerTest.class);
+		return new TestSuite(HtmlCrucibleStatusListenerTest.class);
 	}
 
 
