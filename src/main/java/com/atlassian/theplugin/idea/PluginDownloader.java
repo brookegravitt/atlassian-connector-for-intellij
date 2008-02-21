@@ -9,7 +9,7 @@ import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.io.StreamUtil;
 import com.intellij.util.io.ZipUtil;
-import com.intellij.util.net.HttpConfigurable;
+import com.atlassian.theplugin.exception.ThePluginException;
 import org.apache.log4j.Category;
 import org.jetbrains.annotations.NonNls;
 
@@ -32,14 +32,14 @@ public class PluginDownloader implements Runnable {
 	public static final Category LOG = Category.getInstance(PluginDownloader.class);
 
 	public static final String PLUGIN_ID_TOKEN = "PLUGIN_ID";
-	public static final String BUILD_TOKEN = "BUILD";
+	public static final String VERSION_TOKEN = "BUILD";
 
 	@NonNls
-	public static final String INTELLIJ_NET_PLUGIN_DOWNLOAD =
+	public static String PLUGIN_DOWNLOAD_URL =
 			"http://plugins.intellij.net/pluginManager/?action=download&id="
 					+ PLUGIN_ID_TOKEN
 					+ "&build="
-					+ BUILD_TOKEN;
+					+ VERSION_TOKEN; // non final due to the need of changing it in test case
 
 	private static String pluginName;
 	private String pluginLatestVersion;
@@ -52,16 +52,14 @@ public class PluginDownloader implements Runnable {
 
 	public void run() {
 		try {
-			Object[] result = downloadPluginFromServer(this.pluginLatestVersion);
-			File localArchiveFile = (File) result[0];
-			String serverPath = (String) result[1];
+			File localArchiveFile = downloadPluginFromServer(this.pluginLatestVersion);
 
 			// add startup actions
 
 			// todo lguminski/jjaroczynski to find a better way of getting plugin descriptor
 			// theoritically openapi should provide a method so the plugin could get info on itself
 
-			addActions(PluginManager.getPlugin(PluginId.getId(PluginInfoUtil.getPluginId())), localArchiveFile, serverPath);
+			addActions(PluginManager.getPlugin(PluginId.getId(PluginInfoUtil.getPluginId())), localArchiveFile);
 
 			// restart IDEA
 			promptShutdownAndShutdown();
@@ -95,17 +93,17 @@ public class PluginDownloader implements Runnable {
 	}
 
 	// todo add info about licence and author
-	private static Object[] downloadPluginFromServer(String version) throws IOException {
-		File pluginArchiveFile = FileUtil.createTempFile("temp_" + pluginName + "_", ".plugin");
+	private File downloadPluginFromServer(String version) throws IOException {
+		File pluginArchiveFile = FileUtil.createTempFile("temp_" + pluginName + "_", "tmp");
 
 
-		String pluginUrl = INTELLIJ_NET_PLUGIN_DOWNLOAD
+		String pluginUrl = PLUGIN_DOWNLOAD_URL
 				.replaceAll(PLUGIN_ID_TOKEN, pluginName)
-				.replaceAll(BUILD_TOKEN, version);
+				.replaceAll(VERSION_TOKEN, version);
 
 		LOG.info("Downloading plugin archive from: " + pluginUrl);
 
-		HttpConfigurable.getInstance().prepareURL(pluginUrl);
+		//HttpConfigurable.getInstance().prepareURL(pluginUrl);
 		URL url = new URL(pluginUrl);
 		URLConnection connection = url.openConnection();
 		connection.setConnectTimeout(TIMEOUT);
@@ -139,11 +137,18 @@ public class PluginDownloader implements Runnable {
 				((HttpURLConnection) connection).disconnect();
 			}
 		}
-
-		return new Object[]{ pluginArchiveFile, connection.getURL().toString() };
+		String srcName = connection.getURL().toString();
+		String ext = srcName.substring(srcName.lastIndexOf("."));
+		String newName = pluginArchiveFile.getPath().substring(0, pluginArchiveFile.getPath().length() - 3) + ext;
+		File newFile = new File(newName);
+		if(pluginArchiveFile.renameTo(new File(newName)) == false) {
+			pluginArchiveFile.delete();
+			throw new IOException("Renaming received file from \"" + srcName + "\" to \"" + newName + "\" failed.");
+		}
+		return newFile;
 	}
 
-	private void addActions(IdeaPluginDescriptor installedPlugin, File localArchiveFile, String serverPath) throws IOException {
+	private void addActions(IdeaPluginDescriptor installedPlugin, File localArchiveFile) throws IOException {
 
 		PluginId id = installedPlugin.getPluginId();
 
@@ -155,11 +160,11 @@ public class PluginDownloader implements Runnable {
 		}
 
 		//noinspection HardCodedStringLiteral
-		boolean isJarFile = serverPath.endsWith(".jar");
+		boolean isJarFile = localArchiveFile.getName().endsWith(".jar");
 
 		if (isJarFile) {
 			// add command to copy file to the IDEA/plugins path
-			String fileName = new File(serverPath).getName();
+			String fileName = localArchiveFile.getName();
 			File newFile = new File(PathManager.getPluginsPath() + File.separator + fileName);
 			StartupActionScriptManager.ActionCommand copyPlugin = new StartupActionScriptManager.CopyCommand(localArchiveFile, newFile);
 			StartupActionScriptManager.addActionCommand(copyPlugin);
