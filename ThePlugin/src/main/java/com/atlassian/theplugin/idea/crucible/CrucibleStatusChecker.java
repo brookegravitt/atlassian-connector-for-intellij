@@ -65,7 +65,6 @@ public final class CrucibleStatusChecker {
                                     ApplicationManager.getApplication().invokeLater(
                                             new MissingPasswordHandler(), ModalityState.defaultModalityState());
                                 } catch (CrucibleLoginException e) {
-                                    // @todo
                                     e.printStackTrace();
                                 }
                             }
@@ -81,7 +80,7 @@ public final class CrucibleStatusChecker {
                 }
             });
 	    } catch (Throwable t) {
-            t.printStackTrace();  
+			t.printStackTrace();
         }
     }
 
