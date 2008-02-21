@@ -8,8 +8,10 @@ package com.atlassian.theplugin.configuration;
  */
 public abstract class ConfigurationFactory {
 
+	///CLOVER:OFF
 	private ConfigurationFactory() {
 	}
+	///CLOVER:ON
 
 	private static PluginConfiguration pluginConfiguration;
 

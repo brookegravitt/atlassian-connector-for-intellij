@@ -15,8 +15,10 @@ public final class HttpClientFactory {
 		connectionManager =	new MultiThreadedHttpConnectionManager();
 	}
 
+	///CLOVER:OFF
 	private HttpClientFactory() {		
 	}
+	///CLOVER:ON
 
 	public static HttpClient getClient() {
 		return new HttpClient(connectionManager);

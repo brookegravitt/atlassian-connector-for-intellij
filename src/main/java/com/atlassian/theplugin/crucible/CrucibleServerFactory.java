@@ -10,9 +10,11 @@ package com.atlassian.theplugin.crucible;
 public final class CrucibleServerFactory {
 	private static CrucibleServerFacade facade = new CrucibleServerFacadeImpl();
 
+	///CLOVER:OFF
 	private CrucibleServerFactory() {
 	}
-
+	///CLOVER:ON
+	
 	public static CrucibleServerFacade getCrucibleServerFacade() {
 		return facade;
 	}
