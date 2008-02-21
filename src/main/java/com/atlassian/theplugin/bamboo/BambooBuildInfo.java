@@ -25,21 +25,6 @@ public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
 	public BambooBuildInfo() {
 	}
 
-	//todo: wywalic
-	public BambooBuildInfo(
-			String projectName, String buildName, String buildKey, String buildState, String buildNumber,
-			String buildReason, String buildRelativeBuildDate, String buildDurationDescription, String buildTestSummary) {
-		this.projectName = projectName;
-		this.buildName = buildName;
-		this.buildKey = buildKey;
-		this.buildState = buildState;
-		this.buildNumber = buildNumber;
-		this.buildReason = buildReason;
-		this.buildRelativeBuildDate = buildRelativeBuildDate;
-		this.buildDurationDescription = buildDurationDescription;
-		this.buildTestSummary = buildTestSummary;
-	}
-
 	public String getServerUrl() {
 		return this.serverUrl;
 	}
@@ -92,10 +77,6 @@ public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
 	public void setBuildKey(String buildKey) {
 		this.buildKey = buildKey;
 	}
-
-//	public String getBuildState() {
-//		return buildState;
-//	}
 
 	public void setBuildState(String buildState) {
 		this.buildState = buildState;

@@ -104,7 +104,10 @@ public class ServerBean implements Server {
 
 			return new String(passwordBytes, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
+			///CLOVER:OFF
+			// cannot happen
 			throw new RuntimeException("UTF-8 is not supported", e);
+			///CLOVER:ON
 		}
 
 	}
@@ -113,7 +116,10 @@ public class ServerBean implements Server {
 		try {
 			return Base64.encodeBytes(str2encode.getBytes("UTF-8"));
 		} catch (UnsupportedEncodingException e) {
+			///CLOVER:OFF
+			// cannot happen
 			throw new RuntimeException("UTF-8 is not supported", e);
+			///CLOVER:ON
 		}
 	}
 
