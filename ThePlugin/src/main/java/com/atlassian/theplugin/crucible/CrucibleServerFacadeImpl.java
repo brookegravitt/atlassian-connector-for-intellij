@@ -3,6 +3,7 @@ package com.atlassian.theplugin.crucible;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.crucible.api.*;
+import com.atlassian.theplugin.crucible.api.soap.CrucibleSessionImpl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,10 +26,10 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	}
 
 	/**
-	 * @param serverUrl @see com.atlassian.theplugin.crucible.api.CrucibleSessionImpl#constructor(String baseUrl)
+	 * @param serverUrl @see com.atlassian.theplugin.crucible.api.soap.CrucibleSessionImpl#constructor(String baseUrl)
 	 * @param userName
 	 * @param password
-	 * @throws CrucibleException
+	 * @throws com.atlassian.theplugin.crucible.api.CrucibleException
 	 */
 	public void testServerConnection(String serverUrl, String userName, String password) throws CrucibleException {
 		CrucibleSession session = getSession(serverUrl);
