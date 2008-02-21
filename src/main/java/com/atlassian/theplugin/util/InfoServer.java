@@ -12,13 +12,6 @@ import org.jdom.xpath.XPath;
 import java.io.IOException;
 import java.io.InputStream;
 
-/**
- * Created by IntelliJ IDEA.
- * User: lguminski
- * Date: Feb 19, 2008
- * Time: 11:15:21 AM
- * To change this template use File | Settings | File Templates.
- */
 public class InfoServer {
 	private String serviceUrl;
 	private long uid;
@@ -31,7 +24,7 @@ public class InfoServer {
 	}
 
 	public String getLatestPluginVersion() throws VersionServiceException {
-		try {			
+		try {
 			HttpClient client = new HttpClient();
 			GetMethod method = new GetMethod(serviceUrl + "?uid=" + uid);
 			try {
@@ -41,6 +34,7 @@ public class InfoServer {
 			}
 			InputStream is = method.getResponseBodyAsStream();
 			SAXBuilder builder = new SAXBuilder();
+			builder.setValidation(false);
 			Document doc = builder.build(is);
 			return getVersion(doc);
 		} catch (IOException e) {
