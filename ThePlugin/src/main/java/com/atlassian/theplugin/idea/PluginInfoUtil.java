@@ -28,9 +28,11 @@ public final class PluginInfoUtil {
 
 	private static Document doc = setDoc();
 
+	///CLOVER:OFF
 	private PluginInfoUtil() {
 		super();
 	}
+	///CLOVER:ON
 
 	public static String getName() {
 		return getConfigValue("/idea-plugin/name");
@@ -54,28 +56,26 @@ public final class PluginInfoUtil {
 		builder.setValidation(false);
 		try {
 			if (base.isDirectory()) {
-				File file = null;
-				file = new File(base.getAbsolutePath(), "../META-INF/plugin.xml");
+				File file = new File(base.getAbsolutePath(), "../META-INF/plugin.xml");
 				// magic: we try to find plugin.xml, which is not so simple
 				// beacuase structure of project and structure of the package
 				// made by maven are different
-				int i = 0;
+				boolean giveUp = false;
 				while (true) {
 					try {
 						doc = builder.build(file);
 					} catch (FileNotFoundException e) {
-						if (i == 1) {
+						if (giveUp) {
 							throw e;
 						}
-						++i;
+						giveUp = true;
 						file = new File(base.getAbsolutePath(), "META-INF/plugin.xml");
 						continue;
 					}
 					break;
 				}
 			} else {
-				ZipFile zip = null;
-				zip = new ZipFile(base);
+				ZipFile zip = new ZipFile(base);
 				InputStream in = zip.getInputStream(zip.getEntry("META-INF/plugin.xml"));
 				doc = builder.build(in);
 				in.close();
@@ -93,9 +93,8 @@ public final class PluginInfoUtil {
 
 	private static String getConfigValue(String path) {
 		String result = null;
-		XPath xpath = null;
 		try {
-			xpath = XPath.newInstance(path);
+			XPath xpath = XPath.newInstance(path);
 			Element element = (Element) xpath.selectSingleNode(doc);
 			if (element != null) {
 				result = element.getValue();
