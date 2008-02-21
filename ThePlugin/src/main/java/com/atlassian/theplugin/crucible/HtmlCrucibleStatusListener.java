@@ -9,7 +9,7 @@ import java.util.Iterator;
 public class HtmlCrucibleStatusListener implements CrucibleStatusListener {
 
 	private final CrucibleStatusDisplay display;
-	private static final String BODY_WITH_STYLE =
+	public static final String BODY_WITH_STYLE =
 			"<body style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">";
 
 

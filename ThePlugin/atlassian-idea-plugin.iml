@@ -18,7 +18,7 @@
     <orderEntry type="module-library" exported="">
       <library name="cxf-common-utilities">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/org/apache/cxf/cxf-common-utilities/2.0.4-incubator/cxf-common-utilities-2.0.4-incubator.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/org/apache/cxf/cxf-common-utilities/2.0.4-incubator/cxf-common-utilities-2.0.4-incubator.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -29,7 +29,7 @@
     <orderEntry type="module-library">
       <library name="spring-core">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/org/springframework/spring-core/2.0.6/spring-core-2.0.6.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/org/springframework/spring-core/2.0.6/spring-core-2.0.6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -38,7 +38,7 @@
     <orderEntry type="module-library">
       <library name="commons-logging">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/commons-logging/commons-logging/1.1/commons-logging-1.1.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/commons-logging/commons-logging/1.0.4/commons-logging-1.0.4.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -49,7 +49,7 @@
     <orderEntry type="module-library">
       <library name="spring-beans">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/org/springframework/spring-beans/2.0.6/spring-beans-2.0.6.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/org/springframework/spring-beans/2.0.6/spring-beans-2.0.6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -58,7 +58,7 @@
     <orderEntry type="module-library">
       <library name="spring-context">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/org/springframework/spring-context/2.0.6/spring-context-2.0.6.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/org/springframework/spring-context/2.0.6/spring-context-2.0.6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -67,7 +67,7 @@
     <orderEntry type="module-library">
       <library name="aopalliance">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/aopalliance/aopalliance/1.0/aopalliance-1.0.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/aopalliance/aopalliance/1.0/aopalliance-1.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -78,7 +78,7 @@
     <orderEntry type="module-library">
       <library name="geronimo-annotation_1.0_spec">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/org/apache/geronimo/specs/geronimo-annotation_1.0_spec/1.1/geronimo-annotation_1.0_spec-1.1.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/org/apache/geronimo/specs/geronimo-annotation_1.0_spec/1.1/geronimo-annotation_1.0_spec-1.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -89,7 +89,7 @@
     <orderEntry type="module-library">
       <library name="geronimo-ws-metadata_2.0_spec">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/org/apache/geronimo/specs/geronimo-ws-metadata_2.0_spec/1.1.1/geronimo-ws-metadata_2.0_spec-1.1.1.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/org/apache/geronimo/specs/geronimo-ws-metadata_2.0_spec/1.1.1/geronimo-ws-metadata_2.0_spec-1.1.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -100,7 +100,7 @@
     <orderEntry type="module-library">
       <library name="jaxb-api">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/javax/xml/bind/jaxb-api/2.0/jaxb-api-2.0.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/javax/xml/bind/jaxb-api/2.0/jaxb-api-2.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -109,7 +109,7 @@
     <orderEntry type="module-library">
       <library name="geronimo-stax-api_1.0_spec">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/org/apache/geronimo/specs/geronimo-stax-api_1.0_spec/1.0/geronimo-stax-api_1.0_spec-1.0.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/org/apache/geronimo/specs/geronimo-stax-api_1.0_spec/1.0/geronimo-stax-api_1.0_spec-1.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -120,7 +120,7 @@
     <orderEntry type="module-library">
       <library name="wsdl4j">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/wsdl4j/wsdl4j/1.6.1/wsdl4j-1.6.1.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/wsdl4j/wsdl4j/1.6.1/wsdl4j-1.6.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -131,7 +131,7 @@
     <orderEntry type="module-library">
       <library name="xml-resolver">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/xml-resolver/xml-resolver/1.2/xml-resolver-1.2.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/xml-resolver/xml-resolver/1.2/xml-resolver-1.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -142,7 +142,7 @@
     <orderEntry type="module-library">
       <library name="XmlSchema">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/org/apache/ws/commons/schema/XmlSchema/1.3.2/XmlSchema-1.3.2.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/org/apache/ws/commons/schema/XmlSchema/1.3.2/XmlSchema-1.3.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -153,7 +153,7 @@
     <orderEntry type="module-library">
       <library name="commons-lang">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/commons-lang/commons-lang/2.1/commons-lang-2.1.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/commons-lang/commons-lang/2.1/commons-lang-2.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -164,7 +164,7 @@
     <orderEntry type="module-library" exported="">
       <library name="cxf-rt-transports-http">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/org/apache/cxf/cxf-rt-transports-http/2.0.4-incubator/cxf-rt-transports-http-2.0.4-incubator.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/org/apache/cxf/cxf-rt-transports-http/2.0.4-incubator/cxf-rt-transports-http-2.0.4-incubator.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -175,7 +175,7 @@
     <orderEntry type="module-library" exported="">
       <library name="cxf-api">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/org/apache/cxf/cxf-api/2.0.4-incubator/cxf-api-2.0.4-incubator.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/org/apache/cxf/cxf-api/2.0.4-incubator/cxf-api-2.0.4-incubator.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -186,7 +186,7 @@
     <orderEntry type="module-library">
       <library name="neethi">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/org/apache/neethi/neethi/2.0.2/neethi-2.0.2.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/org/apache/neethi/neethi/2.0.2/neethi-2.0.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -195,7 +195,7 @@
     <orderEntry type="module-library">
       <library name="wstx-asl">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/org/codehaus/woodstox/wstx-asl/3.2.1/wstx-asl-3.2.1.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/org/codehaus/woodstox/wstx-asl/3.2.1/wstx-asl-3.2.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -206,7 +206,7 @@
     <orderEntry type="module-library">
       <library name="cxf-common-schemas">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/org/apache/cxf/cxf-common-schemas/2.0.4-incubator/cxf-common-schemas-2.0.4-incubator.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/org/apache/cxf/cxf-common-schemas/2.0.4-incubator/cxf-common-schemas-2.0.4-incubator.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -217,7 +217,7 @@
     <orderEntry type="module-library">
       <library name="geronimo-activation_1.1_spec">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/org/apache/geronimo/specs/geronimo-activation_1.1_spec/1.0-M1/geronimo-activation_1.1_spec-1.0-M1.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/org/apache/geronimo/specs/geronimo-activation_1.1_spec/1.0-M1/geronimo-activation_1.1_spec-1.0-M1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -228,7 +228,7 @@
     <orderEntry type="module-library" exported="">
       <library name="cxf-rt-core">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/org/apache/cxf/cxf-rt-core/2.0.4-incubator/cxf-rt-core-2.0.4-incubator.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/org/apache/cxf/cxf-rt-core/2.0.4-incubator/cxf-rt-core-2.0.4-incubator.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -239,7 +239,7 @@
     <orderEntry type="module-library">
       <library name="jaxb-impl">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/com/sun/xml/bind/jaxb-impl/2.0.5/jaxb-impl-2.0.5.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/com/sun/xml/bind/jaxb-impl/2.0.5/jaxb-impl-2.0.5.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -248,7 +248,7 @@
     <orderEntry type="module-library">
       <library name="geronimo-javamail_1.4_spec">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/org/apache/geronimo/specs/geronimo-javamail_1.4_spec/1.0-M1/geronimo-javamail_1.4_spec-1.0-M1.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/org/apache/geronimo/specs/geronimo-javamail_1.4_spec/1.0-M1/geronimo-javamail_1.4_spec-1.0-M1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -259,7 +259,7 @@
     <orderEntry type="module-library">
       <library name="spring-web">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/org/springframework/spring-web/2.0.6/spring-web-2.0.6.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/org/springframework/spring-web/2.0.6/spring-web-2.0.6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -268,7 +268,7 @@
     <orderEntry type="module-library">
       <library name="easymock">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/org/easymock/easymock/2.3/easymock-2.3.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/org/easymock/easymock/2.3/easymock-2.3.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -279,7 +279,7 @@
     <orderEntry type="module-library" exported="">
       <library name="log4j">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/log4j/log4j/1.2.9/log4j-1.2.9.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/log4j/log4j/1.2.9/log4j-1.2.9.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -290,7 +290,7 @@
     <orderEntry type="module-library">
       <library name="ddsteps-httpserver-mock">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/org/ddsteps/ddsteps-httpserver-mock/1.0-m1/ddsteps-httpserver-mock-1.0-m1.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/org/ddsteps/ddsteps-httpserver-mock/1.0-m1/ddsteps-httpserver-mock-1.0-m1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -301,7 +301,7 @@
     <orderEntry type="module-library">
       <library name="jetty">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/org/mortbay/jetty/jetty/6.1.6/jetty-6.1.6.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/org/mortbay/jetty/jetty/6.1.6/jetty-6.1.6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -312,7 +312,7 @@
     <orderEntry type="module-library">
       <library name="jetty-util">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/org/mortbay/jetty/jetty-util/6.1.6/jetty-util-6.1.6.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/org/mortbay/jetty/jetty-util/6.1.6/jetty-util-6.1.6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -323,7 +323,7 @@
     <orderEntry type="module-library">
       <library name="junit-addons">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/junit-addons/junit-addons/1.4/junit-addons-1.4.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/junit-addons/junit-addons/1.4/junit-addons-1.4.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -332,7 +332,7 @@
     <orderEntry type="module-library">
       <library name="junit">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/junit/junit/3.8.2/junit-3.8.2.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/junit/junit/3.8.2/junit-3.8.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -343,7 +343,7 @@
     <orderEntry type="module-library" exported="">
       <library name="cxf-rt-transports-http-jetty">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/org/apache/cxf/cxf-rt-transports-http-jetty/2.0.4-incubator/cxf-rt-transports-http-jetty-2.0.4-incubator.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/org/apache/cxf/cxf-rt-transports-http-jetty/2.0.4-incubator/cxf-rt-transports-http-jetty-2.0.4-incubator.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -354,7 +354,7 @@
     <orderEntry type="module-library">
       <library name="slf4j-jdk14">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/org/slf4j/slf4j-jdk14/1.3.1/slf4j-jdk14-1.3.1.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/org/slf4j/slf4j-jdk14/1.3.1/slf4j-jdk14-1.3.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -365,7 +365,7 @@
     <orderEntry type="module-library">
       <library name="slf4j-api">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/org/slf4j/slf4j-api/1.3.1/slf4j-api-1.3.1.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/org/slf4j/slf4j-api/1.3.1/slf4j-api-1.3.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -376,7 +376,7 @@
     <orderEntry type="module-library">
       <library name="geronimo-servlet_2.5_spec">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/org/apache/geronimo/specs/geronimo-servlet_2.5_spec/1.1-M1/geronimo-servlet_2.5_spec-1.1-M1.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/org/apache/geronimo/specs/geronimo-servlet_2.5_spec/1.1-M1/geronimo-servlet_2.5_spec-1.1-M1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -387,7 +387,7 @@
     <orderEntry type="module-library" exported="">
       <library name="cxf-rt-bindings-soap">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/org/apache/cxf/cxf-rt-bindings-soap/2.0.4-incubator/cxf-rt-bindings-soap-2.0.4-incubator.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/org/apache/cxf/cxf-rt-bindings-soap/2.0.4-incubator/cxf-rt-bindings-soap-2.0.4-incubator.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -398,7 +398,7 @@
     <orderEntry type="module-library" exported="">
       <library name="cxf-tools-common">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/org/apache/cxf/cxf-tools-common/2.0.4-incubator/cxf-tools-common-2.0.4-incubator.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/org/apache/cxf/cxf-tools-common/2.0.4-incubator/cxf-tools-common-2.0.4-incubator.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -409,7 +409,7 @@
     <orderEntry type="module-library">
       <library name="velocity">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/velocity/velocity/1.4/velocity-1.4.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/velocity/velocity/1.4/velocity-1.4.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -420,7 +420,7 @@
     <orderEntry type="module-library">
       <library name="velocity-dep">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/velocity/velocity-dep/1.4/velocity-dep-1.4.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/velocity/velocity-dep/1.4/velocity-dep-1.4.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -431,7 +431,7 @@
     <orderEntry type="module-library">
       <library name="jaxb-xjc">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/com/sun/xml/bind/jaxb-xjc/2.0/jaxb-xjc-2.0.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/com/sun/xml/bind/jaxb-xjc/2.0/jaxb-xjc-2.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -442,7 +442,7 @@
     <orderEntry type="module-library">
       <library name="saaj-api">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/javax/xml/soap/saaj-api/1.3/saaj-api-1.3.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/javax/xml/soap/saaj-api/1.3/saaj-api-1.3.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -453,7 +453,7 @@
     <orderEntry type="module-library" exported="">
       <library name="cxf-rt-databinding-jaxb">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/org/apache/cxf/cxf-rt-databinding-jaxb/2.0.4-incubator/cxf-rt-databinding-jaxb-2.0.4-incubator.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/org/apache/cxf/cxf-rt-databinding-jaxb/2.0.4-incubator/cxf-rt-databinding-jaxb-2.0.4-incubator.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -464,7 +464,7 @@
     <orderEntry type="module-library">
       <library name="asm-commons">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/asm/asm-commons/2.2.3/asm-commons-2.2.3.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/asm/asm-commons/2.2.3/asm-commons-2.2.3.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -473,7 +473,7 @@
     <orderEntry type="module-library">
       <library name="asm-tree">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/asm/asm-tree/2.2.3/asm-tree-2.2.3.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/asm/asm-tree/2.2.3/asm-tree-2.2.3.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -482,7 +482,7 @@
     <orderEntry type="module-library">
       <library name="asm">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/asm/asm/2.2.3/asm-2.2.3.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/asm/asm/2.2.3/asm-2.2.3.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -491,7 +491,7 @@
     <orderEntry type="module-library" exported="">
       <library name="jdom">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/jdom/jdom/1.0/jdom-1.0.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/jdom/jdom/1.0/jdom-1.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -502,7 +502,7 @@
     <orderEntry type="module-library">
       <library name="ant">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/ant/ant/1.6.5/ant-1.6.5.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/ant/ant/1.6.5/ant-1.6.5.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -513,7 +513,7 @@
     <orderEntry type="module-library">
       <library name="forms">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/com/jgoodies/forms/1.0.7/forms-1.0.7.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/com/jgoodies/forms/1.0.7/forms-1.0.7.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -524,7 +524,7 @@
     <orderEntry type="module-library">
       <library name="htmlunit">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/net/sourceforge/htmlunit/htmlunit/1.14/htmlunit-1.14.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/net/sourceforge/htmlunit/htmlunit/1.14/htmlunit-1.14.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -535,7 +535,7 @@
     <orderEntry type="module-library" exported="">
       <library name="jaxen">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/jaxen/jaxen/1.1.1/jaxen-1.1.1.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/jaxen/jaxen/1.1.1/jaxen-1.1.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -544,7 +544,7 @@
     <orderEntry type="module-library">
       <library name="commons-collections">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/commons-collections/commons-collections/3.2/commons-collections-3.2.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/commons-collections/commons-collections/3.2/commons-collections-3.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -552,10 +552,10 @@
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library name="commons-httpclient">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/commons-httpclient/commons-httpclient/3.1/commons-httpclient-3.1.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/commons-httpclient/commons-httpclient/3.1/commons-httpclient-3.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -564,7 +564,7 @@
     <orderEntry type="module-library">
       <library name="commons-codec">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/commons-codec/commons-codec/1.3/commons-codec-1.3.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/commons-codec/commons-codec/1.3/commons-codec-1.3.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -575,7 +575,7 @@
     <orderEntry type="module-library">
       <library name="js">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/rhino/js/1.6R7/js-1.6R7.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/rhino/js/1.6R7/js-1.6R7.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -584,7 +584,7 @@
     <orderEntry type="module-library">
       <library name="nekohtml">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/nekohtml/nekohtml/0.9.5/nekohtml-0.9.5.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/nekohtml/nekohtml/0.9.5/nekohtml-0.9.5.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -595,7 +595,7 @@
     <orderEntry type="module-library">
       <library name="commons-io">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/commons-io/commons-io/1.3.1/commons-io-1.3.1.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/commons-io/commons-io/1.3.1/commons-io-1.3.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -606,7 +606,7 @@
     <orderEntry type="module-library" exported="">
       <library name="cxf-rt-frontend-jaxws">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/org/apache/cxf/cxf-rt-frontend-jaxws/2.0.4-incubator/cxf-rt-frontend-jaxws-2.0.4-incubator.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/org/apache/cxf/cxf-rt-frontend-jaxws/2.0.4-incubator/cxf-rt-frontend-jaxws-2.0.4-incubator.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -617,7 +617,7 @@
     <orderEntry type="module-library">
       <library name="jaxws-api">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/javax/xml/ws/jaxws-api/2.0/jaxws-api-2.0.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/javax/xml/ws/jaxws-api/2.0/jaxws-api-2.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -626,7 +626,7 @@
     <orderEntry type="module-library">
       <library name="cxf-rt-bindings-xml">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/org/apache/cxf/cxf-rt-bindings-xml/2.0.4-incubator/cxf-rt-bindings-xml-2.0.4-incubator.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/org/apache/cxf/cxf-rt-bindings-xml/2.0.4-incubator/cxf-rt-bindings-xml-2.0.4-incubator.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -637,7 +637,7 @@
     <orderEntry type="module-library" exported="">
       <library name="cxf-rt-frontend-simple">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/org/apache/cxf/cxf-rt-frontend-simple/2.0.4-incubator/cxf-rt-frontend-simple-2.0.4-incubator.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/org/apache/cxf/cxf-rt-frontend-simple/2.0.4-incubator/cxf-rt-frontend-simple-2.0.4-incubator.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -648,7 +648,7 @@
     <orderEntry type="module-library">
       <library name="saaj-impl">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/com/sun/xml/messaging/saaj/saaj-impl/1.3/saaj-impl-1.3.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/com/sun/xml/messaging/saaj/saaj-impl/1.3/saaj-impl-1.3.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -659,7 +659,7 @@
     <orderEntry type="module-library">
       <library name="xom">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/xom/xom/1.0/xom-1.0.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/xom/xom/1.0/xom-1.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -668,7 +668,7 @@
     <orderEntry type="module-library">
       <library name="icu4j">
         <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/com/ibm/icu/icu4j/2.6.1/icu4j-2.6.1.jar!/" />
+          <root url="jar:///Users/pmaruszak/.m2/repository/com/ibm/icu/icu4j/2.6.1/icu4j-2.6.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -676,15 +676,6 @@
     </orderEntry>
     <orderEntry type="library" name="Clover" level="project" />
     <orderEntry type="library" exported="" name="Clover" level="application" />
-    <orderEntry type="module-library" exported="">
-      <library name="xmlrpc">
-        <CLASSES>
-          <root url="jar://C:/Users/Jacek/.m2/repository/xmlrpc/xmlrpc/2.0/xmlrpc-2.0.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
     <orderEntryProperties />
   </component>
 </module>
