@@ -8,7 +8,7 @@ import com.atlassian.theplugin.crucible.api.State;
 import java.util.List;
 
 
-class ReviewDataInfoImpl implements ReviewDataInfo {
+public class ReviewDataInfoImpl implements ReviewDataInfo {
 	private final ReviewData reviewData;
 	private final List<String> reviewers;
 	private final Server server;
