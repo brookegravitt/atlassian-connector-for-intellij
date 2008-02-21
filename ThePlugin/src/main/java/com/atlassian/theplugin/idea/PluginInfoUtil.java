@@ -44,6 +44,10 @@ public final class PluginInfoUtil {
 		return getConfigValue("/idea-plugin/vendor");
 	}
 
+	public static String getPluginId() {
+		return getConfigValue("/idea-plugin/plugin-id");
+	}
+
 	private static Document setDoc() {
 		File base = new File(baseDir);
 		SAXBuilder builder = new SAXBuilder();
@@ -101,6 +105,5 @@ public final class PluginInfoUtil {
 		}
 		return result;
 	}
-
 }
 

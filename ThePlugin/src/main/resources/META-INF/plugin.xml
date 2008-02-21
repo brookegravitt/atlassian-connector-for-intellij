@@ -4,7 +4,12 @@
 <idea-plugin url="http://www.atlassian.com">
 
 	<name>Atlassian</name>
-
+	<!-- taken from pom to identify plugin package in internal IDEA plugin manager's repository-->
+	<!--
+	todo lguminski/jjaroczynski check if there is some decent way of getting artifactId from pom.xml
+	<plugin-id>${project.artifactId}</plugin-id>
+-->
+	<plugin-id>atlassian-idea-plugin</plugin-id>
 	<description>
 		<![CDATA[
 		The plugin providing IDEA IDE integration for the following Atlassian products:
