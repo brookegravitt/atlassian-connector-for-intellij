@@ -34,19 +34,19 @@ public class HtmlCrucibleStatusListenerTest extends TestCase {
 
 	private static final String DEFAULT_ERROR_MESSAGE = "default error message";
     private static final String DEFAULT_SERVER_URL = "http://test.atlassian.com/crucible/";
-    private static final String DEFAULT_PROJECT_NAME = "CR";
+    private static final String DEFAULT_PROJECT_NAME = "cru";
 	private static final String DEFAULT_PLAN_ID_2 = "CR-ID";
 	private static final String DEFAULT_AUTHOR = "AUTHOR1";
 	private static final String DEFAULT_CREATOR = "DEFAULT_CREATOR";
 	private static final String DEFAULT_DESCRIPTION = "DEFAULT_DESCRIPTION";
 	private static final String DEFAULT_MODERATOR = "DEFAULT_MODERATOR";
-	private static final String DEFAULT_REVIEW_NAME = "DEFAULT_REVIEW_NAME";
-	private static final String DEFAULT_REVIEWER = "DEFAULT_REVIEWER";
+	private static final String DEFAULT_REVIEW_NAME = "cru";
+	private static final String DEFAULT_REVIEWER = "cru";
 
 	private static final String DEFAULT_PERM_ID = "CR-";
 
 
-	private static final String DEFAULT_PROJECT_KEY = "DEFAULT_PROJECT_KEY";
+	private static final String DEFAULT_PROJECT_KEY = "CR-";
 	private static final State DEFAULT_STATE = State.REVIEW;
 
 
@@ -118,19 +118,22 @@ public class HtmlCrucibleStatusListenerTest extends TestCase {
 			assertEquals("<tr><th>Key</th><th>Summary</th><th>Author</th><th>State</th><th>Reviewers</th></tr>", trimWhitespace(table.getRow(1).asXml()));
 		}
 		for (int i = 1; i <= numberOfReviews; i++) {
-			/*sb.append("<tr><td valign=\"top\"><b><font color=\"blue\"><a href=\"");
+			sb.append("<tr><td valign=\"top\"><b><font color=\"blue\"><a href=\"");
 			sb.append(DEFAULT_SERVER_URL);
+			sb.append("cru/");
+			sb.append(DEFAULT_PROJECT_KEY);
+			sb.append(i);
 			sb.append("\">");
 			sb.append(DEFAULT_PERM_ID + i);
 			sb.append("</a></font></b></td>");
-			sb.append("<td valign=\"top\">" + DEFAULT_REVIEW_NAME + i + "</td>");
+			sb.append("<td valign=\"top\">" + DEFAULT_REVIEW_NAME + "</td>");
 			sb.append("<td valign=\"top\">" + DEFAULT_AUTHOR + i + "</td>");
 			sb.append("<td valign=\"top\">" + DEFAULT_STATE + "</td>");
 			sb.append("<td valign=\"top\">");
-			sb.append(DEFAULT_REVIEWER);
+			sb.append(DEFAULT_REVIEWER + i);
 			sb.append("</td></tr>");
 
-			assertEquals(sb.toString(), trimWhitespace(table.getRow(i + 2 - 1).asXml()));*/
+			assertEquals(sb.toString(), trimWhitespace(table.getRow(i + 2 - 1).asXml()));
 
 		}
 
