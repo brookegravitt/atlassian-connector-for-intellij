@@ -12,7 +12,8 @@ import java.util.TimerTask;
 /**
  * Provides functionality to check for new version and update plugin
  */
-public final class NewVersionChecker {
+public final class NewVersionChecker implements SchedulableComponent {
+	private static final long PLUGIN_UPDATE_ATTEMPT_DELAY = 20000;
 
 	private static NewVersionChecker instance;
 	private static final Category LOG = Logger.getInstance(NewVersionChecker.class);
@@ -45,6 +46,14 @@ public final class NewVersionChecker {
 				}
 			}
 		};
+	}
+
+	public boolean canSchedule() {
+		return true; // NewVersionChecker is always enabled
+	}
+
+	public long getInterval() {
+		return PLUGIN_UPDATE_ATTEMPT_DELAY;
 	}
 
 	private void doRun() throws VersionServiceException {

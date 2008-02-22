@@ -8,6 +8,7 @@ import com.atlassian.theplugin.bamboo.MissingPasswordHandler;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.idea.SchedulableComponent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 
@@ -26,7 +27,8 @@ import java.util.TimerTask;
  * <p/>
  * Thread safe.
  */
-public final class BambooStatusChecker {
+public final class BambooStatusChecker implements SchedulableComponent {
+	private static final long BAMBOO_TIMER_TICK = 20000;
 
 	private final List<BambooStatusListener> listenerList = new ArrayList<BambooStatusListener>();
 	private static BambooStatusChecker instance;
@@ -54,8 +56,7 @@ public final class BambooStatusChecker {
         try {
             // collect build info from each server
             final Collection<BambooBuild> newServerBuildsStatus = new ArrayList<BambooBuild>();
-            for (Server server : ConfigurationFactory.getConfiguration().getProductServers(
-                    ServerType.BAMBOO_SERVER).getEnabledServers()) {
+            for (Server server : retrieveEnabledBambooServers()) {
                         try {
                             newServerBuildsStatus.addAll(
                                     BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults(server));
@@ -80,6 +81,10 @@ public final class BambooStatusChecker {
         }
     }
 
+	private static Collection<Server> retrieveEnabledBambooServers() {
+		return ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getEnabledServers();
+	}
+
 	/**
 	 * Create a new instance of {@link java.util.TimerTask} for {@link java.util.Timer} re-scheduling purposes.
 	 *
@@ -93,6 +98,13 @@ public final class BambooStatusChecker {
 		};
 	}
 
+	public boolean canSchedule() {
+		return !retrieveEnabledBambooServers().isEmpty();
+	}
+
+	public long getInterval() {
+		return BAMBOO_TIMER_TICK;		
+	}
 
 	public static synchronized BambooStatusChecker getInstance() {
 		if (instance == null) {
