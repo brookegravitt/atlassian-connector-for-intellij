@@ -17,11 +17,12 @@ import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.util.IconLoader;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.util.*;
 import java.util.Timer;
-import java.util.TimerTask;
 
 @State(name = "ThePluginSettings", storages = { @Storage(id = "thePlugin", file = "$APP_CONFIG$/thePlugin.xml") })
 public class ThePluginApplicationComponent
@@ -37,18 +38,13 @@ public class ThePluginApplicationComponent
 	private PluginConfigurationBean configuration = new PluginConfigurationBean();
 
 	private final Timer timer = new Timer();
-	private static final int TIMER_TICK = 20000;
 	private static final int TIMER_START_DELAY = 0;
-	private TimerTask bambooStatusCheckerTask;
-	private TimerTask crucibleStatusCheckerTask;
+
+	private final Collection<TimerTask> scheduledComponents = new HashSet<TimerTask>();
 
 	private UserDataContext userDataContext;
     private JIRAServer currentJIRAServer;
-	private static final long PLUGIN_UPDATE_ATTEMPT_DELAY = 20000;
 
-	public Timer getTimer() {
-		return timer;
-	}
 
 	@Nls
 	public String getDisplayName() {
@@ -67,6 +63,7 @@ public class ThePluginApplicationComponent
 	}
 
 	@NonNls
+	@NotNull
 	public String getComponentName() {
 		return "ThePluginApplicationComponent";
 	}
@@ -81,7 +78,7 @@ public class ThePluginApplicationComponent
 		ConfigurationFactory.setConfiguration(configuration);
 
 		if (configuration.isPluginEnabled()) {
-			triggerStatusCheckers(false);
+			rescheduleStatusCheckers(false);
 		}
 	}
 
@@ -103,30 +100,39 @@ public class ThePluginApplicationComponent
 	}
 
 	private void disableTimers() {
-		if (bambooStatusCheckerTask != null) {
-			bambooStatusCheckerTask.cancel();
+		Iterator<TimerTask> i = scheduledComponents.iterator();
+		while (i.hasNext()) {
+			TimerTask timerTask = i.next();
+			i.remove();
+			timerTask.cancel();
 		}
-		if (crucibleStatusCheckerTask != null) {
-			crucibleStatusCheckerTask.cancel();
-		}
+
 		timer.purge();
 	}
 
+	private Collection<SchedulableComponent> schedulableComponents = Arrays.asList(
+			BambooStatusChecker.getInstance(),
+			CrucibleStatusChecker.getIntance(),
+			NewVersionChecker.getInstance()
+	);
+
 	/**
 	 * Reschedule the BambooStatusChecker with immediate execution trigger.
+	 *
+	 * @param rightNow set to false if the first execution should be delayed by {@link #TIMER_START_DELAY}.
 	 */
-	public void triggerStatusCheckers(Boolean rightNow) {
-		int delay = TIMER_START_DELAY;
-		if (rightNow) {
-			delay = 0;
-		}
-		bambooStatusCheckerTask = BambooStatusChecker.getInstance().newTimerTask();
-		timer.schedule(bambooStatusCheckerTask, delay, TIMER_TICK);
-		crucibleStatusCheckerTask = CrucibleStatusChecker.getIntance().newTimerTask();
-		timer.schedule(crucibleStatusCheckerTask, delay, TIMER_TICK);
+	public void rescheduleStatusCheckers(boolean rightNow) {
+		disableTimers();
 
-		TimerTask updatePluginTimerTask = NewVersionChecker.getInstance().newTimerTask();
-		timer.schedule(updatePluginTimerTask, PLUGIN_UPDATE_ATTEMPT_DELAY);
+		long delay = rightNow ? 0 : TIMER_START_DELAY;
+
+		for (SchedulableComponent component : schedulableComponents) {
+			if (component.canSchedule()) {
+				final TimerTask newTask = component.newTimerTask();
+				scheduledComponents.add(newTask);
+				timer.schedule(newTask, delay, component.getInterval());
+			}
+		}
 	}
 
 
@@ -136,19 +142,19 @@ public class ThePluginApplicationComponent
 			// Get data from form to component
 			form.getData();
 
-			disableTimers();
 			if (configuration.isPluginEnabled()) {
 				for (Project pr : ProjectManager.getInstance().getOpenProjects()) {
 					ThePluginProjectComponent pc = pr.getComponent(ThePluginProjectComponent.class);
 					pc.enablePlugin();
 				}
-				triggerStatusCheckers(true);
+				rescheduleStatusCheckers(true);
 			} else {
 				for (Project pr : ProjectManager.getInstance().getOpenProjects()) {
 					ThePluginProjectComponent pc = pr.getComponent(ThePluginProjectComponent.class);
 					pc.disablePlugin();
 				}
-            }
+				disableTimers();
+			}
 		}
 
 	}
