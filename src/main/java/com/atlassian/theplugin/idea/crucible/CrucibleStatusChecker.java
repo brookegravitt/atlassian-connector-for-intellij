@@ -9,6 +9,7 @@ import com.atlassian.theplugin.crucible.CrucibleServerFactory;
 import com.atlassian.theplugin.crucible.CrucibleStatusListener;
 import com.atlassian.theplugin.crucible.ReviewDataInfo;
 import com.atlassian.theplugin.crucible.api.CrucibleLoginException;
+import com.atlassian.theplugin.idea.SchedulableComponent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 
@@ -27,7 +28,8 @@ import java.util.TimerTask;
  * <p/>
  * Thread safe.
  */
-public final class CrucibleStatusChecker {
+public final class CrucibleStatusChecker implements SchedulableComponent {
+	private static final long CRUCIBLE_TIMER_TICK = 20000;
 
 	private final List<CrucibleStatusListener> listenerList = new ArrayList<CrucibleStatusListener>();
 	private static CrucibleStatusChecker instance;
@@ -55,9 +57,7 @@ public final class CrucibleStatusChecker {
         try {
             // collect build info from each server
             final Collection<ReviewDataInfo> reviews = new ArrayList<ReviewDataInfo>();
-            for (Server server
-                    : ConfigurationFactory.getConfiguration().getProductServers(
-                            ServerType.CRUCIBLE_SERVER).getEnabledServers()) {
+            for (Server server : retrieveEnabledCrucibleServers()) {
                                 try {
                                     reviews.addAll(
                                             CrucibleServerFactory.getCrucibleServerFacade().getActiveReviewsForUser(server));
@@ -84,8 +84,12 @@ public final class CrucibleStatusChecker {
         }
     }
 
+	private static Collection<Server> retrieveEnabledCrucibleServers() {
+		return ConfigurationFactory.getConfiguration().getProductServers(
+                            ServerType.CRUCIBLE_SERVER).getEnabledServers();
+	}
 
-    /**
+	/**
 	 * Create a new instance of {@link java.util.TimerTask} for {@link java.util.Timer} re-scheduling purposes.
 	 *
 	 * @return new instance of TimerTask
@@ -98,6 +102,13 @@ public final class CrucibleStatusChecker {
         };
 	}
 
+	public boolean canSchedule() {
+		return !retrieveEnabledCrucibleServers().isEmpty();
+	}
+
+	public long getInterval() {
+		return CRUCIBLE_TIMER_TICK;
+	}
 
 	public static synchronized CrucibleStatusChecker getIntance() {
 		if (instance == null) {
