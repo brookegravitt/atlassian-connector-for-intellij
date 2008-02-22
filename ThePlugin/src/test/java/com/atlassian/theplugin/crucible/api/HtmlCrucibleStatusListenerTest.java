@@ -128,7 +128,7 @@ public class HtmlCrucibleStatusListenerTest extends TestCase {
 			sb.append("</a></font></b></td>");
 			sb.append("<td valign=\"top\">" + DEFAULT_REVIEW_NAME + "</td>");
 			sb.append("<td valign=\"top\">" + DEFAULT_AUTHOR + i + "</td>");
-			sb.append("<td valign=\"top\">" + DEFAULT_STATE + "</td>");
+			sb.append("<td valign=\"top\">" + DEFAULT_STATE.value() + "</td>");
 			sb.append("<td valign=\"top\">");
 			sb.append(DEFAULT_REVIEWER + i);
 			sb.append("</td></tr>");
