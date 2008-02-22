@@ -14,7 +14,6 @@ public class CrucibleSessionImpl implements CrucibleSession {
 	private String crucibleAuthUrl;
 	private String crucibleReviewUrl;
 
-
 	private String authToken;
 	private RpcAuthServiceName authService;
 	private RpcReviewServiceName reviewService;
@@ -133,6 +132,10 @@ public class CrucibleSessionImpl implements CrucibleSession {
 		} catch (RuntimeException e) {
 			throw new CrucibleException("getReviewers", e);
 		}
+	}
+
+	public boolean isLoggedIn() {
+		return authToken != null;
 	}
 
 	private String getAuthToken() {
