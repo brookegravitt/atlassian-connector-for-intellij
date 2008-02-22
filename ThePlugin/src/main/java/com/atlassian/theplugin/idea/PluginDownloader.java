@@ -34,7 +34,7 @@ public class PluginDownloader implements Runnable {
 	public static final String VERSION_TOKEN = "BUILD";
 
 	@NonNls
-	public static String PLUGIN_DOWNLOAD_URL =
+	public static String pluginDownloadUrl =
 			"http://plugins.intellij.net/pluginManager/?action=download&id="
 					+ PLUGIN_ID_TOKEN
 					+ "&build="
@@ -97,7 +97,7 @@ public class PluginDownloader implements Runnable {
 		File pluginArchiveFile = FileUtil.createTempFile("temp_" + pluginName + "_", "tmp");
 
 
-		String pluginUrl = PLUGIN_DOWNLOAD_URL
+		String pluginUrl = pluginDownloadUrl
 				.replaceAll(PLUGIN_ID_TOKEN, pluginName)
 				.replaceAll(VERSION_TOKEN, version);
 

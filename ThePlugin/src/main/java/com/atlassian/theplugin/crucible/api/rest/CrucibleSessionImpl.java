@@ -71,8 +71,8 @@ public class CrucibleSessionImpl implements CrucibleSession {
 			if (username == null || aPassword == null) {
 				throw new CrucibleLoginException("Corrupted configuration. Username or aPassword null");
 			}
-			loginUrl = baseUrl + AUTH_SERVICE + LOGIN + "?userName=" + URLEncoder.encode(username, "UTF-8") +
-					"&password=" + URLEncoder.encode(aPassword, "UTF-8");
+			loginUrl = baseUrl + AUTH_SERVICE + LOGIN + "?userName=" + URLEncoder.encode(username, "UTF-8")
+					+ "&password=" + URLEncoder.encode(aPassword, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("URLEncoding problem: " + e.getMessage());
 		}
