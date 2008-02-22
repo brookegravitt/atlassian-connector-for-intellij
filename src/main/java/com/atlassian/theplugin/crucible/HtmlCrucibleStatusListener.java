@@ -39,7 +39,7 @@ public class HtmlCrucibleStatusListener implements CrucibleStatusListener {
                 sb.append("</a></font></b></td>");
                 sb.append("<td valign=\"top\">" + review.getName() + "</td>");
                 sb.append("<td valign=\"top\">" + review.getAuthor() + "</td>");
-                sb.append("<td valign=\"top\">" + review.getState() + "</td>");
+                sb.append("<td valign=\"top\">" + review.getState().value() + "</td>");
                 sb.append("<td valign=\"top\">");
                 for (Iterator<String> iterator = review.getReviewers().iterator(); iterator.hasNext();) {
                     String reviewer = iterator.next();
