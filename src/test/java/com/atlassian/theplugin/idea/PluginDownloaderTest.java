@@ -1,20 +1,18 @@
 package com.atlassian.theplugin.idea;
 
 import junit.framework.TestCase;
-
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Field;
-import java.io.IOException;
-import java.io.File;
-import java.util.zip.ZipOutputStream;
-import java.util.zip.ZipEntry;
-
 import org.ddsteps.mock.httpserver.JettyMockServer;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Created by IntelliJ IDEA.
@@ -43,7 +41,7 @@ public class PluginDownloaderTest extends TestCase {
 
 		mockServer = new JettyMockServer(httpServer);
 
-		Field urlField = PluginDownloader.class.getField("pluginDownloadUrl");
+		Field urlField = PluginDownloader.class.getDeclaredField("pluginDownloadUrl");
 		urlField.setAccessible(true);
 		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort() + DOWNLOAD_PATH;
 		urlField.set(null, mockBaseUrl);

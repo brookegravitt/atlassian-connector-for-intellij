@@ -34,7 +34,7 @@ public class PluginDownloader implements Runnable {
 	public static final String VERSION_TOKEN = "BUILD";
 
 	@NonNls
-	public static String pluginDownloadUrl =
+	private static String pluginDownloadUrl =
 			"http://plugins.intellij.net/pluginManager/?action=download&id="
 					+ PLUGIN_ID_TOKEN
 					+ "&build="
