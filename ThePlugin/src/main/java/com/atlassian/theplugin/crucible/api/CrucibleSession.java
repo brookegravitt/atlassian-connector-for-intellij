@@ -17,4 +17,6 @@ public interface CrucibleSession {
 	List<ReviewData> getAllReviews() throws CrucibleException;
 
 	List<String> getReviewers(PermId arg1) throws CrucibleException;
+
+	boolean isLoggedIn();	
 }

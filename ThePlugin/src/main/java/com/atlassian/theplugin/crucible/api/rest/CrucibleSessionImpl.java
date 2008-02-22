@@ -1,8 +1,5 @@
 package com.atlassian.theplugin.crucible.api.rest;
 
-import com.atlassian.theplugin.bamboo.BambooBuild;
-import com.atlassian.theplugin.bamboo.BambooBuildInfo;
-import com.atlassian.theplugin.bamboo.BuildStatus;
 import com.atlassian.theplugin.crucible.api.*;
 import com.atlassian.theplugin.util.HttpClientFactory;
 import org.apache.commons.httpclient.Header;
@@ -29,7 +26,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -40,14 +36,14 @@ public class CrucibleSessionImpl implements CrucibleSession {
 	private static final String AUTH_SERVICE = "/rest-service/auth-v1";
 	private static final String REVIEW_SERVICE = "/rest-service/reviews-v1";
 	private static final String LOGIN = "/login";
-	private static final String GET_REVIEWS_IN_STATES = "?states=";
+	private static final String GET_REVIEWS_IN_STATES = "?state=";
 	private static final String GET_REVIEWERS = "/reviewers";
 
 	private final String baseUrl;
 	private String userName;
 	private String password;
 	private HttpClient client = null;
-	private String authToken;
+	private String authToken = null;
 
 
 	/**
@@ -60,58 +56,66 @@ public class CrucibleSessionImpl implements CrucibleSession {
 	}
 
 	public void login(String username, String aPassword) throws CrucibleLoginException {
-		String loginUrl;
-		try {
-			if (baseUrl == null) {
-				throw new CrucibleLoginException("Corrupted configuration. Url null");
+		if (!isLoggedIn()) {
+			String loginUrl;
+			try {
+				if (baseUrl == null) {
+					throw new CrucibleLoginException("Corrupted configuration. Url null");
+				}
+				if ("".equals(baseUrl)) {
+					throw new CrucibleLoginException("Corrupted configuration. Url empty");
+				}
+				if (username == null || aPassword == null) {
+					throw new CrucibleLoginException("Corrupted configuration. Username or aPassword null");
+				}
+				loginUrl = baseUrl + AUTH_SERVICE + LOGIN + "?userName=" + URLEncoder.encode(username, "UTF-8") +
+						"&password=" + URLEncoder.encode(aPassword, "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				throw new RuntimeException("URLEncoding problem: " + e.getMessage());
 			}
-			if ("".equals(baseUrl)) {
-				throw new CrucibleLoginException("Corrupted configuration. Url empty");
-			}
-			if (username == null || aPassword == null) {
-				throw new CrucibleLoginException("Corrupted configuration. Username or aPassword null");
-			}
-			loginUrl = baseUrl + AUTH_SERVICE + LOGIN + "?userName=" + URLEncoder.encode(username, "UTF-8")
-					+ "&password=" + URLEncoder.encode(aPassword, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException("URLEncoding problem: " + e.getMessage());
-		}
 
-		try {
-			Document doc = retrieveGetResponse(loginUrl);
-			String exception = getExceptionMessages(doc);
-			if (null != exception) {
-				throw new CrucibleLoginFailedException(exception);
+			try {
+				Document doc = retrieveGetResponse(loginUrl);
+				String exception = getExceptionMessages(doc);
+				if (null != exception) {
+					throw new CrucibleLoginFailedException(exception);
+				}
+				XPath xpath = XPath.newInstance("/loginResult/token");
+				List elements = xpath.selectNodes(doc);
+				if (elements == null) {
+					throw new CrucibleLoginException("Server did not return any authentication token");
+				}
+				if (elements.size() != 1) {
+					throw new CrucibleLoginException("Server did returned excess authentication tokens (" + elements.size() + ")");
+				}
+				this.authToken = ((Element) elements.get(0)).getText();
+				this.userName = username;
+				this.password = aPassword;
+			} catch (MalformedURLException e) {
+				throw new CrucibleLoginException("Malformed server URL: " + baseUrl, e);
+			} catch (UnknownHostException e) {
+				throw new CrucibleLoginException("Unknown host: " + e.getMessage(), e);
+			} catch (IOException e) {
+				throw new CrucibleLoginException(e.getMessage(), e);
+			} catch (JDOMException e) {
+				throw new CrucibleLoginException("Server returned malformed response", e);
 			}
-			XPath xpath = XPath.newInstance("/loginResult/token");
-			List elements = xpath.selectNodes(doc);
-			if (elements == null) {
-				throw new CrucibleLoginException("Server did not return any authentication token");
-			}
-			if (elements.size() != 1) {
-				throw new CrucibleLoginException("Server did returned excess authentication tokens (" + elements.size() + ")");
-			}
-			this.authToken = ((Element) elements.get(0)).getText();
-			this.userName = username;
-			this.password = aPassword;
-		} catch (MalformedURLException e) {
-			throw new CrucibleLoginException("Malformed server URL: " + baseUrl, e);
-		} catch (UnknownHostException e) {
-			throw new CrucibleLoginException("Unknown host: " + e.getMessage(), e);
-		} catch (IOException e) {
-			throw new CrucibleLoginException(e.getMessage(), e);
-		} catch (JDOMException e) {
-			throw new CrucibleLoginException("Server returned malformed response", e);
 		}
 	}
 
 	public void logout() {
 		if (authToken != null) {
 			authToken = null;
+			userName = null;
+			password = null;
 		}
 	}
 
 	public List<ReviewData> getReviewsInStates(List<State> states) throws CrucibleException {
+		if (!isLoggedIn()) {
+			throw new IllegalStateException("Calling method without calling login() first");
+		}
+
 		StringBuilder sb = new StringBuilder();
 		sb.append(baseUrl);
 		sb.append(REVIEW_SERVICE);
@@ -119,7 +123,7 @@ public class CrucibleSessionImpl implements CrucibleSession {
 			sb.append(GET_REVIEWS_IN_STATES);
 			for (Iterator<State> stateIterator = states.iterator(); stateIterator.hasNext();) {
 				State state = stateIterator.next();
-				sb.append(state.toString());
+				sb.append(state.value());
 				if (stateIterator.hasNext()) {
 					sb.append(",");
 				}
@@ -151,6 +155,10 @@ public class CrucibleSessionImpl implements CrucibleSession {
 	}
 
 	public List<String> getReviewers(PermId permId) throws CrucibleException {
+		if (!isLoggedIn()) {
+			throw new IllegalStateException("Calling method without calling login() first");
+		}
+
 		String requestUrl = baseUrl + REVIEW_SERVICE + "/" + permId.getId() + GET_REVIEWERS;
 		try {
 			Document doc = retrieveGetResponse(requestUrl);
@@ -173,10 +181,17 @@ public class CrucibleSessionImpl implements CrucibleSession {
 	}
 
 	public ReviewData createReview(ReviewData reviewData) throws CrucibleException {
-		return null;
+		if (!isLoggedIn()) {
+			throw new IllegalStateException("Calling method without calling login() first");
+		}
+		return createReviewFromPatch(reviewData, null);
 	}
 
 	public ReviewData createReviewFromPatch(ReviewData review, String patch) throws CrucibleException {
+		if (!isLoggedIn()) {
+			throw new IllegalStateException("Calling method without calling login() first");
+		}
+
 		Document request = prepareCreateReviewFromPatch(review, patch);
 
 		try {
@@ -196,18 +211,6 @@ public class CrucibleSessionImpl implements CrucibleSession {
 		}
 	}
 
-	BambooBuild constructBuildErrorInfo(String planId, String message, Date lastPollingTime) {
-		BambooBuildInfo buildInfo = new BambooBuildInfo();
-
-		buildInfo.setServerUrl(baseUrl);
-		buildInfo.setBuildKey(planId);
-		buildInfo.setBuildState(BuildStatus.UNKNOWN.toString());
-		buildInfo.setMessage(message);
-		buildInfo.setPollingTime(lastPollingTime);
-
-		return buildInfo;
-	}
-
 	private ReviewData constructReviewData(Element reviewNode) {
 		ReviewDataBean review = new ReviewDataBean();
 
@@ -224,9 +227,11 @@ public class CrucibleSessionImpl implements CrucibleSession {
 			review.setState(State.fromValue(stateString));
 		}
 
-		PermIdBean permId = new PermIdBean();
-		permId.setId(reviewNode.getChild("permaId").getChild("id").getText());
-		review.setPermaId(permId);
+		if (reviewNode.getChild("permaId") != null) {
+			PermIdBean permId = new PermIdBean();
+			permId.setId(reviewNode.getChild("permaId").getChild("id").getText());
+			review.setPermaId(permId);
+		}
 
 		return review;
 	}
@@ -246,16 +251,18 @@ public class CrucibleSessionImpl implements CrucibleSession {
 		addTag(reviewData, "author", review.getAuthor());
 		addTag(reviewData, "creator", review.getCreator());
 		addTag(reviewData, "description", review.getDescription());
-		addTag(reviewData, "creator", review.getModerator());
+		addTag(reviewData, "moderator", review.getModerator());
 		addTag(reviewData, "name", review.getName());
 		addTag(reviewData, "projectKey", review.getProjectKey());
 		addTag(reviewData, "repoName", review.getRepoName());
 
-		Element patchData = new Element("patch");
-		root.addContent(patchData);
+		if (patch != null) {
+			Element patchData = new Element("patch");
+			root.addContent(patchData);
 
-		CDATA patchT = new CDATA(patch);
-		patchData.setContent(patchT);
+			CDATA patchT = new CDATA(patch);
+			patchData.setContent(patchT);
+		}
 
 		return doc;
 	}
@@ -368,5 +375,9 @@ public class CrucibleSessionImpl implements CrucibleSession {
 			/* no exception */
 			return null;
 		}
+	}
+
+	public boolean isLoggedIn() {
+		return authToken != null;
 	}
 }
