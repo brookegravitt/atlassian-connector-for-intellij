@@ -43,7 +43,7 @@ public class PluginDownloaderTest extends TestCase {
 
 		mockServer = new JettyMockServer(httpServer);
 
-		Field urlField = PluginDownloader.class.getField("PLUGIN_DOWNLOAD_URL");
+		Field urlField = PluginDownloader.class.getField("pluginDownloadUrl");
 		urlField.setAccessible(true);
 		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort() + DOWNLOAD_PATH;
 		urlField.set(null, mockBaseUrl);
