@@ -164,6 +164,13 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.intellij.idea</groupId>
+			<artifactId>bootstrap</artifactId>
+			<version>7.0</version>
+			<classifier>7590</classifier>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>gnu.trove</groupId>
 			<artifactId>trove4j</artifactId>
 			<version>idea-7.0.2</version>
@@ -419,6 +426,10 @@
 						</library>
 						<library>
 							<name>javac2</name>
+							<exclude>true</exclude>
+						</library>
+						<library>
+							<name>bootstrap</name>
 							<exclude>true</exclude>
 						</library>
 						<library>
