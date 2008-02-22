@@ -2,8 +2,11 @@ package com.atlassian.theplugin.crucible;
 
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerBean;
-import com.atlassian.theplugin.crucible.api.*;
-import com.atlassian.theplugin.crucible.api.soap.CrucibleSessionImpl;
+import com.atlassian.theplugin.crucible.api.CrucibleException;
+import com.atlassian.theplugin.crucible.api.CrucibleSession;
+import com.atlassian.theplugin.crucible.api.ReviewData;
+import com.atlassian.theplugin.crucible.api.State;
+import com.atlassian.theplugin.crucible.api.rest.CrucibleSessionImpl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,6 +33,7 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	 * @param userName
 	 * @param password
 	 * @throws com.atlassian.theplugin.crucible.api.CrucibleException
+	 *
 	 */
 	public void testServerConnection(String serverUrl, String userName, String password) throws CrucibleException {
 		CrucibleSession session = getSession(serverUrl);
@@ -49,12 +53,7 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 		CrucibleSession session = getSession(server.getUrlString());
 
 		session.login(server.getUserName(), server.getPasswordString());
-
-		try {
-			return session.createReview(reviewData);
-		} finally {
-			session.logout();
-		}
+		return session.createReview(reviewData);
 	}
 
 	/**
@@ -70,12 +69,7 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 		CrucibleSession session = getSession(server.getUrlString());
 
 		session.login(server.getUserName(), server.getPasswordString());
-
-		try {
-			return session.createReviewFromPatch(reviewData, patch);
-		} finally {
-			session.logout();
-		}
+		return session.createReviewFromPatch(reviewData, patch);
 	}
 
 	/**
@@ -87,17 +81,13 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 
 		session.login(server.getUserName(), server.getPasswordString());
 
-		try {
-			List<ReviewData> res = session.getAllReviews();
-			List<ReviewDataInfo> result = new ArrayList<ReviewDataInfo>(res.size());
-			for (ReviewData review : res) {
-				List<String> reviewers = session.getReviewers(review.getPermaId());
-				result.add(new ReviewDataInfoImpl(review, reviewers, server));
-			}
-			return result;
-		} finally {
-			session.logout();
+		List<ReviewData> res = session.getAllReviews();
+		List<ReviewDataInfo> result = new ArrayList<ReviewDataInfo>(res.size());
+		for (ReviewData review : res) {
+			List<String> reviewers = session.getReviewers(review.getPermaId());
+			result.add(new ReviewDataInfoImpl(review, reviewers, server));
 		}
+		return result;
 	}
 
 	public List<ReviewDataInfo> getActiveReviewsForUser(Server server)
@@ -108,21 +98,18 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 
 		List<State> states = new ArrayList<State>();
 		states.add(State.REVIEW);
-		try {
-			List<ReviewData> reviews = session.getReviewsInStates(states);
-			List<ReviewDataInfo> result = new ArrayList<ReviewDataInfo>(reviews.size());
 
-			for (ReviewData reviewData : reviews) {
-				List<String> reviewers = session.getReviewers(reviewData.getPermaId());
+		List<ReviewData> reviews = session.getReviewsInStates(states);
+		List<ReviewDataInfo> result = new ArrayList<ReviewDataInfo>(reviews.size());
 
-				if (reviewers.contains(server.getUserName())) {
-					result.add(new ReviewDataInfoImpl(reviewData, reviewers, server));
-				}
+		for (ReviewData reviewData : reviews) {
+			List<String> reviewers = session.getReviewers(reviewData.getPermaId());
+
+			if (reviewers.contains(server.getUserName())) {
+				result.add(new ReviewDataInfoImpl(reviewData, reviewers, server));
 			}
-			return result;
-		} finally {
-			session.logout();
 		}
+		return result;
 	}
 
 }
