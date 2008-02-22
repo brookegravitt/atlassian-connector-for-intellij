@@ -9,7 +9,6 @@ import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.io.StreamUtil;
 import com.intellij.util.io.ZipUtil;
-import com.atlassian.theplugin.exception.ThePluginException;
 import org.apache.log4j.Category;
 import org.jetbrains.annotations.NonNls;
 
@@ -44,6 +43,7 @@ public class PluginDownloader implements Runnable {
 	private static String pluginName;
 	private String pluginLatestVersion;
 	private static final int TIMEOUT = 15000;
+	private static final int EXTENTION_LENGHT = 3;
 
 	public PluginDownloader(String version) {
 		pluginLatestVersion = version;
@@ -139,9 +139,10 @@ public class PluginDownloader implements Runnable {
 		}
 		String srcName = connection.getURL().toString();
 		String ext = srcName.substring(srcName.lastIndexOf("."));
-		String newName = pluginArchiveFile.getPath().substring(0, pluginArchiveFile.getPath().length() - 3) + ext;
+		String newName = pluginArchiveFile.getPath().substring(0, pluginArchiveFile.getPath().length()
+				- EXTENTION_LENGHT) + ext;
 		File newFile = new File(newName);
-		if(pluginArchiveFile.renameTo(new File(newName)) == false) {
+		if (!pluginArchiveFile.renameTo(new File(newName))) {
 			pluginArchiveFile.delete();
 			throw new IOException("Renaming received file from \"" + srcName + "\" to \"" + newName + "\" failed.");
 		}
@@ -166,7 +167,8 @@ public class PluginDownloader implements Runnable {
 			// add command to copy file to the IDEA/plugins path
 			String fileName = localArchiveFile.getName();
 			File newFile = new File(PathManager.getPluginsPath() + File.separator + fileName);
-			StartupActionScriptManager.ActionCommand copyPlugin = new StartupActionScriptManager.CopyCommand(localArchiveFile, newFile);
+			StartupActionScriptManager.ActionCommand copyPlugin =
+					new StartupActionScriptManager.CopyCommand(localArchiveFile, newFile);
 			StartupActionScriptManager.addActionCommand(copyPlugin);
 		} else {
 			// add command to unzip file to the IDEA/plugins path
@@ -179,7 +181,8 @@ public class PluginDownloader implements Runnable {
 			}
 
 			File newFile = new File(unzipPath);
-			StartupActionScriptManager.ActionCommand unzip = new StartupActionScriptManager.UnzipCommand(localArchiveFile, newFile);
+			StartupActionScriptManager.ActionCommand unzip =
+					new StartupActionScriptManager.UnzipCommand(localArchiveFile, newFile);
 			StartupActionScriptManager.addActionCommand(unzip);
 		}
 

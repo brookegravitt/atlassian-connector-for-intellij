@@ -25,7 +25,6 @@ public class NewVersionCheckerTest extends TestCase {
 	private static final String GET_LATEST_VERSION_URL = "/GetLatestVersion";
 	public static final String VERSION = "0.2.0";
 	private long uid;
-	private String mockBaseUrl;
 
 	@Override
 	protected void setUp() throws Exception {
@@ -55,13 +54,14 @@ public class NewVersionCheckerTest extends TestCase {
 
 
 	private class PingCallback implements JettyMockServer.Callback {
-		private static final String RESOURCE_BASE =	"/mock/utils/";
 
 		public PingCallback() {
 			super();	//To change body of overridden methods use File | Settings | File Templates.
 		}
-
-		public void onExpectedRequest(String target, HttpServletRequest request, HttpServletResponse response) throws Exception {
+		
+		public void onExpectedRequest(String target, HttpServletRequest request, HttpServletResponse response)
+				throws Exception {
+			
 			response.setContentType("text/xml");
 			assertTrue(request.getPathInfo().endsWith(GET_LATEST_VERSION_URL));
 
@@ -80,7 +80,7 @@ public class NewVersionCheckerTest extends TestCase {
 		private void createResponse(ServletOutputStream outputStream) {
 			StringBuffer sb = new StringBuffer();
 			sb.append("<response><latestVersion>");
-			sb.append(NewVersionCheckerTest.this.VERSION);
+			sb.append(NewVersionCheckerTest.VERSION);
 			sb.append("</latestVersion></response>");
 			try {
 				outputStream.write(sb.toString().getBytes("UTF-8"));
