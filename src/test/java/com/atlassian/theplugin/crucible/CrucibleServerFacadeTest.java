@@ -1,79 +1,44 @@
 package com.atlassian.theplugin.crucible;
 
-import com.atlassian.theplugin.ServerType;
-import com.atlassian.theplugin.configuration.*;
-import com.atlassian.theplugin.crucible.api.CrucibleLoginFailedException;
-import com.atlassian.theplugin.crucible.api.rest.cruciblemock.LoginCallback;
+import com.atlassian.theplugin.configuration.ServerBean;
+import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.crucible.api.*;
 import junit.framework.TestCase;
-import org.ddsteps.mock.httpserver.JettyMockServer;
+import org.easymock.EasyMock;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.replay;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public class CrucibleServerFacadeTest extends TestCase {
 	private static final String VALID_LOGIN = "validLogin";
 	private static final String VALID_PASSWORD = "validPassword";
 	private static final String VALID_URL = "http://localhost:9001";
 
-	private static final String USER_NAME = "someUser";
-	private static final String PASSWORD = "somePassword";
-
-	private org.mortbay.jetty.Server httpServer;
-	private JettyMockServer mockServer;
-	private String mockBaseUrl;
+	private CrucibleServerFacade facade;
+	private CrucibleSession crucibleSessionMock;
 	public static final String INVALID_PROJECT_KEY = "INVALID project key";
 
-	protected void setUp() throws Exception {
-		httpServer = new org.mortbay.jetty.Server(0);
-		httpServer.start();
+	@SuppressWarnings("unchecked")
+	protected void setUp() {
 
-		mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort();
+		crucibleSessionMock = createMock(CrucibleSession.class);
 
-		mockServer = new JettyMockServer(httpServer);
-		ConfigurationFactory.setConfiguration(createCrucibleTestConfiguration(mockBaseUrl, true));
-	}
+		facade = CrucibleServerFactory.getCrucibleServerFacade();
 
-	private static PluginConfiguration createCrucibleTestConfiguration(String serverUrl, boolean isPassInitialized) {
-		CrucibleConfigurationBean configuration = new CrucibleConfigurationBean();
-
-		Collection<ServerBean> servers = new ArrayList<ServerBean>();
-		ServerBean server = new ServerBean();
-
-		server.setName("TestServer");
-		server.setUrlString(serverUrl);
-		server.setUserName(USER_NAME);
-
-		server.setPasswordString(isPassInitialized ? PASSWORD : "", isPassInitialized);
-		server.setIsConfigInitialized(isPassInitialized);
-		servers.add(server);
-
-		configuration.setServersData(servers);
-		PluginConfigurationBean pluginConfig = new PluginConfigurationBean();
-		pluginConfig.setCrucibleConfigurationData(configuration);
-
-		return pluginConfig;
-	}
-
-	protected void tearDown() throws Exception {
-		mockServer = null;
-		mockBaseUrl = null;
-		httpServer.stop();
-	}
-
-	public void testFailedLoginGetAllReviews() throws Exception {
-		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
-
-		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.CRUCIBLE_SERVER).getServers().iterator().next();
 		try {
-			CrucibleServerFactory.getCrucibleServerFacade().getAllReviews(server);
-			fail();
-		} catch (CrucibleLoginFailedException e) {
+			Field f = CrucibleServerFacadeImpl.class.getDeclaredField("sessions");
+			f.setAccessible(true);
 
+			((Map<String, CrucibleSession>) f.get(facade)).put(VALID_URL, crucibleSessionMock);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
-
-		mockServer.verify();
 	}
-/*
+
 	public void testConnectionTestFailed() {
 
 		try {
@@ -127,7 +92,6 @@ public class CrucibleServerFacadeTest extends TestCase {
 		ReviewData response = new ReviewDataInfoImpl(null, null, null);
 
 		EasyMock.expectLastCall().andReturn(response);
-		crucibleSessionMock.logout();
 
 		replay(crucibleSessionMock);
 
@@ -154,7 +118,6 @@ public class CrucibleServerFacadeTest extends TestCase {
 		crucibleSessionMock.createReview(EasyMock.isA(ReviewData.class));
 
 		EasyMock.expectLastCall().andThrow(new CrucibleException("test"));
-		crucibleSessionMock.logout();
 
 		replay(crucibleSessionMock);
 
@@ -184,7 +147,6 @@ public class CrucibleServerFacadeTest extends TestCase {
 		crucibleSessionMock.createReviewFromPatch(EasyMock.isA(ReviewData.class), EasyMock.eq("some patch"));
 		ReviewData response = new ReviewDataInfoImpl(null, null, null);
 		EasyMock.expectLastCall().andReturn(response);
-		crucibleSessionMock.logout();
 
 		replay(crucibleSessionMock);
 
@@ -210,7 +172,6 @@ public class CrucibleServerFacadeTest extends TestCase {
 
 		crucibleSessionMock.createReviewFromPatch(EasyMock.isA(ReviewData.class), EasyMock.eq("some patch"));
 		EasyMock.expectLastCall().andThrow(new CrucibleException("test"));
-		crucibleSessionMock.logout();
 
 		replay(crucibleSessionMock);
 
@@ -246,14 +207,12 @@ public class CrucibleServerFacadeTest extends TestCase {
 		ReviewDataInfoImpl review = new ReviewDataInfoImpl(prepareReviewData("name", State.DRAFT, permId), null, null);
 
 		crucibleSessionMock.getAllReviews();
-		EasyMock.expectLastCall().andReturn(Arrays.asList(new ReviewDataInfo[]{ review, review }));
+		EasyMock.expectLastCall().andReturn(Arrays.asList(review, review));
 
 		crucibleSessionMock.getReviewers(permId);
-		EasyMock.expectLastCall().andReturn(Arrays.asList(new String[]{ "Alice", "Bob", "Charlie" }));
+		EasyMock.expectLastCall().andReturn(Arrays.asList("Alice", "Bob", "Charlie"));
 		crucibleSessionMock.getReviewers(permId);
-		EasyMock.expectLastCall().andReturn(Arrays.asList(new String[]{ "Alice", "Bob", "Charlie" }));
-
-		crucibleSessionMock.logout();
+		EasyMock.expectLastCall().andReturn(Arrays.asList("Alice", "Bob", "Charlie"));
 
 		replay(crucibleSessionMock);
 
@@ -264,7 +223,18 @@ public class CrucibleServerFacadeTest extends TestCase {
 		assertEquals(3, ret.get(0).getReviewers().size());
 		assertEquals(permId.getId(), ret.get(0).getPermaId().getId());
 		assertEquals("name", ret.get(0).getName());
-
+		assertEquals(VALID_LOGIN, ret.get(0).getAuthor());
+		assertEquals(VALID_LOGIN, ret.get(0).getCreator());
+		assertEquals("Test description", ret.get(0).getDescription());
+		assertEquals(VALID_LOGIN, ret.get(0).getModerator());
+		assertEquals("TEST", ret.get(0).getProjectKey());
+		assertEquals(null, ret.get(0).getRepoName());
+		assertEquals(Arrays.asList("Alice", "Bob", "Charlie"), ret.get(0).getReviewers());
+		assertEquals(VALID_URL + "/cru/permId", ret.get(0).getReviewUrl());
+		assertSame(server, ret.get(0).getServer());
+		assertSame(State.DRAFT, ret.get(0).getState());
+		assertNull(ret.get(0).getParentReview());
+		
 		EasyMock.verify(crucibleSessionMock);
 	}
 
@@ -282,18 +252,15 @@ public class CrucibleServerFacadeTest extends TestCase {
 			}
 		};
 
-		crucibleSessionMock.getReviewsInStates(Arrays.asList(new State[]{ State.REVIEW }));
-		EasyMock.expectLastCall().andReturn(Arrays.asList(new ReviewDataInfo[]{
+		crucibleSessionMock.getReviewsInStates(Arrays.asList(State.REVIEW));
+		EasyMock.expectLastCall().andReturn(Arrays.asList(
 				new ReviewDataInfoImpl(prepareReviewData("name", State.REVIEW, permId), null, null),
-				new ReviewDataInfoImpl(prepareReviewData("name", State.REVIEW, permId), null, null)}));
+				new ReviewDataInfoImpl(prepareReviewData("name", State.REVIEW, permId), null, null)));
 
 		crucibleSessionMock.getReviewers(permId);
-		EasyMock.expectLastCall().andReturn(Arrays.asList(new String[]{ VALID_LOGIN, "Bob", "Charlie" }));
+		EasyMock.expectLastCall().andReturn(Arrays.asList(VALID_LOGIN, "Bob", "Charlie"));
 		crucibleSessionMock.getReviewers(permId);
-		EasyMock.expectLastCall().andReturn(Arrays.asList(new String[]{ "Alice", "Bob", "Charlie" }));
-
-
-		crucibleSessionMock.logout();
+		EasyMock.expectLastCall().andReturn(Arrays.asList("Alice", "Bob", "Charlie"));
 
 		replay(crucibleSessionMock);
 
@@ -450,5 +417,4 @@ public class CrucibleServerFacadeTest extends TestCase {
 			fail(e.getMessage());
 		}
 	}
-	*/
 }

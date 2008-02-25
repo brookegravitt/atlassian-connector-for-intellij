@@ -9,7 +9,6 @@ import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
-import org.jdom.CDATA;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -68,10 +67,12 @@ public class CrucibleSessionImpl implements CrucibleSession {
 				if (username == null || aPassword == null) {
 					throw new CrucibleLoginException("Corrupted configuration. Username or aPassword null");
 				}
-				loginUrl = baseUrl + AUTH_SERVICE + LOGIN + "?userName=" + URLEncoder.encode(username, "UTF-8") +
-						"&password=" + URLEncoder.encode(aPassword, "UTF-8");
+				loginUrl = baseUrl + AUTH_SERVICE + LOGIN + "?userName=" + URLEncoder.encode(username, "UTF-8")
+						+ "&password=" + URLEncoder.encode(aPassword, "UTF-8");
 			} catch (UnsupportedEncodingException e) {
+				///CLOVER:OFF
 				throw new RuntimeException("URLEncoding problem: " + e.getMessage());
+				///CLOVER:ON
 			}
 
 			try {
@@ -86,7 +87,8 @@ public class CrucibleSessionImpl implements CrucibleSession {
 					throw new CrucibleLoginException("Server did not return any authentication token");
 				}
 				if (elements.size() != 1) {
-					throw new CrucibleLoginException("Server did returned excess authentication tokens (" + elements.size() + ")");
+					throw new CrucibleLoginException("Server did returned excess authentication tokens ("
+							+ elements.size() + ")");
 				}
 				this.authToken = ((Element) elements.get(0)).getText();
 				this.userName = username;
@@ -134,12 +136,13 @@ public class CrucibleSessionImpl implements CrucibleSession {
 			Document doc = retrieveGetResponse(sb.toString());
 
 			XPath xpath = XPath.newInstance("/reviews/reviewData");
+			@SuppressWarnings("unchecked")
 			List<Element> elements = xpath.selectNodes(doc);
 			List<ReviewData> reviews = new ArrayList<ReviewData>();
 
 			if (elements != null && !elements.isEmpty()) {
 				for (Element element : elements) {
-					reviews.add(constructReviewData(element));
+					reviews.add(ReviewUtil.parseReviewNode(element));
 				}
 			}
 			return reviews;
@@ -164,6 +167,7 @@ public class CrucibleSessionImpl implements CrucibleSession {
 			Document doc = retrieveGetResponse(requestUrl);
 
 			XPath xpath = XPath.newInstance("/reviewers/reviewer");
+			@SuppressWarnings("unchecked")
 			List<Element> elements = xpath.selectNodes(doc);
 			List<String> reviewers = new ArrayList<String>();
 
@@ -192,86 +196,23 @@ public class CrucibleSessionImpl implements CrucibleSession {
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
 
-		Document request = prepareCreateReviewFromPatch(review, patch);
+		Document request = ReviewUtil.prepareCreateReviewNode(review, patch);
 
 		try {
 			Document doc = retrievePostResponse(baseUrl + REVIEW_SERVICE, request);
 
 			XPath xpath = XPath.newInstance("/reviewData");
+			@SuppressWarnings("unchecked")
 			List<Element> elements = xpath.selectNodes(doc);
 
 			if (elements != null && !elements.isEmpty()) {
-				return constructReviewData(elements.iterator().next());
+				return ReviewUtil.parseReviewNode(elements.iterator().next());
 			}
 			return null;
 		} catch (IOException e) {
 			throw new CrucibleException(e.getMessage(), e);
 		} catch (JDOMException e) {
 			throw new CrucibleException("Server returned malformed response", e);
-		}
-	}
-
-	private ReviewData constructReviewData(Element reviewNode) {
-		ReviewDataBean review = new ReviewDataBean();
-
-		review.setAuthor(getChildText(reviewNode, "author"));
-		review.setCreator(getChildText(reviewNode, "creator"));
-		review.setModerator(getChildText(reviewNode, "moderator"));
-		review.setDescription(getChildText(reviewNode, "description"));
-		review.setName(getChildText(reviewNode, "name"));
-		review.setProjectKey(getChildText(reviewNode, "projectKey"));
-		review.setRepoName(getChildText(reviewNode, "repoName"));
-
-		String stateString = getChildText(reviewNode, "state");
-		if (!"".equals(stateString)) {
-			review.setState(State.fromValue(stateString));
-		}
-
-		if (reviewNode.getChild("permaId") != null) {
-			PermIdBean permId = new PermIdBean();
-			permId.setId(reviewNode.getChild("permaId").getChild("id").getText());
-			review.setPermaId(permId);
-		}
-
-		return review;
-	}
-
-	void addTag(Element root, String tagName, String tagValue) {
-		Element newElement = new Element(tagName);
-		newElement.addContent(tagValue);
-		root.addContent(newElement);
-	}
-
-	private Document prepareCreateReviewFromPatch(ReviewData review, String patch) {
-		Element root = new Element("createReview");
-		Document doc = new Document(root);
-		Element reviewData = new Element("reviewData");
-		root.setContent(reviewData);
-
-		addTag(reviewData, "author", review.getAuthor());
-		addTag(reviewData, "creator", review.getCreator());
-		addTag(reviewData, "description", review.getDescription());
-		addTag(reviewData, "moderator", review.getModerator());
-		addTag(reviewData, "name", review.getName());
-		addTag(reviewData, "projectKey", review.getProjectKey());
-		addTag(reviewData, "repoName", review.getRepoName());
-
-		if (patch != null) {
-			Element patchData = new Element("patch");
-			root.addContent(patchData);
-
-			CDATA patchT = new CDATA(patch);
-			patchData.setContent(patchT);
-		}
-
-		return doc;
-	}
-
-	private String getChildText(Element node, String childName) {
-		try {
-			return node.getChild(childName).getText();
-		} catch (Exception e) {
-			return "";
 		}
 	}
 
