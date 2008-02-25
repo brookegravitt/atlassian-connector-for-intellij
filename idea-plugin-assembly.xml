@@ -40,20 +40,6 @@
       <outputDirectory>${pom.project.artifactId}/lib</outputDirectory>
       <scope>runtime</scope>
       <includes>
-        <include>org.apache.cxf:cxf-rt-core:jar</include>
-        <include>org.apache.cxf:cxf-rt-frontend-jaxws:jar</include>
-        <include>org.apache.cxf:cxf-rt-frontend-simple:jar</include>
-        <include>org.apache.cxf:cxf-api:jar</include>
-        <include>org.apache.cxf:cxf-tools-common:jar</include>
-        <include>org.apache.cxf:cxf-common-utilities:jar</include>
-        <include>org.apache.cxf:cxf-rt-transports-http:jar</include>
-        <include>org.apache.cxf:cxf-rt-transports-http-jetty:jar</include>
-        <include>org.apache.cxf:cxf-rt-bindings-soap:jar</include>
-        <include>org.apache.cxf:cxf-rt-databinding-jaxb:jar</include>
-        <include>org.apache.ws.commons.schema:XmlSchema:jar</include>
-        <include>com.sun.xml.bind:jaxb-impl:jar</include>
-        <include>wsdl4j:wsdl4j:jar</include>
-        <include>org.codehaus.woodstox:wstx-asl:jar</include>
 		<include>commons-httpclient:commons-httpclient:jar</include>
 		<include>commons-logging:commons-logging:jar</include>
 	  </includes>
