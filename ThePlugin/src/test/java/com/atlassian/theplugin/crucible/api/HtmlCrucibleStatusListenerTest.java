@@ -6,7 +6,6 @@ import com.atlassian.theplugin.crucible.CrucibleStatusDisplay;
 import com.atlassian.theplugin.crucible.HtmlCrucibleStatusListener;
 import com.atlassian.theplugin.crucible.ReviewDataInfo;
 import com.atlassian.theplugin.crucible.ReviewDataInfoImpl;
-import com.atlassian.theplugin.crucible.api.soap.xfire.review.PermId;
 import com.gargoylesoftware.htmlunit.StringWebResponse;
 import com.gargoylesoftware.htmlunit.TopLevelWindow;
 import com.gargoylesoftware.htmlunit.WebClient;
@@ -19,23 +18,14 @@ import junit.framework.TestSuite;
 import java.io.IOException;
 import java.util.*;
 
-/**
- * Created by IntelliJ IDEA.
- * User: pmaruszak
- * Date: Feb 20, 2008
- * Time: 4:27:37 PM
- * To change this template use File | Settings | File Templates.
- */
 public class HtmlCrucibleStatusListenerTest extends TestCase {
 
 	private StatusListenerResultCatcher output;
 	private HtmlCrucibleStatusListener testedListener;
-	final static ServerBean server = new ServerBean();
+	private static final ServerBean server = new ServerBean();
 
-	private static final String DEFAULT_ERROR_MESSAGE = "default error message";
     private static final String DEFAULT_SERVER_URL = "http://test.atlassian.com/crucible/";
     private static final String DEFAULT_PROJECT_NAME = "cru";
-	private static final String DEFAULT_PLAN_ID_2 = "CR-ID";
 	private static final String DEFAULT_AUTHOR = "AUTHOR1";
 	private static final String DEFAULT_CREATOR = "DEFAULT_CREATOR";
 	private static final String DEFAULT_DESCRIPTION = "DEFAULT_DESCRIPTION";
@@ -75,8 +65,6 @@ public class HtmlCrucibleStatusListenerTest extends TestCase {
 		assertEquals(
                 "<html>" + HtmlCrucibleStatusListener.BODY_WITH_STYLE + "No reviews at this time.</body></html>",
                 output.htmlPage);
-
-		int i=1;
 	}
 
 	public void testEmptyStatusCollection() throws Exception {
@@ -158,7 +146,7 @@ public class HtmlCrucibleStatusListenerTest extends TestCase {
 		rd.setModerator(DEFAULT_MODERATOR);
 		rd.setName(DEFAULT_PROJECT_NAME);
 
-		PermId permId = new PermId();
+		PermIdBean permId = new PermIdBean();
 		permId.setId(DEFAULT_PERM_ID + suffix);
 		rd.setPermaId(permId);
 		rd.setProjectKey(DEFAULT_PROJECT_KEY + suffix);
