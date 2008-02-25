@@ -38,7 +38,7 @@ public class ThePluginApplicationComponent
 	private PluginConfigurationBean configuration = new PluginConfigurationBean();
 
 	private final Timer timer = new Timer();
-	private static final int TIMER_START_DELAY = 0;
+	private static final int TIMER_START_DELAY = 20000;
 
 	private final Collection<TimerTask> scheduledComponents = new HashSet<TimerTask>();
 
