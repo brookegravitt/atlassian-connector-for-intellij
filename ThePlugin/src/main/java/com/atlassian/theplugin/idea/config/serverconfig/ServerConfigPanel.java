@@ -35,12 +35,15 @@ public class ServerConfigPanel extends AbstractContentPanel {
 
     private CardLayout editPaneCardLayout;
     private JPanel editPane;
-    private static final String BLANK_CARD = "Blank card";
-    private static final float SPLIT_RATIO = 0.3f;
+	private static final String BLANK_CARD = "Blank card";
+	private static final String BAMBOO_GENERAL_CARD = "BAmboo General Card";
 
-    private Map<ServerType, AbstractServerPanel> serverPanels;
+	private static final float SPLIT_RATIO = 0.3f;
+	private Map<ServerType, AbstractServerPanel> serverPanels;
+	private static ServerConfigPanel instance;
+	private BambooGeneralPanel bambooGeneralPanel;
 
-    public ServerConfigPanel() {
+	private ServerConfigPanel() {
         serverPanels = new HashMap<ServerType, AbstractServerPanel>();
         initLayout();
     }
@@ -86,19 +89,28 @@ public class ServerConfigPanel extends AbstractContentPanel {
             ServerType serverType = ServerType.values()[i];
             editPane.add(getServerPanel(serverType), serverType.toString());
         }
-        editPane.add(getBlankPanel(), BLANK_CARD);
+		editPane.add(getBambooGeneralPanel(), BAMBOO_GENERAL_CARD);
+		editPane.add(getBlankPanel(), BLANK_CARD);
 
         return editPane;
     }
 
-    private JComponent getBlankPanel() {
+	private JComponent getBlankPanel() {
         if (blankPanel == null) {
             blankPanel = new BlankPanel();
         }
         return blankPanel;
     }
 
-    private JComponent getServerPanel(ServerType serverType) {
+	public JComponent getBambooGeneralPanel() {
+		if (bambooGeneralPanel == null) {
+			bambooGeneralPanel = new BambooGeneralPanel();
+		}
+
+		return bambooGeneralPanel;
+	}
+
+	private JComponent getServerPanel(ServerType serverType) {
         if (!serverPanels.containsKey(serverType)) {
             switch (serverType) {
                 case BAMBOO_SERVER:
@@ -136,11 +148,11 @@ public class ServerConfigPanel extends AbstractContentPanel {
         return serverPanels.get(serverType).getRootComponent();
     }
 
-    public boolean isEnabled() {
+	public boolean isEnabled() {
         return true;
     }
 
-    public boolean isModified() {
+	public boolean isModified() {
         if (!getPluginConfiguration().equals(ConfigurationFactory.getConfiguration())) {
             return true;
         }
@@ -156,11 +168,11 @@ public class ServerConfigPanel extends AbstractContentPanel {
         return false;
     }
 
-    public String getTitle() {
+	public String getTitle() {
         return "Servers";
     }
 
-    public void getData() {
+	public void getData() {
         if (isModified()) {
 
             for (ServerType type : serverPanels.keySet()) {
@@ -177,24 +189,24 @@ public class ServerConfigPanel extends AbstractContentPanel {
         }
     }
 
-    public void setData() {
+	public void setData() {
         this.treePanel.setData(ConfigPanel.getInstance().getPluginConfiguration());
     }
 
-    public void addServer(ServerType serverType) {
+
+	public void addServer(ServerType serverType) {
         treePanel.addServer(serverType);
     }
 
-    public void removeServer() {
+	public void removeServer() {
         treePanel.removeServer();
     }
 
-
-    public void copyServer() {
+	public void copyServer() {
         treePanel.copyServer();
     }
 
-    public void storeServer(ServerNode serverNode) {
+	public void storeServer(ServerNode serverNode) {
         ServerBean server = serverNode.getServer();
         ServerBean tempValue = serverPanels.get(serverNode.getServerType()).getData();
         switch (serverNode.getServerType()) {
@@ -211,16 +223,29 @@ public class ServerConfigPanel extends AbstractContentPanel {
         server.setUrlString(tempValue.getUrlString());
     }
 
-    public void editServer(ServerType serverType, ServerBean server) {
+	public void editServer(ServerType serverType, ServerBean server) {
         editPaneCardLayout.show(editPane, serverType.toString());
         serverPanels.get(serverType).setData(server);
     }
 
-    public void showEmptyPanel() {
+	public void showEmptyPanel() {
         editPaneCardLayout.show(editPane, BLANK_CARD);
     }
 
-    static class BlankPanel extends JPanel {
+
+	public void showBambooGeneralPanel() {
+		editPaneCardLayout.show(editPane, BAMBOO_GENERAL_CARD);
+	}
+
+	public static ServerConfigPanel getInstance() {
+		if (instance == null) {
+			instance = new ServerConfigPanel();
+		}
+
+		return instance;
+	}
+
+	static class BlankPanel extends JPanel {
 
         public BlankPanel() {
             initLayout();
