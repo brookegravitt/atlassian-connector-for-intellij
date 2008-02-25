@@ -1,5 +1,10 @@
 package com.atlassian.theplugin.bamboo;
 
+import com.atlassian.theplugin.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.configuration.BambooConfigurationBean;
+import com.atlassian.theplugin.configuration.BambooTooltipOption;
+import com.atlassian.theplugin.ServerType;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +29,16 @@ public class BambooStatusListenerImpl implements BambooStatusListener {
 	}
 
 	public void updateBuildStatuses(Collection<BambooBuild> newBuildStatuses) {
+
+		// get config option for tooltip
+		BambooTooltipOption tooltipConfigOption =
+				((BambooConfigurationBean) ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER)).
+						getBambooTooltipOption();
+
+		if (tooltipConfigOption == BambooTooltipOption.NEVER) {
+			return;
+		}
+
 		StringBuilder tooltipContent = new StringBuilder();
 
 		BuildStatus status = null;
@@ -33,61 +48,70 @@ public class BambooStatusListenerImpl implements BambooStatusListener {
 
 			for (BambooBuild currentBuild : newBuildStatuses) {
 
-				switch (currentBuild.getStatus()) {
+				// if the build was reported then check it, if not then skip it
 
-					case BUILD_FAILED:
 
-						if (prevBuildStatuses.containsKey(currentBuild.getBuildKey())) {
+					switch (currentBuild.getStatus()) {
 
-							BambooBuild prevBuild = prevBuildStatuses.get(currentBuild.getBuildKey());
+						case BUILD_FAILED:
 
-							if (prevBuild.getStatus() == BuildStatus.BUILD_SUCCEED
-                                    ||
-									(prevBuild.getStatus() == BuildStatus.BUILD_FAILED
-                                    &&
-									!prevBuild.getBuildNumber().equals(currentBuild.getBuildNumber()))) {
-								
-								// build has changes status from SUCCEED to FAILED
-								// or this is new build and still failed 
-								fireTooltip = true;
-								status = BuildStatus.BUILD_FAILED;
-								// prepare information
-								tooltipContent.append(createHtmlRow(currentBuild.getBuildKey(), currentBuild.getBuildNumber(),
-										currentBuild.getBuildResultUrl(), BuildStatus.BUILD_FAILED));
-							}
-						}
+								BambooBuild prevBuild = prevBuildStatuses.get(currentBuild.getBuildKey());
 
-						prevBuildStatuses.put(currentBuild.getBuildKey(), currentBuild);
+							if (prevBuildStatuses.containsKey(currentBuild.getBuildKey())) {
 
-						break;
-					case UNKNOWN:
-						// no action here
-						break;
-					case BUILD_SUCCEED:
+								if (prevBuild.getStatus() == BuildStatus.BUILD_SUCCEED
+										||
+										(prevBuild.getStatus() == BuildStatus.BUILD_FAILED
+											&&
+										!prevBuild.getBuildNumber().equals(currentBuild.getBuildNumber())
+											&&
+										tooltipConfigOption == BambooTooltipOption.ALL_FAULIRES_AND_FIRST_SUCCESS)) {
 
-						if (prevBuildStatuses.containsKey(currentBuild.getBuildKey())) {
-							if (prevBuildStatuses.get(currentBuild.getBuildKey()).getStatus() == BuildStatus.BUILD_FAILED) {
-								// build has changes status from FAILED to SUCCEED
-								fireTooltip = true;
-								if (status == null) {
-									status = BuildStatus.BUILD_SUCCEED;
+									// build has changes status from SUCCEED to FAILED
+									// or this is new build and still failed
+									fireTooltip = true;
+									status = BuildStatus.BUILD_FAILED;
+									// prepare information
+									tooltipContent.append(createHtmlRow(currentBuild.getBuildKey(), currentBuild.getBuildNumber(),
+											currentBuild.getBuildResultUrl(), BuildStatus.BUILD_FAILED));
 								}
-								// prepare information
-								tooltipContent.append(createHtmlRow(currentBuild.getBuildKey(),
-										currentBuild.getBuildNumber(), currentBuild.getBuildResultUrl(),
-                                        BuildStatus.BUILD_SUCCEED));
 							}
-						}
-						prevBuildStatuses.put(currentBuild.getBuildKey(), currentBuild);
 
-						break;
-					default:
-						throw new IllegalStateException("Unexpected build status encountered");
+							prevBuildStatuses.put(currentBuild.getBuildKey(), currentBuild);
+
+							break;
+						case UNKNOWN:
+							// no action here
+							break;
+						case BUILD_SUCCEED:
+
+							if (prevBuildStatuses.containsKey(currentBuild.getBuildKey())) {
+								if (prevBuildStatuses.get(currentBuild.getBuildKey()).getStatus() == BuildStatus.BUILD_FAILED) {
+									// build has changes status from FAILED to SUCCEED
+									fireTooltip = true;
+									if (status == null) {
+										status = BuildStatus.BUILD_SUCCEED;
+									}
+									// prepare information
+									tooltipContent.append(createHtmlRow(currentBuild.getBuildKey(),
+											currentBuild.getBuildNumber(), currentBuild.getBuildResultUrl(),
+											BuildStatus.BUILD_SUCCEED));
+								}
+							}
+
+							prevBuildStatuses.put(currentBuild.getBuildKey(), currentBuild);
+
+							break;
+						default:
+							throw new IllegalStateException("Unexpected build status encountered");
+					}
+
+
 				}
-			}
-		}
 
-		if (fireTooltip == true && status != null) {
+			}
+
+		if (fireTooltip && status != null) {
 			display.updateBambooStatus(status, tooltipContent.toString());
 		}
 	}
