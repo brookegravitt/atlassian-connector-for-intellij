@@ -9,6 +9,7 @@ public class PluginConfigurationBean implements PluginConfiguration {
     private JIRAConfigurationBean jiraConfiguration = new JIRAConfigurationBean();
 	private static final double ID_DISCRIMINATOR = 1e3d;
 	private long uid = 0;
+	private boolean isAutoUpdateEnabled = true;
 
 	public PluginConfigurationBean() {
     }
@@ -113,6 +114,14 @@ public class PluginConfigurationBean implements PluginConfiguration {
 		this.uid = uid;
 	}
 
+	public boolean isAutoUpdateEnabled() {
+		return isAutoUpdateEnabled;
+	}
+
+	public void setAutoUpdateEnabled(boolean autoUpdateEnabled) {
+		isAutoUpdateEnabled = autoUpdateEnabled;
+	}
+
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -127,7 +136,16 @@ public class PluginConfigurationBean implements PluginConfiguration {
             return false;
         }
 
-        if (!bambooConfiguration.equals(that.bambooConfiguration)) {
+		if (uid != that.uid) {
+            return false;
+        }
+
+		if (isAutoUpdateEnabled != that.isAutoUpdateEnabled) {
+            return false;
+        }
+
+
+		if (!bambooConfiguration.equals(that.bambooConfiguration)) {
             return false;
         }
 
