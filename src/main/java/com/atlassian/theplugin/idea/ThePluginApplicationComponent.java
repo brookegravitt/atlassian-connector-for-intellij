@@ -1,8 +1,8 @@
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.theplugin.bamboo.BambooStatusChecker;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
-import com.atlassian.theplugin.idea.bamboo.BambooStatusChecker;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.jira.JIRAServer;
@@ -44,6 +44,12 @@ public class ThePluginApplicationComponent
 
 	private UserDataContext userDataContext;
     private JIRAServer currentJIRAServer;
+
+	BambooStatusChecker getBambooStatusChecker() {
+		return bambooStatusChecker;
+	}
+
+	private BambooStatusChecker bambooStatusChecker = new BambooStatusChecker(IdeaActionScheduler.getInstance());
 
 
 	@Nls
@@ -111,7 +117,7 @@ public class ThePluginApplicationComponent
 	}
 
 	private Collection<SchedulableComponent> schedulableComponents = Arrays.asList(
-			BambooStatusChecker.getInstance(),
+			bambooStatusChecker,
 			CrucibleStatusChecker.getIntance(),
 			NewVersionChecker.getInstance()
 	);
