@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.util;
 
 import com.atlassian.theplugin.exception.VersionServiceException;
+import com.atlassian.theplugin.idea.PluginInfoUtil;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.jdom.Document;
@@ -15,8 +16,6 @@ import java.io.InputStream;
 public class InfoServer {
 	private String serviceUrl;
 	private long uid;
-	// todo lguminski/jjaroczynski change to real server's instance
-	public static final String INFO_SERVER_URL = "http://docs.atlassian.com/atlassian-idea-plugin/latestVersion.xml";
 
 	public InfoServer(String serviceUrl, long uid) {
 		this.serviceUrl = serviceUrl;
@@ -40,7 +39,7 @@ public class InfoServer {
 		} catch (IOException e) {
 			throw new VersionServiceException("Connection error while retriving the latest plugin version", e);
 		} catch (JDOMException e) {
-			throw new VersionServiceException("Error while parsing xml response from version service server", e);
+			throw new VersionServiceException("Error while parsing xml response from version service server at " + serviceUrl + "?uid=" + uid, e);
 		}
 	}
 
@@ -63,7 +62,7 @@ public class InfoServer {
 				xpath = XPath.newInstance(path);
 				element = (Element) xpath.selectSingleNode(doc);
 			} catch (JDOMException e) {
-				throw new VersionServiceException("Error while parsing " + INFO_SERVER_URL, e);
+				throw new VersionServiceException("Error while parsing " + PluginInfoUtil.VERSION_INFO_URL, e);
 			}
 			return element.getValue();
 		}
