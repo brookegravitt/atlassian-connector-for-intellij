@@ -30,8 +30,6 @@ public class CreateReviewCallback implements JettyMockServer.Callback {
 
 		SAXBuilder builder = new SAXBuilder();
 		Document req = builder.build(request.getInputStream());
-		XMLOutputter out = new XMLOutputter(Format.getPrettyFormat());
-		out.output(req, System.out);
 		XPath xpath = XPath.newInstance("/createReview/reviewData");
 		@SuppressWarnings("unchecked")
 		List<Element> elements = xpath.selectNodes(req);
@@ -48,7 +46,6 @@ public class CreateReviewCallback implements JettyMockServer.Callback {
 
 		Document doc = ReviewUtil.prepareReviewNode(reviewData);
 		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
-		outputter.output(doc, System.out);
 		outputter.output(doc, response.getOutputStream());
 	}
 }
