@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.zip.ZipEntry;
@@ -35,16 +34,12 @@ public class PluginDownloaderTest extends TestCase {
 
 
 	protected void setUp() throws Exception {
-		downloader = new PluginDownloader(SOME_VERSION);
 		httpServer = new org.mortbay.jetty.Server(0);
 		httpServer.start();
 
 		mockServer = new JettyMockServer(httpServer);
-
-		Field urlField = PluginDownloader.class.getDeclaredField("pluginDownloadUrl");
-		urlField.setAccessible(true);
 		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort() + DOWNLOAD_PATH;
-		urlField.set(null, mockBaseUrl);
+		downloader = new PluginDownloader(SOME_VERSION, mockBaseUrl);
 	}
 
 	public void testDownloadPluginFromServer() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, NoSuchFieldException {

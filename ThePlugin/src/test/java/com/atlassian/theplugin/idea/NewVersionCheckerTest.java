@@ -37,19 +37,19 @@ public class NewVersionCheckerTest extends TestCase {
 		mockServer = new JettyMockServer(httpServer);
 	}
 
-	public void testGetLatestVersion(){
+	public void testGetLatestVersion() throws VersionServiceException {
 		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort();
 		mockServer.expect(GET_LATEST_VERSION_URL, new PingCallback());
 		InfoServer infoServer = new InfoServer(mockBaseUrl + GET_LATEST_VERSION_URL, uid);
 
-		String version = null;
+		InfoServer.VersionInfo versionInfo = null;
 		try {
-			version = infoServer.getLatestPluginVersion();
+			versionInfo = infoServer.getLatestPluginVersion();
 		} catch (VersionServiceException e) {
 			fail(e.getMessage());
 		}
-		assertNotNull(version);
-		assertEquals(VERSION, version);
+		assertNotNull(versionInfo);
+		assertEquals(VERSION, versionInfo.getVersion());
 	}
 
 
@@ -79,9 +79,13 @@ public class NewVersionCheckerTest extends TestCase {
 
 		private void createResponse(ServletOutputStream outputStream) {
 			StringBuffer sb = new StringBuffer();
-			sb.append("<response><latestVersion>");
+			sb.append("<response><latestStableVersion>");
 			sb.append(NewVersionCheckerTest.VERSION);
-			sb.append("</latestVersion></response>");
+			sb.append("</latestStableVersion>");
+			sb.append("<downloadUrl>");
+			sb.append("http://somedomain.com");
+			sb.append("</downloadUrl>");
+			sb.append("</response>");
 			try {
 				outputStream.write(sb.toString().getBytes("UTF-8"));
 			} catch (IOException e) {

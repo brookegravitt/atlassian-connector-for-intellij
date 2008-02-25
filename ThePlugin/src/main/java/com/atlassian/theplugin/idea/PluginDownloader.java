@@ -10,7 +10,6 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.io.StreamUtil;
 import com.intellij.util.io.ZipUtil;
 import org.apache.log4j.Category;
-import org.jetbrains.annotations.NonNls;
 
 import javax.swing.*;
 import java.io.*;
@@ -33,21 +32,17 @@ public class PluginDownloader implements Runnable {
 	public static final String PLUGIN_ID_TOKEN = "PLUGIN_ID";
 	public static final String VERSION_TOKEN = "BUILD";
 
-	@NonNls
-	private static String pluginDownloadUrl =
-			"http://plugins.intellij.net/pluginManager/?action=download&id="
-					+ PLUGIN_ID_TOKEN
-					+ "&build="
-					+ VERSION_TOKEN; // non final due to the need of changing it in test case
-
 	private static String pluginName;
 	private String pluginLatestVersion;
+	private String pluginDownloadUrl;
+
 	private static final int TIMEOUT = 15000;
 	private static final int EXTENTION_LENGHT = 3;
 
-	public PluginDownloader(String version) {
-		pluginLatestVersion = version;
-		pluginName = PluginInfoUtil.getName();
+	public PluginDownloader(String version, String downloadUrl) {
+		this.pluginLatestVersion = version;
+		this.pluginName = PluginInfoUtil.getName();
+		this.pluginDownloadUrl = downloadUrl;
 	}
 
 	public void run() {
@@ -59,7 +54,14 @@ public class PluginDownloader implements Runnable {
 			// todo lguminski/jjaroczynski to find a better way of getting plugin descriptor
 			// theoritically openapi should provide a method so the plugin could get info on itself
 
-			addActions(PluginManager.getPlugin(PluginId.getId(PluginInfoUtil.getPluginId())), localArchiveFile);
+			IdeaPluginDescriptor pluginDescr = PluginManager.getPlugin(PluginId.getId(PluginInfoUtil.getPluginId()));
+			/* todo lguminsk when you debug the plugin it appears in registry as attlassian-idea-plugin, but when
+			 	you rinstall it notmally it appears as Atlassian. Thats why it is double checked here
+			    */
+			if(pluginDescr == null) {
+				pluginDescr = PluginManager.getPlugin(PluginId.getId(PluginInfoUtil.getName()));
+			}
+			addActions(pluginDescr, localArchiveFile);
 
 			// restart IDEA
 			promptShutdownAndShutdown();
@@ -97,7 +99,7 @@ public class PluginDownloader implements Runnable {
 		File pluginArchiveFile = FileUtil.createTempFile("temp_" + pluginName + "_", "tmp");
 
 
-		String pluginUrl = pluginDownloadUrl
+		String pluginUrl = this.pluginDownloadUrl
 				.replaceAll(PLUGIN_ID_TOKEN, pluginName)
 				.replaceAll(VERSION_TOKEN, version);
 
