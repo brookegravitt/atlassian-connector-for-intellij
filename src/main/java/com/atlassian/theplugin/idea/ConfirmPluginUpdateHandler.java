@@ -26,7 +26,7 @@ public class ConfirmPluginUpdateHandler implements Runnable {
 
 			String message = "New plugin version " + version + " is available. "
 					+ "Your version is " + PluginInfoUtil.getVersion()
-					+ ". Do you want to donwload and install?";
+					+ ". Do you want to download and install?";
 			String title = "New plugin version download";
 
 			isTriggered = true;
