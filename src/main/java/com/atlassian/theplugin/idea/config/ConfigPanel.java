@@ -17,6 +17,7 @@ public final class ConfigPanel extends JPanel {
 	private FooterPanel footerPanel = null;
 	private JTabbedPane contentPanel = null;
 	private ServerConfigPanel serverConfigPanel = null;
+	private GeneralConfigPanel generalConfigPanel = null;
 
 	private ConfigPanel() {
 		initLayout();
@@ -35,10 +36,16 @@ public final class ConfigPanel extends JPanel {
 		add(getHeaderPanel(), BorderLayout.NORTH);
 
 		contentPanel = new JTabbedPane();
+
+		// add servers tab
 		serverConfigPanel = getServerConfigPanel();
 		contentPanel.add(serverConfigPanel.getTitle(), serverConfigPanel);
-		add(contentPanel, BorderLayout.CENTER);
 
+		// add general tab
+		generalConfigPanel = GeneralConfigPanel.getInstance();
+		contentPanel.add(generalConfigPanel.getTitle(), generalConfigPanel);
+
+		add(contentPanel, BorderLayout.CENTER);
 		add(getFooterPanel(), BorderLayout.SOUTH);
 
 	}
@@ -59,7 +66,7 @@ public final class ConfigPanel extends JPanel {
 
 	public ServerConfigPanel getServerConfigPanel() {
 		if (serverConfigPanel == null) {
-			serverConfigPanel = new ServerConfigPanel();
+			serverConfigPanel = ServerConfigPanel.getInstance();
 		}
 		return serverConfigPanel;
 	}
