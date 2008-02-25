@@ -1,18 +1,12 @@
-package com.atlassian.theplugin.idea.bamboo;
+package com.atlassian.theplugin.bamboo;
 
 import com.atlassian.theplugin.ServerType;
-import com.atlassian.theplugin.bamboo.BambooBuild;
-import com.atlassian.theplugin.bamboo.BambooServerFactory;
-import com.atlassian.theplugin.bamboo.BambooStatusListener;
-import com.atlassian.theplugin.bamboo.MissingPasswordHandler;
+import com.atlassian.theplugin.UIActionScheduler;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.idea.SchedulableComponent;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.ModalityState;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -28,13 +22,14 @@ import java.util.TimerTask;
  * Thread safe.
  */
 public final class BambooStatusChecker implements SchedulableComponent {
-	private static final long BAMBOO_TIMER_TICK = 120000;
+	private static final long BAMBOO_TIMER_TICK = 20000;
 
 	private final List<BambooStatusListener> listenerList = new ArrayList<BambooStatusListener>();
-	private static BambooStatusChecker instance;
 
-	private BambooStatusChecker() {
-		super();
+	private final UIActionScheduler actionScheduler;
+
+	public BambooStatusChecker(UIActionScheduler actionScheduler) {
+		this.actionScheduler = actionScheduler;
 	}
 
 	public void registerListener(BambooStatusListener listener) {
@@ -61,13 +56,12 @@ public final class BambooStatusChecker implements SchedulableComponent {
                             newServerBuildsStatus.addAll(
                                     BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults(server));
                         } catch (ServerPasswordNotProvidedException exception) {
-                            ApplicationManager.getApplication().invokeLater(
-                                    new MissingPasswordHandler(), ModalityState.defaultModalityState());
+                            actionScheduler.invokeLater(new MissingPasswordHandler());
                         }
                     }
 
             // dispatch to the listeners
-            EventQueue.invokeLater(new Runnable() {
+            actionScheduler.invokeLater(new Runnable() {
                 public void run() {
                     synchronized (listenerList) {
                         for (BambooStatusListener listener : listenerList) {
@@ -106,10 +100,4 @@ public final class BambooStatusChecker implements SchedulableComponent {
 		return BAMBOO_TIMER_TICK;		
 	}
 
-	public static synchronized BambooStatusChecker getInstance() {
-		if (instance == null) {
-			instance = new BambooStatusChecker();
-		}
-		return instance;
-	}
 }
