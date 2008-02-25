@@ -82,6 +82,7 @@ public final class ConfigPanel extends JPanel {
 		if (isModified()) {
 			headerPanel.getData();
 			serverConfigPanel.getData();
+			generalConfigPanel.getData();
 		}
 	}
 
@@ -89,6 +90,7 @@ public final class ConfigPanel extends JPanel {
 		this.pluginConfiguration = new PluginConfigurationBean(ConfigurationFactory.getConfiguration());
 		headerPanel.setData();
 		serverConfigPanel.setData();
+		generalConfigPanel.setData();
 	}
 
 	public void addServer(ServerType serverType) {
