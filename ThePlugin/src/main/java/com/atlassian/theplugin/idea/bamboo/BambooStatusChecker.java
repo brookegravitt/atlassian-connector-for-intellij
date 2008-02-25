@@ -28,7 +28,7 @@ import java.util.TimerTask;
  * Thread safe.
  */
 public final class BambooStatusChecker implements SchedulableComponent {
-	private static final long BAMBOO_TIMER_TICK = 20000;
+	private static final long BAMBOO_TIMER_TICK = 120000;
 
 	private final List<BambooStatusListener> listenerList = new ArrayList<BambooStatusListener>();
 	private static BambooStatusChecker instance;

@@ -10,6 +10,17 @@ import java.util.List;
  * The class serves both as a configuration provider for plugin logic and Bean for persistence.
  */
 public class BambooConfigurationBean extends AbstractConfigurationBean {
+
+	private BambooTooltipOption bambooTooltipOption;
+
+	public BambooTooltipOption getBambooTooltipOption() {
+		return bambooTooltipOption;
+	}
+
+	public void setBambooTooltipOption(BambooTooltipOption bambooTooltipOption) {
+		this.bambooTooltipOption = bambooTooltipOption;
+	}
+
 	public BambooConfigurationBean() {
         super();
     }

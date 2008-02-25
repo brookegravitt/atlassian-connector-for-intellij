@@ -1,10 +1,7 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.ServerType;
-import com.atlassian.theplugin.configuration.ConfigurationFactory;
-import com.atlassian.theplugin.configuration.PluginConfiguration;
-import com.atlassian.theplugin.configuration.Server;
-import com.atlassian.theplugin.configuration.ServerBean;
+import com.atlassian.theplugin.configuration.*;
 import com.atlassian.theplugin.crucible.CrucibleServerFactory;
 import com.atlassian.theplugin.crucible.api.CrucibleException;
 import com.atlassian.theplugin.exception.ThePluginException;
@@ -36,7 +33,7 @@ public class ServerConfigPanel extends AbstractContentPanel {
     private CardLayout editPaneCardLayout;
     private JPanel editPane;
 	private static final String BLANK_CARD = "Blank card";
-	private static final String BAMBOO_GENERAL_CARD = "BAmboo General Card";
+	private static final String BAMBOO_GENERAL_CARD = "Bamboo General Card";
 
 	private static final float SPLIT_RATIO = 0.3f;
 	private Map<ServerType, AbstractServerPanel> serverPanels;
@@ -65,7 +62,7 @@ public class ServerConfigPanel extends AbstractContentPanel {
         selectPane.setLayout(new VerticalFlowLayout(true, true));
         selectPane.add(createToolbar());
         selectPane.add(getTreePanel());
-        return selectPane;
+		return selectPane;
     }
 
     private JComponent getTreePanel() {
@@ -165,7 +162,11 @@ public class ServerConfigPanel extends AbstractContentPanel {
             }
         }
 
-        return false;
+		if (bambooGeneralPanel.isModyfied()) {
+			return true;
+		}
+
+		return false;
     }
 
 	public String getTitle() {
@@ -183,15 +184,22 @@ public class ServerConfigPanel extends AbstractContentPanel {
                 }
                 Collection<Server> s = getPluginConfiguration().getProductServers(type).getServers();
                 ConfigurationFactory.getConfiguration().getProductServers(type).setServers(s);
-            }
+			}
 
-            this.treePanel.setData(getPluginConfiguration());
+			this.treePanel.setData(getPluginConfiguration());
+
+			((BambooConfigurationBean) getPluginConfiguration().getProductServers(ServerType.BAMBOO_SERVER)).setBambooTooltipOption(bambooGeneralPanel.getData());
+			((BambooConfigurationBean) ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER)).setBambooTooltipOption(bambooGeneralPanel.getData());
+			bambooGeneralPanel.setData(bambooGeneralPanel.getData());
+
         }
     }
 
 	public void setData() {
-        this.treePanel.setData(ConfigPanel.getInstance().getPluginConfiguration());
-    }
+        treePanel.setData(ConfigPanel.getInstance().getPluginConfiguration());
+		//bambooGeneralPanel.setData(ConfigPanel.getInstance().getPluginConfiguration().getBambooConfigurationData().getBambooTooltipOption());
+		bambooGeneralPanel.setData(((BambooConfigurationBean) ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER)).getBambooTooltipOption());
+	}
 
 
 	public void addServer(ServerType serverType) {
