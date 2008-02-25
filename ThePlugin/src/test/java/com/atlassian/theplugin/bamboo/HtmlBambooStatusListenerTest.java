@@ -61,8 +61,6 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 		assertEquals(
                 "<html>" + HtmlBambooStatusListener.BODY_WITH_STYLE + "No plans defined.</body></html>",
                 output.htmlPage);
-
-		int i=1;
 	}
 
 	public void testEmptyStatusCollection() throws Exception {
@@ -128,11 +126,9 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 		assertFalse("---".equals(buildTime));
 	}
 
-    private static String trimWhitespace(String s)
-    {
+    private static String trimWhitespace(String s) {
         StringBuffer result = new StringBuffer("");
-        for (StringTokenizer stringTokenizer = new StringTokenizer(s, "\n"); stringTokenizer.hasMoreTokens();)
-        {
+        for (StringTokenizer stringTokenizer = new StringTokenizer(s, "\n"); stringTokenizer.hasMoreTokens();) {
             result.append(stringTokenizer.nextToken().trim());
         }
         return result.toString();
