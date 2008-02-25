@@ -29,7 +29,7 @@ import java.util.TimerTask;
  * Thread safe.
  */
 public final class CrucibleStatusChecker implements SchedulableComponent {
-	private static final long CRUCIBLE_TIMER_TICK = 20000;
+	private static final long CRUCIBLE_TIMER_TICK = 120000;
 
 	private final List<CrucibleStatusListener> listenerList = new ArrayList<CrucibleStatusListener>();
 	private static CrucibleStatusChecker instance;
