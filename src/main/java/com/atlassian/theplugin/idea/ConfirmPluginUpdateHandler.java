@@ -11,11 +11,13 @@ import javax.swing.*;
  */
 public class ConfirmPluginUpdateHandler implements Runnable {
 	private String version;
+	private String downloadUrl;
 
 	private static boolean isTriggered = false;
 
-	public ConfirmPluginUpdateHandler(String version) {
+	public ConfirmPluginUpdateHandler(String version, String downloadUrl) {
 		this.version = version;
+		this.downloadUrl = downloadUrl;
 	}
 
 	public void run() {
@@ -35,7 +37,7 @@ public class ConfirmPluginUpdateHandler implements Runnable {
 			if (answer == JOptionPane.OK_OPTION) {
 
 				// fire downloading and updating plugin in the new thread
-				Thread downloader = new Thread(new PluginDownloader(version));
+				Thread downloader = new Thread(new PluginDownloader(version, downloadUrl));
 
 				downloader.start();
 			}
