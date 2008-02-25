@@ -8,4 +8,7 @@ public interface PluginConfiguration {
 	ProductServerConfiguration getProductServers(ServerType serverType);
 
 	long getUid();
+	boolean isAutoUpdateEnabled();
+
+	void setAutoUpdateEnabled(boolean autoUpdateEnabled);
 }
