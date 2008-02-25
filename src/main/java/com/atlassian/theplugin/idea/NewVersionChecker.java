@@ -6,6 +6,7 @@ import com.atlassian.theplugin.util.InfoServer;
 import com.intellij.openapi.application.ApplicationManager;
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
+import org.jdom.JDOMException;
 
 import java.util.TimerTask;
 
@@ -58,11 +59,11 @@ public final class NewVersionChecker implements SchedulableComponent {
 
 	private void doRun() throws VersionServiceException {
 		InfoServer server = new InfoServer(InfoServer.INFO_SERVER_URL, ConfigurationFactory.getConfiguration().getUid());
-		String version = server.getLatestPluginVersion();
+		InfoServer.VersionInfo versionInfo = server.getLatestPluginVersion();
 
-		// simple version difference check
-		if (!version.equals(PluginInfoUtil.getVersion())) {
-			ApplicationManager.getApplication().invokeLater(new ConfirmPluginUpdateHandler(version));
+		// simple versionInfo difference check
+		if (!versionInfo.equals(PluginInfoUtil.getVersion())) {
+			ApplicationManager.getApplication().invokeLater(new ConfirmPluginUpdateHandler(versionInfo.getVersion(), versionInfo.getDownloadUrl()));
 		}
 	}
 }
