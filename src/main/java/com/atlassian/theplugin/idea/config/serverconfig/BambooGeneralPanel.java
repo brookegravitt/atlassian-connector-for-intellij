@@ -1,12 +1,13 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
-import com.atlassian.theplugin.configuration.BambooTooltipOption;
 import com.atlassian.theplugin.configuration.BambooConfigurationBean;
+import com.atlassian.theplugin.configuration.BambooTooltipOption;
 import com.intellij.uiDesigner.core.Spacer;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class BambooGeneralPanel extends JPanel {
 	private JRadioButton allFailuresFirstSuccess;
@@ -20,9 +21,10 @@ public class BambooGeneralPanel extends JPanel {
 
 	public BambooGeneralPanel() {
 		$$$setupUI$$$();
+		setLayout(new CardLayout());
 		model = new SpinnerNumberModel(1, 1, 1000, 1);
 		pollTimeSpinner.setModel(model);
-		add(rootComponent);
+		add(rootComponent, "BambooGeneralPanel");
 	}
 
 
