@@ -32,7 +32,7 @@ public class PluginDownloader implements Runnable {
 	public static final String PLUGIN_ID_TOKEN = "PLUGIN_ID";
 	public static final String VERSION_TOKEN = "BUILD";
 
-	private static String pluginName;
+	private static String pluginName = PluginInfoUtil.getName();
 	private String pluginLatestVersion;
 	private String pluginDownloadUrl;
 
@@ -41,7 +41,6 @@ public class PluginDownloader implements Runnable {
 
 	public PluginDownloader(String version, String downloadUrl) {
 		this.pluginLatestVersion = version;
-		this.pluginName = PluginInfoUtil.getName();
 		this.pluginDownloadUrl = downloadUrl;
 	}
 
