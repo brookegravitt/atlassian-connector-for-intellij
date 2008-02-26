@@ -4,6 +4,8 @@ import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.atlassian.theplugin.idea.GeneralConfigForm;
 
+import java.awt.*;
+
 /**
  * Created by IntelliJ IDEA.
  * User: Jacek
@@ -18,8 +20,9 @@ public class GeneralConfigPanel extends AbstractContentPanel {
 
 	public GeneralConfigPanel() {
 		super();
+		setLayout(new CardLayout());
 		dialog = new GeneralConfigForm();
-		add(dialog.getRootPane());
+		add(dialog.getRootPane(), "GeneralConfig");
 	}
 
 	public boolean isEnabled() {
