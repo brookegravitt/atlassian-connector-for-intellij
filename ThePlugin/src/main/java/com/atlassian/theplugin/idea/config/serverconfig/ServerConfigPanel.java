@@ -188,13 +188,19 @@ public class ServerConfigPanel extends AbstractContentPanel {
 
 			this.treePanel.setData(getPluginConfiguration());
 
-			((BambooConfigurationBean) getPluginConfiguration().getProductServers(ServerType.BAMBOO_SERVER)).setBambooTooltipOption(bambooGeneralPanel.getData().getBambooTooltipOption());
-			((BambooConfigurationBean) ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER)).setBambooTooltipOption(bambooGeneralPanel.getData().getBambooTooltipOption());
+			((BambooConfigurationBean) getPluginConfiguration()
+					.getProductServers(ServerType.BAMBOO_SERVER))
+					.setBambooTooltipOption(bambooGeneralPanel.getData().getBambooTooltipOption());
+			((BambooConfigurationBean) ConfigurationFactory
+					.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER))
+					.setBambooTooltipOption(bambooGeneralPanel.getData().getBambooTooltipOption());
 
-			((BambooConfigurationBean) getPluginConfiguration().getProductServers(ServerType.BAMBOO_SERVER)).setPollTime(bambooGeneralPanel.getData().getPollTime());
-			((BambooConfigurationBean) ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER)).setPollTime(bambooGeneralPanel.getData().getPollTime());
-
-			//@todo
+			((BambooConfigurationBean) getPluginConfiguration()
+					.getProductServers(ServerType.BAMBOO_SERVER))
+					.setPollTime(bambooGeneralPanel.getData().getPollTime());
+			((BambooConfigurationBean) ConfigurationFactory.getConfiguration()
+					.getProductServers(ServerType.BAMBOO_SERVER))
+					.setPollTime(bambooGeneralPanel.getData().getPollTime());
 			bambooGeneralPanel.setData(bambooGeneralPanel.getData());
 
         }
@@ -202,8 +208,8 @@ public class ServerConfigPanel extends AbstractContentPanel {
 
 	public void setData() {
         treePanel.setData(ConfigPanel.getInstance().getPluginConfiguration());
-		//bambooGeneralPanel.setData(ConfigPanel.getInstance().getPluginConfiguration().getBambooConfigurationData().getBambooTooltipOption());
-		bambooGeneralPanel.setData(((BambooConfigurationBean) ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER)));
+		bambooGeneralPanel.setData(((BambooConfigurationBean) ConfigurationFactory.getConfiguration()
+				.getProductServers(ServerType.BAMBOO_SERVER)));
 	}
 
 
