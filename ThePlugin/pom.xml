@@ -454,7 +454,9 @@
 					<excludes>
                         **/serverconfig/*Form.java,
                         **/idea/PasswordDialog.java,
-                        **/crucible/CruciblePatchUploadForm.java,
+						**/idea/GeneralConfigDialog.java,
+						**/serverconfig/BambooGeneralPanel.java,
+						**/crucible/CruciblePatchUploadForm.java,
                         **/soap/xfire/**/*.java,
 						**/IssueComment.java,
 						**/IssueCreate.java,

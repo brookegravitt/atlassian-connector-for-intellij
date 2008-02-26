@@ -57,15 +57,17 @@ public final class NewVersionChecker implements SchedulableComponent {
 	}
 
 	private void doRun() throws VersionServiceException {
-		if(ConfigurationFactory.getConfiguration().isAutoUpdateEnabled() == false) {
+		if (ConfigurationFactory.getConfiguration().isAutoUpdateEnabled() == false) {
 			return;
 		}
-		InfoServer server = new InfoServer(PluginInfoUtil.VERSION_INFO_URL, ConfigurationFactory.getConfiguration().getUid());
+		InfoServer server = new InfoServer(PluginInfoUtil.VERSION_INFO_URL,
+				ConfigurationFactory.getConfiguration().getUid());
 		InfoServer.VersionInfo versionInfo = server.getLatestPluginVersion();
 
 		// simple versionInfo difference check
 		if (!versionInfo.equals(PluginInfoUtil.getVersion())) {
-			ApplicationManager.getApplication().invokeLater(new ConfirmPluginUpdateHandler(versionInfo.getVersion(), versionInfo.getDownloadUrl()));
+			ApplicationManager.getApplication().invokeLater(
+					new ConfirmPluginUpdateHandler(versionInfo.getVersion(), versionInfo.getDownloadUrl()));
 		}
 	}
 }

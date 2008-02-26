@@ -39,7 +39,11 @@ public class InfoServer {
 		} catch (IOException e) {
 			throw new VersionServiceException("Connection error while retriving the latest plugin version", e);
 		} catch (JDOMException e) {
-			throw new VersionServiceException("Error while parsing xml response from version service server at " + serviceUrl + "?uid=" + uid, e);
+			throw new VersionServiceException(
+					"Error while parsing xml response from version service server at "
+					+ serviceUrl
+					+ "?uid="
+					+ uid, e);
 		}
 	}
 
