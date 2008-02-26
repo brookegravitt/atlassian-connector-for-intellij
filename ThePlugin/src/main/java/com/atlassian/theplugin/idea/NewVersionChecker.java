@@ -65,7 +65,7 @@ public final class NewVersionChecker implements SchedulableComponent {
 		InfoServer.VersionInfo versionInfo = server.getLatestPluginVersion();
 
 		// simple versionInfo difference check
-		if (!versionInfo.equals(PluginInfoUtil.getVersion())) {
+		if (!versionInfo.getVersion().equals(PluginInfoUtil.getVersion())) {
 			ApplicationManager.getApplication().invokeLater(
 					new ConfirmPluginUpdateHandler(versionInfo.getVersion(), versionInfo.getDownloadUrl()));
 		}

@@ -56,10 +56,21 @@
 		<Class name="com.atlassian.theplugin.crucible.api.ReviewDataBean"/>
 		<Bug pattern="NM_CONFUSING"/>
 	</Match>
+
+	<!--fields in this class have getters and setters-->
+	<Match>
+		<Class name="com.atlassian.theplugin.bamboo.BambooBuildInfo"/>
+		<Bug pattern="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR"/>
+	</Match>
 	
 	<!--reflection is used to call these-->
 	<Match>
 		<Method name="createUIComponents"/>
 	</Match>
 
+	<!--I am not sure why findBugs complains about this. This is an UI designer-generated code anyway, so whatever-->
+	<Match>
+		<Class name="com.atlassian.theplugin.idea.GeneralConfigDialog"/>
+		<Bug code="NP,UwF"/>
+	</Match>
 </FindBugsFilter>
