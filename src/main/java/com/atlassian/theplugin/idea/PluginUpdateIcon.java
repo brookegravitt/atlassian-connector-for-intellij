@@ -24,7 +24,7 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 	private static final Category LOGGER = Logger.getInstance(PluginStatusBarToolTip.class);
 
 	private static final Icon ICON_NEW = IconLoader.getIcon("/icons/icn_update_16.png");
-	private InfoServer.VersionInfo newVersion;
+	private InfoServer.VersionInfo version;
 	private Project project;
 
 	public PluginUpdateIcon(final Project project) {
@@ -35,7 +35,7 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 			public void mouseClicked(MouseEvent e) {
 				String message = null;
 				try {
-					message = "New plugin version " + newVersion.getVersion() + " is available. "
+					message = "New plugin version " + version.getVersion() + " is available. "
 							+ "Your version is " + PluginInfoUtil.getVersion()
 							+ ". Do you want to download and install?";
 				} catch (VersionServiceException e1) {
@@ -49,7 +49,7 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 				if (answer == JOptionPane.OK_OPTION) {
 
 					// fire downloading and updating plugin in the new thread
-					Thread downloader = new Thread(new PluginDownloader(newVersion));
+					Thread downloader = new Thread(new PluginDownloader(version));
 
 					downloader.start();
 				}
@@ -63,10 +63,11 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 	 * @param newVersion
 	 */
 	public void triggerUpdateAvailableAction(InfoServer.VersionInfo newVersion) {
-		this.newVersion = newVersion;
+		this.version = newVersion;
 		this.setIcon(ICON_NEW);
 		try {
-			this.setToolTipText("New version (" + newVersion.getVersion() + ") of the " + PluginInfoUtil.getName() + " available");
+			this.setToolTipText("New version (" + newVersion.getVersion() + ") of the "
+					+ PluginInfoUtil.getName() + " available");
 		} catch (VersionServiceException e) {
 			LOGGER.error(e.getMessage(), e);
 		}
