@@ -1,5 +1,8 @@
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;
+import com.intellij.openapi.project.Project;
+
 import javax.swing.*;
 
 /**
@@ -14,6 +17,8 @@ public class ConfirmPluginUpdateHandler implements Runnable {
 	private String downloadUrl;
 
 	private static boolean isTriggered = false;
+	private BuildStatusChangedToolTip buildFailedToolTip;
+	private Project project;
 
 	public ConfirmPluginUpdateHandler(String version, String downloadUrl) {
 		this.version = version;

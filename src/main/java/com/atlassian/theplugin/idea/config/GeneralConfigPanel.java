@@ -2,9 +2,7 @@ package com.atlassian.theplugin.idea.config;
 
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.PluginConfiguration;
-import com.atlassian.theplugin.idea.GeneralConfigDialog;
-
-import javax.swing.*;
+import com.atlassian.theplugin.idea.GeneralConfigForm;
 
 /**
  * Created by IntelliJ IDEA.
@@ -16,15 +14,12 @@ import javax.swing.*;
 public class GeneralConfigPanel extends AbstractContentPanel {
 	private static GeneralConfigPanel instance = null;
 	private boolean isPluginEnabled;
-	private GeneralConfigDialog dialog;
+	private GeneralConfigForm dialog;
 
 	public GeneralConfigPanel() {
 		super();
-		dialog = new GeneralConfigDialog();
-		dialog.pack();
-		JPanel generalSettingsPanel = dialog.getGeneralSettingsPanel();
-		add(generalSettingsPanel);
-		generalSettingsPanel.setBounds(this.getBounds());
+		dialog = new GeneralConfigForm();
+		add(dialog.getRootPane());
 	}
 
 	public boolean isEnabled() {
