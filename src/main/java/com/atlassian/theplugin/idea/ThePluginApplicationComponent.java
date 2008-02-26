@@ -45,6 +45,16 @@ public class ThePluginApplicationComponent
 	private UserDataContext userDataContext;
     private JIRAServer currentJIRAServer;
 
+	public ThePluginProjectComponent getProjectComponent() {
+		return projectComponent;
+	}
+
+	public void setProjectComponent(ThePluginProjectComponent projectComponent) {
+		this.projectComponent = projectComponent;
+	}
+
+	private ThePluginProjectComponent projectComponent = null;
+
 	BambooStatusChecker getBambooStatusChecker() {
 		return bambooStatusChecker;
 	}
@@ -147,6 +157,10 @@ public class ThePluginApplicationComponent
 		if (form != null) {
 			// Get data from form to component
 			form.getData();
+
+			// show icons if necessary
+			projectComponent.getStatusBarBambooIcon().showOrHideIcon();
+			projectComponent.getStatusBarCrucibleIcon().showOrHideIcon();
 
 			if (configuration.isPluginEnabled()) {
 				for (Project pr : ProjectManager.getInstance().getOpenProjects()) {
