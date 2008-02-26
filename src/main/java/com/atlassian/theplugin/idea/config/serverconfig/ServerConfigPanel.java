@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ServerConfigPanel extends AbstractContentPanel {
+public final class ServerConfigPanel extends AbstractContentPanel {
     private ServerTreePanel treePanel = null;
     private BlankPanel blankPanel = null;
 
