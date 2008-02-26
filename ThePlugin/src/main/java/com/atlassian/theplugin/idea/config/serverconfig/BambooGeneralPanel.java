@@ -47,9 +47,8 @@ public class BambooGeneralPanel extends JPanel {
 			}
 		} else {
 			setDefault();
-			configOption = getDefault();
 		}
-		model.setValue(new Integer(bambooConfiguration.getPollTime()));
+		model.setValue(Integer.valueOf(bambooConfiguration.getPollTime()));
 	}
 
 	public BambooConfigurationBean getData() {
