@@ -36,6 +36,7 @@ public class CrucibleSessionTest extends TestCase {
 	}
 
 	protected void tearDown() throws Exception {
+		mockServer.verify();
 		mockServer = null;
 		mockBaseUrl = null;
 		server.stop();
@@ -243,14 +244,14 @@ public class CrucibleSessionTest extends TestCase {
 		}
 
 		try {
-			apiHandler.login(USER_NAME, PASSWORD);
+			apiHandler.login(null, PASSWORD);
 			fail("Login succeeded while expected failure.");
 		} catch (CrucibleLoginException e) {
 			// expected
 		}
 
 		try {
-			apiHandler.login(USER_NAME, PASSWORD);
+			apiHandler.login(USER_NAME, null);
 			fail("Login succeeded while expected failure.");
 		} catch (CrucibleLoginException e) {
 			// expected
@@ -402,6 +403,7 @@ public class CrucibleSessionTest extends TestCase {
 		} catch (CrucibleException e) {
 			// expected
 		}
+		mockServer.verify();
 	}
 
 	public void testGetReviewsInStatesMalformedResponse() throws Exception {
@@ -419,6 +421,7 @@ public class CrucibleSessionTest extends TestCase {
 		} catch (CrucibleException e) {
 			// expected
 		}
+		mockServer.verify();
 	}
 
 	public void testGetEmptyReviewers() throws Exception {
@@ -453,18 +456,20 @@ public class CrucibleSessionTest extends TestCase {
 
 	public void testGetReviewersInvalidId() throws Exception {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/rest-service/reviews-v1/PR-2/reviewers", new GetReviewersCallback(new String[]{ }, false));
+		mockServer.expect("/rest-service/reviews-v1/PR-2/reviewers", new ErrorResponse(500));
 		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
 
 		apiHandler.login(USER_NAME, PASSWORD);
 		PermIdBean permId = new PermIdBean();
 		permId.setId("PR-2");
 		try {
-			List<String> reviewers = apiHandler.getReviewers(permId);
+			apiHandler.getReviewers(permId);
 			fail();
 		} catch (CrucibleException e) {
 			// expected
 		}
+
+		mockServer.verify();
 	}
 
 	public void testGetReviewersMalformedResponse() throws Exception {
@@ -481,6 +486,8 @@ public class CrucibleSessionTest extends TestCase {
 		} catch (CrucibleException e) {
 			// expected
 		}
+
+		mockServer.verify();
 	}
 
 	public void testCreateReview() throws Exception {
@@ -514,11 +521,12 @@ public class CrucibleSessionTest extends TestCase {
 
 		apiHandler.login(USER_NAME, PASSWORD);
 		try {
-			ReviewData response = apiHandler.createReview(review);
+			apiHandler.createReview(review);
 			fail();
 		} catch (CrucibleException e) {
 			// expected
 		}
+		mockServer.verify();
 	}
 
 	public void testCreateReviewErrorResponse() throws Exception {
@@ -530,11 +538,13 @@ public class CrucibleSessionTest extends TestCase {
 
 		apiHandler.login(USER_NAME, PASSWORD);
 		try {
-			ReviewData response = apiHandler.createReview(review);
+			apiHandler.createReview(review);
 			fail();
 		} catch (CrucibleException e) {
 			// expected
 		}
+
+		mockServer.verify();
 	}
 
 
@@ -609,11 +619,13 @@ public class CrucibleSessionTest extends TestCase {
 		apiHandler.login(USER_NAME, PASSWORD);
 		try {
 			ReviewDataBean review = createReviewRequest();
-			ReviewData response = apiHandler.createReviewFromPatch(review, "patch text");
+			apiHandler.createReviewFromPatch(review, "patch text");
 			fail();
 		} catch (CrucibleException e) {
 			// expected
 		}
+		
+		mockServer.verify();
 	}
 
 	private ReviewDataBean createReviewRequest() {
