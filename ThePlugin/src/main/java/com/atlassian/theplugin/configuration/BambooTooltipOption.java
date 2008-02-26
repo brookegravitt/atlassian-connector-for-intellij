@@ -11,15 +11,18 @@ public enum BambooTooltipOption {
 	ALL_FAULIRES_AND_FIRST_SUCCESS {
 		public String toString() {
 			return "All build failures and first build success";
-		}},
+		}
+	},
 
 	FIRST_FAILURE_AND_FIRST_SUCCESS {
 		public String toString() {
 			return "First build failure and first build success";
-		}},
+		}
+	},
 
 	NEVER {
 		public String toString() {
 			return "Never";
-		}}
+		}
+	}
 }
