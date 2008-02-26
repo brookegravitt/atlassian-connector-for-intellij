@@ -31,6 +31,7 @@ public class BambooServerConfigForm extends AbstractServerPanel {
 	private JTextArea buildPlansTextArea;
 	private JCheckBox chkPasswordRemember;
 	private JCheckBox cbEnabled;
+	private JCheckBox cbUseFavuriteBuilds;
 
 	private transient ServerBean server;
 
@@ -50,6 +51,12 @@ public class BambooServerConfigForm extends AbstractServerPanel {
 				}
 			}
 		});
+		cbUseFavuriteBuilds.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				buildPlansTextArea.setEnabled(!cbUseFavuriteBuilds.isSelected());
+			}
+		});
 	}
 
 	public void setData(ServerBean aServer) {
@@ -61,8 +68,9 @@ public class BambooServerConfigForm extends AbstractServerPanel {
 		chkPasswordRemember.setSelected(aServer.getShouldPasswordBeStored());
 		password.setText(aServer.getPasswordString());
 		cbEnabled.setSelected(aServer.getEnabled());
-
+		cbUseFavuriteBuilds.setSelected(aServer.getUseFavourite());
 		buildPlansTextArea.setText(subscribedPlansToString(aServer.getSubscribedPlans()));
+		buildPlansTextArea.setEnabled(!aServer.getUseFavourite());
 	}
 
 	public ServerBean getData() {
@@ -71,6 +79,7 @@ public class BambooServerConfigForm extends AbstractServerPanel {
 		server.setUserName(username.getText());
 		server.setPasswordString(String.valueOf(password.getPassword()), chkPasswordRemember.isSelected());
 		server.setEnabled(cbEnabled.isSelected());
+		server.setUseFavourite(cbUseFavuriteBuilds.isSelected());
 		server.setSubscribedPlansData(subscribedPlansFromString(buildPlansTextArea.getText()));
 		return server;
 	}
@@ -113,6 +122,9 @@ public class BambooServerConfigForm extends AbstractServerPanel {
 				return true;
 			}
 			if (cbEnabled.isSelected() != server.getEnabled()) {
+				return true;
+			}
+			if (cbUseFavuriteBuilds.isSelected() != server.getUseFavourite()) {
 				return true;
 			}
 			if (serverName.getText() != null
@@ -200,11 +212,11 @@ public class BambooServerConfigForm extends AbstractServerPanel {
 		testConnection.setDisplayedMnemonicIndex(0);
 		panel1.add(testConnection, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		final JPanel panel2 = new JPanel();
-		panel2.setLayout(new GridLayoutManager(2, 1, new Insets(5, 5, 5, 5), -1, -1));
+		panel2.setLayout(new GridLayoutManager(3, 1, new Insets(5, 5, 5, 5), -1, -1));
 		panel1.add(panel2, new GridConstraints(6, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
 		panel2.setBorder(BorderFactory.createTitledBorder("Build plans"));
 		final JScrollPane scrollPane1 = new JScrollPane();
-		panel2.add(scrollPane1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(469, 44), null, 0, false));
+		panel2.add(scrollPane1, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(469, 44), null, 0, false));
 		buildPlansTextArea = new JTextArea();
 		buildPlansTextArea.setLineWrap(true);
 		buildPlansTextArea.setRows(0);
@@ -217,7 +229,12 @@ public class BambooServerConfigForm extends AbstractServerPanel {
 		label5.setText("Please provide space separated list of build plans that you want to monitor.");
 		label5.setDisplayedMnemonic('L');
 		label5.setDisplayedMnemonicIndex(31);
-		panel2.add(label5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_NORTHWEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(73, 35), null, 0, false));
+		panel2.add(label5, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_NORTHWEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(73, 35), null, 0, false));
+		cbUseFavuriteBuilds = new JCheckBox();
+		cbUseFavuriteBuilds.setText("Use Favourite Builds For Server");
+		cbUseFavuriteBuilds.setMnemonic('F');
+		cbUseFavuriteBuilds.setDisplayedMnemonicIndex(4);
+		panel2.add(cbUseFavuriteBuilds, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		chkPasswordRemember = new JCheckBox();
 		chkPasswordRemember.setSelected(true);
 		chkPasswordRemember.setText("Remember password");

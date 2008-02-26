@@ -22,7 +22,7 @@ public class ServerBean implements Server {
 	private Boolean shouldPasswordBeStored = false;
 	private String password = "";
 	private Boolean enabled = true;
-
+	private Boolean useFavourite = false;
 
 	private List<SubscribedPlanBean> subscribedPlans = new ArrayList<SubscribedPlanBean>();
 
@@ -41,6 +41,7 @@ public class ServerBean implements Server {
 		this.setPasswordString(cfg.getPasswordString(), cfg.getShouldPasswordBeStored());		
 		this.setUrlString(cfg.getUrlString());
 		this.setEnabled(cfg.getEnabled());
+		this.setUseFavourite(cfg.getUseFavourite());
 		this.setIsConfigInitialized(cfg.getIsConfigInitialized());
 
 		for (SubscribedPlan plan : cfg.getSubscribedPlans()) {
@@ -79,6 +80,14 @@ public class ServerBean implements Server {
 
 	public synchronized void setEnabled(Boolean enabled) {
 		this.enabled =  enabled;
+	}
+
+	public synchronized Boolean getUseFavourite() {
+		return this.useFavourite;
+	}
+
+	public synchronized void setUseFavourite(Boolean useFavourite) {
+		this.useFavourite = useFavourite;
 	}
 
 //    public char[] getEncryptedPassword() {
@@ -256,6 +265,9 @@ public class ServerBean implements Server {
 			return false;
 		}
 		if (enabled != null ? !enabled.equals(that.enabled) : that.enabled != null) {
+			return false;
+		}
+		if (useFavourite != null ? !useFavourite.equals(that.useFavourite) : that.useFavourite != null) {
 			return false;
 		}
 		if (subscribedPlans != null ? !subscribedPlans.equals(that.subscribedPlans) : that.subscribedPlans != null) {

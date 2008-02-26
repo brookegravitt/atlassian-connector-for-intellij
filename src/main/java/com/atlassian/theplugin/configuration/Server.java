@@ -26,4 +26,6 @@ public interface Server {
 	String getPasswordString();
 
 	Boolean getEnabled();
+
+	Boolean getUseFavourite();
 }

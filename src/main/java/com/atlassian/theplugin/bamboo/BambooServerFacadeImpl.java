@@ -132,12 +132,33 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 			connectionErrorMessage = e.getMessage();
 		}
 
-		for (SubscribedPlan plan : bambooServer.getSubscribedPlans()) {
-			if (api != null && api.isLoggedIn()) {
-				BambooBuild buildInfo = api.getLatestBuildForPlan(plan.getPlanId());
-				builds.add(buildInfo);
-			} else {
-				builds.add(constructBuildErrorInfo(bambooServer.getUrlString(), plan.getPlanId(), connectionErrorMessage));
+		Collection<BambooPlan> plansForServer = getPlanList(bambooServer);
+		if (bambooServer.getUseFavourite()) {
+			for (BambooPlan bambooPlan : plansForServer) {
+				if (bambooPlan.isFavourite()) {
+					if (api != null && api.isLoggedIn()) {
+						BambooBuild buildInfo = api.getLatestBuildForPlan(bambooPlan.getPlanKey());
+						((BambooBuildInfo) buildInfo).setEnabled(bambooPlan.isEnabled());
+						builds.add(buildInfo);
+					} else {
+						builds.add(constructBuildErrorInfo(bambooServer.getUrlString(), bambooPlan.getPlanKey(), connectionErrorMessage));
+					}
+				}
+			}
+		} else {
+			for (SubscribedPlan plan : bambooServer.getSubscribedPlans()) {
+				if (api != null && api.isLoggedIn()) {
+					BambooBuild buildInfo = api.getLatestBuildForPlan(plan.getPlanId());
+					((BambooBuildInfo) buildInfo).setEnabled(true);
+					for (BambooPlan bambooPlan : plansForServer) {
+						if (plan.getPlanId().equals(bambooPlan.getPlanKey())) {
+							((BambooBuildInfo) buildInfo).setEnabled(bambooPlan.isEnabled());
+						}
+					}
+					builds.add(buildInfo);
+				} else {
+					builds.add(constructBuildErrorInfo(bambooServer.getUrlString(), plan.getPlanId(), connectionErrorMessage));
+				}
 			}
 		}
 

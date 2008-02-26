@@ -10,6 +10,7 @@ public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
 	private String projectKey;
 	private String buildName;
 	private String buildKey;
+	private boolean enabled;
 	private String buildState;
 	private String buildNumber;
 	private String buildReason;
@@ -77,6 +78,15 @@ public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
 	public void setBuildKey(String buildKey) {
 		this.buildKey = buildKey;
 	}
+
+	public boolean getEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean value) {
+		enabled = value;
+	}
+
 
 	public void setBuildState(String buildState) {
 		this.buildState = buildState;

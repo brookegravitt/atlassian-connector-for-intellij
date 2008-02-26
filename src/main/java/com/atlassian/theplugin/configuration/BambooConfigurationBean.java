@@ -12,18 +12,19 @@ import java.util.List;
 public class BambooConfigurationBean extends AbstractConfigurationBean {
 
 	private BambooTooltipOption bambooTooltipOption;
-
-	public BambooTooltipOption getBambooTooltipOption() {
-		return bambooTooltipOption;
-	}
-
-	public void setBambooTooltipOption(BambooTooltipOption bambooTooltipOption) {
-		this.bambooTooltipOption = bambooTooltipOption;
-	}
-
+	private int pollTime = 1;
+	
 	public BambooConfigurationBean() {
         super();
     }
+
+	public BambooConfigurationBean(ProductServerConfiguration cfg) {
+		super(cfg);
+		if (cfg instanceof BambooConfigurationBean) {
+			this.bambooTooltipOption = ((BambooConfigurationBean) cfg).getBambooTooltipOption();
+			this.pollTime = ((BambooConfigurationBean) cfg).getPollTime();
+		}
+	}
 
 	@Override
 	@Transient
@@ -37,6 +38,7 @@ public class BambooConfigurationBean extends AbstractConfigurationBean {
 			foundServer.setUrlString(server.getUrlString());
 			foundServer.setUserName(server.getUserName());
 			foundServer.setEnabled(server.getEnabled());
+			foundServer.setUseFavourite(server.getUseFavourite());
 			List<SubscribedPlanBean> subscribedPlans = new ArrayList<SubscribedPlanBean>();
 			for (SubscribedPlan subPlan : server.getSubscribedPlans()) {
 				subscribedPlans.add((SubscribedPlanBean) subPlan);
@@ -45,7 +47,19 @@ public class BambooConfigurationBean extends AbstractConfigurationBean {
 		}
 	}
 
-	public BambooConfigurationBean(ProductServerConfiguration cfg) {
-		super(cfg);
+	public int getPollTime() {
+		return pollTime;
+	}
+
+	public void setPollTime(int pollTime) {
+		this.pollTime = pollTime;
+	}
+
+	public BambooTooltipOption getBambooTooltipOption() {
+		return bambooTooltipOption;
+	}
+
+	public void setBambooTooltipOption(BambooTooltipOption bambooTooltipOption) {
+		this.bambooTooltipOption = bambooTooltipOption;
 	}
 }

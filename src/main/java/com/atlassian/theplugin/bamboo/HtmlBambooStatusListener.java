@@ -1,10 +1,10 @@
 package com.atlassian.theplugin.bamboo;
 
-import static com.atlassian.theplugin.bamboo.BuildStatus.BUILD_FAILED;
-import com.atlassian.theplugin.configuration.Server;
-import com.atlassian.theplugin.configuration.ProductServerConfiguration;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.ServerType;
+import static com.atlassian.theplugin.bamboo.BuildStatus.BUILD_FAILED;
+import com.atlassian.theplugin.configuration.ProductServerConfiguration;
+import com.atlassian.theplugin.configuration.Server;
+import com.atlassian.theplugin.idea.IdeaHelper;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -18,14 +18,14 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 
 	private final BambooStatusDisplay display;
 
-    private static final int TIME_OFFSET = -12;
+	private static final int TIME_OFFSET = -12;
 
-    public static final String BODY_WITH_STYLE =
-            "<body style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">";
-    private static final DateFormat TIME_DF = new SimpleDateFormat("hh:mm a");
-    private static final DateFormat DATE_DF = new SimpleDateFormat("MMM d");
+	public static final String BODY_WITH_STYLE =
+			"<body style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">";
+	private static final DateFormat TIME_DF = new SimpleDateFormat("hh:mm a");
+	private static final DateFormat DATE_DF = new SimpleDateFormat("MMM d");
 
-    public HtmlBambooStatusListener(BambooStatusDisplay aDisplay) {
+	public HtmlBambooStatusListener(BambooStatusDisplay aDisplay) {
 		display = aDisplay;
 	}
 
@@ -35,10 +35,14 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 		Date buildTime = buildInfo.getBuildTime();
 		String relativeBuildDate = buildInfo.getBuildRelativeBuildDate();
 		String buildTimeStr;
-		if (relativeBuildDate != null && !relativeBuildDate.equals("")) {
-			buildTimeStr = buildInfo.getBuildRelativeBuildDate();
+		if (buildInfo.getEnabled()) {
+			if (relativeBuildDate != null && !relativeBuildDate.equals("")) {
+				buildTimeStr = buildInfo.getBuildRelativeBuildDate();
+			} else {
+				buildTimeStr = (null == buildTime) ? "&nbsp;" : formatBuildTime(buildTime);
+			}
 		} else {
-			buildTimeStr = (null == buildTime) ? "&nbsp;" : formatBuildTime(buildTime);
+			buildTimeStr = "Disabled";
 		}
 		sb.append(buildTimeStr).append("</td>");
 
@@ -73,14 +77,18 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 		return drawRow(buildInfo, "#999999", "icn_plan_disabled.gif");
 	}
 
+	private String getDisabledBuildRow(BambooBuild buildInfo) {
+		return drawRow(buildInfo, "#999999", "icn_plan_disabled.gif");
+	}
+
 	private String drawRow(BambooBuild buildInfo, String colour, String icon) {
 		StringBuilder sb = new StringBuilder("<tr>");
 		sb.append(
 				"<td width=1%><a href='"
-				+ buildInfo.getBuildUrl()
-				+ "'><img src=\"/icons/"
-				+ icon
-				+ "\" height=\"16\" width=\"16\" border=\"0\" align=\"absmiddle\"></a></td>");
+						+ buildInfo.getBuildUrl()
+						+ "'><img src=\"/icons/"
+						+ icon
+						+ "\" height=\"16\" width=\"16\" border=\"0\" align=\"absmiddle\"></a></td>");
 		if (buildInfo.getStatus() == BuildStatus.UNKNOWN) {
 			// TODO: jgorycki: this generates bug PL-95
 			// In case of bamboo error garbage is displayed in the tooltip
@@ -88,39 +96,39 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 					? lineSeparator.split(buildInfo.getMessage(), 2)[0] : null;
 			sb.append("<td width=100%><font color=\"" + colour + "\">").append(shortMessage).append("</font></td>");
 		} else {
-            String font = "<font color=\"" + colour + "\">";
-            boolean bamboo2 = !buildInfo.getProjectName().equals("");
-                sb.append("<td width=\"100%\" nowrap>");
-                if (bamboo2) {
-                    sb.append("<b>");
-                    sb.append(
-							"<a href='"
-							+ buildInfo.getProjectUrl()
-							+ "'>"
-							+ font
-							+ buildInfo.getProjectName()
-							+ "</font></a>&nbsp;&nbsp;");
-                    sb.append(
-							"<a href='"
-							+ buildInfo.getBuildUrl()
-							+ "'>"
-							+ font
-							+ buildInfo.getBuildName()
-							+ "</font></a>");
-                    sb.append(font + " &gt; </font>");
-                    sb.append("</b>");
-                }
-                sb.append(
+			String font = "<font color=\"" + colour + "\">";
+			boolean bamboo2 = !buildInfo.getProjectName().equals("");
+			sb.append("<td width=\"100%\" nowrap>");
+			if (bamboo2) {
+				sb.append("<b>");
+				sb.append(
 						"<a href='"
-						+ buildInfo.getBuildResultUrl()
-						+ "'>"
-						+ font
-						+ "<b>"
-						+ buildInfo.getBuildKey()
-						+
-						"-"
-						+ buildInfo.getBuildNumber()
-						+ "</b></font></a></td>");
+								+ buildInfo.getProjectUrl()
+								+ "'>"
+								+ font
+								+ buildInfo.getProjectName()
+								+ "</font></a>&nbsp;&nbsp;");
+				sb.append(
+						"<a href='"
+								+ buildInfo.getBuildUrl()
+								+ "'>"
+								+ font
+								+ buildInfo.getBuildName()
+								+ "</font></a>");
+				sb.append(font + " &gt; </font>");
+				sb.append("</b>");
+			}
+			sb.append(
+					"<a href='"
+							+ buildInfo.getBuildResultUrl()
+							+ "'>"
+							+ font
+							+ "<b>"
+							+ buildInfo.getBuildKey()
+							+
+							"-"
+							+ buildInfo.getBuildNumber()
+							+ "</b></font></a></td>");
 		}
 		sb.append(formatLatestPollAndBuildTime(buildInfo));
 		sb.append("</tr>");
@@ -136,80 +144,84 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 		BuildStatus status = BuildStatus.BUILD_SUCCEED;
 		StringBuilder sb = new StringBuilder("<html>" + BODY_WITH_STYLE);
 
-        if (buildStatuses == null || buildStatuses.size() == 0) {
+		if (buildStatuses == null || buildStatuses.size() == 0) {
 			sb.append("No plans defined.");
 			status = BuildStatus.UNKNOWN;
 		} else {
-            List<BambooBuild> sortedStatuses = new ArrayList<BambooBuild>(buildStatuses);
-            Collections.sort(sortedStatuses, new Comparator<BambooBuild>() {
-                public int compare(BambooBuild b1, BambooBuild b2) {
-                    return b1.getServerUrl().compareTo(b2.getServerUrl());
-                }
-            });
+			List<BambooBuild> sortedStatuses = new ArrayList<BambooBuild>(buildStatuses);
+			Collections.sort(sortedStatuses, new Comparator<BambooBuild>() {
+				public int compare(BambooBuild b1, BambooBuild b2) {
+					return b1.getServerUrl().compareTo(b2.getServerUrl());
+				}
+			});
 
-            sb.append("<table width=\"100%\">");
-            String lastServer = null;
+			sb.append("<table width=\"100%\">");
+			String lastServer = null;
 
-            for (BambooBuild buildInfo : buildStatuses) {
-                if (!buildInfo.getServerUrl().equals(lastServer)) {
-                    Server server = getServerFromUrl(buildInfo.getServerUrl());
+			for (BambooBuild buildInfo : buildStatuses) {
+				if (!buildInfo.getServerUrl().equals(lastServer)) {
+					Server server = getServerFromUrl(buildInfo.getServerUrl());
 
-                    if (lastServer != null) {
-                        sb.append("<tr><td colspan=3>&nbsp;</td></tr>");                        
-                    }
-                    sb.append("<tr><td colspan=3>");
-                    sb.append(
+					if (lastServer != null) {
+						sb.append("<tr><td colspan=3>&nbsp;</td></tr>");
+					}
+					sb.append("<tr><td colspan=3>");
+					sb.append(
 							"<table width=100% cellpadding=0 cellspacing=0>"
-							+ "<tr>"
+									+ "<tr>"
 //                          + "<td width=1%><a href='"
 // 							+ server.getUrlString()
 // 							+ "'><img src=/icons/bamboo-blue-32.png height=32 width=32 border=0></a></td>"
-                            + "<td width=100%><b><a href='"
-							+ server.getUrlString()
-							+ "'>"
-							+ server.getName()
-							+ "</a></b><br>"
-                            + "<font style=\"font-size: 10pt;\" color=#999999>LAST UPDATE: "
-							+ TIME_DF.format(buildInfo.getPollingTime()) + "</font></td>"
-							+ "<td width=1% nowrap align=right valign=bottom style=\"font-size:10pt ;\">"
-							+ "</td></tr></table>");
-                    sb.append("</td></tr>");
-                }
-                switch (buildInfo.getStatus()) {
-					case BUILD_FAILED:
-						sb.append(getFailedBuildRow(buildInfo));
-						status = BUILD_FAILED;
-						break;
-					case UNKNOWN:
-						sb.append(getErrorBuildRow(buildInfo));
-						if (status != BUILD_FAILED) {
-							status = BuildStatus.UNKNOWN;
-						}
-						break;
-					case BUILD_SUCCEED:
-						sb.append(getSuccessBuildRow(buildInfo));
-						break;
-					default:
-						throw new IllegalStateException("Unexpected build status encountered");
+									+ "<td width=100%><b><a href='"
+									+ server.getUrlString()
+									+ "'>"
+									+ server.getName()
+									+ "</a></b><br>"
+									+ "<font style=\"font-size: 10pt;\" color=#999999>LAST UPDATE: "
+									+ TIME_DF.format(buildInfo.getPollingTime()) + "</font></td>"
+									+ "<td width=1% nowrap align=right valign=bottom style=\"font-size:10pt ;\">"
+									+ "</td></tr></table>");
+					sb.append("</td></tr>");
 				}
-                lastServer = buildInfo.getServerUrl();
-            }
+				if (buildInfo.getEnabled()) {
+					switch (buildInfo.getStatus()) {
+						case BUILD_FAILED:
+							sb.append(getFailedBuildRow(buildInfo));
+							status = BUILD_FAILED;
+							break;
+						case UNKNOWN:
+							sb.append(getErrorBuildRow(buildInfo));
+							if (status != BUILD_FAILED) {
+								status = BuildStatus.UNKNOWN;
+							}
+							break;
+						case BUILD_SUCCEED:
+							sb.append(getSuccessBuildRow(buildInfo));
+							break;
+						default:
+							throw new IllegalStateException("Unexpected build status encountered");
+					}
+				} else {
+					sb.append(getDisabledBuildRow(buildInfo));
+				}
+				lastServer = buildInfo.getServerUrl();
+			}
 			sb.append("</table>");
 		}
 		sb.append("</body></html>");
 		display.updateBambooStatus(status, sb.toString());
 	}
 
-    protected Server getServerFromUrl(String serverUrl) {
-        ProductServerConfiguration productServers =
+	protected Server getServerFromUrl(String serverUrl) {
+		ProductServerConfiguration productServers =
 				IdeaHelper.getAppComponent().getState().getProductServers(ServerType.BAMBOO_SERVER);
-        for (Iterator<Server> iterator = productServers.getEnabledServers().iterator(); iterator.hasNext();) {
-            Server server = iterator.next();
-            if (serverUrl.equals(server.getUrlString())) {
-                return server;
+		for (Iterator<Server> iterator = productServers.getEnabledServers().iterator(); iterator.hasNext();) {
+			Server server = iterator.next();
+			if (serverUrl.equals(server.getUrlString())) {
+				return server;
 			}
 		}
 
-        return null;
-    }
+		return null;
+	}
 }

@@ -175,9 +175,16 @@ public class BambooSession {
 			List<Element> elements = xpath.selectNodes(doc);
 			if (elements != null) {
 				for (Element element : elements) {
+					String enabledValue = element.getAttributeValue("enabled");
+					boolean enabled = true;
+					if (enabledValue != null) {
+					  	enabled = Boolean.parseBoolean(enabledValue);
+					}
 					String name = element.getChild("name").getText();
 					String key = element.getChild("key").getText();
-					plans.add(new BambooPlanData(name, key));
+					BambooPlanData plan = new BambooPlanData(name, key);
+					plan.setEnabled(enabled);
+					plans.add(plan);
 				}
 			}
 		} catch (JDOMException e) {
@@ -205,7 +212,6 @@ public class BambooSession {
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("URLEncoding problem: " + e.getMessage());
 		}
-
 
 		try {
 			Document doc = retrieveResponse(buildResultUrl);
@@ -237,7 +243,6 @@ public class BambooSession {
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("URLEncoding problem: " + e.getMessage());
 		}
-
 
 		try {
 			Document doc = retrieveResponse(buildResultUrl);
