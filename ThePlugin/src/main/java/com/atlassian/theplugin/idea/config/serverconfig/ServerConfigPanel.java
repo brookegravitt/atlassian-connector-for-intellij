@@ -38,7 +38,7 @@ public final class ServerConfigPanel extends AbstractContentPanel {
 	private static final float SPLIT_RATIO = 0.3f;
 	private Map<ServerType, AbstractServerPanel> serverPanels;
 	private static ServerConfigPanel instance;
-	private BambooGeneralPanel bambooGeneralPanel;
+	private BambooGeneralForm bambooGeneralForm;
 
 	private ServerConfigPanel() {
         serverPanels = new HashMap<ServerType, AbstractServerPanel>();
@@ -100,11 +100,11 @@ public final class ServerConfigPanel extends AbstractContentPanel {
     }
 
 	public JComponent getBambooGeneralPanel() {
-		if (bambooGeneralPanel == null) {
-			bambooGeneralPanel = new BambooGeneralPanel();
+		if (bambooGeneralForm == null) {
+			bambooGeneralForm = new BambooGeneralForm();
 		}
 
-		return bambooGeneralPanel;
+		return bambooGeneralForm;
 	}
 
 	private JComponent getServerPanel(ServerType serverType) {
@@ -162,7 +162,7 @@ public final class ServerConfigPanel extends AbstractContentPanel {
             }
         }
 
-		if (bambooGeneralPanel.isModified()) {
+		if (bambooGeneralForm.isModified()) {
 			return true;
 		}
 
@@ -190,25 +190,25 @@ public final class ServerConfigPanel extends AbstractContentPanel {
 
 			((BambooConfigurationBean) getPluginConfiguration()
 					.getProductServers(ServerType.BAMBOO_SERVER))
-					.setBambooTooltipOption(bambooGeneralPanel.getData().getBambooTooltipOption());
+					.setBambooTooltipOption(bambooGeneralForm.getData().getBambooTooltipOption());
 			((BambooConfigurationBean) ConfigurationFactory
 					.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER))
-					.setBambooTooltipOption(bambooGeneralPanel.getData().getBambooTooltipOption());
+					.setBambooTooltipOption(bambooGeneralForm.getData().getBambooTooltipOption());
 
 			((BambooConfigurationBean) getPluginConfiguration()
 					.getProductServers(ServerType.BAMBOO_SERVER))
-					.setPollTime(bambooGeneralPanel.getData().getPollTime());
+					.setPollTime(bambooGeneralForm.getData().getPollTime());
 			((BambooConfigurationBean) ConfigurationFactory.getConfiguration()
 					.getProductServers(ServerType.BAMBOO_SERVER))
-					.setPollTime(bambooGeneralPanel.getData().getPollTime());
-			bambooGeneralPanel.setData(bambooGeneralPanel.getData());
+					.setPollTime(bambooGeneralForm.getData().getPollTime());
+			bambooGeneralForm.setData(bambooGeneralForm.getData());
 
         }
     }
 
 	public void setData() {
         treePanel.setData(ConfigPanel.getInstance().getPluginConfiguration());
-		bambooGeneralPanel.setData(((BambooConfigurationBean) ConfigurationFactory.getConfiguration()
+		bambooGeneralForm.setData(((BambooConfigurationBean) ConfigurationFactory.getConfiguration()
 				.getProductServers(ServerType.BAMBOO_SERVER)));
 	}
 
