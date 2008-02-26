@@ -2,6 +2,7 @@ package com.atlassian.theplugin.bamboo;
 
 import com.atlassian.theplugin.ServerType;
 import com.atlassian.theplugin.UIActionScheduler;
+import com.atlassian.theplugin.configuration.BambooConfigurationBean;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
@@ -22,8 +23,6 @@ import java.util.TimerTask;
  * Thread safe.
  */
 public final class BambooStatusChecker implements SchedulableComponent {
-	private static final long BAMBOO_TIMER_TICK = 20000;
-
 	private final List<BambooStatusListener> listenerList = new ArrayList<BambooStatusListener>();
 
 	private final UIActionScheduler actionScheduler;
@@ -97,7 +96,7 @@ public final class BambooStatusChecker implements SchedulableComponent {
 	}
 
 	public long getInterval() {
-		return BAMBOO_TIMER_TICK;		
+		return ((BambooConfigurationBean)ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER)).getPollTime() * 60 * 1000;
 	}
 
 }

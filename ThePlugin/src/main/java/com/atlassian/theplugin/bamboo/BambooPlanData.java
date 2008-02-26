@@ -4,6 +4,7 @@ public class BambooPlanData implements BambooPlan {
 	private String name;
 	private String key;
 	private boolean favourite;
+	private boolean enabled;
 
 	public BambooPlanData(String name, String key) {
 		this.name = name;
@@ -32,5 +33,13 @@ public class BambooPlanData implements BambooPlan {
 
 	public void setFavourite(boolean favourite) {
 		this.favourite = favourite;
+	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 }
