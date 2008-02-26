@@ -28,13 +28,13 @@ public class ThePluginProjectComponent implements ProjectComponent {
     private static final String THE_PLUGIN_TOOL_WINDOW_ICON = "/icons/thePlugin_15x10.png";
 
 	private final Project project;
-	private StatusBar statusBar;
 	private BambooStatusIcon statusBarBambooIcon;
+
 	private CrucibleStatusIcon statusBarCrucibleIcon;
 	private BambooStatusChecker bambooStatusChecker;
 	private HtmlBambooStatusListener iconBambooStatusListener;
     private HtmlBambooStatusListener toolWindowBambooListener;
-	private BambooStatusListenerImpl simpleBambooStatusListener;
+	private BambooStatusListenerImpl tooltipBambooStatusListener;
 
 	private CrucibleStatusChecker crucibleStatusChecker;
     private HtmlCrucibleStatusListener toolWindowCrucibleListener;
@@ -45,14 +45,17 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	private ToolWindow toolWindow;
 	private UserDataContext crucibleUserContext;
 
-	public ThePluginProjectComponent(Project project, ThePluginApplicationComponent applicationConponent) {
+	private ThePluginApplicationComponent applicationComponent;
+
+	public ThePluginProjectComponent(Project project, ThePluginApplicationComponent applicationComponent) {
 		this.project = project;
+		this.applicationComponent = applicationComponent;
+		applicationComponent.setProjectComponent(this);
 
 		// make findBugs happy
 		toolWindowManager = null;
-		bambooStatusChecker = applicationConponent.getBambooStatusChecker();
+		bambooStatusChecker = null;
         crucibleStatusChecker = null;
-        statusBar = null;
 		statusBarBambooIcon = null;
 		statusBarCrucibleIcon = null;
 		enabled = false;
@@ -82,7 +85,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
         // store bamboo between runs in UDC
         // clean up object model confusion
 
-        ThePluginApplicationComponent appComponent = IdeaHelper.getAppComponent();
+		bambooStatusChecker = applicationComponent.getBambooStatusChecker();
 
 		if (!enabled) {
 
@@ -121,7 +124,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			toolWindowBambooListener = new HtmlBambooStatusListener(bambooToolWindowPanel.getBambooContent());
 			bambooStatusChecker.registerListener(toolWindowBambooListener);
 
-			// create status bar icon
+			// create Bamboo status bar icon
 			statusBarBambooIcon = new BambooStatusIcon(this);
 			statusBarBambooIcon.updateBambooStatus(BuildStatus.UNKNOWN,
 					"<div style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">"
@@ -135,42 +138,46 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			// add simple bamboo listener to bamboo checker thread
 			// this listener shows idea tooltip when buld failed
 			buildFailedToolTip = new BuildStatusChangedToolTip(project);
-			simpleBambooStatusListener = new BambooStatusListenerImpl(buildFailedToolTip);
-			bambooStatusChecker.registerListener(simpleBambooStatusListener);
+			tooltipBambooStatusListener = new BambooStatusListenerImpl(buildFailedToolTip);
+			bambooStatusChecker.registerListener(tooltipBambooStatusListener);
 
 			// add bamboo icon to status bar
-			statusBar = WindowManager.getInstance().getStatusBar(project);
-			statusBar.addCustomIndicationComponent(statusBarBambooIcon);
+			//statusBar = WindowManager.getInstance().getStatusBar(project);
+			//statusBar.addCustomIndicationComponent(statusBarBambooIcon);
+			statusBarBambooIcon.showOrHideIcon();
 
 			// create crucible status bar icon
-			statusBarCrucibleIcon = new CrucibleStatusIcon();
+			statusBarCrucibleIcon = new CrucibleStatusIcon(project);
 
 			// setup Crucible status checker and listeners
             crucibleStatusChecker = CrucibleStatusChecker.getIntance();
             toolWindowCrucibleListener = new HtmlCrucibleStatusListener(crucibleToolWindowPanel.getCrucibleContent());
             crucibleStatusChecker.registerListener(toolWindowCrucibleListener);
-			crucibleUserContext = appComponent.getUserDataContext();
+			crucibleUserContext = applicationComponent.getUserDataContext();
 			crucibleUserContext.setDisplay(statusBarCrucibleIcon);
 			crucibleStatusChecker.registerListener(crucibleUserContext);
+
 			// add crucible icon to status bar
-			statusBar.addCustomIndicationComponent(statusBarCrucibleIcon);
-            enabled = true;
+			//statusBar.addCustomIndicationComponent(statusBarCrucibleIcon);
+			statusBarCrucibleIcon.showOrHideIcon();
+
+			enabled = true;
 		}
 	}
 
 	public void disablePlugin() {
 		if (enabled) {
 			// remove icon from status bar
-			statusBar.removeCustomIndicationComponent(statusBarBambooIcon);
+			statusBarBambooIcon.showOrHideIcon();
 			statusBarBambooIcon = null;
-			statusBar.removeCustomIndicationComponent(statusBarCrucibleIcon);
+			statusBarCrucibleIcon.showOrHideIcon();
 			statusBarCrucibleIcon = null;
 
 
 			// unregister listeners
 			bambooStatusChecker.unregisterListener(iconBambooStatusListener);
 			bambooStatusChecker.unregisterListener(toolWindowBambooListener);
-			bambooStatusChecker.unregisterListener(simpleBambooStatusListener);
+			bambooStatusChecker.unregisterListener(tooltipBambooStatusListener);
 			crucibleStatusChecker.unregisterListener(toolWindowCrucibleListener);
 			crucibleStatusChecker.unregisterListener(crucibleUserContext);
 
@@ -182,6 +189,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	}
 
 	public void projectOpened() {
+
 		System.out.println("Start: Project open");
 		enablePlugin();
 		System.out.println("End: Project open");
@@ -199,5 +207,13 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 	public ToolWindow getToolWindow() {
 		return toolWindow;
+	}
+
+	public BambooStatusIcon getStatusBarBambooIcon() {
+		return statusBarBambooIcon;
+	}
+
+	public CrucibleStatusIcon getStatusBarCrucibleIcon() {
+		return statusBarCrucibleIcon;
 	}
 }

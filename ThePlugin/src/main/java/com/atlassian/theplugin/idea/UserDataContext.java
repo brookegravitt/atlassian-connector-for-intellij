@@ -44,7 +44,7 @@ public class UserDataContext implements CrucibleStatusListener {
 
 			final Project project = IdeaHelper.getCurrentProject();
 
-			if (project != null) {
+			//if (project != null) {
 				StringBuffer sb = new StringBuffer(
 						"<table width=\"100%\">"
 						+ "<tr><td width=20><img src=\"/icons/crucible-blue-16.png\" height=16 width=16 border=0></td>"
@@ -82,7 +82,7 @@ public class UserDataContext implements CrucibleStatusListener {
 				content.setCaretPosition(0); // do thi to make sure scroll pane is always at the top / header
 				WindowManager.getInstance().getStatusBar(project).fireNotificationPopup(
 						new JScrollPane(content), new Color(R, G, B));
-			}
+			//}
 		}
 
 		reviews = new ArrayList<ReviewDataInfo>(incomingReviews);

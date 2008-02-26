@@ -1,6 +1,9 @@
 package com.atlassian.theplugin.idea.crucible;
 
+import com.atlassian.theplugin.StatusBarPluginIcon;
+import com.atlassian.theplugin.ServerType;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
 
 import javax.swing.*;
@@ -15,14 +18,15 @@ import java.awt.event.MouseEvent;
  * Time: 10:57:34
  * To change this template use File | Settings | File Templates.
  */
-public class CrucibleStatusIcon extends JLabel {
+public class CrucibleStatusIcon extends StatusBarPluginIcon {
 
 	private static final Icon ICON_NEW = IconLoader.getIcon("/icons/crucible-blue-16.png");
 	private static final Icon ICON_STANDARD = IconLoader.getIcon("/icons/crucible-grey-16.png");
 	private static final String NO_NEW_REVIEWS = "No new reviews.";
 	private static final String NEW_REVIEWS = "New reviews are available. Click for details.";
 
-	public CrucibleStatusIcon() {
+	public CrucibleStatusIcon(final Project project) {
+		super(project);
 		resetIcon();
 
 		addMouseListener(new MouseAdapter() {
@@ -50,5 +54,9 @@ public class CrucibleStatusIcon extends JLabel {
 		this.setIcon(ICON_STANDARD);
 		this.setToolTipText(NO_NEW_REVIEWS);
 		this.setText(null);
+	}
+
+	public void showOrHideIcon() {
+		super.showOrHideIcon(ServerType.CRUCIBLE_SERVER);
 	}
 }
