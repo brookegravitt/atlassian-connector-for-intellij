@@ -141,7 +141,10 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 						((BambooBuildInfo) buildInfo).setEnabled(bambooPlan.isEnabled());
 						builds.add(buildInfo);
 					} else {
-						builds.add(constructBuildErrorInfo(bambooServer.getUrlString(), bambooPlan.getPlanKey(), connectionErrorMessage));
+						builds.add(constructBuildErrorInfo(
+								bambooServer.getUrlString(),
+								bambooPlan.getPlanKey(),
+								connectionErrorMessage));
 					}
 				}
 			}
