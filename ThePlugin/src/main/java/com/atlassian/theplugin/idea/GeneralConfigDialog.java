@@ -9,12 +9,12 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 public class GeneralConfigDialog extends JDialog {
-	private JPanel GeneralSettingsPanel;
+	private JPanel generalSettingsPanel;
 	private JCheckBox chkAutoUpdateEnabled;
 	private JPanel contentPane;
 
 	public GeneralConfigDialog() {
-		setContentPane(GeneralSettingsPanel);
+		setContentPane(generalSettingsPanel);
 		setModal(true);
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
@@ -24,18 +24,12 @@ public class GeneralConfigDialog extends JDialog {
 		});
 	}
 
-	private void onOK() {
-// add your code here
-		dispose();
-	}
-
 	private void onCancel() {
-// add your code here if necessary
 		dispose();
 	}
 
 	public JPanel getGeneralSettingsPanel() {
-		return this.GeneralSettingsPanel;
+		return this.generalSettingsPanel;
 	}
 
 	public boolean getIsAutoUpdateEnabled() {
@@ -63,13 +57,13 @@ public class GeneralConfigDialog extends JDialog {
 	private void $$$setupUI$$$() {
 		contentPane = new JPanel();
 		contentPane.setLayout(new GridLayoutManager(1, 1, new Insets(10, 10, 10, 10), -1, -1));
-		GeneralSettingsPanel = new JPanel();
-		GeneralSettingsPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-		contentPane.add(GeneralSettingsPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_NORTH, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-		GeneralSettingsPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createRaisedBevelBorder(), "Auto update"));
+		generalSettingsPanel = new JPanel();
+		generalSettingsPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+		contentPane.add(generalSettingsPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_NORTH, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+		generalSettingsPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createRaisedBevelBorder(), "Auto update"));
 		chkAutoUpdateEnabled = new JCheckBox();
 		chkAutoUpdateEnabled.setText("Enabled");
-		GeneralSettingsPanel.add(chkAutoUpdateEnabled, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		generalSettingsPanel.add(chkAutoUpdateEnabled, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 	}
 
 	/**
@@ -77,5 +71,9 @@ public class GeneralConfigDialog extends JDialog {
 	 */
 	public JComponent $$$getRootComponent$$$() {
 		return contentPane;
+	}
+
+	private void createUIComponents() {
+		// TODO: place custom component creation code here
 	}
 }
