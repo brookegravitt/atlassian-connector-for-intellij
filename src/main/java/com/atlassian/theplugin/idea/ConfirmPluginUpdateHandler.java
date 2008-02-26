@@ -1,9 +1,8 @@
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;
-import com.intellij.openapi.project.Project;
-
-import javax.swing.*;
+import com.atlassian.theplugin.util.InfoServer;
+import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -13,39 +12,27 @@ import javax.swing.*;
  * To change this template use File | Settings | File Templates.
  */
 public class ConfirmPluginUpdateHandler implements Runnable {
-	private String version;
-	private String downloadUrl;
-
-	private static boolean isTriggered = false;
-	private BuildStatusChangedToolTip buildFailedToolTip;
-	private Project project;
-
-	public ConfirmPluginUpdateHandler(String version, String downloadUrl) {
-		this.version = version;
-		this.downloadUrl = downloadUrl;
-	}
+	private static ConfirmPluginUpdateHandler instance;
+	private InfoServer.VersionInfo versionInfo;
+	private PluginUpdateIcon display;
+	private static final Category LOGGER = Logger.getInstance(PluginStatusBarToolTip.class);
 
 	public void run() {
+		display.triggerUpdateAvailableAction(versionInfo);
+	}	
 
-		if (!isTriggered) {
-
-			String message = "New plugin version " + version + " is available. "
-					+ "Your version is " + PluginInfoUtil.getVersion()
-					+ ". Do you want to download and install?";
-			String title = "New plugin version download";
-
-			isTriggered = true;
-
-			int answer = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(),
-					message, title, JOptionPane.YES_NO_OPTION);
-
-			if (answer == JOptionPane.OK_OPTION) {
-
-				// fire downloading and updating plugin in the new thread
-				Thread downloader = new Thread(new PluginDownloader(version, downloadUrl));
-
-				downloader.start();
-			}
+	public static synchronized ConfirmPluginUpdateHandler getInstance() {
+		if(instance == null) {
+			instance = new ConfirmPluginUpdateHandler();
 		}
+		return instance;
+	}
+
+	public void setNewVersionInfo(InfoServer.VersionInfo versionInfo) {
+		this.versionInfo = versionInfo;
+	}
+
+	public void setDisplay(PluginUpdateIcon display) {
+		this.display = display;
 	}
 }

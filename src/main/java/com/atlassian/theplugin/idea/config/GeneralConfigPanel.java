@@ -16,7 +16,7 @@ import java.awt.*;
 public class GeneralConfigPanel extends AbstractContentPanel {
 	private static GeneralConfigPanel instance = null;
 	private boolean isPluginEnabled;
-	private GeneralConfigForm dialog;
+	transient private GeneralConfigForm dialog;
 
 	public GeneralConfigPanel() {
 		super();

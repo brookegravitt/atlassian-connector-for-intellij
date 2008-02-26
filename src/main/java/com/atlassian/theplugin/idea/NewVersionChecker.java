@@ -17,6 +17,7 @@ public final class NewVersionChecker implements SchedulableComponent {
 
 	private static NewVersionChecker instance;
 	private static final Category LOG = Logger.getInstance(NewVersionChecker.class);
+	private PluginUpdateIcon statusPluginUpdateIcon;
 
 	private NewVersionChecker() {
 		super();
@@ -66,8 +67,13 @@ public final class NewVersionChecker implements SchedulableComponent {
 
 		// simple versionInfo difference check
 		if (!versionInfo.getVersion().equals(PluginInfoUtil.getVersion())) {
-			ApplicationManager.getApplication().invokeLater(
-					new ConfirmPluginUpdateHandler(versionInfo.getVersion(), versionInfo.getDownloadUrl()));
+			ConfirmPluginUpdateHandler handler = ConfirmPluginUpdateHandler.getInstance();
+			handler.setNewVersionInfo(versionInfo);
+			ApplicationManager.getApplication().invokeLater(handler);
 		}
+	}
+
+	public void setDisplay(PluginUpdateIcon statusPluginUpdateIcon) {
+		this.statusPluginUpdateIcon = statusPluginUpdateIcon;
 	}
 }

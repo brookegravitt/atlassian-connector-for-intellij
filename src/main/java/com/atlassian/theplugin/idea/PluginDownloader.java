@@ -1,5 +1,7 @@
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.theplugin.exception.VersionServiceException;
+import com.atlassian.theplugin.util.InfoServer;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.ide.startup.StartupActionScriptManager;
@@ -10,6 +12,7 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.io.StreamUtil;
 import com.intellij.util.io.ZipUtil;
 import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import java.io.*;
@@ -27,26 +30,24 @@ import java.net.URLConnection;
 
 public class PluginDownloader implements Runnable {
 
-	public static final Category LOG = Category.getInstance(PluginDownloader.class);
+	private static final Category LOGGER = Logger.getInstance(PluginStatusBarToolTip.class);
 
 	public static final String PLUGIN_ID_TOKEN = "PLUGIN_ID";
 	public static final String VERSION_TOKEN = "BUILD";
 
 	private static String pluginName = PluginInfoUtil.getName();
-	private String pluginLatestVersion;
-	private String pluginDownloadUrl;
 
 	private static final int TIMEOUT = 15000;
 	private static final int EXTENTION_LENGHT = 3;
+	private InfoServer.VersionInfo newVersion;
 
-	public PluginDownloader(String version, String downloadUrl) {
-		this.pluginLatestVersion = version;
-		this.pluginDownloadUrl = downloadUrl;
+	public PluginDownloader(InfoServer.VersionInfo newVersion) {
+		this.newVersion = newVersion;
 	}
 
 	public void run() {
 		try {
-			File localArchiveFile = downloadPluginFromServer(this.pluginLatestVersion);
+			File localArchiveFile = downloadPluginFromServer(this.newVersion.getDownloadUrl());
 
 			// add startup actions
 
@@ -66,7 +67,9 @@ public class PluginDownloader implements Runnable {
 			promptShutdownAndShutdown();
 
 		} catch (IOException e) {
-			LOG.error("Error registering action in IDEA", e);
+			LOGGER.error("Error registering action in IDEA", e);
+		} catch (VersionServiceException e) {
+			LOGGER.error("Error registering action in IDEA", e);
 		}
 	}
 
@@ -98,11 +101,16 @@ public class PluginDownloader implements Runnable {
 		File pluginArchiveFile = FileUtil.createTempFile("temp_" + pluginName + "_", "tmp");
 
 
-		String pluginUrl = this.pluginDownloadUrl
+		String pluginUrl = null;
+		try {
+			pluginUrl = newVersion.getDownloadUrl()
 				.replaceAll(PLUGIN_ID_TOKEN, pluginName)
-				.replaceAll(VERSION_TOKEN, version);
+					.replaceAll(VERSION_TOKEN, version);
+		} catch (VersionServiceException e) {
+			LOGGER.error("Error retrieving url for new version of the plugin.");
+		}
 
-		LOG.info("Downloading plugin archive from: " + pluginUrl);
+		LOGGER.info("Downloading plugin archive from: " + pluginUrl);
 
 		//HttpConfigurable.getInstance().prepareURL(pluginUrl);
 		URL url = new URL(pluginUrl);
