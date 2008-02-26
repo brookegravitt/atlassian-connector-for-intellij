@@ -42,7 +42,7 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 				buildTimeStr = (null == buildTime) ? "&nbsp;" : formatBuildTime(buildTime);
 			}
 		} else {
-			buildTimeStr = "Disabled";
+			buildTimeStr = "";
 		}
 		sb.append(buildTimeStr).append("</td>");
 
@@ -118,6 +118,7 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 				sb.append(font + " &gt; </font>");
 				sb.append("</b>");
 			}
+			if (buildInfo.getEnabled()) {
 			sb.append(
 					"<a href='"
 							+ buildInfo.getBuildResultUrl()
@@ -129,6 +130,9 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 							"-"
 							+ buildInfo.getBuildNumber()
 							+ "</b></font></a></td>");
+			} else {
+				sb.append(font + "<b>Disabled</b></font></td>");
+			}
 		}
 		sb.append(formatLatestPollAndBuildTime(buildInfo));
 		sb.append("</tr>");
