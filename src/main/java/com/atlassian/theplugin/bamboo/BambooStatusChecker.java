@@ -97,7 +97,7 @@ public final class BambooStatusChecker implements SchedulableComponent {
 	}
 
 	public long getInterval() {
-		return (long)((BambooConfigurationBean) ConfigurationFactory.getConfiguration()
+		return (long) ((BambooConfigurationBean) ConfigurationFactory.getConfiguration()
 				.getProductServers(ServerType.BAMBOO_SERVER))
 				.getPollTime() * SECONDS_IN_MINUTE * MILISECONDS_IN_SECOND;
 	}
