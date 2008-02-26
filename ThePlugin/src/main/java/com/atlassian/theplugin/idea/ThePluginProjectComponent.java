@@ -31,6 +31,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	private BambooStatusIcon statusBarBambooIcon;
 
 	private CrucibleStatusIcon statusBarCrucibleIcon;
+	private PluginUpdateIcon statusPluginUpdateIcon;
 	private BambooStatusChecker bambooStatusChecker;
 	private HtmlBambooStatusListener iconBambooStatusListener;
     private HtmlBambooStatusListener toolWindowBambooListener;
@@ -58,6 +59,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
         crucibleStatusChecker = null;
 		statusBarBambooIcon = null;
 		statusBarCrucibleIcon = null;
+		statusPluginUpdateIcon = null;
 		enabled = false;
 	}
 
@@ -161,6 +163,11 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			//statusBar.addCustomIndicationComponent(statusBarCrucibleIcon);
 			statusBarCrucibleIcon.showOrHideIcon();
 
+			statusPluginUpdateIcon = new PluginUpdateIcon(project);
+			ConfirmPluginUpdateHandler.getInstance().setDisplay(statusPluginUpdateIcon);
+			statusPluginUpdateIcon.showOrHideIcon();
+
+
 			enabled = true;
 		}
 	}
@@ -172,6 +179,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			statusBarBambooIcon = null;
 			statusBarCrucibleIcon.showOrHideIcon();
 			statusBarCrucibleIcon = null;
+			statusPluginUpdateIcon.showOrHideIcon();
+			statusPluginUpdateIcon = null;
 
 
 			// unregister listeners
