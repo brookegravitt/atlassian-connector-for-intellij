@@ -48,7 +48,7 @@ public class InfoServer {
 	}
 
 
-	public class VersionInfo {
+	public static class VersionInfo {
 		private Document doc;
 
 		public VersionInfo(Document doc) {
