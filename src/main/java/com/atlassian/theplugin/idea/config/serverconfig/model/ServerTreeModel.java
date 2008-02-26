@@ -26,13 +26,10 @@ public class ServerTreeModel extends DefaultTreeModel {
 			}
 		}
 		if (addIfMissing) {
-			insertNodeInto(new ServerTypeNode(serverType), (DefaultMutableTreeNode) root, root.getChildCount());
-			for (int i = 0; i < root.getChildCount(); ++i) {
-				ServerTypeNode serverTypeNode = (ServerTypeNode) root.getChildAt(i);
-				if (serverTypeNode.getServerType() == serverType) {
-					return serverTypeNode;
-				}
-			}
+			final ServerTypeNode child = new ServerTypeNode(serverType);
+			insertNodeInto(child, (DefaultMutableTreeNode) root, root.getChildCount());
+			this.nodeChanged(root);
+			return child;
 		}
 		return null;
 	}
