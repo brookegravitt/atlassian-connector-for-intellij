@@ -17,7 +17,7 @@ public final class NewVersionChecker implements SchedulableComponent {
 
 	private static NewVersionChecker instance;
 	private static final Category LOG = Logger.getInstance(NewVersionChecker.class);
-	private PluginUpdateIcon statusPluginUpdateIcon;
+	private PluginUpdateIcon display;
 
 	private NewVersionChecker() {
 		super();
@@ -73,7 +73,7 @@ public final class NewVersionChecker implements SchedulableComponent {
 		}
 	}
 
-	public void setDisplay(PluginUpdateIcon statusPluginUpdateIcon) {
-		this.statusPluginUpdateIcon = statusPluginUpdateIcon;
+	public void setDisplay(PluginUpdateIcon display) {
+		this.display = display;
 	}
 }
