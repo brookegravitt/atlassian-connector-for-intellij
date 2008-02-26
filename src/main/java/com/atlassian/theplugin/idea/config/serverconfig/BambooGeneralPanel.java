@@ -3,6 +3,8 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 import com.atlassian.theplugin.configuration.BambooConfigurationBean;
 import com.atlassian.theplugin.configuration.BambooTooltipOption;
 import com.intellij.uiDesigner.core.Spacer;
+import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.intellij.uiDesigner.core.GridConstraints;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
@@ -123,8 +125,13 @@ public class BambooGeneralPanel extends JPanel {
 		final JLabel label2 = new JLabel();
 		label2.setText("Polling time [minutes]");
 		rootComponent.add(label2, cc.xy(1, 7));
+		final JPanel panel1 = new JPanel();
+		panel1.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
+		rootComponent.add(panel1, cc.xy(3, 7));
 		pollTimeSpinner = new JSpinner();
-		rootComponent.add(pollTimeSpinner, cc.xy(3, 7, CellConstraints.FILL, CellConstraints.DEFAULT));
+		panel1.add(pollTimeSpinner, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		final Spacer spacer3 = new Spacer();
+		panel1.add(spacer3, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
 		ButtonGroup buttonGroup;
 		buttonGroup = new ButtonGroup();
 		buttonGroup.add(allFailuresFirstSuccess);
