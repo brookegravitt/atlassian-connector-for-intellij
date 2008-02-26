@@ -8,10 +8,7 @@ import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.idea.SchedulableComponent;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.TimerTask;
+import java.util.*;
 
 
 /**
@@ -23,9 +20,13 @@ import java.util.TimerTask;
  * Thread safe.
  */
 public final class BambooStatusChecker implements SchedulableComponent {
+	private final int SECONDS_IN_MINUTE = 60;
+	private static final int MILISECONDS_IN_SECOND = 1000;
+
 	private final List<BambooStatusListener> listenerList = new ArrayList<BambooStatusListener>();
 
 	private final UIActionScheduler actionScheduler;
+
 
 	public BambooStatusChecker(UIActionScheduler actionScheduler) {
 		this.actionScheduler = actionScheduler;
@@ -96,7 +97,9 @@ public final class BambooStatusChecker implements SchedulableComponent {
 	}
 
 	public long getInterval() {
-		return ((BambooConfigurationBean)ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER)).getPollTime() * 60 * 1000;
+		return ((BambooConfigurationBean) ConfigurationFactory.getConfiguration()
+				.getProductServers(ServerType.BAMBOO_SERVER))
+				.getPollTime() * SECONDS_IN_MINUTE * MILISECONDS_IN_SECOND;
 	}
 
 }
