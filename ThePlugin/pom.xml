@@ -452,11 +452,8 @@
 				<configuration>
 					<configLocation>java-regular.cs.xml</configLocation>
 					<excludes>
-                        **/serverconfig/*Form.java,
-                        **/idea/PasswordDialog.java,
-						**/idea/GeneralConfigDialog.java,
-						**/serverconfig/BambooGeneralPanel.java,
-						**/crucible/CruciblePatchUploadForm.java,
+                        **/idea/**/*Form.java,
+						**/idea/**/*Dialog.java,
                         **/soap/xfire/**/*.java,
 						**/IssueComment.java,
 						**/IssueCreate.java,
