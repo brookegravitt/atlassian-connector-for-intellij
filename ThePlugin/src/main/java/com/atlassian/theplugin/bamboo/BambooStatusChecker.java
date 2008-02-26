@@ -20,7 +20,7 @@ import java.util.*;
  * Thread safe.
  */
 public final class BambooStatusChecker implements SchedulableComponent {
-	private final int SECONDS_IN_MINUTE = 60;
+	private static final int SECONDS_IN_MINUTE = 60;
 	private static final int MILISECONDS_IN_SECOND = 1000;
 
 	private final List<BambooStatusListener> listenerList = new ArrayList<BambooStatusListener>();
