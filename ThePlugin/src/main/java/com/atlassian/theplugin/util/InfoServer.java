@@ -50,17 +50,27 @@ public class InfoServer {
 
 	public static class VersionInfo {
 		private Document doc;
+		private String version;
+		private String downloadUrl;
 
 		public VersionInfo(Document doc) {
 			this.doc = doc;
 		}
 
+		public VersionInfo(String version, String downloadUrl) {
+			this.version = version;
+			this.downloadUrl = downloadUrl;
+		}
+
 		public String getVersion() throws VersionServiceException {
-			return getValue("/response/latestStableVersion");
+			if (version == null) {
+				version = getValue("/response/latestStableVersion");
+			}
+			return version;
 		}
 
 		private String getValue(String path) throws VersionServiceException {
-			XPath xpath = null;
+			XPath xpath;
 			Element element;
 			try {
 				xpath = XPath.newInstance(path);
@@ -72,7 +82,10 @@ public class InfoServer {
 		}
 
 		public String getDownloadUrl() throws VersionServiceException {
-			return getValue("/response/downloadUrl");
+			if (downloadUrl == null) {
+				downloadUrl = getValue("/response/downloadUrl");
+			}
+			return downloadUrl;
 		}
 	}
 }
