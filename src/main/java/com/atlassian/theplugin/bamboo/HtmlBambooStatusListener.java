@@ -42,7 +42,7 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 				buildTimeStr = (null == buildTime) ? "&nbsp;" : formatBuildTime(buildTime);
 			}
 		} else {
-			buildTimeStr = "";
+			buildTimeStr = "&nbsp;";
 		}
 		sb.append(buildTimeStr).append("</td>");
 
