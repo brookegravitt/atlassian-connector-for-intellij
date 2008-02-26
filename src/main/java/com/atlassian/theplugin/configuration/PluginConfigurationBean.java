@@ -16,7 +16,9 @@ public class PluginConfigurationBean implements PluginConfiguration {
 
     public PluginConfigurationBean(PluginConfiguration cfg) {
         this.setPluginEnabled(cfg.isPluginEnabled());
-        this.setBambooConfigurationData(new BambooConfigurationBean(cfg.getProductServers(ServerType.BAMBOO_SERVER)));
+		this.setUid(cfg.getUid());
+		this.setAutoUpdateEnabled(cfg.isAutoUpdateEnabled());
+		this.setBambooConfigurationData(new BambooConfigurationBean(cfg.getProductServers(ServerType.BAMBOO_SERVER)));
         this.setCrucibleConfigurationData(new CrucibleConfigurationBean(cfg.getProductServers(ServerType.CRUCIBLE_SERVER)));
         this.setJIRAConfigurationData(new JIRAConfigurationBean(cfg.getProductServers(ServerType.JIRA_SERVER)));
     }

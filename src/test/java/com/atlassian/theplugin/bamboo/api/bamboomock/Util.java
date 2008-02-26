@@ -101,10 +101,10 @@ public abstract class Util {
 
 
 	private static final String[][] expectedPlans = {
-			{ "PO-FP", "First Project - First Plan" },
-			{ "PO-SECPLAN", "First Project - Second Plan" },
-			{ "PO-TP", "First Project - Third Plan" },
-			{ "PT-TOP", "Second Project - The Only Plan" }
+			{ "PO-FP", "First Project - First Plan", "true" },
+			{ "PO-SECPLAN", "First Project - Second Plan", "true" },
+			{ "PO-TP", "First Project - Third Plan", "true" },
+			{ "PT-TOP", "Second Project - The Only Plan", "false" }
 	};
 
 	public static void verifyPlanListResult(Collection<BambooPlan> plans) {
@@ -114,6 +114,7 @@ public abstract class Util {
 			BambooPlan plan = iterator.next();
 			assertEquals(pair[0], plan.getPlanKey());
 			assertEquals(pair[1], plan.getPlanName());
+			assertEquals(Boolean.parseBoolean(pair[2]), plan.isEnabled());
 		}
 	}
 

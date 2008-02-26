@@ -87,6 +87,21 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 
 	}
 
+	public void testSingleSuccessResultForDisabledBuild() throws Exception {
+		Collection<BambooBuild> buildInfo = new ArrayList<BambooBuild>();
+
+		buildInfo.add(generateDisabledBuildInfo(BuildStatus.BUILD_SUCCEED));
+		testedListener.updateBuildStatuses(buildInfo);
+
+        assertSame(BuildStatus.BUILD_SUCCEED, output.buildStatus);
+
+		HtmlTable table = output.response.getTheTable();
+		assertEquals(2, table.getRowCount());
+
+		testDisabledSuccessRow(table.getRow(1));
+
+	}
+
 	public void testSingleFailedResult() throws Exception {
 		Collection<BambooBuild> buildInfo = new ArrayList<BambooBuild>();
 		buildInfo.add(generateBuildInfo(BuildStatus.BUILD_FAILED));
@@ -97,6 +112,19 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 		assertEquals(2, table.getRowCount());
 
 		testFailedRow(table.getRow(1));
+
+	}
+
+	public void testSingleFailedResultForDisabledBuild() throws Exception {
+		Collection<BambooBuild> buildInfo = new ArrayList<BambooBuild>();
+		buildInfo.add(generateDisabledBuildInfo(BuildStatus.BUILD_FAILED));
+		testedListener.updateBuildStatuses(buildInfo);
+		assertSame(BuildStatus.BUILD_SUCCEED, output.buildStatus);
+
+		HtmlTable table = output.response.getTheTable();
+		assertEquals(2, table.getRowCount());
+
+		testDisabledFailedRow(table.getRow(1));
 
 	}
 
@@ -126,7 +154,20 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 		assertFalse("---".equals(buildTime));
 	}
 
-    private static String trimWhitespace(String s) {
+	@SuppressWarnings("unchecked")
+	private static void testDisabledSuccessRow(HtmlTableRow tableRow) throws Exception {
+		List<HtmlTableCell> cells = tableRow.getCells();
+		assertEquals(3, cells.size());
+
+        assertEquals("<td width=\"1%\"><a href=\"" + DEFAULT_SERVER_URL + "/browse/PLAN-ID\"><img src=\"/icons/icn_plan_disabled.gif\" height=\"16\" width=\"16\" border=\"0\" align=\"absmiddle\"/></a></td>", trimWhitespace(cells.get(0).asXml()));
+		assertEquals(DEFAULT_PROJECT_NAME + " " + DEFAULT_BUILD_NAME + " > PLAN-ID-777", cells.get(1).asText());
+
+		String buildTime = cells.get(2).asText().trim();
+		assertTrue(buildTime.length() > 1);
+		assertFalse("---".equals(buildTime));
+	}
+
+	private static String trimWhitespace(String s) {
         StringBuffer result = new StringBuffer("");
         for (StringTokenizer stringTokenizer = new StringTokenizer(s, "\n"); stringTokenizer.hasMoreTokens();) {
             result.append(stringTokenizer.nextToken().trim());
@@ -146,6 +187,18 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 		assertFalse("&nbsp;".equals(buildTime));
 	}
 
+    @SuppressWarnings("unchecked")
+	private static void testDisabledFailedRow(HtmlTableRow tableRow) throws Exception {
+		List<HtmlTableCell> cells = tableRow.getCells();
+		assertEquals(3, cells.size());
+
+        assertEquals("<td width=\"1%\"><a href=\"" + DEFAULT_SERVER_URL + "/browse/PLAN-ID\"><img src=\"/icons/icn_plan_disabled.gif\" height=\"16\" width=\"16\" border=\"0\" align=\"absmiddle\"/></a></td>", trimWhitespace(cells.get(0).asXml()));
+		assertEquals(DEFAULT_PROJECT_NAME + " " + DEFAULT_BUILD_NAME + " > PLAN-ID-777", cells.get(1).asText());
+
+		String buildTime = cells.get(2).asText().trim();
+		assertFalse("&nbsp;".equals(buildTime));
+	}
+
 	@SuppressWarnings("unchecked")
 	private static void testErrorRow(HtmlTableRow tableRow) throws Exception {
 		List<HtmlTableCell> cells = tableRow.getCells();
@@ -158,7 +211,6 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 		assertEquals("", cells.get(2).asText().trim());
 	}
 
-
 	public static BambooBuild generateBuildInfo(BuildStatus status) {
 		BambooBuildInfo buildInfo = new BambooBuildInfo();
 
@@ -167,8 +219,38 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 		buildInfo.setBuildNumber(String.valueOf(DEFAULT_BUILD_NO));
         buildInfo.setProjectName(DEFAULT_PROJECT_NAME);
         buildInfo.setServerUrl(DEFAULT_SERVER_URL);
+		buildInfo.setEnabled(true);
 
-        switch (status) {
+		switch (status) {
+			case UNKNOWN:
+				buildInfo.setBuildState("Unknown");
+				buildInfo.setMessage(DEFAULT_ERROR_MESSAGE);
+				break;
+			case BUILD_SUCCEED:
+				buildInfo.setBuildState("Successful");
+				buildInfo.setBuildTime(new Date());
+				break;
+			case BUILD_FAILED:
+				buildInfo.setBuildState("Failed");
+				buildInfo.setBuildTime(new Date());
+				break;
+		}
+		buildInfo.setPollingTime(new Date());
+
+		return buildInfo;
+	}
+
+	public static BambooBuild generateDisabledBuildInfo(BuildStatus status) {
+		BambooBuildInfo buildInfo = new BambooBuildInfo();
+
+		buildInfo.setBuildKey(DEFAULT_PLAN_ID);
+		buildInfo.setBuildName(DEFAULT_BUILD_NAME);
+		buildInfo.setBuildNumber(String.valueOf(DEFAULT_BUILD_NO));
+        buildInfo.setProjectName(DEFAULT_PROJECT_NAME);
+        buildInfo.setServerUrl(DEFAULT_SERVER_URL);
+		buildInfo.setEnabled(false);
+
+		switch (status) {
 			case UNKNOWN:
 				buildInfo.setBuildState("Unknown");
 				buildInfo.setMessage(DEFAULT_ERROR_MESSAGE);
