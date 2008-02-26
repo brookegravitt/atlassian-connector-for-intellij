@@ -160,11 +160,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 		assertEquals(3, cells.size());
 
         assertEquals("<td width=\"1%\"><a href=\"" + DEFAULT_SERVER_URL + "/browse/PLAN-ID\"><img src=\"/icons/icn_plan_disabled.gif\" height=\"16\" width=\"16\" border=\"0\" align=\"absmiddle\"/></a></td>", trimWhitespace(cells.get(0).asXml()));
-		assertEquals(DEFAULT_PROJECT_NAME + " " + DEFAULT_BUILD_NAME + " > PLAN-ID-777", cells.get(1).asText());
-
-		String buildTime = cells.get(2).asText().trim();
-		assertTrue(buildTime.length() > 1);
-		assertFalse("---".equals(buildTime));
+		assertEquals(DEFAULT_PROJECT_NAME + " " + DEFAULT_BUILD_NAME + " > Disabled", cells.get(1).asText());
 	}
 
 	private static String trimWhitespace(String s) {
@@ -193,10 +189,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 		assertEquals(3, cells.size());
 
         assertEquals("<td width=\"1%\"><a href=\"" + DEFAULT_SERVER_URL + "/browse/PLAN-ID\"><img src=\"/icons/icn_plan_disabled.gif\" height=\"16\" width=\"16\" border=\"0\" align=\"absmiddle\"/></a></td>", trimWhitespace(cells.get(0).asXml()));
-		assertEquals(DEFAULT_PROJECT_NAME + " " + DEFAULT_BUILD_NAME + " > PLAN-ID-777", cells.get(1).asText());
-
-		String buildTime = cells.get(2).asText().trim();
-		assertFalse("&nbsp;".equals(buildTime));
+		assertEquals(DEFAULT_PROJECT_NAME + " " + DEFAULT_BUILD_NAME + " > Disabled", cells.get(1).asText());
 	}
 
 	@SuppressWarnings("unchecked")
