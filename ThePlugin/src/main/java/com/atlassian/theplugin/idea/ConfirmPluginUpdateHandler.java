@@ -22,14 +22,14 @@ public class ConfirmPluginUpdateHandler implements Runnable {
 	}	
 
 	public static synchronized ConfirmPluginUpdateHandler getInstance() {
-		if(instance == null) {
+		if (instance == null) {
 			instance = new ConfirmPluginUpdateHandler();
 		}
 		return instance;
 	}
 
-	public void setNewVersionInfo(InfoServer.VersionInfo versionInfo) {
-		this.versionInfo = versionInfo;
+	public void setNewVersionInfo(InfoServer.VersionInfo newVersionInfo) {
+		this.versionInfo = newVersionInfo;
 	}
 
 	public void setDisplay(PluginUpdateIcon display) {
