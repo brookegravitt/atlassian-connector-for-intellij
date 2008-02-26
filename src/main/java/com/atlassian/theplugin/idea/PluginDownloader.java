@@ -58,7 +58,7 @@ public class PluginDownloader implements Runnable {
 			/* todo lguminsk when you debug the plugin it appears in registry as attlassian-idea-plugin, but when
 			 	you rinstall it notmally it appears as Atlassian. Thats why it is double checked here
 			    */
-			if(pluginDescr == null) {
+			if (pluginDescr == null) {
 				pluginDescr = PluginManager.getPlugin(PluginId.getId(PluginInfoUtil.getName()));
 			}
 			addActions(pluginDescr, localArchiveFile);

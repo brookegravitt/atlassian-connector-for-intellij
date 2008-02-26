@@ -72,8 +72,11 @@ public class BambooStatusListenerImpl implements BambooStatusListener {
 									fireTooltip = true;
 									status = BuildStatus.BUILD_FAILED;
 									// prepare information
-									tooltipContent.append(createHtmlRow(currentBuild.getBuildKey(), currentBuild.getBuildNumber(),
-											currentBuild.getBuildResultUrl(), BuildStatus.BUILD_FAILED));
+									tooltipContent.append(createHtmlRow(
+											currentBuild.getBuildKey(),
+											currentBuild.getBuildNumber(),
+											currentBuild.getBuildResultUrl(),
+											BuildStatus.BUILD_FAILED));
 								}
 							}
 

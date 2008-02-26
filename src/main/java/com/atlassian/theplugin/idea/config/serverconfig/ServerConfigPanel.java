@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ServerConfigPanel extends AbstractContentPanel {
+public final class ServerConfigPanel extends AbstractContentPanel {
     private ServerTreePanel treePanel = null;
     private BlankPanel blankPanel = null;
 
@@ -188,8 +188,10 @@ public class ServerConfigPanel extends AbstractContentPanel {
 
 			this.treePanel.setData(getPluginConfiguration());
 
-			((BambooConfigurationBean) getPluginConfiguration().getProductServers(ServerType.BAMBOO_SERVER)).setBambooTooltipOption(bambooGeneralPanel.getData());
-			((BambooConfigurationBean) ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER)).setBambooTooltipOption(bambooGeneralPanel.getData());
+			((BambooConfigurationBean) getPluginConfiguration().getProductServers(
+					ServerType.BAMBOO_SERVER)).setBambooTooltipOption(bambooGeneralPanel.getData());
+			((BambooConfigurationBean) ConfigurationFactory.getConfiguration().getProductServers(
+					ServerType.BAMBOO_SERVER)).setBambooTooltipOption(bambooGeneralPanel.getData());
 			bambooGeneralPanel.setData(bambooGeneralPanel.getData());
 
         }
@@ -197,8 +199,9 @@ public class ServerConfigPanel extends AbstractContentPanel {
 
 	public void setData() {
         treePanel.setData(ConfigPanel.getInstance().getPluginConfiguration());
-		//bambooGeneralPanel.setData(ConfigPanel.getInstance().getPluginConfiguration().getBambooConfigurationData().getBambooTooltipOption());
-		bambooGeneralPanel.setData(((BambooConfigurationBean) ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER)).getBambooTooltipOption());
+		bambooGeneralPanel.setData(
+				((BambooConfigurationBean) ConfigurationFactory.getConfiguration().getProductServers(
+						ServerType.BAMBOO_SERVER)).getBambooTooltipOption());
 	}
 
 
