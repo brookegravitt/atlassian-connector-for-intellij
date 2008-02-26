@@ -22,6 +22,8 @@ public interface BambooBuild extends RequestData {
 
 	String getBuildKey();
 
+	boolean getEnabled();
+
 	String getBuildNumber();
 
     String getBuildResultUrl();

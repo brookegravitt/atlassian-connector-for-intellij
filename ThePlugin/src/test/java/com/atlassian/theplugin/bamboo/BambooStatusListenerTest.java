@@ -1,20 +1,17 @@
 package com.atlassian.theplugin.bamboo;
 
+import com.atlassian.theplugin.configuration.BambooConfigurationBean;
+import com.atlassian.theplugin.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.configuration.ServerBean;
 import junit.framework.TestCase;
 import org.easymock.EasyMock;
-import static org.easymock.EasyMock.createStrictMock;
-import static org.easymock.EasyMock.and;
-import static org.easymock.EasyMock.find;
+import static org.easymock.EasyMock.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 
-/**
- * Created by IntelliJ IDEA.
- * User: Jacek
- * Date: 2008-02-14
- * Time: 10:50:36
- * To change this template use File | Settings | File Templates.
- */
 public class BambooStatusListenerTest extends TestCase {
 
 	private BambooStatusDisplay displayMock;
@@ -25,6 +22,19 @@ public class BambooStatusListenerTest extends TestCase {
 
 		displayMock = createStrictMock(BambooStatusDisplay.class);
 		listenerImpl = new BambooStatusListenerImpl(displayMock);
+		PluginConfigurationBean config = createBambooTestConfiguration();
+		ConfigurationFactory.setConfiguration(config);
+	}
+
+	private static PluginConfigurationBean createBambooTestConfiguration() {
+		BambooConfigurationBean configuration = new BambooConfigurationBean();
+
+		Collection<ServerBean> servers = new ArrayList<ServerBean>();
+		configuration.setServersData(servers);
+		PluginConfigurationBean pluginConfig = new PluginConfigurationBean();
+		pluginConfig.setBambooConfigurationData(configuration);
+
+		return pluginConfig;
 	}
 
 	protected void tearDown() throws Exception {
