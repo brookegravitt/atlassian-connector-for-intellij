@@ -1,9 +1,9 @@
 package com.atlassian.theplugin.bamboo;
 
+import com.atlassian.theplugin.ServerType;
 import com.atlassian.theplugin.bamboo.api.BambooLoginException;
 import com.atlassian.theplugin.bamboo.api.bamboomock.*;
 import com.atlassian.theplugin.configuration.*;
-import com.atlassian.theplugin.ServerType;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 
@@ -66,6 +66,7 @@ public class BambooServerFacadeTest extends TestCase {
 	}
 
 	protected void tearDown() throws Exception {
+		mockServer.verify();
 		mockServer = null;
 		mockBaseUrl = null;
 		httpServer.stop();
@@ -93,6 +94,7 @@ public class BambooServerFacadeTest extends TestCase {
 	}
 
 	public void testFailedLoginSubscribedBuildStatus() throws Exception {
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
