@@ -62,7 +62,7 @@ public class PlanCheckboxList extends JList {
 	private void setModifiedState() {
 		for (int i = 0; i < cbArray.length; ++i) {
 			if (((PlanListItem) cbArray[i]).getCheckBox().isSelected()
-					!= ((PlanListItem) cbInitialArray[i]).getCheckBox().isSelected()){
+					!= ((PlanListItem) cbInitialArray[i]).getCheckBox().isSelected()) {
 				isModified = true;
 				break;
 			}
