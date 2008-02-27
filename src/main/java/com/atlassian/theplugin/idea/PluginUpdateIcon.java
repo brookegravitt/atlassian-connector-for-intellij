@@ -22,8 +22,8 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 	private static final Category LOGGER = Logger.getInstance(PluginStatusBarToolTip.class);
 
 	private static final Icon ICON_NEW = IconLoader.getIcon("/icons/icn_update_16.png");
-	private InfoServer.VersionInfo version;
-	private Project project;
+	private transient InfoServer.VersionInfo version;
+	private transient Project project;
 
 	public PluginUpdateIcon(final Project project) {
 		super(project);
