@@ -19,7 +19,7 @@ public class BambooGeneralForm extends JPanel {
 	private JSpinner pollTimeSpinner;
 	private SpinnerModel model;
 
-	private BambooConfigurationBean bambooConfiguration;
+	private transient BambooConfigurationBean bambooConfiguration;
 
 	public BambooGeneralForm() {
 		$$$setupUI$$$();

@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class PlanCheckboxList extends JList {
-	protected static Border noFocusBorder = new EmptyBorder(1, 1, 1, 1);
+	protected static final Border NO_FOCUS_BORDER = new EmptyBorder(1, 1, 1, 1);
 	private Object[] cbArray;
 	private Object[] cbInitialArray;
 	private boolean isModified;
@@ -84,7 +84,7 @@ public class PlanCheckboxList extends JList {
 			pi.getCheckBox().setFocusPainted(false);
 
 			pi.getCheckBox().setBorderPainted(true);
-			pi.getCheckBox().setBorder(isSelected ? UIManager.getBorder("List.focusCellHighlightBorder") : noFocusBorder);
+			pi.getCheckBox().setBorder(isSelected ? UIManager.getBorder("List.focusCellHighlightBorder") : NO_FOCUS_BORDER);
 
 			return pi;
 		}
