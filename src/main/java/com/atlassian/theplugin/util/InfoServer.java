@@ -93,7 +93,7 @@ public class InfoServer {
 				xpath = XPath.newInstance(path);
 				element = (Element) xpath.selectSingleNode(doc);
 				if (element == null) {
-					throw new VersionServiceException("Error while parsing " + PluginInfoUtil.VERSION_INFO_URL); 
+					throw new VersionServiceException("Error while parsing " + PluginInfoUtil.VERSION_INFO_URL);
 				}
 			} catch (JDOMException e) {
 				throw new VersionServiceException("Error while parsing " + PluginInfoUtil.VERSION_INFO_URL, e);

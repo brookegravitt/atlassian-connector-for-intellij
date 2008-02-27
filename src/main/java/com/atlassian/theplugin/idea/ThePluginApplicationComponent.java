@@ -93,9 +93,7 @@ public class ThePluginApplicationComponent
 
 		ConfigurationFactory.setConfiguration(configuration);
 
-		if (configuration.isPluginEnabled()) {
-			rescheduleStatusCheckers(false);
-		}
+		rescheduleStatusCheckers(false);
 	}
 
 	public void disposeComponent() {
@@ -162,19 +160,11 @@ public class ThePluginApplicationComponent
 			projectComponent.getStatusBarBambooIcon().showOrHideIcon();
 			projectComponent.getStatusBarCrucibleIcon().showOrHideIcon();
 
-			if (configuration.isPluginEnabled()) {
-				for (Project pr : ProjectManager.getInstance().getOpenProjects()) {
-					ThePluginProjectComponent pc = pr.getComponent(ThePluginProjectComponent.class);
-					pc.enablePlugin();
-				}
-				rescheduleStatusCheckers(true);
-			} else {
-				for (Project pr : ProjectManager.getInstance().getOpenProjects()) {
-					ThePluginProjectComponent pc = pr.getComponent(ThePluginProjectComponent.class);
-					pc.disablePlugin();
-				}
-				disableTimers();
+			for (Project pr : ProjectManager.getInstance().getOpenProjects()) {
+				ThePluginProjectComponent pc = pr.getComponent(ThePluginProjectComponent.class);
+				pc.enablePlugin();
 			}
+			rescheduleStatusCheckers(true);
 		}
 
 	}
