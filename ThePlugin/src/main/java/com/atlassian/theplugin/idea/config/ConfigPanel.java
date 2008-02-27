@@ -13,7 +13,6 @@ public final class ConfigPanel extends JPanel {
 
 	private transient PluginConfigurationBean pluginConfiguration = null;
 
-	private HeaderPanel headerPanel = null;
 	private FooterPanel footerPanel = null;
 	private JTabbedPane contentPanel = null;
 	private ServerConfigPanel serverConfigPanel = null;
@@ -33,8 +32,6 @@ public final class ConfigPanel extends JPanel {
 	private void initLayout() {
 		setLayout(new BorderLayout());
 
-		add(getHeaderPanel(), BorderLayout.NORTH);
-
 		contentPanel = new JTabbedPane();
 
 		// add servers tab
@@ -48,13 +45,6 @@ public final class ConfigPanel extends JPanel {
 		add(contentPanel, BorderLayout.CENTER);
 		add(getFooterPanel(), BorderLayout.SOUTH);
 
-	}
-
-	private JPanel getHeaderPanel() {
-		if (headerPanel == null) {
-			headerPanel = new HeaderPanel();
-		}
-		return headerPanel;
 	}
 
 	private JPanel getFooterPanel() {
@@ -75,12 +65,11 @@ public final class ConfigPanel extends JPanel {
 		if (!this.pluginConfiguration.equals(ConfigurationFactory.getConfiguration())) {
             return true;
 		}
-		return serverConfigPanel.isModified() || headerPanel.isModified();
+		return serverConfigPanel.isModified();
 	}
 
 	public void getData() {
 		if (isModified()) {
-			headerPanel.getData();
 			serverConfigPanel.getData();
 			generalConfigPanel.getData();
 		}
@@ -88,7 +77,6 @@ public final class ConfigPanel extends JPanel {
 
 	public void setData() {
 		this.pluginConfiguration = new PluginConfigurationBean(ConfigurationFactory.getConfiguration());
-		headerPanel.setData();
 		serverConfigPanel.setData();
 		generalConfigPanel.setData();
 	}
