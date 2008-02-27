@@ -9,7 +9,6 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import javax.swing.*;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -22,10 +21,10 @@ import java.util.Iterator;
  */
 public class BambooServerConfigurationFormTest extends TestCase {
 
-	BambooServerConfigForm bambooPluginConfigurationForm;
+	private BambooServerConfigForm bambooPluginConfigurationForm;
 	//statuses as strings returned by bamboo Rest API
-	public static String BUILD_SUCCESSFUL = "Successful";
-	public static String BUILD_FAILED = "Failed";
+	public static final String BUILD_SUCCESSFUL = "Successful";
+	public static final String BUILD_FAILED = "Failed";
 
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -41,12 +40,11 @@ public class BambooServerConfigurationFormTest extends TestCase {
 		assertNotNull(bambooPluginConfigurationForm.getRootComponent());
 
 		ServerBean inServerBean = createServerBean();
-		ServerBean outServerBean = null;
 
 		bambooPluginConfigurationForm.setData(inServerBean);
 
 
-		outServerBean = (ServerBean) bambooPluginConfigurationForm.getData();
+		ServerBean outServerBean = bambooPluginConfigurationForm.getData();
 
 		// form use cloned instance
 		assertNotSame(inServerBean, outServerBean);
@@ -62,7 +60,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 		});
 
 		bambooPluginConfigurationForm.setData(inServerBean);
-		outServerBean = (ServerBean) bambooPluginConfigurationForm.getData();
+		outServerBean = bambooPluginConfigurationForm.getData();
 		checkServerBean(outServerBean);
 		//@todo enable again		
 		//assertEquals(1, outServerBean.getSubscribedPlansData().size());
@@ -78,7 +76,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 		bambooPluginConfigurationForm.setData(inServerBean);
 
 
-		outServerBean = (ServerBean) bambooPluginConfigurationForm.getData();
+		outServerBean = bambooPluginConfigurationForm.getData();
 		checkServerBean(outServerBean);
 		//assertEquals(2, outServerBean.getSubscribedPlansData().size());
 		//checkSubscribedPlans(outServerBean, new String[]{ "Plan-1", "Plan-2" });
@@ -92,7 +90,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 		bambooPluginConfigurationForm.setData(inServerBean);
 
 
-		outServerBean = (ServerBean) bambooPluginConfigurationForm.getData();
+		outServerBean = bambooPluginConfigurationForm.getData();
 		checkServerBean(outServerBean);
 
 		//assertEquals(3, outServerBean.getSubscribedPlansData().size());
@@ -104,7 +102,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 		bambooPluginConfigurationForm.setData(inServerBean);
 
 
-		outServerBean = (ServerBean) bambooPluginConfigurationForm.getData();
+		outServerBean = bambooPluginConfigurationForm.getData();
 
 		checkServerBean(outServerBean);
 
@@ -174,7 +172,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 	public void testBambooFormFieldSetting() throws Exception {
 		bambooPluginConfigurationForm.setData(new ServerBean());
 
-		ServerBean outServer = (ServerBean) bambooPluginConfigurationForm.getData();
+		ServerBean outServer = bambooPluginConfigurationForm.getData();
 		assertEquals("", outServer.getName());
 		assertEquals("", outServer.getUrlString());
 		assertEquals("", outServer.getUserName());
@@ -188,7 +186,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 		helper.serverUrl.setText("url");
 		helper.username.setText("userName");
 
-		outServer = (ServerBean) bambooPluginConfigurationForm.getData();
+		outServer = bambooPluginConfigurationForm.getData();
 		checkServerBean(outServer);
 		assertEquals(0, outServer.getSubscribedPlansData().size());
 	}
@@ -231,7 +229,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 
 
 
-	private class PluginConfigurationFormHelper {
+	private class PluginConfigurationFormHelper extends PrivateFieldMapper {
 		public JPanel rootComponent;
 		public JTextField serverName;
 		public JTextField serverUrl;
@@ -240,17 +238,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 		public JButton testConnection;
 
 		public PluginConfigurationFormHelper(BambooServerConfigForm pluginConfigurationForm) throws Exception {
-			for (Field f : getClass().getFields()) {
-				String name = f.getName();
-				Field original = pluginConfigurationForm.getClass().getDeclaredField(name);
-				original.setAccessible(true);
-
-				f.set(this, original.get(pluginConfigurationForm));
-				System.out.println("Copied field " + original.getName());
-
-			}
+			super(pluginConfigurationForm);
 		}
 	}
-
-
 }
