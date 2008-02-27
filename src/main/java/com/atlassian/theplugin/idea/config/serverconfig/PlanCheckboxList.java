@@ -96,7 +96,7 @@ public class PlanCheckboxList extends JList implements BambooPlanListener {
 	public void setBuilds(Server server) {
 		BambooPlanReader planReader = new BambooPlanReader(/*IdeaActionScheduler.getInstance(),*/ server);
 		planReader.registerListener(this);
-		new Thread(planReader).start();//.run();
+		new Thread(planReader).start();
 	}
 
 	public void updatePlanNames(Server server, Collection<BambooPlan> plans) {
