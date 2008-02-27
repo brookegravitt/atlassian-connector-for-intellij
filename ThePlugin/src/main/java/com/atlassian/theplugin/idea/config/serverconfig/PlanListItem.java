@@ -26,11 +26,24 @@ public class PlanListItem extends JPanel {
 		add(checkBox);
 	}
 
-	public JCheckBox getCheckBox() {
+	protected JCheckBox getCheckBox() {
 		return checkBox;
+	}
+
+	public boolean isSelected() {
+		return checkBox.isSelected();
+	}
+
+	public void setSelected(boolean selected) {
+		checkBox.setSelected(selected);
 	}
 
 	public String getPlanName() {
 		return planName;
+	}
+
+	public void setEnabled(boolean enabled) {
+		super.setEnabled(enabled);
+		checkBox.setEnabled(enabled);
 	}
 }
