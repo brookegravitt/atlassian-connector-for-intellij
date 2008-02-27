@@ -165,7 +165,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 			statusPluginUpdateIcon = new PluginUpdateIcon(project);
 			ConfirmPluginUpdateHandler.getInstance().setDisplay(statusPluginUpdateIcon);
-			statusPluginUpdateIcon.showIcon();
+			//statusPluginUpdateIcon.showOrHideIcon();
 
 
 			enabled = true;

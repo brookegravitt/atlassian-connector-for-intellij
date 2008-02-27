@@ -79,13 +79,13 @@ public class NewVersionCheckerTest extends TestCase {
 
 		private void createResponse(ServletOutputStream outputStream) {
 			StringBuffer sb = new StringBuffer();
-			sb.append("<response><latestStableVersion>");
+			sb.append("<response><versions><stable><latestVersion>");
 			sb.append(NewVersionCheckerTest.VERSION);
-			sb.append("</latestStableVersion>");
+			sb.append("</latestVersion>");
 			sb.append("<downloadUrl>");
 			sb.append("http://somedomain.com");
 			sb.append("</downloadUrl>");
-			sb.append("</response>");
+			sb.append("</stable></versions></response>");
 			try {
 				outputStream.write(sb.toString().getBytes("UTF-8"));
 			} catch (IOException e) {

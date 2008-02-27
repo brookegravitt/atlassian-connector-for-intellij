@@ -10,6 +10,8 @@ import org.apache.log4j.Logger;
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by IntelliJ IDEA.
@@ -21,16 +23,19 @@ import java.awt.event.MouseEvent;
 public class PluginUpdateIcon extends StatusBarPluginIcon {
 	private static final Category LOGGER = Logger.getInstance(PluginStatusBarToolTip.class);
 
-	private static final Icon ICON_NEW = IconLoader.getIcon("/icons/icn_update_16.png");
-	private transient InfoServer.VersionInfo version;
-	private transient Project project;
+	private static final Icon ICON_BLINK_ON = IconLoader.getIcon("/icons/icn_update_16.png");
+	private static final Icon ICON_BLINK_OFF = IconLoader.getIcon("/icons/icn_empty_16.gif");
+	private InfoServer.VersionInfo version;
+	private Project project;
+	private Timer timer;
+	private boolean blinkOn = false;
 
 	public PluginUpdateIcon(final Project project) {
 		super(project);
-		resetIcon();
 
 		addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
+				innerHideIcon();
 				String message = null;
 				try {
 					message = "New plugin version " + version.getVersion() + " is available. "
@@ -51,9 +56,26 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 
 					downloader.start();
 				}
-				resetIcon();
 			}
 		});
+	}
+
+	public void innerHideIcon() {
+		if (timer != null) {
+			this.timer.cancel();
+			this.timer = null;
+		}
+		hideIcon();	//To change body of overridden methods use File | Settings | File Templates.
+	}
+
+	protected void innerShowIcon() {
+		showIcon();	//To change body of overridden methods use File | Settings | File Templates.
+		this.timer = new Timer();
+		timer.schedule(new TimerTask() {
+			public void run() {
+				blinkIcon();
+			}
+		}, 0, 500);
 	}
 
 	/**
@@ -62,7 +84,7 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 	 */
 	public void triggerUpdateAvailableAction(InfoServer.VersionInfo newVersion) {
 		this.version = newVersion;
-		this.setIcon(ICON_NEW);
+		innerShowIcon();
 		try {
 			this.setToolTipText("New version (" + newVersion.getVersion() + ") of the "
 					+ PluginInfoUtil.getName() + " available");
@@ -71,13 +93,21 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 		}
 	}
 
-	/**
-	 * Sets the icon to standard state (sets grey icon, removes text label, change tooltip)
-	 */
-	public void resetIcon() {
-		this.setIcon(null);
-		this.setToolTipText(null);
-		this.setText(null);
+	public void blinkIcon() {
+		if (blinkOn) {
+			blinkOn();
+			blinkOn = false;
+		} else {
+			blinkOff();
+			blinkOn = true;
+		}
 	}
 
+	private void blinkOff() {
+		this.setIcon(ICON_BLINK_OFF);
+	}
+
+	private void blinkOn() {
+		this.setIcon(ICON_BLINK_ON);
+	}
 }
