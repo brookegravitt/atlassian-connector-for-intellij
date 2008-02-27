@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.StatusBarPluginIcon;
+import com.atlassian.theplugin.idea.StatusBarPluginIcon;
 import com.atlassian.theplugin.exception.VersionServiceException;
 import com.atlassian.theplugin.util.InfoServer;
 import com.intellij.openapi.project.Project;

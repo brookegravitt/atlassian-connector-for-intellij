@@ -1,9 +1,10 @@
-package com.atlassian.theplugin;
+package com.atlassian.theplugin.idea;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.WindowManager;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.ServerType;
 
 import javax.swing.*;
 
