@@ -64,7 +64,7 @@ public class InfoServer {
 
 		public String getVersion() throws VersionServiceException {
 			if (version == null) {
-				version = getValue("/response/latestStableVersion");
+				version = getValue("/response/versions/stable/latestVersion");
 			}
 			return version;
 		}
@@ -83,7 +83,7 @@ public class InfoServer {
 
 		public String getDownloadUrl() throws VersionServiceException {
 			if (downloadUrl == null) {
-				downloadUrl = getValue("/response/downloadUrl");
+				downloadUrl = getValue("/response/versions/stable/downloadUrl");
 			}
 			return downloadUrl;
 		}
