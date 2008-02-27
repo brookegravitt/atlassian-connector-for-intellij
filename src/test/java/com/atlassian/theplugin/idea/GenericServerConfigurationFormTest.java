@@ -8,7 +8,6 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import javax.swing.*;
-import java.lang.reflect.Field;
 
 /**
  * Created by IntelliJ IDEA.
@@ -19,7 +18,7 @@ import java.lang.reflect.Field;
  */
 public class GenericServerConfigurationFormTest extends TestCase {
 
-	GenericServerConfigForm genericServerConfigurationForm;
+	private GenericServerConfigForm genericServerConfigurationForm;
 
 
 
@@ -32,12 +31,10 @@ public class GenericServerConfigurationFormTest extends TestCase {
 		assertNotNull(genericServerConfigurationForm.getRootComponent());
 
 		ServerBean inServerBean = createServerBean();
-		ServerBean outServerBean = null;
 
 		genericServerConfigurationForm.setData(inServerBean);
 
-
-		outServerBean = (ServerBean) genericServerConfigurationForm.getData();
+		ServerBean outServerBean = genericServerConfigurationForm.getData();
 
 		// form use cloned instance
 		assertNotSame(inServerBean, outServerBean);
@@ -86,7 +83,7 @@ public class GenericServerConfigurationFormTest extends TestCase {
 	public void testBambooFormFieldSetting() throws Exception {
 		genericServerConfigurationForm.setData(new ServerBean());
 
-		ServerBean outServer = (ServerBean) genericServerConfigurationForm.getData();
+		ServerBean outServer = genericServerConfigurationForm.getData();
 		assertEquals("", outServer.getName());
 		assertEquals("", outServer.getUrlString());
 		assertEquals("", outServer.getUserName());
@@ -100,7 +97,7 @@ public class GenericServerConfigurationFormTest extends TestCase {
 		helper.serverUrl.setText("url");
 		helper.username.setText("userName");
 
-		outServer = (ServerBean) genericServerConfigurationForm.getData();
+		outServer = genericServerConfigurationForm.getData();
 		checkServerBean(outServer);
 	}
 
@@ -131,8 +128,8 @@ public class GenericServerConfigurationFormTest extends TestCase {
 
 
 
-
-	private class PluginConfigurationFormHelper {
+	@SuppressWarnings("all")
+	private class PluginConfigurationFormHelper extends PrivateFieldMapper {
 		public JTextField serverName;
 		public JTextField serverUrl;
 		public JTextField username;
@@ -142,13 +139,7 @@ public class GenericServerConfigurationFormTest extends TestCase {
 		public JCheckBox cbEnabled;
 
 		public PluginConfigurationFormHelper(GenericServerConfigForm pluginConfigurationForm) throws Exception {
-			for (Field f : getClass().getFields()) {
-				String name = f.getName();
-				Field original = pluginConfigurationForm.getClass().getDeclaredField(name);
-				original.setAccessible(true);
-
-				f.set(this, original.get(pluginConfigurationForm));				
-			}
+			super(pluginConfigurationForm);
 		}
 	}
 }
