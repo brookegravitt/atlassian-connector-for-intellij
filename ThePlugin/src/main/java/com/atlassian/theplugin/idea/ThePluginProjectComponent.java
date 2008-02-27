@@ -165,7 +165,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 			statusPluginUpdateIcon = new PluginUpdateIcon(project);
 			ConfirmPluginUpdateHandler.getInstance().setDisplay(statusPluginUpdateIcon);
-			statusPluginUpdateIcon.showOrHideIcon();
+			statusPluginUpdateIcon.showIcon();
 
 
 			enabled = true;
@@ -175,11 +175,11 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	public void disablePlugin() {
 		if (enabled) {
 			// remove icon from status bar
-			statusBarBambooIcon.showOrHideIcon();
+			statusBarBambooIcon.hideIcon();
 			statusBarBambooIcon = null;
-			statusBarCrucibleIcon.showOrHideIcon();
+			statusBarCrucibleIcon.hideIcon();
 			statusBarCrucibleIcon = null;
-			statusPluginUpdateIcon.showOrHideIcon();
+			statusPluginUpdateIcon.hideIcon();
 			statusPluginUpdateIcon = null;
 
 
