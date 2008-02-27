@@ -10,7 +10,6 @@ import com.atlassian.theplugin.configuration.SubscribedPlanBean;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -27,8 +26,10 @@ public class PlanCheckboxList extends JList {
 	private boolean isModified;
 
 	public PlanCheckboxList() {
-		this.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+//		this.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 		setCellRenderer(new CheckBoxCellRenderer());
+//		setVisibleRowCount(4);
+//		setAutoscrolls(true);
 
 		addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
@@ -50,9 +51,9 @@ public class PlanCheckboxList extends JList {
 	}
 
 	private void setCheckboxState(int index) {
-		if (index != -1) {
+		if (index != -1 && isEnabled()) {
 			PlanListItem pi = (PlanListItem) getModel().getElementAt(index);
-			pi.getCheckBox().setSelected(!pi.getCheckBox().isSelected());
+			pi.setSelected(!pi.isSelected());
 			repaint();
 
 			setModifiedState();
@@ -61,8 +62,8 @@ public class PlanCheckboxList extends JList {
 
 	private void setModifiedState() {
 		for (int i = 0; i < cbArray.length; ++i) {
-			if (((PlanListItem) cbArray[i]).getCheckBox().isSelected()
-					!= ((PlanListItem) cbInitialArray[i]).getCheckBox().isSelected()) {
+			if (((PlanListItem) cbArray[i]).isSelected()
+					!= ((PlanListItem) cbInitialArray[i]).isSelected()) {
 				isModified = true;
 				break;
 			}
@@ -79,7 +80,7 @@ public class PlanCheckboxList extends JList {
 			pi.getCheckBox().setBackground(isSelected ? getSelectionBackground() : getBackground());
 			pi.getCheckBox().setForeground(isSelected ? getSelectionForeground() : getForeground());
 
-			pi.getCheckBox().setEnabled(isEnabled());
+			pi.setEnabled(isEnabled());
 			pi.getCheckBox().setFont(getFont());
 			pi.getCheckBox().setFocusPainted(false);
 
@@ -124,7 +125,7 @@ public class PlanCheckboxList extends JList {
 			for (int i = 0; i < cbArray.length; ++i) {
 				PlanListItem p = (PlanListItem) cbArray[i];
 
-				if (p.getCheckBox().isSelected()) {
+				if (p.isSelected()) {
 					SubscribedPlanBean spb = new SubscribedPlanBean();
 					spb.setPlanId(p.getPlanName());
 					plans.add(spb);
@@ -136,6 +137,15 @@ public class PlanCheckboxList extends JList {
 
 	public boolean isModified() {
 		return isModified;
-	}	
+	}
+
+	public void setEnabled(boolean enabled) {
+		super.setEnabled(enabled);
+		if (cbArray != null) {
+			for (Object item : cbArray) {
+				((PlanListItem) item).setEnabled(enabled);
+			}
+		}
+	}
 }
 

@@ -156,6 +156,7 @@ public class BambooServerConfigForm extends AbstractServerPanel {
 		username = new JTextField();
 		panel1.add(username, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
 		password = new JPasswordField();
+		password.setText("");
 		panel1.add(password, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
 		final JLabel label2 = new JLabel();
 		label2.setText("Server URL");
@@ -186,8 +187,10 @@ public class BambooServerConfigForm extends AbstractServerPanel {
 		cbUseFavuriteBuilds.setMnemonic('F');
 		cbUseFavuriteBuilds.setDisplayedMnemonicIndex(4);
 		buildsPanel.add(cbUseFavuriteBuilds, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		final JScrollPane scrollPane1 = new JScrollPane();
+		buildsPanel.add(scrollPane1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 		planList = new PlanCheckboxList();
-		buildsPanel.add(planList, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+		scrollPane1.setViewportView(planList);
 		chkPasswordRemember = new JCheckBox();
 		chkPasswordRemember.setSelected(true);
 		chkPasswordRemember.setText("Remember password");
