@@ -1,11 +1,10 @@
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.theplugin.StatusBarPluginIcon;
 import com.atlassian.theplugin.exception.VersionServiceException;
 import com.atlassian.theplugin.util.InfoServer;
-import com.atlassian.theplugin.ServerType;
-import com.atlassian.theplugin.StatusBarPluginIcon;
-import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.IconLoader;
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 
@@ -82,7 +81,4 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 		this.setText(null);
 	}
 
-	public void showOrHideIcon() {
-		super.showOrHideIcon(ServerType.CRUCIBLE_SERVER);
-	}
 }
