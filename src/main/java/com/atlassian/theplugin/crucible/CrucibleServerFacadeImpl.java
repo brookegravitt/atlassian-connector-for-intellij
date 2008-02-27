@@ -1,7 +1,6 @@
 package com.atlassian.theplugin.crucible;
 
 import com.atlassian.theplugin.configuration.Server;
-import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.crucible.api.CrucibleException;
 import com.atlassian.theplugin.crucible.api.CrucibleSession;
 import com.atlassian.theplugin.crucible.api.ReviewData;
@@ -65,7 +64,7 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	 * @return created revew date
 	 * @throws CrucibleException in case of createReview error or CrucibleLoginException in case of login error
 	 */
-	public ReviewData createReviewFromPatch(ServerBean server, ReviewData reviewData, String patch) throws CrucibleException {
+	public ReviewData createReviewFromPatch(Server server, ReviewData reviewData, String patch) throws CrucibleException {
 		CrucibleSession session = getSession(server.getUrlString());
 
 		session.login(server.getUserName(), server.getPasswordString());
