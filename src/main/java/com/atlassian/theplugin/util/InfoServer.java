@@ -78,6 +78,8 @@ public class InfoServer {
 					case UNSTABLE:
 						path = "/response/versions/unstable/latestVersion";
 						break;
+					default:
+						throw new VersionServiceException("neither stable nor unstable");
 				}
 				version = getValue(path);
 			}
@@ -109,6 +111,8 @@ public class InfoServer {
 					case UNSTABLE:
 						path = "/response/versions/unstable/downloadUrl";
 						break;
+					default:
+						throw new VersionServiceException("neither stable nor unstable");
 				}
 				downloadUrl = getValue(path);
 			}
