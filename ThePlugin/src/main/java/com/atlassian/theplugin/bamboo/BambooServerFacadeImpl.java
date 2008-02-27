@@ -133,18 +133,21 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 		}
 
 		Collection<BambooPlan> plansForServer = getPlanList(bambooServer);
+
 		if (bambooServer.getUseFavourite()) {
-			for (BambooPlan bambooPlan : plansForServer) {
-				if (bambooPlan.isFavourite()) {
-					if (api != null && api.isLoggedIn()) {
-						BambooBuild buildInfo = api.getLatestBuildForPlan(bambooPlan.getPlanKey());
-						((BambooBuildInfo) buildInfo).setEnabled(bambooPlan.isEnabled());
-						builds.add(buildInfo);
-					} else {
-						builds.add(constructBuildErrorInfo(
-								bambooServer.getUrlString(),
-								bambooPlan.getPlanKey(),
-								connectionErrorMessage));
+			if (plansForServer != null) {
+				for (BambooPlan bambooPlan : plansForServer) {
+					if (bambooPlan.isFavourite()) {
+						if (api != null && api.isLoggedIn()) {
+							BambooBuild buildInfo = api.getLatestBuildForPlan(bambooPlan.getPlanKey());
+							((BambooBuildInfo) buildInfo).setEnabled(bambooPlan.isEnabled());
+							builds.add(buildInfo);
+						} else {
+							builds.add(constructBuildErrorInfo(
+									bambooServer.getUrlString(),
+									bambooPlan.getPlanKey(),
+									connectionErrorMessage));
+						}
 					}
 				}
 			}
@@ -164,6 +167,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 				}
 			}
 		}
+
 
 		return builds;
 	}
