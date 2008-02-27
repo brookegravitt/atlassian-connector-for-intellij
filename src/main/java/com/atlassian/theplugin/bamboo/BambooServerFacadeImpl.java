@@ -94,7 +94,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 			return plans;
 		} catch (BambooException e) {
 			LOG.error("Bamboo exception: " + e.getMessage());
-			return new ArrayList<BambooPlan>();
+			return null;
 		}
 	}
 
