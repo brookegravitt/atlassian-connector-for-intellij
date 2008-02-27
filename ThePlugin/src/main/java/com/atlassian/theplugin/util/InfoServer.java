@@ -35,7 +35,7 @@ public class InfoServer {
 			SAXBuilder builder = new SAXBuilder();
 			builder.setValidation(false);
 			Document doc = builder.build(is);
-			return new VersionInfo(doc);
+			return new VersionInfo(doc, VersionInfo.Type.STABLE);
 		} catch (IOException e) {
 			throw new VersionServiceException("Connection error while retriving the latest plugin version", e);
 		} catch (JDOMException e) {
@@ -49,12 +49,18 @@ public class InfoServer {
 
 
 	public static class VersionInfo {
+		public enum Type {
+			STABLE,
+			UNSTABLE
+		}
 		private Document doc;
+		private Type type;
 		private String version;
 		private String downloadUrl;
 
-		public VersionInfo(Document doc) {
+		public VersionInfo(Document doc, VersionInfo.Type type) {
 			this.doc = doc;
+			this.type = type;
 		}
 
 		public VersionInfo(String version, String downloadUrl) {
@@ -63,8 +69,17 @@ public class InfoServer {
 		}
 
 		public String getVersion() throws VersionServiceException {
+			String path = "";
 			if (version == null) {
-				version = getValue("/response/versions/stable/latestVersion");
+				switch (type) {
+					case STABLE:
+						path = "/response/versions/stable/latestVersion";
+						break;
+					case UNSTABLE:
+						path = "/response/versions/unstable/latestVersion";
+						break;
+				}
+				version = getValue(path);
 			}
 			return version;
 		}
@@ -75,6 +90,9 @@ public class InfoServer {
 			try {
 				xpath = XPath.newInstance(path);
 				element = (Element) xpath.selectSingleNode(doc);
+				if (element == null) {
+					throw new VersionServiceException("Error while parsing " + PluginInfoUtil.VERSION_INFO_URL); 
+				}
 			} catch (JDOMException e) {
 				throw new VersionServiceException("Error while parsing " + PluginInfoUtil.VERSION_INFO_URL, e);
 			}
@@ -82,8 +100,17 @@ public class InfoServer {
 		}
 
 		public String getDownloadUrl() throws VersionServiceException {
+			String path = "";
 			if (downloadUrl == null) {
-				downloadUrl = getValue("/response/versions/stable/downloadUrl");
+				switch (type) {
+					case STABLE:
+						path = "/response/versions/stable/downloadUrl";
+						break;
+					case UNSTABLE:
+						path = "/response/versions/unstable/downloadUrl";
+						break;
+				}
+				downloadUrl = getValue(path);
 			}
 			return downloadUrl;
 		}

@@ -11,4 +11,8 @@ public class VersionServiceException extends ThePluginException {
 	public VersionServiceException(String s, Throwable e) {
 		super(s, e);
 	}
+
+	public VersionServiceException(String s) {
+		super(s);
+	}
 }
