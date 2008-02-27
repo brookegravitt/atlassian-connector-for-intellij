@@ -8,6 +8,8 @@ package com.atlassian.theplugin.util;
  * To change this template use File | Settings | File Templates.
  */
 public abstract class Util {
+
+	private Util() { }
 	
 	public static String addHttpPrefix(String address) {
 		if (address == null) {
