@@ -76,7 +76,7 @@
 
 	<!--we are not serializing dialogs-->
 	<Match>
-		<Class name="com.atlassian.theplugin.idea.GeneralConfigForm"/>
+		<Class name="com.atlassian.theplugin.idea.config.GeneralConfigPanel"/>
 		<Bug pattern="SE_BAD_FIELD"/>
 	</Match>
 </FindBugsFilter>
