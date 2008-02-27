@@ -232,11 +232,7 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 			if (selectedNode instanceof ServerNode) {
 				ConfigPanel.getInstance().getServerConfigPanel().editServer(
 						((ServerNode) selectedNode).getServerType(), ((ServerNode) selectedNode).getServer());
-			} else if ((selectedNode instanceof ServerTypeNode)
-					&& ((ServerTypeNode) selectedNode).getServerType() == ServerType.BAMBOO_SERVER) {
-				// bamboo group/general panel
-				ConfigPanel.getInstance().getServerConfigPanel().showBambooGeneralPanel();
-			} else {
+			} else if (selectedNode instanceof ServerTypeNode) {
 				ConfigPanel.getInstance().getServerConfigPanel().showEmptyPanel();
 			}
 		} else {

@@ -33,12 +33,10 @@ public final class ServerConfigPanel extends AbstractContentPanel {
     private CardLayout editPaneCardLayout;
     private JPanel editPane;
 	private static final String BLANK_CARD = "Blank card";
-	private static final String BAMBOO_GENERAL_CARD = "Bamboo General Card";
 
 	private static final float SPLIT_RATIO = 0.3f;
 	private Map<ServerType, AbstractServerPanel> serverPanels;
 	private static ServerConfigPanel instance;
-	private BambooGeneralForm bambooGeneralForm;
 
 	private ServerConfigPanel() {
         serverPanels = new HashMap<ServerType, AbstractServerPanel>();
@@ -86,7 +84,6 @@ public final class ServerConfigPanel extends AbstractContentPanel {
             ServerType serverType = ServerType.values()[i];
             editPane.add(getServerPanel(serverType), serverType.toString());
         }
-		editPane.add(getBambooGeneralPanel(), BAMBOO_GENERAL_CARD);
 		editPane.add(getBlankPanel(), BLANK_CARD);
 
         return editPane;
@@ -98,14 +95,6 @@ public final class ServerConfigPanel extends AbstractContentPanel {
         }
         return blankPanel;
     }
-
-	public JComponent getBambooGeneralPanel() {
-		if (bambooGeneralForm == null) {
-			bambooGeneralForm = new BambooGeneralForm();
-		}
-
-		return bambooGeneralForm;
-	}
 
 	private JComponent getServerPanel(ServerType serverType) {
         if (!serverPanels.containsKey(serverType)) {
@@ -162,10 +151,6 @@ public final class ServerConfigPanel extends AbstractContentPanel {
             }
         }
 
-		if (bambooGeneralForm.isModified()) {
-			return true;
-		}
-
 		return false;
     }
 
@@ -175,7 +160,6 @@ public final class ServerConfigPanel extends AbstractContentPanel {
 
 	public void getData() {
         if (isModified()) {
-
             for (ServerType type : serverPanels.keySet()) {
                 if (serverPanels.get(type).isModified()) {
                     if (getPluginConfiguration().getProductServers(type).getServer(serverPanels.get(type).getData()) != null) {
@@ -187,29 +171,11 @@ public final class ServerConfigPanel extends AbstractContentPanel {
 			}
 
 			this.treePanel.setData(getPluginConfiguration());
-
-			((BambooConfigurationBean) getPluginConfiguration()
-					.getProductServers(ServerType.BAMBOO_SERVER))
-					.setBambooTooltipOption(bambooGeneralForm.getData().getBambooTooltipOption());
-			((BambooConfigurationBean) ConfigurationFactory
-					.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER))
-					.setBambooTooltipOption(bambooGeneralForm.getData().getBambooTooltipOption());
-
-			((BambooConfigurationBean) getPluginConfiguration()
-					.getProductServers(ServerType.BAMBOO_SERVER))
-					.setPollTime(bambooGeneralForm.getData().getPollTime());
-			((BambooConfigurationBean) ConfigurationFactory.getConfiguration()
-					.getProductServers(ServerType.BAMBOO_SERVER))
-					.setPollTime(bambooGeneralForm.getData().getPollTime());
-			bambooGeneralForm.setData(bambooGeneralForm.getData());
-
         }
     }
 
 	public void setData() {
         treePanel.setData(ConfigPanel.getInstance().getPluginConfiguration());
-		bambooGeneralForm.setData(((BambooConfigurationBean) ConfigurationFactory.getConfiguration()
-				.getProductServers(ServerType.BAMBOO_SERVER)));
 	}
 
 
@@ -250,11 +216,6 @@ public final class ServerConfigPanel extends AbstractContentPanel {
 	public void showEmptyPanel() {
         editPaneCardLayout.show(editPane, BLANK_CARD);
     }
-
-
-	public void showBambooGeneralPanel() {
-		editPaneCardLayout.show(editPane, BAMBOO_GENERAL_CARD);
-	}
 
 	public static ServerConfigPanel getInstance() {
 		if (instance == null) {
