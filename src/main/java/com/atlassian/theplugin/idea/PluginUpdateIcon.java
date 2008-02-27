@@ -26,9 +26,9 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 	private static final Icon ICON_BLINK_ON = IconLoader.getIcon("/icons/icn_update_16.png");
 	private static final Icon ICON_BLINK_OFF = IconLoader.getIcon("/icons/icn_empty_16.gif");
 	private InfoServer.VersionInfo version;
-	private Project project;
 	private Timer timer;
 	private boolean blinkOn = false;
+	private static final int ICON_BLINK_TIME = 1000;
 
 	public PluginUpdateIcon(final Project project) {
 		super(project);
@@ -53,7 +53,6 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 
 					// fire downloading and updating plugin in the new thread
 					Thread downloader = new Thread(new PluginDownloader(version));
-
 					downloader.start();
 				}
 			}
@@ -75,7 +74,7 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 			public void run() {
 				blinkIcon();
 			}
-		}, 0, 500);
+		}, 0, ICON_BLINK_TIME);
 	}
 
 	/**
