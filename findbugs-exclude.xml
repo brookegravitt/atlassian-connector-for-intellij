@@ -70,7 +70,7 @@
 
 	<!--I am not sure why findBugs complains about this. This is an UI designer-generated code anyway, so whatever-->
 	<Match>
-		<Class name="com.atlassian.theplugin.idea.GeneralConfigDialog"/>
+		<Class name="com.atlassian.theplugin.idea.GeneralConfigForm"/>
 		<Bug code="NP,UwF"/>
 	</Match>
 
