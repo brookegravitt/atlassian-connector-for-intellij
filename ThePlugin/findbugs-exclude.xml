@@ -73,4 +73,10 @@
 		<Class name="com.atlassian.theplugin.idea.GeneralConfigDialog"/>
 		<Bug code="NP,UwF"/>
 	</Match>
+
+	<!--we are not serializing dialogs-->
+	<Match>
+		<Class name="com.atlassian.theplugin.idea.GeneralConfigForm"/>
+		<Bug pattern="SE_BAD_FIELD"/>
+	</Match>
 </FindBugsFilter>
