@@ -1,7 +1,12 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
+import com.atlassian.theplugin.ServerType;
 import com.atlassian.theplugin.configuration.BambooConfigurationBean;
 import com.atlassian.theplugin.configuration.BambooTooltipOption;
+import com.atlassian.theplugin.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.configuration.PluginConfiguration;
+import com.atlassian.theplugin.idea.config.AbstractContentPanel;
+import com.atlassian.theplugin.idea.config.ConfigPanel;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -11,7 +16,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import javax.swing.*;
 import java.awt.*;
 
-public class BambooGeneralForm extends JPanel {
+public class BambooGeneralForm extends AbstractContentPanel {
 	private JRadioButton allFailuresFirstSuccess;
 	private JRadioButton firstFailureFirstSuccess;
 	private JRadioButton never;
@@ -30,8 +35,8 @@ public class BambooGeneralForm extends JPanel {
 	}
 
 
-	public void setData(BambooConfigurationBean bambooConfiguration) {
-		this.bambooConfiguration = new BambooConfigurationBean(bambooConfiguration);
+	public void setData() {
+		bambooConfiguration = (BambooConfigurationBean) getPluginConfiguration().getProductServers(ServerType.BAMBOO_SERVER);
 		BambooTooltipOption configOption = this.bambooConfiguration.getBambooTooltipOption();
 
 		if (configOption != null) {
@@ -50,15 +55,26 @@ public class BambooGeneralForm extends JPanel {
 					break;
 			}
 		} else {
-			setDefault();
+			setDefaultTooltipOption();
 		}
 		model.setValue(Integer.valueOf(bambooConfiguration.getPollTime()));
 	}
 
-	public BambooConfigurationBean getData() {
-		bambooConfiguration.setBambooTooltipOption(getBambooTooltipOption());
-		bambooConfiguration.setPollTime(((Integer) model.getValue()).intValue());
-		return bambooConfiguration;
+
+	public void getData() {
+		((BambooConfigurationBean) getPluginConfiguration()
+				.getProductServers(ServerType.BAMBOO_SERVER))
+				.setBambooTooltipOption(getBambooTooltipOption());
+		((BambooConfigurationBean) ConfigurationFactory
+				.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER))
+				.setBambooTooltipOption(getBambooTooltipOption());
+
+		((BambooConfigurationBean) getPluginConfiguration()
+				.getProductServers(ServerType.BAMBOO_SERVER))
+				.setPollTime(((Integer) model.getValue()).intValue());
+		((BambooConfigurationBean) ConfigurationFactory.getConfiguration()
+				.getProductServers(ServerType.BAMBOO_SERVER))
+				.setPollTime(((Integer) model.getValue()).intValue());
 	}
 
 	private BambooTooltipOption getBambooTooltipOption() {
@@ -69,8 +85,12 @@ public class BambooGeneralForm extends JPanel {
 		} else if (never.isSelected()) {
 			return BambooTooltipOption.NEVER;
 		} else {
-			return getDefault();
+			return getDefaultTooltipOption();
 		}
+	}
+
+	public boolean isEnabled() {
+		return true;
 	}
 
 	public boolean isModified() {
@@ -86,12 +106,20 @@ public class BambooGeneralForm extends JPanel {
 		return false;
 	}
 
-	private void setDefault() {
+	public String getTitle() {
+		return "Bamboo";
+	}
+
+	private void setDefaultTooltipOption() {
 		allFailuresFirstSuccess.setSelected(true);
 	}
 
-	private BambooTooltipOption getDefault() {
+	private BambooTooltipOption getDefaultTooltipOption() {
 		return BambooTooltipOption.ALL_FAULIRES_AND_FIRST_SUCCESS;
+	}
+
+	public PluginConfiguration getPluginConfiguration() {
+		return ConfigPanel.getInstance().getPluginConfiguration();
 	}
 
 	/**
