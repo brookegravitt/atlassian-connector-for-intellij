@@ -4,7 +4,7 @@ import com.atlassian.theplugin.bamboo.BambooStatusDisplay;
 import com.atlassian.theplugin.bamboo.BuildStatus;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ThePluginProjectComponent;
-import com.atlassian.theplugin.StatusBarPluginIcon;
+import com.atlassian.theplugin.idea.StatusBarPluginIcon;
 import com.atlassian.theplugin.ServerType;
 import com.intellij.openapi.util.IconLoader;
 
