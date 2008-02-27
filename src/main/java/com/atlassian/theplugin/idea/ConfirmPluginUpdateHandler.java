@@ -18,7 +18,9 @@ public class ConfirmPluginUpdateHandler implements Runnable {
 	private static final Category LOGGER = Logger.getInstance(PluginStatusBarToolTip.class);
 
 	public void run() {
-		display.triggerUpdateAvailableAction(versionInfo);
+		if (display != null) {
+			display.triggerUpdateAvailableAction(versionInfo);
+		}
 	}	
 
 	public static synchronized ConfirmPluginUpdateHandler getInstance() {
