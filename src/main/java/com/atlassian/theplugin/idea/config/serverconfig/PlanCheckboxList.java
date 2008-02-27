@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class PlanCheckboxList extends JList {
+	private static final int VISIBLE_ROW_COUNT = 4;
 	protected static final Border NO_FOCUS_BORDER = new EmptyBorder(1, 1, 1, 1);
 	private Object[] cbArray;
 	private Object[] cbInitialArray;
@@ -28,7 +29,7 @@ public class PlanCheckboxList extends JList {
 	public PlanCheckboxList() {
 //		this.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 		setCellRenderer(new CheckBoxCellRenderer());
-  		setVisibleRowCount(4);
+		setVisibleRowCount(VISIBLE_ROW_COUNT);
 //		setAutoscrolls(true);
 
 		addMouseListener(new MouseAdapter() {
