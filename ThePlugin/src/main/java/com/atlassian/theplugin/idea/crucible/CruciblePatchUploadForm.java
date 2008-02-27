@@ -1,11 +1,14 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.ServerType;
-import com.atlassian.theplugin.configuration.*;
+import com.atlassian.theplugin.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.configuration.ProductServerConfiguration;
+import com.atlassian.theplugin.configuration.Server;
+import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.crucible.CrucibleServerFactory;
 import com.atlassian.theplugin.crucible.api.CrucibleException;
-import com.atlassian.theplugin.crucible.api.ReviewData;
 import com.atlassian.theplugin.crucible.api.PermId;
+import com.atlassian.theplugin.crucible.api.ReviewData;
 import com.atlassian.theplugin.crucible.api.State;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -17,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Collection;
 
 public class CruciblePatchUploadForm extends DialogWrapper {
 	private JTextArea patchPreview;
@@ -38,40 +42,6 @@ public class CruciblePatchUploadForm extends DialogWrapper {
 
 	public JComponent getPreferredFocusedComponent() {
 		return titleText;
-	}
-
-	private void fillInCrucibleServers() {
-		CrucibleConfigurationBean crucibleConfigurationBean =
-				(CrucibleConfigurationBean) ConfigurationFactory.getConfiguration().getProductServers(
-						ServerType.CRUCIBLE_SERVER);
-
-		crucibleServersComboBox.setRenderer(new ListCellRenderer() {
-			public Component getListCellRendererComponent(JList jList, Object o, int i, boolean b, boolean b1) {
-				if (o instanceof ServerBean) {
-					ServerBean serverBean = (ServerBean) o;
-					return new JLabel(serverBean.getName());
-				}
-				return null;
-			}
-		});
-		for (Server server : crucibleConfigurationBean.getServers()) {
-			crucibleServersComboBox.addItem(server);
-		}
-
-	}
-
-
-	public JComponent getRootComponent() {
-		return rootComponent;
-	}
-
-	public void setPatchPreview(String preview) {
-		patchPreview.setText(preview);
-	}
-
-	@Nullable
-	protected JComponent createCenterPanel() {
-		return getRootComponent();
 	}
 
 	/**
@@ -146,19 +116,65 @@ public class CruciblePatchUploadForm extends DialogWrapper {
 		return rootComponent;
 	}
 
-	private class ReviewDataProvider implements ReviewData {
-		private final ServerBean serverBean;
+	private static final class ComboBoxItem {
+		private final Server server;
 
-		public ReviewDataProvider(ServerBean serverBean) {
-			this.serverBean = serverBean;
+		private ComboBoxItem(Server server) {
+			this.server = server;
+		}
+
+		public String toString() {
+			return server.getName();
+		}
+
+		public Server getServer() {
+			return server;
+		}
+	}
+
+	private void fillInCrucibleServers() {
+		ProductServerConfiguration crucibleConfiguration =
+				ConfigurationFactory.getConfiguration().getProductServers(ServerType.CRUCIBLE_SERVER);
+
+		Collection<Server> enabledServers = crucibleConfiguration.getEnabledServers();
+		if (enabledServers.isEmpty()) {
+			crucibleServersComboBox.setEnabled(false);
+			crucibleServersComboBox.addItem("Enable a Crucible server first!");
+			getOKAction().setEnabled(false);	
+		} else {
+			for (Server server : enabledServers) {
+				crucibleServersComboBox.addItem(new ComboBoxItem(server));
+			}
+		}
+	}
+
+
+	public JComponent getRootComponent() {
+		return rootComponent;
+	}
+
+	public void setPatchPreview(String preview) {
+		patchPreview.setText(preview);
+	}
+
+	@Nullable
+	protected JComponent createCenterPanel() {
+		return getRootComponent();
+	}
+
+	private class ReviewDataProvider implements ReviewData {
+		private final Server server;
+
+		public ReviewDataProvider(Server server) {
+			this.server = server;
 		}
 
 		public String getAuthor() {
-			return serverBean.getUserName();
+			return server.getUserName();
 		}
 
 		public String getCreator() {
-			return serverBean.getUserName();
+			return server.getUserName();
 		}
 
 		public String getDescription() {
@@ -190,31 +206,33 @@ public class CruciblePatchUploadForm extends DialogWrapper {
 		}
 
 		public State getState() {
-			return null; 
+			return null;
 		}
 
 	}
 
 	protected void doOKAction() {
-		final ServerBean serverBean = (ServerBean) crucibleServersComboBox.getSelectedItem();
-		if (serverBean != null) {
-			ReviewData reviewData = new ReviewDataProvider(serverBean);
+		final ComboBoxItem selectedItem = (ComboBoxItem) crucibleServersComboBox.getSelectedItem();
+
+		if (selectedItem != null) {
+			final Server server = selectedItem.getServer();
+			ReviewData reviewData = new ReviewDataProvider(server);
 
 			try {
 				ReviewData draftReviewData =
 						CrucibleServerFactory.getCrucibleServerFacade().createReviewFromPatch(
-								serverBean, reviewData, patchPreview.getText());
+								server, reviewData, patchPreview.getText());
 				if (openBrowserToCompleteCheckBox.isSelected()) {
-					BrowserUtil.launchBrowser(serverBean.getUrlString()
+					BrowserUtil.launchBrowser(server.getUrlString()
 							+ "/cru/"
 							+ draftReviewData.getPermaId().getId());
 				}
 				super.doOKAction();
 			} catch (CrucibleException e) {
 				showMessageDialog(e.getMessage(),
-						"Error creating review: " + serverBean.getUrlString(), Messages.getErrorIcon());
+						"Error creating review: " + server.getUrlString(), Messages.getErrorIcon());
 			} catch (ServerPasswordNotProvidedException e) {
-				showMessageDialog(e.getMessage(), "Error creating review: " + serverBean.getUrlString(), Messages.getErrorIcon());
+				showMessageDialog(e.getMessage(), "Error creating review: " + server.getUrlString(), Messages.getErrorIcon());
 			}
 
 

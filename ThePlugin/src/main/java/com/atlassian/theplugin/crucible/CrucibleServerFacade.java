@@ -1,7 +1,6 @@
 package com.atlassian.theplugin.crucible;
 
 import com.atlassian.theplugin.configuration.Server;
-import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.crucible.api.CrucibleException;
 import com.atlassian.theplugin.crucible.api.ReviewData;
@@ -20,6 +19,6 @@ public interface CrucibleServerFacade {
 	List<ReviewDataInfo> getActiveReviewsForUser(Server server)
 			throws CrucibleException, ServerPasswordNotProvidedException;
 
-	ReviewData createReviewFromPatch(ServerBean server, ReviewData reviewData, String patch)
+	ReviewData createReviewFromPatch(Server server, ReviewData reviewData, String patch)
 			throws CrucibleException, ServerPasswordNotProvidedException;
 }
