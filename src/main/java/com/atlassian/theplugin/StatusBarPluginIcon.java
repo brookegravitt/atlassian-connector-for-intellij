@@ -16,12 +16,12 @@ public abstract class StatusBarPluginIcon extends JLabel {
 		statusBar = WindowManager.getInstance().getStatusBar(project);
 	}
 
-	private void hideIcon() {
+	public void hideIcon() {
 		statusBar.removeCustomIndicationComponent(this);
 		WindowManager.getInstance().getFrame(project).repaint();
 	}
 
-	private void showIcon() {
+	public void showIcon() {
 		statusBar.addCustomIndicationComponent(this);
 		WindowManager.getInstance().getFrame(project).repaint();
 	}
