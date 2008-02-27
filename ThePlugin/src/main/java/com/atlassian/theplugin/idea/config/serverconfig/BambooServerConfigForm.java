@@ -57,9 +57,7 @@ public class BambooServerConfigForm extends AbstractServerPanel {
 	}
 
 	private void getPlansFromServer(ServerBean aServer) {
-		if (!cbUseFavuriteBuilds.isSelected()) {
-			planList.setBuilds(aServer);
-		}
+		planList.setBuilds(aServer);
 	}
 
 	public void setData(ServerBean aServer) {
