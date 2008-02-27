@@ -218,7 +218,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 
 		assertEquals("name", outServer.getName());
 		assertEquals("password", outServer.getPasswordString());
-		assertEquals("url", outServer.getUrlString());
+		assertEquals("http://url", outServer.getUrlString());
 		assertEquals("userName", outServer.getUserName());
 	}
 

@@ -3,6 +3,7 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 import com.atlassian.theplugin.bamboo.BambooServerFactory;
 import com.atlassian.theplugin.bamboo.api.BambooLoginException;
 import com.atlassian.theplugin.configuration.ServerBean;
+import com.atlassian.theplugin.util.Util;
 import com.intellij.openapi.ui.Messages;
 import static com.intellij.openapi.ui.Messages.showMessageDialog;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -76,6 +77,9 @@ public class BambooServerConfigForm extends AbstractServerPanel {
 	}
 
 	public ServerBean getData() {
+
+		serverUrl.setText(Util.addHttpPrefix(serverUrl.getText()));
+
 		server.setName(serverName.getText());
 		server.setUrlString(serverUrl.getText());
 		server.setUserName(username.getText());
