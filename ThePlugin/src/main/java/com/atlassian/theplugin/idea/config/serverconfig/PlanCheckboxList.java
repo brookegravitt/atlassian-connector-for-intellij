@@ -1,9 +1,9 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.bamboo.BambooPlan;
-import com.atlassian.theplugin.bamboo.BambooServerFactory;
+import com.atlassian.theplugin.bamboo.BambooPlanListener;
+import com.atlassian.theplugin.bamboo.BambooPlanReader;
 import com.atlassian.theplugin.configuration.Server;
-import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.configuration.SubscribedPlan;
 import com.atlassian.theplugin.configuration.SubscribedPlanBean;
 
@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class PlanCheckboxList extends JList {
+public class PlanCheckboxList extends JList implements BambooPlanListener {
 	private static final int VISIBLE_ROW_COUNT = 4;
 	protected static final Border NO_FOCUS_BORDER = new EmptyBorder(1, 1, 1, 1);
 	private Object[] cbArray;
@@ -71,6 +71,7 @@ public class PlanCheckboxList extends JList {
 		}
 	}
 
+
 	protected class CheckBoxCellRenderer implements ListCellRenderer {
 		public Component getListCellRendererComponent(JList list, Object value, int index,
 													  boolean isSelected, boolean cellHasFocus) {
@@ -93,27 +94,28 @@ public class PlanCheckboxList extends JList {
 	}
 
 	public void setBuilds(Server server) {
-		try {
-			Collection<BambooPlan> plans = BambooServerFactory.getBambooServerFacade().getPlanList(server);
-			if (plans != null) {
-				cbArray = new Object[plans.size()];
-				cbInitialArray = new Object[plans.size()];
-				int i = 0;
-				for (BambooPlan plan : plans) {
-					boolean enabled = false;
-					for (SubscribedPlan sPlan : server.getSubscribedPlans()) {
-						if (sPlan.getPlanId().equals(plan.getPlanKey())) {
-							enabled = true;
-							break;
-						}
+		BambooPlanReader planReader = new BambooPlanReader(/*IdeaActionScheduler.getInstance(),*/ server);
+		planReader.registerListener(this);
+		new Thread(planReader).start();//.run();
+	}
+
+	public void updatePlanNames(Server server, Collection<BambooPlan> plans) {
+		if (plans != null) {
+			cbArray = new Object[plans.size()];
+			cbInitialArray = new Object[plans.size()];
+			int i = 0;
+			for (BambooPlan plan : plans) {
+				boolean enabled = false;
+				for (SubscribedPlan sPlan : server.getSubscribedPlans()) {
+					if (sPlan.getPlanId().equals(plan.getPlanKey())) {
+						enabled = true;
+						break;
 					}
-					cbArray[i] = new PlanListItem(plan, enabled);
-					cbInitialArray[i++] = new PlanListItem(plan, enabled);
 				}
-			} else {
-				cbArray = new Object[0];
+				cbArray[i] = new PlanListItem(plan, enabled);
+				cbInitialArray[i++] = new PlanListItem(plan, enabled);
 			}
-		} catch (ServerPasswordNotProvidedException ex) {
+		} else {
 			cbArray = new Object[0];
 		}
 		setListData(cbArray);
