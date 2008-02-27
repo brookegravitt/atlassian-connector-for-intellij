@@ -17,18 +17,17 @@ import java.awt.*;
 public class GeneralConfigForm {
 	private JCheckBox chkAutoUpdateEnabled;
 	private JPanel mainPanel;
-	private boolean autoUpdateEnabled;
 
 	public Component getRootPane() {
 		return mainPanel;
 	}
 
 	public boolean getIsAutoUpdateEnabled() {
-		return autoUpdateEnabled;
+		return chkAutoUpdateEnabled.isSelected();
 	}
 
 	public void setAutoUpdateEnabled(boolean autoUpdateEnabled) {
-		this.autoUpdateEnabled = autoUpdateEnabled;
+		chkAutoUpdateEnabled.setSelected(autoUpdateEnabled);
 	}
 
 	{
