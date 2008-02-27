@@ -3,7 +3,6 @@ package com.atlassian.theplugin.configuration;
 import com.atlassian.theplugin.ServerType;
 
 public class PluginConfigurationBean implements PluginConfiguration {
-    private boolean pluginEnabled = true;
     private BambooConfigurationBean bambooConfiguration = new BambooConfigurationBean();
     private CrucibleConfigurationBean crucibleConfiguration = new CrucibleConfigurationBean();
     private JIRAConfigurationBean jiraConfiguration = new JIRAConfigurationBean();
@@ -15,7 +14,6 @@ public class PluginConfigurationBean implements PluginConfiguration {
     }
 
     public PluginConfigurationBean(PluginConfiguration cfg) {
-        this.setPluginEnabled(cfg.isPluginEnabled());
 		this.setUid(cfg.getUid());
 		this.setAutoUpdateEnabled(cfg.isAutoUpdateEnabled());
 		this.setBambooConfigurationData(new BambooConfigurationBean(cfg.getProductServers(ServerType.BAMBOO_SERVER)));
@@ -79,14 +77,6 @@ public class PluginConfigurationBean implements PluginConfiguration {
         jiraConfiguration = newConfiguration;
     }
 
-    public boolean isPluginEnabled() {
-        return pluginEnabled;
-    }
-
-    public void setPluginEnabled(boolean value) {
-        pluginEnabled = value;
-    }
-
     /**
      * Implementation for the interface.
      * <p/>
@@ -134,10 +124,6 @@ public class PluginConfigurationBean implements PluginConfiguration {
 
         PluginConfigurationBean that = (PluginConfigurationBean) o;
 
-        if (pluginEnabled != that.pluginEnabled) {
-            return false;
-        }
-
 		if (uid != that.uid) {
             return false;
         }
@@ -160,8 +146,7 @@ public class PluginConfigurationBean implements PluginConfiguration {
 
     private static final int ONE_EFF = 31;
     public int hashCode() {
-        int result;
-        result = (pluginEnabled ? 1 : 0);
+        int result = 0;
         result = ONE_EFF * result + (bambooConfiguration != null ? bambooConfiguration.hashCode() : 0);
         result = ONE_EFF * result + (crucibleConfiguration != null ? crucibleConfiguration.hashCode() : 0);
         result = ONE_EFF * result + (jiraConfiguration != null ? jiraConfiguration.hashCode() : 0);
