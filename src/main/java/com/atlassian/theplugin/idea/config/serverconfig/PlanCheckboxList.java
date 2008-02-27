@@ -28,7 +28,7 @@ public class PlanCheckboxList extends JList {
 	public PlanCheckboxList() {
 //		this.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 		setCellRenderer(new CheckBoxCellRenderer());
-//		setVisibleRowCount(4);
+  		setVisibleRowCount(4);
 //		setAutoscrolls(true);
 
 		addMouseListener(new MouseAdapter() {
@@ -109,6 +109,8 @@ public class PlanCheckboxList extends JList {
 					cbArray[i] = new PlanListItem(plan, enabled);
 					cbInitialArray[i++] = new PlanListItem(plan, enabled);
 				}
+			} else {
+				cbArray = new Object[0];
 			}
 		} catch (ServerPasswordNotProvidedException ex) {
 			cbArray = new Object[0];

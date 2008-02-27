@@ -16,6 +16,7 @@ public final class ConfigPanel extends JPanel {
 	private FooterPanel footerPanel = null;
 	private JTabbedPane contentPanel = null;
 	private ServerConfigPanel serverConfigPanel = null;
+	private BambooGeneralForm bambooConfigPanel = null;
 	private GeneralConfigPanel generalConfigPanel = null;
 
 	private ConfigPanel() {
@@ -37,6 +38,10 @@ public final class ConfigPanel extends JPanel {
 		// add servers tab
 		serverConfigPanel = getServerConfigPanel();
 		contentPanel.add(serverConfigPanel.getTitle(), serverConfigPanel);
+
+		// add Bamboo optins tab
+		bambooConfigPanel = getBambooConfigPanel();
+		contentPanel.add(bambooConfigPanel.getTitle(), bambooConfigPanel);
 
 		// add general tab
 		generalConfigPanel = GeneralConfigPanel.getInstance();
@@ -61,17 +66,25 @@ public final class ConfigPanel extends JPanel {
 		return serverConfigPanel;
 	}
 
+	public BambooGeneralForm getBambooConfigPanel() {
+		if (bambooConfigPanel == null) {
+			bambooConfigPanel = new BambooGeneralForm();
+		}
+		return bambooConfigPanel;
+	}
+
 	public boolean isModified() {
 		if (!this.pluginConfiguration.equals(ConfigurationFactory.getConfiguration())) {
             return true;
 		}
-		return serverConfigPanel.isModified();
+		return serverConfigPanel.isModified() || bambooConfigPanel.isModified();
 	}
 
 	public void getData() {
 		if (isModified()) {
 			serverConfigPanel.getData();
 			generalConfigPanel.getData();
+			bambooConfigPanel.getData();
 		}
 	}
 
@@ -79,6 +92,7 @@ public final class ConfigPanel extends JPanel {
 		this.pluginConfiguration = new PluginConfigurationBean(ConfigurationFactory.getConfiguration());
 		serverConfigPanel.setData();
 		generalConfigPanel.setData();
+		bambooConfigPanel.setData();
 	}
 
 	public void addServer(ServerType serverType) {
