@@ -25,8 +25,8 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 
 	private static final Icon ICON_BLINK_ON = IconLoader.getIcon("/icons/icn_update_16.png");
 	private static final Icon ICON_BLINK_OFF = IconLoader.getIcon("/icons/icn_empty_16.gif");
-	private InfoServer.VersionInfo version;
-	private Timer timer;
+	private transient InfoServer.VersionInfo version;
+	private transient Timer timer;
 	private boolean blinkOn = false;
 	private static final int ICON_BLINK_TIME = 1000;
 
