@@ -102,6 +102,7 @@
         <option name="myName" value="Project Default" />
         <option name="myLocal" value="false" />
         <inspection_tool class="WrongPackageStatement" level="ERROR" enabled="false" />
+        <inspection_tool class="CheckStyle-IDEA" level="WARNING" enabled="true" />
       </profile>
     </profiles>
     <list size="4">
@@ -298,9 +299,6 @@
     <option name="GENERATE_IIOP_STUBS" value="false" />
     <option name="ADDITIONAL_OPTIONS_STRING" value="" />
   </component>
-  <component name="ToggleTest">
-    <toggle from="*" to="*Test" />
-  </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="svn" />
   </component>
@@ -308,48 +306,48 @@
   <component name="libraryTable">
     <library name="CXF Runtime">
       <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/ant-1.6.5.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/aopalliance-1.0.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/asm-2.2.3.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/commons-lang-2.1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/commons-logging-1.1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/cxf-2.0.4-incubator.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/cxf-manifest-incubator.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/geronimo-activation_1.1_spec-1.0-M1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/geronimo-annotation_1.0_spec-1.1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/geronimo-javamail_1.4_spec-1.0-M1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/geronimo-jms_1.1_spec-1.1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/geronimo-stax-api_1.0_spec-1.0.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/geronimo-ws-metadata_2.0_spec-1.1.1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/jaxb-api-2.0.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/jaxb-impl-2.0.5.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/jaxen-1.1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/jaxws-api-2.0.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/jdom-1.0.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/jettison-1.0-RC2.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/jra-1.0-alpha-4.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/js-1.6R5.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/neethi-2.0.2.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/saaj-api-1.3.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/saaj-impl-1.3.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/slf4j-api-1.3.1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/slf4j-jdk14-1.3.1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/spring-beans-2.0.6.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/spring-context-2.0.6.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/spring-core-2.0.6.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/spring-web-2.0.6.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/stax-utils-20060502.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/velocity-1.4.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/velocity-dep-1.4.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/wsdl4j-1.6.1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/wss4j-1.5.1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/wstx-asl-3.2.1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/xalan-2.7.0.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/xbean-2.2.0.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/xml-apis-1.3.02.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/xml-resolver-1.2.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/XmlSchema-1.3.2.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/xmlsec-1.3.0.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/ant-1.6.5.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/aopalliance-1.0.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/asm-2.2.3.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/commons-lang-2.1.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/commons-logging-1.1.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/cxf-2.0.4-incubator.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/cxf-manifest-incubator.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/geronimo-activation_1.1_spec-1.0-M1.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/geronimo-annotation_1.0_spec-1.1.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/geronimo-javamail_1.4_spec-1.0-M1.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/geronimo-jms_1.1_spec-1.1.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/geronimo-stax-api_1.0_spec-1.0.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/geronimo-ws-metadata_2.0_spec-1.1.1.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/jaxb-api-2.0.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/jaxb-impl-2.0.5.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/jaxen-1.1.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/jaxws-api-2.0.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/jdom-1.0.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/jettison-1.0-RC2.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/jra-1.0-alpha-4.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/js-1.6R5.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/neethi-2.0.2.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/saaj-api-1.3.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/saaj-impl-1.3.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/slf4j-api-1.3.1.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/slf4j-jdk14-1.3.1.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/spring-beans-2.0.6.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/spring-context-2.0.6.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/spring-core-2.0.6.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/spring-web-2.0.6.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/stax-utils-20060502.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/velocity-1.4.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/velocity-dep-1.4.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/wsdl4j-1.6.1.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/wss4j-1.5.1.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/wstx-asl-3.2.1.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/xalan-2.7.0.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/xbean-2.2.0.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/xml-apis-1.3.02.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/xml-resolver-1.2.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/XmlSchema-1.3.2.jar!/" />
+        <root url="jar://C:/../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/xmlsec-1.3.0.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />
