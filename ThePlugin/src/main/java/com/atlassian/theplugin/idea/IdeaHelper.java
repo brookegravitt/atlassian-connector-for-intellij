@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
+import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.DataKeys;
@@ -24,8 +25,7 @@ public final class IdeaHelper {
     }
 
     public static Project getCurrentProject() {
-		return getAppComponent().getProjectComponent().getProject();
-		//return getCurrentProject(DataManager.getInstance().getDataContext());
+		return getCurrentProject(DataManager.getInstance().getDataContext());
     }
 
     public static Project getCurrentProject(DataContext dataContext) {
