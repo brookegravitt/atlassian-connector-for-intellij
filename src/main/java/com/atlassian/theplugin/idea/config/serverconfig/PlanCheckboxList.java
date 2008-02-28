@@ -1,8 +1,8 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.bamboo.BambooPlan;
-import com.atlassian.theplugin.bamboo.BambooPlanListener;
-import com.atlassian.theplugin.bamboo.BambooPlanReader;
+
+import com.atlassian.theplugin.bamboo.BambooServerFactory;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.SubscribedPlan;
 import com.atlassian.theplugin.configuration.SubscribedPlanBean;
@@ -18,8 +18,9 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
-public class PlanCheckboxList extends JList implements BambooPlanListener {
+public class PlanCheckboxList extends JList {
 	private static final int VISIBLE_ROW_COUNT = 4;
 	protected static final Border NO_FOCUS_BORDER = new EmptyBorder(1, 1, 1, 1);
 	private Object[] cbArray;
@@ -93,13 +94,26 @@ public class PlanCheckboxList extends JList implements BambooPlanListener {
 		}
 	}
 
-	public void setBuilds(Server server) {
-		BambooPlanReader planReader = new BambooPlanReader(/*IdeaActionScheduler.getInstance(),*/ server);
-		planReader.registerListener(this);
-		new Thread(planReader).start();
+	public void setBuilds(final Server server) {
+		final SwingWorker<Collection<BambooPlan>, Object> worker = new SwingWorker<Collection<BambooPlan>, Object>() {
+			protected Collection<BambooPlan> doInBackground() throws Exception {
+				return BambooServerFactory.getBambooServerFacade().getPlanList(server);
+			}
+
+			protected void done() {
+				try {
+					updatePlanNames(server, get());
+				} catch (InterruptedException e) {
+					// do nothing
+				} catch (ExecutionException e) {
+					// do nothing
+				}
+			}
+		};
+		worker.execute();
 	}
 
-	public void updatePlanNames(Server server, Collection<BambooPlan> plans) {
+	private void updatePlanNames(Server server, Collection<BambooPlan> plans) {
 		if (plans != null) {
 			cbArray = new Object[plans.size()];
 			cbInitialArray = new Object[plans.size()];
