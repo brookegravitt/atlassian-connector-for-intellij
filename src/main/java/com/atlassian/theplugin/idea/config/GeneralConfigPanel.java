@@ -33,7 +33,11 @@ public class GeneralConfigPanel extends AbstractContentPanel {
         if (!getPluginConfiguration().equals(ConfigurationFactory.getConfiguration())) {
             return true;
         }
-        return false;
+
+		if (dialog.getIsAutoUpdateEnabled() != ConfigurationFactory.getConfiguration().isAutoUpdateEnabled()) {
+			return true;
+		}
+		return false;
     }
 
 	public String getTitle() {
