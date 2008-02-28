@@ -77,7 +77,7 @@ public final class ConfigPanel extends JPanel {
 		if (!this.pluginConfiguration.equals(ConfigurationFactory.getConfiguration())) {
             return true;
 		}
-		return serverConfigPanel.isModified() || bambooConfigPanel.isModified();
+		return serverConfigPanel.isModified() || bambooConfigPanel.isModified() || generalConfigPanel.isModified();
 	}
 
 	public void getData() {
