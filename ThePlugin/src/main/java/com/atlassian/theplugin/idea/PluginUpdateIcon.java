@@ -42,7 +42,7 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 							+ "Your version is " + PluginInfoUtil.getVersion()
 							+ ". Do you want to download and install?";
 				} catch (VersionServiceException e1) {
-					LOGGER.error("Error retrieving new version.");
+					LOGGER.warn("Error retrieving new version.");
 				}
 				String title = "New plugin version download";
 
@@ -88,7 +88,7 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 			this.setToolTipText("New version (" + newVersion.getVersion() + ") of the "
 					+ PluginInfoUtil.getName() + " available");
 		} catch (VersionServiceException e) {
-			LOGGER.error(e.getMessage(), e);
+			LOGGER.warn(e.getMessage(), e);
 		}
 	}
 
