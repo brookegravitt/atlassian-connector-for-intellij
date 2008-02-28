@@ -9,15 +9,15 @@ public class PlanListItem extends JPanel {
 	private JCheckBox checkBox;
 	private String planName;
 
-	private static final Icon favOnIcon = IconLoader.getIcon("/icons/fav_on.gif");
-	private static final Icon favOffIcon = IconLoader.getIcon("/icons/fav_off.gif");
-	private static final Icon disabledIcon = IconLoader.getIcon("/icons/icn_plan_disabled-16.gif");
+	private static final Icon FAVOURITE_ON_ICON = IconLoader.getIcon("/icons/fav_on.gif");
+	private static final Icon FAVOURITE_OFF_ICON = IconLoader.getIcon("/icons/fav_off.gif");
+	private static final Icon DISABLED_ICON = IconLoader.getIcon("/icons/icn_plan_disabled-16.gif");
 
 	public PlanListItem(BambooPlan plan, boolean selected) {
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		planName = plan.getPlanKey();
 		checkBox = new JCheckBox(planName, selected);		
-		add(new JLabel(plan.isEnabled() ? (plan.isFavourite() ? favOnIcon : favOffIcon) : disabledIcon));
+		add(new JLabel(plan.isEnabled() ? (plan.isFavourite() ? FAVOURITE_ON_ICON : FAVOURITE_OFF_ICON) : DISABLED_ICON));
 		add(checkBox);
 	}
 
