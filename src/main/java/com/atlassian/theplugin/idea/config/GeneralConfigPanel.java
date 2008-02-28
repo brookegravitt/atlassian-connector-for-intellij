@@ -45,6 +45,7 @@ public class GeneralConfigPanel extends AbstractContentPanel {
 	}
 
 	public void getData() {
+		getPluginConfiguration().setAutoUpdateEnabled(dialog.getIsAutoUpdateEnabled());
 		ConfigurationFactory.getConfiguration().setAutoUpdateEnabled(dialog.getIsAutoUpdateEnabled());
 	}
 
