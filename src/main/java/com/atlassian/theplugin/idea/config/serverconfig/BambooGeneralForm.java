@@ -136,13 +136,13 @@ public class BambooGeneralForm extends AbstractContentPanel {
 		allFailuresFirstSuccess.setSelected(true);
 		allFailuresFirstSuccess.setText("All build failures and first build success");
 		CellConstraints cc = new CellConstraints();
-		rootComponent.add(allFailuresFirstSuccess, cc.xy(3, 1));
+		rootComponent.add(allFailuresFirstSuccess, cc.xy(3, 1, CellConstraints.LEFT, CellConstraints.DEFAULT));
 		firstFailureFirstSuccess = new JRadioButton();
 		firstFailureFirstSuccess.setText("First build failure and first build success");
-		rootComponent.add(firstFailureFirstSuccess, cc.xy(3, 3));
+		rootComponent.add(firstFailureFirstSuccess, cc.xy(3, 3, CellConstraints.LEFT, CellConstraints.DEFAULT));
 		never = new JRadioButton();
 		never.setText("Never");
-		rootComponent.add(never, cc.xy(3, 5));
+		rootComponent.add(never, cc.xy(3, 5, CellConstraints.LEFT, CellConstraints.DEFAULT));
 		final Spacer spacer1 = new Spacer();
 		rootComponent.add(spacer1, cc.xy(3, 9, CellConstraints.DEFAULT, CellConstraints.FILL));
 		final Spacer spacer2 = new Spacer();
