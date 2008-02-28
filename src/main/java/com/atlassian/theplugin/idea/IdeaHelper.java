@@ -1,16 +1,15 @@
 package com.atlassian.theplugin.idea;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.actionSystem.DataKeys;
-import com.intellij.openapi.actionSystem.DataContext;
+import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.openapi.actionSystem.DataKeys;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowManager;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
-import com.intellij.ide.DataManager;
-import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 
 /**
  * Simple helper methods for the IDEA plugin
@@ -25,7 +24,8 @@ public final class IdeaHelper {
     }
 
     public static Project getCurrentProject() {
-        return getCurrentProject(DataManager.getInstance().getDataContext());
+		return getAppComponent().getProjectComponent().getProject();
+		//return getCurrentProject(DataManager.getInstance().getDataContext());
     }
 
     public static Project getCurrentProject(DataContext dataContext) {
