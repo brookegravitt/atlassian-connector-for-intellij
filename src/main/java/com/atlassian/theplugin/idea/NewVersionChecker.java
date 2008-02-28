@@ -42,7 +42,7 @@ public final class NewVersionChecker implements SchedulableComponent {
 				try {
 					doRun();
 				} catch (VersionServiceException e) {
-					LOG.error("Error checking for new version", e);
+					LOG.warn("Error checking for new version", e);
 				}
 			}
 		};
