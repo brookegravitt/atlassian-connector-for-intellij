@@ -24,7 +24,7 @@
       <component id="e669a" class="javax.swing.JRadioButton" binding="allFailuresFirstSuccess" default-binding="true">
         <constraints>
           <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-          <forms/>
+          <forms defaultalign-horz="false"/>
         </constraints>
         <properties>
           <selected value="true"/>
@@ -34,7 +34,7 @@
       <component id="76d70" class="javax.swing.JRadioButton" binding="firstFailureFirstSuccess" default-binding="true">
         <constraints>
           <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-          <forms/>
+          <forms defaultalign-horz="false"/>
         </constraints>
         <properties>
           <text value="First build failure and first build success"/>
@@ -43,7 +43,7 @@
       <component id="8d7bd" class="javax.swing.JRadioButton" binding="never" default-binding="true">
         <constraints>
           <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-          <forms/>
+          <forms defaultalign-horz="false"/>
         </constraints>
         <properties>
           <text value="Never"/>
