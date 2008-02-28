@@ -64,7 +64,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 		try {
 			return getSession(bambooServer).listProjectNames();
 		} catch (BambooException e) {
-			LOG.error("Bamboo exception: " + e.getMessage());
+			LOG.warn("Bamboo exception: " + e.getMessage());
 			return null;
 		}
 	}
@@ -93,7 +93,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 			}
 			return plans;
 		} catch (BambooException e) {
-			LOG.error("Bamboo exception: " + e.getMessage());
+			LOG.warn("Bamboo exception: " + e.getMessage());
 			return null;
 		}
 	}
@@ -122,13 +122,13 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 			connectionErrorMessage = "";
 		} catch (BambooLoginFailedException e) {
 			if (bambooServer.getIsConfigInitialized()) {
-				LOG.error("Bamboo login exception: " + e.getMessage());
+				LOG.warn("Bamboo login exception: " + e.getMessage());
 				connectionErrorMessage = e.getMessage();
 			} else {
 				throw new ServerPasswordNotProvidedException();
 			}
 		} catch (BambooLoginException e) {
-			LOG.error("Bamboo login exception: " + e.getMessage());
+			LOG.warn("Bamboo login exception: " + e.getMessage());
 			connectionErrorMessage = e.getMessage();
 		}
 
@@ -184,7 +184,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 		try {
 			return getSession(bambooServer).getFavouriteUserPlans();
 		} catch (BambooException e) {
-			LOG.error("Bamboo exception: " + e.getMessage());
+			LOG.warn("Bamboo exception: " + e.getMessage());
 			return null;
 		}
 	}
