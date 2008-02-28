@@ -67,9 +67,9 @@ public class PluginDownloader implements Runnable {
 			promptShutdownAndShutdown();
 
 		} catch (IOException e) {
-			LOGGER.warn("Error registering action in IDEA", e);
+			LOGGER.info("Error registering action in IDEA", e);
 		} catch (VersionServiceException e) {
-			LOGGER.warn("Error registering action in IDEA", e);
+			LOGGER.info("Error registering action in IDEA", e);
 		}
 	}
 
@@ -107,7 +107,7 @@ public class PluginDownloader implements Runnable {
 				.replaceAll(PLUGIN_ID_TOKEN, pluginName)
 					.replaceAll(VERSION_TOKEN, version);
 		} catch (VersionServiceException e) {
-			LOGGER.warn("Error retrieving url for new version of the plugin.");
+			LOGGER.info("Error retrieving url for new version of the plugin.");
 		}
 
 		LOGGER.info("Downloading plugin archive from: " + pluginUrl);

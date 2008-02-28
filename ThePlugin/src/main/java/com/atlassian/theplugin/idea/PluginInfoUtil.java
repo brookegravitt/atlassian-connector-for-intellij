@@ -82,10 +82,10 @@ public final class PluginInfoUtil {
 				in.close();
 			}
 		} catch (IOException e) {
-			LOGGER.warn("Error accessing plugin.xml file.");
+			LOGGER.info("Error accessing plugin.xml file.");
 			throw new UnsupportedOperationException(e);
 		} catch (JDOMException e) {
-			LOGGER.warn("Error accessing plugin.xml file.");
+			LOGGER.info("Error accessing plugin.xml file.");
 			throw new UnsupportedOperationException(e);
 		}
 
@@ -101,7 +101,7 @@ public final class PluginInfoUtil {
 				result = element.getValue();
 			}
 		} catch (JDOMException e) {
-			LOGGER.warn("Error while retrieving plugin name.");
+			LOGGER.info("Error while retrieving plugin name.");
 		}
 		return result;
 	}
