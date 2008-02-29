@@ -5,6 +5,7 @@ import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
+import com.atlassian.theplugin.idea.crucible.CrucibleNewReviewNotifier;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.components.PersistentStateComponent;
@@ -42,7 +43,7 @@ public class ThePluginApplicationComponent
 
 	private final Collection<TimerTask> scheduledComponents = new HashSet<TimerTask>();
 
-	private UserDataContext userDataContext;
+	private CrucibleNewReviewNotifier crucibleNewReviewNotifier;
     private JIRAServer currentJIRAServer;
 
 	BambooStatusChecker getBambooStatusChecker() {
@@ -74,12 +75,12 @@ public class ThePluginApplicationComponent
 		return "ThePluginApplicationComponent";
 	}
 
-	public UserDataContext getUserDataContext() {
-		return userDataContext;
+	public CrucibleNewReviewNotifier getCrucibleNewReviewNotifier() {
+		return crucibleNewReviewNotifier;
 	}
 
 	public void initComponent() {
-		userDataContext = new UserDataContext();
+		crucibleNewReviewNotifier = new CrucibleNewReviewNotifier();
 
 		ConfigurationFactory.setConfiguration(configuration);
 
