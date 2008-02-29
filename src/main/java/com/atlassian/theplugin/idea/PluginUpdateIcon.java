@@ -13,13 +13,6 @@ import java.awt.event.MouseEvent;
 import java.util.Timer;
 import java.util.TimerTask;
 
-/**
- * Created by IntelliJ IDEA.
- * User: lguminski
- * Date: Feb 26, 2008
- * Time: 2:42:20 PM
- * To change this template use File | Settings | File Templates.
- */
 public class PluginUpdateIcon extends StatusBarPluginIcon {
 	private static final Category LOGGER = Logger.getInstance(PluginStatusBarToolTip.class);
 
@@ -70,7 +63,7 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 	protected void innerShowIcon() {
 		showIcon();	//To change body of overridden methods use File | Settings | File Templates.
 		this.timer = new Timer();
-		timer.schedule(new TimerTask() {
+		timer.scheduleAtFixedRate(new TimerTask() {
 			public void run() {
 				blinkIcon();
 			}
@@ -79,7 +72,6 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 
 	/**
 	 * changes status
-	 * @param newVersion
 	 */
 	public void triggerUpdateAvailableAction(InfoServer.VersionInfo newVersion) {
 		this.version = newVersion;
