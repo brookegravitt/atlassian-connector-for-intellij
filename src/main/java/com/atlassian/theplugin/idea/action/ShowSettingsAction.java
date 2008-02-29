@@ -11,7 +11,7 @@ import com.intellij.openapi.options.ShowSettingsUtil;
 public class ShowSettingsAction extends AnAction {
 	public void actionPerformed(AnActionEvent event) {
 		ShowSettingsUtil.getInstance().editConfigurable(
-				IdeaHelper.getAppComponent().getProjectComponent().getProject(),				
+				IdeaHelper.getCurrentProject(event.getDataContext()),				
                 IdeaHelper.getAppComponent());
 	}
 }

@@ -51,7 +51,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	public ThePluginProjectComponent(Project project, ThePluginApplicationComponent applicationComponent) {
 		this.project = project;
 		this.applicationComponent = applicationComponent;
-		applicationComponent.setProjectComponent(this);
 
 		// make findBugs happy
 		toolWindowManager = null;
@@ -79,7 +78,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		return "ThePluginProjectComponent";
 	}
 
-	public void enablePlugin() {
+	private void enablePlugin() {
         // unregister changelistmanager?
         // only open tool windows for each application that's registered
         // show something nice if there are non
