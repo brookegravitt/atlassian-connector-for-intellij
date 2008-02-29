@@ -16,6 +16,7 @@ public final class NewVersionChecker implements SchedulableComponent {
 	private static final long PLUGIN_UPDATE_ATTEMPT_DELAY = 120000;
 
 	private static NewVersionChecker instance;
+	private static boolean checkedAlready = false;
 	private static final Category LOG = Logger.getInstance(NewVersionChecker.class);
 
 	private NewVersionChecker() {
@@ -39,11 +40,7 @@ public final class NewVersionChecker implements SchedulableComponent {
 	public TimerTask newTimerTask() {
 		return new TimerTask() {
 			public void run() {
-				try {
-					doRun();
-				} catch (VersionServiceException e) {
-					LOG.info("Error checking for new version", e);
-				}
+				doRun();
 			}
 		};
 	}
@@ -56,20 +53,25 @@ public final class NewVersionChecker implements SchedulableComponent {
 		return PLUGIN_UPDATE_ATTEMPT_DELAY;
 	}
 
-	private void doRun() throws VersionServiceException {
-		if (ConfigurationFactory.getConfiguration().isAutoUpdateEnabled() == false) {
+	private void doRun() {
+		if (!ConfigurationFactory.getConfiguration().isAutoUpdateEnabled() || checkedAlready) {
 			return;
 		}
 		InfoServer server = new InfoServer(PluginInfoUtil.VERSION_INFO_URL,
 				ConfigurationFactory.getConfiguration().getUid());
-		InfoServer.VersionInfo versionInfo = server.getLatestPluginVersion();
-
-		// simple versionInfo difference check
-		String newVersion = versionInfo.getVersion();
-		if (!newVersion.equals(PluginInfoUtil.getVersion())) {
-			ConfirmPluginUpdateHandler handler = ConfirmPluginUpdateHandler.getInstance();
-			handler.setNewVersionInfo(versionInfo);
-			ApplicationManager.getApplication().invokeLater(handler);
+		InfoServer.VersionInfo versionInfo = null;
+		try {
+			versionInfo = server.getLatestPluginVersion();
+			// simple versionInfo difference check
+			String newVersion = versionInfo.getVersion();
+			if (!newVersion.equals(PluginInfoUtil.getVersion())) {
+				ConfirmPluginUpdateHandler handler = ConfirmPluginUpdateHandler.getInstance();
+				handler.setNewVersionInfo(versionInfo);
+				ApplicationManager.getApplication().invokeLater(handler);
+			}
+			checkedAlready = true;
+		} catch (VersionServiceException e) {
+			LOG.info("Error checking new version.");
 		}
 	}
 
