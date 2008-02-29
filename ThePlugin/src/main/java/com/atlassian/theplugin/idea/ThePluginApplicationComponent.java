@@ -45,16 +45,6 @@ public class ThePluginApplicationComponent
 	private UserDataContext userDataContext;
     private JIRAServer currentJIRAServer;
 
-	public ThePluginProjectComponent getProjectComponent() {
-		return projectComponent;
-	}
-
-	public void setProjectComponent(ThePluginProjectComponent projectComponent) {
-		this.projectComponent = projectComponent;
-	}
-
-	private ThePluginProjectComponent projectComponent = null;
-
 	BambooStatusChecker getBambooStatusChecker() {
 		return bambooStatusChecker;
 	}
@@ -156,13 +146,11 @@ public class ThePluginApplicationComponent
 			// Get data from form to component
 			form.getData();
 
-			// show icons if necessary
-			projectComponent.getStatusBarBambooIcon().showOrHideIcon();
-			projectComponent.getStatusBarCrucibleIcon().showOrHideIcon();
-
-			for (Project pr : ProjectManager.getInstance().getOpenProjects()) {
-				ThePluginProjectComponent pc = pr.getComponent(ThePluginProjectComponent.class);
-				pc.enablePlugin();
+			for (Project project : ProjectManager.getInstance().getOpenProjects()) {
+				ThePluginProjectComponent projectComponent = project.getComponent(ThePluginProjectComponent.class);
+				// show icons if necessary
+				projectComponent.getStatusBarBambooIcon().showOrHideIcon();
+				projectComponent.getStatusBarCrucibleIcon().showOrHideIcon();
 			}
 			rescheduleStatusCheckers(true);
 		}
