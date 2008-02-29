@@ -31,7 +31,7 @@ public class CrucibleStatusIcon extends StatusBarPluginIcon {
 
 		addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-                IdeaHelper.focusPanel(IdeaHelper.TOOLWINDOW_PANEL_CRUCIBLE);
+                IdeaHelper.focusPanel(project, IdeaHelper.TOOLWINDOW_PANEL_CRUCIBLE);
 				resetIcon();
 			}
 		});

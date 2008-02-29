@@ -45,24 +45,19 @@ public class UserDataContext implements CrucibleStatusListener {
 			final Project project = IdeaHelper.getCurrentProject();
 
 			if (project != null) {
-				StringBuffer sb = new StringBuffer(
-						"<table width=\"100%\">"
-						+ "<tr><td width=20><img src=\"/icons/crucible-blue-16.png\" height=16 width=16 border=0></td>"
-						+ "<td colspan=2><b>"
-						+ newReviews.size()
-						+ " New Crucible Review"
-						+ (newReviews.size() != 1 ? "s" : "")
-						+ "</b></td></tr>");
+				StringBuilder sb = new StringBuilder("<table width=\"100%\">");
+				sb.append("<tr><td width=20><img src=\"/icons/crucible-blue-16.png\" height=16 width=16 border=0></td>")
+					.append("<td colspan=2><b>")
+					.append(newReviews.size())
+					.append(" New Crucible Review")
+					.append(newReviews.size() != 1 ? "s" : "")
+					.append("</b></td></tr>");
 
 				for (ReviewDataInfo newReview : newReviews) {
 					String id = newReview.getPermaId().getId();
-					sb.append(
-							"<tr><td colspan=2 width=\"1%\" nowrap valign=top><a href=\""
-							+ newReview.getReviewUrl() + "\">"
-							+ id
-							+ "</a></td><td>"
-							+ newReview.getName()
-							+ "</td></tr>");
+					sb.append("<tr><td colspan=2 width=\"1%\" nowrap valign=top><a href=\"")
+						.append(newReview.getReviewUrl()).append("\">")
+						.append(id).append("</a></td><td>").append(newReview.getName()).append("</td></tr>");
 				}
 				sb.append("</table>");
 				JEditorPane content = new JEditorPane();
@@ -76,7 +71,7 @@ public class UserDataContext implements CrucibleStatusListener {
 				content.addMouseListener(new MouseAdapter() {
 					public void mouseClicked(MouseEvent e) {
 						display.resetIcon();
-						IdeaHelper.focusPanel(IdeaHelper.TOOLWINDOW_PANEL_CRUCIBLE);
+						IdeaHelper.focusPanel(project, IdeaHelper.TOOLWINDOW_PANEL_CRUCIBLE);
 					}
 				});
 				content.setCaretPosition(0); // do thi to make sure scroll pane is always at the top / header

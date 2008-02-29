@@ -11,6 +11,7 @@ import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Simple helper methods for the IDEA plugin
@@ -24,16 +25,14 @@ public final class IdeaHelper {
     private IdeaHelper() {
     }
 
-    public static Project getCurrentProject() {
+    @Nullable
+	public static Project getCurrentProject() {
 		return getCurrentProject(DataManager.getInstance().getDataContext());
     }
 
-    public static Project getCurrentProject(DataContext dataContext) {
+	@Nullable
+	public static Project getCurrentProject(DataContext dataContext) {
         return DataKeys.PROJECT.getData(dataContext);
-    }
-
-    public static ToolWindow getToolWindow() {
-        return getToolWindow(getCurrentProject());
     }
 
     public static ToolWindow getToolWindow(Project p) {
@@ -52,8 +51,8 @@ public final class IdeaHelper {
     }
 
     // simple method to open the ToolWindow and focus on a particular component
-    public static void focusPanel(String componentName) {
-        ToolWindow tw = getToolWindow(getCurrentProject());
+    public static void focusPanel(Project project, String componentName) {
+        ToolWindow tw = getToolWindow(project);
         if (tw != null) {
             ContentManager contentManager = tw.getContentManager();
             tw.activate(null);
@@ -62,11 +61,7 @@ public final class IdeaHelper {
     }
 
     public static void focusPanel(AnActionEvent e, String componentName) {
-        ToolWindow tw = getToolWindow(getCurrentProject(e.getDataContext()));
-        if (tw != null) {
-            ContentManager contentManager = tw.getContentManager();
-            tw.activate(null);
-            contentManager.setSelectedContent(contentManager.findContent(componentName));
-        }
+		Project project = getCurrentProject(e.getDataContext());
+		focusPanel(project, componentName);
     }
 }
