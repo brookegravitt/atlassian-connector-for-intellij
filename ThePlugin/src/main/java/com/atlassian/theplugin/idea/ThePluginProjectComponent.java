@@ -5,10 +5,7 @@ import com.atlassian.theplugin.crucible.HtmlCrucibleStatusListener;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
 import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
 import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;
-import com.atlassian.theplugin.idea.crucible.CruciblePatchSubmitExecutor;
-import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
-import com.atlassian.theplugin.idea.crucible.CrucibleStatusIcon;
-import com.atlassian.theplugin.idea.crucible.CrucibleToolWindowPanel;
+import com.atlassian.theplugin.idea.crucible.*;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.project.Project;
@@ -42,9 +39,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 	private ToolWindowManager toolWindowManager;
 	private boolean enabled;
-	private BambooStatusDisplay buildFailedToolTip;
 	private ToolWindow toolWindow;
-	private UserDataContext crucibleUserContext;
+	private CrucibleNewReviewNotifier crucibleNewReviewNotifier;
 
 	private ThePluginApplicationComponent applicationComponent;
 
@@ -138,7 +134,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 			// add simple bamboo listener to bamboo checker thread
 			// this listener shows idea tooltip when buld failed
-			buildFailedToolTip = new BuildStatusChangedToolTip(project);
+			BambooStatusDisplay buildFailedToolTip = new BuildStatusChangedToolTip(project);
 			tooltipBambooStatusListener = new BambooStatusListenerImpl(buildFailedToolTip);
 			bambooStatusChecker.registerListener(tooltipBambooStatusListener);
 
@@ -154,9 +150,9 @@ public class ThePluginProjectComponent implements ProjectComponent {
             crucibleStatusChecker = CrucibleStatusChecker.getIntance();
             toolWindowCrucibleListener = new HtmlCrucibleStatusListener(crucibleToolWindowPanel.getCrucibleContent());
             crucibleStatusChecker.registerListener(toolWindowCrucibleListener);
-			crucibleUserContext = applicationComponent.getUserDataContext();
-			crucibleUserContext.setDisplay(statusBarCrucibleIcon);
-			crucibleStatusChecker.registerListener(crucibleUserContext);
+			crucibleNewReviewNotifier = applicationComponent.getCrucibleNewReviewNotifier();
+			crucibleNewReviewNotifier.setDisplay(statusBarCrucibleIcon);
+			crucibleStatusChecker.registerListener(crucibleNewReviewNotifier);
 
 			// add crucible icon to status bar
 			//statusBar.addCustomIndicationComponent(statusBarCrucibleIcon);
@@ -187,7 +183,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			bambooStatusChecker.unregisterListener(toolWindowBambooListener);
 			bambooStatusChecker.unregisterListener(tooltipBambooStatusListener);
 			crucibleStatusChecker.unregisterListener(toolWindowCrucibleListener);
-			crucibleStatusChecker.unregisterListener(crucibleUserContext);
+			crucibleStatusChecker.unregisterListener(crucibleNewReviewNotifier);
 
 			// remove tool window
 			toolWindowManager.unregisterToolWindow(IdeaHelper.TOOL_WINDOW_NAME);
