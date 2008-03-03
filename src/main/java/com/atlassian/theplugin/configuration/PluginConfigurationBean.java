@@ -10,18 +10,33 @@ public class PluginConfigurationBean implements PluginConfiguration {
 	private long uid = 0;
 	private boolean isAutoUpdateEnabled = true;
 
+	/**
+	 * Default constructor.
+	 */
 	public PluginConfigurationBean() {
     }
 
-    public PluginConfigurationBean(PluginConfiguration cfg) {
+	/**
+	 * Copying constructor.<p>
+	 * Makes a deep copy of provided configuration.
+	 * @param cfg configuration to be deep copied.
+	 */
+	public PluginConfigurationBean(PluginConfiguration cfg) {
+		setConfiguration(cfg);		
+    }
+
+	/**
+	 * Deep copies provided configuration.
+	 * @param cfg configuration to be copied to current configuration object.
+	 */
+	public void setConfiguration(PluginConfiguration cfg) {
 		this.setUid(cfg.getUid());
 		this.setAutoUpdateEnabled(cfg.isAutoUpdateEnabled());
 		this.setBambooConfigurationData(new BambooConfigurationBean(cfg.getProductServers(ServerType.BAMBOO_SERVER)));
         this.setCrucibleConfigurationData(new CrucibleConfigurationBean(cfg.getProductServers(ServerType.CRUCIBLE_SERVER)));
         this.setJIRAConfigurationData(new JIRAConfigurationBean(cfg.getProductServers(ServerType.JIRA_SERVER)));
-    }
-
-    /**
+	}
+	/**
      * For storage purposes.
      * <p/>
      * Does not use the JDK1.5 'return a subclass' due to problem with XML serialization.

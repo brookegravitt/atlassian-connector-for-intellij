@@ -39,12 +39,12 @@ public class BambooStatusCheckerTest extends TestCase {
 		PluginConfigurationBean config = createBambooTestConfiguration();
 		ConfigurationFactory.setConfiguration(config);
 
-		BambooStatusChecker checker = new BambooStatusChecker(null);
+		BambooStatusChecker checker = new BambooStatusChecker(null, config);
 		assertEquals(60000, checker.getInterval());
 	}
 
 	public void testNewTimerTask() {
-		BambooStatusChecker checker = new BambooStatusChecker(null);
+		BambooStatusChecker checker = new BambooStatusChecker(null, null);
 		TimerTask t1 = checker.newTimerTask();
 		TimerTask t2 = checker.newTimerTask();
 
@@ -58,7 +58,7 @@ public class BambooStatusCheckerTest extends TestCase {
 		ConfigurationFactory.setConfiguration(config);
 
 		EasyInvoker invoker = new EasyInvoker();
-		BambooStatusChecker checker = new BambooStatusChecker(invoker);
+		BambooStatusChecker checker = new BambooStatusChecker(invoker, config);
 
 		TimerTask task = checker.newTimerTask();
 		task.run();
