@@ -1,8 +1,6 @@
 package com.atlassian.theplugin.bamboo.api;
 
-import com.atlassian.theplugin.bamboo.BambooBuild;
-import com.atlassian.theplugin.bamboo.BambooPlan;
-import com.atlassian.theplugin.bamboo.BambooProject;
+import com.atlassian.theplugin.bamboo.*;
 import com.atlassian.theplugin.bamboo.api.bamboomock.*;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
@@ -271,4 +269,277 @@ public class BambooSessionTest extends TestCase {
 		mockServer.verify();
 	}
 
+	public void testBuildDetailsFor1CommitFailedSuccessTests() throws Exception {
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/getBuildResultsDetails.action", new BuildDetailsResultCallback("buildResult-1Commit-FailedTests-SuccessfulTests.xml"));
+		mockServer.expect("/api/rest/logout.action", new LogoutCallback());
+
+		BambooSession apiHandler = new BambooSession(mockBaseUrl);
+		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
+		BuildDetails build = apiHandler.getBuildResultDetails("TP-DEF", "100");
+		apiHandler.logout();
+
+		mockServer.verify();
+
+		assertNotNull(build);
+		assertEquals("13928", build.getVcsRevisionKey());
+		// commit
+		assertEquals(1, build.getCommitInfo().size());
+		assertEquals("author", build.getCommitInfo().iterator().next().getAuthor());
+		assertNotNull(build.getCommitInfo().iterator().next().getCommitDate());
+		assertEquals("commit comment", build.getCommitInfo().iterator().next().getComment());
+		assertEquals(3, build.getCommitInfo().iterator().next().getFiles().size());
+		assertEquals("13928", build.getCommitInfo().iterator().next().getFiles().iterator().next().getRevision());
+		assertEquals(
+				"/PL/trunk/ThePlugin/src/main/java/com/atlassian/theplugin/bamboo/HtmlBambooStatusListener.java",
+				build.getCommitInfo().iterator().next().getFiles().iterator().next().getFileName());
+
+		// failed tests
+		assertEquals(2, build.getFailedTestDetails().size());
+		assertEquals("com.atlassian.theplugin.bamboo.HtmlBambooStatusListenerTest",
+				build.getFailedTestDetails().iterator().next().getTestClassName());
+		assertEquals("testSingleSuccessResultForDisabledBuild",
+				build.getFailedTestDetails().iterator().next().getTestMethodName());
+		assertEquals(0.012,
+				build.getFailedTestDetails().iterator().next().getTestDuration());
+		assertNotNull(build.getFailedTestDetails().iterator().next().getErrors());
+		assertEquals(TestResult.TEST_FAILED,
+				build.getFailedTestDetails().iterator().next().getTestResult());
+
+		// successful tests
+		assertEquals(117, build.getSuccessfulTestDetails().size());
+		assertEquals("com.atlassian.theplugin.bamboo.BambooServerFacadeTest",
+				build.getSuccessfulTestDetails().iterator().next().getTestClassName());
+		assertEquals("testProjectList",
+				build.getSuccessfulTestDetails().iterator().next().getTestMethodName());
+		assertEquals(0.046,
+				build.getSuccessfulTestDetails().iterator().next().getTestDuration());
+		assertNull(build.getSuccessfulTestDetails().iterator().next().getErrors());
+		assertEquals(TestResult.TEST_SUCCEED,
+				build.getSuccessfulTestDetails().iterator().next().getTestResult());
+	}
+
+	public void testBuildDetailsFor1CommitFailedTests() throws Exception {
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/getBuildResultsDetails.action", new BuildDetailsResultCallback("buildResult-1Commit-FailedTests.xml"));
+		mockServer.expect("/api/rest/logout.action", new LogoutCallback());
+
+		BambooSession apiHandler = new BambooSession(mockBaseUrl);
+		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
+		BuildDetails build = apiHandler.getBuildResultDetails("TP-DEF", "100");
+		apiHandler.logout();
+		
+		mockServer.verify();
+
+		assertNotNull(build);
+		assertEquals("13928", build.getVcsRevisionKey());
+		// commit
+		assertEquals(1, build.getCommitInfo().size());
+		assertEquals("author", build.getCommitInfo().iterator().next().getAuthor());
+		assertNotNull(build.getCommitInfo().iterator().next().getCommitDate());
+		assertEquals("commit comment", build.getCommitInfo().iterator().next().getComment());
+		assertEquals(3, build.getCommitInfo().iterator().next().getFiles().size());
+		assertEquals("13928", build.getCommitInfo().iterator().next().getFiles().iterator().next().getRevision());
+		assertEquals(
+				"/PL/trunk/ThePlugin/src/main/java/com/atlassian/theplugin/bamboo/HtmlBambooStatusListener.java",
+				build.getCommitInfo().iterator().next().getFiles().iterator().next().getFileName());
+
+		// failed tests
+		assertEquals(2, build.getFailedTestDetails().size());
+		assertEquals("com.atlassian.theplugin.bamboo.HtmlBambooStatusListenerTest",
+				build.getFailedTestDetails().iterator().next().getTestClassName());
+		assertEquals("testSingleSuccessResultForDisabledBuild",
+				build.getFailedTestDetails().iterator().next().getTestMethodName());
+		assertEquals(0.012,
+				build.getFailedTestDetails().iterator().next().getTestDuration());
+		assertNotNull(build.getFailedTestDetails().iterator().next().getErrors());
+		assertEquals(TestResult.TEST_FAILED,
+				build.getFailedTestDetails().iterator().next().getTestResult());
+
+		// successful tests
+		assertEquals(0, build.getSuccessfulTestDetails().size());
+	}
+
+	public void testBuildDetailsFor1CommitSuccessTests() throws Exception {
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/getBuildResultsDetails.action", new BuildDetailsResultCallback("buildResult-1Commit-SuccessfulTests.xml"));
+		mockServer.expect("/api/rest/logout.action", new LogoutCallback());
+
+		BambooSession apiHandler = new BambooSession(mockBaseUrl);
+		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
+		BuildDetails build = apiHandler.getBuildResultDetails("TP-DEF", "100");
+		apiHandler.logout();
+
+		mockServer.verify();
+
+		assertNotNull(build);
+		assertEquals("13928", build.getVcsRevisionKey());
+		// commit
+		assertEquals(1, build.getCommitInfo().size());
+		assertEquals("author", build.getCommitInfo().iterator().next().getAuthor());
+		assertNotNull(build.getCommitInfo().iterator().next().getCommitDate());
+		assertEquals("commit comment", build.getCommitInfo().iterator().next().getComment());
+		assertEquals(3, build.getCommitInfo().iterator().next().getFiles().size());
+		assertEquals("13928", build.getCommitInfo().iterator().next().getFiles().iterator().next().getRevision());
+		assertEquals(
+				"/PL/trunk/ThePlugin/src/main/java/com/atlassian/theplugin/bamboo/HtmlBambooStatusListener.java",
+				build.getCommitInfo().iterator().next().getFiles().iterator().next().getFileName());
+
+		// failed tests
+		assertEquals(0, build.getFailedTestDetails().size());
+
+		// successful tests
+		assertEquals(117, build.getSuccessfulTestDetails().size());
+		assertEquals("com.atlassian.theplugin.bamboo.BambooServerFacadeTest",
+				build.getSuccessfulTestDetails().iterator().next().getTestClassName());
+		assertEquals("testProjectList",
+				build.getSuccessfulTestDetails().iterator().next().getTestMethodName());
+		assertEquals(0.046,
+				build.getSuccessfulTestDetails().iterator().next().getTestDuration());
+		assertNull(build.getSuccessfulTestDetails().iterator().next().getErrors());
+		assertEquals(TestResult.TEST_SUCCEED,
+				build.getSuccessfulTestDetails().iterator().next().getTestResult());
+	}
+
+	public void testBuildDetailsFor3CommitFailedSuccessTests() throws Exception {
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/getBuildResultsDetails.action", new BuildDetailsResultCallback("buildResult-3Commit-FailedTests-SuccessfulTests.xml"));
+		mockServer.expect("/api/rest/logout.action", new LogoutCallback());
+
+		BambooSession apiHandler = new BambooSession(mockBaseUrl);
+		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
+		BuildDetails build = apiHandler.getBuildResultDetails("TP-DEF", "100");
+		apiHandler.logout();
+
+		mockServer.verify();
+
+		assertNotNull(build);
+		assertEquals("13928", build.getVcsRevisionKey());
+		// commit
+		assertEquals(3, build.getCommitInfo().size());
+		assertEquals("author", build.getCommitInfo().get(0).getAuthor());
+		assertNotNull(build.getCommitInfo().get(0).getCommitDate());
+		assertEquals("commit comment", build.getCommitInfo().get(0).getComment());
+		assertEquals(3, build.getCommitInfo().get(0).getFiles().size());
+		assertEquals("13928", build.getCommitInfo().get(0).getFiles().iterator().next().getRevision());
+		assertEquals(
+				"/PL/trunk/ThePlugin/src/main/java/com/atlassian/theplugin/bamboo/HtmlBambooStatusListener.java",
+				build.getCommitInfo().get(0).getFiles().iterator().next().getFileName());
+		assertEquals(2, build.getCommitInfo().get(1).getFiles().size());
+		assertEquals(1, build.getCommitInfo().get(2).getFiles().size());		
+
+		// failed tests
+		assertEquals(2, build.getFailedTestDetails().size());
+		assertEquals("com.atlassian.theplugin.bamboo.HtmlBambooStatusListenerTest",
+				build.getFailedTestDetails().iterator().next().getTestClassName());
+		assertEquals("testSingleSuccessResultForDisabledBuild",
+				build.getFailedTestDetails().iterator().next().getTestMethodName());
+		assertEquals(0.012,
+				build.getFailedTestDetails().iterator().next().getTestDuration());
+		assertNotNull(build.getFailedTestDetails().iterator().next().getErrors());
+		assertEquals(TestResult.TEST_FAILED,
+				build.getFailedTestDetails().iterator().next().getTestResult());
+
+		assertEquals("error 1\n", build.getFailedTestDetails().get(0).getErrors());
+		assertEquals("error 2\n", build.getFailedTestDetails().get(1).getErrors());		
+
+		// successful tests
+		assertEquals(117, build.getSuccessfulTestDetails().size());
+		assertEquals("com.atlassian.theplugin.bamboo.BambooServerFacadeTest",
+				build.getSuccessfulTestDetails().iterator().next().getTestClassName());
+		assertEquals("testProjectList",
+				build.getSuccessfulTestDetails().iterator().next().getTestMethodName());
+		assertEquals(0.046,
+				build.getSuccessfulTestDetails().iterator().next().getTestDuration());
+		assertNull(build.getSuccessfulTestDetails().iterator().next().getErrors());
+		assertEquals(TestResult.TEST_SUCCEED,
+				build.getSuccessfulTestDetails().iterator().next().getTestResult());
+
+		assertEquals("com.atlassian.theplugin.crucible.CrucibleServerFacadeConnectionTest",
+				build.getSuccessfulTestDetails().get(116).getTestClassName());
+		assertEquals("testConnectionTestFailedNullPassword",
+				build.getSuccessfulTestDetails().get(116).getTestMethodName());
+		assertEquals(0.001,
+				build.getSuccessfulTestDetails().get(116).getTestDuration());
+		assertNull(build.getSuccessfulTestDetails().get(116).getErrors());
+		assertEquals(TestResult.TEST_SUCCEED,
+				build.getSuccessfulTestDetails().get(116).getTestResult());
+	}
+
+	public void testBuildDetailsForNoCommitFailedSuccessTests() throws Exception {
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/getBuildResultsDetails.action", new BuildDetailsResultCallback("buildResult-NoCommit-FailedTests-SuccessfulTests.xml"));
+		mockServer.expect("/api/rest/logout.action", new LogoutCallback());
+
+		BambooSession apiHandler = new BambooSession(mockBaseUrl);
+		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
+		BuildDetails build = apiHandler.getBuildResultDetails("TP-DEF", "100");
+		apiHandler.logout();
+
+		mockServer.verify();
+
+		assertNotNull(build);
+		assertEquals("13928", build.getVcsRevisionKey());
+		// commit
+		assertEquals(0, build.getCommitInfo().size());
+
+		// failed tests
+		assertEquals(2, build.getFailedTestDetails().size());
+		assertEquals("com.atlassian.theplugin.bamboo.HtmlBambooStatusListenerTest",
+				build.getFailedTestDetails().iterator().next().getTestClassName());
+		assertEquals("testSingleSuccessResultForDisabledBuild",
+				build.getFailedTestDetails().iterator().next().getTestMethodName());
+		assertEquals(0.012,
+				build.getFailedTestDetails().iterator().next().getTestDuration());
+		assertNotNull(build.getFailedTestDetails().iterator().next().getErrors());
+		assertEquals(TestResult.TEST_FAILED,
+				build.getFailedTestDetails().iterator().next().getTestResult());
+
+		// successful tests
+		assertEquals(117, build.getSuccessfulTestDetails().size());
+		assertEquals("com.atlassian.theplugin.bamboo.BambooServerFacadeTest",
+				build.getSuccessfulTestDetails().iterator().next().getTestClassName());
+		assertEquals("testProjectList",
+				build.getSuccessfulTestDetails().iterator().next().getTestMethodName());
+		assertEquals(0.046,
+				build.getSuccessfulTestDetails().iterator().next().getTestDuration());
+		assertNull(build.getSuccessfulTestDetails().iterator().next().getErrors());
+		assertEquals(TestResult.TEST_SUCCEED,
+				build.getSuccessfulTestDetails().iterator().next().getTestResult());
+	}
+
+	public void testBuildDetailsMalformedResponse() throws Exception {
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/getBuildResultsDetails.action", new BuildDetailsResultCallback("malformedBuildResult.xml"));
+		mockServer.expect("/api/rest/logout.action", new LogoutCallback());
+
+		BambooSession apiHandler = new BambooSession(mockBaseUrl);
+		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
+		try {
+			BuildDetails build = apiHandler.getBuildResultDetails("TP-DEF", "100");
+			fail();
+		} catch (BambooException e) {
+			assertEquals("org.jdom.input.JDOMParseException", e.getCause().getClass().getName());
+		}
+		apiHandler.logout();
+
+		mockServer.verify();
+	}
+
+	public void testBuildDetailsEmptyResponse() throws Exception {
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/getBuildResultsDetails.action", new BuildDetailsResultCallback("emptyResult.xml"));
+		mockServer.expect("/api/rest/logout.action", new LogoutCallback());
+
+		BambooSession apiHandler = new BambooSession(mockBaseUrl);
+		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
+		BuildDetails build = apiHandler.getBuildResultDetails("TP-DEF", "100");
+		apiHandler.logout();
+
+		assertEquals(0, build.getCommitInfo().size());
+		assertEquals(0, build.getSuccessfulTestDetails().size());
+		assertEquals(0, build.getFailedTestDetails().size());
+
+		mockServer.verify();
+	}
 }
