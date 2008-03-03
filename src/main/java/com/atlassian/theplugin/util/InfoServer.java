@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.util;
 
 import com.atlassian.theplugin.exception.VersionServiceException;
+import com.atlassian.theplugin.exception.IncorrectVersionException;
 import com.atlassian.theplugin.idea.PluginInfoUtil;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -12,6 +13,8 @@ import org.jdom.xpath.XPath;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Scanner;
+import java.util.regex.MatchResult;
 
 public class InfoServer {
 	private String serviceUrl;
@@ -55,7 +58,7 @@ public class InfoServer {
 		}
 		private Document doc;
 		private Type type;
-		private String version;
+		private Version version;
 		private String downloadUrl;
 
 		public VersionInfo(Document doc, VersionInfo.Type type) {
@@ -63,12 +66,16 @@ public class InfoServer {
 			this.type = type;
 		}
 
-		public VersionInfo(String version, String downloadUrl) {
+		public VersionInfo(Version version, String downloadUrl) {
 			this.version = version;
 			this.downloadUrl = downloadUrl;
 		}
 
-		public String getVersion() throws VersionServiceException {
+		public VersionInfo(String version, String downloadUrl) throws IncorrectVersionException {
+			this(new Version(version), downloadUrl);
+		}
+
+		public Version getVersion() throws VersionServiceException, IncorrectVersionException {
 			String path = "";
 			if (version == null) {
 				switch (type) {
@@ -81,7 +88,7 @@ public class InfoServer {
 					default:
 						throw new VersionServiceException("neither stable nor unstable");
 				}
-				version = getValue(path);
+				version = new Version(getValue(path));
 			}
 			return version;
 		}
@@ -117,6 +124,171 @@ public class InfoServer {
 				downloadUrl = getValue(path);
 			}
 			return downloadUrl;
+		}
+	}
+
+	/**
+	 * Class encapsulating version descriptor of a form e.g. "0.3.0, SVN:14021"
+	 */
+	public static class Version {
+		public static final String SPECIAL_DEV_VERSION = "${project.version}, SVN:${buildNumber}";
+
+		private static class VersionNumber {
+			private int major;
+			private int minor;
+			private int micro;
+			private AlphaNum alphaNum;
+
+			public enum AlphaNum {
+				NONE, ALPHA, BETA, SNAPSHOT
+			}
+
+			public VersionNumber(int major, int minor, int micro, String alphaNum) throws IncorrectVersionException {
+				this.major = major;
+				this.minor = minor;
+				this.micro = micro;
+				if (alphaNum == null) {
+					this.alphaNum = AlphaNum.NONE;
+				} else {
+					try {
+						this.alphaNum = AlphaNum.valueOf(alphaNum);
+					} catch (IllegalArgumentException ex) {
+						throw new IncorrectVersionException("Unknown version alphanum: " + alphaNum);
+					}
+				}
+			}
+
+			public boolean greater(VersionNumber other) {
+				if (major > other.major) {
+					return true;
+				} else {
+					if (major == other.major && minor > other.minor) {
+						return true;
+					} else {
+						if (major == other.major && minor == other.minor && micro > other.micro) {
+							return true;
+						} else {
+							if (major == other.major && minor == other.minor && micro == other.micro) {
+								return alphaNum.ordinal() > other.alphaNum.ordinal();
+							}
+						}
+					}
+				}
+				return false;
+			}
+
+			public boolean equals(Object o) {
+				if (this == o) {
+					return true;
+				}
+				if (o == null || getClass() != o.getClass()) {
+					return false;
+				}
+
+				VersionNumber that = (VersionNumber) o;
+
+				if (major != that.major) {
+					return false;
+				}
+				if (micro != that.micro) {
+					return false;
+				}
+				if (minor != that.minor) {
+					return false;
+				}
+				if (alphaNum != that.alphaNum) {
+					return false;
+				}
+
+				return true;
+			}
+
+			public int hashCode() {
+				int result;
+				result = major;
+				result = 31 * result + minor;
+				result = 31 * result + micro;
+				result = 31 * result + (alphaNum != null ? alphaNum.hashCode() : 0);
+				return result;
+			}
+
+		}
+
+		private VersionNumber versionNumber;
+		private Integer buildNo;
+		private String version;
+
+		public Version(String version) throws IncorrectVersionException {
+			this.version = version;
+			if(!version.equals(SPECIAL_DEV_VERSION)) {
+				tokenize();
+			}
+		}
+
+		private void tokenize() throws IncorrectVersionException {
+			Scanner s = new Scanner(version);
+			//String pattern = "^(\\d+)\\.(\\d+)\\.(\\d+)((-(ALPHA|BETA|SNAPSHOT))?+), SVN:(\\d+)$";
+			String pattern = "^(\\d+)\\.(\\d+)\\.(\\d+)((-(SNAPSHOT))?+), SVN:(\\d+)$";
+			s.findInLine(pattern);
+			try {
+				MatchResult result = s.match();
+				versionNumber = new VersionNumber(
+						Integer.valueOf(result.group(1)),
+						Integer.valueOf(result.group(2)),
+						Integer.valueOf(result.group(3)),
+						result.group(6)
+				);
+
+				try {
+					buildNo = Integer.valueOf(result.group(7));
+				} catch (NumberFormatException ex) {
+					throw new IncorrectVersionException("Invalid build number: \"" + result.group(5) + "\"", ex);
+				}
+			} catch (IllegalStateException ex) {
+				throw new IncorrectVersionException("Version ("+ version +") does not match pattern (\"" + pattern + "\")", ex);
+			}
+		}
+
+		public boolean equals(Object that) {
+			if (this == that) {
+				return true;
+			}
+			if (that == null || getClass() != that.getClass()) {
+				return false;
+			}
+
+			Version thatVersion = (Version) that;
+
+			if (version != null ? !version.equals(thatVersion.version) : thatVersion.version != null) {
+				return false;
+			}
+
+			return true;
+		}
+
+		public int hashCode() {
+			return (version != null ? version.hashCode() : 0);
+		}
+
+		public Integer getBuildNo() {
+			return buildNo;
+		}
+
+		public boolean greater(Version someVersion) {
+			if (version.equals(SPECIAL_DEV_VERSION)) {
+				return true;
+			}
+			if (someVersion.version.equals(SPECIAL_DEV_VERSION)) {
+				return false;
+			}
+			if (this.getVersionNumber().equals(someVersion.getVersionNumber())) {
+				return getBuildNo() > someVersion.getBuildNo();
+			}
+			return this.getVersionNumber().greater(someVersion.getVersionNumber());			
+		}
+
+		private VersionNumber getVersionNumber() {
+			return versionNumber;
 		}
 	}
 }

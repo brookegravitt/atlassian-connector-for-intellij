@@ -9,12 +9,10 @@ import com.atlassian.theplugin.crucible.CrucibleServerFactory;
 import com.atlassian.theplugin.crucible.CrucibleStatusListener;
 import com.atlassian.theplugin.crucible.ReviewDataInfo;
 import com.atlassian.theplugin.crucible.api.CrucibleLoginException;
-import com.atlassian.theplugin.idea.PluginStatusBarToolTip;
 import com.atlassian.theplugin.idea.SchedulableComponent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
-import org.apache.log4j.Category;
-import org.apache.log4j.Logger;
+import com.intellij.openapi.diagnostic.Logger;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -33,7 +31,8 @@ import java.util.TimerTask;
  */
 public final class CrucibleStatusChecker implements SchedulableComponent {
 	private static final long CRUCIBLE_TIMER_TICK = 120000;
-	private static final Category LOGGER = Logger.getInstance(PluginStatusBarToolTip.class);
+	private static final Logger LOGGER = Logger.getInstance("#com.atlassian.theplugin.idea.PluginStatusBarToolTip");
+	//private static final Category LOGGER = Logger.getInstance(PluginStatusBarToolTip.class);
 	private final List<CrucibleStatusListener> listenerList = new ArrayList<CrucibleStatusListener>();
 	private static CrucibleStatusChecker instance;
 
@@ -69,7 +68,7 @@ public final class CrucibleStatusChecker implements SchedulableComponent {
                                     ApplicationManager.getApplication().invokeLater(
                                             new MissingPasswordHandler(), ModalityState.defaultModalityState());
                                 } catch (CrucibleLoginException e) {
-                                    LOGGER.info("Error getting Crucible reviews for " + server.getName() + " server", e);
+									LOGGER.error("Error getting Crucible reviews for " + server.getName() + " server", e);
                                 }
                             }
 

@@ -19,6 +19,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 
 /**
  * Created by IntelliJ IDEA.
@@ -104,8 +105,8 @@ public class PluginDownloader implements Runnable {
 		String pluginUrl = null;
 		try {
 			pluginUrl = newVersion.getDownloadUrl()
-				.replaceAll(PLUGIN_ID_TOKEN, pluginName)
-					.replaceAll(VERSION_TOKEN, version);
+				.replaceAll(PLUGIN_ID_TOKEN, URLEncoder.encode(pluginName, "UTF-8"))
+					.replaceAll(VERSION_TOKEN, URLEncoder.encode(version, "UTF-8"));
 		} catch (VersionServiceException e) {
 			LOGGER.info("Error retrieving url for new version of the plugin.");
 		}
