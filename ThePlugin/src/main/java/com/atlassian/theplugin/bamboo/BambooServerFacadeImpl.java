@@ -183,6 +183,26 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 		}
 	}
 
+	public void addLabelToBuild(Server bambooServer, String buildKey, String buildNumber, String buildLabel)
+			throws ServerPasswordNotProvidedException {
+		try {
+			BambooSession api = getSession(bambooServer);
+			api.addLabelToBuild(buildKey, buildNumber, buildLabel);
+		} catch (BambooException e) {
+			LOG.info("Bamboo exception: " + e.getMessage());
+		}
+	}
+
+	public void addCommentToBuild(Server bambooServer, String buildKey, String buildNumber, String buildComment)
+			throws ServerPasswordNotProvidedException {
+		try {
+			BambooSession api = getSession(bambooServer);
+			api.addCommentToBuild(buildKey, buildNumber, buildComment);
+		} catch (BambooException e) {
+			LOG.info("Bamboo exception: " + e.getMessage());
+		}
+	}
+
 	/**
 	 * List plans defined on Bamboo server.
 	 *

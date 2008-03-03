@@ -17,4 +17,10 @@ public interface BambooServerFacade {
 
 	BuildDetails getBuildDetails(Server bambooServer, String buildKey, String buildNumber)
 			throws ServerPasswordNotProvidedException;
+
+	void addLabelToBuild(Server bambooServer, String buildKey, String buildNumber, String buildComment)
+			throws ServerPasswordNotProvidedException;
+
+	void addCommentToBuild(Server bambooServer, String buildKey, String buildNumber, String buildComment)
+			throws ServerPasswordNotProvidedException;
 }

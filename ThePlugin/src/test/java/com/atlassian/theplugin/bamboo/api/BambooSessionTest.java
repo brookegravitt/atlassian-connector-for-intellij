@@ -528,7 +528,7 @@ public class BambooSessionTest extends TestCase {
 
 	public void testBuildDetailsEmptyResponse() throws Exception {
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/api/rest/getBuildResultsDetails.action", new BuildDetailsResultCallback("emptyResult.xml"));
+		mockServer.expect("/api/rest/getBuildResultsDetails.action", new BuildDetailsResultCallback("emptyResponse.xml"));
 		mockServer.expect("/api/rest/logout.action", new LogoutCallback());
 
 		BambooSession apiHandler = new BambooSession(mockBaseUrl);
@@ -542,4 +542,135 @@ public class BambooSessionTest extends TestCase {
 
 		mockServer.verify();
 	}
+
+	public void testAddSimpleLabel() throws Exception {
+		String label = "label siple text";
+
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/addLabelToBuildResults.action", new AddLabelToBuildCallback(label));
+		mockServer.expect("/api/rest/logout.action", new LogoutCallback());
+
+		BambooSession apiHandler = new BambooSession(mockBaseUrl);
+		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
+		apiHandler.addLabelToBuild("TP-DEF", "100", label);
+		apiHandler.logout();
+
+		mockServer.verify();
+	}
+
+	public void testAddEmptyLabel() throws Exception {
+		String label = "";
+
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/addLabelToBuildResults.action", new AddLabelToBuildCallback(label));
+		mockServer.expect("/api/rest/logout.action", new LogoutCallback());
+
+		BambooSession apiHandler = new BambooSession(mockBaseUrl);
+		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
+		apiHandler.addLabelToBuild("TP-DEF", "100", label);
+		apiHandler.logout();
+
+		mockServer.verify();
+	}
+
+	public void testAddMultiLineLabel() throws Exception {
+		String label = "Label first line\nLabel second line	\nLabel third line";
+
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/addLabelToBuildResults.action", new AddLabelToBuildCallback(label));
+		mockServer.expect("/api/rest/logout.action", new LogoutCallback());
+
+		BambooSession apiHandler = new BambooSession(mockBaseUrl);
+		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
+		apiHandler.addLabelToBuild("TP-DEF", "100", label);
+		apiHandler.logout();
+
+		mockServer.verify();
+	}
+
+	public void testAddLabelToNonExistingBuild() throws Exception {
+		String label = "Label";
+
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/addLabelToBuildResults.action", new AddLabelToBuildCallback(label, "200", AddLabelToBuildCallback.NON_EXIST_FAIL));
+		mockServer.expect("/api/rest/logout.action", new LogoutCallback());
+
+		BambooSession apiHandler = new BambooSession(mockBaseUrl);
+		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
+		try {
+			apiHandler.addLabelToBuild("TP-DEF", "200", label);
+			fail();
+		} catch (BambooException e) {
+
+		}
+		apiHandler.logout();
+
+		mockServer.verify();
+	}
+
+	public void testAddCommentLabel() throws Exception {
+		String comment = "comment siple text";
+
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/addCommentToBuildResults.action", new AddCommentToBuildCallback(comment));
+		mockServer.expect("/api/rest/logout.action", new LogoutCallback());
+
+		BambooSession apiHandler = new BambooSession(mockBaseUrl);
+		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
+		apiHandler.addCommentToBuild("TP-DEF", "100", comment);
+		apiHandler.logout();
+
+		mockServer.verify();
+	}
+
+	public void testAddEmptyComment() throws Exception {
+		String comment = "";
+
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/addCommentToBuildResults.action", new AddCommentToBuildCallback(comment));
+		mockServer.expect("/api/rest/logout.action", new LogoutCallback());
+
+		BambooSession apiHandler = new BambooSession(mockBaseUrl);
+		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
+		apiHandler.addCommentToBuild("TP-DEF", "100", comment);
+		apiHandler.logout();
+
+		mockServer.verify();
+	}
+
+	public void testAddMultiLineComment() throws Exception {
+		String comment = "Comment first line\nComment ; second line	\nComment third line";
+
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/addCommentToBuildResults.action", new AddCommentToBuildCallback(comment));
+		mockServer.expect("/api/rest/logout.action", new LogoutCallback());
+
+		BambooSession apiHandler = new BambooSession(mockBaseUrl);
+		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
+		apiHandler.addCommentToBuild("TP-DEF", "100", comment);
+		apiHandler.logout();
+
+		mockServer.verify();
+	}
+
+	public void testAddCommentToNonExistingBuild() throws Exception {
+		String comment = "Comment";
+
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/addCommentToBuildResults.action", new AddCommentToBuildCallback(comment, "200", AddCommentToBuildCallback.NON_EXIST_FAIL));
+		mockServer.expect("/api/rest/logout.action", new LogoutCallback());
+
+		BambooSession apiHandler = new BambooSession(mockBaseUrl);
+		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
+		try {
+			apiHandler.addCommentToBuild("TP-DEF", "200", comment);
+			fail();
+		} catch (BambooException e) {
+
+		}
+		apiHandler.logout();
+
+		mockServer.verify();
+	}
+
 }
