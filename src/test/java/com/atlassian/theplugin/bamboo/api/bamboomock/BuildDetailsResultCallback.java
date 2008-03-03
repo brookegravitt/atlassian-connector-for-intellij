@@ -9,17 +9,13 @@ import javax.servlet.http.HttpServletResponse;
 
 public class BuildDetailsResultCallback implements JettyMockServer.Callback {
 
-	private final String resourcePrefix;
+	private final String resourcePrefix = "";
 	private final String fileName;
+	private final String buildNumber;
 
-	public BuildDetailsResultCallback(String fileName) {
-		this.resourcePrefix = "";
+	public BuildDetailsResultCallback(String fileName, String buildNumber) {
 		this.fileName = fileName;
-	}
-
-	public BuildDetailsResultCallback(String resourcePrefix, String fileName) {
-		this.resourcePrefix = resourcePrefix + "-";
-		this.fileName = fileName;
+		this.buildNumber = buildNumber;
 	}
 
 	public void onExpectedRequest(String target,
@@ -42,7 +38,7 @@ public class BuildDetailsResultCallback implements JettyMockServer.Callback {
 
 		assertEquals(LoginCallback.AUTH_TOKEN, authToken);
 		assertEquals("TP-DEF", buildKey);
-		assertEquals("100", buildNumber);
+		assertEquals(this.buildNumber, buildNumber);
 
 		Util.copyResource(response.getOutputStream(), resourcePrefix + fileName);
 		response.getOutputStream().flush();
