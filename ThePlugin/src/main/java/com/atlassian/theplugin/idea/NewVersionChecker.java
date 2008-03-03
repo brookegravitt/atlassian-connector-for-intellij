@@ -2,6 +2,7 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.exception.VersionServiceException;
+import com.atlassian.theplugin.exception.IncorrectVersionException;
 import com.atlassian.theplugin.util.InfoServer;
 import com.intellij.openapi.application.ApplicationManager;
 import org.apache.log4j.Category;
@@ -57,21 +58,24 @@ public final class NewVersionChecker implements SchedulableComponent {
 		if (!ConfigurationFactory.getConfiguration().isAutoUpdateEnabled() || checkedAlready) {
 			return;
 		}
-		InfoServer server = new InfoServer(PluginInfoUtil.VERSION_INFO_URL,
+		InfoServer server =  new InfoServer(PluginInfoUtil.VERSION_INFO_URL,
 				ConfigurationFactory.getConfiguration().getUid());
 		InfoServer.VersionInfo versionInfo = null;
 		try {
 			versionInfo = server.getLatestPluginVersion();
 			// simple versionInfo difference check
-			String newVersion = versionInfo.getVersion();
-			if (!newVersion.equals(PluginInfoUtil.getVersion())) {
+			InfoServer.Version newVersion = versionInfo.getVersion();
+			InfoServer.Version thisVersion = new InfoServer.Version(PluginInfoUtil.getVersion());
+			if (newVersion.greater(thisVersion)) {
 				ConfirmPluginUpdateHandler handler = ConfirmPluginUpdateHandler.getInstance();
 				handler.setNewVersionInfo(versionInfo);
 				ApplicationManager.getApplication().invokeLater(handler);
 			}
 			checkedAlready = true;
 		} catch (VersionServiceException e) {
-			LOG.info("Error checking new version.");
+			LOG.info("Error checking new version: " + e.getMessage());
+		} catch (IncorrectVersionException e) {
+			LOG.info("Error checking new version: " + e.getMessage());
 		}
 	}
 
