@@ -31,11 +31,11 @@ public class CommitInfo implements Commit {
 	}
 
 	public Date getCommitDate() {
-		return commitDate;
+		return new Date(commitDate.getTime());
 	}
 
 	public void setCommitDate(Date commitDate) {
-		this.commitDate = commitDate;
+		this.commitDate = new Date(commitDate.getTime());
 	}
 
 	public List<CommitFile> getFiles() {
