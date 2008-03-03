@@ -35,6 +35,7 @@ public class BambooSession {
 	private static final String LATEST_BUILD_FOR_PLAN_ACTION = "/api/rest/getLatestBuildResults.action";
 	//private static final String LATEST_BUILDS_FOR_PROJECT_ACTION = "/api/rest/getLatestBuildResultsForProject.action";
 	private static final String LATEST_USER_BUILDS_ACTION = "/api/rest/getLatestUserBuilds.action";
+	private static final String GET_BUILD_DETAILS_ACTION = "/api/rest/getBuildResultsDetails.action";	
 
 	private final String baseUrl;
 	private String authToken;
@@ -269,6 +270,113 @@ public class BambooSession {
 		}
 	}
 
+	public BuildDetails getBuildResultDetails(String buildKey, String buildNumber) throws BambooException {
+		String buildResultUrl;
+		try {
+			buildResultUrl = baseUrl + GET_BUILD_DETAILS_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8")
+					+ "&buildKey=" + URLEncoder.encode(buildKey, "UTF-8")
+					+ "&buildNumber=" + URLEncoder.encode(buildNumber, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException("URLEncoding problem: " + e.getMessage());
+		}
+
+		try {
+			BuildDetailsInfo build = new BuildDetailsInfo();
+			Document doc = retrieveResponse(buildResultUrl);
+			String exception = getExceptionMessages(doc);
+			if (null != exception) {
+				return build;
+			}
+
+			XPath xpath = XPath.newInstance("/response");
+			List<Element> elements = xpath.selectNodes(doc);
+			if (elements != null) {
+				for (Element element : elements) {
+					String vcsRevisionKey = element.getAttributeValue("vcsRevisionKey");
+					if (vcsRevisionKey != null) {
+						build.setVcsRevisionKey(vcsRevisionKey);
+					}
+				}
+			}
+
+			xpath = XPath.newInstance("/response/commits/commit");
+			elements = xpath.selectNodes(doc);
+			if (elements != null) {
+				int i = 1;
+				for (Element element : elements) {
+					CommitInfo cInfo = new CommitInfo();
+					cInfo.setAuthor(element.getAttributeValue("author"));
+					cInfo.setCommitDate(parseCommitTime(element.getAttributeValue("date")));
+					cInfo.setComment(getChildText(element, "comment"));
+
+					String path = "/response/commits/commit[" + i++ + "]/files/file";
+					XPath filesPath = XPath.newInstance(path);
+					List<Element> fileElements = filesPath.selectNodes(doc);
+					for (Element file : fileElements) {
+						CommitFileInfo fileInfo = new CommitFileInfo();
+						fileInfo.setFileName(file.getAttributeValue("name"));
+						fileInfo.setRevision(file.getAttributeValue("revision"));
+						cInfo.addCommitFile(fileInfo);
+					}
+					build.addCommitInfo(cInfo);
+				}
+			}
+
+			xpath = XPath.newInstance("/response/successfulTests/testResult");
+			elements = xpath.selectNodes(doc);
+			if (elements != null) {
+				for (Element element : elements) {
+					TestDetailsInfo tInfo = new TestDetailsInfo();
+					tInfo.setTestClassName(element.getAttributeValue("testClass"));
+					tInfo.setTestMethodName(element.getAttributeValue("testMethod"));
+					double duration = 0;
+					try {
+						duration = Double.valueOf(element.getAttributeValue("duration"));
+					} catch (NumberFormatException e) {
+						// leave 0
+					}
+					tInfo.setTestDuration(duration);
+					tInfo.setTestResult(TestResult.TEST_SUCCEED);
+					build.addSuccessfulTest(tInfo);
+				}
+			}
+
+			xpath = XPath.newInstance("/response/failedTests/testResult");
+			elements = xpath.selectNodes(doc);
+			if (elements != null) {
+				int i = 1;
+				for (Element element : elements) {
+					TestDetailsInfo tInfo = new TestDetailsInfo();
+					tInfo.setTestClassName(element.getAttributeValue("testClass"));
+					tInfo.setTestMethodName(element.getAttributeValue("testMethod"));
+					double duration = 0;
+					try {
+						duration = Double.valueOf(element.getAttributeValue("duration"));
+					} catch (NumberFormatException e) {
+						// leave 0
+					}
+					tInfo.setTestDuration(duration);
+					tInfo.setTestResult(TestResult.TEST_FAILED);					
+
+					String path = "/response/failedTests/testResult[" + i++ + "]/errors/error";
+					XPath errorPath = XPath.newInstance(path);
+					List<Element> errorElements = errorPath.selectNodes(doc);
+					for (Element error : errorElements) {
+						tInfo.setTestErrors(error.getText());
+					}
+					build.addFailedTest(tInfo);
+				}
+			}
+
+			return build;
+		} catch (JDOMException e) {
+			throw new BambooException("Server returned malformed response", e);
+		} catch (IOException e) {
+			throw new BambooException(e.getMessage(), e);
+		}		
+	}
+
+
 //  commented because nobody actually uses this method, and the unit test does not really test anything, so we
 //	don't even know if the method works
 
@@ -340,6 +448,16 @@ public class BambooSession {
 	private Date parseBuildTime(String date) {
 		try {
 			return buildTimeFormat.parse(date);
+		} catch (ParseException e) {
+			return null;
+		}
+	}
+
+	private SimpleDateFormat commitTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+
+	private Date parseCommitTime(String date) {
+		try {
+			return commitTimeFormat.parse(date);
 		} catch (ParseException e) {
 			return null;
 		}

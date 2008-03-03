@@ -172,6 +172,17 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 		return builds;
 	}
 
+	public BuildDetails getBuildDetails(Server bambooServer, String buildKey, String buildNumber)
+			throws ServerPasswordNotProvidedException {
+		try {
+			BambooSession api = getSession(bambooServer);
+			return api.getBuildResultDetails(buildKey, buildNumber);
+		} catch (BambooException e) {
+			LOG.info("Bamboo exception: " + e.getMessage());
+			return null;
+		}
+	}
+
 	/**
 	 * List plans defined on Bamboo server.
 	 *
