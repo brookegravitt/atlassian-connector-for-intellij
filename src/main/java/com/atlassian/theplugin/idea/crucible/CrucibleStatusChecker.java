@@ -34,13 +34,7 @@ public final class CrucibleStatusChecker implements SchedulableComponent {
 	private static final Logger LOGGER = Logger.getInstance("#com.atlassian.theplugin.idea.PluginStatusBarToolTip");
 	//private static final Category LOGGER = Logger.getInstance(PluginStatusBarToolTip.class);
 	private final List<CrucibleStatusListener> listenerList = new ArrayList<CrucibleStatusListener>();
-	private static CrucibleStatusChecker instance;
-
-	private CrucibleStatusChecker() {
-		super();
-
-	}
-
+	
 	public void registerListener(CrucibleStatusListener listener) {
 		synchronized (listenerList) {
 			listenerList.add(listener);
@@ -111,12 +105,5 @@ public final class CrucibleStatusChecker implements SchedulableComponent {
 
 	public long getInterval() {
 		return CRUCIBLE_TIMER_TICK;
-	}
-
-	public static synchronized CrucibleStatusChecker getIntance() {
-		if (instance == null) {
-			instance = new CrucibleStatusChecker();
-		}
-		return instance;
 	}
 }
