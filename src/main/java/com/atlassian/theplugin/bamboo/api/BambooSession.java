@@ -33,9 +33,10 @@ public class BambooSession {
 	private static final String LIST_PROJECT_ACTION = "/api/rest/listProjectNames.action";
 	private static final String LIST_PLAN_ACTION = "/api/rest/listBuildNames.action";
 	private static final String LATEST_BUILD_FOR_PLAN_ACTION = "/api/rest/getLatestBuildResults.action";
-	//private static final String LATEST_BUILDS_FOR_PROJECT_ACTION = "/api/rest/getLatestBuildResultsForProject.action";
 	private static final String LATEST_USER_BUILDS_ACTION = "/api/rest/getLatestUserBuilds.action";
-	private static final String GET_BUILD_DETAILS_ACTION = "/api/rest/getBuildResultsDetails.action";	
+	private static final String GET_BUILD_DETAILS_ACTION = "/api/rest/getBuildResultsDetails.action";
+	private static final String ADD_LABEL_ACTION = "/api/rest/addLabelToBuildResults.action";
+	private static final String ADD_COMMENT_ACTION = "/api/rest/addCommentToBuildResults.action";	
 
 	private final String baseUrl;
 	private String authToken;
@@ -285,12 +286,12 @@ public class BambooSession {
 			Document doc = retrieveResponse(buildResultUrl);
 			String exception = getExceptionMessages(doc);
 			if (null != exception) {
-				return build;
+				throw new BambooException(exception);
 			}
 
 			XPath xpath = XPath.newInstance("/response");
 			List<Element> elements = xpath.selectNodes(doc);
-			if (elements != null) {
+			if (!elements.isEmpty()) {
 				for (Element element : elements) {
 					String vcsRevisionKey = element.getAttributeValue("vcsRevisionKey");
 					if (vcsRevisionKey != null) {
@@ -301,7 +302,7 @@ public class BambooSession {
 
 			xpath = XPath.newInstance("/response/commits/commit");
 			elements = xpath.selectNodes(doc);
-			if (elements != null) {
+			if (!elements.isEmpty()) {
 				int i = 1;
 				for (Element element : elements) {
 					CommitInfo cInfo = new CommitInfo();
@@ -324,7 +325,7 @@ public class BambooSession {
 
 			xpath = XPath.newInstance("/response/successfulTests/testResult");
 			elements = xpath.selectNodes(doc);
-			if (elements != null) {
+			if (!elements.isEmpty()) {
 				for (Element element : elements) {
 					TestDetailsInfo tInfo = new TestDetailsInfo();
 					tInfo.setTestClassName(element.getAttributeValue("testClass"));
@@ -343,7 +344,7 @@ public class BambooSession {
 
 			xpath = XPath.newInstance("/response/failedTests/testResult");
 			elements = xpath.selectNodes(doc);
-			if (elements != null) {
+			if (!elements.isEmpty()) {
 				int i = 1;
 				for (Element element : elements) {
 					TestDetailsInfo tInfo = new TestDetailsInfo();
@@ -376,38 +377,53 @@ public class BambooSession {
 		}		
 	}
 
+	public void addLabelToBuild(String buildKey, String buildNumber, String buildLabel) throws BambooException {
+		String buildResultUrl;
+		try {
+			buildResultUrl = baseUrl + ADD_LABEL_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8")
+					+ "&buildKey=" + URLEncoder.encode(buildKey, "UTF-8")
+					+ "&buildNumber=" + URLEncoder.encode(buildNumber, "UTF-8")
+					+ "&label=" + URLEncoder.encode(buildLabel, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException("URLEncoding problem: ", e);
+		}
 
-//  commented because nobody actually uses this method, and the unit test does not really test anything, so we
-//	don't even know if the method works
+		try {
+			Document doc = retrieveResponse(buildResultUrl);
+			String exception = getExceptionMessages(doc);
+			if (null != exception) {
+				throw new BambooException(exception);
+			}
+		} catch (JDOMException e) {
+			throw new BambooException("Server returned malformed response", e);
+		} catch (IOException e) {
+			throw new BambooException(e.getMessage(), e);
+		}
+	}
 
-//	public List<BambooBuild> getLatestBuildsForProject(String projectKey) throws BambooException {
-//		String buildResultUrl;
-//		Date lastPoolingTime = new Date();
-//		try {
-//			buildResultUrl = baseUrl + LATEST_BUILDS_FOR_PROJECT_ACTION + "?auth="
-//					+ URLEncoder.encode(authToken, "UTF-8") + "&projectKey=" + URLEncoder.encode(projectKey, "UTF-8");
-//		} catch (UnsupportedEncodingException e) {
-//			throw new RuntimeException("URLEncoding problem: " + e.getMessage());
-//		}
-//
-//		Document doc = retrieveResponse(buildResultUrl);
-//		List<BambooBuild> builds = new ArrayList<BambooBuild>();
-//		try {
-//			XPath xpath = XPath.newInstance("/response/build");
-//			List elements = xpath.selectNodes(doc);
-//			if (elements != null) {
-//				for (Object element : elements) {
-//					Element e = (Element) element;
-//					builds.add(constructBuildItem(e, lastPoolingTime));
-//				}
-//			}
-//		} catch (JDOMException e) {
-//			throw new BambooException(e);
-//		}
-//
-//		return builds;
+	public void addCommentToBuild(String buildKey, String buildNumber, String buildComment) throws BambooException {
+		String buildResultUrl;
+		try {
+			buildResultUrl = baseUrl + ADD_COMMENT_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8")
+					+ "&buildKey=" + URLEncoder.encode(buildKey, "UTF-8")
+					+ "&buildNumber=" + URLEncoder.encode(buildNumber, "UTF-8")
+					+ "&content=" + URLEncoder.encode(buildComment, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException("URLEncoding problem: ", e);
+		}
 
-	//	}
+		try {
+			Document doc = retrieveResponse(buildResultUrl);
+			String exception = getExceptionMessages(doc);
+			if (null != exception) {
+				throw new BambooException(exception);
+			}
+		} catch (JDOMException e) {
+			throw new BambooException("Server returned malformed response", e);
+		} catch (IOException e) {
+			throw new BambooException(e.getMessage(), e);
+		}
+	}
 
 	BambooBuild constructBuildErrorInfo(String planId, String message, Date lastPollingTime) {
 		BambooBuildInfo buildInfo = new BambooBuildInfo();
