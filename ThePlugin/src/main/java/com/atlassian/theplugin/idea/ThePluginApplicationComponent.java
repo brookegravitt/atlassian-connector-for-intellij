@@ -4,13 +4,15 @@ import com.atlassian.theplugin.bamboo.BambooStatusChecker;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
-import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.idea.crucible.CrucibleNewReviewNotifier;
 import com.atlassian.theplugin.jira.JIRAServer;
+import com.atlassian.theplugin.util.PicoUtil;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
+import com.intellij.openapi.extensions.AreaPicoContainer;
+import com.intellij.openapi.extensions.Extensions;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
@@ -29,6 +31,11 @@ import java.util.Timer;
 public class ThePluginApplicationComponent
 		implements ApplicationComponent, Configurable, PersistentStateComponent<PluginConfigurationBean> {
 
+	static {
+		AreaPicoContainer apc = Extensions.getRootArea().getPicoContainer();
+		PicoUtil.populatePicoContainer(apc);
+	}
+
 	private static Icon pluginSettingsIcon;
 
 	static {
@@ -36,13 +43,14 @@ public class ThePluginApplicationComponent
 	}
 
 	private ConfigPanel form;
-	private PluginConfigurationBean configuration = new PluginConfigurationBean();
+	private final PluginConfigurationBean configuration;
 
 	private final Timer timer = new Timer();
 	private static final int TIMER_START_DELAY = 20000;
 
 	private final Collection<TimerTask> scheduledComponents = new HashSet<TimerTask>();
 
+	private final BambooStatusChecker bambooStatusChecker;
 	private CrucibleNewReviewNotifier crucibleNewReviewNotifier;
     private JIRAServer currentJIRAServer;
 
@@ -50,7 +58,6 @@ public class ThePluginApplicationComponent
 		return bambooStatusChecker;
 	}
 
-	private BambooStatusChecker bambooStatusChecker = new BambooStatusChecker(IdeaActionScheduler.getInstance());
 
 
 	@Nls
@@ -82,8 +89,6 @@ public class ThePluginApplicationComponent
 	public void initComponent() {
 		crucibleNewReviewNotifier = new CrucibleNewReviewNotifier();
 
-		ConfigurationFactory.setConfiguration(configuration);
-
 		rescheduleStatusCheckers(false);
 	}
 
@@ -104,6 +109,16 @@ public class ThePluginApplicationComponent
 		return form != null && form.isModified();
 	}
 
+	public ThePluginApplicationComponent(PluginConfigurationBean configuration,
+										 BambooStatusChecker bambooStatusChecker,
+										 SchedulableComponent[] schedulableComponents) {
+		this.configuration = configuration;
+		this.bambooStatusChecker = bambooStatusChecker;
+		this.schedulableComponents = schedulableComponents;
+
+		ConfigurationFactory.setConfiguration(configuration);
+	}
+
 	private void disableTimers() {
 		Iterator<TimerTask> i = scheduledComponents.iterator();
 		while (i.hasNext()) {
@@ -115,11 +130,7 @@ public class ThePluginApplicationComponent
 		timer.purge();
 	}
 
-	private Collection<SchedulableComponent> schedulableComponents = Arrays.asList(
-			bambooStatusChecker,
-			CrucibleStatusChecker.getIntance(),
-			NewVersionChecker.getInstance()
-	);
+	private final SchedulableComponent[] schedulableComponents;
 
 	/**
 	 * Reschedule the BambooStatusChecker with immediate execution trigger.
@@ -174,7 +185,7 @@ public class ThePluginApplicationComponent
 	}
 
 	public void loadState(PluginConfigurationBean state) {
-		configuration = state;
+		configuration.setConfiguration(state);
 	}
 
 	public JIRAServer getCurrentJIRAServer() {

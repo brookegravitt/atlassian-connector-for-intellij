@@ -11,7 +11,9 @@ import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
-import com.intellij.openapi.wm.*;
+import com.intellij.openapi.wm.ToolWindow;
+import com.intellij.openapi.wm.ToolWindowAnchor;
+import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.peer.PeerFactory;
 import com.intellij.ui.content.Content;
 import org.jetbrains.annotations.NotNull;
@@ -29,30 +31,33 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 	private CrucibleStatusIcon statusBarCrucibleIcon;
 	private PluginUpdateIcon statusPluginUpdateIcon;
-	private BambooStatusChecker bambooStatusChecker;
+	private final BambooStatusChecker bambooStatusChecker;
 	private HtmlBambooStatusListener iconBambooStatusListener;
     private HtmlBambooStatusListener toolWindowBambooListener;
 	private BambooStatusListenerImpl tooltipBambooStatusListener;
 
-	private CrucibleStatusChecker crucibleStatusChecker;
+	private final CrucibleStatusChecker crucibleStatusChecker;
     private HtmlCrucibleStatusListener toolWindowCrucibleListener;
 
-	private ToolWindowManager toolWindowManager;
+	private final ToolWindowManager toolWindowManager;
 	private boolean enabled;
-	private ToolWindow toolWindow;
 	private CrucibleNewReviewNotifier crucibleNewReviewNotifier;
 
 	private ThePluginApplicationComponent applicationComponent;
 
-	public ThePluginProjectComponent(Project project, ThePluginApplicationComponent applicationComponent) {
+	public ThePluginProjectComponent(Project project,
+									 ThePluginApplicationComponent applicationComponent,
+									 CrucibleStatusChecker crucibleStatusChecker,
+									 ToolWindowManager toolWindowManager,
+									 BambooStatusChecker bambooStatusChecker) {
 		this.project = project;
 		this.applicationComponent = applicationComponent;
+		this.crucibleStatusChecker = crucibleStatusChecker;
+		this.toolWindowManager = toolWindowManager;
+		this.bambooStatusChecker = bambooStatusChecker;
 
 		// make findBugs happy
-		toolWindowManager = null;
-		bambooStatusChecker = null;
-        crucibleStatusChecker = null;
-		statusBarBambooIcon = null;
+        statusBarBambooIcon = null;
 		statusBarCrucibleIcon = null;
 		statusPluginUpdateIcon = null;
 		enabled = false;
@@ -82,13 +87,11 @@ public class ThePluginProjectComponent implements ProjectComponent {
         // store bamboo between runs in UDC
         // clean up object model confusion
 
-		bambooStatusChecker = applicationComponent.getBambooStatusChecker();
-
 		if (!enabled) {
 
 			// create tool window on the right
-			toolWindowManager = ToolWindowManager.getInstance(project);
-			toolWindow = toolWindowManager.registerToolWindow(IdeaHelper.TOOL_WINDOW_NAME, true, ToolWindowAnchor.RIGHT);
+			ToolWindow toolWindow = toolWindowManager.registerToolWindow(IdeaHelper.TOOL_WINDOW_NAME,
+						true, ToolWindowAnchor.RIGHT);
 			Icon toolWindowIcon = IconLoader.getIcon(THE_PLUGIN_TOOL_WINDOW_ICON);
 			toolWindow.setIcon(toolWindowIcon);
 
@@ -147,7 +150,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			statusBarCrucibleIcon = new CrucibleStatusIcon(project);
 
 			// setup Crucible status checker and listeners
-            crucibleStatusChecker = CrucibleStatusChecker.getIntance();
             toolWindowCrucibleListener = new HtmlCrucibleStatusListener(crucibleToolWindowPanel.getCrucibleContent());
             crucibleStatusChecker.registerListener(toolWindowCrucibleListener);
 			crucibleNewReviewNotifier = applicationComponent.getCrucibleNewReviewNotifier();
@@ -187,7 +189,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 			// remove tool window
 			toolWindowManager.unregisterToolWindow(IdeaHelper.TOOL_WINDOW_NAME);
-			toolWindow = null;
 			enabled = false;
 		}
 	}
@@ -207,10 +208,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 	public Project getProject() {
 		return project;
-	}
-
-	public ToolWindow getToolWindow() {
-		return toolWindow;
 	}
 
 	public BambooStatusIcon getStatusBarBambooIcon() {

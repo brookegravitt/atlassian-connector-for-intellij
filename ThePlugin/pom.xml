@@ -212,7 +212,13 @@
 			<groupId>commons-httpclient</groupId>
 			<artifactId>commons-httpclient</artifactId>
 			<version>3.1</version>
-        </dependency>		
+        </dependency>
+		<dependency>
+			<groupId>org.picocontainer</groupId>
+			<artifactId>picocontainer</artifactId>
+			<version>1.2</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -394,6 +400,10 @@
 						</library>
 						<library>
 							<name>trove4j</name>
+							<exclude>true</exclude>
+						</library>
+						<library>
+							<name>picocontainer</name>
 							<exclude>true</exclude>
 						</library>
 					</libraries>
