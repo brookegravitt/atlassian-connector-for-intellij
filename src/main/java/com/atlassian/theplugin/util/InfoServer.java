@@ -134,17 +134,21 @@ public class InfoServer {
 		public static final String SPECIAL_DEV_VERSION = "${project.version}, SVN:${buildNumber}";
 
 		private static class VersionNumber {
+
 			private int major;
 			private int minor;
 			private int micro;
 			private AlphaNum alphaNum;
+			private static final int PRIME = 31;
+
 
 			public enum AlphaNum {
-				NONE, ALPHA, BETA, SNAPSHOT
+				NONE, ALPHA, BETA, SNAPSHOT;
 			}
 
 			public VersionNumber(int major, int minor, int micro, String alphaNum) throws IncorrectVersionException {
 				this.major = major;
+
 				this.minor = minor;
 				this.micro = micro;
 				if (alphaNum == null) {
@@ -206,9 +210,9 @@ public class InfoServer {
 			public int hashCode() {
 				int result;
 				result = major;
-				result = 31 * result + minor;
-				result = 31 * result + micro;
-				result = 31 * result + (alphaNum != null ? alphaNum.hashCode() : 0);
+				result = PRIME * result + minor;
+				result = PRIME * result + micro;
+				result = PRIME * result + (alphaNum != null ? alphaNum.hashCode() : 0);
 				return result;
 			}
 
@@ -225,27 +229,35 @@ public class InfoServer {
 			}
 		}
 
+		private static final String PATTERN = "^(\\d+)\\.(\\d+)\\.(\\d+)((-(SNAPSHOT))?+), SVN:(\\d+)$";
+		//private static final String PATTERN = "^(\\d+)\\.(\\d+)\\.(\\d+)((-(ALPHA|BETA|SNAPSHOT))?+), SVN:(\\d+)$";
+		private static final int MAJOR_TOKEN_GRP = 1;
+		private static final int MINOR_TOKEN_GRP = 2;
+		private static final int MICRO_TOKEN_GRP = 3;
+		private static final int ALPHANUM_TOKEN_GRP = 6;
+		private static final int BUILD_TOKEN_GRP = 7;
+
 		private void tokenize() throws IncorrectVersionException {
 			Scanner s = new Scanner(version);
-			//String pattern = "^(\\d+)\\.(\\d+)\\.(\\d+)((-(ALPHA|BETA|SNAPSHOT))?+), SVN:(\\d+)$";
-			String pattern = "^(\\d+)\\.(\\d+)\\.(\\d+)((-(SNAPSHOT))?+), SVN:(\\d+)$";
-			s.findInLine(pattern);
+			s.findInLine(PATTERN);
 			try {
 				MatchResult result = s.match();
 				versionNumber = new VersionNumber(
-						Integer.valueOf(result.group(1)),
-						Integer.valueOf(result.group(2)),
-						Integer.valueOf(result.group(3)),
-						result.group(6)
+						Integer.valueOf(result.group(MAJOR_TOKEN_GRP)),
+						Integer.valueOf(result.group(MINOR_TOKEN_GRP)),
+						Integer.valueOf(result.group(MICRO_TOKEN_GRP)),
+						result.group(ALPHANUM_TOKEN_GRP)
 				);
 
 				try {
-					buildNo = Integer.valueOf(result.group(7));
+					buildNo = Integer.valueOf(result.group(BUILD_TOKEN_GRP));
 				} catch (NumberFormatException ex) {
-					throw new IncorrectVersionException("Invalid build number: \"" + result.group(5) + "\"", ex);
+					throw new IncorrectVersionException("Invalid build number: \"" + result.group(BUILD_TOKEN_GRP)
+							+ "\"", ex);
 				}
 			} catch (IllegalStateException ex) {
-				throw new IncorrectVersionException("Version ("+ version +") does not match pattern (\"" + pattern + "\")", ex);
+				throw new IncorrectVersionException("Version ("+ version +") does not match pattern (\"" + PATTERN
+						+ "\")", ex);
 			}
 		}
 
