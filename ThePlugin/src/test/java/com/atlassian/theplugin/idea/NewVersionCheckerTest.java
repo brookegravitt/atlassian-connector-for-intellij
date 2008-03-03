@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.exception.IncorrectVersionException;
 import com.atlassian.theplugin.exception.VersionServiceException;
 import com.atlassian.theplugin.util.InfoServer;
 import junit.framework.TestCase;
@@ -23,7 +24,7 @@ public class NewVersionCheckerTest extends TestCase {
 	private JettyMockServer mockServer;
 	private PluginConfigurationBean config;
 	private static final String GET_LATEST_VERSION_URL = "/GetLatestVersion";
-	public static final String VERSION = "0.2.0";
+	public static final String VERSION = "0.2.0, SVN:11";
 	private long uid;
 
 	@Override
@@ -37,7 +38,7 @@ public class NewVersionCheckerTest extends TestCase {
 		mockServer = new JettyMockServer(httpServer);
 	}
 
-	public void testGetLatestVersion() throws VersionServiceException {
+	public void testGetLatestVersion() throws VersionServiceException, IncorrectVersionException {
 		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort();
 		mockServer.expect(GET_LATEST_VERSION_URL, new PingCallback());
 		InfoServer infoServer = new InfoServer(mockBaseUrl + GET_LATEST_VERSION_URL, uid);
@@ -49,7 +50,7 @@ public class NewVersionCheckerTest extends TestCase {
 			fail(e.getMessage());
 		}
 		assertNotNull(versionInfo);
-		assertEquals(VERSION, versionInfo.getVersion());
+		assertEquals(new InfoServer.Version(VERSION), versionInfo.getVersion());
 	}
 
 
