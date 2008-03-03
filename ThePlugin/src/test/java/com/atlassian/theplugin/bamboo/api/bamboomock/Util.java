@@ -1,9 +1,6 @@
 package com.atlassian.theplugin.bamboo.api.bamboomock;
 
-import com.atlassian.theplugin.bamboo.BambooBuild;
-import com.atlassian.theplugin.bamboo.BambooPlan;
-import com.atlassian.theplugin.bamboo.BambooProject;
-import com.atlassian.theplugin.bamboo.BuildStatus;
+import com.atlassian.theplugin.bamboo.*;
 import junit.framework.Assert;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.fail;
@@ -151,5 +148,4 @@ public abstract class Util {
 			}
 		}
 	}
-
 }
