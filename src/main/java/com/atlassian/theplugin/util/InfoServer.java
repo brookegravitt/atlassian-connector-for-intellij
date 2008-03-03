@@ -224,7 +224,7 @@ public class InfoServer {
 
 		public Version(String version) throws IncorrectVersionException {
 			this.version = version;
-			if(!version.equals(SPECIAL_DEV_VERSION)) {
+			if (!version.equals(SPECIAL_DEV_VERSION)) {
 				tokenize();
 			}
 		}
@@ -256,7 +256,7 @@ public class InfoServer {
 							+ "\"", ex);
 				}
 			} catch (IllegalStateException ex) {
-				throw new IncorrectVersionException("Version ("+ version +") does not match pattern (\"" + PATTERN
+				throw new IncorrectVersionException("Version (" + version + ") does not match pattern (\"" + PATTERN
 						+ "\")", ex);
 			}
 		}
