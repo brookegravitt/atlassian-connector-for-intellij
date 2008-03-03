@@ -31,7 +31,7 @@ public class PluginDownloaderTest extends TestCase {
 			"&version=" +
 			PluginDownloader.VERSION_TOKEN +
 			"&fileType=.zip";
-	private static final String SOME_VERSION = "0.3.0";
+	private static final String SOME_VERSION = "0.3.0, SVN:2233";
 
 
 	protected void setUp() throws Exception {
@@ -40,7 +40,7 @@ public class PluginDownloaderTest extends TestCase {
 
 		mockServer = new JettyMockServer(httpServer);
 		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort() + DOWNLOAD_PATH;
-		downloader = new PluginDownloader(new InfoServer.VersionInfo(SOME_VERSION, mockBaseUrl));
+		downloader = new PluginDownloader(new InfoServer.VersionInfo(new InfoServer.Version(SOME_VERSION), mockBaseUrl));
 	}
 
 	public void testDownloadPluginFromServer() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, NoSuchFieldException {
@@ -52,7 +52,6 @@ public class PluginDownloaderTest extends TestCase {
 		File localFile = null;
 		try {
 			localFile = (File) method.invoke(downloader, new Object[]{SOME_VERSION});
-
 		}
 		catch (InvocationTargetException ex) {
 			fail("Invocation of the downloadPluginFromServer method failed: " + ex.getMessage());

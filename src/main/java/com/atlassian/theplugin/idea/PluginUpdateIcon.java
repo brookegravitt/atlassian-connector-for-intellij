@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.exception.VersionServiceException;
+import com.atlassian.theplugin.exception.IncorrectVersionException;
 import com.atlassian.theplugin.util.InfoServer;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
@@ -35,7 +36,9 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 							+ "Your version is " + PluginInfoUtil.getVersion()
 							+ ". Do you want to download and install?";
 				} catch (VersionServiceException e1) {
-					LOGGER.info("Error retrieving new version.");
+					LOGGER.info("Error retrieving new version: " + e1.getMessage(), e1);
+				} catch (IncorrectVersionException e1) {
+					LOGGER.info("Error retrieving new version: " + e1.getMessage(), e1);
 				}
 				String title = "New plugin version download";
 
@@ -80,6 +83,8 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 			this.setToolTipText("New version (" + newVersion.getVersion() + ") of the "
 					+ PluginInfoUtil.getName() + " available");
 		} catch (VersionServiceException e) {
+			LOGGER.info(e.getMessage(), e);
+		} catch (IncorrectVersionException e) {
 			LOGGER.info(e.getMessage(), e);
 		}
 	}
