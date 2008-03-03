@@ -239,4 +239,110 @@ public class BambooServerFacadeTest extends TestCase {
 
 		mockServer.verify();
 	}
+
+	public void testAddLabel() throws Exception {
+		String label = "label";
+
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/addLabelToBuildResults.action", new AddLabelToBuildCallback(label));
+
+		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
+
+		BambooServerFactory.getBambooServerFacade().addLabelToBuild(server, "TP-DEF", "100", label);
+
+		mockServer.verify();
+	}
+
+	public void testAddEmptyLabel() throws Exception {
+		String label = "";
+
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/addLabelToBuildResults.action", new AddLabelToBuildCallback(label));
+
+		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
+
+		BambooServerFactory.getBambooServerFacade().addLabelToBuild(server, "TP-DEF", "100", label);
+
+		mockServer.verify();
+	}
+
+	public void testAddLabelToNonExistingBuild() throws Exception {
+		String label = "label";
+
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/addLabelToBuildResults.action", new AddLabelToBuildCallback(label, "200", AddLabelToBuildCallback.NON_EXIST_FAIL));
+
+		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
+
+		BambooServerFactory.getBambooServerFacade().addLabelToBuild(server, "TP-DEF", "200", label);
+
+		mockServer.verify();
+	}
+
+	public void testAddComment() throws Exception {
+		String label = "label";
+
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/addCommentToBuildResults.action", new AddCommentToBuildCallback(label));
+
+		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
+
+		BambooServerFactory.getBambooServerFacade().addCommentToBuild(server, "TP-DEF", "100", label);
+
+		mockServer.verify();
+	}
+
+	public void testAddEmptyComment() throws Exception {
+		String label = "";
+
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/addCommentToBuildResults.action", new AddCommentToBuildCallback(label));
+
+		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
+
+		BambooServerFactory.getBambooServerFacade().addCommentToBuild(server, "TP-DEF", "100", label);
+
+		mockServer.verify();
+	}
+
+	public void testAddCommentToNonExistingBuild() throws Exception {
+		String label = "label";
+
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/addCommentToBuildResults.action", new AddCommentToBuildCallback(label, "200", AddCommentToBuildCallback.NON_EXIST_FAIL));
+
+		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
+
+		BambooServerFactory.getBambooServerFacade().addCommentToBuild(server, "TP-DEF", "200", label);
+
+		mockServer.verify();
+	}
+
+	public void testGetBuildDetails() throws Exception {
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/getBuildResultsDetails.action", new BuildDetailsResultCallback("buildResult-3Commit-FailedTests-SuccessfulTests.xml", "100"));
+
+		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
+
+		BuildDetails details = BambooServerFactory.getBambooServerFacade().getBuildDetails(server, "TP-DEF", "100");
+		assertEquals(3, details.getCommitInfo().size());
+		assertEquals(2, details.getFailedTestDetails().size());
+		assertEquals(117, details.getSuccessfulTestDetails().size());
+
+		mockServer.verify();
+	}
+
+	public void testGetBuildDetailsNonExistingBuild() throws Exception {
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/getBuildResultsDetails.action", new BuildDetailsResultCallback("buildNotExistsResponse.xml", "200"));
+
+		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
+
+		BuildDetails details = BambooServerFactory.getBambooServerFacade().getBuildDetails(server, "TP-DEF", "200");
+		assertNull(details);
+
+		mockServer.verify();
+	}
+
+
 }
