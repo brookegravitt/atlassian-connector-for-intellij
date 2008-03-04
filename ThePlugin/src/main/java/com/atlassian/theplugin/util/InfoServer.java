@@ -286,17 +286,17 @@ public class InfoServer {
 			return buildNo;
 		}
 
-		public boolean greater(Version someVersion) {
-			if (someVersion.version.equals(SPECIAL_DEV_VERSION)) {
+		public boolean greater(Version other) {
+			if (other.version.equals(SPECIAL_DEV_VERSION)) {
 				return false;
 			}
 			if (version.equals(SPECIAL_DEV_VERSION)) {
 				return true;
 			}
-			if (this.getVersionNumber().equals(someVersion.getVersionNumber())) {
-				return getBuildNo() > someVersion.getBuildNo();
+			if (this.getVersionNumber().equals(other.getVersionNumber())) {
+				return getBuildNo() > other.getBuildNo();
 			}
-			return this.getVersionNumber().greater(someVersion.getVersionNumber());			
+			return this.getVersionNumber().greater(other.getVersionNumber());
 		}
 
 		private VersionNumber getVersionNumber() {
