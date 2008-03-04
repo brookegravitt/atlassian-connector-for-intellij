@@ -287,11 +287,11 @@ public class InfoServer {
 		}
 
 		public boolean greater(Version someVersion) {
-			if (version.equals(SPECIAL_DEV_VERSION)) {
-				return true;
-			}
 			if (someVersion.version.equals(SPECIAL_DEV_VERSION)) {
 				return false;
+			}
+			if (version.equals(SPECIAL_DEV_VERSION)) {
+				return true;
 			}
 			if (this.getVersionNumber().equals(someVersion.getVersionNumber())) {
 				return getBuildNo() > someVersion.getBuildNo();
