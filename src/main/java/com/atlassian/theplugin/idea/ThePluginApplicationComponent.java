@@ -4,7 +4,6 @@ import com.atlassian.theplugin.bamboo.BambooStatusChecker;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
-import com.atlassian.theplugin.idea.crucible.CrucibleNewReviewNotifier;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.util.PicoUtil;
 import com.intellij.openapi.components.ApplicationComponent;
@@ -36,11 +35,8 @@ public class ThePluginApplicationComponent
 		PicoUtil.populatePicoContainer(apc);
 	}
 
-	private static Icon pluginSettingsIcon;
+	private static Icon pluginSettingsIcon = IconLoader.getIcon("/icons/atlassian_icon-32.png");
 
-	static {
-		pluginSettingsIcon = IconLoader.getIcon("/icons/atlassian_icon-32.png");
-	}
 
 	private ConfigPanel form;
 	private final PluginConfigurationBean configuration;
@@ -51,7 +47,6 @@ public class ThePluginApplicationComponent
 	private final Collection<TimerTask> scheduledComponents = new HashSet<TimerTask>();
 
 	private final BambooStatusChecker bambooStatusChecker;
-	private CrucibleNewReviewNotifier crucibleNewReviewNotifier;
     private JIRAServer currentJIRAServer;
 
 	BambooStatusChecker getBambooStatusChecker() {
@@ -82,13 +77,7 @@ public class ThePluginApplicationComponent
 		return "ThePluginApplicationComponent";
 	}
 
-	public CrucibleNewReviewNotifier getCrucibleNewReviewNotifier() {
-		return crucibleNewReviewNotifier;
-	}
-
 	public void initComponent() {
-		crucibleNewReviewNotifier = new CrucibleNewReviewNotifier();
-
 		rescheduleStatusCheckers(false);
 	}
 
