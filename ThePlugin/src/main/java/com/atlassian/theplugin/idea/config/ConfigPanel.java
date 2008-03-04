@@ -19,12 +19,13 @@ public final class ConfigPanel extends JPanel {
 	private final BambooGeneralForm bambooConfigPanel;
 	private final GeneralConfigPanel generalConfigPanel;
 
-	private final PluginConfigurationBean globalConfigurationBean;
+	private final transient PluginConfigurationBean globalConfigurationBean;
 
 	public ConfigPanel(ServerConfigPanel serverConfigPanel,
 					   BambooGeneralForm bambooConfigPanel,
 					   GeneralConfigPanel generalConfigPanel,
 					   PluginConfigurationBean globalConfigurationBean) {
+		/* Yes, I mean this. Assigning to a static field from within a constructor. Blame *Action. */ 
 		instance = this;
 		this.serverConfigPanel = serverConfigPanel;
 		this.bambooConfigPanel = bambooConfigPanel;

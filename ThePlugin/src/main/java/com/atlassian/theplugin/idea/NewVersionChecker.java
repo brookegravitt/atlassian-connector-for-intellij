@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.atlassian.theplugin.exception.VersionServiceException;
 import com.atlassian.theplugin.exception.IncorrectVersionException;
 import com.atlassian.theplugin.util.InfoServer;
@@ -16,22 +16,13 @@ import java.util.TimerTask;
 public final class NewVersionChecker implements SchedulableComponent {
 	private static final long PLUGIN_UPDATE_ATTEMPT_DELAY = 120000;
 
-	private static NewVersionChecker instance;
 	private static boolean checkedAlready = false;
 	private static final Category LOG = Logger.getInstance(NewVersionChecker.class);
 
-	private NewVersionChecker() {
-		super();
-	}
+	private final transient PluginConfiguration pluginConfiguration;
 
-	/**
-	 * @return reference to the object of the class (singleton)
-	 */
-	public static synchronized NewVersionChecker getInstance() {
-		if (instance == null) {
-			instance = new NewVersionChecker();
-		}
-		return instance;
+	public NewVersionChecker(PluginConfiguration pluginConfiguration) {
+		this.pluginConfiguration = pluginConfiguration;
 	}
 
 	/**
@@ -55,14 +46,13 @@ public final class NewVersionChecker implements SchedulableComponent {
 	}
 
 	private void doRun() {
-		if (!ConfigurationFactory.getConfiguration().isAutoUpdateEnabled() || checkedAlready) {
+		if (!pluginConfiguration.isAutoUpdateEnabled() || checkedAlready) {
 			return;
 		}
 		InfoServer server =  new InfoServer(PluginInfoUtil.VERSION_INFO_URL,
-				ConfigurationFactory.getConfiguration().getUid());
-		InfoServer.VersionInfo versionInfo = null;
+				pluginConfiguration.getUid());
 		try {
-			versionInfo = server.getLatestPluginVersion();
+			InfoServer.VersionInfo versionInfo = server.getLatestPluginVersion();
 			// simple versionInfo difference check
 			InfoServer.Version newVersion = versionInfo.getVersion();
 			InfoServer.Version thisVersion = new InfoServer.Version(PluginInfoUtil.getVersion());
