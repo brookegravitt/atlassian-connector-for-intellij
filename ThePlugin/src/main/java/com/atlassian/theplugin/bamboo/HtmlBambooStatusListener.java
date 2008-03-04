@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 /**
  * Renders Bamboo build results as HTML and passes it to configured {@link BambooStatusDisplay}
  */
-public class HtmlBambooStatusListener implements BambooStatusListener {
+	public class HtmlBambooStatusListener implements BambooStatusListener {
 
 	private final BambooStatusDisplay display;
 
@@ -165,7 +165,9 @@ public class HtmlBambooStatusListener implements BambooStatusListener {
 			for (BambooBuild buildInfo : buildStatuses) {
 				if (!buildInfo.getServerUrl().equals(lastServer)) {
 					Server server = getServerFromUrl(buildInfo.getServerUrl());
-
+					if (server == null) { // PL-122 lguminski immuning to a situation when getServerFromUrl returns null 
+						continue;
+					}
 					if (lastServer != null) {
 						sb.append("<tr><td colspan=3>&nbsp;</td></tr>");
 					}
