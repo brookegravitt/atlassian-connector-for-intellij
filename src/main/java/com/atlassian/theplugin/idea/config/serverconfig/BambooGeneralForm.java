@@ -6,7 +6,6 @@ import com.atlassian.theplugin.configuration.BambooTooltipOption;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.atlassian.theplugin.idea.config.AbstractContentPanel;
-import com.atlassian.theplugin.idea.config.ConfigPanel;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -25,6 +24,7 @@ public class BambooGeneralForm extends AbstractContentPanel {
 	private SpinnerModel model;
 
 	private transient BambooConfigurationBean bambooConfiguration;
+	private PluginConfiguration localPluginConfigurationCopy;
 
 	public BambooGeneralForm() {
 		$$$setupUI$$$();
@@ -35,8 +35,9 @@ public class BambooGeneralForm extends AbstractContentPanel {
 	}
 
 
-	public void setData() {
-		bambooConfiguration = (BambooConfigurationBean) getPluginConfiguration().getProductServers(ServerType.BAMBOO_SERVER);
+	public void setData(PluginConfiguration config) {
+		localPluginConfigurationCopy = config;
+		bambooConfiguration = (BambooConfigurationBean) localPluginConfigurationCopy.getProductServers(ServerType.BAMBOO_SERVER);
 		BambooTooltipOption configOption = this.bambooConfiguration.getBambooTooltipOption();
 
 		if (configOption != null) {
@@ -119,7 +120,7 @@ public class BambooGeneralForm extends AbstractContentPanel {
 	}
 
 	public PluginConfiguration getPluginConfiguration() {
-		return ConfigPanel.getInstance().getPluginConfiguration();
+		return localPluginConfigurationCopy;
 	}
 
 	/**
