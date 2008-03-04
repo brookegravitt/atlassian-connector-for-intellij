@@ -50,6 +50,7 @@ public class VersionTest extends TestCase {
 		assertTrue(version6.greater(version3)); // not realistic
 		assertTrue(version6.greater(version7));
 
+
 		assertFalse(version1.greater(version3));
 		assertFalse(version3.greater(version4));
 		assertFalse(version4.greater(version5));
@@ -101,6 +102,7 @@ public class VersionTest extends TestCase {
 		assertFalse(version5.greater(versionSpecial));
 		assertFalse(version6.greater(versionSpecial));
 		assertFalse(version7.greater(versionSpecial));
+		assertFalse(versionSpecial.greater(versionSpecial));
 	}
 
 }
