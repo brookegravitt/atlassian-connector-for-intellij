@@ -165,8 +165,10 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
         if (isModified()) {
             for (ServerType type : serverPanels.keySet()) {
                 if (serverPanels.get(type).isModified()) {
-                    if (getLocalPluginConfigurationCopy().getProductServers(type).getServer(serverPanels.get(type).getData()) != null) {
-                        getLocalPluginConfigurationCopy().getProductServers(type).storeServer(serverPanels.get(type).getData());
+                    if (getLocalPluginConfigurationCopy().
+							getProductServers(type).getServer(serverPanels.get(type).getData()) != null) {
+                        getLocalPluginConfigurationCopy().
+								getProductServers(type).storeServer(serverPanels.get(type).getData());
                     }
                 }
                 Collection<Server> s = getLocalPluginConfigurationCopy().getProductServers(type).getServers();
