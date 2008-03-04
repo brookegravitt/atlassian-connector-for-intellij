@@ -1,12 +1,9 @@
 package com.atlassian.theplugin.crucible.api.rest;
 
-import com.atlassian.theplugin.crucible.api.PermIdBean;
-import com.atlassian.theplugin.crucible.api.ReviewData;
-import com.atlassian.theplugin.crucible.api.ReviewDataBean;
-import com.atlassian.theplugin.crucible.api.State;
+import com.atlassian.theplugin.crucible.api.*;
+import org.jdom.CDATA;
 import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.CDATA;
 
 
 public final class ReviewUtil {
@@ -23,6 +20,25 @@ public final class ReviewUtil {
 			return "";
 		}
 	}
+
+	public static ProjectDataBean parseProjectNode(Element projectNode) {
+		ProjectDataBean project = new ProjectDataBean();
+
+		project.setId(getChildText(projectNode, "id"));
+		project.setKey(getChildText(projectNode, "key"));
+		project.setName(getChildText(projectNode,  "name"));
+
+		return project;
+	}
+
+	public static RepositoryDataBean parseRepositoryNode(Element repoNode) {
+		RepositoryDataBean repo = new RepositoryDataBean();
+
+		repo.setName(getChildText(repoNode, "name"));
+
+		return repo;
+	}
+
 
 	public static ReviewData parseReviewNode(Element reviewNode) {
 		ReviewDataBean review = new ReviewDataBean();

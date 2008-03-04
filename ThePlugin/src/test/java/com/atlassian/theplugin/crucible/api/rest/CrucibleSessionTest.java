@@ -628,6 +628,82 @@ public class CrucibleSessionTest extends TestCase {
 		mockServer.verify();
 	}
 
+	public void testGetProjects() throws Exception {
+		int size = 4;
+
+		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
+		List<State> states = Arrays.asList(State.REVIEW, State.DRAFT);
+		mockServer.expect("/rest-service/projects-v1", new GetProjectsCallback(size));
+		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+
+		apiHandler.login(USER_NAME, PASSWORD);
+		List<ProjectData> project = apiHandler.getProjects();
+		assertEquals(size, project.size());
+		for (int i = 0; i < size; i++) {
+			String id = Integer.toString(i);
+			assertEquals(id, project.get(i).getId());
+			assertEquals("ProjectName" + id, project.get(i).getName());
+			assertEquals("CR" + id, project.get(i).getKey());
+		}
+		mockServer.verify();
+	}
+
+	public void testGetProjectsEmpty() throws Exception {
+		int size = 0;
+
+		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
+		List<State> states = Arrays.asList(State.REVIEW, State.DRAFT);
+		mockServer.expect("/rest-service/projects-v1", new GetProjectsCallback(size));
+		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+
+		apiHandler.login(USER_NAME, PASSWORD);
+		List<ProjectData> project = apiHandler.getProjects();
+		assertEquals(size, project.size());
+		for (int i = 0; i < size; i++) {
+			String id = Integer.toString(i);
+			assertEquals(id, project.get(i).getId());
+			assertEquals("ProjectName" + id, project.get(i).getName());
+			assertEquals("CR" + id, project.get(i).getKey());
+		}
+		mockServer.verify();
+	}
+
+	public void testGetRepositories() throws Exception {
+		int size = 4;
+
+		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
+		List<State> states = Arrays.asList(State.REVIEW, State.DRAFT);
+		mockServer.expect("/rest-service/repositories-v1", new GetRepositoriesCallback(size));
+		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+
+		apiHandler.login(USER_NAME, PASSWORD);
+		List<RepositoryData> repositories = apiHandler.getRepositories();
+		assertEquals(size, repositories.size());
+		for (int i = 0; i < size; i++) {
+			String id = Integer.toString(i);
+			assertEquals("RepoName" + id, repositories.get(i).getName());
+		}
+		mockServer.verify();
+	}
+
+	public void testGetRepositoriesEmpty() throws Exception {
+		int size = 0;
+
+		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
+		List<State> states = Arrays.asList(State.REVIEW, State.DRAFT);
+		mockServer.expect("/rest-service/repositories-v1", new GetRepositoriesCallback(size));
+		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+
+		apiHandler.login(USER_NAME, PASSWORD);
+		List<RepositoryData> repositories = apiHandler.getRepositories();
+		assertEquals(size, repositories.size());
+		for (int i = 0; i < size; i++) {
+			String id = Integer.toString(i);
+			assertEquals("RepoName" + id, repositories.get(i).getName());
+		}
+		mockServer.verify();
+	}
+
 	private ReviewDataBean createReviewRequest() {
 		ReviewDataBean review = new ReviewDataBean();
 		review.setAuthor("autor");
