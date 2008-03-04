@@ -1,7 +1,6 @@
 package com.atlassian.theplugin.bamboo;
 
 import com.atlassian.theplugin.configuration.BambooConfigurationBean;
-import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.configuration.ServerBean;
 import junit.framework.TestCase;
@@ -21,9 +20,7 @@ public class BambooStatusListenerTest extends TestCase {
 		super.setUp();
 
 		displayMock = createStrictMock(BambooStatusDisplay.class);
-		listenerImpl = new BambooStatusListenerImpl(displayMock);
-		PluginConfigurationBean config = createBambooTestConfiguration();
-		ConfigurationFactory.setConfiguration(config);
+		listenerImpl = new BambooStatusListenerImpl(displayMock, createBambooTestConfiguration());
 	}
 
 	private static PluginConfigurationBean createBambooTestConfiguration() {

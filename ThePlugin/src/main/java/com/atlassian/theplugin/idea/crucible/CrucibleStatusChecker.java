@@ -2,7 +2,7 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.ServerType;
 import com.atlassian.theplugin.bamboo.MissingPasswordHandler;
-import com.atlassian.theplugin.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.crucible.CrucibleServerFactory;
@@ -34,7 +34,12 @@ public final class CrucibleStatusChecker implements SchedulableComponent {
 	private static final Logger LOGGER = Logger.getInstance("#com.atlassian.theplugin.idea.PluginStatusBarToolTip");
 	//private static final Category LOGGER = Logger.getInstance(PluginStatusBarToolTip.class);
 	private final List<CrucibleStatusListener> listenerList = new ArrayList<CrucibleStatusListener>();
-	
+	private final PluginConfiguration pluginConfiguration;
+
+	public CrucibleStatusChecker(PluginConfiguration pluginConfiguration) {
+		this.pluginConfiguration = pluginConfiguration;
+	}
+
 	public void registerListener(CrucibleStatusListener listener) {
 		synchronized (listenerList) {
 			listenerList.add(listener);
@@ -81,8 +86,8 @@ public final class CrucibleStatusChecker implements SchedulableComponent {
         }
     }
 
-	private static Collection<Server> retrieveEnabledCrucibleServers() {
-		return ConfigurationFactory.getConfiguration().getProductServers(
+	private Collection<Server> retrieveEnabledCrucibleServers() {
+		return pluginConfiguration.getProductServers(
                             ServerType.CRUCIBLE_SERVER).getEnabledServers();
 	}
 
