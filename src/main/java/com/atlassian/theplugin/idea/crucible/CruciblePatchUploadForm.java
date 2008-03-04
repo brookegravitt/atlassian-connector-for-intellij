@@ -203,13 +203,15 @@ public class CruciblePatchUploadForm extends DialogWrapper {
 					projects = CrucibleServerFactory.getCrucibleServerFacade().getProjects(server);
 					repositories = CrucibleServerFactory.getCrucibleServerFacade().getRepositories(server);
 				} catch (CrucibleException e) {
+					// nothing can be done here
 				} catch (ServerPasswordNotProvidedException e) {
+					// nothing can be done here
 				}
 				final List<ProjectData> finalProjects = projects;
 				final List<RepositoryData> finalRepositories = repositories;
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
-						updateServerRelatedCombos(server, finalProjects, finalRepositories);
+						updateServerRelatedCombos(finalProjects, finalRepositories);
 					}
 				});
 			}
@@ -218,23 +220,23 @@ public class CruciblePatchUploadForm extends DialogWrapper {
 
 	}
 
-	private void updateServerRelatedCombos(Server server, List<ProjectData> finalProjects, List<RepositoryData> finalRepositories) {
-		if (finalProjects.isEmpty()) {
+	private void updateServerRelatedCombos(List<ProjectData> projects, List<RepositoryData> repositories) {
+		if (projects.isEmpty()) {
 			projectsComboBox.setEnabled(false);
 			projectsComboBox.addItem("Crucible server does not contain any projects!");
 			getOKAction().setEnabled(false);
 		} else {
-			for (ProjectData project : finalProjects) {
+			for (ProjectData project : projects) {
 				projectsComboBox.addItem(new ProjectComboBoxItem(project));
 			}
 			getOKAction().setEnabled(true);
 		}
-		if (finalRepositories.isEmpty()) {
+		if (repositories.isEmpty()) {
 			repoComboBox.setEnabled(false);
 			repoComboBox.addItem("Crucible server does not contain any repositories!");
 			getOKAction().setEnabled(false);
 		} else {
-			for (RepositoryData repo : finalRepositories) {
+			for (RepositoryData repo : repositories) {
 				repoComboBox.addItem(new RepositoryComboBoxItem(repo));
 			}
 			getOKAction().setEnabled(true);
