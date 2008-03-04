@@ -21,9 +21,9 @@ public class BambooGeneralForm extends JComponent implements ContentPanel {
 	private SpinnerModel model;
 
 	private transient BambooConfigurationBean bambooConfiguration;
-	private PluginConfiguration localPluginConfigurationCopy;
+	private transient PluginConfiguration localPluginConfigurationCopy;
 
-	private final PluginConfigurationBean globalPluginConfiguration;
+	private final transient PluginConfigurationBean globalPluginConfiguration;
 
 	public BambooGeneralForm(PluginConfigurationBean globalPluginConfiguration) {
 		this.globalPluginConfiguration = globalPluginConfiguration;
@@ -100,11 +100,8 @@ public class BambooGeneralForm extends JComponent implements ContentPanel {
 				return true;
 			}
 		}
-		if ((Integer) model.getValue() != bambooConfiguration.getPollTime()) {
-			return true;
-		}
+		return (Integer) model.getValue() != bambooConfiguration.getPollTime();
 
-		return false;
 	}
 
 	public String getTitle() {

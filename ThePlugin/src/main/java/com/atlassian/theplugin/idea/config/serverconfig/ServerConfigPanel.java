@@ -36,7 +36,7 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
 	private static final float SPLIT_RATIO = 0.3f;
 	private Map<ServerType, ServerPanel> serverPanels = new HashMap<ServerType, ServerPanel>();
 
-	private PluginConfiguration localConfigCopy;
+	private transient PluginConfiguration localConfigCopy;
 
 	public ServerConfigPanel(ServerTreePanel serverTreePanel) {
 		this.serverTreePanel = serverTreePanel;
