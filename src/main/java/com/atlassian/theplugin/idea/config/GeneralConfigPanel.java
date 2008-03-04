@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.idea.config;
 
-import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.atlassian.theplugin.idea.GeneralConfigForm;
 
@@ -8,20 +7,16 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Created by IntelliJ IDEA.
- * User: Jacek
- * Date: 2008-02-22
- * Time: 13:53:32
- * To change this template use File | Settings | File Templates.
+ * General plugin config form.
  */
 public class GeneralConfigPanel extends JPanel implements ContentPanel {
-	private static GeneralConfigPanel instance = null;
-	private boolean isPluginEnabled;
 	private GeneralConfigForm dialog;
 	private PluginConfiguration localPluginConfigurationCopy;
+	private final PluginConfiguration globalPluginConfiguration;
 
-	public GeneralConfigPanel() {
+	public GeneralConfigPanel(PluginConfiguration globalPluginConfiguration) {
 		super();
+		this.globalPluginConfiguration = globalPluginConfiguration;
 		setLayout(new CardLayout());
 		dialog = new GeneralConfigForm();
 		add(dialog.getRootPane(), "GeneralConfig");
@@ -32,23 +27,18 @@ public class GeneralConfigPanel extends JPanel implements ContentPanel {
 	}
 
 	public boolean isModified() {
-        if (!getPluginConfiguration().equals(ConfigurationFactory.getConfiguration())) {
-            return true;
-        }
+		return !localPluginConfigurationCopy.equals(globalPluginConfiguration)
+				|| dialog.getIsAutoUpdateEnabled() != globalPluginConfiguration.isAutoUpdateEnabled();
 
-		if (dialog.getIsAutoUpdateEnabled() != ConfigurationFactory.getConfiguration().isAutoUpdateEnabled()) {
-			return true;
-		}
-		return false;
-    }
+	}
 
 	public String getTitle() {
 		return "General";
 	}
 
 	public void getData() {
-		getPluginConfiguration().setAutoUpdateEnabled(dialog.getIsAutoUpdateEnabled());
-		ConfigurationFactory.getConfiguration().setAutoUpdateEnabled(dialog.getIsAutoUpdateEnabled());
+		localPluginConfigurationCopy.setAutoUpdateEnabled(dialog.getIsAutoUpdateEnabled());
+		globalPluginConfiguration.setAutoUpdateEnabled(dialog.getIsAutoUpdateEnabled());
 	}
 
 	public void setData(PluginConfiguration config) {
@@ -56,15 +46,4 @@ public class GeneralConfigPanel extends JPanel implements ContentPanel {
 		dialog.setAutoUpdateEnabled(localPluginConfigurationCopy.isAutoUpdateEnabled());
 	}
 
-	public static GeneralConfigPanel getInstance() {
-		if (instance == null) {
-			instance = new GeneralConfigPanel();
-		}
-
-		return instance;
-	}
-
-	public PluginConfiguration getPluginConfiguration() {
-        return localPluginConfigurationCopy;
-    }
 }

@@ -1,9 +1,9 @@
 package com.atlassian.theplugin.bamboo;
 
-import com.atlassian.theplugin.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.ServerType;
 import com.atlassian.theplugin.configuration.BambooConfigurationBean;
 import com.atlassian.theplugin.configuration.BambooTooltipOption;
-import com.atlassian.theplugin.ServerType;
+import com.atlassian.theplugin.configuration.PluginConfiguration;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -16,23 +16,26 @@ public class BambooStatusListenerImpl implements BambooStatusListener {
 
 
 	private Map<String, BambooBuild> prevBuildStatuses = new HashMap<String, BambooBuild>(0);
-	private BambooStatusDisplay display;
+	private final BambooStatusDisplay display;
+	private final PluginConfiguration pluginConfiguration;
 	private static final String ICON_PLAN_PASSED = "icn_plan_passed.gif";
 	private static final String ICON_PLAN_FAILED = "icn_plan_failed.gif";
 
 	/**
 	 *
 	 * @param display reference to display component
+	 * @param pluginConfiguration global plugin configuration
 	 */
-	public BambooStatusListenerImpl(BambooStatusDisplay display) {
+	public BambooStatusListenerImpl(BambooStatusDisplay display, PluginConfiguration pluginConfiguration) {
 		this.display = display;
+		this.pluginConfiguration = pluginConfiguration;
 	}
 
 	public void updateBuildStatuses(Collection<BambooBuild> newBuildStatuses) {
 
 		// get config option for tooltip
 		BambooTooltipOption tooltipConfigOption =
-				((BambooConfigurationBean) ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER)).
+				((BambooConfigurationBean) pluginConfiguration.getProductServers(ServerType.BAMBOO_SERVER)).
 						getBambooTooltipOption();
 
 		if (tooltipConfigOption == BambooTooltipOption.NEVER) {
@@ -134,16 +137,25 @@ public class BambooStatusListenerImpl implements BambooStatusListener {
 			icon = ICON_PLAN_PASSED;
 		}
 
-		StringBuffer sb = new StringBuffer("<table width=\"100%\">");
+		StringBuilder sb = new StringBuilder("<table width=\"100%\">");
 		sb.append("<tr><td valign=bottom width=16>");
-		sb.append("<img src=\"/icons/" + icon + "\" height=16 width=16 border=0 valing=bottom/>&nbsp;");
-		sb.append("</td><td ñowrap valign=top align=left>");
+		sb.append("<img src=\"/icons/");
+		sb.append(icon);
+		sb.append("\" height=16 width=16 border=0 valing=bottom/>&nbsp;");
+		sb.append("</td><td nowrap valign=top align=left>");
 		sb.append(
-				"<span style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif; font-weight: bold; color: "
-				+ color
-				+ "\">");
-		sb.append("<a href=\"" + url + "\">" + buildKey + "-" + buildNumber + "</a> " + status + "</span>");
-		sb.append("</td></tr></table>");
+			"<span style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif; font-weight: bold; color: ");
+		sb.append(color);
+		sb.append("\">");
+		sb.append("<a href=\"");
+		sb.append(url);
+		sb.append("\">");
+		sb.append(buildKey);
+		sb.append("-");
+		sb.append(buildNumber);
+		sb.append("</a> ");
+		sb.append(status);
+		sb.append("</span></td></tr></table>");
 
 		return sb.toString();
 	}
