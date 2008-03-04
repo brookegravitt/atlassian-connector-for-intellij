@@ -35,10 +35,10 @@ public class ThePluginApplicationComponent
 		PicoUtil.populatePicoContainer(apc);
 	}
 
-	private static Icon pluginSettingsIcon = IconLoader.getIcon("/icons/atlassian_icon-32.png");
+	private static final Icon PLUGIN_SETTINGS_ICON = IconLoader.getIcon("/icons/atlassian_icon-32.png");
 
 
-	private ConfigPanel form;
+	private final ConfigPanel configPanel;
 	private final PluginConfigurationBean configuration;
 
 	private final Timer timer = new Timer();
@@ -62,7 +62,7 @@ public class ThePluginApplicationComponent
 
 	@Nullable
 	public Icon getIcon() {
-		return pluginSettingsIcon;
+		return PLUGIN_SETTINGS_ICON;
 	}
 
 	@Nullable
@@ -86,24 +86,21 @@ public class ThePluginApplicationComponent
 	}
 
 	public JComponent createComponent() {
-		form = ConfigPanel.getInstance();
-		return form;
-	}
-
-	public ConfigPanel getConfigDialog() {
-		return form;
+		return configPanel;
 	}
 
 	public boolean isModified() {
-		return form != null && form.isModified();
+		return configPanel.isModified();
 	}
 
 	public ThePluginApplicationComponent(PluginConfigurationBean configuration,
 										 BambooStatusChecker bambooStatusChecker,
+										 ConfigPanel configPanel,
 										 SchedulableComponent[] schedulableComponents) {
 		this.configuration = configuration;
 		this.bambooStatusChecker = bambooStatusChecker;
 		this.schedulableComponents = schedulableComponents;
+		this.configPanel = configPanel;
 
 		ConfigurationFactory.setConfiguration(configuration);
 	}
@@ -143,9 +140,9 @@ public class ThePluginApplicationComponent
 
 
 	public void apply() throws ConfigurationException {
-		if (form != null) {
-			// Get data from form to component
-			form.getData();
+		if (configPanel != null) {
+			// Get data from configPanel to component
+			configPanel.getData();
 
 			for (Project project : ProjectManager.getInstance().getOpenProjects()) {
 				ThePluginProjectComponent projectComponent = project.getComponent(ThePluginProjectComponent.class);
@@ -159,14 +156,14 @@ public class ThePluginApplicationComponent
 	}
 
 	public void reset() {
-		if (form != null) {
-			// Reset form data from component
-			form.setData();
+		if (configPanel != null) {
+			// Reset configPanel data from component
+			configPanel.setData();
 		}
 	}
 
 	public void disposeUIResources() {
-		form = null;
+
 	}
 
 	public PluginConfigurationBean getState() {
