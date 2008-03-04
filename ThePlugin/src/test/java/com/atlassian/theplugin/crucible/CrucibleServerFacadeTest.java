@@ -276,6 +276,49 @@ public class CrucibleServerFacadeTest extends TestCase {
 		EasyMock.verify(crucibleSessionMock);
 	}
 
+	public void testGetProjects() throws ServerPasswordNotProvidedException, CrucibleException {
+		try {
+			crucibleSessionMock.login(VALID_LOGIN, VALID_PASSWORD);
+		} catch (CrucibleLoginException e) {
+			fail("recording mock failed for login");
+		}
+		crucibleSessionMock.getProjects();
+		EasyMock.expectLastCall().andReturn(Arrays.asList(prepareProjectData(0), prepareProjectData(1)));
+		replay(crucibleSessionMock);
+
+		ServerBean server = prepareServerBean();
+		// test call
+		List<ProjectData> ret = facade.getProjects(server);
+		assertEquals(2, ret.size());
+		for (int i = 0; i < 2; i++) {
+			String id = Integer.toString(i);
+			assertEquals(id, ret.get(i).getId());
+			assertEquals("CR" + id, ret.get(i).getKey());
+			assertEquals("Name" + id, ret.get(i).getName());
+		}		
+		EasyMock.verify(crucibleSessionMock);
+	}
+
+	public void testGetRepositories() throws ServerPasswordNotProvidedException, CrucibleException {
+		try {
+			crucibleSessionMock.login(VALID_LOGIN, VALID_PASSWORD);
+		} catch (CrucibleLoginException e) {
+			fail("recording mock failed for login");
+		}
+		crucibleSessionMock.getRepositories();
+		EasyMock.expectLastCall().andReturn(Arrays.asList(prepareRepositoryData(0), prepareRepositoryData(1)));
+		replay(crucibleSessionMock);
+
+		ServerBean server = prepareServerBean();
+		// test call
+		List<RepositoryData> ret = facade.getRepositories(server);
+		assertEquals(2, ret.size());
+		for (int i = 0; i < 2; i++) {
+			String id = Integer.toString(i);
+			assertEquals("RepoName" + id, ret.get(i).getName());
+		}
+		EasyMock.verify(crucibleSessionMock);
+	}
 
 	private ReviewData prepareReviewData(final String name, final State state) {
 		return new ReviewData() {
@@ -375,6 +418,30 @@ public class CrucibleServerFacadeTest extends TestCase {
 		server.setUserName(VALID_LOGIN);
 		server.setPasswordString(VALID_PASSWORD, false);
 		return server;
+	}
+
+	private ProjectData prepareProjectData(final int i) {
+		return new ProjectData() {
+			public String getId() {
+				return Integer.toString(i);
+			}
+
+			public String getKey() {
+				return "CR" + Integer.toString(i);
+			}
+
+			public String getName() {
+				return "Name" + Integer.toString(i);
+			}
+		};
+	}
+
+	private RepositoryData prepareRepositoryData(final int i) {
+		return new RepositoryData() {
+			public String getName() {
+				return "RepoName" + Integer.toString(i);
+			}
+		};
 	}
 
 	public void _testCreateReviewHardcoded() throws ServerPasswordNotProvidedException {

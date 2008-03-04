@@ -1,10 +1,8 @@
 package com.atlassian.theplugin.crucible;
 
 import com.atlassian.theplugin.configuration.Server;
-import com.atlassian.theplugin.crucible.api.CrucibleException;
-import com.atlassian.theplugin.crucible.api.CrucibleSession;
-import com.atlassian.theplugin.crucible.api.ReviewData;
-import com.atlassian.theplugin.crucible.api.State;
+import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.crucible.api.*;
 import com.atlassian.theplugin.crucible.api.rest.CrucibleSessionImpl;
 
 import java.util.ArrayList;
@@ -66,9 +64,37 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	 */
 	public ReviewData createReviewFromPatch(Server server, ReviewData reviewData, String patch) throws CrucibleException {
 		CrucibleSession session = getSession(server.getUrlString());
-
 		session.login(server.getUserName(), server.getPasswordString());
 		return session.createReviewFromPatch(reviewData, patch);
+	}
+
+	/**
+	 * Retrieves list of projects defined on Crucible server
+	 *
+	 * @param server
+	 * @return
+	 * @throws CrucibleException
+	 * @throws ServerPasswordNotProvidedException
+	 */
+	public List<ProjectData> getProjects(Server server) throws CrucibleException, ServerPasswordNotProvidedException {
+		CrucibleSession session = getSession(server.getUrlString());
+		session.login(server.getUserName(), server.getPasswordString());
+		return session.getProjects();
+	}
+
+
+	/**
+	 * Retrieves list of repositories defined on Crucible server
+	 *
+	 * @param server
+	 * @return
+	 * @throws CrucibleException
+	 * @throws ServerPasswordNotProvidedException
+	 */
+	public List<RepositoryData> getRepositories(Server server) throws CrucibleException, ServerPasswordNotProvidedException {
+		CrucibleSession session = getSession(server.getUrlString());
+		session.login(server.getUserName(), server.getPasswordString());
+		return session.getRepositories();
 	}
 
 	/**
