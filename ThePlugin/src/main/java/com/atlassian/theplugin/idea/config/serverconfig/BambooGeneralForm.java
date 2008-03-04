@@ -1,10 +1,7 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.ServerType;
-import com.atlassian.theplugin.configuration.BambooConfigurationBean;
-import com.atlassian.theplugin.configuration.BambooTooltipOption;
-import com.atlassian.theplugin.configuration.ConfigurationFactory;
-import com.atlassian.theplugin.configuration.PluginConfiguration;
+import com.atlassian.theplugin.configuration.*;
 import com.atlassian.theplugin.idea.config.ContentPanel;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -26,7 +23,10 @@ public class BambooGeneralForm extends JComponent implements ContentPanel {
 	private transient BambooConfigurationBean bambooConfiguration;
 	private PluginConfiguration localPluginConfigurationCopy;
 
-	public BambooGeneralForm() {
+	private final PluginConfigurationBean globalPluginConfiguration;
+
+	public BambooGeneralForm(PluginConfigurationBean globalPluginConfiguration) {
+		this.globalPluginConfiguration = globalPluginConfiguration;
 		$$$setupUI$$$();
 		setLayout(new CardLayout());
 		model = new SpinnerNumberModel(1, 1, 1000, 1);
@@ -37,7 +37,8 @@ public class BambooGeneralForm extends JComponent implements ContentPanel {
 
 	public void setData(PluginConfiguration config) {
 		localPluginConfigurationCopy = config;
-		bambooConfiguration = (BambooConfigurationBean) localPluginConfigurationCopy.getProductServers(ServerType.BAMBOO_SERVER);
+		bambooConfiguration =
+				(BambooConfigurationBean) localPluginConfigurationCopy.getProductServers(ServerType.BAMBOO_SERVER);
 		BambooTooltipOption configOption = this.bambooConfiguration.getBambooTooltipOption();
 
 		if (configOption != null) {
@@ -58,7 +59,7 @@ public class BambooGeneralForm extends JComponent implements ContentPanel {
 		} else {
 			setDefaultTooltipOption();
 		}
-		model.setValue(Integer.valueOf(bambooConfiguration.getPollTime()));
+		model.setValue(bambooConfiguration.getPollTime());
 	}
 
 
@@ -66,16 +67,15 @@ public class BambooGeneralForm extends JComponent implements ContentPanel {
 		((BambooConfigurationBean) getPluginConfiguration()
 				.getProductServers(ServerType.BAMBOO_SERVER))
 				.setBambooTooltipOption(getBambooTooltipOption());
-		((BambooConfigurationBean) ConfigurationFactory
-				.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER))
+		((BambooConfigurationBean) globalPluginConfiguration.getProductServers(ServerType.BAMBOO_SERVER))
 				.setBambooTooltipOption(getBambooTooltipOption());
 
 		((BambooConfigurationBean) getPluginConfiguration()
 				.getProductServers(ServerType.BAMBOO_SERVER))
-				.setPollTime(((Integer) model.getValue()).intValue());
-		((BambooConfigurationBean) ConfigurationFactory.getConfiguration()
+				.setPollTime((Integer) model.getValue());
+		((BambooConfigurationBean) globalPluginConfiguration
 				.getProductServers(ServerType.BAMBOO_SERVER))
-				.setPollTime(((Integer) model.getValue()).intValue());
+				.setPollTime((Integer) model.getValue());
 	}
 
 	private BambooTooltipOption getBambooTooltipOption() {
@@ -100,7 +100,7 @@ public class BambooGeneralForm extends JComponent implements ContentPanel {
 				return true;
 			}
 		}
-		if (((Integer) model.getValue()).intValue() != bambooConfiguration.getPollTime()) {
+		if ((Integer) model.getValue() != bambooConfiguration.getPollTime()) {
 			return true;
 		}
 
