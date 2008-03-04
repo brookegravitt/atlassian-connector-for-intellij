@@ -42,6 +42,7 @@ public class BambooSession {
 	private String authToken;
 
 	private HttpClient client = null;
+	private static final int CONNECTION_TIMOUT = 20000;
 
 	/**
 	 * Public constructor for BambooSession.
@@ -506,6 +507,7 @@ public class BambooSession {
 		GetMethod method = new GetMethod(urlString);
 		method.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
 
+		client.getHttpConnectionManager().getParams().setConnectionTimeout(CONNECTION_TIMOUT);
 		client.executeMethod(method);
 
 		if (method.getStatusCode() !=  HttpStatus.SC_OK) {

@@ -45,7 +45,7 @@ public class CrucibleSessionImpl implements CrucibleSession {
 	private String password;
 	private HttpClient client = null;
 	private String authToken = null;
-
+	private static final int CONNECTION_TIMOUT = 20000;
 
 	/**
 	 * Public constructor for BambooSession.
@@ -293,6 +293,7 @@ public class CrucibleSessionImpl implements CrucibleSession {
 
 		method.addRequestHeader(new Header("Authorization", getAuthHeaderValue()));
 
+		client.getHttpConnectionManager().getParams().setConnectionTimeout(CONNECTION_TIMOUT);
 		client.executeMethod(method);
 
 		if (method.getStatusCode() != HttpStatus.SC_OK) {
