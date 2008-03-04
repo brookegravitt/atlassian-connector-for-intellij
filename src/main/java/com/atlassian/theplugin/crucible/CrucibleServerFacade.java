@@ -3,6 +3,8 @@ package com.atlassian.theplugin.crucible;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.crucible.api.CrucibleException;
+import com.atlassian.theplugin.crucible.api.ProjectData;
+import com.atlassian.theplugin.crucible.api.RepositoryData;
 import com.atlassian.theplugin.crucible.api.ReviewData;
 
 import java.util.List;
@@ -21,4 +23,11 @@ public interface CrucibleServerFacade {
 
 	ReviewData createReviewFromPatch(Server server, ReviewData reviewData, String patch)
 			throws CrucibleException, ServerPasswordNotProvidedException;
+
+	List<ProjectData> getProjects(Server server)
+			throws CrucibleException, ServerPasswordNotProvidedException;
+
+	List<RepositoryData> getRepositories(Server server) 
+			throws CrucibleException, ServerPasswordNotProvidedException;
+
 }

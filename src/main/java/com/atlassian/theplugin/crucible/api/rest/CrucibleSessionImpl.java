@@ -34,6 +34,8 @@ import java.util.List;
 public class CrucibleSessionImpl implements CrucibleSession {
 	private static final String AUTH_SERVICE = "/rest-service/auth-v1";
 	private static final String REVIEW_SERVICE = "/rest-service/reviews-v1";
+	private static final String PROJECTS_SERVICE = "/rest-service/projects-v1";
+	private static final String REPOSITORIES_SERVICE = "/rest-service/repositories-v1";	
 	private static final String LOGIN = "/login";
 	private static final String GET_REVIEWS_IN_STATES = "?state=";
 	private static final String GET_REVIEWERS = "/reviewers";
@@ -177,6 +179,60 @@ public class CrucibleSessionImpl implements CrucibleSession {
 				}
 			}
 			return reviewers;
+		} catch (IOException e) {
+			throw new CrucibleException(e.getMessage(), e);
+		} catch (JDOMException e) {
+			throw new CrucibleException("Server returned malformed response", e);
+		}
+	}
+
+	public List<ProjectData> getProjects() throws CrucibleException {
+		if (!isLoggedIn()) {
+			throw new IllegalStateException("Calling method without calling login() first");
+		}
+
+		String requestUrl = baseUrl + PROJECTS_SERVICE;
+		try {
+			Document doc = retrieveGetResponse(requestUrl);
+
+			XPath xpath = XPath.newInstance("/projects/projectData");
+			@SuppressWarnings("unchecked")
+			List<Element> elements = xpath.selectNodes(doc);
+			List<ProjectData> projects = new ArrayList<ProjectData>();
+
+			if (elements != null && !elements.isEmpty()) {
+				for (Element element : elements) {
+					projects.add(ReviewUtil.parseProjectNode(element));
+				}
+			}
+			return projects;
+		} catch (IOException e) {
+			throw new CrucibleException(e.getMessage(), e);
+		} catch (JDOMException e) {
+			throw new CrucibleException("Server returned malformed response", e);
+		}
+	}
+
+	public List<RepositoryData> getRepositories() throws CrucibleException {
+		if (!isLoggedIn()) {
+			throw new IllegalStateException("Calling method without calling login() first");
+		}
+
+		String requestUrl = baseUrl + REPOSITORIES_SERVICE;
+		try {
+			Document doc = retrieveGetResponse(requestUrl);
+
+			XPath xpath = XPath.newInstance("/repositories/repoData");
+			@SuppressWarnings("unchecked")
+			List<Element> elements = xpath.selectNodes(doc);
+			List<RepositoryData> repositories = new ArrayList<RepositoryData>();
+
+			if (elements != null && !elements.isEmpty()) {
+				for (Element element : elements) {
+					repositories.add(ReviewUtil.parseRepositoryNode(element));
+				}
+			}
+			return repositories;
 		} catch (IOException e) {
 			throw new CrucibleException(e.getMessage(), e);
 		} catch (JDOMException e) {
