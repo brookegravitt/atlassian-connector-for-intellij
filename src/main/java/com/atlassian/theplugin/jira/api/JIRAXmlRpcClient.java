@@ -52,7 +52,7 @@ public class JIRAXmlRpcClient {
     public boolean login(String lUserName, String lPassword) throws JIRAException {
         try {
             XmlRpcClient client = getClient();
-            Vector params = new Vector();
+			Vector params = new Vector();
             params.add(lUserName);
             params.add(lPassword);
             token = (String) client.execute("jira1.login", params);
@@ -381,6 +381,5 @@ public class JIRAXmlRpcClient {
 
     }
     */
-
 
 }

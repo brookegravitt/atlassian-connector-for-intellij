@@ -10,7 +10,7 @@ package com.atlassian.theplugin.util;
 public abstract class Util {
 
 	private Util() { }
-	
+
 	public static String addHttpPrefix(String address) {
 		if (address == null) {
 			return null;
