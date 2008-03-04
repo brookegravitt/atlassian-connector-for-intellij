@@ -5,7 +5,7 @@ import com.atlassian.theplugin.configuration.BambooConfigurationBean;
 import com.atlassian.theplugin.configuration.BambooTooltipOption;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.PluginConfiguration;
-import com.atlassian.theplugin.idea.config.AbstractContentPanel;
+import com.atlassian.theplugin.idea.config.ContentPanel;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -15,7 +15,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import javax.swing.*;
 import java.awt.*;
 
-public class BambooGeneralForm extends AbstractContentPanel {
+public class BambooGeneralForm extends JComponent implements ContentPanel {
 	private JRadioButton allFailuresFirstSuccess;
 	private JRadioButton firstFailureFirstSuccess;
 	private JRadioButton never;
