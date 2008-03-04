@@ -1,11 +1,11 @@
 package com.atlassian.theplugin.idea.bamboo;
 
+import com.atlassian.theplugin.ServerType;
 import com.atlassian.theplugin.bamboo.BambooStatusDisplay;
 import com.atlassian.theplugin.bamboo.BuildStatus;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.ThePluginProjectComponent;
 import com.atlassian.theplugin.idea.StatusBarPluginIcon;
-import com.atlassian.theplugin.ServerType;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
 
 import javax.swing.*;
@@ -21,11 +21,11 @@ public class BambooStatusIcon extends StatusBarPluginIcon implements BambooStatu
 //	private final PluginStatusBarToolTip tooltip;
 
 	/**
-	 * @param aProjectComponent reference to the project component
+	 * @param project reference to the project that owns this icon.
 	 */
-    public BambooStatusIcon(final ThePluginProjectComponent aProjectComponent) {
+    public BambooStatusIcon(final Project project) {
 
-		super(aProjectComponent.getProject());
+		super(project);
 
 		// show tooltip on mouse over
 //		tooltip = new PluginStatusBarToolTip(WindowManager.getInstance().getFrame(aProjectComponent.getProject()));
@@ -42,7 +42,7 @@ public class BambooStatusIcon extends StatusBarPluginIcon implements BambooStatu
 
 			// show/hide toolbar on click
 			public void mouseClicked(MouseEvent e) {
-				IdeaHelper.focusPanel(aProjectComponent.getProject(), IdeaHelper.TOOLWINDOW_PANEL_BAMBOO);
+				IdeaHelper.focusPanel(project, IdeaHelper.TOOLWINDOW_PANEL_BAMBOO);
             }
 		});
 

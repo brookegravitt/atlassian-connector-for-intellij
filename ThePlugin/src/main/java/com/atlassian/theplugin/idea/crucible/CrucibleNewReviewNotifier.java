@@ -17,19 +17,20 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * This one is supposed to be per project.
+ */
 public class CrucibleNewReviewNotifier implements CrucibleStatusListener {
 	private List<ReviewDataInfo> reviews = new ArrayList<ReviewDataInfo>();
 
 
-	private CrucibleStatusIcon display = null;
+	private final CrucibleStatusIcon display;
+	private static final Color BACKGROUND_COLOR = new Color(255, 255, 200);
 
-	public void setDisplay(CrucibleStatusIcon display) {
+	public CrucibleNewReviewNotifier(CrucibleStatusIcon display) {
 		this.display = display;
 	}
 
-	private static final int R = 255;
-	private static final int G = 255;
-	private static final int B = 200;
 
 	public void updateReviews(Collection<ReviewDataInfo> incomingReviews) {
 		if (!reviews.containsAll(incomingReviews)) {
@@ -66,7 +67,7 @@ public class CrucibleNewReviewNotifier implements CrucibleStatusListener {
 				content.setContentType("text/html");
 				content.setEditorKit(new ClasspathHTMLEditorKit());
 				content.setText("<html>" + HtmlBambooStatusListener.BODY_WITH_STYLE + sb.toString() + "</body></html>");
-				content.setBackground(new Color(R, G, B));
+				content.setBackground(BACKGROUND_COLOR);
 				content.addHyperlinkListener(new GenericHyperlinkListener());
 
 				content.addMouseListener(new MouseAdapter() {
@@ -77,7 +78,7 @@ public class CrucibleNewReviewNotifier implements CrucibleStatusListener {
 				});
 				content.setCaretPosition(0); // do thi to make sure scroll pane is always at the top / header
 				WindowManager.getInstance().getStatusBar(project).fireNotificationPopup(
-						new JScrollPane(content), new Color(R, G, B));
+						new JScrollPane(content), BACKGROUND_COLOR);
 			}
 		}
 
