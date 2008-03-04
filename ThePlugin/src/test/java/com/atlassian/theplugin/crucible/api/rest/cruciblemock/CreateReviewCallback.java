@@ -3,7 +3,7 @@ package com.atlassian.theplugin.crucible.api.rest.cruciblemock;
 import com.atlassian.theplugin.crucible.api.PermIdBean;
 import com.atlassian.theplugin.crucible.api.ReviewDataBean;
 import com.atlassian.theplugin.crucible.api.State;
-import com.atlassian.theplugin.crucible.api.rest.ReviewUtil;
+import com.atlassian.theplugin.crucible.api.rest.CrucibleRestXmlHelper;
 import static junit.framework.Assert.assertTrue;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 import org.jdom.Document;
@@ -36,7 +36,7 @@ public class CreateReviewCallback implements JettyMockServer.Callback {
 
 		ReviewDataBean reviewData = null;
 		if (elements != null && !elements.isEmpty()) {
-			reviewData = (ReviewDataBean) ReviewUtil.parseReviewNode(elements.iterator().next());
+			reviewData = (ReviewDataBean) CrucibleRestXmlHelper.parseReviewNode(elements.iterator().next());
 			reviewData.setState(State.DRAFT);
 			PermIdBean permId = new PermIdBean();
 			permId.setId(PERM_ID);
@@ -44,7 +44,7 @@ public class CreateReviewCallback implements JettyMockServer.Callback {
 			reviewData.setRepoName(REPO_NAME);
 		}
 
-		Document doc = ReviewUtil.prepareReviewNode(reviewData);
+		Document doc = CrucibleRestXmlHelper.prepareReviewNode(reviewData);
 		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
 		outputter.output(doc, response.getOutputStream());
 	}
