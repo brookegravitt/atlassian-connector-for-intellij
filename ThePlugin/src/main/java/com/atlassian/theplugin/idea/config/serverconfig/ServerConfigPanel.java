@@ -1,10 +1,7 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.ServerType;
-import com.atlassian.theplugin.configuration.ConfigurationFactory;
-import com.atlassian.theplugin.configuration.PluginConfiguration;
-import com.atlassian.theplugin.configuration.Server;
-import com.atlassian.theplugin.configuration.ServerBean;
+import com.atlassian.theplugin.configuration.*;
 import com.atlassian.theplugin.crucible.CrucibleServerFactory;
 import com.atlassian.theplugin.crucible.api.CrucibleException;
 import com.atlassian.theplugin.exception.ThePluginException;
@@ -29,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class ServerConfigPanel extends JPanel implements ContentPanel {
-    private ServerTreePanel treePanel = null;
+    private final ServerTreePanel serverTreePanel;
     private BlankPanel blankPanel = null;
 
     private CardLayout editPaneCardLayout;
@@ -38,12 +35,14 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
 
 	private static final float SPLIT_RATIO = 0.3f;
 	private Map<ServerType, ServerPanel> serverPanels = new HashMap<ServerType, ServerPanel>();
-	private static ServerConfigPanel instance;
 
 	private PluginConfiguration localConfigCopy;
 
-	private ServerConfigPanel() {
-        initLayout();
+	public ServerConfigPanel(ServerTreePanel serverTreePanel) {
+		this.serverTreePanel = serverTreePanel;
+		/* required due to circular dependency unhandled by pico */
+		this.serverTreePanel.setServerConfigPanel(this);
+		initLayout();
     }
 
     private void initLayout() {
@@ -62,15 +61,8 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
         JPanel selectPane = new JPanel();
         selectPane.setLayout(new VerticalFlowLayout(true, true));
         selectPane.add(createToolbar());
-        selectPane.add(getTreePanel());
+        selectPane.add(serverTreePanel);
 		return selectPane;
-    }
-
-    private JComponent getTreePanel() {
-        if (treePanel == null) {
-            treePanel = new ServerTreePanel();
-        }
-        return treePanel;
     }
 
     private JComponent createToolbar() {
@@ -164,37 +156,36 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
 	public void getData() {
         if (isModified()) {
             for (ServerType type : serverPanels.keySet()) {
-                if (serverPanels.get(type).isModified()) {
-                    if (getLocalPluginConfigurationCopy().
-							getProductServers(type).getServer(serverPanels.get(type).getData()) != null) {
-                        getLocalPluginConfigurationCopy().
-								getProductServers(type).storeServer(serverPanels.get(type).getData());
+				final ProductServerConfiguration conf = getLocalPluginConfigurationCopy().getProductServers(type);
+				if (serverPanels.get(type).isModified()) {
+                    if (conf.getServer(serverPanels.get(type).getData()) != null) {
+                        conf.storeServer(serverPanels.get(type).getData());
                     }
                 }
-                Collection<Server> s = getLocalPluginConfigurationCopy().getProductServers(type).getServers();
+                Collection<Server> s = conf.getServers();
                 ConfigurationFactory.getConfiguration().getProductServers(type).setServers(s);
 			}
 
-			this.treePanel.setData(getLocalPluginConfigurationCopy());
+			this.serverTreePanel.setData(getLocalPluginConfigurationCopy());
         }
     }
 
 	public void setData(PluginConfiguration config) {
 		localConfigCopy = config;
-		treePanel.setData(getLocalPluginConfigurationCopy());
+		serverTreePanel.setData(getLocalPluginConfigurationCopy());
 	}
 
 
 	public void addServer(ServerType serverType) {
-        treePanel.addServer(serverType);
+        serverTreePanel.addServer(serverType);
     }
 
 	public void removeServer() {
-        treePanel.removeServer();
+        serverTreePanel.removeServer();
     }
 
 	public void copyServer() {
-        treePanel.copyServer();
+        serverTreePanel.copyServer();
     }
 
 	public void storeServer(ServerNode serverNode) {
@@ -223,13 +214,6 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
         editPaneCardLayout.show(editPane, BLANK_CARD);
     }
 
-	public static ServerConfigPanel getInstance() {
-		if (instance == null) {
-			instance = new ServerConfigPanel();
-		}
-
-		return instance;
-	}
 
 	static class BlankPanel extends JPanel {
 

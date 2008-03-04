@@ -5,7 +5,6 @@ import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.atlassian.theplugin.configuration.ProductServerConfiguration;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerBean;
-import com.atlassian.theplugin.idea.config.ConfigPanel;
 import com.atlassian.theplugin.idea.config.serverconfig.model.*;
 import com.atlassian.theplugin.idea.config.serverconfig.util.ServerNameUtil;
 
@@ -33,9 +32,15 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 	private static final int HEIGHT = 250;
 	private static final int VISIBLE_ROW_COUNT = 7;
 
-	public void setModel(ServerTreeModel model) {
-		this.model = model;
+	/**
+	 * serverConfigPanel needs to be initialized outside of the constructor to avoid cyclic dependency.
+	 * @param serverConfigPanel panel to invoke storeServer() and showEmptyPanel() on.
+	 */
+	public void setServerConfigPanel(ServerConfigPanel serverConfigPanel) {
+		this.serverConfigPanel = serverConfigPanel;
 	}
+
+	private ServerConfigPanel serverConfigPanel;
 
 	public ServerTreePanel() {
 		initLayout();
@@ -207,7 +212,7 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 			serverTree.setSelectionPath(path);
 		} else {
 			selectedNode = null;
-			ConfigPanel.getInstance().getServerConfigPanel().showEmptyPanel();
+			serverConfigPanel.showEmptyPanel();
 			if (firstServerNode != null) {
 				TreePath path = new TreePath(firstServerNode.getPath());
 				serverTree.scrollPathToVisible(path);
@@ -225,18 +230,18 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 			if (oldPath != null) {
 				DefaultMutableTreeNode oldNode = (DefaultMutableTreeNode) oldPath.getLastPathComponent();
 				if (oldNode != null && oldNode instanceof ServerNode) {
-					ConfigPanel.getInstance().storeServer((ServerNode) oldNode);
+					serverConfigPanel.storeServer((ServerNode) oldNode);
 				}
 			}
 			selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
 			if (selectedNode instanceof ServerNode) {
-				ConfigPanel.getInstance().getServerConfigPanel().editServer(
+				serverConfigPanel.editServer(
 						((ServerNode) selectedNode).getServerType(), ((ServerNode) selectedNode).getServer());
 			} else if (selectedNode instanceof ServerTypeNode) {
-				ConfigPanel.getInstance().getServerConfigPanel().showEmptyPanel();
+				serverConfigPanel.showEmptyPanel();
 			}
 		} else {
-			ConfigPanel.getInstance().getServerConfigPanel().showEmptyPanel();
+			serverConfigPanel.showEmptyPanel();
 		}
 	}
 }
