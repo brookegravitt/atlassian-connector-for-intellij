@@ -11,7 +11,7 @@ import java.awt.*;
 public final class ConfigPanel extends JPanel {
 	private static ConfigPanel instance;
 
-	private transient PluginConfigurationBean pluginConfiguration = null;
+	private transient PluginConfigurationBean localPluginConfigurationCopy = null;
 
 	private FooterPanel footerPanel = null;
 	private JTabbedPane contentPanel = null;
@@ -74,7 +74,7 @@ public final class ConfigPanel extends JPanel {
 	}
 
 	public boolean isModified() {
-		if (!this.pluginConfiguration.equals(ConfigurationFactory.getConfiguration())) {
+		if (!this.localPluginConfigurationCopy.equals(ConfigurationFactory.getConfiguration())) {
             return true;
 		}
 		return serverConfigPanel.isModified() || bambooConfigPanel.isModified() || generalConfigPanel.isModified();
@@ -89,10 +89,10 @@ public final class ConfigPanel extends JPanel {
 	}
 
 	public void setData() {
-		this.pluginConfiguration = new PluginConfigurationBean(ConfigurationFactory.getConfiguration());
-		serverConfigPanel.setData();
-		generalConfigPanel.setData();
-		bambooConfigPanel.setData();
+		this.localPluginConfigurationCopy = new PluginConfigurationBean(ConfigurationFactory.getConfiguration());
+		serverConfigPanel.setData(localPluginConfigurationCopy);
+		generalConfigPanel.setData(localPluginConfigurationCopy);
+		bambooConfigPanel.setData(localPluginConfigurationCopy);
 	}
 
 	public void addServer(ServerType serverType) {
@@ -111,12 +111,4 @@ public final class ConfigPanel extends JPanel {
     public void storeServer(ServerNode serverNode) {
         serverConfigPanel.storeServer(serverNode);
     }
-
-    public PluginConfigurationBean getPluginConfiguration() {
-		return pluginConfiguration;
-	}
-
-	public void setPluginConfiguration(PluginConfigurationBean pluginConfiguration) {
-		this.pluginConfiguration = pluginConfiguration;
-	}
 }

@@ -17,6 +17,7 @@ public class GeneralConfigPanel extends AbstractContentPanel {
 	private static GeneralConfigPanel instance = null;
 	private boolean isPluginEnabled;
 	private GeneralConfigForm dialog;
+	private PluginConfiguration localPluginConfigurationCopy;
 
 	public GeneralConfigPanel() {
 		super();
@@ -49,8 +50,9 @@ public class GeneralConfigPanel extends AbstractContentPanel {
 		ConfigurationFactory.getConfiguration().setAutoUpdateEnabled(dialog.getIsAutoUpdateEnabled());
 	}
 
-	public void setData() {
-		dialog.setAutoUpdateEnabled(ConfigurationFactory.getConfiguration().isAutoUpdateEnabled());
+	public void setData(PluginConfiguration config) {
+		localPluginConfigurationCopy = config;
+		dialog.setAutoUpdateEnabled(localPluginConfigurationCopy.isAutoUpdateEnabled());
 	}
 
 	public static GeneralConfigPanel getInstance() {
@@ -62,6 +64,6 @@ public class GeneralConfigPanel extends AbstractContentPanel {
 	}
 
 	public PluginConfiguration getPluginConfiguration() {
-        return ConfigPanel.getInstance().getPluginConfiguration();
+        return localPluginConfigurationCopy;
     }
 }
