@@ -4,6 +4,7 @@ import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.atlassian.theplugin.idea.GeneralConfigForm;
 
+import javax.swing.*;
 import java.awt.*;
 
 /**
@@ -13,7 +14,7 @@ import java.awt.*;
  * Time: 13:53:32
  * To change this template use File | Settings | File Templates.
  */
-public class GeneralConfigPanel extends AbstractContentPanel {
+public class GeneralConfigPanel extends JPanel implements ContentPanel {
 	private static GeneralConfigPanel instance = null;
 	private boolean isPluginEnabled;
 	private GeneralConfigForm dialog;
