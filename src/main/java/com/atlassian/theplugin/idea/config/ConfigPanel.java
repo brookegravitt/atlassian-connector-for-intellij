@@ -1,9 +1,9 @@
 package com.atlassian.theplugin.idea.config;
 
-import com.atlassian.theplugin.configuration.*;
-import com.atlassian.theplugin.idea.config.serverconfig.*;
-import com.atlassian.theplugin.idea.config.serverconfig.model.ServerNode;
 import com.atlassian.theplugin.ServerType;
+import com.atlassian.theplugin.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.idea.config.serverconfig.BambooGeneralForm;
+import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,71 +13,59 @@ public final class ConfigPanel extends JPanel {
 
 	private transient PluginConfigurationBean localPluginConfigurationCopy = null;
 
-	private FooterPanel footerPanel = null;
-	private JTabbedPane contentPanel = null;
-	private ServerConfigPanel serverConfigPanel = null;
-	private BambooGeneralForm bambooConfigPanel = null;
-	private GeneralConfigPanel generalConfigPanel = null;
+	private final FooterPanel footerPanel = new FooterPanel();
+	private final JTabbedPane contentPanel = new JTabbedPane();
+	private final ServerConfigPanel serverConfigPanel;
+	private final BambooGeneralForm bambooConfigPanel;
+	private final GeneralConfigPanel generalConfigPanel;
 
-	private ConfigPanel() {
+	private final PluginConfigurationBean globalConfigurationBean;
+
+	public ConfigPanel(ServerConfigPanel serverConfigPanel,
+					   BambooGeneralForm bambooConfigPanel,
+					   GeneralConfigPanel generalConfigPanel,
+					   PluginConfigurationBean globalConfigurationBean) {
+		instance = this;
+		this.serverConfigPanel = serverConfigPanel;
+		this.bambooConfigPanel = bambooConfigPanel;
+		this.generalConfigPanel = generalConfigPanel;
+		this.globalConfigurationBean = globalConfigurationBean;
+
 		initLayout();
 	}
 
+	/**
+	 * This one is still here because IDEA complains about AnAction objects having non-parameterless constructor.
+	 * @return single instance of ConfigPanel.
+	 */
 	public static ConfigPanel getInstance() {
-		if (instance == null) {
-			instance = new ConfigPanel();
-		}
 		return instance;
 	}
 
 	private void initLayout() {
 		setLayout(new BorderLayout());
 
-		contentPanel = new JTabbedPane();
-
 		// add servers tab
-		serverConfigPanel = getServerConfigPanel();
 		contentPanel.add(serverConfigPanel.getTitle(), serverConfigPanel);
 
 		// add Bamboo optins tab
-		bambooConfigPanel = getBambooConfigPanel();
 		contentPanel.add(bambooConfigPanel.getTitle(), bambooConfigPanel);
 
 		// add general tab
-		generalConfigPanel = GeneralConfigPanel.getInstance();
 		contentPanel.add(generalConfigPanel.getTitle(), generalConfigPanel);
 
 		add(contentPanel, BorderLayout.CENTER);
-		add(getFooterPanel(), BorderLayout.SOUTH);
+		add(footerPanel, BorderLayout.SOUTH);
 
 	}
 
-	private JPanel getFooterPanel() {
-		if (footerPanel == null) {
-			footerPanel = new FooterPanel();
-		}
-		return footerPanel;
-	}
 
-	public ServerConfigPanel getServerConfigPanel() {
-		if (serverConfigPanel == null) {
-			serverConfigPanel = ServerConfigPanel.getInstance();
-		}
-		return serverConfigPanel;
-	}
-
-	public BambooGeneralForm getBambooConfigPanel() {
-		if (bambooConfigPanel == null) {
-			bambooConfigPanel = new BambooGeneralForm();
-		}
-		return bambooConfigPanel;
-	}
 
 	public boolean isModified() {
-		if (!this.localPluginConfigurationCopy.equals(ConfigurationFactory.getConfiguration())) {
-            return true;
-		}
-		return serverConfigPanel.isModified() || bambooConfigPanel.isModified() || generalConfigPanel.isModified();
+		return !this.localPluginConfigurationCopy.equals(globalConfigurationBean)
+				|| serverConfigPanel.isModified()
+				|| bambooConfigPanel.isModified()
+				|| generalConfigPanel.isModified();
 	}
 
 	public void getData() {
@@ -89,7 +77,7 @@ public final class ConfigPanel extends JPanel {
 	}
 
 	public void setData() {
-		this.localPluginConfigurationCopy = new PluginConfigurationBean(ConfigurationFactory.getConfiguration());
+		this.localPluginConfigurationCopy = new PluginConfigurationBean(globalConfigurationBean);
 		serverConfigPanel.setData(localPluginConfigurationCopy);
 		generalConfigPanel.setData(localPluginConfigurationCopy);
 		bambooConfigPanel.setData(localPluginConfigurationCopy);
@@ -107,8 +95,4 @@ public final class ConfigPanel extends JPanel {
 	public void copyServer() {
 		serverConfigPanel.copyServer();
 	}
-
-    public void storeServer(ServerNode serverNode) {
-        serverConfigPanel.storeServer(serverNode);
-    }
 }
