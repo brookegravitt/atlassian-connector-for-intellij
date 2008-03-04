@@ -8,7 +8,7 @@ import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.crucible.CrucibleServerFactory;
 import com.atlassian.theplugin.crucible.api.CrucibleException;
 import com.atlassian.theplugin.exception.ThePluginException;
-import com.atlassian.theplugin.idea.config.AbstractContentPanel;
+import com.atlassian.theplugin.idea.config.ContentPanel;
 import com.atlassian.theplugin.idea.config.serverconfig.model.ServerNode;
 import com.atlassian.theplugin.jira.JIRAServerFactory;
 import com.atlassian.theplugin.jira.api.JIRALoginException;
@@ -28,7 +28,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class ServerConfigPanel extends AbstractContentPanel {
+public final class ServerConfigPanel extends JPanel implements ContentPanel {
     private ServerTreePanel treePanel = null;
     private BlankPanel blankPanel = null;
 
@@ -37,13 +37,12 @@ public final class ServerConfigPanel extends AbstractContentPanel {
 	private static final String BLANK_CARD = "Blank card";
 
 	private static final float SPLIT_RATIO = 0.3f;
-	private Map<ServerType, AbstractServerPanel> serverPanels;
+	private Map<ServerType, ServerPanel> serverPanels = new HashMap<ServerType, ServerPanel>();
 	private static ServerConfigPanel instance;
 
 	private PluginConfiguration localConfigCopy;
 
 	private ServerConfigPanel() {
-        serverPanels = new HashMap<ServerType, AbstractServerPanel>();
         initLayout();
     }
 
@@ -147,7 +146,7 @@ public final class ServerConfigPanel extends AbstractContentPanel {
 			return true;
         }
 
-        for (AbstractServerPanel entry : serverPanels.values()) {
+        for (ServerPanel entry : serverPanels.values()) {
             if (entry != null) {
                 if (entry.isModified()) {
 					return true;

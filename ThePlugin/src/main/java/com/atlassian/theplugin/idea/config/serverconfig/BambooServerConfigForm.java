@@ -17,7 +17,7 @@ import java.awt.event.ActionListener;
 /**
  * Plugin configuration form.
  */
-public class BambooServerConfigForm extends AbstractServerPanel {
+public class BambooServerConfigForm extends JComponent implements ServerPanel {
 	private JPanel rootComponent;
 	private JTextField serverName;
 	private JTextField serverUrl;
