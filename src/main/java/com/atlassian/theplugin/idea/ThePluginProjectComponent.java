@@ -43,15 +43,11 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	private boolean enabled;
 	private CrucibleNewReviewNotifier crucibleNewReviewNotifier;
 
-	private ThePluginApplicationComponent applicationComponent;
-
 	public ThePluginProjectComponent(Project project,
-									 ThePluginApplicationComponent applicationComponent,
 									 CrucibleStatusChecker crucibleStatusChecker,
 									 ToolWindowManager toolWindowManager,
 									 BambooStatusChecker bambooStatusChecker) {
 		this.project = project;
-		this.applicationComponent = applicationComponent;
 		this.crucibleStatusChecker = crucibleStatusChecker;
 		this.toolWindowManager = toolWindowManager;
 		this.bambooStatusChecker = bambooStatusChecker;
@@ -125,7 +121,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			bambooStatusChecker.registerListener(toolWindowBambooListener);
 
 			// create Bamboo status bar icon
-			statusBarBambooIcon = new BambooStatusIcon(this);
+			statusBarBambooIcon = new BambooStatusIcon(this.project);
 			statusBarBambooIcon.updateBambooStatus(BuildStatus.UNKNOWN,
 					"<div style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">"
 							+ "Waiting for Bamboo build statuses."
@@ -146,14 +142,14 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			//statusBar.addCustomIndicationComponent(statusBarBambooIcon);
 			statusBarBambooIcon.showOrHideIcon();
 
-			// create crucible status bar icon
-			statusBarCrucibleIcon = new CrucibleStatusIcon(project);
-
 			// setup Crucible status checker and listeners
             toolWindowCrucibleListener = new HtmlCrucibleStatusListener(crucibleToolWindowPanel.getCrucibleContent());
             crucibleStatusChecker.registerListener(toolWindowCrucibleListener);
-			crucibleNewReviewNotifier = applicationComponent.getCrucibleNewReviewNotifier();
-			crucibleNewReviewNotifier.setDisplay(statusBarCrucibleIcon);
+
+			// create crucible status bar icon
+			statusBarCrucibleIcon = new CrucibleStatusIcon(project);
+
+			crucibleNewReviewNotifier = new CrucibleNewReviewNotifier(statusBarCrucibleIcon);
 			crucibleStatusChecker.registerListener(crucibleNewReviewNotifier);
 
 			// add crucible icon to status bar
@@ -204,10 +200,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		System.out.println("Start: Project close");
 		disablePlugin();
 		System.out.println("End: Project close");
-	}
-
-	public Project getProject() {
-		return project;
 	}
 
 	public BambooStatusIcon getStatusBarBambooIcon() {
