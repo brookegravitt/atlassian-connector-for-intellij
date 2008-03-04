@@ -6,10 +6,10 @@ import org.jdom.Document;
 import org.jdom.Element;
 
 
-public final class ReviewUtil {
+public final class CrucibleRestXmlHelper {
 
 	///CLOVER:OFF
-	private ReviewUtil() {
+	private CrucibleRestXmlHelper() {
 	}
 	///CLOVER:ON
 
@@ -33,9 +33,7 @@ public final class ReviewUtil {
 
 	public static RepositoryDataBean parseRepositoryNode(Element repoNode) {
 		RepositoryDataBean repo = new RepositoryDataBean();
-
 		repo.setName(getChildText(repoNode, "name"));
-
 		return repo;
 	}
 
@@ -83,7 +81,6 @@ public final class ReviewUtil {
 			CDATA patchT = new CDATA(patch);
 			patchData.setContent(patchT);
 		}
-
 		return doc;
 	}
 
