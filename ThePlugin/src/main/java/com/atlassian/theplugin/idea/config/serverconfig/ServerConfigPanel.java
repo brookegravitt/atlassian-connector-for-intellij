@@ -1,12 +1,14 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.ServerType;
-import com.atlassian.theplugin.configuration.*;
+import com.atlassian.theplugin.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.configuration.PluginConfiguration;
+import com.atlassian.theplugin.configuration.Server;
+import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.crucible.CrucibleServerFactory;
 import com.atlassian.theplugin.crucible.api.CrucibleException;
 import com.atlassian.theplugin.exception.ThePluginException;
 import com.atlassian.theplugin.idea.config.AbstractContentPanel;
-import com.atlassian.theplugin.idea.config.ConfigPanel;
 import com.atlassian.theplugin.idea.config.serverconfig.model.ServerNode;
 import com.atlassian.theplugin.jira.JIRAServerFactory;
 import com.atlassian.theplugin.jira.api.JIRALoginException;
@@ -37,6 +39,8 @@ public final class ServerConfigPanel extends AbstractContentPanel {
 	private static final float SPLIT_RATIO = 0.3f;
 	private Map<ServerType, AbstractServerPanel> serverPanels;
 	private static ServerConfigPanel instance;
+
+	private PluginConfiguration localConfigCopy;
 
 	private ServerConfigPanel() {
         serverPanels = new HashMap<ServerType, AbstractServerPanel>();
@@ -139,7 +143,7 @@ public final class ServerConfigPanel extends AbstractContentPanel {
     }
 
 	public boolean isModified() {
-        if (!getPluginConfiguration().equals(ConfigurationFactory.getConfiguration())) {
+        if (!getLocalPluginConfigurationCopy().equals(ConfigurationFactory.getConfiguration())) {
 			return true;
         }
 
@@ -162,20 +166,21 @@ public final class ServerConfigPanel extends AbstractContentPanel {
         if (isModified()) {
             for (ServerType type : serverPanels.keySet()) {
                 if (serverPanels.get(type).isModified()) {
-                    if (getPluginConfiguration().getProductServers(type).getServer(serverPanels.get(type).getData()) != null) {
-                        getPluginConfiguration().getProductServers(type).storeServer(serverPanels.get(type).getData());
+                    if (getLocalPluginConfigurationCopy().getProductServers(type).getServer(serverPanels.get(type).getData()) != null) {
+                        getLocalPluginConfigurationCopy().getProductServers(type).storeServer(serverPanels.get(type).getData());
                     }
                 }
-                Collection<Server> s = getPluginConfiguration().getProductServers(type).getServers();
+                Collection<Server> s = getLocalPluginConfigurationCopy().getProductServers(type).getServers();
                 ConfigurationFactory.getConfiguration().getProductServers(type).setServers(s);
 			}
 
-			this.treePanel.setData(getPluginConfiguration());
+			this.treePanel.setData(getLocalPluginConfigurationCopy());
         }
     }
 
-	public void setData() {
-        treePanel.setData(ConfigPanel.getInstance().getPluginConfiguration());
+	public void setData(PluginConfiguration config) {
+		localConfigCopy = config;
+		treePanel.setData(getLocalPluginConfigurationCopy());
 	}
 
 
@@ -263,7 +268,7 @@ public final class ServerConfigPanel extends AbstractContentPanel {
 
     }
 
-    public PluginConfiguration getPluginConfiguration() {
-        return ConfigPanel.getInstance().getPluginConfiguration();
+    public PluginConfiguration getLocalPluginConfigurationCopy() {
+        return localConfigCopy;
     }
 }

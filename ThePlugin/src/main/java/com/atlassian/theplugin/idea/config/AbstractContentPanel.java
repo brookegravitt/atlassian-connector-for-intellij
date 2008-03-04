@@ -1,5 +1,7 @@
 package com.atlassian.theplugin.idea.config;
 
+import com.atlassian.theplugin.configuration.PluginConfiguration;
+
 import javax.swing.*;
 
 /**
@@ -14,5 +16,5 @@ public abstract class AbstractContentPanel extends JPanel {
 	public abstract boolean isModified();
 	public abstract String getTitle();
 	public abstract void getData();
-	public abstract void setData();
+	public abstract void setData(PluginConfiguration config);
 }
