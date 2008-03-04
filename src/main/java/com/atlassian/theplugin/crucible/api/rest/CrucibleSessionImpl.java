@@ -144,7 +144,7 @@ public class CrucibleSessionImpl implements CrucibleSession {
 
 			if (elements != null && !elements.isEmpty()) {
 				for (Element element : elements) {
-					reviews.add(ReviewUtil.parseReviewNode(element));
+					reviews.add(CrucibleRestXmlHelper.parseReviewNode(element));
 				}
 			}
 			return reviews;
@@ -202,7 +202,7 @@ public class CrucibleSessionImpl implements CrucibleSession {
 
 			if (elements != null && !elements.isEmpty()) {
 				for (Element element : elements) {
-					projects.add(ReviewUtil.parseProjectNode(element));
+					projects.add(CrucibleRestXmlHelper.parseProjectNode(element));
 				}
 			}
 			return projects;
@@ -229,7 +229,7 @@ public class CrucibleSessionImpl implements CrucibleSession {
 
 			if (elements != null && !elements.isEmpty()) {
 				for (Element element : elements) {
-					repositories.add(ReviewUtil.parseRepositoryNode(element));
+					repositories.add(CrucibleRestXmlHelper.parseRepositoryNode(element));
 				}
 			}
 			return repositories;
@@ -252,7 +252,7 @@ public class CrucibleSessionImpl implements CrucibleSession {
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
 
-		Document request = ReviewUtil.prepareCreateReviewNode(review, patch);
+		Document request = CrucibleRestXmlHelper.prepareCreateReviewNode(review, patch);
 
 		try {
 			Document doc = retrievePostResponse(baseUrl + REVIEW_SERVICE, request);
@@ -262,7 +262,7 @@ public class CrucibleSessionImpl implements CrucibleSession {
 			List<Element> elements = xpath.selectNodes(doc);
 
 			if (elements != null && !elements.isEmpty()) {
-				return ReviewUtil.parseReviewNode(elements.iterator().next());
+				return CrucibleRestXmlHelper.parseReviewNode(elements.iterator().next());
 			}
 			return null;
 		} catch (IOException e) {
