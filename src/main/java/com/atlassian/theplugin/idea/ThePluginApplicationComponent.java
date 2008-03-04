@@ -99,7 +99,7 @@ public class ThePluginApplicationComponent
 										 SchedulableComponent[] schedulableComponents) {
 		this.configuration = configuration;
 		this.bambooStatusChecker = bambooStatusChecker;
-		this.schedulableComponents = schedulableComponents;
+		this.schedulableComponents = schedulableComponents; /* get lost, findbugs! */
 		this.configPanel = configPanel;
 
 		ConfigurationFactory.setConfiguration(configuration);
