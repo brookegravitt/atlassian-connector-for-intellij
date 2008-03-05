@@ -3,7 +3,6 @@ package com.atlassian.theplugin.bamboo;
 import com.atlassian.theplugin.ServerType;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.Server;
-import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PasswordDialog;
 import com.atlassian.theplugin.idea.PluginInfoUtil;
@@ -32,9 +31,8 @@ public class MissingPasswordHandler implements Runnable {
 				if (server.getIsConfigInitialized()) {
 					continue;
 				}
-				ServerBean serverBean = (ServerBean) server;
 				PasswordDialog dialog = new PasswordDialog(server);
-				dialog.setUserName(serverBean.getUserName());
+				dialog.setUserName(server.getUserName());
 				dialog.pack();
 				JPanel panel = dialog.getPasswordPanel();
 
@@ -44,14 +42,14 @@ public class MissingPasswordHandler implements Runnable {
 				if (answer == JOptionPane.OK_OPTION) {
 					String password = dialog.getPasswordString();
 					Boolean shouldPasswordBeStored = dialog.getShouldPasswordBeStored();
-					serverBean.setPasswordString(password, shouldPasswordBeStored);
-					serverBean.setUserName(dialog.getUserName());
+					server.setPasswordString(password, shouldPasswordBeStored);
+					server.setUserName(dialog.getUserName());
 				} else {
 					wasCanceled = true;
 				}
 				// so or so we assume that user provided password
 
-				serverBean.setIsConfigInitialized(true);
+				server.setIsConfigInitialized(true);
 			}
 			ThePluginApplicationComponent appComponent = IdeaHelper.getAppComponent();
 			appComponent.rescheduleStatusCheckers(true);

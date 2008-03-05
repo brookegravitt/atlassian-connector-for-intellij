@@ -3,11 +3,9 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 import com.atlassian.theplugin.bamboo.BambooServerFacade;
 import com.atlassian.theplugin.bamboo.api.BambooLoginException;
 import com.atlassian.theplugin.configuration.Server;
-import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.exception.ThePluginException;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.Spacer;
 import org.apache.log4j.Category;
 
 import javax.swing.*;
@@ -39,11 +37,11 @@ public class BambooServerConfigForm extends JComponent implements ServerPanel {
 
 	}
 
-	public ServerBean getData() {
-		ServerBean server = genericServerConfigForm.getData();
+	public Server getData() {
+		Server server = genericServerConfigForm.getData();
 
-		ServerBean s = planList.getData();
-		server.setSubscribedPlansData(s.getSubscribedPlansData());
+		Server s = planList.getData();
+		server.setSubscribedPlans(s.getSubscribedPlans());
 		server.setUseFavourite(s.getUseFavourite());
 
 		return server;

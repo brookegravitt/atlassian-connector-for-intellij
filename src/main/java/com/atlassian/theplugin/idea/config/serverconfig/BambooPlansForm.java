@@ -108,7 +108,7 @@ public class BambooPlansForm extends JPanel {
 			isUseFavourite = cbUseFavuriteBuilds.isSelected();
 		}
 		Server server = serverPanel.getData();
-		((ServerBean) server).setSubscribedPlansData(((ServerBean) originalServer).getSubscribedPlansData());
+		server.setSubscribedPlans(originalServer.getSubscribedPlans());
 		serverPlans.remove(getServerKey(originalServer));
 		retrievePlans(server);
 	}
@@ -220,17 +220,17 @@ public class BambooPlansForm extends JPanel {
 		}
 	}
 
-	public ServerBean getData() {
-		ServerBean server = new ServerBean();
+	public Server getData() {
+		Server server = new ServerBean();
 
 		for (int i = 0; i < model.getSize(); ++i) {
 			if (model.getElementAt(i) instanceof BambooPlanItem) {
 				BambooPlanItem p = (BambooPlanItem) model.getElementAt(i);
 
 				if (p.isSelected()) {
-					SubscribedPlanBean spb = new SubscribedPlanBean();
+					SubscribedPlan spb = new SubscribedPlanBean();
 					spb.setPlanId(p.getPlan().getPlanKey());
-					server.getSubscribedPlansData().add(spb);
+					((Collection <SubscribedPlan>)server.getSubscribedPlans()).add(spb);
 				}
 			}
 		}
