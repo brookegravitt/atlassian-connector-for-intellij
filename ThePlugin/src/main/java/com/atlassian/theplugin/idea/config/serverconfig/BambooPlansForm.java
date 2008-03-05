@@ -2,7 +2,7 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.bamboo.BambooPlan;
 import com.atlassian.theplugin.bamboo.BambooPlanData;
-import com.atlassian.theplugin.bamboo.BambooServerFactory;
+import com.atlassian.theplugin.bamboo.BambooServerFacade;
 import com.atlassian.theplugin.configuration.*;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -26,8 +26,10 @@ public class BambooPlansForm extends JPanel {
 	private Boolean isUseFavourite = null;
 	private Server queryServer;
 	private Map<String, List<BambooPlanItem>> serverPlans = new HashMap<String, List<BambooPlanItem>>();
+	private final BambooServerFacade bambooServerFacade;
 
-	public BambooPlansForm() {
+	public BambooPlansForm(BambooServerFacade bambooServerFacade) {
+		this.bambooServerFacade = bambooServerFacade;
 		this.setLayout(new GridLayoutManager(2, 1, new Insets(5, 5, 5, 5), -1, -1));
 		this.setBorder(BorderFactory.createTitledBorder("Build plans"));
 		final JPanel panel1 = new JPanel();
@@ -102,7 +104,7 @@ public class BambooPlansForm extends JPanel {
 
 	private void refreshServerPlans() {
 		if (queryServer.getUseFavourite() != cbUseFavuriteBuilds.isSelected()) {
-			isUseFavourite = Boolean.valueOf(cbUseFavuriteBuilds.isSelected());
+			isUseFavourite = cbUseFavuriteBuilds.isSelected();
 		}
 		serverPlans.remove(getServerKey(queryServer));
 		setData(queryServer);
@@ -148,7 +150,7 @@ public class BambooPlansForm extends JPanel {
 				if (!serverPlans.containsKey(key)) {
 					Collection<BambooPlan> plans = null;
 					try {
-						plans = BambooServerFactory.getBambooServerFacade().getPlanList(server);
+						plans = bambooServerFacade.getPlanList(server);
 					} catch (ServerPasswordNotProvidedException e) {
 
 					}

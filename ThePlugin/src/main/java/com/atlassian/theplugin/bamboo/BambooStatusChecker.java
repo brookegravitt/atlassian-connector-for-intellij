@@ -24,11 +24,15 @@ public final class BambooStatusChecker implements SchedulableComponent {
 
 	private final UIActionScheduler actionScheduler;
 	private final PluginConfiguration configuration;
+	private final BambooServerFacade bambooServerFacade;
 
 
-	public BambooStatusChecker(UIActionScheduler actionScheduler, PluginConfiguration configuration) {
+	public BambooStatusChecker(UIActionScheduler actionScheduler,
+							   PluginConfiguration configuration,
+							   BambooServerFacade bambooServerFacade) {
 		this.actionScheduler = actionScheduler;
 		this.configuration = configuration;
+		this.bambooServerFacade = bambooServerFacade;
 	}
 
 	public void registerListener(BambooStatusListener listener) {
@@ -53,7 +57,7 @@ public final class BambooStatusChecker implements SchedulableComponent {
             for (Server server : retrieveEnabledBambooServers()) {
                         try {
                             newServerBuildsStatus.addAll(
-                                    BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults(server));
+                                    bambooServerFacade.getSubscribedPlansResults(server));
                         } catch (ServerPasswordNotProvidedException exception) {
                             actionScheduler.invokeLater(new MissingPasswordHandler());
                         }

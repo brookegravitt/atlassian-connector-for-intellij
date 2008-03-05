@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.ServerType;
+import com.atlassian.theplugin.bamboo.BambooServerFacade;
 import com.atlassian.theplugin.configuration.*;
 import com.atlassian.theplugin.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.crucible.api.CrucibleException;
@@ -38,10 +39,14 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
 
 	private transient PluginConfiguration localConfigCopy;
 	private final CrucibleServerFacade crucibleServerFacade;
+	private final BambooServerFacade bambooServerFacade;
 
-	public ServerConfigPanel(ServerTreePanel serverTreePanel, CrucibleServerFacade crucibleServerFacade) {
+	public ServerConfigPanel(ServerTreePanel serverTreePanel,
+							 CrucibleServerFacade crucibleServerFacade,
+							 BambooServerFacade bambooServerFacade) {
 		this.serverTreePanel = serverTreePanel;
 		this.crucibleServerFacade = crucibleServerFacade;
+		this.bambooServerFacade = bambooServerFacade;
 		/* required due to circular dependency unhandled by pico */
 		this.serverTreePanel.setServerConfigPanel(this);
 		initLayout();
@@ -97,7 +102,7 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
         if (!serverPanels.containsKey(serverType)) {
             switch (serverType) {
                 case BAMBOO_SERVER:
-                    serverPanels.put(ServerType.BAMBOO_SERVER, new BambooServerConfigForm());
+                    serverPanels.put(ServerType.BAMBOO_SERVER, new BambooServerConfigForm(bambooServerFacade));
                     break;
                 case CRUCIBLE_SERVER:
                     serverPanels.put(ServerType.CRUCIBLE_SERVER, new GenericServerConfigForm(new ConnectionTester() {
