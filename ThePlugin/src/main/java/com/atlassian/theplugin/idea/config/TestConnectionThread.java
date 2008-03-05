@@ -24,38 +24,16 @@ public class TestConnectionThread extends Thread {
 		this.password = password;
 	}
 
-//
-//	interface X {
-//		void testConnection() throws BambooLoginException;
-//	}
-//
-//
-//	public void run1() {
-//		run(new X() {
-//
-//			public void testConnection() throws BambooLoginException {
-//				BambooServerFactory.getBambooServerFacade().testServerConnection(url, userName, password);
-//			}
-//		});
-//	}
-//
-//	public void run2() {
-//		run(new X() {
-//
-//			public void testConnection() throws BambooLoginException {
-//				BambooServerFactory.getBambooServerFacade().testServerConnection(url, userName, password);
-//			}
-//		});
-//	}
-
-	public void run(/*X server*/) {
+	/**
+	 * Runs test connection method on a ConnectionTester and shows MessageBox with result.
+	 * That method should not be used directly but using 'start' method on a thread object. 
+	 */
+	public void run() {
 
 		isRunning = true;
 
 		try {
-			//server.testConnection();
 			connectionTester.testConnection(userName, password, url);
-			//BambooServerFactory.getBambooServerFacade().testServerConnection(url, userName, password);
 			showSuccessMessage();
 		} catch (ThePluginException e) {
 			if (!interrupted) {

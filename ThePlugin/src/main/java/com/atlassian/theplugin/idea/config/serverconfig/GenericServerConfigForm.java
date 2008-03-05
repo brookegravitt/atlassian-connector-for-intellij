@@ -191,9 +191,11 @@ public class GenericServerConfigForm extends JComponent implements ServerPanel {
 		}
 
 		public void actionPerformed(ActionEvent e) {
+
 			Task.Modal testConnectionTask =	new TestConnectionTask(
 					IdeaHelper.getCurrentProject(), "Testing Connection", true, connectionTester);
 			testConnectionTask.setCancelText("Stop");
+
 			ProgressManager.getInstance().run(testConnectionTask);
 		}
 
