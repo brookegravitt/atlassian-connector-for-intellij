@@ -15,8 +15,6 @@ import java.util.*;
 import java.util.List;
 
 public class BambooPlansForm extends JPanel {
-	private static final int VISIBLE_ROW_COUNT = 4;
-
 	private JCheckBox cbUseFavuriteBuilds;
 	private JList list;
 	private DefaultListModel model;
@@ -66,7 +64,6 @@ public class BambooPlansForm extends JPanel {
 		model = new DefaultListModel();
 		list = new JList(model);
 		list.setCellRenderer(new PlanListCellRenderer());
-		list.setVisibleRowCount(VISIBLE_ROW_COUNT);
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		scrollPane1.setViewportView(list);
 		list.addMouseListener(new MouseAdapter() {
@@ -133,6 +130,8 @@ public class BambooPlansForm extends JPanel {
 	}
 
 	public void setData(final Server server) {
+		queryServer = new ServerBean(server);
+
 		cbUseFavuriteBuilds.setEnabled(false);
 		list.setEnabled(false);
 		if (isUseFavourite != null) {
@@ -143,7 +142,7 @@ public class BambooPlansForm extends JPanel {
 		}
 		model.removeAllElements();
 		model.addElement("  Waiting for server plans...");
-		queryServer = server;
+
 		new Thread(new Runnable() {
 			public void run() {
 				String key = getServerKey(server);
