@@ -5,7 +5,7 @@ import com.atlassian.theplugin.bamboo.MissingPasswordHandler;
 import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
-import com.atlassian.theplugin.crucible.CrucibleServerFactory;
+import com.atlassian.theplugin.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.crucible.CrucibleStatusListener;
 import com.atlassian.theplugin.crucible.ReviewDataInfo;
 import com.atlassian.theplugin.crucible.api.CrucibleLoginException;
@@ -35,9 +35,11 @@ public final class CrucibleStatusChecker implements SchedulableComponent {
 	//private static final Category LOGGER = Logger.getInstance(PluginStatusBarToolTip.class);
 	private final List<CrucibleStatusListener> listenerList = new ArrayList<CrucibleStatusListener>();
 	private final PluginConfiguration pluginConfiguration;
+	private final CrucibleServerFacade crucibleServerFacade;
 
-	public CrucibleStatusChecker(PluginConfiguration pluginConfiguration) {
+	public CrucibleStatusChecker(PluginConfiguration pluginConfiguration, CrucibleServerFacade crucibleServerFacade) {
 		this.pluginConfiguration = pluginConfiguration;
+		this.crucibleServerFacade = crucibleServerFacade;
 	}
 
 	public void registerListener(CrucibleStatusListener listener) {
@@ -62,7 +64,7 @@ public final class CrucibleStatusChecker implements SchedulableComponent {
             for (Server server : retrieveEnabledCrucibleServers()) {
                                 try {
                                     reviews.addAll(
-                                            CrucibleServerFactory.getCrucibleServerFacade().getActiveReviewsForUser(server));
+                                            crucibleServerFacade.getActiveReviewsForUser(server));
                                 } catch (ServerPasswordNotProvidedException exception) {
                                     ApplicationManager.getApplication().invokeLater(
                                             new MissingPasswordHandler(), ModalityState.defaultModalityState());

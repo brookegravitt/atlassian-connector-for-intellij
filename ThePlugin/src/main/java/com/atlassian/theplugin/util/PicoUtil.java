@@ -10,6 +10,7 @@ import com.atlassian.theplugin.idea.config.serverconfig.BambooGeneralForm;
 import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
 import com.atlassian.theplugin.idea.config.serverconfig.ServerTreePanel;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
+import com.atlassian.theplugin.crucible.CrucibleServerFacadeImpl;
 import org.picocontainer.MutablePicoContainer;
 
 public final class PicoUtil {
@@ -29,6 +30,7 @@ public final class PicoUtil {
 			BambooGeneralForm.class,
 			GeneralConfigPanel.class,
 			ServerTreePanel.class,
+			CrucibleServerFacadeImpl.class,
 	};
 
 	public static void populatePicoContainer(MutablePicoContainer pico) {
