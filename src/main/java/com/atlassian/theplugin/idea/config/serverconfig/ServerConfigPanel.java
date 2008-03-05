@@ -2,7 +2,7 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.ServerType;
 import com.atlassian.theplugin.configuration.*;
-import com.atlassian.theplugin.crucible.CrucibleServerFactory;
+import com.atlassian.theplugin.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.crucible.api.CrucibleException;
 import com.atlassian.theplugin.exception.ThePluginException;
 import com.atlassian.theplugin.idea.config.ContentPanel;
@@ -37,9 +37,11 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
 	private Map<ServerType, ServerPanel> serverPanels = new HashMap<ServerType, ServerPanel>();
 
 	private transient PluginConfiguration localConfigCopy;
+	private final CrucibleServerFacade crucibleServerFacade;
 
-	public ServerConfigPanel(ServerTreePanel serverTreePanel) {
+	public ServerConfigPanel(ServerTreePanel serverTreePanel, CrucibleServerFacade crucibleServerFacade) {
 		this.serverTreePanel = serverTreePanel;
+		this.crucibleServerFacade = crucibleServerFacade;
 		/* required due to circular dependency unhandled by pico */
 		this.serverTreePanel.setServerConfigPanel(this);
 		initLayout();
@@ -102,8 +104,7 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
                         public void testConnection(String username, String password, String server)
 								throws ThePluginException {
                             try {
-                                CrucibleServerFactory.getCrucibleServerFacade()
-                                        .testServerConnection(server, username, password);
+                                crucibleServerFacade.testServerConnection(server, username, password);
                             } catch (CrucibleException e) {
                                 throw new ThePluginException(e.getMessage());
                             }

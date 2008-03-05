@@ -27,7 +27,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 
 		crucibleSessionMock = createMock(CrucibleSession.class);
 
-		facade = CrucibleServerFactory.getCrucibleServerFacade();
+		facade = new CrucibleServerFacadeImpl();
 
 		try {
 			Field f = CrucibleServerFacadeImpl.class.getDeclaredField("sessions");
