@@ -19,7 +19,7 @@ import java.util.*;
  * Time: 5:12:27 PM
  */
 public class BambooServerFacadeImpl implements BambooServerFacade {
-	private Map<String, BambooSession> sessions = new HashMap<String, BambooSession>();
+	private Map<Server, BambooSession> sessions = new HashMap<Server, BambooSession>();
 
 	private static final Category LOG = Logger.getInstance(BambooServerFacadeImpl.class);
 
@@ -27,12 +27,12 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 	}
 
 	private BambooSession getSession(Server server) throws BambooLoginException {
-
-		BambooSession session = sessions.get(server.getUrlString());
+		// @todo old server will stay on map - remove them !!!
+		BambooSession session = sessions.get(server);
 		if (session == null) {
 			session = new BambooSession(server.getUrlString());
 			session.login(server.getUserName(), server.getPasswordString().toCharArray());
-			sessions.put(server.getUrlString(), session);
+			sessions.put(server, session);
 		}
 		return session;
 	}
@@ -77,25 +77,20 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 	 * @throws ServerPasswordNotProvidedException
 	 *          when invoked for Server that has not had the password set yet
 	 */
-	public Collection<BambooPlan> getPlanList(Server bambooServer) throws ServerPasswordNotProvidedException {
-		try {
-			BambooSession api = getSession(bambooServer);
-			List<BambooPlan> plans = api.listPlanNames();
-			List<String> favPlans = api.getFavouriteUserPlans();
+	public Collection<BambooPlan> getPlanList(Server bambooServer) throws ServerPasswordNotProvidedException, BambooException {
+		BambooSession api = getSession(bambooServer);
+		List<BambooPlan> plans = api.listPlanNames();
+		List<String> favPlans = api.getFavouriteUserPlans();
 
-			for (String fav : favPlans) {
-				for (BambooPlan plan : plans) {
-					if (plan.getPlanKey().equalsIgnoreCase(fav)) {
-						((BambooPlanData) plan).setFavourite(true);
-						break;
-					}
+		for (String fav : favPlans) {
+			for (BambooPlan plan : plans) {
+				if (plan.getPlanKey().equalsIgnoreCase(fav)) {
+					((BambooPlanData) plan).setFavourite(true);
+					break;
 				}
 			}
-			return plans;
-		} catch (BambooException e) {
-			LOG.info("Bamboo exception: " + e.getMessage());
-			return null;
 		}
+		return plans;
 	}
 
 	/**
@@ -132,21 +127,28 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 			connectionErrorMessage = e.getMessage();
 		}
 
-		Collection<BambooPlan> plansForServer = getPlanList(bambooServer);
+		Collection<BambooPlan> plansForServer = null;
+		try {
+			plansForServer = getPlanList(bambooServer);
+		} catch (BambooException e) {
+			// can go further, no disabled info will be available
+		}
 
 		if (bambooServer.getUseFavourite()) {
 			if (plansForServer != null) {
-				for (BambooPlan bambooPlan : plansForServer) {
-					if (bambooPlan.isFavourite()) {
-						if (api != null && api.isLoggedIn()) {
-							BambooBuild buildInfo = api.getLatestBuildForPlan(bambooPlan.getPlanKey());
-							((BambooBuildInfo) buildInfo).setEnabled(bambooPlan.isEnabled());
-							builds.add(buildInfo);
-						} else {
-							builds.add(constructBuildErrorInfo(
-									bambooServer.getUrlString(),
-									bambooPlan.getPlanKey(),
-									connectionErrorMessage));
+				if (plansForServer != null) {
+					for (BambooPlan bambooPlan : plansForServer) {
+						if (bambooPlan.isFavourite()) {
+							if (api != null && api.isLoggedIn()) {
+								BambooBuild buildInfo = api.getLatestBuildForPlan(bambooPlan.getPlanKey());
+								((BambooBuildInfo) buildInfo).setEnabled(bambooPlan.isEnabled());
+								builds.add(buildInfo);
+							} else {
+								builds.add(constructBuildErrorInfo(
+										bambooServer.getUrlString(),
+										bambooPlan.getPlanKey(),
+										connectionErrorMessage));
+							}
 						}
 					}
 				}
@@ -156,9 +158,11 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 				if (api != null && api.isLoggedIn()) {
 					BambooBuild buildInfo = api.getLatestBuildForPlan(plan.getPlanId());
 					((BambooBuildInfo) buildInfo).setEnabled(true);
-					for (BambooPlan bambooPlan : plansForServer) {
-						if (plan.getPlanId().equals(bambooPlan.getPlanKey())) {
-							((BambooBuildInfo) buildInfo).setEnabled(bambooPlan.isEnabled());
+					if (plansForServer != null) {
+						for (BambooPlan bambooPlan : plansForServer) {
+							if (plan.getPlanId().equals(bambooPlan.getPlanKey())) {
+								((BambooBuildInfo) buildInfo).setEnabled(bambooPlan.isEnabled());
+							}
 						}
 					}
 					builds.add(buildInfo);

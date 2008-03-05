@@ -10,7 +10,6 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import javax.swing.*;
-import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
@@ -111,86 +110,6 @@ public class BambooServerConfigurationFormTest extends TestCase {
 
 	}
 
-	@SuppressWarnings({ "RedundantStringConstructorCall" })
-	public void testBambooFormIsModified() throws Exception {
-		ServerBean inServerBean = createServerBean();
-
-		bambooPluginConfigurationForm.setData(inServerBean);
-
-		ServerBean outServerBean = createServerBean();
-
-		assertFalse(bambooPluginConfigurationForm.isModified());
-
-		/* with arraylist set */
-
-	
-		outServerBean.getSubscribedPlansData().add(new SubscribedPlanBean() {
-			{
-				setPlanId("Plan-1");
-			}
-		});
-
-		bambooPluginConfigurationForm.setData(outServerBean);
-		assertFalse(bambooPluginConfigurationForm.isModified());
-
-		/* equals vs == */
-
-		outServerBean.setName(new String("name"));
-		outServerBean.setPasswordString(new String("password"), true);
-		outServerBean.setUrlString(new String("url"));
-		outServerBean.setUserName(new String("userName"));
-		outServerBean.setSubscribedPlansData(new ArrayList<SubscribedPlanBean>());
-		outServerBean.getSubscribedPlansData().add(new SubscribedPlanBean() {
-			{
-				setPlanId(new String("Plan-1"));
-			}
-		});
-
-
-		bambooPluginConfigurationForm.setData(outServerBean);
-		assertFalse(bambooPluginConfigurationForm.isModified());
-
-		PluginConfigurationFormHelper formHelper = new PluginConfigurationFormHelper(bambooPluginConfigurationForm);
-
-		formHelper.serverName.setText(outServerBean.getName() + "-chg");
-		assertTrue(bambooPluginConfigurationForm.isModified());
-		formHelper.serverName.setText(outServerBean.getName());
-
-		formHelper.serverUrl.setText(outServerBean.getUrlString() + "-chg");
-		assertTrue(bambooPluginConfigurationForm.isModified());
-		formHelper.serverUrl.setText(outServerBean.getUrlString());
-
-		formHelper.username.setText(outServerBean.getUserName() + "-chg");
-		assertTrue(bambooPluginConfigurationForm.isModified());
-		formHelper.username.setText(outServerBean.getUserName());
-
-
-		formHelper.password.setText(outServerBean.getName() + "-chg");
-		assertTrue(bambooPluginConfigurationForm.isModified());
-		formHelper.password.setText(outServerBean.getPasswordString());
-	}
-
-	public void testBambooFormFieldSetting() throws Exception {
-		bambooPluginConfigurationForm.setData(new ServerBean());
-
-		ServerBean outServer = bambooPluginConfigurationForm.getData();
-		assertEquals("", outServer.getName());
-		assertEquals("", outServer.getUrlString());
-		assertEquals("", outServer.getUserName());
-		assertEquals("", outServer.getPasswordString());
-		assertEquals(0, outServer.getSubscribedPlansData().size());
-
-		PluginConfigurationFormHelper helper = new PluginConfigurationFormHelper(bambooPluginConfigurationForm);
-
-		helper.serverName.setText("name");
-		helper.password.setText("password");
-		helper.serverUrl.setText("url");
-		helper.username.setText("userName");
-
-		outServer = bambooPluginConfigurationForm.getData();
-		checkServerBean(outServer);
-		assertEquals(0, outServer.getSubscribedPlansData().size());
-	}
 
 	private static void checkSubscribedPlans(ServerBean server, String[] ids) {
 		assertEquals(ids.length, server.getSubscribedPlansData().size());
@@ -201,8 +120,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 		}
 
 	}
-
-
+	
 	private static ServerBean createServerBean() {
 
 		ServerBean outServer = new ServerBean();
