@@ -33,7 +33,7 @@ public class GenericServerConfigForm extends JComponent implements ServerPanel {
 	private JCheckBox chkPasswordRemember;
 	private JCheckBox cbEnabled;
 
-	private Server originalServer;
+	private transient Server originalServer;
 
 	public GenericServerConfigForm(final ConnectionTester tester) {
 
