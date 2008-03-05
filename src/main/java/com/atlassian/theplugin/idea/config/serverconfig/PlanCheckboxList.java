@@ -68,8 +68,7 @@ public class PlanCheckboxList extends JPanel {
 	private void setModifiedState() {
 		isModified = false;
 		for (int i = 0; i < model.getSize(); i++) {
-			if (((BambooPlanItem) model.getElementAt(i)).isSelected() !=
-					localPlans.get(i).isSelected()) {
+			if (((BambooPlanItem) model.getElementAt(i)).isSelected() != localPlans.get(i).isSelected()) {
 				isModified = true;
 				break;
 			}
