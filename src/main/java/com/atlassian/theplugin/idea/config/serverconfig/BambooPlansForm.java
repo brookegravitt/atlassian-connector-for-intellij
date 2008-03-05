@@ -3,6 +3,7 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 import com.atlassian.theplugin.bamboo.BambooPlan;
 import com.atlassian.theplugin.bamboo.BambooPlanData;
 import com.atlassian.theplugin.bamboo.BambooServerFacade;
+import com.atlassian.theplugin.bamboo.api.BambooException;
 import com.atlassian.theplugin.configuration.*;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -22,11 +23,14 @@ public class BambooPlansForm extends JPanel {
 
 	private boolean isListModified;
 	private Boolean isUseFavourite = null;
+	private Server originalServer;
 	private Server queryServer;
 	private Map<String, List<BambooPlanItem>> serverPlans = new HashMap<String, List<BambooPlanItem>>();
 	private final BambooServerFacade bambooServerFacade;
+	private final ServerPanel serverPanel;
 
-	public BambooPlansForm(BambooServerFacade bambooServerFacade) {
+	public BambooPlansForm(BambooServerFacade bambooServerFacade, ServerPanel serverPanel) {
+		this.serverPanel = serverPanel;
 		this.bambooServerFacade = bambooServerFacade;
 		this.setLayout(new GridLayoutManager(2, 1, new Insets(5, 5, 5, 5), -1, -1));
 		this.setBorder(BorderFactory.createTitledBorder("Build plans"));
@@ -100,11 +104,13 @@ public class BambooPlansForm extends JPanel {
 	}
 
 	private void refreshServerPlans() {
-		if (queryServer.getUseFavourite() != cbUseFavuriteBuilds.isSelected()) {
+		if (originalServer.getUseFavourite() != cbUseFavuriteBuilds.isSelected()) {
 			isUseFavourite = cbUseFavuriteBuilds.isSelected();
 		}
-		serverPlans.remove(getServerKey(queryServer));
-		setData(queryServer);
+		Server server = serverPanel.getData();
+		((ServerBean) server).setSubscribedPlansData(((ServerBean) originalServer).getSubscribedPlansData());
+		serverPlans.remove(getServerKey(originalServer));
+		retrievePlans(server);
 	}
 
 	private void setCheckboxState(int index) {
@@ -119,20 +125,26 @@ public class BambooPlansForm extends JPanel {
 
 	private void setModifiedState() {
 		isListModified = false;
-		List<BambooPlanItem> local = serverPlans.get(getServerKey(queryServer));
+		List<BambooPlanItem> local = serverPlans.get(getServerKey(originalServer));
 		for (int i = 0; i < model.getSize(); i++) {
-			if (((BambooPlanItem) model.getElementAt(i)).isSelected()
-					!= local.get(i).isSelected()) {
-				isListModified = true;
-				break;
+			if (local.get(i) != null) {
+				if (((BambooPlanItem) model.getElementAt(i)).isSelected()
+						!= local.get(i).isSelected()) {
+					isListModified = true;
+					break;
+				}
 			}
 		}
 	}
 
 	public void setData(final Server server) {
-		queryServer = new ServerBean(server);
-
+		originalServer = new ServerBean(server);
 		cbUseFavuriteBuilds.setEnabled(false);
+		retrievePlans(originalServer);
+	}
+
+	private void retrievePlans(final Server server) {
+		queryServer = server;
 		list.setEnabled(false);
 		if (isUseFavourite != null) {
 			cbUseFavuriteBuilds.setSelected(isUseFavourite);
@@ -151,7 +163,7 @@ public class BambooPlansForm extends JPanel {
 					try {
 						plans = bambooServerFacade.getPlanList(server);
 					} catch (ServerPasswordNotProvidedException e) {
-
+					} catch (BambooException e) {
 					}
 					List<BambooPlanItem> plansForServer = new ArrayList<BambooPlanItem>();
 					if (plans != null) {
@@ -229,7 +241,7 @@ public class BambooPlansForm extends JPanel {
 
 	public boolean isModified() {
 		boolean isFavModified = false;
-		if (cbUseFavuriteBuilds.isSelected() != queryServer.getUseFavourite()) {
+		if (cbUseFavuriteBuilds.isSelected() != originalServer.getUseFavourite()) {
 			isFavModified = true;
 		}
 

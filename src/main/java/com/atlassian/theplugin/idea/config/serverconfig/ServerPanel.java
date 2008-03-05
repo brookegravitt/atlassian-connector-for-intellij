@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
+import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerBean;
 
 import javax.swing.*;
@@ -11,5 +12,5 @@ public interface ServerPanel {
 
 	ServerBean getData();
 
-	void setData(ServerBean server);
+	void setData(Server server);
 }

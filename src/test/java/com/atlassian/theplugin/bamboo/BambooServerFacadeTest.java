@@ -187,9 +187,12 @@ public class BambooServerFacadeTest extends TestCase {
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
 
-		Collection<BambooPlan> plans = testedBambooServerFacade.getPlanList(server);
-		assertNull(plans);
-
+		try {
+			testedBambooServerFacade.getPlanList(server);
+			fail();
+		} catch (BambooLoginException e) {
+			// expected exception
+		}
 		mockServer.verify();
 	}
 
