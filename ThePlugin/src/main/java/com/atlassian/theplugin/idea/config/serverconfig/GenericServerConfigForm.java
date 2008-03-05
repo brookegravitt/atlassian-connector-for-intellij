@@ -1,18 +1,23 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.configuration.ServerBean;
-import com.atlassian.theplugin.exception.ThePluginException;
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.config.TestConnectionThread;
 import com.atlassian.theplugin.util.Util;
-import com.intellij.openapi.ui.Messages;
-import static com.intellij.openapi.ui.Messages.showMessageDialog;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.project.Project;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import org.apache.log4j.Category;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import static java.lang.Thread.sleep;
 
 /**
  * Plugin configuration form.
@@ -32,16 +37,7 @@ public class GenericServerConfigForm extends JComponent implements ServerPanel {
 	public GenericServerConfigForm(final ConnectionTester tester) {
 
 		$$$setupUI$$$();
-		testConnection.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					tester.testConnection(username.getText(), String.valueOf(password.getPassword()), serverUrl.getText());
-					showMessageDialog("Connected successfully", "Connection OK", Messages.getInformationIcon());
-				} catch (ThePluginException e1) {
-					showMessageDialog(e1.getMessage(), "Connection Error", Messages.getErrorIcon());
-				}
-			}
-		});
+		testConnection.addActionListener(new TestConnectionListener(tester));
 	}
 
 	public void setData(ServerBean server) {
@@ -182,5 +178,63 @@ public class GenericServerConfigForm extends JComponent implements ServerPanel {
 	 */
 	public JComponent $$$getRootComponent$$$() {
 		return rootComponent;
+	}
+
+	private class TestConnectionListener implements ActionListener {
+
+		private ConnectionTester connectionTester = null;
+
+		public TestConnectionListener(ConnectionTester tester) {
+			connectionTester = tester;
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			Task.Modal testConnectionTask =	new TestConnectionTask(
+					IdeaHelper.getCurrentProject(), "Testing Connection", true, connectionTester);
+			testConnectionTask.setCancelText("Stop");
+			ProgressManager.getInstance().run(testConnectionTask);
+		}
+
+		private class TestConnectionTask extends Task.Modal {
+
+			private TestConnectionThread testConnectionThread = null;
+			private static final int CHECK_CANCEL_INTERVAL = 500;	// miliseconds
+			private final Category log = Category.getInstance(TestConnectionTask.class);
+
+			public TestConnectionTask(Project currentProject, String title, boolean canBeCanceled, ConnectionTester tester) {
+
+				super(currentProject, title, canBeCanceled);
+
+				testConnectionThread = new TestConnectionThread(tester,
+						serverUrl.getText(), username.getText(), String.valueOf(password.getPassword()));
+			}
+
+			public void run(ProgressIndicator indicator) {
+
+				indicator.setText("Connecting...");
+				indicator.setFraction(0);
+				indicator.setIndeterminate(true);
+
+				testConnectionThread.start();
+
+				//System.out.println("X: Connecting...");
+
+				while (testConnectionThread.isRunning()) {
+					try {
+						if (indicator.isCanceled()) {
+							testConnectionThread.setInterrupted();
+							//t.interrupt();
+							//System.out.println("X: Interupting...");
+							break;
+						} else {
+							sleep(CHECK_CANCEL_INTERVAL);
+						}
+					} catch (InterruptedException e) {
+						log.info(e.getMessage());
+						//System.out.println("X: Interupting2...");
+					}
+				}
+			}
+		}
 	}
 }
