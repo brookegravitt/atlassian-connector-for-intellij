@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
+import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.config.TestConnectionThread;
@@ -32,7 +33,7 @@ public class GenericServerConfigForm extends JComponent implements ServerPanel {
 	private JCheckBox chkPasswordRemember;
 	private JCheckBox cbEnabled;
 
-	private transient ServerBean server;
+	private Server originalServer;
 
 	public GenericServerConfigForm(final ConnectionTester tester) {
 
@@ -40,8 +41,8 @@ public class GenericServerConfigForm extends JComponent implements ServerPanel {
 		testConnection.addActionListener(new TestConnectionListener(tester));
 	}
 
-	public void setData(ServerBean server) {
-		this.server = new ServerBean(server);
+	public void setData(Server server) {
+		this.originalServer = new ServerBean(server);
 
 		serverName.setText(server.getName());
 		serverUrl.setText(server.getUrlString());
@@ -52,9 +53,10 @@ public class GenericServerConfigForm extends JComponent implements ServerPanel {
 	}
 
 	public ServerBean getData() {
-
 		serverUrl.setText(Util.addHttpPrefix(serverUrl.getText()));
 
+		ServerBean server = new ServerBean();
+		server.setUid(originalServer.getUid());
 		server.setName(serverName.getText());
 		server.setUrlString(serverUrl.getText());
 		server.setUserName(username.getText());
@@ -66,27 +68,27 @@ public class GenericServerConfigForm extends JComponent implements ServerPanel {
 	public boolean isModified() {
 		boolean isModified = false;
 
-		if (server != null) {
-			if (chkPasswordRemember.isSelected() != server.getShouldPasswordBeStored()) {
+		if (originalServer != null) {
+			if (chkPasswordRemember.isSelected() != originalServer.getShouldPasswordBeStored()) {
 				return true;
 			}
 			if (serverName.getText() != null
-					? !serverName.getText().equals(server.getName()) : server.getName() != null) {
+					? !serverName.getText().equals(originalServer.getName()) : originalServer.getName() != null) {
 				return true;
 			}
-			if (cbEnabled.isSelected() != server.getEnabled()) {
+			if (cbEnabled.isSelected() != originalServer.getEnabled()) {
 				return true;
 			}
 			if (serverUrl.getText() != null
-					? !serverUrl.getText().equals(server.getUrlString()) : server.getUrlString() != null) {
+					? !serverUrl.getText().equals(originalServer.getUrlString()) : originalServer.getUrlString() != null) {
 				return true;
 			}
 			if (username.getText() != null
-					? !username.getText().equals(server.getUserName()) : server.getUserName() != null) {
+					? !username.getText().equals(originalServer.getUserName()) : originalServer.getUserName() != null) {
 				return true;
 			}
 			String pass = String.valueOf(password.getPassword());
-			if (!pass.equals(server.getPasswordString())) {
+			if (!pass.equals(originalServer.getPasswordString())) {
 				return true;
 			}
 
