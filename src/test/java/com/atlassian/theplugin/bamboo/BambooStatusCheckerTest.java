@@ -22,7 +22,8 @@ public class BambooStatusCheckerTest extends TestCase {
 	private static final String USER_NAME = "someUser";
 	private static final String PASSWORD = "somePassword";
 	private static final String PLAN_ID = "TP-DEF"; // always the same - mock does the logic
-	
+	private final BambooServerFacade bambooServerFacade = new BambooServerFacadeImpl();
+
 	public BambooStatusCheckerTest(String name) {
         super(name);
     }
@@ -39,12 +40,12 @@ public class BambooStatusCheckerTest extends TestCase {
 		PluginConfigurationBean config = createBambooTestConfiguration();
 		ConfigurationFactory.setConfiguration(config);
 
-		BambooStatusChecker checker = new BambooStatusChecker(null, config);
+		BambooStatusChecker checker = new BambooStatusChecker(null, config, bambooServerFacade);
 		assertEquals(60000, checker.getInterval());
 	}
 
 	public void testNewTimerTask() {
-		BambooStatusChecker checker = new BambooStatusChecker(null, null);
+		BambooStatusChecker checker = new BambooStatusChecker(null, null, bambooServerFacade);
 		TimerTask t1 = checker.newTimerTask();
 		TimerTask t2 = checker.newTimerTask();
 
@@ -58,7 +59,7 @@ public class BambooStatusCheckerTest extends TestCase {
 		ConfigurationFactory.setConfiguration(config);
 
 		EasyInvoker invoker = new EasyInvoker();
-		BambooStatusChecker checker = new BambooStatusChecker(invoker, config);
+		BambooStatusChecker checker = new BambooStatusChecker(invoker, config, bambooServerFacade);
 
 		TimerTask task = checker.newTimerTask();
 		task.run();
