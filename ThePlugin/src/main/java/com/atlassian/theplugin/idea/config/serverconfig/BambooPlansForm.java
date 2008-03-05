@@ -225,9 +225,6 @@ public class BambooPlansForm extends JPanel {
 	}
 
 	public boolean isModified() {
-		System.out.println("cbUseFavuriteBuilds = " + cbUseFavuriteBuilds.isSelected());
-		System.out.println("queryServer = " + queryServer.getUseFavourite());
-
 		boolean isFavModified = false;
 		if (cbUseFavuriteBuilds.isSelected() != queryServer.getUseFavourite()) {
 			isFavModified = true;
