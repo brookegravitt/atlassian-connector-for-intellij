@@ -34,7 +34,9 @@ public class TestConnectionThread extends Thread {
 
 		try {
 			connectionTester.testConnection(userName, password, url);
-			showSuccessMessage();
+			if (!interrupted) {
+				showSuccessMessage();
+			}
 		} catch (ThePluginException e) {
 			if (!interrupted) {
 				showFailMessage(e.getMessage());
