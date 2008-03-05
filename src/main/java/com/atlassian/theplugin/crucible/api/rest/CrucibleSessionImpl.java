@@ -328,7 +328,7 @@ public class CrucibleSessionImpl implements CrucibleSession {
 		method.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
 		method.addRequestHeader(new Header("Authorization", getAuthHeaderValue()));
 
-		XMLOutputter serializer = new XMLOutputter(Format.getCompactFormat());
+		XMLOutputter serializer = new XMLOutputter(Format.getPrettyFormat());
 		method.setRequestEntity(new StringRequestEntity(serializer.outputString(request), "application/xml", "UTF-8"));
 
 		client.executeMethod(method);
