@@ -52,11 +52,10 @@ public class GenericServerConfigForm extends JComponent implements ServerPanel {
 		cbEnabled.setSelected(server.getEnabled());
 	}
 
-	public ServerBean getData() {
+	public Server getData() {
 		serverUrl.setText(Util.addHttpPrefix(serverUrl.getText()));
 
-		ServerBean server = new ServerBean();
-		server.setUid(originalServer.getUid());
+		Server server = new ServerBean(originalServer);
 		server.setName(serverName.getText());
 		server.setUrlString(serverUrl.getText());
 		server.setUserName(username.getText());

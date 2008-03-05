@@ -3,7 +3,6 @@ package com.atlassian.theplugin.configuration;
 import com.intellij.util.xmlb.annotations.Transient;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Bean storing information about Bamboo servers etc.<p>
@@ -29,7 +28,7 @@ public class BambooConfigurationBean extends AbstractConfigurationBean {
 	@Override
 	@Transient
 	public void storeServer(Server server) {
-		ServerBean foundServer = (ServerBean) getServer(server);
+		Server foundServer = getServer(server);
 		if (foundServer == null) {
 			servers.add((ServerBean) server);
 		} else {
@@ -38,12 +37,8 @@ public class BambooConfigurationBean extends AbstractConfigurationBean {
 			foundServer.setUrlString(server.getUrlString());
 			foundServer.setUserName(server.getUserName());
 			foundServer.setEnabled(server.getEnabled());
-			foundServer.setUseFavourite(server.getUseFavourite());
-			List<SubscribedPlanBean> subscribedPlans = new ArrayList<SubscribedPlanBean>();
-			for (SubscribedPlan subPlan : server.getSubscribedPlans()) {
-				subscribedPlans.add((SubscribedPlanBean) subPlan);
-			}
-			foundServer.setSubscribedPlansData(subscribedPlans);
+			foundServer.setUseFavourite(server.getUseFavourite());			
+			foundServer.setSubscribedPlans(new ArrayList<SubscribedPlan>(server.getSubscribedPlans()));
 		}
 	}
 

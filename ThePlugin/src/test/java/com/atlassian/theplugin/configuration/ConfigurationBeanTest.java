@@ -27,7 +27,7 @@ public class ConfigurationBeanTest extends TestCase {
         assertTrue(config.getServers().contains(server2));
 
         // now disable and try to retrieve
-        ServerBean disabledServer = new ServerBean(server2);
+        Server disabledServer = new ServerBean(server2);
         disabledServer.setEnabled(false);
         config.storeServer(disabledServer);
         assertEquals(1, config.getEnabledServers().size());
@@ -46,7 +46,7 @@ public class ConfigurationBeanTest extends TestCase {
 
     public void testPersistence() throws Exception {
         // first, test a single ServerBean
-        ServerBean server = new ServerBean();
+        Server server = new ServerBean();
         server.setUrlString("http://www.poland.pl");
         server.setUserName("sopot");
         server.setPasswordString("gdansk", true);
@@ -57,7 +57,7 @@ public class ConfigurationBeanTest extends TestCase {
         List plans = new ArrayList();
         SubscribedPlanBean plan = new SubscribedPlanBean("FOO-TESTS");
         plans.add(plan);
-        server.setSubscribedPlansData(plans);
+        server.setSubscribedPlans(plans);
         e = XmlSerializer.serialize(server);
         assertEquals(server, XmlSerializer.deserialize(e, ServerBean.class));
 
@@ -67,10 +67,10 @@ public class ConfigurationBeanTest extends TestCase {
         e = XmlSerializer.serialize(bambooConfig);
         assertEquals(bambooConfig, XmlSerializer.deserialize(e, BambooConfigurationBean.class));
 
-        List<SubscribedPlanBean> plans2 = new ArrayList<SubscribedPlanBean>(plans);
-        ServerBean server2 = new ServerBean(server);
+        List<SubscribedPlan> plans2 = new ArrayList<SubscribedPlan>(plans);
+        Server server2 = new ServerBean(server);
         plans2.add(new SubscribedPlanBean("FOO-TEST2"));
-        server2.setSubscribedPlansData(plans2);
+        server2.setSubscribedPlans(plans2);
         bambooConfig.storeServer(server2);
         Collection<Server> servers = bambooConfig.getServers();
         assertEquals(server2.getSubscribedPlans().size(), servers.iterator().next().getSubscribedPlans().size());

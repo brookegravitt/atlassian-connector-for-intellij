@@ -85,7 +85,7 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 	}
 
 	public String addServer(ServerType serverType) {
-		ServerBean newServer = new ServerBean();
+		Server newServer = new ServerBean();
 
 		Collection<Server> servers = pluginConfiguration.getProductServers(serverType).getServers();
 		newServer.setName(ServerNameUtil.suggestNewName(servers));

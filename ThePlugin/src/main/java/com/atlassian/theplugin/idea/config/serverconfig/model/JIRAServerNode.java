@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.config.serverconfig.model;
 
-import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.ServerType;
+import com.atlassian.theplugin.configuration.Server;
 
 /**
  * Represents JIRA Server in servers JTree
@@ -9,7 +9,7 @@ import com.atlassian.theplugin.ServerType;
 public class JIRAServerNode extends ServerNode {
     static final long serialVersionUID = -6944317541000292469L;
 
-    public JIRAServerNode(ServerBean aServer) {
+    public JIRAServerNode(Server aServer) {
 		super(aServer);
 	}
 

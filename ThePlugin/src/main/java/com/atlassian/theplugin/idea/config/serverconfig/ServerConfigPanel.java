@@ -195,11 +195,11 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
     }
 
 	public void storeServer(ServerNode serverNode) {
-        ServerBean server = serverNode.getServer();
-        ServerBean tempValue = serverPanels.get(serverNode.getServerType()).getData();
+        Server server = serverNode.getServer();
+        Server tempValue = serverPanels.get(serverNode.getServerType()).getData();
         switch (serverNode.getServerType()) {
             case BAMBOO_SERVER:
-                server.setSubscribedPlansData(tempValue.getSubscribedPlansData());
+                server.setSubscribedPlans(tempValue.getSubscribedPlans());
                 break;
             default:
                 break;
@@ -207,11 +207,11 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
         server.setName(tempValue.getName());
         server.setUserName(tempValue.getUserName());
         server.setPasswordString(tempValue.getPasswordString(), tempValue.getShouldPasswordBeStored());
-
+		server.setEnabled(tempValue.getEnabled());
         server.setUrlString(tempValue.getUrlString());
     }
 
-	public void editServer(ServerType serverType, ServerBean server) {
+	public void editServer(ServerType serverType, Server server) {
         editPaneCardLayout.show(editPane, serverType.toString());
         serverPanels.get(serverType).setData(server);
     }

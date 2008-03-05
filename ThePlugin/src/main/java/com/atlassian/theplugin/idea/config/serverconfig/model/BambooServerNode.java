@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.config.serverconfig.model;
 
-import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.ServerType;
+import com.atlassian.theplugin.configuration.Server;
 
 /**
  * Represents Bambbo server on servers JTree
@@ -12,7 +12,7 @@ import com.atlassian.theplugin.ServerType;
 public class BambooServerNode extends ServerNode {
 	static final long serialVersionUID = -6944317541000292469L;
 	
-	public BambooServerNode(ServerBean aServer) {
+	public BambooServerNode(Server aServer) {
 		super(aServer);
 	}
 

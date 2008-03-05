@@ -143,13 +143,13 @@ public class BambooStatusCheckerTest extends TestCase {
 		server.setIsConfigInitialized(true);
 		servers.add(server);
 
-		ArrayList<SubscribedPlanBean> plans = new ArrayList<SubscribedPlanBean>();
+		ArrayList<SubscribedPlan> plans = new ArrayList<SubscribedPlan>();
 
-		SubscribedPlanBean plan = new SubscribedPlanBean();
+		SubscribedPlan plan = new SubscribedPlanBean();
 		plan.setPlanId(PLAN_ID);
 		plans.add(plan);
 
-		server.setSubscribedPlansData(plans);
+		server.setSubscribedPlans(plans);
 
 		config.getBambooConfigurationData().setServersData(servers);
 
