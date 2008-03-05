@@ -23,9 +23,10 @@ public class PlanListCellRenderer implements ListCellRenderer {
 
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-		JLabel label = new JLabel();
-		JCheckBox checkBox = new JCheckBox(pi.getPlan().getPlanKey());
-		label.setIcon(pi.getPlan().isEnabled() ? (pi.getPlan().isFavourite() ? FAVOURITE_ON_ICON : FAVOURITE_OFF_ICON) : DISABLED_ICON);
+		label = new JLabel();
+		checkBox = new JCheckBox(pi.getPlan().getPlanKey());
+		label.setIcon(pi.getPlan().isEnabled()
+				? (pi.getPlan().isFavourite() ? FAVOURITE_ON_ICON : FAVOURITE_OFF_ICON) : DISABLED_ICON);
 		checkBox.setText(pi.getPlan().getPlanKey());
 		checkBox.setSelected(pi.isSelected());
 		panel.add(label);
