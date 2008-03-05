@@ -26,11 +26,10 @@ public class BambooServerConfigForm extends JComponent implements ServerPanel {
 	private JButton testConnection;
 	private JCheckBox chkPasswordRemember;
 	private JCheckBox cbEnabled;
-	private JCheckBox cbUseFavuriteBuilds;
 	private JPanel buildsPanel;
 
 	private transient ServerBean server;
-	private PlanCheckboxList planList;
+	private BambooPlansForm planList;
 
 	public BambooServerConfigForm() {
 
@@ -48,16 +47,10 @@ public class BambooServerConfigForm extends JComponent implements ServerPanel {
 				}
 			}
 		});
-		cbUseFavuriteBuilds.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				planList.setEnabled(!cbUseFavuriteBuilds.isSelected());
-				getPlansFromServer(server);
-			}
-		});
 	}
 
 	private void getPlansFromServer(ServerBean aServer) {
-		planList.setBuilds(aServer);
+		planList.setData(aServer);
 	}
 
 	public void setData(ServerBean aServer) {
@@ -69,22 +62,22 @@ public class BambooServerConfigForm extends JComponent implements ServerPanel {
 		chkPasswordRemember.setSelected(aServer.getShouldPasswordBeStored());
 		password.setText(aServer.getPasswordString());
 		cbEnabled.setSelected(aServer.getEnabled());
-		cbUseFavuriteBuilds.setSelected(aServer.getUseFavourite());
 		planList.setEnabled(!aServer.getUseFavourite());
 		getPlansFromServer(server);
 	}
 
 	public ServerBean getData() {
-
 		serverUrl.setText(Util.addHttpPrefix(serverUrl.getText()));
-
 		server.setName(serverName.getText());
 		server.setUrlString(serverUrl.getText());
 		server.setUserName(username.getText());
 		server.setPasswordString(String.valueOf(password.getPassword()), chkPasswordRemember.isSelected());
 		server.setEnabled(cbEnabled.isSelected());
-		server.setUseFavourite(cbUseFavuriteBuilds.isSelected());
-		server.setSubscribedPlansData(planList.getSubscribedPlans());
+
+		ServerBean s = planList.getData();
+		server.setSubscribedPlansData(s.getSubscribedPlansData());
+		server.setUseFavourite(s.getUseFavourite());
+
 		return server;
 	}
 
@@ -96,9 +89,6 @@ public class BambooServerConfigForm extends JComponent implements ServerPanel {
 				return true;
 			}
 			if (cbEnabled.isSelected() != server.getEnabled()) {
-				return true;
-			}
-			if (cbUseFavuriteBuilds.isSelected() != server.getUseFavourite()) {
 				return true;
 			}
 			if (serverName.getText() != null
@@ -181,18 +171,10 @@ public class BambooServerConfigForm extends JComponent implements ServerPanel {
 		testConnection.setDisplayedMnemonicIndex(0);
 		panel1.add(testConnection, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		buildsPanel = new JPanel();
-		buildsPanel.setLayout(new GridLayoutManager(2, 1, new Insets(5, 5, 5, 5), -1, -1));
+		buildsPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
 		panel1.add(buildsPanel, new GridConstraints(6, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-		buildsPanel.setBorder(BorderFactory.createTitledBorder("Build plans"));
-		cbUseFavuriteBuilds = new JCheckBox();
-		cbUseFavuriteBuilds.setText("Use Favourite Builds For Server");
-		cbUseFavuriteBuilds.setMnemonic('F');
-		cbUseFavuriteBuilds.setDisplayedMnemonicIndex(4);
-		buildsPanel.add(cbUseFavuriteBuilds, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-		final JScrollPane scrollPane1 = new JScrollPane();
-		buildsPanel.add(scrollPane1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-		planList = new PlanCheckboxList();
-		scrollPane1.setViewportView(planList);
+		planList = new BambooPlansForm();
+		buildsPanel.add(planList, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
 		chkPasswordRemember = new JCheckBox();
 		chkPasswordRemember.setSelected(true);
 		chkPasswordRemember.setText("Remember password");
