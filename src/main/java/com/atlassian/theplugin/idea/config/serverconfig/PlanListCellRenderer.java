@@ -24,9 +24,9 @@ public class PlanListCellRenderer implements ListCellRenderer {
 		if (value instanceof BambooPlanItem) {
 			BambooPlanItem pi = (BambooPlanItem) value;
 			JCheckBox checkBox = new JCheckBox(pi.getPlan().getPlanKey());
-			label.setIcon(pi.getPlan().isEnabled() ?
-					(pi.getPlan().isFavourite() ? FAVOURITE_ON_ICON : FAVOURITE_OFF_ICON) :
-					DISABLED_ICON);
+			label.setIcon(pi.getPlan().isEnabled()
+					? (pi.getPlan().isFavourite() ? FAVOURITE_ON_ICON : FAVOURITE_OFF_ICON) 
+					: DISABLED_ICON);
 			checkBox.setText(pi.getPlan().getPlanKey());
 			checkBox.setSelected(pi.isSelected());
 			panel.add(checkBox);
