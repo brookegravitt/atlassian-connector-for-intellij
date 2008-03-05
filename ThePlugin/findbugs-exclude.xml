@@ -57,9 +57,12 @@
 		<Bug pattern="NM_CONFUSING"/>
 	</Match>
 
-	<!--fields in this class have getters and setters-->
+	<!--fields in these classes have getters and setters-->
 	<Match>
-		<Class name="com.atlassian.theplugin.bamboo.BambooBuildInfo"/>
+		<Or>
+			<Class name="com.atlassian.theplugin.bamboo.BambooBuildInfo"/>
+			<Class name="com.atlassian.theplugin.bamboo.CommitInfo"/>
+		</Or>
 		<Bug pattern="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR"/>
 	</Match>
 	
@@ -78,5 +81,18 @@
 	<Match>
 		<Class name="com.atlassian.theplugin.idea.config.GeneralConfigPanel"/>
 		<Bug pattern="SE_BAD_FIELD"/>
+	</Match>
+
+	<!--the author says he knows what he is doing. Oh well :)-->
+	<Match>
+		<Class name="com.atlassian.theplugin.idea.config.ConfigPanel"/>
+		<Bug pattern="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"/>
+	</Match>
+
+	<!--evil developer really wants to do it - see the comment in the offending line. -->
+	<!--If something breaks, I am totally gonna kick his ass-->
+	<Match>
+		<Class name="com.atlassian.theplugin.idea.ThePluginApplicationComponent"/>
+		<Bug pattern="EI_EXPOSE_REP2"/>
 	</Match>
 </FindBugsFilter>
