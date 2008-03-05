@@ -47,12 +47,7 @@ public class BambooTestConnection extends Thread {
 					}
 				});
 			}
-		}
-//		catch (IllegalThreadStateException e) {
-//			System.out.println("Y: Interupted...");
-//			LOG.info(e.getMessage());
-//		} 
-		finally {
+		} finally {
 			this.isRunning = false;
 		}
 	}
