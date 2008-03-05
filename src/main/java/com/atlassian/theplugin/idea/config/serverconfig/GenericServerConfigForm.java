@@ -221,21 +221,17 @@ public class GenericServerConfigForm extends JComponent implements ServerPanel {
 
 				testConnectionThread.start();
 
-				//System.out.println("X: Connecting...");
-
 				while (testConnectionThread.isRunning()) {
 					try {
 						if (indicator.isCanceled()) {
 							testConnectionThread.setInterrupted();
 							//t.interrupt();
-							//System.out.println("X: Interupting...");
 							break;
 						} else {
 							sleep(CHECK_CANCEL_INTERVAL);
 						}
 					} catch (InterruptedException e) {
 						log.info(e.getMessage());
-						//System.out.println("X: Interupting2...");
 					}
 				}
 			}
