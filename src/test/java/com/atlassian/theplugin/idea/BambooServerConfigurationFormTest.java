@@ -1,9 +1,7 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.bamboo.BambooServerFacadeImpl;
-import com.atlassian.theplugin.configuration.ServerBean;
-import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
-import com.atlassian.theplugin.configuration.SubscribedPlanBean;
+import com.atlassian.theplugin.configuration.*;
 import com.atlassian.theplugin.idea.config.serverconfig.BambooServerConfigForm;
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -44,16 +42,16 @@ public class BambooServerConfigurationFormTest extends TestCase {
 		bambooPluginConfigurationForm.setData(inServerBean);
 
 
-		ServerBean outServerBean = bambooPluginConfigurationForm.getData();
+		Server outServerBean = bambooPluginConfigurationForm.getData();
 
 		// form use cloned instance
 		assertNotSame(inServerBean, outServerBean);
 		checkServerBean(outServerBean);
-		assertEquals(0, outServerBean.getSubscribedPlansData().size());
+		assertEquals(0, outServerBean.getSubscribedPlans().size());
 
 		/*  */
 
-		inServerBean.getSubscribedPlansData().add(new SubscribedPlanBean() {
+		inServerBean.getSubscribedPlans().add(new SubscribedPlanBean() {
 			{
 				setPlanId("Plan-1");
 			}
@@ -67,7 +65,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 		//assertEquals("Plan-1", outServerBean.getSubscribedPlansData().get(0).getPlanId());
 
 		/*  */
-		inServerBean.getSubscribedPlansData().add(new SubscribedPlanBean() {
+		inServerBean.getSubscribedPlans().add(new SubscribedPlanBean() {
 			{
 				setPlanId("Plan-2");
 			}
@@ -81,7 +79,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 		//assertEquals(2, outServerBean.getSubscribedPlansData().size());
 		//checkSubscribedPlans(outServerBean, new String[]{ "Plan-1", "Plan-2" });
 		/*  */
-		inServerBean.getSubscribedPlansData().add(new SubscribedPlanBean() {
+		inServerBean.getSubscribedPlans().add(new SubscribedPlanBean() {
 			{
 				setPlanId("Plan-3");
 			}
@@ -97,7 +95,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 		//checkSubscribedPlans(outServerBean, new String[]{ "Plan-1", "Plan-2", "Plan-3" });
 
 		/*  */
-		inServerBean.getSubscribedPlansData().clear();
+		inServerBean.getSubscribedPlans().clear();
 
 		bambooPluginConfigurationForm.setData(inServerBean);
 
@@ -106,15 +104,15 @@ public class BambooServerConfigurationFormTest extends TestCase {
 
 		checkServerBean(outServerBean);
 
-		assertEquals(0, outServerBean.getSubscribedPlansData().size());
+		assertEquals(0, outServerBean.getSubscribedPlans().size());
 
 	}
 
 
 	private static void checkSubscribedPlans(ServerBean server, String[] ids) {
-		assertEquals(ids.length, server.getSubscribedPlansData().size());
+		assertEquals(ids.length, server.getSubscribedPlans().size());
 
-		Iterator<SubscribedPlanBean> i = server.getSubscribedPlansData().iterator();
+		Iterator<SubscribedPlan> i = server.getSubscribedPlans().iterator();
 		for (String id : ids) {
 			assertEquals(id, i.next().getPlanId());
 		}
@@ -133,7 +131,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 		return outServer;
 	}
 
-	private static void checkServerBean(ServerBean outServer) throws ServerPasswordNotProvidedException {
+	private static void checkServerBean(Server outServer) throws ServerPasswordNotProvidedException {
 
 		assertEquals("name", outServer.getName());
 		assertEquals("password", outServer.getPasswordString());

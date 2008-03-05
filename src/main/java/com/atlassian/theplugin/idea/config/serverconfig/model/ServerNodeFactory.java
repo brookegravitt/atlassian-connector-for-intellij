@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.idea.config.serverconfig.model;
 
-import com.atlassian.theplugin.configuration.ServerBean;
+import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.ServerType;
 
@@ -10,11 +10,11 @@ public final class ServerNodeFactory {
     public static ServerNode getServerNode(ServerType serverType, Server server) {
         switch (serverType) {
             case BAMBOO_SERVER:
-                return new BambooServerNode((ServerBean) server);
+                return new BambooServerNode(server);
             case JIRA_SERVER:
-                return new JIRAServerNode((ServerBean) server);
+                return new JIRAServerNode(server);
             case CRUCIBLE_SERVER:
-                return new CrucibleServerNode((ServerBean) server);
+                return new CrucibleServerNode(server);
             default:
                 return null;
         }

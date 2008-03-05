@@ -24,7 +24,7 @@ public class ServerBean implements Server {
 	private Boolean enabled = true;
 	private Boolean useFavourite = false;
 
-	private List<SubscribedPlanBean> subscribedPlans = new ArrayList<SubscribedPlanBean>();
+	private Collection<? extends SubscribedPlan> subscribedPlans = new ArrayList<SubscribedPlan>();
 
 	private transient Boolean isConfigInitialized = false;
     private static final double ID_DISCRIMINATOR = 1000d;
@@ -45,8 +45,8 @@ public class ServerBean implements Server {
 		this.setIsConfigInitialized(cfg.getIsConfigInitialized());
 
 		for (SubscribedPlan plan : cfg.getSubscribedPlans()) {
-			SubscribedPlanBean newPlan = new SubscribedPlanBean(plan);
-			subscribedPlans.add(newPlan);
+			SubscribedPlan newPlan = new SubscribedPlanBean(plan);
+			((Collection<SubscribedPlan>)subscribedPlans).add(newPlan);
 		}
 	}
 
@@ -173,8 +173,26 @@ public class ServerBean implements Server {
 	}
 
 	@Transient
-	public synchronized Collection<? extends SubscribedPlan> getSubscribedPlans() {
-		return subscribedPlans;
+	public synchronized Collection<SubscribedPlan> getSubscribedPlans() {
+		return (Collection<SubscribedPlan>) subscribedPlans;
+	}
+
+	@Transient
+	public synchronized void setSubscribedPlans(Collection<? extends SubscribedPlan> subscribedPlans) {
+		this.subscribedPlans = subscribedPlans;
+	}
+
+
+	public synchronized List<SubscribedPlanBean> getSubscribedPlansData() {
+		List<SubscribedPlanBean> beanList = new ArrayList<SubscribedPlanBean>();
+		for (SubscribedPlan subscribedPlan : subscribedPlans) {
+			beanList.add(new SubscribedPlanBean(subscribedPlan));
+		}
+		return beanList;
+	}
+
+	public synchronized void setSubscribedPlansData(List<SubscribedPlanBean> subscribedPlansData) {
+		this.subscribedPlans = subscribedPlansData;
 	}
 
 	@Transient
@@ -198,14 +216,6 @@ public class ServerBean implements Server {
 		}
 
 
-	}
-
-	public synchronized List<SubscribedPlanBean> getSubscribedPlansData() {
-		return subscribedPlans;
-	}
-
-	public synchronized void setSubscribedPlansData(List<SubscribedPlanBean> subscribedPlansData) {
-		this.subscribedPlans = subscribedPlansData;
 	}
 
 	public long getUid() {
@@ -238,45 +248,46 @@ public class ServerBean implements Server {
 		if (this == o) {
 			return true;
 		}
-		if (o == null || getClass() != o.getClass()) {
+
+		if (o == null || !(o instanceof Server)) {
 			return false;
 		}
 
-		ServerBean that = (ServerBean) o;
+		Server that = (Server) o;
 
-		if (uid != that.uid) {
+		if (uid != that.getUid()) {
 			return false;
 		}
-		if (encryptedPassword != null ? !encryptedPassword.equals(that.encryptedPassword) : that.encryptedPassword != null) {
-			return false;
-		}
+//		if (encryptedPassword != null ? !encryptedPassword.equals(that.encryptedPassword) : that.encryptedPassword != null) {
+//			return false;
+//		}
 		if (isConfigInitialized != null
-                ? !isConfigInitialized.equals(that.isConfigInitialized) : that.isConfigInitialized != null) {
+                ? !isConfigInitialized.equals(that.getIsConfigInitialized()) : that.getIsConfigInitialized() != null) {
 			return false;
 		}
-		if (name != null ? !name.equals(that.name) : that.name != null) {
+		if (name != null ? !name.equals(that.getName()) : that.getName() != null) {
 			return false;
 		}
-		if (password != null ? !password.equals(that.password) : that.password != null) {
+		if (password != null ? !password.equals(that.getPasswordString()) : that.getPasswordString() != null) {
 			return false;
 		}
 		if (shouldPasswordBeStored != null
-                ? !shouldPasswordBeStored.equals(that.shouldPasswordBeStored) : that.shouldPasswordBeStored != null) {
+                ? !shouldPasswordBeStored.equals(that.getShouldPasswordBeStored()) : that.getShouldPasswordBeStored() != null) {
 			return false;
 		}
-		if (enabled != null ? !enabled.equals(that.enabled) : that.enabled != null) {
+		if (enabled != null ? !enabled.equals(that.getEnabled()) : that.getEnabled() != null) {
 			return false;
 		}
-		if (useFavourite != null ? !useFavourite.equals(that.useFavourite) : that.useFavourite != null) {
+		if (useFavourite != null ? !useFavourite.equals(that.getUseFavourite()) : that.getUseFavourite() != null) {
 			return false;
 		}
-		if (subscribedPlans != null ? !subscribedPlans.equals(that.subscribedPlans) : that.subscribedPlans != null) {
+		if (subscribedPlans != null ? !subscribedPlans.equals(that.getSubscribedPlans()) : that.getSubscribedPlans() != null) {
 			return false;
 		}
-		if (urlString != null ? !urlString.equals(that.urlString) : that.urlString != null) {
+		if (urlString != null ? !urlString.equals(that.getUrlString()) : that.getUrlString() != null) {
 			return false;
 		}
-		if (username != null ? !username.equals(that.username) : that.username != null) {
+		if (username != null ? !username.equals(that.getUserName()) : that.getUserName() != null) {
 			return false;
 		}
 

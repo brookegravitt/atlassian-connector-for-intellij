@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.idea.config.serverconfig.GenericServerConfigForm;
@@ -34,7 +35,7 @@ public class GenericServerConfigurationFormTest extends TestCase {
 
 		genericServerConfigurationForm.setData(inServerBean);
 
-		ServerBean outServerBean = genericServerConfigurationForm.getData();
+		Server outServerBean = genericServerConfigurationForm.getData();
 
 		// form use cloned instance
 		assertNotSame(inServerBean, outServerBean);
@@ -83,12 +84,12 @@ public class GenericServerConfigurationFormTest extends TestCase {
 	public void testBambooFormFieldSetting() throws Exception {
 		genericServerConfigurationForm.setData(new ServerBean());
 
-		ServerBean outServer = genericServerConfigurationForm.getData();
+		Server outServer = genericServerConfigurationForm.getData();
 		assertEquals("", outServer.getName());
 		assertEquals("", outServer.getUrlString());
 		assertEquals("", outServer.getUserName());
 		assertEquals("", outServer.getPasswordString());
-		assertEquals(0, outServer.getSubscribedPlansData().size());
+		assertEquals(0, outServer.getSubscribedPlans().size());
 
 		PluginConfigurationFormHelper helper = new PluginConfigurationFormHelper(genericServerConfigurationForm);
 
@@ -114,7 +115,7 @@ public class GenericServerConfigurationFormTest extends TestCase {
 		return outServer;
 	}
 
-	private static void checkServerBean(ServerBean outServer) throws ServerPasswordNotProvidedException {
+	private static void checkServerBean(Server outServer) throws ServerPasswordNotProvidedException {
 
 		assertEquals("name", outServer.getName());
 		assertEquals("password", outServer.getPasswordString());

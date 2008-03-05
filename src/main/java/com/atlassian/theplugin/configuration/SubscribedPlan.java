@@ -9,4 +9,6 @@ package com.atlassian.theplugin.configuration;
  */
 public interface SubscribedPlan {
 	String getPlanId();
+
+	void setPlanId(String planId);
 }
