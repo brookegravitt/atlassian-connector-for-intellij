@@ -1,23 +1,30 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
-import com.atlassian.theplugin.bamboo.BambooServerFactory;
-import com.atlassian.theplugin.bamboo.api.BambooLoginException;
 import com.atlassian.theplugin.configuration.ServerBean;
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.config.BambooTestConnection;
 import com.atlassian.theplugin.util.Util;
-import com.intellij.openapi.ui.Messages;
-import static com.intellij.openapi.ui.Messages.showMessageDialog;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.project.Project;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import org.apache.log4j.Category;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import static java.lang.Thread.sleep;
 
 /**
  * Plugin configuration form.
  */
 public class BambooServerConfigForm extends JComponent implements ServerPanel {
+
+	private static final Category LOG = Category.getInstance(BambooServerConfigForm.class);
+
 	private JPanel rootComponent;
 	private JTextField serverName;
 	private JTextField serverUrl;
@@ -34,19 +41,8 @@ public class BambooServerConfigForm extends JComponent implements ServerPanel {
 	public BambooServerConfigForm() {
 
 		$$$setupUI$$$();
-		testConnection.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		testConnection.addActionListener(new TestConnectionListener());
 
-				try {
-					BambooServerFactory.getBambooServerFacade().testServerConnection(serverUrl.getText(),
-							username.getText(), String.valueOf(password.getPassword()));
-					showMessageDialog("Connected successfully", "Connection OK", Messages.getInformationIcon());
-				} catch (BambooLoginException e1) {
-					showMessageDialog(e1.getMessage(), "Connection Error", Messages.getErrorIcon());
-					//throw e1;
-				}
-			}
-		});
 	}
 
 	private void getPlansFromServer(ServerBean aServer) {
@@ -203,4 +199,57 @@ public class BambooServerConfigForm extends JComponent implements ServerPanel {
 	public JComponent $$$getRootComponent$$$() {
 		return rootComponent;
 	}
+
+	private class TestConnectionListener implements ActionListener {
+
+		public void actionPerformed(ActionEvent e) {
+
+			Task.Modal testConnectionTask =	new TestConnectionTask(IdeaHelper.getCurrentProject(), "Testing Connection", true);
+			testConnectionTask.setCancelText("Stop");
+			ProgressManager.getInstance().run(testConnectionTask);
+		}
+
+		private class TestConnectionTask extends Task.Modal {
+
+			private BambooTestConnection bambooTestConnection = null;
+			private static final int CHECK_CANCEL_INTERVAL = 500;	// miliseconds
+
+			public TestConnectionTask(Project currentProject, String title, boolean canBeCanceled) {
+
+				super(currentProject, title, canBeCanceled);
+
+				bambooTestConnection = new BambooTestConnection(
+						serverUrl.getText(), username.getText(), String.valueOf(password.getPassword()));
+			}
+
+			public void run(ProgressIndicator indicator) {
+
+				indicator.setText("Connecting...");
+				indicator.setFraction(0);
+				indicator.setIndeterminate(true);
+
+				bambooTestConnection.start();
+
+				//System.out.println("X: Connecting...");
+
+				while (bambooTestConnection.isRunning()) {
+					try {
+						if (indicator.isCanceled()) {
+							bambooTestConnection.setInterrupted();
+							//t.interrupt();
+							//System.out.println("X: Interupting...");
+							break;
+						} else {
+							sleep(CHECK_CANCEL_INTERVAL);
+						}
+					} catch (InterruptedException e) {
+						LOG.info(e.getMessage());
+						//System.out.println("X: Interupting2...");
+					}
+				}
+			}
+		}
+	}
 }
+
+
