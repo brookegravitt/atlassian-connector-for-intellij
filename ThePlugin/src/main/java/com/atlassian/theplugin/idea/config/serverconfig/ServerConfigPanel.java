@@ -38,8 +38,8 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
 	private Map<ServerType, ServerPanel> serverPanels = new HashMap<ServerType, ServerPanel>();
 
 	private transient PluginConfiguration localConfigCopy;
-	private final CrucibleServerFacade crucibleServerFacade;
-	private final BambooServerFacade bambooServerFacade;
+	private final transient CrucibleServerFacade crucibleServerFacade;
+	private final transient BambooServerFacade bambooServerFacade;
 
 	public ServerConfigPanel(ServerTreePanel serverTreePanel,
 							 CrucibleServerFacade crucibleServerFacade,
@@ -73,7 +73,7 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
     }
 
     private JComponent createToolbar() {
-        ActionManager actionManager = ActionManager.getInstance();
+         ActionManager actionManager = ActionManager.getInstance();
         ActionGroup actionGroup = (ActionGroup) actionManager.getAction("ThePlugin.ServerConfigToolBar");
         return actionManager.createActionToolbar("ThePluginConfig", actionGroup, true).getComponent();
     }

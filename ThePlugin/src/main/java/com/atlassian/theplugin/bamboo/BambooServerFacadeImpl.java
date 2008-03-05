@@ -73,11 +73,12 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 	 * List plans defined on Bamboo server.
 	 *
 	 * @param bambooServer Bamboo server information
-	 * @return list of plans or null on error
+	 * @return list of plans
 	 * @throws ServerPasswordNotProvidedException
 	 *          when invoked for Server that has not had the password set yet
 	 */
-	public Collection<BambooPlan> getPlanList(Server bambooServer) throws ServerPasswordNotProvidedException, BambooException {
+	public Collection<BambooPlan> getPlanList(Server bambooServer)
+			throws ServerPasswordNotProvidedException, BambooException {
 		BambooSession api = getSession(bambooServer);
 		List<BambooPlan> plans = api.listPlanNames();
 		List<String> favPlans = api.getFavouriteUserPlans();
@@ -107,7 +108,8 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 	 *          when invoked for Server that has not had the password set yet
 	 * @see com.atlassian.theplugin.bamboo.api.BambooSession#login(String, char[])
 	 */
-	public Collection<BambooBuild> getSubscribedPlansResults(Server bambooServer) throws ServerPasswordNotProvidedException {
+	public Collection<BambooBuild> getSubscribedPlansResults(Server bambooServer)
+			throws ServerPasswordNotProvidedException {
 		Collection<BambooBuild> builds = new ArrayList<BambooBuild>();
 
 		String connectionErrorMessage;
@@ -135,21 +137,17 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 		}
 
 		if (bambooServer.getUseFavourite()) {
-			if (plansForServer != null) {
-				if (plansForServer != null) {
-					for (BambooPlan bambooPlan : plansForServer) {
-						if (bambooPlan.isFavourite()) {
-							if (api != null && api.isLoggedIn()) {
-								BambooBuild buildInfo = api.getLatestBuildForPlan(bambooPlan.getPlanKey());
-								((BambooBuildInfo) buildInfo).setEnabled(bambooPlan.isEnabled());
-								builds.add(buildInfo);
-							} else {
-								builds.add(constructBuildErrorInfo(
-										bambooServer.getUrlString(),
-										bambooPlan.getPlanKey(),
-										connectionErrorMessage));
-							}
-						}
+			for (BambooPlan bambooPlan : plansForServer) {
+				if (bambooPlan.isFavourite()) {
+					if (api != null && api.isLoggedIn()) {
+						BambooBuild buildInfo = api.getLatestBuildForPlan(bambooPlan.getPlanKey());
+						((BambooBuildInfo) buildInfo).setEnabled(bambooPlan.isEnabled());
+						builds.add(buildInfo);
+					} else {
+						builds.add(constructBuildErrorInfo(
+								bambooServer.getUrlString(),
+								bambooPlan.getPlanKey(),
+								connectionErrorMessage));
 					}
 				}
 			}
@@ -167,7 +165,8 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 					}
 					builds.add(buildInfo);
 				} else {
-					builds.add(constructBuildErrorInfo(bambooServer.getUrlString(), plan.getPlanId(), connectionErrorMessage));
+					builds.add(constructBuildErrorInfo(
+							bambooServer.getUrlString(), plan.getPlanId(), connectionErrorMessage));
 				}
 			}
 		}

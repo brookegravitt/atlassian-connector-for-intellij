@@ -1,7 +1,6 @@
 package com.atlassian.theplugin.idea.config.serverconfig.model;
 
 import com.atlassian.theplugin.configuration.Server;
-import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.ServerType;
 
 public final class ServerNodeFactory {
