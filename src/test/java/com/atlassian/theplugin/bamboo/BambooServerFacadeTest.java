@@ -24,6 +24,7 @@ public class BambooServerFacadeTest extends TestCase {
 	private org.mortbay.jetty.Server httpServer;
 	private JettyMockServer mockServer;
 	private String mockBaseUrl;
+	private BambooServerFacade testedBambooServerFacade;
 
 	protected void setUp() throws Exception {
 		httpServer = new org.mortbay.jetty.Server(0);
@@ -33,6 +34,8 @@ public class BambooServerFacadeTest extends TestCase {
 
 		mockServer = new JettyMockServer(httpServer);
 		ConfigurationFactory.setConfiguration(createBambooTestConfiguration(mockBaseUrl, true));
+
+		testedBambooServerFacade = new BambooServerFacadeImpl();
 	}
 
 	private static PluginConfiguration createBambooTestConfiguration(String serverUrl, boolean isPassInitialized) {
@@ -82,7 +85,7 @@ public class BambooServerFacadeTest extends TestCase {
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
 
-		Collection<BambooBuild> plans = BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults(server);
+		Collection<BambooBuild> plans = testedBambooServerFacade.getSubscribedPlansResults(server);
 		assertNotNull(plans);
 		assertEquals(3, plans.size());
 		Iterator<BambooBuild> iterator = plans.iterator();
@@ -99,7 +102,7 @@ public class BambooServerFacadeTest extends TestCase {
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
 
-		Collection<BambooBuild> plans = BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults(server);
+		Collection<BambooBuild> plans = testedBambooServerFacade.getSubscribedPlansResults(server);
 		assertNotNull(plans);
 		assertEquals(3, plans.size());
 		Iterator<BambooBuild> iterator = plans.iterator();
@@ -115,7 +118,7 @@ public class BambooServerFacadeTest extends TestCase {
 		ConfigurationFactory.setConfiguration(createBambooTestConfiguration(mockBaseUrl, false));
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
 		try {
-			BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults(server);
+			testedBambooServerFacade.getSubscribedPlansResults(server);
 			fail("Testing uninitialized password");
 
 		} catch (ServerPasswordNotProvidedException e) {
@@ -124,7 +127,7 @@ public class BambooServerFacadeTest extends TestCase {
 
 		mockServer.expect("/api/rest/login.action", new ErrorResponse(400));
 		// connection error, just report without asking for the pass
-		Collection<BambooBuild> plans = BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults(server);
+		Collection<BambooBuild> plans = testedBambooServerFacade.getSubscribedPlansResults(server);
 		assertNotNull(plans);
 		assertEquals(3, plans.size());
 		Iterator<BambooBuild> iterator = plans.iterator();
@@ -133,7 +136,7 @@ public class BambooServerFacadeTest extends TestCase {
 		Util.verifyError400BuildResult(iterator.next());
 
 		((ServerBean) server).setUrlString("malformed");
-		plans = BambooServerFactory.getBambooServerFacade().getSubscribedPlansResults(server);
+		plans = testedBambooServerFacade.getSubscribedPlansResults(server);
 		assertNotNull(plans);
 		assertEquals(3, plans.size());
 		iterator = plans.iterator();
@@ -151,7 +154,7 @@ public class BambooServerFacadeTest extends TestCase {
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
 
-		Collection<BambooProject> projects = BambooServerFactory.getBambooServerFacade().getProjectList(server);
+		Collection<BambooProject> projects = testedBambooServerFacade.getProjectList(server);
 		Util.verifyProjectListResult(projects);
 
 		mockServer.verify();
@@ -161,7 +164,7 @@ public class BambooServerFacadeTest extends TestCase {
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
 
-		Collection<BambooProject> projects = BambooServerFactory.getBambooServerFacade().getProjectList(server);
+		Collection<BambooProject> projects = testedBambooServerFacade.getProjectList(server);
 		assertNull(projects);
 		mockServer.verify();
 	}
@@ -173,7 +176,7 @@ public class BambooServerFacadeTest extends TestCase {
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
 
-		Collection<BambooPlan> plans = BambooServerFactory.getBambooServerFacade().getPlanList(server);
+		Collection<BambooPlan> plans = testedBambooServerFacade.getPlanList(server);
 		Util.verifyPlanListWithFavouritesResult(plans);
 
 		mockServer.verify();
@@ -184,14 +187,14 @@ public class BambooServerFacadeTest extends TestCase {
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
 
-		Collection<BambooPlan> plans = BambooServerFactory.getBambooServerFacade().getPlanList(server);
+		Collection<BambooPlan> plans = testedBambooServerFacade.getPlanList(server);
 		assertNull(plans);
 
 		mockServer.verify();
 	}
 
 	public void testConnectionTest() throws Exception {
-		BambooServerFacade facade = BambooServerFactory.getBambooServerFacade();
+		BambooServerFacade facade = testedBambooServerFacade;
 
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
 		mockServer.expect("/api/rest/logout.action", new LogoutCallback());
@@ -248,7 +251,7 @@ public class BambooServerFacadeTest extends TestCase {
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
 
-		BambooServerFactory.getBambooServerFacade().addLabelToBuild(server, "TP-DEF", "100", label);
+		testedBambooServerFacade.addLabelToBuild(server, "TP-DEF", "100", label);
 
 		mockServer.verify();
 	}
@@ -261,7 +264,7 @@ public class BambooServerFacadeTest extends TestCase {
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
 
-		BambooServerFactory.getBambooServerFacade().addLabelToBuild(server, "TP-DEF", "100", label);
+		testedBambooServerFacade.addLabelToBuild(server, "TP-DEF", "100", label);
 
 		mockServer.verify();
 	}
@@ -274,7 +277,7 @@ public class BambooServerFacadeTest extends TestCase {
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
 
-		BambooServerFactory.getBambooServerFacade().addLabelToBuild(server, "TP-DEF", "200", label);
+		testedBambooServerFacade.addLabelToBuild(server, "TP-DEF", "200", label);
 
 		mockServer.verify();
 	}
@@ -287,7 +290,7 @@ public class BambooServerFacadeTest extends TestCase {
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
 
-		BambooServerFactory.getBambooServerFacade().addCommentToBuild(server, "TP-DEF", "100", label);
+		testedBambooServerFacade.addCommentToBuild(server, "TP-DEF", "100", label);
 
 		mockServer.verify();
 	}
@@ -300,7 +303,7 @@ public class BambooServerFacadeTest extends TestCase {
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
 
-		BambooServerFactory.getBambooServerFacade().addCommentToBuild(server, "TP-DEF", "100", label);
+		testedBambooServerFacade.addCommentToBuild(server, "TP-DEF", "100", label);
 
 		mockServer.verify();
 	}
@@ -313,7 +316,7 @@ public class BambooServerFacadeTest extends TestCase {
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
 
-		BambooServerFactory.getBambooServerFacade().addCommentToBuild(server, "TP-DEF", "200", label);
+		testedBambooServerFacade.addCommentToBuild(server, "TP-DEF", "200", label);
 
 		mockServer.verify();
 	}
@@ -324,7 +327,7 @@ public class BambooServerFacadeTest extends TestCase {
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
 
-		BuildDetails details = BambooServerFactory.getBambooServerFacade().getBuildDetails(server, "TP-DEF", "100");
+		BuildDetails details = testedBambooServerFacade.getBuildDetails(server, "TP-DEF", "100");
 		assertEquals(3, details.getCommitInfo().size());
 		assertEquals(2, details.getFailedTestDetails().size());
 		assertEquals(117, details.getSuccessfulTestDetails().size());
@@ -338,7 +341,7 @@ public class BambooServerFacadeTest extends TestCase {
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
 
-		BuildDetails details = BambooServerFactory.getBambooServerFacade().getBuildDetails(server, "TP-DEF", "200");
+		BuildDetails details = testedBambooServerFacade.getBuildDetails(server, "TP-DEF", "200");
 		assertNull(details);
 
 		mockServer.verify();

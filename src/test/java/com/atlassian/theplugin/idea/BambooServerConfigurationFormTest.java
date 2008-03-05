@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.theplugin.bamboo.BambooServerFacadeImpl;
 import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.configuration.SubscribedPlanBean;
@@ -28,7 +29,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 
 	protected void setUp() throws Exception {
 		super.setUp();
-		bambooPluginConfigurationForm = new BambooServerConfigForm();
+		bambooPluginConfigurationForm = new BambooServerConfigForm(new BambooServerFacadeImpl());
 	}
 
 	/*    public void testDummyFail(){

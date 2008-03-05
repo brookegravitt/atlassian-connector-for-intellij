@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.util;
 
 import com.atlassian.theplugin.bamboo.BambooStatusChecker;
+import com.atlassian.theplugin.bamboo.BambooServerFacadeImpl;
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaActionScheduler;
 import com.atlassian.theplugin.idea.NewVersionChecker;
@@ -31,6 +32,7 @@ public final class PicoUtil {
 			GeneralConfigPanel.class,
 			ServerTreePanel.class,
 			CrucibleServerFacadeImpl.class,
+			BambooServerFacadeImpl.class,
 	};
 
 	public static void populatePicoContainer(MutablePicoContainer pico) {
