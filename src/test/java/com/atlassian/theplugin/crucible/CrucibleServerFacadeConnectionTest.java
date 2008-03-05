@@ -19,6 +19,7 @@ public class CrucibleServerFacadeConnectionTest extends TestCase {
 	private JettyMockServer mockServer;
 	private String mockBaseUrl;
 	public static final String INVALID_PROJECT_KEY = "INVALID project key";
+	private CrucibleServerFacade testedCrucibleServerFacade;
 
 	protected void setUp() throws Exception {
 		httpServer = new org.mortbay.jetty.Server(0);
@@ -28,6 +29,8 @@ public class CrucibleServerFacadeConnectionTest extends TestCase {
 
 		mockServer = new JettyMockServer(httpServer);
 		ConfigurationFactory.setConfiguration(createCrucibleTestConfiguration(mockBaseUrl, true));
+
+		testedCrucibleServerFacade = CrucibleServerFactory.getCrucibleServerFacade();
 	}
 
 	private static PluginConfiguration createCrucibleTestConfiguration(String serverUrl, boolean isPassInitialized) {
@@ -55,6 +58,8 @@ public class CrucibleServerFacadeConnectionTest extends TestCase {
 		mockServer = null;
 		mockBaseUrl = null;
 		httpServer.stop();
+
+		testedCrucibleServerFacade = null;
 	}
 
 	public void testFailedLoginGetAllReviews() throws Exception {
@@ -62,7 +67,7 @@ public class CrucibleServerFacadeConnectionTest extends TestCase {
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.CRUCIBLE_SERVER).getServers().iterator().next();
 		try {
-			CrucibleServerFactory.getCrucibleServerFacade().getAllReviews(server);
+			testedCrucibleServerFacade.getAllReviews(server);
 			fail();
 		} catch (CrucibleLoginFailedException e) {
 
@@ -73,7 +78,7 @@ public class CrucibleServerFacadeConnectionTest extends TestCase {
 
 	public void testConnectionTestSucceed() throws Exception {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
-		CrucibleServerFactory.getCrucibleServerFacade().testServerConnection(mockBaseUrl, USER_NAME, PASSWORD);
+		testedCrucibleServerFacade.testServerConnection(mockBaseUrl, USER_NAME, PASSWORD);
 		mockServer.verify();
 	}
 
@@ -81,7 +86,7 @@ public class CrucibleServerFacadeConnectionTest extends TestCase {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
 
 		try {
-			CrucibleServerFactory.getCrucibleServerFacade().testServerConnection(mockBaseUrl, USER_NAME, PASSWORD);
+			testedCrucibleServerFacade.testServerConnection(mockBaseUrl, USER_NAME, PASSWORD);
 			fail();
 		} catch (CrucibleLoginFailedException e) {
 			// expected
@@ -92,7 +97,7 @@ public class CrucibleServerFacadeConnectionTest extends TestCase {
 
 	public void testConnectionTestFailedNullUser() throws Exception {
 		try {
-			CrucibleServerFactory.getCrucibleServerFacade().testServerConnection(mockBaseUrl, null, PASSWORD);
+			testedCrucibleServerFacade.testServerConnection(mockBaseUrl, null, PASSWORD);
 			fail();
 		} catch (CrucibleLoginException e) {
 			// expected
@@ -101,7 +106,7 @@ public class CrucibleServerFacadeConnectionTest extends TestCase {
 
 	public void testConnectionTestFailedNullPassword() throws Exception {
 		try {
-			CrucibleServerFactory.getCrucibleServerFacade().testServerConnection(mockBaseUrl, USER_NAME, null);
+			testedCrucibleServerFacade.testServerConnection(mockBaseUrl, USER_NAME, null);
 			fail();
 		} catch (CrucibleLoginException e) {
 			// expected
@@ -111,7 +116,7 @@ public class CrucibleServerFacadeConnectionTest extends TestCase {
 	public void testConnectionTestFailedEmptyUrl() throws Exception {
 
 		try {
-			CrucibleServerFactory.getCrucibleServerFacade().testServerConnection("", USER_NAME, PASSWORD);
+			testedCrucibleServerFacade.testServerConnection("", USER_NAME, PASSWORD);
 			fail();
 		} catch (CrucibleLoginException e) {
 			// expected
