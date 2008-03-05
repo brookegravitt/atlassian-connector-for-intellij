@@ -10,9 +10,6 @@ import java.awt.*;
 public class PlanListCellRenderer implements ListCellRenderer {
 	protected static final Border NO_FOCUS_BORDER = new EmptyBorder(1, 1, 1, 1);
 
-	protected JCheckBox checkBox;
-	protected JLabel label;
-
 	private static final Icon FAVOURITE_ON_ICON = IconLoader.getIcon("/icons/fav_on.gif");
 	private static final Icon FAVOURITE_OFF_ICON = IconLoader.getIcon("/icons/fav_off.gif");
 	private static final Icon DISABLED_ICON = IconLoader.getIcon("/icons/icn_plan_disabled-16.gif");
@@ -27,7 +24,9 @@ public class PlanListCellRenderer implements ListCellRenderer {
 		if (value instanceof BambooPlanItem) {
 			BambooPlanItem pi = (BambooPlanItem) value;
 			JCheckBox checkBox = new JCheckBox(pi.getPlan().getPlanKey());
-			label.setIcon(pi.getPlan().isEnabled() ? (pi.getPlan().isFavourite() ? FAVOURITE_ON_ICON : FAVOURITE_OFF_ICON) : DISABLED_ICON);
+			label.setIcon(pi.getPlan().isEnabled() ?
+					(pi.getPlan().isFavourite() ? FAVOURITE_ON_ICON : FAVOURITE_OFF_ICON) :
+					DISABLED_ICON);
 			checkBox.setText(pi.getPlan().getPlanKey());
 			checkBox.setSelected(pi.isSelected());
 			panel.add(checkBox);
