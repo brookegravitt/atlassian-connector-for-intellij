@@ -102,6 +102,7 @@
         <option name="myName" value="Project Default" />
         <option name="myLocal" value="false" />
         <inspection_tool class="WrongPackageStatement" level="ERROR" enabled="false" />
+        <inspection_tool class="CheckStyle-IDEA" level="WARNING" enabled="true" />
       </profile>
     </profiles>
     <list size="4">
