@@ -37,8 +37,6 @@ public class PlanListCellRenderer implements ListCellRenderer {
 			checkBox.setEnabled(list.isEnabled());
 			checkBox.setFont(list.getFont());
 			checkBox.setFocusPainted(false);
-
-			checkBox.setBorderPainted(true);
 			checkBox.setBorder(isSelected ? UIManager.getBorder("List.focusCellHighlightBorder") : NO_FOCUS_BORDER);
 		} else {
 			label.setText(value.toString());
