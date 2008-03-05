@@ -177,7 +177,7 @@ public class BambooPlansForm extends JPanel {
 				}
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
-						updatePlanNames(server);						
+						updatePlanNames(server);
 					}
 				});
 			}
@@ -211,12 +211,14 @@ public class BambooPlansForm extends JPanel {
 		ServerBean server = new ServerBean();
 
 		for (int i = 0; i < model.getSize(); ++i) {
-			BambooPlanItem p = (BambooPlanItem) model.getElementAt(i);
+			if (model.getElementAt(i) instanceof BambooPlanItem) {
+				BambooPlanItem p = (BambooPlanItem) model.getElementAt(i);
 
-			if (p.isSelected()) {
-				SubscribedPlanBean spb = new SubscribedPlanBean();
-				spb.setPlanId(p.getPlan().getPlanKey());
-				server.getSubscribedPlansData().add(spb);
+				if (p.isSelected()) {
+					SubscribedPlanBean spb = new SubscribedPlanBean();
+					spb.setPlanId(p.getPlan().getPlanKey());
+					server.getSubscribedPlansData().add(spb);
+				}
 			}
 		}
 		server.setUseFavourite(cbUseFavuriteBuilds.isSelected());
@@ -229,7 +231,7 @@ public class BambooPlansForm extends JPanel {
 		if (cbUseFavuriteBuilds.isSelected() != queryServer.getUseFavourite()) {
 			isFavModified = true;
 		}
-				
+
 		return isListModified || isFavModified;
 	}
 
