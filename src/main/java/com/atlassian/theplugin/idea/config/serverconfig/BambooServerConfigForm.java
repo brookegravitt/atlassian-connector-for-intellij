@@ -21,8 +21,8 @@ public class BambooServerConfigForm extends JComponent implements ServerPanel {
 	private JPanel rootComponent;
 
 	private BambooPlansForm planList;
-	private GenericServerConfigForm genericServerConfigForm;
-	private final BambooServerFacade bambooServerFacade;
+	private transient GenericServerConfigForm genericServerConfigForm;
+	private final transient BambooServerFacade bambooServerFacade;
 
 	public BambooServerConfigForm(BambooServerFacade bambooServerFacadeInstance) {
 		this.bambooServerFacade = bambooServerFacadeInstance;

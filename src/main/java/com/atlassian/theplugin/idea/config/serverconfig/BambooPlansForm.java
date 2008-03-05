@@ -23,10 +23,10 @@ public class BambooPlansForm extends JPanel {
 
 	private boolean isListModified;
 	private Boolean isUseFavourite = null;
-	private Server originalServer;
-	private Server queryServer;
+	private transient Server originalServer;
+	private transient Server queryServer;
 	private Map<String, List<BambooPlanItem>> serverPlans = new HashMap<String, List<BambooPlanItem>>();
-	private final BambooServerFacade bambooServerFacade;
+	private transient final BambooServerFacade bambooServerFacade;
 	private final ServerPanel serverPanel;
 
 	public BambooPlansForm(BambooServerFacade bambooServerFacade, ServerPanel serverPanel) {

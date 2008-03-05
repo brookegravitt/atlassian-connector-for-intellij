@@ -46,7 +46,7 @@ public class ServerBean implements Server {
 
 		for (SubscribedPlan plan : cfg.getSubscribedPlans()) {
 			SubscribedPlan newPlan = new SubscribedPlanBean(plan);
-			((Collection<SubscribedPlan>)subscribedPlans).add(newPlan);
+			((Collection<SubscribedPlan>) subscribedPlans).add(newPlan);
 		}
 	}
 
