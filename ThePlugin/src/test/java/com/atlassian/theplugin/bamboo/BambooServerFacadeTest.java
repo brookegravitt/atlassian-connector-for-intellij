@@ -52,14 +52,14 @@ public class BambooServerFacadeTest extends TestCase {
 		server.setIsConfigInitialized(isPassInitialized);
 		servers.add(server);
 
-		ArrayList<SubscribedPlanBean> plans = new ArrayList<SubscribedPlanBean>();
+		ArrayList<SubscribedPlan> plans = new ArrayList<SubscribedPlan>();
 		for (int i = 1; i <= 3; ++i) {
 			SubscribedPlanBean plan = new SubscribedPlanBean();
 			plan.setPlanId(PLAN_ID);
 			plans.add(plan);
 		}
 
-		server.setSubscribedPlansData(plans);
+		server.setSubscribedPlans(plans);
 
 		configuration.setServersData(servers);
 		PluginConfigurationBean pluginConfig = new PluginConfigurationBean();

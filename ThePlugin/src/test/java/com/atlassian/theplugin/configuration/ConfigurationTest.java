@@ -45,23 +45,23 @@ public class ConfigurationTest extends TestCase {
     }
 
 	public void testServerBeanClone() throws Exception {
-		ServerBean srv = new ServerBean();
+		Server srv = new ServerBean();
 		srv.setName("dummyName");
 		srv.setUrlString("http://dummy.url");
 		srv.setUserName("dummyUserName<a>aa</a>");
 		srv.setPasswordString("dummyPassword", true);
 
-		List<SubscribedPlanBean> plans = new ArrayList<SubscribedPlanBean>();
+		List<SubscribedPlan> plans = new ArrayList<SubscribedPlan>();
 		SubscribedPlanBean plan = new SubscribedPlanBean();
 		plan.setPlanId("dummyPlan");
 		plans.add(plan);
-		srv.setSubscribedPlansData(plans);
+		srv.setSubscribedPlans(plans);
 
-		ServerBean clonedBean = new ServerBean(srv);
+		Server cloned = new ServerBean(srv);
 
-		assertNotSame(srv, clonedBean);
-		assertEquals(srv, clonedBean);
-		assertTrue(srv.equals(clonedBean));
+		assertNotSame(srv, cloned);
+		assertEquals(srv, cloned);
+		assertTrue(srv.equals(cloned));
 		assertTrue(srv.equals(srv));
 		assertFalse(srv.equals(null));
 
@@ -92,7 +92,7 @@ public class ConfigurationTest extends TestCase {
 		assertFalse(srv.equals(clonedBean2));
 
 		clonedBean2 = new ServerBean(srv);
-		clonedBean2.getSubscribedPlansData().clear();
+		clonedBean2.getSubscribedPlans().clear();
 		assertFalse(srv.equals(clonedBean2));
 
 		clonedBean2 = new ServerBean(srv);

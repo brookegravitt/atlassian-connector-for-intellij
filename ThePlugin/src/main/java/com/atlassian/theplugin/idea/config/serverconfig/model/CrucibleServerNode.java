@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.idea.config.serverconfig.model;
 
-import com.atlassian.theplugin.configuration.ServerBean;
+import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.ServerType;
 
 /**
@@ -12,7 +12,7 @@ import com.atlassian.theplugin.ServerType;
 public class CrucibleServerNode extends ServerNode {
 	static final long serialVersionUID = -5578412486422465295L;
 	
-	public CrucibleServerNode(ServerBean aServer) {
+	public CrucibleServerNode(Server aServer) {
 		super(aServer);
 	}
 

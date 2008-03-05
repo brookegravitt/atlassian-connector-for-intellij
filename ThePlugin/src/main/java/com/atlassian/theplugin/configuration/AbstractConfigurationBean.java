@@ -13,7 +13,7 @@ public class AbstractConfigurationBean implements ProductServerConfiguration {
 
     public AbstractConfigurationBean(ProductServerConfiguration cfg) {
 		for (Server server : cfg.getServers()) {
-			ServerBean newServer = new ServerBean(server);
+			Server newServer = new ServerBean(server);
 			storeServer(newServer);
 		}
 	}
@@ -73,7 +73,7 @@ public class AbstractConfigurationBean implements ProductServerConfiguration {
 
     @Transient
 	public void storeServer(Server server) {
-        ServerBean foundServer = (ServerBean) getServer(server);
+        Server foundServer = getServer(server);
         if (foundServer == null) {
             servers.add((ServerBean) server);
         } else {
@@ -93,10 +93,10 @@ public class AbstractConfigurationBean implements ProductServerConfiguration {
     }
 
     @Transient
-	public synchronized void removeServer(Server server) {
-        for (ServerBean serverBean : servers) {
-            if (serverBean.getUid() == server.getUid()) {
-                servers.remove(serverBean);
+	public synchronized void removeServer(Server serverToRemove) {
+        for (Server server : servers) {
+            if (server.getUid() == serverToRemove.getUid()) {
+                servers.remove(server);
                 break;
             }
         }
