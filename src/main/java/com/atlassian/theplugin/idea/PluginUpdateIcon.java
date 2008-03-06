@@ -60,17 +60,19 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 			this.timer.cancel();
 			this.timer = null;
 		}
-		hideIcon();	//To change body of overridden methods use File | Settings | File Templates.
+		hideIcon();
 	}
 
 	protected void innerShowIcon() {
-		showIcon();	//To change body of overridden methods use File | Settings | File Templates.
-		this.timer = new Timer();
-		timer.scheduleAtFixedRate(new TimerTask() {
-			public void run() {
-				blinkIcon();
-			}
-		}, 0, ICON_BLINK_TIME);
+		if (!isIconShown()) {
+			showIcon();	//To change body of overridden methods use File | Settings | File Templates.
+			this.timer = new Timer();
+			timer.scheduleAtFixedRate(new TimerTask() {
+				public void run() {
+					blinkIcon();
+				}
+			}, 0, ICON_BLINK_TIME);
+		}
 	}
 
 	/**
@@ -81,11 +83,11 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 		innerShowIcon();
 		try {
 			this.setToolTipText("New version (" + newVersion.getVersion() + ") of the "
-					+ PluginInfoUtil.getName() + " available");
+					+ PluginUtil.getName() + " available");
 		} catch (VersionServiceException e) {
-			LOGGER.info(e.getMessage(), e);
+			PluginUtil.getLogger().error(e.getMessage(), e);
 		} catch (IncorrectVersionException e) {
-			LOGGER.info(e.getMessage(), e);
+			PluginUtil.getLogger().error(e.getMessage(), e);
 		}
 	}
 
