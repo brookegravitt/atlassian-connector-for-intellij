@@ -6,6 +6,7 @@ import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.util.PicoUtil;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
@@ -57,7 +58,7 @@ public class ThePluginApplicationComponent
 
 	@Nls
 	public String getDisplayName() {
-		return PluginInfoUtil.getName();
+		return PluginUtil.getName();
 	}
 
 	@Nullable
@@ -101,7 +102,6 @@ public class ThePluginApplicationComponent
 		this.bambooStatusChecker = bambooStatusChecker;
 		this.schedulableComponents = schedulableComponents; /* get lost, findbugs! */
 		this.configPanel = configPanel;
-
 		ConfigurationFactory.setConfiguration(configuration);
 	}
 
@@ -124,8 +124,8 @@ public class ThePluginApplicationComponent
 	 * @param rightNow set to false if the first execution should be delayed by {@link #TIMER_START_DELAY}.
 	 */
 	public void rescheduleStatusCheckers(boolean rightNow) {
+		PluginUtil.getLogger().error("test");
 		disableTimers();
-
 		long delay = rightNow ? 0 : TIMER_START_DELAY;
 
 		for (SchedulableComponent component : schedulableComponents) {

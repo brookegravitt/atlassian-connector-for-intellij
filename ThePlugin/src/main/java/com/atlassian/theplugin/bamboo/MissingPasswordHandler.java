@@ -1,11 +1,11 @@
 package com.atlassian.theplugin.bamboo;
 
 import com.atlassian.theplugin.ServerType;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PasswordDialog;
-import com.atlassian.theplugin.idea.PluginInfoUtil;
 import com.atlassian.theplugin.idea.ThePluginApplicationComponent;
 
 import javax.swing.*;
@@ -37,7 +37,7 @@ public class MissingPasswordHandler implements Runnable {
 				JPanel panel = dialog.getPasswordPanel();
 
 				int answer = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(), panel,
-						PluginInfoUtil.getName(), OK_CANCEL_OPTION, PLAIN_MESSAGE);
+						PluginUtil.getName(), OK_CANCEL_OPTION, PLAIN_MESSAGE);
 
 				if (answer == JOptionPane.OK_OPTION) {
 					String password = dialog.getPasswordString();
@@ -57,7 +57,7 @@ public class MissingPasswordHandler implements Runnable {
 			if (wasCanceled) {
 				JOptionPane.showMessageDialog(null,
 						"You can always change password by changing plugin settings (Preferences | IDE Settings | "
-								+ PluginInfoUtil.getName() + ")");
+								+ PluginUtil.getName() + ")");
 			}
 			isDialogShown = false;
 		}
