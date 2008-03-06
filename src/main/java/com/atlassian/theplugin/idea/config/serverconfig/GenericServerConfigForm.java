@@ -9,6 +9,8 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import static com.intellij.openapi.ui.Messages.showMessageDialog;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -220,7 +222,7 @@ public class GenericServerConfigForm extends JComponent implements ServerPanel {
 
 				testConnectionThread.start();
 
-				while (testConnectionThread.isRunning()) {
+				while (testConnectionThread.getConnectionState() == TestConnectionThread.ConnectionState.NOT_FINISHED) {
 					try {
 						if (indicator.isCanceled()) {
 							testConnectionThread.setInterrupted();
@@ -232,6 +234,27 @@ public class GenericServerConfigForm extends JComponent implements ServerPanel {
 					} catch (InterruptedException e) {
 						log.info(e.getMessage());
 					}
+				}
+
+				if (testConnectionThread.getConnectionState() == TestConnectionThread.ConnectionState.SUCCEEDED) {
+					EventQueue.invokeLater(new Runnable() {
+						public void run() {
+							showMessageDialog("Connected successfully", "Connection OK", Messages.getInformationIcon());
+						}
+					});
+				} else if (testConnectionThread.getConnectionState() == TestConnectionThread.ConnectionState.FAILED) {
+					EventQueue.invokeLater(new Runnable() {
+						public void run() {
+							showMessageDialog(testConnectionThread.getErrorMessage(),
+									"Connection Error", Messages.getErrorIcon());
+						}
+					});
+				} else if (testConnectionThread.getConnectionState() == TestConnectionThread.ConnectionState.INTERUPTED) {
+					log.debug("Cancel was pressed during 'Test Connection' operation");
+				} else {
+					// todo should be log.warn
+					log.info("Unexpected 'Test Connection' thread state: "
+							+ testConnectionThread.getConnectionState().toString());
 				}
 			}
 		}
