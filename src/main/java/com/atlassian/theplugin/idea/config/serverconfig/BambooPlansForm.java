@@ -17,13 +17,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by IntelliJ IDEA.
- * User: mwent
- * Date: 2008-03-05
- * Time: 19:49:51
- * To change this template use File | Settings | File Templates.
- */
+
 public class BambooPlansForm extends JComponent {
 	private JPanel statusPanel;
 	private JPanel toolbarPanel;
