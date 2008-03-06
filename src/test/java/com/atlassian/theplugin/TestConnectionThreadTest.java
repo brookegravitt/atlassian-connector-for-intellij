@@ -1,9 +1,8 @@
 package com.atlassian.theplugin;
 
-import junit.framework.TestCase;
-import com.atlassian.theplugin.idea.config.serverconfig.ConnectionTester;
 import com.atlassian.theplugin.exception.ThePluginException;
-import com.atlassian.theplugin.TestConnectionThread;
+import com.atlassian.theplugin.idea.config.serverconfig.ConnectionTester;
+import junit.framework.TestCase;
 
 
 public class TestConnectionThreadTest extends TestCase {
@@ -38,7 +37,6 @@ public class TestConnectionThreadTest extends TestCase {
 
 		assertEquals(TestConnectionThread.ConnectionState.NOT_FINISHED, testConnectionThread.getConnectionState());
 		testConnectionThread.start();
-		assertEquals(TestConnectionThread.ConnectionState.NOT_FINISHED, testConnectionThread.getConnectionState());
 		testConnectionThread.setInterrupted();
 		assertEquals(TestConnectionThread.ConnectionState.INTERUPTED, testConnectionThread.getConnectionState());
 
@@ -61,7 +59,6 @@ public class TestConnectionThreadTest extends TestCase {
 
 		assertEquals(TestConnectionThread.ConnectionState.NOT_FINISHED, testConnectionThread.getConnectionState());
 		testConnectionThread.start();
-		assertEquals(TestConnectionThread.ConnectionState.NOT_FINISHED, testConnectionThread.getConnectionState());
 
 		try {
 			// wait for the connection thread
@@ -82,7 +79,6 @@ public class TestConnectionThreadTest extends TestCase {
 
 		assertEquals(TestConnectionThread.ConnectionState.NOT_FINISHED, testConnectionThread.getConnectionState());
 		testConnectionThread.start();
-		assertEquals(TestConnectionThread.ConnectionState.NOT_FINISHED, testConnectionThread.getConnectionState());
 
 		try {
 			// wait for the connection thread
