@@ -2,30 +2,20 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerBean;
-import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.TestConnectionThread;
+import com.atlassian.theplugin.idea.TestConnectionListener;
 import com.atlassian.theplugin.util.Util;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.ProgressManager;
-import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.project.Project;
-import static com.intellij.openapi.ui.Messages.showMessageDialog;
-import com.intellij.openapi.ui.Messages;
+import com.atlassian.theplugin.LoginDataProvided;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import org.apache.log4j.Category;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import static java.lang.Thread.sleep;
 
 /**
  * Plugin configuration form.
  */
-public class GenericServerConfigForm extends JComponent implements ServerPanel {
+public class GenericServerConfigForm extends JComponent implements ServerPanel, LoginDataProvided {
 	private JPanel rootComponent;
 	private JTextField serverName;
 	private JTextField serverUrl;
@@ -40,7 +30,7 @@ public class GenericServerConfigForm extends JComponent implements ServerPanel {
 	public GenericServerConfigForm(final ConnectionTester tester) {
 
 		$$$setupUI$$$();
-		testConnection.addActionListener(new TestConnectionListener(tester));
+		testConnection.addActionListener(new TestConnectionListener(tester, this));
 	}
 
 	public void setData(Server server) {
@@ -107,6 +97,18 @@ public class GenericServerConfigForm extends JComponent implements ServerPanel {
 	}
 
 	private void createUIComponents() {
+	}
+
+	public String getServerUrl() {
+		return serverUrl.getText();
+	}
+
+	public String getUserName() {
+		return username.getText();
+	}
+
+	public String getPassword() {
+		return String.valueOf(password.getPassword());
 	}
 
 	/**
@@ -181,82 +183,5 @@ public class GenericServerConfigForm extends JComponent implements ServerPanel {
 	 */
 	public JComponent $$$getRootComponent$$$() {
 		return rootComponent;
-	}
-
-	private class TestConnectionListener implements ActionListener {
-
-		private ConnectionTester connectionTester = null;
-
-		public TestConnectionListener(ConnectionTester tester) {
-			connectionTester = tester;
-		}
-
-		public void actionPerformed(ActionEvent e) {
-
-			Task.Modal testConnectionTask =	new TestConnectionTask(
-					IdeaHelper.getCurrentProject(), "Testing Connection", true, connectionTester);
-			testConnectionTask.setCancelText("Stop");
-
-			ProgressManager.getInstance().run(testConnectionTask);
-		}
-
-		private class TestConnectionTask extends Task.Modal {
-
-			private TestConnectionThread testConnectionThread = null;
-			private static final int CHECK_CANCEL_INTERVAL = 500;	// miliseconds
-			private final Category log = Category.getInstance(TestConnectionTask.class);
-
-			public TestConnectionTask(Project currentProject, String title, boolean canBeCanceled, ConnectionTester tester) {
-
-				super(currentProject, title, canBeCanceled);
-
-				testConnectionThread = new TestConnectionThread(tester,
-						serverUrl.getText(), username.getText(), String.valueOf(password.getPassword()));
-			}
-
-			public void run(ProgressIndicator indicator) {
-
-				indicator.setText("Connecting...");
-				indicator.setFraction(0);
-				indicator.setIndeterminate(true);
-
-				testConnectionThread.start();
-
-				while (testConnectionThread.getConnectionState() == TestConnectionThread.ConnectionState.NOT_FINISHED) {
-					try {
-						if (indicator.isCanceled()) {
-							testConnectionThread.setInterrupted();
-							//t.interrupt();
-							break;
-						} else {
-							sleep(CHECK_CANCEL_INTERVAL);
-						}
-					} catch (InterruptedException e) {
-						log.info(e.getMessage());
-					}
-				}
-
-				if (testConnectionThread.getConnectionState() == TestConnectionThread.ConnectionState.SUCCEEDED) {
-					EventQueue.invokeLater(new Runnable() {
-						public void run() {
-							showMessageDialog("Connected successfully", "Connection OK", Messages.getInformationIcon());
-						}
-					});
-				} else if (testConnectionThread.getConnectionState() == TestConnectionThread.ConnectionState.FAILED) {
-					EventQueue.invokeLater(new Runnable() {
-						public void run() {
-							showMessageDialog(testConnectionThread.getErrorMessage(),
-									"Connection Error", Messages.getErrorIcon());
-						}
-					});
-				} else if (testConnectionThread.getConnectionState() == TestConnectionThread.ConnectionState.INTERUPTED) {
-					log.debug("Cancel was pressed during 'Test Connection' operation");
-				} else {
-					// todo should be log.warn
-					log.info("Unexpected 'Test Connection' thread state: "
-							+ testConnectionThread.getConnectionState().toString());
-				}
-			}
-		}
 	}
 }
