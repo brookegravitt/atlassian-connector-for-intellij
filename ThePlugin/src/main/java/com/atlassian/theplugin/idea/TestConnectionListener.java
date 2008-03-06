@@ -8,6 +8,7 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import static com.intellij.openapi.ui.Messages.showMessageDialog;
 import org.apache.log4j.Category;
 
 import java.awt.*;
@@ -15,11 +16,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * Created by IntelliJ IDEA.
-* User: Jacek
-* Date: 2008-03-06
-* Time: 15:36:41
-* To change this template use File | Settings | File Templates.
+ * Listens for the click action (usually on a Test Connection button), displays progress dialog with Cancel button
+ * 
 */
 public class TestConnectionListener implements ActionListener {
 
@@ -79,13 +77,13 @@ public class TestConnectionListener implements ActionListener {
 			if (testConnectionThread.getConnectionState() == TestConnectionThread.ConnectionState.SUCCEEDED) {
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
-						com.intellij.openapi.ui.Messages.showMessageDialog("Connected successfully", "Connection OK", Messages.getInformationIcon());
+						showMessageDialog("Connected successfully", "Connection OK", Messages.getInformationIcon());
 					}
 				});
 			} else if (testConnectionThread.getConnectionState() == TestConnectionThread.ConnectionState.FAILED) {
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
-						com.intellij.openapi.ui.Messages.showMessageDialog(testConnectionThread.getErrorMessage(),
+						showMessageDialog(testConnectionThread.getErrorMessage(),
 								"Connection Error", Messages.getErrorIcon());
 					}
 				});
