@@ -1,9 +1,6 @@
 package com.atlassian.theplugin.bamboo;
 
-import com.atlassian.theplugin.bamboo.api.BambooException;
-import com.atlassian.theplugin.bamboo.api.BambooLoginException;
-import com.atlassian.theplugin.bamboo.api.BambooLoginFailedException;
-import com.atlassian.theplugin.bamboo.api.BambooSession;
+import com.atlassian.theplugin.bamboo.api.*;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.configuration.SubscribedPlan;
@@ -19,7 +16,7 @@ import java.util.*;
  * Time: 5:12:27 PM
  */
 public class BambooServerFacadeImpl implements BambooServerFacade {
-	private Map<Server, BambooSession> sessions = new HashMap<Server, BambooSession>();
+	private Map<Server, BambooSession> sessions = new WeakHashMap<Server, BambooSession>();
 
 	private static final Category LOG = Logger.getInstance(BambooServerFacadeImpl.class);
 
@@ -30,9 +27,11 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 		// @todo old server will stay on map - remove them !!!
 		BambooSession session = sessions.get(server);
 		if (session == null) {
-			session = new BambooSession(server.getUrlString());
-			session.login(server.getUserName(), server.getPasswordString().toCharArray());
+			session = new AutoRenewBambooSession(server.getUrlString());
 			sessions.put(server, session);
+		}
+		if (!session.isLoggedIn()) {
+			session.login(server.getUserName(), server.getPasswordString().toCharArray());
 		}
 		return session;
 	}
@@ -47,7 +46,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 	 * @see BambooLoginFailedException
 	 */
 	public void testServerConnection(String url, String userName, String password) throws BambooLoginException {
-		BambooSession apiHandler = new BambooSession(url);
+		BambooSession apiHandler = new AutoRenewBambooSession(url);
 		apiHandler.login(userName, password.toCharArray());
 		apiHandler.logout();
 	}
@@ -106,7 +105,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 	 * @return results on subscribed builds
 	 * @throws ServerPasswordNotProvidedException
 	 *          when invoked for Server that has not had the password set yet
-	 * @see com.atlassian.theplugin.bamboo.api.BambooSession#login(String, char[])
+	 * @see com.atlassian.theplugin.bamboo.api.BambooSessionImpl#login(String, char[])
 	 */
 	public Collection<BambooBuild> getSubscribedPlansResults(Server bambooServer)
 			throws ServerPasswordNotProvidedException {
@@ -140,9 +139,12 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 			for (BambooPlan bambooPlan : plansForServer) {
 				if (bambooPlan.isFavourite()) {
 					if (api != null && api.isLoggedIn()) {
-						BambooBuild buildInfo = api.getLatestBuildForPlan(bambooPlan.getPlanKey());
-						((BambooBuildInfo) buildInfo).setEnabled(bambooPlan.isEnabled());
-						builds.add(buildInfo);
+						try {
+							BambooBuild buildInfo = api.getLatestBuildForPlan(bambooPlan.getPlanKey());
+							((BambooBuildInfo) buildInfo).setEnabled(bambooPlan.isEnabled());
+							builds.add(buildInfo);
+						} catch (BambooException e) {
+						}
 					} else {
 						builds.add(constructBuildErrorInfo(
 								bambooServer.getUrlString(),
@@ -154,16 +156,19 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 		} else {
 			for (SubscribedPlan plan : bambooServer.getSubscribedPlans()) {
 				if (api != null && api.isLoggedIn()) {
-					BambooBuild buildInfo = api.getLatestBuildForPlan(plan.getPlanId());
-					((BambooBuildInfo) buildInfo).setEnabled(true);
-					if (plansForServer != null) {
-						for (BambooPlan bambooPlan : plansForServer) {
-							if (plan.getPlanId().equals(bambooPlan.getPlanKey())) {
-								((BambooBuildInfo) buildInfo).setEnabled(bambooPlan.isEnabled());
+					try {
+						BambooBuild buildInfo = api.getLatestBuildForPlan(plan.getPlanId());
+						((BambooBuildInfo) buildInfo).setEnabled(true);
+						if (plansForServer != null) {
+							for (BambooPlan bambooPlan : plansForServer) {
+								if (plan.getPlanId().equals(bambooPlan.getPlanKey())) {
+									((BambooBuildInfo) buildInfo).setEnabled(bambooPlan.isEnabled());
+								}
 							}
 						}
+						builds.add(buildInfo);
+					} catch (BambooException e) {
 					}
-					builds.add(buildInfo);
 				} else {
 					builds.add(constructBuildErrorInfo(
 							bambooServer.getUrlString(), plan.getPlanId(), connectionErrorMessage));
