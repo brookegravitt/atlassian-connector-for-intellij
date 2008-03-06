@@ -144,6 +144,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 							((BambooBuildInfo) buildInfo).setEnabled(bambooPlan.isEnabled());
 							builds.add(buildInfo);
 						} catch (BambooException e) {
+							// go ahead, there are other builds
 						}
 					} else {
 						builds.add(constructBuildErrorInfo(
@@ -168,6 +169,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 						}
 						builds.add(buildInfo);
 					} catch (BambooException e) {
+						// go ahead, there are other builds
 					}
 				} else {
 					builds.add(constructBuildErrorInfo(
