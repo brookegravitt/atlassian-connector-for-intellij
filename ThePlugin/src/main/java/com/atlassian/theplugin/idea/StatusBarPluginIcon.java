@@ -12,19 +12,27 @@ public abstract class StatusBarPluginIcon extends JLabel {
 	private StatusBar statusBar = null;
 	private Project project;
 
+	private boolean isIconShown = false;
+
 	public StatusBarPluginIcon(Project aProject) {
 		this.project = aProject;
 		statusBar = WindowManager.getInstance().getStatusBar(project);
 	}
 
 	public void hideIcon() {
-		statusBar.removeCustomIndicationComponent(this);
-		WindowManager.getInstance().getFrame(project).repaint();
+		if (isIconShown) {
+			statusBar.removeCustomIndicationComponent(this);
+			WindowManager.getInstance().getFrame(project).repaint();
+			isIconShown = false;
+		}
 	}
 
 	public void showIcon() {
-		statusBar.addCustomIndicationComponent(this);
-		WindowManager.getInstance().getFrame(project).repaint();
+		if (!isIconShown) {
+			statusBar.addCustomIndicationComponent(this);
+			WindowManager.getInstance().getFrame(project).repaint();
+			isIconShown = true;
+		}
 	}
 
 	/**
@@ -37,5 +45,9 @@ public abstract class StatusBarPluginIcon extends JLabel {
 		} else {
 			hideIcon();
 		}
+	}
+
+	public boolean isIconShown() {
+		return isIconShown;
 	}
 }
