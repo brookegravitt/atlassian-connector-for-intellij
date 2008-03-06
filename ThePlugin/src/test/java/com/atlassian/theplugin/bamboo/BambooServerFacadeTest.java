@@ -126,6 +126,7 @@ public class BambooServerFacadeTest extends TestCase {
 		}
 
 		mockServer.expect("/api/rest/login.action", new ErrorResponse(400));
+		mockServer.expect("/api/rest/login.action", new ErrorResponse(400));
 		// connection error, just report without asking for the pass
 		Collection<BambooBuild> plans = testedBambooServerFacade.getSubscribedPlansResults(server);
 		assertNotNull(plans);
@@ -135,7 +136,7 @@ public class BambooServerFacadeTest extends TestCase {
 		Util.verifyError400BuildResult(iterator.next());
 		Util.verifyError400BuildResult(iterator.next());
 
-		((ServerBean) server).setUrlString("malformed");
+		server.setUrlString("malformed");
 		plans = testedBambooServerFacade.getSubscribedPlansResults(server);
 		assertNotNull(plans);
 		assertEquals(3, plans.size());
@@ -237,6 +238,9 @@ public class BambooServerFacadeTest extends TestCase {
 
 	public void testBambooConnectionWithEmptyPlan() throws BambooLoginException, CloneNotSupportedException, ServerPasswordNotProvidedException {
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/listBuildNames.action", new PlanListCallback());
+		mockServer.expect("/api/rest/getLatestUserBuilds.action", new FavouritePlanListCallback());
+				
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
 		server.getSubscribedPlans().clear();
 		BambooServerFacade facade = new BambooServerFacadeImpl();
