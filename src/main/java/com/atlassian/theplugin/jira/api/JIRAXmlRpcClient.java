@@ -6,7 +6,7 @@
  */
 package com.atlassian.theplugin.jira.api;
 
-import com.intellij.openapi.diagnostic.Logger;
+import com.atlassian.theplugin.util.PluginUtil;
 import org.apache.xmlrpc.XmlRpcClient;
 import org.apache.xmlrpc.XmlRpcException;
 
@@ -15,7 +15,6 @@ import java.net.MalformedURLException;
 import java.util.*;
 
 public class JIRAXmlRpcClient {
-    private static final Logger LOGGER = Logger.getInstance(JIRAXmlRpcClient.class.getName());
 
     private String serverUrl;
     private String token;
@@ -118,7 +117,7 @@ public class JIRAXmlRpcClient {
         params.add(token);
         params.add(projectKey);
 
-        LOGGER.info("Getting components for project: " + projectKey);
+        PluginUtil.getLogger().info("Getting components for project: " + projectKey);
 
         try {
             List projects = (List) client.execute("jira1.getComponents", params);
@@ -141,7 +140,7 @@ public class JIRAXmlRpcClient {
         params.add(token);
         params.add(projectKey);
 
-        LOGGER.info("Getting project versions: " + token + " | " + projectKey);
+        PluginUtil.getLogger().info("Getting project versions: " + token + " | " + projectKey);
 
         try {
             List versions = (List) client.execute("jira1.getVersions", params);

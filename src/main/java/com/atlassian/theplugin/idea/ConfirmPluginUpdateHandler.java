@@ -1,8 +1,6 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.util.InfoServer;
-import org.apache.log4j.Category;
-import org.apache.log4j.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -15,7 +13,6 @@ public class ConfirmPluginUpdateHandler implements Runnable {
 	private static ConfirmPluginUpdateHandler instance;
 	private InfoServer.VersionInfo versionInfo;
 	private PluginUpdateIcon display;
-	private static final Category LOGGER = Logger.getInstance(PluginStatusBarToolTip.class);
 
 	public void run() {
 		if (display != null) {

@@ -2,7 +2,7 @@ package com.atlassian.theplugin.util;
 
 import com.atlassian.theplugin.exception.VersionServiceException;
 import com.atlassian.theplugin.exception.IncorrectVersionException;
-import com.atlassian.theplugin.idea.PluginInfoUtil;
+import com.atlassian.theplugin.util.PluginUtil;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.jdom.Document;
@@ -100,10 +100,10 @@ public class InfoServer {
 				xpath = XPath.newInstance(path);
 				element = (Element) xpath.selectSingleNode(doc);
 				if (element == null) {
-					throw new VersionServiceException("Error while parsing " + PluginInfoUtil.VERSION_INFO_URL);
+					throw new VersionServiceException("Error while parsing " + PluginUtil.VERSION_INFO_URL);
 				}
 			} catch (JDOMException e) {
-				throw new VersionServiceException("Error while parsing " + PluginInfoUtil.VERSION_INFO_URL, e);
+				throw new VersionServiceException("Error while parsing " + PluginUtil.VERSION_INFO_URL, e);
 			}
 			return element.getValue();
 		}
@@ -280,6 +280,11 @@ public class InfoServer {
 
 		public int hashCode() {
 			return (version != null ? version.hashCode() : 0);
+		}
+
+		@Override
+		public String toString() {
+			return version;
 		}
 
 		public Integer getBuildNo() {

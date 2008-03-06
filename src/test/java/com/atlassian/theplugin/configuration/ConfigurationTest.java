@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.configuration;
 
-import com.atlassian.theplugin.idea.PluginInfoUtil;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.ServerType;
 import junit.framework.TestCase;
 
@@ -102,6 +102,6 @@ public class ConfigurationTest extends TestCase {
 
 
 	public void testProjectSettings() {
-        assertEquals("Atlassian", PluginInfoUtil.getName());
+        assertEquals("Atlassian", PluginUtil.getName());
     }
 }

@@ -1,12 +1,11 @@
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.exception.VersionServiceException;
 import com.atlassian.theplugin.exception.IncorrectVersionException;
+import com.atlassian.theplugin.exception.VersionServiceException;
 import com.atlassian.theplugin.util.InfoServer;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
-import org.apache.log4j.Category;
-import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
@@ -15,7 +14,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class PluginUpdateIcon extends StatusBarPluginIcon {
-	private static final Category LOGGER = Logger.getInstance(PluginStatusBarToolTip.class);
 
 	private static final Icon ICON_BLINK_ON = IconLoader.getIcon("/icons/icn_update_16.png");
 	private static final Icon ICON_BLINK_OFF = IconLoader.getIcon("/icons/icn_update_16-empty.png");
@@ -33,12 +31,12 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 				String message = null;
 				try {
 					message = "New plugin version " + version.getVersion() + " is available. "
-							+ "Your version is " + PluginInfoUtil.getVersion()
+							+ "Your version is " + PluginUtil.getVersion()
 							+ ". Do you want to download and install?";
 				} catch (VersionServiceException e1) {
-					LOGGER.info("Error retrieving new version: " + e1.getMessage(), e1);
+					PluginUtil.getLogger().error("Error retrieving new version: " + e1.getMessage(), e1);
 				} catch (IncorrectVersionException e1) {
-					LOGGER.info("Error retrieving new version: " + e1.getMessage(), e1);
+					PluginUtil.getLogger().error("Error retrieving new version: " + e1.getMessage(), e1);
 				}
 				String title = "New plugin version download";
 
@@ -83,11 +81,11 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 		innerShowIcon();
 		try {
 			this.setToolTipText("New version (" + newVersion.getVersion() + ") of the "
-					+ PluginInfoUtil.getName() + " available");
+					+ PluginUtil.getName() + " available");
 		} catch (VersionServiceException e) {
-			LOGGER.info(e.getMessage(), e);
+			PluginUtil.getLogger().warn(e.getMessage(), e);
 		} catch (IncorrectVersionException e) {
-			LOGGER.info(e.getMessage(), e);
+			PluginUtil.getLogger().warn(e.getMessage(), e);
 		}
 	}
 

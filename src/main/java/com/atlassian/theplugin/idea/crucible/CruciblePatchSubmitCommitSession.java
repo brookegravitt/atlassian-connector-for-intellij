@@ -15,18 +15,14 @@ import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.diff.Diff;
 import com.intellij.vcsUtil.VcsUtil;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.util.Collection;
 
 public class CruciblePatchSubmitCommitSession implements CommitSession {
-	private static final Logger LOG = Logger.getLogger("#com.intellij.openapi.diff.DiffData");
-
 	{
-		LOG.setLevel(Level.ALL);
+		//PluginUtil.getLogger().setLevel(Level.ALL);
 	}
 
 	@SuppressWarnings("unused")

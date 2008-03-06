@@ -4,10 +4,10 @@ import com.atlassian.theplugin.bamboo.api.*;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.configuration.SubscribedPlan;
-import org.apache.log4j.Category;
-import org.apache.log4j.Logger;
+import com.atlassian.theplugin.util.PluginUtil;
 
 import java.util.*;
+
 
 /**
  * Class used for communication wiht Bamboo Server.
@@ -17,8 +17,6 @@ import java.util.*;
  */
 public class BambooServerFacadeImpl implements BambooServerFacade {
 	private Map<Server, BambooSession> sessions = new WeakHashMap<Server, BambooSession>();
-
-	private static final Category LOG = Logger.getInstance(BambooServerFacadeImpl.class);
 
 	public BambooServerFacadeImpl() {
 	}
@@ -63,7 +61,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 		try {
 			return getSession(bambooServer).listProjectNames();
 		} catch (BambooException e) {
-			LOG.info("Bamboo exception: " + e.getMessage());
+			PluginUtil.getLogger().error("Bamboo exception: " + e.getMessage());
 			return null;
 		}
 	}
@@ -118,13 +116,13 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 			connectionErrorMessage = "";
 		} catch (BambooLoginFailedException e) {
 			if (bambooServer.getIsConfigInitialized()) {
-				LOG.info("Bamboo login exception: " + e.getMessage());
+				PluginUtil.getLogger().error("Bamboo login exception: " + e.getMessage());
 				connectionErrorMessage = e.getMessage();
 			} else {
 				throw new ServerPasswordNotProvidedException();
 			}
 		} catch (BambooLoginException e) {
-			LOG.info("Bamboo login exception: " + e.getMessage());
+			PluginUtil.getLogger().error("Bamboo login exception: " + e.getMessage());
 			connectionErrorMessage = e.getMessage();
 		}
 
@@ -188,7 +186,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 			BambooSession api = getSession(bambooServer);
 			return api.getBuildResultDetails(buildKey, buildNumber);
 		} catch (BambooException e) {
-			LOG.info("Bamboo exception: " + e.getMessage());
+			PluginUtil.getLogger().info("Bamboo exception: " + e.getMessage());
 			return null;
 		}
 	}
@@ -199,7 +197,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 			BambooSession api = getSession(bambooServer);
 			api.addLabelToBuild(buildKey, buildNumber, buildLabel);
 		} catch (BambooException e) {
-			LOG.info("Bamboo exception: " + e.getMessage());
+			PluginUtil.getLogger().info("Bamboo exception: " + e.getMessage());
 		}
 	}
 
@@ -209,7 +207,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 			BambooSession api = getSession(bambooServer);
 			api.addCommentToBuild(buildKey, buildNumber, buildComment);
 		} catch (BambooException e) {
-			LOG.info("Bamboo exception: " + e.getMessage());
+			PluginUtil.getLogger().info("Bamboo exception: " + e.getMessage());
 		}
 	}
 
@@ -225,7 +223,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 		try {
 			return getSession(bambooServer).getFavouriteUserPlans();
 		} catch (BambooException e) {
-			LOG.info("Bamboo exception: " + e.getMessage());
+			PluginUtil.getLogger().error("Bamboo exception: " + e.getMessage());
 			return null;
 		}
 	}
