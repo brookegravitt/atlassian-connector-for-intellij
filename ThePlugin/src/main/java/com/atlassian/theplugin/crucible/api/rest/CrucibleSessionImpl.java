@@ -48,7 +48,7 @@ public class CrucibleSessionImpl implements CrucibleSession {
 	private static final int CONNECTION_TIMOUT = 20000;
 
 	/**
-	 * Public constructor for BambooSession.
+	 * Public constructor for BambooSessionImpl.
 	 *
 	 * @param baseUrl base URL for Bamboo instance
 	 */
