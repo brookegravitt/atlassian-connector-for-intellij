@@ -16,7 +16,7 @@ import java.util.List;
 
 
 /**
- * Test case for {#link BambooSession}
+ * Test case for {#link BambooSessionImpl}
  */
 public class CrucibleSessionTest extends TestCase {
 	private static final String USER_NAME = "someUser";
