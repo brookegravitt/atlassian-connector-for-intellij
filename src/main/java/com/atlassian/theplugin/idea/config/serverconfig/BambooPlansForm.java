@@ -12,64 +12,43 @@ import com.intellij.uiDesigner.core.Spacer;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
-public class BambooPlansForm extends JPanel {
+/**
+ * Created by IntelliJ IDEA.
+ * User: mwent
+ * Date: 2008-03-05
+ * Time: 19:49:51
+ * To change this template use File | Settings | File Templates.
+ */
+public class BambooPlansForm extends JComponent {
+	private JPanel statusPanel;
+	private JPanel toolbarPanel;
 	private JCheckBox cbUseFavuriteBuilds;
-	private JList list;
-	private DefaultListModel model;
 	private JButton btRefresh;
+	private JList list;
+	private JPanel rootComponent;
+	private JEditorPane statusPane;
+
+	private DefaultListModel model;
 
 	private boolean isListModified;
 	private Boolean isUseFavourite = null;
 	private transient Server originalServer;
 	private transient Server queryServer;
-	private Map<String, List<BambooPlanItem>> serverPlans = new HashMap<String, List<BambooPlanItem>>();
+	private Map<String, java.util.List<BambooPlanItem>> serverPlans = new HashMap<String, java.util.List<BambooPlanItem>>();
 	private transient final BambooServerFacade bambooServerFacade;
 	private final ServerPanel serverPanel;
 
 	public BambooPlansForm(BambooServerFacade bambooServerFacade, ServerPanel serverPanel) {
-		this.serverPanel = serverPanel;
 		this.bambooServerFacade = bambooServerFacade;
-		this.setLayout(new GridLayoutManager(2, 1, new Insets(5, 5, 5, 5), -1, -1));
-		this.setBorder(BorderFactory.createTitledBorder("Build plans"));
-		final JPanel panel1 = new JPanel();
-		panel1.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
-		this.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER,
-				GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-		cbUseFavuriteBuilds = new JCheckBox();
-		cbUseFavuriteBuilds.setText("Use Favourite Builds For Server");
-		cbUseFavuriteBuilds.setMnemonic('F');
-		cbUseFavuriteBuilds.setDisplayedMnemonicIndex(4);
-		panel1.add(cbUseFavuriteBuilds, new GridConstraints(0, 0, 1, 1,
-				GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-				GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-		final Spacer spacer1 = new Spacer();
-		panel1.add(spacer1, new GridConstraints(0, 1, 1, 1,
-				GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
-				GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
-		btRefresh = new JButton();
-		btRefresh.setText("Refresh");
-		btRefresh.setMnemonic('R');
-		btRefresh.setDisplayedMnemonicIndex(0);
-		panel1.add(btRefresh, new GridConstraints(0, 2, 1, 1,
-				GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
-				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-				GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-		final JScrollPane scrollPane1 = new JScrollPane();
-		this.add(scrollPane1, new GridConstraints(1, 0, 1, 1,
-				GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
-				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
-				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+		this.serverPanel = serverPanel;
 
-		model = new DefaultListModel();
-		list = new JList(model);
-		list.setCellRenderer(new PlanListCellRenderer());
-		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		scrollPane1.setViewportView(list);
+		$$$setupUI$$$();
+
 		list.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
 				int index = list.locationToIndex(e.getPoint());
@@ -125,7 +104,7 @@ public class BambooPlansForm extends JPanel {
 
 	private void setModifiedState() {
 		isListModified = false;
-		List<BambooPlanItem> local = serverPlans.get(getServerKey(originalServer));
+		java.util.List<BambooPlanItem> local = serverPlans.get(getServerKey(originalServer));
 		for (int i = 0; i < model.getSize(); i++) {
 			if (local.get(i) != null) {
 				if (((BambooPlanItem) model.getElementAt(i)).isSelected()
@@ -153,53 +132,65 @@ public class BambooPlansForm extends JPanel {
 			cbUseFavuriteBuilds.setSelected(server.getUseFavourite());
 		}
 		model.removeAllElements();
-		model.addElement("  Waiting for server plans...");
+		statusPane.setText("Waiting for server plans...");
 
 		new Thread(new Runnable() {
 			public void run() {
+				StringBuffer msg = new StringBuffer();
 				String key = getServerKey(server);
 				if (!serverPlans.containsKey(key)) {
 					Collection<BambooPlan> plans = null;
 					try {
 						plans = bambooServerFacade.getPlanList(server);
 					} catch (ServerPasswordNotProvidedException e) {
+						msg.append("Unable to connect: password for server not provided\n");
 					} catch (BambooException e) {
+						msg.append("Unable to connect: ");
+						msg.append(e.getMessage());
+						msg.append("\n");
 					}
-					List<BambooPlanItem> plansForServer = new ArrayList<BambooPlanItem>();
+					java.util.List<BambooPlanItem> plansForServer = new ArrayList<BambooPlanItem>();
 					if (plans != null) {
 						for (BambooPlan plan : plans) {
 							plansForServer.add(new BambooPlanItem(plan, false));
 						}
+						msg.append("Build plans updated from server\n");
 					}
-					for (SubscribedPlan sPlan : server.getSubscribedPlans()) {
-						boolean exists = false;
-						for (BambooPlanItem bambooPlanItem : plansForServer) {
-							if (bambooPlanItem.getPlan().getPlanKey().equals(sPlan.getPlanId())) {
-								exists = true;
-								break;
+					if (!server.getSubscribedPlans().isEmpty()) {
+						for (SubscribedPlan sPlan : server.getSubscribedPlans()) {
+							boolean exists = false;
+							for (BambooPlanItem bambooPlanItem : plansForServer) {
+								if (bambooPlanItem.getPlan().getPlanKey().equals(sPlan.getPlanId())) {
+									exists = true;
+									break;
+								}
+							}
+							if (!exists) {
+								BambooPlanData p = new BambooPlanData(sPlan.getPlanId(), sPlan.getPlanId());
+								p.setEnabled(false);
+								p.setFavourite(false);
+								plansForServer.add(new BambooPlanItem(p, true));
 							}
 						}
-						if (!exists) {
-							BambooPlanData p = new BambooPlanData(sPlan.getPlanId(), sPlan.getPlanId());
-							p.setEnabled(false);
-							p.setFavourite(false);
-							plansForServer.add(new BambooPlanItem(p, true));
-						}
+						msg.append("Build plans updated based on stored configuration");
 					}
 					serverPlans.put(key, plansForServer);
+				} else {
+					msg.append("Build plans updated based on cached values");
 				}
+				final String message = msg.toString();
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
-						updatePlanNames(server);
+						updatePlanNames(server, message);
 					}
 				});
 			}
 		}).start();
 	}
 
-	private void updatePlanNames(Server server) {
+	private void updatePlanNames(Server server, String message) {
 		if (server.equals(queryServer)) {
-			List<BambooPlanItem> plans = serverPlans.get(getServerKey(server));
+			java.util.List<BambooPlanItem> plans = serverPlans.get(getServerKey(server));
 			if (plans != null) {
 				model.removeAllElements();
 				for (BambooPlanItem plan : plans) {
@@ -213,6 +204,8 @@ public class BambooPlansForm extends JPanel {
 					model.addElement(new BambooPlanItem(plan.getPlan(), plan.isSelected()));
 				}
 			}
+			statusPane.setText(message);
+			statusPane.setCaretPosition(0);
 			setVisible(true);
 			cbUseFavuriteBuilds.setEnabled(true);
 			list.setEnabled(!cbUseFavuriteBuilds.isSelected());
@@ -230,7 +223,7 @@ public class BambooPlansForm extends JPanel {
 				if (p.isSelected()) {
 					SubscribedPlan spb = new SubscribedPlanBean();
 					spb.setPlanId(p.getPlan().getPlanKey());
-					((Collection <SubscribedPlan>)server.getSubscribedPlans()).add(spb);
+					server.getSubscribedPlans().add(spb);
 				}
 			}
 		}
@@ -252,5 +245,59 @@ public class BambooPlansForm extends JPanel {
 		super.setEnabled(enabled);
 		list.setEnabled(enabled);
 	}
-}
 
+	private void createUIComponents() {
+		model = new DefaultListModel();
+		list = new JList(model);
+		list.setCellRenderer(new PlanListCellRenderer());
+		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+	}
+
+	/**
+	 * Method generated by IntelliJ IDEA GUI Designer
+	 * >>> IMPORTANT!! <<<
+	 * DO NOT edit this method OR call it in your code!
+	 *
+	 * @noinspection ALL
+	 */
+	private void $$$setupUI$$$() {
+		createUIComponents();
+		rootComponent = new JPanel();
+		rootComponent.setLayout(new BorderLayout(0, 0));
+		rootComponent.setBorder(BorderFactory.createTitledBorder("Build Plans"));
+		toolbarPanel = new JPanel();
+		toolbarPanel.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
+		rootComponent.add(toolbarPanel, BorderLayout.NORTH);
+		cbUseFavuriteBuilds = new JCheckBox();
+		cbUseFavuriteBuilds.setText("Use Favourite Builds For Server");
+		cbUseFavuriteBuilds.setMnemonic('F');
+		cbUseFavuriteBuilds.setDisplayedMnemonicIndex(4);
+		toolbarPanel.add(cbUseFavuriteBuilds, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		final Spacer spacer1 = new Spacer();
+		toolbarPanel.add(spacer1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+		btRefresh = new JButton();
+		btRefresh.setText("Refresh");
+		toolbarPanel.add(btRefresh, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		final JScrollPane scrollPane1 = new JScrollPane();
+		rootComponent.add(scrollPane1, BorderLayout.CENTER);
+		scrollPane1.setViewportView(list);
+		statusPanel = new JPanel();
+		statusPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+		rootComponent.add(statusPanel, BorderLayout.SOUTH);
+		final JScrollPane scrollPane2 = new JScrollPane();
+		scrollPane2.setEnabled(true);
+		scrollPane2.setHorizontalScrollBarPolicy(31);
+		scrollPane2.setVerticalScrollBarPolicy(20);
+		statusPanel.add(scrollPane2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, 1, new Dimension(-1, 40), null, new Dimension(-1, 40), 0, false));
+		statusPane = new JEditorPane();
+		statusPane.setEditable(false);
+		scrollPane2.setViewportView(statusPane);
+	}
+
+	/**
+	 * @noinspection ALL
+	 */
+	public JComponent $$$getRootComponent$$$() {
+		return rootComponent;
+	}
+}
