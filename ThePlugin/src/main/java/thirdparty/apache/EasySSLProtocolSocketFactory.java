@@ -29,12 +29,12 @@ package thirdparty.apache;
  * <http://www.apache.org/>.
  *
  */
+
+import com.atlassian.theplugin.util.PluginUtil;
 import org.apache.commons.httpclient.ConnectTimeoutException;
 import org.apache.commons.httpclient.HttpClientError;
 import org.apache.commons.httpclient.params.HttpConnectionParams;
 import org.apache.commons.httpclient.protocol.SecureProtocolSocketFactory;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
@@ -91,8 +91,6 @@ public class EasySSLProtocolSocketFactory implements SecureProtocolSocketFactory
 
 	public final static int SSL_PORT = 443;
 
-	/** Log object for this class. */
-    private static final Log LOG = LogFactory.getLog(EasySSLProtocolSocketFactory.class);
 
     private SSLContext sslcontext = null;
 
@@ -112,7 +110,7 @@ public class EasySSLProtocolSocketFactory implements SecureProtocolSocketFactory
               null);
             return context;
         } catch (Exception e) {
-            LOG.info(e.getMessage(), e);
+            PluginUtil.getLogger().error(e.getMessage(), e);
             throw new HttpClientError(e.toString());
         }
     }

@@ -108,7 +108,7 @@ public class JIRARssClient {
 
     protected Document buildFeed(String url) throws IOException, JDOMException {
         // be careful about logging as we might leak the user's password - nasty!
-        // LOGGER.info("Refeshing issues from: " + url);
+        // PluginUtil.getLogger().info("Refeshing issues from: " + url);
         String feedContent = getUrlContent(url);
         SAXBuilder builder = new SAXBuilder();
         builder.setValidation(false);

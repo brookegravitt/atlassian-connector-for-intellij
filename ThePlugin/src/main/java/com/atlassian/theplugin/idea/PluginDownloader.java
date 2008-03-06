@@ -2,6 +2,7 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.exception.VersionServiceException;
 import com.atlassian.theplugin.util.InfoServer;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.ide.startup.StartupActionScriptManager;
@@ -11,8 +12,6 @@ import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.io.StreamUtil;
 import com.intellij.util.io.ZipUtil;
-import org.apache.log4j.Category;
-import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import java.io.*;
@@ -31,12 +30,11 @@ import java.net.URLEncoder;
 
 public class PluginDownloader implements Runnable {
 
-	private static final Category LOGGER = Logger.getInstance(PluginStatusBarToolTip.class);
 
 	public static final String PLUGIN_ID_TOKEN = "PLUGIN_ID";
 	public static final String VERSION_TOKEN = "BUILD";
 
-	private static String pluginName = PluginInfoUtil.getName();
+	private static String pluginName = PluginUtil.getName();
 
 	private static final int TIMEOUT = 15000;
 	private static final int EXTENTION_LENGHT = 3;
@@ -55,12 +53,12 @@ public class PluginDownloader implements Runnable {
 			// todo lguminski/jjaroczynski to find a better way of getting plugin descriptor
 			// theoritically openapi should provide a method so the plugin could get info on itself
 
-			IdeaPluginDescriptor pluginDescr = PluginManager.getPlugin(PluginId.getId(PluginInfoUtil.getPluginId()));
+			IdeaPluginDescriptor pluginDescr = PluginManager.getPlugin(PluginId.getId(PluginUtil.getPluginId()));
 			/* todo lguminsk when you debug the plugin it appears in registry as attlassian-idea-plugin, but when
 			 	you rinstall it notmally it appears as Atlassian. Thats why it is double checked here
 			    */
 			if (pluginDescr == null) {
-				pluginDescr = PluginManager.getPlugin(PluginId.getId(PluginInfoUtil.getName()));
+				pluginDescr = PluginManager.getPlugin(PluginId.getId(PluginUtil.getName()));
 			}
 			addActions(pluginDescr, localArchiveFile);
 
@@ -68,9 +66,9 @@ public class PluginDownloader implements Runnable {
 			promptShutdownAndShutdown();
 
 		} catch (IOException e) {
-			LOGGER.info("Error registering action in IDEA", e);
+			PluginUtil.getLogger().error("Error registering action in IDEA", e);
 		} catch (VersionServiceException e) {
-			LOGGER.info("Error registering action in IDEA", e);
+			PluginUtil.getLogger().error("Error registering action in IDEA", e);
 		}
 	}
 
@@ -108,10 +106,10 @@ public class PluginDownloader implements Runnable {
 				.replaceAll(PLUGIN_ID_TOKEN, URLEncoder.encode(pluginName, "UTF-8"))
 					.replaceAll(VERSION_TOKEN, URLEncoder.encode(version, "UTF-8"));
 		} catch (VersionServiceException e) {
-			LOGGER.info("Error retrieving url for new version of the plugin.");
+			PluginUtil.getLogger().error("Error retrieving url for new version of the plugin.");
 		}
 
-		LOGGER.info("Downloading plugin archive from: " + pluginUrl);
+		PluginUtil.getLogger().info("Downloading plugin archive from: " + pluginUrl);
 
 		//HttpConfigurable.getInstance().prepareURL(pluginUrl);
 		URL url = new URL(pluginUrl);
