@@ -1,0 +1,101 @@
+package com.atlassian.theplugin.idea;
+
+import com.atlassian.theplugin.LoginDataProvided;
+import com.atlassian.theplugin.TestConnectionThread;
+import com.atlassian.theplugin.idea.config.serverconfig.ConnectionTester;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
+import org.apache.log4j.Category;
+
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+/**
+ * Created by IntelliJ IDEA.
+* User: Jacek
+* Date: 2008-03-06
+* Time: 15:36:41
+* To change this template use File | Settings | File Templates.
+*/
+public class TestConnectionListener implements ActionListener {
+
+	private ConnectionTester connectionTester = null;
+	private LoginDataProvided loginDataProvided = null;
+
+	public TestConnectionListener(ConnectionTester tester, LoginDataProvided loginDataProvided) {
+		connectionTester = tester;
+		this.loginDataProvided = loginDataProvided;
+	}
+
+	public void actionPerformed(ActionEvent e) {
+
+		Task.Modal testConnectionTask =	new TestConnectionTask(
+				IdeaHelper.getCurrentProject(), "Testing Connection", true, connectionTester);
+		testConnectionTask.setCancelText("Stop");
+
+		ProgressManager.getInstance().run(testConnectionTask);
+	}
+
+	private class TestConnectionTask extends Task.Modal {
+
+		private TestConnectionThread testConnectionThread = null;
+		private static final int CHECK_CANCEL_INTERVAL = 500;	// miliseconds
+		private final Category log = Category.getInstance(TestConnectionTask.class);
+
+		public TestConnectionTask(Project currentProject, String title, boolean canBeCanceled, ConnectionTester tester) {
+
+			super(currentProject, title, canBeCanceled);
+
+			testConnectionThread = new TestConnectionThread(tester,
+					loginDataProvided.getServerUrl(), loginDataProvided.getUserName(), loginDataProvided.getPassword());
+		}
+
+		public void run(ProgressIndicator indicator) {
+
+			indicator.setText("Connecting...");
+			indicator.setFraction(0);
+			indicator.setIndeterminate(true);
+
+			testConnectionThread.start();
+
+			while (testConnectionThread.getConnectionState() == TestConnectionThread.ConnectionState.NOT_FINISHED) {
+				try {
+					if (indicator.isCanceled()) {
+						testConnectionThread.setInterrupted();
+						//t.interrupt();
+						break;
+					} else {
+						java.lang.Thread.sleep(CHECK_CANCEL_INTERVAL);
+					}
+				} catch (InterruptedException e) {
+					log.info(e.getMessage());
+				}
+			}
+
+			if (testConnectionThread.getConnectionState() == TestConnectionThread.ConnectionState.SUCCEEDED) {
+				EventQueue.invokeLater(new Runnable() {
+					public void run() {
+						com.intellij.openapi.ui.Messages.showMessageDialog("Connected successfully", "Connection OK", Messages.getInformationIcon());
+					}
+				});
+			} else if (testConnectionThread.getConnectionState() == TestConnectionThread.ConnectionState.FAILED) {
+				EventQueue.invokeLater(new Runnable() {
+					public void run() {
+						com.intellij.openapi.ui.Messages.showMessageDialog(testConnectionThread.getErrorMessage(),
+								"Connection Error", Messages.getErrorIcon());
+					}
+				});
+			} else if (testConnectionThread.getConnectionState() == TestConnectionThread.ConnectionState.INTERUPTED) {
+				log.debug("Cancel was pressed during 'Test Connection' operation");
+			} else {
+				// todo should be log.warn
+				log.info("Unexpected 'Test Connection' thread state: "
+						+ testConnectionThread.getConnectionState().toString());
+			}
+		}
+	}
+}

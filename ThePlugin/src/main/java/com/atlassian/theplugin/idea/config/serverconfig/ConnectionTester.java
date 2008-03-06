@@ -8,8 +8,8 @@ public interface ConnectionTester {
      *
      * @param username
      * @param password
-     * @param server
+     * @param serverUrl
      * @throws ThePluginException If the connection failed.
      */
-    void testConnection(String username, String password, String server) throws ThePluginException;
+    void testConnection(String username, String password, String serverUrl) throws ThePluginException;
 }
