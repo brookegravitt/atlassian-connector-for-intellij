@@ -85,7 +85,8 @@ public class AutoRenewBambooSession implements BambooSession {
 
 	public void login(String name, char[] aPassword) throws BambooLoginException {
 		this.userName = name;
-		this.password = aPassword;
+		this.password = new char[aPassword.length];
+		System.arraycopy(aPassword, 0, password, 0, aPassword.length);
 		delegate.login(name, aPassword);
 	}
 
