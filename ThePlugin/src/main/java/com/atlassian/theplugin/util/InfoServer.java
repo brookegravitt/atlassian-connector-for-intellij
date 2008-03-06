@@ -2,7 +2,6 @@ package com.atlassian.theplugin.util;
 
 import com.atlassian.theplugin.exception.VersionServiceException;
 import com.atlassian.theplugin.exception.IncorrectVersionException;
-import com.atlassian.theplugin.util.PluginUtil;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.jdom.Document;
