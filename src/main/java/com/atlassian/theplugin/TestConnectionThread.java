@@ -1,4 +1,4 @@
-package com.atlassian.theplugin.idea.config;
+package com.atlassian.theplugin;
 
 import com.atlassian.theplugin.exception.ThePluginException;
 import com.atlassian.theplugin.idea.config.serverconfig.ConnectionTester;
