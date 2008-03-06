@@ -16,14 +16,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * Listens for the click action (usually on a Test Connection button), displays progress dialog with Cancel button
- * 
+ * Listens for the click action (usually on a 'Test Connection' button), displays progress dialog with Cancel button
+ * and run in a separate thread testConnection method on a ConnectionTester object passed to the constructor.
+ * Displays message dialog with connection success/failure unless connection test was canceled.
 */
 public class TestConnectionListener implements ActionListener {
 
 	private ConnectionTester connectionTester = null;
 	private LoginDataProvided loginDataProvided = null;
 
+	/**
+	 * @param tester object which provide testConnection method specific to the product (Bamboo/Crucible, etc.)
+	 * @param loginDataProvided object with methods which provide userName, password and url for connection
+	 */
 	public TestConnectionListener(ConnectionTester tester, LoginDataProvided loginDataProvided) {
 		connectionTester = tester;
 		this.loginDataProvided = loginDataProvided;
@@ -90,8 +95,7 @@ public class TestConnectionListener implements ActionListener {
 			} else if (testConnectionThread.getConnectionState() == TestConnectionThread.ConnectionState.INTERUPTED) {
 				log.debug("Cancel was pressed during 'Test Connection' operation");
 			} else {
-				// todo should be log.warn
-				log.info("Unexpected 'Test Connection' thread state: "
+				log.warn("Unexpected 'Test Connection' thread state: "
 						+ testConnectionThread.getConnectionState().toString());
 			}
 		}
