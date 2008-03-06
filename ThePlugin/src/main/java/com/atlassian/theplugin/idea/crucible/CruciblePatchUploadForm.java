@@ -223,7 +223,7 @@ public class CruciblePatchUploadForm extends DialogWrapper {
 	private void updateServerRelatedCombos(List<ProjectData> projects, List<RepositoryData> repositories) {
 		if (projects.isEmpty()) {
 			projectsComboBox.setEnabled(false);
-			projectsComboBox.addItem("Crucible server does not contain any projects!");
+			projectsComboBox.addItem("No projects");
 			getOKAction().setEnabled(false);
 		} else {
 			for (ProjectData project : projects) {
@@ -231,11 +231,8 @@ public class CruciblePatchUploadForm extends DialogWrapper {
 			}
 			getOKAction().setEnabled(true);
 		}
-		if (repositories.isEmpty()) {
-			repoComboBox.setEnabled(false);
-			repoComboBox.addItem("Crucible server does not contain any repositories!");
-			getOKAction().setEnabled(false);
-		} else {
+		repoComboBox.addItem("");
+		if (!repositories.isEmpty()) {
 			for (RepositoryData repo : repositories) {
 				repoComboBox.addItem(new RepositoryComboBoxItem(repo));
 			}
