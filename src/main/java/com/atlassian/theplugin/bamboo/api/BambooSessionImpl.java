@@ -40,8 +40,6 @@ class BambooSessionImpl implements BambooSession {
 
 	private final String baseUrl;
 	private String authToken;
-	private String userName;
-	private char[] password;
 
 	private HttpClient client = null;
 	private static final int CONNECTION_TIMOUT = 20000;
@@ -104,8 +102,6 @@ class BambooSessionImpl implements BambooSession {
 				throw new BambooLoginException("Server did returned excess authentication tokens (" + elements.size() + ")");
 			}
 			this.authToken = ((Element) elements.get(0)).getText();
-			this.userName = name;
-			this.password = aPassword;
 		} catch (MalformedURLException e) {
 			throw new BambooLoginException("Malformed server URL: " + baseUrl, e);
 		} catch (UnknownHostException e) {
