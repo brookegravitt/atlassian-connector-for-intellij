@@ -25,7 +25,7 @@ public class AutoRenewBambooSessionTest extends TestCase {
 	public void setUp() throws Exception {
         super.setUp();
 
-		mockDelegate = EasyMock.createMock(BambooSession.class);
+		mockDelegate = EasyMock.createStrictMock(BambooSession.class);
 		testedSession = new AutoRenewBambooSession("http://dupa");
 
 		Field field = AutoRenewBambooSession.class.getDeclaredField("delegate");
@@ -36,7 +36,6 @@ public class AutoRenewBambooSessionTest extends TestCase {
 
     public void tearDown() throws Exception {
         super.tearDown();
-
 		EasyMock.verify(mockDelegate);
 	}
 
@@ -70,11 +69,11 @@ public class AutoRenewBambooSessionTest extends TestCase {
 	}
 
 	public void testListProjectNames() throws Exception {
-		mockDelegate.login(LOGIN, A_PASSWORD);
+		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
 		EasyMock.expectLastCall();
 		mockDelegate.listProjectNames();
 		EasyMock.expectLastCall().andThrow(new BambooSessionExpiredException(""));
-		mockDelegate.login(LOGIN, A_PASSWORD);
+		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
 		EasyMock.expectLastCall();
 		mockDelegate.listProjectNames();
 		EasyMock.expectLastCall().andReturn(Arrays.asList(new BambooProject[]{new BambooProject() {
@@ -114,11 +113,11 @@ public class AutoRenewBambooSessionTest extends TestCase {
 	}
 
 	public void testListPlanNames() throws Exception {
-		mockDelegate.login(LOGIN, A_PASSWORD);
+		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
 		EasyMock.expectLastCall();
 		mockDelegate.listPlanNames();
 		EasyMock.expectLastCall().andThrow(new BambooSessionExpiredException(""));
-		mockDelegate.login(LOGIN, A_PASSWORD);
+		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
 		EasyMock.expectLastCall();
 		mockDelegate.listPlanNames();
 		EasyMock.expectLastCall().andReturn(Arrays.asList(new BambooPlan[]{new BambooPlan() {
@@ -160,11 +159,11 @@ public class AutoRenewBambooSessionTest extends TestCase {
 	}
 
 	public void testGetLatestBuildForPlan() throws Exception {
-		mockDelegate.login(LOGIN, A_PASSWORD);
+		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
 		EasyMock.expectLastCall();
 		mockDelegate.getLatestBuildForPlan("planKey");
 		EasyMock.expectLastCall().andThrow(new BambooSessionExpiredException(""));
-		mockDelegate.login(LOGIN, A_PASSWORD);
+		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
 		EasyMock.expectLastCall();
 		mockDelegate.getLatestBuildForPlan("planKey");
 		EasyMock.expectLastCall().andReturn(new BambooBuild(){
@@ -250,11 +249,11 @@ public class AutoRenewBambooSessionTest extends TestCase {
 	}
 
 	public void testGetFavouriteUserPlans() throws Exception {
-		mockDelegate.login(LOGIN, A_PASSWORD);
+		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
 		EasyMock.expectLastCall();
 		mockDelegate.getFavouriteUserPlans();
 		EasyMock.expectLastCall().andThrow(new BambooSessionExpiredException(""));
-		mockDelegate.login(LOGIN, A_PASSWORD);
+		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
 		EasyMock.expectLastCall();
 		mockDelegate.getFavouriteUserPlans();
 		EasyMock.expectLastCall().andReturn(Arrays.asList(new String[] {"plan1", "plan2", "plan3"}));
@@ -271,11 +270,11 @@ public class AutoRenewBambooSessionTest extends TestCase {
 	}
 
 	public void testGetBuildResultDetails() throws Exception {
-		mockDelegate.login(LOGIN, A_PASSWORD);
+		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
 		EasyMock.expectLastCall();
 		mockDelegate.getBuildResultDetails("buildKey", "buildNumber");
 		EasyMock.expectLastCall().andThrow(new BambooSessionExpiredException(""));
-		mockDelegate.login(LOGIN, A_PASSWORD);
+		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
 		EasyMock.expectLastCall();
 		mockDelegate.getBuildResultDetails("buildKey", "buildNumber");
 		EasyMock.expectLastCall().andReturn(new BuildDetails() {
@@ -307,11 +306,11 @@ public class AutoRenewBambooSessionTest extends TestCase {
 	}
 
 	public void testAddLabelToBuild() throws Exception {
-		mockDelegate.login(LOGIN, A_PASSWORD);
+		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
 		EasyMock.expectLastCall();
 		mockDelegate.addLabelToBuild("buildKey", "buildNumber", "label");
 		EasyMock.expectLastCall().andThrow(new BambooSessionExpiredException(""));
-		mockDelegate.login(LOGIN, A_PASSWORD);
+		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
 		EasyMock.expectLastCall();
 		mockDelegate.addLabelToBuild("buildKey", "buildNumber", "label");
 		EasyMock.expectLastCall();
@@ -325,11 +324,11 @@ public class AutoRenewBambooSessionTest extends TestCase {
 	}
 
 	public void testAddCommentToBuild() throws Exception {
-		mockDelegate.login(LOGIN, A_PASSWORD);
+		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
 		EasyMock.expectLastCall();
 		mockDelegate.addCommentToBuild("buildKey", "buildNumber", "comment");
 		EasyMock.expectLastCall().andThrow(new BambooSessionExpiredException(""));
-		mockDelegate.login(LOGIN, A_PASSWORD);
+		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
 		EasyMock.expectLastCall();
 		mockDelegate.addCommentToBuild("buildKey", "buildNumber", "comment");
 		EasyMock.expectLastCall();
@@ -343,7 +342,7 @@ public class AutoRenewBambooSessionTest extends TestCase {
 	}
 
 	public void testIsLoggedIn() throws BambooLoginException {
-		mockDelegate.login(LOGIN, A_PASSWORD);
+		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
 		EasyMock.expectLastCall();
 		mockDelegate.isLoggedIn();
 		EasyMock.expectLastCall().andReturn(true);
