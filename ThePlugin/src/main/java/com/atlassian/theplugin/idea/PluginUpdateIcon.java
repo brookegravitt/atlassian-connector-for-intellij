@@ -83,11 +83,11 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 		innerShowIcon();
 		try {
 			this.setToolTipText("New version (" + newVersion.getVersion() + ") of the "
-					+ PluginUtil.getName() + " available");
+					+ PluginInfoUtil.getName() + " available");
 		} catch (VersionServiceException e) {
-			PluginUtil.getLogger().error(e.getMessage(), e);
+			LOGGER.info(e.getMessage(), e);
 		} catch (IncorrectVersionException e) {
-			PluginUtil.getLogger().error(e.getMessage(), e);
+			LOGGER.info(e.getMessage(), e);
 		}
 	}
 

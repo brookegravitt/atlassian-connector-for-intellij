@@ -48,13 +48,13 @@ public final class NewVersionChecker implements SchedulableComponent {
 		if (!pluginConfiguration.isAutoUpdateEnabled()) {
 			return;
 		}
-		InfoServer server =  new InfoServer(PluginUtil.VERSION_INFO_URL,
+		InfoServer server =  new InfoServer(PluginInfoUtil.VERSION_INFO_URL,
 				pluginConfiguration.getUid());
 		try {
 			InfoServer.VersionInfo versionInfo = server.getLatestPluginVersion();
 			// simple versionInfo difference check
 			InfoServer.Version newVersion = versionInfo.getVersion();
-			InfoServer.Version thisVersion = new InfoServer.Version(PluginUtil.getVersion());
+			InfoServer.Version thisVersion = new InfoServer.Version(PluginInfoUtil.getVersion());
 			if (newVersion.greater(thisVersion)) {
 				ConfirmPluginUpdateHandler handler = ConfirmPluginUpdateHandler.getInstance();
 				handler.setNewVersionInfo(versionInfo);
