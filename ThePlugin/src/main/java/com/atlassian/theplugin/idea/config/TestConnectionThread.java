@@ -2,10 +2,6 @@ package com.atlassian.theplugin.idea.config;
 
 import com.atlassian.theplugin.exception.ThePluginException;
 import com.atlassian.theplugin.idea.config.serverconfig.ConnectionTester;
-import com.intellij.openapi.ui.Messages;
-import static com.intellij.openapi.ui.Messages.showMessageDialog;
-
-import java.awt.*;
 
 
 public class TestConnectionThread extends Thread {
@@ -13,9 +9,21 @@ public class TestConnectionThread extends Thread {
 	private String userName;
 	private String password;
 
-	private boolean isRunning = true;
-	private boolean interrupted = false;
 	private ConnectionTester connectionTester;
+	private String errorMessage = null;
+
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+
+	public enum ConnectionState {
+		SUCCEEDED,
+		FAILED,
+		INTERUPTED,
+		NOT_FINISHED
+	}
+
+	private ConnectionState connectionState = ConnectionState.NOT_FINISHED;
 
 	public TestConnectionThread(ConnectionTester tester, String url, String userName, String password) {
 		this.connectionTester = tester;
@@ -30,50 +38,32 @@ public class TestConnectionThread extends Thread {
 	 */
 	public void run() {
 
-		isRunning = true;
-
 		try {
 			connectionTester.testConnection(userName, password, url);
-			if (!interrupted) {
-				showSuccessMessage();
+			if (connectionState != ConnectionState.INTERUPTED) {
+				connectionState = ConnectionState.SUCCEEDED;
 			}
 		} catch (ThePluginException e) {
-			if (!interrupted) {
-				showFailMessage(e.getMessage());
+			if (connectionState != ConnectionState.INTERUPTED) {
+				connectionState = ConnectionState.FAILED;
+				errorMessage = e.getMessage();
 			}
-		} finally {
-			this.isRunning = false;
 		}
-	}
 
-	private void showSuccessMessage() {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				showMessageDialog("Connected successfully", "Connection OK", Messages.getInformationIcon());
-			}
-		});
-	}
-
-	private void showFailMessage(final String message) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				showMessageDialog(message, "Connection Error", Messages.getErrorIcon());
-			}
-		});
+		// at this point we should have connection in state INTERUPTED, SUCCEEDED or FAILED
 	}
 
 	/**
-	 *
-	 * @return information whether the thread is still running or not
-	 */
-	public boolean isRunning() {
-		return isRunning;
-	}
-
-	/**
-	 * Send request to thread to stop
+	 * Sends request to thread to stop
 	 */
 	public void setInterrupted() {
-		this.interrupted = true;
+		connectionState = ConnectionState.INTERUPTED;
+	}
+
+	/**
+	 * @return state of current connection
+	 */
+	public ConnectionState getConnectionState() {
+		return connectionState;
 	}
 }
