@@ -75,7 +75,7 @@ public class VersionTest extends TestCase {
 				InfoServer.Version v = new InfoServer.Version(arg);
 				fail("Creation succeeded although it should fail (\"" + arg + "\")");
 			} catch (IncorrectVersionException e) {
-				System.out.println(e.getMessage());
+				// OK
 			}
 		}
 		// all valid are actually testes during creation of this TestCase

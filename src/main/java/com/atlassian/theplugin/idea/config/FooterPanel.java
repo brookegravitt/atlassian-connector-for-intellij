@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.idea.config;
 
-import com.atlassian.theplugin.idea.PluginInfoUtil;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.ui.HyperlinkLabel;
 
@@ -47,7 +47,7 @@ public class FooterPanel extends JPanel {
     }
 
 	private void initLayout() {
-		String versionName = PluginInfoUtil.getVersion();
+		String versionName = PluginUtil.getVersion();
 
 		BorderLayout gb = new BorderLayout();
 		setLayout(gb);
