@@ -51,7 +51,7 @@
 	</issueManagement>
 	<ciManagement>
 		<system>Bamboo</system>
-		<url>https://spartez.no-ip.org/atlassian-bamboo-1.2.4</url>
+		<url>https://spartez.dyndns.org/atlassian-bamboo-1.2.4</url>
 	</ciManagement>
 	<pluginRepositories>
 		<pluginRepository>
