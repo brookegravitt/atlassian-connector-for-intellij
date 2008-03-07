@@ -5,7 +5,7 @@ import com.atlassian.theplugin.configuration.RequestDataInfo;
 import java.util.Date;
 
 public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
-	private String serverUrl;   dupa
+	private String serverUrl;
 	private String projectName;
 	private String projectKey;
 	private String buildName;
