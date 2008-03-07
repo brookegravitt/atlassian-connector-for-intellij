@@ -8,7 +8,7 @@ import java.util.Date;
  * Build information retrieved from Bamboo server.
  */
 public interface BambooBuild extends RequestData {
-	String getServerUrl()
+	String getServerUrl();
 
     String getProjectName();
 
