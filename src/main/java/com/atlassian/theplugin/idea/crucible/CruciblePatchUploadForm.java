@@ -294,7 +294,11 @@ public class CruciblePatchUploadForm extends DialogWrapper {
 		}
 
 		public String getRepoName() {
-			return ((RepositoryComboBoxItem) repoComboBox.getSelectedItem()).getRepository().getName();
+			if (repoComboBox.getSelectedItem() instanceof RepositoryComboBoxItem) {
+				return ((RepositoryComboBoxItem) repoComboBox.getSelectedItem()).getRepository().getName();
+			} else {
+				return null;
+			}
 		}
 
 		public State getState() {
