@@ -24,7 +24,7 @@ public class QuickSearchAction extends AnAction {
                         + "/secure/QuickSearch.jspa?searchString=" + URLEncoder.encode(query));
             }
         } else {
-            IdeaHelper.focusPanel(e, IdeaHelper.TOOLWINDOW_PANEL_JIRA);
+            IdeaHelper.focusPanel(e, IdeaHelper.ToolWindowPanels.JIRA);
             Messages.showErrorDialog(project, "Please select a JIRA server before searching.", "JIRA Quick Search");
         }
     }

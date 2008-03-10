@@ -17,9 +17,28 @@ import org.jetbrains.annotations.Nullable;
  * Simple helper methods for the IDEA plugin
  */
 public final class IdeaHelper {
-    public static final String TOOLWINDOW_PANEL_JIRA = "JIRA";
-    public static final String TOOLWINDOW_PANEL_BAMBOO = "Bamboo";
-    public static final String TOOLWINDOW_PANEL_CRUCIBLE = "Crucible";
+
+	/**
+	 * List of available panels in tool window
+	 */
+	public enum ToolWindowPanels {
+		BAMBOO {
+			public String toString() {
+				return "Bamboo";
+			}
+		},
+		CRUCIBLE {
+			public String toString() {
+				return "Crucible";
+			}
+		},
+		JIRA {
+			public String toString() {
+				return "JIRA";
+			}
+		}
+	}
+
     public static final String TOOL_WINDOW_NAME = "Atlassian";
 
     private IdeaHelper() {
@@ -35,7 +54,7 @@ public final class IdeaHelper {
         return DataKeys.PROJECT.getData(dataContext);
     }
 
-    public static ToolWindow getToolWindow(Project p) {
+    public static com.intellij.openapi.wm.ToolWindow getToolWindow(Project p) {
         return ToolWindowManager.getInstance(p).getToolWindow(TOOL_WINDOW_NAME);
     }
 
@@ -45,23 +64,39 @@ public final class IdeaHelper {
 
     public static JIRAToolWindowPanel getJIRAToolWindowPanel(AnActionEvent event) {
         Project p = getCurrentProject(event.getDataContext());
-        ToolWindow tw = getToolWindow(p);
-        Content content = tw.getContentManager().findContent(TOOLWINDOW_PANEL_JIRA);
+        com.intellij.openapi.wm.ToolWindow tw = getToolWindow(p);
+        Content content = tw.getContentManager().findContent(ToolWindowPanels.JIRA.toString());
         return (JIRAToolWindowPanel) content.getComponent();
     }
 
     // simple method to open the ToolWindow and focus on a particular component
-    public static void focusPanel(Project project, String componentName) {
+    public static void focusPanel(Project project, ToolWindowPanels component) {
         ToolWindow tw = getToolWindow(project);
         if (tw != null) {
             ContentManager contentManager = tw.getContentManager();
             tw.activate(null);
-            contentManager.setSelectedContent(contentManager.findContent(componentName));
+			Content toolWindow = contentManager.findContent(component.toString());
+
+			if (toolWindow == null) {
+				switch (component) {
+					case BAMBOO:
+						//tw.getContentManager().addContent();
+						break;
+					case CRUCIBLE:
+						break;
+					case JIRA:
+						break;
+					default:
+						break;
+				}
+			}
+			
+			contentManager.setSelectedContent(toolWindow);
         }
     }
 
-    public static void focusPanel(AnActionEvent e, String componentName) {
+    public static void focusPanel(AnActionEvent e, ToolWindowPanels component) {
 		Project project = getCurrentProject(e.getDataContext());
-		focusPanel(project, componentName);
+		focusPanel(project, component);
     }
 }
