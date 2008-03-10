@@ -5,7 +5,7 @@ import com.atlassian.theplugin.ServerType;
 public class PluginConfigurationBean implements PluginConfiguration {
     private BambooConfigurationBean bambooConfiguration = new BambooConfigurationBean();
     private CrucibleConfigurationBean crucibleConfiguration = new CrucibleConfigurationBean();
-    private JIRAConfigurationBean jiraConfiguration = new JIRAConfigurationBean();
+    private JiraConfigurationBean jiraConfiguration = new JiraConfigurationBean();
 	private static final double ID_DISCRIMINATOR = 1e3d;
 	private long uid = 0;
 	private boolean isAutoUpdateEnabled = true;
@@ -34,7 +34,7 @@ public class PluginConfigurationBean implements PluginConfiguration {
 		this.setAutoUpdateEnabled(cfg.isAutoUpdateEnabled());
 		this.setBambooConfigurationData(new BambooConfigurationBean(cfg.getProductServers(ServerType.BAMBOO_SERVER)));
         this.setCrucibleConfigurationData(new CrucibleConfigurationBean(cfg.getProductServers(ServerType.CRUCIBLE_SERVER)));
-        this.setJIRAConfigurationData(new JIRAConfigurationBean(cfg.getProductServers(ServerType.JIRA_SERVER)));
+        this.setJIRAConfigurationData(new JiraConfigurationBean(cfg.getProductServers(ServerType.JIRA_SERVER)));
 	}
 	/**
      * For storage purposes.
@@ -79,7 +79,7 @@ public class PluginConfigurationBean implements PluginConfiguration {
      * <p/>
      * Does not use the JDK1.5 'return a subclass' due to problem with XML serialization.
      */
-    public JIRAConfigurationBean getJIRAConfigurationData() {
+    public JiraConfigurationBean getJIRAConfigurationData() {
         return jiraConfiguration;
     }
 
@@ -88,7 +88,7 @@ public class PluginConfigurationBean implements PluginConfiguration {
      * <p/>
      * Does not use the JDK1.5 'return a subclass' due to problem with XML serialization.
      */
-    public void setJIRAConfigurationData(JIRAConfigurationBean newConfiguration) {
+    public void setJIRAConfigurationData(JiraConfigurationBean newConfiguration) {
         jiraConfiguration = newConfiguration;
     }
 

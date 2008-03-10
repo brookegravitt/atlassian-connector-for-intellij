@@ -4,6 +4,8 @@ import com.atlassian.theplugin.ServerType;
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.idea.config.serverconfig.BambooGeneralForm;
 import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
+import com.atlassian.theplugin.idea.config.serverconfig.JiraGeneralForm;
+import com.atlassian.theplugin.idea.config.serverconfig.util.CrucibleGeneralForm;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,18 +19,25 @@ public final class ConfigPanel extends JPanel {
 	private final JTabbedPane contentPanel = new JTabbedPane();
 	private final ServerConfigPanel serverConfigPanel;
 	private final BambooGeneralForm bambooConfigPanel;
+	private final CrucibleGeneralForm crucibleConfigPanel;
+	private final JiraGeneralForm jiraConfigPanel;
 	private final GeneralConfigPanel generalConfigPanel;
 
 	private final transient PluginConfigurationBean globalConfigurationBean;
 
 	public ConfigPanel(ServerConfigPanel serverConfigPanel,
 					   BambooGeneralForm bambooConfigPanel,
+					   CrucibleGeneralForm crucibleConfigPanel,
+					   JiraGeneralForm jiraConfigPanel,
 					   GeneralConfigPanel generalConfigPanel,
 					   PluginConfigurationBean globalConfigurationBean) {
-		/* Yes, I mean this. Assigning to a static field from within a constructor. Blame *Action. */ 
+		
+		/* Yes, I mean this. Assigning to a static field from within a constructor. Blame *Action. */
 		instance = this;
 		this.serverConfigPanel = serverConfigPanel;
 		this.bambooConfigPanel = bambooConfigPanel;
+		this.crucibleConfigPanel = crucibleConfigPanel;
+		this.jiraConfigPanel = jiraConfigPanel;
 		this.generalConfigPanel = generalConfigPanel;
 		this.globalConfigurationBean = globalConfigurationBean;
 
@@ -49,8 +58,14 @@ public final class ConfigPanel extends JPanel {
 		// add servers tab
 		contentPanel.add(serverConfigPanel.getTitle(), serverConfigPanel);
 
-		// add Bamboo optins tab
+		// add Bamboo option tab
 		contentPanel.add(bambooConfigPanel.getTitle(), bambooConfigPanel);
+
+		// add Crucible option tab
+		contentPanel.add(crucibleConfigPanel.getTitle(), crucibleConfigPanel);
+
+		// add Jira option tab
+		contentPanel.add(jiraConfigPanel.getTitle(), jiraConfigPanel);
 
 		// add general tab
 		contentPanel.add(generalConfigPanel.getTitle(), generalConfigPanel);
@@ -66,6 +81,8 @@ public final class ConfigPanel extends JPanel {
 		return !this.localPluginConfigurationCopy.equals(globalConfigurationBean)
 				|| serverConfigPanel.isModified()
 				|| bambooConfigPanel.isModified()
+				|| crucibleConfigPanel.isModified()
+				|| jiraConfigPanel.isModified()
 				|| generalConfigPanel.isModified();
 	}
 
@@ -74,6 +91,8 @@ public final class ConfigPanel extends JPanel {
 			serverConfigPanel.getData();
 			generalConfigPanel.getData();
 			bambooConfigPanel.getData();
+			jiraConfigPanel.getData();
+			crucibleConfigPanel.getData();
 		}
 	}
 
@@ -82,6 +101,8 @@ public final class ConfigPanel extends JPanel {
 		serverConfigPanel.setData(localPluginConfigurationCopy);
 		generalConfigPanel.setData(localPluginConfigurationCopy);
 		bambooConfigPanel.setData(localPluginConfigurationCopy);
+		jiraConfigPanel.setData(localPluginConfigurationCopy);
+		crucibleConfigPanel.setData(localPluginConfigurationCopy);
 	}
 
 	public void addServer(ServerType serverType) {

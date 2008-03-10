@@ -33,7 +33,7 @@ public class TestConnectionThread extends Thread {
 	}
 
 	/**
-	 * Runs test connection method on a ConnectionTester and shows MessageBox with result.
+	 * Runs test connection method on a ConnectionTester and sets connestionStates accordingly.
 	 * That method should not be used directly but using 'start' method on a thread object. 
 	 */
 	public void run() {
