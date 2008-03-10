@@ -20,15 +20,15 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
-import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
 import org.jetbrains.annotations.Nullable;
 import thirdparty.javaworld.ClasspathHTMLEditorKit;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.*;
 
 public class IssueCreate extends DialogWrapper {
 	private static final Logger LOGGER = Logger.getInstance("IssueCreate");

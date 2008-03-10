@@ -6,6 +6,7 @@ import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.idea.IdeaActionScheduler;
 import com.atlassian.theplugin.idea.NewVersionChecker;
+import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
 import com.atlassian.theplugin.idea.config.GeneralConfigPanel;
 import com.atlassian.theplugin.idea.config.serverconfig.BambooGeneralForm;
@@ -40,6 +41,7 @@ public final class PicoUtil {
 	};
 
 	private static final Class[] PROJECT_COMPONENTS = {
+			BambooTableToolWindowPanel.class
 	};
 
 

@@ -1,13 +1,13 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.bamboo.*;
+import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.atlassian.theplugin.crucible.HtmlCrucibleStatusListener;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
-import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
+import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;
 import com.atlassian.theplugin.idea.crucible.*;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
-import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
@@ -36,6 +36,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
     private HtmlBambooStatusListener toolWindowBambooListener;
 	private BambooStatusListenerImpl tooltipBambooStatusListener;
 
+	private final BambooTableToolWindowPanel bambooToolWindowPanel;
+
 	private final CrucibleStatusChecker crucibleStatusChecker;
     private HtmlCrucibleStatusListener toolWindowCrucibleListener;
 
@@ -49,12 +51,14 @@ public class ThePluginProjectComponent implements ProjectComponent {
 									 CrucibleStatusChecker crucibleStatusChecker,
 									 ToolWindowManager toolWindowManager,
 									 BambooStatusChecker bambooStatusChecker,
-									 PluginConfiguration pluginConfiguration) {
+									 PluginConfiguration pluginConfiguration,
+									 BambooTableToolWindowPanel bambooToolWindowPanel) {
 		this.project = project;
 		this.crucibleStatusChecker = crucibleStatusChecker;
 		this.toolWindowManager = toolWindowManager;
 		this.bambooStatusChecker = bambooStatusChecker;
 		this.pluginConfiguration = pluginConfiguration;
+		this.bambooToolWindowPanel = bambooToolWindowPanel;
 
 		// make findBugs happy
         statusBarBambooIcon = null;
@@ -96,7 +100,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			toolWindow.setIcon(toolWindowIcon);
 
 			// create tool window content
-			BambooToolWindowPanel bambooToolWindowPanel = new BambooToolWindowPanel();
+
 
 			PeerFactory peerFactory = PeerFactory.getInstance();
 
@@ -122,8 +126,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
             toolWindow.getContentManager().setSelectedContent(jiraToolWindow);
 
             // add tool window bamboo content listener to bamboo checker thread
-			toolWindowBambooListener = new HtmlBambooStatusListener(bambooToolWindowPanel.getBambooContent());
-			bambooStatusChecker.registerListener(toolWindowBambooListener);
+			//toolWindowBambooListener = new HtmlBambooStatusListener(bambooToolWindowPanel.getBambooContent());
+			bambooStatusChecker.registerListener(bambooToolWindowPanel);
 
 			// create Bamboo status bar icon
 			statusBarBambooIcon = new BambooStatusIcon(this.project);
@@ -182,8 +186,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 
 			// unregister listeners
-			bambooStatusChecker.unregisterListener(iconBambooStatusListener);
-			bambooStatusChecker.unregisterListener(toolWindowBambooListener);
+			//bambooStatusChecker.unregisterListener(iconBambooStatusListener);
+			//bambooStatusChecker.unregisterListener(toolWindowBambooListener);
 			bambooStatusChecker.unregisterListener(tooltipBambooStatusListener);
 			crucibleStatusChecker.unregisterListener(toolWindowCrucibleListener);
 			crucibleStatusChecker.unregisterListener(crucibleNewReviewNotifier);

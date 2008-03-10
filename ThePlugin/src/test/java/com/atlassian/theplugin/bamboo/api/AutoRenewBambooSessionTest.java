@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.bamboo.api;
 
 import com.atlassian.theplugin.bamboo.*;
+import com.atlassian.theplugin.configuration.Server;
 import junit.framework.TestCase;
 import org.easymock.EasyMock;
 
@@ -9,13 +10,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-/**
- * AutoRenewBambooSession Tester.
- *
- * @author <Authors name>
- * @since <pre>03/06/2008</pre>
- * @version 1.0
- */
 public class AutoRenewBambooSessionTest extends TestCase {
 	private BambooSession testedSession;
 	private BambooSession mockDelegate;
@@ -167,6 +161,10 @@ public class AutoRenewBambooSessionTest extends TestCase {
 		EasyMock.expectLastCall();
 		mockDelegate.getLatestBuildForPlan("planKey");
 		EasyMock.expectLastCall().andReturn(new BambooBuild(){
+			public Server getServer() {
+				return null;  
+			}
+
 			public String getServerUrl() {
 				return null;
 			}
@@ -224,6 +222,10 @@ public class AutoRenewBambooSessionTest extends TestCase {
 			}
 
 			public Date getBuildTime() {
+				return null;
+			}
+
+			public String getBuildReason() {
 				return null;
 			}
 

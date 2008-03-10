@@ -1,10 +1,12 @@
 package com.atlassian.theplugin.bamboo;
 
 import com.atlassian.theplugin.configuration.RequestDataInfo;
+import com.atlassian.theplugin.configuration.Server;
 
 import java.util.Date;
 
 public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
+	private Server server;
 	private String serverUrl;
 	private String projectName;
 	private String projectKey;
@@ -18,6 +20,8 @@ public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
 	private String buildDurationDescription;
 	private String buildTestSummary;
 	private String buildCommitComment;
+	private int buildTestsPassed;
+	private int buildTestsFailed;
 	private String message;
 
 	private Date buildTime;
@@ -26,6 +30,14 @@ public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
 	public BambooBuildInfo() {
 	}
 
+	public Server getServer() {
+		return server;
+	}
+
+	public void setServer(Server server) {
+		this.server = server;
+	}
+		
 	public String getServerUrl() {
 		return this.serverUrl;
 	}
@@ -150,14 +162,20 @@ public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
 		return this.message;
 	}
 
+	public void setBuildTestsPassed(int buildTestsPassed) {
+		this.buildTestsPassed = buildTestsPassed;
+	}
+
+	public void setBuildTestsFailed(int buildTestsFailed) {
+		this.buildTestsFailed = buildTestsFailed;
+	}
+
 	public int getTestsPassed() {
-		//TODO: implement method getTestsPassed
-		throw new UnsupportedOperationException("method getTestsPassed not implemented");
+		return this.buildTestsPassed;
 	}
 
 	public int getTestsFailed() {
-		//TODO: implement method getTestsFailed
-		throw new UnsupportedOperationException("method getTestsFailed not implemented");
+		return this.buildTestsFailed;
 	}
 
 	public void setBuildTime(Date buildTime) {
