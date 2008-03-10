@@ -23,16 +23,12 @@ import java.awt.*;
  */
 public class CrucibleGeneralForm extends JComponent implements ContentPanel {
 	private JPanel rootComponent;
-
 	private JSpinner pollTimeSpinner;
-
-	private PluginConfigurationBean globalPluginConfiguration;
-
 	private SpinnerModel model;
 
-	private CrucibleConfigurationBean crucibleConfiguration;
-
-	private PluginConfiguration localPluginConfigurationCopy;
+	private transient PluginConfigurationBean globalPluginConfiguration;
+	private transient CrucibleConfigurationBean crucibleConfiguration;
+	private transient PluginConfiguration localPluginConfigurationCopy;
 
 	public CrucibleGeneralForm(PluginConfigurationBean globalPluginConfiguration) {
 
