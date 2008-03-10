@@ -16,7 +16,7 @@ import java.util.Comparator;
 public class BuildServerColumn extends BambooColumnInfo {
 	private static final int COL_WIDTH = 100;
 
-	public String getColumnName() {
+	public String getColumnName() {		
 		return "Server";
 	}
 
@@ -31,7 +31,8 @@ public class BuildServerColumn extends BambooColumnInfo {
 	public Comparator getComparator() {
 		return new Comparator() {
 			public int compare(Object o, Object o1) {
-				return ((BambooBuildAdapter) o).getServer().getName().compareTo(((BambooBuildAdapter) o1).getServer().getName());
+				return ((BambooBuildAdapter) o).getServer().getName()
+						.compareTo(((BambooBuildAdapter) o1).getServer().getName());
 			}
 		};
 	}
