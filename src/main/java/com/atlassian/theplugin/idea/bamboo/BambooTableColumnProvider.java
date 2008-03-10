@@ -4,6 +4,8 @@ import com.atlassian.theplugin.idea.bamboo.table.columns.*;
 import com.intellij.util.ui.ColumnInfo;
 
 public class BambooTableColumnProvider {
+	private BambooTableColumnProvider() {		
+	}
 
 	public static ColumnInfo[] makeColumnInfo() {
 		return new ColumnInfo[]{
