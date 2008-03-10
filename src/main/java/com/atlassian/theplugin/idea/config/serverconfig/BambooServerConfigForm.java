@@ -52,9 +52,9 @@ public class BambooServerConfigForm extends JComponent implements ServerPanel {
 	}
 
 
-	 public JComponent getRootComponent() {
-		 return rootComponent;
-	 }
+	public JComponent getRootComponent() {
+		return rootComponent;
+	}
 
 	public void setVisible(boolean visible) {
 		rootComponent.setVisible(visible);

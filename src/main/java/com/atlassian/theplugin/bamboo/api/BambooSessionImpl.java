@@ -459,6 +459,8 @@ class BambooSessionImpl implements BambooSession {
 		buildInfo.setBuildTestSummary(getChildText(buildItemNode, "buildTestSummary"));
 		buildInfo.setBuildCommitComment(getChildText(buildItemNode, "buildCommitComment"));
 		buildInfo.setBuildRelativeBuildDate(getChildText(buildItemNode, "buildRelativeBuildDate"));
+		buildInfo.setBuildTestsPassed(Integer.parseInt(getChildText(buildItemNode, "successfulTestCount")));
+		buildInfo.setBuildTestsFailed(Integer.parseInt(getChildText(buildItemNode, "failedTestCount")));		
 
 		buildInfo.setBuildTime(parseBuildTime(getChildText(buildItemNode, "buildTime")));
 		buildInfo.setPollingTime(lastPollingTime);

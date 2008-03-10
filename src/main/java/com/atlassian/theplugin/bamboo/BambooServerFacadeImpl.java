@@ -139,6 +139,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 					if (api != null && api.isLoggedIn()) {
 						try {
 							BambooBuild buildInfo = api.getLatestBuildForPlan(bambooPlan.getPlanKey());
+							((BambooBuildInfo) buildInfo).setServer(bambooServer);
 							((BambooBuildInfo) buildInfo).setEnabled(bambooPlan.isEnabled());
 							builds.add(buildInfo);
 						} catch (BambooException e) {
@@ -146,7 +147,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 						}
 					} else {
 						builds.add(constructBuildErrorInfo(
-								bambooServer.getUrlString(),
+								bambooServer,
 								bambooPlan.getPlanKey(),
 								connectionErrorMessage));
 					}
@@ -161,6 +162,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 						if (plansForServer != null) {
 							for (BambooPlan bambooPlan : plansForServer) {
 								if (plan.getPlanId().equals(bambooPlan.getPlanKey())) {
+									((BambooBuildInfo) buildInfo).setServer(bambooServer);
 									((BambooBuildInfo) buildInfo).setEnabled(bambooPlan.isEnabled());
 								}
 							}
@@ -171,7 +173,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 					}
 				} else {
 					builds.add(constructBuildErrorInfo(
-							bambooServer.getUrlString(), plan.getPlanId(), connectionErrorMessage));
+							bambooServer, plan.getPlanId(), connectionErrorMessage));
 				}
 			}
 		}
@@ -229,10 +231,11 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 	}
 
 
-	private BambooBuild constructBuildErrorInfo(String serverUrl, String planId, String message) {
+	private BambooBuild constructBuildErrorInfo(Server server, String planId, String message) {
 		BambooBuildInfo buildInfo = new BambooBuildInfo();
 
-		buildInfo.setServerUrl(serverUrl);
+		buildInfo.setServer(server);
+		buildInfo.setServerUrl(server.getUrlString());
 		buildInfo.setBuildKey(planId);
 		buildInfo.setBuildState(BuildStatus.UNKNOWN.toString());
 		buildInfo.setMessage(message);
