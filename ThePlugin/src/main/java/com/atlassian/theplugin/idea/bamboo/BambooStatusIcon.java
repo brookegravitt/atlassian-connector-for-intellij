@@ -42,7 +42,7 @@ public class BambooStatusIcon extends StatusBarPluginIcon implements BambooStatu
 
 			// show/hide toolbar on click
 			public void mouseClicked(MouseEvent e) {
-				IdeaHelper.focusPanel(project, IdeaHelper.TOOLWINDOW_PANEL_BAMBOO);
+				IdeaHelper.focusPanel(project, IdeaHelper.ToolWindowPanels.BAMBOO);
             }
 		});
 

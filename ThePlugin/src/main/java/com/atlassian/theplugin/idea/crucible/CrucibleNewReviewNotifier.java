@@ -73,7 +73,7 @@ public class CrucibleNewReviewNotifier implements CrucibleStatusListener {
 				content.addMouseListener(new MouseAdapter() {
 					public void mouseClicked(MouseEvent e) {
 						display.resetIcon();
-						IdeaHelper.focusPanel(project, IdeaHelper.TOOLWINDOW_PANEL_CRUCIBLE);
+						IdeaHelper.focusPanel(project, IdeaHelper.ToolWindowPanels.CRUCIBLE);
 					}
 				});
 				content.setCaretPosition(0); // do thi to make sure scroll pane is always at the top / header

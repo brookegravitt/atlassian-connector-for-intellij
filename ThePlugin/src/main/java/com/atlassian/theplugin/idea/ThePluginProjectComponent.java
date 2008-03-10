@@ -12,7 +12,6 @@ import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
-import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.peer.PeerFactory;
@@ -91,33 +90,34 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		if (!enabled) {
 
 			// create tool window on the right
-			ToolWindow toolWindow = toolWindowManager.registerToolWindow(IdeaHelper.TOOL_WINDOW_NAME,
+			com.intellij.openapi.wm.ToolWindow toolWindow = toolWindowManager.registerToolWindow(IdeaHelper.TOOL_WINDOW_NAME,
 						true, ToolWindowAnchor.RIGHT);
 			Icon toolWindowIcon = IconLoader.getIcon(THE_PLUGIN_TOOL_WINDOW_ICON);
 			toolWindow.setIcon(toolWindowIcon);
 
 			// create tool window content
 			BambooToolWindowPanel bambooToolWindowPanel = new BambooToolWindowPanel();
+
 			PeerFactory peerFactory = PeerFactory.getInstance();
 
 			Content bambooToolWindow = peerFactory.getContentFactory().createContent(
-					bambooToolWindowPanel, IdeaHelper.TOOLWINDOW_PANEL_BAMBOO, false);
+					bambooToolWindowPanel, IdeaHelper.ToolWindowPanels.BAMBOO.toString(), false);
 			bambooToolWindow.setIcon(IconLoader.getIcon("/icons/bamboo-blue-16.png"));
-			bambooToolWindow.putUserData(ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
+			bambooToolWindow.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
 			toolWindow.getContentManager().addContent(bambooToolWindow);
 
 			CrucibleToolWindowPanel crucibleToolWindowPanel = new CrucibleToolWindowPanel();
 			Content crucibleToolWindow = peerFactory.getContentFactory().createContent(
-					crucibleToolWindowPanel, IdeaHelper.TOOLWINDOW_PANEL_CRUCIBLE, false);
+					crucibleToolWindowPanel, IdeaHelper.ToolWindowPanels.CRUCIBLE.toString(), false);
 			crucibleToolWindow.setIcon(IconLoader.getIcon("/icons/crucible-blue-16.png"));
-			crucibleToolWindow.putUserData(ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
+			crucibleToolWindow.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
 			toolWindow.getContentManager().addContent(crucibleToolWindow);
 
             JIRAToolWindowPanel jiraToolWindowPanel = new JIRAToolWindowPanel();
             Content jiraToolWindow = peerFactory.getContentFactory().createContent(
-                    jiraToolWindowPanel, IdeaHelper.TOOLWINDOW_PANEL_JIRA, false);
+                    jiraToolWindowPanel, IdeaHelper.ToolWindowPanels.JIRA.toString(), false);
             jiraToolWindow.setIcon(IconLoader.getIcon("/icons/jira-blue-16.png"));
-			jiraToolWindow.putUserData(ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
+			jiraToolWindow.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
 			toolWindow.getContentManager().addContent(jiraToolWindow);
             toolWindow.getContentManager().setSelectedContent(jiraToolWindow);
 
