@@ -9,6 +9,8 @@
 		<Or>
 			<Class name="com.atlassian.theplugin.idea.PluginConfigurationForm"/>
 			<Class name="com.atlassian.theplugin.idea.config.serverconfig.BambooServerConfigForm"/>
+			<Class name="com.atlassian.theplugin.idea.config.serverconfig.CrucibleServerConfigForm"/>
+			<Class name="com.atlassian.theplugin.idea.config.serverconfig.JiraServerConfigForm"/>
 			<Class name="com.atlassian.theplugin.idea.config.serverconfig.GenericServerConfigForm"/>
 		</Or>
 		<Bug pattern="DM_BOOLEAN_CTOR"/>
