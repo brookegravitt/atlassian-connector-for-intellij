@@ -32,7 +32,7 @@ public class BuildStatusChangedToolTip extends JPanel implements BambooStatusDis
 
 		content.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-                IdeaHelper.focusPanel(projectComponent, IdeaHelper.TOOLWINDOW_PANEL_BAMBOO);
+                IdeaHelper.focusPanel(projectComponent, IdeaHelper.ToolWindowPanels.BAMBOO);
 			}
 		});
 
