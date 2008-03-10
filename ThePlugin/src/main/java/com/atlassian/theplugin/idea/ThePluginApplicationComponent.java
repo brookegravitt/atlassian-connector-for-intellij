@@ -33,7 +33,7 @@ public class ThePluginApplicationComponent
 
 	static {
 		AreaPicoContainer apc = Extensions.getRootArea().getPicoContainer();
-		PicoUtil.populatePicoContainer(apc);
+		PicoUtil.populateGlobalPicoContainer(apc);
 	}
 
 	private static final Icon PLUGIN_SETTINGS_ICON = IconLoader.getIcon("/icons/atlassian_icon-32.png");

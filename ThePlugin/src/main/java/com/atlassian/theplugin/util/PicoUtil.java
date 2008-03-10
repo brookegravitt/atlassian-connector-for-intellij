@@ -22,7 +22,7 @@ public final class PicoUtil {
 	}
 	///CLOVER:ON
 
-	private static Class[] registeredComponents = {
+	private static final Class[] GLOBAL_COMPONENTS = {
 			IdeaActionScheduler.class,
 			PluginConfigurationBean.class,
 			BambooStatusChecker.class,
@@ -39,9 +39,22 @@ public final class PicoUtil {
 			BambooServerFacadeImpl.class,
 	};
 
-	public static void populatePicoContainer(MutablePicoContainer pico) {
-		for (Class clazz : registeredComponents) {
+	private static final Class[] PROJECT_COMPONENTS = {
+	};
+
+
+	public static void populateGlobalPicoContainer(MutablePicoContainer pico) {
+		populate(pico, GLOBAL_COMPONENTS);
+	}
+
+	public static void populateProjectPicoContainer(MutablePicoContainer pico) {
+		populate(pico, PROJECT_COMPONENTS);
+	}
+
+	private static void populate(MutablePicoContainer pico, Class[] projectComponents) {
+		for (Class clazz : projectComponents) {
 			pico.registerComponentImplementation(clazz);
 		}
 	}
+
 }
