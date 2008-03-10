@@ -45,7 +45,7 @@ public class CruciblePatchUploadForm extends DialogWrapper {
 				fillServerRelatedCombos(((ServerComboBoxItem) crucibleServersComboBox.getSelectedItem()).getServer());
 			}
 		});
-		fillInCrucibleServers();		
+		fillInCrucibleServers();
 	}
 
 	public JComponent getPreferredFocusedComponent() {
