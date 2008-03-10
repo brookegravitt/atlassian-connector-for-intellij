@@ -1,28 +1,30 @@
-package com.atlassian.theplugin.idea.jira;
+package com.atlassian.theplugin.idea.bamboo;
 
-import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.atlassian.theplugin.bamboo.BambooBuild;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.ui.HyperlinkLabel;
+import com.intellij.util.ui.ListTableModel;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
-import javax.swing.table.AbstractTableModel;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class JIRATableModel extends AbstractTableModel {
-	static final long serialVersionUID = 8583198513106993199L;
-	
-	private List<JIRAIssue> issues = Collections.EMPTY_LIST;
+public class BambooTableModel extends ListTableModel {
+
+	private List<BambooBuildAdapter> builds = Collections.EMPTY_LIST;
     private static final int NUM_COLUMNS = 3;
 
-    public void setIssues(List<JIRAIssue> issues) {
-        this.issues = issues;
+    public void setItems(Collection<BambooBuild> builds) {
+		for (BambooBuild build : builds) {
+			this.builds.add(new BambooBuildAdapter(build));
+		}
     }
 
     public int getRowCount() {
-        return issues.size();
+        return builds.size();
     }
 
     public int getColumnCount() {
@@ -40,24 +42,21 @@ public class JIRATableModel extends AbstractTableModel {
     }
 
     public Object getValueAt(int row, int col) {
-        final JIRAIssue issue = issues.get(row);
+        final BambooBuildAdapter build = builds.get(row);
 
         switch (col) {
             case 0:
-                return new ImageIcon(issue.getTypeIconUrl());
+				return build.getBuildIcon();
             case 1:
-//                JLabel label = new JLabel(issue.getKey());
-//                label.setForeground(Color.BLUE);
-//                return label;
-                HyperlinkLabel hyperlinkLabel = new HyperlinkLabel(issue.getKey());
+                HyperlinkLabel hyperlinkLabel = new HyperlinkLabel(build.getBuildResultUrl());
                 hyperlinkLabel.addHyperlinkListener(new HyperlinkListener() {
                     public void hyperlinkUpdate(HyperlinkEvent event) {
-                        BrowserUtil.launchBrowser(issue.getIssueUrl());
+                        BrowserUtil.launchBrowser(build.getBuildResultUrl());
                     }
                 });
                 return hyperlinkLabel;
             case 2:
-                return issue.getSummary();
+                return build.getProjectKey();
             default:
                 return "";
         }
@@ -66,17 +65,17 @@ public class JIRATableModel extends AbstractTableModel {
     public String getColumnName(int col) {
         switch (col) {
             case 0:
-                return "Type";
+                return "Status";
             case 1:
-                return "Key";
+                return "Build";
             case 2:
-                return "Summary";
+                return "Project";
             default:
                 return "";
         }
     }
 
-    public JIRAIssue getIssueAtRow(int row) {
-        return issues.get(row);
+    public BambooBuildAdapter getBuildAtRow(int row) {
+        return builds.get(row);
     }
 }

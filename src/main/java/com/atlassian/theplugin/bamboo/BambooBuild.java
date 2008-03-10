@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.bamboo;
 
 import com.atlassian.theplugin.configuration.RequestData;
+import com.atlassian.theplugin.configuration.Server;
 
 import java.util.Date;
 
@@ -8,6 +9,8 @@ import java.util.Date;
  * Build information retrieved from Bamboo server.
  */
 public interface BambooBuild extends RequestData {
+	Server getServer();
+
 	String getServerUrl();
 
     String getProjectName();
@@ -35,6 +38,8 @@ public interface BambooBuild extends RequestData {
 	int getTestsPassed();
 
 	int getTestsFailed();
+
+	String getBuildReason();
 
 	Date getBuildTime();
 
