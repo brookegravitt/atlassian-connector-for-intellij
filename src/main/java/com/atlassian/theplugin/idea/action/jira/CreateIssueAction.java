@@ -23,7 +23,7 @@ public class CreateIssueAction extends AnAction {
         }
 
         if (errorMsg != null) {
-            IdeaHelper.focusPanel(e, IdeaHelper.TOOLWINDOW_PANEL_JIRA);
+            IdeaHelper.focusPanel(e, IdeaHelper.ToolWindowPanels.JIRA);
             Messages.showErrorDialog(project, errorMsg, "Create JIRA Issue");
         }
     }
