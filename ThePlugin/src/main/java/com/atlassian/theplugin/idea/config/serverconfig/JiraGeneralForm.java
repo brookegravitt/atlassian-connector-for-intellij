@@ -22,14 +22,12 @@ import java.awt.*;
  */
 public class JiraGeneralForm extends JComponent implements ContentPanel {
 	private JPanel rootComponent;
-	private JSpinner pollTimeSpinner;
-	private PluginConfigurationBean globalPluginConfiguration;
-
 	private SpinnerModel model;
+	private JSpinner pollTimeSpinner;
 
-	private JiraConfigurationBean jiraConfiguration;
-
-	private PluginConfiguration localPluginConfigurationCopy;
+	private transient PluginConfigurationBean globalPluginConfiguration;
+	private transient JiraConfigurationBean jiraConfiguration;
+	private transient PluginConfiguration localPluginConfigurationCopy;
 
 	public JiraGeneralForm(PluginConfigurationBean globalPluginConfiguration) {
 
