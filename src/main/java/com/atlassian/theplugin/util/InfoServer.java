@@ -132,18 +132,20 @@ public class InfoServer {
 	 */
 	public static class Version implements Serializable {
 		public static final String SPECIAL_DEV_VERSION = "${project.version}, SVN:${buildNumber}";
-		public static Version NULL_VERSION = null;
+		public static final Version NULL_VERSION = initNullVersion();
 
-		transient private VersionNumber versionNumber;
-		transient private Integer buildNo;
-
-		static {
+		private static Version initNullVersion() {
+			Version result = null;
 			try {
-				NULL_VERSION = new Version("0.0.0, SVN:0");
+				result = new Version("0.0.0, SVN:0");
 			} catch (IncorrectVersionException e) {
-				PluginUtil.getLogger().error("Impossible happened", e);
+				PluginUtil.getLogger().error("God does not exist. Impossible has happened.", e);
 			}
+			return result;
 		}
+
+		private transient VersionNumber versionNumber;
+		private transient Integer buildNo;
 
 		private String version = null;
 
