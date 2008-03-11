@@ -75,12 +75,13 @@ public final class IdeaHelper {
         if (tw != null) {
             ContentManager contentManager = tw.getContentManager();
             tw.activate(null);
-			Content toolWindow = contentManager.findContent(component.toString());
+			Content content = contentManager.findContent(component.toString());
 
-			if (toolWindow == null) {
+			if (content == null) {
 				switch (component) {
 					case BAMBOO:
-						//tw.getContentManager().addContent();
+						content = project.getComponent(ThePluginProjectComponent.class).createBambooContent();
+						contentManager.addContent(content);
 						break;
 					case CRUCIBLE:
 						break;
@@ -91,7 +92,7 @@ public final class IdeaHelper {
 				}
 			}
 			
-			contentManager.setSelectedContent(toolWindow);
+			contentManager.setSelectedContent(content);
         }
     }
 
