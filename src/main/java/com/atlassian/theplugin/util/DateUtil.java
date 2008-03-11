@@ -55,7 +55,7 @@ public abstract class DateUtil extends BambooColumnInfo {
 				return formatRelativeDateItem(buffer, seconds, " second");
 			}
 
-			if(someDate.getTime() > comparedTo.getTime()) {
+			if (someDate.getTime() > comparedTo.getTime()) {
 				return "in the future";
 			}
 
