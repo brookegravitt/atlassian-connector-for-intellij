@@ -33,5 +33,7 @@ public interface BambooSession {
 
 	void addCommentToBuild(String buildKey, String buildNumber, String buildComment) throws BambooException;
 
+	void executeBuild(String buildKey) throws BambooException;
+
 	boolean isLoggedIn();
 }
