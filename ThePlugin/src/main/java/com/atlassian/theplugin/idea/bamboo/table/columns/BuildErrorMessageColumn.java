@@ -5,16 +5,22 @@ import com.atlassian.theplugin.idea.bamboo.table.BambooColumnInfo;
 
 import java.util.Comparator;
 
-
-public class BuildDateColumn extends BambooColumnInfo {
-	private static final int COL_WIDTH = 200;
+/**
+ * Created by IntelliJ IDEA.
+ * User: marek
+ * Date: Mar 10, 2008
+ * Time: 12:24:37 PM
+ * To change this template use File | Settings | File Templates.
+ */
+public class BuildErrorMessageColumn extends BambooColumnInfo {
+	private static final int COL_WIDTH = 300;
 
 	public String getColumnName() {
-		return "Build date";
+		return "Message";
 	}
 
 	public Object valueOf(Object o) {
-		return ((BambooBuildAdapter) o).getBuildTime();
+		return ((BambooBuildAdapter) o).getMessage();
 	}
 
 	public Class getColumnClass() {
@@ -24,14 +30,13 @@ public class BuildDateColumn extends BambooColumnInfo {
 	public Comparator getComparator() {
 		return new Comparator() {
 			public int compare(Object o, Object o1) {
-				if (((BambooBuildAdapter) o).getBuildTime() != null
-						&& ((BambooBuildAdapter) o1).getBuildTime() != null) {
-					return ((BambooBuildAdapter) o).getBuildTime()
-							.compareTo(((BambooBuildAdapter) o1).getBuildTime());
+				if (((BambooBuildAdapter) o).getMessage() != null
+						&& ((BambooBuildAdapter) o1).getMessage() != null) {
+					return ((BambooBuildAdapter) o).getMessage()
+							.compareTo(((BambooBuildAdapter) o1).getMessage());
 				} else {
 					return 0;
 				}
-
 			}
 		};
 	}

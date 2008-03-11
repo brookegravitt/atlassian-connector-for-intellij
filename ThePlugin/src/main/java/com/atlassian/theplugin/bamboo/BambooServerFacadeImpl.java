@@ -57,12 +57,13 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 	 * @throws ServerPasswordNotProvidedException
 	 *          when invoked for Server that has not had the password set yet
 	 */
-	public Collection<BambooProject> getProjectList(Server bambooServer) throws ServerPasswordNotProvidedException {
+	public Collection<BambooProject> getProjectList(Server bambooServer) throws ServerPasswordNotProvidedException
+			, BambooException {
 		try {
 			return getSession(bambooServer).listProjectNames();
 		} catch (BambooException e) {
-			PluginUtil.getLogger().error("Bamboo exception: " + e.getMessage());
-			return null;
+			PluginUtil.getLogger().error("Bamboo exception: " + e.getMessage(), e);
+			throw e;
 		}
 	}
 
@@ -78,15 +79,18 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 			throws ServerPasswordNotProvidedException, BambooException {
 		BambooSession api = getSession(bambooServer);
 		List<BambooPlan> plans = api.listPlanNames();
-		List<String> favPlans = api.getFavouriteUserPlans();
-
-		for (String fav : favPlans) {
-			for (BambooPlan plan : plans) {
-				if (plan.getPlanKey().equalsIgnoreCase(fav)) {
-					((BambooPlanData) plan).setFavourite(true);
-					break;
+		try {
+			List<String> favPlans = api.getFavouriteUserPlans();
+			for (String fav : favPlans) {
+				for (BambooPlan plan : plans) {
+					if (plan.getPlanKey().equalsIgnoreCase(fav)) {
+						((BambooPlanData) plan).setFavourite(true);
+						break;
+					}
 				}
 			}
+		} catch (BambooException e) {
+			// lack of favourite info is not a blocker here
 		}
 		return plans;
 	}
@@ -185,42 +189,46 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 	}
 
 	public BuildDetails getBuildDetails(Server bambooServer, String buildKey, String buildNumber)
-			throws ServerPasswordNotProvidedException {
+			throws ServerPasswordNotProvidedException, BambooException {
 		try {
 			BambooSession api = getSession(bambooServer);
 			return api.getBuildResultDetails(buildKey, buildNumber);
 		} catch (BambooException e) {
 			PluginUtil.getLogger().info("Bamboo exception: " + e.getMessage());
-			return null;
+			throw e;
 		}
 	}
 
 	public void addLabelToBuild(Server bambooServer, String buildKey, String buildNumber, String buildLabel)
-			throws ServerPasswordNotProvidedException {
+			throws ServerPasswordNotProvidedException, BambooException {
 		try {
 			BambooSession api = getSession(bambooServer);
 			api.addLabelToBuild(buildKey, buildNumber, buildLabel);
 		} catch (BambooException e) {
 			PluginUtil.getLogger().info("Bamboo exception: " + e.getMessage());
+			throw e;
 		}
 	}
 
 	public void addCommentToBuild(Server bambooServer, String buildKey, String buildNumber, String buildComment)
-			throws ServerPasswordNotProvidedException {
+			throws ServerPasswordNotProvidedException, BambooException {
 		try {
 			BambooSession api = getSession(bambooServer);
 			api.addCommentToBuild(buildKey, buildNumber, buildComment);
 		} catch (BambooException e) {
 			PluginUtil.getLogger().info("Bamboo exception: " + e.getMessage());
+			throw e;
 		}
 	}
 
-	public void executeBuild(Server bambooServer, String buildKey) throws ServerPasswordNotProvidedException {
+	public void executeBuild(Server bambooServer, String buildKey)
+			throws ServerPasswordNotProvidedException, BambooException {
 		try {
 			BambooSession api = getSession(bambooServer);
 			api.executeBuild(buildKey);
 		} catch (BambooException e) {
 			PluginUtil.getLogger().info("Bamboo exception: " + e.getMessage());
+			throw e;
 		}
 	}
 
@@ -232,12 +240,13 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 	 * @throws ServerPasswordNotProvidedException
 	 *          when invoked for Server that has not had the password set yet
 	 */
-	public Collection<String> getFavouritePlans(Server bambooServer) throws ServerPasswordNotProvidedException {
+	public Collection<String> getFavouritePlans(Server bambooServer)
+			throws ServerPasswordNotProvidedException, BambooException {
 		try {
 			return getSession(bambooServer).getFavouriteUserPlans();
 		} catch (BambooException e) {
 			PluginUtil.getLogger().error("Bamboo exception: " + e.getMessage());
-			return null;
+			throw e;
 		}
 	}
 
