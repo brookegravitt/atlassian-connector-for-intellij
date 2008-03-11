@@ -104,10 +104,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 			PeerFactory peerFactory = PeerFactory.getInstance();
 
-			Content bambooToolWindow = peerFactory.getContentFactory().createContent(
-					bambooToolWindowPanel, IdeaHelper.ToolWindowPanels.BAMBOO.toString(), false);
-			bambooToolWindow.setIcon(IconLoader.getIcon("/icons/bamboo-blue-16.png"));
-			bambooToolWindow.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
+			Content bambooToolWindow = createBambooContent();
 			toolWindow.getContentManager().addContent(bambooToolWindow);
 
 			CrucibleToolWindowPanel crucibleToolWindowPanel = new CrucibleToolWindowPanel();
@@ -172,6 +169,20 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 			enabled = true;
 		}
+	}
+
+	public Content createBambooContent() {
+		PeerFactory peerFactory = PeerFactory.getInstance();
+
+		Content content = peerFactory.getContentFactory().createContent(
+				bambooToolWindowPanel,
+				IdeaHelper.ToolWindowPanels.BAMBOO.toString(),
+				false);
+
+		content.setIcon(IconLoader.getIcon("/icons/bamboo-blue-16.png"));
+		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
+
+		return content;
 	}
 
 	public void disablePlugin() {
