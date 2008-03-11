@@ -4,6 +4,7 @@ import com.atlassian.theplugin.bamboo.BambooBuild;
 import com.atlassian.theplugin.bamboo.BambooServerFacade;
 import com.atlassian.theplugin.bamboo.BambooStatusListener;
 import com.atlassian.theplugin.bamboo.HtmlBambooStatusListener;
+import com.atlassian.theplugin.bamboo.api.BambooException;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.idea.bamboo.table.BambooColumnInfo;
 import com.atlassian.theplugin.idea.ui.AtlassianTableView;
@@ -25,37 +26,38 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.FutureTask;
 
 public class BambooTableToolWindowPanel extends JPanel implements BambooStatusListener {
-    private JEditorPane editorPane;
-    private ListTableModel listTableModel;
-    private AtlassianTableView table;
+	private JEditorPane editorPane;
+	private ListTableModel listTableModel;
+	private AtlassianTableView table;
 	private final BambooServerFacade bambooFacade;
 	private static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
 
-    public BambooTableToolWindowPanel(BambooServerFacade bambooFacade) {
-        super(new BorderLayout());
+	public BambooTableToolWindowPanel(BambooServerFacade bambooFacade) {
+		super(new BorderLayout());
 
-		this.bambooFacade = bambooFacade;		
+		this.bambooFacade = bambooFacade;
 
 		setBackground(UIUtil.getTreeTextBackground());
-		
-		ActionManager actionManager = ActionManager.getInstance();  
+
+		ActionManager actionManager = ActionManager.getInstance();
 		ActionGroup toolbar = (ActionGroup) actionManager.getAction("ThePlugin.BambooToolWindowToolBar");
 		add(actionManager.createActionToolbar(
 				"atlassian.toolwindow.toolbar", toolbar, true).getComponent(), BorderLayout.NORTH);
 
-        editorPane = new ToolWindowBambooContent();
-        editorPane.setEditorKit(new ClasspathHTMLEditorKit());
-        JScrollPane pane = setupPane(editorPane, wrapBody("Bamboo."));
-        editorPane.setMinimumSize(ED_PANE_MINE_SIZE);
-        add(pane, BorderLayout.SOUTH);
+		editorPane = new ToolWindowBambooContent();
+		editorPane.setEditorKit(new ClasspathHTMLEditorKit());
+		JScrollPane pane = setupPane(editorPane, wrapBody("Waiting for Bamboo statuses."));
+		editorPane.setMinimumSize(ED_PANE_MINE_SIZE);
+		add(pane, BorderLayout.SOUTH);
 
 		BambooColumnInfo[] columns = BambooTableColumnProvider.makeColumnInfo();
 		TableCellRenderer[] renderers = BambooTableColumnProvider.makeRendererInfo();
 
 		listTableModel = new ListTableModel(columns);
-        listTableModel.setSortable(true);
+		listTableModel.setSortable(true);
 		table = new AtlassianTableView(listTableModel);
 
 		TableColumnModel model = table.getColumnModel();
@@ -68,134 +70,188 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 		}
 
 		table.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) { // on double click, just open the issue
-                if (e.getClickCount() == 2) {
+			public void mouseClicked(MouseEvent e) { // on double click, just open the issue
+				if (e.getClickCount() == 2) {
 					BambooBuildAdapter build = (BambooBuildAdapter) table.getSelectedObject();
-                    if (build != null) {
-                        BrowserUtil.launchBrowser(build.getBuildResultUrl());
-                    }
-                }
-            }
+					if (build != null) {
+						BrowserUtil.launchBrowser(build.getBuildResultUrl());
+					}
+				}
+			}
 
-            public void mousePressed(MouseEvent e) {
-                maybeShowPopup(e);
-            }
+			public void mousePressed(MouseEvent e) {
+				maybeShowPopup(e);
+			}
 
-            public void mouseReleased(MouseEvent e) {
-                maybeShowPopup(e);
-            }
+			public void mouseReleased(MouseEvent e) {
+				maybeShowPopup(e);
+			}
 
-            private void maybeShowPopup(MouseEvent e) { // on right click, show a context menu for this issue
-                if (e.isPopupTrigger() && table.isEnabled()) {
+			private void maybeShowPopup(MouseEvent e) { // on right click, show a context menu for this issue
+				if (e.isPopupTrigger() && table.isEnabled()) {
 					BambooBuildAdapter build = (BambooBuildAdapter) table.getSelectedObject();
 
-                    if (build != null) {
-                        Point p = new Point(e.getX(), e.getY());
-                        JPopupMenu contextMenu = createContextMenu(build);
-                        contextMenu.show(table, p.x, p.y);
-                    }                    
-                }
-            }
-        });
+					if (build != null) {
+						Point p = new Point(e.getX(), e.getY());
+						JPopupMenu contextMenu = createContextMenu(build);
+						contextMenu.show(table, p.x, p.y);
+					}
+				}
+			}
+		});
 
-        add(new JScrollPane(table), BorderLayout.CENTER);
-    }
+		add(new JScrollPane(table), BorderLayout.CENTER);
+	}
 
-    private JPopupMenu createContextMenu(BambooBuildAdapter buildAdapter) {
-        JPopupMenu contextMenu = new JPopupMenu();
-        contextMenu.add(makeWebUrlMenu("View", buildAdapter.getBuildResultUrl()));
-        contextMenu.addSeparator();
+	private JPopupMenu createContextMenu(BambooBuildAdapter buildAdapter) {
+		JPopupMenu contextMenu = new JPopupMenu();
+		contextMenu.add(makeWebUrlMenu("View", buildAdapter.getBuildResultUrl()));
+		contextMenu.addSeparator();
 		contextMenu.add(makeAddLabelMenu("Add label", buildAdapter));
-		contextMenu.add(makeAddCommentMenu("Add comment", buildAdapter));		
-        contextMenu.addSeparator();
+		contextMenu.add(makeAddCommentMenu("Add comment", buildAdapter));
+		contextMenu.addSeparator();
 		contextMenu.add(makeExecuteBuildMenu("Run build", buildAdapter));
 		return contextMenu;
-    }
+	}
 
 	private JMenuItem makeWebUrlMenu(String menuName, final String url) {
-        JMenuItem viewInBrowser = new JMenuItem();
-        viewInBrowser.setText(menuName);
-        viewInBrowser.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                BrowserUtil.launchBrowser(url);
-            }
-        });
-        return viewInBrowser;
-    }
+		JMenuItem viewInBrowser = new JMenuItem();
+		viewInBrowser.setText(menuName);
+		viewInBrowser.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				BrowserUtil.launchBrowser(url);
+			}
+		});
+		return viewInBrowser;
+	}
 
-    private JMenuItem makeAddLabelMenu(String menuName, final BambooBuildAdapter build) {
-        JMenuItem addLabel = new JMenuItem();
-        addLabel.setText(menuName);
-        addLabel.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {				
+	private JMenuItem makeAddLabelMenu(String menuName, final BambooBuildAdapter build) {
+		JMenuItem addLabel = new JMenuItem();
+		addLabel.setText(menuName);
+		addLabel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 				BuildLabelForm buildLabelForm = new BuildLabelForm(bambooFacade, build);
 				buildLabelForm.show();
+				if (buildLabelForm.getExitCode() == 0) {
+					labelBuild(build, buildLabelForm.getLabel());
+				}
 			}
-        });
-        return addLabel;
-    }
+		});
+		return addLabel;
+	}
 
-    private JMenuItem makeAddCommentMenu(String menuName, final BambooBuildAdapter build) {
-        JMenuItem addLabel = new JMenuItem();
-        addLabel.setText(menuName);
-        addLabel.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+	private void labelBuild(final BambooBuildAdapter build, final String label) {
+		FutureTask task = new FutureTask(new Runnable() {
+			public void run() {
+				setStatusMessage("Applying label on build...");
+				try {
+					bambooFacade.addLabelToBuild(build.getServer(), build.getBuildKey(), build.getBuildNumber(), label);
+					setStatusMessage("Label applied on build");
+				} catch (ServerPasswordNotProvidedException e) {
+					setStatusMessage("Label not applied: Password on provided for server");
+				} catch (BambooException e) {
+					setStatusMessage("Label not applied: " + e.getMessage());
+				}
+			}
+		}, null);
+		new Thread(task).start();
+	}
+
+	private JMenuItem makeAddCommentMenu(String menuName, final BambooBuildAdapter build) {
+		JMenuItem addComment = new JMenuItem();
+		addComment.setText(menuName);
+		addComment.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 				BuildCommentForm buildCommentForm = new BuildCommentForm(bambooFacade, build);
 				buildCommentForm.show();
+				if (buildCommentForm.getExitCode() == 0) {
+					commentBuild(build, buildCommentForm.getCommentText());
+				}
 			}
-        });
-        return addLabel;
-    }
+		});
+		return addComment;
+	}
 
-	private JMenuItem makeExecuteBuildMenu(String menuName, BambooBuildAdapter build) {
-        JMenuItem executeBuild = new JMenuItem();
-        executeBuild.setText(menuName);
+	private void commentBuild(final BambooBuildAdapter build, final String commentText) {
+		FutureTask task = new FutureTask(new Runnable() {
+			public void run() {
+				setStatusMessage("Adding comment label on build...");
+				try {
+					bambooFacade.addCommentToBuild(build.getServer(), build.getBuildKey(), build.getBuildNumber(), commentText);
+					setStatusMessage("Comment added to build");
+				} catch (ServerPasswordNotProvidedException e) {
+					setStatusMessage("Comment not added: Password on provided for server");
+				} catch (BambooException e) {
+					setStatusMessage("Comment not added: " + e.getMessage());
+				}
 
-		try {
-			bambooFacade.executeBuild(build.getServer(), build.getBuildKey());
-			setStatusMessage("Build triggered successfully");
-		} catch (ServerPasswordNotProvidedException e) {
-			setStatusMessage("Build trigger failed");
-		}
+			}
+		}, null);
+		new Thread(task).start();
+	}
 
-
+	private JMenuItem makeExecuteBuildMenu(String menuName, final BambooBuildAdapter build) {
+		JMenuItem executeBuild = new JMenuItem();
+		executeBuild.setText(menuName);
+		executeBuild.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				executeBuild(build);
+			}
+		});
 		return executeBuild;
 	}
 
+	private void executeBuild(final BambooBuildAdapter build) {
+		FutureTask task = new FutureTask(new Runnable() {
+			public void run() {
+				setStatusMessage("Executing build on plan " + build.getBuildKey());
+				try {
+					bambooFacade.executeBuild(build.getServer(), build.getBuildKey());
+					setStatusMessage("Build executed on plan: " + build.getBuildKey());					
+				} catch (ServerPasswordNotProvidedException e) {
+					setStatusMessage("Build not executed: Password on provided for server");
+				} catch (BambooException e) {
+					setStatusMessage("Build not executed: " + e.getMessage());
+				}
+
+			}
+		}, null);
+		new Thread(task).start();
+	}
 
 
 	private JScrollPane setupPane(JEditorPane pane, String initialText) {
-        pane.setText(initialText);
-        JScrollPane scrollPane = new JScrollPane(pane,
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setWheelScrollingEnabled(true);
-        return scrollPane;
-    }
+		pane.setText(initialText);
+		JScrollPane scrollPane = new JScrollPane(pane,
+				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.setWheelScrollingEnabled(true);
+		return scrollPane;
+	}
 
-    public void setBuilds(Collection<BambooBuild> builds) {
+	public void setBuilds(Collection<BambooBuild> builds) {
 		List<BambooBuildAdapter> buildAdapters = new ArrayList<BambooBuildAdapter>();
 		for (BambooBuild build : builds) {
 			buildAdapters.add(new BambooBuildAdapter(build));
 		}
 		listTableModel.setItems(buildAdapters);
-        listTableModel.fireTableDataChanged();
-        table.setEnabled(true);
-        table.setForeground(UIUtil.getActiveTextColor());
-//        editorPane.setText(wrapBody("Loaded <b>" + builds.size() + "</b> builds."));
-    }
+		listTableModel.fireTableDataChanged();
+		table.setEnabled(true);
+		table.setForeground(UIUtil.getActiveTextColor());
+        editorPane.setText(wrapBody("Loaded <b>" + builds.size() + "</b> builds."));
+	}
 
-    private String wrapBody(String s) {
-        return "<html>" + HtmlBambooStatusListener.BODY_WITH_STYLE + s + "</body></html>";
+	private String wrapBody(String s) {
+		return "<html>" + HtmlBambooStatusListener.BODY_WITH_STYLE + s + "</body></html>";
 
-    }
+	}
 
-    private void setStatusMessage(String msg) {
-        editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">" + msg + "</td></tr></table>"));
-    }
+	private void setStatusMessage(String msg) {
+		editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">" + msg + "</td></tr></table>"));
+	}
 
-    public List<BambooBuildAdapter> getBuilds() {
-        return (List<BambooBuildAdapter>) listTableModel.getItems();
-    }
+	public List<BambooBuildAdapter> getBuilds() {
+		return (List<BambooBuildAdapter>) listTableModel.getItems();
+	}
 
 	public void updateBuildStatuses(Collection<BambooBuild> buildStatuses) {
 		setBuilds(buildStatuses);
