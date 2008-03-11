@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.configuration;
 
 import com.atlassian.theplugin.ServerType;
+import com.atlassian.theplugin.util.InfoServer;
 
 public class PluginConfigurationBean implements PluginConfiguration {
     private BambooConfigurationBean bambooConfiguration = new BambooConfigurationBean();
@@ -9,6 +10,7 @@ public class PluginConfigurationBean implements PluginConfiguration {
 	private static final double ID_DISCRIMINATOR = 1e3d;
 	private long uid = 0;
 	private boolean isAutoUpdateEnabled = true;
+	private InfoServer.Version rejectedUpgrade = InfoServer.Version.NULL_VERSION;
 
 	/**
 	 * Default constructor.
@@ -32,6 +34,7 @@ public class PluginConfigurationBean implements PluginConfiguration {
 	public void setConfiguration(PluginConfiguration cfg) {
 		this.setUid(cfg.getUid());
 		this.setAutoUpdateEnabled(cfg.isAutoUpdateEnabled());
+		this.setRejectedUpgrade(cfg.getRejectedUpgrade());
 		this.setBambooConfigurationData(new BambooConfigurationBean(cfg.getProductServers(ServerType.BAMBOO_SERVER)));
         this.setCrucibleConfigurationData(new CrucibleConfigurationBean(cfg.getProductServers(ServerType.CRUCIBLE_SERVER)));
         this.setJIRAConfigurationData(new JiraConfigurationBean(cfg.getProductServers(ServerType.JIRA_SERVER)));
@@ -45,7 +48,7 @@ public class PluginConfigurationBean implements PluginConfiguration {
         return bambooConfiguration;
     }
 
-    /**
+	/**
      * For storage purposes.
      * <p/>
      * Does not use the JDK1.5 'return a subclass' due to problem with XML serialization.
@@ -129,7 +132,15 @@ public class PluginConfigurationBean implements PluginConfiguration {
 		isAutoUpdateEnabled = autoUpdateEnabled;
 	}
 
-    public boolean equals(Object o) {
+	public InfoServer.Version getRejectedUpgrade() {
+		return rejectedUpgrade;
+	}
+
+	public void setRejectedUpgrade(InfoServer.Version rejectedUpgrade) {
+		this.rejectedUpgrade = rejectedUpgrade;
+	}
+
+	public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
@@ -147,6 +158,9 @@ public class PluginConfigurationBean implements PluginConfiguration {
             return false;
         }
 
+		if (!rejectedUpgrade.equals(that.rejectedUpgrade)) {
+			return false;
+		}
 
 		if (!bambooConfiguration.equals(that.bambooConfiguration)) {
             return false;
@@ -165,6 +179,9 @@ public class PluginConfigurationBean implements PluginConfiguration {
         result = ONE_EFF * result + (bambooConfiguration != null ? bambooConfiguration.hashCode() : 0);
         result = ONE_EFF * result + (crucibleConfiguration != null ? crucibleConfiguration.hashCode() : 0);
         result = ONE_EFF * result + (jiraConfiguration != null ? jiraConfiguration.hashCode() : 0);
+		result = ONE_EFF * result + (int) (uid ^ (uid >>> 32));
+		result = ONE_EFF * result + (isAutoUpdateEnabled ? 1 : 0);
+		result = ONE_EFF * result + (rejectedUpgrade != null ? rejectedUpgrade.hashCode() : 0);
         return result;
     }
 }

@@ -165,7 +165,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			//statusBar.addCustomIndicationComponent(statusBarCrucibleIcon);
 			statusBarCrucibleIcon.showOrHideIcon();
 
-			statusPluginUpdateIcon = new PluginUpdateIcon(project);
+			statusPluginUpdateIcon = new PluginUpdateIcon(project, pluginConfiguration);
 			ConfirmPluginUpdateHandler.getInstance().setDisplay(statusPluginUpdateIcon);
 			//statusPluginUpdateIcon.showOrHideIcon();
 
