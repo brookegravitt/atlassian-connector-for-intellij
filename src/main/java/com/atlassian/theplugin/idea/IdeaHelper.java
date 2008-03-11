@@ -84,8 +84,12 @@ public final class IdeaHelper {
 						contentManager.addContent(content);
 						break;
 					case CRUCIBLE:
+						content = project.getComponent(ThePluginProjectComponent.class).createCrusibleContent();
+						contentManager.addContent(content);
 						break;
 					case JIRA:
+						content = project.getComponent(ThePluginProjectComponent.class).createJiraContent();
+						contentManager.addContent(content);
 						break;
 					default:
 						break;
