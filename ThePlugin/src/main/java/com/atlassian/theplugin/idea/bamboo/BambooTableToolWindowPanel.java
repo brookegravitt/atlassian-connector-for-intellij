@@ -4,16 +4,18 @@ import com.atlassian.theplugin.bamboo.BambooBuild;
 import com.atlassian.theplugin.bamboo.BambooServerFacade;
 import com.atlassian.theplugin.bamboo.BambooStatusListener;
 import com.atlassian.theplugin.bamboo.HtmlBambooStatusListener;
+import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.idea.bamboo.table.BambooColumnInfo;
 import com.atlassian.theplugin.idea.ui.AtlassianTableView;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.ui.table.TableView;
 import com.intellij.util.ui.ListTableModel;
 import com.intellij.util.ui.UIUtil;
 import thirdparty.javaworld.ClasspathHTMLEditorKit;
 
 import javax.swing.*;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -27,7 +29,7 @@ import java.util.List;
 public class BambooTableToolWindowPanel extends JPanel implements BambooStatusListener {
     private JEditorPane editorPane;
     private ListTableModel listTableModel;
-    private TableView table;
+    private AtlassianTableView table;
 	private final BambooServerFacade bambooFacade;
 	private static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
 
@@ -49,21 +51,26 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
         editorPane.setMinimumSize(ED_PANE_MINE_SIZE);
         add(pane, BorderLayout.SOUTH);
 
-        listTableModel = new ListTableModel(BambooTableColumnProvider.makeColumnInfo());
-        listTableModel.setSortable(true);
+		BambooColumnInfo[] columns = BambooTableColumnProvider.makeColumnInfo();
+		TableCellRenderer[] renderers = BambooTableColumnProvider.makeRendererInfo();
 
+		listTableModel = new ListTableModel(columns);
+        listTableModel.setSortable(true);
 		table = new AtlassianTableView(listTableModel);
 
 		TableColumnModel model = table.getColumnModel();
 		for (int i = 0; i < model.getColumnCount(); ++i) {
-			//System.out.println("resizable = " + model.getColumn(i).getResizable());
 			model.getColumn(i).setResizable(true);
+			model.getColumn(i).setPreferredWidth(columns[i].getPrefferedWidth());
+			if (renderers[i] != null) {
+				model.getColumn(i).setCellRenderer(renderers[i]);
+			}
 		}
 
 		table.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) { // on double click, just open the issue
                 if (e.getClickCount() == 2) {
-                    BambooBuildAdapter build = (BambooBuildAdapter) table.getSelectedObject();
+					BambooBuildAdapter build = (BambooBuildAdapter) table.getSelectedObject();
                     if (build != null) {
                         BrowserUtil.launchBrowser(build.getBuildResultUrl());
                     }
@@ -80,13 +87,13 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 
             private void maybeShowPopup(MouseEvent e) { // on right click, show a context menu for this issue
                 if (e.isPopupTrigger() && table.isEnabled()) {
-                    BambooBuildAdapter build = (BambooBuildAdapter) table.getSelectedObject();
+					BambooBuildAdapter build = (BambooBuildAdapter) table.getSelectedObject();
 
                     if (build != null) {
                         Point p = new Point(e.getX(), e.getY());
                         JPopupMenu contextMenu = createContextMenu(build);
                         contextMenu.show(table, p.x, p.y);
-                    }
+                    }                    
                 }
             }
         });
@@ -101,11 +108,11 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 		contextMenu.add(makeAddLabelMenu("Add label", buildAdapter));
 		contextMenu.add(makeAddCommentMenu("Add comment", buildAdapter));		
         contextMenu.addSeparator();
-//		contextMenu.add(makeWebUrlMenu("Run build", buildAdapter.getServer()));
+		contextMenu.add(makeExecuteBuildMenu("Run build", buildAdapter));
 		return contextMenu;
     }
 
-    private JMenuItem makeWebUrlMenu(String menuName, final String url) {
+	private JMenuItem makeWebUrlMenu(String menuName, final String url) {
         JMenuItem viewInBrowser = new JMenuItem();
         viewInBrowser.setText(menuName);
         viewInBrowser.addActionListener(new ActionListener() {
@@ -140,6 +147,23 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
         return addLabel;
     }
 
+	private JMenuItem makeExecuteBuildMenu(String menuName, BambooBuildAdapter build) {
+        JMenuItem executeBuild = new JMenuItem();
+        executeBuild.setText(menuName);
+
+		try {
+			bambooFacade.executeBuild(build.getServer(), build.getBuildKey());
+			setStatusMessage("Build triggered successfully");
+		} catch (ServerPasswordNotProvidedException e) {
+			setStatusMessage("Build trigger failed");
+		}
+
+
+		return executeBuild;
+	}
+
+
+
 	private JScrollPane setupPane(JEditorPane pane, String initialText) {
         pane.setText(initialText);
         JScrollPane scrollPane = new JScrollPane(pane,
@@ -157,7 +181,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
         listTableModel.fireTableDataChanged();
         table.setEnabled(true);
         table.setForeground(UIUtil.getActiveTextColor());
-        editorPane.setText(wrapBody("Loaded <b>" + builds.size() + "</b> builds."));
+//        editorPane.setText(wrapBody("Loaded <b>" + builds.size() + "</b> builds."));
     }
 
     private String wrapBody(String s) {
@@ -169,12 +193,8 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
         editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">" + msg + "</td></tr></table>"));
     }
 
-    public List<BambooBuildAdapter> getIssues() {
+    public List<BambooBuildAdapter> getBuilds() {
         return (List<BambooBuildAdapter>) listTableModel.getItems();
-    }
-
-    public BambooBuild getCurrentIssue() {
-        return (BambooBuild) table.getSelectedObject();
     }
 
 	public void updateBuildStatuses(Collection<BambooBuild> buildStatuses) {

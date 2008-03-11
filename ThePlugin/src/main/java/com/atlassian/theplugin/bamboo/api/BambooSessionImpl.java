@@ -37,6 +37,7 @@ class BambooSessionImpl implements BambooSession {
 	private static final String GET_BUILD_DETAILS_ACTION = "/api/rest/getBuildResultsDetails.action";
 	private static final String ADD_LABEL_ACTION = "/api/rest/addLabelToBuildResults.action";
 	private static final String ADD_COMMENT_ACTION = "/api/rest/addCommentToBuildResults.action";
+	private static final String EXECUTE_BUILD_ACTION = "/api/rest/executeBuild.action";
 
 	private final String baseUrl;
 	private String authToken;
@@ -415,6 +416,28 @@ class BambooSessionImpl implements BambooSession {
 					+ "&buildKey=" + URLEncoder.encode(buildKey, "UTF-8")
 					+ "&buildNumber=" + URLEncoder.encode(buildNumber, "UTF-8")
 					+ "&content=" + URLEncoder.encode(buildComment, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException("URLEncoding problem: ", e);
+		}
+
+		try {
+			Document doc = retrieveResponse(buildResultUrl);
+			String exception = getExceptionMessages(doc);
+			if (null != exception) {
+				throw new BambooException(exception);
+			}
+		} catch (JDOMException e) {
+			throw new BambooException("Server returned malformed response", e);
+		} catch (IOException e) {
+			throw new BambooException(e.getMessage(), e);
+		}
+	}
+
+	public void executeBuild(String buildKey) throws BambooException {
+		String buildResultUrl;
+		try {
+			buildResultUrl = baseUrl + EXECUTE_BUILD_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8")
+					+ "&buildKey=" + URLEncoder.encode(buildKey, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("URLEncoding problem: ", e);
 		}

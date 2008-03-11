@@ -24,4 +24,7 @@ public interface BambooServerFacade {
 
 	void addCommentToBuild(Server bambooServer, String buildKey, String buildNumber, String buildComment)
 			throws ServerPasswordNotProvidedException;
+
+	void executeBuild(Server bambooServer, String buildKey)
+			throws ServerPasswordNotProvidedException;
 }
