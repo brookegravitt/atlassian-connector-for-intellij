@@ -24,11 +24,11 @@ public class BambooBuildAdapter {
 	}
 
 	public String getServerUrl() {
-		return build.getServerUrl();
+		return build.getServerUrl() == null ? "" : build.getServerUrl();
 	}
 
 	public String getProjectName() {
-		return build.getProjectName();
+		return build.getProjectName() == null ? "" : build.getProjectName();
 	}
 
 	public String getProjectKey() {
@@ -36,19 +36,19 @@ public class BambooBuildAdapter {
 	}
 
 	public String getProjectUrl() {
-		return build.getProjectUrl();
+		return build.getProjectUrl() == null ? "" : build.getProjectUrl();
 	}
 
 	public String getBuildUrl() {
-		return build.getBuildUrl();
+		return build.getBuildUrl() == null ? "" : build.getBuildUrl();
 	}
 
 	public String getBuildName() {
-		return build.getBuildName();
+		return build.getBuildName() == null ? "" : build.getBuildName();
 	}
 
 	public String getBuildKey() {
-		return build.getBuildKey();
+		return build.getBuildKey() == null ? "" : build.getBuildKey();
 	}
 
 	public boolean getEnabled() {
@@ -56,11 +56,11 @@ public class BambooBuildAdapter {
 	}
 
 	public String getBuildNumber() {
-		return build.getBuildNumber();
+		return build.getBuildNumber() == null ? "0" : build.getBuildNumber();
 	}
 
 	public String getBuildResultUrl() {
-		return build.getBuildResultUrl();
+		return build.getBuildResultUrl() == null ? "" : build.getBuildResultUrl();
 	}
 
 	public BuildStatus getStatus() {
@@ -68,7 +68,7 @@ public class BambooBuildAdapter {
 	}
 
 	public String getMessage() {
-		return build.getMessage();
+		return build.getMessage() == null ? "" : build.getMessage();
 	}
 
 	public int getTestsPassed() {
@@ -88,7 +88,7 @@ public class BambooBuildAdapter {
 	}
 
 	public String getBuildRelativeBuildDate() {
-		return build.getBuildRelativeBuildDate();
+		return build.getBuildRelativeBuildDate() == null ? "" : build.getBuildRelativeBuildDate();
 	}
 
 	public Date getPollingTime() {
@@ -113,6 +113,6 @@ public class BambooBuildAdapter {
 	}
 
 	public String getBuildReason() {
-		return build.getBuildReason();
+		return build.getBuildReason() == null ? "" : build.getBuildReason();
 	}
 }

@@ -361,6 +361,25 @@ public class AutoRenewBambooSessionTest extends TestCase {
 		EasyMock.verify(mockDelegate);
 	}	
 
+	public void testGetBambooBuildNumber() throws Exception {
+		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
+		EasyMock.expectLastCall();
+		mockDelegate.getBamboBuildNumber();
+		EasyMock.expectLastCall().andThrow(new BambooSessionExpiredException(""));
+		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
+		EasyMock.expectLastCall();
+		mockDelegate.getBamboBuildNumber();
+		EasyMock.expectLastCall().andReturn(770);
+
+		EasyMock.replay(mockDelegate);
+
+		testedSession.login(LOGIN, A_PASSWORD);
+		testedSession.getBamboBuildNumber();
+
+		EasyMock.verify(mockDelegate);
+	}
+
+
 	public void testIsLoggedIn() throws BambooLoginException {
 		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
 		EasyMock.expectLastCall();

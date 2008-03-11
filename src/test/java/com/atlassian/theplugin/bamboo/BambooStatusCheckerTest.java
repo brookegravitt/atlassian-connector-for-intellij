@@ -1,10 +1,7 @@
 package com.atlassian.theplugin.bamboo;
 
 import com.atlassian.theplugin.UIActionScheduler;
-import com.atlassian.theplugin.bamboo.api.bamboomock.LatestBuildResultCallback;
-import com.atlassian.theplugin.bamboo.api.bamboomock.LoginCallback;
-import com.atlassian.theplugin.bamboo.api.bamboomock.PlanListCallback;
-import com.atlassian.theplugin.bamboo.api.bamboomock.FavouritePlanListCallback;
+import com.atlassian.theplugin.bamboo.api.bamboomock.*;
 import com.atlassian.theplugin.configuration.*;
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -25,18 +22,18 @@ public class BambooStatusCheckerTest extends TestCase {
 	private final BambooServerFacade bambooServerFacade = new BambooServerFacadeImpl();
 
 	public BambooStatusCheckerTest(String name) {
-        super(name);
-    }
+		super(name);
+	}
 
-    public void setUp() throws Exception {
-        super.setUp();
-    }
+	public void setUp() throws Exception {
+		super.setUp();
+	}
 
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
+	public void tearDown() throws Exception {
+		super.tearDown();
+	}
 
-    public void testGetInterval() throws Exception {
+	public void testGetInterval() throws Exception {
 		PluginConfigurationBean config = createBambooTestConfiguration();
 		ConfigurationFactory.setConfiguration(config);
 
@@ -107,8 +104,9 @@ public class BambooStatusCheckerTest extends TestCase {
 		assertTrue(checker.canSchedule()); // config not empty
 
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/getBambooBuildNumber.action", new BamboBuildNumberCalback());
 		mockServer.expect("/api/rest/listBuildNames.action", new PlanListCallback());
-		mockServer.expect("/api/rest/getLatestUserBuilds.action", new FavouritePlanListCallback());		
+		mockServer.expect("/api/rest/getLatestUserBuilds.action", new FavouritePlanListCallback());
 		mockServer.expect("/api/rest/getLatestBuildResults.action", new LatestBuildResultCallback());
 
 		task.run();
@@ -156,8 +154,8 @@ public class BambooStatusCheckerTest extends TestCase {
 	}
 
 	public static Test suite() {
-        return new TestSuite(BambooStatusCheckerTest.class);
-    }
+		return new TestSuite(BambooStatusCheckerTest.class);
+	}
 
 	private class MockReceiver implements BambooStatusListener {
 
@@ -172,6 +170,7 @@ public class BambooStatusCheckerTest extends TestCase {
 			lastStatuses = null;
 			return ret;
 		}
+
 		public Collection<BambooBuild> getLastStatuses() {
 			return lastStatuses;
 		}

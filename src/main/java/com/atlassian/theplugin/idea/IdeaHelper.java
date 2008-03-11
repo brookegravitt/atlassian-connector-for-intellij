@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -64,12 +65,26 @@ public final class IdeaHelper {
 
     public static JIRAToolWindowPanel getJIRAToolWindowPanel(AnActionEvent event) {
         Project p = getCurrentProject(event.getDataContext());
-        com.intellij.openapi.wm.ToolWindow tw = getToolWindow(p);
+		if (p == null) {
+			return null;
+		}
+		com.intellij.openapi.wm.ToolWindow tw = getToolWindow(p);
         Content content = tw.getContentManager().findContent(ToolWindowPanels.JIRA.toString());
         return (JIRAToolWindowPanel) content.getComponent();
     }
 
-    // simple method to open the ToolWindow and focus on a particular component
+	public static BambooTableToolWindowPanel getBambooToolWindowPanel(AnActionEvent event) {
+		Project p = getCurrentProject(event.getDataContext());
+		if (p == null) {
+			return null;
+		}
+		com.intellij.openapi.wm.ToolWindow tw = getToolWindow(p);
+		Content content = tw.getContentManager().findContent(ToolWindowPanels.BAMBOO.toString());
+		return (BambooTableToolWindowPanel) content.getComponent();
+	}
+
+
+	// simple method to open the ToolWindow and focus on a particular component
     public static void focusPanel(Project project, ToolWindowPanels component) {
         ToolWindow tw = getToolWindow(project);
         if (tw != null) {

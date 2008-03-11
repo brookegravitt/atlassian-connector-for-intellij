@@ -102,4 +102,13 @@ public class AutoRenewBambooSession implements BambooSession {
 	public void logout() {
 		delegate.logout();
 	}
+
+	public int getBamboBuildNumber() throws BambooException {
+		try {
+			return delegate.getBamboBuildNumber();
+		} catch (BambooSessionExpiredException e) {
+			delegate.login(userName, password);
+			return delegate.getBamboBuildNumber();
+		}
+	}
 }
