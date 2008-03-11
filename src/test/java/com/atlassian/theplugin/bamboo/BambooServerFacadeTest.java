@@ -328,6 +328,28 @@ public class BambooServerFacadeTest extends TestCase {
 		mockServer.verify();
 	}
 
+	public void testExecuteBuild() throws Exception {
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/executeBuild.action", new ExecuteBuildCallback());
+
+		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
+
+		testedBambooServerFacade.executeBuild(server, "TP-DEF");
+
+		mockServer.verify();
+	}
+
+	public void testFailedExecuteBuild() throws Exception {
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/executeBuild.action", new ExecuteBuildCallback(ExecuteBuildCallback.NON_EXIST_FAIL));
+
+		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
+
+		testedBambooServerFacade.executeBuild(server, "TP-DEF");
+
+		mockServer.verify();
+	}
+
 	public void testGetBuildDetails() throws Exception {
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
 		mockServer.expect("/api/rest/getBuildResultsDetails.action", new BuildDetailsResultCallback("buildResult-3Commit-FailedTests-SuccessfulTests.xml", "100"));

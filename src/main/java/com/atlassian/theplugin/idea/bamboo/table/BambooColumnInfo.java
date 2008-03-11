@@ -2,7 +2,6 @@ package com.atlassian.theplugin.idea.bamboo.table;
 
 import com.intellij.util.ui.ColumnInfo;
 
-import javax.swing.*;
 import java.util.Comparator;
 
 /**
@@ -30,5 +29,5 @@ public abstract class BambooColumnInfo extends ColumnInfo {
 
 	public abstract Comparator getComparator();
 
-	public abstract int getWidth(JTable jTable);
+	public abstract int getPrefferedWidth();
 }

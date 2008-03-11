@@ -25,6 +25,15 @@ public class AutoRenewBambooSession implements BambooSession {
 		}
 	}
 
+	public void executeBuild(String buildKey) throws BambooException {
+		try {
+			delegate.executeBuild(buildKey);
+		} catch (BambooSessionExpiredException e) {
+			delegate.login(userName, password);
+			delegate.executeBuild(buildKey);
+		}
+	}
+
 	public void addLabelToBuild(String buildKey, String buildNumber, String buildLabel) throws BambooException {
 		try {
 			delegate.addLabelToBuild(buildKey, buildNumber, buildLabel);
