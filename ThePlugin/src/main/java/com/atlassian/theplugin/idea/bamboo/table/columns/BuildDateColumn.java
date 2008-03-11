@@ -2,7 +2,6 @@ package com.atlassian.theplugin.idea.bamboo.table.columns;
 
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.idea.bamboo.table.BambooColumnInfo;
-import com.atlassian.theplugin.util.DateUtil;
 
 import java.util.Comparator;
 import java.util.Date;
@@ -16,11 +15,11 @@ public class BuildDateColumn extends BambooColumnInfo {
 	}
 
 	public Object valueOf(Object o) {
-         return DateUtil.getRelativePastDate(new Date(), ((BambooBuildAdapter) o).getBuildTime());
+         return ((BambooBuildAdapter) o).getBuildTime();
 	}
 
 	public Class getColumnClass() {
-		return String.class;
+		return Date.class;
 	}
 
 	public Comparator getComparator() {

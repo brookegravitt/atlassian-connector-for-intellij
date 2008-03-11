@@ -30,6 +30,16 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 		}
 		if (!session.isLoggedIn()) {
 			session.login(server.getUserName(), server.getPasswordString().toCharArray());
+			try {
+				if (session.getBamboBuildNumber() > 0) {
+					server.setIsBamboo2(true);
+				} else {
+					server.setIsBamboo2(false);
+				}
+			} catch (BambooException e) {
+				// can not validate as Bamboo 2
+				server.setIsBamboo2(false);
+			}
 		}
 		return session;
 	}

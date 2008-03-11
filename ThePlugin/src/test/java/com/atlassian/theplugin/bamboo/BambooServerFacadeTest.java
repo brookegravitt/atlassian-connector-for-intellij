@@ -78,6 +78,7 @@ public class BambooServerFacadeTest extends TestCase {
 
 	public void testSubscribedBuildStatus() throws Exception {
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/getBambooBuildNumber.action", new BamboBuildNumberCalback());
 		mockServer.expect("/api/rest/listBuildNames.action", new PlanListCallback());
 		mockServer.expect("/api/rest/getLatestUserBuilds.action", new FavouritePlanListCallback());
 		mockServer.expect("/api/rest/getLatestBuildResults.action", new LatestBuildResultCallback());
@@ -152,6 +153,7 @@ public class BambooServerFacadeTest extends TestCase {
 
 	public void testProjectList() throws Exception {
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/getBambooBuildNumber.action", new BamboBuildNumberCalback());
 		mockServer.expect("/api/rest/listProjectNames.action", new ProjectListCallback());
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
@@ -177,6 +179,7 @@ public class BambooServerFacadeTest extends TestCase {
 
 	public void testPlanList() throws Exception {
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/getBambooBuildNumber.action", new BamboBuildNumberCalback());
 		mockServer.expect("/api/rest/listBuildNames.action", new PlanListCallback());
 		mockServer.expect("/api/rest/getLatestUserBuilds.action", new FavouritePlanListCallback());
 
@@ -190,7 +193,6 @@ public class BambooServerFacadeTest extends TestCase {
 
 	public void testFailedPlanList() throws Exception {
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
-
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
 
 		try {
@@ -243,6 +245,7 @@ public class BambooServerFacadeTest extends TestCase {
 
 	public void testBambooConnectionWithEmptyPlan() throws BambooLoginException, CloneNotSupportedException, ServerPasswordNotProvidedException {
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/getBambooBuildNumber.action", new BamboBuildNumberCalback());
 		mockServer.expect("/api/rest/listBuildNames.action", new PlanListCallback());
 		mockServer.expect("/api/rest/getLatestUserBuilds.action", new FavouritePlanListCallback());
 
@@ -259,6 +262,7 @@ public class BambooServerFacadeTest extends TestCase {
 		String label = "label";
 
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/getBambooBuildNumber.action", new BamboBuildNumberCalback());
 		mockServer.expect("/api/rest/addLabelToBuildResults.action", new AddLabelToBuildCallback(label));
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
@@ -272,6 +276,7 @@ public class BambooServerFacadeTest extends TestCase {
 		String label = "";
 
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/getBambooBuildNumber.action", new BamboBuildNumberCalback());
 		mockServer.expect("/api/rest/addLabelToBuildResults.action", new AddLabelToBuildCallback(label));
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
@@ -285,6 +290,7 @@ public class BambooServerFacadeTest extends TestCase {
 		String label = "label";
 
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/getBambooBuildNumber.action", new BamboBuildNumberCalback());
 		mockServer.expect("/api/rest/addLabelToBuildResults.action", new AddLabelToBuildCallback(label, "200", AddLabelToBuildCallback.NON_EXIST_FAIL));
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
@@ -303,6 +309,7 @@ public class BambooServerFacadeTest extends TestCase {
 		String label = "label";
 
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/getBambooBuildNumber.action", new BamboBuildNumberCalback());
 		mockServer.expect("/api/rest/addCommentToBuildResults.action", new AddCommentToBuildCallback(label));
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
@@ -316,6 +323,7 @@ public class BambooServerFacadeTest extends TestCase {
 		String label = "";
 
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/getBambooBuildNumber.action", new BamboBuildNumberCalback());
 		mockServer.expect("/api/rest/addCommentToBuildResults.action", new AddCommentToBuildCallback(label));
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
@@ -329,6 +337,7 @@ public class BambooServerFacadeTest extends TestCase {
 		String label = "label";
 
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/getBambooBuildNumber.action", new BamboBuildNumberCalback());
 		mockServer.expect("/api/rest/addCommentToBuildResults.action", new AddCommentToBuildCallback(label, "200", AddCommentToBuildCallback.NON_EXIST_FAIL));
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
@@ -345,6 +354,7 @@ public class BambooServerFacadeTest extends TestCase {
 
 	public void testExecuteBuild() throws Exception {
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/getBambooBuildNumber.action", new BamboBuildNumberCalback());
 		mockServer.expect("/api/rest/executeBuild.action", new ExecuteBuildCallback());
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
@@ -356,6 +366,7 @@ public class BambooServerFacadeTest extends TestCase {
 
 	public void testFailedExecuteBuild() throws Exception {
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/getBambooBuildNumber.action", new BamboBuildNumberCalback());
 		mockServer.expect("/api/rest/executeBuild.action", new ExecuteBuildCallback(ExecuteBuildCallback.NON_EXIST_FAIL));
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
@@ -371,6 +382,7 @@ public class BambooServerFacadeTest extends TestCase {
 
 	public void testGetBuildDetails() throws Exception {
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/getBambooBuildNumber.action", new BamboBuildNumberCalback());
 		mockServer.expect("/api/rest/getBuildResultsDetails.action", new BuildDetailsResultCallback("buildResult-3Commit-FailedTests-SuccessfulTests.xml", "100"));
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
@@ -385,6 +397,7 @@ public class BambooServerFacadeTest extends TestCase {
 
 	public void testGetBuildDetailsNonExistingBuild() throws Exception {
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/getBambooBuildNumber.action", new BamboBuildNumberCalback());
 		mockServer.expect("/api/rest/getBuildResultsDetails.action", new BuildDetailsResultCallback("buildNotExistsResponse.xml", "200"));
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
