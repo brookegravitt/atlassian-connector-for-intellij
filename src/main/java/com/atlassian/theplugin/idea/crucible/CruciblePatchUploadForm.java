@@ -42,7 +42,9 @@ public class CruciblePatchUploadForm extends DialogWrapper {
 		getOKAction().putValue(Action.NAME, "Create review...");
 		crucibleServersComboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				fillServerRelatedCombos(((ServerComboBoxItem) crucibleServersComboBox.getSelectedItem()).getServer());
+				if (crucibleServersComboBox.getItemCount() > 0 && crucibleServersComboBox.getSelectedItem() != null && crucibleServersComboBox.getSelectedItem() instanceof ServerComboBoxItem) {
+					fillServerRelatedCombos(((ServerComboBoxItem) crucibleServersComboBox.getSelectedItem()).getServer());
+				}
 			}
 		});
 		fillInCrucibleServers();
