@@ -23,22 +23,23 @@ public class ServerBean implements Server {
 	private String password = "";
 	private Boolean enabled = true;
 	private Boolean useFavourite = false;
+	private boolean isBamboo2 = false;
 
 	private Collection<? extends SubscribedPlan> subscribedPlans = new ArrayList<SubscribedPlan>();
 
 	private transient Boolean isConfigInitialized = false;
-    private static final double ID_DISCRIMINATOR = 1000d;
+	private static final double ID_DISCRIMINATOR = 1000d;
 
-    public ServerBean() {
-        
-        uid = System.currentTimeMillis() + (long) (Math.random() * ID_DISCRIMINATOR);
+	public ServerBean() {
+
+		uid = System.currentTimeMillis() + (long) (Math.random() * ID_DISCRIMINATOR);
 	}
 
 	public ServerBean(Server cfg) {
 		this.setName(cfg.getName());
 		this.setUid(cfg.getUid());
 		this.setUserName(cfg.getUserName());
-		this.setPasswordString(cfg.getPasswordString(), cfg.getShouldPasswordBeStored());		
+		this.setPasswordString(cfg.getPasswordString(), cfg.getShouldPasswordBeStored());
 		this.setUrlString(cfg.getUrlString());
 		this.setEnabled(cfg.getEnabled());
 		this.setUseFavourite(cfg.getUseFavourite());
@@ -79,7 +80,7 @@ public class ServerBean implements Server {
 	}
 
 	public synchronized void setEnabled(Boolean enabled) {
-		this.enabled =  enabled;
+		this.enabled = enabled;
 	}
 
 	public synchronized Boolean getUseFavourite() {
@@ -103,9 +104,9 @@ public class ServerBean implements Server {
 
 			byte[] passwordBytes = Base64.decode(str2decode);
 
-			 /*if passwordBytes is null means that we tried to decode password with
-			 * not supported characters or just password hasn't been encoded yet
-			 * in this situation clear password*/
+			/*if passwordBytes is null means that we tried to decode password with
+						 * not supported characters or just password hasn't been encoded yet
+						 * in this situation clear password*/
 			if (passwordBytes == null) {
 				shouldPasswordBeStored = false;
 				return "";
@@ -226,11 +227,18 @@ public class ServerBean implements Server {
 		this.uid = uid;
 	}
 
+	public boolean isBamboo2() {
+		return isBamboo2;
+	}
 
-    private static final int ONE_EFF = 31;
-    private static final int TWO_ZERO = 32;
+	public void setIsBamboo2(boolean bamboo2) {
+		isBamboo2 = bamboo2;
+	}
 
-    public int hashCode() {
+	private static final int ONE_EFF = 31;
+	private static final int TWO_ZERO = 32;
+
+	public int hashCode() {
 		int result;
 		result = (int) (uid ^ (uid >>> TWO_ZERO));
 		result = ONE_EFF * result + (name != null ? name.hashCode() : 0);
@@ -262,7 +270,7 @@ public class ServerBean implements Server {
 //			return false;
 //		}
 		if (isConfigInitialized != null
-                ? !isConfigInitialized.equals(that.getIsConfigInitialized()) : that.getIsConfigInitialized() != null) {
+				? !isConfigInitialized.equals(that.getIsConfigInitialized()) : that.getIsConfigInitialized() != null) {
 			return false;
 		}
 		if (name != null ? !name.equals(that.getName()) : that.getName() != null) {
@@ -272,7 +280,7 @@ public class ServerBean implements Server {
 			return false;
 		}
 		if (shouldPasswordBeStored != null
-                ? !shouldPasswordBeStored.equals(that.getShouldPasswordBeStored()) : that.getShouldPasswordBeStored() != null) {
+				? !shouldPasswordBeStored.equals(that.getShouldPasswordBeStored()) : that.getShouldPasswordBeStored() != null) {
 			return false;
 		}
 		if (enabled != null ? !enabled.equals(that.getEnabled()) : that.getEnabled() != null) {
@@ -288,6 +296,9 @@ public class ServerBean implements Server {
 			return false;
 		}
 		if (username != null ? !username.equals(that.getUserName()) : that.getUserName() != null) {
+			return false;
+		}
+		if (isBamboo2 != that.isBamboo2()) {
 			return false;
 		}
 

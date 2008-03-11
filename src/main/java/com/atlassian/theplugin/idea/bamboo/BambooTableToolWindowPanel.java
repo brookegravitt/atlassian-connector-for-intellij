@@ -96,6 +96,12 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 						JPopupMenu contextMenu = createContextMenu(build);
 						contextMenu.show(table, p.x, p.y);
 					}
+
+					//                                     DataContext ctx = DataManager.getInstance().getDataContext();
+					//EventManager
+
+					//AnActionEvent ev = new AnActionEvent();
+					//ActionManager.getInstance().getAction("ThePlugin.RunBuild").update(ev);//  .getTemplatePresentation().setEnabled(false);
 				}
 			}
 		});
@@ -128,16 +134,21 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 	private JMenuItem makeAddLabelMenu(String menuName, final BambooBuildAdapter build) {
 		JMenuItem addLabel = new JMenuItem();
 		addLabel.setText(menuName);
+		addLabel.setEnabled(build.getServer().isBamboo2());
 		addLabel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				BuildLabelForm buildLabelForm = new BuildLabelForm(bambooFacade, build);
-				buildLabelForm.show();
-				if (buildLabelForm.getExitCode() == 0) {
-					labelBuild(build, buildLabelForm.getLabel());
-				}
+				openLabelDialog(build);
 			}
 		});
 		return addLabel;
+	}
+
+	private void openLabelDialog(BambooBuildAdapter build) {
+		BuildLabelForm buildLabelForm = new BuildLabelForm(bambooFacade, build);
+		buildLabelForm.show();
+		if (buildLabelForm.getExitCode() == 0) {
+			labelBuild(build, buildLabelForm.getLabel());
+		}
 	}
 
 	private void labelBuild(final BambooBuildAdapter build, final String label) {
@@ -157,19 +168,29 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 		new Thread(task).start();
 	}
 
+	public void addLabelToBuild() {
+		BambooBuildAdapter build = (BambooBuildAdapter) table.getSelectedObject();
+		openLabelDialog(build);
+	}
+
 	private JMenuItem makeAddCommentMenu(String menuName, final BambooBuildAdapter build) {
 		JMenuItem addComment = new JMenuItem();
 		addComment.setText(menuName);
+		addComment.setEnabled(build.getServer().isBamboo2());
 		addComment.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				BuildCommentForm buildCommentForm = new BuildCommentForm(bambooFacade, build);
-				buildCommentForm.show();
-				if (buildCommentForm.getExitCode() == 0) {
-					commentBuild(build, buildCommentForm.getCommentText());
-				}
+				openCommentDialog(build);
 			}
 		});
 		return addComment;
+	}
+
+	private void openCommentDialog(BambooBuildAdapter build) {
+		BuildCommentForm buildCommentForm = new BuildCommentForm(bambooFacade, build);
+		buildCommentForm.show();
+		if (buildCommentForm.getExitCode() == 0) {
+			commentBuild(build, buildCommentForm.getCommentText());
+		}
 	}
 
 	private void commentBuild(final BambooBuildAdapter build, final String commentText) {
@@ -190,9 +211,16 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 		new Thread(task).start();
 	}
 
+	public void addCommentToBuild() {
+		BambooBuildAdapter build = (BambooBuildAdapter) table.getSelectedObject();
+		openCommentDialog(build);
+	}
+
 	private JMenuItem makeExecuteBuildMenu(String menuName, final BambooBuildAdapter build) {
 		JMenuItem executeBuild = new JMenuItem();
 		executeBuild.setText(menuName);
+		executeBuild.setEnabled(!build.getServer().isBamboo2());
+
 		executeBuild.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				executeBuild(build);
@@ -207,7 +235,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 				setStatusMessage("Executing build on plan " + build.getBuildKey());
 				try {
 					bambooFacade.executeBuild(build.getServer(), build.getBuildKey());
-					setStatusMessage("Build executed on plan: " + build.getBuildKey());					
+					setStatusMessage("Build executed on plan: " + build.getBuildKey());
 				} catch (ServerPasswordNotProvidedException e) {
 					setStatusMessage("Build not executed: Password on provided for server");
 				} catch (BambooException e) {
@@ -219,6 +247,10 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 		new Thread(task).start();
 	}
 
+	public void runBuild() {
+		BambooBuildAdapter build = (BambooBuildAdapter) table.getSelectedObject();
+		executeBuild(build);
+	}
 
 	private JScrollPane setupPane(JEditorPane pane, String initialText) {
 		pane.setText(initialText);
@@ -237,7 +269,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 		listTableModel.fireTableDataChanged();
 		table.setEnabled(true);
 		table.setForeground(UIUtil.getActiveTextColor());
-        editorPane.setText(wrapBody("Loaded <b>" + builds.size() + "</b> builds."));
+		editorPane.setText(wrapBody("Loaded <b>" + builds.size() + "</b> builds."));
 	}
 
 	private String wrapBody(String s) {
@@ -255,5 +287,39 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 
 	public void updateBuildStatuses(Collection<BambooBuild> buildStatuses) {
 		setBuilds(buildStatuses);
+	}
+
+	public boolean getExecuteBuildEnabled() {
+		BambooBuildAdapter build = (BambooBuildAdapter) table.getSelectedObject();
+		if (build != null) {
+			if (build.getServer().isBamboo2()) {
+				return false;
+			} else {
+				return true;
+			}
+		} else {
+			return false;
+		}
+	}
+
+	private boolean getBamboo2ActionsEnabled() {
+		BambooBuildAdapter build = (BambooBuildAdapter) table.getSelectedObject();
+		if (build != null) {
+			if (build.getServer().isBamboo2()) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
+
+	public boolean getLabelBuildEnabled() {
+		return getBamboo2ActionsEnabled();
+	}
+
+	public boolean getCommentBuildEnabled() {
+		return getBamboo2ActionsEnabled();		
 	}
 }

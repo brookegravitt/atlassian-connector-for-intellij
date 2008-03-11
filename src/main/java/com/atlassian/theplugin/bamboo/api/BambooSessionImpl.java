@@ -38,6 +38,7 @@ class BambooSessionImpl implements BambooSession {
 	private static final String ADD_LABEL_ACTION = "/api/rest/addLabelToBuildResults.action";
 	private static final String ADD_COMMENT_ACTION = "/api/rest/addCommentToBuildResults.action";
 	private static final String EXECUTE_BUILD_ACTION = "/api/rest/executeBuild.action";
+	private static final String GET_BAMBOO_BUILD_NUMBER_ACTION = "/api/rest/getBambooBuildNumber.action";
 
 	private final String baseUrl;
 	private String authToken;
@@ -137,6 +138,40 @@ class BambooSessionImpl implements BambooSession {
 
 		authToken = null;
 		client = null;
+	}
+
+	public int getBamboBuildNumber() throws BambooException {
+		String queryUrl;
+		try {
+			queryUrl = baseUrl + GET_BAMBOO_BUILD_NUMBER_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException("URLEncoding problem: ", e);
+		}
+
+		try {
+			Document doc = retrieveResponse(queryUrl);
+
+			String exception = getExceptionMessages(doc);
+			if (null != exception) {
+				// error - method does nt exists (session errors handled in retrieveResponse
+				return -1;
+			}
+
+			XPath xpath = XPath.newInstance("/response/bambooBuildNumber");
+			@SuppressWarnings("unchecked")
+			List<Element> elements = xpath.selectNodes(doc);
+			if (elements != null) {
+				for (Element element : elements) {
+					String bNo = element.getText();
+					return Integer.parseInt(bNo);
+				}
+			}
+			return -1;
+		} catch (JDOMException e) {
+			throw new BambooException("Server returned malformed response", e);
+		} catch (IOException e) {
+			throw new BambooException(e.getMessage(), e);
+		}
 	}
 
 	public List<BambooProject> listProjectNames() throws BambooException {
