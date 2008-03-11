@@ -30,7 +30,11 @@ public class BuildReasonColumn extends BambooColumnInfo {
 	public Comparator getComparator() {
 		return new Comparator() {
 			public int compare(Object o, Object o1) {
-				return ((BambooBuildAdapter) o).getBuildReason().compareTo(((BambooBuildAdapter) o1).getBuildReason());
+				if (((BambooBuildAdapter) o).getBuildReason() != null && ((BambooBuildAdapter) o1).getBuildReason() != null) {
+					return ((BambooBuildAdapter) o).getBuildReason().compareTo(((BambooBuildAdapter) o1).getBuildReason());
+				} else {
+					return 0;
+				}
 			}
 		};
 	}
