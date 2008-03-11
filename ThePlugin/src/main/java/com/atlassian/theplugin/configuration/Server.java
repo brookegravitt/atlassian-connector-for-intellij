@@ -49,4 +49,9 @@ public interface Server {
 
 	@Transient
 	void setIsConfigInitialized(Boolean isConfigInitialized);
+
+	@Transient
+	boolean isBamboo2();
+
+	void setIsBamboo2(boolean bamboo2);
 }

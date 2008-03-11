@@ -20,13 +20,7 @@ public class BuildNumberColumn extends BambooColumnInfo {
 	}
 
 	public Object valueOf(Object o) {
-		String number = ((BambooBuildAdapter) o).getBuildNumber();
-		if (number != null) {
-			return Integer.valueOf(number);
-		} else {
-			return Integer.valueOf(0);
-		}
-
+		return Integer.valueOf(((BambooBuildAdapter) o).getBuildNumber());
 	}
 
 	public Class getColumnClass() {
@@ -36,14 +30,8 @@ public class BuildNumberColumn extends BambooColumnInfo {
 	public Comparator getComparator() {
 		return new Comparator() {
 			public int compare(Object o, Object o1) {
-				String oStr = (((BambooBuildAdapter) o).getBuildNumber());
-				String o1Str = ((BambooBuildAdapter) o1).getBuildNumber();
-				if (oStr != null && o1Str != null) {
-					int oValue = Integer.parseInt(oStr);
-					int o1Value = Integer.parseInt(o1Str);
-					return oValue - o1Value;
-				}
-				return 0;
+				return Integer.parseInt(((BambooBuildAdapter) o).getBuildNumber())
+						- Integer.parseInt(((BambooBuildAdapter) o1).getBuildNumber());
 			}
 		};
 	}

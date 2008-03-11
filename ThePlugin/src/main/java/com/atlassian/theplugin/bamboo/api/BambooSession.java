@@ -19,6 +19,8 @@ public interface BambooSession {
 
 	void logout();
 
+	int getBamboBuildNumber() throws BambooException;
+
 	List<BambooProject> listProjectNames() throws BambooException;
 
 	List<BambooPlan> listPlanNames() throws BambooException;

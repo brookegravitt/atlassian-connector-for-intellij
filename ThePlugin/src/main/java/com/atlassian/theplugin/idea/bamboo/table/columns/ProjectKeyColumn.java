@@ -30,13 +30,7 @@ public class ProjectKeyColumn extends BambooColumnInfo {
 	public Comparator getComparator() {
 		return new Comparator() {
 			public int compare(Object o, Object o1) {
-				if (((BambooBuildAdapter) o).getProjectName() != null
-						&& ((BambooBuildAdapter) o1).getProjectName() != null) {
-					return ((BambooBuildAdapter) o).getProjectName().
-							compareTo(((BambooBuildAdapter) o1).getProjectName());
-				} else {
-					return 0;
-				}
+				return ((BambooBuildAdapter) o).getProjectName().compareTo(((BambooBuildAdapter) o1).getProjectName());
 			}
 		};
 	}

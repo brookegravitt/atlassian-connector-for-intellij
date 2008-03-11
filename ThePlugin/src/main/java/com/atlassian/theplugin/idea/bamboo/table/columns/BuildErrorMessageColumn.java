@@ -30,13 +30,8 @@ public class BuildErrorMessageColumn extends BambooColumnInfo {
 	public Comparator getComparator() {
 		return new Comparator() {
 			public int compare(Object o, Object o1) {
-				if (((BambooBuildAdapter) o).getMessage() != null
-						&& ((BambooBuildAdapter) o1).getMessage() != null) {
-					return ((BambooBuildAdapter) o).getMessage()
-							.compareTo(((BambooBuildAdapter) o1).getMessage());
-				} else {
-					return 0;
-				}
+				return ((BambooBuildAdapter) o).getMessage()
+						.compareTo(((BambooBuildAdapter) o1).getMessage());
 			}
 		};
 	}
