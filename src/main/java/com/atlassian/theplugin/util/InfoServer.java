@@ -12,6 +12,7 @@ import org.jdom.xpath.XPath;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.Scanner;
 import java.util.regex.MatchResult;
 
@@ -129,8 +130,122 @@ public class InfoServer {
 	/**
 	 * Class encapsulating version descriptor of a form e.g. "0.3.0, SVN:14021"
 	 */
-	public static class Version {
+	public static class Version implements Serializable {
 		public static final String SPECIAL_DEV_VERSION = "${project.version}, SVN:${buildNumber}";
+		public static Version NULL_VERSION = null;
+
+		transient private VersionNumber versionNumber;
+		transient private Integer buildNo;
+
+		static {
+			try {
+				NULL_VERSION = new Version("0.0.0, SVN:0");
+			} catch (IncorrectVersionException e) {
+				PluginUtil.getLogger().error("Impossible happened", e);
+			}
+		}
+
+		private String version = null;
+
+		public Version(String version) throws IncorrectVersionException {
+			super();
+			setVersion(version);
+		}
+		
+		public Version() throws IncorrectVersionException {
+			this(NULL_VERSION.getVersion());
+		}
+
+		public String getVersion() {
+			return version;
+		}
+
+		public void setVersion(String version) throws IncorrectVersionException {
+			this.version = version;
+			if (!version.equals(SPECIAL_DEV_VERSION)) {
+				tokenize();
+			}
+		}
+
+
+		private static final String PATTERN = "^(\\d+)\\.(\\d+)\\.(\\d+)((-(SNAPSHOT))?+), SVN:(\\d+)$";
+		//private static final String PATTERN = "^(\\d+)\\.(\\d+)\\.(\\d+)((-(ALPHA|BETA|SNAPSHOT))?+), SVN:(\\d+)$";
+		private static final int MAJOR_TOKEN_GRP = 1;
+		private static final int MINOR_TOKEN_GRP = 2;
+		private static final int MICRO_TOKEN_GRP = 3;
+		private static final int ALPHANUM_TOKEN_GRP = 6;
+		private static final int BUILD_TOKEN_GRP = 7;
+
+		private void tokenize() throws IncorrectVersionException {
+			Scanner s = new Scanner(version);
+			s.findInLine(PATTERN);
+			try {
+				MatchResult result = s.match();
+				versionNumber = new VersionNumber(
+						Integer.valueOf(result.group(MAJOR_TOKEN_GRP)),
+						Integer.valueOf(result.group(MINOR_TOKEN_GRP)),
+						Integer.valueOf(result.group(MICRO_TOKEN_GRP)),
+						result.group(ALPHANUM_TOKEN_GRP)
+				);
+
+				try {
+					buildNo = Integer.valueOf(result.group(BUILD_TOKEN_GRP));
+				} catch (NumberFormatException ex) {
+					throw new IncorrectVersionException("Invalid build number: \"" + result.group(BUILD_TOKEN_GRP)
+							+ "\"", ex);
+				}
+			} catch (IllegalStateException ex) {
+				throw new IncorrectVersionException("Version (" + version + ") does not match pattern (\"" + PATTERN
+						+ "\")", ex);
+			}
+		}
+
+		public boolean equals(Object that) {
+			if (this == that) {
+				return true;
+			}
+			if (that == null || getClass() != that.getClass()) {
+				return false;
+			}
+
+			Version thatVersion = (Version) that;
+
+			if (version != null ? !version.equals(thatVersion.version) : thatVersion.version != null) {
+				return false;
+			}
+
+			return true;
+		}
+
+		public int hashCode() {
+			return (version != null ? version.hashCode() : 0);
+		}
+
+		@Override
+		public String toString() {
+			return version;
+		}
+
+		public Integer getBuildNo() {
+			return buildNo;
+		}
+
+		public boolean greater(Version other) {
+			if (other.version.equals(SPECIAL_DEV_VERSION)) {
+				return false;
+			}
+			if (version.equals(SPECIAL_DEV_VERSION)) {
+				return true;
+			}
+			if (this.getVersionNumber().equals(other.getVersionNumber())) {
+				return getBuildNo() > other.getBuildNo();
+			}
+			return this.getVersionNumber().greater(other.getVersionNumber());
+		}
+
+		private VersionNumber getVersionNumber() {
+			return versionNumber;
+		}
 
 		private static class VersionNumber {
 
@@ -217,94 +332,5 @@ public class InfoServer {
 
 		}
 
-		private VersionNumber versionNumber;
-		private Integer buildNo;
-		private String version;
-
-		public Version(String version) throws IncorrectVersionException {
-			this.version = version;
-			if (!version.equals(SPECIAL_DEV_VERSION)) {
-				tokenize();
-			}
-		}
-
-		private static final String PATTERN = "^(\\d+)\\.(\\d+)\\.(\\d+)((-(SNAPSHOT))?+), SVN:(\\d+)$";
-		//private static final String PATTERN = "^(\\d+)\\.(\\d+)\\.(\\d+)((-(ALPHA|BETA|SNAPSHOT))?+), SVN:(\\d+)$";
-		private static final int MAJOR_TOKEN_GRP = 1;
-		private static final int MINOR_TOKEN_GRP = 2;
-		private static final int MICRO_TOKEN_GRP = 3;
-		private static final int ALPHANUM_TOKEN_GRP = 6;
-		private static final int BUILD_TOKEN_GRP = 7;
-
-		private void tokenize() throws IncorrectVersionException {
-			Scanner s = new Scanner(version);
-			s.findInLine(PATTERN);
-			try {
-				MatchResult result = s.match();
-				versionNumber = new VersionNumber(
-						Integer.valueOf(result.group(MAJOR_TOKEN_GRP)),
-						Integer.valueOf(result.group(MINOR_TOKEN_GRP)),
-						Integer.valueOf(result.group(MICRO_TOKEN_GRP)),
-						result.group(ALPHANUM_TOKEN_GRP)
-				);
-
-				try {
-					buildNo = Integer.valueOf(result.group(BUILD_TOKEN_GRP));
-				} catch (NumberFormatException ex) {
-					throw new IncorrectVersionException("Invalid build number: \"" + result.group(BUILD_TOKEN_GRP)
-							+ "\"", ex);
-				}
-			} catch (IllegalStateException ex) {
-				throw new IncorrectVersionException("Version (" + version + ") does not match pattern (\"" + PATTERN
-						+ "\")", ex);
-			}
-		}
-
-		public boolean equals(Object that) {
-			if (this == that) {
-				return true;
-			}
-			if (that == null || getClass() != that.getClass()) {
-				return false;
-			}
-
-			Version thatVersion = (Version) that;
-
-			if (version != null ? !version.equals(thatVersion.version) : thatVersion.version != null) {
-				return false;
-			}
-
-			return true;
-		}
-
-		public int hashCode() {
-			return (version != null ? version.hashCode() : 0);
-		}
-
-		@Override
-		public String toString() {
-			return version;
-		}
-
-		public Integer getBuildNo() {
-			return buildNo;
-		}
-
-		public boolean greater(Version other) {
-			if (other.version.equals(SPECIAL_DEV_VERSION)) {
-				return false;
-			}
-			if (version.equals(SPECIAL_DEV_VERSION)) {
-				return true;
-			}
-			if (this.getVersionNumber().equals(other.getVersionNumber())) {
-				return getBuildNo() > other.getBuildNo();
-			}
-			return this.getVersionNumber().greater(other.getVersionNumber());
-		}
-
-		private VersionNumber getVersionNumber() {
-			return versionNumber;
-		}
 	}
 }
