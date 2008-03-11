@@ -174,12 +174,13 @@ public class PluginConfigurationBean implements PluginConfiguration {
     }
 
     private static final int ONE_EFF = 31;
+	private static final int SHIFT_VAL = 32;
     public int hashCode() {
         int result = 0;
         result = ONE_EFF * result + (bambooConfiguration != null ? bambooConfiguration.hashCode() : 0);
         result = ONE_EFF * result + (crucibleConfiguration != null ? crucibleConfiguration.hashCode() : 0);
         result = ONE_EFF * result + (jiraConfiguration != null ? jiraConfiguration.hashCode() : 0);
-		result = ONE_EFF * result + (int) (uid ^ (uid >>> 32));
+		result = ONE_EFF * result + (int) (uid ^ (uid >>> SHIFT_VAL));
 		result = ONE_EFF * result + (isAutoUpdateEnabled ? 1 : 0);
 		result = ONE_EFF * result + (rejectedUpgrade != null ? rejectedUpgrade.hashCode() : 0);
         return result;
