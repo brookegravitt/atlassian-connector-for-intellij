@@ -3,7 +3,7 @@ package com.atlassian.theplugin.idea.bamboo;
 import com.atlassian.theplugin.idea.bamboo.table.columns.*;
 import com.intellij.util.ui.ColumnInfo;
 
-public class BambooTableColumnProvider {
+public final class BambooTableColumnProvider {
 	private BambooTableColumnProvider() {		
 	}
 
