@@ -14,6 +14,7 @@ import com.intellij.util.ui.UIUtil;
 import thirdparty.javaworld.ClasspathHTMLEditorKit;
 
 import javax.swing.*;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -52,6 +53,12 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
         listTableModel.setSortable(true);
 
 		table = new AtlassianTableView(listTableModel);
+
+		TableColumnModel model = table.getColumnModel();
+		for (int i = 0; i < model.getColumnCount(); ++i) {
+			//System.out.println("resizable = " + model.getColumn(i).getResizable());
+			model.getColumn(i).setResizable(true);
+		}
 
 		table.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) { // on double click, just open the issue
