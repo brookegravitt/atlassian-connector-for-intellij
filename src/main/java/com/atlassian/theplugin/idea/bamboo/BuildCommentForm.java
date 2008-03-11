@@ -1,7 +1,6 @@
 package com.atlassian.theplugin.idea.bamboo;
 
 import com.atlassian.theplugin.bamboo.BambooServerFacade;
-import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -47,14 +46,8 @@ public class BuildCommentForm extends DialogWrapper {
 		});
 	}
 
-	protected void doOKAction() {
-		try {
-			bambooFacade.addCommentToBuild(build.getServer(), build.getBuildKey(), build.getBuildNumber(), commentArea.getText());
-		} catch (ServerPasswordNotProvidedException e) {
-			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-		}
-
-		super.doOKAction();
+	public String getCommentText() {
+		return commentArea.getText();
 	}
 
 	@Nullable

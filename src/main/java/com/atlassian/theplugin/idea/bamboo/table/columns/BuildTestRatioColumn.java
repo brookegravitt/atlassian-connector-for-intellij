@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.idea.bamboo.table.columns;
 
+import com.atlassian.theplugin.bamboo.BuildStatus;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.idea.bamboo.table.BambooColumnInfo;
 
@@ -20,7 +21,11 @@ public class BuildTestRatioColumn extends BambooColumnInfo {
 	}
 
 	public Object valueOf(Object o) {
-		return ((BambooBuildAdapter) o).getTestsPassed() + "/" + ((BambooBuildAdapter) o).getTestsNumber();
+		if (((BambooBuildAdapter)o).getStatus() == BuildStatus.UNKNOWN) {
+			return "-/-";
+		} else {
+			return ((BambooBuildAdapter) o).getTestsPassed() + "/" + ((BambooBuildAdapter) o).getTestsNumber();
+		}
 	}
 
 	public Class getColumnClass() {

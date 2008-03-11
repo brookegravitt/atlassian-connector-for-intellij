@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.bamboo;
 
 import com.atlassian.theplugin.ServerType;
+import com.atlassian.theplugin.bamboo.api.BambooException;
 import com.atlassian.theplugin.bamboo.api.BambooLoginException;
 import com.atlassian.theplugin.bamboo.api.bamboomock.*;
 import com.atlassian.theplugin.configuration.*;
@@ -77,7 +78,7 @@ public class BambooServerFacadeTest extends TestCase {
 
 	public void testSubscribedBuildStatus() throws Exception {
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/api/rest/listBuildNames.action", new PlanListCallback());		
+		mockServer.expect("/api/rest/listBuildNames.action", new PlanListCallback());
 		mockServer.expect("/api/rest/getLatestUserBuilds.action", new FavouritePlanListCallback());
 		mockServer.expect("/api/rest/getLatestBuildResults.action", new LatestBuildResultCallback());
 		mockServer.expect("/api/rest/getLatestBuildResults.action", new LatestBuildResultCallback("FAILED"));
@@ -165,8 +166,12 @@ public class BambooServerFacadeTest extends TestCase {
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
 
-		Collection<BambooProject> projects = testedBambooServerFacade.getProjectList(server);
-		assertNull(projects);
+		try {
+			Collection<BambooProject> projects = testedBambooServerFacade.getProjectList(server);
+			fail();
+		} catch (BambooException e) {
+			// expected
+		}
 		mockServer.verify();
 	}
 
@@ -240,7 +245,7 @@ public class BambooServerFacadeTest extends TestCase {
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
 		mockServer.expect("/api/rest/listBuildNames.action", new PlanListCallback());
 		mockServer.expect("/api/rest/getLatestUserBuilds.action", new FavouritePlanListCallback());
-				
+
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
 		server.getSubscribedPlans().clear();
 		BambooServerFacade facade = new BambooServerFacadeImpl();
@@ -284,7 +289,12 @@ public class BambooServerFacadeTest extends TestCase {
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
 
-		testedBambooServerFacade.addLabelToBuild(server, "TP-DEF", "200", label);
+		try {
+			testedBambooServerFacade.addLabelToBuild(server, "TP-DEF", "200", label);
+			fail();
+		} catch (BambooException e) {
+			// expected
+		}
 
 		mockServer.verify();
 	}
@@ -323,7 +333,12 @@ public class BambooServerFacadeTest extends TestCase {
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
 
-		testedBambooServerFacade.addCommentToBuild(server, "TP-DEF", "200", label);
+		try {
+			testedBambooServerFacade.addCommentToBuild(server, "TP-DEF", "200", label);
+			fail();
+		} catch (BambooException e) {
+			// expected
+		}
 
 		mockServer.verify();
 	}
@@ -345,7 +360,11 @@ public class BambooServerFacadeTest extends TestCase {
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
 
-		testedBambooServerFacade.executeBuild(server, "TP-DEF");
+		try {
+			testedBambooServerFacade.executeBuild(server, "TP-DEF");
+		} catch (BambooException e) {
+			// expected
+		}
 
 		mockServer.verify();
 	}
@@ -370,8 +389,13 @@ public class BambooServerFacadeTest extends TestCase {
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
 
-		BuildDetails details = testedBambooServerFacade.getBuildDetails(server, "TP-DEF", "200");
-		assertNull(details);
+		try {
+			testedBambooServerFacade.getBuildDetails(server, "TP-DEF", "200");
+			fail();
+		} catch (BambooException e) {
+			// expected
+		}
+
 
 		mockServer.verify();
 	}

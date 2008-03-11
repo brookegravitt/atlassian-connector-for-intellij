@@ -1,7 +1,6 @@
 package com.atlassian.theplugin.idea.bamboo;
 
 import com.atlassian.theplugin.bamboo.BambooServerFacade;
-import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -48,19 +47,13 @@ public class BuildLabelForm extends DialogWrapper {
 		});
 	}
 
+	public String getLabel() {
+		return labelField.getText();
+	}
+
 	@Nullable
 	protected JComponent createCenterPanel() {
 		return mainPanel;
-	}
-
-	protected void doOKAction() {
-		try {
-			bambooFacade.addLabelToBuild(build.getServer(), build.getBuildKey(), build.getBuildNumber(), labelField.getText());
-		} catch (ServerPasswordNotProvidedException e) {
-			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-		}
-
-		super.doOKAction();
 	}
 
 	{
