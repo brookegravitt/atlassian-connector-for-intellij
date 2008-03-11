@@ -21,7 +21,7 @@ public class BuildTestRatioColumn extends BambooColumnInfo {
 	}
 
 	public Object valueOf(Object o) {
-		if (((BambooBuildAdapter)o).getStatus() == BuildStatus.UNKNOWN) {
+		if (((BambooBuildAdapter) o).getStatus() == BuildStatus.UNKNOWN) {
 			return "-/-";
 		} else {
 			return ((BambooBuildAdapter) o).getTestsPassed() + "/" + ((BambooBuildAdapter) o).getTestsNumber();
