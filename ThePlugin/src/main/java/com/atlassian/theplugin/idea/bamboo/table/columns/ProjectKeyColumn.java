@@ -3,7 +3,6 @@ package com.atlassian.theplugin.idea.bamboo.table.columns;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.idea.bamboo.table.BambooColumnInfo;
 
-import javax.swing.*;
 import java.util.Comparator;
 
 /**
@@ -36,7 +35,7 @@ public class ProjectKeyColumn extends BambooColumnInfo {
 		};
 	}
 
-	public int getWidth(JTable jTable) {
+	public int getPrefferedWidth() {
 		return COL_PROJECT_KEY_WIDTH;
 	}
 }

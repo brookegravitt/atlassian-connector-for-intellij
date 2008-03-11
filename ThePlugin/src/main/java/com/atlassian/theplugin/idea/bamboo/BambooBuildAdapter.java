@@ -32,7 +32,7 @@ public class BambooBuildAdapter {
 	}
 
 	public String getProjectKey() {
-		return build.getProjectKey() == null ? "" : build.getProjectKey(); 
+		return build.getProjectKey() == null ? "" : build.getProjectKey();
 	}
 
 	public String getProjectUrl() {
@@ -96,15 +96,19 @@ public class BambooBuildAdapter {
 	}
 
 	public Icon getBuildIcon() {
-		switch (build.getStatus()) {
-			case BUILD_FAILED:
-				return ICON_RED;
-			case UNKNOWN:
-				return ICON_GREY;
-			case BUILD_SUCCEED:
-				return ICON_GREEN;
-			default:
-				throw new IllegalArgumentException("Illegal state of build.");
+		if (build.getEnabled()) {
+			switch (build.getStatus()) {
+				case BUILD_FAILED:
+					return ICON_RED;
+				case UNKNOWN:
+					return ICON_GREY;
+				case BUILD_SUCCEED:
+					return ICON_GREEN;
+				default:
+					throw new IllegalArgumentException("Illegal state of build.");
+			}
+		} else {
+			return ICON_GREY;
 		}
 	}
 

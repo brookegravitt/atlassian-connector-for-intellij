@@ -17,7 +17,7 @@ public class BuildStatusColumn extends BambooColumnInfo {
 	private static final int COL_ICON_WIDTH = 20;
 
 	public String getColumnName() {
-		return "Status";
+		return "";
 	}
 
 	public Object valueOf(Object o) {
@@ -36,7 +36,8 @@ public class BuildStatusColumn extends BambooColumnInfo {
 		};
 	}
 
-	public int getWidth(JTable jTable) {
+	public int getPrefferedWidth() {
 		return COL_ICON_WIDTH;
 	}
+
 }

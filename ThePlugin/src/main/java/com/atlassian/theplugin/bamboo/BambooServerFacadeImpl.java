@@ -134,22 +134,24 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 		}
 
 		if (bambooServer.getUseFavourite()) {
-			for (BambooPlan bambooPlan : plansForServer) {
-				if (bambooPlan.isFavourite()) {
-					if (api != null && api.isLoggedIn()) {
-						try {
-							BambooBuild buildInfo = api.getLatestBuildForPlan(bambooPlan.getPlanKey());
-							((BambooBuildInfo) buildInfo).setServer(bambooServer);
-							((BambooBuildInfo) buildInfo).setEnabled(bambooPlan.isEnabled());
-							builds.add(buildInfo);
-						} catch (BambooException e) {
-							// go ahead, there are other builds
+			if (plansForServer != null) {
+				for (BambooPlan bambooPlan : plansForServer) {
+					if (bambooPlan.isFavourite()) {
+						if (api != null && api.isLoggedIn()) {
+							try {
+								BambooBuild buildInfo = api.getLatestBuildForPlan(bambooPlan.getPlanKey());
+								((BambooBuildInfo) buildInfo).setServer(bambooServer);
+								((BambooBuildInfo) buildInfo).setEnabled(bambooPlan.isEnabled());
+								builds.add(buildInfo);
+							} catch (BambooException e) {
+								// go ahead, there are other builds
+							}
+						} else {
+							builds.add(constructBuildErrorInfo(
+									bambooServer,
+									bambooPlan.getPlanKey(),
+									connectionErrorMessage));
 						}
-					} else {
-						builds.add(constructBuildErrorInfo(
-								bambooServer,
-								bambooPlan.getPlanKey(),
-								connectionErrorMessage));
 					}
 				}
 			}
@@ -208,6 +210,15 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 		try {
 			BambooSession api = getSession(bambooServer);
 			api.addCommentToBuild(buildKey, buildNumber, buildComment);
+		} catch (BambooException e) {
+			PluginUtil.getLogger().info("Bamboo exception: " + e.getMessage());
+		}
+	}
+
+	public void executeBuild(Server bambooServer, String buildKey) throws ServerPasswordNotProvidedException {
+		try {
+			BambooSession api = getSession(bambooServer);
+			api.executeBuild(buildKey);
 		} catch (BambooException e) {
 			PluginUtil.getLogger().info("Bamboo exception: " + e.getMessage());
 		}

@@ -3,7 +3,6 @@ package com.atlassian.theplugin.idea.bamboo.table.columns;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.idea.bamboo.table.BambooColumnInfo;
 
-import javax.swing.*;
 import java.util.Comparator;
 
 /**
@@ -46,7 +45,7 @@ public class BuildTestRatioColumn extends BambooColumnInfo {
 		return oTests;
 	}
 
-	public int getWidth(JTable jTable) {
+	public int getPrefferedWidth() {
 		return COL_TEST_RATIO_WIDTH;
 	}
 }
