@@ -93,9 +93,12 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
 		CellConstraints cc = new CellConstraints();
 		rootComponent.add(panel1, cc.xy(3, 1));
 		pollTimeSpinner = new JSpinner();
+		pollTimeSpinner.setEnabled(false);
+		pollTimeSpinner.setToolTipText("Polling is not used for JIRA currently");
 		panel1.add(pollTimeSpinner, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(50, -1), null, 0, false));
 		final JLabel label1 = new JLabel();
 		label1.setText("Polling time [minutes]:");
+		label1.setToolTipText("Polling is not used for JIRA currently");
 		rootComponent.add(label1, cc.xy(1, 1));
 	}
 
