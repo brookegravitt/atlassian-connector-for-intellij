@@ -9,10 +9,13 @@ import thirdparty.apache.EasySSLProtocolSocketFactory;
 public final class HttpClientFactory {
 	private static MultiThreadedHttpConnectionManager connectionManager;
 
+	private static final int CONNECTION_TIMOUT = 20000;
+
 	static {
 		Protocol.registerProtocol("https", new Protocol(
 				"https", (ProtocolSocketFactory) new EasySSLProtocolSocketFactory(), EasySSLProtocolSocketFactory.SSL_PORT));
 		connectionManager =	new MultiThreadedHttpConnectionManager();
+		connectionManager.getParams().setConnectionTimeout(CONNECTION_TIMOUT);
 	}
 
 	///CLOVER:OFF
