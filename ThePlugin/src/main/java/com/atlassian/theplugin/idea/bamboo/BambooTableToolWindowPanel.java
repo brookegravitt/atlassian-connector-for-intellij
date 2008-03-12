@@ -125,7 +125,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 	private JMenuItem makeAddLabelMenu(String menuName, final BambooBuildAdapter build) {
 		JMenuItem addLabel = new JMenuItem();
 		addLabel.setText(menuName);
-		addLabel.setEnabled(build.getServer().isBamboo2());
+		addLabel.setEnabled(build.isBamboo2());
 		addLabel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				openLabelDialog(build);
@@ -168,7 +168,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 	private JMenuItem makeAddCommentMenu(String menuName, final BambooBuildAdapter build) {
 		JMenuItem addComment = new JMenuItem();
 		addComment.setText(menuName);
-		addComment.setEnabled(build.getServer().isBamboo2());
+		addComment.setEnabled(build.isBamboo2());
 		addComment.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				openCommentDialog(build);
@@ -212,7 +212,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 	private JMenuItem makeExecuteBuildMenu(String menuName, final BambooBuildAdapter build) {
 		JMenuItem executeBuild = new JMenuItem();
 		executeBuild.setText(menuName);
-		executeBuild.setEnabled(!build.getServer().isBamboo2());
+		executeBuild.setEnabled(!build.isBamboo2());
 
 		executeBuild.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
@@ -299,7 +299,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 	public boolean getExecuteBuildEnabled() {
 		BambooBuildAdapter build = (BambooBuildAdapter) table.getSelectedObject();
 		if (build != null) {
-			return !build.getServer().isBamboo2();
+			return !build.isBamboo2();
 		} else {
 			return false;
 		}
@@ -308,7 +308,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 	private boolean getBamboo2ActionsEnabled() {
 		BambooBuildAdapter build = (BambooBuildAdapter) table.getSelectedObject();
 		if (build != null) {
-			return build.getServer().isBamboo2();
+			return build.isBamboo2();
 		} else {
 			return false;
 		}
