@@ -31,6 +31,14 @@ public class BambooBuildAdapter {
 		}
 	}
 
+	public boolean isBamboo2() {
+		if (build.getServer() != null) {
+			return build.getServer().isBamboo2();
+		} else {
+			return false;
+		}
+	}
+
 	public String getServerUrl() {
 		return build.getServerUrl() == null ? "" : build.getServerUrl();
 	}
