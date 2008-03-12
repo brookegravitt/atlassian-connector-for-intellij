@@ -45,7 +45,8 @@ public class BuildTestRatioColumn extends BambooColumnInfo {
 	private double getTestRatio(Object o) {
 		double oTests = 0;
 		if (((BambooBuildAdapter) o).getTestsNumber() > 0) {
-			oTests = ((double) ((BambooBuildAdapter) o).getTestsPassed()) / ((double) ((BambooBuildAdapter) o).getTestsNumber());
+			oTests = ((double) ((BambooBuildAdapter) o).getTestsPassed())
+					/ ((double) ((BambooBuildAdapter) o).getTestsNumber());
 		}
 		return oTests;
 	}
