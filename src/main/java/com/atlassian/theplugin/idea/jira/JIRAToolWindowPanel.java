@@ -3,11 +3,12 @@ package com.atlassian.theplugin.idea.jira;
 import com.atlassian.theplugin.bamboo.HtmlBambooStatusListener;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.atlassian.theplugin.idea.action.jira.MyIssuesAction;
 import com.atlassian.theplugin.idea.action.jira.UnresolvedIssuesAction;
 import com.atlassian.theplugin.idea.bamboo.ToolWindowBambooContent;
+import com.atlassian.theplugin.idea.jira.table.JIRATableColumnProvider;
 import com.atlassian.theplugin.idea.ui.AtlassianTableView;
-import com.atlassian.theplugin.jira.IssueKeyComparator;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFactory;
@@ -18,8 +19,6 @@ import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.ui.table.TableView;
-import com.intellij.util.ui.ColumnInfo;
 import com.intellij.util.ui.ListTableModel;
 import com.intellij.util.ui.UIUtil;
 import thirdparty.javaworld.ClasspathHTMLEditorKit;
@@ -30,8 +29,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.FutureTask;
 
 public class JIRAToolWindowPanel extends JPanel {
@@ -40,7 +41,7 @@ public class JIRAToolWindowPanel extends JPanel {
     private ListTableModel listTableModel;
     // a simple map to store all selected query fragments.
     private Map<String, JIRAQueryFragment> queryFragments = new HashMap<String, JIRAQueryFragment>();
-    private TableView table;
+    private AtlassianTableView table;
     private static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
     private static final int COL_ICON_WIDTH = 20;
     private static final int COL_KEY_WIDTH = 50;
@@ -69,10 +70,11 @@ public class JIRAToolWindowPanel extends JPanel {
         editorPane.setMinimumSize(ED_PANE_MINE_SIZE);
         add(pane, BorderLayout.SOUTH);
 
-        listTableModel = new ListTableModel(makeColumnInfo());
-        listTableModel.setSortable(true);
-
-        table = new AtlassianTableView(listTableModel);
+		TableColumnInfo[] columns = JIRATableColumnProvider.makeColumnInfo();
+		listTableModel = new ListTableModel(columns);
+		listTableModel.setSortable(true);
+		table = new AtlassianTableView(listTableModel);
+		table.prepareColumns(columns, JIRATableColumnProvider.makeRendererInfo());
 
         table.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) { // on double click, just open the issue
@@ -106,68 +108,6 @@ public class JIRAToolWindowPanel extends JPanel {
         });
 
         add(new JScrollPane(table), BorderLayout.CENTER);
-    }
-
-    private ColumnInfo[] makeColumnInfo() {
-        ColumnInfo col0 = new ColumnInfo("") {
-            public Object valueOf(Object o) {
-                return new ImageIcon(((JIRAIssue) o).getTypeIconUrl());
-            }
-
-            public Class getColumnClass() {
-                return Icon.class;
-            }
-
-            public Comparator getComparator() {
-                return new Comparator() {
-                    public int compare(Object o, Object o1) {
-                        return ((JIRAIssue) o).getType().compareTo(((JIRAIssue) o1).getType());
-                    }
-                };
-            }
-
-            public int getWidth(JTable jTable) {
-                return COL_ICON_WIDTH;
-            }
-        };
-
-        ColumnInfo col1 = new ColumnInfo("Key") {
-            public Object valueOf(Object o) {
-                return ((JIRAIssue) o).getKey();
-            }
-
-            public Class getColumnClass() {
-                return String.class;
-            }
-
-            public Comparator getComparator() {
-                return new IssueKeyComparator();
-            }
-
-            public int getWidth(JTable jTable) {
-                return COL_KEY_WIDTH;
-            }
-        };
-
-        ColumnInfo col2 = new ColumnInfo("Summary") {
-            public Object valueOf(Object o) {
-                return ((JIRAIssue) o).getSummary();
-            }
-
-            public Class getColumnClass() {
-                return String.class;
-            }
-
-            public Comparator getComparator() {
-                return new Comparator() {
-                    public int compare(Object o, Object o1) {
-                        return ((JIRAIssue) o).getSummary().compareTo(((JIRAIssue) o1).getSummary());
-                    }
-                };
-            }
-        };
-
-        return new ColumnInfo[]{col0, col1, col2};
     }
 
     private JPopupMenu createContextMenu(JIRAIssue issue) {

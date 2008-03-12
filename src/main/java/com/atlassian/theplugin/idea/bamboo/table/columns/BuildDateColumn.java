@@ -1,14 +1,14 @@
 package com.atlassian.theplugin.idea.bamboo.table.columns;
 
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapter;
-import com.atlassian.theplugin.idea.bamboo.table.BambooColumnInfo;
+import com.atlassian.theplugin.idea.TableColumnInfo;
 
 import java.util.Comparator;
 import java.util.Date;
 
 
-public class BuildDateColumn extends BambooColumnInfo {
-	private static final int COL_WIDTH = 200;
+public class BuildDateColumn extends TableColumnInfo {
+	private static final int COL_WIDTH = 120;
 
 	public String getColumnName() {
 		return "Build date";

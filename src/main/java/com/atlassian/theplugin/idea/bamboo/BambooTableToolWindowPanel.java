@@ -6,7 +6,7 @@ import com.atlassian.theplugin.bamboo.BambooStatusListener;
 import com.atlassian.theplugin.bamboo.HtmlBambooStatusListener;
 import com.atlassian.theplugin.bamboo.api.BambooException;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
-import com.atlassian.theplugin.idea.bamboo.table.BambooColumnInfo;
+import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.atlassian.theplugin.idea.ui.AtlassianTableView;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
@@ -16,15 +16,16 @@ import com.intellij.util.ui.UIUtil;
 import thirdparty.javaworld.ClasspathHTMLEditorKit;
 
 import javax.swing.*;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.FutureTask;
 
@@ -34,6 +35,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 	private AtlassianTableView table;
 	private final transient BambooServerFacade bambooFacade;
 	private static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
+	private static final DateFormat TIME_DF = new SimpleDateFormat("hh:mm a");
 
 	public BambooTableToolWindowPanel(BambooServerFacade bambooFacade) {
 		super(new BorderLayout());
@@ -53,22 +55,12 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 		editorPane.setMinimumSize(ED_PANE_MINE_SIZE);
 		add(pane, BorderLayout.SOUTH);
 
-		BambooColumnInfo[] columns = BambooTableColumnProvider.makeColumnInfo();
-		TableCellRenderer[] renderers = BambooTableColumnProvider.makeRendererInfo();
+		TableColumnInfo[] columns = BambooTableColumnProvider.makeColumnInfo();
 
 		listTableModel = new ListTableModel(columns);
 		listTableModel.setSortable(true);
 		table = new AtlassianTableView(listTableModel);
-
-
-		TableColumnModel model = table.getColumnModel();
-		for (int i = 0; i < model.getColumnCount(); ++i) {
-			model.getColumn(i).setResizable(true);
-			model.getColumn(i).setPreferredWidth(columns[i].getPrefferedWidth());
-			if (renderers[i] != null) {
-				model.getColumn(i).setCellRenderer(renderers[i]);
-			}
-		}
+		table.prepareColumns(columns, BambooTableColumnProvider.makeRendererInfo());
 
 		table.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) { // on double click, just open the issue
@@ -263,14 +255,28 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 
 	public void setBuilds(Collection<BambooBuild> builds) {
 		List<BambooBuildAdapter> buildAdapters = new ArrayList<BambooBuildAdapter>();
+		Date lastPollingTime = null;
 		for (BambooBuild build : builds) {
+			if (build.getPollingTime() != null) {
+			lastPollingTime = build.getPollingTime();
+			}
 			buildAdapters.add(new BambooBuildAdapter(build));
 		}
 		listTableModel.setItems(buildAdapters);
 		listTableModel.fireTableDataChanged();
 		table.setEnabled(true);
 		table.setForeground(UIUtil.getActiveTextColor());
-		editorPane.setText(wrapBody("Loaded <b>" + builds.size() + "</b> builds."));
+		StringBuffer sb = new StringBuffer();
+		sb.append("Loaded <b>");
+		sb.append(builds.size());
+		sb.append("</b> builds");
+		if (lastPollingTime != null) {
+		 	sb.append(" at  <b>");
+			sb.append(TIME_DF.format(lastPollingTime));
+			sb.append("</b>");
+		}
+		sb.append(".");
+		editorPane.setText(wrapBody(sb.toString()));
 	}
 
 	private String wrapBody(String s) {
