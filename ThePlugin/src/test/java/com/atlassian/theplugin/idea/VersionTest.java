@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.exception.IncorrectVersionException;
+import com.atlassian.theplugin.util.Version;
 import junit.framework.TestCase;
 
 /**
@@ -12,26 +12,26 @@ import junit.framework.TestCase;
  * To change this template use File | Settings | File Templates.
  */
 public class VersionTest extends TestCase {
-	private InfoServer.Version version1;
-	private InfoServer.Version version2;
-	private InfoServer.Version version3;
-	private InfoServer.Version version4;
-	private InfoServer.Version version5;
-	private InfoServer.Version version6;
-	private InfoServer.Version version7;
-	private InfoServer.Version versionSpecial;
+	private Version version1;
+	private Version version2;
+	private Version version3;
+	private Version version4;
+	private Version version5;
+	private Version version6;
+	private Version version7;
+	private Version versionSpecial;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();	//To change body of overridden methods use File | Settings | File Templates.
-		version1 = new InfoServer.Version("0.1.1-SNAPSHOT, SVN:111");
-		version2 = new InfoServer.Version("0.1.1-SNAPSHOT, SVN:111");
-		version3 = new InfoServer.Version("0.17.1, SVN:222");
-		version4 = new InfoServer.Version("0.17.1-SNAPSHOT, SVN:223");
-		version5 = new InfoServer.Version("0.17.1-SNAPSHOT, SVN:224");
-		version6 = new InfoServer.Version("0.18.0-SNAPSHOT, SVN:224");
-		version7 = new InfoServer.Version("0.14.0-SNAPSHOT, SVN:999");
-		versionSpecial = new InfoServer.Version(InfoServer.Version.SPECIAL_DEV_VERSION);
+		version1 = new Version("0.1.1-SNAPSHOT, SVN:111");
+		version2 = new Version("0.1.1-SNAPSHOT, SVN:111");
+		version3 = new Version("0.17.1, SVN:222");
+		version4 = new Version("0.17.1-SNAPSHOT, SVN:223");
+		version5 = new Version("0.17.1-SNAPSHOT, SVN:224");
+		version6 = new Version("0.18.0-SNAPSHOT, SVN:224");
+		version7 = new Version("0.14.0-SNAPSHOT, SVN:999");
+		versionSpecial = new Version(Version.SPECIAL_DEV_VERSION);
 	}
 
 	public void testEquals() {
@@ -72,7 +72,7 @@ public class VersionTest extends TestCase {
 		};
 		for (String arg : invalidArguments) {
 			try {
-				InfoServer.Version v = new InfoServer.Version(arg);
+				Version v = new Version(arg);
 				fail("Creation succeeded although it should fail (\"" + arg + "\")");
 			} catch (IncorrectVersionException e) {
 				// OK

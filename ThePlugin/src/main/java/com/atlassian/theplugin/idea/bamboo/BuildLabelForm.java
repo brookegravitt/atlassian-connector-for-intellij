@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.idea.bamboo;
 
-import com.atlassian.theplugin.bamboo.BambooServerFacade;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -18,17 +17,11 @@ public class BuildLabelForm extends DialogWrapper {
 	private JTextField buildNumberKey;
 	private JTextField labelField;
 
-	private final BambooServerFacade bambooFacade;
-	private final BambooBuildAdapter build;
-
-	public BuildLabelForm(BambooServerFacade bambooFacade, BambooBuildAdapter build) {
+	public BuildLabelForm(BambooBuildAdapter build) {
 		super(false);
 		init();
 		pack();
 		setTitle("Add Label");
-
-		this.bambooFacade = bambooFacade;
-		this.build = build;
 
 		this.buildKeyField.setText(build.getBuildKey());
 		this.buildNumberKey.setText(build.getBuildNumber());

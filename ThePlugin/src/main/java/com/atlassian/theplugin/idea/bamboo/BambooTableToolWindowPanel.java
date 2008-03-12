@@ -32,7 +32,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 	private JEditorPane editorPane;
 	private ListTableModel listTableModel;
 	private AtlassianTableView table;
-	private final BambooServerFacade bambooFacade;
+	private final transient BambooServerFacade bambooFacade;
 	private static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
 
 	public BambooTableToolWindowPanel(BambooServerFacade bambooFacade) {
@@ -96,12 +96,6 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 						JPopupMenu contextMenu = createContextMenu(build);
 						contextMenu.show(table, p.x, p.y);
 					}
-
-					//                                     DataContext ctx = DataManager.getInstance().getDataContext();
-					//EventManager
-
-					//AnActionEvent ev = new AnActionEvent();
-					//ActionManager.getInstance().getAction("ThePlugin.RunBuild").update(ev);//  .getTemplatePresentation().setEnabled(false);
 				}
 			}
 		});
@@ -144,7 +138,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 	}
 
 	private void openLabelDialog(BambooBuildAdapter build) {
-		BuildLabelForm buildLabelForm = new BuildLabelForm(bambooFacade, build);
+		BuildLabelForm buildLabelForm = new BuildLabelForm(build);
 		buildLabelForm.show();
 		if (buildLabelForm.getExitCode() == 0) {
 			labelBuild(build, buildLabelForm.getLabel());
@@ -156,7 +150,8 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 			public void run() {
 				setStatusMessage("Applying label on build...");
 				try {
-					bambooFacade.addLabelToBuild(build.getServer(), build.getBuildKey(), build.getBuildNumber(), label);
+					bambooFacade.addLabelToBuild(build.getServer(),
+							build.getBuildKey(), build.getBuildNumber(), label);
 					setStatusMessage("Label applied on build");
 				} catch (ServerPasswordNotProvidedException e) {
 					setStatusMessage("Label not applied: Password on provided for server");
@@ -186,7 +181,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 	}
 
 	private void openCommentDialog(BambooBuildAdapter build) {
-		BuildCommentForm buildCommentForm = new BuildCommentForm(bambooFacade, build);
+		BuildCommentForm buildCommentForm = new BuildCommentForm(build);
 		buildCommentForm.show();
 		if (buildCommentForm.getExitCode() == 0) {
 			commentBuild(build, buildCommentForm.getCommentText());
@@ -198,7 +193,8 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 			public void run() {
 				setStatusMessage("Adding comment label on build...");
 				try {
-					bambooFacade.addCommentToBuild(build.getServer(), build.getBuildKey(), build.getBuildNumber(), commentText);
+					bambooFacade.addCommentToBuild(build.getServer(),
+							build.getBuildKey(), build.getBuildNumber(), commentText);
 					setStatusMessage("Comment added to build");
 				} catch (ServerPasswordNotProvidedException e) {
 					setStatusMessage("Comment not added: Password on provided for server");
@@ -292,11 +288,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 	public boolean getExecuteBuildEnabled() {
 		BambooBuildAdapter build = (BambooBuildAdapter) table.getSelectedObject();
 		if (build != null) {
-			if (build.getServer().isBamboo2()) {
-				return false;
-			} else {
-				return true;
-			}
+			return !build.getServer().isBamboo2();
 		} else {
 			return false;
 		}
@@ -305,11 +297,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 	private boolean getBamboo2ActionsEnabled() {
 		BambooBuildAdapter build = (BambooBuildAdapter) table.getSelectedObject();
 		if (build != null) {
-			if (build.getServer().isBamboo2()) {
-				return true;
-			} else {
-				return false;
-			}
+			return build.getServer().isBamboo2();
 		} else {
 			return false;
 		}

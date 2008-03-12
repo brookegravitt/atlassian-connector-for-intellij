@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.configuration;
 
 import com.atlassian.theplugin.ServerType;
-import com.atlassian.theplugin.util.InfoServer;
+import com.atlassian.theplugin.util.Version;
 
 public class PluginConfigurationBean implements PluginConfiguration {
     private BambooConfigurationBean bambooConfiguration = new BambooConfigurationBean();
@@ -10,7 +10,7 @@ public class PluginConfigurationBean implements PluginConfiguration {
 	private static final double ID_DISCRIMINATOR = 1e3d;
 	private long uid = 0;
 	private boolean isAutoUpdateEnabled = true;
-	private InfoServer.Version rejectedUpgrade = InfoServer.Version.NULL_VERSION;
+	private Version rejectedUpgrade = Version.NULL_VERSION;
 
 	/**
 	 * Default constructor.
@@ -132,11 +132,11 @@ public class PluginConfigurationBean implements PluginConfiguration {
 		isAutoUpdateEnabled = autoUpdateEnabled;
 	}
 
-	public InfoServer.Version getRejectedUpgrade() {
+	public Version getRejectedUpgrade() {
 		return rejectedUpgrade;
 	}
 
-	public void setRejectedUpgrade(InfoServer.Version rejectedUpgrade) {
+	public void setRejectedUpgrade(Version rejectedUpgrade) {
 		this.rejectedUpgrade = rejectedUpgrade;
 	}
 
