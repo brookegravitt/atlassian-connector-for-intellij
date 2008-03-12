@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.util;
 
-import com.atlassian.theplugin.idea.bamboo.table.BambooColumnInfo;
+import com.atlassian.theplugin.idea.TableColumnInfo;
 import org.joda.time.Period;
 
 import java.util.Date;
@@ -12,7 +12,7 @@ import java.util.Date;
  * Time: 4:55:29 PM
  * Taken from the Bamboo project.
  */
-public abstract class DateUtil extends BambooColumnInfo {
+public abstract class DateUtil extends TableColumnInfo {
 	private static final String PRIOR_TEXT = "before";
 	//private static final Category LOGGER = Logger.getInstance(PluginStatusBarToolTip.class);
 	public static final int SECONDS_IN_MINUTE = 60;

@@ -1,22 +1,16 @@
-package com.atlassian.theplugin.idea.bamboo.table;
+package com.atlassian.theplugin.idea;
 
 import com.intellij.util.ui.ColumnInfo;
 
 import java.util.Comparator;
 
-/**
- * Created by IntelliJ IDEA.
- * User: marek
- * Date: Mar 10, 2008
- * Time: 12:29:52 PM
- * To change this template use File | Settings | File Templates.
- */
-public abstract class BambooColumnInfo extends ColumnInfo {
-	private BambooColumnInfo(String s) {
+
+public abstract class TableColumnInfo extends ColumnInfo {
+	private TableColumnInfo(String s) {
 		super(s);
 	}
 
-	public BambooColumnInfo() {
+	public TableColumnInfo() {
 		this("");
 		setName(getColumnName());
 	}

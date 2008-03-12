@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.bamboo.table.columns;
 
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapter;
-import com.atlassian.theplugin.idea.bamboo.table.BambooColumnInfo;
+import com.atlassian.theplugin.idea.TableColumnInfo;
 
 import javax.swing.*;
 import java.util.Comparator;
@@ -13,7 +13,7 @@ import java.util.Comparator;
  * Time: 12:24:37 PM
  * To change this template use File | Settings | File Templates.
  */
-public class BuildStatusColumn extends BambooColumnInfo {
+public class BuildStatusColumn extends TableColumnInfo {
 	private static final int COL_ICON_WIDTH = 20;
 
 	public String getColumnName() {
