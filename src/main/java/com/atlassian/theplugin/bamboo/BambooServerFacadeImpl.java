@@ -25,30 +25,22 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 		// @todo old server will stay on map - remove them !!!
 		BambooSession session = sessions.get(server);
 		if (session == null) {
-			System.out.println("Creating new session");
 			session = new AutoRenewBambooSession(server.getUrlString());
 			sessions.put(server, session);
 		}
-		System.out.println("session.isLoggedIn() = " + session.isLoggedIn());
 		if (!session.isLoggedIn()) {
-			System.out.println("Login in");
 			session.login(server.getUserName(), server.getPasswordString().toCharArray());
 			try {
-				System.out.println("Checking Bamboo version");
 				if (session.getBamboBuildNumber() > 0) {
-					System.out.println("Bamboo 2");
 					server.setIsBamboo2(true);
 				} else {
-					System.out.println("Bamboo 1");
 					server.setIsBamboo2(false);
 				}
 			} catch (BambooException e) {
 				// can not validate as Bamboo 2
-				System.out.println("Bamboo does not support method");
 				server.setIsBamboo2(false);
 			}
 		}
-		System.out.println("on exit session.isLoggedIn() = " + session.isLoggedIn());
 		return session;
 	}
 
