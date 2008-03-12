@@ -5,6 +5,7 @@ import com.atlassian.theplugin.exception.IncorrectVersionException;
 import com.atlassian.theplugin.exception.VersionServiceException;
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.atlassian.theplugin.util.Version;
 import com.intellij.openapi.application.ApplicationManager;
 
 import java.util.TimerTask;
@@ -50,8 +51,8 @@ public final class NewVersionChecker implements SchedulableComponent {
 		try {
 			InfoServer.VersionInfo versionInfo = server.getLatestPluginVersion();
 			// simple versionInfo difference check
-			InfoServer.Version newVersion = versionInfo.getVersion();
-			InfoServer.Version thisVersion = new InfoServer.Version(PluginUtil.getVersion());
+			Version newVersion = versionInfo.getVersion();
+			Version thisVersion = new Version(PluginUtil.getVersion());
 			if (newVersion.greater(thisVersion) && !newVersion.equals(pluginConfiguration.getRejectedUpgrade())) {
 				ConfirmPluginUpdateHandler handler = ConfirmPluginUpdateHandler.getInstance();
 				handler.setNewVersionInfo(versionInfo);

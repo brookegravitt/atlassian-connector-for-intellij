@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.idea.bamboo;
 
-import com.atlassian.theplugin.bamboo.BambooServerFacade;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -17,17 +16,11 @@ public class BuildCommentForm extends DialogWrapper {
 	private JTextArea commentArea;
 	private JPanel mainPanel;
 
-	private final BambooServerFacade bambooFacade;
-	private final BambooBuildAdapter build;
-
-	public BuildCommentForm(BambooServerFacade bambooFacade, BambooBuildAdapter build) {
+	public BuildCommentForm(BambooBuildAdapter build) {
 		super(false);
 		init();
 		pack();
 		setTitle("Add Comment");
-
-		this.bambooFacade = bambooFacade;
-		this.build = build;
 
 		this.buildKeyField.setText(build.getBuildKey());
 		this.buildNumberField.setText(build.getBuildNumber());

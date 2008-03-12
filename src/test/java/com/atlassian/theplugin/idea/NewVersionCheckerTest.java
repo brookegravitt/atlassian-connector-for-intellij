@@ -4,6 +4,7 @@ import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.exception.IncorrectVersionException;
 import com.atlassian.theplugin.exception.VersionServiceException;
 import com.atlassian.theplugin.util.InfoServer;
+import com.atlassian.theplugin.util.Version;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 
@@ -50,7 +51,7 @@ public class NewVersionCheckerTest extends TestCase {
 			fail(e.getMessage());
 		}
 		assertNotNull(versionInfo);
-		assertEquals(new InfoServer.Version(VERSION), versionInfo.getVersion());
+		assertEquals(new Version(VERSION), versionInfo.getVersion());
 	}
 
 
