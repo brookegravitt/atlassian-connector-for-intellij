@@ -1,17 +1,15 @@
 package com.atlassian.theplugin.idea.bamboo.table.renderer;
 
 import com.atlassian.theplugin.util.DateUtil;
-import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.GridConstraints;
 
 import javax.swing.*;
-import javax.swing.table.TableCellRenderer;
+import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
-public class DateTableCellRenderer implements TableCellRenderer {
+public class DateTableCellRenderer extends DefaultTableCellRenderer {
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	public Component getTableCellRendererComponent(JTable jTable,
@@ -20,23 +18,15 @@ public class DateTableCellRenderer implements TableCellRenderer {
 												   boolean hasFocus,
 												   int i,
 												   int i1) {
-		JLabel label = new JLabel();
-
-		label.setText(DateUtil.getRelativePastDate(new Date(), (Date) o));
-		label.setToolTipText(dateFormat.format((Date) o));
-
-		JPanel panel = new JPanel();
-		panel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-		panel.add(label, new GridConstraints(0, 0, 1, 1,
-				GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE,
-				GridConstraints.SIZEPOLICY_CAN_GROW | GridConstraints.SIZEPOLICY_CAN_SHRINK,
-				GridConstraints.SIZEPOLICY_CAN_GROW | GridConstraints.SIZEPOLICY_CAN_SHRINK,
-				null, null, null, 0, false));
-		if (isSelected) {
-			panel.setBackground(jTable.getSelectionBackground());
+		Component c = super.getTableCellRendererComponent(jTable, o, isSelected, hasFocus, i, i1);
+		if (o != null && o instanceof Date) {
+			((JLabel) c).setToolTipText(dateFormat.format((Date) o));
+			((JLabel) c).setText(DateUtil.getRelativePastDate(new Date(), (Date) o));
 		} else {
-			panel.setBackground(jTable.getBackground());
+			((JLabel) c).setToolTipText("Build date not accessible");
+			((JLabel) c).setText("-");
 		}
-		return panel;
+		((JLabel) c).setHorizontalAlignment(SwingConstants.RIGHT);
+		return c; 
 	}
 }
