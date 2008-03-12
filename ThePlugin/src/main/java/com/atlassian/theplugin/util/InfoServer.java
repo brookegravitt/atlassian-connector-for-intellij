@@ -12,9 +12,6 @@ import org.jdom.xpath.XPath;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
-import java.util.Scanner;
-import java.util.regex.MatchResult;
 
 public class InfoServer {
 	private String serviceUrl;
