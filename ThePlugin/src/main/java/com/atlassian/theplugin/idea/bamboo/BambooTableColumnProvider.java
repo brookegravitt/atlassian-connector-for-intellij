@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.idea.bamboo;
 
-import com.atlassian.theplugin.idea.bamboo.table.BambooColumnInfo;
+import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.atlassian.theplugin.idea.bamboo.table.columns.*;
 import com.atlassian.theplugin.idea.bamboo.table.renderer.BuildNumberCellRenderer;
 import com.atlassian.theplugin.idea.bamboo.table.renderer.DateTableCellRenderer;
@@ -11,8 +11,8 @@ public final class BambooTableColumnProvider {
 	private BambooTableColumnProvider() {		
 	}
 
-	public static BambooColumnInfo[] makeColumnInfo() {
-		return new BambooColumnInfo[]{
+	public static TableColumnInfo[] makeColumnInfo() {
+		return new TableColumnInfo[]{
 				new BuildStatusColumn(),
 				new BuildKeyColumn(),
 				new BuildNumberColumn(),

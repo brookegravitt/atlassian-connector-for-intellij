@@ -2,7 +2,7 @@ package com.atlassian.theplugin.idea.bamboo.table.columns;
 
 import com.atlassian.theplugin.bamboo.BuildStatus;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapter;
-import com.atlassian.theplugin.idea.bamboo.table.BambooColumnInfo;
+import com.atlassian.theplugin.idea.TableColumnInfo;
 
 import java.util.Comparator;
 
@@ -13,7 +13,7 @@ import java.util.Comparator;
  * Time: 12:24:37 PM
  * To change this template use File | Settings | File Templates.
  */
-public class BuildTestRatioColumn extends BambooColumnInfo {
+public class BuildTestRatioColumn extends TableColumnInfo {
 	private static final int COL_TEST_RATIO_WIDTH = 100;
 
 	public String getColumnName() {

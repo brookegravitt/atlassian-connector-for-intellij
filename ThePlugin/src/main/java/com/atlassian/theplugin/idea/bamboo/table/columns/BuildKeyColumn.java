@@ -1,11 +1,11 @@
 package com.atlassian.theplugin.idea.bamboo.table.columns;
 
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapter;
-import com.atlassian.theplugin.idea.bamboo.table.BambooColumnInfo;
+import com.atlassian.theplugin.idea.TableColumnInfo;
 
 import java.util.Comparator;
 
-public class BuildKeyColumn extends BambooColumnInfo {
+public class BuildKeyColumn extends TableColumnInfo {
 	private static final int COL_BUILD_KEY_WIDTH = 100;
 
 	public String getColumnName() {
