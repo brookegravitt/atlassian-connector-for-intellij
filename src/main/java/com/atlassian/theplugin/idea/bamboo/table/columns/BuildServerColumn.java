@@ -30,8 +30,8 @@ public class BuildServerColumn extends TableColumnInfo {
 	public Comparator getComparator() {
 		return new Comparator() {
 			public int compare(Object o, Object o1) {
-				return ((BambooBuildAdapter) o).getServer().getName()
-						.compareTo(((BambooBuildAdapter) o1).getServer().getName());
+				return ((BambooBuildAdapter) o).getServerName()
+						.compareTo(((BambooBuildAdapter) o1).getServerName());
 			}
 		};
 	}
