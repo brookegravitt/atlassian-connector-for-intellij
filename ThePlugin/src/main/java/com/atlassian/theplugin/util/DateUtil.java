@@ -1,10 +1,9 @@
 package com.atlassian.theplugin.util;
 
 import com.atlassian.theplugin.idea.bamboo.table.BambooColumnInfo;
+import org.joda.time.Period;
 
 import java.util.Date;
-
-import org.joda.time.Period;
 
 /**
  * Created by IntelliJ IDEA.
@@ -15,6 +14,9 @@ import org.joda.time.Period;
  */
 public abstract class DateUtil extends BambooColumnInfo {
 	private static final String PRIOR_TEXT = "before";
+	//private static final Category LOGGER = Logger.getInstance(PluginStatusBarToolTip.class);
+	public static final int SECONDS_IN_MINUTE = 60;
+	public static final int MILISECONDS_IN_SECOND = 1000;
 
 	public static String getRelativePastDate(Date comparedTo, Date someDate) {
 		if (someDate != null) {
