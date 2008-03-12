@@ -26,7 +26,10 @@
                 <preferred-size width="50" height="-1"/>
               </grid>
             </constraints>
-            <properties/>
+            <properties>
+              <enabled value="false"/>
+              <toolTipText value="Polling is not used for JIRA currently"/>
+            </properties>
           </component>
         </children>
       </grid>
@@ -37,6 +40,7 @@
         </constraints>
         <properties>
           <text value="Polling time [minutes]:"/>
+          <toolTipText value="Polling is not used for JIRA currently"/>
         </properties>
       </component>
     </children>
