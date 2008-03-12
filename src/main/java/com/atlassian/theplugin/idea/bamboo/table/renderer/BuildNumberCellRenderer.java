@@ -6,13 +6,11 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
-import java.text.SimpleDateFormat;
 
 
 public class BuildNumberCellRenderer implements TableCellRenderer {
-	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-	public Component getTableCellRendererComponent(JTable jTable, Object o, boolean isSelected, boolean hasFocus, int i, int i1) {
+	public Component getTableCellRendererComponent(JTable jTable,
+												   Object o, boolean isSelected, boolean hasFocus, int i, int i1) {
 		JLabel label = new JLabel();
 		if (o instanceof Integer) {
 			int value = (Integer) o;
@@ -25,7 +23,12 @@ public class BuildNumberCellRenderer implements TableCellRenderer {
 		}
 		JPanel panel = new JPanel();
 		panel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-		panel.add(label, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_GROW | GridConstraints.SIZEPOLICY_CAN_SHRINK, GridConstraints.SIZEPOLICY_CAN_GROW | GridConstraints.SIZEPOLICY_CAN_SHRINK, null, null, null, 0, false));
+		panel.add(label, new GridConstraints(0, 0, 1, 1,
+				GridConstraints.ANCHOR_EAST,
+				GridConstraints.FILL_NONE,
+				GridConstraints.SIZEPOLICY_CAN_GROW | GridConstraints.SIZEPOLICY_CAN_SHRINK,
+				GridConstraints.SIZEPOLICY_CAN_GROW | GridConstraints.SIZEPOLICY_CAN_SHRINK,
+				null, null, null, 0, false));
 
 		if (isSelected) {
 			panel.setBackground(jTable.getSelectionBackground());

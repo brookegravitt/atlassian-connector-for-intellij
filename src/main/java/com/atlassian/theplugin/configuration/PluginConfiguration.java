@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.configuration;
 
 import com.atlassian.theplugin.ServerType;
-import com.atlassian.theplugin.util.InfoServer;
+import com.atlassian.theplugin.util.Version;
 
 public interface PluginConfiguration {
 	ProductServerConfiguration getProductServers(ServerType serverType);
@@ -11,7 +11,7 @@ public interface PluginConfiguration {
 
 	void setAutoUpdateEnabled(boolean autoUpdateEnabled);
 
-	InfoServer.Version getRejectedUpgrade();
+	Version getRejectedUpgrade();
 
-	void setRejectedUpgrade(InfoServer.Version version);
+	void setRejectedUpgrade(Version version);
 }

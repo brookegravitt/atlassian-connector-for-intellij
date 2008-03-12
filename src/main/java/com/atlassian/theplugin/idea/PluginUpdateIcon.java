@@ -1,10 +1,11 @@
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.atlassian.theplugin.exception.IncorrectVersionException;
 import com.atlassian.theplugin.exception.VersionServiceException;
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.atlassian.theplugin.configuration.PluginConfiguration;
+import com.atlassian.theplugin.util.Version;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
 
@@ -22,18 +23,16 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 	private transient Timer timer;
 	private boolean blinkOn = false;
 	private static final int ICON_BLINK_TIME = 1000;
-	private PluginConfiguration pluginConfiguration;
 
 	public PluginUpdateIcon(final Project project, final PluginConfiguration pluginConfiguration) {
 		super(project);
-		this.pluginConfiguration = pluginConfiguration;
 
 		addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				innerHideIcon();
 				String message = null;
 				try {
-					InfoServer.Version aVersion = version.getVersion();
+					Version aVersion = version.getVersion();
 					message = "New plugin version " + aVersion + " is available. "
 							+ "Your version is " + PluginUtil.getVersion()
 							+ ". Do you want to download and install?";

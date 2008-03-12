@@ -33,7 +33,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	private PluginUpdateIcon statusPluginUpdateIcon;
 	private final BambooStatusChecker bambooStatusChecker;
 	private HtmlBambooStatusListener iconBambooStatusListener;
-    private HtmlBambooStatusListener toolWindowBambooListener;
 	private BambooStatusListenerImpl tooltipBambooStatusListener;
 
 	private final BambooTableToolWindowPanel bambooToolWindowPanel;
@@ -102,10 +101,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			toolWindow.setIcon(toolWindowIcon);
 
 			// create tool window content
-
-
-			PeerFactory peerFactory = PeerFactory.getInstance();
-
 			Content bambooToolWindow = createBambooContent();
 			toolWindow.getContentManager().addContent(bambooToolWindow);
 
