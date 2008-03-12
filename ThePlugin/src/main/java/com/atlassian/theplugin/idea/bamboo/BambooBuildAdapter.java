@@ -23,6 +23,14 @@ public class BambooBuildAdapter {
 		return build.getServer();
 	}
 
+	public String getServerName() {
+		if (build.getServer() != null) {
+			return build.getServer().getName() == null ? "" : build.getServer().getName();
+		} else {
+			return "";
+		}
+	}
+
 	public String getServerUrl() {
 		return build.getServerUrl() == null ? "" : build.getServerUrl();
 	}
