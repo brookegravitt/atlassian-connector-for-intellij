@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.util.InfoServer;
+import com.atlassian.theplugin.util.Version;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 
@@ -40,7 +41,7 @@ public class PluginDownloaderTest extends TestCase {
 
 		mockServer = new JettyMockServer(httpServer);
 		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort() + DOWNLOAD_PATH;
-		downloader = new PluginDownloader(new InfoServer.VersionInfo(new InfoServer.Version(SOME_VERSION), mockBaseUrl));
+		downloader = new PluginDownloader(new InfoServer.VersionInfo(new Version(SOME_VERSION), mockBaseUrl));
 	}
 
 	public void testDownloadPluginFromServer() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, NoSuchFieldException {
