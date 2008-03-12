@@ -16,5 +16,6 @@ public class AtlassianTableView extends TableView {
 
         getColumnModel().setColumnMargin(0);
         setRowHeight(DEFAULT_ROW_HEIGHT);
-    }
+		setAutoResizeMode(TableView.AUTO_RESIZE_OFF);
+	}
 }

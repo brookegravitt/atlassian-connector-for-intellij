@@ -60,6 +60,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 		listTableModel.setSortable(true);
 		table = new AtlassianTableView(listTableModel);
 
+
 		TableColumnModel model = table.getColumnModel();
 		for (int i = 0; i < model.getColumnCount(); ++i) {
 			model.getColumn(i).setResizable(true);
@@ -100,7 +101,11 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 			}
 		});
 
-		add(new JScrollPane(table), BorderLayout.CENTER);
+		JScrollPane tablePane = new JScrollPane(table,
+				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		tablePane.setWheelScrollingEnabled(true);
+		//table.setMinimumSize(ED_PANE_MINE_SIZE);
+		add(tablePane, BorderLayout.CENTER);
 	}
 
 	private JPopupMenu createContextMenu(BambooBuildAdapter buildAdapter) {
