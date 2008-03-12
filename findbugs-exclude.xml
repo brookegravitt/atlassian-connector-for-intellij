@@ -95,4 +95,9 @@
 		<Class name="com.atlassian.theplugin.idea.ThePluginApplicationComponent"/>
 		<Bug pattern="EI_EXPOSE_REP2"/>
 	</Match>
+	<!-- findbug is too sensitive about the state of the Version object -->
+	<Match>
+		<Class name="com.atlassian.theplugin.util.Version"/>
+		<Bug pattern="SE_TRANSIENT_FIELD_NOT_RESTORED"/>
+	</Match>
 </FindBugsFilter>
