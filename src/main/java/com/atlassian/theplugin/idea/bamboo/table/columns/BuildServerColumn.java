@@ -20,7 +20,7 @@ public class BuildServerColumn extends TableColumnInfo {
 	}
 
 	public Object valueOf(Object o) {
-		return ((BambooBuildAdapter) o).getServer().getName();
+		return ((BambooBuildAdapter) o).getServerName();
 	}
 
 	public Class getColumnClass() {
