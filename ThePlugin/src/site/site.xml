@@ -1,0 +1,9 @@
+<project name="Atlassian IDEA Plugin">
+	<version position="left"/>
+	<body>
+		<menu name="Overview">
+			<item name="Download" href="downloads.html"/>
+		</menu>
+		<menu ref="reports"/>
+	</body>
+</project>

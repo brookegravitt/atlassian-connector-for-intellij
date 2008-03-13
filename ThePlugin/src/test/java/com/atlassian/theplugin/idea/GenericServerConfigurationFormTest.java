@@ -1,0 +1,146 @@
+package com.atlassian.theplugin.idea;
+
+import com.atlassian.theplugin.configuration.Server;
+import com.atlassian.theplugin.configuration.ServerBean;
+import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.idea.config.serverconfig.GenericServerConfigForm;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+
+import javax.swing.*;
+
+/**
+ * Created by IntelliJ IDEA.
+ * User: pmaruszak
+ * Date: Feb 20, 2008
+ * Time: 2:22:22 PM
+ * To change this template use File | Settings | File Templates.
+ */
+public class GenericServerConfigurationFormTest extends TestCase {
+
+	private GenericServerConfigForm genericServerConfigurationForm;
+
+
+
+	protected void setUp() throws Exception {
+		super.setUp();
+		genericServerConfigurationForm = new GenericServerConfigForm(null);
+	}
+
+	public void testGenericSetGetData() throws Exception {
+		assertNotNull(genericServerConfigurationForm.getRootComponent());
+
+		ServerBean inServerBean = createServerBean();
+
+		genericServerConfigurationForm.setData(inServerBean);
+
+		Server outServerBean = genericServerConfigurationForm.getData();
+
+		// form use cloned instance
+		assertNotSame(inServerBean, outServerBean);
+		checkServerBean(outServerBean);
+	}
+
+	@SuppressWarnings({ "RedundantStringConstructorCall" })
+	public void testBambooFormIsModified() throws Exception {
+		ServerBean inServerBean = createServerBean();
+
+		genericServerConfigurationForm.setData(inServerBean);
+
+		ServerBean outServerBean = createServerBean();
+
+		assertFalse(genericServerConfigurationForm.isModified());
+
+
+		/* equals vs == */
+
+		outServerBean.setName(new String("name"));
+		outServerBean.setPasswordString(new String("password"), true);
+		outServerBean.setUrlString(new String("url"));
+		outServerBean.setUserName(new String("userName"));
+
+
+		PluginConfigurationFormHelper formHelper = new PluginConfigurationFormHelper(genericServerConfigurationForm);
+
+		formHelper.serverName.setText(outServerBean.getName() + "-chg");
+		assertTrue(genericServerConfigurationForm.isModified());
+		formHelper.serverName.setText(outServerBean.getName());
+
+		formHelper.serverUrl.setText(outServerBean.getUrlString() + "-chg");
+		assertTrue(genericServerConfigurationForm.isModified());
+		formHelper.serverUrl.setText(outServerBean.getUrlString());
+
+		formHelper.username.setText(outServerBean.getUserName() + "-chg");
+		assertTrue(genericServerConfigurationForm.isModified());
+		formHelper.username.setText(outServerBean.getUserName());
+
+
+		formHelper.password.setText(outServerBean.getName() + "-chg");
+		assertTrue(genericServerConfigurationForm.isModified());
+		formHelper.password.setText(outServerBean.getPasswordString());
+	}
+
+	public void testBambooFormFieldSetting() throws Exception {
+		genericServerConfigurationForm.setData(new ServerBean());
+
+		Server outServer = genericServerConfigurationForm.getData();
+		assertEquals("", outServer.getName());
+		assertEquals("", outServer.getUrlString());
+		assertEquals("", outServer.getUserName());
+		assertEquals("", outServer.getPasswordString());
+		assertEquals(0, outServer.getSubscribedPlans().size());
+
+		PluginConfigurationFormHelper helper = new PluginConfigurationFormHelper(genericServerConfigurationForm);
+
+		helper.serverName.setText("name");
+		helper.password.setText("password");
+		helper.serverUrl.setText("url");
+		helper.username.setText("userName");
+
+		outServer = genericServerConfigurationForm.getData();
+		checkServerBean(outServer);
+	}
+
+
+	private static ServerBean createServerBean() {
+
+		ServerBean outServer = new ServerBean();
+		outServer.setName("name");
+		outServer.setPasswordString("password", true);
+		outServer.setUrlString("url");
+		outServer.setUserName("userName");
+
+
+		return outServer;
+	}
+
+	private static void checkServerBean(Server outServer) throws ServerPasswordNotProvidedException {
+
+		assertEquals("name", outServer.getName());
+		assertEquals("password", outServer.getPasswordString());
+		assertEquals("http://url", outServer.getUrlString());
+		assertEquals("userName", outServer.getUserName());
+	}
+
+	public static Test suite() {
+		return new TestSuite(GenericServerConfigurationFormTest.class);
+	}
+
+
+
+	@SuppressWarnings("all")
+	private class PluginConfigurationFormHelper extends PrivateFieldMapper {
+		public JTextField serverName;
+		public JTextField serverUrl;
+		public JTextField username;
+		public JPasswordField password;
+		public JButton testConnection;
+		public JCheckBox chkPasswordRemember;
+		public JCheckBox cbEnabled;
+
+		public PluginConfigurationFormHelper(GenericServerConfigForm pluginConfigurationForm) throws Exception {
+			super(pluginConfigurationForm);
+		}
+	}
+}
