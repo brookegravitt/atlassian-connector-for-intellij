@@ -13,7 +13,7 @@ import java.util.Date;
  * Taken from the Bamboo project.
  */
 public abstract class DateUtil extends TableColumnInfo {
-	private static final String PRIOR_TEXT = "before";
+	private static final String PRIOR_TEXT = "ago";
 	//private static final Category LOGGER = Logger.getInstance(PluginStatusBarToolTip.class);
 	public static final int SECONDS_IN_MINUTE = 60;
 	public static final int MILISECONDS_IN_SECOND = 1000;
