@@ -228,8 +228,12 @@ public class BambooPlansForm extends JComponent {
 
 	public boolean isModified() {
 		boolean isFavModified = false;
-		if (cbUseFavuriteBuilds.isSelected() != originalServer.getUseFavourite()) {
-			isFavModified = true;
+		if (originalServer != null) {
+			if (cbUseFavuriteBuilds.isSelected() != originalServer.getUseFavourite()) {
+				isFavModified = true;
+			}
+		} else {
+			return false;
 		}
 
 		return isListModified || isFavModified;
