@@ -113,7 +113,9 @@ public class BambooPlansForm extends JComponent {
 	public void setData(final Server server) {
 		originalServer = new ServerBean(server);
 		cbUseFavuriteBuilds.setEnabled(false);
-		retrievePlans(originalServer);
+		if (!"".equals(originalServer.getUrlString())) {
+			retrievePlans(originalServer);
+		}
 	}
 
 	private void retrievePlans(final Server server) {
