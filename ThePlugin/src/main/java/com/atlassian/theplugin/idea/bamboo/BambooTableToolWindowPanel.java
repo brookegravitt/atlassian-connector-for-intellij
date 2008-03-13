@@ -11,6 +11,7 @@ import com.atlassian.theplugin.idea.ui.AtlassianTableView;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.util.IconLoader;
 import com.intellij.util.ui.ListTableModel;
 import com.intellij.util.ui.UIUtil;
 import thirdparty.javaworld.ClasspathHTMLEditorKit;
@@ -36,6 +37,10 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 	private final transient BambooServerFacade bambooFacade;
 	private static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
 	private static final DateFormat TIME_DF = new SimpleDateFormat("hh:mm a");
+
+	private static final Icon ICON_RUN = IconLoader.getIcon("/icons/bamboo-run.png");
+	private static final Icon ICON_LABEL = IconLoader.getIcon("/icons/bamboo-label.png");
+	private static final Icon ICON_COMMENT = IconLoader.getIcon("/icons/bamboo-comment.png");	
 
 	public BambooTableToolWindowPanel(BambooServerFacade bambooFacade) {
 		super(new BorderLayout());
@@ -124,8 +129,9 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 
 	private JMenuItem makeAddLabelMenu(String menuName, final BambooBuildAdapter build) {
 		JMenuItem addLabel = new JMenuItem();
+		addLabel.setIcon(ICON_LABEL);
 		addLabel.setText(menuName);
-		addLabel.setEnabled(build.isBamboo2());
+		addLabel.setEnabled(getLabelBuildEnabled());
 		addLabel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				openLabelDialog(build);
@@ -167,8 +173,9 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 
 	private JMenuItem makeAddCommentMenu(String menuName, final BambooBuildAdapter build) {
 		JMenuItem addComment = new JMenuItem();
+		addComment.setIcon(ICON_COMMENT);
 		addComment.setText(menuName);
-		addComment.setEnabled(build.isBamboo2());
+		addComment.setEnabled(getCommentBuildEnabled());
 		addComment.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				openCommentDialog(build);
@@ -211,8 +218,9 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 
 	private JMenuItem makeExecuteBuildMenu(String menuName, final BambooBuildAdapter build) {
 		JMenuItem executeBuild = new JMenuItem();
+		executeBuild.setIcon(ICON_RUN);		
 		executeBuild.setText(menuName);
-		executeBuild.setEnabled(!build.isBamboo2());
+		executeBuild.setEnabled(getExecuteBuildEnabled());
 
 		executeBuild.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
@@ -298,11 +306,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 
 	public boolean getExecuteBuildEnabled() {
 		BambooBuildAdapter build = (BambooBuildAdapter) table.getSelectedObject();
-		if (build != null) {
-			return !build.isBamboo2();
-		} else {
-			return false;
-		}
+		return build != null;
 	}
 
 	private boolean getBamboo2ActionsEnabled() {
