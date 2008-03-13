@@ -68,9 +68,9 @@
         <action id="ThePlugin.AddCrucibleServerAction" class="com.atlassian.theplugin.idea.config.serverconfig.action.AddCrucibleServerAction" text="Crucible Server" description="Add a new Crucible server" icon="/icons/crucible-16.png"/>
 
         <action id="ThePlugin.ShowSettings" class="com.atlassian.theplugin.idea.action.ShowSettingsAction" text="Configure" description="Show plugin configuration" icon="/general/ideOptions.png"/>
-        <action id="ThePlugin.RunBuild" class="com.atlassian.theplugin.idea.action.bamboo.RunBuildAction" text="Run build" description="Run Bamboo build" icon="/icons/icn_run.gif"/>
-		<action id="ThePlugin.AddLabelToBuild" class="com.atlassian.theplugin.idea.action.bamboo.LabelBuildAction" text="Add label to build" description="Add label to Bamboo build" icon="/actions/export.png"/>
-		<action id="ThePlugin.AddCommentToBuild" class="com.atlassian.theplugin.idea.action.bamboo.CommentBuildAction" text="Add comment to build" description="Add comment to Bamboo build" icon="/icons/comment_build.gif"/>
+        <action id="ThePlugin.RunBuild" class="com.atlassian.theplugin.idea.action.bamboo.RunBuildAction" text="Run build" description="Run Bamboo build" icon="/icons/bamboo-run.png"/>
+		<action id="ThePlugin.AddLabelToBuild" class="com.atlassian.theplugin.idea.action.bamboo.LabelBuildAction" text="Add label to build" description="Add label to Bamboo build" icon="/icons/bamboo-label.png"/>
+		<action id="ThePlugin.AddCommentToBuild" class="com.atlassian.theplugin.idea.action.bamboo.CommentBuildAction" text="Add comment to build" description="Add comment to Bamboo build" icon="/icons/bamboo-comment.png"/>
 
 		<group id="ThePlugin.ServerConfigToolBar" popup="false" text="">
             <reference id="ThePlugin.AddServerAction"/>

@@ -43,8 +43,6 @@ public class JIRAToolWindowPanel extends JPanel {
     private Map<String, JIRAQueryFragment> queryFragments = new HashMap<String, JIRAQueryFragment>();
     private AtlassianTableView table;
     private static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
-    private static final int COL_ICON_WIDTH = 20;
-    private static final int COL_KEY_WIDTH = 50;
 
     public JIRAToolWindowPanel() {
         super(new BorderLayout());
