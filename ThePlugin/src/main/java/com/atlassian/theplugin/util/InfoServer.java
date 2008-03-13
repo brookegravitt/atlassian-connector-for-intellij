@@ -58,19 +58,29 @@ public class InfoServer {
 		private Version version;
 		private String downloadUrl;
 
-		public VersionInfo(Document doc, VersionInfo.Type type) {
+		/**
+		 * Only for internal use (package scope)
+		 * @param doc doc
+		 * @param type type
+		 */
+		VersionInfo(Document doc, VersionInfo.Type type) {
 			this.doc = doc;
 			this.type = type;
 		}
 
+		/**
+		 * Only for test use
+		 * @param version
+		 * @param downloadUrl
+		 */
 		public VersionInfo(Version version, String downloadUrl) {
 			this.version = version;
 			this.downloadUrl = downloadUrl;
 		}
-
-		public VersionInfo(String version, String downloadUrl) throws IncorrectVersionException {
-			this(new Version(version), downloadUrl);
-		}
+//
+//		public VersionInfo(String version, String downloadUrl) throws IncorrectVersionException {
+//			this(new Version(version), downloadUrl);
+//		}
 
 		public Version getVersion() throws VersionServiceException, IncorrectVersionException {
 			String path = "";
