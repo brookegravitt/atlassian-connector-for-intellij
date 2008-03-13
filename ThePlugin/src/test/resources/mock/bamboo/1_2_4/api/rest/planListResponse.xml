@@ -1,0 +1,18 @@
+<response>
+	<build enabled="true">
+		<name>First Project - First Plan</name>
+		<key>PO-FP</key>
+	</build>
+	<build enabled="true">
+		<name>First Project - Second Plan</name>
+		<key>PO-SECPLAN</key>
+	</build>
+	<build enabled="true">
+		<name>First Project - Third Plan</name>
+		<key>PO-TP</key>
+	</build>
+	<build enabled="false">
+		<name>Second Project - The Only Plan</name>
+		<key>PT-TOP</key>
+	</build>
+</response>

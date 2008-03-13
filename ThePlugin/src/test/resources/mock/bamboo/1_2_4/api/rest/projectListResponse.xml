@@ -1,0 +1,14 @@
+<response>
+	<project>
+		<name>Project One</name>
+		<key>PO</key>
+	</project>
+	<project>
+		<name>Project Two</name>
+		<key>PT</key>
+	</project>
+	<project>
+		<name>Project Three - Empty</name>
+		<key>PEMPTY</key>
+	</project>
+</response>
