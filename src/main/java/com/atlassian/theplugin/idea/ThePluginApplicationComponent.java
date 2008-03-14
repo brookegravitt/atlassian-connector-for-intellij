@@ -142,6 +142,7 @@ public class ThePluginApplicationComponent
 		if (configPanel != null) {
 			// Get data from configPanel to component
 			configPanel.getData();
+			configPanel.setData();
 
 			for (Project project : ProjectManager.getInstance().getOpenProjects()) {
 				ThePluginProjectComponent projectComponent = project.getComponent(ThePluginProjectComponent.class);

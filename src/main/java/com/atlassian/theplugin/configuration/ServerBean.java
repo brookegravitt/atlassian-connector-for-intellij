@@ -298,10 +298,12 @@ public class ServerBean implements Server {
 		if (username != null ? !username.equals(that.getUserName()) : that.getUserName() != null) {
 			return false;
 		}
+		// runtime value - NOT changed configuration
+/*
 		if (isBamboo2 != that.isBamboo2()) {
 			return false;
 		}
-
+*/
 		return true;
 	}
 }
