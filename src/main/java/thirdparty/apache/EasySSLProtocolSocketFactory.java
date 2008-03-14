@@ -110,7 +110,7 @@ public class EasySSLProtocolSocketFactory implements SecureProtocolSocketFactory
               null);
             return context;
         } catch (Exception e) {
-            PluginUtil.getLogger().error(e.getMessage(), e);
+            PluginUtil.getLogger().warn(e.getMessage(), e);
             throw new HttpClientError(e.toString());
         }
     }
