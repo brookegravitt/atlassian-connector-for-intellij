@@ -110,7 +110,7 @@ public class BambooPlansForm extends JComponent {
 				}
 			}
 		} else {
-			isListModified = !local.isEmpty();
+			isListModified = !model.isEmpty();
 		}
 	}
 
