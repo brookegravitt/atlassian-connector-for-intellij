@@ -45,10 +45,8 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 						// fire downloading and updating plugin in the new thread
 						Thread downloader = new Thread(new PluginDownloader(version, pluginConfiguration));
 						downloader.start();
-					} else {
-							pluginConfiguration.setRejectedUpgrade(version.getVersion());
 					}
-
+					pluginConfiguration.setRejectedUpgrade(version.getVersion());
 				} catch (VersionServiceException e1) {
 					PluginUtil.getLogger().info("Error retrieving new version: " + e1.getMessage(), e1);
 				} catch (IncorrectVersionException e1) {
