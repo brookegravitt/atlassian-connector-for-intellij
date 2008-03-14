@@ -72,7 +72,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 		try {
 			return getSession(bambooServer).listProjectNames();
 		} catch (BambooException e) {
-			PluginUtil.getLogger().warn("Bamboo exception: " + e.getMessage(), e);
+			PluginUtil.getLogger().info("Bamboo exception: " + e.getMessage(), e);
 			throw e;
 		}
 	}
@@ -130,13 +130,13 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 			connectionErrorMessage = "";
 		} catch (BambooLoginFailedException e) {
 			if (bambooServer.getIsConfigInitialized()) {
-				PluginUtil.getLogger().warn("Bamboo login exception: " + e.getMessage());
+				PluginUtil.getLogger().info("Bamboo login exception: " + e.getMessage());
 				connectionErrorMessage = e.getMessage();
 			} else {
 				throw new ServerPasswordNotProvidedException();
 			}
 		} catch (BambooLoginException e) {
-			PluginUtil.getLogger().warn("Bamboo login exception: " + e.getMessage());
+			PluginUtil.getLogger().info("Bamboo login exception: " + e.getMessage());
 			connectionErrorMessage = e.getMessage();
 		}
 
@@ -255,7 +255,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 		try {
 			return getSession(bambooServer).getFavouriteUserPlans();
 		} catch (BambooException e) {
-			PluginUtil.getLogger().warn("Bamboo exception: " + e.getMessage());
+			PluginUtil.getLogger().info("Bamboo exception: " + e.getMessage());
 			throw e;
 		}
 	}
