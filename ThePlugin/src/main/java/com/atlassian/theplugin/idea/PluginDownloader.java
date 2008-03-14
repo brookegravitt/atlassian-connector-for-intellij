@@ -3,6 +3,7 @@ package com.atlassian.theplugin.idea;
 import com.atlassian.theplugin.exception.VersionServiceException;
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.ide.startup.StartupActionScriptManager;
@@ -39,9 +40,11 @@ public class PluginDownloader implements Runnable {
 	private static final int TIMEOUT = 15000;
 	private static final int EXTENTION_LENGHT = 3;
 	private InfoServer.VersionInfo newVersion;
+	private PluginConfiguration pluginConfiguration;
 
-	public PluginDownloader(InfoServer.VersionInfo newVersion) {
+	public PluginDownloader(InfoServer.VersionInfo newVersion, PluginConfiguration pluginConfiguration) {
 		this.newVersion = newVersion;
+		this.pluginConfiguration = pluginConfiguration;
 	}
 
 	public void run() {
@@ -105,6 +108,10 @@ public class PluginDownloader implements Runnable {
 			pluginUrl = newVersion.getDownloadUrl()
 				.replaceAll(PLUGIN_ID_TOKEN, URLEncoder.encode(pluginName, "UTF-8"))
 					.replaceAll(VERSION_TOKEN, URLEncoder.encode(version, "UTF-8"));
+			if (!pluginUrl.contains("?")) {
+				pluginUrl += "?";
+			}
+			pluginUrl += "uid=" + URLEncoder.encode(Long.toString(pluginConfiguration.getUid()), "UTF-8");
 		} catch (VersionServiceException e) {
 			PluginUtil.getLogger().error("Error retrieving url for new version of the plugin.");
 		}
@@ -169,7 +176,8 @@ public class PluginDownloader implements Runnable {
 		}
 
 		//noinspection HardCodedStringLiteral
-		boolean isJarFile = localArchiveFile.getName().endsWith(".jar");
+		boolean isJarFile = localArchiveFile.getName().endsWith(".jar")
+				|| localArchiveFile.getName().contains(".jar?");
 
 		if (isJarFile) {
 			// add command to copy file to the IDEA/plugins path

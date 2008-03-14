@@ -2,6 +2,8 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.Version;
+import com.atlassian.theplugin.configuration.PluginConfiguration;
+import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 
@@ -33,7 +35,7 @@ public class PluginDownloaderTest extends TestCase {
 			PluginDownloader.VERSION_TOKEN +
 			"&fileType=.zip";
 	private static final String SOME_VERSION = "0.3.0, SVN:2233";
-
+	private PluginConfiguration pluginConfiguration = new PluginConfigurationBean();
 
 	protected void setUp() throws Exception {
 		httpServer = new org.mortbay.jetty.Server(0);
@@ -41,7 +43,7 @@ public class PluginDownloaderTest extends TestCase {
 
 		mockServer = new JettyMockServer(httpServer);
 		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort() + DOWNLOAD_PATH;
-		downloader = new PluginDownloader(new InfoServer.VersionInfo(new Version(SOME_VERSION), mockBaseUrl));
+		downloader = new PluginDownloader(new InfoServer.VersionInfo(new Version(SOME_VERSION), mockBaseUrl), pluginConfiguration);
 	}
 
 	public void testDownloadPluginFromServer() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, NoSuchFieldException {
