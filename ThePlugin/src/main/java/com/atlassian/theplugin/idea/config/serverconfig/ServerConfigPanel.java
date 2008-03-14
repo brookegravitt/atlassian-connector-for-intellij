@@ -173,7 +173,7 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
 			}
 
 			this.serverTreePanel.setData(getLocalPluginConfigurationCopy());
-        }
+       }
     }
 
 	public void setData(PluginConfiguration config) {
@@ -200,7 +200,8 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
         switch (serverNode.getServerType()) {
             case BAMBOO_SERVER:
                 server.setSubscribedPlans(tempValue.getSubscribedPlans());
-                break;
+				server.setUseFavourite(tempValue.getUseFavourite());
+				break;
             default:
                 break;
         }
