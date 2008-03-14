@@ -99,14 +99,18 @@ public class BambooPlansForm extends JComponent {
 	private void setModifiedState() {
 		isListModified = false;
 		java.util.List<BambooPlanItem> local = serverPlans.get(getServerKey(originalServer));
-		for (int i = 0; i < model.getSize(); i++) {
-			if (local.get(i) != null) {
-				if (((BambooPlanItem) model.getElementAt(i)).isSelected()
-						!= local.get(i).isSelected()) {
-					isListModified = true;
-					break;
+		if (local != null) {
+			for (int i = 0; i < model.getSize(); i++) {
+				if (local.get(i) != null) {
+					if (((BambooPlanItem) model.getElementAt(i)).isSelected()
+							!= local.get(i).isSelected()) {
+						isListModified = true;
+						break;
+					}
 				}
 			}
+		} else {
+			isListModified = !local.isEmpty();
 		}
 	}
 
@@ -115,6 +119,8 @@ public class BambooPlansForm extends JComponent {
 		cbUseFavuriteBuilds.setEnabled(false);
 		if (!"".equals(originalServer.getUrlString())) {
 			retrievePlans(originalServer);
+		} else {
+			model.removeAllElements();
 		}
 	}
 
