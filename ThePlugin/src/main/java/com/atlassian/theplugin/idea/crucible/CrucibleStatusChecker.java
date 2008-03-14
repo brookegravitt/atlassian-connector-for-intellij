@@ -70,7 +70,7 @@ public final class CrucibleStatusChecker implements SchedulableComponent {
                                     ApplicationManager.getApplication().invokeLater(
                                             new MissingPasswordHandler(), ModalityState.defaultModalityState());
                                 } catch (CrucibleLoginException e) {
-                                    PluginUtil.getLogger().warn("Error getting Crucible reviews for " + server.getName()
+                                    PluginUtil.getLogger().info("Error getting Crucible reviews for " + server.getName()
 											+ " server", e);
                                 }
                             }
