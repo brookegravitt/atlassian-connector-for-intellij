@@ -43,7 +43,7 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 					if (answer == JOptionPane.OK_OPTION) {
 
 						// fire downloading and updating plugin in the new thread
-						Thread downloader = new Thread(new PluginDownloader(version));
+						Thread downloader = new Thread(new PluginDownloader(version, pluginConfiguration));
 						downloader.start();
 					} else {
 							pluginConfiguration.setRejectedUpgrade(version.getVersion());
