@@ -44,17 +44,17 @@ public class VersionTest extends TestCase {
 		assertFalse(version2.greater(version2));
 
 		assertTrue(version3.greater(version1));
-		assertTrue(version4.greater(version3));
+		assertTrue(version3.greater(version4));
 		assertTrue(version5.greater(version4));
-		assertTrue(version5.greater(version3));
+		assertTrue(version3.greater(version5));
 		assertTrue(version6.greater(version3)); // not realistic
 		assertTrue(version6.greater(version7));
 
 
 		assertFalse(version1.greater(version3));
-		assertFalse(version3.greater(version4));
+		assertFalse(version4.greater(version3));
 		assertFalse(version4.greater(version5));
-		assertFalse(version3.greater(version5));
+		assertFalse(version5.greater(version3));
 		assertFalse(version3.greater(version6)); // not realistic
 		assertFalse(version7.greater(version6));
 	}
