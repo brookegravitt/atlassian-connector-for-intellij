@@ -16,17 +16,18 @@ import java.util.*;
  * Time: 5:12:27 PM
  */
 public class BambooServerFacadeImpl implements BambooServerFacade {
-	private Map<Server, BambooSession> sessions = new WeakHashMap<Server, BambooSession>();
+	private Map<String, BambooSession> sessions = new WeakHashMap<String, BambooSession>();
 
 	public BambooServerFacadeImpl() {
 	}
 
 	private BambooSession getSession(Server server) throws BambooLoginException {
 		// @todo old server will stay on map - remove them !!!
-		BambooSession session = sessions.get(server);
+		String key = server.getUserName() + server.getUrlString() + server.getPasswordString();
+		BambooSession session = sessions.get(key);
 		if (session == null) {
 			session = new AutoRenewBambooSession(server.getUrlString());
-			sessions.put(server, session);
+			sessions.put(key, session);
 		}
 		if (!session.isLoggedIn()) {
 			session.login(server.getUserName(), server.getPasswordString().toCharArray());
