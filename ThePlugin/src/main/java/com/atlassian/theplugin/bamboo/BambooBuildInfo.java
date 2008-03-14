@@ -12,7 +12,7 @@ public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
 	private String projectKey;
 	private String buildName;
 	private String buildKey;
-	private boolean enabled;
+	private boolean enabled = true;
 	private String buildState;
 	private String buildNumber;
 	private String buildReason;
