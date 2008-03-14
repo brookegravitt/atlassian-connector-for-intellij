@@ -133,7 +133,7 @@ public class Version implements Serializable {
 
 
 		public enum AlphaNum {
-			NONE, ALPHA, BETA, SNAPSHOT;
+			ALPHA, BETA, SNAPSHOT, NONE;
 		}
 
 		public VersionNumber(int major, int minor, int micro, String alphaNum) throws IncorrectVersionException {
