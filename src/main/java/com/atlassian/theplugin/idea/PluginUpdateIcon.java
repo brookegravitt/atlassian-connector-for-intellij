@@ -50,9 +50,9 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 					}
 
 				} catch (VersionServiceException e1) {
-					PluginUtil.getLogger().warn("Error retrieving new version: " + e1.getMessage(), e1);
+					PluginUtil.getLogger().info("Error retrieving new version: " + e1.getMessage(), e1);
 				} catch (IncorrectVersionException e1) {
-					PluginUtil.getLogger().warn("Error retrieving new version: " + e1.getMessage(), e1);
+					PluginUtil.getLogger().info("Error retrieving new version: " + e1.getMessage(), e1);
 				}
 			}
 		});
@@ -88,9 +88,9 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 			this.setToolTipText("New version (" + newVersion.getVersion() + ") of the "
 					+ PluginUtil.getName() + " available");
 		} catch (VersionServiceException e) {
-			PluginUtil.getLogger().warn(e.getMessage(), e);
+			PluginUtil.getLogger().info(e.getMessage(), e);
 		} catch (IncorrectVersionException e) {
-			PluginUtil.getLogger().warn(e.getMessage(), e);
+			PluginUtil.getLogger().info(e.getMessage(), e);
 		}
 	}
 
