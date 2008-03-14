@@ -19,7 +19,7 @@ public class Version implements Serializable {
 		try {
 			result = new Version("0.0.0, SVN:0");
 		} catch (IncorrectVersionException e) {
-			PluginUtil.getLogger().error("God does not exist. Impossible has happened.", e);
+			PluginUtil.getLogger().warn("God does not exist. Impossible has happened.", e);
 		}
 		return result;
 	}
