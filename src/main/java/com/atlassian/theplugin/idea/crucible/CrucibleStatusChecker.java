@@ -62,7 +62,8 @@ public final class CrucibleStatusChecker implements SchedulableComponent {
             final Collection<ReviewDataInfo> reviews = new ArrayList<ReviewDataInfo>();
             for (Server server : retrieveEnabledCrucibleServers()) {
                                 try {
-									PluginUtil.getLogger().debug("Crucible: updating status for server: " + server.getUrlString());
+									PluginUtil.getLogger().debug("Crucible: updating status for server: "
+											+ server.getUrlString());
 									reviews.addAll(
                                             crucibleServerFacade.getActiveReviewsForUser(server));
                                 } catch (ServerPasswordNotProvidedException exception) {
