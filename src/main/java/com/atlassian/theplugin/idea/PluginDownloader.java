@@ -69,9 +69,9 @@ public class PluginDownloader implements Runnable {
 			promptShutdownAndShutdown();
 
 		} catch (IOException e) {
-			PluginUtil.getLogger().error("Error registering action in IDEA", e);
+			PluginUtil.getLogger().warn("Error registering action in IDEA", e);
 		} catch (VersionServiceException e) {
-			PluginUtil.getLogger().error("Error registering action in IDEA", e);
+			PluginUtil.getLogger().warn("Error registering action in IDEA", e);
 		}
 	}
 
@@ -113,7 +113,7 @@ public class PluginDownloader implements Runnable {
 			}
 			pluginUrl += "uid=" + URLEncoder.encode(Long.toString(pluginConfiguration.getUid()), "UTF-8");
 		} catch (VersionServiceException e) {
-			PluginUtil.getLogger().error("Error retrieving url for new version of the plugin.");
+			PluginUtil.getLogger().warn("Error retrieving url for new version of the plugin.");
 		}
 
 		PluginUtil.getLogger().info("Downloading plugin archive from: " + pluginUrl);

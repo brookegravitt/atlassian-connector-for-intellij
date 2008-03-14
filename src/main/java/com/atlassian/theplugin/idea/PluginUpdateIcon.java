@@ -50,9 +50,9 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 					}
 
 				} catch (VersionServiceException e1) {
-					PluginUtil.getLogger().error("Error retrieving new version: " + e1.getMessage(), e1);
+					PluginUtil.getLogger().warn("Error retrieving new version: " + e1.getMessage(), e1);
 				} catch (IncorrectVersionException e1) {
-					PluginUtil.getLogger().error("Error retrieving new version: " + e1.getMessage(), e1);
+					PluginUtil.getLogger().warn("Error retrieving new version: " + e1.getMessage(), e1);
 				}
 			}
 		});
