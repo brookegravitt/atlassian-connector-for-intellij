@@ -95,7 +95,7 @@ public class TestConnectionListener implements ActionListener {
 			} else if (testConnectionThread.getConnectionState() == TestConnectionThread.ConnectionState.INTERUPTED) {
 				log.debug("Cancel was pressed during 'Test Connection' operation");
 			} else {
-				log.warn("Unexpected 'Test Connection' thread state: "
+				log.info("Unexpected 'Test Connection' thread state: "
 						+ testConnectionThread.getConnectionState().toString());
 			}
 		}
