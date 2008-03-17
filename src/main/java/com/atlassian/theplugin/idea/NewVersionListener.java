@@ -64,9 +64,7 @@ public class NewVersionListener implements ActionListener {
 			indicator.setIndeterminate(true);
 			checkerThread = new ConnectionWrapper(new UpdateServerConnection());
 			checkerThread.start();
-			while (checkerThread.getConnectionState() == ConnectionWrapper.ConnectionState.NOT_FINISHED)
-
-			{
+			while (checkerThread.getConnectionState() == ConnectionWrapper.ConnectionState.NOT_FINISHED) {
 				try {
 					if (indicator.isCanceled()) {
 						checkerThread.setInterrupted();
