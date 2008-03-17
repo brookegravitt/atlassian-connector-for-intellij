@@ -1,12 +1,13 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.configuration.PluginConfiguration;
-import com.atlassian.theplugin.exception.IncorrectVersionException;
 import com.atlassian.theplugin.exception.VersionServiceException;
+import com.atlassian.theplugin.exception.ThePluginException;
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.util.Version;
-import com.intellij.openapi.application.ApplicationManager;
+import com.atlassian.theplugin.idea.autoupdate.UpdateActionHandler;
+import com.atlassian.theplugin.idea.autoupdate.ForwardToIconHandler;
 
 import java.util.TimerTask;
 
@@ -29,7 +30,11 @@ public final class NewVersionChecker implements SchedulableComponent {
 	public TimerTask newTimerTask() {
 		return new TimerTask() {
 			public void run() {
-				doRun();
+				try {
+					doRun(new ForwardToIconHandler(pluginConfiguration));
+				} catch (ThePluginException e) {
+					PluginUtil.getLogger().info("Error checking new version: " + e.getMessage());
+				}
 			}
 		};
 	}
@@ -42,27 +47,26 @@ public final class NewVersionChecker implements SchedulableComponent {
 		return PLUGIN_UPDATE_ATTEMPT_DELAY;
 	}
 
-	private void doRun() {
+	protected void doRun(UpdateActionHandler action) throws ThePluginException {
 		if (!pluginConfiguration.isAutoUpdateEnabled()) {
 			return;
 		}
+		if (action == null) {
+			throw new IllegalArgumentException("Action handler not provided.");
+		}
+		InfoServer.VersionInfo versionInfo = getLatestVersion();
+		Version newVersion = versionInfo.getVersion();
+		Version thisVersion = new Version(PluginUtil.getVersion());
+		if (newVersion.greater(thisVersion)) {
+			action.doAction(versionInfo);
+		}
+	}
+
+	private InfoServer.VersionInfo getLatestVersion() throws VersionServiceException {
 		InfoServer server =  new InfoServer(PluginUtil.VERSION_INFO_URL,
 				pluginConfiguration.getUid());
-		try {
-			InfoServer.VersionInfo versionInfo = server.getLatestPluginVersion();
-			// simple versionInfo difference check
-			Version newVersion = versionInfo.getVersion();
-			Version thisVersion = new Version(PluginUtil.getVersion());
-			if (newVersion.greater(thisVersion) && !newVersion.equals(pluginConfiguration.getRejectedUpgrade())) {
-				ConfirmPluginUpdateHandler handler = ConfirmPluginUpdateHandler.getInstance();
-				handler.setNewVersionInfo(versionInfo);
-				ApplicationManager.getApplication().invokeLater(handler);
-			}
-		} catch (VersionServiceException e) {
-			PluginUtil.getLogger().info("Error checking new version: " + e.getMessage());
-		} catch (IncorrectVersionException e) {
-			PluginUtil.getLogger().info("Error checking new version: " + e.getMessage());
-		}
+		InfoServer.VersionInfo versionInfo = server.getLatestPluginVersion();
+		return versionInfo;
 	}
 
 }
