@@ -52,7 +52,7 @@ public class GeneralConfigForm {
 	 */
 	private void $$$setupUI$$$() {
 		mainPanel = new JPanel();
-		mainPanel.setLayout(new GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
+		mainPanel.setLayout(new GridLayoutManager(2, 3, new Insets(0, 0, 0, 0), -1, -1));
 		chkAutoUpdateEnabled = new JCheckBox();
 		chkAutoUpdateEnabled.setText("Auto Update Enabled");
 		chkAutoUpdateEnabled.setMnemonic('A');
@@ -64,7 +64,9 @@ public class GeneralConfigForm {
 		checkNowButton.setText("Check now");
 		checkNowButton.setMnemonic('C');
 		checkNowButton.setDisplayedMnemonicIndex(0);
-		mainPanel.add(checkNowButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		mainPanel.add(checkNowButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		final Spacer spacer2 = new Spacer();
+		mainPanel.add(spacer2, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
 	}
 
 	/**

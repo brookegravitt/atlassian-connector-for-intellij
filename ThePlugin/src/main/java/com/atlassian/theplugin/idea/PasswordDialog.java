@@ -1,11 +1,11 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.LoginDataProvided;
+import com.atlassian.theplugin.util.Connector;
 import com.atlassian.theplugin.bamboo.BambooServerFactory;
 import com.atlassian.theplugin.bamboo.api.BambooLoginException;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.exception.ThePluginException;
-import com.atlassian.theplugin.idea.config.serverconfig.ConnectionTester;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 
@@ -42,15 +42,18 @@ public class PasswordDialog extends JDialog implements LoginDataProvided {
 			}
 		}, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-		testConnectionButton.addActionListener(new TestConnectionListener(new ConnectionTester() {
-			public void testConnection(String aUsername, String aPassword, String aServer) throws ThePluginException {
+		testConnectionButton.addActionListener(new TestConnectionListener(new Connector() {
+
+			public void connect() throws ThePluginException {
+				this.validate();
 				try {
 					BambooServerFactory.getBambooServerFacade().testServerConnection(
-							aServer, aUsername, aPassword);
+							super.getUrl(), super.getUserName(), super.getPassword());
 				} catch (BambooLoginException e) {
-					throw new ThePluginException(e.getMessage());
+					throw new ThePluginException("Error conecting bamboo server.", e);
 				}
 			}
+
 		}, this));
 	}
 

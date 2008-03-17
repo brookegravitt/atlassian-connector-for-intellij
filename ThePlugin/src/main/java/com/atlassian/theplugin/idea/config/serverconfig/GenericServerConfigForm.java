@@ -4,6 +4,7 @@ import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.idea.TestConnectionListener;
 import com.atlassian.theplugin.util.Util;
+import com.atlassian.theplugin.util.Connector;
 import com.atlassian.theplugin.LoginDataProvided;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -27,7 +28,7 @@ public class GenericServerConfigForm extends JComponent implements ServerPanel, 
 
 	private transient Server originalServer;
 
-	public GenericServerConfigForm(final ConnectionTester tester) {
+	public GenericServerConfigForm(final Connector tester) {
 
 		$$$setupUI$$$();
 		testConnection.addActionListener(new TestConnectionListener(tester, this));
