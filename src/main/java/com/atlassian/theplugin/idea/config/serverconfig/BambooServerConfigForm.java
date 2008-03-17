@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
+import com.atlassian.theplugin.util.Connector;
 import com.atlassian.theplugin.bamboo.BambooServerFacade;
 import com.atlassian.theplugin.bamboo.api.BambooLoginException;
 import com.atlassian.theplugin.configuration.Server;
@@ -61,13 +62,14 @@ public class BambooServerConfigForm extends JComponent implements ServerPanel {
 	}
 
 	private void createUIComponents() {
-		genericServerConfigForm = new GenericServerConfigForm(new ConnectionTester() {
-			public void testConnection(String username, String password, String server)
-					throws ThePluginException {
+		genericServerConfigForm = new GenericServerConfigForm(new Connector() {
+			public void connect() throws ThePluginException {
 				try {
-					bambooServerFacade.testServerConnection(server, username, password);
+					bambooServerFacade.testServerConnection(getUrl(), getUserName(), getPassword());
+				} catch (IllegalArgumentException e) {
+					throw new ThePluginException(e.getMessage(), e);
 				} catch (BambooLoginException e) {
-					throw new ThePluginException(e.getMessage());
+					throw new ThePluginException(e.getMessage(), e);
 				}
 			}
 		});

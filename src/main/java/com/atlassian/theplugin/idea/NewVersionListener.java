@@ -1,8 +1,12 @@
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.theplugin.ConnectionWrapper;
 import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.atlassian.theplugin.exception.ThePluginException;
+import com.atlassian.theplugin.idea.autoupdate.UpdateActionHandler;
 import com.atlassian.theplugin.idea.autoupdate.QueryOnUpdateHandler;
+import com.atlassian.theplugin.util.Connector;
+import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -22,10 +26,11 @@ import java.awt.event.ActionListener;
  * To change this template use File | Settings | File Templates.
  */
 public class NewVersionListener implements ActionListener {
-	private CheckerThread checkerThread;
+	private ConnectionWrapper checkerThread;
 	private static final long CHECK_CANCEL_INTERVAL = 500; //milis
 	private NewVersionChecker checker;
 	private PluginConfiguration pluginConfiguration;
+	private InfoServer.VersionInfo newVersion;
 
 	public NewVersionListener(NewVersionChecker checker, PluginConfiguration pluginConfiguration) {
 		this.checker = checker;
@@ -36,13 +41,22 @@ public class NewVersionListener implements ActionListener {
 		ProgressManager.getInstance().run(new Task.Modal(IdeaHelper.getCurrentProject(),
 				"Checking available updates", true) {
 			public void run(ProgressIndicator indicator) {
+				newVersion = null;
 				setCancelText("Stop");
 				indicator.setText("Connecting...");
 				indicator.setFraction(0);
 				indicator.setIndeterminate(true);
-				checkerThread = new CheckerThread(checker, pluginConfiguration);
+				checkerThread = new ConnectionWrapper(new Connector() {
+					public void connect() throws ThePluginException {
+						checker.doRun(new UpdateActionHandler() {
+							public void doAction(InfoServer.VersionInfo versionInfo) throws ThePluginException {
+								newVersion = versionInfo;
+							}
+						});
+					}
+				});
 				checkerThread.start();
-				while (checkerThread.getConnectionState() == CheckerThread.ConnectionState.NOT_FINISHED) {
+				while (checkerThread.getConnectionState() == ConnectionWrapper.ConnectionState.NOT_FINISHED) {
 					try {
 						if (indicator.isCanceled()) {
 							checkerThread.setInterrupted();
@@ -56,69 +70,47 @@ public class NewVersionListener implements ActionListener {
 					}
 				}
 
-				if (checkerThread.getConnectionState() == CheckerThread.ConnectionState.FAILED) {
-					EventQueue.invokeLater(new Runnable() {
-						public void run() {
-							showMessageDialog(checkerThread.getErrorMessage(),
-									"Error occured when contacting update server", Messages.getErrorIcon());
+				switch (checkerThread.getConnectionState()) {
+					case FAILED:
+						EventQueue.invokeLater(new Runnable() {
+							public void run() {
+								showMessageDialog(checkerThread.getErrorMessage(),
+										"Error occured when contacting update server", Messages.getErrorIcon());
+							}
+						});
+						break;
+					case INTERUPTED:
+						PluginUtil.getLogger().debug("Cancel was pressed during the upgrade process");
+						break;
+					case NOT_FINISHED:
+						break;
+					case SUCCEEDED:
+						if (newVersion != null) {
+							try {
+								new QueryOnUpdateHandler(pluginConfiguration).doAction(newVersion);
+							} catch (final ThePluginException e) {
+								EventQueue.invokeLater(new Runnable() {
+									public void run() {
+										showMessageDialog(e.getMessage(),
+												"Error retrieving new version", Messages.getErrorIcon());
+									}
+								});
+							}
+						} else {
+							EventQueue.invokeLater(new Runnable() {
+									public void run() {
+										showMessageDialog("You have the latest version (\"" + PluginUtil.getVersion() + "\")",
+												"Version checked", Messages.getInformationIcon());
+									}
+								});
 						}
-					});
-				} else if (checkerThread.getConnectionState() == CheckerThread.ConnectionState.INTERUPTED) {
-					PluginUtil.getLogger().debug("Cancel was pressed during the upgrade process");
-				} else {
-					PluginUtil.getLogger().info("Unexpected thread state: "
+						break;
+					default:
+						PluginUtil.getLogger().info("Unexpected thread state: "
 							+ checkerThread.getConnectionState().toString());
 				}
 			}
 		});
 	}
 
-	private static class CheckerThread extends Thread {
-		private ConnectionState connectionState = ConnectionState.NOT_FINISHED;
-		private String errorMessage;
-
-		public String getErrorMessage() {
-			return errorMessage;
-		}
-
-		public enum ConnectionState {
-			SUCCEEDED,
-			FAILED,
-			INTERUPTED,
-			NOT_FINISHED
-		}
-
-
-		private NewVersionChecker timerTask;
-		private PluginConfiguration pluginConfiguration;
-
-		@Override
-		public void run() {
-		try {
-			timerTask.doRun(new QueryOnUpdateHandler(pluginConfiguration));
-			if (connectionState != ConnectionState.INTERUPTED) {
-				connectionState = ConnectionState.SUCCEEDED;
-			}
-		} catch (ThePluginException e) {
-			if (connectionState != ConnectionState.INTERUPTED) {
-				connectionState = ConnectionState.FAILED;
-				errorMessage = e.getMessage();
-			}
-		}
-		}
-
-		public CheckerThread(NewVersionChecker timerTask, PluginConfiguration pluginConfiguration) {
-			this.timerTask = timerTask;
-			this.pluginConfiguration = pluginConfiguration;
-		}
-
-		public ConnectionState getConnectionState() {
-			return connectionState;
-		}
-
-		public void setInterrupted() {
-			connectionState = ConnectionState.INTERUPTED;
-		}
-
-	}
 }
