@@ -15,7 +15,7 @@ import java.util.TimerTask;
  * Provides functionality to check for new version and update plugin
  */
 public final class NewVersionChecker implements SchedulableComponent {
-	private static final long PLUGIN_UPDATE_ATTEMPT_DELAY = 120000;
+	private static final long PLUGIN_UPDATE_ATTEMPT_DELAY = 60 * 60 * 1000; // every hour
 
 	private final transient PluginConfiguration pluginConfiguration;
 
