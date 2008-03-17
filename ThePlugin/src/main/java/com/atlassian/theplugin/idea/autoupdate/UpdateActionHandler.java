@@ -1,9 +1,7 @@
 package com.atlassian.theplugin.idea.autoupdate;
 
-import com.atlassian.theplugin.util.InfoServer;
-import com.atlassian.theplugin.exception.IncorrectVersionException;
-import com.atlassian.theplugin.exception.VersionServiceException;
 import com.atlassian.theplugin.exception.ThePluginException;
+import com.atlassian.theplugin.util.InfoServer;
 
 /**
  * Created by IntelliJ IDEA.
@@ -13,5 +11,5 @@ import com.atlassian.theplugin.exception.ThePluginException;
  * To change this template use File | Settings | File Templates.
  */
 public interface UpdateActionHandler {
-	void doAction(InfoServer.VersionInfo versionInfo) throws IncorrectVersionException, VersionServiceException, ThePluginException;
+	void doAction(InfoServer.VersionInfo versionInfo) throws ThePluginException;
 }

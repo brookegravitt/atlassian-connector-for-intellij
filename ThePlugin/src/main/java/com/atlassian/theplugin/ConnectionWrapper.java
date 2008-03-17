@@ -1,16 +1,13 @@
 package com.atlassian.theplugin;
 
 import com.atlassian.theplugin.exception.ThePluginException;
-import com.atlassian.theplugin.idea.config.serverconfig.ConnectionTester;
+import com.atlassian.theplugin.util.Connector;
 
 
-public class TestConnectionThread extends Thread {
-	private String url;
-	private String userName;
-	private String password;
+public class ConnectionWrapper extends Thread {
 
-	private ConnectionTester connectionTester;
 	private String errorMessage = null;
+	private Connector connector;
 
 	public String getErrorMessage() {
 		return errorMessage;
@@ -25,11 +22,8 @@ public class TestConnectionThread extends Thread {
 
 	private ConnectionState connectionState = ConnectionState.NOT_FINISHED;
 
-	public TestConnectionThread(ConnectionTester tester, String url, String userName, String password) {
-		this.connectionTester = tester;
-		this.url = url;
-		this.userName = userName;
-		this.password = password;
+	public ConnectionWrapper(Connector connector) {
+		this.connector = connector;
 	}
 
 	/**
@@ -37,9 +31,8 @@ public class TestConnectionThread extends Thread {
 	 * That method should not be used directly but using 'start' method on a thread object. 
 	 */
 	public void run() {
-
 		try {
-			connectionTester.testConnection(userName, password, url);
+			connector.connect();
 			if (connectionState != ConnectionState.INTERUPTED) {
 				connectionState = ConnectionState.SUCCEEDED;
 			}
@@ -66,4 +59,5 @@ public class TestConnectionThread extends Thread {
 	public ConnectionState getConnectionState() {
 		return connectionState;
 	}
+
 }

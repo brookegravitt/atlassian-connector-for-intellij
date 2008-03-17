@@ -1,8 +1,8 @@
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.theplugin.ConnectionWrapper;
 import com.atlassian.theplugin.LoginDataProvided;
-import com.atlassian.theplugin.TestConnectionThread;
-import com.atlassian.theplugin.idea.config.serverconfig.ConnectionTester;
+import com.atlassian.theplugin.util.Connector;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -22,14 +22,14 @@ import java.awt.event.ActionListener;
 */
 public class TestConnectionListener implements ActionListener {
 
-	private ConnectionTester connectionTester = null;
+	private Connector connectionTester = null;
 	private LoginDataProvided loginDataProvided = null;
 
 	/**
 	 * @param tester object which provide testConnection method specific to the product (Bamboo/Crucible, etc.)
 	 * @param loginDataProvided object with methods which provide userName, password and url for connection
 	 */
-	public TestConnectionListener(ConnectionTester tester, LoginDataProvided loginDataProvided) {
+	public TestConnectionListener(Connector tester, LoginDataProvided loginDataProvided) {
 		connectionTester = tester;
 		this.loginDataProvided = loginDataProvided;
 	}
@@ -45,16 +45,17 @@ public class TestConnectionListener implements ActionListener {
 
 	private class TestConnectionTask extends Task.Modal {
 
-		private TestConnectionThread testConnectionThread = null;
+		private ConnectionWrapper testConnector = null;
 		private static final int CHECK_CANCEL_INTERVAL = 500;	// miliseconds
 		private final Category log = Category.getInstance(TestConnectionTask.class);
 
-		public TestConnectionTask(Project currentProject, String title, boolean canBeCanceled, ConnectionTester tester) {
-
+		public TestConnectionTask(Project currentProject, String title, boolean canBeCanceled,
+								  Connector tester) {
 			super(currentProject, title, canBeCanceled);
-
-			testConnectionThread = new TestConnectionThread(tester,
-					loginDataProvided.getServerUrl(), loginDataProvided.getUserName(), loginDataProvided.getPassword());
+			tester.setUrl(loginDataProvided.getServerUrl());
+			tester.setUserName(loginDataProvided.getUserName());
+			tester.setPassword(loginDataProvided.getPassword());
+			testConnector = new ConnectionWrapper(tester);
 		}
 
 		public void run(ProgressIndicator indicator) {
@@ -63,12 +64,12 @@ public class TestConnectionListener implements ActionListener {
 			indicator.setFraction(0);
 			indicator.setIndeterminate(true);
 
-			testConnectionThread.start();
+			testConnector.start();
 
-			while (testConnectionThread.getConnectionState() == TestConnectionThread.ConnectionState.NOT_FINISHED) {
+			while (testConnector.getConnectionState() == ConnectionWrapper.ConnectionState.NOT_FINISHED) {
 				try {
 					if (indicator.isCanceled()) {
-						testConnectionThread.setInterrupted();
+						testConnector.setInterrupted();
 						//t.interrupt();
 						break;
 					} else {
@@ -79,24 +80,24 @@ public class TestConnectionListener implements ActionListener {
 				}
 			}
 
-			if (testConnectionThread.getConnectionState() == TestConnectionThread.ConnectionState.SUCCEEDED) {
+			if (testConnector.getConnectionState() == ConnectionWrapper.ConnectionState.SUCCEEDED) {
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
 						showMessageDialog("Connected successfully", "Connection OK", Messages.getInformationIcon());
 					}
 				});
-			} else if (testConnectionThread.getConnectionState() == TestConnectionThread.ConnectionState.FAILED) {
+			} else if (testConnector.getConnectionState() == ConnectionWrapper.ConnectionState.FAILED) {
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
-						showMessageDialog(testConnectionThread.getErrorMessage(),
+						showMessageDialog(testConnector.getErrorMessage(),
 								"Connection Error", Messages.getErrorIcon());
 					}
 				});
-			} else if (testConnectionThread.getConnectionState() == TestConnectionThread.ConnectionState.INTERUPTED) {
+			} else if (testConnector.getConnectionState() == ConnectionWrapper.ConnectionState.INTERUPTED) {
 				log.debug("Cancel was pressed during 'Test Connection' operation");
 			} else {
 				log.info("Unexpected 'Test Connection' thread state: "
-						+ testConnectionThread.getConnectionState().toString());
+						+ testConnector.getConnectionState().toString());
 			}
 		}
 	}

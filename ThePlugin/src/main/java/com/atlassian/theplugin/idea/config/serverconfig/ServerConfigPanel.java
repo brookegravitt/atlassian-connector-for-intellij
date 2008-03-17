@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.ServerType;
+import com.atlassian.theplugin.util.Connector;
 import com.atlassian.theplugin.bamboo.BambooServerFacade;
 import com.atlassian.theplugin.configuration.*;
 import com.atlassian.theplugin.crucible.CrucibleServerFacade;
@@ -105,28 +106,28 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
                     serverPanels.put(ServerType.BAMBOO_SERVER, new BambooServerConfigForm(bambooServerFacade));
                     break;
                 case CRUCIBLE_SERVER:
-                    serverPanels.put(ServerType.CRUCIBLE_SERVER, new GenericServerConfigForm(new ConnectionTester() {
-                        public void testConnection(String username, String password, String server)
-								throws ThePluginException {
-                            try {
-                                crucibleServerFacade.testServerConnection(server, username, password);
-                            } catch (CrucibleException e) {
-                                throw new ThePluginException(e.getMessage());
-                            }
-                        }
-                    }));
+                    serverPanels.put(ServerType.CRUCIBLE_SERVER, new GenericServerConfigForm(new Connector() {
+						public void connect() throws ThePluginException {
+							validate();
+							try {
+								crucibleServerFacade.testServerConnection(getUrl(), getUserName(), getPassword());
+							} catch (CrucibleException e) {
+								throw new ThePluginException("Error connecting Crucible server", e);
+							}
+						}
+					}));
                     break;
                 case JIRA_SERVER:
-                    serverPanels.put(ServerType.JIRA_SERVER, new GenericServerConfigForm(new ConnectionTester() {
-                        public void testConnection(String username, String password, String server)
-								throws ThePluginException {
-                            try {
-                                JIRAServerFactory.getJIRAServerFacade().testServerConnection(server, username, password);
-                            } catch (JIRALoginException e) {
-                                throw new ThePluginException(e.getMessage());
-                            }
-                        }
-                    }));
+                    serverPanels.put(ServerType.JIRA_SERVER, new GenericServerConfigForm(new Connector() {
+						public void connect() throws ThePluginException {
+							validate();
+							try {
+								JIRAServerFactory.getJIRAServerFacade().testServerConnection(getUrl(), getUserName(), getPassword());
+							} catch (JIRALoginException e) {
+								throw new ThePluginException("Error connecting Jira server", e);
+							}
+						}
+					}));
                     break;
                 default:
                     break;
