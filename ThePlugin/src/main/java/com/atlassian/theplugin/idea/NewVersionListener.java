@@ -38,73 +38,7 @@ public class NewVersionListener implements ActionListener {
 	}
 	
 	public void actionPerformed(ActionEvent event) {
-		ProgressManager.getInstance().run(new Task.Modal(IdeaHelper.getCurrentProject(),
-				"Checking available updates", true) {
-			public void run(ProgressIndicator indicator) {
-				newVersion = null;
-				setCancelText("Stop");
-				indicator.setText("Connecting...");
-				indicator.setFraction(0);
-				indicator.setIndeterminate(true);
-				checkerThread = new ConnectionWrapper(new UpdateServerConnection());
-				checkerThread.start();
-				while (checkerThread.getConnectionState() == ConnectionWrapper.ConnectionState.NOT_FINISHED)
-
-				{
-					try {
-						if (indicator.isCanceled()) {
-							checkerThread.setInterrupted();
-							//t.interrupt();
-							break;
-						} else {
-							java.lang.Thread.sleep(CHECK_CANCEL_INTERVAL);
-						}
-					} catch (InterruptedException e) {
-						PluginUtil.getLogger().info(e.getMessage());
-					}
-				}
-
-				switch (checkerThread.getConnectionState()) {
-					case FAILED:
-						EventQueue.invokeLater(new Runnable() {
-							public void run() {
-								showMessageDialog(checkerThread.getErrorMessage(),
-										"Error occured when contacting update server", Messages.getErrorIcon());
-							}
-						});
-						break;
-					case INTERUPTED:
-						PluginUtil.getLogger().debug("Cancel was pressed during the upgrade process");
-						break;
-					case NOT_FINISHED:
-						break;
-					case SUCCEEDED:
-						if (newVersion != null) {
-							try {
-								new QueryOnUpdateHandler(pluginConfiguration).doAction(newVersion);
-							} catch (final ThePluginException e) {
-								EventQueue.invokeLater(new Runnable() {
-									public void run() {
-										showMessageDialog(e.getMessage(),
-												"Error retrieving new version", Messages.getErrorIcon());
-									}
-								});
-							}
-						} else {
-							EventQueue.invokeLater(new Runnable() {
-								public void run() {
-									showMessageDialog("You have the latest version (\"" + PluginUtil.getVersion() + "\")",
-											"Version checked", Messages.getInformationIcon());
-								}
-							});
-						}
-						break;
-					default:
-						PluginUtil.getLogger().info("Unexpected thread state: "
-								+ checkerThread.getConnectionState().toString());
-				}
-			}
-		});
+		ProgressManager.getInstance().run(new UpdateModalTask());
 	}
 
 	private class UpdateServerConnection extends Connector {
@@ -114,6 +48,77 @@ public class NewVersionListener implements ActionListener {
 					newVersion = versionInfo;
 				}
 			});
+		}
+	}
+
+	private class UpdateModalTask extends Task.Modal {
+		public UpdateModalTask() {
+			super(IdeaHelper.getCurrentProject(), "Checking available updates", true);
+		}
+
+		public void run(ProgressIndicator indicator) {
+			newVersion = null;
+			setCancelText("Stop");
+			indicator.setText("Connecting...");
+			indicator.setFraction(0);
+			indicator.setIndeterminate(true);
+			checkerThread = new ConnectionWrapper(new UpdateServerConnection());
+			checkerThread.start();
+			while (checkerThread.getConnectionState() == ConnectionWrapper.ConnectionState.NOT_FINISHED)
+
+			{
+				try {
+					if (indicator.isCanceled()) {
+						checkerThread.setInterrupted();
+						//t.interrupt();
+						break;
+					} else {
+						Thread.sleep(CHECK_CANCEL_INTERVAL);
+					}
+				} catch (InterruptedException e) {
+					PluginUtil.getLogger().info(e.getMessage());
+				}
+			}
+
+			switch (checkerThread.getConnectionState()) {
+				case FAILED:
+					EventQueue.invokeLater(new Runnable() {
+						public void run() {
+							showMessageDialog(checkerThread.getErrorMessage(),
+									"Error occured when contacting update server", Messages.getErrorIcon());
+						}
+					});
+					break;
+				case INTERUPTED:
+					PluginUtil.getLogger().debug("Cancel was pressed during the upgrade process");
+					break;
+				case NOT_FINISHED:
+					break;
+				case SUCCEEDED:
+					if (newVersion != null) {
+						try {
+							new QueryOnUpdateHandler(pluginConfiguration).doAction(newVersion);
+						} catch (final ThePluginException e) {
+							EventQueue.invokeLater(new Runnable() {
+								public void run() {
+									showMessageDialog(e.getMessage(),
+											"Error retrieving new version", Messages.getErrorIcon());
+								}
+							});
+						}
+					} else {
+						EventQueue.invokeLater(new Runnable() {
+							public void run() {
+								showMessageDialog("You have the latest version (\"" + PluginUtil.getVersion() + "\")",
+										"Version checked", Messages.getInformationIcon());
+							}
+						});
+					}
+					break;
+				default:
+					PluginUtil.getLogger().info("Unexpected thread state: "
+							+ checkerThread.getConnectionState().toString());
+			}
 		}
 	}
 }
