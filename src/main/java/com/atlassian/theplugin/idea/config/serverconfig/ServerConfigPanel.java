@@ -122,7 +122,8 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
 						public void connect() throws ThePluginException {
 							validate();
 							try {
-								JIRAServerFactory.getJIRAServerFacade().testServerConnection(getUrl(), getUserName(), getPassword());
+								JIRAServerFactory.getJIRAServerFacade().testServerConnection(getUrl(), getUserName(),
+										getPassword());
 							} catch (JIRALoginException e) {
 								throw new ThePluginException("Error connecting Jira server", e);
 							}

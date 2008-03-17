@@ -46,17 +46,11 @@ public class NewVersionListener implements ActionListener {
 				indicator.setText("Connecting...");
 				indicator.setFraction(0);
 				indicator.setIndeterminate(true);
-				checkerThread = new ConnectionWrapper(new Connector() {
-					public void connect() throws ThePluginException {
-						checker.doRun(new UpdateActionHandler() {
-							public void doAction(InfoServer.VersionInfo versionInfo) throws ThePluginException {
-								newVersion = versionInfo;
-							}
-						});
-					}
-				});
+				checkerThread = new ConnectionWrapper(new UpdateServerConnection());
 				checkerThread.start();
-				while (checkerThread.getConnectionState() == ConnectionWrapper.ConnectionState.NOT_FINISHED) {
+				while (checkerThread.getConnectionState() == ConnectionWrapper.ConnectionState.NOT_FINISHED)
+
+				{
 					try {
 						if (indicator.isCanceled()) {
 							checkerThread.setInterrupted();
@@ -98,19 +92,28 @@ public class NewVersionListener implements ActionListener {
 							}
 						} else {
 							EventQueue.invokeLater(new Runnable() {
-									public void run() {
-										showMessageDialog("You have the latest version (\"" + PluginUtil.getVersion() + "\")",
-												"Version checked", Messages.getInformationIcon());
-									}
-								});
+								public void run() {
+									showMessageDialog("You have the latest version (\"" + PluginUtil.getVersion() + "\")",
+											"Version checked", Messages.getInformationIcon());
+								}
+							});
 						}
 						break;
 					default:
 						PluginUtil.getLogger().info("Unexpected thread state: "
-							+ checkerThread.getConnectionState().toString());
+								+ checkerThread.getConnectionState().toString());
 				}
 			}
 		});
 	}
 
+	private class UpdateServerConnection extends Connector {
+		public void connect() throws ThePluginException {
+			checker.doRun(new UpdateActionHandler() {
+				public void doAction(InfoServer.VersionInfo versionInfo) throws ThePluginException {
+					newVersion = versionInfo;
+				}
+			});
+		}
+	}
 }
