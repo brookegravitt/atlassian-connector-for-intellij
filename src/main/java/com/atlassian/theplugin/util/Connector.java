@@ -12,15 +12,15 @@ import com.atlassian.theplugin.exception.ThePluginException;
 public abstract class Connector {
 
 	private String url;
-	private String username;
+	private String userName;
 	private String password;
 
 	public void setUrl(String url) {
 		this.url = url;
 	}
 
-	public void setUserName(String username) {
-		this.username = username;
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 
 	public void setPassword(String password) {
@@ -33,7 +33,7 @@ public abstract class Connector {
 		if (url == null) {
 			throw new IllegalArgumentException("Url not provided.");
 		}
-		if (username == null) {
+		if (userName == null) {
 			throw new IllegalArgumentException("Username not provided.");
 		}
 		if (password == null) {
@@ -46,7 +46,7 @@ public abstract class Connector {
 	}
 
 	public String getUserName() {
-		return username;
+		return userName;
 	}
 
 	public String getPassword() {
