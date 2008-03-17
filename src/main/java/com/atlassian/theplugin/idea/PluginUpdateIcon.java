@@ -2,10 +2,12 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.atlassian.theplugin.exception.IncorrectVersionException;
+import com.atlassian.theplugin.exception.ThePluginException;
 import com.atlassian.theplugin.exception.VersionServiceException;
+import com.atlassian.theplugin.idea.autoupdate.QueryOnUpdateHandler;
+import com.atlassian.theplugin.idea.autoupdate.UpdateActionHandler;
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.atlassian.theplugin.util.Version;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
 
@@ -23,33 +25,18 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 	private transient Timer timer;
 	private boolean blinkOn = false;
 	private static final int ICON_BLINK_TIME = 1000;
+	private transient UpdateActionHandler handler = null;
 
 	public PluginUpdateIcon(final Project project, final PluginConfiguration pluginConfiguration) {
 		super(project);
+		handler = new QueryOnUpdateHandler(pluginConfiguration);
 
 		addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				innerHideIcon();
-				String message = null;
 				try {
-					Version aVersion = version.getVersion();
-					message = "New plugin version " + aVersion + " is available. "
-							+ "Your version is " + PluginUtil.getVersion()
-							+ ". Do you want to download and install?";
-					String title = "New plugin version download";
-
-					int answer = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(),
-							message, title, JOptionPane.YES_NO_OPTION);
-					if (answer == JOptionPane.OK_OPTION) {
-
-						// fire downloading and updating plugin in the new thread
-						Thread downloader = new Thread(new PluginDownloader(version, pluginConfiguration));
-						downloader.start();
-					}
-					pluginConfiguration.setRejectedUpgrade(version.getVersion());
-				} catch (VersionServiceException e1) {
-					PluginUtil.getLogger().info("Error retrieving new version: " + e1.getMessage(), e1);
-				} catch (IncorrectVersionException e1) {
+					handler.doAction(version);
+				} catch (ThePluginException e1) {
 					PluginUtil.getLogger().info("Error retrieving new version: " + e1.getMessage(), e1);
 				}
 			}

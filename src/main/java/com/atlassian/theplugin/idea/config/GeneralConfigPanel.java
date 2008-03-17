@@ -2,6 +2,7 @@ package com.atlassian.theplugin.idea.config;
 
 import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.atlassian.theplugin.idea.GeneralConfigForm;
+import com.atlassian.theplugin.idea.NewVersionChecker;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,11 +15,11 @@ public class GeneralConfigPanel extends JPanel implements ContentPanel {
 	private PluginConfiguration localPluginConfigurationCopy;
 	private final PluginConfiguration globalPluginConfiguration;
 
-	public GeneralConfigPanel(PluginConfiguration globalPluginConfiguration) {
+	public GeneralConfigPanel(PluginConfiguration globalPluginConfiguration, NewVersionChecker checker) {
 		super();
 		this.globalPluginConfiguration = globalPluginConfiguration;
 		setLayout(new CardLayout());
-		dialog = new GeneralConfigForm();
+		dialog = new GeneralConfigForm(checker, globalPluginConfiguration);
 		add(dialog.getRootPane(), "GeneralConfig");
 	}
 
