@@ -1,7 +1,8 @@
 package com.atlassian.theplugin.idea;
 
-import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 
 import javax.swing.*;
@@ -17,6 +18,11 @@ import java.awt.*;
 public class GeneralConfigForm {
 	private JCheckBox chkAutoUpdateEnabled;
 	private JPanel mainPanel;
+	private JButton checkNowButton;
+
+	public GeneralConfigForm(NewVersionChecker checker, PluginConfiguration pluginConfiguration) {
+		checkNowButton.addActionListener(new NewVersionListener(checker, pluginConfiguration));
+	}
 
 	public Component getRootPane() {
 		return mainPanel;
@@ -46,7 +52,7 @@ public class GeneralConfigForm {
 	 */
 	private void $$$setupUI$$$() {
 		mainPanel = new JPanel();
-		mainPanel.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
+		mainPanel.setLayout(new GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
 		chkAutoUpdateEnabled = new JCheckBox();
 		chkAutoUpdateEnabled.setText("Auto Update Enabled");
 		chkAutoUpdateEnabled.setMnemonic('A');
@@ -54,6 +60,11 @@ public class GeneralConfigForm {
 		mainPanel.add(chkAutoUpdateEnabled, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		final Spacer spacer1 = new Spacer();
 		mainPanel.add(spacer1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+		checkNowButton = new JButton();
+		checkNowButton.setText("Check now");
+		checkNowButton.setMnemonic('C');
+		checkNowButton.setDisplayedMnemonicIndex(0);
+		mainPanel.add(checkNowButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 	}
 
 	/**
