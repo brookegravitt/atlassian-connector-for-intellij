@@ -3,8 +3,6 @@ package com.atlassian.theplugin.idea.autoupdate;
 import com.atlassian.theplugin.idea.ConfirmPluginUpdateHandler;
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.configuration.PluginConfiguration;
-import com.atlassian.theplugin.exception.IncorrectVersionException;
-import com.atlassian.theplugin.exception.VersionServiceException;
 import com.atlassian.theplugin.exception.ThePluginException;
 import com.intellij.openapi.application.ApplicationManager;
 
