@@ -176,10 +176,10 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 					try {
 						BambooBuild buildInfo = api.getLatestBuildForPlan(plan.getPlanId());
 						((BambooBuildInfo) buildInfo).setEnabled(true);
+						((BambooBuildInfo) buildInfo).setServer(bambooServer);
 						if (plansForServer != null) {
 							for (BambooPlan bambooPlan : plansForServer) {
 								if (plan.getPlanId().equals(bambooPlan.getPlanKey())) {
-									((BambooBuildInfo) buildInfo).setServer(bambooServer);
 									((BambooBuildInfo) buildInfo).setEnabled(bambooPlan.isEnabled());
 								}
 							}
