@@ -6,7 +6,7 @@ public class ThePluginException extends Exception {
 		super(message);
 	}
 
-	ThePluginException(String message, Throwable throwable) {
+	public ThePluginException(String message, Throwable throwable) {
 		super(message, throwable);
 	}
 }
