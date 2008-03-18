@@ -54,7 +54,9 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 	private CrucibleNewReviewNotifier crucibleNewReviewNotifier;
 
 	private final PluginConfiguration pluginConfiguration;
+
 	private CrucibleToolWindowPanel crucibleToolWindowPanel;
+
 	private JIRAToolWindowPanel jiraToolWindowPanel;
 
 	public ThePluginProjectComponent(Project project,
@@ -62,17 +64,15 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 									 ToolWindowManager toolWindowManager,
 									 BambooStatusChecker bambooStatusChecker,
 									 PluginConfiguration pluginConfiguration,
-									 BambooTableToolWindowPanel bambooToolWindowPanel,
-									 ProjectConfigurationBean projectConfigurationBean,
-									 JIRAToolWindowPanel jiraToolWindowPanel) {
+									 BambooTableToolWindowPanel bambooToolWindowPanel) {
 		this.project = project;
-		this.projectConfigurationBean = projectConfigurationBean;
+		this.projectConfigurationBean = new ProjectConfigurationBean();
 		this.crucibleStatusChecker = crucibleStatusChecker;
 		this.toolWindowManager = toolWindowManager;
 		this.bambooStatusChecker = bambooStatusChecker;
 		this.pluginConfiguration = pluginConfiguration;
 		this.bambooToolWindowPanel = bambooToolWindowPanel;
-		this.jiraToolWindowPanel = jiraToolWindowPanel;
+		//this.jiraToolWindowPanel = jiraToolWindowPanel;
 
 		// make findBugs happy
         statusBarBambooIcon = null;
@@ -122,7 +122,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 			Content crucibleToolWindow = createCrusibleContent();
 			toolWindow.getContentManager().addContent(crucibleToolWindow);
 
-			//jiraToolWindowPanel = new JIRAToolWindowPanel();
+			jiraToolWindowPanel = new JIRAToolWindowPanel();
             Content jiraToolWindow = createJiraContent();
 			toolWindow.getContentManager().addContent(jiraToolWindow);
             toolWindow.getContentManager().setSelectedContent(jiraToolWindow);
@@ -190,7 +190,6 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 		return content;
 	}
 
-
 	public Content createCrusibleContent() {
 		PeerFactory peerFactory = PeerFactory.getInstance();
 
@@ -201,6 +200,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 
 		return content;
 	}
+
 
 	public Content createJiraContent() {
 		PeerFactory peerFactory = PeerFactory.getInstance();
@@ -266,5 +266,9 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 	public void loadState(ProjectConfigurationBean state) {
 		System.out.println("SET:");
 		projectConfigurationBean = state;
+	}
+
+	public ProjectConfigurationBean getProjectConfigurationBean() {
+		return projectConfigurationBean;
 	}
 }

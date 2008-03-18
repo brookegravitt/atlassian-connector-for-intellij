@@ -18,7 +18,6 @@ public class BambooProjectToolWindowTableConfiguration extends Storage.MapStorag
 	private Map<String, String> properties = new HashMap<String, String>();
 
 	public BambooProjectToolWindowTableConfiguration() {
-		;
 	}
 	
 	public Map<String, String> getProperties() {

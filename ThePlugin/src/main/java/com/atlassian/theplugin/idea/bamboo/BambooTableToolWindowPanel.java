@@ -44,11 +44,10 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 	private static final Icon ICON_COMMENT = IconLoader.getIcon("/icons/bamboo-comment.png");
 	private ProjectConfigurationBean projectConfigurationBean;
 
-	public BambooTableToolWindowPanel(BambooServerFacade bambooFacade, ProjectConfigurationBean projectConfigurationBean) {
+	public BambooTableToolWindowPanel(BambooServerFacade bambooFacade) {
 		super(new BorderLayout());
 
 		this.bambooFacade = bambooFacade;
-		this.projectConfigurationBean = projectConfigurationBean;
 
 		setBackground(UIUtil.getTreeTextBackground());
 
@@ -67,7 +66,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 
 		listTableModel = new ListTableModel(columns);
 		listTableModel.setSortable(true);
-		table = new AtlassianTableView(listTableModel, projectConfigurationBean);
+		table = new AtlassianTableView(listTableModel);
 		table.prepareColumns(columns, BambooTableColumnProvider.makeRendererInfo());
 
 		table.addMouseListener(new MouseAdapter() {
