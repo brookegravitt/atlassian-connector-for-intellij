@@ -20,6 +20,7 @@ public class AtlassianTableView extends TableView {
         getColumnModel().setColumnMargin(0);
         setRowHeight(DEFAULT_ROW_HEIGHT);
 		setAutoResizeMode(TableView.AUTO_RESIZE_OFF);
+
 	}
 
 	public void prepareColumns(TableColumnInfo[] cols, TableCellRenderer[] renderers) {
@@ -32,4 +33,9 @@ public class AtlassianTableView extends TableView {
 			}
 		}		
 	}
+
+	protected void onHeaderClicked(int column) {
+		System.out.println("YYYYYYYYYYYYYYYY");
+	}
 }
+

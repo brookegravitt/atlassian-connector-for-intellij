@@ -25,7 +25,7 @@ public class JIRAServer {
     public void setServer(Server server) {
         this.server = server;
     }
-
+ 
     public List<JIRAProject> getProjects() {
         if (projects == null) {
             try {
@@ -34,7 +34,7 @@ public class JIRAServer {
                 e.printStackTrace();
             }
         }
-
+		               
         return projects;
     }
 

@@ -25,6 +25,8 @@ public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
 	private String message;
 
 	private Date buildTime;
+	public static final String BUILD_SUCCESSFUL = "Successful";
+	public static final String BUILD_FAILED = "Failed";
 
 
 	public BambooBuildInfo() {
@@ -149,9 +151,9 @@ public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
 	}
 
 	public BuildStatus getStatus() {
-		if ("Successful".equalsIgnoreCase(buildState)) {
+		if (BUILD_SUCCESSFUL.equalsIgnoreCase(buildState)) {
 			return BuildStatus.BUILD_SUCCEED;
-		} else if ("Failed".equalsIgnoreCase(buildState)) {
+		} else if (BUILD_FAILED.equalsIgnoreCase(buildState)) {
 			return BuildStatus.BUILD_FAILED;
 		} else {
 			return BuildStatus.UNKNOWN;
