@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.idea.autoupdate;
 
-import com.atlassian.theplugin.idea.autoupdate.ConfirmPluginUpdateHandler;
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.atlassian.theplugin.exception.ThePluginException;

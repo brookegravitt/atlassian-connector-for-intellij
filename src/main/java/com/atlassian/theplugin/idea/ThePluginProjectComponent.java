@@ -33,7 +33,7 @@ import javax.swing.*;
 public class ThePluginProjectComponent implements ProjectComponent, PersistentStateComponent<ProjectConfigurationBean> {
     private static final String THE_PLUGIN_TOOL_WINDOW_ICON = "/icons/thePlugin_15x10.png";
 
-	ProjectConfigurationBean projectConfigurationBean;
+	private ProjectConfigurationBean projectConfigurationBean;
 
 	private final Project project;
 	private BambooStatusIcon statusBarBambooIcon;
@@ -64,6 +64,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 									 PluginConfiguration pluginConfiguration,
 									 BambooTableToolWindowPanel bambooToolWindowPanel) {
 		this.project = project;
+		this.projectConfigurationBean = new ProjectConfigurationBean();
 		this.crucibleStatusChecker = crucibleStatusChecker;
 		this.toolWindowManager = toolWindowManager;
 		this.bambooStatusChecker = bambooStatusChecker;
@@ -238,7 +239,6 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 	public void projectOpened() {
 
 		System.out.println("Start: Project open");
-		projectConfigurationBean = new ProjectConfigurationBean();
 		createPlugin();
 		System.out.println("End: Project open");
 	}

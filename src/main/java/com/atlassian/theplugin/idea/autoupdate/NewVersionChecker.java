@@ -7,8 +7,6 @@ import com.atlassian.theplugin.exception.IncorrectVersionException;
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.util.Version;
-import com.atlassian.theplugin.idea.autoupdate.UpdateActionHandler;
-import com.atlassian.theplugin.idea.autoupdate.ForwardToIconHandler;
 import com.atlassian.theplugin.idea.SchedulableComponent;
 
 import java.util.TimerTask;
