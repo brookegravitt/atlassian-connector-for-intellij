@@ -1,11 +1,14 @@
 package com.atlassian.theplugin.idea.autoupdate;
 
 import com.atlassian.theplugin.configuration.PluginConfiguration;
-import com.atlassian.theplugin.util.InfoServer;
-import com.atlassian.theplugin.util.Version;
-import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.exception.ThePluginException;
-import com.atlassian.theplugin.idea.PluginDownloader;
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.autoupdate.PluginDownloader;
+import com.atlassian.theplugin.util.InfoServer;
+import com.atlassian.theplugin.util.PluginUtil;
+import com.atlassian.theplugin.util.Version;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
 
 import javax.swing.*;
 
@@ -36,8 +39,13 @@ public class QueryOnUpdateHandler implements UpdateActionHandler {
 		if (answer == JOptionPane.OK_OPTION) {
 
 			// fire downloading and updating plugin in the new thread
-			Thread downloader = new Thread(new PluginDownloader(versionInfo, pluginConfiguration));
-			downloader.start();
+			//Thread downloader = new Thread(new PluginDownloader(versionInfo, pluginConfiguration));
+			//downloader.start();
+
+			Task.Backgroundable downloader = new PluginDownloader(versionInfo, pluginConfiguration, IdeaHelper.getCurrentProject());
+
+			ProgressManager.getInstance().run(downloader);
+
 		} else {
 				pluginConfiguration.setRejectedUpgrade(versionInfo.getVersion());
 		}

@@ -1,4 +1,4 @@
-package com.atlassian.theplugin.idea;
+package com.atlassian.theplugin.idea.autoupdate;
 
 import com.atlassian.theplugin.util.InfoServer;
 

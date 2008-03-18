@@ -42,11 +42,10 @@ public class NewVersionCheckerTest extends TestCase {
 	public void testGetLatestVersion() throws VersionServiceException, IncorrectVersionException {
 		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort();
 		mockServer.expect(GET_LATEST_VERSION_URL, new PingCallback());
-		InfoServer infoServer = new InfoServer(mockBaseUrl + GET_LATEST_VERSION_URL, uid);
 
 		InfoServer.VersionInfo versionInfo = null;
 		try {
-			versionInfo = infoServer.getLatestPluginVersion();
+			versionInfo = InfoServer.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, uid);
 		} catch (VersionServiceException e) {
 			fail(e.getMessage());
 		}
