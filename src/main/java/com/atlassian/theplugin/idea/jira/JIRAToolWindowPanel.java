@@ -2,6 +2,7 @@ package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.bamboo.HtmlBambooStatusListener;
 import com.atlassian.theplugin.configuration.Server;
+import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.atlassian.theplugin.idea.action.jira.MyIssuesAction;
@@ -43,11 +44,14 @@ public class JIRAToolWindowPanel extends JPanel {
     private Map<String, JIRAQueryFragment> queryFragments = new HashMap<String, JIRAQueryFragment>();
     private AtlassianTableView table;
     private static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
+	private ProjectConfigurationBean projectConfigurationBean;
 
-    public JIRAToolWindowPanel() {
+	public JIRAToolWindowPanel(ProjectConfigurationBean projectConfigurationBean) {
         super(new BorderLayout());
 
-        setBackground(UIUtil.getTreeTextBackground());
+		this.projectConfigurationBean = projectConfigurationBean;
+
+		setBackground(UIUtil.getTreeTextBackground());
 
         toolBarPanel = new JPanel(new BorderLayout());
         ActionManager aManager = ActionManager.getInstance();
@@ -71,7 +75,7 @@ public class JIRAToolWindowPanel extends JPanel {
 		TableColumnInfo[] columns = JIRATableColumnProvider.makeColumnInfo();
 		listTableModel = new ListTableModel(columns);
 		listTableModel.setSortable(true);
-		table = new AtlassianTableView(listTableModel);
+		table = new AtlassianTableView(listTableModel, projectConfigurationBean);
 		table.prepareColumns(columns, JIRATableColumnProvider.makeRendererInfo());
 
         table.addMouseListener(new MouseAdapter() {
