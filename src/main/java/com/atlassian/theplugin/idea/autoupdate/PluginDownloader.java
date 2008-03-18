@@ -1,17 +1,23 @@
-package com.atlassian.theplugin.idea;
+package com.atlassian.theplugin.idea.autoupdate;
 
+import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.atlassian.theplugin.exception.VersionServiceException;
+import com.atlassian.theplugin.exception.IncorrectVersionException;
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.atlassian.theplugin.configuration.PluginConfiguration;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.ide.startup.StartupActionScriptManager;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.extensions.PluginId;
+import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.io.StreamUtil;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.util.io.ZipUtil;
 
 import javax.swing.*;
@@ -20,6 +26,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.awt.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -29,7 +36,7 @@ import java.net.URLEncoder;
  * To change this template use File | Settings | File Templates.
  */
 
-public class PluginDownloader implements Runnable {
+public class PluginDownloader extends Task.Backgroundable { //implements Runnable {
 
 
 	public static final String PLUGIN_ID_TOKEN = "PLUGIN_ID";
@@ -41,8 +48,29 @@ public class PluginDownloader implements Runnable {
 	private static final int EXTENTION_LENGHT = 3;
 	private InfoServer.VersionInfo newVersion;
 	private PluginConfiguration pluginConfiguration;
+	private static final String DOWNLOAD_TITLE = "Downloading new " + PluginUtil.getName() + " plugin version ";
+
+	public void setTimeout(int timeout) {
+		this.timeout = timeout;
+	}
+
+	public void setReadTimeout(int readTimeout) {
+		this.readTimeout = readTimeout;
+	}
+
+	private int timeout = TIMEOUT;
+	private int readTimeout = TIMEOUT;
 
 	public PluginDownloader(InfoServer.VersionInfo newVersion, PluginConfiguration pluginConfiguration) {
+		super(null, "");
+		this.newVersion = newVersion;
+		this.pluginConfiguration = pluginConfiguration;
+	}
+
+	public PluginDownloader(InfoServer.VersionInfo newVersion, PluginConfiguration pluginConfiguration, Project project) throws IncorrectVersionException, VersionServiceException {
+
+		super(project, DOWNLOAD_TITLE + newVersion.getVersion(), false);
+
 		this.newVersion = newVersion;
 		this.pluginConfiguration = pluginConfiguration;
 	}
@@ -69,8 +97,6 @@ public class PluginDownloader implements Runnable {
 			promptShutdownAndShutdown();
 
 		} catch (IOException e) {
-			PluginUtil.getLogger().info("Error registering action in IDEA", e);
-		} catch (VersionServiceException e) {
 			PluginUtil.getLogger().info("Error registering action in IDEA", e);
 		}
 	}
@@ -104,25 +130,21 @@ public class PluginDownloader implements Runnable {
 
 
 		String pluginUrl = null;
-		try {
-			pluginUrl = newVersion.getDownloadUrl()
+		pluginUrl = newVersion.getDownloadUrl()
 				.replaceAll(PLUGIN_ID_TOKEN, URLEncoder.encode(pluginName, "UTF-8"))
-					.replaceAll(VERSION_TOKEN, URLEncoder.encode(version, "UTF-8"));
-			if (!pluginUrl.contains("?")) {
-				pluginUrl += "?";
-			}
-			pluginUrl += "uid=" + URLEncoder.encode(Long.toString(pluginConfiguration.getUid()), "UTF-8");
-		} catch (VersionServiceException e) {
-			PluginUtil.getLogger().info("Error retrieving url for new version of the plugin.");
+				.replaceAll(VERSION_TOKEN, URLEncoder.encode(version, "UTF-8"));
+		if (!pluginUrl.contains("?")) {
+			pluginUrl += "?";
 		}
+		pluginUrl += "uid=" + URLEncoder.encode(Long.toString(pluginConfiguration.getUid()), "UTF-8");
 
 		PluginUtil.getLogger().info("Downloading plugin archive from: " + pluginUrl);
 
 		//HttpConfigurable.getInstance().prepareURL(pluginUrl);
 		URL url = new URL(pluginUrl);
 		URLConnection connection = url.openConnection();
-		connection.setConnectTimeout(TIMEOUT);
-		connection.setReadTimeout(TIMEOUT);
+		connection.setConnectTimeout(getTimeout());
+		connection.setReadTimeout(getReadTimeout());
 		connection.connect();
 
 		InputStream inputStream = null;
@@ -154,6 +176,9 @@ public class PluginDownloader implements Runnable {
 		}
 		String srcName = connection.getURL().toString();
 		String ext = srcName.substring(srcName.lastIndexOf("."));
+		if (ext.contains("?")) {
+			ext = ext.substring(0, ext.indexOf("?"));	
+		}
 		String newName = pluginArchiveFile.getPath().substring(0, pluginArchiveFile.getPath().length()
 				- EXTENTION_LENGHT) + ext;
 		File newFile = new File(newName);
@@ -207,4 +232,42 @@ public class PluginDownloader implements Runnable {
 		StartupActionScriptManager.addActionCommand(deleteTemp);
 	}
 
+	public void run(ProgressIndicator indicator) {
+				try {
+			File localArchiveFile = downloadPluginFromServer(this.newVersion.getDownloadUrl());
+
+			// add startup actions
+
+			// todo lguminski/jjaroczynski to find a better way of getting plugin descriptor
+			// theoritically openapi should provide a method so the plugin could get info on itself
+
+			IdeaPluginDescriptor pluginDescr = PluginManager.getPlugin(PluginId.getId(PluginUtil.getPluginId()));
+			/* todo lguminsk when you debug the plugin it appears in registry as attlassian-idea-plugin, but when
+			 	you rinstall it notmally it appears as Atlassian. Thats why it is double checked here
+			    */
+			if (pluginDescr == null) {
+				pluginDescr = PluginManager.getPlugin(PluginId.getId(PluginUtil.getName()));
+			}
+			addActions(pluginDescr, localArchiveFile);
+
+			// restart IDEA
+			promptShutdownAndShutdown();
+
+		} catch (final IOException e) {
+			PluginUtil.getLogger().info("Error registering action in IDEA", e);
+					EventQueue.invokeLater(new Runnable() {
+						public void run() {
+							Messages.showMessageDialog(IdeaHelper.getCurrentProject(), e.getMessage(), "Error registering action in IDEA", Messages.getErrorIcon());
+						}
+					});
+		} 
+	}
+
+	public int getTimeout() {
+		return timeout;
+	}
+
+	public int getReadTimeout() {
+		return readTimeout;
+	}
 }

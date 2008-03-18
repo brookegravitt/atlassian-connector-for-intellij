@@ -1,10 +1,9 @@
-package com.atlassian.theplugin.idea;
+package com.atlassian.theplugin.idea.autoupdate;
 
 import com.atlassian.theplugin.ConnectionWrapper;
 import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.atlassian.theplugin.exception.ThePluginException;
-import com.atlassian.theplugin.idea.autoupdate.UpdateActionHandler;
-import com.atlassian.theplugin.idea.autoupdate.QueryOnUpdateHandler;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.util.Connector;
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -94,16 +93,16 @@ public class NewVersionListener implements ActionListener {
 					break;
 				case SUCCEEDED:
 					if (newVersion != null) {
-						try {
-							new QueryOnUpdateHandler(pluginConfiguration).doAction(newVersion);
-						} catch (final ThePluginException e) {
-							EventQueue.invokeLater(new Runnable() {
-								public void run() {
+						EventQueue.invokeLater(new Runnable() {
+							public void run() {
+								try {
+									new QueryOnUpdateHandler(pluginConfiguration).doAction(newVersion);
+								} catch (ThePluginException e) {
 									showMessageDialog(e.getMessage(),
 											"Error retrieving new version", Messages.getErrorIcon());
 								}
-							});
-						}
+							}
+						});
 					} else {
 						EventQueue.invokeLater(new Runnable() {
 							public void run() {

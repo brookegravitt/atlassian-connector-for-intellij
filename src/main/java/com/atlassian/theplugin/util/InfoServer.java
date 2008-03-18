@@ -14,15 +14,13 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class InfoServer {
-	private String serviceUrl;
-	private long uid;
 
-	public InfoServer(String serviceUrl, long uid) {
-		this.serviceUrl = serviceUrl;
-		this.uid = uid;
+	private InfoServer() {
 	}
 
-	public VersionInfo getLatestPluginVersion() throws VersionServiceException {
+	public static VersionInfo getLatestPluginVersion(String serviceUrl, long uid)
+			throws VersionServiceException, IncorrectVersionException {
+
 		try {
 			HttpClient client = new HttpClient();
 			GetMethod method = new GetMethod(serviceUrl + "?uid=" + uid);
@@ -63,9 +61,21 @@ public class InfoServer {
 		 * @param doc doc
 		 * @param type type
 		 */
-		VersionInfo(Document doc, VersionInfo.Type type) {
+		VersionInfo(Document doc, VersionInfo.Type type) throws VersionServiceException, IncorrectVersionException {
 			this.doc = doc;
 			this.type = type;
+			switch (type) {
+				case STABLE:
+					version = new Version(getValue("/response/versions/stable/latestVersion", doc));
+					downloadUrl = getValue("/response/versions/stable/downloadUrl", doc);
+					break;
+				case UNSTABLE:
+					version = new Version(getValue("/response/versions/unstable/latestVersion", doc));
+					downloadUrl = getValue("/response/versions/unstable/downloadUrl", doc);
+					break;
+				default:
+					throw new VersionServiceException("neither stable nor unstable");
+			}
 		}
 
 		/**
@@ -82,25 +92,11 @@ public class InfoServer {
 //			this(new Version(version), downloadUrl);
 //		}
 
-		public Version getVersion() throws VersionServiceException, IncorrectVersionException {
-			String path = "";
-			if (version == null) {
-				switch (type) {
-					case STABLE:
-						path = "/response/versions/stable/latestVersion";
-						break;
-					case UNSTABLE:
-						path = "/response/versions/unstable/latestVersion";
-						break;
-					default:
-						throw new VersionServiceException("neither stable nor unstable");
-				}
-				version = new Version(getValue(path));
-			}
+		public Version getVersion() {
 			return version;
 		}
 
-		private String getValue(String path) throws VersionServiceException {
+		private String getValue(String path, Document doc) throws VersionServiceException {
 			XPath xpath;
 			Element element;
 			try {
@@ -115,21 +111,7 @@ public class InfoServer {
 			return element.getValue();
 		}
 
-		public String getDownloadUrl() throws VersionServiceException {
-			String path = "";
-			if (downloadUrl == null) {
-				switch (type) {
-					case STABLE:
-						path = "/response/versions/stable/downloadUrl";
-						break;
-					case UNSTABLE:
-						path = "/response/versions/unstable/downloadUrl";
-						break;
-					default:
-						throw new VersionServiceException("neither stable nor unstable");
-				}
-				downloadUrl = getValue(path);
-			}
+		public String getDownloadUrl() {
 			return downloadUrl;
 		}
 	}
