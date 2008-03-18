@@ -62,14 +62,17 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 									 ToolWindowManager toolWindowManager,
 									 BambooStatusChecker bambooStatusChecker,
 									 PluginConfiguration pluginConfiguration,
-									 BambooTableToolWindowPanel bambooToolWindowPanel) {
+									 BambooTableToolWindowPanel bambooToolWindowPanel,
+									 ProjectConfigurationBean projectConfigurationBean,
+									 JIRAToolWindowPanel jiraToolWindowPanel) {
 		this.project = project;
-		this.projectConfigurationBean = new ProjectConfigurationBean();
+		this.projectConfigurationBean = projectConfigurationBean;
 		this.crucibleStatusChecker = crucibleStatusChecker;
 		this.toolWindowManager = toolWindowManager;
 		this.bambooStatusChecker = bambooStatusChecker;
 		this.pluginConfiguration = pluginConfiguration;
 		this.bambooToolWindowPanel = bambooToolWindowPanel;
+		this.jiraToolWindowPanel = jiraToolWindowPanel;
 
 		// make findBugs happy
         statusBarBambooIcon = null;
@@ -113,13 +116,13 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 			// create tool window content
 			Content bambooToolWindow = createBambooContent();
 			toolWindow.getContentManager().addContent(bambooToolWindow);
-			bambooToolWindowPanel.restore(projectConfigurationBean.getBambooConfiguration().getTableConfiguration());
+			bambooToolWindowPanel.getTable().restore(projectConfigurationBean.getBambooConfiguration().getTableConfiguration());
 
 			crucibleToolWindowPanel = new CrucibleToolWindowPanel();
 			Content crucibleToolWindow = createCrusibleContent();
 			toolWindow.getContentManager().addContent(crucibleToolWindow);
 
-			jiraToolWindowPanel = new JIRAToolWindowPanel();
+			//jiraToolWindowPanel = new JIRAToolWindowPanel();
             Content jiraToolWindow = createJiraContent();
 			toolWindow.getContentManager().addContent(jiraToolWindow);
             toolWindow.getContentManager().setSelectedContent(jiraToolWindow);
@@ -227,8 +230,6 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 			bambooStatusChecker.unregisterListener(tooltipBambooStatusListener);
 			crucibleStatusChecker.unregisterListener(toolWindowCrucibleListener);
 			crucibleStatusChecker.unregisterListener(crucibleNewReviewNotifier);
-
-			bambooToolWindowPanel.store(projectConfigurationBean.getBambooConfiguration().getTableConfiguration());
 
 			// remove tool window
 			toolWindowManager.unregisterToolWindow(IdeaHelper.TOOL_WINDOW_NAME);

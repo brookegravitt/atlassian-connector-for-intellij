@@ -6,6 +6,7 @@ import com.atlassian.theplugin.bamboo.BambooStatusListener;
 import com.atlassian.theplugin.bamboo.HtmlBambooStatusListener;
 import com.atlassian.theplugin.bamboo.api.BambooException;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.atlassian.theplugin.idea.ui.AtlassianTableView;
 import com.intellij.ide.BrowserUtil;
@@ -14,8 +15,6 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.util.ui.ListTableModel;
 import com.intellij.util.ui.UIUtil;
-import com.intellij.util.config.Storage;
-import com.intellij.ui.table.TableView;
 import thirdparty.javaworld.ClasspathHTMLEditorKit;
 
 import javax.swing.*;
@@ -43,11 +42,13 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 	private static final Icon ICON_RUN = IconLoader.getIcon("/icons/bamboo-run.png");
 	private static final Icon ICON_LABEL = IconLoader.getIcon("/icons/bamboo-label.png");
 	private static final Icon ICON_COMMENT = IconLoader.getIcon("/icons/bamboo-comment.png");
+	private ProjectConfigurationBean projectConfigurationBean;
 
-	public BambooTableToolWindowPanel(BambooServerFacade bambooFacade) {
+	public BambooTableToolWindowPanel(BambooServerFacade bambooFacade, ProjectConfigurationBean projectConfigurationBean) {
 		super(new BorderLayout());
 
 		this.bambooFacade = bambooFacade;
+		this.projectConfigurationBean = projectConfigurationBean;
 
 		setBackground(UIUtil.getTreeTextBackground());
 
@@ -66,7 +67,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 
 		listTableModel = new ListTableModel(columns);
 		listTableModel.setSortable(true);
-		table = new AtlassianTableView(listTableModel);
+		table = new AtlassianTableView(listTableModel, projectConfigurationBean);
 		table.prepareColumns(columns, BambooTableColumnProvider.makeRendererInfo());
 
 		table.addMouseListener(new MouseAdapter() {
@@ -327,20 +328,8 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 	public boolean getCommentBuildEnabled() {
 		return getBamboo2ActionsEnabled();		
 	}
-
-	/**
-	 * Restores table properties from Storage object into current table instance
-	 * @param storage object with table properties
-	 */
-	public void restore(Storage storage) {
-		TableView.restore(storage, table);
-	}
-
-	/**
-	 * Stores current table properties into Storage object
-	 * @param storage object to store table properties
-	 */
-	public void store(Storage storage) {
-		TableView.store(storage, table);
+	
+	public AtlassianTableView getTable() {
+		return table;
 	}
 }
