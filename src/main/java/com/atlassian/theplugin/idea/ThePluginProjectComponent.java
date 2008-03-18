@@ -259,12 +259,12 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 	}
 
 	public ProjectConfigurationBean getState() {
-		System.out.println("GET:");
+		//System.out.println("GET:");
 		return projectConfigurationBean;
 	}
 
 	public void loadState(ProjectConfigurationBean state) {
-		System.out.println("SET:");
+		//System.out.println("SET:");
 		projectConfigurationBean = state;
 	}
 
