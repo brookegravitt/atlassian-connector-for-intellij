@@ -1,11 +1,8 @@
-package com.atlassian.theplugin.idea;
+package com.atlassian.theplugin.idea.autoupdate;
 
 import com.atlassian.theplugin.configuration.PluginConfiguration;
-import com.atlassian.theplugin.exception.IncorrectVersionException;
 import com.atlassian.theplugin.exception.ThePluginException;
-import com.atlassian.theplugin.exception.VersionServiceException;
-import com.atlassian.theplugin.idea.autoupdate.QueryOnUpdateHandler;
-import com.atlassian.theplugin.idea.autoupdate.UpdateActionHandler;
+import com.atlassian.theplugin.idea.StatusBarPluginIcon;
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.project.Project;
@@ -69,14 +66,9 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 	public void triggerUpdateAvailableAction(InfoServer.VersionInfo newVersion) {
 		this.version = newVersion;
 		innerShowIcon();
-		try {
-			this.setToolTipText("New version (" + newVersion.getVersion() + ") of the "
-					+ PluginUtil.getName() + " available");
-		} catch (VersionServiceException e) {
-			PluginUtil.getLogger().info(e.getMessage(), e);
-		} catch (IncorrectVersionException e) {
-			PluginUtil.getLogger().info(e.getMessage(), e);
-		}
+		this.setToolTipText("New version (" + newVersion.getVersion() + ") of the "
+				+ PluginUtil.getName() + " available");
+
 	}
 
 	public void blinkIcon() {

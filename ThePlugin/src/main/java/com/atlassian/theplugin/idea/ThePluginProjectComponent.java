@@ -2,13 +2,19 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.bamboo.*;
 import com.atlassian.theplugin.configuration.PluginConfiguration;
+import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.crucible.HtmlCrucibleStatusListener;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
 import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;
 import com.atlassian.theplugin.idea.crucible.*;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
+import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
+import com.atlassian.theplugin.idea.autoupdate.ConfirmPluginUpdateHandler;
+import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ProjectComponent;
+import com.intellij.openapi.components.State;
+import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
@@ -23,8 +29,11 @@ import javax.swing.*;
 /**
  * Per-project plugin component.
  */
-public class ThePluginProjectComponent implements ProjectComponent {
+@State(name = "ThePluginSettings", storages = { @Storage(id = "thePlugin", file = "$PROJECT_FILE$") })
+public class ThePluginProjectComponent implements ProjectComponent, PersistentStateComponent<ProjectConfigurationBean> {
     private static final String THE_PLUGIN_TOOL_WINDOW_ICON = "/icons/thePlugin_15x10.png";
+
+	ProjectConfigurationBean projectConfigurationBean;
 
 	private final Project project;
 	private BambooStatusIcon statusBarBambooIcon;
@@ -41,7 +50,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
     private HtmlCrucibleStatusListener toolWindowCrucibleListener;
 
 	private final ToolWindowManager toolWindowManager;
-	private boolean enabled;
+	private boolean created;
 	private CrucibleNewReviewNotifier crucibleNewReviewNotifier;
 
 	private final PluginConfiguration pluginConfiguration;
@@ -65,7 +74,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
         statusBarBambooIcon = null;
 		statusBarCrucibleIcon = null;
 		statusPluginUpdateIcon = null;
-		enabled = false;
+		created = false;
 	}
 
 	public void initComponent() {
@@ -84,7 +93,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		return "ThePluginProjectComponent";
 	}
 
-	private void enablePlugin() {
+	private void createPlugin() {
         // unregister changelistmanager?
         // only open tool windows for each application that's registered
         // show something nice if there are non
@@ -92,7 +101,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
         // store bamboo between runs in UDC
         // clean up object model confusion
 
-		if (!enabled) {
+		if (!created) {
 
 			// create tool window on the right
 			com.intellij.openapi.wm.ToolWindow toolWindow = toolWindowManager.registerToolWindow(IdeaHelper.TOOL_WINDOW_NAME,
@@ -103,6 +112,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			// create tool window content
 			Content bambooToolWindow = createBambooContent();
 			toolWindow.getContentManager().addContent(bambooToolWindow);
+			bambooToolWindowPanel.restore(projectConfigurationBean.getBambooConfiguration().getTableConfiguration());
 
 			crucibleToolWindowPanel = new CrucibleToolWindowPanel();
 			Content crucibleToolWindow = createCrusibleContent();
@@ -158,7 +168,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			//statusPluginUpdateIcon.showOrHideIcon();
 
 
-			enabled = true;
+			created = true;
 		}
 	}
 
@@ -199,8 +209,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		return content;
 	}
 
-	public void disablePlugin() {
-		if (enabled) {
+	public void disposePlugin() {
+		if (created) {
 			// remove icon from status bar
 			statusBarBambooIcon.hideIcon();
 			statusBarBambooIcon = null;
@@ -217,22 +227,25 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			crucibleStatusChecker.unregisterListener(toolWindowCrucibleListener);
 			crucibleStatusChecker.unregisterListener(crucibleNewReviewNotifier);
 
+			bambooToolWindowPanel.store(projectConfigurationBean.getBambooConfiguration().getTableConfiguration());
+
 			// remove tool window
 			toolWindowManager.unregisterToolWindow(IdeaHelper.TOOL_WINDOW_NAME);
-			enabled = false;
+			created = false;
 		}
 	}
 
 	public void projectOpened() {
 
 		System.out.println("Start: Project open");
-		enablePlugin();
+		projectConfigurationBean = new ProjectConfigurationBean();
+		createPlugin();
 		System.out.println("End: Project open");
 	}
 
 	public void projectClosed() {
 		System.out.println("Start: Project close");
-		disablePlugin();
+		disposePlugin();
 		System.out.println("End: Project close");
 	}
 
@@ -242,5 +255,15 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 	public CrucibleStatusIcon getStatusBarCrucibleIcon() {
 		return statusBarCrucibleIcon;
+	}
+
+	public ProjectConfigurationBean getState() {
+		System.out.println("GET:");
+		return projectConfigurationBean;
+	}
+
+	public void loadState(ProjectConfigurationBean state) {
+		System.out.println("SET:");
+		projectConfigurationBean = state;
 	}
 }

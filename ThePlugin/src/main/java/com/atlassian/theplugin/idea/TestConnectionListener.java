@@ -80,24 +80,28 @@ public class TestConnectionListener implements ActionListener {
 				}
 			}
 
-			if (testConnector.getConnectionState() == ConnectionWrapper.ConnectionState.SUCCEEDED) {
-				EventQueue.invokeLater(new Runnable() {
-					public void run() {
-						showMessageDialog("Connected successfully", "Connection OK", Messages.getInformationIcon());
-					}
-				});
-			} else if (testConnector.getConnectionState() == ConnectionWrapper.ConnectionState.FAILED) {
-				EventQueue.invokeLater(new Runnable() {
-					public void run() {
-						showMessageDialog(testConnector.getErrorMessage(),
-								"Connection Error", Messages.getErrorIcon());
-					}
-				});
-			} else if (testConnector.getConnectionState() == ConnectionWrapper.ConnectionState.INTERUPTED) {
-				log.debug("Cancel was pressed during 'Test Connection' operation");
-			} else {
-				log.info("Unexpected 'Test Connection' thread state: "
-						+ testConnector.getConnectionState().toString());
+			switch (testConnector.getConnectionState()) {
+				case FAILED:
+					EventQueue.invokeLater(new Runnable() {
+						public void run() {
+							showMessageDialog(testConnector.getErrorMessage(),
+									"Connection Error", Messages.getErrorIcon());
+						}
+					});
+					break;
+				case INTERUPTED:
+					log.debug("Cancel was pressed during 'Test Connection' operation");
+					break;
+				case SUCCEEDED:
+					EventQueue.invokeLater(new Runnable() {
+						public void run() {
+							showMessageDialog("Connected successfully", "Connection OK", Messages.getInformationIcon());
+						}
+					});
+					break;
+				default: //NOT_FINISHED:
+					log.info("Unexpected 'Test Connection' thread state: "
+							+ testConnector.getConnectionState().toString());
 			}
 		}
 	}

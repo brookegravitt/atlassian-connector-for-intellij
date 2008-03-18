@@ -2,7 +2,7 @@ package com.atlassian.theplugin.idea.config;
 
 import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.atlassian.theplugin.idea.GeneralConfigForm;
-import com.atlassian.theplugin.idea.NewVersionChecker;
+import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,6 +1,8 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.configuration.PluginConfiguration;
+import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
+import com.atlassian.theplugin.idea.autoupdate.NewVersionListener;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
