@@ -44,7 +44,8 @@ public class PluginDownloaderTest extends TestCase {
 
 		mockServer = new JettyMockServer(httpServer);
 		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort() + DOWNLOAD_PATH;
-		downloader = new PluginDownloader(new InfoServer.VersionInfo(new Version(SOME_VERSION), mockBaseUrl), pluginConfiguration);
+		InfoServer.VersionInfo newVersion = new InfoServer.VersionInfo(new Version(SOME_VERSION), mockBaseUrl);
+		downloader = new PluginDownloader(newVersion, pluginConfiguration);
 	}
 
 	public void testDownloadPluginFromServer() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, NoSuchFieldException {
