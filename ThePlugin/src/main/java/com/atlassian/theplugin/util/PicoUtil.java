@@ -3,8 +3,10 @@ package com.atlassian.theplugin.util;
 import com.atlassian.theplugin.bamboo.BambooServerFacadeImpl;
 import com.atlassian.theplugin.bamboo.BambooStatusChecker;
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.idea.IdeaActionScheduler;
+import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
 import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
@@ -41,7 +43,9 @@ public final class PicoUtil {
 	};
 
 	private static final Class[] PROJECT_COMPONENTS = {
-			BambooTableToolWindowPanel.class
+			BambooTableToolWindowPanel.class,
+			ProjectConfigurationBean.class,
+			JIRAToolWindowPanel.class
 	};
 
 

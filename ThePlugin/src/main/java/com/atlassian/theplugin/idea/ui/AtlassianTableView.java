@@ -1,17 +1,21 @@
 package com.atlassian.theplugin.idea.ui;
 
+import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.intellij.ui.table.TableView;
+import com.intellij.util.config.Storage;
 import com.intellij.util.ui.ListTableModel;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class AtlassianTableView extends TableView {
     private static final int DEFAULT_ROW_HEIGHT = 20;
 
-    public AtlassianTableView(ListTableModel listTableModel) {
+    public AtlassianTableView(ListTableModel listTableModel, final ProjectConfigurationBean projectConfigurationBean) {
         super(listTableModel);
 
         setBorder(BorderFactory.createEmptyBorder());
@@ -20,6 +24,13 @@ public class AtlassianTableView extends TableView {
         getColumnModel().setColumnMargin(0);
         setRowHeight(DEFAULT_ROW_HEIGHT);
 		setAutoResizeMode(TableView.AUTO_RESIZE_OFF);
+
+		getTableHeader().addMouseListener(new MouseAdapter() {
+			public void mouseReleased(MouseEvent e) {
+				System.out.println("YYYYYYYYYYYYYYYY");
+				TableView.store(projectConfigurationBean.getBambooConfiguration().getTableConfiguration(), AtlassianTableView.this);
+			}
+		});
 
 	}
 
@@ -34,8 +45,20 @@ public class AtlassianTableView extends TableView {
 		}		
 	}
 
-	protected void onHeaderClicked(int column) {
-		System.out.println("YYYYYYYYYYYYYYYY");
+		/**
+	 * Restores table properties from Storage object into current table instance
+	 * @param storage object with table properties
+	 */
+	public void restore(Storage storage) {
+		TableView.restore(storage, this);
+	}
+
+	/**
+	 * Stores current table properties into Storage object
+	 * @param storage object to store table properties
+	 */
+	public void store(Storage storage) {
+		TableView.store(storage, this);
 	}
 }
 
