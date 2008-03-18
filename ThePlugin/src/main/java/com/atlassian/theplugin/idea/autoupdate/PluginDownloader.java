@@ -1,23 +1,16 @@
 package com.atlassian.theplugin.idea.autoupdate;
 
 import com.atlassian.theplugin.configuration.PluginConfiguration;
-import com.atlassian.theplugin.exception.VersionServiceException;
-import com.atlassian.theplugin.exception.IncorrectVersionException;
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.ide.startup.StartupActionScriptManager;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.extensions.PluginId;
-import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.io.StreamUtil;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.util.io.ZipUtil;
 
 import javax.swing.*;
@@ -26,7 +19,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.awt.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -36,7 +28,7 @@ import java.awt.*;
  * To change this template use File | Settings | File Templates.
  */
 
-public class PluginDownloader extends Task.Backgroundable { //implements Runnable {
+public class PluginDownloader { //implements Runnable {
 
 
 	public static final String PLUGIN_ID_TOKEN = "PLUGIN_ID";
@@ -48,7 +40,6 @@ public class PluginDownloader extends Task.Backgroundable { //implements Runnabl
 	private static final int EXTENTION_LENGHT = 3;
 	private InfoServer.VersionInfo newVersion;
 	private PluginConfiguration pluginConfiguration;
-	private static final String DOWNLOAD_TITLE = "Downloading new " + PluginUtil.getName() + " plugin version ";
 
 	public void setTimeout(int timeout) {
 		this.timeout = timeout;
@@ -62,15 +53,6 @@ public class PluginDownloader extends Task.Backgroundable { //implements Runnabl
 	private int readTimeout = TIMEOUT;
 
 	public PluginDownloader(InfoServer.VersionInfo newVersion, PluginConfiguration pluginConfiguration) {
-		super(null, "");
-		this.newVersion = newVersion;
-		this.pluginConfiguration = pluginConfiguration;
-	}
-
-	public PluginDownloader(InfoServer.VersionInfo newVersion, PluginConfiguration pluginConfiguration, Project project) throws IncorrectVersionException, VersionServiceException {
-
-		super(project, DOWNLOAD_TITLE + newVersion.getVersion(), false);
-
 		this.newVersion = newVersion;
 		this.pluginConfiguration = pluginConfiguration;
 	}
@@ -100,7 +82,7 @@ public class PluginDownloader extends Task.Backgroundable { //implements Runnabl
 			PluginUtil.getLogger().info("Error registering action in IDEA", e);
 		}
 	}
-
+	
 	private void promptShutdownAndShutdown() {
 		ApplicationManager.getApplication().invokeLater(new Runnable() {
 			public void run() {
@@ -230,37 +212,6 @@ public class PluginDownloader extends Task.Backgroundable { //implements Runnabl
 		// add command to remove temp plugin file
 		StartupActionScriptManager.ActionCommand deleteTemp = new StartupActionScriptManager.DeleteCommand(localArchiveFile);
 		StartupActionScriptManager.addActionCommand(deleteTemp);
-	}
-
-	public void run(ProgressIndicator indicator) {
-				try {
-			File localArchiveFile = downloadPluginFromServer(this.newVersion.getDownloadUrl());
-
-			// add startup actions
-
-			// todo lguminski/jjaroczynski to find a better way of getting plugin descriptor
-			// theoritically openapi should provide a method so the plugin could get info on itself
-
-			IdeaPluginDescriptor pluginDescr = PluginManager.getPlugin(PluginId.getId(PluginUtil.getPluginId()));
-			/* todo lguminsk when you debug the plugin it appears in registry as attlassian-idea-plugin, but when
-			 	you rinstall it notmally it appears as Atlassian. Thats why it is double checked here
-			    */
-			if (pluginDescr == null) {
-				pluginDescr = PluginManager.getPlugin(PluginId.getId(PluginUtil.getName()));
-			}
-			addActions(pluginDescr, localArchiveFile);
-
-			// restart IDEA
-			promptShutdownAndShutdown();
-
-		} catch (final IOException e) {
-			PluginUtil.getLogger().info("Error registering action in IDEA", e);
-					EventQueue.invokeLater(new Runnable() {
-						public void run() {
-							Messages.showMessageDialog(IdeaHelper.getCurrentProject(), e.getMessage(), "Error registering action in IDEA", Messages.getErrorIcon());
-						}
-					});
-		} 
 	}
 
 	public int getTimeout() {
