@@ -22,24 +22,19 @@ public class BambooProjectToolWindowTableConfiguration extends Storage.MapStorag
 	}
 	
 	public Map<String, String> getProperties() {
-
 		Iterator<String> iter = getKeys();
-
 		properties.clear();
-
 		while (iter.hasNext()) {
 			String key = iter.next();
 			properties.put(key, get(key));
 		}
-
 		return properties;
 	}
 
 	public void setProperties(Map<String, String> properties) {
 		this.properties = properties;
-
-		for (String key : properties.keySet()) {
-			put(key, properties.get(key));
+		for (Map.Entry<String, String> entry : properties.entrySet()) {
+			put(entry.getKey(), entry.getValue());
 		}
 	}
 }

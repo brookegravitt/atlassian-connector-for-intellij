@@ -13,7 +13,7 @@ import org.jdom.xpath.XPath;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class InfoServer {
+public final class InfoServer {
 
 	private InfoServer() {
 	}
@@ -51,9 +51,8 @@ public class InfoServer {
 			STABLE,
 			UNSTABLE
 		}
-		private Document doc;
-		private Type type;
 		private Version version;
+
 		private String downloadUrl;
 
 		/**
@@ -62,8 +61,6 @@ public class InfoServer {
 		 * @param type type
 		 */
 		VersionInfo(Document doc, VersionInfo.Type type) throws VersionServiceException, IncorrectVersionException {
-			this.doc = doc;
-			this.type = type;
 			switch (type) {
 				case STABLE:
 					version = new Version(getValue("/response/versions/stable/latestVersion", doc));
@@ -87,14 +84,6 @@ public class InfoServer {
 			this.version = version;
 			this.downloadUrl = downloadUrl;
 		}
-//
-//		public VersionInfo(String version, String downloadUrl) throws IncorrectVersionException {
-//			this(new Version(version), downloadUrl);
-//		}
-
-		public Version getVersion() {
-			return version;
-		}
 
 		private String getValue(String path, Document doc) throws VersionServiceException {
 			XPath xpath;
@@ -109,6 +98,10 @@ public class InfoServer {
 				throw new VersionServiceException("Error while parsing " + PluginUtil.VERSION_INFO_URL, e);
 			}
 			return element.getValue();
+		}
+
+		public Version getVersion() {
+			return version;
 		}
 
 		public String getDownloadUrl() {
