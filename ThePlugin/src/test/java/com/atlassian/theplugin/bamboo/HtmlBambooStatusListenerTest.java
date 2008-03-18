@@ -1,15 +1,16 @@
 package com.atlassian.theplugin.bamboo;
 
+import com.atlassian.theplugin.configuration.Server;
+import com.atlassian.theplugin.configuration.ServerBean;
 import com.gargoylesoftware.htmlunit.StringWebResponse;
 import com.gargoylesoftware.htmlunit.TopLevelWindow;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.*;
-import com.atlassian.theplugin.configuration.Server;
-import com.atlassian.theplugin.configuration.ServerBean;
 import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.easymock.EasyMock;
 
 import java.io.IOException;
 import java.util.*;
@@ -52,6 +53,39 @@ public class HtmlBambooStatusListenerTest extends TestCase {
                 return server;
             }
         };
+	}
+
+	public void testUpdateDisplay() {
+
+		BambooBuild buildUnknown = generateRawBuildInfo();
+
+		// create mock and tested object
+		BambooStatusDisplay mockDisplay = EasyMock.createMock(BambooStatusDisplay.class);
+		HtmlBambooStatusListener bambooListener = new HtmlBambooStatusListener(mockDisplay) {
+			protected Server getServerFromUrl(String serverUrl) {
+				return new ServerBean();
+			}
+		};
+
+		// record mock
+		mockDisplay.updateBambooStatus(EasyMock.eq(BuildStatus.UNKNOWN), EasyMock.isA(String.class));
+		EasyMock.replay(mockDisplay);
+
+		// test: empty builds (error connection) should be considered as unknown builds
+		Collection<BambooBuild> builds = new ArrayList<BambooBuild>();
+		builds.add(buildUnknown);
+		bambooListener.updateBuildStatuses(builds);
+
+		EasyMock.verify(mockDisplay);
+
+	}
+
+	private BambooBuild generateRawBuildInfo() {
+		BambooBuildInfo build = new BambooBuildInfo();
+
+		build.setServerUrl("some url");
+
+		return build;
 	}
 
 	public void testNullStatusCollection() throws Exception {
@@ -227,13 +261,19 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 				buildInfo.setMessage(DEFAULT_ERROR_MESSAGE);
 				break;
 			case BUILD_SUCCEED:
-				buildInfo.setBuildState("Successful");
+				buildInfo.setBuildState(BambooBuildInfo.BUILD_SUCCESSFUL);
 				buildInfo.setBuildTime(new Date());
 				break;
 			case BUILD_FAILED:
-				buildInfo.setBuildState("Failed");
+				buildInfo.setBuildState(BambooBuildInfo.BUILD_FAILED);
 				buildInfo.setBuildTime(new Date());
 				break;
+			case BUILD_DISABLED:
+				buildInfo.setBuildState(BambooBuildInfo.BUILD_FAILED);
+				buildInfo.setBuildTime(new Date());
+				buildInfo.setEnabled(false);
+				break;
+
 		}
 		buildInfo.setPollingTime(new Date());
 
@@ -324,8 +364,7 @@ class StatusListenerResultCatcher implements BambooStatusDisplay {
 		}
 	}
 
-    public String getHtmlPage()
-    {
+    public String getHtmlPage() {
         return htmlPage;
     }
 }
