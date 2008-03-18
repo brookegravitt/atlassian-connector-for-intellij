@@ -1,13 +1,15 @@
-package com.atlassian.theplugin.idea;
+package com.atlassian.theplugin.idea.autoupdate;
 
 import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.atlassian.theplugin.exception.VersionServiceException;
 import com.atlassian.theplugin.exception.ThePluginException;
+import com.atlassian.theplugin.exception.IncorrectVersionException;
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.util.Version;
 import com.atlassian.theplugin.idea.autoupdate.UpdateActionHandler;
 import com.atlassian.theplugin.idea.autoupdate.ForwardToIconHandler;
+import com.atlassian.theplugin.idea.SchedulableComponent;
 
 import java.util.TimerTask;
 
@@ -62,11 +64,10 @@ public final class NewVersionChecker implements SchedulableComponent {
 		}
 	}
 
-	private InfoServer.VersionInfo getLatestVersion() throws VersionServiceException {
-		InfoServer server =  new InfoServer(PluginUtil.VERSION_INFO_URL,
-				pluginConfiguration.getUid());
-		InfoServer.VersionInfo versionInfo = server.getLatestPluginVersion();
-		return versionInfo;
+	private InfoServer.VersionInfo getLatestVersion() throws VersionServiceException, IncorrectVersionException {
+//		InfoServer server =  new InfoServer(PluginUtil.VERSION_INFO_URL,
+//				pluginConfiguration.getUid());
+		return InfoServer.getLatestPluginVersion(PluginUtil.VERSION_INFO_URL, pluginConfiguration.getUid());
 	}
 
 }

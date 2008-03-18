@@ -124,6 +124,7 @@ public class ThePluginApplicationComponent
 	 * @param rightNow set to false if the first execution should be delayed by {@link #TIMER_START_DELAY}.
 	 */
 	public void rescheduleStatusCheckers(boolean rightNow) {
+
 		disableTimers();
 		long delay = rightNow ? 0 : TIMER_START_DELAY;
 

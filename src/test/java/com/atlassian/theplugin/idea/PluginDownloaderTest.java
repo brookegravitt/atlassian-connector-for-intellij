@@ -4,6 +4,7 @@ import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.Version;
 import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.idea.autoupdate.PluginDownloader;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 
@@ -64,7 +65,35 @@ public class PluginDownloaderTest extends TestCase {
 				localFile.delete();
 			}
 		}
+	}
 
+	public void testTimeoutedDownloadPluginFromServer() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, NoSuchFieldException {
+		mockServer.expect(DOWNLOAD_BASE, new TimeoutProviderCallback());
+
+		Class[] paramTypes = {String.class};
+		Method method = PluginDownloader.class.getDeclaredMethod("downloadPluginFromServer", paramTypes);
+		method.setAccessible(true);
+		File localFile = null;
+		try {
+			downloader.setReadTimeout(10);
+			downloader.setTimeout(10);
+			localFile = (File) method.invoke(downloader, new Object[]{SOME_VERSION});
+			fail("Invocation of the downloadPluginFromServer method failed: timeout doesn't work");
+		}
+		catch (InvocationTargetException ex) {
+			// ok
+		}
+		finally {
+			if (localFile != null) {
+				localFile.delete();
+			}
+		}
+	}
+	private class TimeoutProviderCallback implements JettyMockServer.Callback {
+
+		public void onExpectedRequest(String s, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
+			Thread.sleep(2000);
+		}
 	}
 
 	private class ArchiveRepositoryProviderCallback implements JettyMockServer.Callback {
