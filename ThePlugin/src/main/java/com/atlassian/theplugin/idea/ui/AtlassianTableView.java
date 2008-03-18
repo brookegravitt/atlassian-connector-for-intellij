@@ -28,7 +28,7 @@ public class AtlassianTableView extends TableView {
 
 		getTableHeader().addMouseListener(new MouseAdapter() {
 			public void mouseReleased(MouseEvent e) {
-				System.out.println("YYYYYYYYYYYYYYYY");
+				//System.out.println("YYYYYYYYYYYYYYYY");
 				TableView.store(
 						IdeaHelper.getCurrentProject().getComponent(ThePluginProjectComponent.class).
 								getProjectConfigurationBean().getBambooConfiguration().getTableConfiguration(),
