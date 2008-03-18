@@ -15,7 +15,7 @@ import java.util.Iterator;
  */
 public class BambooProjectToolWindowTableConfiguration extends Storage.MapStorage {
 
-	Map<String, String> properties = new HashMap<String, String>();
+	private Map<String, String> properties = new HashMap<String, String>();
 
 	public BambooProjectToolWindowTableConfiguration() {
 
