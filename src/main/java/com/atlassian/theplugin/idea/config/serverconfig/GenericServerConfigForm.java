@@ -1,18 +1,18 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
+import com.atlassian.theplugin.LoginDataProvided;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.idea.TestConnectionListener;
-import com.atlassian.theplugin.util.Util;
 import com.atlassian.theplugin.util.Connector;
-import com.atlassian.theplugin.LoginDataProvided;
+import com.atlassian.theplugin.util.Util;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.FocusListener;
+import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 
 /**
@@ -34,11 +34,7 @@ public class GenericServerConfigForm extends JComponent implements ServerPanel, 
 
 		$$$setupUI$$$();
 		testConnection.addActionListener(new TestConnectionListener(tester, this));
-		serverUrl.addFocusListener(new FocusListener() {
-			public void focusGained(FocusEvent e) {
-				//To change body of implemented methods use File | Settings | File Templates.
-			}
-
+		serverUrl.addFocusListener(new FocusAdapter() {
 			public void focusLost(FocusEvent e) {
 				serverUrl.setText(Util.addHttpPrefix(serverUrl.getText()));
 			}
