@@ -12,7 +12,6 @@ import java.util.List;
  * User: mwent
  * Date: 2008-03-06
  * Time: 11:16:09
- * To change this template use File | Settings | File Templates.
  */
 public interface BambooSession {
 	void login(String name, char[] aPassword) throws BambooLoginException;
