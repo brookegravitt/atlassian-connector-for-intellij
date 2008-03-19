@@ -15,7 +15,7 @@ import java.util.List;
 public class CommentIssueAction extends AnAction {
     public void actionPerformed(AnActionEvent e) {
         Project project = IdeaHelper.getCurrentProject(e.getDataContext());
-        JIRAServer jiraServer = IdeaHelper.getAppComponent().getCurrentJIRAServer();
+        JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer();
         JIRAToolWindowPanel toolWindowPanel = IdeaHelper.getJIRAToolWindowPanel(e);
 
         String errorMsg = null;
@@ -25,7 +25,7 @@ public class CommentIssueAction extends AnAction {
             if (l.isEmpty()) {
                 errorMsg = "Search for issues to comment on first.";
             } else {
-                IssueComment issueComment = new IssueComment(IdeaHelper.getAppComponent().getCurrentJIRAServer(), l);
+                IssueComment issueComment = new IssueComment(IdeaHelper.getCurrentJIRAServer(), l);
 
                 if (toolWindowPanel.getCurrentIssue() != null) {
                     issueComment.setIssue(toolWindowPanel.getCurrentIssue());

@@ -1,7 +1,6 @@
 package com.atlassian.theplugin.idea.action.jira;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.ThePluginApplicationComponent;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.api.JIRAConstant;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -26,8 +25,7 @@ public abstract class AbstractConstantComboAction extends ComboBoxAction {
 		DefaultActionGroup group = new DefaultActionGroup();
 
 		group.add(makeAction(comboBox, null));
-		ThePluginApplicationComponent app = IdeaHelper.getAppComponent();
-		JIRAServer server = app.getCurrentJIRAServer();
+		JIRAServer server = IdeaHelper.getCurrentJIRAServer();
 		for (Iterator iterator = getValues(server).iterator(); iterator.hasNext();) {
 			JIRAConstant constant = (JIRAConstant) iterator.next();
 			group.add(makeAction(comboBox, constant));

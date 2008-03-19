@@ -2,6 +2,7 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
+import com.atlassian.theplugin.jira.JIRAServer;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
@@ -55,7 +56,25 @@ public final class IdeaHelper {
         return DataKeys.PROJECT.getData(dataContext);
     }
 
-    public static com.intellij.openapi.wm.ToolWindow getToolWindow(Project p) {
+    @Nullable
+	public static JIRAServer getCurrentJIRAServer() {
+		Project p = getCurrentProject(DataManager.getInstance().getDataContext());
+		if (p == null) {
+			return null;
+		}
+		return p.getComponent(ThePluginProjectComponent.class).getCurrentJiraServer();
+    }
+
+    @Nullable
+	public static void setCurrentJIRAServer(JIRAServer jiraServer) {
+		Project p = getCurrentProject(DataManager.getInstance().getDataContext());
+		if (p == null) {
+			return;
+		}
+		p.getComponent(ThePluginProjectComponent.class).setCurrentJiraServer(jiraServer);
+    }
+
+	public static com.intellij.openapi.wm.ToolWindow getToolWindow(Project p) {
         return ToolWindowManager.getInstance(p).getToolWindow(TOOL_WINDOW_NAME);
     }
 

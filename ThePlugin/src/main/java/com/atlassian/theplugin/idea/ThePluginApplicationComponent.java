@@ -4,7 +4,6 @@ import com.atlassian.theplugin.bamboo.BambooStatusChecker;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
-import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.util.PicoUtil;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.components.ApplicationComponent;
@@ -48,7 +47,6 @@ public class ThePluginApplicationComponent
 	private final Collection<TimerTask> scheduledComponents = new HashSet<TimerTask>();
 
 	private final BambooStatusChecker bambooStatusChecker;
-    private JIRAServer currentJIRAServer;
 
 	BambooStatusChecker getBambooStatusChecker() {
 		return bambooStatusChecker;
@@ -176,12 +174,4 @@ public class ThePluginApplicationComponent
 	public void loadState(PluginConfigurationBean state) {
 		configuration.setConfiguration(state);
 	}
-
-	public JIRAServer getCurrentJIRAServer() {
-        return currentJIRAServer;
-    }
-
-    public void setCurrentJIRAServer(JIRAServer currentJIRAServer) {
-        this.currentJIRAServer = currentJIRAServer;
-    }
 }
