@@ -79,7 +79,7 @@ public abstract class Util {
 		Assert.assertSame(BuildStatus.UNKNOWN, build.getStatus());
 		Assert.assertTrue(build.getPollingTime().getTime() - System.currentTimeMillis() < 5000);
 		Assert.assertTrue(build.getMessage().startsWith(
-				ErrorResponse.getStaticErrorMessage(400)));
+				ErrorResponse.getStaticErrorMessage(400, "Bad Request")));
 	}
 
 

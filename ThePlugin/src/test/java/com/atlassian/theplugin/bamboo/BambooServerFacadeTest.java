@@ -127,8 +127,8 @@ public class BambooServerFacadeTest extends TestCase {
 			// ok: connection succeeded but server returned error
 		}
 
-		mockServer.expect("/api/rest/login.action", new ErrorResponse(400));
-		mockServer.expect("/api/rest/login.action", new ErrorResponse(400));
+		mockServer.expect("/api/rest/login.action", new ErrorResponse(400, ""));
+		mockServer.expect("/api/rest/login.action", new ErrorResponse(400, ""));
 		// connection error, just report without asking for the pass
 		Collection<BambooBuild> plans = testedBambooServerFacade.getSubscribedPlansResults(server);
 		assertNotNull(plans);
