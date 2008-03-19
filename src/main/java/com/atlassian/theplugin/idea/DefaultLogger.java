@@ -12,7 +12,7 @@ import java.io.PrintStream;
  */
 public class DefaultLogger extends Logger {
 
-	private static String[] LogLevelStr = {
+	private static final String[] LOG_LEVEL_STR = {
 				"ERROR",
 				"WARN",
 				"INFO",
@@ -37,7 +37,7 @@ public class DefaultLogger extends Logger {
 			stream = System.err;
 		} else {
             // since we are obfuscating, mName shouldn't be printed.
-            decoratedMsg = LogLevelStr[level] + ": " + msg;
+            decoratedMsg = LOG_LEVEL_STR[level] + ": " + msg;
             stream = System.err;
         }
         stream.print(decoratedMsg);
