@@ -14,7 +14,7 @@ import java.net.URLEncoder;
 public class QuickSearchAction extends AnAction {
     public void actionPerformed(AnActionEvent e) {
         Project project = IdeaHelper.getCurrentProject(e.getDataContext());
-        JIRAServer jiraServer = IdeaHelper.getAppComponent().getCurrentJIRAServer();
+        JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer();
 
         if (jiraServer != null) {
             String query = Messages.showInputDialog(project, "Quick Search:",
@@ -31,8 +31,8 @@ public class QuickSearchAction extends AnAction {
 
 	public void update(AnActionEvent event) {
 		super.update(event);
-		if (IdeaHelper.getAppComponent().getCurrentJIRAServer() != null) {
-			event.getPresentation().setEnabled(IdeaHelper.getAppComponent().getCurrentJIRAServer().isValidServer());
+		if (IdeaHelper.getCurrentJIRAServer() != null) {
+			event.getPresentation().setEnabled(IdeaHelper.getCurrentJIRAServer().isValidServer());
 		} else {
 			event.getPresentation().setEnabled(false);
 		}

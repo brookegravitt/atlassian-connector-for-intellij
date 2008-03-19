@@ -40,12 +40,14 @@ public class JIRAToolWindowPanel extends JPanel {
     private JEditorPane editorPane;
     private JPanel toolBarPanel;
     private ListTableModel listTableModel;
-    // a simple map to store all selected query fragments.
-    private Map<String, JIRAQueryFragment> queryFragments = new HashMap<String, JIRAQueryFragment>();
     private AtlassianTableView table;
     private static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
 	private transient ActionToolbar filterToolbarTop;
 	private transient ActionToolbar filterToolbarBottom;
+
+	// a simple map to store all selected query fragments.
+	private Map<String, JIRAQueryFragment> queryFragments = new HashMap<String, JIRAQueryFragment>();
+	private JIRAServer currentJIRAServer;
 
 	public JIRAToolWindowPanel(ProjectConfigurationBean projectConfigurationBean) {
         super(new BorderLayout());
@@ -148,8 +150,8 @@ public class JIRAToolWindowPanel extends JPanel {
     }
 
     public void refreshIssues() {
-        if (IdeaHelper.getAppComponent().getCurrentJIRAServer() != null) {
-            updateIssues(IdeaHelper.getAppComponent().getCurrentJIRAServer());
+        if (IdeaHelper.getCurrentJIRAServer() != null) {
+            updateIssues(IdeaHelper.getCurrentJIRAServer());
         }
     }
 
@@ -176,7 +178,7 @@ public class JIRAToolWindowPanel extends JPanel {
     public void selectServer(Server server) {
         if (server != null) {
             final JIRAServer jiraServer = new JIRAServer(server);
-            IdeaHelper.getAppComponent().setCurrentJIRAServer(jiraServer);
+            IdeaHelper.setCurrentJIRAServer(jiraServer);
 
             FutureTask task = new FutureTask(new Runnable() {
                 public void run() {
@@ -202,7 +204,7 @@ public class JIRAToolWindowPanel extends JPanel {
                         setStatusMessage("Unable to connect to server." + jiraServer.getErrorMessage());
                         return;
                     }
-					if (jiraServer.equals(IdeaHelper.getAppComponent().getCurrentJIRAServer())) {
+					if (jiraServer.equals(IdeaHelper.getCurrentJIRAServer())) {
 						updateIssues(jiraServer);
 						filterToolbarSetVisible(true);
 					}
@@ -289,7 +291,7 @@ public class JIRAToolWindowPanel extends JPanel {
         public void actionPerformed(ActionEvent e) {
             JIRAIssue issue = (JIRAIssue) table.getSelectedObject();
             IssueComment issueComment = new IssueComment(
-					IdeaHelper.getAppComponent().getCurrentJIRAServer(), getIssues());
+					IdeaHelper.getCurrentJIRAServer(), getIssues());
             issueComment.setIssue(issue);
             issueComment.show();
         }
