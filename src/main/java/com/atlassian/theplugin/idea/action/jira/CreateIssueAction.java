@@ -27,4 +27,13 @@ public class CreateIssueAction extends AnAction {
             Messages.showErrorDialog(project, errorMsg, "Create JIRA Issue");
         }
     }
+
+	public void update(AnActionEvent event) {
+		super.update(event);
+		if (IdeaHelper.getAppComponent().getCurrentJIRAServer() != null) {
+			event.getPresentation().setEnabled(IdeaHelper.getAppComponent().getCurrentJIRAServer().isValidServer());
+		} else {
+			event.getPresentation().setEnabled(false);
+		}
+	}
 }
