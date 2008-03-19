@@ -4,13 +4,13 @@ import com.atlassian.theplugin.bamboo.*;
 import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.crucible.HtmlCrucibleStatusListener;
+import com.atlassian.theplugin.idea.autoupdate.ConfirmPluginUpdateHandler;
+import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
 import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;
 import com.atlassian.theplugin.idea.crucible.*;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
-import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
-import com.atlassian.theplugin.idea.autoupdate.ConfirmPluginUpdateHandler;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.components.State;
@@ -22,6 +22,7 @@ import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.peer.PeerFactory;
 import com.intellij.ui.content.Content;
+import com.intellij.ui.table.TableView;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -117,7 +118,8 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 			// create tool window content
 			Content bambooToolWindow = createBambooContent();
 			toolWindow.getContentManager().addContent(bambooToolWindow);
-			bambooToolWindowPanel.getTable().restore(projectConfigurationBean.getBambooConfiguration().getTableConfiguration());
+			TableView.restore(projectConfigurationBean.getBambooConfiguration().getTableConfiguration(),
+					bambooToolWindowPanel.getTable());
 
 			crucibleToolWindowPanel = new CrucibleToolWindowPanel();
 			Content crucibleToolWindow = createCrusibleContent();
@@ -127,8 +129,10 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
             Content jiraToolWindow = createJiraContent();
 			toolWindow.getContentManager().addContent(jiraToolWindow);
             toolWindow.getContentManager().setSelectedContent(jiraToolWindow);
+			TableView.restore(projectConfigurationBean.getJiraConfiguration().getTableConfiguration(),
+					jiraToolWindowPanel.getTable());
 
-            // add tool window bamboo content listener to bamboo checker thread
+			// add tool window bamboo content listener to bamboo checker thread
 			//toolWindowBambooListener = new HtmlBambooStatusListener(bambooToolWindowPanel.getBambooContent());
 			bambooStatusChecker.registerListener(bambooToolWindowPanel);
 
