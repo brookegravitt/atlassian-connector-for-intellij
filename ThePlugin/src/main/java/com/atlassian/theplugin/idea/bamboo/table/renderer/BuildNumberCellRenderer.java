@@ -15,6 +15,7 @@ public class BuildNumberCellRenderer extends DefaultTableCellRenderer {
 				((JLabel) c).setToolTipText("Build information not accessible");
 				((JLabel) c).setText("-");
 			} else {
+				((JLabel) c).setToolTipText(o.toString());
 				((JLabel) c).setText(o.toString());
 			}
 		}

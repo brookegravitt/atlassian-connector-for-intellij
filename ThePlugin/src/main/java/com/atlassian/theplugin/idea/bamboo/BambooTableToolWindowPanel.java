@@ -309,13 +309,13 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 
 	public boolean getExecuteBuildEnabled() {
 		BambooBuildAdapter build = (BambooBuildAdapter) table.getSelectedObject();
-		return build != null;
+		return build != null && build.getEnabled();
 	}
 
 	private boolean getBamboo2ActionsEnabled() {
 		BambooBuildAdapter build = (BambooBuildAdapter) table.getSelectedObject();
 		if (build != null) {
-			return build.isBamboo2();
+			return build.isBamboo2() && build.getEnabled();
 		} else {
 			return false;
 		}

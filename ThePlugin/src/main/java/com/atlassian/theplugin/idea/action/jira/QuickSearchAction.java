@@ -28,4 +28,13 @@ public class QuickSearchAction extends AnAction {
             Messages.showErrorDialog(project, "Please select a JIRA server before searching.", "JIRA Quick Search");
         }
     }
+
+	public void update(AnActionEvent event) {
+		super.update(event);
+		if (IdeaHelper.getAppComponent().getCurrentJIRAServer() != null) {
+			event.getPresentation().setEnabled(IdeaHelper.getAppComponent().getCurrentJIRAServer().isValidServer());
+		} else {
+			event.getPresentation().setEnabled(false);
+		}
+	}	
 }
