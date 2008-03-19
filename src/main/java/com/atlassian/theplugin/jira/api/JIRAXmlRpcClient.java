@@ -36,7 +36,7 @@ public class JIRAXmlRpcClient {
         try {
             return new XmlRpcClient(serverUrl + "/rpc/xmlrpc");
         } catch (MalformedURLException e) {
-            throw new JIRAException(e.getMessage());
+            throw new JIRAException(e.getMessage(), e);
         }
     }
 
@@ -58,7 +58,7 @@ public class JIRAXmlRpcClient {
 
             loggedIn = token != null && token.length() > 0;
         } catch (Throwable e) { // ugly exceptions get thrown here - catch 'em all.
-            throw new JIRAException("RPC not supported or remote error: " + e.getMessage());
+            throw new JIRAException("RPC not supported or remote error: " + e.getMessage(), e);
         }
 
         return loggedIn;
@@ -85,7 +85,7 @@ public class JIRAXmlRpcClient {
         try {
             return (List) client.execute(rpcCommand, params);
         } catch (Exception e) {
-            throw new JIRAException(e.getMessage());
+            throw new JIRAException(e.getMessage(), e);
         }
     }
 
@@ -123,9 +123,9 @@ public class JIRAXmlRpcClient {
             List projects = (List) client.execute("jira1.getComponents", params);
             return projects;
         } catch (XmlRpcException e) {
-            throw new JIRAException(e.getMessage());
+            throw new JIRAException(e.getMessage(), e);
         } catch (IOException e) {
-            throw new JIRAException(e.getMessage());
+            throw new JIRAException(e.getMessage(), e);
         }
 
     }
@@ -146,7 +146,7 @@ public class JIRAXmlRpcClient {
             List versions = (List) client.execute("jira1.getVersions", params);
             return versions;
         } catch (Exception e) {
-            throw new JIRAException(e.getMessage());
+            throw new JIRAException(e.getMessage(), e);
         }
     }
 

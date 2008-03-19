@@ -6,8 +6,11 @@ import com.atlassian.theplugin.jira.api.*;
 import java.util.List;
 
 public class JIRAServer {
-    private Server server;
-    private List<JIRAProject> projects;
+	private Server server;
+	private boolean validServer = false;
+	private String errorMessage = null;
+
+	private List<JIRAProject> projects;
     private List statuses;
     private List issueTypes;
 
@@ -27,38 +30,62 @@ public class JIRAServer {
     }
  
     public List<JIRAProject> getProjects() {
-        if (projects == null) {
-            try {
+		validServer = false;
+		if (projects == null) {
+			errorMessage = null;
+			try {
                 projects = JIRAServerFactory.getJIRAServerFacade().getProjects(server);
-            } catch (JIRAException e) {
-                e.printStackTrace();
+				validServer = true;
+			} catch (JIRAException e) {
+				errorMessage = e.getMessage();
+				e.printStackTrace();
             }
-        }
+        } else {
+			validServer = true;
+		}
 		               
         return projects;
     }
 
     public List<JIRAConstant> getStatuses() {
-        if (statuses == null) {
-            try {
+		validServer = false;
+		if (statuses == null) {
+			errorMessage = null;
+			try {
                 statuses = JIRAServerFactory.getJIRAServerFacade().getStatuses(server);
-            } catch (JIRAException e) {
-                e.printStackTrace();
+				validServer = true;
+			} catch (JIRAException e) {
+				errorMessage = e.getCause().getMessage();
             }
-        }
+        } else {
+			validServer = true;
+		}
 
         return statuses;
     }
 
     public List<JIRAConstant> getIssueTypes() {
-        if (issueTypes == null) {
-            try {
+		validServer = false;
+		if (issueTypes == null) {
+			errorMessage = null;			
+			try {
                 issueTypes = JIRAServerFactory.getJIRAServerFacade().getIssueTypes(server);
-            } catch (JIRAException e) {
-                e.printStackTrace();
+				validServer = true;
+			} catch (JIRAException e) {
+				errorMessage = e.getMessage();
             }
-        }
+        } else {
+			validServer = true;
+		}
+		
+		return issueTypes;
+	}
 
-        return issueTypes;
-    }
+	public boolean isValidServer() {
+		return validServer;
+	}
+
+	public String getErrorMessage() {
+		return errorMessage;
+	}
 }
