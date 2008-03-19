@@ -150,6 +150,8 @@ public class ThePluginApplicationComponent
 				// show icons if necessary
 				projectComponent.getStatusBarBambooIcon().showOrHideIcon();
 				projectComponent.getStatusBarCrucibleIcon().showOrHideIcon();
+
+				//projectComponent.
 			}
 			rescheduleStatusCheckers(true);
 		}
