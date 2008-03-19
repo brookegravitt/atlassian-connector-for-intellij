@@ -1,7 +1,5 @@
 package com.atlassian.theplugin.idea;
 
-import org.jetbrains.annotations.NonNls;
-
 /**
  * Created by IntelliJ IDEA.
  * User: pmaruszak
@@ -57,7 +55,7 @@ public abstract class Logger {
      * overriding the factory implementation and thereby providing backward
      * compatibility.
      *
-     * @param instance
+     * @param instance instance
      */
     public static void setInstance(Logger instance) {
         singleton = instance;
@@ -113,9 +111,6 @@ public abstract class Logger {
         log(LOG_WARN, (t != null) ? t.getMessage() : "Exception", t);
     }
 
-	public void error(@NonNls String message, Throwable t, @NonNls String... details) {
-		//To change body of implemented methods use File | Settings | File Templates.
-	}
 
 	public void info(String msg) {
         log(LOG_INFO, msg, null);
