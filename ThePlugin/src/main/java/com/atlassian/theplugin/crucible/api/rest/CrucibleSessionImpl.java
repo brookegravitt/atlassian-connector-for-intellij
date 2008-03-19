@@ -295,7 +295,7 @@ public class CrucibleSessionImpl implements CrucibleSession {
 		client.executeMethod(method);
 
 		if (method.getStatusCode() != HttpStatus.SC_OK) {
-			throw new IOException(method.getStatusText());
+			throw new IOException("HTTP status code " + method.getStatusCode() + " : " + method.getStatusText());
 		}
 
 		SAXBuilder builder = new SAXBuilder();
@@ -332,7 +332,7 @@ public class CrucibleSessionImpl implements CrucibleSession {
 		client.executeMethod(method);
 
 		if (method.getStatusCode() != HttpStatus.SC_OK) {
-			throw new IOException(method.getStatusText());
+			throw new IOException("HTTP status code " + method.getStatusCode() + " : " + method.getStatusText());
 		}
 
 		SAXBuilder builder = new SAXBuilder();
