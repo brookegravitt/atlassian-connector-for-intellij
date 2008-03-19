@@ -568,20 +568,22 @@ class BambooSessionImpl implements BambooSession {
 		if (client == null) {
 			client = HttpClientFactory.getClient();
 		}
-
 		GetMethod method = new GetMethod(urlString);
-		method.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
+		Document doc = null;
+		try {
+			method.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
 
-		client.executeMethod(method);
+			client.executeMethod(method);
 
-		if (method.getStatusCode() != HttpStatus.SC_OK) {
-			throw new IOException("HTTP status code " + method.getStatusCode() + ": " + method.getStatusText());
+			if (method.getStatusCode() != HttpStatus.SC_OK) {
+				throw new IOException("HTTP status code " + method.getStatusCode() + ": " + method.getStatusText());
+			}
+
+			SAXBuilder builder = new SAXBuilder();
+			doc = builder.build(method.getResponseBodyAsStream());
+		} finally {
+			method.releaseConnection();
 		}
-
-		SAXBuilder builder = new SAXBuilder();
-		Document doc = builder.build(method.getResponseBodyAsStream());
-
-		method.releaseConnection();
 
 		String error = getExceptionMessages(doc);
 		if (error != null) {
