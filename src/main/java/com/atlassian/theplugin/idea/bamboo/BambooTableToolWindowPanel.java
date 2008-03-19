@@ -6,7 +6,6 @@ import com.atlassian.theplugin.bamboo.BambooStatusListener;
 import com.atlassian.theplugin.bamboo.HtmlBambooStatusListener;
 import com.atlassian.theplugin.bamboo.api.BambooException;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
-import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.atlassian.theplugin.idea.ui.AtlassianTableView;
 import com.intellij.ide.BrowserUtil;
@@ -42,7 +41,6 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 	private static final Icon ICON_RUN = IconLoader.getIcon("/icons/bamboo-run.png");
 	private static final Icon ICON_LABEL = IconLoader.getIcon("/icons/bamboo-label.png");
 	private static final Icon ICON_COMMENT = IconLoader.getIcon("/icons/bamboo-comment.png");
-	private ProjectConfigurationBean projectConfigurationBean;
 
 	public BambooTableToolWindowPanel(BambooServerFacade bambooFacade) {
 		super(new BorderLayout());
