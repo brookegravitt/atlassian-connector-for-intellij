@@ -576,7 +576,9 @@ class BambooSessionImpl implements BambooSession {
 			client.executeMethod(method);
 
 			if (method.getStatusCode() != HttpStatus.SC_OK) {
-				throw new IOException("HTTP status code " + method.getStatusCode() + ": " + method.getStatusText());
+				throw new IOException(
+					"HTTP " + method.getStatusCode() + " (" + HttpStatus.getStatusText(method.getStatusCode()) + ")\n"
+					+ method.getStatusText());
 			}
 
 			SAXBuilder builder = new SAXBuilder();
