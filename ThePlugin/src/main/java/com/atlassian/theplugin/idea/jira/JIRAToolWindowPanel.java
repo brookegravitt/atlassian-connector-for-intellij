@@ -47,7 +47,6 @@ public class JIRAToolWindowPanel extends JPanel {
 
 	// a simple map to store all selected query fragments.
 	private Map<String, JIRAQueryFragment> queryFragments = new HashMap<String, JIRAQueryFragment>();
-	private JIRAServer currentJIRAServer;
 
 	public JIRAToolWindowPanel(ProjectConfigurationBean projectConfigurationBean) {
         super(new BorderLayout());
