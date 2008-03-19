@@ -5,7 +5,6 @@ package com.atlassian.theplugin.idea;
  * User: pmaruszak
  * Date: Mar 17, 2008
  * Time: 4:40:34 PM
- * To change this template use File | Settings | File Templates.
  */
 public class IdeaLogger extends Logger {
 
