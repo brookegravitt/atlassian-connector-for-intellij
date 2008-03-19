@@ -1,10 +1,7 @@
 package com.atlassian.theplugin.util;
 
+import com.atlassian.theplugin.idea.Logger;
 import com.intellij.util.PathUtil;
-import org.apache.log4j.Category;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.log4j.xml.DOMConfigurator;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -17,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.ZipFile;
 
+
 /**
  * Created by IntelliJ IDEA.
  * User: lguminski
@@ -25,7 +23,7 @@ import java.util.zip.ZipFile;
  */
 public final class PluginUtil {
 
-	private static Category logger = null;
+	//private static com.atlassian.theplugin.idea.Logger logger = null;
 
 	private static String baseDir = PathUtil.getJarPathForClass(PluginUtil.class);
 
@@ -38,14 +36,8 @@ public final class PluginUtil {
 	}
 	///CLOVER:ON
 
-	public static Category getLogger() {
-		if (logger == null) {
-			if (!LogManager.getCurrentLoggers().hasMoreElements()) {
-				DOMConfigurator.configure(PluginUtil.class.getResource("/properties/log4j.xml"));
-			}
-			logger = Logger.getInstance("#com.atlassian.theplugin");
-		}
-		return logger;
+	public static Logger getLogger() {
+		return Logger.getInstance();
 	}
 
 	public static String getName() {
@@ -77,7 +69,7 @@ public final class PluginUtil {
 				boolean giveUp = false;
 				while (true) {
 					try {
-						doc = builder.build(file);
+							doc = builder.build(file);				
 					} catch (FileNotFoundException e) {
 						if (giveUp) {
 							throw e;
