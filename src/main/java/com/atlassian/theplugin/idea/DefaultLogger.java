@@ -12,13 +12,16 @@ import java.io.PrintStream;
  */
 public class DefaultLogger extends Logger {
 
-    private static String[] LOG_LEVEL_STR = {
-        "ERROR",
-        "WARN",
-        "INFO",
-        "VERBOSE",
-        "DEBUG"
-    };
+	private static String[] LogLevelStr = {
+				"ERROR",
+				"WARN",
+				"INFO",
+				"VERBOSE",
+				"DEBUG"
+		};
+
+	static {
+	}
 
 	public void log(int level, String msg, Throwable t) {
         if (canIgnore(level)) {
@@ -27,14 +30,14 @@ public class DefaultLogger extends Logger {
 
         final PrintStream stream;
         final String decoratedMsg;
-        if (level >= LOG_INFO ) {
+        if (level >= LOG_INFO) {
             // for INFO or below level msgs, print the msg only, nothing else
             decoratedMsg = msg;
             //stream = System.out;
 			stream = System.err;
 		} else {
             // since we are obfuscating, mName shouldn't be printed.
-            decoratedMsg = LOG_LEVEL_STR[level] + ": " + msg;
+            decoratedMsg = LogLevelStr[level] + ": " + msg;
             stream = System.err;
         }
         stream.print(decoratedMsg);
