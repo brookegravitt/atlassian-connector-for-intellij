@@ -82,7 +82,7 @@ public class BambooSessionTest extends TestCase {
 	}
 
 	public void testWrongUrlBambooLogin() throws Exception {
-		ErrorResponse error = new ErrorResponse(400); 
+		ErrorResponse error = new ErrorResponse(400, "Bad Request"); 
 		mockServer.expect("/wrongurl/api/rest/login.action", error);
 		BambooLoginException exception = null;
 
@@ -97,7 +97,7 @@ public class BambooSessionTest extends TestCase {
 		assertNotNull("Exception expected", exception);
 		assertNotNull("Exception should have a cause", exception.getCause());
 		assertSame(IOException.class, exception.getCause().getClass());
-		assertTrue(exception.getMessage().startsWith(error.getErrorMessage()));
+		assertTrue(exception.getMessage().contains(error.getErrorMessage()));
 	}
 
 	public void testNonExistingServerBambooLogin() throws Exception {
