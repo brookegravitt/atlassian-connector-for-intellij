@@ -44,6 +44,8 @@ public class JIRAToolWindowPanel extends JPanel {
     private Map<String, JIRAQueryFragment> queryFragments = new HashMap<String, JIRAQueryFragment>();
     private AtlassianTableView table;
     private static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
+	private ActionToolbar filterToolbarTop;
+	private ActionToolbar filterToolbarBottom;
 
 	public JIRAToolWindowPanel(ProjectConfigurationBean projectConfigurationBean) {
         super(new BorderLayout());
@@ -107,10 +109,12 @@ public class JIRAToolWindowPanel extends JPanel {
             }
         });
 
-        add(new JScrollPane(table), BorderLayout.CENTER);
+		createFilterToolBar();
+
+		add(new JScrollPane(table), BorderLayout.CENTER);
     }
 
-    private JPopupMenu createContextMenu(JIRAIssue issue) {
+	private JPopupMenu createContextMenu(JIRAIssue issue) {
         JPopupMenu contextMenu = new JPopupMenu();
         contextMenu.add(makeWebUrlMenu("View", issue.getIssueUrl()));
         contextMenu.add(makeWebUrlMenu("Edit",
@@ -149,7 +153,14 @@ public class JIRAToolWindowPanel extends JPanel {
         }
     }
 
-    public void setIssues(List<JIRAIssue> issues) {
+	public void clearIssues() {
+        listTableModel.setItems(new ArrayList<JIRAIssue>());
+        listTableModel.fireTableDataChanged();
+        table.setEnabled(false);
+        editorPane.setText(wrapBody("No issues for server."));
+    }
+
+	public void setIssues(List<JIRAIssue> issues) {
         listTableModel.setItems(issues);
         listTableModel.fireTableDataChanged();
         table.setEnabled(true);
@@ -169,22 +180,33 @@ public class JIRAToolWindowPanel extends JPanel {
 
             FutureTask task = new FutureTask(new Runnable() {
                 public void run() {
-                    setStatusMessage("Retrieving statuses...");
+					filterToolbarSetVisible(false);
+					clearIssues();					
+					setStatusMessage("Retrieving statuses...");
                     List statuses = jiraServer.getStatuses(); // ensure statuses are cached
-                    if (statuses == null) {
-                        setStatusMessage("Unable to connect to server.");
+                    if (!jiraServer.isValidServer()) {
+                        setStatusMessage("Unable to connect to server." + jiraServer.getErrorMessage());
                         return;
                     }
                     String msg = "Found <b>" + statuses.size() + "</b> statuses.<br>";
                     setStatusMessage(msg + "Retrieving issue types...");
                     List types = jiraServer.getIssueTypes(); // ensure types are cached
-                    msg += "Found <b>" + types.size() + "</b> issue types.<br>";
+                    if (!jiraServer.isValidServer()) {
+                        setStatusMessage("Unable to connect to server." + jiraServer.getErrorMessage());
+                        return;
+                    }
+					msg += "Found <b>" + types.size() + "</b> issue types.<br>";
                     setStatusMessage(msg + "Retrieving projects...");
                     jiraServer.getProjects(); // ensure projects are cached
-
-                    showFilterToolBar();
-                    updateIssues(jiraServer);
-                }
+                    if (!jiraServer.isValidServer()) {
+                        setStatusMessage("Unable to connect to server." + jiraServer.getErrorMessage());
+                        return;
+                    }
+					if (jiraServer.equals(IdeaHelper.getAppComponent().getCurrentJIRAServer())) {
+						updateIssues(jiraServer);
+						filterToolbarSetVisible(true);
+					}
+				}
             }, null);
 
             new Thread(task).start();
@@ -195,20 +217,26 @@ public class JIRAToolWindowPanel extends JPanel {
         editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">" + msg + "</td></tr></table>"));
     }
 
-    private void showFilterToolBar() {
+    private void createFilterToolBar() {
         ActionManager actionManager = ActionManager.getInstance();
         ActionGroup filterToolBarTop = (ActionGroup) actionManager.getAction("ThePlugin.JIRA.FilterToolBarTop");
         ActionGroup filterToolBarBottom = (ActionGroup) actionManager.getAction("ThePlugin.JIRA.FilterToolBarBottom");
-        ActionToolbar fTop = actionManager.createActionToolbar("atlassian.toolwindow.filterToolBarTop",
+		filterToolbarTop = actionManager.createActionToolbar("atlassian.toolwindow.filterToolBarTop",
                 filterToolBarTop, true);
-        toolBarPanel.add(fTop.getComponent(), BorderLayout.CENTER);
-        ActionToolbar fBot = actionManager.createActionToolbar("atlassian.toolwindow.filterToolBarBottom",
+		toolBarPanel.add(filterToolbarTop.getComponent(), BorderLayout.CENTER);
+		filterToolbarBottom = actionManager.createActionToolbar("atlassian.toolwindow.filterToolBarBottom",
                 filterToolBarBottom, true);
-        toolBarPanel.add(fBot.getComponent(), BorderLayout.SOUTH);
-    }
+		filterToolbarSetVisible(false);
+		toolBarPanel.add(filterToolbarBottom.getComponent(), BorderLayout.SOUTH);
+	}
+
+	private void filterToolbarSetVisible(boolean visible) {
+		filterToolbarTop.getComponent().setVisible(visible);
+		filterToolbarBottom.getComponent().setVisible(visible);
+	}
 
 
-    private void updateIssues(final JIRAServer jiraServer) {
+	private void updateIssues(final JIRAServer jiraServer) {
         table.setEnabled(false);
         table.setForeground(UIUtil.getInactiveTextColor());
 
