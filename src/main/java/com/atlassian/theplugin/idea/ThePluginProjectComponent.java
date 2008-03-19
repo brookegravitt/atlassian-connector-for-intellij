@@ -33,7 +33,7 @@ import javax.swing.*;
 public class ThePluginProjectComponent implements ProjectComponent, PersistentStateComponent<ProjectConfigurationBean> {
     private static final String THE_PLUGIN_TOOL_WINDOW_ICON = "/icons/thePlugin_15x10.png";
 
-	private ProjectConfigurationBean projectConfigurationBean;
+	private final ProjectConfigurationBean projectConfigurationBean;
 
 	private final Project project;
 	private BambooStatusIcon statusBarBambooIcon;
@@ -64,14 +64,15 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 									 ToolWindowManager toolWindowManager,
 									 BambooStatusChecker bambooStatusChecker,
 									 PluginConfiguration pluginConfiguration,
-									 BambooTableToolWindowPanel bambooToolWindowPanel) {
+									 BambooTableToolWindowPanel bambooToolWindowPanel,
+									 ProjectConfigurationBean projectConfigurationBean) {
 		this.project = project;
-		this.projectConfigurationBean = new ProjectConfigurationBean();
 		this.crucibleStatusChecker = crucibleStatusChecker;
 		this.toolWindowManager = toolWindowManager;
 		this.bambooStatusChecker = bambooStatusChecker;
 		this.pluginConfiguration = pluginConfiguration;
 		this.bambooToolWindowPanel = bambooToolWindowPanel;
+		this.projectConfigurationBean = projectConfigurationBean;
 		//this.jiraToolWindowPanel = jiraToolWindowPanel;
 
 		// make findBugs happy
@@ -122,7 +123,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 			Content crucibleToolWindow = createCrusibleContent();
 			toolWindow.getContentManager().addContent(crucibleToolWindow);
 
-			jiraToolWindowPanel = new JIRAToolWindowPanel();
+			jiraToolWindowPanel = new JIRAToolWindowPanel(projectConfigurationBean);
             Content jiraToolWindow = createJiraContent();
 			toolWindow.getContentManager().addContent(jiraToolWindow);
             toolWindow.getContentManager().setSelectedContent(jiraToolWindow);
@@ -259,13 +260,13 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 	}
 
 	public ProjectConfigurationBean getState() {
-		//System.out.println("GET:");
+		System.out.println("GET:");
 		return projectConfigurationBean;
 	}
 
 	public void loadState(ProjectConfigurationBean state) {
-		//System.out.println("SET:");
-		projectConfigurationBean = state;
+		System.out.println("SET:");
+		projectConfigurationBean.copyConfiguration(state);
 	}
 
 	public ProjectConfigurationBean getProjectConfigurationBean() {

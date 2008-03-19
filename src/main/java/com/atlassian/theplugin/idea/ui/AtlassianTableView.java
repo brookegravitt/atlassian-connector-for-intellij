@@ -1,8 +1,6 @@
 package com.atlassian.theplugin.idea.ui;
 
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.TableColumnInfo;
-import com.atlassian.theplugin.idea.ThePluginProjectComponent;
 import com.intellij.ui.table.TableView;
 import com.intellij.util.config.Storage;
 import com.intellij.util.ui.ListTableModel;
@@ -16,7 +14,7 @@ import java.awt.event.MouseEvent;
 public class AtlassianTableView extends TableView {
     private static final int DEFAULT_ROW_HEIGHT = 20;
 
-    public AtlassianTableView(ListTableModel listTableModel) {
+    public AtlassianTableView(ListTableModel listTableModel, final Storage storage) {
         super(listTableModel);
 
         setBorder(BorderFactory.createEmptyBorder());
@@ -28,11 +26,8 @@ public class AtlassianTableView extends TableView {
 
 		getTableHeader().addMouseListener(new MouseAdapter() {
 			public void mouseReleased(MouseEvent e) {
-				//System.out.println("YYYYYYYYYYYYYYYY");
-				TableView.store(
-						IdeaHelper.getCurrentProject().getComponent(ThePluginProjectComponent.class).
-								getProjectConfigurationBean().getBambooConfiguration().getTableConfiguration(),
-						AtlassianTableView.this);
+				// stores table configuration in Storage object
+				TableView.store(storage, AtlassianTableView.this);
 			}
 		});
 
