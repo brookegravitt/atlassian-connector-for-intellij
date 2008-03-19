@@ -1,7 +1,6 @@
 package com.atlassian.theplugin.idea.action.jira;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.ThePluginApplicationComponent;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.api.JIRAProject;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -26,8 +25,7 @@ public class ProjectComboAction extends ComboBoxAction {
 
         group.add(new MyAnAction(null, comboBox, this));
 
-        ThePluginApplicationComponent app = IdeaHelper.getAppComponent();
-        JIRAServer server = app.getCurrentJIRAServer();
+        JIRAServer server = IdeaHelper.getCurrentJIRAServer();
         for (Iterator iterator = server.getProjects().iterator(); iterator.hasNext();) {
             JIRAProject project = (JIRAProject) iterator.next();
             group.add(new MyAnAction(project, comboBox, this));

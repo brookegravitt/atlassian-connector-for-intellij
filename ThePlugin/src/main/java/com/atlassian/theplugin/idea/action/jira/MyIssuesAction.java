@@ -27,6 +27,6 @@ public class MyIssuesAction extends CheckboxAction implements JIRAQueryFragment 
     }
 
     public String getQueryStringFragment() {
-        return "assignee=" + IdeaHelper.getAppComponent().getCurrentJIRAServer().getServer().getUserName();
+        return "assignee=" + IdeaHelper.getCurrentJIRAServer().getServer().getUserName();
     }
 }

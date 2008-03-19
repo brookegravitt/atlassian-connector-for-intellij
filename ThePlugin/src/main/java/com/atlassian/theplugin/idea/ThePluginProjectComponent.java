@@ -11,6 +11,7 @@ import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;
 import com.atlassian.theplugin.idea.crucible.*;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
+import com.atlassian.theplugin.jira.JIRAServer;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.components.State;
@@ -32,7 +33,7 @@ import javax.swing.*;
  */
 @State(name = "ThePluginSettings", storages = { @Storage(id = "thePlugin", file = "$PROJECT_FILE$") })
 public class ThePluginProjectComponent implements ProjectComponent, PersistentStateComponent<ProjectConfigurationBean> {
-    private static final String THE_PLUGIN_TOOL_WINDOW_ICON = "/icons/thePlugin_15x10.png";
+	private static final String THE_PLUGIN_TOOL_WINDOW_ICON = "/icons/thePlugin_15x10.png";
 
 	private final ProjectConfigurationBean projectConfigurationBean;
 
@@ -48,7 +49,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 	private final BambooTableToolWindowPanel bambooToolWindowPanel;
 
 	private final CrucibleStatusChecker crucibleStatusChecker;
-    private HtmlCrucibleStatusListener toolWindowCrucibleListener;
+	private HtmlCrucibleStatusListener toolWindowCrucibleListener;
 
 	private final ToolWindowManager toolWindowManager;
 	private boolean created;
@@ -59,6 +60,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 	private CrucibleToolWindowPanel crucibleToolWindowPanel;
 
 	private JIRAToolWindowPanel jiraToolWindowPanel;
+	private JIRAServer currentJiraServer;
 
 	public ThePluginProjectComponent(Project project,
 									 CrucibleStatusChecker crucibleStatusChecker,
@@ -77,7 +79,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 		//this.jiraToolWindowPanel = jiraToolWindowPanel;
 
 		// make findBugs happy
-        statusBarBambooIcon = null;
+		statusBarBambooIcon = null;
 		statusBarCrucibleIcon = null;
 		statusPluginUpdateIcon = null;
 		created = false;
@@ -100,18 +102,18 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 	}
 
 	private void createPlugin() {
-        // unregister changelistmanager?
-        // only open tool windows for each application that's registered
-        // show something nice if there are non
-        // swap listener for dataretrievedlistener and datachangelisteners
-        // store bamboo between runs in UDC
-        // clean up object model confusion
+		// unregister changelistmanager?
+		// only open tool windows for each application that's registered
+		// show something nice if there are non
+		// swap listener for dataretrievedlistener and datachangelisteners
+		// store bamboo between runs in UDC
+		// clean up object model confusion
 
 		if (!created) {
 
 			// create tool window on the right
 			com.intellij.openapi.wm.ToolWindow toolWindow = toolWindowManager.registerToolWindow(IdeaHelper.TOOL_WINDOW_NAME,
-						true, ToolWindowAnchor.RIGHT);
+					true, ToolWindowAnchor.RIGHT);
 			Icon toolWindowIcon = IconLoader.getIcon(THE_PLUGIN_TOOL_WINDOW_ICON);
 			toolWindow.setIcon(toolWindowIcon);
 
@@ -126,9 +128,9 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 			toolWindow.getContentManager().addContent(crucibleToolWindow);
 
 			jiraToolWindowPanel = new JIRAToolWindowPanel(projectConfigurationBean);
-            Content jiraToolWindow = createJiraContent();
+			Content jiraToolWindow = createJiraContent();
 			toolWindow.getContentManager().addContent(jiraToolWindow);
-            toolWindow.getContentManager().setSelectedContent(jiraToolWindow);
+			toolWindow.getContentManager().setSelectedContent(jiraToolWindow);
 			TableView.restore(projectConfigurationBean.getJiraConfiguration().getTableConfiguration(),
 					jiraToolWindowPanel.getTable());
 
@@ -159,8 +161,8 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 			statusBarBambooIcon.showOrHideIcon();
 
 			// setup Crucible status checker and listeners
-            toolWindowCrucibleListener = new HtmlCrucibleStatusListener(crucibleToolWindowPanel.getCrucibleContent());
-            crucibleStatusChecker.registerListener(toolWindowCrucibleListener);
+			toolWindowCrucibleListener = new HtmlCrucibleStatusListener(crucibleToolWindowPanel.getCrucibleContent());
+			crucibleStatusChecker.registerListener(toolWindowCrucibleListener);
 
 			// create crucible status bar icon
 			statusBarCrucibleIcon = new CrucibleStatusIcon(project);
@@ -228,7 +230,6 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 			statusPluginUpdateIcon.hideIcon();
 			statusPluginUpdateIcon = null;
 
-
 			// unregister listeners
 			//bambooStatusChecker.unregisterListener(iconBambooStatusListener);
 			//bambooStatusChecker.unregisterListener(toolWindowBambooListener);
@@ -276,4 +277,12 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 	public ProjectConfigurationBean getProjectConfigurationBean() {
 		return projectConfigurationBean;
 	}
+
+	public JIRAServer getCurrentJiraServer() {
+		return currentJiraServer;
+	}
+
+	public void setCurrentJiraServer(JIRAServer currentJiraServer) {
+		this.currentJiraServer = currentJiraServer;
+	}	
 }
