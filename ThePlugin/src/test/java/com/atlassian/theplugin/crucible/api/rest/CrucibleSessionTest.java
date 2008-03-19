@@ -74,7 +74,7 @@ public class CrucibleSessionTest extends TestCase {
 	}
 
 	public void testLoginInternalErrorResponse() throws Exception {
-		mockServer.expect("/rest-service/auth-v1/login", new ErrorResponse(500));
+		mockServer.expect("/rest-service/auth-v1/login", new ErrorResponse(500, ""));
 		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
 
 		try {
@@ -118,7 +118,7 @@ public class CrucibleSessionTest extends TestCase {
 	}
 
 	public void testWrongUrlBambooLogin() throws Exception {
-		ErrorResponse error = new ErrorResponse(400);
+		ErrorResponse error = new ErrorResponse(400, "Bad Request");
 		mockServer.expect("/wrongurl/rest-service/auth-v1/login", error);
 		CrucibleLoginException exception = null;
 
@@ -457,7 +457,7 @@ public class CrucibleSessionTest extends TestCase {
 
 	public void testGetReviewersInvalidId() throws Exception {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/rest-service/reviews-v1/PR-2/reviewers", new ErrorResponse(500));
+		mockServer.expect("/rest-service/reviews-v1/PR-2/reviewers", new ErrorResponse(500, ""));
 		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
 
 		apiHandler.login(USER_NAME, PASSWORD);
@@ -534,7 +534,7 @@ public class CrucibleSessionTest extends TestCase {
 		ReviewDataBean review = createReviewRequest();
 
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/rest-service/reviews-v1", new ErrorResponse(500));
+		mockServer.expect("/rest-service/reviews-v1", new ErrorResponse(500, ""));
 		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
 
 		apiHandler.login(USER_NAME, PASSWORD);

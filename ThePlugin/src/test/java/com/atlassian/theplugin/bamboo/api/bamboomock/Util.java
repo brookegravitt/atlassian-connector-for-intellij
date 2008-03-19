@@ -14,6 +14,8 @@ import java.util.Iterator;
 public abstract class Util {
 
 	private static final String RESOURCE_BASE = "/mock/bamboo/1_2_4/api/rest/";
+	private static final String HTTP_400_TEXT = "Bad Request";
+	private static final int HTTP_400 = 400;
 
 
 	private Util() {
@@ -75,7 +77,7 @@ public abstract class Util {
 		Assert.assertSame(BuildStatus.UNKNOWN, build.getStatus());
 		Assert.assertTrue(build.getPollingTime().getTime() - System.currentTimeMillis() < 5000);
 		Assert.assertTrue(build.getMessage().startsWith(
-				ErrorResponse.getStaticErrorMessage(400)));
+				ErrorResponse.getStaticErrorMessage(HTTP_400, HTTP_400_TEXT)));
 	}
 
 
