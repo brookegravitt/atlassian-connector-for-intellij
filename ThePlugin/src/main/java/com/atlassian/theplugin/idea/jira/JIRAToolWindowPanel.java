@@ -267,4 +267,7 @@ public class JIRAToolWindowPanel extends JPanel {
         }
     }
 
+	public AtlassianTableView getTable() {
+		return table;
+	}
 }
