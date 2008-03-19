@@ -6,8 +6,7 @@ import org.jetbrains.annotations.NonNls;
  * Created by IntelliJ IDEA.
  * User: pmaruszak
  * Date: Mar 19, 2008
- * Time: 10:27:32 AM
- * To change this template use File | Settings | File Templates.
+ * Time: 10:27:32 AM 
  */
 
 public abstract class Logger {
