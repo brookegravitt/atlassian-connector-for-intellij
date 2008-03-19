@@ -75,7 +75,7 @@ public abstract class Util {
 		Assert.assertSame(BuildStatus.UNKNOWN, build.getStatus());
 		Assert.assertTrue(build.getPollingTime().getTime() - System.currentTimeMillis() < 5000);
 		Assert.assertTrue(build.getMessage().startsWith(
-				ErrorResponse.getErrorMessage()));
+				ErrorResponse.getStaticErrorMessage(400)));
 	}
 
 
