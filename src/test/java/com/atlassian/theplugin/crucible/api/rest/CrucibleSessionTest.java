@@ -118,7 +118,8 @@ public class CrucibleSessionTest extends TestCase {
 	}
 
 	public void testWrongUrlBambooLogin() throws Exception {
-		mockServer.expect("/wrongurl/rest-service/auth-v1/login", new ErrorResponse(400));
+		ErrorResponse error = new ErrorResponse(400);
+		mockServer.expect("/wrongurl/rest-service/auth-v1/login", error);
 		CrucibleLoginException exception = null;
 
 		try {
@@ -132,7 +133,7 @@ public class CrucibleSessionTest extends TestCase {
 		assertNotNull("Exception expected", exception);
 		assertNotNull("Exception should have a cause", exception.getCause());
 		assertSame(IOException.class, exception.getCause().getClass());
-		assertTrue(exception.getMessage().startsWith(ErrorResponse.getErrorMessage()));
+		assertTrue(exception.getMessage().startsWith(error.getErrorMessage()));
 	}
 
 	public void testNonExistingServerBambooLogin() throws Exception {
