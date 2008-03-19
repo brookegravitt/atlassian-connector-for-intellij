@@ -288,20 +288,23 @@ public class CrucibleSessionImpl implements CrucibleSession {
 		}
 
 		GetMethod method = new GetMethod(urlString);
-		method.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
+		Document doc = null;
+		try {
+			method.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
 
-		method.addRequestHeader(new Header("Authorization", getAuthHeaderValue()));
+			method.addRequestHeader(new Header("Authorization", getAuthHeaderValue()));
 
-		client.executeMethod(method);
+			client.executeMethod(method);
 
-		if (method.getStatusCode() != HttpStatus.SC_OK) {
-			throw new IOException("HTTP status code " + method.getStatusCode() + ": " + method.getStatusText());
+			if (method.getStatusCode() != HttpStatus.SC_OK) {
+				throw new IOException("HTTP status code " + method.getStatusCode() + ": " + method.getStatusText());
+			}
+
+			SAXBuilder builder = new SAXBuilder();
+			doc = builder.build(method.getResponseBodyAsStream());
+		} finally {
+			method.releaseConnection();
 		}
-
-		SAXBuilder builder = new SAXBuilder();
-		Document doc = builder.build(method.getResponseBodyAsStream());
-
-		method.releaseConnection();
 
 		return doc;
 	}
@@ -323,23 +326,26 @@ public class CrucibleSessionImpl implements CrucibleSession {
 		}
 
 		PostMethod method = new PostMethod(urlString);
-		method.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
-		method.addRequestHeader(new Header("Authorization", getAuthHeaderValue()));
+		Document doc = null;
+		try {
+			method.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
+			method.addRequestHeader(new Header("Authorization", getAuthHeaderValue()));
 
-		XMLOutputter serializer = new XMLOutputter(Format.getPrettyFormat());
-		method.setRequestEntity(new StringRequestEntity(serializer.outputString(request), "application/xml", "UTF-8"));
+			XMLOutputter serializer = new XMLOutputter(Format.getPrettyFormat());
+			method.setRequestEntity(new StringRequestEntity(serializer.outputString(request), "application/xml", "UTF-8"));
 
-		client.executeMethod(method);
+			client.executeMethod(method);
 
-		if (method.getStatusCode() != HttpStatus.SC_OK) {
-			throw new IOException("HTTP status code " + method.getStatusCode() + ": " + method.getStatusText());
+			if (method.getStatusCode() != HttpStatus.SC_OK) {
+				throw new IOException("HTTP status code " + method.getStatusCode() + ": " + method.getStatusText());
+			}
+
+			SAXBuilder builder = new SAXBuilder();
+			doc = builder.build(method.getResponseBodyAsStream());
+
+		} finally {
+			method.releaseConnection();
 		}
-
-		SAXBuilder builder = new SAXBuilder();
-		Document doc = builder.build(method.getResponseBodyAsStream());
-
-		method.releaseConnection();
-
 		return doc;
 	}
 
