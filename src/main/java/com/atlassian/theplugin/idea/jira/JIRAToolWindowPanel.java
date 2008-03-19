@@ -44,8 +44,8 @@ public class JIRAToolWindowPanel extends JPanel {
     private Map<String, JIRAQueryFragment> queryFragments = new HashMap<String, JIRAQueryFragment>();
     private AtlassianTableView table;
     private static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
-	private ActionToolbar filterToolbarTop;
-	private ActionToolbar filterToolbarBottom;
+	private transient ActionToolbar filterToolbarTop;
+	private transient ActionToolbar filterToolbarBottom;
 
 	public JIRAToolWindowPanel(ProjectConfigurationBean projectConfigurationBean) {
         super(new BorderLayout());
