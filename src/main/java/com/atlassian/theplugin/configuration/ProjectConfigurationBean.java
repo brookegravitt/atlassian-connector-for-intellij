@@ -10,6 +10,11 @@ package com.atlassian.theplugin.configuration;
 public class ProjectConfigurationBean {
 
 	private BambooProjectConfiguration bambooConfiguration = new BambooProjectConfiguration();
+	private JiraProjectConfiguration jiraConfiguration = new JiraProjectConfiguration();
+
+	public ProjectConfigurationBean() {
+
+	}
 
 	public BambooProjectConfiguration getBambooConfiguration() {
 		return bambooConfiguration;
@@ -19,8 +24,16 @@ public class ProjectConfigurationBean {
 		this.bambooConfiguration = bambooConfiguration;
 	}
 
-	public ProjectConfigurationBean() {
-
+	public JiraProjectConfiguration getJiraConfiguration() {
+		return jiraConfiguration;
 	}
 
+	public void setJiraConfiguration(JiraProjectConfiguration jiraConfiguration) {
+		this.jiraConfiguration = jiraConfiguration;
+	}
+
+	public void copyConfiguration(ProjectConfigurationBean state) {
+		bambooConfiguration.copyConfiguration(state.getBambooConfiguration());
+		jiraConfiguration.copyConfiguration(state.getJiraConfiguration());
+	}
 }

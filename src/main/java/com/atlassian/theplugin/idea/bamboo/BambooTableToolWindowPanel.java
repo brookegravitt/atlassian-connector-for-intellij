@@ -5,6 +5,7 @@ import com.atlassian.theplugin.bamboo.BambooServerFacade;
 import com.atlassian.theplugin.bamboo.BambooStatusListener;
 import com.atlassian.theplugin.bamboo.HtmlBambooStatusListener;
 import com.atlassian.theplugin.bamboo.api.BambooException;
+import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.atlassian.theplugin.idea.ui.AtlassianTableView;
@@ -42,7 +43,8 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 	private static final Icon ICON_LABEL = IconLoader.getIcon("/icons/bamboo-label.png");
 	private static final Icon ICON_COMMENT = IconLoader.getIcon("/icons/bamboo-comment.png");
 
-	public BambooTableToolWindowPanel(BambooServerFacade bambooFacade) {
+	public BambooTableToolWindowPanel(BambooServerFacade bambooFacade,
+									  ProjectConfigurationBean projectConfigurationBean) {
 		super(new BorderLayout());
 
 		this.bambooFacade = bambooFacade;
@@ -64,7 +66,8 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 
 		listTableModel = new ListTableModel(columns);
 		listTableModel.setSortable(true);
-		table = new AtlassianTableView(listTableModel);
+		table = new AtlassianTableView(listTableModel,
+				projectConfigurationBean.getBambooConfiguration().getTableConfiguration());
 		table.prepareColumns(columns, BambooTableColumnProvider.makeRendererInfo());
 
 		table.addMouseListener(new MouseAdapter() {
