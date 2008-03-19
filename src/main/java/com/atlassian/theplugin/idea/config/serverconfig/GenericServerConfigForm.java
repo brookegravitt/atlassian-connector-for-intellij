@@ -12,6 +12,8 @@ import com.intellij.uiDesigner.core.Spacer;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.FocusListener;
+import java.awt.event.FocusEvent;
 
 /**
  * Plugin configuration form.
@@ -32,6 +34,15 @@ public class GenericServerConfigForm extends JComponent implements ServerPanel, 
 
 		$$$setupUI$$$();
 		testConnection.addActionListener(new TestConnectionListener(tester, this));
+		serverUrl.addFocusListener(new FocusListener() {
+			public void focusGained(FocusEvent e) {
+				//To change body of implemented methods use File | Settings | File Templates.
+			}
+
+			public void focusLost(FocusEvent e) {
+				serverUrl.setText(Util.addHttpPrefix(serverUrl.getText()));
+			}
+		});
 	}
 
 	public void setData(Server server) {
