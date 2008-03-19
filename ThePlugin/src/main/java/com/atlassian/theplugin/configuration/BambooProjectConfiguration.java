@@ -8,18 +8,22 @@ package com.atlassian.theplugin.configuration;
  * To change this template use File | Settings | File Templates.
  */
 public class BambooProjectConfiguration {
-	private BambooProjectToolWindowTableConfiguration tableConfiguration =
-			new BambooProjectToolWindowTableConfiguration();
+	private ProjectToolWindowTableConfiguration tableConfiguration =
+			new ProjectToolWindowTableConfiguration();
 
 	public BambooProjectConfiguration() {
 
 	}
 
-	public BambooProjectToolWindowTableConfiguration getTableConfiguration() {
+	public ProjectToolWindowTableConfiguration getTableConfiguration() {
 		return tableConfiguration;
 	}
 
-	public void setTableConfiguration(BambooProjectToolWindowTableConfiguration tableConfiguration) {
+	public void setTableConfiguration(ProjectToolWindowTableConfiguration tableConfiguration) {
 		this.tableConfiguration = tableConfiguration;
+	}
+
+	public void copyConfiguration(BambooProjectConfiguration bambooConfiguration) {
+		tableConfiguration.copyConfiguration(bambooConfiguration.getTableConfiguration());
 	}
 }
