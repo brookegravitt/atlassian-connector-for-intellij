@@ -23,6 +23,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.*;
 import java.util.Timer;
 
@@ -76,7 +79,14 @@ public class ThePluginApplicationComponent
 		return "ThePluginApplicationComponent";
 	}
 
+
 	public void initComponent() {
+		Logger.setFactory(new Logger.Factory() {
+						public Logger getLoggerInstance(String category) {
+							return new IdeaLogger(com.intellij.openapi.diagnostic.Logger.getInstance(category));
+						};
+					});
+
 		rescheduleStatusCheckers(false);
 	}
 
