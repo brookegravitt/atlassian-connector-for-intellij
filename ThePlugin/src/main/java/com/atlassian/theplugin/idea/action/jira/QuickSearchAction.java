@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.action.jira;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.PluginToolWindow;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -24,7 +25,7 @@ public class QuickSearchAction extends AnAction {
                         + "/secure/QuickSearch.jspa?searchString=" + URLEncoder.encode(query));
             }
         } else {
-            IdeaHelper.focusPanel(e, IdeaHelper.ToolWindowPanels.JIRA);
+            PluginToolWindow.focusPanel(e, PluginToolWindow.ToolWindowPanels.JIRA);
             Messages.showErrorDialog(project, "Please select a JIRA server before searching.", "JIRA Quick Search");
         }
     }

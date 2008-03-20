@@ -5,6 +5,7 @@ import com.atlassian.theplugin.crucible.CrucibleStatusListener;
 import com.atlassian.theplugin.crucible.ReviewDataInfo;
 import com.atlassian.theplugin.idea.GenericHyperlinkListener;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.PluginToolWindow;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.WindowManager;
 import thirdparty.javaworld.ClasspathHTMLEditorKit;
@@ -73,7 +74,7 @@ public class CrucibleNewReviewNotifier implements CrucibleStatusListener {
 				content.addMouseListener(new MouseAdapter() {
 					public void mouseClicked(MouseEvent e) {
 						display.resetIcon();
-						IdeaHelper.focusPanel(project, IdeaHelper.ToolWindowPanels.CRUCIBLE);
+						PluginToolWindow.focusPanel(project, PluginToolWindow.ToolWindowPanels.CRUCIBLE);
 					}
 				});
 				content.setCaretPosition(0); // do thi to make sure scroll pane is always at the top / header

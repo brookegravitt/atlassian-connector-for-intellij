@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.action.jira;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.PluginToolWindow;
 import com.atlassian.theplugin.idea.jira.IssueCreate;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -23,7 +24,7 @@ public class CreateIssueAction extends AnAction {
         }
 
         if (errorMsg != null) {
-            IdeaHelper.focusPanel(e, IdeaHelper.ToolWindowPanels.JIRA);
+            PluginToolWindow.focusPanel(e, PluginToolWindow.ToolWindowPanels.JIRA);
             Messages.showErrorDialog(project, errorMsg, "Create JIRA Issue");
         }
     }
