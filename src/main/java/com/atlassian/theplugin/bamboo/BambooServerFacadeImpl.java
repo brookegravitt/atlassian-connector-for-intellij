@@ -5,6 +5,7 @@ import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.configuration.SubscribedPlan;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.atlassian.theplugin.rest.RestException;
 
 import java.util.*;
 
@@ -26,7 +27,11 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 		String key = server.getUserName() + server.getUrlString() + server.getPasswordString();
 		BambooSession session = sessions.get(key);
 		if (session == null) {
-			session = new AutoRenewBambooSession(server.getUrlString());
+			try {
+				session = new AutoRenewBambooSession(server.getUrlString());
+			} catch (RestException e) {
+				throw new BambooLoginException(e.getMessage(), e);
+			}
 			sessions.put(key, session);
 		}
 		if (!session.isLoggedIn()) {
@@ -55,7 +60,12 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 	 * @see BambooLoginFailedException
 	 */
 	public void testServerConnection(String url, String userName, String password) throws BambooLoginException {
-		BambooSession apiHandler = new AutoRenewBambooSession(url);
+		BambooSession apiHandler = null;
+		try {
+			apiHandler = new AutoRenewBambooSession(url);
+		} catch (RestException e) {
+			throw new BambooLoginException(e.getMessage(), e);
+		}
 		apiHandler.login(userName, password.toCharArray());
 		apiHandler.logout();
 	}

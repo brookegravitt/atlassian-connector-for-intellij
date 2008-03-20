@@ -1,22 +1,18 @@
 package com.atlassian.theplugin.bamboo.api;
 
 import com.atlassian.theplugin.bamboo.*;
-import com.atlassian.theplugin.util.HttpClientFactory;
-import com.atlassian.theplugin.util.Util;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.cookie.CookiePolicy;
-import org.apache.commons.httpclient.methods.GetMethod;
+import com.atlassian.theplugin.rest.AbstractRestSession;
+import com.atlassian.theplugin.rest.RestException;
+import com.atlassian.theplugin.rest.RestSessionExpiredException;
+import org.apache.commons.httpclient.HttpMethod;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.text.ParseException;
@@ -28,7 +24,7 @@ import java.util.List;
 /**
  * Communication stub for Bamboo REST API.
  */
-class BambooSessionImpl implements BambooSession {
+class BambooSessionImpl extends AbstractRestSession implements BambooSession {
 	private static final String LOGIN_ACTION = "/api/rest/login.action";
 	private static final String LOGOUT_ACTION = "/api/rest/logout.action";
 	private static final String LIST_PROJECT_ACTION = "/api/rest/listProjectNames.action";
@@ -41,11 +37,8 @@ class BambooSessionImpl implements BambooSession {
 	private static final String EXECUTE_BUILD_ACTION = "/api/rest/executeBuild.action";
 	private static final String GET_BAMBOO_BUILD_NUMBER_ACTION = "/api/rest/getBambooBuildNumber.action";
 
-	private final String baseUrl;
 	private String authToken;
-	private final Object clientLock = new Object();
 
-	private HttpClient client = null;
 	private static final String AUTHENTICATION_ERROR_MESSAGE = "User not authenticated yet, or session timed out";
 
 	/**
@@ -53,9 +46,10 @@ class BambooSessionImpl implements BambooSession {
 	 *
 	 * @param baseUrl base URL for Bamboo instance
 	 */
-	public BambooSessionImpl(String baseUrl) {
-		this.baseUrl = Util.removeUrlTrailingSlashes(baseUrl);
+	public BambooSessionImpl(String baseUrl) throws RestException {
+		super(baseUrl);
 	}
+
 
 	/**
 	 * Connects to Bamboo server instance. On successful login authentication token is returned from
@@ -91,7 +85,7 @@ class BambooSessionImpl implements BambooSession {
 		}
 
 		try {
-			Document doc = retrieveResponse(loginUrl);
+			Document doc = retrieveGetResponse(loginUrl);
 			String exception = getExceptionMessages(doc);
 			if (null != exception) {
 				throw new BambooLoginFailedException(exception);
@@ -113,7 +107,7 @@ class BambooSessionImpl implements BambooSession {
 			throw new BambooLoginException(e.getMessage(), e);
 		} catch (JDOMException e) {
 			throw new BambooLoginException("Server returned malformed response", e);
-		} catch (BambooSessionExpiredException e) {
+		} catch (RestSessionExpiredException e) {
 			throw new BambooLoginException("Session expired", e);
 		}
 	}
@@ -125,14 +119,14 @@ class BambooSessionImpl implements BambooSession {
 
 		try {
 			String logoutUrl = baseUrl + LOGOUT_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8");
-			retrieveResponse(logoutUrl);
+			retrieveGetResponse(logoutUrl);
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("URLEncoding problem", e);
 		} catch (IOException e) {
 			/* ignore errors on logout */
 		} catch (JDOMException e) {
 			/* ignore errors on logout */
-		} catch (BambooSessionExpiredException e) {
+		} catch (RestSessionExpiredException e) {
 			/* ignore errors on logout */
 		}
 
@@ -150,11 +144,11 @@ class BambooSessionImpl implements BambooSession {
 		}
 
 		try {
-			Document doc = retrieveResponse(queryUrl);
+			Document doc = retrieveGetResponse(queryUrl);
 
 			String exception = getExceptionMessages(doc);
 			if (null != exception) {
-				// error - method does nt exists (session errors handled in retrieveResponse
+				// error - method does nt exists (session errors handled in retrieveGetReponse
 				return -1;
 			}
 
@@ -172,6 +166,8 @@ class BambooSessionImpl implements BambooSession {
 			throw new BambooException("Server returned malformed response", e);
 		} catch (IOException e) {
 			throw new BambooException(e.getMessage(), e);
+		} catch (RestSessionExpiredException e) {
+			throw new BambooSessionExpiredException(e.getMessage(), e);
 		}
 	}
 
@@ -185,7 +181,7 @@ class BambooSessionImpl implements BambooSession {
 
 		List<BambooProject> projects = new ArrayList<BambooProject>();
 		try {
-			Document doc = retrieveResponse(buildResultUrl);
+			Document doc = retrieveGetResponse(buildResultUrl);
 			XPath xpath = XPath.newInstance("/response/project");
 			@SuppressWarnings("unchecked")
 			List<Element> elements = xpath.selectNodes(doc);
@@ -200,6 +196,8 @@ class BambooSessionImpl implements BambooSession {
 			throw new BambooException("Server returned malformed response", e);
 		} catch (IOException e) {
 			throw new BambooException(e.getMessage(), e);
+		} catch (RestSessionExpiredException e) {
+			throw new BambooSessionExpiredException(e.getMessage(), e);
 		}
 
 		return projects;
@@ -215,7 +213,7 @@ class BambooSessionImpl implements BambooSession {
 
 		List<BambooPlan> plans = new ArrayList<BambooPlan>();
 		try {
-			Document doc = retrieveResponse(buildResultUrl);
+			Document doc = retrieveGetResponse(buildResultUrl);
 			XPath xpath = XPath.newInstance("/response/build");
 			@SuppressWarnings("unchecked")
 			List<Element> elements = xpath.selectNodes(doc);
@@ -237,6 +235,8 @@ class BambooSessionImpl implements BambooSession {
 			throw new BambooException("Server returned malformed response", e);
 		} catch (IOException e) {
 			throw new BambooException(e.getMessage(), e);
+		} catch (RestSessionExpiredException e) {
+			throw new BambooSessionExpiredException("Session expired", e);
 		}
 
 		return plans;
@@ -260,7 +260,7 @@ class BambooSessionImpl implements BambooSession {
 		}
 
 		try {
-			Document doc = retrieveResponse(buildResultUrl);
+			Document doc = retrieveGetResponse(buildResultUrl);
 			String exception = getExceptionMessages(doc);
 			if (null != exception) {
 				return constructBuildErrorInfo(planKey, exception, new Date());
@@ -278,6 +278,8 @@ class BambooSessionImpl implements BambooSession {
 			return constructBuildErrorInfo(planKey, e.getMessage(), new Date());
 		} catch (JDOMException e) {
 			return constructBuildErrorInfo(planKey, "Server returned malformed response", new Date());
+		} catch (RestSessionExpiredException e) {
+			throw new BambooSessionExpiredException("Session expired", e);
 		}
 	}
 
@@ -291,7 +293,7 @@ class BambooSessionImpl implements BambooSession {
 		}
 
 		try {
-			Document doc = retrieveResponse(buildResultUrl);
+			Document doc = retrieveGetResponse(buildResultUrl);
 			String exception = getExceptionMessages(doc);
 			if (null != exception) {
 				return builds;
@@ -312,6 +314,8 @@ class BambooSessionImpl implements BambooSession {
 			return builds;
 		} catch (JDOMException e) {
 			return builds;
+		} catch (RestSessionExpiredException e) {
+			throw new BambooSessionExpiredException("Session expired", e);
 		}
 	}
 
@@ -327,7 +331,7 @@ class BambooSessionImpl implements BambooSession {
 
 		try {
 			BuildDetailsInfo build = new BuildDetailsInfo();
-			Document doc = retrieveResponse(buildResultUrl);
+			Document doc = retrieveGetResponse(buildResultUrl);
 			String exception = getExceptionMessages(doc);
 			if (null != exception) {
 				throw new BambooException(exception);
@@ -418,6 +422,8 @@ class BambooSessionImpl implements BambooSession {
 			throw new BambooException("Server returned malformed response", e);
 		} catch (IOException e) {
 			throw new BambooException(e.getMessage(), e);
+		} catch (RestSessionExpiredException e) {
+			throw new BambooSessionExpiredException("Session expired", e);
 		}
 	}
 
@@ -433,7 +439,7 @@ class BambooSessionImpl implements BambooSession {
 		}
 
 		try {
-			Document doc = retrieveResponse(buildResultUrl);
+			Document doc = retrieveGetResponse(buildResultUrl);
 			String exception = getExceptionMessages(doc);
 			if (null != exception) {
 				throw new BambooException(exception);
@@ -442,6 +448,8 @@ class BambooSessionImpl implements BambooSession {
 			throw new BambooException("Server returned malformed response", e);
 		} catch (IOException e) {
 			throw new BambooException(e.getMessage(), e);
+		} catch (RestSessionExpiredException e) {
+			throw new BambooSessionExpiredException("Session expired", e);
 		}
 	}
 
@@ -457,7 +465,7 @@ class BambooSessionImpl implements BambooSession {
 		}
 
 		try {
-			Document doc = retrieveResponse(buildResultUrl);
+			Document doc = retrieveGetResponse(buildResultUrl);
 			String exception = getExceptionMessages(doc);
 			if (null != exception) {
 				throw new BambooException(exception);
@@ -466,6 +474,8 @@ class BambooSessionImpl implements BambooSession {
 			throw new BambooException("Server returned malformed response", e);
 		} catch (IOException e) {
 			throw new BambooException(e.getMessage(), e);
+		} catch (RestSessionExpiredException e) {
+			throw new BambooSessionExpiredException("Session expired", e);
 		}
 	}
 
@@ -479,7 +489,7 @@ class BambooSessionImpl implements BambooSession {
 		}
 
 		try {
-			Document doc = retrieveResponse(buildResultUrl);
+			Document doc = retrieveGetResponse(buildResultUrl);
 			String exception = getExceptionMessages(doc);
 			if (null != exception) {
 				throw new BambooException(exception);
@@ -488,6 +498,8 @@ class BambooSessionImpl implements BambooSession {
 			throw new BambooException("Server returned malformed response", e);
 		} catch (IOException e) {
 			throw new BambooException(e.getMessage(), e);
+		} catch (RestSessionExpiredException e) {
+			throw new BambooSessionExpiredException("Session expired", e);
 		}
 	}
 
@@ -555,57 +567,6 @@ class BambooSessionImpl implements BambooSession {
 		}
 	}
 
-	private Document retrieveResponse(String urlString) throws IOException, JDOMException, BambooSessionExpiredException {
-		// validate URL first
-		try {
-			URL url = new URL(urlString);
-			// check the host name
-			if (url.getHost().length() == 0) {
-				throw new MalformedURLException("Url must contain valid host.");
-			}
-			if (url.getPort() >= 2 * Short.MAX_VALUE) {
-				throw new MalformedURLException("Url port invalid");
-			}			
-		} catch (MalformedURLException e) {
-			throw new MalformedURLException("Url must contain valid host.");
-		}
-
-		Document doc = null;
-		synchronized (clientLock) {
-			if (client == null) {
-				client = HttpClientFactory.getClient();
-			}
-			GetMethod method = new GetMethod(urlString);
-			try {
-				method.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
-
-				client.executeMethod(method);
-
-				if (method.getStatusCode() != HttpStatus.SC_OK) {
-					throw new IOException(
-							"HTTP " + method.getStatusCode() + " (" + HttpStatus.getStatusText(method.getStatusCode()) + ")\n"
-									+ method.getStatusText());
-				}
-
-				SAXBuilder builder = new SAXBuilder();
-				doc = builder.build(method.getResponseBodyAsStream());
-			} catch (NullPointerException e) {
-				throw (IOException) new IOException("Connection error").initCause(e);
-			}	finally {
-				method.releaseConnection();
-			}
-		}
-
-		String error = getExceptionMessages(doc);
-		if (error != null) {
-			if (error.startsWith(AUTHENTICATION_ERROR_MESSAGE)) {
-				throw new BambooSessionExpiredException("Session expired.");
-			}
-		}
-
-		return doc;
-	}
-
 	private static String getExceptionMessages(Document doc) throws JDOMException {
 		XPath xpath = XPath.newInstance("/errors/error");
 		@SuppressWarnings("unchecked")
@@ -627,4 +588,18 @@ class BambooSessionImpl implements BambooSession {
 	public boolean isLoggedIn() {
 		return authToken != null;
 	}
+
+	protected void adjustHttpHeader(HttpMethod method) {
+		// Bamboo does not require custom headers
+	}
+
+	protected void preprocessResult(Document doc) throws JDOMException, RestSessionExpiredException {
+		String error = getExceptionMessages(doc);
+		if (error != null) {
+			if (error.startsWith(AUTHENTICATION_ERROR_MESSAGE)) {
+				throw new RestSessionExpiredException("Session expired.");
+			}
+		}
+	}
+
 }

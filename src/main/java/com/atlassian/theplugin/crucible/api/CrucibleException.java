@@ -1,5 +1,7 @@
 package com.atlassian.theplugin.crucible.api;
 
+import com.atlassian.theplugin.rest.RestException;
+
 /**
  * Created by IntelliJ IDEA.
  * User: Jacek
@@ -7,7 +9,7 @@ package com.atlassian.theplugin.crucible.api;
  * Time: 16:14:11
  * To change this template use File | Settings | File Templates.
  */
-public class CrucibleException extends Exception {
+public class CrucibleException extends RestException {
 
 	public CrucibleException(String message) {
 		super(message);
