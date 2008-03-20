@@ -4,6 +4,7 @@ import com.atlassian.theplugin.bamboo.BambooBuild;
 import com.atlassian.theplugin.bamboo.BambooPlan;
 import com.atlassian.theplugin.bamboo.BambooProject;
 import com.atlassian.theplugin.bamboo.BuildDetails;
+import com.atlassian.theplugin.rest.RestException;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ public class AutoRenewBambooSession implements BambooSession {
 	private String userName;
 	private char[] password;
 
-	public AutoRenewBambooSession(String url) {
+	public AutoRenewBambooSession(String url) throws RestException {
 		this.delegate = new BambooSessionImpl(url);
 	}
 

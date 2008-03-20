@@ -1,28 +1,20 @@
 package com.atlassian.theplugin.crucible.api.rest;
 
 import com.atlassian.theplugin.crucible.api.*;
-import com.atlassian.theplugin.util.HttpClientFactory;
-import com.atlassian.theplugin.util.Util;
+import com.atlassian.theplugin.rest.RestSessionExpiredException;
+import com.atlassian.theplugin.rest.AbstractRestSession;
+import com.atlassian.theplugin.rest.RestException;
 import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.cookie.CookiePolicy;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.apache.commons.httpclient.HttpMethod;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
 import org.jdom.xpath.XPath;
 import thirdparty.net.iharder.base64.Base64;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -32,7 +24,7 @@ import java.util.List;
 /**
  * Communication stub for Bamboo REST API.
  */
-public class CrucibleSessionImpl implements CrucibleSession {
+public class CrucibleSessionImpl extends AbstractRestSession implements CrucibleSession  {
 	private static final String AUTH_SERVICE = "/rest-service/auth-v1";
 	private static final String REVIEW_SERVICE = "/rest-service/reviews-v1";
 	private static final String PROJECTS_SERVICE = "/rest-service/projects-v1";
@@ -41,26 +33,15 @@ public class CrucibleSessionImpl implements CrucibleSession {
 	private static final String GET_REVIEWS_IN_STATES = "?state=";
 	private static final String GET_REVIEWERS = "/reviewers";
 
-	private final String baseUrl;
-	private String userName;
-	private String password;
-	private HttpClient client = null;
 	private String authToken = null;
-
-	private final Object clientLock = new Object();
 
 	/**
 	 * Public constructor for BambooSessionImpl.
 	 *
 	 * @param baseUrl base URL for Bamboo instance
 	 */
-	public CrucibleSessionImpl(String baseUrl) throws CrucibleLoginException {
-		this.baseUrl = Util.removeUrlTrailingSlashes(baseUrl);
-		try {
-			new URL(baseUrl);
-		} catch (MalformedURLException e) {
-			throw new CrucibleLoginException("Malformed server URL: " + baseUrl, e);
-		}
+	public CrucibleSessionImpl(String baseUrl) throws RestException {
+		super(baseUrl);
 	}
 
 	public void login(String username, String aPassword) throws CrucibleLoginException {
@@ -110,6 +91,8 @@ public class CrucibleSessionImpl implements CrucibleSession {
 				throw new CrucibleLoginException(e.getMessage(), e);
 			} catch (JDOMException e) {
 				throw new CrucibleLoginException("Server returned malformed response", e);
+			} catch (RestSessionExpiredException e) {
+				// Crucible does not return this exception
 			}
 		}
 	}
@@ -159,7 +142,10 @@ public class CrucibleSessionImpl implements CrucibleSession {
 			throw new CrucibleException(e.getMessage(), e);
 		} catch (JDOMException e) {
 			throw new CrucibleException("Server returned malformed response", e);
+		} catch (RestSessionExpiredException e) {
+			// Crucible does not return this exception
 		}
+		return null;
 	}
 
 	public List<ReviewData> getAllReviews() throws CrucibleException {
@@ -190,7 +176,10 @@ public class CrucibleSessionImpl implements CrucibleSession {
 			throw new CrucibleException(e.getMessage(), e);
 		} catch (JDOMException e) {
 			throw new CrucibleException("Server returned malformed response", e);
+		} catch (RestSessionExpiredException e) {
+			// Crucible does not return this exception
 		}
+		return null;
 	}
 
 	public List<ProjectData> getProjects() throws CrucibleException {
@@ -217,7 +206,10 @@ public class CrucibleSessionImpl implements CrucibleSession {
 			throw new CrucibleException(e.getMessage(), e);
 		} catch (JDOMException e) {
 			throw new CrucibleException("Server returned malformed response", e);
+		} catch (RestSessionExpiredException e) {
+			// Crucible does not return this exception
 		}
+		return null;
 	}
 
 	public List<RepositoryData> getRepositories() throws CrucibleException {
@@ -244,7 +236,10 @@ public class CrucibleSessionImpl implements CrucibleSession {
 			throw new CrucibleException(e.getMessage(), e);
 		} catch (JDOMException e) {
 			throw new CrucibleException("Server returned malformed response", e);
+		} catch (RestSessionExpiredException e) {
+			// Crucible does not return this exception
 		}
+		return null;
 	}
 
 	public ReviewData createReview(ReviewData reviewData) throws CrucibleException {
@@ -276,105 +271,18 @@ public class CrucibleSessionImpl implements CrucibleSession {
 			throw new CrucibleException(e.getMessage(), e);
 		} catch (JDOMException e) {
 			throw new CrucibleException("Server returned malformed response", e);
+		} catch (RestSessionExpiredException e) {
+			// Crucible does not return this exception
 		}
+		return null;
 	}
 
-	private Document retrieveGetResponse(String urlString) throws IOException, JDOMException {
-		// validate URL first
-		try {
-			URL url = new URL(urlString);
-			// check the host name
-			if (url.getHost().length() == 0) {
-				throw new MalformedURLException("Url must contain valid host.");
-			}
-			if (url.getPort() >= 2 * Short.MAX_VALUE) {
-				throw new MalformedURLException("Url port invalid");
-			}			
-		} catch (MalformedURLException e) {
-			throw new MalformedURLException("Url must contain valid host.");
-		}
-
-		Document doc = null;
-		synchronized (clientLock) {
-			if (client == null) {
-				client = HttpClientFactory.getClient();
-			}
-
-			GetMethod method = new GetMethod(urlString);
-
-			try {
-				method.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
-
-				method.addRequestHeader(new Header("Authorization", getAuthHeaderValue()));
-
-				client.executeMethod(method);
-
-				if (method.getStatusCode() != HttpStatus.SC_OK) {
-					throw new IOException(
-							"HTTP " + method.getStatusCode() + " (" + HttpStatus.getStatusText(method.getStatusCode())
-									+ ")\n" + method.getStatusText());
-					//"HTTP " + method.getStatusCode() + ": " + method.getStatusText());
-				}
-
-				SAXBuilder builder = new SAXBuilder();
-				doc = builder.build(method.getResponseBodyAsStream());
-			} catch (NullPointerException e) {
-				throw (IOException) new IOException("Connection error").initCause(e);
-			} finally {
-				method.releaseConnection();
-			}
-		}
-
-		return doc;
+	protected void adjustHttpHeader(HttpMethod method) {
+		method.addRequestHeader(new Header("Authorization", getAuthHeaderValue()));
 	}
 
-	private Document retrievePostResponse(String urlString, Document request) throws IOException, JDOMException {
-		// validate URL first
-		try {
-			URL url = new URL(urlString);
-			// check the host name
-			if (url.getHost().length() == 0) {
-				throw new MalformedURLException("Url must contain valid host.");
-			}
-			
-			if (url.getPort() >= 2 * Short.MAX_VALUE) {
-				throw new MalformedURLException("Url port invalid");
-			}
-		} catch (MalformedURLException e) {
-			throw new MalformedURLException("Url must contain valid host.");
-		}
-
-		Document doc = null;
-		synchronized (clientLock) {
-			if (client == null) {
-				client = HttpClientFactory.getClient();
-			}
-
-			PostMethod method = new PostMethod(urlString);
-
-			try {
-				method.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
-				method.addRequestHeader(new Header("Authorization", getAuthHeaderValue()));
-
-				XMLOutputter serializer = new XMLOutputter(Format.getPrettyFormat());
-				method.setRequestEntity(new StringRequestEntity(serializer.outputString(request), "application/xml", "UTF-8"));
-
-				client.executeMethod(method);
-
-				if (method.getStatusCode() != HttpStatus.SC_OK) {
-					throw new IOException("HTTP status code " + method.getStatusCode() + ": " + method.getStatusText());
-				}
-
-				SAXBuilder builder = new SAXBuilder();
-				doc = builder.build(method.getResponseBodyAsStream());
-
-			} catch (NullPointerException e) {
-				throw (IOException) new IOException("Connection error").initCause(e);
-			} finally {
-				method.releaseConnection();
-			}
-		}
-		return doc;
+	protected void preprocessResult(Document doc) throws JDOMException, RestSessionExpiredException {
+		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
 	private String getAuthHeaderValue() {
