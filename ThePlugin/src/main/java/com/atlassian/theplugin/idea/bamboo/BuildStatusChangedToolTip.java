@@ -3,7 +3,7 @@ package com.atlassian.theplugin.idea.bamboo;
 import com.atlassian.theplugin.bamboo.BambooStatusDisplay;
 import com.atlassian.theplugin.bamboo.BuildStatus;
 import com.atlassian.theplugin.idea.GenericHyperlinkListener;
-import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.PluginToolWindow;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.WindowManager;
 import thirdparty.javaworld.ClasspathHTMLEditorKit;
@@ -32,7 +32,7 @@ public class BuildStatusChangedToolTip extends JPanel implements BambooStatusDis
 
 		content.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-                IdeaHelper.focusPanel(projectComponent, IdeaHelper.ToolWindowPanels.BAMBOO);
+                PluginToolWindow.focusPanel(projectComponent, PluginToolWindow.ToolWindowPanels.BAMBOO);
 			}
 		});
 
