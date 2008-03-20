@@ -314,7 +314,7 @@ public class CrucibleSessionImpl implements CrucibleSession {
 				SAXBuilder builder = new SAXBuilder();
 				doc = builder.build(method.getResponseBodyAsStream());
 			} catch (NullPointerException e) {
-				throw new IOException("Connection error", e);
+				throw (IOException) new IOException("Connection error").initCause(e);
 			} finally {
 				method.releaseConnection();
 			}
@@ -364,7 +364,7 @@ public class CrucibleSessionImpl implements CrucibleSession {
 				doc = builder.build(method.getResponseBodyAsStream());
 
 			} catch (NullPointerException e) {
-				throw new IOException("Connection error", e);
+				throw (IOException) new IOException("Connection error").initCause(e);
 			} finally {
 				method.releaseConnection();
 			}

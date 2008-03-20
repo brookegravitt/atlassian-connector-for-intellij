@@ -590,7 +590,7 @@ class BambooSessionImpl implements BambooSession {
 				SAXBuilder builder = new SAXBuilder();
 				doc = builder.build(method.getResponseBodyAsStream());
 			} catch (NullPointerException e) {
-				throw new IOException("Connection error", e);
+				throw (IOException) new IOException("Connection error").initCause(e);
 			}	finally {
 				method.releaseConnection();
 			}
