@@ -251,9 +251,15 @@ public class CrucibleSessionTest extends TestCase {
 
 	public void testFailedCrucibleLogin() {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
-		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+		CrucibleSession apiHandler = null;
+		try {
+			apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+		} catch (CrucibleLoginException e) {
+			fail();
+		}
 
 		try {
+
 			apiHandler.login(USER_NAME, PASSWORD);
 			fail("Login succeeded while expected failure.");
 		} catch (CrucibleLoginException e) {

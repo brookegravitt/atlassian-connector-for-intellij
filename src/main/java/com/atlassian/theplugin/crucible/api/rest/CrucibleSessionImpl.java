@@ -54,8 +54,13 @@ public class CrucibleSessionImpl implements CrucibleSession {
 	 *
 	 * @param baseUrl base URL for Bamboo instance
 	 */
-	public CrucibleSessionImpl(String baseUrl) {
+	public CrucibleSessionImpl(String baseUrl) throws CrucibleLoginException {
 		this.baseUrl = Util.removeUrlTrailingSlashes(baseUrl);
+		try {
+			new URL(baseUrl);
+		} catch (MalformedURLException e) {
+			throw new CrucibleLoginException("'" + baseUrl + "' malformed URL. Login failed.");
+		}
 	}
 
 	public void login(String username, String aPassword) throws CrucibleLoginException {
@@ -65,7 +70,7 @@ public class CrucibleSessionImpl implements CrucibleSession {
 				if (baseUrl == null) {
 					throw new CrucibleLoginException("Corrupted configuration. Url null");
 				}
-				if ("".equals(baseUrl)) {
+				if ("".equals(baseUrl.trim())) {
 					throw new CrucibleLoginException("Corrupted configuration. Url empty");
 				}
 				if (username == null || aPassword == null) {
