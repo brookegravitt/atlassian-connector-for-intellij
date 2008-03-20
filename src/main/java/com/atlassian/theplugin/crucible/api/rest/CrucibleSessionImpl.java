@@ -35,7 +35,7 @@ public class CrucibleSessionImpl implements CrucibleSession {
 	private static final String AUTH_SERVICE = "/rest-service/auth-v1";
 	private static final String REVIEW_SERVICE = "/rest-service/reviews-v1";
 	private static final String PROJECTS_SERVICE = "/rest-service/projects-v1";
-	private static final String REPOSITORIES_SERVICE = "/rest-service/repositories-v1";	
+	private static final String REPOSITORIES_SERVICE = "/rest-service/repositories-v1";
 	private static final String LOGIN = "/login";
 	private static final String GET_REVIEWS_IN_STATES = "?state=";
 	private static final String GET_REVIEWERS = "/reviewers";
@@ -45,6 +45,8 @@ public class CrucibleSessionImpl implements CrucibleSession {
 	private String password;
 	private HttpClient client = null;
 	private String authToken = null;
+
+	private final Object clientLock = new Object();
 
 	/**
 	 * Public constructor for BambooSessionImpl.
@@ -283,30 +285,33 @@ public class CrucibleSessionImpl implements CrucibleSession {
 			throw new MalformedURLException("Url must contain valid host.");
 		}
 
-		if (client == null) {
-			client = HttpClientFactory.getClient();
-		}
-
-		GetMethod method = new GetMethod(urlString);
 		Document doc = null;
-		try {
-			method.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
-
-			method.addRequestHeader(new Header("Authorization", getAuthHeaderValue()));
-
-			client.executeMethod(method);
-
-			if (method.getStatusCode() != HttpStatus.SC_OK) {
-				throw new IOException(
-						"HTTP " + method.getStatusCode() + " (" + HttpStatus.getStatusText(method.getStatusCode())
-							+ ")\n"	+ method.getStatusText());
-						//"HTTP " + method.getStatusCode() + ": " + method.getStatusText());
+		synchronized (clientLock) {
+			if (client == null) {
+				client = HttpClientFactory.getClient();
 			}
 
-			SAXBuilder builder = new SAXBuilder();
-			doc = builder.build(method.getResponseBodyAsStream());
-		} finally {
-			method.releaseConnection();
+			GetMethod method = new GetMethod(urlString);
+
+			try {
+				method.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
+
+				method.addRequestHeader(new Header("Authorization", getAuthHeaderValue()));
+
+				client.executeMethod(method);
+
+				if (method.getStatusCode() != HttpStatus.SC_OK) {
+					throw new IOException(
+							"HTTP " + method.getStatusCode() + " (" + HttpStatus.getStatusText(method.getStatusCode())
+									+ ")\n" + method.getStatusText());
+					//"HTTP " + method.getStatusCode() + ": " + method.getStatusText());
+				}
+
+				SAXBuilder builder = new SAXBuilder();
+				doc = builder.build(method.getResponseBodyAsStream());
+			} finally {
+				method.releaseConnection();
+			}
 		}
 
 		return doc;
@@ -324,30 +329,33 @@ public class CrucibleSessionImpl implements CrucibleSession {
 			throw new MalformedURLException("Url must contain valid host.");
 		}
 
-		if (client == null) {
-			client = HttpClientFactory.getClient();
-		}
-
-		PostMethod method = new PostMethod(urlString);
 		Document doc = null;
-		try {
-			method.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
-			method.addRequestHeader(new Header("Authorization", getAuthHeaderValue()));
-
-			XMLOutputter serializer = new XMLOutputter(Format.getPrettyFormat());
-			method.setRequestEntity(new StringRequestEntity(serializer.outputString(request), "application/xml", "UTF-8"));
-
-			client.executeMethod(method);
-
-			if (method.getStatusCode() != HttpStatus.SC_OK) {
-				throw new IOException("HTTP status code " + method.getStatusCode() + ": " + method.getStatusText());
+		synchronized (clientLock) {
+			if (client == null) {
+				client = HttpClientFactory.getClient();
 			}
 
-			SAXBuilder builder = new SAXBuilder();
-			doc = builder.build(method.getResponseBodyAsStream());
+			PostMethod method = new PostMethod(urlString);
 
-		} finally {
-			method.releaseConnection();
+			try {
+				method.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
+				method.addRequestHeader(new Header("Authorization", getAuthHeaderValue()));
+
+				XMLOutputter serializer = new XMLOutputter(Format.getPrettyFormat());
+				method.setRequestEntity(new StringRequestEntity(serializer.outputString(request), "application/xml", "UTF-8"));
+
+				client.executeMethod(method);
+
+				if (method.getStatusCode() != HttpStatus.SC_OK) {
+					throw new IOException("HTTP status code " + method.getStatusCode() + ": " + method.getStatusText());
+				}
+
+				SAXBuilder builder = new SAXBuilder();
+				doc = builder.build(method.getResponseBodyAsStream());
+
+			} finally {
+				method.releaseConnection();
+			}
 		}
 		return doc;
 	}

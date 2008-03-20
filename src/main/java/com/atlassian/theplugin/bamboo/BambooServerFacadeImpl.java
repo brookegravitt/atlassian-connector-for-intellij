@@ -21,7 +21,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 	public BambooServerFacadeImpl() {
 	}
 
-	private BambooSession getSession(Server server) throws BambooLoginException {
+	private synchronized BambooSession getSession(Server server) throws BambooLoginException {
 		// @todo old server will stay on map - remove them !!!
 		String key = server.getUserName() + server.getUrlString() + server.getPasswordString();
 		BambooSession session = sessions.get(key);
