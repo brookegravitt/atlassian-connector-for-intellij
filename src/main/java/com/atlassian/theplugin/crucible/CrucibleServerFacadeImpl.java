@@ -33,7 +33,7 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	 *
 	 */
 	public void testServerConnection(String serverUrl, String userName, String password) throws CrucibleException {
-		CrucibleSession session = getSession(serverUrl);
+		CrucibleSession session = new CrucibleSessionImpl(serverUrl);
 		session.login(userName, password);
 		session.logout();
 	}
