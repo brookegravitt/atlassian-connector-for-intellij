@@ -8,7 +8,6 @@ import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.idea.SchedulableComponent;
 import com.atlassian.theplugin.util.DateUtil;
-import com.atlassian.theplugin.util.PluginUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,11 +57,10 @@ public final class BambooStatusChecker implements SchedulableComponent {
 	 */
 	private void doRun() {
         try {
-			// collect build info from each server
+            // collect build info from each server
             final Collection<BambooBuild> newServerBuildsStatus = new ArrayList<BambooBuild>();
             for (Server server : retrieveEnabledBambooServers()) {
                         try {
-							PluginUtil.getLogger().debug("Bamboo: updating status for server: " + server.getUrlString());
                             newServerBuildsStatus.addAll(
                                     bambooServerFacade.getSubscribedPlansResults(server));
                         } catch (ServerPasswordNotProvidedException exception) {

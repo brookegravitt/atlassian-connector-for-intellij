@@ -63,7 +63,7 @@ public abstract class DateUtil extends TableColumnInfo {
 
 			return "< 1 second " + PRIOR_TEXT;
 		} else {
-			PluginUtil.getLogger().info("Returning a blank string for relative date.");
+			PluginUtil.getLogger().warn("Returning a blank string for relative date.");
 			return "";
 		}
 
