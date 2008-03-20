@@ -2,6 +2,7 @@ package com.atlassian.theplugin.crucible.api.rest;
 
 import com.atlassian.theplugin.crucible.api.*;
 import com.atlassian.theplugin.util.HttpClientFactory;
+import com.atlassian.theplugin.util.Util;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
@@ -54,7 +55,7 @@ public class CrucibleSessionImpl implements CrucibleSession {
 	 * @param baseUrl base URL for Bamboo instance
 	 */
 	public CrucibleSessionImpl(String baseUrl) {
-		this.baseUrl = baseUrl;
+		this.baseUrl = Util.removeUrlTrailingSlashes(baseUrl);
 	}
 
 	public void login(String username, String aPassword) throws CrucibleLoginException {
@@ -281,6 +282,9 @@ public class CrucibleSessionImpl implements CrucibleSession {
 			if (url.getHost().length() == 0) {
 				throw new MalformedURLException("Url must contain valid host.");
 			}
+			if (url.getPort() >= 2 * Short.MAX_VALUE) {
+				throw new MalformedURLException("Url port invalid");
+			}			
 		} catch (MalformedURLException e) {
 			throw new MalformedURLException("Url must contain valid host.");
 		}
@@ -309,6 +313,8 @@ public class CrucibleSessionImpl implements CrucibleSession {
 
 				SAXBuilder builder = new SAXBuilder();
 				doc = builder.build(method.getResponseBodyAsStream());
+			} catch (NullPointerException e) {
+				throw new IOException("Connection error", e);
 			} finally {
 				method.releaseConnection();
 			}
@@ -324,6 +330,10 @@ public class CrucibleSessionImpl implements CrucibleSession {
 			// check the host name
 			if (url.getHost().length() == 0) {
 				throw new MalformedURLException("Url must contain valid host.");
+			}
+			
+			if (url.getPort() >= 2 * Short.MAX_VALUE) {
+				throw new MalformedURLException("Url port invalid");
 			}
 		} catch (MalformedURLException e) {
 			throw new MalformedURLException("Url must contain valid host.");
@@ -353,6 +363,8 @@ public class CrucibleSessionImpl implements CrucibleSession {
 				SAXBuilder builder = new SAXBuilder();
 				doc = builder.build(method.getResponseBodyAsStream());
 
+			} catch (NullPointerException e) {
+				throw new IOException("Connection error", e);
 			} finally {
 				method.releaseConnection();
 			}

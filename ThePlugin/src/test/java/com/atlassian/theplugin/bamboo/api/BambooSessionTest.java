@@ -2,6 +2,9 @@ package com.atlassian.theplugin.bamboo.api;
 
 import com.atlassian.theplugin.bamboo.*;
 import com.atlassian.theplugin.bamboo.api.bamboomock.*;
+import com.atlassian.theplugin.crucible.api.CrucibleLoginException;
+import com.atlassian.theplugin.crucible.api.CrucibleSession;
+import com.atlassian.theplugin.crucible.api.rest.CrucibleSessionImpl;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 import org.mortbay.jetty.Server;
@@ -59,8 +62,8 @@ public class BambooSessionTest extends TestCase {
 	}
 
 	public void testSuccessBambooLoginURLWithSlash() throws Exception {
-		mockServer.expect("//api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("//api/rest/logout.action", new LogoutCallback(LoginCallback.AUTH_TOKEN));
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/logout.action", new LogoutCallback(LoginCallback.AUTH_TOKEN));
 
 		BambooSession apiHandler = new BambooSessionImpl(mockBaseUrl + "/");
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
@@ -742,5 +745,19 @@ public class BambooSessionTest extends TestCase {
 		mockServer.verify();
 	}
 
+	public void testOutOfRangePort() {
+		String url = "http://localhost:80808";
+		BambooLoginException exception = null;
+		try {
+			BambooSession apiHandler = new BambooSessionImpl(url);
+			apiHandler.login(USER_NAME, PASSWORD.toCharArray());
+		} catch (BambooLoginException e) {
+			exception = e;
+		}
+
+		assertNotNull("Exception expected", exception);
+		assertNotNull("Exception should have a cause", exception.getCause());
+		assertTrue("MalformedURLException expected", exception.getCause() instanceof IOException);
+	}
 
 }

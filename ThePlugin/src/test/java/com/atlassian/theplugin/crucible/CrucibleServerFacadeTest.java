@@ -3,10 +3,13 @@ package com.atlassian.theplugin.crucible;
 import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.crucible.api.*;
+import com.atlassian.theplugin.crucible.api.rest.cruciblemock.LoginCallback;
 import junit.framework.TestCase;
+import org.ddsteps.mock.httpserver.JettyMockServer;
 import org.easymock.EasyMock;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.replay;
+import org.mortbay.jetty.Server;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -39,46 +42,44 @@ public class CrucibleServerFacadeTest extends TestCase {
 		}
 	}
 
-	public void testConnectionTestFailed() {
+	public void testConnectionTestFailed() throws Exception {
+
+		Server server = new Server(0);
+		server.start();
+
+		String mockBaseUrl = "http://localhost:" + server.getConnectors()[0].getLocalPort();
+		JettyMockServer mockServer = new JettyMockServer(server);
+		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(VALID_LOGIN, VALID_PASSWORD, LoginCallback.ALWAYS_FAIL));
 
 		try {
-			crucibleSessionMock.login("badUserName", "badPassword");
-			EasyMock.expectLastCall().andThrow(new CrucibleLoginException(""));
-		} catch (CrucibleLoginException e) {
-			fail("recording mock failed for login");
-		}
-
-		replay(crucibleSessionMock);
-
-		try {
-			facade.testServerConnection(VALID_URL, "badUserName", "badPassword");
+			facade.testServerConnection(mockBaseUrl, VALID_LOGIN, VALID_PASSWORD);
 			fail("testServerConnection failed");
 		} catch (CrucibleException e) {
-			// testServerConnection succeed
-		} finally {
-			EasyMock.verify(crucibleSessionMock);
+			//
 		}
+
+		mockServer.verify();
+		mockServer = null;
+		server.stop();		
 	}
 
-	public void testConnectionTestSucceed() {
+	public void testConnectionTestSucceed() throws Exception {
+		Server server = new Server(0);
+		server.start();
+
+		String mockBaseUrl = "http://localhost:" + server.getConnectors()[0].getLocalPort();
+		JettyMockServer mockServer = new JettyMockServer(server);
+		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(VALID_LOGIN, VALID_PASSWORD));
 
 		try {
-			crucibleSessionMock.login("CorrectUserName", "CorrectPassword");
-		} catch (CrucibleLoginException e) {
-			fail("recording mock failed for login");
-		}
-
-		crucibleSessionMock.logout();
-
-		replay(crucibleSessionMock);
-
-		try {
-			facade.testServerConnection(VALID_URL, "CorrectUserName", "CorrectPassword");
+			facade.testServerConnection(mockBaseUrl, VALID_LOGIN, VALID_PASSWORD);
 		} catch (CrucibleException e) {
 			fail("testServerConnection failed");
-		} finally {
-			EasyMock.verify(crucibleSessionMock);
 		}
+
+		mockServer.verify();
+		mockServer = null;
+		server.stop();
 	}
 
 	public void testCreateReview() throws Exception {
