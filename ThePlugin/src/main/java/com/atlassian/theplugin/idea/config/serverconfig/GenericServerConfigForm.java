@@ -36,9 +36,16 @@ public class GenericServerConfigForm extends JComponent implements ServerPanel, 
 		testConnection.addActionListener(new TestConnectionListener(tester, this));
 		serverUrl.addFocusListener(new FocusAdapter() {
 			public void focusLost(FocusEvent e) {
-				serverUrl.setText(Util.addHttpPrefix(serverUrl.getText()));
+				adjustUrl();
 			}
 		});
+	}
+
+	private void adjustUrl() {
+		String url = serverUrl.getText();
+		url = Util.addHttpPrefix(url);
+		url = Util.removeUrlTrailingSlashes(url);
+		serverUrl.setText(url);
 	}
 
 	public void setData(Server server) {
@@ -53,7 +60,7 @@ public class GenericServerConfigForm extends JComponent implements ServerPanel, 
 	}
 
 	public Server getData() {
-		serverUrl.setText(Util.addHttpPrefix(serverUrl.getText()));
+		adjustUrl();
 
 		Server server = new ServerBean(originalServer);
 		server.setName(serverName.getText());

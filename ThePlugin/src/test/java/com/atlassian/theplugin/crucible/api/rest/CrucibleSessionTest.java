@@ -86,7 +86,7 @@ public class CrucibleSessionTest extends TestCase {
 	}
 
 	public void testSuccessBambooLoginURLWithSlash() throws Exception {
-		mockServer.expect("//rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
 
 		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl + "/");
 		apiHandler.login(USER_NAME, PASSWORD);
@@ -190,6 +190,22 @@ public class CrucibleSessionTest extends TestCase {
 		assertTrue("MalformedURLException expected", exception.getCause() instanceof MalformedURLException);
 		assertEquals("Malformed server URL: " + url, exception.getMessage());
 	}
+
+	public void testOutOfRangePort() {
+		String url = "http://localhost:80808";
+		CrucibleLoginException exception = null;
+		try {
+			CrucibleSession apiHandler = new CrucibleSessionImpl(url);
+			apiHandler.login(USER_NAME, PASSWORD);
+		} catch (CrucibleLoginException e) {
+			exception = e;
+		}
+
+		assertNotNull("Exception expected", exception);
+		assertNotNull("Exception should have a cause", exception.getCause());
+		assertTrue("MalformedURLException expected", exception.getCause() instanceof IOException);
+	}
+
 
 	public void testWrongUserCrucibleLogin() throws Exception {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
