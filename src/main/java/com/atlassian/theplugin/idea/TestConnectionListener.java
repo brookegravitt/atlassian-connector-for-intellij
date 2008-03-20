@@ -100,7 +100,7 @@ public class TestConnectionListener implements ActionListener {
 					});
 					break;
 				default: //NOT_FINISHED:
-					log.info("Unexpected 'Test Connection' thread state: "
+					log.warn("Unexpected 'Test Connection' thread state: "
 							+ testConnector.getConnectionState().toString());
 			}
 		}
