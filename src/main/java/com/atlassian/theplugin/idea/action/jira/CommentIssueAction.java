@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.action.jira;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.PluginToolWindow;
 import com.atlassian.theplugin.idea.jira.IssueComment;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.atlassian.theplugin.jira.JIRAServer;
@@ -38,7 +39,7 @@ public class CommentIssueAction extends AnAction {
 
 
         if (errorMsg != null) {
-            IdeaHelper.focusPanel(e, IdeaHelper.ToolWindowPanels.JIRA);
+            PluginToolWindow.focusPanel(e, PluginToolWindow.ToolWindowPanels.JIRA);
             Messages.showErrorDialog(project, errorMsg, "JIRA Comment Issue");
         }
     }

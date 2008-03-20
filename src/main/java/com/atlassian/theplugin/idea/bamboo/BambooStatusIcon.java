@@ -3,8 +3,8 @@ package com.atlassian.theplugin.idea.bamboo;
 import com.atlassian.theplugin.ServerType;
 import com.atlassian.theplugin.bamboo.BambooStatusDisplay;
 import com.atlassian.theplugin.bamboo.BuildStatus;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.StatusBarPluginIcon;
+import com.atlassian.theplugin.idea.PluginToolWindow;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
 
@@ -42,7 +42,7 @@ public class BambooStatusIcon extends StatusBarPluginIcon implements BambooStatu
 
 			// show/hide toolbar on click
 			public void mouseClicked(MouseEvent e) {
-				IdeaHelper.focusPanel(project, IdeaHelper.ToolWindowPanels.BAMBOO);
+				PluginToolWindow.focusPanel(project, PluginToolWindow.ToolWindowPanels.BAMBOO);
             }
 		});
 
