@@ -4,6 +4,7 @@ import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.crucible.api.*;
 import com.atlassian.theplugin.crucible.api.rest.CrucibleSessionImpl;
+import com.atlassian.theplugin.rest.RestException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,7 +20,11 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	private synchronized CrucibleSession getSession(String serverUrl) throws CrucibleException {
 		CrucibleSession session = sessions.get(serverUrl);
 		if (session == null) {
-			session = new CrucibleSessionImpl(serverUrl);
+			try {
+				session = new CrucibleSessionImpl(serverUrl);
+			} catch (RestException e) {
+				throw new CrucibleLoginException(e.getMessage(), e);
+			}
 			sessions.put(serverUrl, session);
 		}
 		return session;
@@ -33,7 +38,12 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	 *
 	 */
 	public void testServerConnection(String serverUrl, String userName, String password) throws CrucibleException {
-		CrucibleSession session = new CrucibleSessionImpl(serverUrl);
+		CrucibleSession session = null;
+		try {
+			session = new CrucibleSessionImpl(serverUrl);
+		} catch (RestException e) {
+			throw new CrucibleLoginException(e.getMessage(), e);
+		}
 		session.login(userName, password);
 		session.logout();
 	}

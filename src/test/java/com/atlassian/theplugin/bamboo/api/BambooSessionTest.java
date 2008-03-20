@@ -2,9 +2,7 @@ package com.atlassian.theplugin.bamboo.api;
 
 import com.atlassian.theplugin.bamboo.*;
 import com.atlassian.theplugin.bamboo.api.bamboomock.*;
-import com.atlassian.theplugin.crucible.api.CrucibleLoginException;
-import com.atlassian.theplugin.crucible.api.CrucibleSession;
-import com.atlassian.theplugin.crucible.api.rest.CrucibleSessionImpl;
+import com.atlassian.theplugin.rest.RestException;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 import org.mortbay.jetty.Server;
@@ -79,7 +77,7 @@ public class BambooSessionTest extends TestCase {
 			BambooSession apiHandler = new BambooSessionImpl(null);
 			apiHandler.login(null, null);
 			fail();
-		} catch (BambooLoginException ex) {
+		} catch (RestException ex) {
 			System.out.println("Exception: " + ex.getMessage());
 		}
 	}
@@ -148,13 +146,14 @@ public class BambooSessionTest extends TestCase {
 		try {
 			BambooSession apiHandler = new BambooSessionImpl(url);
 			apiHandler.login(USER_NAME, PASSWORD.toCharArray());
-		} catch (BambooLoginException e) {
-			exception = e;
+		} catch (RestException e) {
+			exception = new BambooLoginException(e.getMessage(), e);
 		}
 
 		assertNotNull("Exception expected", exception);
 		assertNotNull("Exception should have a cause", exception.getCause());
-		assertTrue("MalformedURLException expected", exception.getCause() instanceof MalformedURLException);
+		assertTrue("RestException expected", exception.getCause() instanceof RestException);
+		assertTrue("MalformedURLExceptionException expected", exception.getCause().getCause() instanceof MalformedURLException);
 		assertEquals("Malformed server URL: " + url, exception.getMessage());
 	}
 
@@ -178,7 +177,7 @@ public class BambooSessionTest extends TestCase {
 			BambooSession apiHandler = new BambooSessionImpl("");
 			apiHandler.login("", "".toCharArray());
 			fail();
-		} catch (BambooLoginException ex) {
+		} catch (RestException ex) {
 			System.out.println("Exception: " + ex.getMessage());
 		}
 	}
@@ -751,13 +750,13 @@ public class BambooSessionTest extends TestCase {
 		try {
 			BambooSession apiHandler = new BambooSessionImpl(url);
 			apiHandler.login(USER_NAME, PASSWORD.toCharArray());
-		} catch (BambooLoginException e) {
-			exception = e;
+		} catch (RestException e) {
+			exception = new BambooLoginException(e.getMessage(), e);
 		}
 
 		assertNotNull("Exception expected", exception);
 		assertNotNull("Exception should have a cause", exception.getCause());
-		assertTrue("MalformedURLException expected", exception.getCause() instanceof IOException);
+		assertTrue("MalformedURLException expected", exception.getCause().getCause() instanceof IOException);
 	}
 
 }
