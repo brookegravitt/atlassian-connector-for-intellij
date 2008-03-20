@@ -1,10 +1,10 @@
 package com.atlassian.theplugin.bamboo;
 
 import com.atlassian.theplugin.ServerType;
-import com.atlassian.theplugin.bamboo.api.BambooException;
-import com.atlassian.theplugin.bamboo.api.BambooLoginException;
 import com.atlassian.theplugin.bamboo.api.bamboomock.*;
 import com.atlassian.theplugin.configuration.*;
+import com.atlassian.theplugin.rest.RestException;
+import com.atlassian.theplugin.rest.RestLoginException;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 
@@ -171,7 +171,7 @@ public class BambooServerFacadeTest extends TestCase {
 		try {
 			Collection<BambooProject> projects = testedBambooServerFacade.getProjectList(server);
 			fail();
-		} catch (BambooException e) {
+		} catch (RestException e) {
 			// expected
 		}
 		mockServer.verify();
@@ -198,7 +198,7 @@ public class BambooServerFacadeTest extends TestCase {
 		try {
 			testedBambooServerFacade.getPlanList(server);
 			fail();
-		} catch (BambooLoginException e) {
+		} catch (RestLoginException e) {
 			// expected exception
 		}
 		mockServer.verify();
@@ -214,7 +214,7 @@ public class BambooServerFacadeTest extends TestCase {
 		try {
 			facade.testServerConnection("", "", "");
 			fail();
-		} catch (BambooLoginException e) {
+		} catch (RestLoginException e) {
 			// expected
 		}
 
@@ -222,28 +222,28 @@ public class BambooServerFacadeTest extends TestCase {
 		try {
 			facade.testServerConnection(mockBaseUrl, "", "");
 			fail();
-		} catch (BambooLoginException e) {
+		} catch (RestLoginException e) {
 			//expected
 		}
 
 		try {
 			facade.testServerConnection("", USER_NAME, "");
 			fail();
-		} catch (BambooLoginException e) {
+		} catch (RestLoginException e) {
 			//expected
 		}
 
 		try {
 			facade.testServerConnection("", "", PASSWORD);
 			fail();
-		} catch (BambooLoginException e) {
+		} catch (RestLoginException e) {
 			//expected
 		}
 		mockServer.verify();
 	}
 
 
-	public void testBambooConnectionWithEmptyPlan() throws BambooLoginException, CloneNotSupportedException, ServerPasswordNotProvidedException {
+	public void testBambooConnectionWithEmptyPlan() throws RestLoginException, CloneNotSupportedException, ServerPasswordNotProvidedException {
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
 		mockServer.expect("/api/rest/getBambooBuildNumber.action", new BamboBuildNumberCalback());
 		mockServer.expect("/api/rest/listBuildNames.action", new PlanListCallback());
@@ -298,7 +298,7 @@ public class BambooServerFacadeTest extends TestCase {
 		try {
 			testedBambooServerFacade.addLabelToBuild(server, "TP-DEF", "200", label);
 			fail();
-		} catch (BambooException e) {
+		} catch (RestException e) {
 			// expected
 		}
 
@@ -345,7 +345,7 @@ public class BambooServerFacadeTest extends TestCase {
 		try {
 			testedBambooServerFacade.addCommentToBuild(server, "TP-DEF", "200", label);
 			fail();
-		} catch (BambooException e) {
+		} catch (RestException e) {
 			// expected
 		}
 
@@ -373,7 +373,7 @@ public class BambooServerFacadeTest extends TestCase {
 
 		try {
 			testedBambooServerFacade.executeBuild(server, "TP-DEF");
-		} catch (BambooException e) {
+		} catch (RestException e) {
 			// expected
 		}
 
@@ -405,7 +405,7 @@ public class BambooServerFacadeTest extends TestCase {
 		try {
 			testedBambooServerFacade.getBuildDetails(server, "TP-DEF", "200");
 			fail();
-		} catch (BambooException e) {
+		} catch (RestException e) {
 			// expected
 		}
 

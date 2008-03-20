@@ -3,8 +3,8 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 import com.atlassian.theplugin.bamboo.BambooPlan;
 import com.atlassian.theplugin.bamboo.BambooPlanData;
 import com.atlassian.theplugin.bamboo.BambooServerFacade;
-import com.atlassian.theplugin.bamboo.api.BambooException;
 import com.atlassian.theplugin.configuration.*;
+import com.atlassian.theplugin.rest.RestException;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -146,7 +146,7 @@ public class BambooPlansForm extends JComponent {
 						plans = bambooServerFacade.getPlanList(server);
 					} catch (ServerPasswordNotProvidedException e) {
 						msg.append("Unable to connect: password for server not provided\n");
-					} catch (BambooException e) {
+					} catch (RestException e) {
 						msg.append("Unable to connect: ");
 						msg.append(e.getMessage());
 						msg.append("\n");

@@ -1,16 +1,19 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.ServerType;
-import com.atlassian.theplugin.util.Connector;
 import com.atlassian.theplugin.bamboo.BambooServerFacade;
-import com.atlassian.theplugin.configuration.*;
+import com.atlassian.theplugin.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.configuration.PluginConfiguration;
+import com.atlassian.theplugin.configuration.ProductServerConfiguration;
+import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.crucible.CrucibleServerFacade;
-import com.atlassian.theplugin.crucible.api.CrucibleException;
 import com.atlassian.theplugin.exception.ThePluginException;
 import com.atlassian.theplugin.idea.config.ContentPanel;
 import com.atlassian.theplugin.idea.config.serverconfig.model.ServerNode;
 import com.atlassian.theplugin.jira.JIRAServerFactory;
 import com.atlassian.theplugin.jira.api.JIRALoginException;
+import com.atlassian.theplugin.rest.RestException;
+import com.atlassian.theplugin.util.Connector;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.ui.Splitter;
@@ -111,7 +114,7 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
 							validate();
 							try {
 								crucibleServerFacade.testServerConnection(getUrl(), getUserName(), getPassword());
-							} catch (CrucibleException e) {
+							} catch (RestException e) {
 								throw new ThePluginException("Error connecting Crucible server", e);
 							}
 						}
