@@ -37,6 +37,10 @@ public final class PluginUtil {
 	///CLOVER:ON
 
 	public static Logger getLogger() {
+//		if (logger == null) {
+//			if (!LogManager.getCurrentLoggers().hasMoreElements()) {
+//				DOMConfigurator.configure(PluginUtil.class.getResource("/properties/log4j.xml"));
+//			}
 		return Logger.getInstance();
 	}
 
@@ -87,10 +91,10 @@ public final class PluginUtil {
 				in.close();
 			}
 		} catch (IOException e) {
-			PluginUtil.getLogger().info("Error accessing plugin.xml file.");
+			PluginUtil.getLogger().error("Error accessing plugin.xml file.");
 			throw new UnsupportedOperationException(e);
 		} catch (JDOMException e) {
-			PluginUtil.getLogger().info("Error accessing plugin.xml file.");
+			PluginUtil.getLogger().error("Error accessing plugin.xml file.");
 			throw new UnsupportedOperationException(e);
 		}
 
@@ -106,7 +110,7 @@ public final class PluginUtil {
 				result = element.getValue();
 			}
 		} catch (JDOMException e) {
-			PluginUtil.getLogger().info("Error while retrieving plugin name.");
+			PluginUtil.getLogger().error("Error while retrieving plugin name.");
 		}
 		return result;
 	}
