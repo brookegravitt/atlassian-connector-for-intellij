@@ -1,11 +1,14 @@
 package com.atlassian.theplugin.bamboo;
 
-import com.atlassian.theplugin.bamboo.api.*;
+import com.atlassian.theplugin.bamboo.api.AutoRenewBambooSession;
+import com.atlassian.theplugin.bamboo.api.BambooSession;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.configuration.SubscribedPlan;
-import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.rest.RestException;
+import com.atlassian.theplugin.rest.RestLoginException;
+import com.atlassian.theplugin.rest.RestLoginFailedException;
+import com.atlassian.theplugin.util.PluginUtil;
 
 import java.util.*;
 
@@ -22,7 +25,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 	public BambooServerFacadeImpl() {
 	}
 
-	private synchronized BambooSession getSession(Server server) throws BambooLoginException {
+	private synchronized BambooSession getSession(Server server) throws RestLoginException {
 		// @todo old server will stay on map - remove them !!!
 		String key = server.getUserName() + server.getUrlString() + server.getPasswordString();
 		BambooSession session = sessions.get(key);
@@ -30,7 +33,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 			try {
 				session = new AutoRenewBambooSession(server.getUrlString());
 			} catch (RestException e) {
-				throw new BambooLoginException(e.getMessage(), e);
+				throw new RestLoginException(e.getMessage(), e);
 			}
 			sessions.put(key, session);
 		}
@@ -42,7 +45,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 				} else {
 					server.setIsBamboo2(false);
 				}
-			} catch (BambooException e) {
+			} catch (RestException e) {
 				// can not validate as Bamboo 2
 				server.setIsBamboo2(false);
 			}
@@ -59,12 +62,12 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 	 * @throws BambooLoginException on failed login
 	 * @see BambooLoginFailedException
 	 */
-	public void testServerConnection(String url, String userName, String password) throws BambooLoginException {
+	public void testServerConnection(String url, String userName, String password) throws RestLoginException {
 		BambooSession apiHandler = null;
 		try {
 			apiHandler = new AutoRenewBambooSession(url);
 		} catch (RestException e) {
-			throw new BambooLoginException(e.getMessage(), e);
+			throw new RestLoginException(e.getMessage(), e);
 		}
 		apiHandler.login(userName, password.toCharArray());
 		apiHandler.logout();
@@ -79,10 +82,10 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 	 *          when invoked for Server that has not had the password set yet
 	 */
 	public Collection<BambooProject> getProjectList(Server bambooServer) throws ServerPasswordNotProvidedException
-			, BambooException {
+			, RestException {
 		try {
 			return getSession(bambooServer).listProjectNames();
-		} catch (BambooException e) {
+		} catch (RestException e) {
 			PluginUtil.getLogger().error("Bamboo exception: " + e.getMessage(), e);
 			throw e;
 		}
@@ -97,7 +100,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 	 *          when invoked for Server that has not had the password set yet
 	 */
 	public Collection<BambooPlan> getPlanList(Server bambooServer)
-			throws ServerPasswordNotProvidedException, BambooException {
+			throws ServerPasswordNotProvidedException, RestException {
 		BambooSession api = getSession(bambooServer);
 		List<BambooPlan> plans = api.listPlanNames();
 		try {
@@ -110,7 +113,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 					}
 				}
 			}
-		} catch (BambooException e) {
+		} catch (RestException e) {
 			// lack of favourite info is not a blocker here
 		}
 		return plans;
@@ -139,14 +142,14 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 		try {
 			api = getSession(bambooServer);
 			connectionErrorMessage = "";
-		} catch (BambooLoginFailedException e) {
+		} catch (RestLoginFailedException e) {
 			if (bambooServer.getIsConfigInitialized()) {
 				PluginUtil.getLogger().error("Bamboo login exception: " + e.getMessage());
 				connectionErrorMessage = e.getMessage();
 			} else {
 				throw new ServerPasswordNotProvidedException();
 			}
-		} catch (BambooLoginException e) {
+		} catch (RestLoginException e) {
 			PluginUtil.getLogger().error("Bamboo login exception: " + e.getMessage());
 			connectionErrorMessage = e.getMessage();
 		}
@@ -154,7 +157,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 		Collection<BambooPlan> plansForServer = null;
 		try {
 			plansForServer = getPlanList(bambooServer);
-		} catch (BambooException e) {
+		} catch (RestException e) {
 			// can go further, no disabled info will be available
 		}
 
@@ -168,7 +171,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 								((BambooBuildInfo) buildInfo).setServer(bambooServer);
 								((BambooBuildInfo) buildInfo).setEnabled(bambooPlan.isEnabled());
 								builds.add(buildInfo);
-							} catch (BambooException e) {
+							} catch (RestException e) {
 								// go ahead, there are other builds
 							}
 						} else {
@@ -195,7 +198,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 							}
 						}
 						builds.add(buildInfo);
-					} catch (BambooException e) {
+					} catch (RestException e) {
 						// go ahead, there are other builds
 					}
 				} else {
@@ -210,44 +213,44 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 	}
 
 	public BuildDetails getBuildDetails(Server bambooServer, String buildKey, String buildNumber)
-			throws ServerPasswordNotProvidedException, BambooException {
+			throws ServerPasswordNotProvidedException, RestException {
 		try {
 			BambooSession api = getSession(bambooServer);
 			return api.getBuildResultDetails(buildKey, buildNumber);
-		} catch (BambooException e) {
+		} catch (RestException e) {
 			PluginUtil.getLogger().info("Bamboo exception: " + e.getMessage());
 			throw e;
 		}
 	}
 
 	public void addLabelToBuild(Server bambooServer, String buildKey, String buildNumber, String buildLabel)
-			throws ServerPasswordNotProvidedException, BambooException {
+			throws ServerPasswordNotProvidedException, RestException {
 		try {
 			BambooSession api = getSession(bambooServer);
 			api.addLabelToBuild(buildKey, buildNumber, buildLabel);
-		} catch (BambooException e) {
+		} catch (RestException e) {
 			PluginUtil.getLogger().info("Bamboo exception: " + e.getMessage());
 			throw e;
 		}
 	}
 
 	public void addCommentToBuild(Server bambooServer, String buildKey, String buildNumber, String buildComment)
-			throws ServerPasswordNotProvidedException, BambooException {
+			throws ServerPasswordNotProvidedException, RestException {
 		try {
 			BambooSession api = getSession(bambooServer);
 			api.addCommentToBuild(buildKey, buildNumber, buildComment);
-		} catch (BambooException e) {
+		} catch (RestException e) {
 			PluginUtil.getLogger().info("Bamboo exception: " + e.getMessage());
 			throw e;
 		}
 	}
 
 	public void executeBuild(Server bambooServer, String buildKey)
-			throws ServerPasswordNotProvidedException, BambooException {
+			throws ServerPasswordNotProvidedException, RestException {
 		try {
 			BambooSession api = getSession(bambooServer);
 			api.executeBuild(buildKey);
-		} catch (BambooException e) {
+		} catch (RestException e) {
 			PluginUtil.getLogger().info("Bamboo exception: " + e.getMessage());
 			throw e;
 		}
@@ -262,10 +265,10 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 	 *          when invoked for Server that has not had the password set yet
 	 */
 	public Collection<String> getFavouritePlans(Server bambooServer)
-			throws ServerPasswordNotProvidedException, BambooException {
+			throws ServerPasswordNotProvidedException, RestException {
 		try {
 			return getSession(bambooServer).getFavouriteUserPlans();
-		} catch (BambooException e) {
+		} catch (RestException e) {
 			PluginUtil.getLogger().error("Bamboo exception: " + e.getMessage());
 			throw e;
 		}

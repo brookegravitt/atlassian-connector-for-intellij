@@ -4,6 +4,8 @@ import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.crucible.api.*;
 import com.atlassian.theplugin.crucible.api.rest.cruciblemock.LoginCallback;
+import com.atlassian.theplugin.rest.RestException;
+import com.atlassian.theplugin.rest.RestLoginException;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 import org.easymock.EasyMock;
@@ -54,7 +56,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 		try {
 			facade.testServerConnection(mockBaseUrl, VALID_LOGIN, VALID_PASSWORD);
 			fail("testServerConnection failed");
-		} catch (CrucibleException e) {
+		} catch (RestException e) {
 			//
 		}
 
@@ -73,7 +75,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 
 		try {
 			facade.testServerConnection(mockBaseUrl, VALID_LOGIN, VALID_PASSWORD);
-		} catch (CrucibleException e) {
+		} catch (RestException e) {
 			fail("testServerConnection failed");
 		}
 
@@ -85,7 +87,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 	public void testCreateReview() throws Exception {
 		try {
 			crucibleSessionMock.login(VALID_LOGIN, VALID_PASSWORD);
-		} catch (CrucibleLoginException e) {
+		} catch (RestLoginException e) {
 			fail("recording mock failed for login");
 		}
 
@@ -112,13 +114,13 @@ public class CrucibleServerFacadeTest extends TestCase {
 
 		try {
 			crucibleSessionMock.login(VALID_LOGIN, VALID_PASSWORD);
-		} catch (CrucibleLoginException e) {
+		} catch (RestLoginException e) {
 			fail("recording mock failed for login");
 		}
 
 		crucibleSessionMock.createReview(EasyMock.isA(ReviewData.class));
 
-		EasyMock.expectLastCall().andThrow(new CrucibleException("test"));
+		EasyMock.expectLastCall().andThrow(new RestException("test"));
 
 		replay(crucibleSessionMock);
 
@@ -129,7 +131,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 			// test call
 			facade.createReview(server, reviewData);
 			fail("creating review with invalid key should throw an CrucibleException()");
-		} catch (CrucibleException e) {
+		} catch (RestException e) {
 
 		} finally {
 			EasyMock.verify(crucibleSessionMock);
@@ -137,11 +139,11 @@ public class CrucibleServerFacadeTest extends TestCase {
 
 	}
 
-	public void testCreateReviewFromPatch() throws ServerPasswordNotProvidedException, CrucibleException {
+	public void testCreateReviewFromPatch() throws ServerPasswordNotProvidedException, RestException {
 
 		try {
 			crucibleSessionMock.login(VALID_LOGIN, VALID_PASSWORD);
-		} catch (CrucibleLoginException e) {
+		} catch (RestLoginException e) {
 			fail("recording mock failed for login");
 		}
 
@@ -167,12 +169,12 @@ public class CrucibleServerFacadeTest extends TestCase {
 
 		try {
 			crucibleSessionMock.login(VALID_LOGIN, VALID_PASSWORD);
-		} catch (CrucibleLoginException e) {
+		} catch (RestLoginException e) {
 			fail("recording mock failed for login");
 		}
 
 		crucibleSessionMock.createReviewFromPatch(EasyMock.isA(ReviewData.class), EasyMock.eq("some patch"));
-		EasyMock.expectLastCall().andThrow(new CrucibleException("test"));
+		EasyMock.expectLastCall().andThrow(new RestException("test"));
 
 		replay(crucibleSessionMock);
 
@@ -183,19 +185,19 @@ public class CrucibleServerFacadeTest extends TestCase {
 
 		try {
 			facade.createReviewFromPatch(server, reviewData, patch);
-			fail("creating review with patch with invalid key should throw an CrucibleException()");
-		} catch (CrucibleException e) {
+			fail("creating review with patch with invalid key should throw an RestException()");
+		} catch (RestException e) {
 			// ignored by design
 		} finally {
 			EasyMock.verify(crucibleSessionMock);
 		}
 	}
 
-	public void testGetAllReviews() throws ServerPasswordNotProvidedException, CrucibleException {
+	public void testGetAllReviews() throws ServerPasswordNotProvidedException, RestException {
 
 		try {
 			crucibleSessionMock.login(VALID_LOGIN, VALID_PASSWORD);
-		} catch (CrucibleLoginException e) {
+		} catch (RestLoginException e) {
 			fail("recording mock failed for login");
 		}
 
@@ -239,11 +241,11 @@ public class CrucibleServerFacadeTest extends TestCase {
 		EasyMock.verify(crucibleSessionMock);
 	}
 
-	public void testGetActiveReviewsForUser() throws ServerPasswordNotProvidedException, CrucibleException {
+	public void testGetActiveReviewsForUser() throws ServerPasswordNotProvidedException, RestException {
 
 		try {
 			crucibleSessionMock.login(VALID_LOGIN, VALID_PASSWORD);
-		} catch (CrucibleLoginException e) {
+		} catch (RestLoginException e) {
 			fail("recording mock failed for login");
 		}
 
@@ -277,10 +279,10 @@ public class CrucibleServerFacadeTest extends TestCase {
 		EasyMock.verify(crucibleSessionMock);
 	}
 
-	public void testGetProjects() throws ServerPasswordNotProvidedException, CrucibleException {
+	public void testGetProjects() throws ServerPasswordNotProvidedException, RestException {
 		try {
 			crucibleSessionMock.login(VALID_LOGIN, VALID_PASSWORD);
-		} catch (CrucibleLoginException e) {
+		} catch (RestLoginException e) {
 			fail("recording mock failed for login");
 		}
 		crucibleSessionMock.getProjects();
@@ -300,10 +302,10 @@ public class CrucibleServerFacadeTest extends TestCase {
 		EasyMock.verify(crucibleSessionMock);
 	}
 
-	public void testGetRepositories() throws ServerPasswordNotProvidedException, CrucibleException {
+	public void testGetRepositories() throws ServerPasswordNotProvidedException, RestException {
 		try {
 			crucibleSessionMock.login(VALID_LOGIN, VALID_PASSWORD);
-		} catch (CrucibleLoginException e) {
+		} catch (RestLoginException e) {
 			fail("recording mock failed for login");
 		}
 		crucibleSessionMock.getRepositories();
@@ -464,7 +466,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 			assertNotNull(ret.getPermaId());
 			assertNotNull(ret.getPermaId().getId());
 			assertTrue(ret.getPermaId().getId().length() > 0);
-		} catch (CrucibleException e) {
+		} catch (RestException e) {
 			fail(e.getMessage());
 		}
 	}
@@ -481,7 +483,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 			List<ReviewDataInfo> list = facade.getAllReviews(server);
 			assertNotNull(list);
 			assertTrue(list.size() > 0);
-		} catch (CrucibleException e) {
+		} catch (RestException e) {
 			fail(e.getMessage());
 		}
 	}

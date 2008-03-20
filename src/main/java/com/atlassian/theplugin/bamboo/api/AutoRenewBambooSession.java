@@ -5,6 +5,8 @@ import com.atlassian.theplugin.bamboo.BambooPlan;
 import com.atlassian.theplugin.bamboo.BambooProject;
 import com.atlassian.theplugin.bamboo.BuildDetails;
 import com.atlassian.theplugin.rest.RestException;
+import com.atlassian.theplugin.rest.RestLoginException;
+import com.atlassian.theplugin.rest.RestSessionExpiredException;
 
 import java.util.List;
 
@@ -17,55 +19,55 @@ public class AutoRenewBambooSession implements BambooSession {
 		this.delegate = new BambooSessionImpl(url);
 	}
 
-	public void addCommentToBuild(String buildKey, String buildNumber, String buildComment) throws BambooException {
+	public void addCommentToBuild(String buildKey, String buildNumber, String buildComment) throws RestException {
 		try {
 			delegate.addCommentToBuild(buildKey, buildNumber, buildComment);
-		} catch (BambooSessionExpiredException e) {
+		} catch (RestSessionExpiredException e) {
 			delegate.login(userName, password);
 			delegate.addCommentToBuild(buildKey, buildNumber, buildComment);
 		}
 	}
 
-	public void executeBuild(String buildKey) throws BambooException {
+	public void executeBuild(String buildKey) throws RestException {
 		try {
 			delegate.executeBuild(buildKey);
-		} catch (BambooSessionExpiredException e) {
+		} catch (RestSessionExpiredException e) {
 			delegate.login(userName, password);
 			delegate.executeBuild(buildKey);
 		}
 	}
 
-	public void addLabelToBuild(String buildKey, String buildNumber, String buildLabel) throws BambooException {
+	public void addLabelToBuild(String buildKey, String buildNumber, String buildLabel) throws RestException {
 		try {
 			delegate.addLabelToBuild(buildKey, buildNumber, buildLabel);
-		} catch (BambooSessionExpiredException e) {
+		} catch (RestSessionExpiredException e) {
 			delegate.login(userName, password);
 			delegate.addLabelToBuild(buildKey, buildNumber, buildLabel);
 		}
 	}
 
-	public BuildDetails getBuildResultDetails(String buildKey, String buildNumber) throws BambooException {
+	public BuildDetails getBuildResultDetails(String buildKey, String buildNumber) throws RestException {
 		try {
 			return delegate.getBuildResultDetails(buildKey, buildNumber);
-		} catch (BambooSessionExpiredException e) {
+		} catch (RestSessionExpiredException e) {
 			delegate.login(userName, password);
 			return delegate.getBuildResultDetails(buildKey, buildNumber);
 		}					
 	}
 
-	public List<String> getFavouriteUserPlans() throws BambooException {
+	public List<String> getFavouriteUserPlans() throws RestException {
 		try {
 			return delegate.getFavouriteUserPlans();
-		} catch (BambooSessionExpiredException e) {
+		} catch (RestSessionExpiredException e) {
 			delegate.login(userName, password);
 			return delegate.getFavouriteUserPlans();
 		}		
 	}
 
-	public BambooBuild getLatestBuildForPlan(String planKey) throws BambooException {
+	public BambooBuild getLatestBuildForPlan(String planKey) throws RestException {
 		try {
 			return delegate.getLatestBuildForPlan(planKey);
-		} catch (BambooSessionExpiredException e) {
+		} catch (RestSessionExpiredException e) {
 			delegate.login(userName, password);
 			return delegate.getLatestBuildForPlan(planKey);
 		}				
@@ -75,25 +77,25 @@ public class AutoRenewBambooSession implements BambooSession {
 		return delegate.isLoggedIn();
 	}
 
-	public List<BambooPlan> listPlanNames() throws BambooException {
+	public List<BambooPlan> listPlanNames() throws RestException {
 		try {
 			return delegate.listPlanNames();
-		} catch (BambooSessionExpiredException e) {
+		} catch (RestSessionExpiredException e) {
 			delegate.login(userName, password);
 			return delegate.listPlanNames();
 		}
 	}
 
-	public List<BambooProject> listProjectNames() throws BambooException {
+	public List<BambooProject> listProjectNames() throws RestException {
 		try {
 			return delegate.listProjectNames();
-		} catch (BambooSessionExpiredException e) {
+		} catch (RestSessionExpiredException e) {
 			delegate.login(userName, password);
 			return delegate.listProjectNames();
 		}
 	}
 
-	public void login(String name, char[] aPassword) throws BambooLoginException {
+	public void login(String name, char[] aPassword) throws RestLoginException {
 		this.userName = name;
 		this.password = new char[aPassword.length];
 		System.arraycopy(aPassword, 0, password, 0, aPassword.length);
@@ -104,10 +106,10 @@ public class AutoRenewBambooSession implements BambooSession {
 		delegate.logout();
 	}
 
-	public int getBamboBuildNumber() throws BambooException {
+	public int getBamboBuildNumber() throws RestException {
 		try {
 			return delegate.getBamboBuildNumber();
-		} catch (BambooSessionExpiredException e) {
+		} catch (RestSessionExpiredException e) {
 			delegate.login(userName, password);
 			return delegate.getBamboBuildNumber();
 		}
