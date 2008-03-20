@@ -41,7 +41,7 @@ public class IdeaLogger extends Logger {
                 if (t != null) {
                     ideaLog.info("ERROR:" + aMsg, t);
                 } else {
-                    ideaLog.info("ERROR" + aMsg);
+                    ideaLog.info("ERROR:" + aMsg);
                 }
                 break;
 

@@ -16,7 +16,7 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	public CrucibleServerFacadeImpl() {
 	}
 
-	private synchronized CrucibleSession getSession(String serverUrl) {
+	private synchronized CrucibleSession getSession(String serverUrl) throws CrucibleException {
 		CrucibleSession session = sessions.get(serverUrl);
 		if (session == null) {
 			session = new CrucibleSessionImpl(serverUrl);
