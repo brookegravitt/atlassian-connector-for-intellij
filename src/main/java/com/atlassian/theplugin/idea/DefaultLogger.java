@@ -20,9 +20,6 @@ public class DefaultLogger extends Logger {
 				"DEBUG"
 		};
 
-	static {
-	}
-
 	public void log(int level, String msg, Throwable t) {
         if (canIgnore(level)) {
             return;
