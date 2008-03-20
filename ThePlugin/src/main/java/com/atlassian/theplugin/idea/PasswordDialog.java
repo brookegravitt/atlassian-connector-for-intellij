@@ -34,7 +34,7 @@ public class PasswordDialog extends JDialog implements LoginDataProvided {
 				onCancel();
 			}
 		});
-		lblCommand.setText("Please provide password to connect \"" + this.server.getName() + "\" server");
+		lblCommand.setText("<html><p>Please provide password to connect \"" + this.server.getName() + "\" server:</p> <p><i>" + this.server.getUrlString() + "</i></p></html>");
 // call onCancel() on ESCAPE
 		passwordPanel.registerKeyboardAction(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
