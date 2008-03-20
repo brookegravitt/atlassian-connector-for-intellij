@@ -49,10 +49,8 @@ public class QueryOnUpdateHandler implements UpdateActionHandler {
 			};
 
 			ProgressManager.getInstance().run(downloader);
-
-		} else {
-				pluginConfiguration.setRejectedUpgrade(versionInfo.getVersion());
 		}
-
+		// so or so we mark this version so no more popups will appear
+		pluginConfiguration.setRejectedUpgrade(versionInfo.getVersion());
 	}
 }
