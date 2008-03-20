@@ -2,6 +2,7 @@ package com.atlassian.theplugin.bamboo.api;
 
 import com.atlassian.theplugin.bamboo.*;
 import com.atlassian.theplugin.util.HttpClientFactory;
+import com.atlassian.theplugin.util.Util;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
@@ -53,7 +54,7 @@ class BambooSessionImpl implements BambooSession {
 	 * @param baseUrl base URL for Bamboo instance
 	 */
 	public BambooSessionImpl(String baseUrl) {
-		this.baseUrl = baseUrl;
+		this.baseUrl = Util.removeUrlTrailingSlashes(baseUrl);
 	}
 
 	/**
@@ -562,6 +563,9 @@ class BambooSessionImpl implements BambooSession {
 			if (url.getHost().length() == 0) {
 				throw new MalformedURLException("Url must contain valid host.");
 			}
+			if (url.getPort() >= 2 * Short.MAX_VALUE) {
+				throw new MalformedURLException("Url port invalid");
+			}			
 		} catch (MalformedURLException e) {
 			throw new MalformedURLException("Url must contain valid host.");
 		}
@@ -585,7 +589,9 @@ class BambooSessionImpl implements BambooSession {
 
 				SAXBuilder builder = new SAXBuilder();
 				doc = builder.build(method.getResponseBodyAsStream());
-			} finally {
+			} catch (NullPointerException e) {
+				throw new IOException("Connection error", e);
+			}	finally {
 				method.releaseConnection();
 			}
 		}

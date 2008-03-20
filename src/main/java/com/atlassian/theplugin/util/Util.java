@@ -1,5 +1,8 @@
 package com.atlassian.theplugin.util;
 
+import java.net.URL;
+import java.net.MalformedURLException;
+
 /**
  * Created by IntelliJ IDEA.
  * User: Jacek
@@ -21,5 +24,24 @@ public abstract class Util {
 		} else {
 			return address;
 		}
+	}
+
+	public static String removeUrlTrailingSlashes(String address) {
+		if (address == null) {
+			return null;
+		}
+		try {
+			URL url = new URL(address);
+			if (url.getHost().length() == 0) {
+				return address;
+			}
+		} catch (MalformedURLException e) {
+			return address;
+		}
+
+		while (address.endsWith("/")) {
+			address = address.substring(0, address.length() - 1);
+		}
+		return address;
 	}
 }
