@@ -2,7 +2,7 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.idea.StatusBarPluginIcon;
 import com.atlassian.theplugin.ServerType;
-import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.PluginToolWindow;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
 
@@ -31,7 +31,7 @@ public class CrucibleStatusIcon extends StatusBarPluginIcon {
 
 		addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-                IdeaHelper.focusPanel(project, IdeaHelper.ToolWindowPanels.CRUCIBLE);
+                PluginToolWindow.focusPanel(project, PluginToolWindow.ToolWindowPanels.CRUCIBLE);
 				resetIcon();
 			}
 		});

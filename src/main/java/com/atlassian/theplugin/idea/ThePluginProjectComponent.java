@@ -19,7 +19,6 @@ import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
-import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.peer.PeerFactory;
 import com.intellij.ui.content.Content;
@@ -61,6 +60,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 
 	private JIRAToolWindowPanel jiraToolWindowPanel;
 	private JIRAServer currentJiraServer;
+	private PluginToolWindow toolWindow;
 
 	public ThePluginProjectComponent(Project project,
 									 CrucibleStatusChecker crucibleStatusChecker,
@@ -101,6 +101,10 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 		return "ThePluginProjectComponent";
 	}
 
+	public PluginToolWindow getToolWindow() {
+		return toolWindow;
+	}
+
 	private void createPlugin() {
 		// unregister changelistmanager?
 		// only open tool windows for each application that's registered
@@ -112,25 +116,29 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 		if (!created) {
 
 			// create tool window on the right
-			com.intellij.openapi.wm.ToolWindow toolWindow = toolWindowManager.registerToolWindow(IdeaHelper.TOOL_WINDOW_NAME,
-					true, ToolWindowAnchor.RIGHT);
+			toolWindow = new PluginToolWindow(toolWindowManager, project);
 			Icon toolWindowIcon = IconLoader.getIcon(THE_PLUGIN_TOOL_WINDOW_ICON);
-			toolWindow.setIcon(toolWindowIcon);
+			toolWindow.getIdeaToolWindow().setIcon(toolWindowIcon);
 
 			// create tool window content
-			Content bambooToolWindow = createBambooContent();
-			toolWindow.getContentManager().addContent(bambooToolWindow);
+			//Content bambooToolWindow = createBambooContent();
+			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.BAMBOO);
+			toolWindow.showHidePanels();
 			TableView.restore(projectConfigurationBean.getBambooConfiguration().getTableConfiguration(),
 					bambooToolWindowPanel.getTable());
 
 			crucibleToolWindowPanel = new CrucibleToolWindowPanel();
-			Content crucibleToolWindow = createCrusibleContent();
-			toolWindow.getContentManager().addContent(crucibleToolWindow);
+			//Content crucibleToolWindow = createCrusibleContent();
+			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.CRUCIBLE);
+			toolWindow.showHidePanels();
 
 			jiraToolWindowPanel = new JIRAToolWindowPanel(projectConfigurationBean);
-			Content jiraToolWindow = createJiraContent();
-			toolWindow.getContentManager().addContent(jiraToolWindow);
-			toolWindow.getContentManager().setSelectedContent(jiraToolWindow);
+			//Content jiraToolWindow = createJiraContent();
+			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.JIRA);
+			toolWindow.showHidePanels();
+			PluginToolWindow.focusPanel(project, PluginToolWindow.ToolWindowPanels.JIRA);
+			//toolWindow.getIdeaToolWindow().getContentManager().setSelectedContent(jiraToolWindow);
+
 			TableView.restore(projectConfigurationBean.getJiraConfiguration().getTableConfiguration(),
 					jiraToolWindowPanel.getTable());
 
@@ -178,6 +186,8 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 			ConfirmPluginUpdateHandler.getInstance().setDisplay(statusPluginUpdateIcon);
 			//statusPluginUpdateIcon.showOrHideIcon();
 
+			toolWindow.showHidePanels();
+
 
 			created = true;
 		}
@@ -188,7 +198,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 
 		Content content = peerFactory.getContentFactory().createContent(
 				bambooToolWindowPanel,
-				IdeaHelper.ToolWindowPanels.BAMBOO.toString(),
+				PluginToolWindow.ToolWindowPanels.BAMBOO.toString(),
 				false);
 
 		content.setIcon(IconLoader.getIcon("/icons/bamboo-blue-16.png"));
@@ -201,7 +211,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 		PeerFactory peerFactory = PeerFactory.getInstance();
 
 		Content content = peerFactory.getContentFactory().createContent(
-				crucibleToolWindowPanel, IdeaHelper.ToolWindowPanels.CRUCIBLE.toString(), false);
+				crucibleToolWindowPanel, PluginToolWindow.ToolWindowPanels.CRUCIBLE.toString(), false);
 		content.setIcon(IconLoader.getIcon("/icons/crucible-blue-16.png"));
 		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
 
@@ -213,7 +223,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 		PeerFactory peerFactory = PeerFactory.getInstance();
 
 		Content content = peerFactory.getContentFactory().createContent(
-				jiraToolWindowPanel, IdeaHelper.ToolWindowPanels.JIRA.toString(), false);
+				jiraToolWindowPanel, PluginToolWindow.ToolWindowPanels.JIRA.toString(), false);
 		content.setIcon(IconLoader.getIcon("/icons/jira-blue-16.png"));
 		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
 
@@ -238,7 +248,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 			crucibleStatusChecker.unregisterListener(crucibleNewReviewNotifier);
 
 			// remove tool window
-			toolWindowManager.unregisterToolWindow(IdeaHelper.TOOL_WINDOW_NAME);
+			toolWindowManager.unregisterToolWindow(PluginToolWindow.TOOL_WINDOW_NAME);
 			created = false;
 		}
 	}
