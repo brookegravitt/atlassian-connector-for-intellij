@@ -1,10 +1,10 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
-import com.atlassian.theplugin.util.Connector;
 import com.atlassian.theplugin.bamboo.BambooServerFacade;
-import com.atlassian.theplugin.bamboo.api.BambooLoginException;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.exception.ThePluginException;
+import com.atlassian.theplugin.rest.RestLoginException;
+import com.atlassian.theplugin.util.Connector;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import org.apache.log4j.Category;
@@ -68,7 +68,7 @@ public class BambooServerConfigForm extends JComponent implements ServerPanel {
 					bambooServerFacade.testServerConnection(getUrl(), getUserName(), getPassword());
 				} catch (IllegalArgumentException e) {
 					throw new ThePluginException(e.getMessage(), e);
-				} catch (BambooLoginException e) {
+				} catch (RestLoginException e) {
 					throw new ThePluginException(e.getMessage(), e);
 				}
 			}

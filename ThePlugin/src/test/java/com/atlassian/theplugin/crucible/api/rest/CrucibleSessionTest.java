@@ -4,6 +4,7 @@ import com.atlassian.theplugin.bamboo.api.bamboomock.ErrorResponse;
 import com.atlassian.theplugin.crucible.api.*;
 import com.atlassian.theplugin.crucible.api.rest.cruciblemock.*;
 import com.atlassian.theplugin.rest.RestException;
+import com.atlassian.theplugin.rest.RestLoginException;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 import org.mortbay.jetty.Server;
@@ -69,7 +70,7 @@ public class CrucibleSessionTest extends TestCase {
 		try {
 			apiHandler.login(USER_NAME, PASSWORD);
 			fail();
-		} catch (CrucibleException e) {
+		} catch (RestException e) {
 
 		}
 	}
@@ -81,7 +82,7 @@ public class CrucibleSessionTest extends TestCase {
 		try {
 			apiHandler.login(USER_NAME, PASSWORD);
 			fail();
-		} catch (CrucibleException e) {
+		} catch (RestException e) {
 			// expected
 		}
 	}
@@ -113,7 +114,7 @@ public class CrucibleSessionTest extends TestCase {
 			CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
 			apiHandler.login(null, null);
 			fail();
-		} catch (CrucibleLoginException ex) {
+		} catch (RestLoginException ex) {
 			System.out.println("Exception: " + ex.getMessage());
 		}
 	}
@@ -121,12 +122,12 @@ public class CrucibleSessionTest extends TestCase {
 	public void testWrongUrlBambooLogin() throws Exception {
 		ErrorResponse error = new ErrorResponse(400, "Bad Request");
 		mockServer.expect("/wrongurl/rest-service/auth-v1/login", error);
-		CrucibleLoginException exception = null;
+		RestLoginException exception = null;
 
 		try {
 			CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl + "/wrongurl");
 			apiHandler.login(USER_NAME, PASSWORD);
-		} catch (CrucibleLoginException ex) {
+		} catch (RestLoginException ex) {
 			exception = ex;
 		}
 		mockServer.verify();
@@ -138,12 +139,12 @@ public class CrucibleSessionTest extends TestCase {
 	}
 
 	public void testNonExistingServerBambooLogin() throws Exception {
-		CrucibleLoginException exception = null;
+		RestLoginException exception = null;
 
 		try {
 			CrucibleSession apiHandler = new CrucibleSessionImpl("http://non.existing.server.utest");
 			apiHandler.login(USER_NAME, PASSWORD);
-		} catch (CrucibleLoginException ex) {
+		} catch (RestLoginException ex) {
 			exception = ex;
 		}
 
@@ -182,7 +183,7 @@ public class CrucibleSessionTest extends TestCase {
 		try {
 			CrucibleSession apiHandler = new CrucibleSessionImpl(url);
 			apiHandler.login(USER_NAME, PASSWORD);
-		} catch (CrucibleLoginException e) {
+		} catch (RestLoginException e) {
 			exception = e;
 		} catch (RestException e) {
 			exception = e;
@@ -217,7 +218,7 @@ public class CrucibleSessionTest extends TestCase {
 			CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
 			apiHandler.login(USER_NAME, PASSWORD); // mock will fail this
 			fail();
-		} catch (CrucibleLoginException ex) {
+		} catch (RestLoginException ex) {
 			System.out.println("Exception: " + ex.getMessage());
 		}
 
@@ -265,21 +266,21 @@ public class CrucibleSessionTest extends TestCase {
 
 			apiHandler.login(USER_NAME, PASSWORD);
 			fail("Login succeeded while expected failure.");
-		} catch (CrucibleLoginException e) {
+		} catch (RestLoginException e) {
 			// expected
 		}
 
 		try {
 			apiHandler.login(null, PASSWORD);
 			fail("Login succeeded while expected failure.");
-		} catch (CrucibleLoginException e) {
+		} catch (RestLoginException e) {
 			// expected
 		}
 
 		try {
 			apiHandler.login(USER_NAME, null);
 			fail("Login succeeded while expected failure.");
-		} catch (CrucibleLoginException e) {
+		} catch (RestLoginException e) {
 			// expected
 		}
 
@@ -426,7 +427,7 @@ public class CrucibleSessionTest extends TestCase {
 		try {
 			apiHandler.getAllReviews();
 			fail();
-		} catch (CrucibleException e) {
+		} catch (RestException e) {
 			// expected
 		}
 		mockServer.verify();
@@ -444,7 +445,7 @@ public class CrucibleSessionTest extends TestCase {
 			List<State> states = Arrays.asList(State.REVIEW, State.DRAFT);
 			apiHandler.getReviewsInStates(states);
 			fail();
-		} catch (CrucibleException e) {
+		} catch (RestException e) {
 			// expected
 		}
 		mockServer.verify();
@@ -491,7 +492,7 @@ public class CrucibleSessionTest extends TestCase {
 		try {
 			apiHandler.getReviewers(permId);
 			fail();
-		} catch (CrucibleException e) {
+		} catch (RestException e) {
 			// expected
 		}
 
@@ -509,7 +510,7 @@ public class CrucibleSessionTest extends TestCase {
 		try {
 			apiHandler.getReviewers(permId);
 			fail();
-		} catch (CrucibleException e) {
+		} catch (RestException e) {
 			// expected
 		}
 
@@ -549,7 +550,7 @@ public class CrucibleSessionTest extends TestCase {
 		try {
 			apiHandler.createReview(review);
 			fail();
-		} catch (CrucibleException e) {
+		} catch (RestException e) {
 			// expected
 		}
 		mockServer.verify();
@@ -566,7 +567,7 @@ public class CrucibleSessionTest extends TestCase {
 		try {
 			apiHandler.createReview(review);
 			fail();
-		} catch (CrucibleException e) {
+		} catch (RestException e) {
 			// expected
 		}
 
@@ -647,7 +648,7 @@ public class CrucibleSessionTest extends TestCase {
 			ReviewDataBean review = createReviewRequest();
 			apiHandler.createReviewFromPatch(review, "patch text");
 			fail();
-		} catch (CrucibleException e) {
+		} catch (RestException e) {
 			// expected
 		}
 		
