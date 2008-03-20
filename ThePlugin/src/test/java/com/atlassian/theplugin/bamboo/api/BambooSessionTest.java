@@ -3,6 +3,7 @@ package com.atlassian.theplugin.bamboo.api;
 import com.atlassian.theplugin.bamboo.*;
 import com.atlassian.theplugin.bamboo.api.bamboomock.*;
 import com.atlassian.theplugin.rest.RestException;
+import com.atlassian.theplugin.rest.RestLoginException;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 import org.mortbay.jetty.Server;
@@ -85,12 +86,12 @@ public class BambooSessionTest extends TestCase {
 	public void testWrongUrlBambooLogin() throws Exception {
 		ErrorResponse error = new ErrorResponse(400, "Bad Request"); 
 		mockServer.expect("/wrongurl/api/rest/login.action", error);
-		BambooLoginException exception = null;
+		RestLoginException exception = null;
 
 		try {
 			BambooSession apiHandler = new BambooSessionImpl(mockBaseUrl + "/wrongurl");
 			apiHandler.login(USER_NAME, PASSWORD.toCharArray());
-		} catch (BambooLoginException ex) {
+		} catch (RestLoginException ex) {
 			exception = ex;
 		}
 		mockServer.verify();
@@ -102,12 +103,12 @@ public class BambooSessionTest extends TestCase {
 	}
 
 	public void testNonExistingServerBambooLogin() throws Exception {
-		BambooLoginException exception = null;
+		RestLoginException exception = null;
 
 		try {
 			BambooSession apiHandler = new BambooSessionImpl("http://non.existing.server.utest");
 			apiHandler.login(USER_NAME, PASSWORD.toCharArray());
-		} catch (BambooLoginException ex) {
+		} catch (RestLoginException ex) {
 			exception = ex;
 		}
 
@@ -142,12 +143,12 @@ public class BambooSessionTest extends TestCase {
 	}
 
 	private void tryMalformedUrl(final String url) {
-		BambooLoginException exception = null;
+		RestLoginException exception = null;
 		try {
 			BambooSession apiHandler = new BambooSessionImpl(url);
 			apiHandler.login(USER_NAME, PASSWORD.toCharArray());
 		} catch (RestException e) {
-			exception = new BambooLoginException(e.getMessage(), e);
+			exception = new RestLoginException(e.getMessage(), e);
 		}
 
 		assertNotNull("Exception expected", exception);
@@ -164,7 +165,7 @@ public class BambooSessionTest extends TestCase {
 			BambooSession apiHandler = new BambooSessionImpl(mockBaseUrl);
 			apiHandler.login(USER_NAME, PASSWORD.toCharArray()); // mock will fail this
 			fail();
-		} catch (BambooLoginException ex) {
+		} catch (RestLoginException ex) {
 			System.out.println("Exception: " + ex.getMessage());
 		}
 
@@ -521,7 +522,7 @@ public class BambooSessionTest extends TestCase {
 		try {
 			apiHandler.getBuildResultDetails("TP-DEF", "200");
 			fail();
-		} catch (BambooException e) {
+		} catch (RestException e) {
 			// expected
 		}
 		apiHandler.logout();
@@ -539,7 +540,7 @@ public class BambooSessionTest extends TestCase {
 		try {
 			BuildDetails build = apiHandler.getBuildResultDetails("TP-DEF", "100");
 			fail();
-		} catch (BambooException e) {
+		} catch (RestException e) {
 			assertEquals("org.jdom.input.JDOMParseException", e.getCause().getClass().getName());
 		}
 		apiHandler.logout();
@@ -621,7 +622,7 @@ public class BambooSessionTest extends TestCase {
 		try {
 			apiHandler.addLabelToBuild("TP-DEF", "200", label);
 			fail();
-		} catch (BambooException e) {
+		} catch (RestException e) {
 
 		}
 		apiHandler.logout();
@@ -686,7 +687,7 @@ public class BambooSessionTest extends TestCase {
 		try {
 			apiHandler.addCommentToBuild("TP-DEF", "200", comment);
 			fail();
-		} catch (BambooException e) {
+		} catch (RestException e) {
 
 		}
 		apiHandler.logout();
@@ -717,7 +718,7 @@ public class BambooSessionTest extends TestCase {
 		try {
 			apiHandler.executeBuild("TP-DEF");
 			fail();
-		} catch (BambooException e) {
+		} catch (RestException e) {
 			// expected
 		}
 		apiHandler.logout();
@@ -746,12 +747,12 @@ public class BambooSessionTest extends TestCase {
 
 	public void testOutOfRangePort() {
 		String url = "http://localhost:80808";
-		BambooLoginException exception = null;
+		RestLoginException exception = null;
 		try {
 			BambooSession apiHandler = new BambooSessionImpl(url);
 			apiHandler.login(USER_NAME, PASSWORD.toCharArray());
 		} catch (RestException e) {
-			exception = new BambooLoginException(e.getMessage(), e);
+			exception = new RestLoginException(e.getMessage(), e);
 		}
 
 		assertNotNull("Exception expected", exception);

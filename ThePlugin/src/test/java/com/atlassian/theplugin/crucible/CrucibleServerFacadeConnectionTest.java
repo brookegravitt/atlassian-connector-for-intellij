@@ -2,9 +2,9 @@ package com.atlassian.theplugin.crucible;
 
 import com.atlassian.theplugin.ServerType;
 import com.atlassian.theplugin.configuration.*;
-import com.atlassian.theplugin.crucible.api.CrucibleLoginException;
-import com.atlassian.theplugin.crucible.api.CrucibleLoginFailedException;
 import com.atlassian.theplugin.crucible.api.rest.cruciblemock.LoginCallback;
+import com.atlassian.theplugin.rest.RestLoginException;
+import com.atlassian.theplugin.rest.RestLoginFailedException;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 
@@ -69,7 +69,7 @@ public class CrucibleServerFacadeConnectionTest extends TestCase {
 		try {
 			testedCrucibleServerFacade.getAllReviews(server);
 			fail();
-		} catch (CrucibleLoginFailedException e) {
+		} catch (RestLoginFailedException e) {
 
 		}
 
@@ -88,7 +88,7 @@ public class CrucibleServerFacadeConnectionTest extends TestCase {
 		try {
 			testedCrucibleServerFacade.testServerConnection(mockBaseUrl, USER_NAME, PASSWORD);
 			fail();
-		} catch (CrucibleLoginFailedException e) {
+		} catch (RestLoginFailedException e) {
 			// expected
 		}
 
@@ -99,7 +99,7 @@ public class CrucibleServerFacadeConnectionTest extends TestCase {
 		try {
 			testedCrucibleServerFacade.testServerConnection(mockBaseUrl, null, PASSWORD);
 			fail();
-		} catch (CrucibleLoginException e) {
+		} catch (RestLoginException e) {
 			// expected
 		}
 	}
@@ -108,7 +108,7 @@ public class CrucibleServerFacadeConnectionTest extends TestCase {
 		try {
 			testedCrucibleServerFacade.testServerConnection(mockBaseUrl, USER_NAME, null);
 			fail();
-		} catch (CrucibleLoginException e) {
+		} catch (RestLoginException e) {
 			// expected
 		}
 	}
@@ -118,7 +118,7 @@ public class CrucibleServerFacadeConnectionTest extends TestCase {
 		try {
 			testedCrucibleServerFacade.testServerConnection("", USER_NAME, PASSWORD);
 			fail();
-		} catch (CrucibleLoginException e) {
+		} catch (RestLoginException e) {
 			// expected
 		}
 		mockServer.verify();
