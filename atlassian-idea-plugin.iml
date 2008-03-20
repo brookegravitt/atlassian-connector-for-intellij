@@ -295,6 +295,17 @@
         </SOURCES>
       </library>
     </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="joda-time">
+        <CLASSES>
+          <root url="jar:///home/marek/.m2/repository/joda-time/joda-time/1.5.2/joda-time-1.5.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar:///home/marek/.m2/repository/joda-time/joda-time/1.5.2/joda-time-1.5.2-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
     <orderEntryProperties />
   </component>
   <component name="org.mevenide.idea.module.ModuleSettings">
