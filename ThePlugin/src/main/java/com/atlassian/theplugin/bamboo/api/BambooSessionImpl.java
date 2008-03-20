@@ -42,6 +42,7 @@ class BambooSessionImpl implements BambooSession {
 
 	private final String baseUrl;
 	private String authToken;
+	private final Object clientLock = new Object();
 
 	private HttpClient client = null;
 	private static final String AUTHENTICATION_ERROR_MESSAGE = "User not authenticated yet, or session timed out";
@@ -517,7 +518,7 @@ class BambooSessionImpl implements BambooSession {
 		buildInfo.setBuildCommitComment(getChildText(buildItemNode, "buildCommitComment"));
 		buildInfo.setBuildRelativeBuildDate(getChildText(buildItemNode, "buildRelativeBuildDate"));
 		buildInfo.setBuildTestsPassed(Integer.parseInt(getChildText(buildItemNode, "successfulTestCount")));
-		buildInfo.setBuildTestsFailed(Integer.parseInt(getChildText(buildItemNode, "failedTestCount")));		
+		buildInfo.setBuildTestsFailed(Integer.parseInt(getChildText(buildItemNode, "failedTestCount")));
 
 		buildInfo.setBuildTime(parseBuildTime(getChildText(buildItemNode, "buildTime")));
 		buildInfo.setPollingTime(lastPollingTime);
@@ -565,26 +566,28 @@ class BambooSessionImpl implements BambooSession {
 			throw new MalformedURLException("Url must contain valid host.");
 		}
 
-		if (client == null) {
-			client = HttpClientFactory.getClient();
-		}
-		GetMethod method = new GetMethod(urlString);
 		Document doc = null;
-		try {
-			method.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
-
-			client.executeMethod(method);
-
-			if (method.getStatusCode() != HttpStatus.SC_OK) {
-				throw new IOException(
-					"HTTP " + method.getStatusCode() + " (" + HttpStatus.getStatusText(method.getStatusCode()) + ")\n"
-					+ method.getStatusText());
+		synchronized (clientLock) {
+			if (client == null) {
+				client = HttpClientFactory.getClient();
 			}
+			GetMethod method = new GetMethod(urlString);
+			try {
+				method.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
 
-			SAXBuilder builder = new SAXBuilder();
-			doc = builder.build(method.getResponseBodyAsStream());
-		} finally {
-			method.releaseConnection();
+				client.executeMethod(method);
+
+				if (method.getStatusCode() != HttpStatus.SC_OK) {
+					throw new IOException(
+							"HTTP " + method.getStatusCode() + " (" + HttpStatus.getStatusText(method.getStatusCode()) + ")\n"
+									+ method.getStatusText());
+				}
+
+				SAXBuilder builder = new SAXBuilder();
+				doc = builder.build(method.getResponseBodyAsStream());
+			} finally {
+				method.releaseConnection();
+			}
 		}
 
 		String error = getExceptionMessages(doc);
