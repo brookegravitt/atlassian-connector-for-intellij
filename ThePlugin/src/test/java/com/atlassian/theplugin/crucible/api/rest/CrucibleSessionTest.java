@@ -3,6 +3,7 @@ package com.atlassian.theplugin.crucible.api.rest;
 import com.atlassian.theplugin.bamboo.api.bamboomock.ErrorResponse;
 import com.atlassian.theplugin.crucible.api.*;
 import com.atlassian.theplugin.crucible.api.rest.cruciblemock.*;
+import com.atlassian.theplugin.rest.RestException;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 import org.mortbay.jetty.Server;
@@ -102,7 +103,7 @@ public class CrucibleSessionTest extends TestCase {
 			CrucibleSession apiHandler = new CrucibleSessionImpl(null);
 			apiHandler.login(null, null);
 			fail();
-		} catch (CrucibleLoginException ex) {
+		} catch (RestException ex) {
 			System.out.println("Exception: " + ex.getMessage());
 		}
 	}
@@ -177,11 +178,13 @@ public class CrucibleSessionTest extends TestCase {
 	}
 
 	private void tryMalformedUrl(final String url) {
-		CrucibleLoginException exception = null;
+		RestException exception = null;
 		try {
 			CrucibleSession apiHandler = new CrucibleSessionImpl(url);
 			apiHandler.login(USER_NAME, PASSWORD);
 		} catch (CrucibleLoginException e) {
+			exception = e;
+		} catch (RestException e) {
 			exception = e;
 		}
 
@@ -193,11 +196,11 @@ public class CrucibleSessionTest extends TestCase {
 
 	public void testOutOfRangePort() {
 		String url = "http://localhost:80808";
-		CrucibleLoginException exception = null;
+		RestException exception = null;
 		try {
 			CrucibleSession apiHandler = new CrucibleSessionImpl(url);
 			apiHandler.login(USER_NAME, PASSWORD);
-		} catch (CrucibleLoginException e) {
+		} catch (RestException e) {
 			exception = e;
 		}
 
@@ -227,7 +230,7 @@ public class CrucibleSessionTest extends TestCase {
 			CrucibleSession apiHandler = new CrucibleSessionImpl("");
 			apiHandler.login("", "");
 			fail();
-		} catch (CrucibleLoginException ex) {
+		} catch (RestException ex) {
 			System.out.println("Exception: " + ex.getMessage());
 		}
 	}
@@ -254,7 +257,7 @@ public class CrucibleSessionTest extends TestCase {
 		CrucibleSession apiHandler = null;
 		try {
 			apiHandler = new CrucibleSessionImpl(mockBaseUrl);
-		} catch (CrucibleLoginException e) {
+		} catch (RestException e) {
 			fail();
 		}
 
