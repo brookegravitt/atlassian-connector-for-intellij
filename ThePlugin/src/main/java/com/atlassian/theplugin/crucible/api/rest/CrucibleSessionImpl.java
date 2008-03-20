@@ -59,7 +59,7 @@ public class CrucibleSessionImpl implements CrucibleSession {
 		try {
 			new URL(baseUrl);
 		} catch (MalformedURLException e) {
-			throw new CrucibleLoginException("'" + baseUrl + "' malformed URL. Login failed.");
+			throw new CrucibleLoginException("Malformed server URL: " + baseUrl, e);
 		}
 	}
 
