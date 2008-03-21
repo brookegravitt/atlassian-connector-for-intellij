@@ -4,7 +4,7 @@ import com.atlassian.theplugin.LoginDataProvided;
 import com.atlassian.theplugin.bamboo.BambooServerFactory;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.exception.ThePluginException;
-import com.atlassian.theplugin.api.RemoteApiException;
+import com.atlassian.theplugin.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.util.Connector;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;

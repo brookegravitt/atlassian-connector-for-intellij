@@ -135,7 +135,7 @@ public class JIRARssClient {
 
     // protected so that we can easily write tests by simply returning XML from a file instead of a URL!
     protected InputStream getUrlAsStream(String url) throws IOException {
-//        return new FileInputStream("/Users/mike/svn/pazu-trunk/src/test/resources/jira/api/assignedIssues.xml");
+//        return new FileInputStream("/Users/mike/svn/pazu-trunk/src/test/resources/jira/remoteapi/assignedIssues.xml");
         return new URL(url).openConnection().getInputStream();
     }
 }

@@ -4,7 +4,7 @@ import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.crucible.api.*;
 import com.atlassian.theplugin.crucible.api.rest.CrucibleSessionImpl;
-import com.atlassian.theplugin.api.RemoteApiException;
+import com.atlassian.theplugin.remoteapi.RemoteApiException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,7 +27,7 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	}
 
 	/**
-	 * @param serverUrl @see com.atlassian.theplugin.crucible.api.soap.CrucibleSessionImpl#constructor(String baseUrl)
+	 * @param serverUrl @see com.atlassian.theplugin.crucible.remoteapi.soap.CrucibleSessionImpl#constructor(String baseUrl)
 	 * @param userName
 	 * @param password
 	 * @throws com.atlassian.theplugin.crucible.api.CrucibleException

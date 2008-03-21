@@ -1,4 +1,4 @@
-package com.atlassian.theplugin.api;
+package com.atlassian.theplugin.remoteapi;
 
 /**
  * Thrown when the login operation fails in an orderly fashion - Bamboo returns a valid exception message.

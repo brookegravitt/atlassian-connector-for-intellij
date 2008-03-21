@@ -3,9 +3,9 @@ package com.atlassian.theplugin.crucible;
 import com.atlassian.theplugin.ServerType;
 import com.atlassian.theplugin.configuration.*;
 import com.atlassian.theplugin.crucible.api.rest.cruciblemock.LoginCallback;
-import com.atlassian.theplugin.api.RemoteApiLoginException;
-import com.atlassian.theplugin.api.RemoteApiLoginFailedException;
-import com.atlassian.theplugin.api.RemoteApiMalformedUrlException;
+import com.atlassian.theplugin.remoteapi.RemoteApiLoginException;
+import com.atlassian.theplugin.remoteapi.RemoteApiLoginFailedException;
+import com.atlassian.theplugin.remoteapi.RemoteApiMalformedUrlException;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 
@@ -64,7 +64,7 @@ public class CrucibleServerFacadeConnectionTest extends TestCase {
 	}
 
 	public void testFailedLoginGetAllReviews() throws Exception {
-		mockServer.expect("/api-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
+		mockServer.expect("/remoteapi-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.CRUCIBLE_SERVER).getServers().iterator().next();
 		try {
@@ -78,13 +78,13 @@ public class CrucibleServerFacadeConnectionTest extends TestCase {
 	}
 
 	public void testConnectionTestSucceed() throws Exception {
-		mockServer.expect("/api-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/remoteapi-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
 		testedCrucibleServerFacade.testServerConnection(mockBaseUrl, USER_NAME, PASSWORD);
 		mockServer.verify();
 	}
 
 	public void testConnectionTestFailed() throws Exception {
-		mockServer.expect("/api-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
+		mockServer.expect("/remoteapi-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
 
 		try {
 			testedCrucibleServerFacade.testServerConnection(mockBaseUrl, USER_NAME, PASSWORD);

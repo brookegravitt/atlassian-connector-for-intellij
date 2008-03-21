@@ -4,8 +4,8 @@ import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.crucible.api.*;
 import com.atlassian.theplugin.crucible.api.rest.cruciblemock.LoginCallback;
-import com.atlassian.theplugin.api.RemoteApiException;
-import com.atlassian.theplugin.api.RemoteApiLoginException;
+import com.atlassian.theplugin.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.remoteapi.RemoteApiLoginException;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 import org.easymock.EasyMock;
@@ -51,7 +51,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 
 		String mockBaseUrl = "http://localhost:" + server.getConnectors()[0].getLocalPort();
 		JettyMockServer mockServer = new JettyMockServer(server);
-		mockServer.expect("/api-service/auth-v1/login", new LoginCallback(VALID_LOGIN, VALID_PASSWORD, LoginCallback.ALWAYS_FAIL));
+		mockServer.expect("/remoteapi-service/auth-v1/login", new LoginCallback(VALID_LOGIN, VALID_PASSWORD, LoginCallback.ALWAYS_FAIL));
 
 		try {
 			facade.testServerConnection(mockBaseUrl, VALID_LOGIN, VALID_PASSWORD);
@@ -71,7 +71,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 
 		String mockBaseUrl = "http://localhost:" + server.getConnectors()[0].getLocalPort();
 		JettyMockServer mockServer = new JettyMockServer(server);
-		mockServer.expect("/api-service/auth-v1/login", new LoginCallback(VALID_LOGIN, VALID_PASSWORD));
+		mockServer.expect("/remoteapi-service/auth-v1/login", new LoginCallback(VALID_LOGIN, VALID_PASSWORD));
 
 		try {
 			facade.testServerConnection(mockBaseUrl, VALID_LOGIN, VALID_PASSWORD);

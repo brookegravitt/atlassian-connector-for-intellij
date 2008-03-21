@@ -8,7 +8,7 @@ import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.atlassian.theplugin.idea.ui.AtlassianTableView;
-import com.atlassian.theplugin.api.RemoteApiException;
+import com.atlassian.theplugin.remoteapi.RemoteApiException;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;

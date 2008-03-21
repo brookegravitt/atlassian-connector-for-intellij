@@ -1,8 +1,8 @@
 package com.atlassian.theplugin.bamboo.api;
 
 import com.atlassian.theplugin.bamboo.*;
-import com.atlassian.theplugin.api.*;
-import com.atlassian.theplugin.api.rest.AbstractRestSession;
+import com.atlassian.theplugin.remoteapi.*;
+import com.atlassian.theplugin.remoteapi.rest.AbstractRestSession;
 import org.apache.commons.httpclient.HttpMethod;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -24,17 +24,17 @@ import java.util.List;
  * Communication stub for Bamboo REST API.
  */
 class BambooSessionImpl extends AbstractRestSession implements BambooSession {
-	private static final String LOGIN_ACTION = "/api/api/login.action";
-	private static final String LOGOUT_ACTION = "/api/api/logout.action";
-	private static final String LIST_PROJECT_ACTION = "/api/api/listProjectNames.action";
-	private static final String LIST_PLAN_ACTION = "/api/api/listBuildNames.action";
-	private static final String LATEST_BUILD_FOR_PLAN_ACTION = "/api/api/getLatestBuildResults.action";
-	private static final String LATEST_USER_BUILDS_ACTION = "/api/api/getLatestUserBuilds.action";
-	private static final String GET_BUILD_DETAILS_ACTION = "/api/api/getBuildResultsDetails.action";
-	private static final String ADD_LABEL_ACTION = "/api/api/addLabelToBuildResults.action";
-	private static final String ADD_COMMENT_ACTION = "/api/api/addCommentToBuildResults.action";
-	private static final String EXECUTE_BUILD_ACTION = "/api/api/executeBuild.action";
-	private static final String GET_BAMBOO_BUILD_NUMBER_ACTION = "/api/api/getBambooBuildNumber.action";
+	private static final String LOGIN_ACTION = "/remoteapi/remoteapi/login.action";
+	private static final String LOGOUT_ACTION = "/remoteapi/remoteapi/logout.action";
+	private static final String LIST_PROJECT_ACTION = "/remoteapi/remoteapi/listProjectNames.action";
+	private static final String LIST_PLAN_ACTION = "/remoteapi/remoteapi/listBuildNames.action";
+	private static final String LATEST_BUILD_FOR_PLAN_ACTION = "/remoteapi/remoteapi/getLatestBuildResults.action";
+	private static final String LATEST_USER_BUILDS_ACTION = "/remoteapi/remoteapi/getLatestUserBuilds.action";
+	private static final String GET_BUILD_DETAILS_ACTION = "/remoteapi/remoteapi/getBuildResultsDetails.action";
+	private static final String ADD_LABEL_ACTION = "/remoteapi/remoteapi/addLabelToBuildResults.action";
+	private static final String ADD_COMMENT_ACTION = "/remoteapi/remoteapi/addCommentToBuildResults.action";
+	private static final String EXECUTE_BUILD_ACTION = "/remoteapi/remoteapi/executeBuild.action";
+	private static final String GET_BAMBOO_BUILD_NUMBER_ACTION = "/remoteapi/remoteapi/getBambooBuildNumber.action";
 
 	private String authToken;
 
@@ -56,12 +56,12 @@ class BambooSessionImpl extends AbstractRestSession implements BambooSession {
 	 * <p/>
 	 * The exception returned may have the getCause() examined for to get the actual exception reason.<br>
 	 * If the exception is caused by a valid error response from the server (no IOEXception, UnknownHostException,
-	 * MalformedURLException or JDOMException), the {@link com.atlassian.theplugin.api.RemoteApiLoginFailedException}
+	 * MalformedURLException or JDOMException), the {@link com.atlassian.theplugin.remoteapi.RemoteApiLoginFailedException}
 	 * is actually thrown. This may be used as a hint that the password is invalid.
 	 *
 	 * @param name	  username defined on Bamboo server instance
 	 * @param aPassword for username
-	 * @throws com.atlassian.theplugin.api.RemoteApiLoginException on connection or authentication errors
+	 * @throws com.atlassian.theplugin.remoteapi.RemoteApiLoginException on connection or authentication errors
 	 */
 	public void login(String name, char[] aPassword) throws RemoteApiLoginException {
 		String loginUrl;
