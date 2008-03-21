@@ -14,9 +14,9 @@ import java.net.URL;
  * Time: 14:20:49
  * To change this template use File | Settings | File Templates.
  */
-public abstract class Util {
+public abstract class UrlUtil {
 
-	private Util() { }
+	private UrlUtil() { }
 
 	public static String addHttpPrefix(String address) {
 		if (address == null) {

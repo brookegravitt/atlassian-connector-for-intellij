@@ -1,29 +1,29 @@
 package com.atlassian.theplugin.crucible.api;
 
-import com.atlassian.theplugin.rest.RestException;
-import com.atlassian.theplugin.rest.RestLoginException;
+import com.atlassian.theplugin.api.RemoteApiException;
+import com.atlassian.theplugin.api.RemoteApiLoginException;
 
 import java.util.List;
 
 
 public interface CrucibleSession {
-	void login(String userName, String password) throws RestLoginException;
+	void login(String userName, String password) throws RemoteApiLoginException;
 
 	void logout();
 
-	ReviewData createReview(ReviewData reviewData) throws RestException;
+	ReviewData createReview(ReviewData reviewData) throws RemoteApiException;
 
-	ReviewData createReviewFromPatch(ReviewData reviewData, String patch) throws RestException;
+	ReviewData createReviewFromPatch(ReviewData reviewData, String patch) throws RemoteApiException;
 
-	List<ReviewData> getReviewsInStates(List<State> arg1) throws RestException;
+	List<ReviewData> getReviewsInStates(List<State> arg1) throws RemoteApiException;
 
-	List<ReviewData> getAllReviews() throws RestException;
+	List<ReviewData> getAllReviews() throws RemoteApiException;
 
-	List<String> getReviewers(PermId arg1) throws RestException;
+	List<String> getReviewers(PermId arg1) throws RemoteApiException;
 
-	List<ProjectData> getProjects() throws RestException;
+	List<ProjectData> getProjects() throws RemoteApiException;
 
-	List<RepositoryData> getRepositories() throws RestException;
+	List<RepositoryData> getRepositories() throws RemoteApiException;
 
 	boolean isLoggedIn();	
 }

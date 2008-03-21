@@ -2,8 +2,8 @@ package com.atlassian.theplugin.bamboo.api;
 
 import com.atlassian.theplugin.bamboo.*;
 import com.atlassian.theplugin.configuration.Server;
-import com.atlassian.theplugin.rest.RestLoginException;
-import com.atlassian.theplugin.rest.RestSessionExpiredException;
+import com.atlassian.theplugin.api.RemoteApiLoginException;
+import com.atlassian.theplugin.api.RemoteApiSessionExpiredException;
 import junit.framework.TestCase;
 import org.easymock.EasyMock;
 
@@ -37,13 +37,13 @@ public class AutoRenewBambooSessionTest extends TestCase {
 
 	public void testLogin() throws Exception {
 		mockDelegate.login(LOGIN, A_PASSWORD);
-		EasyMock.expectLastCall().andThrow(new RestLoginException(""));
+		EasyMock.expectLastCall().andThrow(new RemoteApiLoginException(""));
 		EasyMock.replay(mockDelegate);
 
 		try {
 			testedSession.login(LOGIN, A_PASSWORD);
 			fail();
-		} catch (RestLoginException e) {
+		} catch (RemoteApiLoginException e) {
 			//expected
 		}
 
@@ -68,7 +68,7 @@ public class AutoRenewBambooSessionTest extends TestCase {
 		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
 		EasyMock.expectLastCall();
 		mockDelegate.listProjectNames();
-		EasyMock.expectLastCall().andThrow(new RestSessionExpiredException(""));
+		EasyMock.expectLastCall().andThrow(new RemoteApiSessionExpiredException(""));
 		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
 		EasyMock.expectLastCall();
 		mockDelegate.listProjectNames();
@@ -112,7 +112,7 @@ public class AutoRenewBambooSessionTest extends TestCase {
 		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
 		EasyMock.expectLastCall();
 		mockDelegate.listPlanNames();
-		EasyMock.expectLastCall().andThrow(new RestSessionExpiredException(""));
+		EasyMock.expectLastCall().andThrow(new RemoteApiSessionExpiredException(""));
 		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
 		EasyMock.expectLastCall();
 		mockDelegate.listPlanNames();
@@ -158,7 +158,7 @@ public class AutoRenewBambooSessionTest extends TestCase {
 		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
 		EasyMock.expectLastCall();
 		mockDelegate.getLatestBuildForPlan("planKey");
-		EasyMock.expectLastCall().andThrow(new RestSessionExpiredException(""));
+		EasyMock.expectLastCall().andThrow(new RemoteApiSessionExpiredException(""));
 		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
 		EasyMock.expectLastCall();
 		mockDelegate.getLatestBuildForPlan("planKey");
@@ -256,7 +256,7 @@ public class AutoRenewBambooSessionTest extends TestCase {
 		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
 		EasyMock.expectLastCall();
 		mockDelegate.getFavouriteUserPlans();
-		EasyMock.expectLastCall().andThrow(new RestSessionExpiredException(""));
+		EasyMock.expectLastCall().andThrow(new RemoteApiSessionExpiredException(""));
 		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
 		EasyMock.expectLastCall();
 		mockDelegate.getFavouriteUserPlans();
@@ -277,7 +277,7 @@ public class AutoRenewBambooSessionTest extends TestCase {
 		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
 		EasyMock.expectLastCall();
 		mockDelegate.getBuildResultDetails("buildKey", "buildNumber");
-		EasyMock.expectLastCall().andThrow(new RestSessionExpiredException(""));
+		EasyMock.expectLastCall().andThrow(new RemoteApiSessionExpiredException(""));
 		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
 		EasyMock.expectLastCall();
 		mockDelegate.getBuildResultDetails("buildKey", "buildNumber");
@@ -313,7 +313,7 @@ public class AutoRenewBambooSessionTest extends TestCase {
 		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
 		EasyMock.expectLastCall();
 		mockDelegate.addLabelToBuild("buildKey", "buildNumber", "label");
-		EasyMock.expectLastCall().andThrow(new RestSessionExpiredException(""));
+		EasyMock.expectLastCall().andThrow(new RemoteApiSessionExpiredException(""));
 		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
 		EasyMock.expectLastCall();
 		mockDelegate.addLabelToBuild("buildKey", "buildNumber", "label");
@@ -331,7 +331,7 @@ public class AutoRenewBambooSessionTest extends TestCase {
 		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
 		EasyMock.expectLastCall();
 		mockDelegate.addCommentToBuild("buildKey", "buildNumber", "comment");
-		EasyMock.expectLastCall().andThrow(new RestSessionExpiredException(""));
+		EasyMock.expectLastCall().andThrow(new RemoteApiSessionExpiredException(""));
 		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
 		EasyMock.expectLastCall();
 		mockDelegate.addCommentToBuild("buildKey", "buildNumber", "comment");
@@ -349,7 +349,7 @@ public class AutoRenewBambooSessionTest extends TestCase {
 		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
 		EasyMock.expectLastCall();
 		mockDelegate.executeBuild("buildKey");
-		EasyMock.expectLastCall().andThrow(new RestSessionExpiredException(""));
+		EasyMock.expectLastCall().andThrow(new RemoteApiSessionExpiredException(""));
 		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
 		EasyMock.expectLastCall();
 		mockDelegate.executeBuild("buildKey");
@@ -367,7 +367,7 @@ public class AutoRenewBambooSessionTest extends TestCase {
 		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
 		EasyMock.expectLastCall();
 		mockDelegate.getBamboBuildNumber();
-		EasyMock.expectLastCall().andThrow(new RestSessionExpiredException(""));
+		EasyMock.expectLastCall().andThrow(new RemoteApiSessionExpiredException(""));
 		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
 		EasyMock.expectLastCall();
 		mockDelegate.getBamboBuildNumber();
@@ -382,7 +382,7 @@ public class AutoRenewBambooSessionTest extends TestCase {
 	}
 
 
-	public void testIsLoggedIn() throws RestLoginException {
+	public void testIsLoggedIn() throws RemoteApiLoginException {
 		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
 		EasyMock.expectLastCall();
 		mockDelegate.isLoggedIn();

@@ -30,7 +30,7 @@ public class AddLabelToBuildCallback implements JettyMockServer.Callback {
 								  HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 
-		assertTrue(request.getPathInfo().endsWith("/api/rest/addLabelToBuildResults.action"));
+		assertTrue(request.getPathInfo().endsWith("/api/api/addLabelToBuildResults.action"));
 
 		final String[] authTokens = request.getParameterValues("auth");
 		final String[] buildKeys = request.getParameterValues("buildKey");

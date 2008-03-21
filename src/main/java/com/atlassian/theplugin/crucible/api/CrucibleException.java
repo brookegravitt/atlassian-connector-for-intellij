@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.crucible.api;
 
-import com.atlassian.theplugin.rest.RestException;
+import com.atlassian.theplugin.api.RemoteApiException;
 
 /**
  * Created by IntelliJ IDEA.
@@ -9,7 +9,7 @@ import com.atlassian.theplugin.rest.RestException;
  * Time: 16:14:11
  * To change this template use File | Settings | File Templates.
  */
-public class CrucibleException extends RestException {
+public class CrucibleException extends RemoteApiException {
 
 	public CrucibleException(String message) {
 		super(message);

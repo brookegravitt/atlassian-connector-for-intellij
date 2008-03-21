@@ -141,7 +141,7 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 				afterSpan += diff.inserted;
 				// Display any remaining lines (plus skip some if there's too many)
 
-				//select place where rest of context (after change) should ends
+				//select place where api of context (after change) should ends
 				if (diff.link != null) {
 					lastLine = Math.min(previousLine + linesOfContext, diff.link.line0);
 

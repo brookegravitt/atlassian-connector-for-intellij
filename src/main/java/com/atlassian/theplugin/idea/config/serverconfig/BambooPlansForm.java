@@ -4,7 +4,7 @@ import com.atlassian.theplugin.bamboo.BambooPlan;
 import com.atlassian.theplugin.bamboo.BambooPlanData;
 import com.atlassian.theplugin.bamboo.BambooServerFacade;
 import com.atlassian.theplugin.configuration.*;
-import com.atlassian.theplugin.rest.RestException;
+import com.atlassian.theplugin.api.RemoteApiException;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -146,7 +146,7 @@ public class BambooPlansForm extends JComponent {
 						plans = bambooServerFacade.getPlanList(server);
 					} catch (ServerPasswordNotProvidedException e) {
 						msg.append("Unable to connect: password for server not provided\n");
-					} catch (RestException e) {
+					} catch (RemoteApiException e) {
 						msg.append("Unable to connect: ");
 						msg.append(e.getMessage());
 						msg.append("\n");

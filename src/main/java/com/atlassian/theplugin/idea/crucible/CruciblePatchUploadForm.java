@@ -7,7 +7,7 @@ import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.crucible.CrucibleServerFactory;
 import com.atlassian.theplugin.crucible.api.*;
-import com.atlassian.theplugin.rest.RestException;
+import com.atlassian.theplugin.api.RemoteApiException;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
@@ -205,7 +205,7 @@ public class CruciblePatchUploadForm extends DialogWrapper {
 				try {
 					projects = CrucibleServerFactory.getCrucibleServerFacade().getProjects(server);
 					repositories = CrucibleServerFactory.getCrucibleServerFacade().getRepositories(server);
-				} catch (RestException e) {
+				} catch (RemoteApiException e) {
 					// nothing can be done here
 				} catch (ServerPasswordNotProvidedException e) {
 					// nothing can be done here
@@ -327,7 +327,7 @@ public class CruciblePatchUploadForm extends DialogWrapper {
 							+ draftReviewData.getPermaId().getId());
 				}
 				super.doOKAction();
-			} catch (RestException e) {
+			} catch (RemoteApiException e) {
 				showMessageDialog(e.getMessage(),
 						"Error creating review: " + server.getUrlString(), Messages.getErrorIcon());
 			} catch (ServerPasswordNotProvidedException e) {
