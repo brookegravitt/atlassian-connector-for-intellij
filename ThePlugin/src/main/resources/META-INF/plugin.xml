@@ -29,10 +29,10 @@
 	<!--<vendor url="http://www.atlassian.com" email="support@atlassian.com">Atlassian</vendor>-->
 	<vendor url="http://www.atlassian.com">Atlassian</vendor>
 
-	<!--we will only support IDEAs 7.2 for now - the one we are testing on -->
+	<!--we will only support IDEAs 7.x for now - the one we are testing on -->
 	<!--jgorycki: I hope 7126 is the first build of 7.0. This is at least what the checkstyle plugin uses-->
-	<!-- jjaroczynski: firt build of 7.0 was 7027. due to API incompatibility I changed it to 7.2 (7590) -->
-	<idea-version since-build="7590"/>
+	<!-- jjaroczynski: official build of 7.0 was 7361.  -->
+	<idea-version since-build="7361"/>
 
 	<change-notes>
 		<![CDATA[
