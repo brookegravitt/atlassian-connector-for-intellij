@@ -31,20 +31,27 @@ public class PluginToolWindow extends ContentManagerAdapter {
 
 	private ToolWindow ideaToolWindow;
 	private Project project;
-	private Content selectedContent = null;
+	//private String selectedContent = null;
 	public static final String TOOL_WINDOW_NAME = "Atlassian";
 	private static final int INITIAL_NUMBER_OF_TABS = 3;
 
 	/**
 	 *
-	 * @param toolWindowManager
+	 * @param toolWindowManager ToolWindowManager object
 	 * @param project reference to the project
 	 */
 	public PluginToolWindow(ToolWindowManager toolWindowManager, Project project) {
 		this.ideaToolWindow = toolWindowManager.registerToolWindow(
 				TOOL_WINDOW_NAME, true, ToolWindowAnchor.RIGHT);
-		this.ideaToolWindow.getContentManager().addContentManagerListener(this);
 		this.project = project;
+	}
+
+	private void startTabChangeListener() {
+		this.ideaToolWindow.getContentManager().addContentManagerListener(this);
+	}
+
+	private void stopTabChangeListener() {
+		this.ideaToolWindow.getContentManager().removeContentManagerListener(this);
 	}
 
 	/**
@@ -56,7 +63,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 
 	/**
 	 * Register type of panel. Register panel can be then shown/hidden using {@link #showHidePanels}
-	 * @param toolWindowPanel
+	 * @param toolWindowPanel ToolWindowPanels enum value
 	 */
 	public void registerPanel(ToolWindowPanels toolWindowPanel) {
 		panels.add(toolWindowPanel);
@@ -67,6 +74,8 @@ public class PluginToolWindow extends ContentManagerAdapter {
 	 * Hides registered panels if servers are not define for the type of panel.
 	 */
 	public void showHidePanels() {
+
+		stopTabChangeListener();
 
 		for (ToolWindowPanels entry : panels) {
 			try {
@@ -109,6 +118,8 @@ public class PluginToolWindow extends ContentManagerAdapter {
 				PluginUtil.getLogger().error(e.getMessage(), e);
 			}
 		}
+
+		startTabChangeListener();
 	}
 
 	// simple method to open the ToolWindow and focus on a particular component
@@ -142,13 +153,27 @@ public class PluginToolWindow extends ContentManagerAdapter {
         }
     }
 
+	public static void focusPanel(Project project, String activeToolWindowTab) {
+		if (activeToolWindowTab.equals(ToolWindowPanels.BAMBOO.toString())) {
+			focusPanel(project, ToolWindowPanels.BAMBOO);
+		} else if (activeToolWindowTab.equals(ToolWindowPanels.CRUCIBLE.toString())) {
+			focusPanel(project, ToolWindowPanels.CRUCIBLE);
+		} else if (activeToolWindowTab.equals(ToolWindowPanels.JIRA.toString())) {
+			focusPanel(project, ToolWindowPanels.JIRA);
+		}
+	}
+
 	public static void focusPanel(AnActionEvent e, ToolWindowPanels component) {
 		Project project = IdeaHelper.getCurrentProject(e.getDataContext());
 		focusPanel(project, component);
     }
 
+
 	public void selectionChanged(ContentManagerEvent event) {
-		this.selectedContent = event.getContent();
+		//this.selectedContent = event.getContent().getDisplayName();
+
+		project.getComponent(ThePluginProjectComponent.class).getProjectConfigurationBean().
+				setActiveToolWindowTab(event.getContent().getDisplayName());
 	}
 
 	/**

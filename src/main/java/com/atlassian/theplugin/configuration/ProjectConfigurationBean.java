@@ -1,5 +1,7 @@
 package com.atlassian.theplugin.configuration;
 
+import com.atlassian.theplugin.idea.PluginToolWindow;
+
 /**
  * Created by IntelliJ IDEA.
  * User: Jacek
@@ -11,6 +13,7 @@ public class ProjectConfigurationBean {
 
 	private BambooProjectConfiguration bambooConfiguration = new BambooProjectConfiguration();
 	private JiraProjectConfiguration jiraConfiguration = new JiraProjectConfiguration();
+	private String activeToolWindowTab = PluginToolWindow.ToolWindowPanels.JIRA.toString();
 
 	public ProjectConfigurationBean() {
 
@@ -35,5 +38,14 @@ public class ProjectConfigurationBean {
 	public void copyConfiguration(ProjectConfigurationBean state) {
 		bambooConfiguration.copyConfiguration(state.getBambooConfiguration());
 		jiraConfiguration.copyConfiguration(state.getJiraConfiguration());
+		this.activeToolWindowTab = state.getActiveToolWindowTab();
+	}
+
+	public String getActiveToolWindowTab() {
+		return activeToolWindowTab;
+	}
+
+	public void setActiveToolWindowTab(String activeToolWindowTab) {
+		this.activeToolWindowTab = activeToolWindowTab;
 	}
 }
