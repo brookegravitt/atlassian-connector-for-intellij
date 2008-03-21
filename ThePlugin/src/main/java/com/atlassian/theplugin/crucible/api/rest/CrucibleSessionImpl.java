@@ -24,10 +24,10 @@ import java.util.List;
  * Communication stub for Bamboo REST API.
  */
 public class CrucibleSessionImpl extends AbstractRestSession implements CrucibleSession  {
-	private static final String AUTH_SERVICE = "/remoteapi-service/auth-v1";
-	private static final String REVIEW_SERVICE = "/remoteapi-service/reviews-v1";
-	private static final String PROJECTS_SERVICE = "/remoteapi-service/projects-v1";
-	private static final String REPOSITORIES_SERVICE = "/remoteapi-service/repositories-v1";
+	private static final String AUTH_SERVICE = "/rest-service/auth-v1";
+	private static final String REVIEW_SERVICE = "/rest-service/reviews-v1";
+	private static final String PROJECTS_SERVICE = "/rest-service/projects-v1";
+	private static final String REPOSITORIES_SERVICE = "/rest-service/repositories-v1";
 	private static final String LOGIN = "/login";
 	private static final String GET_REVIEWS_IN_STATES = "?state=";
 	private static final String GET_REVIEWERS = "/reviewers";

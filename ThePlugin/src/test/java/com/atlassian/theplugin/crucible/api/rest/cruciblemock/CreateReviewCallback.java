@@ -25,7 +25,7 @@ public class CreateReviewCallback implements JettyMockServer.Callback {
 								  HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 
-		assertTrue(request.getPathInfo().endsWith("/remoteapi-service/reviews-v1"));
+		assertTrue(request.getPathInfo().endsWith("/rest-service/reviews-v1"));
 		assertTrue("POST".equalsIgnoreCase(request.getMethod()));
 
 		SAXBuilder builder = new SAXBuilder();

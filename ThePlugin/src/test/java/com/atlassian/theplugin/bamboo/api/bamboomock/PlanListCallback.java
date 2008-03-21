@@ -12,7 +12,7 @@ public class PlanListCallback implements JettyMockServer.Callback {
 								  HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 
-		assertTrue(request.getPathInfo().endsWith("/remoteapi/remoteapi/listBuildNames.action"));
+		assertTrue(request.getPathInfo().endsWith("/api/rest/listBuildNames.action"));
 
 		final String[] authTokens = request.getParameterValues("auth");
 		assertEquals(1, authTokens.length);
