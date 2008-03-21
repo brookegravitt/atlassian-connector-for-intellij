@@ -24,7 +24,8 @@ public class ReviewKeyColumn extends TableColumnInfo {
 	public Comparator getComparator() {
 		return new Comparator() {
 			public int compare(Object o, Object o1) {
-				return ((CrucibleReviewAdapter) o).getPermaId().getId().compareTo(((CrucibleReviewAdapter) o1).getPermaId().getId());
+				return ((CrucibleReviewAdapter) o).getPermaId().getId()
+						.compareTo(((CrucibleReviewAdapter) o1).getPermaId().getId());
 			}
 		};
 	}

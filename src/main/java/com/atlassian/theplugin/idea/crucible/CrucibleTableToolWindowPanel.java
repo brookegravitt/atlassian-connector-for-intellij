@@ -65,10 +65,10 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 		table.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) { // on double click, just open the issue
 				if (e.getClickCount() == 2) {
-					//BambooBuildAdapter build = (BambooBuildAdapter) table.getSelectedObject();
-					//if (build != null) {
-					//	BrowserUtil.launchBrowser(build.getBuildResultUrl());
-					//}
+					CrucibleReviewAdapter review = (CrucibleReviewAdapter) table.getSelectedObject();
+					if (review != null) {
+						BrowserUtil.launchBrowser(review.getPermaId().getId());
+					}
 				}
 			}
 
