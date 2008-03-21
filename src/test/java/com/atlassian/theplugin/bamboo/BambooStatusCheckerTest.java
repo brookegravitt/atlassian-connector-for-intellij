@@ -103,11 +103,11 @@ public class BambooStatusCheckerTest extends TestCase {
 
 		assertTrue(checker.canSchedule()); // config not empty
 
-		mockServer.expect("/remoteapi/remoteapi/login.action", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/remoteapi/remoteapi/getBambooBuildNumber.action", new BamboBuildNumberCalback());
-		mockServer.expect("/remoteapi/remoteapi/listBuildNames.action", new PlanListCallback());
-		mockServer.expect("/remoteapi/remoteapi/getLatestUserBuilds.action", new FavouritePlanListCallback());
-		mockServer.expect("/remoteapi/remoteapi/getLatestBuildResults.action", new LatestBuildResultCallback());
+		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/rest/getBambooBuildNumber.action", new BamboBuildNumberCalback());
+		mockServer.expect("/api/rest/listBuildNames.action", new PlanListCallback());
+		mockServer.expect("/api/rest/getLatestUserBuilds.action", new FavouritePlanListCallback());
+		mockServer.expect("/api/rest/getLatestBuildResults.action", new LatestBuildResultCallback());
 
 		task.run();
 		assertEquals(1, r2.lastStatuses.size());

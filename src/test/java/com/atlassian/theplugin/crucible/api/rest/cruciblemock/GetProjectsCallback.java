@@ -21,7 +21,7 @@ public class GetProjectsCallback implements JettyMockServer.Callback {
 								  HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 
-		assertTrue(request.getPathInfo().endsWith("/remoteapi-service/projects-v1"));
+		assertTrue(request.getPathInfo().endsWith("/rest-service/projects-v1"));
 
 		Document doc;
 		doc = getProjects();
