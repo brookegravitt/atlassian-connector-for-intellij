@@ -4,8 +4,8 @@ import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.crucible.api.*;
 import com.atlassian.theplugin.crucible.api.rest.cruciblemock.LoginCallback;
-import com.atlassian.theplugin.rest.RestException;
-import com.atlassian.theplugin.rest.RestLoginException;
+import com.atlassian.theplugin.api.RemoteApiException;
+import com.atlassian.theplugin.api.RemoteApiLoginException;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 import org.easymock.EasyMock;
@@ -51,12 +51,12 @@ public class CrucibleServerFacadeTest extends TestCase {
 
 		String mockBaseUrl = "http://localhost:" + server.getConnectors()[0].getLocalPort();
 		JettyMockServer mockServer = new JettyMockServer(server);
-		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(VALID_LOGIN, VALID_PASSWORD, LoginCallback.ALWAYS_FAIL));
+		mockServer.expect("/api-service/auth-v1/login", new LoginCallback(VALID_LOGIN, VALID_PASSWORD, LoginCallback.ALWAYS_FAIL));
 
 		try {
 			facade.testServerConnection(mockBaseUrl, VALID_LOGIN, VALID_PASSWORD);
 			fail("testServerConnection failed");
-		} catch (RestException e) {
+		} catch (RemoteApiException e) {
 			//
 		}
 
@@ -71,11 +71,11 @@ public class CrucibleServerFacadeTest extends TestCase {
 
 		String mockBaseUrl = "http://localhost:" + server.getConnectors()[0].getLocalPort();
 		JettyMockServer mockServer = new JettyMockServer(server);
-		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(VALID_LOGIN, VALID_PASSWORD));
+		mockServer.expect("/api-service/auth-v1/login", new LoginCallback(VALID_LOGIN, VALID_PASSWORD));
 
 		try {
 			facade.testServerConnection(mockBaseUrl, VALID_LOGIN, VALID_PASSWORD);
-		} catch (RestException e) {
+		} catch (RemoteApiException e) {
 			fail("testServerConnection failed");
 		}
 
@@ -87,7 +87,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 	public void testCreateReview() throws Exception {
 		try {
 			crucibleSessionMock.login(VALID_LOGIN, VALID_PASSWORD);
-		} catch (RestLoginException e) {
+		} catch (RemoteApiLoginException e) {
 			fail("recording mock failed for login");
 		}
 
@@ -114,13 +114,13 @@ public class CrucibleServerFacadeTest extends TestCase {
 
 		try {
 			crucibleSessionMock.login(VALID_LOGIN, VALID_PASSWORD);
-		} catch (RestLoginException e) {
+		} catch (RemoteApiLoginException e) {
 			fail("recording mock failed for login");
 		}
 
 		crucibleSessionMock.createReview(EasyMock.isA(ReviewData.class));
 
-		EasyMock.expectLastCall().andThrow(new RestException("test"));
+		EasyMock.expectLastCall().andThrow(new RemoteApiException("test"));
 
 		replay(crucibleSessionMock);
 
@@ -131,7 +131,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 			// test call
 			facade.createReview(server, reviewData);
 			fail("creating review with invalid key should throw an CrucibleException()");
-		} catch (RestException e) {
+		} catch (RemoteApiException e) {
 
 		} finally {
 			EasyMock.verify(crucibleSessionMock);
@@ -139,11 +139,11 @@ public class CrucibleServerFacadeTest extends TestCase {
 
 	}
 
-	public void testCreateReviewFromPatch() throws ServerPasswordNotProvidedException, RestException {
+	public void testCreateReviewFromPatch() throws ServerPasswordNotProvidedException, RemoteApiException {
 
 		try {
 			crucibleSessionMock.login(VALID_LOGIN, VALID_PASSWORD);
-		} catch (RestLoginException e) {
+		} catch (RemoteApiLoginException e) {
 			fail("recording mock failed for login");
 		}
 
@@ -169,12 +169,12 @@ public class CrucibleServerFacadeTest extends TestCase {
 
 		try {
 			crucibleSessionMock.login(VALID_LOGIN, VALID_PASSWORD);
-		} catch (RestLoginException e) {
+		} catch (RemoteApiLoginException e) {
 			fail("recording mock failed for login");
 		}
 
 		crucibleSessionMock.createReviewFromPatch(EasyMock.isA(ReviewData.class), EasyMock.eq("some patch"));
-		EasyMock.expectLastCall().andThrow(new RestException("test"));
+		EasyMock.expectLastCall().andThrow(new RemoteApiException("test"));
 
 		replay(crucibleSessionMock);
 
@@ -185,19 +185,19 @@ public class CrucibleServerFacadeTest extends TestCase {
 
 		try {
 			facade.createReviewFromPatch(server, reviewData, patch);
-			fail("creating review with patch with invalid key should throw an RestException()");
-		} catch (RestException e) {
+			fail("creating review with patch with invalid key should throw an RemoteApiException()");
+		} catch (RemoteApiException e) {
 			// ignored by design
 		} finally {
 			EasyMock.verify(crucibleSessionMock);
 		}
 	}
 
-	public void testGetAllReviews() throws ServerPasswordNotProvidedException, RestException {
+	public void testGetAllReviews() throws ServerPasswordNotProvidedException, RemoteApiException {
 
 		try {
 			crucibleSessionMock.login(VALID_LOGIN, VALID_PASSWORD);
-		} catch (RestLoginException e) {
+		} catch (RemoteApiLoginException e) {
 			fail("recording mock failed for login");
 		}
 
@@ -241,11 +241,11 @@ public class CrucibleServerFacadeTest extends TestCase {
 		EasyMock.verify(crucibleSessionMock);
 	}
 
-	public void testGetActiveReviewsForUser() throws ServerPasswordNotProvidedException, RestException {
+	public void testGetActiveReviewsForUser() throws ServerPasswordNotProvidedException, RemoteApiException {
 
 		try {
 			crucibleSessionMock.login(VALID_LOGIN, VALID_PASSWORD);
-		} catch (RestLoginException e) {
+		} catch (RemoteApiLoginException e) {
 			fail("recording mock failed for login");
 		}
 
@@ -279,10 +279,10 @@ public class CrucibleServerFacadeTest extends TestCase {
 		EasyMock.verify(crucibleSessionMock);
 	}
 
-	public void testGetProjects() throws ServerPasswordNotProvidedException, RestException {
+	public void testGetProjects() throws ServerPasswordNotProvidedException, RemoteApiException {
 		try {
 			crucibleSessionMock.login(VALID_LOGIN, VALID_PASSWORD);
-		} catch (RestLoginException e) {
+		} catch (RemoteApiLoginException e) {
 			fail("recording mock failed for login");
 		}
 		crucibleSessionMock.getProjects();
@@ -302,10 +302,10 @@ public class CrucibleServerFacadeTest extends TestCase {
 		EasyMock.verify(crucibleSessionMock);
 	}
 
-	public void testGetRepositories() throws ServerPasswordNotProvidedException, RestException {
+	public void testGetRepositories() throws ServerPasswordNotProvidedException, RemoteApiException {
 		try {
 			crucibleSessionMock.login(VALID_LOGIN, VALID_PASSWORD);
-		} catch (RestLoginException e) {
+		} catch (RemoteApiLoginException e) {
 			fail("recording mock failed for login");
 		}
 		crucibleSessionMock.getRepositories();
@@ -466,7 +466,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 			assertNotNull(ret.getPermaId());
 			assertNotNull(ret.getPermaId().getId());
 			assertTrue(ret.getPermaId().getId().length() > 0);
-		} catch (RestException e) {
+		} catch (RemoteApiException e) {
 			fail(e.getMessage());
 		}
 	}
@@ -483,7 +483,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 			List<ReviewDataInfo> list = facade.getAllReviews(server);
 			assertNotNull(list);
 			assertTrue(list.size() > 0);
-		} catch (RestException e) {
+		} catch (RemoteApiException e) {
 			fail(e.getMessage());
 		}
 	}

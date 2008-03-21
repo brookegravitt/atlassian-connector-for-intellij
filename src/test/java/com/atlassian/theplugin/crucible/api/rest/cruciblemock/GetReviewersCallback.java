@@ -21,7 +21,7 @@ public class GetReviewersCallback implements JettyMockServer.Callback {
 								  HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 
-		assertTrue(request.getPathInfo().endsWith("/rest-service/reviews-v1/PR-1/reviewers"));
+		assertTrue(request.getPathInfo().endsWith("/api-service/reviews-v1/PR-1/reviewers"));
 
 		Document doc = getReviewers(reviewers);
 		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());

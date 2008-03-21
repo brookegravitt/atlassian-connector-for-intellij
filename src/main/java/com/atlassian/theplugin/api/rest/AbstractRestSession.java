@@ -1,7 +1,9 @@
-package com.atlassian.theplugin.rest;
+package com.atlassian.theplugin.api.rest;
 
 import com.atlassian.theplugin.util.HttpClientFactory;
-import com.atlassian.theplugin.util.Util;
+import com.atlassian.theplugin.util.UrlUtil;
+import com.atlassian.theplugin.api.RemoteApiMalformedUrlException;
+import com.atlassian.theplugin.api.RemoteApiSessionExpiredException;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
@@ -35,12 +37,16 @@ public abstract class AbstractRestSession {
 	 *
 	 * @param baseUrl base URL for server instance
 	 */
-	public AbstractRestSession(String baseUrl) throws RestException {
-		this.baseUrl = Util.removeUrlTrailingSlashes(baseUrl);
+	public AbstractRestSession(String baseUrl) throws RemoteApiMalformedUrlException {
+		if (baseUrl == null) {
+			throw new RemoteApiMalformedUrlException("Malformed server URL: null");
+		}
+		this.baseUrl = UrlUtil.removeUrlTrailingSlashes(baseUrl);
 		try {
 			new URL(baseUrl);
+			validateUrl(baseUrl);
 		} catch (MalformedURLException e) {
-			throw new RestException("Malformed server URL: " + baseUrl, e);
+			throw new RemoteApiMalformedUrlException("Malformed server URL: " + baseUrl, e);
 		}
 	}
 
@@ -61,7 +67,7 @@ public abstract class AbstractRestSession {
 		}
 	}
 
-	protected Document retrieveGetResponse(String urlString) throws IOException, JDOMException, RestSessionExpiredException {
+	protected Document retrieveGetResponse(String urlString) throws IOException, JDOMException, RemoteApiSessionExpiredException {
 		validateUrl(urlString);
 
 		Document doc = null;
@@ -99,7 +105,7 @@ public abstract class AbstractRestSession {
 	}
 
 	protected Document retrievePostResponse(String urlString, Document request)
-			throws IOException, JDOMException, RestSessionExpiredException {
+			throws IOException, JDOMException, RemoteApiSessionExpiredException {
 		validateUrl(urlString);
 
 
@@ -140,5 +146,5 @@ public abstract class AbstractRestSession {
 
 	protected abstract void adjustHttpHeader(HttpMethod method);
 
-	protected abstract void preprocessResult(Document doc) throws JDOMException, RestSessionExpiredException;
+	protected abstract void preprocessResult(Document doc) throws JDOMException, RemoteApiSessionExpiredException;
 }

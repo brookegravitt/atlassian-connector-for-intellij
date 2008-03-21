@@ -4,7 +4,7 @@ import com.atlassian.theplugin.ServerType;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.exception.ThePluginException;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.atlassian.theplugin.util.Util;
+import com.atlassian.theplugin.util.UrlUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
@@ -65,7 +65,7 @@ public class PluginToolWindow {
 
 		for (ToolWindowPanels entry : panels) {
 			try {
-				ServerType serverType = Util.toolWindowPanelsToServerType(entry);
+				ServerType serverType = UrlUtil.toolWindowPanelsToServerType(entry);
 
 				// servers are defined
 				if (ConfigurationFactory.getConfiguration().getProductServers(serverType).getServers().size() > 0) {
