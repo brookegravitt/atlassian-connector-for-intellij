@@ -39,7 +39,7 @@
           <forms/>
         </constraints>
         <properties>
-          <text value="Polling time [minutes]:"/>
+          <text value="Polling Time [minutes]:"/>
           <toolTipText value="Polling is not used for JIRA currently"/>
         </properties>
       </component>

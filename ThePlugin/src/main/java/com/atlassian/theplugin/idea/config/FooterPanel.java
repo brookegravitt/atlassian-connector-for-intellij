@@ -88,26 +88,24 @@ public class FooterPanel extends JPanel {
 
 		JPanel linkPanel = new JPanel();
 		
-		openJiraHyperlinkBugLabel = new HyperlinkLabel("bug");
+		openJiraHyperlinkBugLabel = new HyperlinkLabel("Report Bug");
 		openJiraHyperlinkBugLabel.addHyperlinkListener(new HyperlinkListener() {
 			public void hyperlinkUpdate(HyperlinkEvent e) {
 				BrowserUtil.launchBrowser(bugUrl);
 			}
 		});
 
-		openJiraHyperlinkStoryLabel = new HyperlinkLabel("feature request");
+		openJiraHyperlinkStoryLabel = new HyperlinkLabel("Request Feature");
 		openJiraHyperlinkStoryLabel.addHyperlinkListener(new HyperlinkListener() {
 			public void hyperlinkUpdate(HyperlinkEvent e) {
 				BrowserUtil.launchBrowser(storyUrl);
 			}
 		});
 
-		linkPanel.add(new JLabel("report new"));
 		linkPanel.add(openJiraHyperlinkBugLabel);
-		linkPanel.add(new JLabel("/"));
+		linkPanel.add(new JLabel("|"));
 		linkPanel.add(openJiraHyperlinkStoryLabel);
-		add(linkPanel, BorderLayout.EAST);
-
-		add(new JLabel(versionName), BorderLayout.WEST);
+		linkPanel.add(new JLabel(versionName));
+		add(linkPanel, BorderLayout.WEST);
 	}
 }

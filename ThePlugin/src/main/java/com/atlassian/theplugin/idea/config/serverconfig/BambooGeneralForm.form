@@ -67,7 +67,7 @@
           <forms/>
         </constraints>
         <properties>
-          <text value="Show tooltip:"/>
+          <text value="Show Tooltip:"/>
         </properties>
       </component>
       <component id="80997" class="javax.swing.JLabel">
@@ -76,7 +76,7 @@
           <forms/>
         </constraints>
         <properties>
-          <text value="Polling time [minutes]"/>
+          <text value="Polling Time [minutes]"/>
         </properties>
       </component>
       <grid id="3433c" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">

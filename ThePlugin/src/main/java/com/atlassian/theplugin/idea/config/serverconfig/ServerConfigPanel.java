@@ -17,7 +17,6 @@ import com.atlassian.theplugin.util.Connector;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.ui.Splitter;
-import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.util.IconLoader;
 
 import javax.swing.*;
@@ -57,22 +56,40 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
     }
 
     private void initLayout() {
-        setLayout(new BorderLayout());
+		GridBagLayout gbl = new GridBagLayout();
 
-        Splitter splitter = new Splitter(false, SPLIT_RATIO);
+		setLayout(gbl);
+
+		Splitter splitter = new Splitter(false, SPLIT_RATIO);
         splitter.setShowDividerControls(true);
         splitter.setFirstComponent(createSelectPane());
         splitter.setSecondComponent(createEditPane());
         splitter.setHonorComponentsMinimumSize(true);
 
-        add(splitter, BorderLayout.CENTER);
+		GridBagConstraints c = new GridBagConstraints();
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = 1;
+		c.weighty = 1;
+		c.insets = new Insets(12, 12, 12, 12);
+		add(splitter, c);
     }
 
     private JComponent createSelectPane() {
         JPanel selectPane = new JPanel();
-        selectPane.setLayout(new VerticalFlowLayout(true, true));
-        selectPane.add(createToolbar());
-        selectPane.add(serverTreePanel);
+//        selectPane.setLayout(new VerticalFlowLayout(true, true));
+		GridBagLayout gbl = new GridBagLayout();
+		selectPane.setLayout(gbl);
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = 0;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		selectPane.add(createToolbar(), c);
+		c.gridx = 0;
+		c.gridy = 1;
+		c.weightx = 1;
+		c.weighty = 1;
+		c.fill = GridBagConstraints.BOTH;
+		selectPane.add(serverTreePanel, c);
 		return selectPane;
     }
 

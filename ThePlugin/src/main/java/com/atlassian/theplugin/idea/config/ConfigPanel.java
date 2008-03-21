@@ -5,7 +5,7 @@ import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.idea.config.serverconfig.BambooGeneralForm;
 import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
 import com.atlassian.theplugin.idea.config.serverconfig.JiraGeneralForm;
-import com.atlassian.theplugin.idea.config.serverconfig.util.CrucibleGeneralForm;
+import com.atlassian.theplugin.idea.config.serverconfig.CrucibleGeneralForm;
 
 import javax.swing.*;
 import java.awt.*;

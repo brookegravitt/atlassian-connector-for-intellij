@@ -1,12 +1,13 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.ServerType;
-import com.atlassian.theplugin.configuration.JiraConfigurationBean;
+import com.atlassian.theplugin.configuration.CrucibleConfigurationBean;
 import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.idea.config.ContentPanel;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.intellij.uiDesigner.core.Spacer;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
@@ -16,24 +17,25 @@ import java.awt.*;
 /**
  * Created by IntelliJ IDEA.
  * User: Jacek
- * Date: 2008-03-10
- * Time: 12:15:37
+ * Date: 2008-03-07
+ * Time: 11:30:05
  * To change this template use File | Settings | File Templates.
  */
-public class JiraGeneralForm extends JComponent implements ContentPanel {
+public class CrucibleGeneralForm extends JComponent implements ContentPanel {
 	private JPanel rootComponent;
-	private SpinnerModel model;
 	private JSpinner pollTimeSpinner;
+	private SpinnerModel model;
 
 	private transient PluginConfigurationBean globalPluginConfiguration;
-	private transient JiraConfigurationBean jiraConfiguration;
+	private transient CrucibleConfigurationBean crucibleConfiguration;
 	private transient PluginConfiguration localPluginConfigurationCopy;
 
-	public JiraGeneralForm(PluginConfigurationBean globalPluginConfiguration) {
+	public CrucibleGeneralForm(PluginConfigurationBean globalPluginConfiguration) {
 
 		this.globalPluginConfiguration = globalPluginConfiguration;
 
 		$$$setupUI$$$();
+
 		model = new SpinnerNumberModel(1, 1, 1000, 1);
 		pollTimeSpinner.setModel(model);
 
@@ -41,24 +43,28 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
 		add(rootComponent, BorderLayout.WEST);
 	}
 
+	public boolean isEnabled() {
+		return true;  //To change body of implemented methods use File | Settings | File Templates.
+	}
+
 
 	public boolean isModified() {
-		return (Integer) model.getValue() != jiraConfiguration.getPollTime();
+		return (Integer) model.getValue() != crucibleConfiguration.getPollTime();
 	}
 
 	public String getTitle() {
-		return "Jira";
+		return "Crucible";
 	}
 
 	public void getData() {
 
-		((JiraConfigurationBean) getLocalPluginConfigurationCopy()
-				.getProductServers(ServerType.JIRA_SERVER))
+		((CrucibleConfigurationBean) getLocalPluginConfigurationCopy()
+				.getProductServers(ServerType.CRUCIBLE_SERVER))
 				.setPollTime((Integer) model.getValue());
 
 
-		((JiraConfigurationBean) globalPluginConfiguration
-				.getProductServers(ServerType.JIRA_SERVER))
+		((CrucibleConfigurationBean) globalPluginConfiguration
+				.getProductServers(ServerType.CRUCIBLE_SERVER))
 				.setPollTime((Integer) model.getValue());
 	}
 
@@ -66,15 +72,15 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
 
 		localPluginConfigurationCopy = config;
 
-		jiraConfiguration =
-				(JiraConfigurationBean) localPluginConfigurationCopy.getProductServers(ServerType.JIRA_SERVER);
+		crucibleConfiguration =
+				(CrucibleConfigurationBean) localPluginConfigurationCopy.getProductServers(ServerType.CRUCIBLE_SERVER);
 
-		model.setValue(jiraConfiguration.getPollTime());
+		model.setValue(crucibleConfiguration.getPollTime());
 
 
 	}
 
-	private PluginConfiguration getLocalPluginConfigurationCopy() {
+	public PluginConfiguration getLocalPluginConfigurationCopy() {
 		return localPluginConfigurationCopy;
 	}
 
@@ -87,19 +93,18 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
 	 */
 	private void $$$setupUI$$$() {
 		rootComponent = new JPanel();
-		rootComponent.setLayout(new FormLayout("fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:max(d;4px):noGrow", "center:d:noGrow"));
-		final JPanel panel1 = new JPanel();
-		panel1.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
+		rootComponent.setLayout(new FormLayout("fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:d:grow", "center:d:noGrow"));
+		final Spacer spacer1 = new Spacer();
 		CellConstraints cc = new CellConstraints();
-		rootComponent.add(panel1, cc.xy(3, 1));
-		pollTimeSpinner = new JSpinner();
-		pollTimeSpinner.setEnabled(false);
-		pollTimeSpinner.setToolTipText("Polling is not used for JIRA currently");
-		panel1.add(pollTimeSpinner, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(50, -1), null, 0, false));
+		rootComponent.add(spacer1, cc.xy(5, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
 		final JLabel label1 = new JLabel();
 		label1.setText("Polling Time [minutes]:");
-		label1.setToolTipText("Polling is not used for JIRA currently");
-		rootComponent.add(label1, cc.xy(1, 1));
+		rootComponent.add(label1, cc.xy(1, 1, CellConstraints.LEFT, CellConstraints.DEFAULT));
+		final JPanel panel1 = new JPanel();
+		panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+		rootComponent.add(panel1, cc.xy(3, 1));
+		pollTimeSpinner = new JSpinner();
+		panel1.add(pollTimeSpinner, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(50, -1), null, 0, false));
 	}
 
 	/**
