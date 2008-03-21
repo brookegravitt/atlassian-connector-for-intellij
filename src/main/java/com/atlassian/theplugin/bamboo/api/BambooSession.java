@@ -4,8 +4,8 @@ import com.atlassian.theplugin.bamboo.BambooBuild;
 import com.atlassian.theplugin.bamboo.BambooPlan;
 import com.atlassian.theplugin.bamboo.BambooProject;
 import com.atlassian.theplugin.bamboo.BuildDetails;
-import com.atlassian.theplugin.api.RemoteApiException;
-import com.atlassian.theplugin.api.RemoteApiLoginException;
+import com.atlassian.theplugin.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.remoteapi.RemoteApiLoginException;
 
 import java.util.List;
 

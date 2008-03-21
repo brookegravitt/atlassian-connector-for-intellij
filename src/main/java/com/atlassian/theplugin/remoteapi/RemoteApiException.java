@@ -1,4 +1,4 @@
-package com.atlassian.theplugin.api;
+package com.atlassian.theplugin.remoteapi;
 
 /**
  * Bamboo excepton related to session expired event process.

@@ -5,8 +5,8 @@ import com.atlassian.theplugin.bamboo.api.BambooSession;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.configuration.SubscribedPlan;
-import com.atlassian.theplugin.api.RemoteApiException;
-import com.atlassian.theplugin.api.RemoteApiLoginFailedException;
+import com.atlassian.theplugin.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.remoteapi.RemoteApiLoginFailedException;
 import com.atlassian.theplugin.util.PluginUtil;
 
 import java.util.*;

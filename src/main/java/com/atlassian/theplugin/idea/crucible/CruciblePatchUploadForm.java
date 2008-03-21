@@ -7,7 +7,7 @@ import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.crucible.CrucibleServerFactory;
 import com.atlassian.theplugin.crucible.api.*;
-import com.atlassian.theplugin.api.RemoteApiException;
+import com.atlassian.theplugin.remoteapi.RemoteApiException;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;

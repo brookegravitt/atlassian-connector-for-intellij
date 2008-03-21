@@ -2,8 +2,8 @@ package com.atlassian.theplugin.bamboo.api;
 
 import com.atlassian.theplugin.bamboo.*;
 import com.atlassian.theplugin.bamboo.api.bamboomock.*;
-import com.atlassian.theplugin.api.RemoteApiException;
-import com.atlassian.theplugin.api.RemoteApiLoginException;
+import com.atlassian.theplugin.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.remoteapi.RemoteApiLoginException;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 import org.mortbay.jetty.Server;
@@ -48,8 +48,8 @@ public class BambooSessionTest extends TestCase {
 		String[] passwords = { "password", "+-=&;<>", "", "&password=other", ",./';[]\t\\ |}{\":><?" };
 
 		for (int i = 0; i < usernames.length; ++i) {
-			mockServer.expect("/api/api/login.action", new LoginCallback(usernames[i], passwords[i]));
-			mockServer.expect("/api/api/logout.action", new LogoutCallback());
+			mockServer.expect("/remoteapi/remoteapi/login.action", new LoginCallback(usernames[i], passwords[i]));
+			mockServer.expect("/remoteapi/remoteapi/logout.action", new LogoutCallback());
 
 			apiHandler.login(usernames[i], passwords[i].toCharArray());
 			assertTrue(apiHandler.isLoggedIn());
@@ -61,8 +61,8 @@ public class BambooSessionTest extends TestCase {
 	}
 
 	public void testSuccessBambooLoginURLWithSlash() throws Exception {
-		mockServer.expect("/api/api/login.action", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/api/api/logout.action", new LogoutCallback(LoginCallback.AUTH_TOKEN));
+		mockServer.expect("/remoteapi/remoteapi/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/remoteapi/remoteapi/logout.action", new LogoutCallback(LoginCallback.AUTH_TOKEN));
 
 		BambooSession apiHandler = new BambooSessionImpl(mockBaseUrl + "/");
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
@@ -85,7 +85,7 @@ public class BambooSessionTest extends TestCase {
 
 	public void testWrongUrlBambooLogin() throws Exception {
 		ErrorResponse error = new ErrorResponse(400, "Bad Request"); 
-		mockServer.expect("/wrongurl/api/api/login.action", error);
+		mockServer.expect("/wrongurl/remoteapi/remoteapi/login.action", error);
 		RemoteApiLoginException exception = null;
 
 		try {
@@ -159,7 +159,7 @@ public class BambooSessionTest extends TestCase {
 	}
 
 	public void testWrongUserBambooLogin() throws Exception {
-		mockServer.expect("/api/api/login.action", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
+		mockServer.expect("/remoteapi/remoteapi/login.action", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
 
 		try {
 			BambooSession apiHandler = new BambooSessionImpl(mockBaseUrl);
@@ -185,9 +185,9 @@ public class BambooSessionTest extends TestCase {
 
 
 	public void testProjectList() throws Exception {
-		mockServer.expect("/api/api/login.action", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/api/api/listProjectNames.action", new ProjectListCallback());
-		mockServer.expect("/api/api/logout.action", new LogoutCallback());
+		mockServer.expect("/remoteapi/remoteapi/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/remoteapi/remoteapi/listProjectNames.action", new ProjectListCallback());
+		mockServer.expect("/remoteapi/remoteapi/logout.action", new LogoutCallback());
 
 		BambooSession apiHandler = new BambooSessionImpl(mockBaseUrl);
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
@@ -200,9 +200,9 @@ public class BambooSessionTest extends TestCase {
 	}
 
 	public void testPlanList() throws Exception {
-		mockServer.expect("/api/api/login.action", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/api/api/listBuildNames.action", new PlanListCallback());
-		mockServer.expect("/api/api/logout.action", new LogoutCallback());
+		mockServer.expect("/remoteapi/remoteapi/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/remoteapi/remoteapi/listBuildNames.action", new PlanListCallback());
+		mockServer.expect("/remoteapi/remoteapi/logout.action", new LogoutCallback());
 
 		BambooSession apiHandler = new BambooSessionImpl(mockBaseUrl);
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
@@ -214,9 +214,9 @@ public class BambooSessionTest extends TestCase {
 	}
 
 	public void testFavouritePlanList() throws Exception {
-		mockServer.expect("/api/api/login.action", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/api/api/getLatestUserBuilds.action", new FavouritePlanListCallback());
-		mockServer.expect("/api/api/logout.action", new LogoutCallback());
+		mockServer.expect("/remoteapi/remoteapi/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/remoteapi/remoteapi/getLatestUserBuilds.action", new FavouritePlanListCallback());
+		mockServer.expect("/remoteapi/remoteapi/logout.action", new LogoutCallback());
 
 		BambooSession apiHandler = new BambooSessionImpl(mockBaseUrl);
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
@@ -228,9 +228,9 @@ public class BambooSessionTest extends TestCase {
 	}
 
 	public void testBuildForPlanSuccess() throws Exception {
-		mockServer.expect("/api/api/login.action", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/api/api/getLatestBuildResults.action", new LatestBuildResultCallback());
-		mockServer.expect("/api/api/logout.action", new LogoutCallback());
+		mockServer.expect("/remoteapi/remoteapi/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/remoteapi/remoteapi/getLatestBuildResults.action", new LatestBuildResultCallback());
+		mockServer.expect("/remoteapi/remoteapi/logout.action", new LogoutCallback());
 
 		BambooSession apiHandler = new BambooSessionImpl(mockBaseUrl);
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
@@ -244,9 +244,9 @@ public class BambooSessionTest extends TestCase {
 
 
 	public void testBuildForPlanFailure() throws Exception {
-		mockServer.expect("/api/api/login.action", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/api/api/getLatestBuildResults.action", new LatestBuildResultCallback("FAILED"));
-		mockServer.expect("/api/api/logout.action", new LogoutCallback());
+		mockServer.expect("/remoteapi/remoteapi/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/remoteapi/remoteapi/getLatestBuildResults.action", new LatestBuildResultCallback("FAILED"));
+		mockServer.expect("/remoteapi/remoteapi/logout.action", new LogoutCallback());
 
 		BambooSession apiHandler = new BambooSessionImpl(mockBaseUrl);
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
@@ -259,9 +259,9 @@ public class BambooSessionTest extends TestCase {
 	}
 
 	public void testBuildForNonExistingPlan() throws Exception {
-		mockServer.expect("/api/api/login.action", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/api/api/getLatestBuildResults.action", new LatestBuildResultCallback("WRONG"));
-		mockServer.expect("/api/api/logout.action", new LogoutCallback());
+		mockServer.expect("/remoteapi/remoteapi/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/remoteapi/remoteapi/getLatestBuildResults.action", new LatestBuildResultCallback("WRONG"));
+		mockServer.expect("/remoteapi/remoteapi/logout.action", new LogoutCallback());
 
 		BambooSession apiHandler = new BambooSessionImpl(mockBaseUrl);
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
@@ -274,9 +274,9 @@ public class BambooSessionTest extends TestCase {
 	}
 
 	public void testBuildDetailsFor1CommitFailedSuccessTests() throws Exception {
-		mockServer.expect("/api/api/login.action", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/api/api/getBuildResultsDetails.action", new BuildDetailsResultCallback("buildResult-1Commit-FailedTests-SuccessfulTests.xml", "100"));
-		mockServer.expect("/api/api/logout.action", new LogoutCallback());
+		mockServer.expect("/remoteapi/remoteapi/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/remoteapi/remoteapi/getBuildResultsDetails.action", new BuildDetailsResultCallback("buildResult-1Commit-FailedTests-SuccessfulTests.xml", "100"));
+		mockServer.expect("/remoteapi/remoteapi/logout.action", new LogoutCallback());
 
 		BambooSession apiHandler = new BambooSessionImpl(mockBaseUrl);
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
@@ -324,9 +324,9 @@ public class BambooSessionTest extends TestCase {
 	}
 
 	public void testBuildDetailsFor1CommitFailedTests() throws Exception {
-		mockServer.expect("/api/api/login.action", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/api/api/getBuildResultsDetails.action", new BuildDetailsResultCallback("buildResult-1Commit-FailedTests.xml", "100"));
-		mockServer.expect("/api/api/logout.action", new LogoutCallback());
+		mockServer.expect("/remoteapi/remoteapi/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/remoteapi/remoteapi/getBuildResultsDetails.action", new BuildDetailsResultCallback("buildResult-1Commit-FailedTests.xml", "100"));
+		mockServer.expect("/remoteapi/remoteapi/logout.action", new LogoutCallback());
 
 		BambooSession apiHandler = new BambooSessionImpl(mockBaseUrl);
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
@@ -365,9 +365,9 @@ public class BambooSessionTest extends TestCase {
 	}
 
 	public void testBuildDetailsFor1CommitSuccessTests() throws Exception {
-		mockServer.expect("/api/api/login.action", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/api/api/getBuildResultsDetails.action", new BuildDetailsResultCallback("buildResult-1Commit-SuccessfulTests.xml", "100"));
-		mockServer.expect("/api/api/logout.action", new LogoutCallback());
+		mockServer.expect("/remoteapi/remoteapi/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/remoteapi/remoteapi/getBuildResultsDetails.action", new BuildDetailsResultCallback("buildResult-1Commit-SuccessfulTests.xml", "100"));
+		mockServer.expect("/remoteapi/remoteapi/logout.action", new LogoutCallback());
 
 		BambooSession apiHandler = new BambooSessionImpl(mockBaseUrl);
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
@@ -406,9 +406,9 @@ public class BambooSessionTest extends TestCase {
 	}
 
 	public void testBuildDetailsFor3CommitFailedSuccessTests() throws Exception {
-		mockServer.expect("/api/api/login.action", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/api/api/getBuildResultsDetails.action", new BuildDetailsResultCallback("buildResult-3Commit-FailedTests-SuccessfulTests.xml", "100"));
-		mockServer.expect("/api/api/logout.action", new LogoutCallback());
+		mockServer.expect("/remoteapi/remoteapi/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/remoteapi/remoteapi/getBuildResultsDetails.action", new BuildDetailsResultCallback("buildResult-3Commit-FailedTests-SuccessfulTests.xml", "100"));
+		mockServer.expect("/remoteapi/remoteapi/logout.action", new LogoutCallback());
 
 		BambooSession apiHandler = new BambooSessionImpl(mockBaseUrl);
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
@@ -471,9 +471,9 @@ public class BambooSessionTest extends TestCase {
 	}
 
 	public void testBuildDetailsForNoCommitFailedSuccessTests() throws Exception {
-		mockServer.expect("/api/api/login.action", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/api/api/getBuildResultsDetails.action", new BuildDetailsResultCallback("buildResult-NoCommit-FailedTests-SuccessfulTests.xml", "100"));
-		mockServer.expect("/api/api/logout.action", new LogoutCallback());
+		mockServer.expect("/remoteapi/remoteapi/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/remoteapi/remoteapi/getBuildResultsDetails.action", new BuildDetailsResultCallback("buildResult-NoCommit-FailedTests-SuccessfulTests.xml", "100"));
+		mockServer.expect("/remoteapi/remoteapi/logout.action", new LogoutCallback());
 
 		BambooSession apiHandler = new BambooSessionImpl(mockBaseUrl);
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
@@ -513,9 +513,9 @@ public class BambooSessionTest extends TestCase {
 	}
 
 	public void testBuildDetailsForNonExistingBuild() throws Exception {
-		mockServer.expect("/api/api/login.action", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/api/api/getBuildResultsDetails.action", new BuildDetailsResultCallback("buildNotExistsResponse.xml", "200"));
-		mockServer.expect("/api/api/logout.action", new LogoutCallback());
+		mockServer.expect("/remoteapi/remoteapi/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/remoteapi/remoteapi/getBuildResultsDetails.action", new BuildDetailsResultCallback("buildNotExistsResponse.xml", "200"));
+		mockServer.expect("/remoteapi/remoteapi/logout.action", new LogoutCallback());
 
 		BambooSession apiHandler = new BambooSessionImpl(mockBaseUrl);
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
@@ -531,9 +531,9 @@ public class BambooSessionTest extends TestCase {
 	}
 
 	public void testBuildDetailsMalformedResponse() throws Exception {
-		mockServer.expect("/api/api/login.action", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/api/api/getBuildResultsDetails.action", new BuildDetailsResultCallback("malformedBuildResult.xml", "100"));
-		mockServer.expect("/api/api/logout.action", new LogoutCallback());
+		mockServer.expect("/remoteapi/remoteapi/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/remoteapi/remoteapi/getBuildResultsDetails.action", new BuildDetailsResultCallback("malformedBuildResult.xml", "100"));
+		mockServer.expect("/remoteapi/remoteapi/logout.action", new LogoutCallback());
 
 		BambooSession apiHandler = new BambooSessionImpl(mockBaseUrl);
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
@@ -549,9 +549,9 @@ public class BambooSessionTest extends TestCase {
 	}
 
 	public void testBuildDetailsEmptyResponse() throws Exception {
-		mockServer.expect("/api/api/login.action", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/api/api/getBuildResultsDetails.action", new BuildDetailsResultCallback("emptyResponse.xml", "100"));
-		mockServer.expect("/api/api/logout.action", new LogoutCallback());
+		mockServer.expect("/remoteapi/remoteapi/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/remoteapi/remoteapi/getBuildResultsDetails.action", new BuildDetailsResultCallback("emptyResponse.xml", "100"));
+		mockServer.expect("/remoteapi/remoteapi/logout.action", new LogoutCallback());
 
 		BambooSession apiHandler = new BambooSessionImpl(mockBaseUrl);
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
@@ -568,9 +568,9 @@ public class BambooSessionTest extends TestCase {
 	public void testAddSimpleLabel() throws Exception {
 		String label = "label siple text";
 
-		mockServer.expect("/api/api/login.action", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/api/api/addLabelToBuildResults.action", new AddLabelToBuildCallback(label));
-		mockServer.expect("/api/api/logout.action", new LogoutCallback());
+		mockServer.expect("/remoteapi/remoteapi/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/remoteapi/remoteapi/addLabelToBuildResults.action", new AddLabelToBuildCallback(label));
+		mockServer.expect("/remoteapi/remoteapi/logout.action", new LogoutCallback());
 
 		BambooSession apiHandler = new BambooSessionImpl(mockBaseUrl);
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
@@ -583,9 +583,9 @@ public class BambooSessionTest extends TestCase {
 	public void testAddEmptyLabel() throws Exception {
 		String label = "";
 
-		mockServer.expect("/api/api/login.action", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/api/api/addLabelToBuildResults.action", new AddLabelToBuildCallback(label));
-		mockServer.expect("/api/api/logout.action", new LogoutCallback());
+		mockServer.expect("/remoteapi/remoteapi/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/remoteapi/remoteapi/addLabelToBuildResults.action", new AddLabelToBuildCallback(label));
+		mockServer.expect("/remoteapi/remoteapi/logout.action", new LogoutCallback());
 
 		BambooSession apiHandler = new BambooSessionImpl(mockBaseUrl);
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
@@ -598,9 +598,9 @@ public class BambooSessionTest extends TestCase {
 	public void testAddMultiLineLabel() throws Exception {
 		String label = "Label first line\nLabel second line	\nLabel third line";
 
-		mockServer.expect("/api/api/login.action", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/api/api/addLabelToBuildResults.action", new AddLabelToBuildCallback(label));
-		mockServer.expect("/api/api/logout.action", new LogoutCallback());
+		mockServer.expect("/remoteapi/remoteapi/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/remoteapi/remoteapi/addLabelToBuildResults.action", new AddLabelToBuildCallback(label));
+		mockServer.expect("/remoteapi/remoteapi/logout.action", new LogoutCallback());
 
 		BambooSession apiHandler = new BambooSessionImpl(mockBaseUrl);
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
@@ -613,9 +613,9 @@ public class BambooSessionTest extends TestCase {
 	public void testAddLabelToNonExistingBuild() throws Exception {
 		String label = "Label";
 
-		mockServer.expect("/api/api/login.action", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/api/api/addLabelToBuildResults.action", new AddLabelToBuildCallback(label, "200", AddLabelToBuildCallback.NON_EXIST_FAIL));
-		mockServer.expect("/api/api/logout.action", new LogoutCallback());
+		mockServer.expect("/remoteapi/remoteapi/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/remoteapi/remoteapi/addLabelToBuildResults.action", new AddLabelToBuildCallback(label, "200", AddLabelToBuildCallback.NON_EXIST_FAIL));
+		mockServer.expect("/remoteapi/remoteapi/logout.action", new LogoutCallback());
 
 		BambooSession apiHandler = new BambooSessionImpl(mockBaseUrl);
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
@@ -633,9 +633,9 @@ public class BambooSessionTest extends TestCase {
 	public void testAddComment() throws Exception {
 		String comment = "comment siple text";
 
-		mockServer.expect("/api/api/login.action", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/api/api/addCommentToBuildResults.action", new AddCommentToBuildCallback(comment));
-		mockServer.expect("/api/api/logout.action", new LogoutCallback());
+		mockServer.expect("/remoteapi/remoteapi/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/remoteapi/remoteapi/addCommentToBuildResults.action", new AddCommentToBuildCallback(comment));
+		mockServer.expect("/remoteapi/remoteapi/logout.action", new LogoutCallback());
 
 		BambooSession apiHandler = new BambooSessionImpl(mockBaseUrl);
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
@@ -648,9 +648,9 @@ public class BambooSessionTest extends TestCase {
 	public void testAddEmptyComment() throws Exception {
 		String comment = "";
 
-		mockServer.expect("/api/api/login.action", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/api/api/addCommentToBuildResults.action", new AddCommentToBuildCallback(comment));
-		mockServer.expect("/api/api/logout.action", new LogoutCallback());
+		mockServer.expect("/remoteapi/remoteapi/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/remoteapi/remoteapi/addCommentToBuildResults.action", new AddCommentToBuildCallback(comment));
+		mockServer.expect("/remoteapi/remoteapi/logout.action", new LogoutCallback());
 
 		BambooSession apiHandler = new BambooSessionImpl(mockBaseUrl);
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
@@ -663,9 +663,9 @@ public class BambooSessionTest extends TestCase {
 	public void testAddMultiLineComment() throws Exception {
 		String comment = "Comment first line\nComment ; second line	\nComment third line";
 
-		mockServer.expect("/api/api/login.action", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/api/api/addCommentToBuildResults.action", new AddCommentToBuildCallback(comment));
-		mockServer.expect("/api/api/logout.action", new LogoutCallback());
+		mockServer.expect("/remoteapi/remoteapi/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/remoteapi/remoteapi/addCommentToBuildResults.action", new AddCommentToBuildCallback(comment));
+		mockServer.expect("/remoteapi/remoteapi/logout.action", new LogoutCallback());
 
 		BambooSession apiHandler = new BambooSessionImpl(mockBaseUrl);
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
@@ -678,9 +678,9 @@ public class BambooSessionTest extends TestCase {
 	public void testAddCommentToNonExistingBuild() throws Exception {
 		String comment = "Comment";
 
-		mockServer.expect("/api/api/login.action", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/api/api/addCommentToBuildResults.action", new AddCommentToBuildCallback(comment, "200", AddCommentToBuildCallback.NON_EXIST_FAIL));
-		mockServer.expect("/api/api/logout.action", new LogoutCallback());
+		mockServer.expect("/remoteapi/remoteapi/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/remoteapi/remoteapi/addCommentToBuildResults.action", new AddCommentToBuildCallback(comment, "200", AddCommentToBuildCallback.NON_EXIST_FAIL));
+		mockServer.expect("/remoteapi/remoteapi/logout.action", new LogoutCallback());
 
 		BambooSession apiHandler = new BambooSessionImpl(mockBaseUrl);
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
@@ -696,9 +696,9 @@ public class BambooSessionTest extends TestCase {
 	}
 
 	public void testExecuteBuild() throws Exception {
-		mockServer.expect("/api/api/login.action", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/api/api/executeBuild.action", new ExecuteBuildCallback());
-		mockServer.expect("/api/api/logout.action", new LogoutCallback());
+		mockServer.expect("/remoteapi/remoteapi/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/remoteapi/remoteapi/executeBuild.action", new ExecuteBuildCallback());
+		mockServer.expect("/remoteapi/remoteapi/logout.action", new LogoutCallback());
 
 		BambooSession apiHandler = new BambooSessionImpl(mockBaseUrl);
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
@@ -709,9 +709,9 @@ public class BambooSessionTest extends TestCase {
 	}
 
 	public void testExecuteBuildFailed() throws Exception {
-		mockServer.expect("/api/api/login.action", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/api/api/executeBuild.action", new ExecuteBuildCallback(ExecuteBuildCallback.NON_EXIST_FAIL));
-		mockServer.expect("/api/api/logout.action", new LogoutCallback());
+		mockServer.expect("/remoteapi/remoteapi/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/remoteapi/remoteapi/executeBuild.action", new ExecuteBuildCallback(ExecuteBuildCallback.NON_EXIST_FAIL));
+		mockServer.expect("/remoteapi/remoteapi/logout.action", new LogoutCallback());
 
 		BambooSession apiHandler = new BambooSessionImpl(mockBaseUrl);
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
@@ -727,12 +727,12 @@ public class BambooSessionTest extends TestCase {
 	}
 
 	public void testRenewSession() throws Exception {
-		mockServer.expect("/api/api/login.action", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/api/api/listProjectNames.action", new ProjectListCallback());
-		mockServer.expect("/api/api/listProjectNames.action", new ErrorMessageCallback("authExpiredResponse.xml"));
-		mockServer.expect("/api/api/login.action", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/api/api/listProjectNames.action", new ProjectListCallback());
-		mockServer.expect("/api/api/logout.action", new LogoutCallback());
+		mockServer.expect("/remoteapi/remoteapi/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/remoteapi/remoteapi/listProjectNames.action", new ProjectListCallback());
+		mockServer.expect("/remoteapi/remoteapi/listProjectNames.action", new ErrorMessageCallback("authExpiredResponse.xml"));
+		mockServer.expect("/remoteapi/remoteapi/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/remoteapi/remoteapi/listProjectNames.action", new ProjectListCallback());
+		mockServer.expect("/remoteapi/remoteapi/logout.action", new LogoutCallback());
 
 		BambooSession apiHandler = new AutoRenewBambooSession(mockBaseUrl);
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());

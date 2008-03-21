@@ -21,7 +21,7 @@ public class GetRepositoriesCallback implements JettyMockServer.Callback {
 								  HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 
-		assertTrue(request.getPathInfo().endsWith("/api-service/repositories-v1"));
+		assertTrue(request.getPathInfo().endsWith("/remoteapi-service/repositories-v1"));
 
 		Document doc;
 		doc = getRepositories();
