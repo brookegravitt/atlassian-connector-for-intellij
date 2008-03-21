@@ -67,7 +67,8 @@ public abstract class AbstractRestSession {
 		}
 	}
 
-	protected Document retrieveGetResponse(String urlString) throws IOException, JDOMException, RemoteApiSessionExpiredException {
+	protected Document retrieveGetResponse(String urlString)
+			throws IOException, JDOMException, RemoteApiSessionExpiredException {
 		validateUrl(urlString);
 
 		Document doc = null;
