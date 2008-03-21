@@ -25,11 +25,12 @@ import java.util.Set;
  */
 public class PluginToolWindow {
 
-	private Set<ToolWindowPanels> panels = new HashSet<ToolWindowPanels>(3);
+	private Set<ToolWindowPanels> panels = new HashSet<ToolWindowPanels>(INITIAL_NUMBER_OF_TABS);
 
 	private ToolWindow ideaToolWindow;
 	private Project project;
 	public static final String TOOL_WINDOW_NAME = "Atlassian";
+	private static final int INITIAL_NUMBER_OF_TABS = 3;
 
 	/**
 	 *
