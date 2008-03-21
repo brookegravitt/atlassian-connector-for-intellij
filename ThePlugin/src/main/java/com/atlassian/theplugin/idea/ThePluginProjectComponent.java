@@ -134,7 +134,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 					crucibleToolWindowPanel.getTable());
 
 
-			jiraToolWindowPanel = new JIRAToolWindowPanel(projectConfigurationBean);
+			jiraToolWindowPanel = new JIRAToolWindowPanel(projectConfigurationBean, project);
 			//Content jiraToolWindow = createJiraContent();
 			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.JIRA);
 			toolWindow.showHidePanels();
