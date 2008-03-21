@@ -51,7 +51,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 
 		String mockBaseUrl = "http://localhost:" + server.getConnectors()[0].getLocalPort();
 		JettyMockServer mockServer = new JettyMockServer(server);
-		mockServer.expect("/remoteapi-service/auth-v1/login", new LoginCallback(VALID_LOGIN, VALID_PASSWORD, LoginCallback.ALWAYS_FAIL));
+		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(VALID_LOGIN, VALID_PASSWORD, LoginCallback.ALWAYS_FAIL));
 
 		try {
 			facade.testServerConnection(mockBaseUrl, VALID_LOGIN, VALID_PASSWORD);
@@ -71,7 +71,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 
 		String mockBaseUrl = "http://localhost:" + server.getConnectors()[0].getLocalPort();
 		JettyMockServer mockServer = new JettyMockServer(server);
-		mockServer.expect("/remoteapi-service/auth-v1/login", new LoginCallback(VALID_LOGIN, VALID_PASSWORD));
+		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(VALID_LOGIN, VALID_PASSWORD));
 
 		try {
 			facade.testServerConnection(mockBaseUrl, VALID_LOGIN, VALID_PASSWORD);

@@ -24,7 +24,7 @@ public class GetReviewsCallback implements JettyMockServer.Callback {
 								  HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 
-		assertTrue(request.getPathInfo().endsWith("/remoteapi-service/reviews-v1"));
+		assertTrue(request.getPathInfo().endsWith("/rest-service/reviews-v1"));
 
 		Document doc;
 		final String[] statesParam = request.getParameterValues("state");

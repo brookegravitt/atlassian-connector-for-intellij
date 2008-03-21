@@ -22,7 +22,7 @@ public class BuildDetailsResultCallback implements JettyMockServer.Callback {
 								  HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 
-		assertTrue(request.getPathInfo().endsWith("/remoteapi/remoteapi/getBuildResultsDetails.action"));
+		assertTrue(request.getPathInfo().endsWith("/api/rest/getBuildResultsDetails.action"));
 
 		final String[] authTokens = request.getParameterValues("auth");
 		final String[] buildKeys = request.getParameterValues("buildKey");

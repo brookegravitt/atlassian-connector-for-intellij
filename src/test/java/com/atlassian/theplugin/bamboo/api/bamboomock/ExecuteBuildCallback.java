@@ -26,7 +26,7 @@ public class ExecuteBuildCallback implements JettyMockServer.Callback {
 								  HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 
-		assertTrue(request.getPathInfo().endsWith("/remoteapi/remoteapi/executeBuild.action"));
+		assertTrue(request.getPathInfo().endsWith("/api/rest/executeBuild.action"));
 
 		final String[] authTokens = request.getParameterValues("auth");
 		final String[] buildKeys = request.getParameterValues("buildKey");
