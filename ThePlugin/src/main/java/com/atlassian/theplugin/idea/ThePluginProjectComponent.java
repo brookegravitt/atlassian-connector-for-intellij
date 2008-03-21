@@ -3,7 +3,6 @@ package com.atlassian.theplugin.idea;
 import com.atlassian.theplugin.bamboo.*;
 import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
-import com.atlassian.theplugin.crucible.HtmlCrucibleStatusListener;
 import com.atlassian.theplugin.idea.autoupdate.ConfirmPluginUpdateHandler;
 import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
@@ -46,17 +45,15 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 	private BambooStatusListenerImpl tooltipBambooStatusListener;
 
 	private final BambooTableToolWindowPanel bambooToolWindowPanel;
+	private final CrucibleTableToolWindowPanel crucibleToolWindowPanel;
 
 	private final CrucibleStatusChecker crucibleStatusChecker;
-	private HtmlCrucibleStatusListener toolWindowCrucibleListener;
 
 	private final ToolWindowManager toolWindowManager;
 	private boolean created;
 	private CrucibleNewReviewNotifier crucibleNewReviewNotifier;
 
 	private final PluginConfiguration pluginConfiguration;
-
-	private CrucibleToolWindowPanel crucibleToolWindowPanel;
 
 	private JIRAToolWindowPanel jiraToolWindowPanel;
 	private JIRAServer currentJiraServer;
@@ -68,6 +65,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 									 BambooStatusChecker bambooStatusChecker,
 									 PluginConfiguration pluginConfiguration,
 									 BambooTableToolWindowPanel bambooToolWindowPanel,
+									 CrucibleTableToolWindowPanel crucibleToolWindowPanel,
 									 ProjectConfigurationBean projectConfigurationBean) {
 		this.project = project;
 		this.crucibleStatusChecker = crucibleStatusChecker;
@@ -75,6 +73,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 		this.bambooStatusChecker = bambooStatusChecker;
 		this.pluginConfiguration = pluginConfiguration;
 		this.bambooToolWindowPanel = bambooToolWindowPanel;
+		this.crucibleToolWindowPanel = crucibleToolWindowPanel;
 		this.projectConfigurationBean = projectConfigurationBean;
 		//this.jiraToolWindowPanel = jiraToolWindowPanel;
 
@@ -127,10 +126,13 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 			TableView.restore(projectConfigurationBean.getBambooConfiguration().getTableConfiguration(),
 					bambooToolWindowPanel.getTable());
 
-			crucibleToolWindowPanel = new CrucibleToolWindowPanel();
+			//crucibleToolWindowPanel = new CrucibleToolWindowPanel();
 			//Content crucibleToolWindow = createCrusibleContent();
 			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.CRUCIBLE);
 			toolWindow.showHidePanels();
+			TableView.restore(projectConfigurationBean.getCrucibleConfiguration().getTableConfiguration(),
+					crucibleToolWindowPanel.getTable());
+
 
 			jiraToolWindowPanel = new JIRAToolWindowPanel(projectConfigurationBean);
 			//Content jiraToolWindow = createJiraContent();
@@ -169,8 +171,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 			statusBarBambooIcon.showOrHideIcon();
 
 			// setup Crucible status checker and listeners
-			toolWindowCrucibleListener = new HtmlCrucibleStatusListener(crucibleToolWindowPanel.getCrucibleContent());
-			crucibleStatusChecker.registerListener(toolWindowCrucibleListener);
+			crucibleStatusChecker.registerListener(crucibleToolWindowPanel);
 
 			// create crucible status bar icon
 			statusBarCrucibleIcon = new CrucibleStatusIcon(project);
@@ -245,7 +246,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 			//bambooStatusChecker.unregisterListener(iconBambooStatusListener);
 			//bambooStatusChecker.unregisterListener(toolWindowBambooListener);
 			bambooStatusChecker.unregisterListener(tooltipBambooStatusListener);
-			crucibleStatusChecker.unregisterListener(toolWindowCrucibleListener);
+			crucibleStatusChecker.unregisterListener(crucibleToolWindowPanel);
 			crucibleStatusChecker.unregisterListener(crucibleNewReviewNotifier);
 
 			// remove tool window

@@ -31,7 +31,7 @@ public class AddCommentToBuildCallback implements JettyMockServer.Callback {
 								  HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 
-		assertTrue(request.getPathInfo().endsWith("/remoteapi/remoteapi/addCommentToBuildResults.action"));
+		assertTrue(request.getPathInfo().endsWith("/api/rest/addCommentToBuildResults.action"));
 
 		final String[] authTokens = request.getParameterValues("auth");
 		final String[] buildKeys = request.getParameterValues("buildKey");

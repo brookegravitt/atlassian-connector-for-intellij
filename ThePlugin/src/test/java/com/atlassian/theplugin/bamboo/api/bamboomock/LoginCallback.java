@@ -31,7 +31,7 @@ public class LoginCallback implements JettyMockServer.Callback {
 			throws Exception {
 
 
-		assertTrue(request.getPathInfo().endsWith("/remoteapi/remoteapi/login.action"));
+		assertTrue(request.getPathInfo().endsWith("/api/rest/login.action"));
 
 		final String[] usernames = request.getParameterValues("username");
 		final String[] passwords = request.getParameterValues("password");

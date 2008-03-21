@@ -64,7 +64,7 @@ public class CrucibleServerFacadeConnectionTest extends TestCase {
 	}
 
 	public void testFailedLoginGetAllReviews() throws Exception {
-		mockServer.expect("/remoteapi-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
+		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.CRUCIBLE_SERVER).getServers().iterator().next();
 		try {
@@ -78,13 +78,13 @@ public class CrucibleServerFacadeConnectionTest extends TestCase {
 	}
 
 	public void testConnectionTestSucceed() throws Exception {
-		mockServer.expect("/remoteapi-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
 		testedCrucibleServerFacade.testServerConnection(mockBaseUrl, USER_NAME, PASSWORD);
 		mockServer.verify();
 	}
 
 	public void testConnectionTestFailed() throws Exception {
-		mockServer.expect("/remoteapi-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
+		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
 
 		try {
 			testedCrucibleServerFacade.testServerConnection(mockBaseUrl, USER_NAME, PASSWORD);

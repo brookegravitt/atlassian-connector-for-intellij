@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class BamboBuildNumberCalback implements JettyMockServer.Callback {
 	public void onExpectedRequest(String target, HttpServletRequest request, HttpServletResponse response) throws Exception {
-		assertTrue(request.getPathInfo().endsWith("/remoteapi/remoteapi/getBambooBuildNumber.action"));
+		assertTrue(request.getPathInfo().endsWith("/api/rest/getBambooBuildNumber.action"));
 
 		final String[] authTokens = request.getParameterValues("auth");
 
