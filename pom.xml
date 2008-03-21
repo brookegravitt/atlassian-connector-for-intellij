@@ -136,7 +136,7 @@
 			<groupId>com.intellij.idea</groupId>
 			<artifactId>openapi</artifactId>
 			<version>7.0</version>
-			<classifier>7027</classifier>
+			<classifier>7590</classifier>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
