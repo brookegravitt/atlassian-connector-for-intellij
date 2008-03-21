@@ -143,28 +143,35 @@
 			<groupId>com.intellij.idea</groupId>
 			<artifactId>annotations</artifactId>
 			<version>7.0</version>
-			<classifier>7027</classifier>
+			<classifier>7590</classifier>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.intellij.idea</groupId>
 			<artifactId>forms_rt</artifactId>
 			<version>7.0</version>
-			<classifier>7027</classifier>
+			<classifier>7590</classifier>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.intellij.idea</groupId>
+			<artifactId>jgoodies-forms</artifactId>
+			<version>7.0</version>
+			<classifier>7590</classifier>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.intellij.idea</groupId>
 			<artifactId>javac2</artifactId>
 			<version>7.0</version>
-			<classifier>7027</classifier>
+			<classifier>7590</classifier>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.intellij.idea</groupId>
 			<artifactId>extensions</artifactId>
 			<version>7.0</version>
-			<classifier>7027</classifier>
+			<classifier>7590</classifier>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
