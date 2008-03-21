@@ -1,8 +1,8 @@
 package com.atlassian.theplugin.crucible.api.rest;
 
 import com.atlassian.theplugin.crucible.api.*;
-import com.atlassian.theplugin.api.*;
-import com.atlassian.theplugin.api.rest.AbstractRestSession;
+import com.atlassian.theplugin.remoteapi.*;
+import com.atlassian.theplugin.remoteapi.rest.AbstractRestSession;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpMethod;
 import org.jdom.Document;
@@ -24,10 +24,10 @@ import java.util.List;
  * Communication stub for Bamboo REST API.
  */
 public class CrucibleSessionImpl extends AbstractRestSession implements CrucibleSession  {
-	private static final String AUTH_SERVICE = "/api-service/auth-v1";
-	private static final String REVIEW_SERVICE = "/api-service/reviews-v1";
-	private static final String PROJECTS_SERVICE = "/api-service/projects-v1";
-	private static final String REPOSITORIES_SERVICE = "/api-service/repositories-v1";
+	private static final String AUTH_SERVICE = "/remoteapi-service/auth-v1";
+	private static final String REVIEW_SERVICE = "/remoteapi-service/reviews-v1";
+	private static final String PROJECTS_SERVICE = "/remoteapi-service/projects-v1";
+	private static final String REPOSITORIES_SERVICE = "/remoteapi-service/repositories-v1";
 	private static final String LOGIN = "/login";
 	private static final String GET_REVIEWS_IN_STATES = "?state=";
 	private static final String GET_REVIEWERS = "/reviewers";

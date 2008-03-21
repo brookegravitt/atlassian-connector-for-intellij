@@ -4,7 +4,7 @@ import com.atlassian.theplugin.bamboo.BambooPlan;
 import com.atlassian.theplugin.bamboo.BambooPlanData;
 import com.atlassian.theplugin.bamboo.BambooServerFacade;
 import com.atlassian.theplugin.configuration.*;
-import com.atlassian.theplugin.api.RemoteApiException;
+import com.atlassian.theplugin.remoteapi.RemoteApiException;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;

@@ -1,9 +1,9 @@
-package com.atlassian.theplugin.api.rest;
+package com.atlassian.theplugin.remoteapi.rest;
 
 import com.atlassian.theplugin.util.HttpClientFactory;
 import com.atlassian.theplugin.util.UrlUtil;
-import com.atlassian.theplugin.api.RemoteApiMalformedUrlException;
-import com.atlassian.theplugin.api.RemoteApiSessionExpiredException;
+import com.atlassian.theplugin.remoteapi.RemoteApiMalformedUrlException;
+import com.atlassian.theplugin.remoteapi.RemoteApiSessionExpiredException;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;

@@ -2,8 +2,8 @@ package com.atlassian.theplugin.bamboo.api;
 
 import com.atlassian.theplugin.bamboo.*;
 import com.atlassian.theplugin.configuration.Server;
-import com.atlassian.theplugin.api.RemoteApiLoginException;
-import com.atlassian.theplugin.api.RemoteApiSessionExpiredException;
+import com.atlassian.theplugin.remoteapi.RemoteApiLoginException;
+import com.atlassian.theplugin.remoteapi.RemoteApiSessionExpiredException;
 import junit.framework.TestCase;
 import org.easymock.EasyMock;
 

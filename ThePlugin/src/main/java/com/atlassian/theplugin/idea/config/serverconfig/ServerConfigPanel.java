@@ -12,7 +12,7 @@ import com.atlassian.theplugin.idea.config.ContentPanel;
 import com.atlassian.theplugin.idea.config.serverconfig.model.ServerNode;
 import com.atlassian.theplugin.jira.JIRAServerFactory;
 import com.atlassian.theplugin.jira.api.JIRALoginException;
-import com.atlassian.theplugin.api.RemoteApiException;
+import com.atlassian.theplugin.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.util.Connector;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;

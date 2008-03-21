@@ -5,7 +5,7 @@ import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.crucible.api.ProjectData;
 import com.atlassian.theplugin.crucible.api.RepositoryData;
 import com.atlassian.theplugin.crucible.api.ReviewData;
-import com.atlassian.theplugin.api.RemoteApiException;
+import com.atlassian.theplugin.remoteapi.RemoteApiException;
 
 import java.util.List;
 

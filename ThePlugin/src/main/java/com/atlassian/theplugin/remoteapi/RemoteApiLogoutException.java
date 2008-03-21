@@ -1,4 +1,4 @@
-package com.atlassian.theplugin.api;
+package com.atlassian.theplugin.remoteapi;
 
 /**
  * Created by IntelliJ IDEA.

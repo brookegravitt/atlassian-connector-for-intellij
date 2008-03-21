@@ -10,7 +10,7 @@ import com.atlassian.theplugin.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.crucible.CrucibleStatusListener;
 import com.atlassian.theplugin.crucible.ReviewDataInfo;
 import com.atlassian.theplugin.idea.SchedulableComponent;
-import com.atlassian.theplugin.api.RemoteApiLoginException;
+import com.atlassian.theplugin.remoteapi.RemoteApiLoginException;
 import com.atlassian.theplugin.util.DateUtil;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.application.ApplicationManager;
