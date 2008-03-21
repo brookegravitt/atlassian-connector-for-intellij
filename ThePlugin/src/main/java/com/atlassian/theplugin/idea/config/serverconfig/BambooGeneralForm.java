@@ -146,10 +146,10 @@ public class BambooGeneralForm extends JComponent implements ContentPanel {
 		final Spacer spacer2 = new Spacer();
 		rootComponent.add(spacer2, cc.xy(5, 9, CellConstraints.FILL, CellConstraints.DEFAULT));
 		final JLabel label1 = new JLabel();
-		label1.setText("Show tooltip:");
+		label1.setText("Show Tooltip:");
 		rootComponent.add(label1, cc.xy(1, 1));
 		final JLabel label2 = new JLabel();
-		label2.setText("Polling time [minutes]");
+		label2.setText("Polling Time [minutes]");
 		rootComponent.add(label2, cc.xy(1, 7));
 		final JPanel panel1 = new JPanel();
 		panel1.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));

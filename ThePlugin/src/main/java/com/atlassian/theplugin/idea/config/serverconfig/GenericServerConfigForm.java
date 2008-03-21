@@ -135,10 +135,16 @@ public class GenericServerConfigForm extends JComponent implements ServerPanel, 
 	 */
 	private void $$$setupUI$$$() {
 		rootComponent = new JPanel();
-		rootComponent.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
+		rootComponent.setLayout(new GridBagLayout());
 		final JPanel panel1 = new JPanel();
 		panel1.setLayout(new GridLayoutManager(6, 3, new Insets(0, 0, 0, 0), -1, -1));
-		rootComponent.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+		GridBagConstraints gbc;
+		gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.weightx = 1.0;
+		gbc.fill = GridBagConstraints.BOTH;
+		rootComponent.add(panel1, gbc);
 		serverName = new JTextField();
 		serverName.setText("");
 		panel1.add(serverName, new GridConstraints(1, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
@@ -159,9 +165,9 @@ public class GenericServerConfigForm extends JComponent implements ServerPanel, 
 		label2.setDisplayedMnemonicIndex(7);
 		panel1.add(label2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		final JLabel label3 = new JLabel();
-		label3.setText("User Name");
+		label3.setText("Username");
 		label3.setDisplayedMnemonic('N');
-		label3.setDisplayedMnemonicIndex(5);
+		label3.setDisplayedMnemonicIndex(4);
 		panel1.add(label3, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		final JLabel label4 = new JLabel();
 		label4.setText("Password");
@@ -175,7 +181,7 @@ public class GenericServerConfigForm extends JComponent implements ServerPanel, 
 		panel1.add(testConnection, new GridConstraints(5, 2, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		chkPasswordRemember = new JCheckBox();
 		chkPasswordRemember.setSelected(true);
-		chkPasswordRemember.setText("Remember password");
+		chkPasswordRemember.setText("Remember Password");
 		chkPasswordRemember.setMnemonic('R');
 		chkPasswordRemember.setDisplayedMnemonicIndex(0);
 		panel1.add(chkPasswordRemember, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -185,8 +191,6 @@ public class GenericServerConfigForm extends JComponent implements ServerPanel, 
 		cbEnabled.setMnemonic('E');
 		cbEnabled.setDisplayedMnemonicIndex(7);
 		panel1.add(cbEnabled, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-		final Spacer spacer1 = new Spacer();
-		rootComponent.add(spacer1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 		label1.setLabelFor(serverName);
 		label2.setLabelFor(serverUrl);
 		label3.setLabelFor(username);
