@@ -2,7 +2,7 @@ package com.atlassian.theplugin.bamboo;
 
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
-import com.atlassian.theplugin.api.RemoteApiException;
+import com.atlassian.theplugin.remoteapi.RemoteApiException;
 
 import java.util.Collection;
 
