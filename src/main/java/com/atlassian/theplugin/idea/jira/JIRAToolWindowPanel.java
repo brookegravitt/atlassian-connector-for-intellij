@@ -20,6 +20,9 @@ import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vcs.changes.ChangeListManager;
+import com.intellij.openapi.vcs.changes.LocalChangeList;
 import com.intellij.util.ui.ListTableModel;
 import com.intellij.util.ui.UIUtil;
 import thirdparty.javaworld.ClasspathHTMLEditorKit;
@@ -47,9 +50,12 @@ public class JIRAToolWindowPanel extends JPanel {
 
 	// a simple map to store all selected query fragments.
 	private Map<String, JIRAQueryFragment> queryFragments = new HashMap<String, JIRAQueryFragment>();
+	private final Project project;
 
-	public JIRAToolWindowPanel(ProjectConfigurationBean projectConfigurationBean) {
+	public JIRAToolWindowPanel(ProjectConfigurationBean projectConfigurationBean, Project project) {
         super(new BorderLayout());
+
+		this.project = project;
 
 		setBackground(UIUtil.getTreeTextBackground());
 
@@ -126,6 +132,8 @@ public class JIRAToolWindowPanel extends JPanel {
                 + "/secure/CreateWorklog!default.jspa?key=" + issue.getKey()));
         contextMenu.add(makeWebUrlMenu("Commit Changes Against Issue", issue.getServerUrl()
                 + "/secure/EditIssue!default.jspa?key=" + issue.getKey()));
+        contextMenu.add(new JMenuItem(new CreateChangeListAction(issue, project)));
+
         return contextMenu;
     }
 
@@ -295,6 +303,34 @@ public class JIRAToolWindowPanel extends JPanel {
             issueComment.show();
         }
     }
+
+	public class CreateChangeListAction extends AbstractAction {
+		private final Project project;
+		private final String changeListName;
+
+		public CreateChangeListAction(JIRAIssue issue, Project project) {
+			this.project = project;
+			changeListName = issue.getKey() + " " + issue.getSummary();
+
+			if (ChangeListManager.getInstance(project).findChangeList(changeListName) == null) {
+				putValue(Action.NAME, "Create ChangeList");
+			} else {
+				putValue(Action.NAME, "Activate ChangeList");
+			}
+
+		}
+
+		public void actionPerformed(ActionEvent event) {
+
+			final ChangeListManager changeListManager = ChangeListManager.getInstance(project);
+
+			LocalChangeList changeList = changeListManager.findChangeList(changeListName);
+			if (changeList == null) {
+				changeList = changeListManager.addChangeList(changeListName, "");
+			}
+			changeListManager.setDefaultChangeList(changeList);
+		}
+	}
 
 	public AtlassianTableView getTable() {
 		return table;
