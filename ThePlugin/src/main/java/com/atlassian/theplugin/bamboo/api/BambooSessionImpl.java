@@ -1,7 +1,8 @@
 package com.atlassian.theplugin.bamboo.api;
 
 import com.atlassian.theplugin.bamboo.*;
-import com.atlassian.theplugin.rest.*;
+import com.atlassian.theplugin.api.*;
+import com.atlassian.theplugin.api.rest.AbstractRestSession;
 import org.apache.commons.httpclient.HttpMethod;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -23,17 +24,17 @@ import java.util.List;
  * Communication stub for Bamboo REST API.
  */
 class BambooSessionImpl extends AbstractRestSession implements BambooSession {
-	private static final String LOGIN_ACTION = "/api/rest/login.action";
-	private static final String LOGOUT_ACTION = "/api/rest/logout.action";
-	private static final String LIST_PROJECT_ACTION = "/api/rest/listProjectNames.action";
-	private static final String LIST_PLAN_ACTION = "/api/rest/listBuildNames.action";
-	private static final String LATEST_BUILD_FOR_PLAN_ACTION = "/api/rest/getLatestBuildResults.action";
-	private static final String LATEST_USER_BUILDS_ACTION = "/api/rest/getLatestUserBuilds.action";
-	private static final String GET_BUILD_DETAILS_ACTION = "/api/rest/getBuildResultsDetails.action";
-	private static final String ADD_LABEL_ACTION = "/api/rest/addLabelToBuildResults.action";
-	private static final String ADD_COMMENT_ACTION = "/api/rest/addCommentToBuildResults.action";
-	private static final String EXECUTE_BUILD_ACTION = "/api/rest/executeBuild.action";
-	private static final String GET_BAMBOO_BUILD_NUMBER_ACTION = "/api/rest/getBambooBuildNumber.action";
+	private static final String LOGIN_ACTION = "/api/api/login.action";
+	private static final String LOGOUT_ACTION = "/api/api/logout.action";
+	private static final String LIST_PROJECT_ACTION = "/api/api/listProjectNames.action";
+	private static final String LIST_PLAN_ACTION = "/api/api/listBuildNames.action";
+	private static final String LATEST_BUILD_FOR_PLAN_ACTION = "/api/api/getLatestBuildResults.action";
+	private static final String LATEST_USER_BUILDS_ACTION = "/api/api/getLatestUserBuilds.action";
+	private static final String GET_BUILD_DETAILS_ACTION = "/api/api/getBuildResultsDetails.action";
+	private static final String ADD_LABEL_ACTION = "/api/api/addLabelToBuildResults.action";
+	private static final String ADD_COMMENT_ACTION = "/api/api/addCommentToBuildResults.action";
+	private static final String EXECUTE_BUILD_ACTION = "/api/api/executeBuild.action";
+	private static final String GET_BAMBOO_BUILD_NUMBER_ACTION = "/api/api/getBambooBuildNumber.action";
 
 	private String authToken;
 
@@ -44,7 +45,7 @@ class BambooSessionImpl extends AbstractRestSession implements BambooSession {
 	 *
 	 * @param baseUrl base URL for Bamboo instance
 	 */
-	public BambooSessionImpl(String baseUrl) throws RestException {
+	public BambooSessionImpl(String baseUrl) throws RemoteApiMalformedUrlException {
 		super(baseUrl);
 	}
 
@@ -55,24 +56,18 @@ class BambooSessionImpl extends AbstractRestSession implements BambooSession {
 	 * <p/>
 	 * The exception returned may have the getCause() examined for to get the actual exception reason.<br>
 	 * If the exception is caused by a valid error response from the server (no IOEXception, UnknownHostException,
-	 * MalformedURLException or JDOMException), the {@link com.atlassian.theplugin.rest.RestLoginFailedException}
+	 * MalformedURLException or JDOMException), the {@link com.atlassian.theplugin.api.RemoteApiLoginFailedException}
 	 * is actually thrown. This may be used as a hint that the password is invalid.
 	 *
 	 * @param name	  username defined on Bamboo server instance
 	 * @param aPassword for username
-	 * @throws com.atlassian.theplugin.rest.RestLoginException on connection or authentication errors
+	 * @throws com.atlassian.theplugin.api.RemoteApiLoginException on connection or authentication errors
 	 */
-	public void login(String name, char[] aPassword) throws RestLoginException {
+	public void login(String name, char[] aPassword) throws RemoteApiLoginException {
 		String loginUrl;
-		try {
-			if (baseUrl == null) {
-				throw new RestLoginException("Corrupted configuration. Url null");
-			}
-			if ("".equals(baseUrl)) {
-				throw new RestLoginException("Corrupted configuration. Url empty");
-			}
+		try {			
 			if (name == null || aPassword == null) {
-				throw new RestLoginException("Corrupted configuration. Username or aPassword null");
+				throw new RemoteApiLoginException("Corrupted configuration. Username or aPassword null");
 			}
 			String pass = String.valueOf(aPassword);
 			loginUrl = baseUrl + LOGIN_ACTION + "?username=" + URLEncoder.encode(name, "UTF-8") + "&password="
@@ -86,27 +81,27 @@ class BambooSessionImpl extends AbstractRestSession implements BambooSession {
 			Document doc = retrieveGetResponse(loginUrl);
 			String exception = getExceptionMessages(doc);
 			if (null != exception) {
-				throw new RestLoginFailedException(exception);
+				throw new RemoteApiLoginFailedException(exception);
 			}
 			XPath xpath = XPath.newInstance("/response/auth");
 			List elements = xpath.selectNodes(doc);
 			if (elements == null) {
-				throw new RestLoginException("Server did not return any authentication token");
+				throw new RemoteApiLoginException("Server did not return any authentication token");
 			}
 			if (elements.size() != 1) {
-				throw new RestLoginException("Server did returned excess authentication tokens (" + elements.size() + ")");
+				throw new RemoteApiLoginException("Server did returned excess authentication tokens (" + elements.size() + ")");
 			}
 			this.authToken = ((Element) elements.get(0)).getText();
 		} catch (MalformedURLException e) {
-			throw new RestLoginException("Malformed server URL: " + baseUrl, e);
+			throw new RemoteApiLoginException("Malformed server URL: " + baseUrl, e);
 		} catch (UnknownHostException e) {
-			throw new RestLoginException("Unknown host: " + e.getMessage(), e);
+			throw new RemoteApiLoginException("Unknown host: " + e.getMessage(), e);
 		} catch (IOException e) {
-			throw new RestLoginException(e.getMessage(), e);
+			throw new RemoteApiLoginException(e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RestLoginException("Server returned malformed response", e);
-		} catch (RestSessionExpiredException e) {
-			throw new RestLoginException("Session expired", e);
+			throw new RemoteApiLoginException("Server returned malformed response", e);
+		} catch (RemoteApiSessionExpiredException e) {
+			throw new RemoteApiLoginException("Session expired", e);
 		}
 	}
 
@@ -124,7 +119,7 @@ class BambooSessionImpl extends AbstractRestSession implements BambooSession {
 			/* ignore errors on logout */
 		} catch (JDOMException e) {
 			/* ignore errors on logout */
-		} catch (RestSessionExpiredException e) {
+		} catch (RemoteApiSessionExpiredException e) {
 			/* ignore errors on logout */
 		}
 
@@ -133,7 +128,7 @@ class BambooSessionImpl extends AbstractRestSession implements BambooSession {
 		client = null;
 	}
 
-	public int getBamboBuildNumber() throws RestException {
+	public int getBamboBuildNumber() throws RemoteApiException {
 		String queryUrl;
 		try {
 			queryUrl = baseUrl + GET_BAMBOO_BUILD_NUMBER_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8");
@@ -161,13 +156,13 @@ class BambooSessionImpl extends AbstractRestSession implements BambooSession {
 			}
 			return -1;
 		} catch (JDOMException e) {
-			throw new RestException("Server returned malformed response", e);
+			throw new RemoteApiException("Server returned malformed response", e);
 		} catch (IOException e) {
-			throw new RestException(e.getMessage(), e);
+			throw new RemoteApiException(e.getMessage(), e);
 		}
 	}
 
-	public List<BambooProject> listProjectNames() throws RestException {
+	public List<BambooProject> listProjectNames() throws RemoteApiException {
 		String buildResultUrl;
 		try {
 			buildResultUrl = baseUrl + LIST_PROJECT_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8");
@@ -189,15 +184,15 @@ class BambooSessionImpl extends AbstractRestSession implements BambooSession {
 				}
 			}
 		} catch (JDOMException e) {
-			throw new RestException("Server returned malformed response", e);
+			throw new RemoteApiException("Server returned malformed response", e);
 		} catch (IOException e) {
-			throw new RestException(e.getMessage(), e);
+			throw new RemoteApiException(e.getMessage(), e);
 		}
 
 		return projects;
 	}
 
-	public List<BambooPlan> listPlanNames() throws RestException {
+	public List<BambooPlan> listPlanNames() throws RemoteApiException {
 		String buildResultUrl;
 		try {
 			buildResultUrl = baseUrl + LIST_PLAN_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8");
@@ -226,9 +221,9 @@ class BambooSessionImpl extends AbstractRestSession implements BambooSession {
 				}
 			}
 		} catch (JDOMException e) {
-			throw new RestException("Server returned malformed response", e);
+			throw new RemoteApiException("Server returned malformed response", e);
 		} catch (IOException e) {
-			throw new RestException(e.getMessage(), e);
+			throw new RemoteApiException(e.getMessage(), e);
 		}
 
 		return plans;
@@ -242,7 +237,7 @@ class BambooSessionImpl extends AbstractRestSession implements BambooSession {
 	 * @param planKey ID of the plan to get info about
 	 * @return Information about the last build or error message
 	 */
-	public BambooBuild getLatestBuildForPlan(String planKey) throws RestSessionExpiredException {
+	public BambooBuild getLatestBuildForPlan(String planKey) throws RemoteApiSessionExpiredException {
 		String buildResultUrl;
 		try {
 			buildResultUrl = baseUrl + LATEST_BUILD_FOR_PLAN_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8")
@@ -273,7 +268,7 @@ class BambooSessionImpl extends AbstractRestSession implements BambooSession {
 		}
 	}
 
-	public List<String> getFavouriteUserPlans() throws RestSessionExpiredException {
+	public List<String> getFavouriteUserPlans() throws RemoteApiSessionExpiredException {
 		List<String> builds = new ArrayList<String>();
 		String buildResultUrl;
 		try {
@@ -307,7 +302,7 @@ class BambooSessionImpl extends AbstractRestSession implements BambooSession {
 		}
 	}
 
-	public BuildDetails getBuildResultDetails(String buildKey, String buildNumber) throws RestException {
+	public BuildDetails getBuildResultDetails(String buildKey, String buildNumber) throws RemoteApiException {
 		String buildResultUrl;
 		try {
 			buildResultUrl = baseUrl + GET_BUILD_DETAILS_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8")
@@ -322,7 +317,7 @@ class BambooSessionImpl extends AbstractRestSession implements BambooSession {
 			Document doc = retrieveGetResponse(buildResultUrl);
 			String exception = getExceptionMessages(doc);
 			if (null != exception) {
-				throw new RestException(exception);
+				throw new RemoteApiException(exception);
 			}
 
 			XPath xpath = XPath.newInstance("/response");
@@ -407,13 +402,13 @@ class BambooSessionImpl extends AbstractRestSession implements BambooSession {
 
 			return build;
 		} catch (JDOMException e) {
-			throw new RestException("Server returned malformed response", e);
+			throw new RemoteApiException("Server returned malformed response", e);
 		} catch (IOException e) {
-			throw new RestException(e.getMessage(), e);
+			throw new RemoteApiException(e.getMessage(), e);
 		}
 	}
 
-	public void addLabelToBuild(String buildKey, String buildNumber, String buildLabel) throws RestException {
+	public void addLabelToBuild(String buildKey, String buildNumber, String buildLabel) throws RemoteApiException {
 		String buildResultUrl;
 		try {
 			buildResultUrl = baseUrl + ADD_LABEL_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8")
@@ -428,16 +423,16 @@ class BambooSessionImpl extends AbstractRestSession implements BambooSession {
 			Document doc = retrieveGetResponse(buildResultUrl);
 			String exception = getExceptionMessages(doc);
 			if (null != exception) {
-				throw new RestException(exception);
+				throw new RemoteApiException(exception);
 			}
 		} catch (JDOMException e) {
-			throw new RestException("Server returned malformed response", e);
+			throw new RemoteApiException("Server returned malformed response", e);
 		} catch (IOException e) {
-			throw new RestException(e.getMessage(), e);
+			throw new RemoteApiException(e.getMessage(), e);
 		}
 	}
 
-	public void addCommentToBuild(String buildKey, String buildNumber, String buildComment) throws RestException {
+	public void addCommentToBuild(String buildKey, String buildNumber, String buildComment) throws RemoteApiException {
 		String buildResultUrl;
 		try {
 			buildResultUrl = baseUrl + ADD_COMMENT_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8")
@@ -452,16 +447,16 @@ class BambooSessionImpl extends AbstractRestSession implements BambooSession {
 			Document doc = retrieveGetResponse(buildResultUrl);
 			String exception = getExceptionMessages(doc);
 			if (null != exception) {
-				throw new RestException(exception);
+				throw new RemoteApiException(exception);
 			}
 		} catch (JDOMException e) {
-			throw new RestException("Server returned malformed response", e);
+			throw new RemoteApiException("Server returned malformed response", e);
 		} catch (IOException e) {
-			throw new RestException(e.getMessage(), e);
+			throw new RemoteApiException(e.getMessage(), e);
 		}
 	}
 
-	public void executeBuild(String buildKey) throws RestException {
+	public void executeBuild(String buildKey) throws RemoteApiException {
 		String buildResultUrl;
 		try {
 			buildResultUrl = baseUrl + EXECUTE_BUILD_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8")
@@ -474,12 +469,12 @@ class BambooSessionImpl extends AbstractRestSession implements BambooSession {
 			Document doc = retrieveGetResponse(buildResultUrl);
 			String exception = getExceptionMessages(doc);
 			if (null != exception) {
-				throw new RestException(exception);
+				throw new RemoteApiException(exception);
 			}
 		} catch (JDOMException e) {
-			throw new RestException("Server returned malformed response", e);
+			throw new RemoteApiException("Server returned malformed response", e);
 		} catch (IOException e) {
-			throw new RestException(e.getMessage(), e);
+			throw new RemoteApiException(e.getMessage(), e);
 		} 
 	}
 
@@ -573,11 +568,11 @@ class BambooSessionImpl extends AbstractRestSession implements BambooSession {
 		// Bamboo does not require custom headers
 	}
 
-	protected void preprocessResult(Document doc) throws JDOMException, RestSessionExpiredException {
+	protected void preprocessResult(Document doc) throws JDOMException, RemoteApiSessionExpiredException {
 		String error = getExceptionMessages(doc);
 		if (error != null) {
 			if (error.startsWith(AUTHENTICATION_ERROR_MESSAGE)) {
-				throw new RestSessionExpiredException("Session expired.");
+				throw new RemoteApiSessionExpiredException("Session expired.");
 			}
 		}
 	}

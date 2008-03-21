@@ -24,7 +24,7 @@ public class LogoutCallback implements JettyMockServer.Callback {
 								  HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 
-		assertTrue(request.getPathInfo().endsWith("/api/rest/logout.action"));
+		assertTrue(request.getPathInfo().endsWith("/api/api/logout.action"));
 
 		final String[] authTokens = request.getParameterValues("auth");
 		assertEquals(1, authTokens.length);

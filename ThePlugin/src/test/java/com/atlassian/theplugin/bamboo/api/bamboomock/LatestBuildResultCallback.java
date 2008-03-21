@@ -23,7 +23,7 @@ public class LatestBuildResultCallback implements JettyMockServer.Callback {
 								  HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 
-		assertTrue(request.getPathInfo().endsWith("/api/rest/getLatestBuildResults.action"));
+		assertTrue(request.getPathInfo().endsWith("/api/api/getLatestBuildResults.action"));
 
 		final String[] authTokens = request.getParameterValues("auth");
 		final String[] buildKeys = request.getParameterValues("buildKey");

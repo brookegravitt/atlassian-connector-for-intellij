@@ -5,7 +5,7 @@ import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.idea.TestConnectionListener;
 import com.atlassian.theplugin.util.Connector;
-import com.atlassian.theplugin.util.Util;
+import com.atlassian.theplugin.util.UrlUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -43,8 +43,8 @@ public class GenericServerConfigForm extends JComponent implements ServerPanel, 
 
 	private void adjustUrl() {
 		String url = serverUrl.getText();
-		url = Util.addHttpPrefix(url);
-		url = Util.removeUrlTrailingSlashes(url);
+		url = UrlUtil.addHttpPrefix(url);
+		url = UrlUtil.removeUrlTrailingSlashes(url);
 		serverUrl.setText(url);
 	}
 

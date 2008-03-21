@@ -4,7 +4,7 @@ import com.atlassian.theplugin.LoginDataProvided;
 import com.atlassian.theplugin.bamboo.BambooServerFactory;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.exception.ThePluginException;
-import com.atlassian.theplugin.rest.RestLoginException;
+import com.atlassian.theplugin.api.RemoteApiException;
 import com.atlassian.theplugin.util.Connector;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -49,7 +49,7 @@ public class PasswordDialog extends JDialog implements LoginDataProvided {
 				try {
 					BambooServerFactory.getBambooServerFacade().testServerConnection(
 							super.getUrl(), super.getUserName(), super.getPassword());
-				} catch (RestLoginException e) {
+				} catch (RemoteApiException e) {
 					throw new ThePluginException("Error conecting bamboo server.", e);
 				}
 			}

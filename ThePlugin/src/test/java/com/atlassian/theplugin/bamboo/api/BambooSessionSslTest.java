@@ -43,8 +43,8 @@ public class BambooSessionSslTest extends TestCase {
 	}
 
 	public void testSuccessBambooLoginOnSSL() throws Exception {
-		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/api/rest/logout.action", new LogoutCallback(LoginCallback.AUTH_TOKEN));
+		mockServer.expect("/api/api/login.action", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api/api/logout.action", new LogoutCallback(LoginCallback.AUTH_TOKEN));
 
 		BambooSession apiHandler = new BambooSessionImpl(mockBaseUrl);
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
