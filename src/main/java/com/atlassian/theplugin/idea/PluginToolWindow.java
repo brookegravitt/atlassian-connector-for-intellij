@@ -12,6 +12,8 @@ import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
+import com.intellij.ui.content.ContentManagerAdapter;
+import com.intellij.ui.content.ContentManagerEvent;
 import com.intellij.util.containers.HashSet;
 
 import java.util.Set;
@@ -23,23 +25,25 @@ import java.util.Set;
  * Time: 11:22:10
  * To change this template use File | Settings | File Templates.
  */
-public class PluginToolWindow {
+public class PluginToolWindow extends ContentManagerAdapter {
 
 	private Set<ToolWindowPanels> panels = new HashSet<ToolWindowPanels>(INITIAL_NUMBER_OF_TABS);
 
 	private ToolWindow ideaToolWindow;
 	private Project project;
+	private Content selectedContent = null;
 	public static final String TOOL_WINDOW_NAME = "Atlassian";
 	private static final int INITIAL_NUMBER_OF_TABS = 3;
 
 	/**
 	 *
-	 * @param ideaToolWindow {@link ToolWindow} object wraped up by this class
+	 * @param toolWindowManager
 	 * @param project reference to the project
 	 */
 	public PluginToolWindow(ToolWindowManager toolWindowManager, Project project) {
 		this.ideaToolWindow = toolWindowManager.registerToolWindow(
 				TOOL_WINDOW_NAME, true, ToolWindowAnchor.RIGHT);
+		this.ideaToolWindow.getContentManager().addContentManagerListener(this);
 		this.project = project;
 	}
 
@@ -142,6 +146,10 @@ public class PluginToolWindow {
 		Project project = IdeaHelper.getCurrentProject(e.getDataContext());
 		focusPanel(project, component);
     }
+
+	public void selectionChanged(ContentManagerEvent event) {
+		this.selectedContent = event.getContent();
+	}
 
 	/**
 	 * List of available panels in tool window
