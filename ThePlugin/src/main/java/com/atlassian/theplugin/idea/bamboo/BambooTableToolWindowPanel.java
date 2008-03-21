@@ -8,7 +8,7 @@ import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.atlassian.theplugin.idea.ui.AtlassianTableView;
-import com.atlassian.theplugin.rest.RestException;
+import com.atlassian.theplugin.api.RemoteApiException;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -161,7 +161,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 					setStatusMessage("Label applied on build");
 				} catch (ServerPasswordNotProvidedException e) {
 					setStatusMessage("Label not applied: Password on provided for server");
-				} catch (RestException e) {
+				} catch (RemoteApiException e) {
 					setStatusMessage("Label not applied: " + e.getMessage());
 				}
 			}
@@ -205,7 +205,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 					setStatusMessage("Comment added to build");
 				} catch (ServerPasswordNotProvidedException e) {
 					setStatusMessage("Comment not added: Password on provided for server");
-				} catch (RestException e) {
+				} catch (RemoteApiException e) {
 					setStatusMessage("Comment not added: " + e.getMessage());
 				}
 
@@ -242,7 +242,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 					setStatusMessage("Build executed on plan: " + build.getBuildKey());
 				} catch (ServerPasswordNotProvidedException e) {
 					setStatusMessage("Build not executed: Password on provided for server");
-				} catch (RestException e) {
+				} catch (RemoteApiException e) {
 					setStatusMessage("Build not executed: " + e.getMessage());
 				}
 

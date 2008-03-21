@@ -4,8 +4,7 @@ import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.crucible.api.*;
 import com.atlassian.theplugin.crucible.api.rest.CrucibleSessionImpl;
-import com.atlassian.theplugin.rest.RestException;
-import com.atlassian.theplugin.rest.RestLoginException;
+import com.atlassian.theplugin.api.RemoteApiException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,14 +17,10 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	public CrucibleServerFacadeImpl() {
 	}
 
-	private synchronized CrucibleSession getSession(String serverUrl) throws RestException {
+	private synchronized CrucibleSession getSession(String serverUrl) throws RemoteApiException {
 		CrucibleSession session = sessions.get(serverUrl);
 		if (session == null) {
-			try {
-				session = new CrucibleSessionImpl(serverUrl);
-			} catch (RestException e) {
-				throw new RestLoginException(e.getMessage(), e);
-			}
+			session = new CrucibleSessionImpl(serverUrl);
 			sessions.put(serverUrl, session);
 		}
 		return session;
@@ -38,13 +33,9 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	 * @throws com.atlassian.theplugin.crucible.api.CrucibleException
 	 *
 	 */
-	public void testServerConnection(String serverUrl, String userName, String password) throws RestException {
-		CrucibleSession session = null;
-		try {
-			session = new CrucibleSessionImpl(serverUrl);
-		} catch (RestException e) {
-			throw new RestLoginException(e.getMessage(), e);
-		}
+	public void testServerConnection(String serverUrl, String userName, String password) throws RemoteApiException {
+		CrucibleSession session = null;		
+		session = new CrucibleSessionImpl(serverUrl);
 		session.login(userName, password);
 		session.logout();
 	}
@@ -57,7 +48,7 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	 * @return created revew date
 	 * @throws CrucibleException in case of createReview error or CrucibleLoginException in case of login error
 	 */
-	public ReviewData createReview(Server server, ReviewData reviewData) throws RestException {
+	public ReviewData createReview(Server server, ReviewData reviewData) throws RemoteApiException {
 		CrucibleSession session = getSession(server.getUrlString());
 
 		session.login(server.getUserName(), server.getPasswordString());
@@ -73,7 +64,7 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	 * @return created revew date
 	 * @throws CrucibleException in case of createReview error or CrucibleLoginException in case of login error
 	 */
-	public ReviewData createReviewFromPatch(Server server, ReviewData reviewData, String patch) throws RestException {
+	public ReviewData createReviewFromPatch(Server server, ReviewData reviewData, String patch) throws RemoteApiException {
 		CrucibleSession session = getSession(server.getUrlString());
 		session.login(server.getUserName(), server.getPasswordString());
 		return session.createReviewFromPatch(reviewData, patch);
@@ -87,7 +78,7 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	 * @throws CrucibleException
 	 * @throws ServerPasswordNotProvidedException
 	 */
-	public List<ProjectData> getProjects(Server server) throws RestException, ServerPasswordNotProvidedException {
+	public List<ProjectData> getProjects(Server server) throws RemoteApiException, ServerPasswordNotProvidedException {
 		CrucibleSession session = getSession(server.getUrlString());
 		session.login(server.getUserName(), server.getPasswordString());
 		return session.getProjects();
@@ -102,7 +93,7 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	 * @throws CrucibleException
 	 * @throws ServerPasswordNotProvidedException
 	 */
-	public List<RepositoryData> getRepositories(Server server) throws RestException, ServerPasswordNotProvidedException {
+	public List<RepositoryData> getRepositories(Server server) throws RemoteApiException, ServerPasswordNotProvidedException {
 		CrucibleSession session = getSession(server.getUrlString());
 		session.login(server.getUserName(), server.getPasswordString());
 		return session.getRepositories();
@@ -112,7 +103,7 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	 * @param server server object with Url, Login and Password to connect to
 	 * @return List of reviews (empty list in case there is no review)
 	 */
-	public List<ReviewDataInfo> getAllReviews(Server server) throws RestException {
+	public List<ReviewDataInfo> getAllReviews(Server server) throws RemoteApiException {
 		CrucibleSession session = getSession(server.getUrlString());
 
 		session.login(server.getUserName(), server.getPasswordString());
@@ -127,7 +118,7 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	}
 
 	public List<ReviewDataInfo> getActiveReviewsForUser(Server server)
-			throws RestException {
+			throws RemoteApiException {
 		CrucibleSession session = getSession(server.getUrlString());
 
 		session.login(server.getUserName(), server.getPasswordString());

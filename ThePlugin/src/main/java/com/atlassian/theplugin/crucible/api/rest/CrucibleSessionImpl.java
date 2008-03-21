@@ -1,7 +1,8 @@
 package com.atlassian.theplugin.crucible.api.rest;
 
 import com.atlassian.theplugin.crucible.api.*;
-import com.atlassian.theplugin.rest.*;
+import com.atlassian.theplugin.api.*;
+import com.atlassian.theplugin.api.rest.AbstractRestSession;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpMethod;
 import org.jdom.Document;
@@ -23,10 +24,10 @@ import java.util.List;
  * Communication stub for Bamboo REST API.
  */
 public class CrucibleSessionImpl extends AbstractRestSession implements CrucibleSession  {
-	private static final String AUTH_SERVICE = "/rest-service/auth-v1";
-	private static final String REVIEW_SERVICE = "/rest-service/reviews-v1";
-	private static final String PROJECTS_SERVICE = "/rest-service/projects-v1";
-	private static final String REPOSITORIES_SERVICE = "/rest-service/repositories-v1";
+	private static final String AUTH_SERVICE = "/api-service/auth-v1";
+	private static final String REVIEW_SERVICE = "/api-service/reviews-v1";
+	private static final String PROJECTS_SERVICE = "/api-service/projects-v1";
+	private static final String REPOSITORIES_SERVICE = "/api-service/repositories-v1";
 	private static final String LOGIN = "/login";
 	private static final String GET_REVIEWS_IN_STATES = "?state=";
 	private static final String GET_REVIEWERS = "/reviewers";
@@ -38,22 +39,16 @@ public class CrucibleSessionImpl extends AbstractRestSession implements Crucible
 	 *
 	 * @param baseUrl base URL for Bamboo instance
 	 */
-	public CrucibleSessionImpl(String baseUrl) throws RestException {
+	public CrucibleSessionImpl(String baseUrl) throws RemoteApiMalformedUrlException {
 		super(baseUrl);
 	}
 
-	public void login(String username, String aPassword) throws RestLoginException {
+	public void login(String username, String aPassword) throws RemoteApiLoginException {
 		if (!isLoggedIn()) {
 			String loginUrl;
 			try {
-				if (baseUrl == null) {
-					throw new RestLoginException("Corrupted configuration. Url null");
-				}
-				if ("".equals(baseUrl.trim())) {
-					throw new RestLoginException("Corrupted configuration. Url empty");
-				}
 				if (username == null || aPassword == null) {
-					throw new RestLoginException("Corrupted configuration. Username or aPassword null");
+					throw new RemoteApiLoginException("Corrupted configuration. Username or aPassword null");
 				}
 				loginUrl = baseUrl + AUTH_SERVICE + LOGIN + "?userName=" + URLEncoder.encode(username, "UTF-8")
 						+ "&password=" + URLEncoder.encode(aPassword, "UTF-8");
@@ -67,29 +62,29 @@ public class CrucibleSessionImpl extends AbstractRestSession implements Crucible
 				Document doc = retrieveGetResponse(loginUrl);
 				String exception = getExceptionMessages(doc);
 				if (null != exception) {
-					throw new RestLoginFailedException(exception);
+					throw new RemoteApiLoginFailedException(exception);
 				}
 				XPath xpath = XPath.newInstance("/loginResult/token");
 				List elements = xpath.selectNodes(doc);
 				if (elements == null) {
-					throw new RestLoginException("Server did not return any authentication token");
+					throw new RemoteApiLoginException("Server did not return any authentication token");
 				}
 				if (elements.size() != 1) {
-					throw new RestLoginException("Server did returned excess authentication tokens ("
+					throw new RemoteApiLoginException("Server did returned excess authentication tokens ("
 							+ elements.size() + ")");
 				}
 				this.authToken = ((Element) elements.get(0)).getText();
 				this.userName = username;
 				this.password = aPassword;
 			} catch (MalformedURLException e) {
-				throw new RestLoginException("Malformed server URL: " + baseUrl, e);
+				throw new RemoteApiLoginException("Malformed server URL: " + baseUrl, e);
 			} catch (UnknownHostException e) {
-				throw new RestLoginException("Unknown host: " + e.getMessage(), e);
+				throw new RemoteApiLoginException("Unknown host: " + e.getMessage(), e);
 			} catch (IOException e) {
-				throw new RestLoginException(e.getMessage(), e);
+				throw new RemoteApiLoginException(e.getMessage(), e);
 			} catch (JDOMException e) {
-				throw new RestLoginException("Server returned malformed response", e);
-			} catch (RestSessionExpiredException e) {
+				throw new RemoteApiLoginException("Server returned malformed response", e);
+			} catch (RemoteApiSessionExpiredException e) {
 				// Crucible does not return this exception
 			}
 		}
@@ -103,7 +98,7 @@ public class CrucibleSessionImpl extends AbstractRestSession implements Crucible
 		}
 	}
 
-	public List<ReviewData> getReviewsInStates(List<State> states) throws RestException {
+	public List<ReviewData> getReviewsInStates(List<State> states) throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
@@ -137,17 +132,17 @@ public class CrucibleSessionImpl extends AbstractRestSession implements Crucible
 			}
 			return reviews;
 		} catch (IOException e) {
-			throw new RestException(e.getMessage(), e);
+			throw new RemoteApiException(e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RestException("Server returned malformed response", e);
+			throw new RemoteApiException("Server returned malformed response", e);
 		}
 	}
 
-	public List<ReviewData> getAllReviews() throws RestException {
+	public List<ReviewData> getAllReviews() throws RemoteApiException {
 		return getReviewsInStates(null);
 	}
 
-	public List<String> getReviewers(PermId permId) throws RestException {
+	public List<String> getReviewers(PermId permId) throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
@@ -168,13 +163,13 @@ public class CrucibleSessionImpl extends AbstractRestSession implements Crucible
 			}
 			return reviewers;
 		} catch (IOException e) {
-			throw new RestException(e.getMessage(), e);
+			throw new RemoteApiException(e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RestException("Server returned malformed response", e);
+			throw new RemoteApiException("Server returned malformed response", e);
 		}
 	}
 
-	public List<ProjectData> getProjects() throws RestException {
+	public List<ProjectData> getProjects() throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
@@ -195,13 +190,13 @@ public class CrucibleSessionImpl extends AbstractRestSession implements Crucible
 			}
 			return projects;
 		} catch (IOException e) {
-			throw new RestException(e.getMessage(), e);
+			throw new RemoteApiException(e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RestException("Server returned malformed response", e);
+			throw new RemoteApiException("Server returned malformed response", e);
 		}
 	}
 
-	public List<RepositoryData> getRepositories() throws RestException {
+	public List<RepositoryData> getRepositories() throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
@@ -222,20 +217,20 @@ public class CrucibleSessionImpl extends AbstractRestSession implements Crucible
 			}
 			return repositories;
 		} catch (IOException e) {
-			throw new RestException(e.getMessage(), e);
+			throw new RemoteApiException(e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RestException("Server returned malformed response", e);
+			throw new RemoteApiException("Server returned malformed response", e);
 		}
 	}
 
-	public ReviewData createReview(ReviewData reviewData) throws RestException {
+	public ReviewData createReview(ReviewData reviewData) throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
 		return createReviewFromPatch(reviewData, null);
 	}
 
-	public ReviewData createReviewFromPatch(ReviewData review, String patch) throws RestException {
+	public ReviewData createReviewFromPatch(ReviewData review, String patch) throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
@@ -254,9 +249,9 @@ public class CrucibleSessionImpl extends AbstractRestSession implements Crucible
 			}
 			return null;
 		} catch (IOException e) {
-			throw new RestException(e.getMessage(), e);
+			throw new RemoteApiException(e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RestException("Server returned malformed response", e);
+			throw new RemoteApiException("Server returned malformed response", e);
 		}
 	}
 
@@ -264,7 +259,7 @@ public class CrucibleSessionImpl extends AbstractRestSession implements Crucible
 		method.addRequestHeader(new Header("Authorization", getAuthHeaderValue()));
 	}
 
-	protected void preprocessResult(Document doc) throws JDOMException, RestSessionExpiredException {
+	protected void preprocessResult(Document doc) throws JDOMException, RemoteApiSessionExpiredException {
 
 	}
 

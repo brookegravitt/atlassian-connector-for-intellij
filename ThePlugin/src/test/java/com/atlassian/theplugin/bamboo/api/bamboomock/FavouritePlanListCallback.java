@@ -12,7 +12,7 @@ public class FavouritePlanListCallback implements JettyMockServer.Callback {
 								  HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 
-		assertTrue(request.getPathInfo().endsWith("/api/rest/getLatestUserBuilds.action"));
+		assertTrue(request.getPathInfo().endsWith("/api/api/getLatestUserBuilds.action"));
 
 		final String[] authTokens = request.getParameterValues("auth");
 		assertEquals(1, authTokens.length);

@@ -3,8 +3,9 @@ package com.atlassian.theplugin.crucible;
 import com.atlassian.theplugin.ServerType;
 import com.atlassian.theplugin.configuration.*;
 import com.atlassian.theplugin.crucible.api.rest.cruciblemock.LoginCallback;
-import com.atlassian.theplugin.rest.RestLoginException;
-import com.atlassian.theplugin.rest.RestLoginFailedException;
+import com.atlassian.theplugin.api.RemoteApiLoginException;
+import com.atlassian.theplugin.api.RemoteApiLoginFailedException;
+import com.atlassian.theplugin.api.RemoteApiMalformedUrlException;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 
@@ -63,13 +64,13 @@ public class CrucibleServerFacadeConnectionTest extends TestCase {
 	}
 
 	public void testFailedLoginGetAllReviews() throws Exception {
-		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
+		mockServer.expect("/api-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.CRUCIBLE_SERVER).getServers().iterator().next();
 		try {
 			testedCrucibleServerFacade.getAllReviews(server);
 			fail();
-		} catch (RestLoginFailedException e) {
+		} catch (RemoteApiLoginFailedException e) {
 
 		}
 
@@ -77,18 +78,18 @@ public class CrucibleServerFacadeConnectionTest extends TestCase {
 	}
 
 	public void testConnectionTestSucceed() throws Exception {
-		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/api-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
 		testedCrucibleServerFacade.testServerConnection(mockBaseUrl, USER_NAME, PASSWORD);
 		mockServer.verify();
 	}
 
 	public void testConnectionTestFailed() throws Exception {
-		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
+		mockServer.expect("/api-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
 
 		try {
 			testedCrucibleServerFacade.testServerConnection(mockBaseUrl, USER_NAME, PASSWORD);
 			fail();
-		} catch (RestLoginFailedException e) {
+		} catch (RemoteApiLoginFailedException e) {
 			// expected
 		}
 
@@ -99,7 +100,7 @@ public class CrucibleServerFacadeConnectionTest extends TestCase {
 		try {
 			testedCrucibleServerFacade.testServerConnection(mockBaseUrl, null, PASSWORD);
 			fail();
-		} catch (RestLoginException e) {
+		} catch (RemoteApiLoginException e) {
 			// expected
 		}
 	}
@@ -108,7 +109,7 @@ public class CrucibleServerFacadeConnectionTest extends TestCase {
 		try {
 			testedCrucibleServerFacade.testServerConnection(mockBaseUrl, USER_NAME, null);
 			fail();
-		} catch (RestLoginException e) {
+		} catch (RemoteApiLoginException e) {
 			// expected
 		}
 	}
@@ -118,7 +119,7 @@ public class CrucibleServerFacadeConnectionTest extends TestCase {
 		try {
 			testedCrucibleServerFacade.testServerConnection("", USER_NAME, PASSWORD);
 			fail();
-		} catch (RestLoginException e) {
+		} catch (RemoteApiMalformedUrlException e) {
 			// expected
 		}
 		mockServer.verify();
