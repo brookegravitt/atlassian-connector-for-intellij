@@ -136,7 +136,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 			//Content jiraToolWindow = createJiraContent();
 			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.JIRA);
 			toolWindow.showHidePanels();
-			PluginToolWindow.focusPanel(project, PluginToolWindow.ToolWindowPanels.JIRA);
+			//PluginToolWindow.focusPanel(project, PluginToolWindow.ToolWindowPanels.JIRA);
 			//toolWindow.getIdeaToolWindow().getContentManager().setSelectedContent(jiraToolWindow);
 
 			TableView.restore(projectConfigurationBean.getJiraConfiguration().getTableConfiguration(),
@@ -187,6 +187,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 			//statusPluginUpdateIcon.showOrHideIcon();
 
 			toolWindow.showHidePanels();
+			PluginToolWindow.focusPanel(project, projectConfigurationBean.getActiveToolWindowTab());
 
 
 			created = true;
