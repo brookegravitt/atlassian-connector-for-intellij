@@ -24,7 +24,8 @@ public class ReviewStateColumn extends TableColumnInfo {
 	public Comparator getComparator() {
 		return new Comparator() {
 			public int compare(Object o, Object o1) {
-				return ((CrucibleReviewAdapter) o).getState().value().compareTo(((CrucibleReviewAdapter) o1).getState().value());
+				return ((CrucibleReviewAdapter) o).getState().value()
+						.compareTo(((CrucibleReviewAdapter) o1).getState().value());
 			}
 		};
 	}
