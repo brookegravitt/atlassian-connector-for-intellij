@@ -24,17 +24,17 @@ import java.util.List;
  * Communication stub for Bamboo REST API.
  */
 class BambooSessionImpl extends AbstractRestSession implements BambooSession {
-	private static final String LOGIN_ACTION = "/remoteapi/remoteapi/login.action";
-	private static final String LOGOUT_ACTION = "/remoteapi/remoteapi/logout.action";
-	private static final String LIST_PROJECT_ACTION = "/remoteapi/remoteapi/listProjectNames.action";
-	private static final String LIST_PLAN_ACTION = "/remoteapi/remoteapi/listBuildNames.action";
-	private static final String LATEST_BUILD_FOR_PLAN_ACTION = "/remoteapi/remoteapi/getLatestBuildResults.action";
-	private static final String LATEST_USER_BUILDS_ACTION = "/remoteapi/remoteapi/getLatestUserBuilds.action";
-	private static final String GET_BUILD_DETAILS_ACTION = "/remoteapi/remoteapi/getBuildResultsDetails.action";
-	private static final String ADD_LABEL_ACTION = "/remoteapi/remoteapi/addLabelToBuildResults.action";
-	private static final String ADD_COMMENT_ACTION = "/remoteapi/remoteapi/addCommentToBuildResults.action";
-	private static final String EXECUTE_BUILD_ACTION = "/remoteapi/remoteapi/executeBuild.action";
-	private static final String GET_BAMBOO_BUILD_NUMBER_ACTION = "/remoteapi/remoteapi/getBambooBuildNumber.action";
+	private static final String LOGIN_ACTION = "/api/rest/login.action";
+	private static final String LOGOUT_ACTION = "/api/rest/logout.action";
+	private static final String LIST_PROJECT_ACTION = "/api/rest/listProjectNames.action";
+	private static final String LIST_PLAN_ACTION = "/api/rest/listBuildNames.action";
+	private static final String LATEST_BUILD_FOR_PLAN_ACTION = "/api/rest/getLatestBuildResults.action";
+	private static final String LATEST_USER_BUILDS_ACTION = "/api/rest/getLatestUserBuilds.action";
+	private static final String GET_BUILD_DETAILS_ACTION = "/api/rest/getBuildResultsDetails.action";
+	private static final String ADD_LABEL_ACTION = "/api/rest/addLabelToBuildResults.action";
+	private static final String ADD_COMMENT_ACTION = "/api/rest/addCommentToBuildResults.action";
+	private static final String EXECUTE_BUILD_ACTION = "/api/rest/executeBuild.action";
+	private static final String GET_BAMBOO_BUILD_NUMBER_ACTION = "/api/rest/getBambooBuildNumber.action";
 
 	private String authToken;
 
