@@ -10,7 +10,7 @@ import com.atlassian.theplugin.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.crucible.CrucibleStatusListener;
 import com.atlassian.theplugin.crucible.ReviewDataInfo;
 import com.atlassian.theplugin.idea.SchedulableComponent;
-import com.atlassian.theplugin.remoteapi.RemoteApiLoginException;
+import com.atlassian.theplugin.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.util.DateUtil;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.application.ApplicationManager;
@@ -69,7 +69,7 @@ public final class CrucibleStatusChecker implements SchedulableComponent {
                                 } catch (ServerPasswordNotProvidedException exception) {
                                     ApplicationManager.getApplication().invokeLater(
                                             new MissingPasswordHandler(), ModalityState.defaultModalityState());
-                                } catch (RemoteApiLoginException e) {
+                                } catch (RemoteApiException e) {
                                     PluginUtil.getLogger().info("Error getting Crucible reviews for " + server.getName()
 											+ " server", e);
                                 }
