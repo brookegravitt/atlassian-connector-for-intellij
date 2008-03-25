@@ -7,8 +7,7 @@ import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.idea.config.ContentPanel;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import com.intellij.uiDesigner.core.Spacer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -87,11 +86,12 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
 	 */
 	private void $$$setupUI$$$() {
 		rootComponent = new JPanel();
-		rootComponent.setLayout(new FormLayout("fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:max(d;4px):noGrow", "center:d:noGrow"));
+		rootComponent.setLayout(new GridLayoutManager(2, 3, new Insets(0, 0, 0, 0), -1, -1));
+		rootComponent.setOpaque(true);
+		rootComponent.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12), null));
 		final JPanel panel1 = new JPanel();
-		panel1.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
-		CellConstraints cc = new CellConstraints();
-		rootComponent.add(panel1, cc.xy(3, 1));
+		panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+		rootComponent.add(panel1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
 		pollTimeSpinner = new JSpinner();
 		pollTimeSpinner.setEnabled(false);
 		pollTimeSpinner.setToolTipText("Polling is not used for JIRA currently");
@@ -99,7 +99,11 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
 		final JLabel label1 = new JLabel();
 		label1.setText("Polling Time [minutes]:");
 		label1.setToolTipText("Polling is not used for JIRA currently");
-		rootComponent.add(label1, cc.xy(1, 1));
+		rootComponent.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		final Spacer spacer1 = new Spacer();
+		rootComponent.add(spacer1, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+		final Spacer spacer2 = new Spacer();
+		rootComponent.add(spacer2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 	}
 
 	/**

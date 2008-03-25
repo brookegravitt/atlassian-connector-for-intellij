@@ -19,7 +19,9 @@
       <xy x="20" y="20" width="606" height="400"/>
     </constraints>
     <properties/>
-    <border type="none"/>
+    <border type="empty">
+      <size top="12" left="12" bottom="12" right="12"/>
+    </border>
     <children>
       <component id="e669a" class="javax.swing.JRadioButton" binding="allFailuresFirstSuccess" default-binding="true">
         <constraints>
