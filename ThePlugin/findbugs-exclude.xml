@@ -74,7 +74,7 @@
 	<!--I am not sure why findBugs complains about this. This is an UI designer-generated code anyway, so whatever-->
 	<Match>
 		<Class name="com.atlassian.theplugin.idea.GeneralConfigForm"/>
-		<Bug code="NP,UwF,URF_UNREAD_FIELD"/>
+		<Bug code="NP,UwF,UrF,URF_UNREAD_FIELD"/>
 	</Match>
 
 	<!--we are not serializing dialogs-->
