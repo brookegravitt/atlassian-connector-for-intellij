@@ -8,7 +8,6 @@ import com.atlassian.theplugin.util.Connector;
 import com.atlassian.theplugin.util.UrlUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.Spacer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -137,7 +136,7 @@ public class GenericServerConfigForm extends JComponent implements ServerPanel, 
 		rootComponent = new JPanel();
 		rootComponent.setLayout(new GridBagLayout());
 		final JPanel panel1 = new JPanel();
-		panel1.setLayout(new GridLayoutManager(6, 3, new Insets(0, 0, 0, 0), -1, -1));
+		panel1.setLayout(new GridLayoutManager(7, 3, new Insets(0, 0, 0, 0), -1, -1));
 		GridBagConstraints gbc;
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;
@@ -191,6 +190,13 @@ public class GenericServerConfigForm extends JComponent implements ServerPanel, 
 		cbEnabled.setMnemonic('E');
 		cbEnabled.setDisplayedMnemonicIndex(7);
 		panel1.add(cbEnabled, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		final JPanel spacer1 = new JPanel();
+		gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 1;
+		gbc.weighty = 1.0;
+		gbc.fill = GridBagConstraints.VERTICAL;
+		rootComponent.add(spacer1, gbc);
 		label1.setLabelFor(serverName);
 		label2.setLabelFor(serverUrl);
 		label3.setLabelFor(username);

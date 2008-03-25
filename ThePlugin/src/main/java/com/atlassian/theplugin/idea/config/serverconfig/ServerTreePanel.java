@@ -48,8 +48,18 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 
 	private void initLayout() {
 		setLayout(new BorderLayout());
+//		setLayout(new GridBagLayout());
 		setMinimumSize(new Dimension(WIDTH, HEIGHT));
+
+//		GridBagConstraints c = new GridBagConstraints();
+//		c.fill = GridBagConstraints.BOTH;
+//		c.weightx = 1;
+//		c.weighty = 1;
+//		c.insets = new Insets(2, 2, 2, 2);
+
 		add(new JScrollPane(getServerTree()), BorderLayout.CENTER);
+//		add(new JScrollPane(getServerTree()), c);
+
 	}
 
     private void expandAllPaths() {
@@ -61,6 +71,7 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 	private JTree getServerTree() {
 		if (serverTree == null) {
 			serverTree = new JTree();
+			
 			serverTree.setName("Server tree");
 
 			RootNode root = new RootNode();

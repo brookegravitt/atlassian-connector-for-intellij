@@ -86,13 +86,17 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = 0;
-		c.fill = GridBagConstraints.HORIZONTAL;
+		c.anchor = GridBagConstraints.PAGE_START;
+		c.fill = GridBagConstraints.NONE;
+		c.ipady = 2;
 		selectPane.add(createToolbar(), c);
 		c.gridx = 0;
 		c.gridy = 1;
 		c.weightx = 1;
 		c.weighty = 1;
 		c.fill = GridBagConstraints.BOTH;
+		c.ipady = 0;
+		c.insets = new Insets(3, 2, 2, 2);
 		selectPane.add(serverTreePanel, c);
 		return selectPane;
     }
