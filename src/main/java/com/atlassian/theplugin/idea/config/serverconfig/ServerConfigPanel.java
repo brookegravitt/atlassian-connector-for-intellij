@@ -8,6 +8,7 @@ import com.atlassian.theplugin.configuration.ProductServerConfiguration;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.exception.ThePluginException;
+import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.config.ContentPanel;
 import com.atlassian.theplugin.idea.config.serverconfig.model.ServerNode;
 import com.atlassian.theplugin.jira.JIRAServerFactory;
@@ -70,7 +71,10 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = 1;
 		c.weighty = 1;
-		c.insets = new Insets(12, 12, 12, 12);
+		c.insets = new Insets(Constants.DIALOG_MARGIN,
+							  Constants.DIALOG_MARGIN,
+							  Constants.DIALOG_MARGIN,
+							  Constants.DIALOG_MARGIN);
 		add(splitter, c);
     }
 
