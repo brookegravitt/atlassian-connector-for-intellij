@@ -1,15 +1,21 @@
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.crucible.api.ReviewData;
+import com.atlassian.theplugin.crucible.ReviewDataInfo;
 import com.atlassian.theplugin.crucible.api.PermId;
 import com.atlassian.theplugin.crucible.api.State;
 
+import java.util.List;
 
-public class CrucibleReviewAdapter {
-	private ReviewData review;
 
-	public CrucibleReviewAdapter(ReviewData review) {
+public class ReviewDataInfoAdapter {
+	private ReviewDataInfo review;
+
+	public ReviewDataInfoAdapter(ReviewDataInfo review) {
 		this.review = review;
+	}
+
+	public String getReviewUrl() {
+		return review.getReviewUrl();
 	}
 
 	public String getAuthor() {
@@ -26,6 +32,10 @@ public class CrucibleReviewAdapter {
 
 	public String getModerator() {
 		return review.getModerator();
+	}
+
+	public List<String> getReviewers() {
+		return review.getReviewers();
 	}
 
 	public String getName() {
