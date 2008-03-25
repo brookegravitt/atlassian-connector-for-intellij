@@ -1,9 +1,11 @@
 package com.atlassian.theplugin.idea.crucible.table.column;
 
 import com.atlassian.theplugin.idea.TableColumnInfo;
-import com.atlassian.theplugin.idea.crucible.CrucibleReviewAdapter;
+import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
+import com.sun.org.apache.xalan.internal.xsltc.compiler.Stylesheet;
 
 import java.util.Comparator;
+import java.util.Iterator;
 
 
 public class ReviewReviewersColumn extends TableColumnInfo {
@@ -14,7 +16,21 @@ public class ReviewReviewersColumn extends TableColumnInfo {
 	}
 
 	public Object valueOf(Object o) {
-         return ((CrucibleReviewAdapter) o).getAuthor();
+		String reviewers = "<html>";
+		reviewers += getReviewersAsText(o);
+		reviewers += "</html>";
+		return reviewers;				
+	}
+
+	private String getReviewersAsText(Object o) {
+		StringBuffer sb = new StringBuffer();
+		for (Iterator<String> iterator = ((ReviewDataInfoAdapter) o).getReviewers().iterator(); iterator.hasNext();) {
+			sb.append(iterator.next());
+			if (iterator.hasNext()) {
+				sb.append(", ");
+			}
+		}
+		return sb.toString();
 	}
 
 	public Class getColumnClass() {
@@ -24,7 +40,9 @@ public class ReviewReviewersColumn extends TableColumnInfo {
 	public Comparator getComparator() {
 		return new Comparator() {
 			public int compare(Object o, Object o1) {
-				return ((CrucibleReviewAdapter) o).getAuthor().compareTo(((CrucibleReviewAdapter) o1).getAuthor());
+				String r = getReviewersAsText(o);
+				String r1 = getReviewersAsText(o1);
+				return r.compareTo(r1);
 			}
 		};
 	}

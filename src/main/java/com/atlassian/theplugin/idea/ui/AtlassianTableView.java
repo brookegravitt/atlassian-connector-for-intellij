@@ -21,7 +21,8 @@ public class AtlassianTableView extends TableView {
         getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         getColumnModel().setColumnMargin(0);
-        setRowHeight(DEFAULT_ROW_HEIGHT);
+
+		setMinRowHeight(DEFAULT_ROW_HEIGHT);
 		setAutoResizeMode(TableView.AUTO_RESIZE_OFF);
 
 		getTableHeader().addMouseListener(new MouseAdapter() {

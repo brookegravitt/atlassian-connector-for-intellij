@@ -57,7 +57,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 		TableColumnInfo[] columns = CrucibleTableColumnProvider.makeColumnInfo();
 
 		listTableModel = new ListTableModel(columns);
-		listTableModel.setSortable(true);
+		listTableModel.setSortable(true);		
 		table = new AtlassianTableView(listTableModel,
 				projectConfigurationBean.getCrucibleConfiguration().getTableConfiguration());
 		table.prepareColumns(columns, CrucibleTableColumnProvider.makeRendererInfo());
@@ -65,9 +65,9 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 		table.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) { // on double click, just open the issue
 				if (e.getClickCount() == 2) {
-					CrucibleReviewAdapter review = (CrucibleReviewAdapter) table.getSelectedObject();
-					if (review != null) {
-						BrowserUtil.launchBrowser(review.getPermaId().getId());
+					ReviewDataInfoAdapter reviewDataInfo = (ReviewDataInfoAdapter) table.getSelectedObject();
+					if (reviewDataInfo != null) {
+						BrowserUtil.launchBrowser(reviewDataInfo.getReviewUrl());
 					}
 				}
 			}
@@ -131,18 +131,19 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 	}
 	
 	public void updateReviews(Collection<ReviewDataInfo> reviews) {
-		List<CrucibleReviewAdapter> reviewAdapters = new ArrayList<CrucibleReviewAdapter>();
+		List<ReviewDataInfoAdapter> reviewDataInfoAdapters = new ArrayList<ReviewDataInfoAdapter>();
 		for (ReviewDataInfo review : reviews) {
-			reviewAdapters.add(new CrucibleReviewAdapter(review));
+			reviewDataInfoAdapters.add(new ReviewDataInfoAdapter(review));
 		}
-		listTableModel.setItems(reviewAdapters);
+		listTableModel.setItems(reviewDataInfoAdapters);
 		listTableModel.fireTableDataChanged();
+		table.revalidate();
 		table.setEnabled(true);
 		table.setForeground(UIUtil.getActiveTextColor());
 		StringBuffer sb = new StringBuffer();
 		sb.append("Loaded <b>");
 		sb.append(reviews.size());
-		sb.append("</b> reviews.");
+		sb.append(" open code reviews</b> for you.");
 		editorPane.setText(wrapBody(sb.toString()));
 	}
 
