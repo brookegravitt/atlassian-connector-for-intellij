@@ -189,6 +189,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 
 			toolWindow.showHidePanels();
 			PluginToolWindow.focusPanel(project, projectConfigurationBean.getActiveToolWindowTab());
+			toolWindow.startTabChangeListener();
 
 
 			created = true;
@@ -250,6 +251,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 			crucibleStatusChecker.unregisterListener(crucibleNewReviewNotifier);
 
 			// remove tool window
+			toolWindow.stopTabChangeListener();
 			toolWindowManager.unregisterToolWindow(PluginToolWindow.TOOL_WINDOW_NAME);
 			created = false;
 		}
