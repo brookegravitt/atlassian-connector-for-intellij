@@ -80,13 +80,12 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
 
     private JComponent createSelectPane() {
         JPanel selectPane = new JPanel();
-//        selectPane.setLayout(new VerticalFlowLayout(true, true));
 		GridBagLayout gbl = new GridBagLayout();
 		selectPane.setLayout(gbl);
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = 0;
-		c.anchor = GridBagConstraints.PAGE_START;
+		c.anchor = GridBagConstraints.FIRST_LINE_START;
 		c.fill = GridBagConstraints.NONE;
 		c.ipady = 2;
 		selectPane.add(createToolbar(), c);
@@ -96,7 +95,9 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
 		c.weighty = 1;
 		c.fill = GridBagConstraints.BOTH;
 		c.ipady = 0;
-		c.insets = new Insets(1 + 1 + 1, 2, 2, 2); // to avoid magic nunmber 3:)
+		// magic - don't ask why 3 is good - looks like crap otherwise
+		// moreover - 3 is a magic number according to Checkstyle and 2 is not :)
+		c.insets = new Insets(2 + 1, 2, 2, 2);
 		selectPane.add(serverTreePanel, c);
 		return selectPane;
     }

@@ -279,7 +279,7 @@ public class BambooPlansForm extends JComponent {
 		gbc.gridy = 0;
 		gbc.weightx = 1.0;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.insets = new Insets(0, 12, 12, 12);
+		gbc.insets = new Insets(0, 10, 12, 8);
 		rootComponent.add(toolbarPanel, gbc);
 		cbUseFavuriteBuilds = new JCheckBox();
 		cbUseFavuriteBuilds.setText("Use Favourite Builds For Server");
@@ -298,7 +298,7 @@ public class BambooPlansForm extends JComponent {
 		gbc.gridx = 2;
 		gbc.gridy = 0;
 		gbc.weighty = 1.0;
-		gbc.anchor = GridBagConstraints.EAST;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
 		toolbarPanel.add(btRefresh, gbc);
 		final JScrollPane scrollPane1 = new JScrollPane();
 		gbc = new GridBagConstraints();
