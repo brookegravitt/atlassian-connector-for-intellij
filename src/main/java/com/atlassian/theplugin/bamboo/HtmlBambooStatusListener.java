@@ -145,7 +145,7 @@ import java.util.regex.Pattern;
 
 	public void updateBuildStatuses(Collection<BambooBuild> buildStatuses) {
 
-		BuildStatus status = BuildStatus.BUILD_SUCCEED;
+		BuildStatus status = BuildStatus.UNKNOWN;
 		StringBuilder sb = new StringBuilder("<html>" + BODY_WITH_STYLE);
 
 		if (buildStatuses == null || buildStatuses.size() == 0) {
@@ -197,12 +197,15 @@ import java.util.regex.Pattern;
 							break;
 						case UNKNOWN:
 							sb.append(getErrorBuildRow(buildInfo));
-							if (status != BUILD_FAILED) {
-								status = BuildStatus.UNKNOWN;
-							}
+//							if (status != BUILD_FAILED && status != BuildStatus.BUILD_SUCCEED) {
+//								status = BuildStatus.UNKNOWN;
+//							}
 							break;
 						case BUILD_SUCCEED:
 							sb.append(getSuccessBuildRow(buildInfo));
+							if (status != BUILD_FAILED) {
+								status = BuildStatus.BUILD_SUCCEED;
+							}
 							break;
 						default:
 							throw new IllegalStateException("Unexpected build status encountered");
