@@ -46,11 +46,18 @@ public class PluginToolWindow extends ContentManagerAdapter {
 		this.project = project;
 	}
 
-	private void startTabChangeListener() {
+	/**
+	 * Starts listening to the tab selection changes.
+	 * It will fire {@link #selectionChanged} which store new selection in project configuration
+	 */
+	public void startTabChangeListener() {
 		this.ideaToolWindow.getContentManager().addContentManagerListener(this);
 	}
 
-	private void stopTabChangeListener() {
+	/**
+	 * Stops listening to the tab selection changes.
+	 */
+	public void stopTabChangeListener() {
 		this.ideaToolWindow.getContentManager().removeContentManagerListener(this);
 	}
 
@@ -75,7 +82,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 	 */
 	public void showHidePanels() {
 
-		stopTabChangeListener();
+		//stopTabChangeListener();
 
 		for (ToolWindowPanels entry : panels) {
 			try {
@@ -119,7 +126,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 			}
 		}
 
-		startTabChangeListener();
+		//startTabChangeListener();
 	}
 
 	// simple method to open the ToolWindow and focus on a particular component
