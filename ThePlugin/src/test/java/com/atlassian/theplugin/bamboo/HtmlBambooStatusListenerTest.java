@@ -80,6 +80,80 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 
 	}
 
+	public void testUpdateDisplayUnknownSuccessful() {
+
+		BambooBuild buildUnknown = generateBuildInfo(BuildStatus.UNKNOWN);
+		BambooBuild buildSuccessful = generateBuildInfo2(BuildStatus.BUILD_SUCCEED);
+
+		// create mock display and tested listener
+		BambooStatusDisplay mockDisplay = EasyMock.createMock(BambooStatusDisplay.class);
+		HtmlBambooStatusListener bambooListener = new HtmlBambooStatusListener(mockDisplay) {
+			protected Server getServerFromUrl(String serverUrl) {
+				return new ServerBean();
+			}
+		};
+
+		// record mock
+		mockDisplay.updateBambooStatus(EasyMock.eq(BuildStatus.BUILD_SUCCEED), EasyMock.isA(String.class));
+		EasyMock.replay(mockDisplay);
+
+		// test: unknown and successful build should generate green (successful) state
+		Collection<BambooBuild> builds = new ArrayList<BambooBuild>();
+		builds.add(buildSuccessful);
+		builds.add(buildUnknown);
+		bambooListener.updateBuildStatuses(builds);
+
+		EasyMock.verify(mockDisplay);
+	}
+
+	public void testUpdateDisplaySuccessful() {
+
+		BambooBuild buildSuccessful = generateBuildInfo(BuildStatus.BUILD_SUCCEED);
+
+		// create mock display and tested listener
+		BambooStatusDisplay mockDisplay = EasyMock.createMock(BambooStatusDisplay.class);
+		HtmlBambooStatusListener bambooListener = new HtmlBambooStatusListener(mockDisplay) {
+			protected Server getServerFromUrl(String serverUrl) {
+				return new ServerBean();
+			}
+		};
+
+		// record mock
+		mockDisplay.updateBambooStatus(EasyMock.eq(BuildStatus.BUILD_SUCCEED), EasyMock.isA(String.class));
+		EasyMock.replay(mockDisplay);
+
+		// test: successful build should generate green (successful) state
+		Collection<BambooBuild> builds = new ArrayList<BambooBuild>();
+		builds.add(buildSuccessful);
+		bambooListener.updateBuildStatuses(builds);
+
+		EasyMock.verify(mockDisplay);
+	}
+
+	public void testUpdateDisplayUnknown() {
+
+		BambooBuild buildUnknown = generateBuildInfo(BuildStatus.UNKNOWN);
+
+		// create mock display and tested listener
+		BambooStatusDisplay mockDisplay = EasyMock.createMock(BambooStatusDisplay.class);
+		HtmlBambooStatusListener bambooListener = new HtmlBambooStatusListener(mockDisplay) {
+			protected Server getServerFromUrl(String serverUrl) {
+				return new ServerBean();
+			}
+		};
+
+		// record mock
+		mockDisplay.updateBambooStatus(EasyMock.eq(BuildStatus.UNKNOWN), EasyMock.isA(String.class));
+		EasyMock.replay(mockDisplay);
+
+		// test: unknown build should generate grey (unknown) state
+		Collection<BambooBuild> builds = new ArrayList<BambooBuild>();
+		builds.add(buildUnknown);
+		bambooListener.updateBuildStatuses(builds);
+
+		EasyMock.verify(mockDisplay);
+	}
+
 	private BambooBuild generateRawBuildInfo() {
 		BambooBuildInfo build = new BambooBuildInfo();
 
@@ -127,7 +201,8 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 		buildInfo.add(generateDisabledBuildInfo(BuildStatus.BUILD_SUCCEED));
 		testedListener.updateBuildStatuses(buildInfo);
 
-        assertSame(BuildStatus.BUILD_SUCCEED, output.buildStatus);
+		// disabled builds are not considered
+		assertSame(BuildStatus.UNKNOWN, output.buildStatus);
 
 		HtmlTable table = output.response.getTheTable();
 		assertEquals(2, table.getRowCount());
@@ -140,6 +215,8 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 		Collection<BambooBuild> buildInfo = new ArrayList<BambooBuild>();
 		buildInfo.add(generateBuildInfo(BuildStatus.BUILD_FAILED));
 		testedListener.updateBuildStatuses(buildInfo);
+
+		// disabled builds are not considered
 		assertSame(BuildStatus.BUILD_FAILED, output.buildStatus);
 
 		HtmlTable table = output.response.getTheTable();
@@ -153,7 +230,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 		Collection<BambooBuild> buildInfo = new ArrayList<BambooBuild>();
 		buildInfo.add(generateDisabledBuildInfo(BuildStatus.BUILD_FAILED));
 		testedListener.updateBuildStatuses(buildInfo);
-		assertSame(BuildStatus.BUILD_SUCCEED, output.buildStatus);
+		assertSame(BuildStatus.UNKNOWN, output.buildStatus);
 
 		HtmlTable table = output.response.getTheTable();
 		assertEquals(2, table.getRowCount());
