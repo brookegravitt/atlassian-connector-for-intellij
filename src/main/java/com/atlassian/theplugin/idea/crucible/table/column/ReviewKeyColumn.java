@@ -22,12 +22,7 @@ public class ReviewKeyColumn extends TableColumnInfo {
 	}
 
 	public Comparator getComparator() {
-		return new Comparator() {
-			public int compare(Object o, Object o1) {
-				return ((ReviewDataInfoAdapter) o).getPermaId().getId()
-						.compareTo(((ReviewDataInfoAdapter) o1).getPermaId().getId());
-			}
-		};
+		return new ReviewKeyComparator();
 	}
 
 	public int getPrefferedWidth() {
