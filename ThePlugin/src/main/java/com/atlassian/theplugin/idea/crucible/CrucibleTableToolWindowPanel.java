@@ -82,11 +82,11 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
 			private void maybeShowPopup(MouseEvent e) { // on right click, show a context menu for this issue
 				if (e.isPopupTrigger() && table.isEnabled()) {
-					BambooBuildAdapter build = (BambooBuildAdapter) table.getSelectedObject();
+					ReviewDataInfoAdapter review = (ReviewDataInfoAdapter) table.getSelectedObject();
 
-					if (build != null) {
+					if (review != null) {
 						Point p = new Point(e.getX(), e.getY());
-						JPopupMenu contextMenu = createContextMenu(build);
+						JPopupMenu contextMenu = createContextMenu(review);
 						contextMenu.show(table, p.x, p.y);
 					}
 				}
@@ -95,19 +95,13 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
 		JScrollPane tablePane = new JScrollPane(table,
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		tablePane.setWheelScrollingEnabled(true);
-		//table.setMinimumSize(ED_PANE_MINE_SIZE);
+		tablePane.setWheelScrollingEnabled(true);		
 		add(tablePane, BorderLayout.CENTER);
 	}
 
-	private JPopupMenu createContextMenu(BambooBuildAdapter buildAdapter) {
+	private JPopupMenu createContextMenu(ReviewDataInfoAdapter reviewAdapter) {
 		JPopupMenu contextMenu = new JPopupMenu();
-		contextMenu.add(makeWebUrlMenu("View", buildAdapter.getBuildResultUrl()));
-		//contextMenu.addSeparator();
-		//contextMenu.add(makeAddLabelMenu("Add label", buildAdapter));
-		//contextMenu.add(makeAddCommentMenu("Add comment", buildAdapter));
-		//contextMenu.addSeparator();
-		//contextMenu.add(makeExecuteBuildMenu("Run build", buildAdapter));
+		contextMenu.add(makeWebUrlMenu("View", reviewAdapter.getReviewUrl()));
 		return contextMenu;
 	}
 
@@ -151,10 +145,6 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 		return "<html>" + HtmlBambooStatusListener.BODY_WITH_STYLE + s + "</body></html>";
 
 	}
-
-//	private void setStatusMessage(String msg) {
-//		editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">" + msg + "</td></tr></table>"));
-//	}
 
 	public List<BambooBuildAdapter> getBuilds() {
 		return (List<BambooBuildAdapter>) listTableModel.getItems();
