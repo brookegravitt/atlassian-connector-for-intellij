@@ -2,7 +2,6 @@ package com.atlassian.theplugin.idea.crucible.table.column;
 
 import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
-import com.sun.org.apache.xalan.internal.xsltc.compiler.Stylesheet;
 
 import java.util.Comparator;
 import java.util.Iterator;
