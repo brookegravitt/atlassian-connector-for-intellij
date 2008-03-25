@@ -151,9 +151,9 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
 	}
 
-	private void setStatusMessage(String msg) {
-		editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">" + msg + "</td></tr></table>"));
-	}
+//	private void setStatusMessage(String msg) {
+//		editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">" + msg + "</td></tr></table>"));
+//	}
 
 	public List<BambooBuildAdapter> getBuilds() {
 		return (List<BambooBuildAdapter>) listTableModel.getItems();

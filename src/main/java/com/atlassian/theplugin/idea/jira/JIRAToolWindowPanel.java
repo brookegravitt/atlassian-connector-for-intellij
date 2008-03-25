@@ -50,7 +50,7 @@ public class JIRAToolWindowPanel extends JPanel {
 
 	// a simple map to store all selected query fragments.
 	private Map<String, JIRAQueryFragment> queryFragments = new HashMap<String, JIRAQueryFragment>();
-	private final Project project;
+	private final transient Project project;
 
 	public JIRAToolWindowPanel(ProjectConfigurationBean projectConfigurationBean, Project project) {
         super(new BorderLayout());
@@ -304,8 +304,8 @@ public class JIRAToolWindowPanel extends JPanel {
         }
     }
 
-	public class CreateChangeListAction extends AbstractAction {
-		private final Project project;
+	public static class CreateChangeListAction extends AbstractAction {
+		private final transient Project project;
 		private final String changeListName;
 
 		public CreateChangeListAction(JIRAIssue issue, Project project) {
