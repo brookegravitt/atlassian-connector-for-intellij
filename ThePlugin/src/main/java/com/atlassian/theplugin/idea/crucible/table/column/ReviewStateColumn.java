@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.crucible.table.column;
 
 import com.atlassian.theplugin.idea.TableColumnInfo;
-import com.atlassian.theplugin.idea.crucible.CrucibleReviewAdapter;
+import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
 
 import java.util.Comparator;
 
@@ -14,7 +14,7 @@ public class ReviewStateColumn extends TableColumnInfo {
 	}
 
 	public Object valueOf(Object o) {
-         return ((CrucibleReviewAdapter) o).getState().value();
+         return ((ReviewDataInfoAdapter) o).getState().value();
 	}
 
 	public Class getColumnClass() {
@@ -24,8 +24,8 @@ public class ReviewStateColumn extends TableColumnInfo {
 	public Comparator getComparator() {
 		return new Comparator() {
 			public int compare(Object o, Object o1) {
-				return ((CrucibleReviewAdapter) o).getState().value()
-						.compareTo(((CrucibleReviewAdapter) o1).getState().value());
+				return ((ReviewDataInfoAdapter) o).getState().value()
+						.compareTo(((ReviewDataInfoAdapter) o1).getState().value());
 			}
 		};
 	}
