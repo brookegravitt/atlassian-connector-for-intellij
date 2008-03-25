@@ -326,7 +326,7 @@ public class JIRAToolWindowPanel extends JPanel {
 
 			LocalChangeList changeList = changeListManager.findChangeList(changeListName);
 			if (changeList == null) {
-				changeList = changeListManager.addChangeList(changeListName, "");
+				changeList = changeListManager.addChangeList(changeListName, changeListName + "\n");
 			}
 			changeListManager.setDefaultChangeList(changeList);
 		}
