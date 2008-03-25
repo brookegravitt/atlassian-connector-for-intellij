@@ -32,6 +32,4 @@ public class ReviewAuthorColumn extends TableColumnInfo {
 	public int getPrefferedWidth() {
 		return COL_WIDTH;
 	}
-
-
 }
