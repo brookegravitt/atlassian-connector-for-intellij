@@ -189,7 +189,7 @@ public class GenericServerConfigForm extends JComponent implements ServerPanel, 
 		cbEnabled.setText("Server Enabled");
 		cbEnabled.setMnemonic('E');
 		cbEnabled.setDisplayedMnemonicIndex(7);
-		panel1.add(cbEnabled, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		panel1.add(cbEnabled, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(115, 25), null, 0, false));
 		final JPanel spacer1 = new JPanel();
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;
