@@ -130,6 +130,7 @@ public class BambooGeneralForm extends JComponent implements ContentPanel {
 	private void $$$setupUI$$$() {
 		rootComponent = new JPanel();
 		rootComponent.setLayout(new FormLayout("fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:d:grow,left:4dlu:noGrow,fill:d:grow", "center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:d:grow"));
+		rootComponent.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12), null));
 		allFailuresFirstSuccess = new JRadioButton();
 		allFailuresFirstSuccess.setSelected(true);
 		allFailuresFirstSuccess.setText("All build failures and first build success");
