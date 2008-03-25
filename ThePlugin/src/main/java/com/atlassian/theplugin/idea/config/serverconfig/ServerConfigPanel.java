@@ -96,7 +96,7 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
 		c.weighty = 1;
 		c.fill = GridBagConstraints.BOTH;
 		c.ipady = 0;
-		c.insets = new Insets(3, 2, 2, 2);
+		c.insets = new Insets(1 + 1 + 1, 2, 2, 2); // to avoid magic nunmber 3:)
 		selectPane.add(serverTreePanel, c);
 		return selectPane;
     }
