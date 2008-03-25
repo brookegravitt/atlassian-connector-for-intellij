@@ -24,7 +24,7 @@ public class ReviewSummaryColumn extends TableColumnInfo {
 	public Comparator getComparator() {
 		return new Comparator() {
 			public int compare(Object o, Object o1) {
-				return ((ReviewDataInfoAdapter) o).getDescription().compareTo(((ReviewDataInfoAdapter) o1).getDescription());
+				return ((ReviewDataInfoAdapter) o).getName().compareTo(((ReviewDataInfoAdapter) o1).getName());
 			}
 		};
 	}
