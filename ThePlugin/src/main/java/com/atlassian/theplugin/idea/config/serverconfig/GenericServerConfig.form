@@ -2,12 +2,12 @@
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.atlassian.theplugin.idea.config.serverconfig.GenericServerConfigForm">
   <grid id="27dc6" binding="rootComponent" layout-manager="GridBagLayout">
     <constraints>
-      <xy x="20" y="20" width="844" height="216"/>
+      <xy x="20" y="20" width="844" height="474"/>
     </constraints>
     <properties/>
     <border type="none"/>
     <children>
-      <grid id="a9df3" layout-manager="GridLayoutManager" row-count="6" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="a9df3" layout-manager="GridLayoutManager" row-count="7" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -114,6 +114,12 @@
           </component>
         </children>
       </grid>
+      <vspacer id="8bd4e">
+        <constraints>
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+          <gridbag weightx="0.0" weighty="1.0"/>
+        </constraints>
+      </vspacer>
     </children>
   </grid>
 </form>

@@ -2,10 +2,11 @@ package com.atlassian.theplugin.idea.config;
 
 import com.atlassian.theplugin.ServerType;
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.config.serverconfig.BambooGeneralForm;
-import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
-import com.atlassian.theplugin.idea.config.serverconfig.JiraGeneralForm;
 import com.atlassian.theplugin.idea.config.serverconfig.CrucibleGeneralForm;
+import com.atlassian.theplugin.idea.config.serverconfig.JiraGeneralForm;
+import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -54,6 +55,9 @@ public final class ConfigPanel extends JPanel {
 
 	private void initLayout() {
 		setLayout(new BorderLayout());
+
+		contentPanel.setOpaque(true);
+		contentPanel.setBackground(new Color(Constants.BG_COLOR_R, Constants.BG_COLOR_G, Constants.BG_COLOR_B));
 
 		// add servers tab
 		contentPanel.add(serverConfigPanel.getTitle(), serverConfigPanel);
