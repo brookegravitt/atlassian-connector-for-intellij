@@ -1,7 +1,5 @@
 package com.atlassian.theplugin.configuration;
 
-import com.atlassian.theplugin.idea.PluginToolWindow;
-
 /**
  * Created by IntelliJ IDEA.
  * User: Jacek
@@ -13,7 +11,7 @@ public class ProjectConfigurationBean {
 
 	private BambooProjectConfiguration bambooConfiguration = new BambooProjectConfiguration();
 	private JiraProjectConfiguration jiraConfiguration = new JiraProjectConfiguration();
-	private String activeToolWindowTab = PluginToolWindow.ToolWindowPanels.JIRA.toString();
+	private String activeToolWindowTab = ""; //PluginToolWindow.ToolWindowPanels.JIRA.toString();
 	private CrucibleProjectConfiguration crucibleConfiguration = new CrucibleProjectConfiguration();
 
 	public ProjectConfigurationBean() {
