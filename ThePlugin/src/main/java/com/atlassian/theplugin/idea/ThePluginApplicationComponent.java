@@ -35,7 +35,7 @@ public class ThePluginApplicationComponent
 		PicoUtil.populateGlobalPicoContainer(apc);
 	}
 
-	private static final Icon PLUGIN_SETTINGS_ICON = IconLoader.getIcon("/icons/atlassian_icon-32.png");
+	private static final Icon PLUGIN_SETTINGS_ICON = IconLoader.getIcon("/icons/ico_plugin.png");
 
 
 	private final ConfigPanel configPanel;
