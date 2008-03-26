@@ -34,13 +34,13 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="38314" class="javax.swing.JCheckBox" binding="watchForUnstableVersionsCheckBox" default-binding="true">
+              <component id="38314" class="javax.swing.JCheckBox" binding="chkUnstableVersionsCheckBox" default-binding="true">
                 <constraints>
                   <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <enabled value="false"/>
-                  <text value="Watch for unstable versions"/>
+                  <text value="Check unstable versions"/>
                 </properties>
               </component>
               <hspacer id="dadcc">
@@ -73,6 +73,17 @@
           <gridbag weightx="0.0" weighty="1.0"/>
         </constraints>
       </vspacer>
+      <component id="44730" class="javax.swing.JCheckBox" binding="reportAnonymousUsageStatisticsCheckBox" default-binding="true">
+        <constraints>
+          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <gridbag weightx="0.0" weighty="0.0"/>
+        </constraints>
+        <properties>
+          <enabled value="true"/>
+          <selected value="false"/>
+          <text value="&amp;Report anonymous usage statistics to help us develop a better plugin"/>
+        </properties>
+      </component>
     </children>
   </grid>
 </form>

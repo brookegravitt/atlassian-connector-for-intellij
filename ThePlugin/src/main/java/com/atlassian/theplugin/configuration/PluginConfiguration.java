@@ -14,4 +14,12 @@ public interface PluginConfiguration {
 	Version getRejectedUpgrade();
 
 	void setRejectedUpgrade(Version version);
+
+	void setCheckUnstableVersionsEnabled(boolean checkUnstableVersions);
+
+	boolean getCheckUnstableVersionsEnabled();
+
+	boolean getIsAnonymousFeedbackEnabled();
+
+	void setIsAnonymousFeedbackEnabled(boolean isAnonymousFeedbackEnabled);
 }
