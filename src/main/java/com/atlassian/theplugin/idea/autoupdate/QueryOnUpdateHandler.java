@@ -9,8 +9,7 @@ import com.atlassian.theplugin.util.Version;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
-
-import javax.swing.*;
+import com.intellij.openapi.ui.Messages;
 
 /**
  * Created by IntelliJ IDEA.
@@ -34,10 +33,12 @@ public class QueryOnUpdateHandler implements UpdateActionHandler {
 				+ ". Do you want to download and install?";
 		String title = "New plugin version download";
 
-		int answer = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(),
-				message, title, JOptionPane.YES_NO_OPTION);
-		if (answer == JOptionPane.OK_OPTION) {
+		int answer = Messages.showYesNoDialog(message, title, Messages.getQuestionIcon());
 
+		//int answer = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(),
+		//		message, title, JOptionPane.YES_NO_OPTION);
+		//if (answer == JOptionPane.OK_OPTION) {
+		if (answer == 0) {
 			// fire downloading and updating plugin in the new thread
 			//Thread downloader = new Thread(new PluginDownloader(versionInfo, pluginConfiguration));
 			//downloader.start();
