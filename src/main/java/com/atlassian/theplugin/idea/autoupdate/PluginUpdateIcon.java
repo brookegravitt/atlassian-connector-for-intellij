@@ -30,7 +30,7 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 
 		addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-				innerHideIcon();
+				stopBlinking();
 				try {
 					handler.doAction(version);
 				} catch (ThePluginException e1) {
@@ -40,7 +40,7 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 		});
 	}
 
-	public void innerHideIcon() {
+	public void stopBlinking() {
 		if (timer != null) {
 			this.timer.cancel();
 			this.timer = null;
@@ -48,9 +48,8 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 		hideIcon();
 	}
 
-	protected void innerShowIcon() {
-		if (!isIconShown()) {
-			showIcon();	//To change body of overridden methods use File | Settings | File Templates.
+	protected void startBlinking() {
+		if (this.timer == null) {
 			this.timer = new Timer();
 			timer.scheduleAtFixedRate(new TimerTask() {
 				public void run() {
@@ -65,13 +64,16 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 	 */
 	public void triggerUpdateAvailableAction(InfoServer.VersionInfo newVersion) {
 		this.version = newVersion;
-		innerShowIcon();
+		startBlinking();
 		this.setToolTipText("New version (" + newVersion.getVersion() + ") of the "
 				+ PluginUtil.getName() + " available");
 
 	}
 
 	public void blinkIcon() {
+		if (!isIconShown()) {
+			showIcon();
+		}
 		if (blinkOn) {
 			blinkOn();
 			blinkOn = false;
