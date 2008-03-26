@@ -129,7 +129,12 @@ public class PluginToolWindow extends ContentManagerAdapter {
 		//startTabChangeListener();
 	}
 
-	// simple method to open the ToolWindow and focus on a particular component
+	/**
+	 * Methods opens the ToolWindow and focuses on a particular component.
+	 * If component does not exists it is created
+	 * @param project
+	 * @param component
+	 */
     public static void focusPanel(Project project, ToolWindowPanels component) {
         ToolWindow tw = IdeaHelper.getToolWindow(project);
         if (tw != null) {
@@ -160,21 +165,52 @@ public class PluginToolWindow extends ContentManagerAdapter {
         }
     }
 
-	public static void focusPanel(Project project, String activeToolWindowTab) {
-		if (activeToolWindowTab.equals(ToolWindowPanels.BAMBOO.toString())) {
+	/**
+	 * Methods opens the ToolWindow and focuses on a particular component.
+	 * If component does not exists it is created
+	 * @param project
+	 * @param tabName
+	 */
+	public static void focusPanel(Project project, String tabName) {
+		if (tabName.equals(ToolWindowPanels.BAMBOO.toString())) {
 			focusPanel(project, ToolWindowPanels.BAMBOO);
-		} else if (activeToolWindowTab.equals(ToolWindowPanels.CRUCIBLE.toString())) {
+		} else if (tabName.equals(ToolWindowPanels.CRUCIBLE.toString())) {
 			focusPanel(project, ToolWindowPanels.CRUCIBLE);
-		} else if (activeToolWindowTab.equals(ToolWindowPanels.JIRA.toString())) {
+		} else if (tabName.equals(ToolWindowPanels.JIRA.toString())) {
 			focusPanel(project, ToolWindowPanels.JIRA);
 		}
 	}
 
+	/**
+	 * Methods opens the ToolWindow and focuses on a particular component.
+	 * If component does not exists it is created
+	 * @param e
+	 * @param component
+	 */
 	public static void focusPanel(AnActionEvent e, ToolWindowPanels component) {
 		Project project = IdeaHelper.getCurrentProject(e.getDataContext());
 		focusPanel(project, component);
     }
 
+	/**
+	 * Methods opens the ToolWindow and focuses on a particular component.
+	 * If component does not exists it is not created and focused
+	 * @param project
+	 * @param tabName
+	 */
+	public static void focusPanelIfExists(Project project, String tabName) {
+		ToolWindow tw = IdeaHelper.getToolWindow(project);
+
+        if (tw != null) {
+			tw.activate(null);
+			ContentManager contentManager = tw.getContentManager();
+			Content content = contentManager.findContent(tabName);
+
+			if (content != null) {
+				contentManager.setSelectedContent(content);
+			}
+        }
+	}
 
 	public void selectionChanged(ContentManagerEvent event) {
 		//this.selectedContent = event.getContent().getDisplayName();
