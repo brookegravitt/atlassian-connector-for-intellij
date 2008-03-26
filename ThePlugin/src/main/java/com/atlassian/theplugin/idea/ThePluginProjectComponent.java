@@ -188,7 +188,8 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 			//statusPluginUpdateIcon.showOrHideIcon();
 
 			toolWindow.showHidePanels();
-			PluginToolWindow.focusPanel(project, projectConfigurationBean.getActiveToolWindowTab());
+			// focus last active panel only if it exists 
+			PluginToolWindow.focusPanelIfExists(project, projectConfigurationBean.getActiveToolWindowTab());
 			toolWindow.startTabChangeListener();
 
 
