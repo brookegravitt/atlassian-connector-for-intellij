@@ -16,9 +16,9 @@
 		<ul>
 			<li>Bamboo (2.0 and above)</li>
 			<li>Crucible</li>
-			<li>Fisheye</li>
 			<li>Jira</li>
-			<li>Confluence</li>
+			<li>Confluence - in the future</li>
+			<li>Fisheye - in the future</li>
 		</ul>
 		]]>
 	</description>
@@ -37,6 +37,10 @@
 	<change-notes>
 		<![CDATA[
 		<ul>
+			<li>0.5.0: even more small improvements and bugfixes. UI looks really nice now</li>
+			<li>0.4.0: many small improvements and bugfixes</li>
+			<li>0.3.1: now with basic JIRA support! And autoupdate</li>
+			<li>0.3.0: broken :(</li>
 			<li>0.2.0: Look&feel improvements, bug fixes and initial support for Crucible</li> 
 			<li>0.1.0: A much more stable version with a nicely working bamboo build status support,
 			but crappy visuals</li>
