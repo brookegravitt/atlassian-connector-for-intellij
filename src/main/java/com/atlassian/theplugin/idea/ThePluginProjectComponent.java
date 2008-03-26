@@ -31,7 +31,7 @@ import javax.swing.*;
  */
 @State(name = "ThePluginSettings", storages = { @Storage(id = "thePlugin", file = "$PROJECT_FILE$") })
 public class ThePluginProjectComponent implements ProjectComponent, PersistentStateComponent<ProjectConfigurationBean> {
-	private static final String THE_PLUGIN_TOOL_WINDOW_ICON = "/icons/thePlugin_15x10.png";
+	private static final String THE_PLUGIN_TOOL_WINDOW_ICON = "/icons/ico_plugin_16.png";
 
 	private final ProjectConfigurationBean projectConfigurationBean;
 
@@ -204,7 +204,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 				PluginToolWindow.ToolWindowPanels.BAMBOO.toString(),
 				false);
 
-		content.setIcon(IconLoader.getIcon("/icons/bamboo-blue-16.png"));
+		content.setIcon(IconLoader.getIcon("/icons/tab_bamboo.png"));
 		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
 
 		return content;
@@ -215,7 +215,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 
 		Content content = peerFactory.getContentFactory().createContent(
 				crucibleToolWindowPanel, PluginToolWindow.ToolWindowPanels.CRUCIBLE.toString(), false);
-		content.setIcon(IconLoader.getIcon("/icons/crucible-blue-16.png"));
+		content.setIcon(IconLoader.getIcon("/icons/tab_crucible.png"));
 		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
 
 		return content;
@@ -227,7 +227,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 
 		Content content = peerFactory.getContentFactory().createContent(
 				jiraToolWindowPanel, PluginToolWindow.ToolWindowPanels.JIRA.toString(), false);
-		content.setIcon(IconLoader.getIcon("/icons/jira-blue-16.png"));
+		content.setIcon(IconLoader.getIcon("/icons/tab_jira.png"));
 		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
 
 		return content;
