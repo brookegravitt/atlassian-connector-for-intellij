@@ -12,7 +12,6 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
-import com.atlassian.theplugin.jira.JIRAServerFactory;
 import com.atlassian.theplugin.jira.api.*;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.diagnostic.Logger;
@@ -38,10 +37,12 @@ public class IssueCreate extends DialogWrapper {
 	private JComboBox projectComboBox;
 	private JComboBox typeComboBox;
 	private JTextField summary;
-	private JIRAServer jiraServer;
+	private final JIRAServer jiraServer;
+	private final JIRAServerFacade jiraServerFacade;
 
-	public IssueCreate(final JIRAServer jiraServer) {
+	public IssueCreate(JIRAServer jiraServer, JIRAServerFacade jiraServerFacade) {
 		super(false);
+		this.jiraServerFacade = jiraServerFacade;
 		init();
 		this.jiraServer = jiraServer;
 		setTitle("Create JIRA Issue");
@@ -72,7 +73,6 @@ public class IssueCreate extends DialogWrapper {
 	}
 
 	protected void doOKAction() {
-		JIRAServerFacade facade = JIRAServerFactory.getJIRAServerFacade();
 		JIRAIssueBean issueProxy = new JIRAIssueBean();
 		issueProxy.setSummary(summary.getText());
 		issueProxy.setProjectKey(((JIRAProject) projectComboBox.getSelectedItem()).getKey());
@@ -84,7 +84,7 @@ public class IssueCreate extends DialogWrapper {
 
 		String message = null;
 		try {
-			newIssue = facade.createIssue(jiraServer.getServer(), issueProxy);
+			newIssue = jiraServerFacade.createIssue(jiraServer.getServer(), issueProxy);
 		} catch (JIRAException e) {
 			message = "Issue created failed?<br>" + e.getMessage();
 			content.setBackground(BuildStatusChangedToolTip.BACKGROUND_COLOR_FAILED);

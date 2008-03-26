@@ -14,12 +14,16 @@ public class JIRAServer {
     private List statuses;
     private List issueTypes;
 
-    public JIRAServer() {
-    }
+	private final JIRAServerFacade jiraServerFacade;
 
-    public JIRAServer(Server server) {
+	public JIRAServer(JIRAServerFacade jiraServerFacade) {
+		this.jiraServerFacade = jiraServerFacade;
+	}
+
+    public JIRAServer(Server server, JIRAServerFacade jiraServerFacade) {
         this.server = server;
-    }
+		this.jiraServerFacade = jiraServerFacade;
+	}
 
     public Server getServer() {
         return server;
@@ -34,7 +38,7 @@ public class JIRAServer {
 		if (projects == null) {
 			errorMessage = null;
 			try {
-                projects = JIRAServerFactory.getJIRAServerFacade().getProjects(server);
+                projects = jiraServerFacade.getProjects(server);
 				validServer = true;
 			} catch (JIRAException e) {
 				errorMessage = e.getMessage();
@@ -52,7 +56,7 @@ public class JIRAServer {
 		if (statuses == null) {
 			errorMessage = null;
 			try {
-                statuses = JIRAServerFactory.getJIRAServerFacade().getStatuses(server);
+                statuses = jiraServerFacade.getStatuses(server);
 				validServer = true;
 			} catch (JIRAException e) {
 				errorMessage = e.getCause().getMessage();
@@ -69,7 +73,7 @@ public class JIRAServer {
 		if (issueTypes == null) {
 			errorMessage = null;			
 			try {
-                issueTypes = JIRAServerFactory.getJIRAServerFacade().getIssueTypes(server);
+                issueTypes = jiraServerFacade.getIssueTypes(server);
 				validServer = true;
 			} catch (JIRAException e) {
 				errorMessage = e.getMessage();

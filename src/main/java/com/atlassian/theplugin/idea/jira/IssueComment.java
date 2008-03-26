@@ -8,20 +8,19 @@ package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
-import com.atlassian.theplugin.jira.JIRAServerFactory;
 import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
-import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.util.List;
 import java.awt.*;
+import java.util.List;
 
 public class IssueComment extends DialogWrapper {
 	private static final Logger LOGGER = Logger.getInstance("IssueComment");
@@ -33,8 +32,11 @@ public class IssueComment extends DialogWrapper {
 	private static final int MAX_SUM_LENGTH = 53;
 	private static final int MAX_SUM_LENGTH_MINUS_ELLIPSIS = 50;
 
-	public IssueComment(final JIRAServer jiraServer, List<JIRAIssue> issues) {
+	private final JIRAServerFacade jiraServerFacade;
+
+	public IssueComment(JIRAServerFacade jiraServerFacade, final JIRAServer jiraServer, List<JIRAIssue> issues) {
 		super(false);
+		this.jiraServerFacade = jiraServerFacade;
 		init();
 		this.jiraServer = jiraServer;
 		setTitle("Add Comment");
@@ -68,7 +70,7 @@ public class IssueComment extends DialogWrapper {
 
 	protected void doOKAction() {
 		try {
-			JIRAServerFacade facade = JIRAServerFactory.getJIRAServerFacade();
+			JIRAServerFacade facade = jiraServerFacade;
 			facade.addComment(jiraServer.getServer(), getIssue(), comment.getText());
 		} catch (JIRAException e1) {
 			e1.printStackTrace();

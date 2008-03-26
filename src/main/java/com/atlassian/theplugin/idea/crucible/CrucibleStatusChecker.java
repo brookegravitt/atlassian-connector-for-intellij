@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.ServerType;
-import com.atlassian.theplugin.bamboo.MissingPasswordHandler;
+import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
 import com.atlassian.theplugin.configuration.CrucibleConfigurationBean;
 import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.atlassian.theplugin.configuration.Server;
@@ -57,42 +57,42 @@ public final class CrucibleStatusChecker implements SchedulableComponent {
 	 * DO NOT use that method in 'dispatching thread' of IDEA. It can block GUI for several seconds.
 	 */
 	private void doRun() {
-        try {
+		try {
 			// collect build info from each server
-            final Collection<ReviewDataInfo> reviews = new ArrayList<ReviewDataInfo>();
-            for (Server server : retrieveEnabledCrucibleServers()) {
-                                try {
-									PluginUtil.getLogger().debug("Crucible: updating status for server: "
-											+ server.getUrlString());
-									reviews.addAll(
-                                            crucibleServerFacade.getActiveReviewsForUser(server));
-                                } catch (ServerPasswordNotProvidedException exception) {
-                                    ApplicationManager.getApplication().invokeLater(
-                                            new MissingPasswordHandler(), ModalityState.defaultModalityState());
-                                } catch (RemoteApiException e) {
-                                    PluginUtil.getLogger().info("Error getting Crucible reviews for " + server.getName()
-											+ " server", e);
-                                }
-                            }
+			final Collection<ReviewDataInfo> reviews = new ArrayList<ReviewDataInfo>();
+			for (Server server : retrieveEnabledCrucibleServers()) {
+				try {
+					PluginUtil.getLogger().debug("Crucible: updating status for server: "
+							+ server.getUrlString());
+					reviews.addAll(
+							crucibleServerFacade.getActiveReviewsForUser(server));
+				} catch (ServerPasswordNotProvidedException exception) {
+					ApplicationManager.getApplication().invokeLater(
+							new MissingPasswordHandler(crucibleServerFacade), ModalityState.defaultModalityState());
+				} catch (RemoteApiException e) {
+					PluginUtil.getLogger().info("Error getting Crucible reviews for " + server.getName()
+							+ " server", e);
+				}
+			}
 
-            // dispatch to the listeners
-            EventQueue.invokeLater(new Runnable() {
-                public void run() {
-                    synchronized (listenerList) {
-                        for (CrucibleStatusListener listener : listenerList) {
-                            listener.updateReviews(reviews);
-                        }
-                    }
-                }
-            });
-	    } catch (Throwable t) {
+			// dispatch to the listeners
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					synchronized (listenerList) {
+						for (CrucibleStatusListener listener : listenerList) {
+							listener.updateReviews(reviews);
+						}
+					}
+				}
+			});
+		} catch (Throwable t) {
 			t.printStackTrace();
-        }
-    }
+		}
+	}
 
 	private Collection<Server> retrieveEnabledCrucibleServers() {
 		return pluginConfiguration.getProductServers(
-                            ServerType.CRUCIBLE_SERVER).getEnabledServers();
+				ServerType.CRUCIBLE_SERVER).getEnabledServers();
 	}
 
 	/**
@@ -101,11 +101,11 @@ public final class CrucibleStatusChecker implements SchedulableComponent {
 	 * @return new instance of TimerTask
 	 */
 	public TimerTask newTimerTask() {
-        return new TimerTask() {
-            public void run() {
-                doRun();
-            }
-        };
+		return new TimerTask() {
+			public void run() {
+				doRun();
+			}
+		};
 	}
 
 	public boolean canSchedule() {

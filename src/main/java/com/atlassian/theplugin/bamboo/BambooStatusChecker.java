@@ -2,6 +2,7 @@ package com.atlassian.theplugin.bamboo;
 
 import com.atlassian.theplugin.ServerType;
 import com.atlassian.theplugin.UIActionScheduler;
+import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
 import com.atlassian.theplugin.configuration.BambooConfigurationBean;
 import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.atlassian.theplugin.configuration.Server;
@@ -64,7 +65,7 @@ public final class BambooStatusChecker implements SchedulableComponent {
                             newServerBuildsStatus.addAll(
                                     bambooServerFacade.getSubscribedPlansResults(server));
                         } catch (ServerPasswordNotProvidedException exception) {
-                            actionScheduler.invokeLater(new MissingPasswordHandler());
+                            actionScheduler.invokeLater(new MissingPasswordHandler(bambooServerFacade));
                         }
                     }
 

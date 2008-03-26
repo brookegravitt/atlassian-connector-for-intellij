@@ -3,6 +3,7 @@ package com.atlassian.theplugin.idea;
 import com.atlassian.theplugin.bamboo.*;
 import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
+import com.atlassian.theplugin.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.idea.autoupdate.ConfirmPluginUpdateHandler;
 import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
@@ -49,6 +50,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 	private final CrucibleTableToolWindowPanel crucibleToolWindowPanel;
 
 	private final CrucibleStatusChecker crucibleStatusChecker;
+	private final CrucibleServerFacade crucibleServerFacade;
 
 	private final ToolWindowManager toolWindowManager;
 	private boolean created;
@@ -56,7 +58,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 
 	private final PluginConfiguration pluginConfiguration;
 
-	private JIRAToolWindowPanel jiraToolWindowPanel;
+	private final JIRAToolWindowPanel jiraToolWindowPanel;
 	private JIRAServer currentJiraServer;
 	private PluginToolWindow toolWindow;
 
@@ -67,7 +69,9 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 									 PluginConfiguration pluginConfiguration,
 									 BambooTableToolWindowPanel bambooToolWindowPanel,
 									 CrucibleTableToolWindowPanel crucibleToolWindowPanel,
-									 ProjectConfigurationBean projectConfigurationBean) {
+									 JIRAToolWindowPanel jiraToolWindowPanel,
+									 ProjectConfigurationBean projectConfigurationBean,
+									 CrucibleServerFacade crucibleServerFacade) {
 		this.project = project;
 		this.crucibleStatusChecker = crucibleStatusChecker;
 		this.toolWindowManager = toolWindowManager;
@@ -75,8 +79,9 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 		this.pluginConfiguration = pluginConfiguration;
 		this.bambooToolWindowPanel = bambooToolWindowPanel;
 		this.crucibleToolWindowPanel = crucibleToolWindowPanel;
+		this.jiraToolWindowPanel = jiraToolWindowPanel;
 		this.projectConfigurationBean = projectConfigurationBean;
-		//this.jiraToolWindowPanel = jiraToolWindowPanel;
+		this.crucibleServerFacade = crucibleServerFacade;
 
 		// make findBugs happy
 		statusBarBambooIcon = null;
@@ -95,7 +100,8 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 	public void initComponent() {
 		System.out.println("Start: Init ThePlugin project component.");
 		System.out.println("End: Init ThePlugin project component.");
-		ChangeListManager.getInstance(project).registerCommitExecutor(new CruciblePatchSubmitExecutor(project));
+		ChangeListManager.getInstance(project).registerCommitExecutor(
+				new CruciblePatchSubmitExecutor(project, crucibleServerFacade));
 	}
 
 	public void disposeComponent() {
@@ -134,7 +140,6 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 			TableView.restore(projectConfigurationBean.getBambooConfiguration().getTableConfiguration(),
 					bambooToolWindowPanel.getTable());
 
-			//crucibleToolWindowPanel = new CrucibleToolWindowPanel();
 			//Content crucibleToolWindow = createCrusibleContent();
 			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.CRUCIBLE);
 			toolWindow.showHidePanels();
@@ -142,7 +147,6 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 					crucibleToolWindowPanel.getTable());
 
 
-			jiraToolWindowPanel = new JIRAToolWindowPanel(projectConfigurationBean, project);
 			//Content jiraToolWindow = createJiraContent();
 			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.JIRA);
 			toolWindow.showHidePanels();

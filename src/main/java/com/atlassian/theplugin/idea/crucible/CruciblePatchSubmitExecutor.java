@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.idea.crucible;
 
+import com.atlassian.theplugin.crucible.CrucibleServerFacade;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.changes.CommitExecutor;
 import com.intellij.openapi.vcs.changes.CommitSession;
@@ -10,9 +11,11 @@ import javax.swing.*;
 
 public class CruciblePatchSubmitExecutor implements CommitExecutor {
 	private final Project project;
+	private final CrucibleServerFacade crucibleServerFacade;
 
-	public CruciblePatchSubmitExecutor(Project project) {
+	public CruciblePatchSubmitExecutor(Project project, CrucibleServerFacade crucibleServerFacade) {
 		this.project = project;
+		this.crucibleServerFacade = crucibleServerFacade;
 	}
 
 	@NotNull
@@ -32,6 +35,6 @@ public class CruciblePatchSubmitExecutor implements CommitExecutor {
 	}
 
 	public CommitSession createCommitSession() {
-		return new CruciblePatchSubmitCommitSession(project);
+		return new CruciblePatchSubmitCommitSession(project, crucibleServerFacade);
 	}
 }

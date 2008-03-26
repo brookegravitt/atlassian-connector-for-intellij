@@ -5,7 +5,7 @@ import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.ProductServerConfiguration;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
-import com.atlassian.theplugin.crucible.CrucibleServerFactory;
+import com.atlassian.theplugin.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.crucible.api.*;
 import com.atlassian.theplugin.remoteapi.RemoteApiException;
 import com.intellij.ide.BrowserUtil;
@@ -35,8 +35,11 @@ public class CruciblePatchUploadForm extends DialogWrapper {
 	private JComboBox projectsComboBox;
 	private String patchText;
 
-	protected CruciblePatchUploadForm(String commitMessage) {
+	private CrucibleServerFacade crucibleServerFacade;
+
+	protected CruciblePatchUploadForm(CrucibleServerFacade crucibleServerFacade, String commitMessage) {
 		super(false);
+		this.crucibleServerFacade = crucibleServerFacade;
 		$$$setupUI$$$();
 		init();
 		titleText.setText(commitMessage);
@@ -203,8 +206,8 @@ public class CruciblePatchUploadForm extends DialogWrapper {
 				List<ProjectData> projects = new ArrayList<ProjectData>();
 				List<RepositoryData> repositories = new ArrayList<RepositoryData>();
 				try {
-					projects = CrucibleServerFactory.getCrucibleServerFacade().getProjects(server);
-					repositories = CrucibleServerFactory.getCrucibleServerFacade().getRepositories(server);
+					projects = crucibleServerFacade.getProjects(server);
+					repositories = crucibleServerFacade.getRepositories(server);
 				} catch (RemoteApiException e) {
 					// nothing can be done here
 				} catch (ServerPasswordNotProvidedException e) {
@@ -319,7 +322,7 @@ public class CruciblePatchUploadForm extends DialogWrapper {
 
 			try {
 				ReviewData draftReviewData =
-						CrucibleServerFactory.getCrucibleServerFacade().createReviewFromPatch(
+						crucibleServerFacade.createReviewFromPatch(
 								server, reviewData, patchText);
 				if (openBrowserToCompleteCheckBox.isSelected()) {
 					BrowserUtil.launchBrowser(server.getUrlString()
