@@ -18,12 +18,19 @@ public final class InfoServer {
 	private InfoServer() {
 	}
 
-	public static VersionInfo getLatestPluginVersion(String serviceUrl, long uid)
+	public static VersionInfo getLatestPluginVersion(String serviceUrl,
+													 long uid,
+													 boolean reportUid,
+													 boolean checkUnstableVersions)
 			throws VersionServiceException, IncorrectVersionException {
 
 		try {
 			HttpClient client = new HttpClient();
-			GetMethod method = new GetMethod(serviceUrl + "?uid=" + uid);
+			String urlString = serviceUrl;
+			if (reportUid) {
+				urlString += "?uid=" + uid;
+			}
+			GetMethod method = new GetMethod(urlString);
 			try {
 				client.executeMethod(method);
 			} catch (IllegalArgumentException e) {
@@ -33,6 +40,9 @@ public final class InfoServer {
 			SAXBuilder builder = new SAXBuilder();
 			builder.setValidation(false);
 			Document doc = builder.build(is);
+			if (checkUnstableVersions) {
+				return new VersionInfo(doc, VersionInfo.Type.UNSTABLE);
+			}
 			return new VersionInfo(doc, VersionInfo.Type.STABLE);
 		} catch (IOException e) {
 			throw new VersionServiceException("Connection error while retriving the latest plugin version", e);
@@ -67,8 +77,8 @@ public final class InfoServer {
 					downloadUrl = getValue("/response/versions/stable/downloadUrl", doc);
 					break;
 				case UNSTABLE:
-					version = new Version(getValue("/response/versions/unstable/latestVersion", doc));
-					downloadUrl = getValue("/response/versions/unstable/downloadUrl", doc);
+					version = new Version(getValue("/response/versions/version/latestVersion", doc));
+					downloadUrl = getValue("/response/versions/version/downloadUrl", doc);
 					break;
 				default:
 					throw new VersionServiceException("neither stable nor unstable");

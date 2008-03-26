@@ -18,8 +18,9 @@ public class GeneralConfigPanel extends JPanel implements ContentPanel {
 	public GeneralConfigPanel(PluginConfiguration globalPluginConfiguration, NewVersionChecker checker) {
 		super();
 		this.globalPluginConfiguration = globalPluginConfiguration;
+		localPluginConfigurationCopy = this.globalPluginConfiguration;
 		setLayout(new CardLayout());
-		dialog = new GeneralConfigForm(checker, globalPluginConfiguration);
+		dialog = new GeneralConfigForm(checker, localPluginConfigurationCopy);
 		add(dialog.getRootPane(), "GeneralConfig");
 	}
 
@@ -29,7 +30,9 @@ public class GeneralConfigPanel extends JPanel implements ContentPanel {
 
 	public boolean isModified() {
 		return !localPluginConfigurationCopy.equals(globalPluginConfiguration)
-				|| dialog.getIsAutoUpdateEnabled() != globalPluginConfiguration.isAutoUpdateEnabled();
+				|| dialog.getIsAutoUpdateEnabled() != globalPluginConfiguration.isAutoUpdateEnabled()
+				|| dialog.getIsCheckUnstableVersionsEnabled() != globalPluginConfiguration.getCheckUnstableVersionsEnabled()
+				|| dialog.getIsAnonymousFeedbackEnabled() != globalPluginConfiguration.getIsAnonymousFeedbackEnabled();
 
 	}
 
@@ -39,12 +42,18 @@ public class GeneralConfigPanel extends JPanel implements ContentPanel {
 
 	public void getData() {
 		localPluginConfigurationCopy.setAutoUpdateEnabled(dialog.getIsAutoUpdateEnabled());
+		localPluginConfigurationCopy.setCheckUnstableVersionsEnabled(dialog.getIsCheckUnstableVersionsEnabled());
+		localPluginConfigurationCopy.setIsAnonymousFeedbackEnabled(dialog.getIsAnonymousFeedbackEnabled());
 		globalPluginConfiguration.setAutoUpdateEnabled(dialog.getIsAutoUpdateEnabled());
+		globalPluginConfiguration.setCheckUnstableVersionsEnabled(dialog.getIsCheckUnstableVersionsEnabled());
+		globalPluginConfiguration.setIsAnonymousFeedbackEnabled(dialog.getIsAnonymousFeedbackEnabled());
 	}
 
 	public void setData(PluginConfiguration config) {
 		localPluginConfigurationCopy = config;
 		dialog.setAutoUpdateEnabled(localPluginConfigurationCopy.isAutoUpdateEnabled());
+		dialog.setIsCheckUnstableVersionsEnabled(localPluginConfigurationCopy.getCheckUnstableVersionsEnabled());
+		dialog.setIsAnonymousFeedbackEnabled(localPluginConfigurationCopy.getIsAnonymousFeedbackEnabled());
 	}
 
 }

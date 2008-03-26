@@ -11,6 +11,8 @@ public class PluginConfigurationBean implements PluginConfiguration {
 	private long uid = 0;
 	private boolean isAutoUpdateEnabled = true;
 	private Version rejectedUpgrade = Version.NULL_VERSION;
+	private boolean isCheckUnstableVersionsEnabled = false;
+	private boolean isAnonymousFeedbackEnabled;
 
 	/**
 	 * Default constructor.
@@ -34,6 +36,8 @@ public class PluginConfigurationBean implements PluginConfiguration {
 	public void setConfiguration(PluginConfiguration cfg) {
 		this.setUid(cfg.getUid());
 		this.setAutoUpdateEnabled(cfg.isAutoUpdateEnabled());
+		this.setIsAnonymousFeedbackEnabled(cfg.getIsAnonymousFeedbackEnabled());
+		this.setCheckUnstableVersionsEnabled(cfg.getCheckUnstableVersionsEnabled());
 		this.setRejectedUpgrade(cfg.getRejectedUpgrade());
 		this.setBambooConfigurationData(new BambooConfigurationBean(cfg.getProductServers(ServerType.BAMBOO_SERVER)));
         this.setCrucibleConfigurationData(new CrucibleConfigurationBean(cfg.getProductServers(ServerType.CRUCIBLE_SERVER)));
@@ -140,6 +144,26 @@ public class PluginConfigurationBean implements PluginConfiguration {
 		this.rejectedUpgrade = rejectedUpgrade;
 	}
 
+	public void setCheckUnstableVersionsEnabled(boolean checkUnstableVersionsEnabled) {
+		this.isCheckUnstableVersionsEnabled = checkUnstableVersionsEnabled;
+	}
+
+	public boolean getCheckUnstableVersionsEnabled() {
+		return isCheckUnstableVersionsEnabled;
+	}
+
+	public boolean getIsAnonymousFeedbackEnabled() {
+		return isAnonymousFeedbackEnabled;
+	}
+
+	public void setIsAnonymousFeedbackEnabled(boolean isAnonymousFeedbackEnabled) {
+		this.isAnonymousFeedbackEnabled = isAnonymousFeedbackEnabled;
+	}
+
+	public void setAnonymousFeedbackEnabled(boolean anonymousFeedbackEnabled) {
+		isAnonymousFeedbackEnabled = anonymousFeedbackEnabled;
+	}
+
 	public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -155,6 +179,14 @@ public class PluginConfigurationBean implements PluginConfiguration {
         }
 
 		if (isAutoUpdateEnabled != that.isAutoUpdateEnabled) {
+            return false;
+        }
+
+		if (isAnonymousFeedbackEnabled != that.isAnonymousFeedbackEnabled) {
+            return false;
+        }
+
+		if (isCheckUnstableVersionsEnabled != that.isCheckUnstableVersionsEnabled) {
             return false;
         }
 
@@ -182,6 +214,8 @@ public class PluginConfigurationBean implements PluginConfiguration {
         result = ONE_EFF * result + (jiraConfiguration != null ? jiraConfiguration.hashCode() : 0);
 		result = ONE_EFF * result + (int) (uid ^ (uid >>> SHIFT_VAL));
 		result = ONE_EFF * result + (isAutoUpdateEnabled ? 1 : 0);
+		result = ONE_EFF * result + (isCheckUnstableVersionsEnabled ? 1 : 0);
+		result = ONE_EFF * result + (isAnonymousFeedbackEnabled ? 1 : 0);
 		result = ONE_EFF * result + (rejectedUpgrade != null ? rejectedUpgrade.hashCode() : 0);
         return result;
     }
