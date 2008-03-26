@@ -17,7 +17,8 @@ public class CreateIssueAction extends AnAction {
         String errorMsg = null;
 
         if (jiraServer != null) {
-            IssueCreate issueCreate = new IssueCreate(IdeaHelper.getCurrentJIRAServer());
+            IssueCreate issueCreate = new IssueCreate(IdeaHelper.getCurrentJIRAServer(),
+					IdeaHelper.getAppComponent().getJiraServerFacade());
             issueCreate.show();
         } else {
             errorMsg = "Select a JIRA server before creating issues.";

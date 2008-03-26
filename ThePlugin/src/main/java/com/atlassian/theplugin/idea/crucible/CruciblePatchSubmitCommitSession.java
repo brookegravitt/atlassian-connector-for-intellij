@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.idea.crucible;
 
+import com.atlassian.theplugin.crucible.CrucibleServerFacade;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.diff.LineTokenizer;
@@ -28,9 +29,11 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 	@SuppressWarnings("unused")
 	private final Project project;
 	private static final int LINES_OF_CONTEXT = 3;
+	protected final CrucibleServerFacade crucibleServerFacade;
 
-	public CruciblePatchSubmitCommitSession(Project project) {
+	public CruciblePatchSubmitCommitSession(Project project, CrucibleServerFacade crucibleServerFacade) {
 		this.project = project;
+		this.crucibleServerFacade = crucibleServerFacade;
 	}
 
 	@Nullable
@@ -52,7 +55,8 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 		String patch = generateUnifiedDiff(changes);
 
 		ApplicationManager.getApplication().invokeAndWait(
-                new CruciblePatchUploader(commitMessage, patch), ModalityState.defaultModalityState());
+				new CruciblePatchUploader(crucibleServerFacade, commitMessage, patch),
+				ModalityState.defaultModalityState());
 	}
 
 	String generateUnifiedDiff(Collection<Change> changes) {
@@ -106,7 +110,7 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 	 */
 
 	private void generateUnifiedDiffBody(
-            StringBuilder sb, Diff.Change diff, String[] beforeLines, String[] afterLines, int linesOfContext) {
+			StringBuilder sb, Diff.Change diff, String[] beforeLines, String[] afterLines, int linesOfContext) {
 
 		while (diff != null) {
 			int lastLine = 1;

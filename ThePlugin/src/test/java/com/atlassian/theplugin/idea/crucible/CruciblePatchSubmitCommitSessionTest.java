@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.idea.crucible;
 
+import com.atlassian.theplugin.crucible.CrucibleServerFacadeImpl;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vcs.FilePath;
 import com.intellij.openapi.vcs.VcsException;
@@ -117,7 +118,7 @@ public class CruciblePatchSubmitCommitSessionTest extends TestCase {
 
 class CruciblePatchSubmitCommitSessionWrapper extends CruciblePatchSubmitCommitSession {
 	CruciblePatchSubmitCommitSessionWrapper() {
-		super(null);
+		super(null, new CrucibleServerFacadeImpl());
 	}
 
 	protected String getPath(ContentRevision revision) {

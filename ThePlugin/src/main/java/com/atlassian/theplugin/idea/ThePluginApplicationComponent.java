@@ -4,6 +4,7 @@ import com.atlassian.theplugin.bamboo.BambooStatusChecker;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
+import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.util.PicoUtil;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.components.ApplicationComponent;
@@ -47,6 +48,8 @@ public class ThePluginApplicationComponent
 	private final Collection<TimerTask> scheduledComponents = new HashSet<TimerTask>();
 
 	private final BambooStatusChecker bambooStatusChecker;
+
+	private final JIRAServerFacade jiraServerFacade;
 
 	BambooStatusChecker getBambooStatusChecker() {
 		return bambooStatusChecker;
@@ -99,14 +102,20 @@ public class ThePluginApplicationComponent
 		return configPanel.isModified();
 	}
 
+	public JIRAServerFacade getJiraServerFacade() {
+		return jiraServerFacade;
+	}
+
 	public ThePluginApplicationComponent(PluginConfigurationBean configuration,
 										 BambooStatusChecker bambooStatusChecker,
 										 ConfigPanel configPanel,
-										 SchedulableComponent[] schedulableComponents) {
+										 SchedulableComponent[] schedulableComponents,
+										 JIRAServerFacade jiraServerFacade) {
 		this.configuration = configuration;
 		this.bambooStatusChecker = bambooStatusChecker;
 		this.schedulableComponents = schedulableComponents; /* get lost, findbugs! */
 		this.configPanel = configPanel;
+		this.jiraServerFacade = jiraServerFacade;
 		ConfigurationFactory.setConfiguration(configuration);
 	}
 
