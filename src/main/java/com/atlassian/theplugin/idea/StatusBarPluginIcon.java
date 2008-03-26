@@ -20,6 +20,9 @@ public abstract class StatusBarPluginIcon extends JLabel {
 	}
 
 	public void hideIcon() {
+		if (statusBar == null) {
+			return;
+		}
 		if (isIconShown) {
 			statusBar.removeCustomIndicationComponent(this);
 			WindowManager.getInstance().getFrame(project).repaint();
@@ -28,6 +31,9 @@ public abstract class StatusBarPluginIcon extends JLabel {
 	}
 
 	public void showIcon() {
+		if (statusBar == null) {
+			return;
+		}
 		if (!isIconShown) {
 			statusBar.addCustomIndicationComponent(this);
 			WindowManager.getInstance().getFrame(project).repaint();
