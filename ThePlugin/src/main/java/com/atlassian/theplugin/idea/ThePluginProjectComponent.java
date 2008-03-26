@@ -19,6 +19,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.wm.ToolWindowManager;
+import com.intellij.openapi.startup.StartupManager;
 import com.intellij.peer.PeerFactory;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.table.TableView;
@@ -82,6 +83,13 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 		statusBarCrucibleIcon = null;
 		statusPluginUpdateIcon = null;
 		created = false;
+		StartupManager.getInstance(project).registerPostStartupActivity(new Runnable() {
+			public void run() {
+				System.out.println("Start: Project initializing");
+				initializePlugin();
+				System.out.println("End: Project initialized");
+			}
+		});
 	}
 
 	public void initComponent() {
@@ -104,7 +112,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 		return toolWindow;
 	}
 
-	private void createPlugin() {
+	private void initializePlugin() {
 		// unregister changelistmanager?
 		// only open tool windows for each application that's registered
 		// show something nice if there are non
@@ -259,10 +267,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 	}
 
 	public void projectOpened() {
-
-		System.out.println("Start: Project open");
-		createPlugin();
-		System.out.println("End: Project open");
+		// content moved to StartupManager to wait until 
 	}
 
 	public void projectClosed() {
