@@ -35,7 +35,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 	public static final String TOOL_WINDOW_NAME = "Atlassian";
 	private static final int INITIAL_NUMBER_OF_TABS = 3;
 
-	public static void showHidePluginWindow(AnActionEvent event){
+	public static void showHidePluginWindow(AnActionEvent event) {
 		ToolWindow tw = IdeaHelper.getToolWindow(IdeaHelper.getCurrentProject(event.getDataContext()));
 		if (tw != null) {
 			if (tw.isVisible()) {
