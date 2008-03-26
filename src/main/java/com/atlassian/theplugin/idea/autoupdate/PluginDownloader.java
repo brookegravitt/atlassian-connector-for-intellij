@@ -9,11 +9,12 @@ import com.intellij.ide.startup.StartupActionScriptManager;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.extensions.PluginId;
+import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.io.StreamUtil;
 import com.intellij.util.io.ZipUtil;
 
-import javax.swing.*;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -89,8 +90,8 @@ public class PluginDownloader { //implements Runnable {
 				String title = "IDEA shutdown";
 				String message = "Plugin has been installed successfully. Do you want to restart IDEA to activate the plugin?";
 
-				int answer = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(),
-						message, title, JOptionPane.YES_NO_OPTION);
+				int answer = Messages.showYesNoDialog(
+						message, title, Messages.getQuestionIcon());
 
 //						Messages.showDialog(PluginUpdateNotifierBundle.message("progress.shutdown.dialog.text"),
 //                        PluginUpdateNotifierBundle.message("progress.shutdown.dialog.title"),
@@ -98,7 +99,7 @@ public class PluginDownloader { //implements Runnable {
 //                                PluginUpdateNotifierBundle.message("progress.shutdown.dialog.button.cancel.text")},
 //                        0, Messages.getQuestionIcon());
 
-				if (answer == JOptionPane.YES_OPTION) {
+				if (answer == DialogWrapper.OK_EXIT_CODE) {
 					//ApplicationManagerEx.getApplicationEx().exit(true);
 					ApplicationManager.getApplication().exit();
 				}
