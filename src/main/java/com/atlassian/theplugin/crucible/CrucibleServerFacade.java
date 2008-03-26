@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.crucible;
 
+import com.atlassian.theplugin.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.crucible.api.ProjectData;
@@ -9,9 +10,7 @@ import com.atlassian.theplugin.remoteapi.RemoteApiException;
 
 import java.util.List;
 
-public interface CrucibleServerFacade {
-	void testServerConnection(String serverUrl, String userName, String password) throws RemoteApiException;
-
+public interface CrucibleServerFacade extends ProductServerFacade {
 	ReviewData createReview(Server server, ReviewData review)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 

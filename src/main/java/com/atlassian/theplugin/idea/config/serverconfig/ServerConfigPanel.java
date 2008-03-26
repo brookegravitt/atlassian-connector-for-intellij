@@ -11,8 +11,7 @@ import com.atlassian.theplugin.exception.ThePluginException;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.config.ContentPanel;
 import com.atlassian.theplugin.idea.config.serverconfig.model.ServerNode;
-import com.atlassian.theplugin.jira.JIRAServerFactory;
-import com.atlassian.theplugin.jira.api.JIRALoginException;
+import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.util.Connector;
 import com.intellij.openapi.actionSystem.ActionGroup;
@@ -44,13 +43,16 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
 	private transient PluginConfiguration localConfigCopy;
 	private final transient CrucibleServerFacade crucibleServerFacade;
 	private final transient BambooServerFacade bambooServerFacade;
+	private final transient JIRAServerFacade jiraServerFacade;
 
 	public ServerConfigPanel(ServerTreePanel serverTreePanel,
 							 CrucibleServerFacade crucibleServerFacade,
-							 BambooServerFacade bambooServerFacade) {
+							 BambooServerFacade bambooServerFacade,
+							 JIRAServerFacade jiraServerFacade) {
 		this.serverTreePanel = serverTreePanel;
 		this.crucibleServerFacade = crucibleServerFacade;
 		this.bambooServerFacade = bambooServerFacade;
+		this.jiraServerFacade = jiraServerFacade;
 		/* required due to circular dependency unhandled by pico */
 		this.serverTreePanel.setServerConfigPanel(this);
 		initLayout();
@@ -151,9 +153,9 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
 						public void connect() throws ThePluginException {
 							validate();
 							try {
-								JIRAServerFactory.getJIRAServerFacade().testServerConnection(getUrl(), getUserName(),
+								jiraServerFacade.testServerConnection(getUrl(), getUserName(),
 										getPassword());
-							} catch (JIRALoginException e) {
+							} catch (RemoteApiException e) {
 								throw new ThePluginException("Error connecting Jira server", e);
 							}
 						}

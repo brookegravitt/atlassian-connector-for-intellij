@@ -26,7 +26,9 @@ public class CommentIssueAction extends AnAction {
             if (l.isEmpty()) {
                 errorMsg = "Search for issues to comment on first.";
             } else {
-                IssueComment issueComment = new IssueComment(IdeaHelper.getCurrentJIRAServer(), l);
+				IssueComment issueComment = new IssueComment(
+						IdeaHelper.getAppComponent().getJiraServerFacade(),
+						IdeaHelper.getCurrentJIRAServer(), l);
 
                 if (toolWindowPanel.getCurrentIssue() != null) {
                     issueComment.setIssue(toolWindowPanel.getCurrentIssue());

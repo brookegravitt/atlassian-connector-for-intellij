@@ -11,9 +11,10 @@ import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
 import com.atlassian.theplugin.idea.config.GeneralConfigPanel;
 import com.atlassian.theplugin.idea.config.serverconfig.*;
-import com.atlassian.theplugin.idea.config.serverconfig.CrucibleGeneralForm;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
+import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
+import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import org.picocontainer.MutablePicoContainer;
 
 public final class PicoUtil {
@@ -37,11 +38,13 @@ public final class PicoUtil {
 			ServerTreePanel.class,
 			CrucibleServerFacadeImpl.class,
 			BambooServerFacadeImpl.class,
+			JIRAServerFacadeImpl.class,
 	};
 
 	private static final Class[] PROJECT_COMPONENTS = {
 			BambooTableToolWindowPanel.class,
 			CrucibleTableToolWindowPanel.class,
+			JIRAToolWindowPanel.class,
 			ProjectConfigurationBean.class
 	};
 

@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.LoginDataProvided;
-import com.atlassian.theplugin.bamboo.BambooServerFactory;
+import com.atlassian.theplugin.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.exception.ThePluginException;
 import com.atlassian.theplugin.remoteapi.RemoteApiException;
@@ -23,7 +23,7 @@ public class PasswordDialog extends JDialog implements LoginDataProvided {
 	private JTextField userName;
 	private transient Server server;
 
-	public PasswordDialog(final Server server) {
+	public PasswordDialog(final Server server, final ProductServerFacade serverFacade) {
 		this.server = server;
 		setContentPane(passwordPanel);
 		setModal(true);
@@ -47,7 +47,7 @@ public class PasswordDialog extends JDialog implements LoginDataProvided {
 			public void connect() throws ThePluginException {
 				this.validate();
 				try {
-					BambooServerFactory.getBambooServerFacade().testServerConnection(
+					serverFacade.testServerConnection(
 							super.getUrl(), super.getUserName(), super.getPassword());
 				} catch (RemoteApiException e) {
 					throw new ThePluginException("Error conecting bamboo server.", e);

@@ -1,25 +1,32 @@
 package com.atlassian.theplugin.jira;
 
+import com.atlassian.theplugin.ServerType;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.jira.api.*;
+import com.atlassian.theplugin.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.remoteapi.RemoteApiLoginException;
 
 import java.util.List;
 
 public class JIRAServerFacadeImpl implements JIRAServerFacade {
     private static final int MAX_ISSUES_DEFAULT = 50;
 
-    public void testServerConnection(String url, String userName, String password) throws JIRALoginException {
+    public void testServerConnection(String url, String userName, String password) throws RemoteApiException {
         JIRAXmlRpcClient client = new JIRAXmlRpcClient(url);
         try {
             if (!client.login(userName, password)) {
-                throw new JIRALoginException("Bad credentials");
+                throw new RemoteApiLoginException("Bad credentials");
             }
         } catch (JIRAException e) {
-            throw new JIRALoginException("Error logging in", e);
+            throw new RemoteApiLoginException("Error logging in", e);
         }
     }
 
-    public List getIssues(Server server, List<JIRAQueryFragment> query) throws JIRAException {
+	public ServerType getServerType() {
+		return ServerType.JIRA_SERVER;
+	}
+
+	public List getIssues(Server server, List<JIRAQueryFragment> query) throws JIRAException {
         JIRARssClient rss = new JIRARssClient(server.getUrlString(), server.getUserName(), server.getPasswordString());
         return rss.getIssues(query, "updated", "DESC", MAX_ISSUES_DEFAULT);
     }
