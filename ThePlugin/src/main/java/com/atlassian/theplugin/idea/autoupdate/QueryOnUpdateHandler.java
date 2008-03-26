@@ -9,6 +9,7 @@ import com.atlassian.theplugin.util.Version;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 
 /**
@@ -38,7 +39,7 @@ public class QueryOnUpdateHandler implements UpdateActionHandler {
 		//int answer = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(),
 		//		message, title, JOptionPane.YES_NO_OPTION);
 		//if (answer == JOptionPane.OK_OPTION) {
-		if (answer == 0) {
+		if (answer == DialogWrapper.OK_EXIT_CODE) {
 			// fire downloading and updating plugin in the new thread
 			//Thread downloader = new Thread(new PluginDownloader(versionInfo, pluginConfiguration));
 			//downloader.start();

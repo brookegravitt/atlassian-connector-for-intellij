@@ -7,6 +7,7 @@ import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerBean;
 import com.atlassian.theplugin.idea.config.serverconfig.model.*;
 import com.atlassian.theplugin.idea.config.serverconfig.util.ServerNameUtil;
+import com.intellij.openapi.ui.Messages;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
@@ -119,12 +120,11 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 		if (selectedNode != null) {
 			if (selectedNode instanceof ServerNode) {
 				final ServerNode selectedServerNode = (ServerNode) this.selectedNode;
-				int response = JOptionPane.showConfirmDialog(this,
+				int response = Messages.showYesNoDialog(
 						"Are you sure you want to delete the selected server?",
 						"Confirm server delete",
-						JOptionPane.YES_NO_OPTION,
-						JOptionPane.QUESTION_MESSAGE,
-						null);
+						Messages.getQuestionIcon()						
+						);
 
 				if (response != 0) {
 					return;
