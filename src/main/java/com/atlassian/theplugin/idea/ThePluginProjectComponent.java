@@ -102,6 +102,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 		System.out.println("End: Init ThePlugin project component.");
 		ChangeListManager.getInstance(project).registerCommitExecutor(
 				new CruciblePatchSubmitExecutor(project, crucibleServerFacade));
+
 	}
 
 	public void disposeComponent() {
@@ -266,6 +267,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 			// remove tool window
 			toolWindow.stopTabChangeListener();
 			toolWindowManager.unregisterToolWindow(PluginToolWindow.TOOL_WINDOW_NAME);
+			
 			created = false;
 		}
 	}
