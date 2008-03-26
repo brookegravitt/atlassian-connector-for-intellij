@@ -142,7 +142,7 @@ public class AutoRenewBambooSessionTest extends TestCase {
 			public boolean isEnabled() {
 				return false;
 			}
-		}}));
+		}} ));
 
 		EasyMock.replay(mockDelegate);
 
@@ -162,7 +162,7 @@ public class AutoRenewBambooSessionTest extends TestCase {
 		mockDelegate.login(EasyMock.eq("login"), EasyMock.isA(char[].class));
 		EasyMock.expectLastCall();
 		mockDelegate.getLatestBuildForPlan("planKey");
-		EasyMock.expectLastCall().andReturn(new BambooBuild(){
+		EasyMock.expectLastCall().andReturn(new BambooBuild() {
 			public Server getServer() {
 				return null;  
 			}
