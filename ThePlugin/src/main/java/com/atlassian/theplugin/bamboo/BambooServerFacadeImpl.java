@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.bamboo;
 
+import com.atlassian.theplugin.ServerType;
 import com.atlassian.theplugin.bamboo.api.AutoRenewBambooSession;
 import com.atlassian.theplugin.bamboo.api.BambooSession;
 import com.atlassian.theplugin.configuration.Server;
@@ -22,6 +23,10 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 	private Map<String, BambooSession> sessions = new WeakHashMap<String, BambooSession>();
 
 	public BambooServerFacadeImpl() {
+	}
+
+	public ServerType getServerType() {
+		return ServerType.BAMBOO_SERVER;
 	}
 
 	private synchronized BambooSession getSession(Server server) throws RemoteApiException {
@@ -54,8 +59,8 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 	 * @param url	  Bamboo server base URL
 	 * @param userName Bamboo user name
 	 * @param password Bamboo password
-	 * @throws BambooLoginException on failed login
-	 * @see BambooLoginFailedException
+	 * @throws RemoteApiException on failed login
+	 * @see RemoteApiLoginFailedException
 	 */
 	public void testServerConnection(String url, String userName, String password) throws RemoteApiException {
 		BambooSession apiHandler = null;

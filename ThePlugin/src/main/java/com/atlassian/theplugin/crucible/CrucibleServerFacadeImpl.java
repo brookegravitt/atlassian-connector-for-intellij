@@ -1,10 +1,13 @@
 package com.atlassian.theplugin.crucible;
 
+import com.atlassian.theplugin.ServerType;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.crucible.api.*;
 import com.atlassian.theplugin.crucible.api.rest.CrucibleSessionImpl;
 import com.atlassian.theplugin.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.remoteapi.RemoteApiLoginFailedException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,6 +18,10 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	private Map<String, CrucibleSession> sessions = new HashMap<String, CrucibleSession>();
 
 	public CrucibleServerFacadeImpl() {
+	}
+
+	public ServerType getServerType() {
+		return ServerType.CRUCIBLE_SERVER;
 	}
 
 	private synchronized CrucibleSession getSession(String serverUrl) throws RemoteApiException {
@@ -118,10 +125,21 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	}
 
 	public List<ReviewDataInfo> getActiveReviewsForUser(Server server)
-			throws RemoteApiException {
+			throws RemoteApiException, ServerPasswordNotProvidedException {
 		CrucibleSession session = getSession(server.getUrlString());
 
-		session.login(server.getUserName(), server.getPasswordString());
+
+		try {
+			session.login(server.getUserName(), server.getPasswordString());
+		} catch (RemoteApiLoginFailedException e) {
+			if (server.getIsConfigInitialized()) {
+				PluginUtil.getLogger().error("Crucible login exception: " + e.getMessage());
+			} else {
+				throw new ServerPasswordNotProvidedException();
+			}
+		} catch (RemoteApiException e) {
+			PluginUtil.getLogger().error("Crucible exception: " + e.getMessage());
+		}
 
 		List<State> states = new ArrayList<State>();
 		states.add(State.REVIEW);

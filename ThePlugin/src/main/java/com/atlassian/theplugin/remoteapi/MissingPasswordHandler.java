@@ -1,12 +1,11 @@
-package com.atlassian.theplugin.bamboo;
+package com.atlassian.theplugin.remoteapi;
 
-import com.atlassian.theplugin.ServerType;
-import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PasswordDialog;
 import com.atlassian.theplugin.idea.ThePluginApplicationComponent;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.ui.Messages;
 
 import javax.swing.*;
@@ -20,6 +19,12 @@ public class MissingPasswordHandler implements Runnable {
 
 	private static boolean isDialogShown = false;
 
+	private final ProductServerFacade serverFacade;
+
+	public MissingPasswordHandler(ProductServerFacade serverFacade) {
+		this.serverFacade = serverFacade;
+	}
+
 	public void run() {
 
 		if (!isDialogShown) {
@@ -27,12 +32,12 @@ public class MissingPasswordHandler implements Runnable {
 			isDialogShown = true;
 			boolean wasCanceled = false;
 
-			for (Server server
-					: ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers()) {
+			for (Server server : ConfigurationFactory.
+					getConfiguration().getProductServers(serverFacade.getServerType()).getServers()) {
 				if (server.getIsConfigInitialized()) {
 					continue;
 				}
-				PasswordDialog dialog = new PasswordDialog(server);
+				PasswordDialog dialog = new PasswordDialog(server, serverFacade);
 				dialog.setUserName(server.getUserName());
 				dialog.pack();
 				JPanel panel = dialog.getPasswordPanel();

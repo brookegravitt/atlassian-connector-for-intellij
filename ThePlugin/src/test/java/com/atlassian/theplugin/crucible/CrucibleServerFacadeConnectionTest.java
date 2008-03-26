@@ -31,7 +31,7 @@ public class CrucibleServerFacadeConnectionTest extends TestCase {
 		mockServer = new JettyMockServer(httpServer);
 		ConfigurationFactory.setConfiguration(createCrucibleTestConfiguration(mockBaseUrl, true));
 
-		testedCrucibleServerFacade = CrucibleServerFactory.getCrucibleServerFacade();
+		testedCrucibleServerFacade = new CrucibleServerFacadeImpl();
 	}
 
 	private static PluginConfiguration createCrucibleTestConfiguration(String serverUrl, boolean isPassInitialized) {

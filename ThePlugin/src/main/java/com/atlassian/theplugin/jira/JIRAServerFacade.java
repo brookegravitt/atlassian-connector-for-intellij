@@ -1,13 +1,12 @@
 package com.atlassian.theplugin.jira;
 
+import com.atlassian.theplugin.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.jira.api.*;
 
 import java.util.List;
 
-public interface JIRAServerFacade {
-    void testServerConnection(String url, String userName, String password) throws JIRALoginException;
-
+public interface JIRAServerFacade extends ProductServerFacade {
     List getIssues(Server server, List<JIRAQueryFragment> query) throws JIRAException;
 
     List<JIRAProject> getProjects(Server server) throws JIRAException;

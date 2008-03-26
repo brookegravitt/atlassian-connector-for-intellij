@@ -12,7 +12,6 @@ import com.atlassian.theplugin.idea.jira.table.JIRATableColumnProvider;
 import com.atlassian.theplugin.idea.ui.AtlassianTableView;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
-import com.atlassian.theplugin.jira.JIRAServerFactory;
 import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
@@ -51,11 +50,15 @@ public class JIRAToolWindowPanel extends JPanel {
 	// a simple map to store all selected query fragments.
 	private Map<String, JIRAQueryFragment> queryFragments = new HashMap<String, JIRAQueryFragment>();
 	private final transient Project project;
+	private final transient JIRAServerFacade jiraServerFacade;
 
-	public JIRAToolWindowPanel(ProjectConfigurationBean projectConfigurationBean, Project project) {
+	public JIRAToolWindowPanel(ProjectConfigurationBean projectConfigurationBean,
+							   Project project,
+							   JIRAServerFacade jiraServerFacade) {
         super(new BorderLayout());
 
 		this.project = project;
+		this.jiraServerFacade = jiraServerFacade;
 
 		setBackground(UIUtil.getTreeTextBackground());
 
@@ -184,7 +187,7 @@ public class JIRAToolWindowPanel extends JPanel {
 
     public void selectServer(Server server) {
         if (server != null) {
-            final JIRAServer jiraServer = new JIRAServer(server);
+            final JIRAServer jiraServer = new JIRAServer(server, jiraServerFacade);
             IdeaHelper.setCurrentJIRAServer(jiraServer);
 
             FutureTask task = new FutureTask(new Runnable() {
@@ -256,7 +259,7 @@ public class JIRAToolWindowPanel extends JPanel {
 
         FutureTask task = new FutureTask(new Runnable() {
             public void run() {
-                JIRAServerFacade serverFacade = JIRAServerFactory.getJIRAServerFacade();
+                JIRAServerFacade serverFacade = jiraServerFacade;
 
                 try {
                     List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
@@ -298,7 +301,7 @@ public class JIRAToolWindowPanel extends JPanel {
         public void actionPerformed(ActionEvent e) {
             JIRAIssue issue = (JIRAIssue) table.getSelectedObject();
             IssueComment issueComment = new IssueComment(
-					IdeaHelper.getCurrentJIRAServer(), getIssues());
+					jiraServerFacade, IdeaHelper.getCurrentJIRAServer(), getIssues());
             issueComment.setIssue(issue);
             issueComment.show();
         }
