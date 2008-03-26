@@ -16,10 +16,10 @@ public abstract class StatusBarPluginIcon extends JLabel {
 
 	public StatusBarPluginIcon(Project aProject) {
 		this.project = aProject;
-		statusBar = WindowManager.getInstance().getStatusBar(project);
 	}
 
 	public void hideIcon() {
+		statusBar = WindowManager.getInstance().getStatusBar(project);
 		if (statusBar == null) {
 			return;
 		}
@@ -31,6 +31,7 @@ public abstract class StatusBarPluginIcon extends JLabel {
 	}
 
 	public void showIcon() {
+		statusBar = WindowManager.getInstance().getStatusBar(project);
 		if (statusBar == null) {
 			return;
 		}
