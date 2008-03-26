@@ -35,6 +35,27 @@ public class PluginToolWindow extends ContentManagerAdapter {
 	public static final String TOOL_WINDOW_NAME = "Atlassian";
 	private static final int INITIAL_NUMBER_OF_TABS = 3;
 
+	public static void showHidePluginWindow(AnActionEvent event){
+		ToolWindow tw = IdeaHelper.getToolWindow(IdeaHelper.getCurrentProject(event.getDataContext()));
+		if (tw != null) {
+			if (tw.isVisible()) {
+				tw.hide(new Runnable() {
+					public void run() {
+						//To change body of implemented methods use File | Settings | File Templates.
+					}
+				});
+			} else {
+
+ 				tw.show(new Runnable() {
+					public void run() {
+						//To change body of implemented methods use File | Settings | File Templates.
+					}
+				});
+			}
+
+		}
+
+	}
 	/**
 	 *
 	 * @param toolWindowManager ToolWindowManager object
@@ -212,6 +233,73 @@ public class PluginToolWindow extends ContentManagerAdapter {
         }
 	}
 
+	/**
+	 * Shows/hides panel if exists at least one server configured for this panel.
+	 * If component does not exists it is not created and focused.
+	 * @param event
+	 * @param component
+	 */
+	public static void showHidePanelIfExists(AnActionEvent event, ToolWindowPanels component) {
+		Project project = IdeaHelper.getCurrentProject(event.getDataContext());
+		ToolWindow tw = IdeaHelper.getToolWindow(project);
+
+		if (tw != null) {
+
+			tw.activate(null);
+			try {
+				ServerType serverType = UrlUtil.toolWindowPanelsToServerType(component);
+				// servers are defined
+				if (ConfigurationFactory.getConfiguration().getProductServers(serverType).getServers().size() > 0) {
+					// tab is not visible
+					Content content =  tw.getContentManager().findContent(component.toString());
+					if (content == null) {
+
+						// doesn't exists so create and show tab
+						switch (component) {
+							case BAMBOO:
+								content = project.getComponent(ThePluginProjectComponent.class).createBambooContent();
+								break;
+							case CRUCIBLE:
+								content = project.getComponent(ThePluginProjectComponent.class).createCrusibleContent();
+								break;
+							case JIRA:
+								content = project.getComponent(ThePluginProjectComponent.class).createJiraContent();
+								break;
+							default:
+								break;
+						}
+
+						tw.getContentManager().addContent(content);
+					} else { //tab exists so close it, hide
+
+						tw.getContentManager().removeContent(content, true);
+					}
+				// servers are not defined
+				} else {
+					// tab is visible
+					Content content = tw.getContentManager().findContent(component.toString());
+					if (content != null) {
+						// hide tab
+						tw.getContentManager().removeContent(content, true);
+					}
+				}
+			} catch (ThePluginException e) {
+				PluginUtil.getLogger().error(e.getMessage(), e);
+			}
+
+			focusPanelIfExists(project, component.toString());
+		}
+	}
+
+	/**
+	 * Methods opens the ToolWindow and focuses on a particular component.
+	 * If component does not exists it is not created and focused
+	 * @param e
+	 * @param component
+	 */
+	public static void focusPanelifExists(AnActionEvent e, ToolWindowPanels component) {
+		focusPanelIfExists(IdeaHelper.getCurrentProject(e.getDataContext()), component.toString());
+	}
 	public void selectionChanged(ContentManagerEvent event) {
 		//this.selectedContent = event.getContent().getDisplayName();
 
