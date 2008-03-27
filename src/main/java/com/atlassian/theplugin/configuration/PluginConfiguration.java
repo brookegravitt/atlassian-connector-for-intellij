@@ -19,7 +19,7 @@ public interface PluginConfiguration {
 
 	boolean getCheckUnstableVersionsEnabled();
 
-	boolean getIsAnonymousFeedbackEnabled();
+	Boolean getIsAnonymousFeedbackEnabled();
 
 	void setIsAnonymousFeedbackEnabled(boolean isAnonymousFeedbackEnabled);
 }
