@@ -289,7 +289,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 						// hide tab
 
 
-						if (content.isSelected() && tw.isVisible()){
+						if (content.isSelected() && tw.isVisible()) {
 							tw.getContentManager().removeContent(content, true);
 						} else {
 							tw.getContentManager().setSelectedContent(content);
