@@ -68,7 +68,6 @@ public final class NewVersionChecker implements SchedulableComponent {
 		return InfoServer.getLatestPluginVersion(
 				PluginUtil.VERSION_INFO_URL,
 				pluginConfiguration.getUid(),
-				pluginConfiguration.getIsAnonymousFeedbackEnabled(), 
 				pluginConfiguration.getCheckUnstableVersionsEnabled());
 	}
 

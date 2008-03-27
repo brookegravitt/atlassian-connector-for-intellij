@@ -45,7 +45,7 @@ public class NewVersionCheckerTest extends TestCase {
 
 		InfoServer.VersionInfo versionInfo = null;
 		try {
-			versionInfo = InfoServer.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, uid, true, false);
+			versionInfo = InfoServer.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, uid, false);
 		} catch (VersionServiceException e) {
 			fail(e.getMessage());
 		}

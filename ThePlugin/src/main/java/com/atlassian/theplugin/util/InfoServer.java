@@ -20,17 +20,12 @@ public final class InfoServer {
 
 	public static VersionInfo getLatestPluginVersion(String serviceUrl,
 													 long uid,
-													 boolean reportUid,
 													 boolean checkUnstableVersions)
 			throws VersionServiceException, IncorrectVersionException {
 
 		try {
 			HttpClient client = new HttpClient();
-			String urlString = serviceUrl;
-			if (reportUid) {
-				urlString += "?uid=" + uid;
-			}
-			GetMethod method = new GetMethod(urlString);
+			GetMethod method = new GetMethod(serviceUrl + "?uid=" + uid);
 			try {
 				client.executeMethod(method);
 			} catch (IllegalArgumentException e) {
