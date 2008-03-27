@@ -187,9 +187,15 @@ public class PluginConfigurationBean implements PluginConfiguration {
             return false;
         }
 
-		if (isAnonymousFeedbackEnabled != that.isAnonymousFeedbackEnabled) {
-            return false;
-        }
+		if (isAnonymousFeedbackEnabled == null) {
+			if (that.isAnonymousFeedbackEnabled != null) {
+				return false;
+			}
+		} else {
+			if (!isAnonymousFeedbackEnabled.equals(that.isAnonymousFeedbackEnabled)) {
+	            return false;
+			}
+		}
 
 		if (isCheckUnstableVersionsEnabled != that.isCheckUnstableVersionsEnabled) {
             return false;
