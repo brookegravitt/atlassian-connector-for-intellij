@@ -13,6 +13,9 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  */
 public class RemoveServerAction extends AnAction {
     public void actionPerformed(AnActionEvent event) {
-		ConfigPanel.getInstance().removeServer();		
+		ConfigPanel panel = ConfigPanel.getInstance();
+		if (panel != null) {
+			panel.removeServer();//safe		
+		}
     }
 }
