@@ -26,12 +26,18 @@ public class GeneralConfigForm {
 	private JPanel autoUpdateConfigPanel;
 	private JCheckBox chkUnstableVersionsCheckBox;
 	private JCheckBox reportAnonymousUsageStatisticsCheckBox;
+	private Boolean isAnonymousFeedbackEnabled;
 
 	public GeneralConfigForm(NewVersionChecker checker, PluginConfiguration pluginConfiguration) {
 		checkNowButton.addActionListener(new NewVersionListener(checker, pluginConfiguration));
 		chkAutoUpdateEnabled.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				chkUnstableVersionsCheckBox.setEnabled(chkAutoUpdateEnabled.isSelected());
+			}
+		});
+		reportAnonymousUsageStatisticsCheckBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				isAnonymousFeedbackEnabled = reportAnonymousUsageStatisticsCheckBox.isSelected();
 			}
 		});
 	}
@@ -58,11 +64,16 @@ public class GeneralConfigForm {
 	}
 
 	public boolean getIsAnonymousFeedbackEnabled() {
-		return reportAnonymousUsageStatisticsCheckBox.isSelected();
+		return this.isAnonymousFeedbackEnabled;
 	}
 
-	public void setIsAnonymousFeedbackEnabled(boolean isAnonymousFeedbackEnabled) {
-		reportAnonymousUsageStatisticsCheckBox.setSelected(isAnonymousFeedbackEnabled);
+	public void setIsAnonymousFeedbackEnabled(Boolean isAnonymousFeedbackEnabled) {
+		this.isAnonymousFeedbackEnabled = isAnonymousFeedbackEnabled;
+		if (isAnonymousFeedbackEnabled == null || !isAnonymousFeedbackEnabled) {
+			reportAnonymousUsageStatisticsCheckBox.setSelected(false);
+		} else {
+			reportAnonymousUsageStatisticsCheckBox.setSelected(true);
+		}
 	}
 
 

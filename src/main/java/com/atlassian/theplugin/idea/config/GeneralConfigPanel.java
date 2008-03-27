@@ -35,6 +35,10 @@ public class GeneralConfigPanel extends JPanel implements ContentPanel {
 				|| dialog.getIsAnonymousFeedbackEnabled() != globalPluginConfiguration.getIsAnonymousFeedbackEnabled();
 
 	}
+	
+	public void setIsAnonymousFeedbackEnabled(Boolean isAnonymousFeedbackEnabled) {
+		dialog.setIsAnonymousFeedbackEnabled(isAnonymousFeedbackEnabled);
+	}
 
 	public String getTitle() {
 		return "General";

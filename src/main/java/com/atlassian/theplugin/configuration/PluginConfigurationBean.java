@@ -12,7 +12,7 @@ public class PluginConfigurationBean implements PluginConfiguration {
 	private boolean isAutoUpdateEnabled = true;
 	private Version rejectedUpgrade = Version.NULL_VERSION;
 	private boolean isCheckUnstableVersionsEnabled = false;
-	private boolean isAnonymousFeedbackEnabled;
+	private Boolean isAnonymousFeedbackEnabled = null;
 
 	/**
 	 * Default constructor.
@@ -118,8 +118,13 @@ public class PluginConfigurationBean implements PluginConfiguration {
     }
 
 	public long getUid() {
-		if (uid == 0)  {
-			uid = System.currentTimeMillis() + (long) (Math.random() * ID_DISCRIMINATOR);
+		if (isAnonymousFeedbackEnabled != null && isAnonymousFeedbackEnabled) {
+			if (uid == 0) {
+				// generate if there was no uid yet
+				uid = System.currentTimeMillis() + (long) (Math.random() * ID_DISCRIMINATOR);
+			}
+		} else {
+			return 0;
 		}
 		return uid;
 	}
@@ -152,7 +157,7 @@ public class PluginConfigurationBean implements PluginConfiguration {
 		return isCheckUnstableVersionsEnabled;
 	}
 
-	public boolean getIsAnonymousFeedbackEnabled() {
+	public Boolean getIsAnonymousFeedbackEnabled() {
 		return isAnonymousFeedbackEnabled;
 	}
 
@@ -160,8 +165,8 @@ public class PluginConfigurationBean implements PluginConfiguration {
 		this.isAnonymousFeedbackEnabled = isAnonymousFeedbackEnabled;
 	}
 
-	public void setAnonymousFeedbackEnabled(boolean anonymousFeedbackEnabled) {
-		isAnonymousFeedbackEnabled = anonymousFeedbackEnabled;
+	public void setIsAnonymousFeedbackEnabled(Boolean isAnonymousFeedbackEnabled) {
+		this.isAnonymousFeedbackEnabled = isAnonymousFeedbackEnabled;
 	}
 
 	public boolean equals(Object o) {
