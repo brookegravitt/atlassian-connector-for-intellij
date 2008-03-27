@@ -51,6 +51,12 @@ public class QueryOnUpdateHandler implements UpdateActionHandler {
 			};
 
 			ProgressManager.getInstance().run(downloader);
+		} else {
+			Messages.showMessageDialog("You can always install " + aVersion
+					+ " version through " + PluginUtil.getName()
+					+ " configuration panel (Preferences | IDE Settings | "
+					+ PluginUtil.getName() + " | General | Auto update | Check now)", "Information",
+					Messages.getInformationIcon());
 		}
 		// so or so we mark this version so no more popups will appear
 		pluginConfiguration.setRejectedUpgrade(versionInfo.getVersion());
