@@ -20,8 +20,8 @@ import java.awt.event.MouseEvent;
  */
 public class CrucibleStatusIcon extends StatusBarPluginIcon {
 
-	private static final Icon ICON_NEW = IconLoader.getIcon("/icons/crucible-blue-16.png");
-	private static final Icon ICON_STANDARD = IconLoader.getIcon("/icons/crucible-grey-16.png");
+	private static final Icon ICON_NEW = IconLoader.getIcon("/icons/ico_crucible_green.png");
+	private static final Icon ICON_STANDARD = IconLoader.getIcon("/icons/ico_crucible_grey.png");
 	private static final String NO_NEW_REVIEWS = "No new reviews.";
 	private static final String NEW_REVIEWS = "New reviews are available. Click for details.";
 

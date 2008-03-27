@@ -16,7 +16,7 @@ import java.util.TimerTask;
 
 public class PluginUpdateIcon extends StatusBarPluginIcon {
 
-	private static final Icon ICON_BLINK_ON = IconLoader.getIcon("/icons/icn_update_16.png");
+	private static final Icon ICON_BLINK_ON = IconLoader.getIcon("/icons/status_plugin.png");
 	private static final Icon ICON_BLINK_OFF = IconLoader.getIcon("/icons/icn_update_16-empty.png");
 	private transient InfoServer.VersionInfo version;
 	private transient Timer timer;
