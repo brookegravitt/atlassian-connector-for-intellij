@@ -155,7 +155,7 @@
         </action>
 
         <action id="ThePlugin.JIRA.CreateIssue" class="com.atlassian.theplugin.idea.action.jira.CreateIssueAction" text="Create JIRA Issue"  icon="/general/add.png">
-            <keyboard-shortcut first-keystroke="shift alt n" second-keystroke="alt C" keymap="$default"/>
+            <keyboard-shortcut first-keystroke="shift alt n" keymap="$default"/>
         </action>
 
         <action id="ThePlugin.JIRA.MyIssues" class="com.atlassian.theplugin.idea.action.jira.MyIssuesAction" text="Mine"/>
