@@ -1,12 +1,15 @@
 package com.atlassian.theplugin.idea.config;
 
 import com.atlassian.theplugin.ServerType;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.config.serverconfig.BambooGeneralForm;
 import com.atlassian.theplugin.idea.config.serverconfig.CrucibleGeneralForm;
 import com.atlassian.theplugin.idea.config.serverconfig.JiraGeneralForm;
 import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
+import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.ui.DialogWrapper;
 
 import javax.swing.*;
 import java.awt.*;
@@ -76,12 +79,20 @@ public final class ConfigPanel extends JPanel {
 
 		add(contentPanel, BorderLayout.CENTER);
 		add(footerPanel, BorderLayout.SOUTH);
-
 	}
 
 
 
 	public boolean isModified() {
+		if (globalConfigurationBean.getIsAnonymousFeedbackEnabled() == null) {
+			int answer = Messages.showYesNoDialog("We would greatly appreciate if you allow us to collect anonymous "
+					+ "usage statistics to help us providing product of a better quality. "
+					+ "Would you agree to allow us collecting it?",
+					PluginUtil.getName() + " request", Messages.getQuestionIcon());
+			localPluginConfigurationCopy.setIsAnonymousFeedbackEnabled(answer == DialogWrapper.OK_EXIT_CODE);
+			globalConfigurationBean.setIsAnonymousFeedbackEnabled(answer == DialogWrapper.OK_EXIT_CODE);
+			generalConfigPanel.setIsAnonymousFeedbackEnabled(answer == DialogWrapper.OK_EXIT_CODE);
+		}
 		return !this.localPluginConfigurationCopy.equals(globalConfigurationBean)
 				|| serverConfigPanel.isModified()
 				|| bambooConfigPanel.isModified()
