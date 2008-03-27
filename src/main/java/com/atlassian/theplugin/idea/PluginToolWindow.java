@@ -236,6 +236,8 @@ public class PluginToolWindow extends ContentManagerAdapter {
 	/**
 	 * Shows/hides panel if exists at least one server configured for this panel.
 	 * If component does not exists it is not created and focused.
+	 * If component is not focused than is focused.
+	 * If component is focused then is closed/hidden
 	 * @param event
 	 * @param component
 	 */
@@ -245,7 +247,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 
 		if (tw != null) {
 
-			tw.activate(null);
+
 			try {
 				ServerType serverType = UrlUtil.toolWindowPanelsToServerType(component);
 				// servers are defined
@@ -272,7 +274,12 @@ public class PluginToolWindow extends ContentManagerAdapter {
 						tw.getContentManager().addContent(content);
 					} else { //tab exists so close it, hide
 
-						tw.getContentManager().removeContent(content, true);
+
+						if (content.isSelected() && tw.isVisible()) {
+							tw.getContentManager().removeContent(content, true);
+						} else {
+							tw.getContentManager().setSelectedContent(content);
+						}
 					}
 				// servers are not defined
 				} else {
@@ -280,12 +287,20 @@ public class PluginToolWindow extends ContentManagerAdapter {
 					Content content = tw.getContentManager().findContent(component.toString());
 					if (content != null) {
 						// hide tab
-						tw.getContentManager().removeContent(content, true);
+
+
+						if (content.isSelected() && tw.isVisible()){
+							tw.getContentManager().removeContent(content, true);
+						} else {
+							tw.getContentManager().setSelectedContent(content);
+						}
 					}
 				}
 			} catch (ThePluginException e) {
 				PluginUtil.getLogger().error(e.getMessage(), e);
 			}
+			
+			tw.activate(null);
 
 			focusPanelIfExists(project, component.toString());
 		}
