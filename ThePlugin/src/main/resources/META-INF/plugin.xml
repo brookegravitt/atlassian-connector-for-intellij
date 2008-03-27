@@ -66,40 +66,34 @@
 
     <actions>
 		<action id="ThePlugin.ShowHideMainToolWindow" class="com.atlassian.theplugin.idea.action.ShowHideMainPluginWindowAction" text="Show/Hide main plugin tool window" description="Shows/Hides main plugin tool window">
-			<keyboard-shortcut first-keystroke="alt shift a" keymap="$default" />
+			<keyboard-shortcut first-keystroke="shift control p" keymap="$default" />
 		</action>
 		
 		<action id="ThePlugin.AddServerAction" class="com.atlassian.theplugin.idea.config.serverconfig.action.AddServerAction" text="Add (Insert)" description="Add a new server" icon="/general/add.png"/>
         <action id="ThePlugin.RemoveServerAction" class="com.atlassian.theplugin.idea.config.serverconfig.action.RemoveServerAction" text="Remove (Delete)" description="Remove an existing server" icon="/general/remove.png">
-			<keyboard-shortcut first-keystroke="alt shift d" keymap="$default" />
 		</action>
 
 		<action id="ThePlugin.CopyServerAction" class="com.atlassian.theplugin.idea.config.serverconfig.action.CopyServerAction" text="Copy" description="Copy the selected server" icon="/general/copy.png"/>
 
         <action id="ThePlugin.AddBambooServerAction" class="com.atlassian.theplugin.idea.config.serverconfig.action.AddBambooServerAction" text="Bamboo Server" description="Add a new Bamboo server" icon="/icons/blue-16.png">
-			<keyboard-shortcut first-keystroke="control shift b" keymap="$default"/>
 		</action>
 		
 
 		<action id="ThePlugin.AddCrucibleServerAction" class="com.atlassian.theplugin.idea.config.serverconfig.action.AddCrucibleServerAction" text="Crucible Server" description="Add a new Crucible server" icon="/icons/crucible-16.png">
-			<keyboard-shortcut first-keystroke="control shift u" keymap="$default"/>
 		</action>
 
 		<action id="ThePlugin.ShowSettings" class="com.atlassian.theplugin.idea.action.ShowSettingsAction" text="Configure" description="Show plugin configuration" icon="/general/ideOptions.png">
-			<keyboard-shortcut first-keystroke="control p" keymap="$default"/>
+			<keyboard-shortcut first-keystroke="shift control g" keymap="$default"/>
 		</action>
 
 		<action id="ThePlugin.RunBuild" class="com.atlassian.theplugin.idea.action.bamboo.RunBuildAction" text="Run build" description="Run Bamboo build" icon="/icons/bamboo-run.png">
-			<keyboard-shortcut first-keystroke="alt shift R" keymap="$default"/>
 		</action>	
 		<action id="ThePlugin.AddLabelToBuild" class="com.atlassian.theplugin.idea.action.bamboo.LabelBuildAction" text="Add label to build" description="Add label to Bamboo build" icon="/icons/bamboo-label.png">
-			<keyboard-shortcut first-keystroke="alt shift l" keymap="$default"/>
 		</action>
 		<action id="ThePlugin.AddCommentToBuild" class="com.atlassian.theplugin.idea.action.bamboo.CommentBuildAction" text="Add comment to build" description="Add comment to Bamboo build" icon="/icons/bamboo-comment.png">
-			<keyboard-shortcut first-keystroke="alt shift c" keymap="$default"/>
 		</action>
 		<action id="ThePlugin.Bamboo.ShowHideBambooTab" class="com.atlassian.theplugin.idea.action.bamboo.ShowHideBambooTabAction" text="Show/Hide Bamboo tab" description="Shows or hides Bamboo tab in main plugin window">
-			<keyboard-shortcut first-keystroke="control b" keymap="$default"/>
+			<keyboard-shortcut first-keystroke="shift control b" keymap="$default"/>
 		</action>
 
 
@@ -128,10 +122,9 @@
 
         <!-- Crucible tool window panel related actions -->
 		<action id="ThePlugin.Crucible.ShowHideCrucibleTab" class="com.atlassian.theplugin.idea.action.crucible.ShowHideCrucibleTabAction" text="Show/Hide Crucible tab" description="Shows or hides Crucuble tab in main plugin window">
-			<keyboard-shortcut first-keystroke="control u" keymap="$default"/>
+			<keyboard-shortcut first-keystroke="shift control y" keymap="$default"/>
 		</action>
 		<action id="ThePlugin.ReviewScope" class="com.atlassian.theplugin.idea.action.ReviewScope" text="Review scope" description="Select review scope">
-			<keyboard-shortcut first-keystroke="alt R" keymap="$default"/>
 		</action>
 		<action id="ThePlugin.ReviewScopeAll" class="com.atlassian.theplugin.idea.action.ReviewScopeAll" text="All Reviews" description="Show all reviews"/>
 		<action id="ThePlugin.ReviewScopeMy" class="com.atlassian.theplugin.idea.action.ReviewScopeMy" text="My Reviews" description="Show my reviews"/>
@@ -151,18 +144,18 @@
 
         <!-- JIRA tool window panel related actions -->
 		<action id="ThePlugin.JIRA.ShowHideJIRATab" class="com.atlassian.theplugin.idea.action.jira.ShowHideJiraTabAction" text="Show/Hide Jira tab" description="Shows or hides Jira tab in main plugin window">
-			<keyboard-shortcut first-keystroke="control r" keymap="$default"/>
+			<keyboard-shortcut first-keystroke="shift control k" keymap="$default"/>
 		</action>
 		<action id="ThePlugin.JIRA.RefreshIssues" class="com.atlassian.theplugin.idea.action.JIRARefreshIssuesAction" text="Refresh assigned JIRA issues"  icon="/actions/sync.png"/>
         <action id="ThePlugin.JIRA.QuickSearch" class="com.atlassian.theplugin.idea.action.jira.QuickSearchAction" text="Search JIRA issues"  icon="/actions/find.png">
-            <keyboard-shortcut first-keystroke="alt S" keymap="$default"/>
+            <keyboard-shortcut first-keystroke="shift alt s" keymap="$default"/>
         </action>
         <action id="ThePlugin.JIRA.CommentIssueAction" class="com.atlassian.theplugin.idea.action.jira.CommentIssueAction" text="Comment on JIRA issue">
-            <keyboard-shortcut first-keystroke="alt M" keymap="$default"/>
+            <keyboard-shortcut first-keystroke="shift alt m" keymap="$default"/>
         </action>
 
         <action id="ThePlugin.JIRA.CreateIssue" class="com.atlassian.theplugin.idea.action.jira.CreateIssueAction" text="Create JIRA Issue"  icon="/general/add.png">
-            <keyboard-shortcut first-keystroke="alt R" second-keystroke="alt C" keymap="$default"/>            
+            <keyboard-shortcut first-keystroke="shift alt n" second-keystroke="alt C" keymap="$default"/>
         </action>
 
         <action id="ThePlugin.JIRA.MyIssues" class="com.atlassian.theplugin.idea.action.jira.MyIssuesAction" text="Mine"/>
