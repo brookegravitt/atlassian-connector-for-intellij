@@ -88,28 +88,31 @@ public class BambooPlansForm extends JComponent {
 		if (index != -1 && isEnabled()) {
 			BambooPlanItem pi = (BambooPlanItem) list.getModel().getElementAt(index);
 			pi.setSelected(!pi.isSelected());
-			
-			int[] oldIdx = list.getSelectedIndices();
-			int[] newIdx;
-			if (pi.isSelected()) {
-				newIdx = new int[oldIdx.length + 1];
-				arraycopy(newIdx, 0, oldIdx, 0, oldIdx.length);
-				newIdx[newIdx.length - 1] = index;
-			} else {
-				newIdx = new int[Math.max(0, oldIdx.length - 1)];
-				int i = 0;
-				for (int id : oldIdx) {
-					if (id == index) {
-						continue;
-					}
-					newIdx[i++] = id;
-				}
-			}
-			list.setSelectedIndices(newIdx);
+			setViewState(index, pi.isSelected());
 			repaint();
 
 			setModifiedState();
 		}
+	}
+
+	private void setViewState(int index, boolean newState) {
+		int[] oldIdx = list.getSelectedIndices();
+		int[] newIdx;
+		if (newState) {
+			newIdx = new int[oldIdx.length + 1];
+			arraycopy(newIdx, 0, oldIdx, 0, oldIdx.length);
+			newIdx[newIdx.length - 1] = index;
+		} else {
+			newIdx = new int[Math.max(0, oldIdx.length - 1)];
+			int i = 0;
+			for (int id : oldIdx) {
+				if (id == index) {
+					continue;
+				}
+				newIdx[i++] = id;
+			}
+		}
+		list.setSelectedIndices(newIdx);
 	}
 
 	private void setModifiedState() {
