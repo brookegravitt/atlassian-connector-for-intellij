@@ -7,21 +7,19 @@ import com.atlassian.theplugin.configuration.*;
 import com.atlassian.theplugin.remoteapi.RemoteApiException;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.Spacer;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.List;
+import static java.lang.System.*;
 
 
 public class BambooPlansForm extends JComponent {
 	private JPanel statusPanel;
 	private JPanel toolbarPanel;
-	private JCheckBox cbUseFavuriteBuilds;
+	private JCheckBox cbUseFavouriteBuilds;
 	private JButton btRefresh;
 	private JList list;
 	private JPanel rootComponent;
@@ -33,7 +31,7 @@ public class BambooPlansForm extends JComponent {
 	private Boolean isUseFavourite = null;
 	private transient Server originalServer;
 	private transient Server queryServer;
-	private Map<String, java.util.List<BambooPlanItem>> serverPlans = new HashMap<String, java.util.List<BambooPlanItem>>();
+	private Map<String, List<BambooPlanItem>> serverPlans = new HashMap<String, List<BambooPlanItem>>();
 	private transient final BambooServerFacade bambooServerFacade;
 	private final ServerPanel serverPanel;
 
@@ -59,9 +57,9 @@ public class BambooPlansForm extends JComponent {
 			}
 		});
 
-		cbUseFavuriteBuilds.addActionListener(new ActionListener() {
+		cbUseFavouriteBuilds.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				setEnabled(!cbUseFavuriteBuilds.isSelected());
+				setEnabled(!cbUseFavouriteBuilds.isSelected());
 			}
 		});
 
@@ -77,8 +75,8 @@ public class BambooPlansForm extends JComponent {
 	}
 
 	private void refreshServerPlans() {
-		if (originalServer.getUseFavourite() != cbUseFavuriteBuilds.isSelected()) {
-			isUseFavourite = cbUseFavuriteBuilds.isSelected();
+		if (originalServer.getUseFavourite() != cbUseFavouriteBuilds.isSelected()) {
+			isUseFavourite = cbUseFavouriteBuilds.isSelected();
 		}
 		Server server = serverPanel.getData();
 		server.setSubscribedPlans(originalServer.getSubscribedPlans());
@@ -90,6 +88,24 @@ public class BambooPlansForm extends JComponent {
 		if (index != -1 && isEnabled()) {
 			BambooPlanItem pi = (BambooPlanItem) list.getModel().getElementAt(index);
 			pi.setSelected(!pi.isSelected());
+			
+			int[] oldIdx = list.getSelectedIndices();
+			int[] newIdx;
+			if (pi.isSelected()) {
+				newIdx = new int[oldIdx.length + 1];
+				arraycopy(newIdx, 0, oldIdx, 0, oldIdx.length);
+				newIdx[newIdx.length - 1] = index;
+			} else {
+				newIdx = new int[Math.max(0, oldIdx.length - 1)];
+				int i = 0;
+				for (int id : oldIdx) {
+					if (id == index) {
+						continue;
+					}
+					newIdx[i++] = id;
+				}
+			}
+			list.setSelectedIndices(newIdx);
 			repaint();
 
 			setModifiedState();
@@ -98,7 +114,7 @@ public class BambooPlansForm extends JComponent {
 
 	private void setModifiedState() {
 		isListModified = false;
-		java.util.List<BambooPlanItem> local = serverPlans.get(getServerKey(originalServer));
+		List<BambooPlanItem> local = serverPlans.get(getServerKey(originalServer));
 		if (local != null) {
 			for (int i = 0; i < model.getSize(); i++) {
 				if (local.get(i) != null) {
@@ -116,7 +132,7 @@ public class BambooPlansForm extends JComponent {
 
 	public void setData(final Server server) {
 		originalServer = new ServerBean(server);
-		cbUseFavuriteBuilds.setEnabled(false);
+		cbUseFavouriteBuilds.setEnabled(false);
 		if (!"".equals(originalServer.getUrlString())) {
 			retrievePlans(originalServer);
 		} else {
@@ -128,10 +144,10 @@ public class BambooPlansForm extends JComponent {
 		queryServer = server;
 		list.setEnabled(false);
 		if (isUseFavourite != null) {
-			cbUseFavuriteBuilds.setSelected(isUseFavourite);
+			cbUseFavouriteBuilds.setSelected(isUseFavourite);
 			isUseFavourite = null;
 		} else {
-			cbUseFavuriteBuilds.setSelected(server.getUseFavourite());
+			cbUseFavouriteBuilds.setSelected(server.getUseFavourite());
 		}
 		model.removeAllElements();
 		statusPane.setText("Waiting for server plans...");
@@ -151,7 +167,7 @@ public class BambooPlansForm extends JComponent {
 						msg.append(e.getMessage());
 						msg.append("\n");
 					}
-					java.util.List<BambooPlanItem> plansForServer = new ArrayList<BambooPlanItem>();
+					List<BambooPlanItem> plansForServer = new ArrayList<BambooPlanItem>();
 					if (plans != null) {
 						for (BambooPlan plan : plans) {
 							plansForServer.add(new BambooPlanItem(plan, false));
@@ -192,7 +208,7 @@ public class BambooPlansForm extends JComponent {
 
 	private void updatePlanNames(Server server, String message) {
 		if (server.equals(queryServer)) {
-			java.util.List<BambooPlanItem> plans = serverPlans.get(getServerKey(server));
+			List<BambooPlanItem> plans = serverPlans.get(getServerKey(server));
 			if (plans != null) {
 				model.removeAllElements();
 				for (BambooPlanItem plan : plans) {
@@ -209,8 +225,8 @@ public class BambooPlansForm extends JComponent {
 			statusPane.setText(message);
 			statusPane.setCaretPosition(0);
 			setVisible(true);
-			cbUseFavuriteBuilds.setEnabled(true);
-			list.setEnabled(!cbUseFavuriteBuilds.isSelected());
+			cbUseFavouriteBuilds.setEnabled(true);
+			list.setEnabled(!cbUseFavouriteBuilds.isSelected());
 			isListModified = false;
 		}
 	}
@@ -229,7 +245,7 @@ public class BambooPlansForm extends JComponent {
 				}
 			}
 		}
-		server.setUseFavourite(cbUseFavuriteBuilds.isSelected());
+		server.setUseFavourite(cbUseFavouriteBuilds.isSelected());
 
 		return server;
 	}
@@ -237,7 +253,7 @@ public class BambooPlansForm extends JComponent {
 	public boolean isModified() {
 		boolean isFavModified = false;
 		if (originalServer != null) {
-			if (cbUseFavuriteBuilds.isSelected() != originalServer.getUseFavourite()) {
+			if (cbUseFavouriteBuilds.isSelected() != originalServer.getUseFavourite()) {
 				isFavModified = true;
 			}
 		} else {
@@ -281,17 +297,17 @@ public class BambooPlansForm extends JComponent {
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.insets = new Insets(0, 10, 12, 8);
 		rootComponent.add(toolbarPanel, gbc);
-		cbUseFavuriteBuilds = new JCheckBox();
-		cbUseFavuriteBuilds.setText("Use Favourite Builds For Server");
-		cbUseFavuriteBuilds.setMnemonic('F');
-		cbUseFavuriteBuilds.setDisplayedMnemonicIndex(4);
+		cbUseFavouriteBuilds = new JCheckBox();
+		cbUseFavouriteBuilds.setText("Use Favourite Builds For Server");
+		cbUseFavouriteBuilds.setMnemonic('F');
+		cbUseFavouriteBuilds.setDisplayedMnemonicIndex(4);
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.weightx = 1.0;
 		gbc.weighty = 1.0;
 		gbc.anchor = GridBagConstraints.WEST;
-		toolbarPanel.add(cbUseFavuriteBuilds, gbc);
+		toolbarPanel.add(cbUseFavouriteBuilds, gbc);
 		btRefresh = new JButton();
 		btRefresh.setText("Refresh");
 		gbc = new GridBagConstraints();
