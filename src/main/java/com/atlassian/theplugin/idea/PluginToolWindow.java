@@ -223,7 +223,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 		ToolWindow tw = IdeaHelper.getToolWindow(project);
 
         if (tw != null) {
-			tw.activate(null);
+			//tw.activate(null);
 			ContentManager contentManager = tw.getContentManager();
 			Content content = contentManager.findContent(tabName);
 
@@ -308,7 +308,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 
 	/**
 	 * Methods opens the ToolWindow and focuses on a particular component.
-	 * If component does not exists it is not created and focused
+	 * If component does not exists it is not created AND focused
 	 * @param e
 	 * @param component
 	 */
