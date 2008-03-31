@@ -10,11 +10,14 @@ public class JIRAIssueBean implements JIRAIssue {
     private String serverUrl;
     private String key;
     private String summary;
-    private String type;
+	private String status;
+	private URL statusUrl;
+	private String type;
     private URL typeUrl;
     private String description;
     private String projectKey;
-    private JIRAConstant typeConstant;
+	private JIRAConstant statusConstant;
+	private JIRAConstant typeConstant;
     private String assignee;
 
     public JIRAIssueBean() {
@@ -25,14 +28,23 @@ public class JIRAIssueBean implements JIRAIssue {
         this.summary = getTextSafely(e, "summary");
         this.key = getTextSafely(e, "key");
         updateProjectKey();
-        this.description = getTextSafely(e, "description");
+		this.status = getTextSafely(e, "status");
+        String statusUrlString = getAttributeSafely(e, "status", "iconUrl");
+		if (statusUrlString != null) {
+            try {
+                statusUrl = new URL(statusUrlString);
+            } catch (MalformedURLException e1) {
+				statusUrl = null;
+            }
+        }
+		this.description = getTextSafely(e, "description");
         this.type = getTextSafely(e, "type");
         String typeUrlString = getAttributeSafely(e, "type", "iconUrl");
         if (typeUrlString != null) {
             try {
                 typeUrl = new URL(typeUrlString);
             } catch (MalformedURLException e1) {
-                e1.printStackTrace();
+                typeUrl = null;
             }
         }
     }
@@ -40,7 +52,8 @@ public class JIRAIssueBean implements JIRAIssue {
     public JIRAIssueBean(String serverUrl, Map params) {
         this.serverUrl = serverUrl;
         this.summary = (String) params.get("summary");
-        this.key = (String) params.get("key");
+		this.status = (String) params.get("status");
+		this.key = (String) params.get("key");
         updateProjectKey();
         this.description = (String) params.get("description");
         this.type = (String) params.get("type");
@@ -92,7 +105,15 @@ public class JIRAIssueBean implements JIRAIssue {
         return projectKey;
     }
 
-    public String getKey() {
+	public String getStatus() {
+		return status;
+	}
+
+	public URL getStatusTypeUrl() {
+		return statusUrl;
+	}
+
+	public String getKey() {
         return key;
     }
 
@@ -112,7 +133,11 @@ public class JIRAIssueBean implements JIRAIssue {
         return typeConstant;
     }
 
-    public URL getTypeIconUrl() {
+	public JIRAConstant getStatusConstant() {
+		return statusConstant;
+	}
+
+	public URL getTypeIconUrl() {
         return typeUrl;
     }
 
@@ -169,7 +194,12 @@ public class JIRAIssueBean implements JIRAIssue {
         this.typeConstant = type;
     }
 
-    public String getAssignee() {
+	public void setStatus(JIRAConstant status) {
+		this.status = status.getName();
+		this.statusConstant = status;
+	}
+
+	public String getAssignee() {
         return assignee;
     }
 

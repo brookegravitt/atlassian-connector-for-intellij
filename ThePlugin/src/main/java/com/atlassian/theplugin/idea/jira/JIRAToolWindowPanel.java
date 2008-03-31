@@ -1,10 +1,12 @@
 package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.bamboo.HtmlBambooStatusListener;
+import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.TableColumnInfo;
+import com.atlassian.theplugin.idea.ThePluginProjectComponent;
 import com.atlassian.theplugin.idea.action.jira.MyIssuesAction;
 import com.atlassian.theplugin.idea.action.jira.UnresolvedIssuesAction;
 import com.atlassian.theplugin.idea.bamboo.ToolWindowBambooContent;
@@ -51,12 +53,15 @@ public class JIRAToolWindowPanel extends JPanel {
 	private Map<String, JIRAQueryFragment> queryFragments = new HashMap<String, JIRAQueryFragment>();
 	private final transient Project project;
 	private final transient JIRAServerFacade jiraServerFacade;
+	private final transient PluginConfigurationBean pluginConfiguration;
 
-	public JIRAToolWindowPanel(ProjectConfigurationBean projectConfigurationBean,
+	public JIRAToolWindowPanel(PluginConfigurationBean pluginConfiguration,
+							   ProjectConfigurationBean projectConfigurationBean,
 							   Project project,
 							   JIRAServerFacade jiraServerFacade) {
         super(new BorderLayout());
 
+		this.pluginConfiguration = pluginConfiguration;
 		this.project = project;
 		this.jiraServerFacade = jiraServerFacade;
 
@@ -91,9 +96,9 @@ public class JIRAToolWindowPanel extends JPanel {
         table.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) { // on double click, just open the issue
                 if (e.getClickCount() == 2) {
-                    JIRAIssue issue = (JIRAIssue) table.getSelectedObject();
+                    String issue = ((JiraIssueAdapter) table.getSelectedObject()).getIssueUrl();
                     if (issue != null) {
-                        BrowserUtil.launchBrowser(issue.getIssueUrl());
+                        BrowserUtil.launchBrowser(issue);
                     }
                 }
             }
@@ -108,7 +113,7 @@ public class JIRAToolWindowPanel extends JPanel {
 
             private void maybeShowPopup(MouseEvent e) { // on right click, show a context menu for this issue
                 if (e.isPopupTrigger() && table.isEnabled()) {
-                    JIRAIssue issue = (JIRAIssue) table.getSelectedObject();
+                    JIRAIssue issue = ((JiraIssueAdapter) table.getSelectedObject()).getIssue();
 
                     if (issue != null) {
                         Point p = new Point(e.getX(), e.getY());
@@ -121,8 +126,8 @@ public class JIRAToolWindowPanel extends JPanel {
 
 		createFilterToolBar();
 
-		add(new JScrollPane(table), BorderLayout.CENTER);
-    }
+		add(new JScrollPane(table), BorderLayout.CENTER);						
+	}
 
 	private JPopupMenu createContextMenu(JIRAIssue issue) {
         JPopupMenu contextMenu = new JPopupMenu();
@@ -166,14 +171,20 @@ public class JIRAToolWindowPanel extends JPanel {
     }
 
 	public void clearIssues() {
-        listTableModel.setItems(new ArrayList<JIRAIssue>());
+        listTableModel.setItems(new ArrayList<JiraIssueAdapter>());
         listTableModel.fireTableDataChanged();
         table.setEnabled(false);
         editorPane.setText(wrapBody("No issues for server."));
     }
 
 	public void setIssues(List<JIRAIssue> issues) {
-        listTableModel.setItems(issues);
+		List<JiraIssueAdapter> adapters = new ArrayList<JiraIssueAdapter>();
+		for (JIRAIssue issue : issues) {
+			adapters.add(new JiraIssueAdapter(
+					issue,
+					pluginConfiguration.getJIRAConfigurationData().isDisplayIconDescription()));
+		}
+		listTableModel.setItems(adapters);
         listTableModel.fireTableDataChanged();
         table.setEnabled(true);
         table.setForeground(UIUtil.getActiveTextColor());
@@ -187,7 +198,13 @@ public class JIRAToolWindowPanel extends JPanel {
 
     public void selectServer(Server server) {
         if (server != null) {
-            final JIRAServer jiraServer = new JIRAServer(server, jiraServerFacade);
+			System.out.println("Selecting JIRA server");
+
+			IdeaHelper.getCurrentProject().
+					getComponent(ThePluginProjectComponent.class).
+					getProjectConfigurationBean().getJiraConfiguration().setSelectedServerId(server.getUid());
+			
+			final JIRAServer jiraServer = new JIRAServer(server, jiraServerFacade);
             IdeaHelper.setCurrentJIRAServer(jiraServer);
 
             FutureTask task = new FutureTask(new Runnable() {
@@ -285,12 +302,12 @@ public class JIRAToolWindowPanel extends JPanel {
         }
     }
 
-    public List<JIRAIssue> getIssues() {
-        return (List<JIRAIssue>) listTableModel.getItems();
+    public List<JiraIssueAdapter> getIssues() {
+        return (List<JiraIssueAdapter>) listTableModel.getItems();
     }
 
     public JIRAIssue getCurrentIssue() {
-        return (JIRAIssue) table.getSelectedObject();
+        return ((JiraIssueAdapter) table.getSelectedObject()).getIssue();
     }
 
     public class CommentIssueAction extends AbstractAction {
@@ -299,7 +316,7 @@ public class JIRAToolWindowPanel extends JPanel {
         }
 
         public void actionPerformed(ActionEvent e) {
-            JIRAIssue issue = (JIRAIssue) table.getSelectedObject();
+            JIRAIssue issue = ((JiraIssueAdapter) table.getSelectedObject()).getIssue();
             IssueComment issueComment = new IssueComment(
 					jiraServerFacade, IdeaHelper.getCurrentJIRAServer(), getIssues());
             issueComment.setIssue(issue);

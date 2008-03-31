@@ -14,26 +14,31 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 
 public class SelectJIRAAction extends ComboBoxAction {
-    
-    @NotNull
-    protected DefaultActionGroup createPopupActionGroup(JComponent jComponent) {
-        ThePluginApplicationComponent appComponent = IdeaHelper.getAppComponent();
 
-        final DefaultActionGroup g = new DefaultActionGroup();
+	@NotNull
+	protected DefaultActionGroup createPopupActionGroup(JComponent jComponent) {
+		ThePluginApplicationComponent appComponent = IdeaHelper.getAppComponent();
 
-        ProductServerConfiguration jConfig = appComponent.getState().getProductServers(ServerType.JIRA_SERVER);
+		final DefaultActionGroup g = new DefaultActionGroup();
 
-        final ComboBoxButton button = (ComboBoxButton) jComponent;
+		ProductServerConfiguration jConfig = appComponent.getState().getProductServers(ServerType.JIRA_SERVER);
 
-        for (final Server server : jConfig.getEnabledServers()) {
-            g.add(new AnAction(server.getName()) {
-                public void actionPerformed(AnActionEvent event) {
-                    button.setText(event.getPresentation().getText());
-                    IdeaHelper.getJIRAToolWindowPanel(event).selectServer(server);
-                }
-            });
-        }
+		final ComboBoxButton button = (ComboBoxButton) jComponent;
+		for (final Server server : jConfig.getEnabledServers()) {
+			g.add(new AnAction(server.getName()) {
+				public void actionPerformed(AnActionEvent event) {
+					button.setText(event.getPresentation().getText());
+					IdeaHelper.getJIRAToolWindowPanel(event).selectServer(server);
+				}
+			});
+		}
+		return g;
+	}
 
-        return g;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+	public void update(AnActionEvent event) {
+		super.update(event);
+		if (IdeaHelper.getCurrentJIRAServer() != null) {
+			event.getPresentation().setText(IdeaHelper.getCurrentJIRAServer().getServer().getName());
+		}
+	}
 }

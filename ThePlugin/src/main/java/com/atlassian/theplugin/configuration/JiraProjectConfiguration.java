@@ -9,6 +9,7 @@ package com.atlassian.theplugin.configuration;
  */
 public class JiraProjectConfiguration {
 	private ProjectToolWindowTableConfiguration tableConfiguration = new ProjectToolWindowTableConfiguration();
+	private long selectedServerId = 0;
 
 	public JiraProjectConfiguration() {
 	}
@@ -23,5 +24,14 @@ public class JiraProjectConfiguration {
 
 	public void copyConfiguration(JiraProjectConfiguration jiraConfiguration) {
 		tableConfiguration.copyConfiguration(jiraConfiguration.getTableConfiguration());
+		setSelectedServerId(jiraConfiguration.getSelectedServerId());
+	}
+
+	public long getSelectedServerId() {
+		return selectedServerId;
+	}
+
+	public void setSelectedServerId(long selectedServerId) {
+		this.selectedServerId = selectedServerId;
 	}
 }

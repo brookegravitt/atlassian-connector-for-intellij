@@ -10,6 +10,6 @@ public class IssueTypeComboAction extends AbstractConstantComboAction {
     }
 
     protected String getDefaultText() {
-        return "Any Issue Type";
+        return "  Any Issue Type  ";
     }
 }
