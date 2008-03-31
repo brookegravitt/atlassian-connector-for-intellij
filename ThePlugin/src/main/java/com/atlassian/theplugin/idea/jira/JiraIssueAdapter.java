@@ -56,13 +56,17 @@ public class JiraIssueAdapter {
 	}
 
 	public Icon getStatusTypeIcon() {
-		String key = issue.getStatusTypeUrl().toString();
-		if (!icons.containsKey(key)) {
-			if (issue.getStatusTypeUrl() != null) {
-				icons.put(key, new ImageIcon(issue.getStatusTypeUrl()));
+		if (issue.getStatusTypeUrl() != null) {
+			String key = issue.getStatusTypeUrl().toString();
+			if (!icons.containsKey(key)) {
+				if (issue.getStatusTypeUrl() != null) {
+					icons.put(key, new ImageIcon(issue.getStatusTypeUrl()));
+				}
 			}
+			return icons.get(key);
+		} else {
+			return null;
 		}
-		return icons.get(key);
 	}
 
 	public String getSummary() {
@@ -78,13 +82,17 @@ public class JiraIssueAdapter {
 	}
 
 	public Icon getTypeIcon() {
-		String key = issue.getTypeIconUrl().toString();
-		if (!icons.containsKey(key)) {
-			if (issue.getTypeIconUrl() != null) {
-				icons.put(key, new ImageIcon(issue.getTypeIconUrl()));
+		if (issue.getTypeIconUrl() != null) {
+			String key = issue.getTypeIconUrl().toString();
+			if (!icons.containsKey(key)) {
+				if (issue.getTypeIconUrl() != null) {
+					icons.put(key, new ImageIcon(issue.getTypeIconUrl()));
+				}
 			}
+			return icons.get(key);
+		} else {
+			return null;
 		}
-		return icons.get(key);
 	}
 
 	public String getDescription() {
