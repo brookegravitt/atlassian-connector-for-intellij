@@ -34,7 +34,7 @@ public class IssueComment extends DialogWrapper {
 
 	private final JIRAServerFacade jiraServerFacade;
 
-	public IssueComment(JIRAServerFacade jiraServerFacade, final JIRAServer jiraServer, List<JIRAIssue> issues) {
+	public IssueComment(JIRAServerFacade jiraServerFacade, final JIRAServer jiraServer, List<JiraIssueAdapter> issues) {
 		super(false);
 		this.jiraServerFacade = jiraServerFacade;
 		init();
@@ -52,8 +52,8 @@ public class IssueComment extends DialogWrapper {
 			}
 		});
 
-		for (JIRAIssue issue : issues) {
-			issueComboBox.addItem(issue);
+		for (JiraIssueAdapter issue : issues) {
+			issueComboBox.addItem(issue.getIssue());
 		}
 
 		getOKAction().putValue(Action.NAME, "Comment");
