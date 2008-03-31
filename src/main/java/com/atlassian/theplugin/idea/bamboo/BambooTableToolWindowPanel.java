@@ -221,7 +221,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 
 	private JMenuItem makeExecuteBuildMenu(String menuName, final BambooBuildAdapter build) {
 		JMenuItem executeBuild = new JMenuItem();
-		executeBuild.setIcon(ICON_RUN);		
+		executeBuild.setIcon(ICON_RUN);
 		executeBuild.setText(menuName);
 		executeBuild.setEnabled(getExecuteBuildEnabled());
 
@@ -269,7 +269,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 		Date lastPollingTime = null;
 		for (BambooBuild build : builds) {
 			if (build.getPollingTime() != null) {
-			lastPollingTime = build.getPollingTime();
+				lastPollingTime = build.getPollingTime();
 			}
 			buildAdapters.add(new BambooBuildAdapter(build));
 		}
@@ -282,7 +282,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 		sb.append(builds.size());
 		sb.append("</b> builds");
 		if (lastPollingTime != null) {
-		 	sb.append(" at  <b>");
+			sb.append(" at  <b>");
 			sb.append(TIME_DF.format(lastPollingTime));
 			sb.append("</b>");
 		}
@@ -326,9 +326,9 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 	}
 
 	public boolean getCommentBuildEnabled() {
-		return getBamboo2ActionsEnabled();		
+		return getBamboo2ActionsEnabled();
 	}
-	
+
 	public AtlassianTableView getTable() {
 		return table;
 	}

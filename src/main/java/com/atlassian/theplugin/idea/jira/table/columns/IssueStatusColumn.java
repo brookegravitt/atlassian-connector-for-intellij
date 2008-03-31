@@ -5,30 +5,30 @@ import com.atlassian.theplugin.idea.jira.JiraIssueAdapter;
 
 import java.util.Comparator;
 
-public class IssueSummaryColumn extends TableColumnInfo {
-	private static final int COL_WIDTH = 500;
+public class IssueStatusColumn extends TableColumnInfo {
+	private static final int COL_WIDTH = 20;
 
 	public Object valueOf(Object o) {
-		return ((JiraIssueAdapter) o).getSummary();
+		return (JiraIssueAdapter) o;
 	}
 
 	public Class getColumnClass() {
-		return String.class;
+		return JiraIssueAdapter.class;
 	}
 
 	public Comparator getComparator() {
 		return new Comparator() {
 			public int compare(Object o, Object o1) {
-				return ((JiraIssueAdapter) o).getSummary().compareTo(((JiraIssueAdapter) o1).getSummary());
+				return ((JiraIssueAdapter) o).getStatus().compareTo(((JiraIssueAdapter) o1).getStatus());
 			}
 		};
 	}
 
-	public String getColumnName() {
-		return "Summary";
-	}
-
 	public int getPrefferedWidth() {
 		return COL_WIDTH;
+	}
+
+	public String getColumnName() {
+		return "Status";
 	}
 }
