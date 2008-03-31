@@ -8,6 +8,8 @@ public class JiraConfigurationBean extends AbstractConfigurationBean {
 
 	private int pollTime = 1;
 
+	private boolean displayIconDescription = false;
+
 	public JiraConfigurationBean() {
         super();
     }
@@ -16,6 +18,7 @@ public class JiraConfigurationBean extends AbstractConfigurationBean {
 		super(cfg);
 		if (cfg instanceof JiraConfigurationBean) {
 			this.pollTime = ((JiraConfigurationBean) cfg).getPollTime();
+			this.displayIconDescription = ((JiraConfigurationBean) cfg).isDisplayIconDescription();
 		}
 	}
 
@@ -25,5 +28,13 @@ public class JiraConfigurationBean extends AbstractConfigurationBean {
 
 	public void setPollTime(int pollTime) {
 		this.pollTime = pollTime;
+	}
+
+	public boolean isDisplayIconDescription() {
+		return displayIconDescription;
+	}
+
+	public void setDisplayIconDescription(boolean displayIconDescription) {
+		this.displayIconDescription = displayIconDescription;
 	}
 }

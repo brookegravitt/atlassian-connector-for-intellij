@@ -13,7 +13,11 @@ public interface JIRAIssue {
 
     String getProjectKey();
 
-    String getSummary();
+	String getStatus();
+
+	URL getStatusTypeUrl();
+
+	String getSummary();
 
     String getType();
 
@@ -23,7 +27,9 @@ public interface JIRAIssue {
 
     JIRAConstant getTypeConstant();
 
-    String getAssignee();
+	JIRAConstant getStatusConstant();
+
+	String getAssignee();
 
     void setAssignee(String assignee);
 }

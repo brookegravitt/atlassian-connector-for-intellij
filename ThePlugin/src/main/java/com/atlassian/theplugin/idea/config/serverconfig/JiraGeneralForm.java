@@ -23,6 +23,7 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
 	private JPanel rootComponent;
 	private SpinnerModel model;
 	private JSpinner pollTimeSpinner;
+	private JCheckBox cbIconDescription;
 
 	private transient PluginConfigurationBean globalPluginConfiguration;
 	private transient JiraConfigurationBean jiraConfiguration;
@@ -42,7 +43,7 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
 
 
 	public boolean isModified() {
-		return (Integer) model.getValue() != jiraConfiguration.getPollTime();
+		return (Integer) model.getValue() != jiraConfiguration.getPollTime() || cbIconDescription.isSelected() != jiraConfiguration.isDisplayIconDescription();
 	}
 
 	public String getTitle() {
@@ -59,6 +60,15 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
 		((JiraConfigurationBean) globalPluginConfiguration
 				.getProductServers(ServerType.JIRA_SERVER))
 				.setPollTime((Integer) model.getValue());
+
+		((JiraConfigurationBean) getLocalPluginConfigurationCopy()
+				.getProductServers(ServerType.JIRA_SERVER))
+				.setDisplayIconDescription(cbIconDescription.isSelected());
+
+		((JiraConfigurationBean) globalPluginConfiguration
+				.getProductServers(ServerType.JIRA_SERVER))
+				.setDisplayIconDescription(cbIconDescription.isSelected());
+
 	}
 
 	public void setData(PluginConfiguration config) {
@@ -70,6 +80,7 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
 
 		model.setValue(jiraConfiguration.getPollTime());
 
+		cbIconDescription.setSelected(jiraConfiguration.isDisplayIconDescription());
 
 	}
 
@@ -86,7 +97,7 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
 	 */
 	private void $$$setupUI$$$() {
 		rootComponent = new JPanel();
-		rootComponent.setLayout(new GridLayoutManager(2, 3, new Insets(0, 0, 0, 0), -1, -1));
+		rootComponent.setLayout(new GridLayoutManager(3, 3, new Insets(0, 0, 0, 0), -1, -1));
 		rootComponent.setOpaque(true);
 		rootComponent.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12), null));
 		final JPanel panel1 = new JPanel();
@@ -103,7 +114,11 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
 		final Spacer spacer1 = new Spacer();
 		rootComponent.add(spacer1, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
 		final Spacer spacer2 = new Spacer();
-		rootComponent.add(spacer2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+		rootComponent.add(spacer2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+		cbIconDescription = new JCheckBox();
+		cbIconDescription.setHorizontalTextPosition(11);
+		cbIconDescription.setText("Display icon description");
+		rootComponent.add(cbIconDescription, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 	}
 
 	/**

@@ -1,8 +1,10 @@
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.theplugin.ServerType;
 import com.atlassian.theplugin.bamboo.*;
 import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
+import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.idea.autoupdate.ConfirmPluginUpdateHandler;
 import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
@@ -17,10 +19,10 @@ import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.startup.StartupManager;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.wm.ToolWindowManager;
-import com.intellij.openapi.startup.StartupManager;
 import com.intellij.peer.PeerFactory;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.table.TableView;
@@ -147,7 +149,6 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 			TableView.restore(projectConfigurationBean.getCrucibleConfiguration().getTableConfiguration(),
 					crucibleToolWindowPanel.getTable());
 
-
 			//Content jiraToolWindow = createJiraContent();
 			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.JIRA);
 			toolWindow.showHidePanels();
@@ -205,6 +206,14 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 			PluginToolWindow.focusPanelIfExists(project, projectConfigurationBean.getActiveToolWindowTab());
 			toolWindow.startTabChangeListener();
 
+			if (!pluginConfiguration.getProductServers(ServerType.JIRA_SERVER).getServers().isEmpty()) {
+				long uuid = projectConfigurationBean.getJiraConfiguration().getSelectedServerId();
+				for (Server server : pluginConfiguration.getProductServers(ServerType.JIRA_SERVER).getServers()) {
+					if (server.getUid() == uuid) {
+						jiraToolWindowPanel.selectServer(server);
+					}
+				}								
+			}
 
 			created = true;
 		}
@@ -267,7 +276,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 			// remove tool window
 			toolWindow.stopTabChangeListener();
 			toolWindowManager.unregisterToolWindow(PluginToolWindow.TOOL_WINDOW_NAME);
-			
+
 			created = false;
 		}
 	}
@@ -310,5 +319,5 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 
 	public void setCurrentJiraServer(JIRAServer currentJiraServer) {
 		this.currentJiraServer = currentJiraServer;
-	}	
+	}
 }
