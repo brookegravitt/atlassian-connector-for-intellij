@@ -86,8 +86,7 @@ public final class ConfigPanel extends JPanel {
 	public boolean isModified() {
 		if (globalConfigurationBean.getIsAnonymousFeedbackEnabled() == null) {
 			int answer = Messages.showYesNoDialog("We would greatly appreciate if you allow us to collect anonymous "
-					+ "usage statistics to help us providing product of a better quality. "
-					+ "Would you agree?",
+					+ "usage statistics to help us provide a better quality product. Is this ok?",
 					PluginUtil.getName() + " request", Messages.getQuestionIcon());
 			localPluginConfigurationCopy.setIsAnonymousFeedbackEnabled(answer == DialogWrapper.OK_EXIT_CODE);
 			globalConfigurationBean.setIsAnonymousFeedbackEnabled(answer == DialogWrapper.OK_EXIT_CODE);
