@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.action.jira;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.jira.CachedIconLoader;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.api.JIRAConstant;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -47,8 +48,10 @@ public abstract class AbstractConstantComboAction extends ComboBoxAction {
 				comboBox.setText(event.getPresentation().getText());
 				if (constant != null) {
 					if (constant.getIconUrl() != null) {
-						comboBox.setIcon(new ImageIcon(constant.getIconUrl()));
-					}
+						comboBox.setIcon(CachedIconLoader.getIcon(constant.getIconUrl()));
+					} 
+				} else {
+					comboBox.setIcon(null);
 				}
 				IdeaHelper.getJIRAToolWindowPanel(event).addQueryFragment(getDefaultText(), constant);
 				IdeaHelper.getJIRAToolWindowPanel(event).refreshIssues();

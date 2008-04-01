@@ -34,7 +34,7 @@ public class ProjectComboAction extends ComboBoxAction {
     }
 
     private String getDefaultText() {
-        return "  Any Project  ";
+        return "Any Project";
     }
 
     private static class MyAnAction extends AnAction {
