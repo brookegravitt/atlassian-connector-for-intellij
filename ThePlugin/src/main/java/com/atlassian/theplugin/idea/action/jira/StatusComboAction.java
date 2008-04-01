@@ -10,6 +10,6 @@ public class StatusComboAction extends AbstractConstantComboAction {
     }
 
     protected String getDefaultText() {
-        return "  Any Status  ";
+        return "Any Status";
     }
 }
