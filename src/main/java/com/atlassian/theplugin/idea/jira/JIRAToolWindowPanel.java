@@ -215,7 +215,7 @@ public class JIRAToolWindowPanel extends JPanel {
 
             FutureTask task = new FutureTask(new Runnable() {
                 public void run() {
-					startProgressAnimation();
+					//startProgressAnimation();
 					//toolBarPanel.setEnabled(false);
 					filterToolbarSetVisible(false);
 					clearIssues();
@@ -245,7 +245,7 @@ public class JIRAToolWindowPanel extends JPanel {
 						filterToolbarSetVisible(true);
 					}
 
-					stopProgressAnimation();
+					//stopProgressAnimation();
 					//toolBarPanel.setEnabled(true);
 				}
 			}, null);
