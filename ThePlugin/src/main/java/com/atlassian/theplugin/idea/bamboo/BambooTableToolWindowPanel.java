@@ -273,10 +273,18 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 			}
 			buildAdapters.add(new BambooBuildAdapter(build));
 		}
+
+		// remember selection
+		int selectedItem = table.getSelectedRow();
+
 		listTableModel.setItems(buildAdapters);
 		listTableModel.fireTableDataChanged();
 		table.setEnabled(true);
 		table.setForeground(UIUtil.getActiveTextColor());
+
+		// restore selection
+		table.getSelectionModel().setSelectionInterval(selectedItem, selectedItem);
+
 		StringBuffer sb = new StringBuffer();
 		sb.append("Loaded <b>");
 		sb.append(builds.size());
