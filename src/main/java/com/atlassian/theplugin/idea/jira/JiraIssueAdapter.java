@@ -3,8 +3,6 @@ package com.atlassian.theplugin.idea.jira;
 import com.atlassian.theplugin.jira.api.JIRAConstant;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 
-import javax.swing.*;
-
 public class JiraIssueAdapter {
 	private JIRAIssue issue;
 	private boolean useIconDescription;
@@ -46,16 +44,16 @@ public class JiraIssueAdapter {
 		return issue.getStatus();
 	}
 
-	public Icon getStatusTypeIcon() {
-		return CachedIconLoader.getIcon(issue.getStatusTypeUrl());
+	public JiraIcon getStatusInfo() {
+		return new JiraIcon(issue.getStatus(), issue.getStatusTypeUrl());		
 	}
 
 	public String getPriority() {
 		return issue.getPriority() != null ? issue.getPriority() : "";
 	}
 	
-	public Icon getPriorityIcon() {
-		return CachedIconLoader.getIcon(issue.getPriorityIconUrl());
+	public JiraIcon getPriorityInfo() {
+		return new JiraIcon(issue.getPriority(), issue.getPriorityIconUrl());
 	}
 
 	public String getSummary() {
@@ -66,8 +64,8 @@ public class JiraIssueAdapter {
 		return issue.getType();
 	}
 
-	public Icon getTypeIcon() {
-		return CachedIconLoader.getIcon(issue.getTypeIconUrl());
+	public JiraIcon getTypeInfo() {
+		return new JiraIcon(issue.getType(), issue.getTypeIconUrl());
 	}
 
 	public String getDescription() {
