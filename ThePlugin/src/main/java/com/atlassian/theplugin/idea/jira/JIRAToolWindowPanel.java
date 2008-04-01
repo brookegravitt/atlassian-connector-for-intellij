@@ -248,19 +248,19 @@ public class JIRAToolWindowPanel extends JPanel {
 		}
 	}
 
-	private void startProgressAnimation() {
-		this.remove(scrollTable);
-		this.add(progressIcon, BorderLayout.CENTER);
-		progressIcon.resume();
-		this.invalidate();
-	}
-
-	private void stopProgressAnimation() {
-		this.remove(progressIcon);
-		this.add(scrollTable, BorderLayout.CENTER);
-		progressIcon.suspend();
-		this.invalidate();
-	}
+//	private void startProgressAnimation() {
+//		this.remove(scrollTable);
+//		this.add(progressIcon, BorderLayout.CENTER);
+//		progressIcon.resume();
+//		this.invalidate();
+//	}
+//
+//	private void stopProgressAnimation() {
+//		this.remove(progressIcon);
+//		this.add(scrollTable, BorderLayout.CENTER);
+//		progressIcon.suspend();
+//		this.invalidate();
+//	}
 
 	private void setStatusMessage(String msg) {
         editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">" + msg + "</td></tr></table>"));
