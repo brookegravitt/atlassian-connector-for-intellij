@@ -14,9 +14,7 @@ import com.atlassian.theplugin.idea.jira.table.JIRATableColumnProvider;
 import com.atlassian.theplugin.idea.ui.AtlassianTableView;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
-import com.atlassian.theplugin.jira.api.JIRAException;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
+import com.atlassian.theplugin.jira.api.*;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -168,7 +166,8 @@ public class JIRAToolWindowPanel extends JPanel {
         if (IdeaHelper.getCurrentJIRAServer() != null) {
             updateIssues(IdeaHelper.getCurrentJIRAServer());
         }
-    }
+
+	}
 
 	public void clearIssues() {
         listTableModel.setItems(new ArrayList<JiraIssueAdapter>());
@@ -297,10 +296,16 @@ public class JIRAToolWindowPanel extends JPanel {
     public void addQueryFragment(String fragmentName, JIRAQueryFragment fragment) {
         if (fragment == null) {
             queryFragments.remove(fragmentName);
-        } else {
+			if ("project".equals(fragmentName)) {
+				IdeaHelper.getCurrentJIRAServer().setCurrentProject("");
+			}
+		} else {
             queryFragments.put(fragmentName, fragment);
-        }
-    }
+			if ("project".equals(fragmentName)) {
+				IdeaHelper.getCurrentJIRAServer().setCurrentProject(Long.toString(((JIRAProjectBean)fragment).getId()));
+			}
+		}
+	}
 
     public List<JiraIssueAdapter> getIssues() {
         return (List<JiraIssueAdapter>) listTableModel.getItems();

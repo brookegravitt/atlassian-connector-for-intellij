@@ -1,7 +1,9 @@
 package com.atlassian.theplugin.jira;
 
 import com.atlassian.theplugin.configuration.Server;
-import com.atlassian.theplugin.jira.api.*;
+import com.atlassian.theplugin.jira.api.JIRAConstant;
+import com.atlassian.theplugin.jira.api.JIRAException;
+import com.atlassian.theplugin.jira.api.JIRAProject;
 
 import java.util.List;
 
@@ -11,8 +13,11 @@ public class JIRAServer {
 	private String errorMessage = null;
 
 	private List<JIRAProject> projects;
-    private List statuses;
-    private List issueTypes;
+	private List statuses;
+	private List issueTypes;
+
+	private String lastProject = "";
+	private String currentProject = "";
 
 	private final JIRAServerFacade jiraServerFacade;
 
@@ -20,68 +25,73 @@ public class JIRAServer {
 		this.jiraServerFacade = jiraServerFacade;
 	}
 
-    public JIRAServer(Server server, JIRAServerFacade jiraServerFacade) {
-        this.server = server;
+	public JIRAServer(Server server, JIRAServerFacade jiraServerFacade) {
+		this.server = server;
 		this.jiraServerFacade = jiraServerFacade;
 	}
 
-    public Server getServer() {
-        return server;
-    }
+	public Server getServer() {
+		return server;
+	}
 
-    public void setServer(Server server) {
-        this.server = server;
-    }
- 
-    public List<JIRAProject> getProjects() {
+	public void setServer(Server server) {
+		this.server = server;
+	}
+
+	public List<JIRAProject> getProjects() {
 		validServer = false;
 		if (projects == null) {
 			errorMessage = null;
 			try {
-                projects = jiraServerFacade.getProjects(server);
+				projects = jiraServerFacade.getProjects(server);
 				validServer = true;
 			} catch (JIRAException e) {
 				errorMessage = e.getMessage();
 				e.printStackTrace();
-            }
-        } else {
+			}
+		} else {
 			validServer = true;
 		}
-		               
-        return projects;
-    }
 
-    public List<JIRAConstant> getStatuses() {
+		return projects;
+	}
+
+	public List<JIRAConstant> getStatuses() {
 		validServer = false;
-		if (statuses == null) {
+		if (statuses == null || !currentProject.equals(lastProject)) {
 			errorMessage = null;
 			try {
-                statuses = jiraServerFacade.getStatuses(server);
+				if ("".equals(currentProject)) {
+					statuses = jiraServerFacade.getStatuses(server);
+				} else {
+					statuses = jiraServerFacade.getIssueTypesForProject(server, currentProject);
+				}
+				lastProject = currentProject;
 				validServer = true;
 			} catch (JIRAException e) {
 				errorMessage = e.getCause().getMessage();
-            }
-        } else {
+			}
+		} else {
 			validServer = true;
 		}
 
-        return statuses;
-    }
+		return statuses;
+	}
 
-    public List<JIRAConstant> getIssueTypes() {
+	public List<JIRAConstant> getIssueTypes() {
 		validServer = false;
 		if (issueTypes == null) {
-			errorMessage = null;			
+			errorMessage = null;
 			try {
-                issueTypes = jiraServerFacade.getIssueTypes(server);
+				issueTypes = jiraServerFacade.getIssueTypes(server);
 				validServer = true;
 			} catch (JIRAException e) {
 				errorMessage = e.getMessage();
-            }
-        } else {
+			}
+		} else {
 			validServer = true;
 		}
-		
+
 		return issueTypes;
 	}
 
@@ -91,5 +101,13 @@ public class JIRAServer {
 
 	public String getErrorMessage() {
 		return errorMessage;
+	}
+
+	public String getCurrentProject() {
+		return currentProject;
+	}
+
+	public void setCurrentProject(String currentProject) {
+		this.currentProject = currentProject;
 	}
 }
