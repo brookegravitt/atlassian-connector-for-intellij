@@ -174,14 +174,18 @@ public class JIRAXmlRpcClient {
 
 		PluginUtil.getLogger().info("Getting issue types for project: " + token + " | " + projectKey);
 
+
+		List issueTypes = null;
 		try {
-			List issueTypes = (List) client.execute("jira1.getIssueTypesForProject", params);
+			issueTypes = (List) client.execute("jira1.getIssueTypesForProject", params);
 			List<JIRAConstant> result = new ArrayList<JIRAConstant>(issueTypes.size());
 			for (Iterator iterator = issueTypes.iterator(); iterator.hasNext();) {
 				result.add(new JIRAIssueTypeBean((Map) iterator.next()));
 			}
 			return result;
-		} catch (Exception e) {
+		} catch (XmlRpcException e) {
+			throw new JIRAException(e.getMessage(), e);
+		} catch (IOException e) {
 			throw new JIRAException(e.getMessage(), e);
 		}
 	}
