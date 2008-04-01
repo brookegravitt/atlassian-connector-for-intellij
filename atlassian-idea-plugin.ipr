@@ -299,6 +299,7 @@
     <option name="ADDITIONAL_OPTIONS_STRING" value="" />
   </component>
   <component name="ThePluginSettings">
+    <option name="activeToolWindowTab" value="JIRA" />
     <option name="bambooConfiguration">
       <BambooProjectConfiguration>
         <option name="tableConfiguration">
@@ -310,29 +311,62 @@
                 <entry key="Order2" value="1" />
                 <entry key="Order3" value="2" />
                 <entry key="Order4" value="3" />
-                <entry key="Order5" value="4" />
-                <entry key="Order6" value="5" />
+                <entry key="Order5" value="5" />
+                <entry key="Order6" value="4" />
                 <entry key="Order7" value="6" />
                 <entry key="Order8" value="8" />
                 <entry key="Width0" value="81" />
-                <entry key="Width1" value="20" />
+                <entry key="Width1" value="29" />
                 <entry key="Width2" value="100" />
                 <entry key="Width3" value="100" />
                 <entry key="Width4" value="120" />
                 <entry key="Width5" value="100" />
                 <entry key="Width6" value="100" />
-                <entry key="Width7" value="100" />
-                <entry key="Width8" value="300" />
+                <entry key="Width7" value="42" />
+                <entry key="Width8" value="358" />
               </map>
             </option>
           </ProjectToolWindowTableConfiguration>
         </option>
       </BambooProjectConfiguration>
     </option>
+    <option name="crucibleConfiguration">
+      <CrucibleProjectConfiguration>
+        <option name="tableConfiguration">
+          <ProjectToolWindowTableConfiguration>
+            <option name="properties">
+              <map>
+                <entry key="Order0" value="0" />
+                <entry key="Order1" value="1" />
+                <entry key="Order2" value="2" />
+                <entry key="Order3" value="3" />
+                <entry key="Order4" value="4" />
+                <entry key="Width0" value="49" />
+                <entry key="Width1" value="200" />
+                <entry key="Width2" value="120" />
+                <entry key="Width3" value="200" />
+                <entry key="Width4" value="200" />
+              </map>
+            </option>
+          </ProjectToolWindowTableConfiguration>
+        </option>
+      </CrucibleProjectConfiguration>
+    </option>
     <option name="jiraConfiguration">
       <JiraProjectConfiguration>
         <option name="tableConfiguration">
-          <ProjectToolWindowTableConfiguration />
+          <ProjectToolWindowTableConfiguration>
+            <option name="properties">
+              <map>
+                <entry key="Order0" value="0" />
+                <entry key="Order1" value="1" />
+                <entry key="Order2" value="2" />
+                <entry key="Width0" value="20" />
+                <entry key="Width1" value="50" />
+                <entry key="Width2" value="500" />
+              </map>
+            </option>
+          </ProjectToolWindowTableConfiguration>
         </option>
       </JiraProjectConfiguration>
     </option>
