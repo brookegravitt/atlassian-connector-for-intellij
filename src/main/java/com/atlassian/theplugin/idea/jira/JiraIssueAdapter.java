@@ -4,15 +4,10 @@ import com.atlassian.theplugin.jira.api.JIRAConstant;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 
 import javax.swing.*;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 public class JiraIssueAdapter {
 	private JIRAIssue issue;
 	private boolean useIconDescription;
-
-	private static Map<String, Icon> icons = new HashMap<String, Icon>();
 
 	public JiraIssueAdapter(JIRAIssue issue, boolean useIconDescription) {
 		this.issue = issue;
@@ -51,22 +46,16 @@ public class JiraIssueAdapter {
 		return issue.getStatus();
 	}
 
-	public URL getStatusTypeUrl() {
-		return issue.getStatusTypeUrl();
+	public Icon getStatusTypeIcon() {
+		return CachedIconLoader.getIcon(issue.getStatusTypeUrl());
 	}
 
-	public Icon getStatusTypeIcon() {
-		if (issue.getStatusTypeUrl() != null) {
-			String key = issue.getStatusTypeUrl().toString();
-			if (!icons.containsKey(key)) {
-				if (issue.getStatusTypeUrl() != null) {
-					icons.put(key, new ImageIcon(issue.getStatusTypeUrl()));
-				}
-			}
-			return icons.get(key);
-		} else {
-			return null;
-		}
+	public String getPriority() {
+		return issue.getPriority() != null ? issue.getPriority() : "";
+	}
+	
+	public Icon getPriorityIcon() {
+		return CachedIconLoader.getIcon(issue.getPriorityIconUrl());
 	}
 
 	public String getSummary() {
@@ -77,22 +66,8 @@ public class JiraIssueAdapter {
 		return issue.getType();
 	}
 
-	public URL getTypeIconUrl() {
-		return issue.getTypeIconUrl();
-	}
-
 	public Icon getTypeIcon() {
-		if (issue.getTypeIconUrl() != null) {
-			String key = issue.getTypeIconUrl().toString();
-			if (!icons.containsKey(key)) {
-				if (issue.getTypeIconUrl() != null) {
-					icons.put(key, new ImageIcon(issue.getTypeIconUrl()));
-				}
-			}
-			return icons.get(key);
-		} else {
-			return null;
-		}
+		return CachedIconLoader.getIcon(issue.getTypeIconUrl());
 	}
 
 	public String getDescription() {
