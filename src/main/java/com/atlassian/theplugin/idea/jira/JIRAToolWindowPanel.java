@@ -215,11 +215,9 @@ public class JIRAToolWindowPanel extends JPanel {
 
             FutureTask task = new FutureTask(new Runnable() {
                 public void run() {
-					//startProgressAnimation();
-					//toolBarPanel.setEnabled(false);
+					//startProgressAnimation(); 	//toolBarPanel.setEnabled(false);
 					filterToolbarSetVisible(false);
 					clearIssues();
-
 					setStatusMessage("Retrieving statuses...");
 					List statuses = jiraServer.getStatuses(); // ensure statuses are cached
 					if (!jiraServer.isValidServer()) {
@@ -244,9 +242,7 @@ public class JIRAToolWindowPanel extends JPanel {
 						updateIssues(jiraServer);
 						filterToolbarSetVisible(true);
 					}
-
-					//stopProgressAnimation();
-					//toolBarPanel.setEnabled(true);
+					//stopProgressAnimation();	//toolBarPanel.setEnabled(true);
 				}
 			}, null);
 
