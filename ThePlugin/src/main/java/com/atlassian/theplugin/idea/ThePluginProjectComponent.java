@@ -205,7 +205,8 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 			// focus last active panel only if it exists (do not create panel)
 			PluginToolWindow.focusPanelIfExists(project, projectConfigurationBean.getActiveToolWindowTab());
 			toolWindow.startTabChangeListener();
-
+			
+			IdeaHelper.getAppComponent().rescheduleStatusCheckers(false);
 			if (!pluginConfiguration.getProductServers(ServerType.JIRA_SERVER).getServers().isEmpty()) {
 				long uuid = projectConfigurationBean.getJiraConfiguration().getSelectedServerId();
 				for (Server server : pluginConfiguration.getProductServers(ServerType.JIRA_SERVER).getServers()) {
