@@ -9,7 +9,15 @@ public interface ContentPanel {
 
 	String getTitle();
 
+
+	/**
+	 * Copies configuration to global config object serialized by IDEA
+	 */
 	void getData();
 
+	/**
+	 * Assigns config parameter to local configuration
+	 * @param config
+	 */
 	void setData(PluginConfiguration config);
 }
