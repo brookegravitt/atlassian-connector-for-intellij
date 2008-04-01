@@ -15,7 +15,9 @@ public interface JIRAServerFacade extends ProductServerFacade {
     
     List<JIRAConstant> getStatuses(Server server) throws JIRAException;
 
-    void addComment(Server server, JIRAIssue issue, String comment) throws JIRAException;
+	List getIssueTypesForProject(Server server, String project) throws JIRAException;
+
+	void addComment(Server server, JIRAIssue issue, String comment) throws JIRAException;
 
     JIRAIssue createIssue(Server server, JIRAIssue issue) throws JIRAException;
 }
