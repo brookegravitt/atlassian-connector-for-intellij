@@ -15,6 +15,8 @@ import javax.swing.*;
 public class AnimatedProgressIcon extends AsyncProcessIcon {
 	private Icon[] icons;
 	private Icon passiveIcon;
+	private static final int CYCLE_LENGTH = 640; // whole animation single cycle lenght
+	private static final int CYCLE_GAP = 80; // break after every single cycle (best 'cycleLenght / number of frames')
 
 	public AnimatedProgressIcon(@org.jetbrains.annotations.NonNls String name) {
 		super(name);
@@ -24,13 +26,8 @@ public class AnimatedProgressIcon extends AsyncProcessIcon {
 	}
 
 	private void initCustomLook() {
-
 		loadIcons();
-
-		final int cycleLength = 640;	// whole animation single cycle lenght
-		final int cycleGap = 80;		// break after every single cycle (best 'cycleLenght / number of frames')
-
-		init(icons, passiveIcon, cycleLength, cycleGap, -1);	
+		init(icons, passiveIcon, CYCLE_LENGTH, CYCLE_GAP, -1);
 	}
 
 	private void loadIcons() {
