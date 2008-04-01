@@ -46,7 +46,12 @@ public class JIRAServerFacadeImpl implements JIRAServerFacade {
         return client.getStatuses();
     }
 
-    public void addComment(Server server, JIRAIssue issue, String comment) throws JIRAException {
+	public List getIssueTypesForProject(Server server, String project) throws JIRAException {
+		JIRAXmlRpcClient client = new JIRAXmlRpcClient(server.getUrlString(), server.getUserName(), server.getPasswordString());
+		return client.getIssueTypesForProject(project);
+	}
+
+	public void addComment(Server server, JIRAIssue issue, String comment) throws JIRAException {
         JIRAXmlRpcClient client = new JIRAXmlRpcClient(server.getUrlString(), server.getUserName(), server.getPasswordString());
         client.addIssueComment(issue.getKey(), comment);
     }
