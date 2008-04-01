@@ -24,6 +24,7 @@ public class IssueTypeCellRenderer extends DefaultTableCellRenderer {
 			} else {
 				((JLabel) c).setToolTipText(issueAdapter.getType());
 				((JLabel) c).setText(issueAdapter.getType());
+				((JLabel) c).setIcon(null);
 			}
 		}
 		return c;

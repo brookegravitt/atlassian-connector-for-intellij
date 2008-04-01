@@ -1,12 +1,10 @@
 package com.atlassian.theplugin.idea.jira.table;
 
 import com.atlassian.theplugin.idea.TableColumnInfo;
-import com.atlassian.theplugin.idea.jira.table.columns.IssueKeyColumn;
-import com.atlassian.theplugin.idea.jira.table.columns.IssueStatusColumn;
-import com.atlassian.theplugin.idea.jira.table.columns.IssueSummaryColumn;
-import com.atlassian.theplugin.idea.jira.table.columns.IssueTypeColumn;
+import com.atlassian.theplugin.idea.jira.table.columns.*;
 import com.atlassian.theplugin.idea.jira.table.renderers.IssueStatusCellRenderer;
 import com.atlassian.theplugin.idea.jira.table.renderers.IssueTypeCellRenderer;
+import com.atlassian.theplugin.idea.jira.table.renderers.IssuePriorityCellRenderer;
 
 import javax.swing.table.TableCellRenderer;
 
@@ -18,6 +16,7 @@ public final class JIRATableColumnProvider {
 		return new TableColumnInfo[]{
 				new IssueTypeColumn(),
 				new IssueStatusColumn(),
+				new IssuePriorityColumn(),
 				new IssueKeyColumn(),
 				new IssueSummaryColumn()
 		};
@@ -27,6 +26,7 @@ public final class JIRATableColumnProvider {
 		return new TableCellRenderer[]{
 				new IssueTypeCellRenderer(),
 				new IssueStatusCellRenderer(),
+				new IssuePriorityCellRenderer(),
 				null,
 				null
 		};

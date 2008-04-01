@@ -57,7 +57,7 @@ public class IssueCreate extends DialogWrapper {
 			protected void customizeCellRenderer(JList list, Object value, int index, boolean selected, boolean hasFocus) {
 				JIRAConstant type = (JIRAConstant) value;
 				append(type.getName(), SimpleTextAttributes.SIMPLE_CELL_ATTRIBUTES);
-				setIcon(new ImageIcon(type.getIconUrl()));
+				setIcon(CachedIconLoader.getIcon(type.getIconUrl()));
 			}
 		});
 
