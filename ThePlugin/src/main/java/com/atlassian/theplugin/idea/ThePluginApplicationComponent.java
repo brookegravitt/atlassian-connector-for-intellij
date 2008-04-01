@@ -87,7 +87,8 @@ public class ThePluginApplicationComponent
 						}
 					});
 
-		rescheduleStatusCheckers(false);
+			
+
 	}
 
 	public void disposeComponent() {
