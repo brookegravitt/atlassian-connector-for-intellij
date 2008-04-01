@@ -48,7 +48,7 @@ public class IssueComment extends DialogWrapper {
 						+ (summary.length() > MAX_SUM_LENGTH ? summary.substring(0, MAX_SUM_LENGTH_MINUS_ELLIPSIS)
 						+ "..." : summary);
 				append(text, SimpleTextAttributes.SIMPLE_CELL_ATTRIBUTES);
-				setIcon(new ImageIcon(issue.getTypeIconUrl()));
+				setIcon(CachedIconLoader.getIcon(issue.getTypeIconUrl()));
 			}
 		});
 

@@ -2,8 +2,6 @@ package com.atlassian.theplugin.jira.api;
 
 import org.jdom.Element;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Map;
 
 public class JIRAIssueBean implements JIRAIssue {
@@ -11,14 +9,16 @@ public class JIRAIssueBean implements JIRAIssue {
     private String key;
     private String summary;
 	private String status;
-	private URL statusUrl;
+	private String statusUrl;
 	private String type;
-    private URL typeUrl;
-    private String description;
+    private String typeUrl;
+	private String priority;
+	private String priorityUrl;
+	private String description;
     private String projectKey;
 	private JIRAConstant statusConstant;
 	private JIRAConstant typeConstant;
-    private String assignee;
+	private String assignee;
 
     public JIRAIssueBean() {
     }
@@ -29,27 +29,19 @@ public class JIRAIssueBean implements JIRAIssue {
         this.key = getTextSafely(e, "key");
         updateProjectKey();
 		this.status = getTextSafely(e, "status");
-        String statusUrlString = getAttributeSafely(e, "status", "iconUrl");
-		if (statusUrlString != null) {
-            try {
-                statusUrl = new URL(statusUrlString);
-            } catch (MalformedURLException e1) {
-				statusUrl = null;
-            }
-        }
+        this.statusUrl = getAttributeSafely(e, "status", "iconUrl");
+		this.priority = getTextSafely(e, "priority");
+        this.priorityUrl = getAttributeSafely(e, "priority", "iconUrl");		
 		this.description = getTextSafely(e, "description");
         this.type = getTextSafely(e, "type");
-        String typeUrlString = getAttributeSafely(e, "type", "iconUrl");
-        if (typeUrlString != null) {
-            try {
-                typeUrl = new URL(typeUrlString);
-            } catch (MalformedURLException e1) {
-                typeUrl = null;
-            }
-        }
+        this.typeUrl = getAttributeSafely(e, "type", "iconUrl");
     }
 
-    public JIRAIssueBean(String serverUrl, Map params) {
+	public void setPriority(String priority) {
+		this.priority = priority;
+	}
+
+	public JIRAIssueBean(String serverUrl, Map params) {
         this.serverUrl = serverUrl;
         this.summary = (String) params.get("summary");
 		this.status = (String) params.get("status");
@@ -57,7 +49,8 @@ public class JIRAIssueBean implements JIRAIssue {
         updateProjectKey();
         this.description = (String) params.get("description");
         this.type = (String) params.get("type");
-    }
+		this.priority = (String) params.get("priority");
+	}
 
     private void updateProjectKey() {
         if (key != null) {
@@ -109,8 +102,16 @@ public class JIRAIssueBean implements JIRAIssue {
 		return status;
 	}
 
-	public URL getStatusTypeUrl() {
+	public String getStatusTypeUrl() {
 		return statusUrl;
+	}
+
+	public String getPriority() {
+		return priority;
+	}
+
+	public String getPriorityIconUrl() {
+		return priorityUrl;
 	}
 
 	public String getKey() {
@@ -129,15 +130,7 @@ public class JIRAIssueBean implements JIRAIssue {
         return type;
     }
 
-    public JIRAConstant getTypeConstant() {
-        return typeConstant;
-    }
-
-	public JIRAConstant getStatusConstant() {
-		return statusConstant;
-	}
-
-	public URL getTypeIconUrl() {
+	public String getTypeIconUrl() {
         return typeUrl;
     }
 
@@ -149,38 +142,6 @@ public class JIRAIssueBean implements JIRAIssue {
         this.summary = summary;
     }
 
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        JIRAIssueBean that = (JIRAIssueBean) o;
-
-        if (key != null ? !key.equals(that.key) : that.key != null) {
-            return false;
-        }
-        if (serverUrl != null ? !serverUrl.equals(that.serverUrl) : that.serverUrl != null) {
-            return false;
-        }
-        if (summary != null ? !summary.equals(that.summary) : that.summary != null) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private static final int ONE_EFF = 31;
-    public int hashCode() {
-        int result;
-        result = (serverUrl != null ? serverUrl.hashCode() : 0);
-        result = ONE_EFF * result + (key != null ? key.hashCode() : 0);
-        result = ONE_EFF * result + (summary != null ? summary.hashCode() : 0);
-        return result;
-    }
-
     public void setProjectKey(String projectKey) {
         this.projectKey = projectKey;
     }
@@ -189,10 +150,18 @@ public class JIRAIssueBean implements JIRAIssue {
         this.description = description;
     }
 
-    public void setType(JIRAConstant type) {
+	public JIRAConstant getTypeConstant() {
+		return typeConstant;
+	}
+
+	public void setType(JIRAConstant type) {
         this.type = type.getName();
         this.typeConstant = type;
     }
+
+	public JIRAConstant getStatusConstant() {
+		return statusConstant;
+	}
 
 	public void setStatus(JIRAConstant status) {
 		this.status = status.getName();
@@ -206,4 +175,36 @@ public class JIRAIssueBean implements JIRAIssue {
     public void setAssignee(String assignee) {
         this.assignee = assignee;
     }
+
+	public boolean equals(Object o) {
+		 if (this == o) {
+			 return true;
+		 }
+		 if (o == null || getClass() != o.getClass()) {
+			 return false;
+		 }
+
+		 JIRAIssueBean that = (JIRAIssueBean) o;
+
+		 if (key != null ? !key.equals(that.key) : that.key != null) {
+			 return false;
+		 }
+		 if (serverUrl != null ? !serverUrl.equals(that.serverUrl) : that.serverUrl != null) {
+			 return false;
+		 }
+		 if (summary != null ? !summary.equals(that.summary) : that.summary != null) {
+			 return false;
+		 }
+
+		 return true;
+	 }
+
+	 private static final int ONE_EFF = 31;
+	 public int hashCode() {
+		 int result;
+		 result = (serverUrl != null ? serverUrl.hashCode() : 0);
+		 result = ONE_EFF * result + (key != null ? key.hashCode() : 0);
+		 result = ONE_EFF * result + (summary != null ? summary.hashCode() : 0);
+		 return result;
+	 }
 }

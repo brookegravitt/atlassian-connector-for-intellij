@@ -7,23 +7,23 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 
 
-public class IssueStatusCellRenderer extends DefaultTableCellRenderer {
+public class IssuePriorityCellRenderer extends DefaultTableCellRenderer {
 	public Component getTableCellRendererComponent(JTable jTable,
 												   Object o, boolean isSelected, boolean hasFocus, int i, int i1) {
 		Component c = super.getTableCellRendererComponent(jTable, o, isSelected, hasFocus, i, i1);
 		if (o instanceof JiraIssueAdapter) {
 			JiraIssueAdapter issueAdapter = (JiraIssueAdapter) o;
-			if (issueAdapter.getStatusTypeIcon() != null) {
-				((JLabel) c).setToolTipText(issueAdapter.getStatus());
+			if (issueAdapter.getPriorityIcon() != null) {
+				((JLabel) c).setToolTipText(issueAdapter.getPriority());
 				if (issueAdapter.isUseIconDescription()) {
-					((JLabel) c).setText(issueAdapter.getStatus());
+					((JLabel) c).setText(issueAdapter.getPriority());
 				} else {
-					((JLabel) c).setText("");					
+					((JLabel) c).setText("");
 				}
-				((JLabel) c).setIcon(issueAdapter.getStatusTypeIcon());
+				((JLabel) c).setIcon(issueAdapter.getPriorityIcon());
 			} else {
-				((JLabel) c).setToolTipText(issueAdapter.getStatus());
-				((JLabel) c).setText(issueAdapter.getStatus());
+				((JLabel) c).setToolTipText(issueAdapter.getPriority());
+				((JLabel) c).setText(issueAdapter.getPriority());
 				((JLabel) c).setIcon(null);
 			}
 		}
