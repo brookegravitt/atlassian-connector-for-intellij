@@ -14,7 +14,10 @@ import com.atlassian.theplugin.idea.jira.table.JIRATableColumnProvider;
 import com.atlassian.theplugin.idea.ui.AtlassianTableView;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
-import com.atlassian.theplugin.jira.api.*;
+import com.atlassian.theplugin.jira.api.JIRAException;
+import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.atlassian.theplugin.jira.api.JIRAProjectBean;
+import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -39,11 +42,11 @@ import java.util.Map;
 import java.util.concurrent.FutureTask;
 
 public class JIRAToolWindowPanel extends JPanel {
-    private JEditorPane editorPane;
-    private JPanel toolBarPanel;
-    private ListTableModel listTableModel;
-    private AtlassianTableView table;
-    private static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
+	private JEditorPane editorPane;
+	private JPanel toolBarPanel;
+	private ListTableModel listTableModel;
+	private AtlassianTableView table;
+	private static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
 	private transient ActionToolbar filterToolbarTop;
 	private transient ActionToolbar filterToolbarBottom;
 
@@ -57,7 +60,7 @@ public class JIRAToolWindowPanel extends JPanel {
 							   ProjectConfigurationBean projectConfigurationBean,
 							   Project project,
 							   JIRAServerFacade jiraServerFacade) {
-        super(new BorderLayout());
+		super(new BorderLayout());
 
 		this.pluginConfiguration = pluginConfiguration;
 		this.project = project;
@@ -65,24 +68,24 @@ public class JIRAToolWindowPanel extends JPanel {
 
 		setBackground(UIUtil.getTreeTextBackground());
 
-        toolBarPanel = new JPanel(new BorderLayout());
-        ActionManager aManager = ActionManager.getInstance();
-        ActionGroup serverToolBar = (ActionGroup) aManager.getAction("ThePlugin.JIRA.ServerToolBar");
-        ActionToolbar actionToolbar = aManager.createActionToolbar(
+		toolBarPanel = new JPanel(new BorderLayout());
+		ActionManager aManager = ActionManager.getInstance();
+		ActionGroup serverToolBar = (ActionGroup) aManager.getAction("ThePlugin.JIRA.ServerToolBar");
+		ActionToolbar actionToolbar = aManager.createActionToolbar(
 				"atlassian.toolwindow.serverToolBar", serverToolBar, true);
-        toolBarPanel.add(actionToolbar.getComponent(), BorderLayout.NORTH);
+		toolBarPanel.add(actionToolbar.getComponent(), BorderLayout.NORTH);
 
-        add(toolBarPanel, BorderLayout.NORTH);
+		add(toolBarPanel, BorderLayout.NORTH);
 
-        // setup initial query fragments
-        queryFragments.put(MyIssuesAction.QF_NAME, new MyIssuesAction());
-        queryFragments.put(UnresolvedIssuesAction.QF_NAME, new UnresolvedIssuesAction());
+		// setup initial query fragments
+		queryFragments.put(MyIssuesAction.QF_NAME, new MyIssuesAction());
+		queryFragments.put(UnresolvedIssuesAction.QF_NAME, new UnresolvedIssuesAction());
 
-        editorPane = new ToolWindowBambooContent();
-        editorPane.setEditorKit(new ClasspathHTMLEditorKit());
-        JScrollPane pane = setupPane(editorPane, wrapBody("Select a JIRA server to retrieve your issues."));
-        editorPane.setMinimumSize(ED_PANE_MINE_SIZE);
-        add(pane, BorderLayout.SOUTH);
+		editorPane = new ToolWindowBambooContent();
+		editorPane.setEditorKit(new ClasspathHTMLEditorKit());
+		JScrollPane pane = setupPane(editorPane, wrapBody("Select a JIRA server to retrieve your issues."));
+		editorPane.setMinimumSize(ED_PANE_MINE_SIZE);
+		add(pane, BorderLayout.SOUTH);
 
 		TableColumnInfo[] columns = JIRATableColumnProvider.makeColumnInfo();
 		listTableModel = new ListTableModel(columns);
@@ -91,90 +94,90 @@ public class JIRAToolWindowPanel extends JPanel {
 				projectConfigurationBean.getJiraConfiguration().getTableConfiguration());
 		table.prepareColumns(columns, JIRATableColumnProvider.makeRendererInfo());
 
-        table.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) { // on double click, just open the issue
-                if (e.getClickCount() == 2) {
-                    String issue = ((JiraIssueAdapter) table.getSelectedObject()).getIssueUrl();
-                    if (issue != null) {
-                        BrowserUtil.launchBrowser(issue);
-                    }
-                }
-            }
+		table.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) { // on double click, just open the issue
+				if (e.getClickCount() == 2) {
+					String issue = ((JiraIssueAdapter) table.getSelectedObject()).getIssueUrl();
+					if (issue != null) {
+						BrowserUtil.launchBrowser(issue);
+					}
+				}
+			}
 
-            public void mousePressed(MouseEvent e) {
-                maybeShowPopup(e);
-            }
+			public void mousePressed(MouseEvent e) {
+				maybeShowPopup(e);
+			}
 
-            public void mouseReleased(MouseEvent e) {
-                maybeShowPopup(e);
-            }
+			public void mouseReleased(MouseEvent e) {
+				maybeShowPopup(e);
+			}
 
-            private void maybeShowPopup(MouseEvent e) { // on right click, show a context menu for this issue
-                if (e.isPopupTrigger() && table.isEnabled()) {
-                    JIRAIssue issue = ((JiraIssueAdapter) table.getSelectedObject()).getIssue();
+			private void maybeShowPopup(MouseEvent e) { // on right click, show a context menu for this issue
+				if (e.isPopupTrigger() && table.isEnabled()) {
+					JIRAIssue issue = ((JiraIssueAdapter) table.getSelectedObject()).getIssue();
 
-                    if (issue != null) {
-                        Point p = new Point(e.getX(), e.getY());
-                        JPopupMenu contextMenu = createContextMenu(issue);
-                        contextMenu.show(table, p.x, p.y);
-                    }
-                }
-            }
-        });
+					if (issue != null) {
+						Point p = new Point(e.getX(), e.getY());
+						JPopupMenu contextMenu = createContextMenu(issue);
+						contextMenu.show(table, p.x, p.y);
+					}
+				}
+			}
+		});
 
 		createFilterToolBar();
 
-		add(new JScrollPane(table), BorderLayout.CENTER);						
+		add(new JScrollPane(table), BorderLayout.CENTER);
 	}
 
 	private JPopupMenu createContextMenu(JIRAIssue issue) {
-        JPopupMenu contextMenu = new JPopupMenu();
-        contextMenu.add(makeWebUrlMenu("View", issue.getIssueUrl()));
-        contextMenu.add(makeWebUrlMenu("Edit",
+		JPopupMenu contextMenu = new JPopupMenu();
+		contextMenu.add(makeWebUrlMenu("View", issue.getIssueUrl()));
+		contextMenu.add(makeWebUrlMenu("Edit",
 				issue.getServerUrl() + "/secure/EditIssue!default.jspa?key=" + issue.getKey()));
-        contextMenu.addSeparator();
-        contextMenu.add(new JMenuItem(new CommentIssueAction()));
-        contextMenu.add(makeWebUrlMenu("Log Work", issue.getServerUrl()
-                + "/secure/CreateWorklog!default.jspa?key=" + issue.getKey()));
-        contextMenu.add(makeWebUrlMenu("Commit Changes Against Issue", issue.getServerUrl()
-                + "/secure/EditIssue!default.jspa?key=" + issue.getKey()));
-        contextMenu.add(new JMenuItem(new CreateChangeListAction(issue, project)));
+		contextMenu.addSeparator();
+		contextMenu.add(new JMenuItem(new CommentIssueAction()));
+		contextMenu.add(makeWebUrlMenu("Log Work", issue.getServerUrl()
+				+ "/secure/CreateWorklog!default.jspa?key=" + issue.getKey()));
+		contextMenu.add(makeWebUrlMenu("Commit Changes Against Issue", issue.getServerUrl()
+				+ "/secure/EditIssue!default.jspa?key=" + issue.getKey()));
+		contextMenu.add(new JMenuItem(new CreateChangeListAction(issue, project)));
 
-        return contextMenu;
-    }
+		return contextMenu;
+	}
 
-    private JMenuItem makeWebUrlMenu(String menuName, final String url) {
-        JMenuItem viewInBrowser = new JMenuItem();
-        viewInBrowser.setText(menuName);
-        viewInBrowser.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                BrowserUtil.launchBrowser(url);
-            }
-        });
-        return viewInBrowser;
-    }
+	private JMenuItem makeWebUrlMenu(String menuName, final String url) {
+		JMenuItem viewInBrowser = new JMenuItem();
+		viewInBrowser.setText(menuName);
+		viewInBrowser.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				BrowserUtil.launchBrowser(url);
+			}
+		});
+		return viewInBrowser;
+	}
 
-    private JScrollPane setupPane(JEditorPane pane, String initialText) {
-        pane.setText(initialText);
-        JScrollPane scrollPane = new JScrollPane(pane,
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setWheelScrollingEnabled(true);
-        return scrollPane;
-    }
+	private JScrollPane setupPane(JEditorPane pane, String initialText) {
+		pane.setText(initialText);
+		JScrollPane scrollPane = new JScrollPane(pane,
+				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.setWheelScrollingEnabled(true);
+		return scrollPane;
+	}
 
-    public void refreshIssues() {
-        if (IdeaHelper.getCurrentJIRAServer() != null) {
-            updateIssues(IdeaHelper.getCurrentJIRAServer());
-        }
+	public void refreshIssues() {
+		if (IdeaHelper.getCurrentJIRAServer() != null) {
+			updateIssues(IdeaHelper.getCurrentJIRAServer());
+		}
 
 	}
 
 	public void clearIssues() {
-        listTableModel.setItems(new ArrayList<JiraIssueAdapter>());
-        listTableModel.fireTableDataChanged();
-        table.setEnabled(false);
-        editorPane.setText(wrapBody("No issues for server."));
-    }
+		listTableModel.setItems(new ArrayList<JiraIssueAdapter>());
+		listTableModel.fireTableDataChanged();
+		table.setEnabled(false);
+		editorPane.setText(wrapBody("No issues for server."));
+	}
 
 	public void setIssues(List<JIRAIssue> issues) {
 		List<JiraIssueAdapter> adapters = new ArrayList<JiraIssueAdapter>();
@@ -184,76 +187,76 @@ public class JIRAToolWindowPanel extends JPanel {
 					pluginConfiguration.getJIRAConfigurationData().isDisplayIconDescription()));
 		}
 		listTableModel.setItems(adapters);
-        listTableModel.fireTableDataChanged();
-        table.setEnabled(true);
-        table.setForeground(UIUtil.getActiveTextColor());
-        editorPane.setText(wrapBody("Loaded <b>" + issues.size() + "</b> issues."));
-    }
+		listTableModel.fireTableDataChanged();
+		table.setEnabled(true);
+		table.setForeground(UIUtil.getActiveTextColor());
+		editorPane.setText(wrapBody("Loaded <b>" + issues.size() + "</b> issues."));
+	}
 
-    private String wrapBody(String s) {
-        return "<html>" + HtmlBambooStatusListener.BODY_WITH_STYLE + s + "</body></html>";
+	private String wrapBody(String s) {
+		return "<html>" + HtmlBambooStatusListener.BODY_WITH_STYLE + s + "</body></html>";
 
-    }
+	}
 
-    public void selectServer(Server server) {
-        if (server != null) {
+	public void selectServer(Server server) {
+		if (server != null) {
 			System.out.println("Selecting JIRA server");
 
 			IdeaHelper.getCurrentProject().
 					getComponent(ThePluginProjectComponent.class).
 					getProjectConfigurationBean().getJiraConfiguration().setSelectedServerId(server.getUid());
-			
-			final JIRAServer jiraServer = new JIRAServer(server, jiraServerFacade);
-            IdeaHelper.setCurrentJIRAServer(jiraServer);
 
-            FutureTask task = new FutureTask(new Runnable() {
-                public void run() {
+			final JIRAServer jiraServer = new JIRAServer(server, jiraServerFacade);
+			IdeaHelper.setCurrentJIRAServer(jiraServer);
+
+			FutureTask task = new FutureTask(new Runnable() {
+				public void run() {
 					filterToolbarSetVisible(false);
-					clearIssues();					
+					clearIssues();
 					setStatusMessage("Retrieving statuses...");
-                    List statuses = jiraServer.getStatuses(); // ensure statuses are cached
-                    if (!jiraServer.isValidServer()) {
-                        setStatusMessage("Unable to connect to server." + jiraServer.getErrorMessage());
-                        return;
-                    }
-                    String msg = "Found <b>" + statuses.size() + "</b> statuses.<br>";
-                    setStatusMessage(msg + "Retrieving issue types...");
-                    List types = jiraServer.getIssueTypes(); // ensure types are cached
-                    if (!jiraServer.isValidServer()) {
-                        setStatusMessage("Unable to connect to server." + jiraServer.getErrorMessage());
-                        return;
-                    }
+					List statuses = jiraServer.getStatuses(); // ensure statuses are cached
+					if (!jiraServer.isValidServer()) {
+						setStatusMessage("Unable to connect to server." + jiraServer.getErrorMessage());
+						return;
+					}
+					String msg = "Found <b>" + statuses.size() + "</b> statuses.<br>";
+					setStatusMessage(msg + "Retrieving issue types...");
+					List types = jiraServer.getIssueTypes(); // ensure types are cached
+					if (!jiraServer.isValidServer()) {
+						setStatusMessage("Unable to connect to server." + jiraServer.getErrorMessage());
+						return;
+					}
 					msg += "Found <b>" + types.size() + "</b> issue types.<br>";
-                    setStatusMessage(msg + "Retrieving projects...");
-                    jiraServer.getProjects(); // ensure projects are cached
-                    if (!jiraServer.isValidServer()) {
-                        setStatusMessage("Unable to connect to server." + jiraServer.getErrorMessage());
-                        return;
-                    }
+					setStatusMessage(msg + "Retrieving projects...");
+					jiraServer.getProjects(); // ensure projects are cached
+					if (!jiraServer.isValidServer()) {
+						setStatusMessage("Unable to connect to server." + jiraServer.getErrorMessage());
+						return;
+					}
 					if (jiraServer.equals(IdeaHelper.getCurrentJIRAServer())) {
 						updateIssues(jiraServer);
 						filterToolbarSetVisible(true);
 					}
 				}
-            }, null);
+			}, null);
 
-            new Thread(task).start();
-        }
-    }
+			new Thread(task).start();
+		}
+	}
 
-    private void setStatusMessage(String msg) {
-        editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">" + msg + "</td></tr></table>"));
-    }
+	private void setStatusMessage(String msg) {
+		editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">" + msg + "</td></tr></table>"));
+	}
 
-    private void createFilterToolBar() {
-        ActionManager actionManager = ActionManager.getInstance();
-        ActionGroup filterToolBarTop = (ActionGroup) actionManager.getAction("ThePlugin.JIRA.FilterToolBarTop");
-        ActionGroup filterToolBarBottom = (ActionGroup) actionManager.getAction("ThePlugin.JIRA.FilterToolBarBottom");
+	private void createFilterToolBar() {
+		ActionManager actionManager = ActionManager.getInstance();
+		ActionGroup filterToolBarTop = (ActionGroup) actionManager.getAction("ThePlugin.JIRA.FilterToolBarTop");
+		ActionGroup filterToolBarBottom = (ActionGroup) actionManager.getAction("ThePlugin.JIRA.FilterToolBarBottom");
 		filterToolbarTop = actionManager.createActionToolbar("atlassian.toolwindow.filterToolBarTop",
-                filterToolBarTop, true);
+				filterToolBarTop, true);
 		toolBarPanel.add(filterToolbarTop.getComponent(), BorderLayout.CENTER);
 		filterToolbarBottom = actionManager.createActionToolbar("atlassian.toolwindow.filterToolBarBottom",
-                filterToolBarBottom, true);
+				filterToolBarBottom, true);
 		filterToolbarSetVisible(false);
 		toolBarPanel.add(filterToolbarBottom.getComponent(), BorderLayout.SOUTH);
 	}
@@ -265,69 +268,71 @@ public class JIRAToolWindowPanel extends JPanel {
 
 
 	private void updateIssues(final JIRAServer jiraServer) {
-        table.setEnabled(false);
-        table.setForeground(UIUtil.getInactiveTextColor());
+		table.setEnabled(false);
+		table.setForeground(UIUtil.getInactiveTextColor());
 
-        final Server server = jiraServer.getServer();
-        editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">Retrieving your issues from <b>"
-                + server.getName() + "</b>...</td></tr></table>"));
-        editorPane.setCaretPosition(0);
+		final Server server = jiraServer.getServer();
+		editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">Retrieving your issues from <b>"
+				+ server.getName() + "</b>...</td></tr></table>"));
+		editorPane.setCaretPosition(0);
 
-        FutureTask task = new FutureTask(new Runnable() {
-            public void run() {
-                JIRAServerFacade serverFacade = jiraServerFacade;
+		FutureTask task = new FutureTask(new Runnable() {
+			public void run() {
+				JIRAServerFacade serverFacade = jiraServerFacade;
 
-                try {
-                    List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
-                    query.addAll(queryFragments.values());
-                    System.out.println("query = " + query);
-                    List result = serverFacade.getIssues(jiraServer.getServer(), query);
-                    setIssues(result);
-                } catch (JIRAException e) {
-                    editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">Error contacting server <b>"
-                            + server.getName() + "</b>?</td></tr></table>"));
-                }
-            }
-        }, null);
+				try {
+					List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
+					query.addAll(queryFragments.values());
+					System.out.println("query = " + query);
+					List result = serverFacade.getIssues(jiraServer.getServer(), query);
+					setIssues(result);
+				} catch (JIRAException e) {
+					editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">Error contacting server <b>"
+							+ server.getName() + "</b>?</td></tr></table>"));
+				}
+			}
+		}, null);
 
-        new Thread(task).start();
-    }
+		new Thread(task).start();
+	}
 
-    public void addQueryFragment(String fragmentName, JIRAQueryFragment fragment) {
-        if (fragment == null) {
-            queryFragments.remove(fragmentName);
+	public void addQueryFragment(String fragmentName, JIRAQueryFragment fragment) {
+		if (fragment == null) {
+			queryFragments.remove(fragmentName);
 			if ("project".equals(fragmentName)) {
 				IdeaHelper.getCurrentJIRAServer().setCurrentProject("");
 			}
 		} else {
-            queryFragments.put(fragmentName, fragment);
+			queryFragments.put(fragmentName, fragment);
 			if ("project".equals(fragmentName)) {
-				IdeaHelper.getCurrentJIRAServer().setCurrentProject(Long.toString(((JIRAProjectBean)fragment).getId()));
+				if (fragment instanceof JIRAProjectBean) {
+					IdeaHelper.getCurrentJIRAServer().setCurrentProject(Long.toString(((JIRAProjectBean) fragment).getId()));
+				}
 			}
 		}
 	}
 
-    public List<JiraIssueAdapter> getIssues() {
-        return (List<JiraIssueAdapter>) listTableModel.getItems();
-    }
+	public List<JiraIssueAdapter> getIssues() {
+		return (List<JiraIssueAdapter>) listTableModel.getItems();
+	}
 
-    public JIRAIssue getCurrentIssue() {
-        return ((JiraIssueAdapter) table.getSelectedObject()).getIssue();
-    }
+	public JIRAIssue getCurrentIssue() {
+		return ((JiraIssueAdapter) table.getSelectedObject()).getIssue();
+	}
 
-    public class CommentIssueAction extends AbstractAction {
-        public CommentIssueAction() {
-            putValue(Action.NAME, "Add Comment");
-        }
+	public class CommentIssueAction extends AbstractAction {
+		public CommentIssueAction() {
+			putValue(Action.NAME, "Add Comment");
+		}
 
-        public void actionPerformed(ActionEvent e) {
-            JIRAIssue issue = ((JiraIssueAdapter) table.getSelectedObject()).getIssue();
-            IssueComment issueComment = new IssueComment(
+		public void actionPerformed(ActionEvent e) {
+			JIRAIssue issue = ((JiraIssueAdapter) table.getSelectedObject()).getIssue();
+			IssueComment issueComment = new IssueComment(
 					jiraServerFacade, IdeaHelper.getCurrentJIRAServer(), getIssues());
-            issueComment.setIssue(issue);
-            issueComment.show();
-        }
-    }
+			issueComment.setIssue(issue);
+			issueComment.show();
+		}
+	}
 
 	public static class CreateChangeListAction extends AbstractAction {
 		private final transient Project project;
