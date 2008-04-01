@@ -38,7 +38,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 			Field f = CrucibleServerFacadeImpl.class.getDeclaredField("sessions");
 			f.setAccessible(true);
 
-			((Map<String, CrucibleSession>) f.get(facade)).put(VALID_URL, crucibleSessionMock);
+			((Map<String, CrucibleSession>) f.get(facade)).put(VALID_URL + VALID_LOGIN + VALID_PASSWORD, crucibleSessionMock);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
