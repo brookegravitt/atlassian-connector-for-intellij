@@ -1,0 +1,13 @@
+<assembly>
+  <id>metadata</id>
+  <formats>
+    <format>dir</format>
+  </formats>
+  <files>
+    <file>
+      <source>latestStableVersion.xml</source>
+      <outputDirectory>/</outputDirectory>
+      <filtered>true</filtered>
+    </file>
+  </files>
+</assembly>
