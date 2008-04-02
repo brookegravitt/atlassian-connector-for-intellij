@@ -9,7 +9,7 @@ import com.atlassian.theplugin.remoteapi.RemoteApiLoginException;
 import java.util.List;
 
 public class JIRAServerFacadeImpl implements JIRAServerFacade {
-    private static final int MAX_ISSUES_DEFAULT = 50;
+    private static final int MAX_ISSUES_DEFAULT = 150;
 
     public void testServerConnection(String url, String userName, String password) throws RemoteApiException {
         JIRAXmlRpcClient client = new JIRAXmlRpcClient(url);
