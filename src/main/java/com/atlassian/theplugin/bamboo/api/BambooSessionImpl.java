@@ -2,7 +2,7 @@ package com.atlassian.theplugin.bamboo.api;
 
 import com.atlassian.theplugin.bamboo.*;
 import com.atlassian.theplugin.remoteapi.*;
-import com.atlassian.theplugin.remoteapi.rest.AbstractRestSession;
+import com.atlassian.theplugin.remoteapi.rest.AbstractHttpSession;
 import org.apache.commons.httpclient.HttpMethod;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * Communication stub for Bamboo REST API.
  */
-class BambooSessionImpl extends AbstractRestSession implements BambooSession {
+class BambooSessionImpl extends AbstractHttpSession implements BambooSession {
 	private static final String LOGIN_ACTION = "/api/rest/login.action";
 	private static final String LOGOUT_ACTION = "/api/rest/logout.action";
 	private static final String LIST_PROJECT_ACTION = "/api/rest/listProjectNames.action";
