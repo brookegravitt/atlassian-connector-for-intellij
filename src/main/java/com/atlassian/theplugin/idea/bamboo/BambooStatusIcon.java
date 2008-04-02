@@ -14,9 +14,9 @@ import java.awt.event.MouseEvent;
 
 public class BambooStatusIcon extends StatusBarPluginIcon implements BambooStatusDisplay {
 
-	private static final Icon ICON_RED = IconLoader.getIcon("/icons/ico_bamboo_red.png");
-	private static final Icon ICON_GREEN = IconLoader.getIcon("/icons/ico_bamboo_green.png");
-	private static final Icon ICON_GREY = IconLoader.getIcon("/icons/ico_bamboo_grey.png");
+	private static final Icon ICON_RED = IconLoader.getIcon("/icons/red-16.png");
+	private static final Icon ICON_GREEN = IconLoader.getIcon("/icons/green-16.png");
+	private static final Icon ICON_GREY = IconLoader.getIcon("/icons/grey-16.png");
 
 //	private final PluginStatusBarToolTip tooltip;
 
