@@ -1,15 +1,12 @@
 package com.atlassian.theplugin.configuration;
 
-/**
- * Created by IntelliJ IDEA.
- * User: Jacek
- * Date: 2008-03-19
- * Time: 09:54:10
- * To change this template use File | Settings | File Templates.
- */
+import java.util.ArrayList;
+import java.util.List;
+
 public class JiraProjectConfiguration {
 	private ProjectToolWindowTableConfiguration tableConfiguration = new ProjectToolWindowTableConfiguration();
 	private long selectedServerId = 0;
+	private List<String> query = new ArrayList<String>();
 
 	public JiraProjectConfiguration() {
 	}
@@ -25,6 +22,7 @@ public class JiraProjectConfiguration {
 	public void copyConfiguration(JiraProjectConfiguration jiraConfiguration) {
 		tableConfiguration.copyConfiguration(jiraConfiguration.getTableConfiguration());
 		setSelectedServerId(jiraConfiguration.getSelectedServerId());
+		setQuery(jiraConfiguration.getQuery());
 	}
 
 	public long getSelectedServerId() {
@@ -33,5 +31,13 @@ public class JiraProjectConfiguration {
 
 	public void setSelectedServerId(long selectedServerId) {
 		this.selectedServerId = selectedServerId;
+	}
+
+	public List<String> getQuery() {
+		return query;
+	}
+
+	public void setQuery(List<String> query) {
+		this.query = query;
 	}
 }
