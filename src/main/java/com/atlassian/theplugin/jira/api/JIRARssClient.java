@@ -49,7 +49,7 @@ public class JIRARssClient {
 
         url.append("&sorter/field=" + sortBy + "&sorter/order=" + sortOrder + "&tempMax=" + max);
         url.append(appendAuthentication());
-
+		System.out.println("url.toString() = " + url.toString());
 //        System.out.println("url = " + url);
         
         try {

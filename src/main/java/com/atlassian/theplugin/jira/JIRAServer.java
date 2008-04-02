@@ -58,15 +58,10 @@ public class JIRAServer {
 
 	public List<JIRAConstant> getStatuses() {
 		validServer = false;
-		if (statuses == null || !currentProject.equals(lastProject)) {
+		if (statuses == null) {
 			errorMessage = null;
 			try {
-				if ("".equals(currentProject)) {
-					statuses = jiraServerFacade.getStatuses(server);
-				} else {
-					statuses = jiraServerFacade.getIssueTypesForProject(server, currentProject);
-				}
-				lastProject = currentProject;
+				statuses = jiraServerFacade.getStatuses(server);
 				validServer = true;
 			} catch (JIRAException e) {
 				errorMessage = e.getCause().getMessage();
@@ -80,10 +75,15 @@ public class JIRAServer {
 
 	public List<JIRAConstant> getIssueTypes() {
 		validServer = false;
-		if (issueTypes == null) {
+		if (issueTypes == null || !currentProject.equals(lastProject)) {
 			errorMessage = null;
 			try {
-				issueTypes = jiraServerFacade.getIssueTypes(server);
+				if ("".equals(currentProject)) {
+					issueTypes = jiraServerFacade.getIssueTypes(server);
+				} else {
+					issueTypes = jiraServerFacade.getIssueTypesForProject(server, currentProject);
+				}
+				lastProject = currentProject;						
 				validServer = true;
 			} catch (JIRAException e) {
 				errorMessage = e.getMessage();
