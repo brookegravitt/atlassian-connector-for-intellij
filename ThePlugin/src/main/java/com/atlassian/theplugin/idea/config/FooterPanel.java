@@ -88,7 +88,7 @@ public class FooterPanel extends JPanel {
 				+ "&versions=" + versionCodeForJira
 				+ "&issuetype=" + TICKET_TYPE_STORY;
 
-		final String helpUrl = Constants.HELP_URL_BASE;
+		final String helpUrl = Constants.HELP_URL_BASE + Constants.HELP_CONFIG_PANEL;
 
 		JPanel linkPanel = new JPanel();
 		
