@@ -53,18 +53,18 @@ public class JIRAServerFacadeImpl implements JIRAServerFacade {
 		return rss.getIssues(query, "updated", "DESC", MAX_ISSUES_DEFAULT);
     }
 
-	public List getSavedFilterIssues(Server server, JIRAQueryFragment query) throws JIRAException {
+	public List getSavedFilterIssues(Server server, List<JIRAQueryFragment> query) throws JIRAException {
 		JIRARssClient rss = null;
 		try {
 			rss = getSession(server);
 		} catch (RemoteApiException e) {
 			throw new JIRAException(e.getMessage(), e);
 		}
-		return rss.getSavedFilterIssues(query, "updated", "DESC", MAX_ISSUES_DEFAULT);
-		/*
-		JIRAXmlRpcClient client = new JIRAXmlRpcClient(server.getUrlString(), server.getUserName(), server.getPasswordString());
-		return client.getIssuesFromSavedFilter(query);
-		*/
+		if (query.size() != 1) {
+			throw new JIRAException("Only one saved filter could be used for query");
+		} else {
+			return rss.getSavedFilterIssues(query.get(0), "updated", "DESC", MAX_ISSUES_DEFAULT);
+		}
 	}	
 
 	public List getProjects(Server server) throws JIRAException {
