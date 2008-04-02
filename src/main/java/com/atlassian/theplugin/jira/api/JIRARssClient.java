@@ -8,7 +8,7 @@ package com.atlassian.theplugin.jira.api;
 
 import com.atlassian.theplugin.remoteapi.RemoteApiMalformedUrlException;
 import com.atlassian.theplugin.remoteapi.RemoteApiSessionExpiredException;
-import com.atlassian.theplugin.remoteapi.rest.AbstractRestSession;
+import com.atlassian.theplugin.remoteapi.rest.AbstractHttpSession;
 import com.intellij.openapi.diagnostic.Logger;
 import org.apache.commons.httpclient.HttpMethod;
 import org.jdom.Document;
@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-public class JIRARssClient extends AbstractRestSession {
+public class JIRARssClient extends AbstractHttpSession {
     private static final Logger LOGGER = Logger.getInstance(JIRARssClient.class.getName());
 
     public JIRARssClient(String url) throws RemoteApiMalformedUrlException {
