@@ -1,22 +1,20 @@
 package com.atlassian.theplugin.jira;
 
-import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.atlassian.theplugin.idea.jira.JiraIssueAdapter;
 
-import java.util.Comparator;
 import java.io.Serializable;
+import java.util.Comparator;
 
 public class IssueKeyComparator implements Comparator, Serializable {
 	static final long serialVersionUID = 903490105978352608L;
 	
 	public int compare(Object o, Object o1) {
-        JIRAIssue issue = (JIRAIssue) o;
-        String key = issue.getKey();
-        JIRAIssue issue1 = (JIRAIssue) o1;
-        String key1 = issue1.getKey();
+        String key = ((JiraIssueAdapter) o).getKey();
+        String key1 = ((JiraIssueAdapter) o1).getKey();
 
         // first, try to compare on projects
-        if (!issue.getProjectKey().equals(issue1.getProjectKey())) {
-            return issue.getProjectKey().compareTo(issue1.getProjectKey());
+        if (!((JiraIssueAdapter) o).getProjectKey().equals(((JiraIssueAdapter) o1).getProjectKey())) {
+            return ((JiraIssueAdapter) o).getProjectKey().compareTo(((JiraIssueAdapter) o1).getProjectKey());
         }
 
         // otherwise, if the same project - sort on issue ID
