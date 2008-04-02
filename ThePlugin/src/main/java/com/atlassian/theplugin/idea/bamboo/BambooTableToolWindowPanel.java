@@ -39,9 +39,9 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 	private static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
 	private static final DateFormat TIME_DF = new SimpleDateFormat("hh:mm a");
 
-	private static final Icon ICON_RUN = IconLoader.getIcon("/icons/bamboo-run.png");
-	private static final Icon ICON_LABEL = IconLoader.getIcon("/icons/bamboo-label.png");
-	private static final Icon ICON_COMMENT = IconLoader.getIcon("/icons/bamboo-comment.png");
+	private static final Icon ICON_RUN = IconLoader.getIcon("/actions/execute.png");
+	private static final Icon ICON_LABEL = IconLoader.getIcon("/modules/annotation.png");
+	private static final Icon ICON_COMMENT = IconLoader.getIcon("/actions/editSource.png");
 
 	public BambooTableToolWindowPanel(BambooServerFacade bambooFacade,
 									  ProjectConfigurationBean projectConfigurationBean) {
