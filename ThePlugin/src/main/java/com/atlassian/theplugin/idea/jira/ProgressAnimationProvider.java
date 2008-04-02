@@ -12,7 +12,7 @@ import java.awt.*;
  * Time: 13:35:13
  * To change this template use File | Settings | File Templates.
  */
-public class ProgressAnimationPanel extends JPanel {
+public class ProgressAnimationProvider extends JPanel {
 
 	private AnimatedProgressIcon progressIcon = new AnimatedProgressIcon("Progress Indicator");
 	private JComponent replacedComponent;
@@ -26,17 +26,17 @@ public class ProgressAnimationPanel extends JPanel {
 	 * @param replacedComponent component to hide (to replace by animated progress icon)
 	 * @param addConstraint constraind used to add replacedComponent
 	 */
-	public void setReplacedComponent(JComponent rootComponent, JComponent replacedComponent, Object addConstraint) {
+	public void configure(JComponent rootComponent, JComponent replacedComponent, Object addConstraint) {
 		this.rootComponent = rootComponent;
 		this.replacedComponent = replacedComponent;
 		this.addConstraint = addConstraint;
 	}
 
-	protected void startProgressAnimation() {
+	public void startProgressAnimation() {
 		EventQueue.invokeLater(new ProgressAnimation(true));
 	}
 
-	protected void stopProgressAnimation() {
+	public void stopProgressAnimation() {
 		EventQueue.invokeLater(new ProgressAnimation(false));
 	}
 

@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.FutureTask;
 
-public class JIRAToolWindowPanel extends ProgressAnimationPanel {
+public class JIRAToolWindowPanel extends JPanel {
     private JEditorPane editorPane;
     private JPanel toolBarPanel;
     private ListTableModel listTableModel;
@@ -50,6 +50,8 @@ public class JIRAToolWindowPanel extends ProgressAnimationPanel {
 	private static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
 	private transient ActionToolbar filterToolbarTop;
 	private transient ActionToolbar filterToolbarBottom;
+
+	private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
 
 
 	// a simple map to store all selected query fragments.
@@ -140,7 +142,7 @@ public class JIRAToolWindowPanel extends ProgressAnimationPanel {
 		add(scrollTable, BorderLayout.CENTER, 0);
 
 		// initialize animated panel functionality
-		setReplacedComponent(this, scrollTable, BorderLayout.CENTER);
+		progressAnimation.configure(this, scrollTable, BorderLayout.CENTER);
 	}
 
 	public List<String> serializeQuery() {
@@ -243,7 +245,7 @@ public class JIRAToolWindowPanel extends ProgressAnimationPanel {
 
 		public void run() {
 
-			startProgressAnimation();
+			progressAnimation.startProgressAnimation();
 			filterToolbarSetVisible(false);
 			clearIssues();
 			setStatusMessage("Retrieving statuses...");
@@ -281,7 +283,7 @@ public class JIRAToolWindowPanel extends ProgressAnimationPanel {
 				updateIssues(jiraServer);
 				filterToolbarSetVisible(true);
 			}
-			stopProgressAnimation();
+			progressAnimation.stopProgressAnimation();
 		}
 	}
 
@@ -320,7 +322,7 @@ public class JIRAToolWindowPanel extends ProgressAnimationPanel {
 
 		FutureTask task = new FutureTask(new Runnable() {
 			public void run() {
-				startProgressAnimation();
+				progressAnimation.startProgressAnimation();
 				JIRAServerFacade serverFacade = jiraServerFacade;
 
 				try {
@@ -341,7 +343,7 @@ public class JIRAToolWindowPanel extends ProgressAnimationPanel {
 					editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">Error contacting server <b>"
 							+ server.getName() + "</b>?</td></tr></table>"));
 				} finally {
-					stopProgressAnimation();
+					progressAnimation.stopProgressAnimation();
 				}
 			}
 		}, null);
