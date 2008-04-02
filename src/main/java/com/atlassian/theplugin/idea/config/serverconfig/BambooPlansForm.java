@@ -4,7 +4,7 @@ import com.atlassian.theplugin.bamboo.BambooPlan;
 import com.atlassian.theplugin.bamboo.BambooPlanData;
 import com.atlassian.theplugin.bamboo.BambooServerFacade;
 import com.atlassian.theplugin.configuration.*;
-import com.atlassian.theplugin.idea.jira.ProgressAnimationPanel;
+import com.atlassian.theplugin.idea.jira.ProgressAnimationProvider;
 import com.atlassian.theplugin.remoteapi.RemoteApiException;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -17,7 +17,7 @@ import java.util.*;
 import java.util.List;
 
 
-public class BambooPlansForm extends ProgressAnimationPanel {
+public class BambooPlansForm extends JPanel {
 	private JPanel statusPanel;
 	private JPanel toolbarPanel;
 	private JCheckBox cbUseFavouriteBuilds;
@@ -27,6 +27,7 @@ public class BambooPlansForm extends ProgressAnimationPanel {
 	private JEditorPane statusPane;
 	private JScrollPane scrollList;
 	private JPanel listPanel;
+	private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
 
 	private DefaultListModel model;
 
@@ -49,7 +50,7 @@ public class BambooPlansForm extends ProgressAnimationPanel {
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false);
 
-		setReplacedComponent(listPanel, scrollList, constraint);
+		progressAnimation.configure(listPanel, scrollList, constraint);
 
 		list.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
@@ -167,7 +168,7 @@ public class BambooPlansForm extends ProgressAnimationPanel {
 
 		new Thread(new Runnable() {
 			public void run() {
-				startProgressAnimation();
+				progressAnimation.startProgressAnimation();
 				StringBuffer msg = new StringBuffer();
 				String key = getServerKey(server);
 				if (!serverPlans.containsKey(key)) {
@@ -217,7 +218,7 @@ public class BambooPlansForm extends ProgressAnimationPanel {
 					}
 				});
 
-				stopProgressAnimation();
+				progressAnimation.stopProgressAnimation();
 
 			}
 		}).start();
