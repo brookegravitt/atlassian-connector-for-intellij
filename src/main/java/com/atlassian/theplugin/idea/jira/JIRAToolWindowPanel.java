@@ -228,8 +228,8 @@ public class JIRAToolWindowPanel extends JPanel {
 		}
 
 		public void run() {
+
 			startProgressAnimation();
-			//toolBarPanel.setEnabled(false);
 			filterToolbarSetVisible(false);
 			clearIssues();
 			setStatusMessage("Retrieving statuses...");
@@ -257,22 +257,42 @@ public class JIRAToolWindowPanel extends JPanel {
 				filterToolbarSetVisible(true);
 			}
 			stopProgressAnimation();
-			//toolBarPanel.setEnabled(true);
+		}
+	}
+
+	private class ProgressAnimation implements Runnable {
+		private boolean start;
+
+		public ProgressAnimation(boolean start) {
+			this.start = start;
+		}
+
+		public void run() {
+			if (start) {
+				JIRAToolWindowPanel.this.remove(scrollTable);
+				//scrollTable.setVisible(false);
+				JIRAToolWindowPanel.this.add(progressIcon, BorderLayout.CENTER);
+				JIRAToolWindowPanel.this.progressIcon.resume();
+				JIRAToolWindowPanel.this.repaint();
+				JIRAToolWindowPanel.this.requestFocus();
+			} else {
+				JIRAToolWindowPanel.this.progressIcon.suspend();
+				JIRAToolWindowPanel.this.remove(progressIcon);
+				JIRAToolWindowPanel.this.add(scrollTable, BorderLayout.CENTER);
+				//scrollTable.setVisible(true);
+				JIRAToolWindowPanel.this.repaint();
+				JIRAToolWindowPanel.this.requestFocus();
+			}
+
 		}
 	}
 
 	private void startProgressAnimation() {
-		this.remove(scrollTable);
-		this.add(progressIcon, BorderLayout.CENTER);
-		progressIcon.resume();
-		this.invalidate();
+		EventQueue.invokeLater(new ProgressAnimation(true));
 	}
 
 	private void stopProgressAnimation() {
-		this.remove(progressIcon);
-		this.add(scrollTable, BorderLayout.CENTER);
-		progressIcon.suspend();
-		this.invalidate();
+		EventQueue.invokeLater(new ProgressAnimation(false));
 	}
 
 	private void setStatusMessage(String msg) {
@@ -309,7 +329,7 @@ public class JIRAToolWindowPanel extends JPanel {
 
         FutureTask task = new FutureTask(new Runnable() {
             public void run() {
-				//startProgressAnimation();
+				startProgressAnimation();
 				JIRAServerFacade serverFacade = jiraServerFacade;
 
                 try {
@@ -323,7 +343,7 @@ public class JIRAToolWindowPanel extends JPanel {
                     editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">Error contacting server <b>"
                             + server.getName() + "</b>?</td></tr></table>"));
                 }
-				//stopProgressAnimation();
+				stopProgressAnimation();
 			}
         }, null);
 
