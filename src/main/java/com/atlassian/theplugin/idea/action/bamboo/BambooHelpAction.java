@@ -1,9 +1,11 @@
 package com.atlassian.theplugin.idea.action.bamboo;
 
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.atlassian.theplugin.idea.action.HelpAction;
 
-public class BambooHelpAction extends AnAction {
-	public void actionPerformed(AnActionEvent event) {
+public class BambooHelpAction extends HelpAction {
+
+	public BambooHelpAction() {
+		super("/BambooTab");
 	}
+
 }
