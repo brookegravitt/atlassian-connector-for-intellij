@@ -173,8 +173,9 @@
         <action id="ThePlugin.JIRA.ProjectCombo" class="com.atlassian.theplugin.idea.action.jira.ProjectComboAction" text="Any Project" />
         <action id="ThePlugin.JIRA.StatusCombo" class="com.atlassian.theplugin.idea.action.jira.StatusComboAction" text="Any Status" />
         <action id="ThePlugin.JIRA.TypeCombo" class="com.atlassian.theplugin.idea.action.jira.IssueTypeComboAction" text="Any Issue Type"/>
+        <action id="ThePlugin.JIRA.SavedFilterCombo" class="com.atlassian.theplugin.idea.action.jira.SavedFilterComboAction" text="No Saved Filter"/>
 
-        <action id="ThePlugin.JIRA.VersionCombo" class="com.atlassian.theplugin.idea.action.jira.SelectJIRAAction" text="Any Version" />
+		<action id="ThePlugin.JIRA.VersionCombo" class="com.atlassian.theplugin.idea.action.jira.SelectJIRAAction" text="Any Version" />
         <action id="ThePlugin.JIRA.ComponentCombo" class="com.atlassian.theplugin.idea.action.jira.SelectJIRAAction" text="Any Component" />
 
         <action id="ThePlugin.AddJIRAServerAction" class="com.atlassian.theplugin.idea.config.serverconfig.action.AddJIRAServerAction" text="JIRA Server" description="Add a new JIRA server" icon="/icons/jira-blue-16.png">
@@ -195,7 +196,8 @@
             <reference id="ThePlugin.JIRA.ProjectCombo"/>
             <reference id="ThePlugin.JIRA.StatusCombo"/>
             <reference id="ThePlugin.JIRA.TypeCombo"/>
-        </group>
+            <reference id="ThePlugin.JIRA.SavedFilterCombo"/>			
+		</group>
 
         <group id="ThePlugin.JIRA.FilterToolBarBottom" popup="true" >
             <!--<reference id="ThePlugin.JIRA.VersionCombo"/>-->

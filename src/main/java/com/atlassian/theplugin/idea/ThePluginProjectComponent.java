@@ -213,7 +213,8 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 					if (server.getUid() == uuid) {
 						jiraToolWindowPanel.selectServer(server);
 					}
-				}								
+				}
+				jiraToolWindowPanel.restoreQuery();
 			}
 
 			created = true;

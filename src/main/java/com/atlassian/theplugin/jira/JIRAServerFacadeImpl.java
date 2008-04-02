@@ -7,11 +7,28 @@ import com.atlassian.theplugin.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.remoteapi.RemoteApiLoginException;
 
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 public class JIRAServerFacadeImpl implements JIRAServerFacade {
-    private static final int MAX_ISSUES_DEFAULT = 150;
+    private static final int MAX_ISSUES_DEFAULT = 50;
 
-    public void testServerConnection(String url, String userName, String password) throws RemoteApiException {
+	private Map<String, JIRARssClient> sessions = new WeakHashMap<String, JIRARssClient>();
+
+
+	private synchronized JIRARssClient getSession(Server server) throws RemoteApiException {
+		// @todo old server will stay on map - remove them !!!
+		String key = server.getUserName() + server.getUrlString() + server.getPasswordString();
+		JIRARssClient session = sessions.get(key);
+		if (session == null) {
+			session = new JIRARssClient(server.getUrlString(), server.getUserName(), server.getPasswordString());
+			sessions.put(key, session);
+		}
+		return session;
+	}
+
+
+	public void testServerConnection(String url, String userName, String password) throws RemoteApiException {
         JIRAXmlRpcClient client = new JIRAXmlRpcClient(url);
         try {
             if (!client.login(userName, password)) {
@@ -27,11 +44,30 @@ public class JIRAServerFacadeImpl implements JIRAServerFacade {
 	}
 
 	public List getIssues(Server server, List<JIRAQueryFragment> query) throws JIRAException {
-        JIRARssClient rss = new JIRARssClient(server.getUrlString(), server.getUserName(), server.getPasswordString());
-        return rss.getIssues(query, "updated", "DESC", MAX_ISSUES_DEFAULT);
+		JIRARssClient rss = null;
+		try {
+			rss = getSession(server);
+		} catch (RemoteApiException e) {
+			throw new JIRAException(e.getMessage(), e);
+		}
+		return rss.getIssues(query, "updated", "DESC", MAX_ISSUES_DEFAULT);
     }
 
-    public List getProjects(Server server) throws JIRAException {
+	public List getSavedFilterIssues(Server server, JIRAQueryFragment query) throws JIRAException {
+		JIRARssClient rss = null;
+		try {
+			rss = getSession(server);
+		} catch (RemoteApiException e) {
+			throw new JIRAException(e.getMessage(), e);
+		}
+		return rss.getSavedFilterIssues(query, "updated", "DESC", MAX_ISSUES_DEFAULT);
+		/*
+		JIRAXmlRpcClient client = new JIRAXmlRpcClient(server.getUrlString(), server.getUserName(), server.getPasswordString());
+		return client.getIssuesFromSavedFilter(query);
+		*/
+	}	
+
+	public List getProjects(Server server) throws JIRAException {
         JIRAXmlRpcClient client = new JIRAXmlRpcClient(server.getUrlString(), server.getUserName(), server.getPasswordString());
         return client.getProjects();
     }
@@ -69,5 +105,10 @@ public class JIRAServerFacadeImpl implements JIRAServerFacade {
     public List getVersions(Server server, String projectKey) throws JIRAException {
         JIRAXmlRpcClient client = new JIRAXmlRpcClient(server.getUrlString(), server.getUserName(), server.getPasswordString());
         return client.getVersions(projectKey);
-    }
+	}
+
+	public List getSavedFilters(Server server) throws JIRAException {
+		JIRAXmlRpcClient client = new JIRAXmlRpcClient(server.getUrlString(), server.getUserName(), server.getPasswordString());
+		return client.getSavedFilters();		
+	}
 }
