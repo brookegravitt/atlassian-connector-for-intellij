@@ -13,7 +13,9 @@ import javax.swing.*;
 import java.util.Iterator;
 
 public class SavedFilterComboAction extends ComboBoxAction {
-    @NotNull
+    public static final String QF_NAME = "SavedFilter";	
+
+	@NotNull
     protected DefaultActionGroup createPopupActionGroup(JComponent jComponent) {
         final ComboBoxButton comboBox;
         if (!(jComponent instanceof ComboBoxButton)) {
@@ -49,7 +51,8 @@ public class SavedFilterComboAction extends ComboBoxAction {
 
         public void actionPerformed(AnActionEvent event) {
             comboBox.setText(event.getPresentation().getText());
-            IdeaHelper.getJIRAToolWindowPanel(event).refreshSavedFilterIssues(savedFilter);
-        }
+            IdeaHelper.getJIRAToolWindowPanel(event).addQueryFragment(QF_NAME, savedFilter);
+			IdeaHelper.getJIRAToolWindowPanel(event).refreshIssues();			
+		}
     }
 }
