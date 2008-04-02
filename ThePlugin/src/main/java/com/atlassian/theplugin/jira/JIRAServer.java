@@ -15,6 +15,7 @@ public class JIRAServer {
 	private List<JIRAProject> projects;
 	private List statuses;
 	private List issueTypes;
+	private List savedFilters;
 
 	private String lastProject = "";
 	private String currentProject = "";
@@ -93,6 +94,23 @@ public class JIRAServer {
 		}
 
 		return issueTypes;
+	}
+
+	public List<JIRAConstant> getSavedFilters() {
+		validServer = false;
+		if (savedFilters == null) {
+			errorMessage = null;
+			try {
+				savedFilters = jiraServerFacade.getSavedFilters(server);
+				validServer = true;
+			} catch (JIRAException e) {
+				errorMessage = e.getMessage();
+			}
+		} else {
+			validServer = true;
+		}
+
+		return savedFilters;
 	}
 
 	public boolean isValidServer() {

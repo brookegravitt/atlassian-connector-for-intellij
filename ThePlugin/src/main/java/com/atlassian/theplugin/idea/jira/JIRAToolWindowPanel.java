@@ -6,19 +6,15 @@ import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.TableColumnInfo;
-import com.atlassian.theplugin.idea.ThePluginProjectComponent;
 import com.atlassian.theplugin.idea.action.jira.MyIssuesAction;
 import com.atlassian.theplugin.idea.action.jira.UnresolvedIssuesAction;
 import com.atlassian.theplugin.idea.bamboo.ToolWindowBambooContent;
 import com.atlassian.theplugin.idea.jira.table.JIRATableColumnProvider;
-import com.atlassian.theplugin.idea.ui.AtlassianTableView;
 import com.atlassian.theplugin.idea.ui.AnimatedProgressIcon;
+import com.atlassian.theplugin.idea.ui.AtlassianTableView;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
-import com.atlassian.theplugin.jira.api.JIRAException;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.atlassian.theplugin.jira.api.JIRAProjectBean;
-import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
+import com.atlassian.theplugin.jira.api.*;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -43,10 +39,10 @@ import java.util.Map;
 import java.util.concurrent.FutureTask;
 
 public class JIRAToolWindowPanel extends JPanel {
-    private JEditorPane editorPane;
-    private JPanel toolBarPanel;
-    private ListTableModel listTableModel;
-    private AtlassianTableView table;
+	private JEditorPane editorPane;
+	private JPanel toolBarPanel;
+	private ListTableModel listTableModel;
+	private AtlassianTableView table;
 	private JScrollPane scrollTable;
 	private static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
 	private transient ActionToolbar filterToolbarTop;
@@ -58,6 +54,7 @@ public class JIRAToolWindowPanel extends JPanel {
 	private final transient Project project;
 	private final transient JIRAServerFacade jiraServerFacade;
 	private final transient PluginConfigurationBean pluginConfiguration;
+	private final transient ProjectConfigurationBean projectConfiguration;
 
 	public JIRAToolWindowPanel(PluginConfigurationBean pluginConfiguration,
 							   ProjectConfigurationBean projectConfigurationBean,
@@ -66,6 +63,7 @@ public class JIRAToolWindowPanel extends JPanel {
 		super(new BorderLayout());
 
 		this.pluginConfiguration = pluginConfiguration;
+		this.projectConfiguration = projectConfigurationBean;
 		this.project = project;
 		this.jiraServerFacade = jiraServerFacade;
 
@@ -88,9 +86,9 @@ public class JIRAToolWindowPanel extends JPanel {
 		queryFragments.get(UnresolvedIssuesAction.QF_NAME).add(new UnresolvedIssuesAction());
 
 		editorPane = new ToolWindowBambooContent();
-        editorPane.setEditorKit(new ClasspathHTMLEditorKit());
-        JScrollPane pane = setupPane(editorPane, wrapBody("Select a JIRA server to retrieve your issues."));
-        editorPane.setMinimumSize(ED_PANE_MINE_SIZE);
+		editorPane.setEditorKit(new ClasspathHTMLEditorKit());
+		JScrollPane pane = setupPane(editorPane, wrapBody("Select a JIRA server to retrieve your issues."));
+		editorPane.setMinimumSize(ED_PANE_MINE_SIZE);
 		add(pane, BorderLayout.SOUTH);
 
 		TableColumnInfo[] columns = JIRATableColumnProvider.makeColumnInfo();
@@ -100,15 +98,15 @@ public class JIRAToolWindowPanel extends JPanel {
 				projectConfigurationBean.getJiraConfiguration().getTableConfiguration());
 		table.prepareColumns(columns, JIRATableColumnProvider.makeRendererInfo());
 
-        table.addMouseListener(new MouseAdapter() {
+		table.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) { // on double click, just open the issue
-                if (e.getClickCount() == 2) {
-                    String issue = ((JiraIssueAdapter) table.getSelectedObject()).getIssueUrl();
-                    if (issue != null) {
-                        BrowserUtil.launchBrowser(issue);
-                    }
-                }
-            }
+				if (e.getClickCount() == 2) {
+					String issue = ((JiraIssueAdapter) table.getSelectedObject()).getIssueUrl();
+					if (issue != null) {
+						BrowserUtil.launchBrowser(issue);
+					}
+				}
+			}
 
 			public void mousePressed(MouseEvent e) {
 				maybeShowPopup(e);
@@ -135,6 +133,19 @@ public class JIRAToolWindowPanel extends JPanel {
 
 		scrollTable = new JScrollPane(table);
 		add(scrollTable, BorderLayout.CENTER);
+	}
+
+	public List<String> serializeQuery() {
+		List<String> query = new ArrayList<String>();
+		for (List<JIRAQueryFragment> jiraQueryFragments : queryFragments.values()) {
+			for (JIRAQueryFragment jiraQueryFragment : jiraQueryFragments) {
+				query.add(jiraQueryFragment.getQueryStringFragment());
+			}
+		}
+		return query;
+	}
+
+	public void restoreQuery() {
 	}
 
 	private JPopupMenu createContextMenu(JIRAIssue issue) {
@@ -207,11 +218,7 @@ public class JIRAToolWindowPanel extends JPanel {
 
 	public void selectServer(Server server) {
 		if (server != null) {
-			System.out.println("Selecting JIRA server");
-
-			IdeaHelper.getCurrentProject().
-					getComponent(ThePluginProjectComponent.class).
-					getProjectConfigurationBean().getJiraConfiguration().setSelectedServerId(server.getUid());
+			projectConfiguration.getJiraConfiguration().setSelectedServerId(server.getUid());
 
 			final JIRAServer jiraServer = new JIRAServer(server, jiraServerFacade);
 			IdeaHelper.setCurrentJIRAServer(jiraServer);
@@ -256,6 +263,17 @@ public class JIRAToolWindowPanel extends JPanel {
 				updateIssues(jiraServer);
 				filterToolbarSetVisible(true);
 			}
+			setStatusMessage(msg + "Retrieving saved filters...");
+			jiraServer.getSavedFilters();
+			if (!jiraServer.isValidServer()) {
+				setStatusMessage("Unable to connect to server." + jiraServer.getErrorMessage());
+				return;
+			}
+
+			if (jiraServer.equals(IdeaHelper.getCurrentJIRAServer())) {
+				updateIssues(jiraServer);
+				filterToolbarSetVisible(true);
+			}
 			stopProgressAnimation();
 		}
 	}
@@ -296,8 +314,8 @@ public class JIRAToolWindowPanel extends JPanel {
 	}
 
 	private void setStatusMessage(String msg) {
-        editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">" + msg + "</td></tr></table>"));
-    }
+		editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">" + msg + "</td></tr></table>"));
+	}
 
 	private void createFilterToolBar() {
 		ActionManager actionManager = ActionManager.getInstance();
@@ -327,25 +345,25 @@ public class JIRAToolWindowPanel extends JPanel {
 				+ server.getName() + "</b>...</td></tr></table>"));
 		editorPane.setCaretPosition(0);
 
-        FutureTask task = new FutureTask(new Runnable() {
-            public void run() {
+		FutureTask task = new FutureTask(new Runnable() {
+			public void run() {
 				startProgressAnimation();
 				JIRAServerFacade serverFacade = jiraServerFacade;
 
-                try {
-                    List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
+				try {
+					List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
 					for (List<JIRAQueryFragment> jiraQueryFragments : queryFragments.values()) {
 						query.addAll(jiraQueryFragments);
 					}
-                    List result = serverFacade.getIssues(jiraServer.getServer(), query);
-                    setIssues(result);
-                } catch (JIRAException e) {
-                    editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">Error contacting server <b>"
-                            + server.getName() + "</b>?</td></tr></table>"));
-                }
+					List result = serverFacade.getIssues(jiraServer.getServer(), query);
+					setIssues(result);
+				} catch (JIRAException e) {
+					editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">Error contacting server <b>"
+							+ server.getName() + "</b>?</td></tr></table>"));
+				}
 				stopProgressAnimation();
 			}
-        }, null);
+		}, null);
 
 		new Thread(task).start();
 	}
@@ -371,6 +389,7 @@ public class JIRAToolWindowPanel extends JPanel {
 				}
 			}
 		}
+		projectConfiguration.getJiraConfiguration().setQuery(serializeQuery());
 	}
 
 	public List<JiraIssueAdapter> getIssues() {
@@ -379,6 +398,39 @@ public class JIRAToolWindowPanel extends JPanel {
 
 	public JIRAIssue getCurrentIssue() {
 		return ((JiraIssueAdapter) table.getSelectedObject()).getIssue();
+	}
+
+	public void refreshSavedFilterIssues(final JIRASavedFilter savedFilter) {
+		final JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer();
+		if (jiraServer != null) {
+
+			table.setEnabled(false);
+			table.setForeground(UIUtil.getInactiveTextColor());
+
+			final Server server = jiraServer.getServer();
+			editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">Retrieving your issues from <b>"
+					+ server.getName() + "</b>...</td></tr></table>"));
+			editorPane.setCaretPosition(0);
+
+			FutureTask task = new FutureTask(new Runnable() {
+				public void run() {
+					startProgressAnimation();
+					JIRAServerFacade serverFacade = jiraServerFacade;
+
+					try {
+						List result = serverFacade.getSavedFilterIssues(jiraServer.getServer(), savedFilter);
+						setIssues(result);
+					} catch (JIRAException e) {
+						editorPane.
+								setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">Error contacting server <b>"
+								+ server.getName() + "</b>?</td></tr></table>"));
+					}
+					stopProgressAnimation();
+				}
+			}, null);
+
+			new Thread(task).start();
+		}
 	}
 
 	public class CommentIssueAction extends AbstractAction {
