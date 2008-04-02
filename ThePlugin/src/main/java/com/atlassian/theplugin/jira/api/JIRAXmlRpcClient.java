@@ -64,6 +64,32 @@ public class JIRAXmlRpcClient {
 		return loggedIn;
 	}
 
+	public List<JIRAIssue> getIssuesFromSavedFilter(JIRAQueryFragment query) throws JIRAException {
+		if (!loggedIn) {
+			login();
+		}
+
+		XmlRpcClient client = getClient();
+		Vector params = new Vector();
+		params.add(token);
+		params.add(query.getQueryStringFragment());
+
+		List retrieved = null;
+		try {
+			retrieved = (List) client.execute("jira1.getIssuesFromFilter", params);
+			List result = new ArrayList<JIRAProject>(retrieved.size());
+			for (Iterator iterator = retrieved.iterator(); iterator.hasNext();) {
+				result.add(new JIRAIssueBean(serverUrl, (Map) iterator.next()));
+			}
+			return result;
+		} catch (XmlRpcException e) {
+			throw new JIRAException("RPC not supported or remote error: " + e.getMessage(), e);
+		} catch (IOException e) {
+			throw new JIRAException("RPC not supported or remote error: " + e.getMessage(), e);
+		}
+	}
+
+
 	public List<JIRAProject> getProjects() throws JIRAException {
 		List projVector = getListFromRPCMethod("jira1.getProjects");
 		List result = new ArrayList<JIRAProject>(projVector.size());
@@ -150,8 +176,15 @@ public class JIRAXmlRpcClient {
 		}
 	}
 
-	public List getSavedFilters() throws JIRAException {
-		return getListFromRPCMethod("jira1.getSavedFilters");
+	public List<JIRAConstant> getSavedFilters() throws JIRAException {
+		List retrieved = getListFromRPCMethod("jira1.getSavedFilters");
+		List result = new ArrayList<JIRAConstant>(retrieved.size());
+		for (Iterator iterator = retrieved.iterator(); iterator.hasNext();) {
+			result.add(new JIRASavedFilterBean((Map) iterator.next()));
+		}
+		return result;
+
+
 	}
 
 	public List getResolutions() throws JIRAException {
