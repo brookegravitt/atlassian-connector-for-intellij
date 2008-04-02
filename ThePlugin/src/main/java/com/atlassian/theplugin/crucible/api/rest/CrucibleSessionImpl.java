@@ -2,7 +2,7 @@ package com.atlassian.theplugin.crucible.api.rest;
 
 import com.atlassian.theplugin.crucible.api.*;
 import com.atlassian.theplugin.remoteapi.*;
-import com.atlassian.theplugin.remoteapi.rest.AbstractRestSession;
+import com.atlassian.theplugin.remoteapi.rest.AbstractHttpSession;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpMethod;
 import org.jdom.Document;
@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * Communication stub for Bamboo REST API.
  */
-public class CrucibleSessionImpl extends AbstractRestSession implements CrucibleSession  {
+public class CrucibleSessionImpl extends AbstractHttpSession implements CrucibleSession  {
 	private static final String AUTH_SERVICE = "/rest-service/auth-v1";
 	private static final String REVIEW_SERVICE = "/rest-service/reviews-v1";
 	private static final String PROJECTS_SERVICE = "/rest-service/projects-v1";
