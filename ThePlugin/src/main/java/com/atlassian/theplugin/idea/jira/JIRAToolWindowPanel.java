@@ -216,54 +216,64 @@ public class JIRAToolWindowPanel extends JPanel {
 			final JIRAServer jiraServer = new JIRAServer(server, jiraServerFacade);
 			IdeaHelper.setCurrentJIRAServer(jiraServer);
 
-            FutureTask task = new FutureTask(new Runnable() {
-                public void run() {	//startProgressAnimation(); 	//toolBarPanel.setEnabled(false);
-					filterToolbarSetVisible(false);
-					clearIssues();
-					setStatusMessage("Retrieving statuses...");
-					List statuses = jiraServer.getStatuses(); // ensure statuses are cached
-					if (!jiraServer.isValidServer()) {
-						setStatusMessage("Unable to connect to server." + jiraServer.getErrorMessage());
-						return;
-					}
-					String msg = "Found <b>" + statuses.size() + "</b> statuses.<br>";
-					setStatusMessage(msg + "Retrieving issue types...");
-					List types = jiraServer.getIssueTypes(); // ensure types are cached
-					if (!jiraServer.isValidServer()) {
-						setStatusMessage("Unable to connect to server." + jiraServer.getErrorMessage());
-						return;
-					}
-					msg += "Found <b>" + types.size() + "</b> issue types.<br>";
-					setStatusMessage(msg + "Retrieving projects...");
-					jiraServer.getProjects(); // ensure projects are cached
-					if (!jiraServer.isValidServer()) {
-						setStatusMessage("Unable to connect to server." + jiraServer.getErrorMessage());
-						return;
-					}
-					if (jiraServer.equals(IdeaHelper.getCurrentJIRAServer())) {
-						updateIssues(jiraServer);
-						filterToolbarSetVisible(true);
-					} //stopProgressAnimation();	//toolBarPanel.setEnabled(true);
-				}
-			}, null);
-
-			new Thread(task).start();
+			new Thread(new SelectServerTask(jiraServer)).start();
 		}
 	}
 
-//	private void startProgressAnimation() {
-//		this.remove(scrollTable);
-//		this.add(progressIcon, BorderLayout.CENTER);
-//		progressIcon.resume();
-//		this.invalidate();
-//	}
-//
-//	private void stopProgressAnimation() {
-//		this.remove(progressIcon);
-//		this.add(scrollTable, BorderLayout.CENTER);
-//		progressIcon.suspend();
-//		this.invalidate();
-//	}
+	private class SelectServerTask implements Runnable {
+		private JIRAServer jiraServer;
+
+		public SelectServerTask(JIRAServer jiraServer) {
+			this.jiraServer = jiraServer;
+		}
+
+		public void run() {
+			startProgressAnimation();
+			//toolBarPanel.setEnabled(false);
+			filterToolbarSetVisible(false);
+			clearIssues();
+			setStatusMessage("Retrieving statuses...");
+			List statuses = jiraServer.getStatuses(); // ensure statuses are cached
+			if (!jiraServer.isValidServer()) {
+				setStatusMessage("Unable to connect to server." + jiraServer.getErrorMessage());
+				return;
+			}
+			String msg = "Found <b>" + statuses.size() + "</b> statuses.<br>";
+			setStatusMessage(msg + "Retrieving issue types...");
+			List types = jiraServer.getIssueTypes(); // ensure types are cached
+			if (!jiraServer.isValidServer()) {
+				setStatusMessage("Unable to connect to server." + jiraServer.getErrorMessage());
+				return;
+			}
+			msg += "Found <b>" + types.size() + "</b> issue types.<br>";
+			setStatusMessage(msg + "Retrieving projects...");
+			jiraServer.getProjects(); // ensure projects are cached
+			if (!jiraServer.isValidServer()) {
+				setStatusMessage("Unable to connect to server." + jiraServer.getErrorMessage());
+				return;
+			}
+			if (jiraServer.equals(IdeaHelper.getCurrentJIRAServer())) {
+				updateIssues(jiraServer);
+				filterToolbarSetVisible(true);
+			}
+			stopProgressAnimation();
+			//toolBarPanel.setEnabled(true);
+		}
+	}
+
+	private void startProgressAnimation() {
+		this.remove(scrollTable);
+		this.add(progressIcon, BorderLayout.CENTER);
+		progressIcon.resume();
+		this.invalidate();
+	}
+
+	private void stopProgressAnimation() {
+		this.remove(progressIcon);
+		this.add(scrollTable, BorderLayout.CENTER);
+		progressIcon.suspend();
+		this.invalidate();
+	}
 
 	private void setStatusMessage(String msg) {
         editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">" + msg + "</td></tr></table>"));
