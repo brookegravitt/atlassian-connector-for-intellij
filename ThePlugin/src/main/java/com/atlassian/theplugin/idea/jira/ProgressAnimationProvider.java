@@ -17,19 +17,19 @@ public class ProgressAnimationProvider extends JPanel {
 	private AnimatedProgressIcon progressIcon = new AnimatedProgressIcon("Progress Indicator");
 	private JComponent replacedComponent;
 	private Object addConstraint;
-	private JComponent rootComponent;
+	private JComponent parentComponent;
 
 	/**
 	 * Sets component which is hidden when ProgressIcon starts and restored when ProgressIcon is stops
 	 * Parameters shouldn't be null
-	 * @param rootComponent parent of the replacedComponent
-	 * @param replacedComponent component to hide (to replace by animated progress icon)
-	 * @param addConstraint constraind used to add replacedComponent
+	 * @param rootComponent parent of the replaceComponent
+	 * @param replaceComponent component to hide (to replace by animated progress icon)
+	 * @param constraint constraind used to add replaceComponent
 	 */
-	public void configure(JComponent rootComponent, JComponent replacedComponent, Object addConstraint) {
-		this.rootComponent = rootComponent;
-		this.replacedComponent = replacedComponent;
-		this.addConstraint = addConstraint;
+	public void configure(JComponent rootComponent, JComponent replaceComponent, Object constraint) {
+		this.parentComponent = rootComponent;
+		this.replacedComponent = replaceComponent;
+		this.addConstraint = constraint;
 	}
 
 	public void startProgressAnimation() {
@@ -50,23 +50,23 @@ public class ProgressAnimationProvider extends JPanel {
 		public void run() {
 			if (start) {
 				if (replacedComponent != null) {
-					rootComponent.remove(replacedComponent);
+					parentComponent.remove(replacedComponent);
 				}
-				rootComponent.add(progressIcon, addConstraint);
+				parentComponent.add(progressIcon, addConstraint);
 				progressIcon.resume();
-				rootComponent.repaint();
-				rootComponent.validate();
-				rootComponent.requestFocus();
+				parentComponent.repaint();
+				parentComponent.validate();
+				parentComponent.requestFocus();
 			} else {
 
 				progressIcon.suspend();
-				rootComponent.remove(progressIcon);
+				parentComponent.remove(progressIcon);
 				if (replacedComponent != null) {
-					rootComponent.add(replacedComponent, addConstraint);
+					parentComponent.add(replacedComponent, addConstraint);
 				}
-				rootComponent.repaint();
-				rootComponent.validate();
-				rootComponent.requestFocus();
+				parentComponent.repaint();
+				parentComponent.validate();
+				parentComponent.requestFocus();
 			}
 
 		}
