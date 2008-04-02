@@ -1,9 +1,11 @@
 package com.atlassian.theplugin.idea.action.jira;
 
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.atlassian.theplugin.idea.action.HelpAction;
 
-public class JIRAHelpAction extends AnAction {
-	public void actionPerformed(AnActionEvent event) {
+public class JIRAHelpAction extends HelpAction {
+
+	public JIRAHelpAction() {
+		super("/JIRATab");
 	}
+
 }
