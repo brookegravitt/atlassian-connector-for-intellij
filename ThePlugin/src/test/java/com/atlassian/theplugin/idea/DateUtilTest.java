@@ -46,6 +46,10 @@ public class DateUtilTest extends TestCase {
 		assertEquals("3 months ago", DateUtil.getRelativePastDate(date1.toDate(), date1.minus(Months.THREE).toDate()));
 
 		assertEquals("1 year ago", DateUtil.getRelativePastDate(date1.toDate(), date1.minus(Years.ONE).toDate()));
+		System.out.println("****************************************************");
+		System.out.println(date1.toString());
+		System.out.println(date1.minus(Years.TWO).toString());
+		System.out.println("****************************************************");
 		assertEquals("2 years ago", DateUtil.getRelativePastDate(date1.toDate(), date1.minus(Years.TWO).toDate()));
 		assertEquals("3 years ago", DateUtil.getRelativePastDate(date1.toDate(), date1.minus(Years.THREE).toDate()));
 	}
