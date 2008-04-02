@@ -54,7 +54,7 @@ public class JIRAToolWindowPanel extends JPanel {
 	private AnimatedProgressIcon progressIcon = new AnimatedProgressIcon("Progress Indicator");
 
 	// a simple map to store all selected query fragments.
-	private Map<String, JIRAQueryFragment> queryFragments = new HashMap<String, JIRAQueryFragment>();
+	private Map<String, List<JIRAQueryFragment>> queryFragments = new HashMap<String, List<JIRAQueryFragment>>();
 	private final transient Project project;
 	private final transient JIRAServerFacade jiraServerFacade;
 	private final transient PluginConfigurationBean pluginConfiguration;
@@ -81,10 +81,13 @@ public class JIRAToolWindowPanel extends JPanel {
 		add(toolBarPanel, BorderLayout.NORTH);
 
 		// setup initial query fragments
-		queryFragments.put(MyIssuesAction.QF_NAME, new MyIssuesAction());
-		queryFragments.put(UnresolvedIssuesAction.QF_NAME, new UnresolvedIssuesAction());
 
-        editorPane = new ToolWindowBambooContent();
+		queryFragments.put(MyIssuesAction.QF_NAME, new ArrayList<JIRAQueryFragment>());
+		queryFragments.get(MyIssuesAction.QF_NAME).add(new MyIssuesAction());
+		queryFragments.put(UnresolvedIssuesAction.QF_NAME, new ArrayList<JIRAQueryFragment>());
+		queryFragments.get(UnresolvedIssuesAction.QF_NAME).add(new UnresolvedIssuesAction());
+
+		editorPane = new ToolWindowBambooContent();
         editorPane.setEditorKit(new ClasspathHTMLEditorKit());
         JScrollPane pane = setupPane(editorPane, wrapBody("Select a JIRA server to retrieve your issues."));
         editorPane.setMinimumSize(ED_PANE_MINE_SIZE);
@@ -301,8 +304,9 @@ public class JIRAToolWindowPanel extends JPanel {
 
                 try {
                     List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
-                    query.addAll(queryFragments.values());
-                    System.out.println("query = " + query);
+					for (List<JIRAQueryFragment> jiraQueryFragments : queryFragments.values()) {
+						query.addAll(jiraQueryFragments);
+					}
                     List result = serverFacade.getIssues(jiraServer.getServer(), query);
                     setIssues(result);
                 } catch (JIRAException e) {
@@ -318,12 +322,19 @@ public class JIRAToolWindowPanel extends JPanel {
 
 	public void addQueryFragment(String fragmentName, JIRAQueryFragment fragment) {
 		if (fragment == null) {
-			queryFragments.remove(fragmentName);
+			if (queryFragments.containsKey(fragmentName)) {
+				queryFragments.get(fragmentName).clear();
+			}
 			if ("project".equals(fragmentName)) {
 				IdeaHelper.getCurrentJIRAServer().setCurrentProject("");
 			}
 		} else {
-			queryFragments.put(fragmentName, fragment);
+			if (!queryFragments.containsKey(fragmentName)) {
+				queryFragments.put(fragmentName, new ArrayList<JIRAQueryFragment>());
+			} else {
+				queryFragments.get(fragmentName).clear();
+			}
+			queryFragments.get(fragmentName).add(fragment);
 			if ("project".equals(fragmentName)) {
 				if (fragment instanceof JIRAProjectBean) {
 					IdeaHelper.getCurrentJIRAServer().setCurrentProject(Long.toString(((JIRAProjectBean) fragment).getId()));
