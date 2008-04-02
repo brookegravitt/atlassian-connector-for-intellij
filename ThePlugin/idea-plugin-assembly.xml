@@ -18,6 +18,7 @@
   ~ under the License.
   -->
 <assembly>
+  <id>package</id>
   <includeBaseDirectory>false</includeBaseDirectory>
   <formats>
     <format>zip</format>
