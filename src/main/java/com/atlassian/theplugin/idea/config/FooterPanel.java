@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.idea.config;
 
+import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.ui.HyperlinkLabel;
@@ -14,6 +15,7 @@ import java.util.Map;
 public class FooterPanel extends JPanel {
 	private HyperlinkLabel openJiraHyperlinkBugLabel;
 	private HyperlinkLabel openJiraHyperlinkStoryLabel;
+	private HyperlinkLabel openConfigHelpLabel;
 
 	private static final String BASE = "https://studio.atlassian.com/secure/CreateIssueDetails!init.jspa";
 	private static final String PROJECT_ID = "10024";
@@ -49,7 +51,7 @@ public class FooterPanel extends JPanel {
 	private void initLayout() {
 		String versionName = PluginUtil.getVersion();
 
-		BorderLayout gb = new BorderLayout();
+		GridBagLayout gb = new GridBagLayout();
 		setLayout(gb);
 
 		// versions seen here are formatted:
@@ -86,6 +88,8 @@ public class FooterPanel extends JPanel {
 				+ "&versions=" + versionCodeForJira
 				+ "&issuetype=" + TICKET_TYPE_STORY;
 
+		final String helpUrl = Constants.HELP_URL_BASE;
+
 		JPanel linkPanel = new JPanel();
 		
 		openJiraHyperlinkBugLabel = new HyperlinkLabel("Report Bug");
@@ -102,10 +106,35 @@ public class FooterPanel extends JPanel {
 			}
 		});
 
+		// jgorycki: in my and Marek's opinion, text-based link looks marginally less bad than an icon
+		openConfigHelpLabel = new HyperlinkLabel("Help");
+//		openConfigHelpLabel.setIcon(Constants.HELP_ICON);
+//		openConfigHelpLabel.setToolTipText("Help");
+
+		openConfigHelpLabel.addHyperlinkListener(new HyperlinkListener() {
+			public void hyperlinkUpdate(HyperlinkEvent e) {
+				BrowserUtil.launchBrowser(helpUrl);
+			}
+		});
+
 		linkPanel.add(openJiraHyperlinkBugLabel);
 		linkPanel.add(new JLabel("|"));
 		linkPanel.add(openJiraHyperlinkStoryLabel);
 		linkPanel.add(new JLabel(versionName));
-		add(linkPanel, BorderLayout.WEST);
+		
+		GridBagConstraints c = new GridBagConstraints();
+
+		c.gridx = 0;
+		c.fill = GridBagConstraints.NONE;
+		add(linkPanel, c);
+		c.gridx = 1;
+		c.weightx = 1;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		add(new JPanel(), c);
+		c.gridx = 2;
+		c.weightx = 0;
+		c.anchor = GridBagConstraints.LINE_END;
+		c.insets = new Insets(0, 0, 0, Constants.DIALOG_MARGIN);
+		add(openConfigHelpLabel, c);
 	}
 }
