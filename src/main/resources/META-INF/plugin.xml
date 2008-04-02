@@ -86,14 +86,20 @@
 			<keyboard-shortcut first-keystroke="shift control g" keymap="$default"/>
 		</action>
 
-		<action id="ThePlugin.RunBuild" class="com.atlassian.theplugin.idea.action.bamboo.RunBuildAction" text="Run build" description="Run Bamboo build" icon="/icons/bamboo-run.png">
+		<action id="ThePlugin.RunBuild" class="com.atlassian.theplugin.idea.action.bamboo.RunBuildAction" text="Run build" description="Run Bamboo build" icon="/actions/execute.png">
 		</action>	
-		<action id="ThePlugin.AddLabelToBuild" class="com.atlassian.theplugin.idea.action.bamboo.LabelBuildAction" text="Add label to build" description="Add label to Bamboo build" icon="/icons/bamboo-label.png">
+		<action id="ThePlugin.AddLabelToBuild" class="com.atlassian.theplugin.idea.action.bamboo.LabelBuildAction" text="Add label to build" description="Add label to Bamboo build" icon="/modules/annotation.png">
 		</action>
-		<action id="ThePlugin.AddCommentToBuild" class="com.atlassian.theplugin.idea.action.bamboo.CommentBuildAction" text="Add comment to build" description="Add comment to Bamboo build" icon="/icons/bamboo-comment.png">
+		<action id="ThePlugin.AddCommentToBuild" class="com.atlassian.theplugin.idea.action.bamboo.CommentBuildAction" text="Add comment to build" description="Add comment to Bamboo build" icon="/actions/editSource.png">
 		</action>
 		<action id="ThePlugin.Bamboo.ShowHideBambooTab" class="com.atlassian.theplugin.idea.action.bamboo.ShowHideBambooTabAction" text="Show/Hide Bamboo tab" description="Shows or hides Bamboo tab in main plugin window">
 			<keyboard-shortcut first-keystroke="shift control b" keymap="$default"/>
+		</action>
+		<action id="ThePlugin.HelpBamboo" class="com.atlassian.theplugin.idea.action.bamboo.BambooHelpAction" text="Help" description="Help" icon="/actions/help.png">
+		</action>
+		<action id="ThePlugin.HelpCrucible" class="com.atlassian.theplugin.idea.action.crucible.CrucibleHelpAction" text="Help" description="Help" icon="/actions/help.png">
+		</action>
+		<action id="ThePlugin.HelpJIRA" class="com.atlassian.theplugin.idea.action.jira.JIRAHelpAction" text="Help" description="Help" icon="/actions/help.png">
 		</action>
 
 
@@ -112,7 +118,8 @@
         <!-- Bamboo tool window panel related actions -->
 		<group id="ThePlugin.BambooToolWindowToolBar" popup="false" text="">
             <reference id="ThePlugin.ShowSettings" />
-			<separator/>
+			<reference id="ThePlugin.HelpBamboo" />
+			<separator />
 			<reference id="ThePlugin.RunBuild" />
 			<reference id="ThePlugin.AddLabelToBuild" />
 			<reference id="ThePlugin.AddCommentToBuild" />
@@ -136,6 +143,8 @@
         
         <group id="ThePlugin.CrucibleToolWindowToolBar" popup="false" text="">
             <reference id="ThePlugin.ShowSettings" />
+			<reference id="ThePlugin.HelpCrucible" />
+			<separator />
 			<!--<separator />-->
 			<!--<reference id="ThePlugin.ReviewScope"/>-->
         </group>
@@ -173,13 +182,14 @@
         </action>		
 
 		<group id="ThePlugin.JIRA.ServerToolBar" popup="false">
+			<reference id="ThePlugin.ShowSettings" />
+			<reference id="ThePlugin.HelpJIRA" />
+			<separator />
             <reference id="ThePlugin.JIRA.ServerCombo"/>
             <separator />
             <reference id="ThePlugin.JIRA.CreateIssue" />
             <reference id="ThePlugin.JIRA.QuickSearch" />
-            <separator />
-            <reference id="ThePlugin.ShowSettings" />
-        </group>
+		</group>
 
         <group id="ThePlugin.JIRA.FilterToolBarTop" popup="false">
             <reference id="ThePlugin.JIRA.ProjectCombo"/>
