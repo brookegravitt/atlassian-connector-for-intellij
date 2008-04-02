@@ -4,6 +4,7 @@ import com.atlassian.theplugin.bamboo.BambooPlan;
 import com.atlassian.theplugin.bamboo.BambooPlanData;
 import com.atlassian.theplugin.bamboo.BambooServerFacade;
 import com.atlassian.theplugin.configuration.*;
+import com.atlassian.theplugin.idea.jira.ProgressAnimationPanel;
 import com.atlassian.theplugin.remoteapi.RemoteApiException;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -11,12 +12,12 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import static java.lang.System.arraycopy;
 import java.util.*;
 import java.util.List;
-import static java.lang.System.*;
 
 
-public class BambooPlansForm extends JComponent {
+public class BambooPlansForm extends ProgressAnimationPanel {
 	private JPanel statusPanel;
 	private JPanel toolbarPanel;
 	private JCheckBox cbUseFavouriteBuilds;
@@ -24,6 +25,8 @@ public class BambooPlansForm extends JComponent {
 	private JList list;
 	private JPanel rootComponent;
 	private JEditorPane statusPane;
+	private JScrollPane scrollList;
+	private JPanel listPanel;
 
 	private DefaultListModel model;
 
@@ -40,6 +43,13 @@ public class BambooPlansForm extends JComponent {
 		this.serverPanel = serverPanel;
 
 		$$$setupUI$$$();
+
+		GridConstraints constraint = new GridConstraints(0, 0, 1, 1,
+				GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false);
+
+		setReplacedComponent(listPanel, scrollList, constraint);
 
 		list.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
@@ -157,6 +167,7 @@ public class BambooPlansForm extends JComponent {
 
 		new Thread(new Runnable() {
 			public void run() {
+				startProgressAnimation();
 				StringBuffer msg = new StringBuffer();
 				String key = getServerKey(server);
 				if (!serverPlans.containsKey(key)) {
@@ -205,6 +216,9 @@ public class BambooPlansForm extends JComponent {
 						updatePlanNames(server, message);
 					}
 				});
+
+				stopProgressAnimation();
+
 			}
 		}).start();
 	}
@@ -319,16 +333,6 @@ public class BambooPlansForm extends JComponent {
 		gbc.weighty = 1.0;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		toolbarPanel.add(btRefresh, gbc);
-		final JScrollPane scrollPane1 = new JScrollPane();
-		gbc = new GridBagConstraints();
-		gbc.gridx = 0;
-		gbc.gridy = 1;
-		gbc.weightx = 1.0;
-		gbc.weighty = 1.0;
-		gbc.fill = GridBagConstraints.BOTH;
-		gbc.insets = new Insets(0, 12, 0, 12);
-		rootComponent.add(scrollPane1, gbc);
-		scrollPane1.setViewportView(list);
 		statusPanel = new JPanel();
 		statusPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
 		gbc = new GridBagConstraints();
@@ -337,14 +341,29 @@ public class BambooPlansForm extends JComponent {
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.insets = new Insets(0, 12, 12, 12);
 		rootComponent.add(statusPanel, gbc);
-		final JScrollPane scrollPane2 = new JScrollPane();
-		scrollPane2.setEnabled(true);
-		scrollPane2.setHorizontalScrollBarPolicy(31);
-		scrollPane2.setVerticalScrollBarPolicy(20);
-		statusPanel.add(scrollPane2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, 1, new Dimension(-1, 40), null, new Dimension(-1, 40), 0, false));
+		final JScrollPane scrollPane1 = new JScrollPane();
+		scrollPane1.setEnabled(true);
+		scrollPane1.setHorizontalScrollBarPolicy(31);
+		scrollPane1.setVerticalScrollBarPolicy(20);
+		statusPanel.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, 1, new Dimension(-1, 40), null, new Dimension(-1, 40), 0, false));
 		statusPane = new JEditorPane();
 		statusPane.setEditable(false);
-		scrollPane2.setViewportView(statusPane);
+		scrollPane1.setViewportView(statusPane);
+		listPanel = new JPanel();
+		listPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+		listPanel.setBackground(new Color(-1));
+		gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 1;
+		gbc.weightx = 1.0;
+		gbc.weighty = 1.0;
+		gbc.fill = GridBagConstraints.BOTH;
+		gbc.insets = new Insets(0, 12, 0, 12);
+		rootComponent.add(listPanel, gbc);
+		scrollList = new JScrollPane();
+		scrollList.setBackground(new Color(-1));
+		listPanel.add(scrollList, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+		scrollList.setViewportView(list);
 	}
 
 	/**
