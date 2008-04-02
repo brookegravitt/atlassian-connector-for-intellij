@@ -11,7 +11,6 @@ import com.atlassian.theplugin.idea.action.jira.SavedFilterComboAction;
 import com.atlassian.theplugin.idea.action.jira.UnresolvedIssuesAction;
 import com.atlassian.theplugin.idea.bamboo.ToolWindowBambooContent;
 import com.atlassian.theplugin.idea.jira.table.JIRATableColumnProvider;
-import com.atlassian.theplugin.idea.ui.AnimatedProgressIcon;
 import com.atlassian.theplugin.idea.ui.AtlassianTableView;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
@@ -42,16 +41,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.FutureTask;
 
-public class JIRAToolWindowPanel extends JPanel {
-	private JEditorPane editorPane;
-	private JPanel toolBarPanel;
-	private ListTableModel listTableModel;
-	private AtlassianTableView table;
+public class JIRAToolWindowPanel extends ProgressAnimationPanel {
+    private JEditorPane editorPane;
+    private JPanel toolBarPanel;
+    private ListTableModel listTableModel;
+    private AtlassianTableView table;
 	private JScrollPane scrollTable;
 	private static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
 	private transient ActionToolbar filterToolbarTop;
 	private transient ActionToolbar filterToolbarBottom;
-	private AnimatedProgressIcon progressIcon = new AnimatedProgressIcon("Progress Indicator");
+
 
 	// a simple map to store all selected query fragments.
 	private Map<String, List<JIRAQueryFragment>> queryFragments = new HashMap<String, List<JIRAQueryFragment>>();
@@ -64,7 +63,9 @@ public class JIRAToolWindowPanel extends JPanel {
 							   ProjectConfigurationBean projectConfigurationBean,
 							   Project project,
 							   JIRAServerFacade jiraServerFacade) {
-		super(new BorderLayout());
+
+		setLayout(new BorderLayout());
+
 
 		this.pluginConfiguration = pluginConfiguration;
 		this.projectConfiguration = projectConfigurationBean;
@@ -136,7 +137,10 @@ public class JIRAToolWindowPanel extends JPanel {
 		createFilterToolBar();
 
 		scrollTable = new JScrollPane(table);
-		add(scrollTable, BorderLayout.CENTER);
+		add(scrollTable, BorderLayout.CENTER, 0);
+
+		// initialize animated panel functionality
+		setReplacedComponent(this, scrollTable, BorderLayout.CENTER);
 	}
 
 	public List<String> serializeQuery() {
@@ -281,42 +285,6 @@ public class JIRAToolWindowPanel extends JPanel {
 		}
 	}
 
-	private class ProgressAnimation implements Runnable {
-		private boolean start;
-
-		public ProgressAnimation(boolean start) {
-			this.start = start;
-		}
-
-		public void run() {
-			if (start) {
-				JIRAToolWindowPanel.this.remove(scrollTable);
-				//scrollTable.setVisible(false);
-				JIRAToolWindowPanel.this.add(progressIcon, BorderLayout.CENTER);
-				JIRAToolWindowPanel.this.progressIcon.resume();
-				JIRAToolWindowPanel.this.repaint();
-				JIRAToolWindowPanel.this.validate();
-				JIRAToolWindowPanel.this.requestFocus();
-			} else {
-				JIRAToolWindowPanel.this.progressIcon.suspend();
-				JIRAToolWindowPanel.this.remove(progressIcon);
-				JIRAToolWindowPanel.this.add(scrollTable, BorderLayout.CENTER);
-				//scrollTable.setVisible(true);
-				JIRAToolWindowPanel.this.repaint();
-				JIRAToolWindowPanel.this.validate();
-				JIRAToolWindowPanel.this.requestFocus();
-			}
-
-		}
-	}
-
-	private void startProgressAnimation() {
-		EventQueue.invokeLater(new ProgressAnimation(true));
-	}
-
-	private void stopProgressAnimation() {
-		EventQueue.invokeLater(new ProgressAnimation(false));
-	}
 
 	private void setStatusMessage(String msg) {
 		editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">" + msg + "</td></tr></table>"));
