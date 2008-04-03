@@ -45,6 +45,9 @@ public class JIRAIssueFilterPanel extends JPanel {
 	private JScrollPane fixForScrollPane;
 	private JScrollPane projectScrollPane;
 	private JScrollPane issueTypeScrollPane;
+	private JScrollPane componentsScrollPane;
+	private JList componentsList;
+	private JList list1;
 
 
 	public JIRAIssueFilterPanel() {
@@ -73,7 +76,6 @@ public class JIRAIssueFilterPanel extends JPanel {
 		this.resolutionsList.setCellRenderer(new JIRAQueryFragmentListRenderer());
 		this.fixForList.setCellRenderer(new JIRAQueryFragmentListRenderer());
 		this.affectsVersionsList.setCellRenderer(new JIRAQueryFragmentListRenderer());
-
 
 //		viewButtonBottom.addActionListener(new ActionListener() {
 //			public void actionPerformed(ActionEvent event) {
@@ -109,7 +111,7 @@ public class JIRAIssueFilterPanel extends JPanel {
 	 */
 	private void $$$setupUI$$$() {
 		rootPanel = new JPanel();
-		rootPanel.setLayout(new GridLayoutManager(13, 3, new Insets(0, 0, 0, 0), -1, -1));
+		rootPanel.setLayout(new GridLayoutManager(14, 3, new Insets(0, 0, 0, 0), -1, -1));
 		rootPanel.setMaximumSize(new Dimension(347, 586));
 		final JLabel label1 = new JLabel();
 		label1.setFont(new Font(label1.getFont().getName(), label1.getFont().getStyle(), 11));
@@ -119,19 +121,19 @@ public class JIRAIssueFilterPanel extends JPanel {
 		reporterComboBox = new JComboBox();
 		reporterComboBox.setLightWeightPopupEnabled(false);
 		reporterComboBox.setMaximumRowCount(5);
-		rootPanel.add(reporterComboBox, new GridConstraints(7, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		rootPanel.add(reporterComboBox, new GridConstraints(8, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		final JLabel label2 = new JLabel();
 		label2.setFont(new Font(label2.getFont().getName(), label2.getFont().getStyle(), 11));
 		label2.setText("Reporter:");
-		rootPanel.add(label2, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		rootPanel.add(label2, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		assigneeComboBox = new JComboBox();
 		assigneeComboBox.setLightWeightPopupEnabled(false);
 		assigneeComboBox.setMaximumRowCount(5);
-		rootPanel.add(assigneeComboBox, new GridConstraints(8, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		rootPanel.add(assigneeComboBox, new GridConstraints(9, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		final JLabel label3 = new JLabel();
 		label3.setFont(new Font(label3.getFont().getName(), label3.getFont().getStyle(), 11));
 		label3.setText("Assignee:");
-		rootPanel.add(label3, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		rootPanel.add(label3, new GridConstraints(9, 0, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		final JPanel panel1 = new JPanel();
 		panel1.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
 		panel1.setBackground(new Color(-3355444));
@@ -144,7 +146,7 @@ public class JIRAIssueFilterPanel extends JPanel {
 		final JPanel panel2 = new JPanel();
 		panel2.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
 		panel2.setBackground(new Color(-3355444));
-		rootPanel.add(panel2, new GridConstraints(6, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+		rootPanel.add(panel2, new GridConstraints(7, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
 		final JLabel label5 = new JLabel();
 		label5.setText("Issue Attributes");
 		panel2.add(label5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -152,7 +154,7 @@ public class JIRAIssueFilterPanel extends JPanel {
 		panel2.add(spacer2, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
 		final JPanel panel3 = new JPanel();
 		panel3.setLayout(new GridLayoutManager(1, 4, new Insets(0, 0, 0, 0), -1, -1));
-		rootPanel.add(panel3, new GridConstraints(12, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, 1, null, null, null, 0, false));
+		rootPanel.add(panel3, new GridConstraints(13, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, 1, null, null, null, 0, false));
 		viewHideButtonBottom = new JButton();
 		viewHideButtonBottom.setInheritsPopupMenu(true);
 		viewHideButtonBottom.setLabel("<< View  Hide");
@@ -183,14 +185,14 @@ public class JIRAIssueFilterPanel extends JPanel {
 		viewButtonTop.setText("View >>");
 		panel4.add(viewButtonTop, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(46, 29), null, 0, false));
 		final Spacer spacer5 = new Spacer();
-		panel4.add(spacer5, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+		panel4.add(spacer5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
 		final Spacer spacer6 = new Spacer();
-		panel4.add(spacer6, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+		panel4.add(spacer6, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
 		final JLabel label6 = new JLabel();
 		label6.setFont(new Font(label6.getFont().getName(), label6.getFont().getStyle(), 11));
 		label6.setRequestFocusEnabled(false);
 		label6.setText("Status:");
-		rootPanel.add(label6, new GridConstraints(9, 0, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		rootPanel.add(label6, new GridConstraints(10, 0, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		issueTypeScrollPane = new JScrollPane();
 		rootPanel.add(issueTypeScrollPane, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, 1, null, null, null, 0, false));
 		issueTypeList = new JList();
@@ -220,13 +222,14 @@ public class JIRAIssueFilterPanel extends JPanel {
 		label8.setVerticalAlignment(1);
 		rootPanel.add(label8, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		statusScrollPane = new JScrollPane();
-		rootPanel.add(statusScrollPane, new GridConstraints(9, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, 1, null, null, null, 0, false));
+		rootPanel.add(statusScrollPane, new GridConstraints(10, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, 1, null, null, null, 0, false));
 		statusList = new JList();
 		final DefaultListModel defaultListModel2 = new DefaultListModel();
 		statusList.setModel(defaultListModel2);
+		statusList.setVisibleRowCount(5);
 		statusScrollPane.setViewportView(statusList);
 		resolutionScrollPane = new JScrollPane();
-		rootPanel.add(resolutionScrollPane, new GridConstraints(10, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, 1, null, null, null, 0, false));
+		rootPanel.add(resolutionScrollPane, new GridConstraints(11, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, 1, null, null, null, 0, false));
 		resolutionsList = new JList();
 		final DefaultListModel defaultListModel3 = new DefaultListModel();
 		resolutionsList.setModel(defaultListModel3);
@@ -235,24 +238,38 @@ public class JIRAIssueFilterPanel extends JPanel {
 		final JLabel label9 = new JLabel();
 		label9.setFont(new Font(label9.getFont().getName(), label9.getFont().getStyle(), 11));
 		label9.setText("Resolutions:");
-		rootPanel.add(label9, new GridConstraints(10, 0, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		rootPanel.add(label9, new GridConstraints(11, 0, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		prioritiesScrollPane = new JScrollPane();
-		rootPanel.add(prioritiesScrollPane, new GridConstraints(11, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, 1, null, null, null, 0, false));
+		rootPanel.add(prioritiesScrollPane, new GridConstraints(12, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, 1, null, null, null, 0, false));
 		prioritiesList = new JList();
 		prioritiesList.setVisibleRowCount(5);
 		prioritiesScrollPane.setViewportView(prioritiesList);
 		final JLabel label10 = new JLabel();
 		label10.setFont(new Font(label10.getFont().getName(), label10.getFont().getStyle(), 11));
 		label10.setText("Priorities:");
-		rootPanel.add(label10, new GridConstraints(11, 0, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		rootPanel.add(label10, new GridConstraints(12, 0, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		affectVersionScrollPane = new JScrollPane();
-		rootPanel.add(affectVersionScrollPane, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, 1, null, null, null, 0, false));
+		rootPanel.add(affectVersionScrollPane, new GridConstraints(6, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, 1, null, null, null, 0, false));
 		affectsVersionsList = new JList();
+		affectsVersionsList.setVisibleRowCount(5);
 		affectVersionScrollPane.setViewportView(affectsVersionsList);
 		final JLabel label11 = new JLabel();
 		label11.setFont(new Font(label11.getFont().getName(), label11.getFont().getStyle(), 11));
 		label11.setText("<html>Affects<br>  Versions:</html>");
-		rootPanel.add(label11, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		rootPanel.add(label11, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		componentsScrollPane = new JScrollPane();
+		rootPanel.add(componentsScrollPane, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+		componentsList = new JList();
+		final DefaultListModel defaultListModel4 = new DefaultListModel();
+		componentsList.setModel(defaultListModel4);
+		componentsList.setVisible(true);
+		componentsList.setVisibleRowCount(5);
+		componentsScrollPane.setViewportView(componentsList);
+		final JLabel label12 = new JLabel();
+		label12.setFont(new Font(label12.getFont().getName(), label12.getFont().getStyle(), 11));
+		label12.setHorizontalAlignment(4);
+		label12.setText("Components:");
+		rootPanel.add(label12, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		final Spacer spacer7 = new Spacer();
 		rootPanel.add(spacer7, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
 		label1.setLabelFor(issueTypeScrollPane);
@@ -263,6 +280,7 @@ public class JIRAIssueFilterPanel extends JPanel {
 		label9.setLabelFor(resolutionScrollPane);
 		label10.setLabelFor(prioritiesScrollPane);
 		label11.setLabelFor(affectVersionScrollPane);
+		label12.setNextFocusableComponent(componentsScrollPane);
 	}
 
 	/**
@@ -271,6 +289,5 @@ public class JIRAIssueFilterPanel extends JPanel {
 	public JComponent $$$getRootComponent$$$() {
 		return rootPanel;
 	}
-
 }
 
