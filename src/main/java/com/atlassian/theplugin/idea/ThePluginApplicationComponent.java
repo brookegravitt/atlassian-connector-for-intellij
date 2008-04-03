@@ -42,7 +42,7 @@ public class ThePluginApplicationComponent
 	private final ConfigPanel configPanel;
 	private final PluginConfigurationBean configuration;
 
-	private final Timer timer = new Timer();
+	private final Timer timer = new Timer("atlassian-idea-plugin background status checkers");
 	private static final int TIMER_START_DELAY = 20000;
 
 	private final Collection<TimerTask> scheduledComponents = new HashSet<TimerTask>();
