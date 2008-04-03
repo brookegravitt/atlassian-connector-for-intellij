@@ -56,8 +56,6 @@ public class JIRARssClient extends AbstractHttpSession {
         url.append("&sorter/field=" + sortBy + "&sorter/order=" + sortOrder + "&tempMax=" + max);
         url.append(appendAuthentication());
 
-		System.out.println("getIssues -> url.toString() = " + url.toString());
-
 		try {
             Document doc = retrieveGetResponse(url.toString());
             Element root = doc.getRootElement();
@@ -115,8 +113,6 @@ public class JIRARssClient extends AbstractHttpSession {
 
 		url.append("?sorter/field=" + sortBy + "&sorter/order=" + sortOrder + "&tempMax=" + max);
 		url.append(appendAuthentication());
-
-		System.out.println("getSavedFilterIssues -> url.toString() = " + url.toString());		
 
 		try {
 			Document doc = retrieveGetResponse(url.toString());

@@ -300,6 +300,10 @@ public class JIRAToolWindowPanel extends JPanel {
 				updateIssues(jiraServer);
 				filterToolbarSetVisible(true);
 			}
+
+			jiraIssueFilterPanel.setProjects(jiraServer.getProjects());
+			jiraIssueFilterPanel.setIssueType(jiraServer.getIssueTypes());
+
 			progressAnimation.stopProgressAnimation();
 		}
 	}
@@ -386,6 +390,8 @@ public class JIRAToolWindowPanel extends JPanel {
 			if ("project".equals(fragmentName)) {
 				if (fragment instanceof JIRAProjectBean) {
 					IdeaHelper.getCurrentJIRAServer().setCurrentProject(Long.toString(((JIRAProjectBean) fragment).getId()));
+					IdeaHelper.getCurrentJIRAServer().getVersions();
+					IdeaHelper.getCurrentJIRAServer().getComponents();
 				}
 			}
 		}
