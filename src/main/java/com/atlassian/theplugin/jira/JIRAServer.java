@@ -1,12 +1,9 @@
 package com.atlassian.theplugin.jira;
 
 import com.atlassian.theplugin.configuration.Server;
-import com.atlassian.theplugin.jira.api.JIRAConstant;
-import com.atlassian.theplugin.jira.api.JIRAException;
-import com.atlassian.theplugin.jira.api.JIRAProject;
+import com.atlassian.theplugin.jira.api.*;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class JIRAServer {
 	private Server server;
@@ -17,7 +14,7 @@ public class JIRAServer {
 	private List statuses;
 	private List issueTypes;
 	private List savedFilters;
-	private List versions;
+	private List<JIRAVersionBean> versions;
 	private List components;
 	private List priorieties;
 	private List resolutions;
@@ -49,7 +46,10 @@ public class JIRAServer {
 		if (projects == null) {
 			errorMessage = null;
 			try {
-				projects = jiraServerFacade.getProjects(server);
+				List<JIRAProject> retrieved = jiraServerFacade.getProjects(server);
+				projects = new ArrayList<JIRAProject>();
+				projects.add(new JIRAProjectBean(-1, "Any"));
+				projects.addAll(retrieved);
 				validServer = true;
 			} catch (JIRAException e) {
 				errorMessage = e.getMessage();
@@ -67,7 +67,10 @@ public class JIRAServer {
 		if (statuses == null) {
 			errorMessage = null;
 			try {
-				statuses = jiraServerFacade.getStatuses(server);
+				List<JIRAConstant> retrieved = jiraServerFacade.getStatuses(server);
+				statuses = new ArrayList<JIRAConstant>(retrieved.size() + 1);
+				statuses.add(new JIRAStatusBean(-1, "Any", null));
+				statuses.addAll(retrieved);
 				validServer = true;
 			} catch (JIRAException e) {
 				errorMessage = e.getCause().getMessage();
@@ -84,11 +87,16 @@ public class JIRAServer {
 		if (issueTypes == null) {
 			errorMessage = null;
 			try {
+				List<JIRAConstant> retrieved = Collections.EMPTY_LIST;
 				if (currentProject == null) {
-					issueTypes = jiraServerFacade.getIssueTypes(server);
+					retrieved = jiraServerFacade.getIssueTypes(server);
 				} else {
-					issueTypes = jiraServerFacade.getIssueTypesForProject(server, Long.toString(currentProject.getId()));
+					retrieved = jiraServerFacade.getIssueTypesForProject(server, Long.toString(currentProject.getId()));
 				}
+				issueTypes = new ArrayList<JIRAConstant>(retrieved.size() + 1);
+				issueTypes.add(new JIRAIssueTypeBean(-1, "Any", null));
+				issueTypes.addAll(retrieved);
+
 				lastProject = currentProject;
 				validServer = true;
 			} catch (JIRAException e) {
@@ -124,7 +132,10 @@ public class JIRAServer {
 		if (priorieties == null) {
 			errorMessage = null;
 			try {
-				priorieties = jiraServerFacade.getPriorieties(server);
+				List<JIRAConstant> retrieved = jiraServerFacade.getPriorieties(server);
+				priorieties = new ArrayList(retrieved.size() + 1);
+				priorieties.add(new JIRAPriorityBean(-1, "Any", null));
+				priorieties.addAll(retrieved);
 				validServer = true;
 			} catch (JIRAException e) {
 				errorMessage = e.getCause().getMessage();
@@ -141,7 +152,10 @@ public class JIRAServer {
 		if (resolutions == null) {
 			errorMessage = null;
 			try {
-				resolutions = jiraServerFacade.getResolutions(server);
+				List<JIRAQueryFragment> retrieved = jiraServerFacade.getResolutions(server);
+				resolutions = new ArrayList<JIRAResolutionBean>(retrieved.size() + 1);
+				resolutions.add(new JIRAResolutionBean(-1, "Any"));
+				resolutions.addAll(retrieved);
 				validServer = true;
 			} catch (JIRAException e) {
 				errorMessage = e.getCause().getMessage();
@@ -153,13 +167,28 @@ public class JIRAServer {
 		return resolutions;
 	}
 
-	public List getVersions() {
+	public List<JIRAVersionBean> getVersions() {
 		validServer = false;
 		if (versions == null) {
 			errorMessage = null;
 			try {
 				if (currentProject != null) {
-					versions = jiraServerFacade.getVersions(server, currentProject.getKey());
+					List<JIRAQueryFragment> retrieved = jiraServerFacade.getVersions(server, currentProject.getKey());
+					versions = new ArrayList<JIRAVersionBean>(retrieved.size() + 4);
+					versions.add(new JIRAVersionBean(-1, "Any"));
+					versions.add(new JIRAVersionBean(-2, "No version"));
+					versions.add(new JIRAVersionBean(-3, "Released versions"));
+					for (JIRAQueryFragment jiraQueryFragment : retrieved) {
+						if (((JIRAVersionBean) jiraQueryFragment).isReleased()) {
+							versions.add((JIRAVersionBean) jiraQueryFragment);
+						}
+					}
+					versions.add(new JIRAVersionBean(-4, "Unreleased versions"));
+					for (JIRAQueryFragment jiraQueryFragment : retrieved) {
+						if (!((JIRAVersionBean) jiraQueryFragment).isReleased()) {
+							versions.add((JIRAVersionBean) jiraQueryFragment);
+						}
+					}
 					lastProject = currentProject;
 				} else {
 					versions = Collections.EMPTY_LIST;
@@ -175,13 +204,16 @@ public class JIRAServer {
 		return versions;
 	}
 
-	public List getComponents() {
+	public List<JIRAQueryFragment> getComponents() {
 		validServer = false;
 		if (components == null || (currentProject != null && !currentProject.getKey().equals(lastProject.getKey()))) {
 			errorMessage = null;
 			try {
 				if (currentProject != null) {
-					components = jiraServerFacade.getComponents(server, currentProject.getKey());
+					List<JIRAQueryFragment> retrieved = jiraServerFacade.getComponents(server, currentProject.getKey());
+					components = new ArrayList<JIRAVersionBean>(retrieved.size() + 1);
+					components.add(new JIRAComponentBean(-1, "Any"));
+					components.addAll(retrieved);
 					lastProject = currentProject;
 				} else {
 					components = Collections.EMPTY_LIST;
