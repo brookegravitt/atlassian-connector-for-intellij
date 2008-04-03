@@ -422,11 +422,13 @@ public class JIRAToolWindowPanel extends JPanel {
 
 	public static class CreateChangeListAction extends AbstractAction {
 		private final transient Project project;
-		private final String changeListName;
+		private String changeListName;
+		private String issueKey;
 
 		public CreateChangeListAction(JIRAIssue issue, Project project) {
 			this.project = project;
-			changeListName = issue.getKey() + " " + issue.getSummary();
+			issueKey = issue.getKey();
+			changeListName = issueKey + " - " + issue.getSummary();
 
 			if (ChangeListManager.getInstance(project).findChangeList(changeListName) == null) {
 				putValue(Action.NAME, "Create ChangeList");
@@ -442,9 +444,15 @@ public class JIRAToolWindowPanel extends JPanel {
 
 			LocalChangeList changeList = changeListManager.findChangeList(changeListName);
 			if (changeList == null) {
-				changeList = changeListManager.addChangeList(changeListName, changeListName + "\n");
+				ChangesetCreate c = new ChangesetCreate(issueKey);
+				c.setChangesetName(changeListName);
+				c.show();
+				if (c.isOK()) {
+					changeListName = c.getChangesetName();
+					changeList = changeListManager.addChangeList(changeListName, changeListName + "\n");
+					changeListManager.setDefaultChangeList(changeList);
+				}
 			}
-			changeListManager.setDefaultChangeList(changeList);
 		}
 	}
 
