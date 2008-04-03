@@ -11,7 +11,12 @@ public class JIRAResolutionBean implements JIRAResolution {
         id = Long.valueOf((String) projMap.get("id"));
     }
 
-    public String getName() {
+	public JIRAResolutionBean(long id, String name) {
+		this.name = name;
+		this.id = id;
+	}
+
+	public String getName() {
         return name;
     }
 

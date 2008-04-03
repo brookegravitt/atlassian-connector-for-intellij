@@ -75,6 +75,7 @@ public class JIRAIssueFilterPanel extends JPanel {
 		this.prioritiesList.setCellRenderer(new JIRAConstantListRenderer());
 		this.resolutionsList.setCellRenderer(new JIRAQueryFragmentListRenderer());
 		this.fixForList.setCellRenderer(new JIRAQueryFragmentListRenderer());
+		this.componentsList.setCellRenderer(new JIRAQueryFragmentListRenderer());
 		this.affectsVersionsList.setCellRenderer(new JIRAQueryFragmentListRenderer());
 
 //		viewButtonBottom.addActionListener(new ActionListener() {
@@ -91,6 +92,7 @@ public class JIRAIssueFilterPanel extends JPanel {
 		this.prioritiesList.setListData(jiraServer.getPriorieties().toArray());
 		this.resolutionsList.setListData(jiraServer.getResolutions().toArray());
 		this.fixForList.setListData(jiraServer.getVersions().toArray());
+		this.componentsList.setListData(jiraServer.getComponents().toArray());
 		this.affectsVersionsList.setListData(jiraServer.getVersions().toArray());
 	}
 
@@ -264,8 +266,8 @@ public class JIRAIssueFilterPanel extends JPanel {
 		viewHideButtonBottom.setText("<< View & Hide");
 		viewHideButtonBottom.setMnemonic(' ');
 		viewHideButtonBottom.setDisplayedMnemonicIndex(2);
-		viewHideButtonBottom.putClientProperty("hideActionText", Boolean.FALSE);
 		viewHideButtonBottom.putClientProperty("html.disable", Boolean.FALSE);
+		viewHideButtonBottom.putClientProperty("hideActionText", Boolean.FALSE);
 		panel4.add(viewHideButtonBottom, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, 1, 1, null, null, null, 0, false));
 		viewButtonBottom = new JButton();
 		viewButtonBottom.setLabel("View >>");

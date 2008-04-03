@@ -19,7 +19,12 @@ public class JIRAProjectBean implements JIRAProject {
         id = Long.valueOf((String) projMap.get("id"));
     }
 
-    public String getName() {
+	public JIRAProjectBean(long id, String name) {
+		this.id = id;
+		this.name = name;
+	}
+
+	public String getName() {
         return name; 
     }
 

@@ -10,6 +10,11 @@ public class JIRAVersionBean extends AbstractJIRAConstantBean {
 		isReleased = Boolean.valueOf((String) map.get("released"));
 	}
 
+	public JIRAVersionBean(long id, String name) {
+		this.id = id;
+		this.name = name;
+	}
+
 	public boolean isReleased() {
 		return isReleased;
 	}
