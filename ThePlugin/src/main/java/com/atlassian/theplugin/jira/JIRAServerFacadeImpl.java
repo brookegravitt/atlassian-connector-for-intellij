@@ -107,6 +107,16 @@ public class JIRAServerFacadeImpl implements JIRAServerFacade {
         return client.getVersions(projectKey);
 	}
 
+	public List getPriorieties(Server server) throws JIRAException {
+		JIRAXmlRpcClient client = new JIRAXmlRpcClient(server.getUrlString(), server.getUserName(), server.getPasswordString());
+		return client.getPriorities();
+	}
+
+	public List getResolutions(Server server) throws JIRAException {
+		JIRAXmlRpcClient client = new JIRAXmlRpcClient(server.getUrlString(), server.getUserName(), server.getPasswordString());
+		return client.getResolutions();
+	}
+
 	public List getSavedFilters(Server server) throws JIRAException {
 		JIRAXmlRpcClient client = new JIRAXmlRpcClient(server.getUrlString(), server.getUserName(), server.getPasswordString());
 		return client.getSavedFilters();		

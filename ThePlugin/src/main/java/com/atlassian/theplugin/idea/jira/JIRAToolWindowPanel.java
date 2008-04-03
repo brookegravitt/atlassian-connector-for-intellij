@@ -5,8 +5,8 @@ import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
+import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.atlassian.theplugin.idea.action.jira.MyIssuesAction;
 import com.atlassian.theplugin.idea.action.jira.SavedFilterComboAction;
 import com.atlassian.theplugin.idea.action.jira.UnresolvedIssuesAction;
@@ -15,10 +15,7 @@ import com.atlassian.theplugin.idea.jira.table.JIRATableColumnProvider;
 import com.atlassian.theplugin.idea.ui.AtlassianTableView;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
-import com.atlassian.theplugin.jira.api.JIRAException;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.atlassian.theplugin.jira.api.JIRAProjectBean;
-import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
+import com.atlassian.theplugin.jira.api.*;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -43,10 +40,10 @@ import java.util.Map;
 import java.util.concurrent.FutureTask;
 
 public class JIRAToolWindowPanel extends JPanel {
-    private JEditorPane editorPane;
-    private JPanel toolBarPanel;
-    private ListTableModel listTableModel;
-    private AtlassianTableView table;
+	private JEditorPane editorPane;
+	private JPanel toolBarPanel;
+	private ListTableModel listTableModel;
+	private AtlassianTableView table;
 	private JScrollPane scrollTable;
 	private static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
 	private transient ActionToolbar filterToolbarTop;
@@ -159,11 +156,15 @@ public class JIRAToolWindowPanel extends JPanel {
 		}
 		return query;
 	}
-	public final void filterAndViewJiraIssues() {
+	public final synchronized void filterAndViewJiraIssues() {
 		setScrollPaneViewport(table);
 	}
 
-	public final void showJIRAIssueFilter() {
+	public final synchronized void showJIRAIssueFilter() {
+		JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer();
+		if (jiraServer != null) {
+			jiraIssueFilterPanel.setJiraServer(jiraServer);
+		}
 		setScrollPaneViewport(jiraIssueFilterPanel.$$$getRootComponent$$$());
 	}
 
@@ -219,7 +220,7 @@ public class JIRAToolWindowPanel extends JPanel {
 		listTableModel.setItems(new ArrayList<JiraIssueAdapter>());
 		listTableModel.fireTableDataChanged();
 		table.setEnabled(false);
-		editorPane.setText(wrapBody("No issues for server."));		
+		editorPane.setText(wrapBody("No issues for server."));
 	}
 
 	public void setIssues(List<JIRAIssue> issues) {
@@ -301,9 +302,6 @@ public class JIRAToolWindowPanel extends JPanel {
 				filterToolbarSetVisible(true);
 			}
 
-			jiraIssueFilterPanel.setProjects(jiraServer.getProjects());
-			jiraIssueFilterPanel.setIssueType(jiraServer.getIssueTypes());
-
 			progressAnimation.stopProgressAnimation();
 		}
 	}
@@ -378,7 +376,7 @@ public class JIRAToolWindowPanel extends JPanel {
 				queryFragments.get(fragmentName).clear();
 			}
 			if ("project".equals(fragmentName)) {
-				IdeaHelper.getCurrentJIRAServer().setCurrentProject("");
+				IdeaHelper.getCurrentJIRAServer().setCurrentProject(null);
 			}
 		} else {
 			if (!queryFragments.containsKey(fragmentName)) {
@@ -389,9 +387,7 @@ public class JIRAToolWindowPanel extends JPanel {
 			queryFragments.get(fragmentName).add(fragment);
 			if ("project".equals(fragmentName)) {
 				if (fragment instanceof JIRAProjectBean) {
-					IdeaHelper.getCurrentJIRAServer().setCurrentProject(Long.toString(((JIRAProjectBean) fragment).getId()));
-					IdeaHelper.getCurrentJIRAServer().getVersions();
-					IdeaHelper.getCurrentJIRAServer().getComponents();
+					IdeaHelper.getCurrentJIRAServer().setCurrentProject((JIRAProject) fragment);
 				}
 			}
 		}
