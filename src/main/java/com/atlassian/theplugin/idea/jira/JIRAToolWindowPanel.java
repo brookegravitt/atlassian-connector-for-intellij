@@ -51,6 +51,7 @@ public class JIRAToolWindowPanel extends JPanel {
 	private static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
 	private transient ActionToolbar filterToolbarTop;
 	private transient ActionToolbar filterToolbarBottom;
+	private transient JIRAIssueFilterPanel jiraIssueFilterPanel;
 
 	private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
 
@@ -139,11 +140,14 @@ public class JIRAToolWindowPanel extends JPanel {
 
 		createFilterToolBar();
 
+		jiraIssueFilterPanel = new JIRAIssueFilterPanel();
 		scrollTable = new JScrollPane(table);
 		add(scrollTable, BorderLayout.CENTER, 0);
 
 		// initialize animated panel functionality
 		progressAnimation.configure(this, scrollTable, BorderLayout.CENTER);
+		showJIRAIssueFilter();
+
 	}
 
 	public List<String> serializeQuery() {
@@ -155,6 +159,17 @@ public class JIRAToolWindowPanel extends JPanel {
 		}
 		return query;
 	}
+	public synchronized final void filterAndViewJiraIssues() {
+		setScrollPaneViewport(table);
+	}
+
+	public synchronized final void showJIRAIssueFilter(){
+		setScrollPaneViewport(jiraIssueFilterPanel.$$$getRootComponent$$$());
+	}
+
+	private void setScrollPaneViewport(JComponent component) {
+		scrollTable.setViewportView(component);
+	};
 
 	public void restoreQuery() {
 	}
@@ -204,7 +219,7 @@ public class JIRAToolWindowPanel extends JPanel {
 		listTableModel.setItems(new ArrayList<JiraIssueAdapter>());
 		listTableModel.fireTableDataChanged();
 		table.setEnabled(false);
-		editorPane.setText(wrapBody("No issues for server."));
+		editorPane.setText(wrapBody("No issues for server."));		
 	}
 
 	public void setIssues(List<JIRAIssue> issues) {
@@ -219,6 +234,7 @@ public class JIRAToolWindowPanel extends JPanel {
 		table.setEnabled(true);
 		table.setForeground(UIUtil.getActiveTextColor());
 		editorPane.setText(wrapBody("Loaded <b>" + issues.size() + "</b> issues."));
+		filterAndViewJiraIssues();
 	}
 
 	private String wrapBody(String s) {
