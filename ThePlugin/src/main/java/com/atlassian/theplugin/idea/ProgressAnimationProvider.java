@@ -1,6 +1,7 @@
-package com.atlassian.theplugin.idea.jira;
+package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.idea.ui.AnimatedProgressIcon;
+import com.intellij.util.ui.AsyncProcessIcon;
+import com.intellij.openapi.util.IconLoader;
 
 import javax.swing.*;
 import java.awt.*;
@@ -67,6 +68,41 @@ public class ProgressAnimationProvider extends JPanel {
 				parentComponent.validate();
 				parentComponent.requestFocus();
 			}
+
+		}
+	}
+
+	private class AnimatedProgressIcon extends AsyncProcessIcon {
+		private Icon[] icons;
+		private Icon passiveIcon;
+		private static final int CYCLE_LENGTH = 640; // whole animation single cycle lenght
+		private static final int CYCLE_GAP = 80; // break after every single cycle (best 'cycleLenght / number of frames')
+
+		public AnimatedProgressIcon(@org.jetbrains.annotations.NonNls String name) {
+			super(name);
+
+			// comment that line if you want to use standard IDEA small progress circle
+			initCustomLook();
+		}
+
+		private void initCustomLook() {
+			loadIcons();
+			init(icons, passiveIcon, CYCLE_LENGTH, CYCLE_GAP, -1);
+		}
+
+		private void loadIcons() {
+			icons = new Icon[]{
+				IconLoader.getIcon("/icons/progress/roller_1.png"),
+				IconLoader.getIcon("/icons/progress/roller_2.png"),
+				IconLoader.getIcon("/icons/progress/roller_3.png"),
+				IconLoader.getIcon("/icons/progress/roller_4.png"),
+				IconLoader.getIcon("/icons/progress/roller_5.png"),
+				IconLoader.getIcon("/icons/progress/roller_6.png"),
+				IconLoader.getIcon("/icons/progress/roller_7.png"),
+				IconLoader.getIcon("/icons/progress/roller_8.png"),
+			};
+
+			passiveIcon = IconLoader.getIcon("/icons/progress/roller_0.png");
 
 		}
 	}
