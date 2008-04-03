@@ -72,7 +72,7 @@ public class ProgressAnimationProvider extends JPanel {
 		}
 	}
 
-	private class AnimatedProgressIcon extends AsyncProcessIcon {
+	private static class AnimatedProgressIcon extends AsyncProcessIcon {
 		private Icon[] icons;
 		private Icon passiveIcon;
 		private static final int CYCLE_LENGTH = 640; // whole animation single cycle lenght
