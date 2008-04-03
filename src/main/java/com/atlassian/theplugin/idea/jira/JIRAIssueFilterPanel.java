@@ -1,6 +1,9 @@
 package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.jira.table.JIRAConstantListRenderer;
+import com.atlassian.theplugin.idea.jira.table.JIRAQueryFragmentListRenderer;
+import com.atlassian.theplugin.jira.JIRAServer;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -63,6 +66,15 @@ public class JIRAIssueFilterPanel extends JPanel {
 			}
 		});
 
+		this.projectList.setCellRenderer(new JIRAQueryFragmentListRenderer());
+		this.issueTypeList.setCellRenderer(new JIRAConstantListRenderer());
+		this.statusList.setCellRenderer(new JIRAConstantListRenderer());
+		this.prioritiesList.setCellRenderer(new JIRAConstantListRenderer());
+		this.resolutionsList.setCellRenderer(new JIRAQueryFragmentListRenderer());
+		this.fixForList.setCellRenderer(new JIRAQueryFragmentListRenderer());
+		this.affectsVersionsList.setCellRenderer(new JIRAQueryFragmentListRenderer());
+
+
 //		viewButtonBottom.addActionListener(new ActionListener() {
 //			public void actionPerformed(ActionEvent event) {
 //				IdeaHelper.getCurrentJIRAToolWindowPanel().filterAndViewJiraIssues();
@@ -70,12 +82,14 @@ public class JIRAIssueFilterPanel extends JPanel {
 //		});
 	}
 
-	public void setProjects(java.util.List projects) {
-		this.projectList.setListData(projects.toArray());
-	}
-
-	public void setIssueType(java.util.List issueTypes) {
-		this.issueTypeList.setListData(issueTypes.toArray());
+	public void setJiraServer(JIRAServer jiraServer) {
+		this.projectList.setListData(jiraServer.getProjects().toArray());
+		this.issueTypeList.setListData(jiraServer.getIssueTypes().toArray());
+		this.statusList.setListData(jiraServer.getStatuses().toArray());
+		this.prioritiesList.setListData(jiraServer.getPriorieties().toArray());
+		this.resolutionsList.setListData(jiraServer.getResolutions().toArray());
+		this.fixForList.setListData(jiraServer.getVersions().toArray());
+		this.affectsVersionsList.setListData(jiraServer.getVersions().toArray());
 	}
 
 	private void createUIComponents() {
@@ -257,5 +271,6 @@ public class JIRAIssueFilterPanel extends JPanel {
 	public JComponent $$$getRootComponent$$$() {
 		return rootPanel;
 	}
+
 }
 
