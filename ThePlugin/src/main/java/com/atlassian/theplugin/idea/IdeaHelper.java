@@ -31,7 +31,12 @@ public final class IdeaHelper {
         return DataKeys.PROJECT.getData(dataContext);
     }
 
-    @Nullable
+	@Nullable
+	public static Project getCurrentProject(AnActionEvent e) {
+		return getCurrentProject(e.getDataContext());
+	}
+
+	@Nullable
 	public static JIRAServer getCurrentJIRAServer() {
 		Project p = getCurrentProject(DataManager.getInstance().getDataContext());
 		if (p == null) {
@@ -40,7 +45,7 @@ public final class IdeaHelper {
 		return p.getComponent(ThePluginProjectComponent.class).getCurrentJiraServer();
     }
 
-    @Nullable
+	@Nullable
 	public static void setCurrentJIRAServer(JIRAServer jiraServer) {
 		Project p = getCurrentProject(DataManager.getInstance().getDataContext());
 		if (p == null) {
@@ -53,7 +58,7 @@ public final class IdeaHelper {
         return ToolWindowManager.getInstance(p).getToolWindow(PluginToolWindow.TOOL_WINDOW_NAME);
     }
 
-    public static ThePluginApplicationComponent getAppComponent() {
+	public static ThePluginApplicationComponent getAppComponent() {
         return ApplicationManager.getApplication().getComponent(ThePluginApplicationComponent.class);
     }
 
@@ -77,6 +82,7 @@ public final class IdeaHelper {
         return (JIRAToolWindowPanel) content.getComponent();
     }
 
+
 	public static BambooTableToolWindowPanel getBambooToolWindowPanel(AnActionEvent event) {
 		Project p = getCurrentProject(event.getDataContext());
 		if (p == null) {
@@ -87,5 +93,13 @@ public final class IdeaHelper {
 		return (BambooTableToolWindowPanel) content.getComponent();
 	}
 
+	public static ThePluginProjectComponent getCurrentProjectComponent(AnActionEvent e) {
+		Project project = getCurrentProject(e.getDataContext());
 
+		if (project == null) {
+			return null;
+		} else {
+			return project.getComponent(ThePluginProjectComponent.class);
+		}
+	}
 }
