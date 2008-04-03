@@ -3,7 +3,7 @@
   <grid id="27dc6" binding="rootPanel" layout-manager="GridLayoutManager" row-count="15" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="620" height="766"/>
+      <xy x="20" y="20" width="426" height="766"/>
     </constraints>
     <properties>
       <maximumSize width="347" height="586"/>
@@ -244,6 +244,7 @@
             <properties>
               <inheritsPopupMenu value="false"/>
               <layoutOrientation value="0"/>
+              <model/>
               <visibleRowCount value="5"/>
             </properties>
           </component>
@@ -345,6 +346,11 @@
           <text value="Affects &#10;Versions:"/>
         </properties>
       </component>
+      <hspacer id="b0d9">
+        <constraints>
+          <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </hspacer>
     </children>
   </grid>
 </form>
