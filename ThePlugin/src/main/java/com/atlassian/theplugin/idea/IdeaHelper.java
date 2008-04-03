@@ -57,7 +57,17 @@ public final class IdeaHelper {
         return ApplicationManager.getApplication().getComponent(ThePluginApplicationComponent.class);
     }
 
-    public static JIRAToolWindowPanel getJIRAToolWindowPanel(AnActionEvent event) {
+	public static JIRAToolWindowPanel getCurrentJIRAToolWindowPanel(){
+		Project p = getCurrentProject();
+		if (p == null) {
+			return null;
+		}
+		com.intellij.openapi.wm.ToolWindow tw = getToolWindow(p);
+        Content content = tw.getContentManager().findContent(PluginToolWindow.ToolWindowPanels.JIRA.toString());
+        return (JIRAToolWindowPanel) content.getComponent();
+	}
+
+	public static JIRAToolWindowPanel getJIRAToolWindowPanel(AnActionEvent event) {
         Project p = getCurrentProject(event.getDataContext());
 		if (p == null) {
 			return null;
