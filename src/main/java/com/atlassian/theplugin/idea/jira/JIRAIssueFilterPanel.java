@@ -191,6 +191,8 @@ public class JIRAIssueFilterPanel extends JPanel {
 		projectList = new JList();
 		projectList.setInheritsPopupMenu(false);
 		projectList.setLayoutOrientation(0);
+		final DefaultListModel defaultListModel1 = new DefaultListModel();
+		projectList.setModel(defaultListModel1);
 		projectList.setVisibleRowCount(5);
 		projectScrollPane.setViewportView(projectList);
 		final JLabel label8 = new JLabel();
@@ -200,14 +202,14 @@ public class JIRAIssueFilterPanel extends JPanel {
 		statusScrollPane = new JScrollPane();
 		rootPanel.add(statusScrollPane, new GridConstraints(10, 1, 2, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 		statusList = new JList();
-		final DefaultListModel defaultListModel1 = new DefaultListModel();
-		statusList.setModel(defaultListModel1);
+		final DefaultListModel defaultListModel2 = new DefaultListModel();
+		statusList.setModel(defaultListModel2);
 		statusScrollPane.setViewportView(statusList);
 		resolutionScrollPane = new JScrollPane();
 		rootPanel.add(resolutionScrollPane, new GridConstraints(12, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 		resolutionsList = new JList();
-		final DefaultListModel defaultListModel2 = new DefaultListModel();
-		resolutionsList.setModel(defaultListModel2);
+		final DefaultListModel defaultListModel3 = new DefaultListModel();
+		resolutionsList.setModel(defaultListModel3);
 		resolutionsList.setVisibleRowCount(5);
 		resolutionScrollPane.setViewportView(resolutionsList);
 		final JLabel label9 = new JLabel();
@@ -228,6 +230,8 @@ public class JIRAIssueFilterPanel extends JPanel {
 		final JLabel label11 = new JLabel();
 		label11.setText("Affects \nVersions:");
 		rootPanel.add(label11, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		final Spacer spacer7 = new Spacer();
+		rootPanel.add(spacer7, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
 		label1.setLabelFor(issueTypeScrollPane);
 		label2.setLabelFor(reporterComboBox);
 		label3.setLabelFor(assigneeComboBox);
