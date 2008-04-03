@@ -104,4 +104,8 @@
 		<Class name="com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon"/>
 		<Bug pattern="SE_TRANSIENT_FIELD_NOT_RESTORED"/>
 	</Match>
+	<Match>
+		<Class name="com.atlassian.theplugin.idea.jira.JIRAIssueFilterPanel"/>
+	</Match>
+
 </FindBugsFilter>
