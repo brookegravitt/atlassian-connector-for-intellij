@@ -36,7 +36,7 @@ public class JIRAIssueFilterPanel extends JPanel {
 	//private CollapsiblePanel collapsiblePanel1;
 	private JPanel rootPanel;
 
-	
+
 	public JIRAIssueFilterPanel() {
 		$$$setupUI$$$();
 
@@ -63,6 +63,14 @@ public class JIRAIssueFilterPanel extends JPanel {
 //		});
 	}
 
+	public void setProjects(java.util.List projects) {
+		this.projectList.setListData(projects.toArray());
+	}
+
+	public void setIssueType(java.util.List issueTypes) {
+		this.issueTypeList.setListData(issueTypes.toArray());
+	}
+
 	private void createUIComponents() {
 		//list1 = new JList();
 		//collapsiblePanel1 = new CollapsiblePanel(list1, true);
@@ -84,11 +92,11 @@ public class JIRAIssueFilterPanel extends JPanel {
 		rootPanel.setMaximumSize(new Dimension(347, 586));
 		final JPanel panel1 = new JPanel();
 		panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-		rootPanel.add(panel1, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+		rootPanel.add(panel1, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		projectList = new JList();
 		projectList.setLayoutOrientation(0);
 		projectList.setVisibleRowCount(5);
-		panel1.add(projectList, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(198, 50), null, 0, false));
+		panel1.add(projectList, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(198, 50), new Dimension(198, 50), 0, false));
 		final JLabel label1 = new JLabel();
 		label1.setText("Project:");
 		label1.setVerticalAlignment(1);
@@ -210,6 +218,5 @@ public class JIRAIssueFilterPanel extends JPanel {
 	public JComponent $$$getRootComponent$$$() {
 		return rootPanel;
 	}
-
 }
 

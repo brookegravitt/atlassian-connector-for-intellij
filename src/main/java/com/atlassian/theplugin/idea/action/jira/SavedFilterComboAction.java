@@ -36,7 +36,7 @@ public class SavedFilterComboAction extends ComboBoxAction {
     }
 
     private String getDefaultText() {
-        return "No Saved Filter ";
+        return "Select saved filter";
     }
 
     private static class MyAnAction extends AnAction {
