@@ -322,4 +322,12 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 	public void setCurrentJiraServer(JIRAServer currentJiraServer) {
 		this.currentJiraServer = currentJiraServer;
 	}
+
+	public CrucibleStatusChecker getCrucibleStatusChecker() {
+		return crucibleStatusChecker;
+	}
+
+	public BambooStatusChecker getBambooStatusChecker() {
+		return bambooStatusChecker;
+	}
 }
