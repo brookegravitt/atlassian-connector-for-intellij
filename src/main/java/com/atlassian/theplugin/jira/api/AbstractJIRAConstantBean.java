@@ -5,11 +5,20 @@ import java.net.URL;
 import java.util.Map;
 
 public abstract class AbstractJIRAConstantBean implements JIRAConstant {
-    private String name;
-    private long id;
-    private URL iconUrl;
+    protected String name;
+    protected long id;
+    protected URL iconUrl;
 
-    public AbstractJIRAConstantBean(Map map) {
+	public AbstractJIRAConstantBean() {		
+	}
+
+	protected AbstractJIRAConstantBean(long id, String name, URL iconUrl) {
+		this.id = id;
+		this.name = name;
+		this.iconUrl = iconUrl;
+	}
+
+	public AbstractJIRAConstantBean(Map map) {
         name = (String) map.get("name");
         id = Long.valueOf((String) map.get("id"));
 

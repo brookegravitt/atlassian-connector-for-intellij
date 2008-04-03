@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.jira.api;
 
 import java.util.Map;
+import java.net.URL;
 
 public class JIRAIssueTypeBean extends AbstractJIRAConstantBean {
     private boolean subTask = false;
@@ -9,7 +10,11 @@ public class JIRAIssueTypeBean extends AbstractJIRAConstantBean {
         subTask = Boolean.valueOf((String) map.get("subTask"));
     }
 
-    public String getQueryStringFragment() {
+	public JIRAIssueTypeBean(long id, String name, URL iconUrl) {
+		super(id, name, iconUrl);
+	}
+
+	public String getQueryStringFragment() {
         return "type=" + getId();
     }
 
