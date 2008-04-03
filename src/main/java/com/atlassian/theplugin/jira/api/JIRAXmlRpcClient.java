@@ -178,7 +178,9 @@ public class JIRAXmlRpcClient {
 				result.add(new JIRAVersionBean((Map) iterator.next()));
 			}
 			return result;
-		} catch (Exception e) {
+		} catch (XmlRpcException e) {
+			throw new JIRAException(e.getMessage(), e);
+		} catch (IOException e) {
 			throw new JIRAException(e.getMessage(), e);
 		}
 	}
