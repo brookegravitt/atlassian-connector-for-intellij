@@ -5,6 +5,7 @@ import com.atlassian.theplugin.jira.api.JIRAConstant;
 import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAProject;
 
+import java.util.Collections;
 import java.util.List;
 
 public class JIRAServer {
@@ -18,9 +19,11 @@ public class JIRAServer {
 	private List savedFilters;
 	private List versions;
 	private List components;
+	private List priorieties;
+	private List resolutions;
 
-	private String lastProject = "";
-	private String currentProject = "";
+	private JIRAProject lastProject = null;
+	private JIRAProject currentProject = null;
 
 	private final JIRAServerFacade jiraServerFacade;
 
@@ -78,17 +81,18 @@ public class JIRAServer {
 
 	public List<JIRAConstant> getIssueTypes() {
 		validServer = false;
-		if (issueTypes == null || !currentProject.equals(lastProject)) {
+		if (issueTypes == null) {
 			errorMessage = null;
 			try {
-				if ("".equals(currentProject)) {
+				if (currentProject == null) {
 					issueTypes = jiraServerFacade.getIssueTypes(server);
 				} else {
-					issueTypes = jiraServerFacade.getIssueTypesForProject(server, currentProject);
+					issueTypes = jiraServerFacade.getIssueTypesForProject(server, Long.toString(currentProject.getId()));
 				}
-				lastProject = currentProject;						
+				lastProject = currentProject;
 				validServer = true;
 			} catch (JIRAException e) {
+				System.out.println("e = " + e);
 				errorMessage = e.getMessage();
 			}
 		} else {
@@ -115,13 +119,51 @@ public class JIRAServer {
 		return savedFilters;
 	}
 
-	public List getVersions() {
+	public List<JIRAConstant> getPriorieties() {
 		validServer = false;
-		if (versions == null || !currentProject.equals(lastProject)) {
+		if (priorieties == null) {
 			errorMessage = null;
 			try {
-				versions = jiraServerFacade.getVersions(server, currentProject);
-				lastProject = currentProject;
+				priorieties = jiraServerFacade.getPriorieties(server);
+				validServer = true;
+			} catch (JIRAException e) {
+				errorMessage = e.getCause().getMessage();
+			}
+		} else {
+			validServer = true;
+		}
+
+		return priorieties;
+	}
+
+	public List<JIRAConstant> getResolutions() {
+		validServer = false;
+		if (resolutions == null) {
+			errorMessage = null;
+			try {
+				resolutions = jiraServerFacade.getResolutions(server);
+				validServer = true;
+			} catch (JIRAException e) {
+				errorMessage = e.getCause().getMessage();
+			}
+		} else {
+			validServer = true;
+		}
+
+		return resolutions;
+	}
+
+	public List getVersions() {
+		validServer = false;
+		if (versions == null) {
+			errorMessage = null;
+			try {
+				if (currentProject != null) {
+					versions = jiraServerFacade.getVersions(server, currentProject.getKey());
+					lastProject = currentProject;
+				} else {
+					versions = Collections.EMPTY_LIST;
+				}
 				validServer = true;
 			} catch (JIRAException e) {
 				errorMessage = e.getMessage();
@@ -135,11 +177,15 @@ public class JIRAServer {
 
 	public List getComponents() {
 		validServer = false;
-		if (components == null || !currentProject.equals(lastProject)) {
+		if (components == null || (currentProject != null && !currentProject.getKey().equals(lastProject.getKey()))) {
 			errorMessage = null;
 			try {
-				components = jiraServerFacade.getComponents(server, currentProject);
-				lastProject = currentProject;
+				if (currentProject != null) {
+					components = jiraServerFacade.getComponents(server, currentProject.getKey());
+					lastProject = currentProject;
+				} else {
+					components = Collections.EMPTY_LIST;
+				}
 				validServer = true;
 			} catch (JIRAException e) {
 				errorMessage = e.getMessage();
@@ -159,11 +205,14 @@ public class JIRAServer {
 		return errorMessage;
 	}
 
-	public String getCurrentProject() {
+	public JIRAProject getCurrentProject() {
 		return currentProject;
 	}
 
-	public void setCurrentProject(String currentProject) {
+	public void setCurrentProject(JIRAProject currentProject) {
 		this.currentProject = currentProject;
+		versions = null;
+		components = null;
+		issueTypes = null;
 	}
 }

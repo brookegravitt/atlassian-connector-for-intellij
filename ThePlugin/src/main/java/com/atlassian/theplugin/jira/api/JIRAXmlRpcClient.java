@@ -133,7 +133,7 @@ public class JIRAXmlRpcClient {
 		return result;
 	}
 
-	public List getComponents(String projectKey) throws JIRAException {
+	public List<JIRAQueryFragment> getComponents(String projectKey) throws JIRAException {
 		if (!loggedIn) {
 			login();
 		}
@@ -144,20 +144,22 @@ public class JIRAXmlRpcClient {
 		params.add(projectKey);
 
 		PluginUtil.getLogger().info("Getting components for project: " + projectKey);
-		System.out.println("Getting components for project: " + projectKey);
 
 		try {
-			List projects = (List) client.execute("jira1.getComponents", params);
-			return projects;
+			List retrieved = (List) client.execute("jira1.getComponents", params);
+			List result = new ArrayList<JIRAConstant>(retrieved.size());
+			for (Iterator iterator = retrieved.iterator(); iterator.hasNext();) {
+				result.add(new JIRAComponentBean((Map) iterator.next()));
+			}
+			return result;
 		} catch (XmlRpcException e) {
 			throw new JIRAException(e.getMessage(), e);
 		} catch (IOException e) {
 			throw new JIRAException(e.getMessage(), e);
 		}
-
 	}
 
-	public List getVersions(String projectKey) throws JIRAException {
+	public List<JIRAQueryFragment> getVersions(String projectKey) throws JIRAException {
 		if (!loggedIn) {
 			login();
 		}
@@ -168,14 +170,15 @@ public class JIRAXmlRpcClient {
 		params.add(projectKey);
 
 		PluginUtil.getLogger().info("Getting project versions: " + token + " | " + projectKey);
-		System.out.println("Getting versions for project: " + projectKey);		
 
 		try {
-			List versions = (List) client.execute("jira1.getVersions", params);
-			System.out.println("versions.size() = " + versions.size());
-			return versions;
+			List retrieved = (List) client.execute("jira1.getVersions", params);
+			List result = new ArrayList<JIRAConstant>(retrieved.size());
+			for (Iterator iterator = retrieved.iterator(); iterator.hasNext();) {
+				result.add(new JIRAVersionBean((Map) iterator.next()));
+			}
+			return result;
 		} catch (Exception e) {
-			System.out.println("e = " + e);
 			throw new JIRAException(e.getMessage(), e);
 		}
 	}
@@ -192,11 +195,21 @@ public class JIRAXmlRpcClient {
 	}
 
 	public List getResolutions() throws JIRAException {
-		return getListFromRPCMethod("jira1.getResolutions");
+		List retrieved = getListFromRPCMethod("jira1.getResolutions");
+		List result = new ArrayList<JIRAConstant>(retrieved.size());
+		for (Iterator iterator = retrieved.iterator(); iterator.hasNext();) {
+			result.add(new JIRAResolutionBean((Map) iterator.next()));
+		}
+		return result;
 	}
 
-	public List getPriorities() throws JIRAException {
-		return getListFromRPCMethod("jira1.getPriorities");
+	public List<JIRAConstant> getPriorities() throws JIRAException {
+		List retrieved = getListFromRPCMethod("jira1.getPriorities");
+		List result = new ArrayList<JIRAConstant>(retrieved.size());
+		for (Iterator iterator = retrieved.iterator(); iterator.hasNext();) {
+			result.add(new JIRAPriorityBean((Map) iterator.next()));
+		}
+		return result;
 	}
 
 	public List<JIRAConstant> getIssueTypesForProject(String projectKey) throws JIRAException {
@@ -210,7 +223,6 @@ public class JIRAXmlRpcClient {
 		params.add(projectKey);
 
 		PluginUtil.getLogger().info("Getting issue types for project: " + token + " | " + projectKey);
-
 
 		List issueTypes = null;
 		try {
