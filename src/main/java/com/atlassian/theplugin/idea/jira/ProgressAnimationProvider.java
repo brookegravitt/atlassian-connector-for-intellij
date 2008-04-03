@@ -20,11 +20,10 @@ public class ProgressAnimationProvider extends JPanel {
 	private JComponent parentComponent;
 
 	/**
-	 * Sets component which is hidden when ProgressIcon starts and restored when ProgressIcon is stops
-	 * Parameters shouldn't be null
-	 * @param rootComponent parent of the replaceComponent
-	 * @param replaceComponent component to hide (to replace by animated progress icon)
-	 * @param constraint constraind used to add replaceComponent
+	 * @param rootComponent place where to put animation (parent of the replaceComponent). CANNOT BE NULL
+	 * @param replaceComponent component to hide (to replace by animated progress icon).
+	 * Can be null if rootComponent doesn't contain child
+	 * @param constraint constraint used to add animation icon (and replaceComponent). 
 	 */
 	public void configure(JComponent rootComponent, JComponent replaceComponent, Object constraint) {
 		this.parentComponent = rootComponent;
