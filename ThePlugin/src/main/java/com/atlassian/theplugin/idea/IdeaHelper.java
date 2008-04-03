@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
+import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.intellij.ide.DataManager;
@@ -9,6 +10,7 @@ import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.Content;
 import org.jetbrains.annotations.Nullable;
@@ -88,7 +90,8 @@ public final class IdeaHelper {
 		if (p == null) {
 			return null;
 		}
-		com.intellij.openapi.wm.ToolWindow tw = getToolWindow(p);
+
+		ToolWindow tw = getToolWindow(p);
 		Content content = tw.getContentManager().findContent(PluginToolWindow.ToolWindowPanels.BAMBOO.toString());
 		return (BambooTableToolWindowPanel) content.getComponent();
 	}
@@ -101,5 +104,17 @@ public final class IdeaHelper {
 		} else {
 			return project.getComponent(ThePluginProjectComponent.class);
 		}
+	}
+
+	public static CrucibleTableToolWindowPanel getCrucibleToolWindowPanel(AnActionEvent e) {
+		Project p = getCurrentProject(e.getDataContext());
+		if (p == null) {
+			return null;
+		}
+
+		ToolWindow tw = getToolWindow(p);
+		Content content = tw.getContentManager().findContent(PluginToolWindow.ToolWindowPanels.CRUCIBLE.toString());
+
+		return (CrucibleTableToolWindowPanel) content.getComponent();
 	}
 }
