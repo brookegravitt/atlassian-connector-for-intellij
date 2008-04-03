@@ -513,9 +513,8 @@
                         **/soap/xfire/**/*.java,
 						**/IssueComment.java,
 						**/IssueCreate.java,
-						**/thirdparty/**/*.*
+						**/thirdparty/**/*.*,
 						**/JIRAIssueFilterPanel.java
-
 					</excludes>
 					<!--<failsOnError>true</failsOnError>-->
 					<!--<linkXRef>false</linkXRef>-->
