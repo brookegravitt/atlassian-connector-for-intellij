@@ -144,6 +144,7 @@ public class JIRAXmlRpcClient {
 		params.add(projectKey);
 
 		PluginUtil.getLogger().info("Getting components for project: " + projectKey);
+		System.out.println("Getting components for project: " + projectKey);
 
 		try {
 			List projects = (List) client.execute("jira1.getComponents", params);
@@ -167,11 +168,14 @@ public class JIRAXmlRpcClient {
 		params.add(projectKey);
 
 		PluginUtil.getLogger().info("Getting project versions: " + token + " | " + projectKey);
+		System.out.println("Getting versions for project: " + projectKey);		
 
 		try {
 			List versions = (List) client.execute("jira1.getVersions", params);
+			System.out.println("versions.size() = " + versions.size());
 			return versions;
 		} catch (Exception e) {
+			System.out.println("e = " + e);
 			throw new JIRAException(e.getMessage(), e);
 		}
 	}

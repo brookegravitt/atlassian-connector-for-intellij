@@ -16,6 +16,8 @@ public class JIRAServer {
 	private List statuses;
 	private List issueTypes;
 	private List savedFilters;
+	private List versions;
+	private List components;
 
 	private String lastProject = "";
 	private String currentProject = "";
@@ -111,6 +113,42 @@ public class JIRAServer {
 		}
 
 		return savedFilters;
+	}
+
+	public List getVersions() {
+		validServer = false;
+		if (versions == null || !currentProject.equals(lastProject)) {
+			errorMessage = null;
+			try {
+				versions = jiraServerFacade.getVersions(server, currentProject);
+				lastProject = currentProject;
+				validServer = true;
+			} catch (JIRAException e) {
+				errorMessage = e.getMessage();
+			}
+		} else {
+			validServer = true;
+		}
+
+		return versions;
+	}
+
+	public List getComponents() {
+		validServer = false;
+		if (components == null || !currentProject.equals(lastProject)) {
+			errorMessage = null;
+			try {
+				components = jiraServerFacade.getComponents(server, currentProject);
+				lastProject = currentProject;
+				validServer = true;
+			} catch (JIRAException e) {
+				errorMessage = e.getMessage();
+			}
+		} else {
+			validServer = true;
+		}
+
+		return components;
 	}
 
 	public boolean isValidServer() {

@@ -16,4 +16,8 @@ public class JIRAIssueTypeBean extends AbstractJIRAConstantBean {
     public boolean isSubTask() {
         return subTask;
     }
+
+	public String toString() {
+		return getName();
+	}
 }
