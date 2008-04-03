@@ -159,17 +159,17 @@ public class JIRAToolWindowPanel extends JPanel {
 		}
 		return query;
 	}
-	public final synchronized void filterAndViewJiraIssues() {
+	public final void filterAndViewJiraIssues() {
 		setScrollPaneViewport(table);
 	}
 
-	public final synchronized void showJIRAIssueFilter() {
+	public final void showJIRAIssueFilter() {
 		setScrollPaneViewport(jiraIssueFilterPanel.$$$getRootComponent$$$());
 	}
 
 	private void setScrollPaneViewport(JComponent component) {
 		scrollTable.setViewportView(component);
-	};
+	}
 
 	public void restoreQuery() {
 	}
