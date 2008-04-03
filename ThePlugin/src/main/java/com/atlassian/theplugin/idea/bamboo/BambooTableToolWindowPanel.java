@@ -7,6 +7,7 @@ import com.atlassian.theplugin.bamboo.HtmlBambooStatusListener;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.idea.TableColumnInfo;
+import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.ui.AtlassianTableView;
 import com.atlassian.theplugin.remoteapi.RemoteApiException;
 import com.intellij.ide.BrowserUtil;
@@ -38,10 +39,15 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 	private final transient BambooServerFacade bambooFacade;
 	private static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
 	private static final DateFormat TIME_DF = new SimpleDateFormat("hh:mm a");
+	private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
 
 	private static final Icon ICON_RUN = IconLoader.getIcon("/actions/execute.png");
 	private static final Icon ICON_LABEL = IconLoader.getIcon("/modules/annotation.png");
 	private static final Icon ICON_COMMENT = IconLoader.getIcon("/actions/editSource.png");
+
+	public ProgressAnimationProvider getProgressAnimation() {
+		return progressAnimation;
+	}
 
 	public BambooTableToolWindowPanel(BambooServerFacade bambooFacade,
 									  ProjectConfigurationBean projectConfigurationBean) {
@@ -106,6 +112,8 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 		tablePane.setWheelScrollingEnabled(true);
 		//table.setMinimumSize(ED_PANE_MINE_SIZE);
 		add(tablePane, BorderLayout.CENTER);
+
+		progressAnimation.configure(this, tablePane, BorderLayout.CENTER);
 	}
 
 	private JPopupMenu createContextMenu(BambooBuildAdapter buildAdapter) {

@@ -6,6 +6,7 @@ import com.atlassian.theplugin.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.crucible.CrucibleStatusListener;
 import com.atlassian.theplugin.crucible.ReviewDataInfo;
 import com.atlassian.theplugin.idea.TableColumnInfo;
+import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.idea.ui.AtlassianTableView;
 import com.intellij.ide.BrowserUtil;
@@ -34,6 +35,11 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 	private final transient CrucibleServerFacade crucibleFacade;
 	private static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
 	private static final DateFormat TIME_DF = new SimpleDateFormat("hh:mm a");
+	private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
+
+	public ProgressAnimationProvider getProgressAnimation() {
+		return progressAnimation;
+	}
 
 	public CrucibleTableToolWindowPanel(CrucibleServerFacade crucibleFacade,
 									  ProjectConfigurationBean projectConfigurationBean) {
@@ -97,6 +103,8 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		tablePane.setWheelScrollingEnabled(true);		
 		add(tablePane, BorderLayout.CENTER);
+
+		progressAnimation.configure(this, tablePane, BorderLayout.CENTER);
 	}
 
 	private JPopupMenu createContextMenu(ReviewDataInfoAdapter reviewAdapter) {

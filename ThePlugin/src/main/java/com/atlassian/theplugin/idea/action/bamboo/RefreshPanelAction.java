@@ -1,8 +1,11 @@
 package com.atlassian.theplugin.idea.action.bamboo;
 
+import com.atlassian.theplugin.bamboo.BambooStatusChecker;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ThePluginProjectComponent;
-import com.atlassian.theplugin.bamboo.BambooStatusChecker;
+import com.atlassian.theplugin.idea.ProgressAnimationProvider;
+import com.atlassian.theplugin.idea.Logger;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
@@ -15,14 +18,39 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  */
 public class RefreshPanelAction extends AnAction {
 
-	public void actionPerformed(AnActionEvent e) {
+	public void actionPerformed(final AnActionEvent e) {
 		ThePluginProjectComponent projectComponent = IdeaHelper.getCurrentProjectComponent(e);
 
 		if (projectComponent != null) {
-			BambooStatusChecker checker = projectComponent.getBambooStatusChecker();
+			final BambooStatusChecker checker = projectComponent.getBambooStatusChecker();
 
 			if (checker.canSchedule()) {
-				new Thread(checker.newTimerTask()).start();
+
+				final ProgressAnimationProvider animator =
+								IdeaHelper.getBambooToolWindowPanel(e).getProgressAnimation();
+
+				final Logger log = PluginUtil.getLogger();
+
+				new Thread(new Runnable() {
+					public void run() {
+
+						Thread t = new Thread(checker.newTimerTask(), "Manual Bamboo panel refresh (checker)");
+
+						animator.startProgressAnimation();
+
+						t.start();
+						try {
+							t.join();
+						} catch (InterruptedException e) {
+							log.warn(e.toString());
+						} finally {
+							animator.stopProgressAnimation();
+						}
+
+
+					}
+				}, "Manual Bamboo panel refresh").start();
+
 			}
 		}
 	}
