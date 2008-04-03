@@ -57,7 +57,7 @@ public final class IdeaHelper {
         return ApplicationManager.getApplication().getComponent(ThePluginApplicationComponent.class);
     }
 
-	public static JIRAToolWindowPanel getCurrentJIRAToolWindowPanel(){
+	public static JIRAToolWindowPanel getCurrentJIRAToolWindowPanel() {
 		Project p = getCurrentProject();
 		if (p == null) {
 			return null;
