@@ -11,6 +11,8 @@ public final class HelpUrl {
 
 	private static String helpUrlBase;
 
+	private HelpUrl() { }
+
 	static {
 		InputStream is = HelpUrl.class.getResourceAsStream("/properties/help-paths.properties");
 		try {
