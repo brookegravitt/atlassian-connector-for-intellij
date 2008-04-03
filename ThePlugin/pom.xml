@@ -513,6 +513,7 @@
                         **/soap/xfire/**/*.java,
 						**/IssueComment.java,
 						**/IssueCreate.java,
+						**/ChangesetCreate.java,
 						**/thirdparty/**/*.*,
 						**/JIRAIssueFilterPanel.java
 					</excludes>
