@@ -29,4 +29,8 @@ public class UnresolvedIssuesAction extends CheckboxAction implements JIRAQueryF
     public String getQueryStringFragment() {
         return "resolution=-1";
     }
+
+	public String getName() {
+		return "";
+	}	
 }
