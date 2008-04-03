@@ -46,4 +46,8 @@ public class JIRAProjectBean implements JIRAProject {
     public String getLead() {
         return lead;
     }
+
+	public String toString() {
+		return name;
+	}
 }
