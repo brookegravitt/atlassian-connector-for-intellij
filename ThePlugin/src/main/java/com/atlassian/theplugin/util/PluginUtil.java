@@ -28,7 +28,7 @@ public final class PluginUtil {
 	private static String baseDir = PathUtil.getJarPathForClass(PluginUtil.class);
 
 	private static Document doc = setDoc();
-	public static final String VERSION_INFO_URL = "http://docs.atlassian.com/atlassian-idea-plugin/latestVersion.xml";
+	public static final String VERSION_INFO_URL = "http://update.atlassian.com/atlassian-idea-plugin/latestVersion.xml";
 
 	///CLOVER:OFF
 	private PluginUtil() {
