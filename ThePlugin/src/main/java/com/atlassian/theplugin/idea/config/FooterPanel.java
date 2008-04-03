@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.config;
 
 import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.HelpUrl;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.ui.HyperlinkLabel;
@@ -88,7 +89,7 @@ public class FooterPanel extends JPanel {
 				+ "&versions=" + versionCodeForJira
 				+ "&issuetype=" + TICKET_TYPE_STORY;
 
-		final String helpUrl = Constants.HELP_URL_BASE + Constants.HELP_CONFIG_PANEL;
+		final String helpUrl = HelpUrl.getHelpUrl(Constants.HELP_CONFIG_PANEL);
 
 		JPanel linkPanel = new JPanel();
 		
@@ -109,7 +110,7 @@ public class FooterPanel extends JPanel {
 		// jgorycki: in my and Marek's opinion, text-based link looks marginally less bad than an icon
 		openConfigHelpLabel = new HyperlinkLabel("Help");
 //		openConfigHelpLabel.setIcon(Constants.HELP_ICON);
-//		openConfigHelpLabel.setToolTipText("Help");
+//		openConfigHelpLabel.setToolTipText(helpUrl);
 
 		openConfigHelpLabel.addHyperlinkListener(new HyperlinkListener() {
 			public void hyperlinkUpdate(HyperlinkEvent e) {
