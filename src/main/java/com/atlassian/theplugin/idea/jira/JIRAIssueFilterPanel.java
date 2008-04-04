@@ -5,6 +5,7 @@ import com.atlassian.theplugin.idea.jira.table.JIRAConstantListRenderer;
 import com.atlassian.theplugin.idea.jira.table.JIRAQueryFragmentListRenderer;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.api.JIRAProjectBean;
+import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -15,6 +16,8 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class JIRAIssueFilterPanel extends JPanel {
@@ -72,11 +75,6 @@ public class JIRAIssueFilterPanel extends JPanel {
 		this.componentsList.setCellRenderer(new JIRAQueryFragmentListRenderer());
 		this.affectsVersionsList.setCellRenderer(new JIRAQueryFragmentListRenderer());
 
-//		viewButtonBottom.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent event) {
-//				IdeaHelper.getCurrentJIRAToolWindowPanel().filterAndViewJiraIssues();
-//			}
-//		});
 		projectList.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent event) {
 				if (projectList.getSelectedValues().length == 1) {
@@ -103,7 +101,7 @@ public class JIRAIssueFilterPanel extends JPanel {
 			this.fixForScrollPane.setVisible(true);
 			this.fixForLabel.setVisible(true);
 		}
-		if (this.componentsList.getModel().getSize() <= JIRAServer.LIST_SPECIAL_VALUES_COUNT) {
+		if (this.componentsList.getModel().getSize() <= JIRAServer.COMPONENTS_SPECIAL_VALUES_COUNT) {
 			this.componentsScrollPane.setVisible(false);
 			this.componentsLabel.setVisible(false);
 		} else {
@@ -132,7 +130,7 @@ public class JIRAIssueFilterPanel extends JPanel {
 
 	private void refreshProjectDependentLists() {
 		this.issueTypeList.setListData(jiraServer.getIssueTypes().toArray());
-		this.fixForList.setListData(jiraServer.getVersions().toArray());
+		this.fixForList.setListData(jiraServer.getFixForVersions().toArray());
 		this.componentsList.setListData(jiraServer.getComponents().toArray());
 		this.affectsVersionsList.setListData(jiraServer.getVersions().toArray());
 		enableProjectDependentLists(true);
@@ -145,9 +143,70 @@ public class JIRAIssueFilterPanel extends JPanel {
 		this.statusList.setListData(jiraServer.getStatuses().toArray());
 		this.prioritiesList.setListData(jiraServer.getPriorieties().toArray());
 		this.resolutionsList.setListData(jiraServer.getResolutions().toArray());
-		this.fixForList.setListData(jiraServer.getVersions().toArray());
+		this.fixForList.setListData(jiraServer.getFixForVersions().toArray());
 		this.componentsList.setListData(jiraServer.getComponents().toArray());
 		this.affectsVersionsList.setListData(jiraServer.getVersions().toArray());
+	}
+
+	public void setInitialFilter(List<JIRAQueryFragment> advancedQuery) {
+		setComboValues(projectList, advancedQuery);
+		setComboValues(statusList, advancedQuery);
+		setComboValues(prioritiesList, advancedQuery);
+		setComboValues(resolutionsList, advancedQuery);
+		setComboValues(issueTypeList, advancedQuery);
+		setComboValues(componentsList, advancedQuery);
+		setComboValues(fixForList, advancedQuery);
+		setComboValues(affectsVersionsList, advancedQuery);
+	}
+
+	public void setComboValues(JList list,
+							   List<JIRAQueryFragment> advancedQuery) {
+		List<Integer> selection = new ArrayList<Integer>();
+		for (int i = 0, size = list.getModel().getSize(); i < size; ++i) {			
+			for (JIRAQueryFragment jiraQueryFragment : advancedQuery) {
+				JIRAQueryFragment fragment = (JIRAQueryFragment) list.getModel().getElementAt(i);
+				if (jiraQueryFragment.getQueryStringFragment().equals(fragment.getQueryStringFragment())) {
+					selection.add(i);
+				}
+			}
+		}
+		if (selection.size() > 0) {
+			int[] sel = new int[selection.size()];
+			int j = 0;
+			for (Integer integer : selection) {
+				sel[j++] = integer;
+			}
+			list.setSelectedIndices(sel);
+		}
+	}
+
+	public List<JIRAQueryFragment> getFilter() {
+		List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
+		for (Object o : projectList.getSelectedValues()) {
+			query.add((JIRAQueryFragment) o);
+		}
+		for (Object o : issueTypeList.getSelectedValues()) {
+			query.add((JIRAQueryFragment) o);
+		}
+		for (Object o : statusList.getSelectedValues()) {
+			query.add((JIRAQueryFragment) o);
+		}
+		for (Object o : prioritiesList.getSelectedValues()) {
+			query.add((JIRAQueryFragment) o);
+		}
+		for (Object o : resolutionsList.getSelectedValues()) {
+			query.add((JIRAQueryFragment) o);
+		}
+		for (Object o : fixForList.getSelectedValues()) {
+			query.add((JIRAQueryFragment) o);
+		}
+		for (Object o : componentsList.getSelectedValues()) {
+			query.add((JIRAQueryFragment) o);
+		}
+		for (Object o : affectsVersionsList.getSelectedValues()) {
+			query.add((JIRAQueryFragment) o);
+		}
+		return query;
 	}
 
 	private void createUIComponents() {
@@ -346,5 +405,6 @@ public class JIRAIssueFilterPanel extends JPanel {
 	public JComponent $$$getRootComponent$$$() {
 		return rootPanel;
 	}
+
 }
 

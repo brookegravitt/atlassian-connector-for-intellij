@@ -6,12 +6,15 @@ import com.atlassian.theplugin.jira.api.*;
 import java.util.*;
 
 public class JIRAServer {
-	public final static int LIST_SPECIAL_VALUES_COUNT = 1;
-	public final static int VERSION_SPECIAL_VALUES_COUNT = LIST_SPECIAL_VALUES_COUNT + 3;	
-	private static final int ANY_ID = -1;
-	private static final int NO_VERSION_ID = -2;
+	public static final int LIST_SPECIAL_VALUES_COUNT = 1;
+	public static final int VERSION_SPECIAL_VALUES_COUNT = 4;
+	public static final int COMPONENTS_SPECIAL_VALUES_COUNT = 2;	
+	public static final int ANY_ID = -1000;
+	private static final int NO_VERSION_ID = -1;
 	private static final int RELEASED_VERSION_ID = -3;
-	private static final int UNRELEASED_VERSION_ID = -4;
+	private static final int UNRELEASED_VERSION_ID = -2;
+	private static final int NO_COMPONENT_ID = -1;
+	private static final int UNRESOLVED_ID = -1;
 
 	private Server server;
 	private boolean validServer = false;
@@ -22,6 +25,7 @@ public class JIRAServer {
 	private List issueTypes;
 	private List savedFilters;
 	private List<JIRAVersionBean> versions;
+	private List<JIRAFixForVersionBean> fixForVersions;	
 	private List components;
 	private List priorieties;
 	private List resolutions;
@@ -30,6 +34,7 @@ public class JIRAServer {
 	private JIRAProject currentProject = null;
 
 	private final JIRAServerFacade jiraServerFacade;
+
 
 	public JIRAServer(JIRAServerFacade jiraServerFacade) {
 		this.jiraServerFacade = jiraServerFacade;
@@ -94,7 +99,7 @@ public class JIRAServer {
 		if (issueTypes == null) {
 			errorMessage = null;
 			try {
-				List<JIRAConstant> retrieved = Collections.EMPTY_LIST;
+				List<JIRAConstant> retrieved;
 				if (currentProject == null) {
 					retrieved = jiraServerFacade.getIssueTypes(server);
 				} else {
@@ -162,6 +167,7 @@ public class JIRAServer {
 				List<JIRAQueryFragment> retrieved = jiraServerFacade.getResolutions(server);
 				resolutions = new ArrayList<JIRAResolutionBean>(retrieved.size() + 1);
 				resolutions.add(new JIRAResolutionBean(ANY_ID, "Any"));
+				resolutions.add(new JIRAResolutionBean(UNRESOLVED_ID, "Unresolved"));				
 				resolutions.addAll(retrieved);
 				validServer = true;
 			} catch (JIRAException e) {
@@ -211,6 +217,43 @@ public class JIRAServer {
 		return versions;
 	}
 
+	public List<JIRAFixForVersionBean> getFixForVersions() {
+		validServer = false;
+		if (fixForVersions == null) {
+			errorMessage = null;
+			try {
+				if (currentProject != null) {
+					List<JIRAQueryFragment> retrieved = jiraServerFacade.getVersions(server, currentProject.getKey());
+					fixForVersions = new ArrayList<JIRAFixForVersionBean>(retrieved.size() + VERSION_SPECIAL_VALUES_COUNT);
+					fixForVersions.add(new JIRAFixForVersionBean(ANY_ID, "Any"));
+					fixForVersions.add(new JIRAFixForVersionBean(NO_VERSION_ID, "No version"));
+					fixForVersions.add(new JIRAFixForVersionBean(RELEASED_VERSION_ID, "Released versions"));
+					for (JIRAQueryFragment jiraQueryFragment : retrieved) {
+						if (((JIRAVersionBean) jiraQueryFragment).isReleased()) {
+							fixForVersions.add(new JIRAFixForVersionBean((JIRAVersionBean) jiraQueryFragment));
+						}
+					}
+					fixForVersions.add(new JIRAFixForVersionBean(UNRELEASED_VERSION_ID, "Unreleased versions"));
+					for (JIRAQueryFragment jiraQueryFragment : retrieved) {
+						if (!((JIRAVersionBean) jiraQueryFragment).isReleased()) {
+							fixForVersions.add(new JIRAFixForVersionBean((JIRAVersionBean) jiraQueryFragment));
+						}
+					}
+					lastProject = currentProject;
+				} else {
+					fixForVersions = Collections.EMPTY_LIST;
+				}
+				validServer = true;
+			} catch (JIRAException e) {
+				errorMessage = e.getMessage();
+			}
+		} else {
+			validServer = true;
+		}
+
+		return fixForVersions;
+	}
+
 	public List<JIRAQueryFragment> getComponents() {
 		validServer = false;
 		if (components == null || (currentProject != null && !currentProject.getKey().equals(lastProject.getKey()))) {
@@ -220,6 +263,7 @@ public class JIRAServer {
 					List<JIRAQueryFragment> retrieved = jiraServerFacade.getComponents(server, currentProject.getKey());
 					components = new ArrayList<JIRAVersionBean>(retrieved.size() + 1);
 					components.add(new JIRAComponentBean(ANY_ID, "Any"));
+					components.add(new JIRAComponentBean(NO_COMPONENT_ID, "No component"));
 					components.addAll(retrieved);
 					lastProject = currentProject;
 				} else {
@@ -251,6 +295,7 @@ public class JIRAServer {
 	public void setCurrentProject(JIRAProject currentProject) {
 		this.currentProject = currentProject;
 		versions = null;
+		fixForVersions = null;
 		components = null;
 		issueTypes = null;
 	}
