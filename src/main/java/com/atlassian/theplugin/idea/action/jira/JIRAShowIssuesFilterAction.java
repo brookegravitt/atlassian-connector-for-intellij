@@ -1,6 +1,8 @@
 package com.atlassian.theplugin.idea.action.jira;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.ProgressAnimationProvider;
+import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
@@ -12,7 +14,25 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  * To change this template use File | Settings | File Templates.
  */
 public class JIRAShowIssuesFilterAction extends AnAction {
+
 	public void actionPerformed(AnActionEvent e) {
-		IdeaHelper.getCurrentJIRAToolWindowPanel().showJIRAIssueFilter();
+
+		final JIRAToolWindowPanel jiraPanel = IdeaHelper.getCurrentJIRAToolWindowPanel();
+
+		if (jiraPanel != null) {
+
+			final ProgressAnimationProvider animator = jiraPanel.getProgressAnimation();
+
+			new Thread(new Runnable() {
+				public void run() {
+					animator.startProgressAnimation();
+					jiraPanel.showJIRAIssueFilter();
+					animator.stopProgressAnimation();
+
+				}
+			}, "JIRA show issues filter").start();
+
+		}
 	}
 }
+
