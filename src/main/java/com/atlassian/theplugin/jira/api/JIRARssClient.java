@@ -53,7 +53,7 @@ public class JIRARssClient extends AbstractHttpSession {
             }
         }
 
-        url.append("&sorter/field=" + sortBy + "&sorter/order=" + sortOrder + "&tempMax=" + max + "&start=50");
+        url.append("&sorter/field=" + sortBy + "&sorter/order=" + sortOrder + "&tempMax=" + max);
         url.append(appendAuthentication());
 
 		System.out.println("url.to = " + url.toString());
