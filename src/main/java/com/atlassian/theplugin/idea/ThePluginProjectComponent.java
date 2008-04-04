@@ -214,7 +214,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 						jiraToolWindowPanel.selectServer(server);
 					}
 				}
-				jiraToolWindowPanel.restoreQuery();
+				jiraToolWindowPanel.restoreQuery(projectConfigurationBean.getJiraConfiguration().getQuery());
 			}
 
 			created = true;

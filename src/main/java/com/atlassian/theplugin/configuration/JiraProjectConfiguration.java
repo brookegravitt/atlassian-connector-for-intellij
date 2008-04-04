@@ -6,7 +6,7 @@ import java.util.List;
 public class JiraProjectConfiguration {
 	private ProjectToolWindowTableConfiguration tableConfiguration = new ProjectToolWindowTableConfiguration();
 	private long selectedServerId = 0;
-	private List<String> query = new ArrayList<String>();
+	private List<FilterMapBean> query = new ArrayList<FilterMapBean>();
 
 	public JiraProjectConfiguration() {
 	}
@@ -33,11 +33,11 @@ public class JiraProjectConfiguration {
 		this.selectedServerId = selectedServerId;
 	}
 
-	public List<String> getQuery() {
+	public List<FilterMapBean> getQuery() {
 		return query;
 	}
 
-	public void setQuery(List<String> query) {
+	public void setQuery(List<FilterMapBean> query) {
 		this.query = query;
 	}
 }

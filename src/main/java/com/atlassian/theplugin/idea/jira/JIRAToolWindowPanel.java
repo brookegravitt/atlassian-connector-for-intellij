@@ -4,6 +4,7 @@ import com.atlassian.theplugin.bamboo.HtmlBambooStatusListener;
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.configuration.Server;
+import com.atlassian.theplugin.configuration.FilterMapBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.TableColumnInfo;
@@ -32,9 +33,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
 import java.util.concurrent.FutureTask;
+import java.lang.reflect.InvocationTargetException;
 
 public class JIRAToolWindowPanel extends JPanel {
 	private JEditorPane editorPane;
@@ -135,17 +137,41 @@ public class JIRAToolWindowPanel extends JPanel {
 		progressAnimation.configure(this, scrollTable, BorderLayout.CENTER);
 	}
 
-	public List<String> serializeQuery() {
-		List<String> query = new ArrayList<String>();
+	public List<FilterMapBean> serializeQuery() {
+		List<FilterMapBean> query = new ArrayList<FilterMapBean>();
 		for (JIRAQueryFragment jiraQueryFragment : advancedQuery) {
-			query.add(jiraQueryFragment.getQueryStringFragment());
+			query.add(new FilterMapBean(jiraQueryFragment.getMap()));						
 		}
 		return query;
+	}
+
+	public void restoreQuery(List<FilterMapBean> query) {
+		advancedQuery.clear();
+		for (FilterMapBean filterMapBean : query) {
+			Map<String, String> filter = filterMapBean.getFilter();
+			String className = filter.get("filterTypeClass");
+			try {
+				Class c = Class.forName(className);
+				advancedQuery.add((JIRAQueryFragment) c.getConstructor(Map.class).newInstance(filter));
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				e.printStackTrace(); 
+			}
+		}
+		updateIssues(IdeaHelper.getCurrentJIRAServer());
 	}
 
 	public final synchronized void filterAndViewJiraIssues() {
 		advancedQuery = jiraIssueFilterPanel.getFilter();
 		updateIssues(IdeaHelper.getCurrentJIRAServer());
+		projectConfiguration.getJiraConfiguration().setQuery(serializeQuery());
 		setScrollPaneViewport(table);
 	}
 
@@ -160,9 +186,6 @@ public class JIRAToolWindowPanel extends JPanel {
 
 	private void setScrollPaneViewport(JComponent component) {
 		scrollTable.setViewportView(component);
-	}
-
-	public void restoreQuery() {
 	}
 
 	private JPopupMenu createContextMenu(JIRAIssue issue) {
@@ -203,6 +226,7 @@ public class JIRAToolWindowPanel extends JPanel {
 	public void refreshIssues() {
 		if (IdeaHelper.getCurrentJIRAServer() != null) {
 			updateIssues(IdeaHelper.getCurrentJIRAServer());
+			serializeQuery();
 		}
 	}
 
