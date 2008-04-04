@@ -32,7 +32,7 @@ public class TestConnectionThreadTest extends TestCase {
 
 	public void testRunInterupted() {
 
-		ConnectionWrapper testConnectionThread = new ConnectionWrapper(emptyConnectionTester);
+		ConnectionWrapper testConnectionThread = new ConnectionWrapper(emptyConnectionTester, "test thread");
 
 		assertEquals(ConnectionWrapper.ConnectionState.NOT_FINISHED, testConnectionThread.getConnectionState());
 		testConnectionThread.start();
@@ -54,7 +54,7 @@ public class TestConnectionThreadTest extends TestCase {
 
 	public void testRunSucceeded() {
 
-		ConnectionWrapper testConnectionThread = new ConnectionWrapper(emptyConnectionTester);
+		ConnectionWrapper testConnectionThread = new ConnectionWrapper(emptyConnectionTester, "test thread");
 
 		assertEquals(ConnectionWrapper.ConnectionState.NOT_FINISHED, testConnectionThread.getConnectionState());
 		testConnectionThread.start();
@@ -74,7 +74,7 @@ public class TestConnectionThreadTest extends TestCase {
 
 	public void testRunFailed() {
 
-		ConnectionWrapper testConnectionThread = new ConnectionWrapper(failedConnectionTester);
+		ConnectionWrapper testConnectionThread = new ConnectionWrapper(failedConnectionTester, "test thread");
 
 		assertEquals(ConnectionWrapper.ConnectionState.NOT_FINISHED, testConnectionThread.getConnectionState());
 		testConnectionThread.start();
