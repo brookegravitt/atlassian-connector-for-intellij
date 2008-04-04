@@ -149,7 +149,7 @@
           </component>
         </children>
       </scrollpane>
-      <component id="ecabd" class="javax.swing.JLabel">
+      <component id="ecabd" class="javax.swing.JLabel" binding="fixForLabel">
         <constraints>
           <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="5" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -270,7 +270,7 @@
           </component>
         </children>
       </scrollpane>
-      <component id="a1796" class="javax.swing.JLabel">
+      <component id="a1796" class="javax.swing.JLabel" binding="affectsVersionLabel">
         <constraints>
           <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="5" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -297,7 +297,7 @@
           </component>
         </children>
       </scrollpane>
-      <component id="1e2cc" class="javax.swing.JLabel">
+      <component id="1e2cc" class="javax.swing.JLabel" binding="componentsLabel">
         <constraints>
           <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="5" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>

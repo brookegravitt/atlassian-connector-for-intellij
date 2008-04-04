@@ -4,23 +4,19 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.table.JIRAConstantListRenderer;
 import com.atlassian.theplugin.idea.jira.table.JIRAQueryFragmentListRenderer;
 import com.atlassian.theplugin.jira.JIRAServer;
+import com.atlassian.theplugin.jira.api.JIRAProjectBean;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 
-/**
- * Created by IntelliJ IDEA.
- * User: pmaruszak
- * Date: Apr 1, 2008
- * Time: 9:54:23 AM
- * To change this template use File | Settings | File Templates.
- */
 public class JIRAIssueFilterPanel extends JPanel {
 	private JList projectList;
 	private JList issueTypeList;
@@ -35,8 +31,6 @@ public class JIRAIssueFilterPanel extends JPanel {
 	private JButton viewHideButtonTop;
 	private JButton viewButtonTop;
 	private JList statusList;
-	//private JList list1;
-	//private CollapsiblePanel collapsiblePanel1;
 	private JPanel rootPanel;
 	private JScrollPane prioritiesScrollPane;
 	private JScrollPane resolutionScrollPane;
@@ -47,15 +41,15 @@ public class JIRAIssueFilterPanel extends JPanel {
 	private JScrollPane issueTypeScrollPane;
 	private JScrollPane componentsScrollPane;
 	private JList componentsList;
-	private JList list1;
+	private JLabel componentsLabel;
+	private JLabel fixForLabel;
+	private JLabel affectsVersionLabel;
+
+	private JIRAServer jiraServer;
 
 
 	public JIRAIssueFilterPanel() {
 		$$$setupUI$$$();
-
-		//collapsiblePanel1.add(list1);
-		//rootPanel.add(collapsiblePanel1, new GridConstraints(10, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
-		//panel4.add(list1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
 
 		viewHideButtonBottom.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
@@ -83,9 +77,69 @@ public class JIRAIssueFilterPanel extends JPanel {
 //				IdeaHelper.getCurrentJIRAToolWindowPanel().filterAndViewJiraIssues();
 //			}
 //		});
+		projectList.addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent event) {
+				if (projectList.getSelectedValues().length == 1) {
+					JIRAProjectBean project = (JIRAProjectBean) projectList.getSelectedValues()[0];
+					jiraServer.setCurrentProject(project);
+					refreshProjectDependentLists();
+				} else {
+					clearProjectDependentLists();
+				}
+			}
+		});
+	}
+
+	private void enableProjectDependentLists(boolean value) {
+		this.issueTypeList.setEnabled(value);
+		this.fixForList.setEnabled(value);
+		this.componentsList.setEnabled(value);
+		this.affectsVersionsList.setEnabled(value);
+
+		if (this.fixForList.getModel().getSize() <= 4) {
+			this.fixForScrollPane.setVisible(false);
+			this.fixForLabel.setVisible(false);
+		} else {
+			this.fixForScrollPane.setVisible(true);
+			this.fixForLabel.setVisible(true);
+		}
+		if (this.componentsList.getModel().getSize() <= 1) {
+			this.componentsScrollPane.setVisible(false);
+			this.componentsLabel.setVisible(false);
+		} else {
+			this.componentsScrollPane.setVisible(true);
+			this.componentsLabel.setVisible(true);
+		}
+		if (this.affectsVersionsList.getModel().getSize() <= 4) {
+			this.affectVersionScrollPane.setVisible(false);
+			this.affectsVersionLabel.setVisible(false);
+		} else {
+			this.affectVersionScrollPane.setVisible(true);
+			this.affectsVersionLabel.setVisible(true);
+		}
+
+		rootPanel.validate();
+	}
+
+	private void clearProjectDependentLists() {
+		this.issueTypeList.setListData(new Object[0]);
+		this.fixForList.setListData(new Object[0]);
+		this.componentsList.setListData(new Object[0]);
+		this.affectsVersionsList.setListData(new Object[0]);
+
+		enableProjectDependentLists(false);
+	}
+
+	private void refreshProjectDependentLists() {
+		this.issueTypeList.setListData(jiraServer.getIssueTypes().toArray());
+		this.fixForList.setListData(jiraServer.getVersions().toArray());
+		this.componentsList.setListData(jiraServer.getComponents().toArray());
+		this.affectsVersionsList.setListData(jiraServer.getVersions().toArray());
+		enableProjectDependentLists(true);
 	}
 
 	public void setJiraServer(JIRAServer jiraServer) {
+		this.jiraServer = jiraServer;
 		this.projectList.setListData(jiraServer.getProjects().toArray());
 		this.issueTypeList.setListData(jiraServer.getIssueTypes().toArray());
 		this.statusList.setListData(jiraServer.getStatuses().toArray());
@@ -169,10 +223,10 @@ public class JIRAIssueFilterPanel extends JPanel {
 		fixForList = new JList();
 		fixForList.setVisibleRowCount(5);
 		fixForScrollPane.setViewportView(fixForList);
-		final JLabel label7 = new JLabel();
-		label7.setFont(new Font(label7.getFont().getName(), label7.getFont().getStyle(), 11));
-		label7.setText("Fix For:");
-		rootPanel.add(label7, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		fixForLabel = new JLabel();
+		fixForLabel.setFont(new Font(fixForLabel.getFont().getName(), fixForLabel.getFont().getStyle(), 11));
+		fixForLabel.setText("Fix For:");
+		rootPanel.add(fixForLabel, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		projectScrollPane = new JScrollPane();
 		rootPanel.add(projectScrollPane, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, 1, null, null, null, 0, false));
 		projectList = new JList();
@@ -182,11 +236,11 @@ public class JIRAIssueFilterPanel extends JPanel {
 		projectList.setModel(defaultListModel1);
 		projectList.setVisibleRowCount(5);
 		projectScrollPane.setViewportView(projectList);
-		final JLabel label8 = new JLabel();
-		label8.setFont(new Font(label8.getFont().getName(), label8.getFont().getStyle(), 11));
-		label8.setText("Project:");
-		label8.setVerticalAlignment(1);
-		rootPanel.add(label8, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		final JLabel label7 = new JLabel();
+		label7.setFont(new Font(label7.getFont().getName(), label7.getFont().getStyle(), 11));
+		label7.setText("Project:");
+		label7.setVerticalAlignment(1);
+		rootPanel.add(label7, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		statusScrollPane = new JScrollPane();
 		rootPanel.add(statusScrollPane, new GridConstraints(10, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, 1, null, null, null, 0, false));
 		statusList = new JList();
@@ -201,28 +255,28 @@ public class JIRAIssueFilterPanel extends JPanel {
 		resolutionsList.setModel(defaultListModel3);
 		resolutionsList.setVisibleRowCount(5);
 		resolutionScrollPane.setViewportView(resolutionsList);
-		final JLabel label9 = new JLabel();
-		label9.setFont(new Font(label9.getFont().getName(), label9.getFont().getStyle(), 11));
-		label9.setText("Resolutions:");
-		rootPanel.add(label9, new GridConstraints(11, 0, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		final JLabel label8 = new JLabel();
+		label8.setFont(new Font(label8.getFont().getName(), label8.getFont().getStyle(), 11));
+		label8.setText("Resolutions:");
+		rootPanel.add(label8, new GridConstraints(11, 0, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		prioritiesScrollPane = new JScrollPane();
 		rootPanel.add(prioritiesScrollPane, new GridConstraints(12, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, 1, null, null, null, 0, false));
 		prioritiesList = new JList();
 		prioritiesList.setVisibleRowCount(5);
 		prioritiesScrollPane.setViewportView(prioritiesList);
-		final JLabel label10 = new JLabel();
-		label10.setFont(new Font(label10.getFont().getName(), label10.getFont().getStyle(), 11));
-		label10.setText("Priorities:");
-		rootPanel.add(label10, new GridConstraints(12, 0, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		final JLabel label9 = new JLabel();
+		label9.setFont(new Font(label9.getFont().getName(), label9.getFont().getStyle(), 11));
+		label9.setText("Priorities:");
+		rootPanel.add(label9, new GridConstraints(12, 0, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		affectVersionScrollPane = new JScrollPane();
 		rootPanel.add(affectVersionScrollPane, new GridConstraints(6, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, 1, null, null, null, 0, false));
 		affectsVersionsList = new JList();
 		affectsVersionsList.setVisibleRowCount(5);
 		affectVersionScrollPane.setViewportView(affectsVersionsList);
-		final JLabel label11 = new JLabel();
-		label11.setFont(new Font(label11.getFont().getName(), label11.getFont().getStyle(), 11));
-		label11.setText("<html>Affects<br>  Versions:</html>");
-		rootPanel.add(label11, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		affectsVersionLabel = new JLabel();
+		affectsVersionLabel.setFont(new Font(affectsVersionLabel.getFont().getName(), affectsVersionLabel.getFont().getStyle(), 11));
+		affectsVersionLabel.setText("<html>Affects<br>  Versions:</html>");
+		rootPanel.add(affectsVersionLabel, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		componentsScrollPane = new JScrollPane();
 		rootPanel.add(componentsScrollPane, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 		componentsList = new JList();
@@ -231,11 +285,11 @@ public class JIRAIssueFilterPanel extends JPanel {
 		componentsList.setVisible(true);
 		componentsList.setVisibleRowCount(5);
 		componentsScrollPane.setViewportView(componentsList);
-		final JLabel label12 = new JLabel();
-		label12.setFont(new Font(label12.getFont().getName(), label12.getFont().getStyle(), 11));
-		label12.setHorizontalAlignment(4);
-		label12.setText("Components:");
-		rootPanel.add(label12, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		componentsLabel = new JLabel();
+		componentsLabel.setFont(new Font(componentsLabel.getFont().getName(), componentsLabel.getFont().getStyle(), 11));
+		componentsLabel.setHorizontalAlignment(4);
+		componentsLabel.setText("Components:");
+		rootPanel.add(componentsLabel, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		final Spacer spacer3 = new Spacer();
 		rootPanel.add(spacer3, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
 		final JPanel panel3 = new JPanel();
@@ -278,12 +332,12 @@ public class JIRAIssueFilterPanel extends JPanel {
 		label1.setLabelFor(issueTypeScrollPane);
 		label2.setLabelFor(reporterComboBox);
 		label3.setLabelFor(assigneeComboBox);
-		label7.setLabelFor(fixForScrollPane);
-		label8.setLabelFor(projectScrollPane);
-		label9.setLabelFor(resolutionScrollPane);
-		label10.setLabelFor(prioritiesScrollPane);
-		label11.setLabelFor(affectVersionScrollPane);
-		label12.setNextFocusableComponent(componentsScrollPane);
+		fixForLabel.setLabelFor(fixForScrollPane);
+		label7.setLabelFor(projectScrollPane);
+		label8.setLabelFor(resolutionScrollPane);
+		label9.setLabelFor(prioritiesScrollPane);
+		affectsVersionLabel.setLabelFor(affectVersionScrollPane);
+		componentsLabel.setNextFocusableComponent(componentsScrollPane);
 	}
 
 	/**
