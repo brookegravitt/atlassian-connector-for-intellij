@@ -8,8 +8,7 @@ public class JIRAComponentBean extends AbstractJIRAConstantBean {
     }
 	
 	public JIRAComponentBean(long id, String name) {
-		this.id = id;
-		this.name = name;
+		super(id, name, null);
 	}
 
 	// returns from this object a fragment of a query string that the IssueNavigator will understand

@@ -32,5 +32,9 @@ public class UnresolvedIssuesAction extends CheckboxAction implements JIRAQueryF
 
 	public String getName() {
 		return "";
-	}	
+	}
+
+	public long getId() {
+		return 0;
+	}
 }
