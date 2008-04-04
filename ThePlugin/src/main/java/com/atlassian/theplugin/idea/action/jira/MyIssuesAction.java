@@ -30,6 +30,10 @@ public class MyIssuesAction extends CheckboxAction implements JIRAQueryFragment 
         return "assignee=" + IdeaHelper.getCurrentJIRAServer().getServer().getUserName();
     }
 
+	public long getId() {
+		return 0;
+	}
+
 	public String getName() {
 		return "";
 	}
