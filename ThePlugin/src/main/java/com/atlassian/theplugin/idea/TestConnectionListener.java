@@ -55,7 +55,7 @@ public class TestConnectionListener implements ActionListener {
 			tester.setUrl(loginDataProvided.getServerUrl());
 			tester.setUserName(loginDataProvided.getUserName());
 			tester.setPassword(loginDataProvided.getPassword());
-			testConnector = new ConnectionWrapper(tester);
+			testConnector = new ConnectionWrapper(tester, "test thread");
 		}
 
 		public void run(ProgressIndicator indicator) {
