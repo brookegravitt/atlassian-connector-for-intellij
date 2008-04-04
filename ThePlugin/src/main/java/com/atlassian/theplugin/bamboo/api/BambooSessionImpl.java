@@ -102,7 +102,10 @@ class BambooSessionImpl extends AbstractHttpSession implements BambooSession {
 			throw new RemoteApiLoginException("Server returned malformed response", e);
 		} catch (RemoteApiSessionExpiredException e) {
 			throw new RemoteApiLoginException("Session expired", e);
+		} catch (IllegalArgumentException e) {
+			throw new RemoteApiLoginException("Malformed server URL: " + baseUrl, e);
 		}
+
 	}
 
 	public void logout() {
