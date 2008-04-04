@@ -16,7 +16,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  * Time: 10:49:07
  * To change this template use File | Settings | File Templates.
  */
-public class RefreshPanelAction extends AnAction {
+public class RefreshBambooPanelAction extends AnAction {
 
 	public void actionPerformed(final AnActionEvent e) {
 		ThePluginProjectComponent projectComponent = IdeaHelper.getCurrentProjectComponent(e);
