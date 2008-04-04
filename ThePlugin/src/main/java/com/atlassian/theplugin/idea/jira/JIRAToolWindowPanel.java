@@ -251,7 +251,7 @@ public class JIRAToolWindowPanel extends JPanel {
 			final JIRAServer jiraServer = new JIRAServer(server, jiraServerFacade);
 			IdeaHelper.setCurrentJIRAServer(jiraServer);
 
-			new Thread(new SelectServerTask(jiraServer)).start();
+			new Thread(new SelectServerTask(jiraServer), "atlassian-idea-plugin jira tab select server").start();
 		}
 	}
 
@@ -372,7 +372,7 @@ public class JIRAToolWindowPanel extends JPanel {
 			}
 		}, null);
 
-		new Thread(task).start();
+		new Thread(task, "atlassian-idea-plugin jira tab update issues").start();
 	}
 
 	public void addQueryFragment(String fragmentName, JIRAQueryFragment fragment) {

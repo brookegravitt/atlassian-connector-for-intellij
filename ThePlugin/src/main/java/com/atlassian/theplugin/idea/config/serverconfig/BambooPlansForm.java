@@ -221,7 +221,7 @@ public class BambooPlansForm extends JPanel {
 				progressAnimation.stopProgressAnimation();
 
 			}
-		}).start();
+		}, "atlassian-idea-plugin bamboo panel retrieve plans").start();
 	}
 
 	private void updatePlanNames(Server server, String message) {

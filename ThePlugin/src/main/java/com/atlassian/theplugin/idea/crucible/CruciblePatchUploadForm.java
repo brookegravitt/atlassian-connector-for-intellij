@@ -221,7 +221,7 @@ public class CruciblePatchUploadForm extends DialogWrapper {
 					}
 				});
 			}
-		}).start();
+		}, "atlassian-idea-plugin crucible patch upload combos refresh").start();
 
 
 	}

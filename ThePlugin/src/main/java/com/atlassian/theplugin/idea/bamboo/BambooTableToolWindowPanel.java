@@ -174,7 +174,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 				}
 			}
 		}, null);
-		new Thread(task).start();
+		new Thread(task, "atlassian-idea-plugin label build").start();
 	}
 
 	public void addLabelToBuild() {
@@ -219,7 +219,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 
 			}
 		}, null);
-		new Thread(task).start();
+		new Thread(task, "atlassian-idea-plugin comment build").start();
 	}
 
 	public void addCommentToBuild() {
@@ -256,7 +256,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 
 			}
 		}, null);
-		new Thread(task).start();
+		new Thread(task, "atlassian-idea-plugin execute build").start();
 	}
 
 	public void runBuild() {
