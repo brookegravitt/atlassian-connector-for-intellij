@@ -22,7 +22,8 @@ public class ConnectionWrapper extends Thread {
 
 	private ConnectionState connectionState = ConnectionState.NOT_FINISHED;
 
-	public ConnectionWrapper(Connector connector) {
+	public ConnectionWrapper(Connector connector, String threadName) {
+		super(threadName);
 		this.connector = connector;
 	}
 
