@@ -21,10 +21,10 @@ public abstract class UrlUtil {
 	public static String addHttpPrefix(String address) {
 		if (address == null) {
 			return null;
-		} else if (address.length() == 0) {
+		} else if (address.trim().length() == 0) {
 			return address;
-		} else if (!(address.startsWith("http://") || address.startsWith("https://"))) {
-			return "http://" + address;
+		} else if (!(address.trim().startsWith("http://") || address.trim().startsWith("https://"))) {
+			return "http://" + address.trim();
 		} else {
 			return address;
 		}
