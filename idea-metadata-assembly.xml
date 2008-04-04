@@ -10,5 +10,10 @@
       <outputDirectory>/</outputDirectory>
       <filtered>true</filtered>
     </file>
+    <file>
+      <source>latestPossibleVersion.xml</source>
+      <outputDirectory>/</outputDirectory>
+      <filtered>true</filtered>
+    </file>
   </files>
 </assembly>
