@@ -6,6 +6,13 @@ import com.atlassian.theplugin.jira.api.*;
 import java.util.*;
 
 public class JIRAServer {
+	public final static int LIST_SPECIAL_VALUES_COUNT = 1;
+	public final static int VERSION_SPECIAL_VALUES_COUNT = LIST_SPECIAL_VALUES_COUNT + 3;	
+	private static final int ANY_ID = -1;
+	private static final int NO_VERSION_ID = -2;
+	private static final int RELEASED_VERSION_ID = -3;
+	private static final int UNRELEASED_VERSION_ID = -4;
+
 	private Server server;
 	private boolean validServer = false;
 	private String errorMessage = null;
@@ -48,7 +55,7 @@ public class JIRAServer {
 			try {
 				List<JIRAProject> retrieved = jiraServerFacade.getProjects(server);
 				projects = new ArrayList<JIRAProject>();
-				projects.add(new JIRAProjectBean(-1, "Any"));
+				projects.add(new JIRAProjectBean(ANY_ID, "Any"));
 				projects.addAll(retrieved);
 				validServer = true;
 			} catch (JIRAException e) {
@@ -69,7 +76,7 @@ public class JIRAServer {
 			try {
 				List<JIRAConstant> retrieved = jiraServerFacade.getStatuses(server);
 				statuses = new ArrayList<JIRAConstant>(retrieved.size() + 1);
-				statuses.add(new JIRAStatusBean(-1, "Any", null));
+				statuses.add(new JIRAStatusBean(ANY_ID, "Any", null));
 				statuses.addAll(retrieved);
 				validServer = true;
 			} catch (JIRAException e) {
@@ -94,7 +101,7 @@ public class JIRAServer {
 					retrieved = jiraServerFacade.getIssueTypesForProject(server, Long.toString(currentProject.getId()));
 				}
 				issueTypes = new ArrayList<JIRAConstant>(retrieved.size() + 1);
-				issueTypes.add(new JIRAIssueTypeBean(-1, "Any", null));
+				issueTypes.add(new JIRAIssueTypeBean(ANY_ID, "Any", null));
 				issueTypes.addAll(retrieved);
 
 				lastProject = currentProject;
@@ -134,7 +141,7 @@ public class JIRAServer {
 			try {
 				List<JIRAConstant> retrieved = jiraServerFacade.getPriorieties(server);
 				priorieties = new ArrayList(retrieved.size() + 1);
-				priorieties.add(new JIRAPriorityBean(-1, "Any", null));
+				priorieties.add(new JIRAPriorityBean(ANY_ID, "Any", null));
 				priorieties.addAll(retrieved);
 				validServer = true;
 			} catch (JIRAException e) {
@@ -154,7 +161,7 @@ public class JIRAServer {
 			try {
 				List<JIRAQueryFragment> retrieved = jiraServerFacade.getResolutions(server);
 				resolutions = new ArrayList<JIRAResolutionBean>(retrieved.size() + 1);
-				resolutions.add(new JIRAResolutionBean(-1, "Any"));
+				resolutions.add(new JIRAResolutionBean(ANY_ID, "Any"));
 				resolutions.addAll(retrieved);
 				validServer = true;
 			} catch (JIRAException e) {
@@ -174,16 +181,16 @@ public class JIRAServer {
 			try {
 				if (currentProject != null) {
 					List<JIRAQueryFragment> retrieved = jiraServerFacade.getVersions(server, currentProject.getKey());
-					versions = new ArrayList<JIRAVersionBean>(retrieved.size() + 4);
-					versions.add(new JIRAVersionBean(-1, "Any"));
-					versions.add(new JIRAVersionBean(-2, "No version"));
-					versions.add(new JIRAVersionBean(-3, "Released versions"));
+					versions = new ArrayList<JIRAVersionBean>(retrieved.size() + VERSION_SPECIAL_VALUES_COUNT);
+					versions.add(new JIRAVersionBean(ANY_ID, "Any"));
+					versions.add(new JIRAVersionBean(NO_VERSION_ID, "No version"));
+					versions.add(new JIRAVersionBean(RELEASED_VERSION_ID, "Released versions"));
 					for (JIRAQueryFragment jiraQueryFragment : retrieved) {
 						if (((JIRAVersionBean) jiraQueryFragment).isReleased()) {
 							versions.add((JIRAVersionBean) jiraQueryFragment);
 						}
 					}
-					versions.add(new JIRAVersionBean(-4, "Unreleased versions"));
+					versions.add(new JIRAVersionBean(UNRELEASED_VERSION_ID, "Unreleased versions"));
 					for (JIRAQueryFragment jiraQueryFragment : retrieved) {
 						if (!((JIRAVersionBean) jiraQueryFragment).isReleased()) {
 							versions.add((JIRAVersionBean) jiraQueryFragment);
@@ -212,7 +219,7 @@ public class JIRAServer {
 				if (currentProject != null) {
 					List<JIRAQueryFragment> retrieved = jiraServerFacade.getComponents(server, currentProject.getKey());
 					components = new ArrayList<JIRAVersionBean>(retrieved.size() + 1);
-					components.add(new JIRAComponentBean(-1, "Any"));
+					components.add(new JIRAComponentBean(ANY_ID, "Any"));
 					components.addAll(retrieved);
 					lastProject = currentProject;
 				} else {
