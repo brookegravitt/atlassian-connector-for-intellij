@@ -16,7 +16,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  * Time: 11:30:12
  * To change this template use File | Settings | File Templates.
  */
-public class RefreshPanelAction extends AnAction {
+public class RefreshCruciblePanelAction extends AnAction {
 	public void actionPerformed(AnActionEvent e) {
 		ThePluginProjectComponent projectComponent = IdeaHelper.getCurrentProjectComponent(e);
 

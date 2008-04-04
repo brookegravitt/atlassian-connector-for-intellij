@@ -156,11 +156,12 @@ public class JIRAToolWindowPanel extends JPanel {
 		}
 		return query;
 	}
-	public final synchronized void filterAndViewJiraIssues() {
+	
+	public final void filterAndViewJiraIssues() {
 		setScrollPaneViewport(table);
 	}
 
-	public final synchronized void showJIRAIssueFilter() {
+	public final void showJIRAIssueFilter() {
 		JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer();
 		if (jiraServer != null) {
 			jiraIssueFilterPanel.setJiraServer(jiraServer);
@@ -252,6 +253,10 @@ public class JIRAToolWindowPanel extends JPanel {
 
 			new Thread(new SelectServerTask(jiraServer)).start();
 		}
+	}
+
+	public ProgressAnimationProvider getProgressAnimation() {
+		return progressAnimation;
 	}
 
 	private class SelectServerTask implements Runnable {
