@@ -78,7 +78,7 @@ public class CollapsiblePanel extends JPanel {
                                  GridBagConstraints.CENTER,
                                  GridBagConstraints.CENTER,
                                  new Insets(0, 3, 0, 3), 0,
-                                 0));//new Insets(-5, -3, 0, -3), 0,
+                                 0)); //new Insets(-5, -3, 0, -3), 0,
 
     }
 
@@ -97,8 +97,7 @@ public class CollapsiblePanel extends JPanel {
   private Dimension getButtonDimension() {
     if (myExpandIcon == null) {
       return new Dimension(7, 7);
-    }
-    else {
+    }     else {
       return new Dimension(myExpandIcon.getIconWidth(), myExpandIcon.getIconHeight());
     }
   }
@@ -110,7 +109,9 @@ public class CollapsiblePanel extends JPanel {
   protected void setCollapsed(boolean collapse) {
     try {
       if (collapse) {
-        if (myIsInitialized) remove(myContent);
+        if (myIsInitialized) {
+			remove(myContent);
+		}
 		  if (myContent != null) {
 			  myContent.setVisible(false);
 		  }
@@ -127,7 +128,7 @@ public class CollapsiblePanel extends JPanel {
 	  myIsCollapsed = collapse;
 
       Icon icon = getIcon();
-      if (icon != null){
+      if (icon != null) {
         myToggleCollapseButton.setIcon(icon);
         myToggleCollapseButton.setBorder(null);
         myToggleCollapseButton.setBorderPainted(false);
@@ -145,8 +146,7 @@ public class CollapsiblePanel extends JPanel {
 
       revalidate();
       repaint();
-    }
-    finally {
+    } finally {
       myIsInitialized = true;
     }
   }
@@ -154,8 +154,7 @@ public class CollapsiblePanel extends JPanel {
   private String getToggleButtonToolTipText() {
     if (myIsCollapsed) {
       return "Collapsed";
-    }
-    else {
+    } else {
       return "Expanded";
     }
   }
@@ -163,8 +162,7 @@ public class CollapsiblePanel extends JPanel {
   private Icon getIcon() {
     if (myIsCollapsed) {
       return myExpandIcon;
-    }
-    else {
+    } else {
       return myCollapseIcon;
     }
   }
@@ -208,11 +206,11 @@ public class CollapsiblePanel extends JPanel {
     myToggleCollapseButton.setSelected(selected);
   }
 
-  public ActionMap getCollapsibleActionMap(){
+  public ActionMap getCollapsibleActionMap() {
     return myToggleCollapseButton.getActionMap();
   }
 
-  public InputMap getCollapsibleInputMap(){
+  public InputMap getCollapsibleInputMap() {
     return myToggleCollapseButton.getInputMap();
   }
 
