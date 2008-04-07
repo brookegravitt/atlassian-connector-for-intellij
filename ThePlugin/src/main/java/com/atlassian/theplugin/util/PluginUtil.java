@@ -1,6 +1,9 @@
 package com.atlassian.theplugin.util;
 
 import com.atlassian.theplugin.idea.Logger;
+import com.atlassian.theplugin.idea.PluginToolWindow;
+import com.atlassian.theplugin.ServerType;
+import com.atlassian.theplugin.exception.ThePluginException;
 import com.intellij.util.PathUtil;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -113,6 +116,19 @@ public final class PluginUtil {
 			PluginUtil.getLogger().error("Error while retrieving plugin name.");
 		}
 		return result;
+	}
+
+	public static ServerType toolWindowPanelsToServerType(PluginToolWindow.ToolWindowPanels panel) throws ThePluginException {
+		switch (panel) {
+			case BAMBOO:
+				return ServerType.BAMBOO_SERVER;
+			case CRUCIBLE:
+				return ServerType.CRUCIBLE_SERVER;
+			case JIRA:
+				return ServerType.JIRA_SERVER;
+			default:
+				throw new ThePluginException("Unrecognized tool window type");
+		}
 	}
 }
 

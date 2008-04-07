@@ -29,15 +29,18 @@ public class JIRAServerFacadeImpl implements JIRAServerFacade {
 
 
 	public void testServerConnection(String url, String userName, String password) throws RemoteApiException {
-        JIRAXmlRpcClient client = new JIRAXmlRpcClient(url);
+
         try {
-            if (!client.login(userName, password)) {
+
+			JIRAXmlRpcClient client = new JIRAXmlRpcClient(url);
+
+			if (!client.login(userName, password)) {
                 throw new RemoteApiLoginException("Bad credentials");
             }
         } catch (JIRAException e) {
-            throw new RemoteApiLoginException("Error logging in", e);
-        }
-    }
+            throw new RemoteApiLoginException(e.getMessage(), e);
+        } 
+	}
 
 	public ServerType getServerType() {
 		return ServerType.JIRA_SERVER;
