@@ -143,7 +143,7 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
 							try {
 								crucibleServerFacade.testServerConnection(getUrl(), getUserName(), getPassword());
 							} catch (RemoteApiException e) {
-								throw new ThePluginException("Error connecting Crucible server", e);
+								throw new ThePluginException(e.getMessage(), e);
 							}
 						}
 					}));
