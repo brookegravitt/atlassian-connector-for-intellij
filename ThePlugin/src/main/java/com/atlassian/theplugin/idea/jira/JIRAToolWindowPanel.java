@@ -196,8 +196,8 @@ public class JIRAToolWindowPanel extends JPanel {
 		contextMenu.add(new JMenuItem(new CommentIssueAction()));
 		contextMenu.add(makeWebUrlMenu("Log Work", issue.getServerUrl()
 				+ "/secure/CreateWorklog!default.jspa?key=" + issue.getKey()));
-		contextMenu.add(makeWebUrlMenu("Commit Changes Against Issue", issue.getServerUrl()
-				+ "/secure/EditIssue!default.jspa?key=" + issue.getKey()));
+//		contextMenu.add(makeWebUrlMenu("Commit Changes Against Issue", issue.getServerUrl()
+//				+ "/secure/EditIssue!default.jspa?key=" + issue.getKey()));
 		contextMenu.add(new JMenuItem(new CreateChangeListAction(issue, project)));
 
 		return contextMenu;
