@@ -302,8 +302,8 @@ public class JIRAIssueFilterPanel extends JPanel {
 		viewHideButtonBottom.setText("<< View & Hide");
 		viewHideButtonBottom.setMnemonic(' ');
 		viewHideButtonBottom.setDisplayedMnemonicIndex(2);
-		viewHideButtonBottom.putClientProperty("hideActionText", Boolean.FALSE);
 		viewHideButtonBottom.putClientProperty("html.disable", Boolean.FALSE);
+		viewHideButtonBottom.putClientProperty("hideActionText", Boolean.FALSE);
 		panel2.add(viewHideButtonBottom, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, 1, 1, null, null, null, 0, false));
 		final Spacer spacer3 = new Spacer();
 		panel2.add(spacer3, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
