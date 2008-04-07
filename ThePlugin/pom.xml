@@ -382,7 +382,7 @@
 						</configuration-->
 				<configuration>
 					<descriptors>
-						<descriptor>/Users/lguminski/IdeaProjects/mv/ThePlugin/idea-metadata-assembly.xml</descriptor>
+						<descriptor>${pom.basedir}/idea-metadata-assembly.xml</descriptor>
 					</descriptors>
 				</configuration>
 				<executions>
