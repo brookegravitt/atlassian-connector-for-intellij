@@ -1,14 +1,14 @@
 package com.atlassian.theplugin.configuration;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.intellij.util.xmlb.annotations.Transient;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class JiraProjectConfiguration {
 	private ProjectToolWindowTableConfiguration tableConfiguration = new ProjectToolWindowTableConfiguration();
 	private long selectedServerId = 0;
-	private List<FilterMapBean> query = new ArrayList<FilterMapBean>();
-
-	private String savedFilterName = null;
+	private Map<Long, JiraFiltersBean> query = new HashMap<Long, JiraFiltersBean>();
 
 	public JiraProjectConfiguration() {
 	}
@@ -25,7 +25,6 @@ public class JiraProjectConfiguration {
 		tableConfiguration.copyConfiguration(jiraConfiguration.getTableConfiguration());
 		setSelectedServerId(jiraConfiguration.getSelectedServerId());
 		setQuery(jiraConfiguration.getQuery());
-		setSavedFilterName(jiraConfiguration.getSavedFilterName());
 	}
 
 	public long getSelectedServerId() {
@@ -36,19 +35,26 @@ public class JiraProjectConfiguration {
 		this.selectedServerId = selectedServerId;
 	}
 
-	public List<FilterMapBean> getQuery() {
+	public Map<Long, JiraFiltersBean> getQuery() {
 		return query;
 	}
 
-	public void setQuery(List<FilterMapBean> query) {
+	public void setQuery(Map<Long, JiraFiltersBean> query) {
 		this.query = query;
 	}
 
-	public String getSavedFilterName() {
-		return savedFilterName;
+	@Transient
+	public JiraFiltersBean getJiraFilters(long serverId) {
+		Long id = Long.valueOf(serverId);
+		if (query.containsKey(id)) {
+			return query.get(id);
+		} else {
+			return null;
+		}
 	}
 
-	public void setSavedFilterName(String savedFilterName) {
-		this.savedFilterName = savedFilterName;
+	@Transient
+	public void setFiltersBean(long serverId, JiraFiltersBean filters) {
+		query.put(Long.valueOf(serverId), filters);		
 	}
 }
