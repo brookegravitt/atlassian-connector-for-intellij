@@ -546,6 +546,7 @@
 						**/IssueComment.java,
 						**/IssueCreate.java,
 						**/ChangesetCreate.java,
+						**/CollapsiblePanel.java,
 						**/thirdparty/**/*.*,
 						**/JIRAIssueFilterPanel.java
 					</excludes>
