@@ -8,6 +8,8 @@ public class JiraProjectConfiguration {
 	private long selectedServerId = 0;
 	private List<FilterMapBean> query = new ArrayList<FilterMapBean>();
 
+	private String savedFilterName = null;
+
 	public JiraProjectConfiguration() {
 	}
 
@@ -23,6 +25,7 @@ public class JiraProjectConfiguration {
 		tableConfiguration.copyConfiguration(jiraConfiguration.getTableConfiguration());
 		setSelectedServerId(jiraConfiguration.getSelectedServerId());
 		setQuery(jiraConfiguration.getQuery());
+		setSavedFilterName(jiraConfiguration.getSavedFilterName());
 	}
 
 	public long getSelectedServerId() {
@@ -39,5 +42,13 @@ public class JiraProjectConfiguration {
 
 	public void setQuery(List<FilterMapBean> query) {
 		this.query = query;
+	}
+
+	public String getSavedFilterName() {
+		return savedFilterName;
+	}
+
+	public void setSavedFilterName(String savedFilterName) {
+		this.savedFilterName = savedFilterName;
 	}
 }
