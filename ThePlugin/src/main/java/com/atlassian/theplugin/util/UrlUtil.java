@@ -1,9 +1,5 @@
 package com.atlassian.theplugin.util;
 
-import com.atlassian.theplugin.ServerType;
-import com.atlassian.theplugin.exception.ThePluginException;
-import com.atlassian.theplugin.idea.PluginToolWindow;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -50,17 +46,26 @@ public abstract class UrlUtil {
 	}
 
 
+	public static void validateUrl(String urlString) throws MalformedURLException {
 
-	public static ServerType toolWindowPanelsToServerType(PluginToolWindow.ToolWindowPanels panel) throws ThePluginException {
-		switch (panel) {
-			case BAMBOO:
-				return ServerType.BAMBOO_SERVER;
-			case CRUCIBLE:
-				return ServerType.CRUCIBLE_SERVER;
-			case JIRA:
-				return ServerType.JIRA_SERVER;
-			default:
-				throw new ThePluginException("Unrecognized tool window type");
+		if (urlString == null || urlString.length() == 0) {
+			throw new MalformedURLException("Malformed URL: null or empty");
+		}
+
+		try {
+			URL url = new URL(urlString);
+
+			// check the host name
+			if (url.getHost().length() == 0) {
+				throw new MalformedURLException("Url must contain valid host.");
+			}
+			// check the port number
+			if (url.getPort() >= 2 * Short.MAX_VALUE) {
+				throw new MalformedURLException("Url port invalid");
+			}
+		} catch (MalformedURLException e) {
+			throw new MalformedURLException("Malformed URL: " + e.getMessage());
 		}
 	}
+
 }

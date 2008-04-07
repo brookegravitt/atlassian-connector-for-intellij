@@ -156,7 +156,7 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
 								jiraServerFacade.testServerConnection(getUrl(), getUserName(),
 										getPassword());
 							} catch (RemoteApiException e) {
-								throw new ThePluginException("Error connecting Jira server", e);
+								throw new ThePluginException(e.getMessage(), e);
 							}
 						}
 					}));

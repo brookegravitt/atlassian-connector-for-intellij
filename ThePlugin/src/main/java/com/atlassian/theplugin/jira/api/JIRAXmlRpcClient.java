@@ -7,11 +7,13 @@
 package com.atlassian.theplugin.jira.api;
 
 import com.atlassian.theplugin.util.PluginUtil;
+import com.atlassian.theplugin.util.UrlUtil;
 import org.apache.xmlrpc.XmlRpcClient;
 import org.apache.xmlrpc.XmlRpcException;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.UnknownHostException;
 import java.util.*;
 
 public class JIRAXmlRpcClient {
@@ -22,11 +24,21 @@ public class JIRAXmlRpcClient {
 	private String userName;
 	private String password;
 
-	public JIRAXmlRpcClient(String url) {
+	public JIRAXmlRpcClient(String url) throws JIRAException {
+		try {
+			UrlUtil.validateUrl(url);
+		} catch (MalformedURLException e) {
+			throw new JIRAException(e.getMessage(), e);
+		}
 		this.serverUrl = url;
 	}
 
-	public JIRAXmlRpcClient(String url, String userName, String password) {
+	public JIRAXmlRpcClient(String url, String userName, String password) throws JIRAException {
+		try {
+			UrlUtil.validateUrl(url);
+		} catch (MalformedURLException e) {
+			throw new JIRAException(e.getMessage(), e);
+		}
 		this.serverUrl = url;
 		this.userName = userName;
 		this.password = password;
@@ -57,8 +69,14 @@ public class JIRAXmlRpcClient {
 			token = (String) client.execute("jira1.login", params);
 
 			loggedIn = token != null && token.length() > 0;
+		} catch (UnknownHostException e) {
+			throw new JIRAException("Unknown host: " + e.getMessage());	
 		} catch (Throwable e) { // ugly exceptions get thrown here - catch 'em all.
-			throw new JIRAException("RPC not supported or remote error: " + e.getMessage(), e);
+			if (e.getMessage().contains("RemoteAuthenticationException: Invalid username or password.")) {
+				throw new JIRAException("RemoteAuthenticationException: Invalid username or password.", e);
+			} else {
+				throw new JIRAException("RPC not supported or remote error: " + e.getMessage(), e);
+			}
 		}
 
 		return loggedIn;
