@@ -12,7 +12,7 @@ public class ChangesetCreate extends DialogWrapper {
 	public ChangesetCreate(String issueKey) {
 		super(false);
 		init();
-		setTitle("ChangeLet Name for " + issueKey);
+		setTitle("ChangeList Name for " + issueKey);
 		changesetName.setDragEnabled(false);
 		getOKAction().putValue(Action.NAME, "Create");
 	}
