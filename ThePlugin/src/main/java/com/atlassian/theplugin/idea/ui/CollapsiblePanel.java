@@ -135,11 +135,12 @@ public class CollapsiblePanel extends JPanel {
         myToggleCollapseButton.setToolTipText(getToggleButtonToolTipText());
       }
 
-      if (collapse) {
-        //setFocused(true);
-        //setSelected(true);
-		  myContent.requestFocusInWindow();
-	  } else {
+
+	  if (collapse) {
+        setFocused(true);
+        setSelected(true);
+
+	  } else if (myContent != null) {
         myContent.requestFocusInWindow();
       }
 
