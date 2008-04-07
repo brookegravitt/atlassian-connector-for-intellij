@@ -51,7 +51,7 @@ public class JIRAToolWindowPanel extends JPanel {
 
 	private transient JiraFiltersBean filters;
 	private transient JIRAQueryFragment savedQuery;
-	private transient List<JIRAQueryFragment> advancedQuery = new ArrayList<JIRAQueryFragment>();
+	private final List<JIRAQueryFragment> advancedQuery;
 
 	private final transient Project project;
 	private final transient JIRAServerFacade jiraServerFacade;
@@ -70,6 +70,7 @@ public class JIRAToolWindowPanel extends JPanel {
 		this.projectConfiguration = projectConfigurationBean;
 		this.project = project;
 		this.jiraServerFacade = jiraServerFacade;
+		this.advancedQuery = new ArrayList<JIRAQueryFragment>();
 
 		setBackground(UIUtil.getTreeTextBackground());
 
@@ -172,7 +173,8 @@ public class JIRAToolWindowPanel extends JPanel {
 	}
 
 	public final synchronized void filterAndViewJiraIssues() {
-		advancedQuery = jiraIssueFilterPanel.getFilter();
+		advancedQuery.clear();
+		advancedQuery.addAll(jiraIssueFilterPanel.getFilter());
 		updateIssues(IdeaHelper.getCurrentJIRAServer());
 		filters.setManualFilter(serializeQuery());
 		filters.setSavedFilterUsed(false);
