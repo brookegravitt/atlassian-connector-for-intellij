@@ -102,6 +102,8 @@ public class JIRAIssueFilterPanel extends JPanel {
 					clearProjectDependentLists();
 				}
 			}
+
+
 		});
 	}
 
@@ -227,17 +229,13 @@ public class JIRAIssueFilterPanel extends JPanel {
 	}
 
 	private void createUIComponents() {
-		Icon collapse = IconLoader.findIcon("/actions/collapsePanel.png");
-		Icon expand = IconLoader.findIcon("/actions/expandPanel.png");
+		Icon collapse = IconLoader.findIcon("/icons/navigate_down_10.gif");
+		Icon expand = IconLoader.findIcon("/icons/navigate_right_10.gif");
 		componentsVersionsPanel = new JPanel();
 		issueAttributesPanel = new JPanel();
 
 		componentsVersionsCollapsiblePanel = new CollapsiblePanel(componentsVersionsPanel, true, false, collapse, expand, "Components/Versions");
-
-
 		issueAttributesCollapsiblePanel = new CollapsiblePanel(issueAttributesPanel, true, false, collapse, expand, "Issue Attributes");
-
-
 	}
 
 
@@ -302,8 +300,8 @@ public class JIRAIssueFilterPanel extends JPanel {
 		viewHideButtonBottom.setText("<< View & Hide");
 		viewHideButtonBottom.setMnemonic(' ');
 		viewHideButtonBottom.setDisplayedMnemonicIndex(2);
-		viewHideButtonBottom.putClientProperty("html.disable", Boolean.FALSE);
 		viewHideButtonBottom.putClientProperty("hideActionText", Boolean.FALSE);
+		viewHideButtonBottom.putClientProperty("html.disable", Boolean.FALSE);
 		panel2.add(viewHideButtonBottom, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, 1, 1, null, null, null, 0, false));
 		final Spacer spacer3 = new Spacer();
 		panel2.add(spacer3, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));

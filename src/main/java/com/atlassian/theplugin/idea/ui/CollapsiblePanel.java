@@ -78,7 +78,7 @@ public class CollapsiblePanel extends JPanel {
                                  GridBagConstraints.CENTER,
                                  GridBagConstraints.CENTER,
                                  new Insets(0, 3, 0, 3), 0,
-                                 0)); //new Insets(-5, -3, 0, -3), 0,
+                                 0));
 
     }
 
@@ -97,7 +97,7 @@ public class CollapsiblePanel extends JPanel {
   private Dimension getButtonDimension() {
     if (myExpandIcon == null) {
       return new Dimension(7, 7);
-    }     else {
+    } else {
       return new Dimension(myExpandIcon.getIconWidth(), myExpandIcon.getIconHeight());
     }
   }
@@ -111,11 +111,11 @@ public class CollapsiblePanel extends JPanel {
       if (collapse) {
         if (myIsInitialized) {
 			remove(myContent);
-		}
+			
 		  if (myContent != null) {
 			  myContent.setVisible(false);
 		  }
-
+	  	}
 	  } else {
 	  	if (myContent != null) {
         add(myContent,
@@ -136,9 +136,10 @@ public class CollapsiblePanel extends JPanel {
       }
 
       if (collapse) {
-        setFocused(true);
-        setSelected(true);
-      } else {
+        //setFocused(true);
+        //setSelected(true);
+		  myContent.requestFocusInWindow();
+	  } else {
         myContent.requestFocusInWindow();
       }
 
@@ -203,7 +204,7 @@ public class CollapsiblePanel extends JPanel {
   }
 
   public void setSelected(boolean selected) {
-    myToggleCollapseButton.setSelected(selected);
+	myToggleCollapseButton.setSelected(selected);
   }
 
   public ActionMap getCollapsibleActionMap() {
