@@ -1,9 +1,9 @@
 package com.atlassian.theplugin.remoteapi.rest;
 
-import com.atlassian.theplugin.util.HttpClientFactory;
-import com.atlassian.theplugin.util.UrlUtil;
 import com.atlassian.theplugin.remoteapi.RemoteApiMalformedUrlException;
 import com.atlassian.theplugin.remoteapi.RemoteApiSessionExpiredException;
+import com.atlassian.theplugin.util.HttpClientFactory;
+import com.atlassian.theplugin.util.UrlUtil;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
@@ -19,7 +19,6 @@ import org.jdom.output.XMLOutputter;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * Communication stub for lightweight XML based APIs.
@@ -36,40 +35,23 @@ public abstract class AbstractHttpSession {
 	 * Public constructor for AbstractHttpSession
 	 *
 	 * @param baseUrl base URL for server instance
+	 * @throws com.atlassian.theplugin.remoteapi.RemoteApiMalformedUrlException for malformed url
 	 */
 	public AbstractHttpSession(String baseUrl) throws RemoteApiMalformedUrlException {
-		if (baseUrl == null) {
-			throw new RemoteApiMalformedUrlException("Malformed server URL: null");
-		}
+
 		this.baseUrl = UrlUtil.removeUrlTrailingSlashes(baseUrl);
+
 		try {
-			new URL(baseUrl);
-			validateUrl(baseUrl);
+			UrlUtil.validateUrl(baseUrl);
 		} catch (MalformedURLException e) {
 			throw new RemoteApiMalformedUrlException("Malformed server URL: " + baseUrl, e);
 		}
 	}
 
-	private void validateUrl(String urlString) throws MalformedURLException {
-		// validate URL first
-		try {
-			URL url = new URL(urlString);
-			// check the host name
-			if (url.getHost().length() == 0) {
-				throw new MalformedURLException("Url must contain valid host.");
-			}
-			// check the port number
-			if (url.getPort() >= 2 * Short.MAX_VALUE) {
-				throw new MalformedURLException("Url port invalid");
-			}
-		} catch (MalformedURLException e) {
-			throw new MalformedURLException("Url must contain valid host.");
-		}
-	}
 
 	protected Document retrieveGetResponse(String urlString)
 			throws IOException, JDOMException, RemoteApiSessionExpiredException {
-		validateUrl(urlString);
+		UrlUtil.validateUrl(urlString);
 
 		Document doc = null;
 		synchronized (clientLock) {
@@ -107,7 +89,7 @@ public abstract class AbstractHttpSession {
 
 	protected Document retrievePostResponse(String urlString, Document request)
 			throws IOException, JDOMException, RemoteApiSessionExpiredException {
-		validateUrl(urlString);
+		UrlUtil.validateUrl(urlString);
 
 
 		Document doc = null;
