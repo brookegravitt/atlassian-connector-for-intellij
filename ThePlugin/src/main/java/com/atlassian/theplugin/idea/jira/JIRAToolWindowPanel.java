@@ -1,10 +1,7 @@
 package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.bamboo.HtmlBambooStatusListener;
-import com.atlassian.theplugin.configuration.PluginConfigurationBean;
-import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
-import com.atlassian.theplugin.configuration.Server;
-import com.atlassian.theplugin.configuration.FilterMapBean;
+import com.atlassian.theplugin.configuration.*;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.TableColumnInfo;
@@ -16,6 +13,7 @@ import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
+import com.atlassian.theplugin.jira.api.JIRASavedFilterBean;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -33,10 +31,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.*;
-import java.util.List;
-import java.util.concurrent.FutureTask;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.FutureTask;
 
 public class JIRAToolWindowPanel extends JPanel {
 	private JEditorPane editorPane;
@@ -49,10 +48,10 @@ public class JIRAToolWindowPanel extends JPanel {
 	private JIRAIssueFilterPanel jiraIssueFilterPanel;
 
 	private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
-	// a simple list to store selected saved filter.
-	private List<JIRAQueryFragment> queryFragments = new ArrayList<JIRAQueryFragment>();
-	// a simple list to store selected query fragmrants
-	private List<JIRAQueryFragment> advancedQuery = new ArrayList<JIRAQueryFragment>();
+
+	private transient JiraFiltersBean filters;
+	private transient JIRAQueryFragment savedQuery;
+	private transient List<JIRAQueryFragment> advancedQuery = new ArrayList<JIRAQueryFragment>();
 
 	private final transient Project project;
 	private final transient JIRAServerFacade jiraServerFacade;
@@ -137,18 +136,18 @@ public class JIRAToolWindowPanel extends JPanel {
 		progressAnimation.configure(this, scrollTable, BorderLayout.CENTER);
 	}
 
-	public List<FilterMapBean> serializeQuery() {
-		List<FilterMapBean> query = new ArrayList<FilterMapBean>();
+	public List<JiraFilterEntryBean> serializeQuery() {
+		List<JiraFilterEntryBean> query = new ArrayList<JiraFilterEntryBean>();
 		for (JIRAQueryFragment jiraQueryFragment : advancedQuery) {
-			query.add(new FilterMapBean(jiraQueryFragment.getMap()));
+			query.add(new JiraFilterEntryBean(jiraQueryFragment.getMap()));
 		}
 		return query;
 	}
 
-	public void restoreQuery(List<FilterMapBean> query) {
+	public void restoreQuery(List<JiraFilterEntryBean> query, JiraFilterEntryBean savedFilter) {
 		advancedQuery.clear();
-		for (FilterMapBean filterMapBean : query) {
-			Map<String, String> filter = filterMapBean.getFilter();
+		for (JiraFilterEntryBean filterMapBean : query) {
+			Map<String, String> filter = filterMapBean.getFilterEntry();
 			String className = filter.get("filterTypeClass");
 			try {
 				Class c = Class.forName(className);
@@ -165,12 +164,20 @@ public class JIRAToolWindowPanel extends JPanel {
 				e.printStackTrace();
 			}
 		}
+		if (savedFilter != null) {
+			savedQuery = new JIRASavedFilterBean(savedFilter.getFilterEntry());
+		} else {
+			savedQuery = null;
+		}
 	}
 
 	public final synchronized void filterAndViewJiraIssues() {
 		advancedQuery = jiraIssueFilterPanel.getFilter();
 		updateIssues(IdeaHelper.getCurrentJIRAServer());
-		projectConfiguration.getJiraConfiguration().setQuery(serializeQuery());
+		filters.setManualFilter(serializeQuery());
+		filters.setSavedFilterUsed(false);
+		projectConfiguration.
+				getJiraConfiguration().setFiltersBean(IdeaHelper.getCurrentJIRAServer().getServer().getUid(), filters);
 		setScrollPaneViewport(table);
 	}
 
@@ -278,7 +285,6 @@ public class JIRAToolWindowPanel extends JPanel {
 		}
 
 		public void run() {
-
 			progressAnimation.startProgressAnimation();
 			filterToolbarSetVisible(false);
 			clearIssues();
@@ -309,8 +315,13 @@ public class JIRAToolWindowPanel extends JPanel {
 				return;
 			}
 
-			if (jiraServer.equals(IdeaHelper.getCurrentJIRAServer())) {			
-				restoreQuery(projectConfiguration.getJiraConfiguration().getQuery());
+			if (jiraServer.equals(IdeaHelper.getCurrentJIRAServer())) {
+				filters = projectConfiguration.getJiraConfiguration()
+						.getJiraFilters(IdeaHelper.getCurrentJIRAServer().getServer().getUid());
+				if (filters == null) {
+					filters = new JiraFiltersBean();
+				}
+				restoreQuery(filters.getManualFilter(), filters.getSavedFilter());
 				updateIssues(jiraServer);
 				filterToolbarSetVisible(true);
 			}
@@ -355,8 +366,8 @@ public class JIRAToolWindowPanel extends JPanel {
 				try {
 					List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
 					List result;
-					if (queryFragments.size() == 1) {
-						query.add(queryFragments.get(0));
+					if (filters.getSavedFilterUsed()) {
+						query.add(savedQuery);
 						result = serverFacade.getSavedFilterIssues(jiraServer.getServer(), query);
 					} else {
 						for (JIRAQueryFragment jiraQueryFragment : advancedQuery) {
@@ -380,12 +391,15 @@ public class JIRAToolWindowPanel extends JPanel {
 	}
 
 	public void addQueryFragment(JIRAQueryFragment fragment) {
-		if (fragment == null) {
-			queryFragments.clear();
+		savedQuery = fragment;
+		if (fragment != null) {
+			filters.setSavedFilter(new JiraFilterEntryBean(fragment.getMap()));
+			filters.setSavedFilterUsed(true);
 		} else {
-			queryFragments.add(fragment);
+			filters.setSavedFilterUsed(false);
 		}
-		projectConfiguration.getJiraConfiguration().setQuery(serializeQuery());
+		projectConfiguration.getJiraConfiguration().
+				setFiltersBean(IdeaHelper.getCurrentJIRAServer().getServer().getUid(), filters);
 	}
 
 
@@ -449,5 +463,9 @@ public class JIRAToolWindowPanel extends JPanel {
 
 	public AtlassianTableView getTable() {
 		return table;
+	}
+
+	public JiraFiltersBean getFilters() {
+		return filters;
 	}
 }

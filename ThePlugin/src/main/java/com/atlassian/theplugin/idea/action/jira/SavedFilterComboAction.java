@@ -13,46 +13,65 @@ import javax.swing.*;
 import java.util.Iterator;
 
 public class SavedFilterComboAction extends ComboBoxAction {
-    public static final String QF_NAME = "SavedFilter";	
+	public static final String QF_NAME = "SavedFilter";
+	private static final String NO_SAVED_FILTER_TEXT = "Select saved filter";
+	private ComboBoxButton button;
 
 	@NotNull
-    protected DefaultActionGroup createPopupActionGroup(JComponent jComponent) {
-        final ComboBoxButton comboBox;
-        if (!(jComponent instanceof ComboBoxButton)) {
-            throw new UnsupportedOperationException("This action can only be used as a combobox");
-        }
-
-        comboBox = (ComboBoxButton) jComponent;
-        DefaultActionGroup group = new DefaultActionGroup();
-
-        group.add(new MyAnAction(null, comboBox, this));
-
-        JIRAServer server = IdeaHelper.getCurrentJIRAServer();
-        for (Iterator iterator = server.getSavedFilters().iterator(); iterator.hasNext();) {
-            JIRASavedFilter filter = (JIRASavedFilter) iterator.next();
-            group.add(new MyAnAction(filter, comboBox, this));
-        }
-        return group;
-    }
-
-    private String getDefaultText() {
-        return "Select saved filter";
-    }
-
-    private static class MyAnAction extends AnAction {
-        private final JIRASavedFilter savedFilter;
-        private final ComboBoxButton comboBox;
-
-        public MyAnAction(JIRASavedFilter savedFilter, ComboBoxButton comboBox, SavedFilterComboAction parent) {
-            super((savedFilter != null ? savedFilter.getName() : parent.getDefaultText()));
-            this.savedFilter = savedFilter;
-            this.comboBox = comboBox;
-        }
-
-        public void actionPerformed(AnActionEvent event) {
-            comboBox.setText(event.getPresentation().getText());
-            IdeaHelper.getJIRAToolWindowPanel(event).addQueryFragment(savedFilter);
-			IdeaHelper.getJIRAToolWindowPanel(event).refreshIssues();			
+	protected DefaultActionGroup createPopupActionGroup(JComponent jComponent) {
+		System.out.println("Create popupAction...");
+		final ComboBoxButton comboBox;
+		if (!(jComponent instanceof ComboBoxButton)) {
+			throw new UnsupportedOperationException("This action can only be used as a combobox");
 		}
-    }
+
+		DefaultActionGroup group = new DefaultActionGroup();
+		button = (ComboBoxButton) jComponent;
+
+		group.add(new AnAction(NO_SAVED_FILTER_TEXT) {
+			public void actionPerformed(AnActionEvent event) {
+				System.out.println("Action performed");
+				button.setText(event.getPresentation().getText());
+				IdeaHelper.getJIRAToolWindowPanel(event).addQueryFragment(null);
+				IdeaHelper.getJIRAToolWindowPanel(event).refreshIssues();
+			}
+		});
+
+		JIRAServer server = IdeaHelper.getCurrentJIRAServer();
+		for (Iterator iterator = server.getSavedFilters().iterator(); iterator.hasNext();) {
+			final JIRASavedFilter filter = (JIRASavedFilter) iterator.next();
+			group.add(new AnAction(filter.getName()) {
+				public void actionPerformed(AnActionEvent event) {
+					button.setText(event.getPresentation().getText());
+					IdeaHelper.getJIRAToolWindowPanel(event).addQueryFragment(filter);
+					IdeaHelper.getJIRAToolWindowPanel(event).refreshIssues();
+				}
+			});
+		}
+
+		return group;
+	}
+
+	public void update(AnActionEvent event) {
+		super.update(event);
+		if (IdeaHelper.getJIRAToolWindowPanel(event) != null) {
+			if (!IdeaHelper.getJIRAToolWindowPanel(event).getFilters().getSavedFilterUsed()) {
+				setComboText(event, NO_SAVED_FILTER_TEXT);
+			} else {
+				if (IdeaHelper.getJIRAToolWindowPanel(event).getFilters().getSavedFilter() != null) {
+					setComboText(event,
+							IdeaHelper.getJIRAToolWindowPanel(event).
+									getFilters().getSavedFilter().getFilterEntry().get("name"));
+				}
+			}
+		}
+	}
+
+	private void setComboText(AnActionEvent event, String label) {
+		if (button != null) {
+			button.setText(label);
+		} else {
+			event.getPresentation().setText(label);
+		}
+	}
 }
