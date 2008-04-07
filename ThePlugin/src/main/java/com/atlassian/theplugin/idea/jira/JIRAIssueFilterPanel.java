@@ -1,12 +1,14 @@
 package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.ui.CollapsiblePanel;
 import com.atlassian.theplugin.idea.jira.table.JIRAConstantListRenderer;
 import com.atlassian.theplugin.idea.jira.table.JIRAQueryFragmentListRenderer;
+import com.atlassian.theplugin.idea.ui.CollapsiblePanel;
 import com.atlassian.theplugin.jira.JIRAServer;
+import com.atlassian.theplugin.jira.api.JIRAAssigneeBean;
 import com.atlassian.theplugin.jira.api.JIRAProjectBean;
 import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
+import com.atlassian.theplugin.jira.api.JIRAReporterBean;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -22,13 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-/**
- * Created by IntelliJ IDEA.
- * User: pmaruszak
- * Date: Apr 1, 2008
- * Time: 9:54:23 AM
- * To change this template use File | Settings | File Templates.
- */
 public class JIRAIssueFilterPanel extends JPanel {
 	private JList projectList;
 	private JList issueTypeList;
@@ -91,6 +86,8 @@ public class JIRAIssueFilterPanel extends JPanel {
 		this.fixForList.setCellRenderer(new JIRAQueryFragmentListRenderer());
 		this.componentsList.setCellRenderer(new JIRAQueryFragmentListRenderer());
 		this.affectsVersionsList.setCellRenderer(new JIRAQueryFragmentListRenderer());
+		this.reporterComboBox.setRenderer(new JIRAQueryFragmentListRenderer());
+		this.assigneeComboBox.setRenderer(new JIRAQueryFragmentListRenderer());
 
 		projectList.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent event) {
@@ -148,11 +145,15 @@ public class JIRAIssueFilterPanel extends JPanel {
 	}
 
 	private void refreshProjectDependentLists() {
-		this.issueTypeList.setListData(jiraServer.getIssueTypes().toArray());
-		this.fixForList.setListData(jiraServer.getFixForVersions().toArray());
-		this.componentsList.setListData(jiraServer.getComponents().toArray());
-		this.affectsVersionsList.setListData(jiraServer.getVersions().toArray());
-		enableProjectDependentLists(true);
+		if (jiraServer.getCurrentProject().getId() == JIRAServer.ANY_ID) {
+			clearProjectDependentLists();
+		} else {
+			this.issueTypeList.setListData(jiraServer.getIssueTypes().toArray());
+			this.fixForList.setListData(jiraServer.getFixForVersions().toArray());
+			this.componentsList.setListData(jiraServer.getComponents().toArray());
+			this.affectsVersionsList.setListData(jiraServer.getVersions().toArray());
+			enableProjectDependentLists(true);
+		}
 	}
 
 	public void setJiraServer(JIRAServer jiraServer) {
@@ -165,21 +166,34 @@ public class JIRAIssueFilterPanel extends JPanel {
 		this.fixForList.setListData(jiraServer.getFixForVersions().toArray());
 		this.componentsList.setListData(jiraServer.getComponents().toArray());
 		this.affectsVersionsList.setListData(jiraServer.getVersions().toArray());
+
+		reporterComboBox.removeAllItems();
+		reporterComboBox.addItem(new JIRAReporterBean(JIRAServer.ANY_ID, "Any User", null));
+		//reporterComboBox.addItem(new JIRAReporterBean((long) -1, "No reporter", "issue_no_reporter"));
+		reporterComboBox.addItem(new JIRAReporterBean((long) -1, "Current User", jiraServer.getServer().getUserName()));
+
+		assigneeComboBox.removeAllItems();
+		assigneeComboBox.addItem(new JIRAAssigneeBean(JIRAServer.ANY_ID, "Any User", ""));
+		assigneeComboBox.addItem(new JIRAAssigneeBean((long) -1, "Unassigned", "unassigned"));
+		assigneeComboBox.addItem(new JIRAAssigneeBean((long) -1, "Current User", jiraServer.getServer().getUserName()));
+
 	}
 
 	public void setInitialFilter(List<JIRAQueryFragment> advancedQuery) {
-		setComboValues(projectList, advancedQuery);
-		setComboValues(statusList, advancedQuery);
-		setComboValues(prioritiesList, advancedQuery);
-		setComboValues(resolutionsList, advancedQuery);
-		setComboValues(issueTypeList, advancedQuery);
-		setComboValues(componentsList, advancedQuery);
-		setComboValues(fixForList, advancedQuery);
-		setComboValues(affectsVersionsList, advancedQuery);
+		setListValues(projectList, advancedQuery);
+		setListValues(statusList, advancedQuery);
+		setListValues(prioritiesList, advancedQuery);
+		setListValues(resolutionsList, advancedQuery);
+		setListValues(issueTypeList, advancedQuery);
+		setListValues(componentsList, advancedQuery);
+		setListValues(fixForList, advancedQuery);
+		setListValues(affectsVersionsList, advancedQuery);
+		setComboValue(assigneeComboBox, advancedQuery);
+		setComboValue(reporterComboBox, advancedQuery);
 	}
 
-	public void setComboValues(JList list,
-							   List<JIRAQueryFragment> advancedQuery) {
+	public void setListValues(JList list,
+							  List<JIRAQueryFragment> advancedQuery) {
 		List<Integer> selection = new ArrayList<Integer>();
 		for (int i = 0, size = list.getModel().getSize(); i < size; ++i) {
 			for (JIRAQueryFragment jiraQueryFragment : advancedQuery) {
@@ -198,6 +212,20 @@ public class JIRAIssueFilterPanel extends JPanel {
 			list.setSelectedIndices(sel);
 		}
 	}
+
+	public void setComboValue(JComboBox combo,
+							  List<JIRAQueryFragment> advancedQuery) {
+		for (int i = 0, size = combo.getModel().getSize(); i < size; ++i) {
+			for (JIRAQueryFragment jiraQueryFragment : advancedQuery) {
+				JIRAQueryFragment fragment = (JIRAQueryFragment) combo.getModel().getElementAt(i);
+				if (jiraQueryFragment.getQueryStringFragment().equals(fragment.getQueryStringFragment())) {
+					combo.setSelectedIndex(i);
+					break;
+				}
+			}
+		}
+	}
+
 
 	public List<JIRAQueryFragment> getFilter() {
 		List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
@@ -225,6 +253,8 @@ public class JIRAIssueFilterPanel extends JPanel {
 		for (Object o : affectsVersionsList.getSelectedValues()) {
 			query.add((JIRAQueryFragment) o);
 		}
+		query.add((JIRAQueryFragment) assigneeComboBox.getSelectedItem());
+		query.add((JIRAQueryFragment) reporterComboBox.getSelectedItem());
 		return query;
 	}
 
