@@ -28,7 +28,6 @@ public class JIRASavedFilterBean implements JIRASavedFilter {
 		map.put("project", getProject());
 		map.put("filterTypeClass", this.getClass().getName());
 		return map;
-
 	}
 
 	public long getId() {
