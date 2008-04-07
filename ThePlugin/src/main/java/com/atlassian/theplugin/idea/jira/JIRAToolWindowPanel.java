@@ -140,7 +140,7 @@ public class JIRAToolWindowPanel extends JPanel {
 	public List<FilterMapBean> serializeQuery() {
 		List<FilterMapBean> query = new ArrayList<FilterMapBean>();
 		for (JIRAQueryFragment jiraQueryFragment : advancedQuery) {
-			query.add(new FilterMapBean(jiraQueryFragment.getMap()));						
+			query.add(new FilterMapBean(jiraQueryFragment.getMap()));
 		}
 		return query;
 	}
@@ -162,7 +162,7 @@ public class JIRAToolWindowPanel extends JPanel {
 			} catch (IllegalAccessException e) {
 				e.printStackTrace();
 			} catch (InstantiationException e) {
-				e.printStackTrace(); 
+				e.printStackTrace();
 			}
 		}
 	}
