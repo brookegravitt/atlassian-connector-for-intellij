@@ -294,10 +294,23 @@
 						<goal>upload</goal>
 					</goals>
 					<configuration>
-						<uploadResourceSrc>${project.reporting.outputDirectory}/${downloadDir}/${pom.artifactId}-${pom.version}.zip</uploadResourceSrc>
-						<uploadResourceDest>${pom.artifactId}/Downloads</uploadResourceDest>
-						<uploadServerId>atlassian-documentation</uploadServerId>
-						<uploadUrl>dav:https://docs.atlassian.com/</uploadUrl>
+						<resourceSrc>${project.reporting.outputDirectory}/${downloadDir}/${pom.artifactId}-${pom.version}.zip</resourceSrc>
+						<resourceDest>${pom.artifactId}/Downloads</resourceDest>
+						<serverId>atlassian-documentation</serverId>
+						<url>dav:https://docs.atlassian.com/</url>
+					</configuration>
+				</execution>	
+				<execution>
+					<id>upload-stable-metadata</id>
+					<phase>site-deploy</phase>
+					<goals>
+						<goal>upload</goal>
+					</goals>
+					<configuration>
+						<resourceSrc>${project.reporting.outputDirectory}/${metadataDir}/${pom.artifactId}-${pom.version}-metadata.dir/latestStableVersion.xml</resourceSrc>
+						<resourceDest>${pom.artifactId}</resourceDest>
+						<serverId>atlassian-documentation</serverId>
+						<url>dav:https://docs.atlassian.com/</url>
 					</configuration>
 				</execution>	
 				<execution>
@@ -307,10 +320,10 @@
 						<goal>upload</goal>
 					</goals>
 					<configuration>
-						<uploadResourceSrc>${project.reporting.outputDirectory}/${metadataDir}/${pom.artifactId}-${pom.version}-metadata.dir/latestStableVersion.xml</uploadResourceSrc>
-						<uploadResourceDest>${pom.artifactId}</uploadResourceDest>
-						<uploadServerId>atlassian-documentation</uploadServerId>
-						<uploadUrl>dav:https://docs.atlassian.com/</uploadUrl>
+						<resourceSrc>${project.reporting.outputDirectory}/${metadataDir}/${pom.artifactId}-${pom.version}-metadata.dir/latestPossibleVersion.xml</resourceSrc>
+						<resourceDest>${pom.artifactId}</resourceDest>
+						<serverId>atlassian-documentation</serverId>
+						<url>dav:https://docs.atlassian.com/</url>
 					</configuration>
 				</execution>	
 			</executions>
@@ -358,9 +371,20 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.2-beta-2</version>
 				<!--configuration>
 					<descriptorSourceDirectory>assembly</descriptorSourceDirectory>
 				</configuration-->
+						<!--configuration>
+							<descriptors>
+								<descriptor>${pom.basedir}/idea-metadata-assembly.xml</descriptor>
+							</descriptors>
+						</configuration-->
+				<configuration>
+					<descriptors>
+						<descriptor>/Users/lguminski/IdeaProjects/mv/ThePlugin/idea-metadata-assembly.xml</descriptor>
+					</descriptors>
+				</configuration>
 				<executions>
 					<execution>
 						<id>distribution-package</id>
@@ -382,9 +406,6 @@
 							<goal>directory-single</goal>
 						</goals>
 						<configuration>
-							<descriptors>
-								<descriptor>${pom.basedir}/idea-metadata-assembly.xml</descriptor>
-							</descriptors>
 							<outputDirectory>${project.reporting.outputDirectory}/${metadataDir}</outputDirectory>
 						</configuration>
 					</execution>
