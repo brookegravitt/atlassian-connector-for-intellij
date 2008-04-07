@@ -165,7 +165,6 @@ public class JIRAToolWindowPanel extends JPanel {
 				e.printStackTrace(); 
 			}
 		}
-		updateIssues(IdeaHelper.getCurrentJIRAServer());
 	}
 
 	public final synchronized void filterAndViewJiraIssues() {
@@ -303,10 +302,6 @@ public class JIRAToolWindowPanel extends JPanel {
 				setStatusMessage("Unable to connect to server." + jiraServer.getErrorMessage());
 				return;
 			}
-			if (jiraServer.equals(IdeaHelper.getCurrentJIRAServer())) {
-				updateIssues(jiraServer);
-				filterToolbarSetVisible(true);
-			}
 			setStatusMessage(msg + "Retrieving saved filters...");
 			jiraServer.getSavedFilters();
 			if (!jiraServer.isValidServer()) {
@@ -314,7 +309,8 @@ public class JIRAToolWindowPanel extends JPanel {
 				return;
 			}
 
-			if (jiraServer.equals(IdeaHelper.getCurrentJIRAServer())) {
+			if (jiraServer.equals(IdeaHelper.getCurrentJIRAServer())) {			
+				restoreQuery(projectConfiguration.getJiraConfiguration().getQuery());
 				updateIssues(jiraServer);
 				filterToolbarSetVisible(true);
 			}
@@ -383,8 +379,7 @@ public class JIRAToolWindowPanel extends JPanel {
 		new Thread(task, "atlassian-idea-plugin jira tab update issues").start();
 	}
 
-
-	public void addQueryFragment(String fragmentName, JIRAQueryFragment fragment) {
+	public void addQueryFragment(JIRAQueryFragment fragment) {
 		if (fragment == null) {
 			queryFragments.clear();
 		} else {
