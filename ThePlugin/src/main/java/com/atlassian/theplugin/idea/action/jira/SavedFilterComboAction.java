@@ -51,7 +51,7 @@ public class SavedFilterComboAction extends ComboBoxAction {
 
         public void actionPerformed(AnActionEvent event) {
             comboBox.setText(event.getPresentation().getText());
-            IdeaHelper.getJIRAToolWindowPanel(event).addQueryFragment(QF_NAME, savedFilter);
+            IdeaHelper.getJIRAToolWindowPanel(event).addQueryFragment(savedFilter);
 			IdeaHelper.getJIRAToolWindowPanel(event).refreshIssues();			
 		}
     }
