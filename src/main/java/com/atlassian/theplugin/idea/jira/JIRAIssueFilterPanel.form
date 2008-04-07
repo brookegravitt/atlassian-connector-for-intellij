@@ -214,6 +214,7 @@
                 <constraints/>
                 <properties>
                   <model/>
+                  <visibleRowCount value="5"/>
                 </properties>
               </component>
             </children>
