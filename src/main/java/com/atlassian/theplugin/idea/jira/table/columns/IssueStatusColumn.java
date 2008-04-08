@@ -7,6 +7,7 @@ import java.util.Comparator;
 
 public class IssueStatusColumn extends TableColumnInfo {
 	private static final int COL_WIDTH = 20;
+	public static final String COLUMN_NAME = "Status";
 
 	public Object valueOf(Object o) {
 		return (JiraIssueAdapter) o;
@@ -29,6 +30,6 @@ public class IssueStatusColumn extends TableColumnInfo {
 	}
 
 	public String getColumnName() {
-		return "Status";
+		return COLUMN_NAME;
 	}
 }

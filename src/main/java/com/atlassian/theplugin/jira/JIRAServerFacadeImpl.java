@@ -46,17 +46,27 @@ public class JIRAServerFacadeImpl implements JIRAServerFacade {
 		return ServerType.JIRA_SERVER;
 	}
 
-	public List getIssues(Server server, List<JIRAQueryFragment> query) throws JIRAException {
+	public List getIssues(Server server,
+						  List<JIRAQueryFragment> query,
+						  String sort,
+						  String sortOrder,
+						  int start,
+						  int size) throws JIRAException {
 		JIRARssClient rss = null;
 		try {
 			rss = getSession(server);
 		} catch (RemoteApiException e) {
 			throw new JIRAException(e.getMessage(), e);
 		}
-		return rss.getIssues(query, "updated", "DESC", MAX_ISSUES_DEFAULT);
+		return rss.getIssues(query, sort, sortOrder, start, size);
     }
 
-	public List getSavedFilterIssues(Server server, List<JIRAQueryFragment> query) throws JIRAException {
+	public List getSavedFilterIssues(Server server,
+									 List<JIRAQueryFragment> query,
+									 String sort,
+									 String sortOrder,
+									 int start,
+									 int size) throws JIRAException {
 		JIRARssClient rss = null;
 		try {
 			rss = getSession(server);
@@ -66,7 +76,7 @@ public class JIRAServerFacadeImpl implements JIRAServerFacade {
 		if (query.size() != 1) {
 			throw new JIRAException("Only one saved filter could be used for query");
 		} else {
-			return rss.getSavedFilterIssues(query.get(0), "updated", "DESC", MAX_ISSUES_DEFAULT);
+			return rss.getSavedFilterIssues(query.get(0), sort, sortOrder, start, size);
 		}
 	}	
 

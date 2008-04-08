@@ -7,9 +7,18 @@ import com.atlassian.theplugin.remoteapi.ProductServerFacade;
 import java.util.List;
 
 public interface JIRAServerFacade extends ProductServerFacade {
-    List getIssues(Server server, List<JIRAQueryFragment> query) throws JIRAException;
+    List getIssues(Server server, List<JIRAQueryFragment> query,
+				   String sort,
+				   String sortOrder,
+				   int start,
+				   int size) throws JIRAException;
 
-	List getSavedFilterIssues(Server server, List<JIRAQueryFragment> query) throws JIRAException;	
+	List getSavedFilterIssues(Server server,
+							  List<JIRAQueryFragment> query,
+							  String sort,
+							  String sortOrder,
+							  int start,
+							  int size) throws JIRAException;
 
 	List<JIRAProject> getProjects(Server server) throws JIRAException;
 
