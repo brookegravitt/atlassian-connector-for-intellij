@@ -44,7 +44,6 @@ public class JIRAShowIssuesFilterAction extends AnAction {
 					animator.startProgressAnimation();
 					jiraPanel.showJIRAIssueFilter();
 					animator.stopProgressAnimation();
-
 				}
 			}, "JIRA show issues filter").start();
 

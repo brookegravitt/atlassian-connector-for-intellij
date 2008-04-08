@@ -22,21 +22,29 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.ex.CheckboxAction;
 
 public class FilterTypeAction extends CheckboxAction {
-    private boolean state = true;
+	private boolean state;
 
-    public boolean isSelected(AnActionEvent event) {
-        return state; 
-    }
+	public boolean isSelected(AnActionEvent event) {
+		JIRAToolWindowPanel toolWindowPanel = IdeaHelper.getJIRAToolWindowPanel(event);
+		if (toolWindowPanel != null) {
+			state = toolWindowPanel.getFilters().getSavedFilterUsed();
+		}
+		return state;
+	}
 
-    public void setSelected(AnActionEvent event, boolean b) {
-        state = b;
+	public void setSelected(AnActionEvent event, boolean b) {
+		state = b;
 
-        JIRAToolWindowPanel toolWindowPanel = IdeaHelper.getJIRAToolWindowPanel(event);
-        if (b) {
-            toolWindowPanel.getFilters().setSavedFilterUsed(true);
-        } else {
-            toolWindowPanel.getFilters().setSavedFilterUsed(false);
-        }
-        toolWindowPanel.refreshIssues();
-    }
+		JIRAToolWindowPanel toolWindowPanel = IdeaHelper.getJIRAToolWindowPanel(event);
+		if (toolWindowPanel != null) {
+			if (b) {
+				toolWindowPanel.getFilters().setSavedFilterUsed(true);
+			} else {
+				toolWindowPanel.getFilters().setSavedFilterUsed(false);
+			}
+			toolWindowPanel.refreshIssues();			
+		}
+	}
+
+
 }

@@ -180,7 +180,7 @@
 			<keyboard-shortcut first-keystroke="shift control k" keymap="$default"/>
 		</action>
 		<action id="ThePlugin.JIRA.RefreshIssues" class="com.atlassian.theplugin.idea.action.JIRARefreshIssuesAction" text="Refresh assigned JIRA issues"  icon="/actions/sync.png"/>
-		<action id="ThePlugin.JIRA.ShowFilter" class="com.atlassian.theplugin.idea.action.jira.JIRAShowIssuesFilterAction" text="Show JIRA filter dialog"  icon="/actions/find.png"/>
+		<action id="ThePlugin.JIRA.ShowFilter" class="com.atlassian.theplugin.idea.action.jira.JIRAShowIssuesFilterAction" text="Show JIRA filter dialog"  icon="/ant/filter.png"/>
 		<action id="ThePlugin.JIRA.QuickSearch" class="com.atlassian.theplugin.idea.action.jira.QuickSearchAction" text="Search JIRA issues"  icon="/actions/find.png">
             <keyboard-shortcut first-keystroke="shift alt s" keymap="$default"/>
         </action>
