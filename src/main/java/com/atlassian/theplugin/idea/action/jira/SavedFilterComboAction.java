@@ -15,27 +15,16 @@ import java.util.Iterator;
 public class SavedFilterComboAction extends ComboBoxAction {
 	public static final String QF_NAME = "SavedFilter";
 	private static final String NO_SAVED_FILTER_TEXT = "Select saved filter";
-	private ComboBoxButton button;
+	private ComboBoxButton button = null;
 
 	@NotNull
 	protected DefaultActionGroup createPopupActionGroup(JComponent jComponent) {
-		System.out.println("Create popupAction...");
-		final ComboBoxButton comboBox;
 		if (!(jComponent instanceof ComboBoxButton)) {
 			throw new UnsupportedOperationException("This action can only be used as a combobox");
 		}
 
 		DefaultActionGroup group = new DefaultActionGroup();
 		button = (ComboBoxButton) jComponent;
-
-		group.add(new AnAction(NO_SAVED_FILTER_TEXT) {
-			public void actionPerformed(AnActionEvent event) {
-				System.out.println("Action performed");
-				button.setText(event.getPresentation().getText());
-				IdeaHelper.getJIRAToolWindowPanel(event).addQueryFragment(null);
-				IdeaHelper.getJIRAToolWindowPanel(event).refreshIssues();
-			}
-		});
 
 		JIRAServer server = IdeaHelper.getCurrentJIRAServer();
 		for (Iterator iterator = server.getSavedFilters().iterator(); iterator.hasNext();) {
@@ -56,22 +45,24 @@ public class SavedFilterComboAction extends ComboBoxAction {
 		super.update(event);
 		if (IdeaHelper.getJIRAToolWindowPanel(event) != null) {
 			if (!IdeaHelper.getJIRAToolWindowPanel(event).getFilters().getSavedFilterUsed()) {
-				setComboText(event, NO_SAVED_FILTER_TEXT);
+				setComboText(event, NO_SAVED_FILTER_TEXT, false);
 			} else {
 				if (IdeaHelper.getJIRAToolWindowPanel(event).getFilters().getSavedFilter() != null) {
 					setComboText(event,
 							IdeaHelper.getJIRAToolWindowPanel(event).
-									getFilters().getSavedFilter().getFilterEntry().get("name"));
+									getFilters().getSavedFilter().getFilterEntry().get("name"), true);
 				}
 			}
 		}
 	}
 
-	private void setComboText(AnActionEvent event, String label) {
+	private void setComboText(AnActionEvent event, String label, boolean enabled) {
 		if (button != null) {
 			button.setText(label);
+			button.setEnabled(enabled);
 		} else {
 			event.getPresentation().setText(label);
+			event.getPresentation().setEnabled(enabled);
 		}
 	}
 }
