@@ -58,7 +58,7 @@ public class HtmlCrucibleStatusListener implements StatusListener {
 		display.updateCrucibleStatus(sb.toString());
 	}
 
-	public void reset() {
+	public void resetState() {
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 }

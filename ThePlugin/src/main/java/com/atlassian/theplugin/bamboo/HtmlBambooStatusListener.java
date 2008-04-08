@@ -234,7 +234,8 @@ import java.util.regex.Pattern;
 		return null;
 	}
 
-	public void reset() {
+	public void resetState() {
+		// set empty list of builds
 		updateBuildStatuses(new ArrayList<BambooBuild>());
 	}
 }

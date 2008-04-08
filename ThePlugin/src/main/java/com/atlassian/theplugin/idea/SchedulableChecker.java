@@ -25,5 +25,8 @@ public interface SchedulableChecker {
 	 */
 	long getInterval();
 
-	void resetListeners();
+	/**
+	 * Resets state of registered listeners (sets state to default/empty) 
+	 */
+	void resetListenersState();
 }

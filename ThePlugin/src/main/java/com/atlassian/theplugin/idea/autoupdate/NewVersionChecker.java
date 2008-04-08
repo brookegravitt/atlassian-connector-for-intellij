@@ -47,7 +47,7 @@ public final class NewVersionChecker implements SchedulableChecker {
 		return PLUGIN_UPDATE_ATTEMPT_DELAY;
 	}
 
-	public void resetListeners() {
+	public void resetListenersState() {
 		// do nothing
 	}
 

@@ -9,7 +9,7 @@ package com.atlassian.theplugin;
  */
 public interface StatusListener {
 	/**
-	 * Reset the listener (display) state to default state
+	 * Resets the listener (display) state to default/empty state
 	 */
-	void reset();
+	void resetState();
 }
