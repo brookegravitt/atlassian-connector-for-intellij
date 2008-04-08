@@ -7,6 +7,7 @@ import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.atlassian.theplugin.idea.bamboo.ToolWindowBambooContent;
 import com.atlassian.theplugin.idea.jira.table.JIRATableColumnProvider;
+import com.atlassian.theplugin.idea.jira.table.columns.*;
 import com.atlassian.theplugin.idea.ui.AtlassianTableView;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
@@ -38,6 +39,8 @@ import java.util.Map;
 import java.util.concurrent.FutureTask;
 
 public class JIRAToolWindowPanel extends JPanel {
+	private static final int PAGE_SIZE = 25;
+
 	private JEditorPane editorPane;
 	private JPanel toolBarPanel;
 	private ListTableModel listTableModel;
@@ -57,6 +60,13 @@ public class JIRAToolWindowPanel extends JPanel {
 	private final transient JIRAServerFacade jiraServerFacade;
 	private final transient PluginConfigurationBean pluginConfiguration;
 	private final transient ProjectConfigurationBean projectConfiguration;
+
+	private int maxIndex = PAGE_SIZE;
+	private int startIndex = 0;
+	private boolean nextPageAvailable = false;
+	private boolean prevPageAvailable = false;
+	private String sortColumn = "issuekey";
+	private String sortOrder = "ASC";
 
 	public JIRAToolWindowPanel(PluginConfigurationBean pluginConfiguration,
 							   ProjectConfigurationBean projectConfigurationBean,
@@ -126,6 +136,8 @@ public class JIRAToolWindowPanel extends JPanel {
 				}
 			}
 		});
+
+		
 
 		createFilterToolBar();
 
@@ -239,6 +251,7 @@ public class JIRAToolWindowPanel extends JPanel {
 	}
 
 	public void clearIssues() {
+		startIndex = 0;
 		listTableModel.setItems(new ArrayList<JiraIssueAdapter>());
 		listTableModel.fireTableDataChanged();
 		table.setEnabled(false);
@@ -256,7 +269,8 @@ public class JIRAToolWindowPanel extends JPanel {
 		listTableModel.fireTableDataChanged();
 		table.setEnabled(true);
 		table.setForeground(UIUtil.getActiveTextColor());
-		editorPane.setText(wrapBody("Loaded <b>" + issues.size() + "</b> issues."));
+		checkNextPageAvailable(issues);
+		editorPane.setText(wrapBody("Loaded <b>" + issues.size() + "</b> issues starting at <b>" + startIndex + "</b>."));
 	}
 
 	private String wrapBody(String s) {
@@ -350,6 +364,36 @@ public class JIRAToolWindowPanel extends JPanel {
 		filterToolbarTop.getComponent().setVisible(visible);
 	}
 
+	public void prevPage() {
+		startIndex -= PAGE_SIZE;
+		checkPrevPageAvaialble();
+		updateIssues(IdeaHelper.getCurrentJIRAServer());
+	}
+
+	public void nextPage() {
+		startIndex += PAGE_SIZE;
+		checkPrevPageAvaialble();
+		updateIssues(IdeaHelper.getCurrentJIRAServer());
+	}
+
+	private void checkPrevPageAvaialble() {
+		if (startIndex < 0) {
+			startIndex = 0;
+		}
+		if (startIndex == 0) {
+			prevPageAvailable = false;
+		} else {
+			prevPageAvailable = true;
+		}
+	}
+
+	private void checkNextPageAvailable(List result) {
+		if (result.size() < PAGE_SIZE) {
+			nextPageAvailable = false;
+		} else {
+			nextPageAvailable = true;
+		}
+	}	
 
 	private void updateIssues(final JIRAServer jiraServer) {
 		table.setEnabled(false);
@@ -364,20 +408,22 @@ public class JIRAToolWindowPanel extends JPanel {
 			public void run() {
 				progressAnimation.startProgressAnimation();
 				JIRAServerFacade serverFacade = jiraServerFacade;
-
 				try {
 					List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
 					List result;
+					checkTableSort();
 					if (filters.getSavedFilterUsed()) {
 						query.add(savedQuery);
-						result = serverFacade.getSavedFilterIssues(jiraServer.getServer(), query);
+						result = serverFacade.getSavedFilterIssues(jiraServer.getServer(),
+								query, sortColumn, sortOrder, startIndex, maxIndex);
 					} else {
 						for (JIRAQueryFragment jiraQueryFragment : advancedQuery) {
 							if (jiraQueryFragment.getId() != JIRAServer.ANY_ID) {
 								query.add(jiraQueryFragment);
 							}
 						}
-						result = serverFacade.getIssues(jiraServer.getServer(), query);
+						result = serverFacade.getIssues(jiraServer.getServer(),
+								query, sortColumn,	sortOrder, startIndex, maxIndex);
 					}
 					setIssues(result);
 				} catch (JIRAException e) {
@@ -390,6 +436,34 @@ public class JIRAToolWindowPanel extends JPanel {
 		}, null);
 
 		new Thread(task, "atlassian-idea-plugin jira tab update issues").start();
+	}
+
+	private void checkTableSort() {
+		String columnName = table.getTableViewModel().getColumnName(table.getTableViewModel().getSortedColumnIndex());
+		if (IssueTypeColumn.COLUMN_NAME.equals(columnName)) {
+			sortColumn = "issuetype";
+		} else {
+			if (IssueStatusColumn.COLUMN_NAME.equals(columnName)) {
+				sortColumn = "status";
+			} else {
+				if (IssuePriorityColumn.COLUMN_NAME.equals(columnName)) {
+					sortColumn = "priority";
+				} else {
+					if (IssueKeyColumn.COLUMN_NAME.equals(columnName)) {
+						sortColumn = "issuekey";
+					} else {
+						if (IssueSummaryColumn.COLUMN_NAME.equals(columnName)) {
+							sortColumn = "description";
+						}
+					}
+				}
+			}			
+		}
+		if (table.getTableViewModel().getSortingType() == 1) {
+			sortOrder = "ASC";
+		} else {
+			sortOrder = "DESC";
+		}
 	}
 
 	public void addQueryFragment(JIRAQueryFragment fragment) {
@@ -469,5 +543,13 @@ public class JIRAToolWindowPanel extends JPanel {
 
 	public JiraFiltersBean getFilters() {
 		return filters;
+	}
+
+	public boolean isNextPageAvailable() {
+		return nextPageAvailable;
+	}
+
+	public boolean isPrevPageAvailable() {
+		return prevPageAvailable;
 	}
 }

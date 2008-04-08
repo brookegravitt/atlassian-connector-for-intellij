@@ -9,7 +9,7 @@ public class IssueKeyComparator implements Comparator, Serializable {
 	static final long serialVersionUID = 903490105978352608L;
 	
 	public int compare(Object o, Object o1) {
-        String key = ((JiraIssueAdapter) o).getKey();
+		String key = ((JiraIssueAdapter) o).getKey();
         String key1 = ((JiraIssueAdapter) o1).getKey();
 
         // first, try to compare on projects
