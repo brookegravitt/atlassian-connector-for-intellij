@@ -43,7 +43,7 @@ public class JIRARssClient extends AbstractHttpSession {
 
     public List getIssues(List<JIRAQueryFragment> fragments,
 						  String sortBy,
-						  String sortOrder, int max) throws JIRAException {
+						  String sortOrder, int start, int max) throws JIRAException {
 
         StringBuffer url = new StringBuffer(baseUrl + "/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml?");
 
@@ -53,7 +53,10 @@ public class JIRARssClient extends AbstractHttpSession {
             }
         }
 
-        url.append("&sorter/field=" + sortBy + "&sorter/order=" + sortOrder + "&tempMax=" + max);
+        url.append("&sorter/field=" + sortBy);
+		url.append("&sorter/order=" + sortOrder);
+		url.append("&pager/start=" + start);
+		url.append("&tempMax=" + max);
         url.append(appendAuthentication());
 
 		System.out.println("url.to = " + url.toString());
@@ -102,6 +105,7 @@ public class JIRARssClient extends AbstractHttpSession {
 	public List getSavedFilterIssues(JIRAQueryFragment fragment,
 									 String sortBy,
 									 String sortOrder,
+									 int start, 
 									 int max) throws JIRAException {
 
 		StringBuffer url = new StringBuffer(baseUrl + "/sr/jira.issueviews:searchrequest-xml/");
@@ -113,7 +117,11 @@ public class JIRARssClient extends AbstractHttpSession {
 					.append(".xml");
 		}
 
-		url.append("?sorter/field=" + sortBy + "&sorter/order=" + sortOrder + "&tempMax=" + max);
+		url.append("?sorter/field=" + sortBy);
+		url.append("&sorter/order=" + sortOrder);
+		url.append("&pager/start=" + start);
+		url.append("&tempMax=" + max);
+			
 		url.append(appendAuthentication());
 
 		try {
