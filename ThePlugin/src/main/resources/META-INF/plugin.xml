@@ -166,7 +166,11 @@
 		<action id="ThePlugin.JIRA.QuickSearch" class="com.atlassian.theplugin.idea.action.jira.QuickSearchAction" text="Search JIRA issues"  icon="/actions/find.png">
             <keyboard-shortcut first-keystroke="shift alt s" keymap="$default"/>
         </action>
-        <action id="ThePlugin.JIRA.CommentIssueAction" class="com.atlassian.theplugin.idea.action.jira.CommentIssueAction" text="Comment on JIRA issue">
+
+		<action id="ThePlugin.JIRA.NextPage" class="com.atlassian.theplugin.idea.action.jira.JIRANextPageAction" text="Next results page"  icon="/actions/forward.png"/>
+		<action id="ThePlugin.JIRA.PreviousPage" class="com.atlassian.theplugin.idea.action.jira.JIRAPreviousPageAcion" text="Previous results page"  icon="/actions/back.png"/>
+
+		<action id="ThePlugin.JIRA.CommentIssueAction" class="com.atlassian.theplugin.idea.action.jira.CommentIssueAction" text="Comment on JIRA issue">
             <keyboard-shortcut first-keystroke="shift alt m" keymap="$default"/>
         </action>
 
@@ -196,6 +200,8 @@
             <reference id="ThePlugin.JIRA.SavedFilterCombo"/>
 			<separator />
 			<reference id="ThePlugin.JIRA.ShowFilter"/>
+			<reference id="ThePlugin.JIRA.PreviousPage" anchor="last" />
+			<reference id="ThePlugin.JIRA.NextPage" anchor="last" />						
 		</group>
 
     </actions>

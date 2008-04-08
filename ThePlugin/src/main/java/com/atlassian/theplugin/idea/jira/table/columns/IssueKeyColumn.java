@@ -8,13 +8,14 @@ import java.util.Comparator;
 
 public class IssueKeyColumn extends TableColumnInfo {
 	private static final int COL_WIDTH = 50;
+	public static final String COLUMN_NAME = "Key";
 
 	public Object valueOf(Object o) {
 		return ((JiraIssueAdapter) o).getKey();
 	}
 
 	public String getColumnName() {
-		return "Key";
+		return COLUMN_NAME;
 	}
 
 	public Class getColumnClass() {

@@ -7,6 +7,7 @@ import java.util.Comparator;
 
 public class IssueSummaryColumn extends TableColumnInfo {
 	private static final int COL_WIDTH = 500;
+	public static final String COLUMN_NAME = "Summary";
 
 	public Object valueOf(Object o) {
 		return ((JiraIssueAdapter) o).getSummary();
@@ -25,7 +26,7 @@ public class IssueSummaryColumn extends TableColumnInfo {
 	}
 
 	public String getColumnName() {
-		return "Summary";
+		return COLUMN_NAME;
 	}
 
 	public int getPrefferedWidth() {
