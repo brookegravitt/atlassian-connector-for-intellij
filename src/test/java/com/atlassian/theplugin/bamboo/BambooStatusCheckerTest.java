@@ -174,6 +174,10 @@ public class BambooStatusCheckerTest extends TestCase {
 		public Collection<BambooBuild> getLastStatuses() {
 			return lastStatuses;
 		}
+
+		public void reset() {
+			//To change body of implemented methods use File | Settings | File Templates.
+		}
 	}
 
 	private class EasyInvoker implements UIActionScheduler {

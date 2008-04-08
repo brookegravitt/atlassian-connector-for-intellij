@@ -110,11 +110,11 @@ public class ThePluginApplicationComponent
 	public ThePluginApplicationComponent(PluginConfigurationBean configuration,
 										 BambooStatusChecker bambooStatusChecker,
 										 ConfigPanel configPanel,
-										 SchedulableComponent[] schedulableComponents,
+										 SchedulableChecker[] schedulableCheckers,
 										 JIRAServerFacade jiraServerFacade) {
 		this.configuration = configuration;
 		this.bambooStatusChecker = bambooStatusChecker;
-		this.schedulableComponents = schedulableComponents; /* get lost, findbugs! */
+		this.schedulableCheckers = schedulableCheckers; /* get lost, findbugs! */
 		this.configPanel = configPanel;
 		this.jiraServerFacade = jiraServerFacade;
 		ConfigurationFactory.setConfiguration(configuration);
@@ -131,7 +131,7 @@ public class ThePluginApplicationComponent
 		timer.purge();
 	}
 
-	private final SchedulableComponent[] schedulableComponents;
+	private final SchedulableChecker[] schedulableCheckers;
 
 	/**
 	 * Reschedule the BambooStatusChecker with immediate execution trigger.
@@ -143,11 +143,13 @@ public class ThePluginApplicationComponent
 		disableTimers();
 		long delay = rightNow ? 0 : TIMER_START_DELAY;
 
-		for (SchedulableComponent component : schedulableComponents) {
-			if (component.canSchedule()) {
-				final TimerTask newTask = component.newTimerTask();
+		for (SchedulableChecker checker : schedulableCheckers) {
+			if (checker.canSchedule()) {
+				final TimerTask newTask = checker.newTimerTask();
 				scheduledComponents.add(newTask);
-				timer.schedule(newTask, delay, component.getInterval());
+				timer.schedule(newTask, delay, checker.getInterval());
+			} else {
+				checker.resetListeners();
 			}
 		}
 	}

@@ -233,4 +233,8 @@ import java.util.regex.Pattern;
 
 		return null;
 	}
+
+	public void reset() {
+		updateBuildStatuses(new ArrayList<BambooBuild>());
+	}
 }
