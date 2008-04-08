@@ -7,7 +7,7 @@ import com.atlassian.theplugin.configuration.BambooConfigurationBean;
 import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
-import com.atlassian.theplugin.idea.SchedulableComponent;
+import com.atlassian.theplugin.idea.SchedulableChecker;
 import com.atlassian.theplugin.util.DateUtil;
 
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ import java.util.TimerTask;
  * <p/>
  * Thread safe.
  */
-public final class BambooStatusChecker implements SchedulableComponent {
+public final class BambooStatusChecker implements SchedulableChecker {
 
 	private final List<BambooStatusListener> listenerList = new ArrayList<BambooStatusListener>();
 
@@ -109,6 +109,16 @@ public final class BambooStatusChecker implements SchedulableComponent {
 		return (long) ((BambooConfigurationBean) configuration
 				.getProductServers(ServerType.BAMBOO_SERVER))
 				.getPollTime() * DateUtil.SECONDS_IN_MINUTE * DateUtil.MILISECONDS_IN_SECOND;
+	}
+
+	/**
+	 * Resets listeners (sets them to default state)
+	 * Listeners should be set to default state if the checker topic list is empty
+	 */
+	public void resetListeners() {
+		for (BambooStatusListener listener : listenerList) {
+			listener.reset();
+		}
 	}
 
 }

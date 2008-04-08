@@ -85,4 +85,8 @@ public class CrucibleNewReviewNotifier implements CrucibleStatusListener {
 
 		reviews = new ArrayList<ReviewDataInfo>(incomingReviews);
 	}
+
+	public void reset() {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
 }

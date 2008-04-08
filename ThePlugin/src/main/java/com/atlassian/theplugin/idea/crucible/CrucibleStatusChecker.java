@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.ServerType;
-import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
+import com.atlassian.theplugin.StatusListener;
 import com.atlassian.theplugin.configuration.CrucibleConfigurationBean;
 import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.atlassian.theplugin.configuration.Server;
@@ -9,7 +9,8 @@ import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.crucible.CrucibleStatusListener;
 import com.atlassian.theplugin.crucible.ReviewDataInfo;
-import com.atlassian.theplugin.idea.SchedulableComponent;
+import com.atlassian.theplugin.idea.SchedulableChecker;
+import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
 import com.atlassian.theplugin.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.util.DateUtil;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -31,7 +32,7 @@ import java.util.TimerTask;
  * <p/>
  * Thread safe.
  */
-public final class CrucibleStatusChecker implements SchedulableComponent {
+public final class CrucibleStatusChecker implements SchedulableChecker {
 	private final List<CrucibleStatusListener> listenerList = new ArrayList<CrucibleStatusListener>();
 	private final PluginConfiguration pluginConfiguration;
 	private final CrucibleServerFacade crucibleServerFacade;
@@ -116,5 +117,11 @@ public final class CrucibleStatusChecker implements SchedulableComponent {
 		return (long) ((CrucibleConfigurationBean) pluginConfiguration
 				.getProductServers(ServerType.CRUCIBLE_SERVER))
 				.getPollTime() * DateUtil.SECONDS_IN_MINUTE * DateUtil.MILISECONDS_IN_SECOND;
+	}
+
+	public void resetListeners() {
+		for (StatusListener listener : listenerList) {
+			listener.reset();
+		}
 	}
 }

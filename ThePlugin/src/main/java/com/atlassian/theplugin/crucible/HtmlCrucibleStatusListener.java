@@ -1,12 +1,14 @@
 package com.atlassian.theplugin.crucible;
 
+import com.atlassian.theplugin.StatusListener;
+
 import java.util.Collection;
 import java.util.Iterator;
 
 /**
  * Renders Crucible reviews as HTML and passes it to configured {@link CrucibleStatusDisplay}
  */
-public class HtmlCrucibleStatusListener implements CrucibleStatusListener {
+public class HtmlCrucibleStatusListener implements StatusListener {
 
 	private final CrucibleStatusDisplay display;
 	public static final String BODY_WITH_STYLE =
@@ -54,5 +56,9 @@ public class HtmlCrucibleStatusListener implements CrucibleStatusListener {
 		}
 		sb.append("</body></html>");
 		display.updateCrucibleStatus(sb.toString());
+	}
+
+	public void reset() {
+		//To change body of implemented methods use File | Settings | File Templates.
 	}
 }
