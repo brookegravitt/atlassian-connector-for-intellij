@@ -183,4 +183,8 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 	public AtlassianTableView getTable() {
 		return table;
 	}
+
+	public void reset() {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
 }

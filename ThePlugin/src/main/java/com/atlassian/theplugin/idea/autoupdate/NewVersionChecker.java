@@ -7,14 +7,14 @@ import com.atlassian.theplugin.exception.IncorrectVersionException;
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.util.Version;
-import com.atlassian.theplugin.idea.SchedulableComponent;
+import com.atlassian.theplugin.idea.SchedulableChecker;
 
 import java.util.TimerTask;
 
 /**
  * Provides functionality to check for new version and update plugin
  */
-public final class NewVersionChecker implements SchedulableComponent {
+public final class NewVersionChecker implements SchedulableChecker {
 	private static final long PLUGIN_UPDATE_ATTEMPT_DELAY = 60 * 60 * 1000; // every hour
 
 	private final transient PluginConfiguration pluginConfiguration;
@@ -45,6 +45,10 @@ public final class NewVersionChecker implements SchedulableComponent {
 
 	public long getInterval() {
 		return PLUGIN_UPDATE_ATTEMPT_DELAY;
+	}
+
+	public void resetListeners() {
+		// do nothing
 	}
 
 	protected void doRun(UpdateActionHandler action) throws ThePluginException {

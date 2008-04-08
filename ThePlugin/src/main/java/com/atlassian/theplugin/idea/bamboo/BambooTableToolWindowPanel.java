@@ -272,7 +272,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 		return scrollPane;
 	}
 
-	public void setBuilds(Collection<BambooBuild> builds) {
+	private void setBuilds(Collection<BambooBuild> builds) {
 		List<BambooBuildAdapter> buildAdapters = new ArrayList<BambooBuildAdapter>();
 		Date lastPollingTime = null;
 		for (BambooBuild build : builds) {
@@ -321,6 +321,10 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 
 	public void updateBuildStatuses(Collection<BambooBuild> buildStatuses) {
 		setBuilds(buildStatuses);
+	}
+
+	public void reset() {
+		updateBuildStatuses(new ArrayList<BambooBuild>());
 	}
 
 	public boolean getExecuteBuildEnabled() {

@@ -2,7 +2,7 @@ package com.atlassian.theplugin.idea;
 
 import java.util.TimerTask;
 
-public interface SchedulableComponent {
+public interface SchedulableChecker {
 	/**
 	 * Create a new instance of TimerTask for this component so it can be used for (re)scheduling in
 	 * {@link java.util.Timer}
@@ -24,4 +24,6 @@ public interface SchedulableComponent {
 	 * @return Preferred scheduling interval in milliseconds.
 	 */
 	long getInterval();
+
+	void resetListeners();
 }
