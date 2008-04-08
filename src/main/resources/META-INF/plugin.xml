@@ -180,15 +180,16 @@
 
         <action id="ThePlugin.JIRA.ServerCombo" class="com.atlassian.theplugin.idea.action.jira.SelectJIRAAction" text="JIRA Server" />
         <action id="ThePlugin.JIRA.SavedFilterCombo" class="com.atlassian.theplugin.idea.action.jira.SavedFilterComboAction" text="Select saved filter"/>
+		<action id="ThePlugin.JIRA.FilterType" class="com.atlassian.theplugin.idea.action.jira.FilterTypeAction" text="Use server filters"/>
 
-        <action id="ThePlugin.AddJIRAServerAction" class="com.atlassian.theplugin.idea.config.serverconfig.action.AddJIRAServerAction" text="JIRA Server" description="Add a new JIRA server" icon="/icons/jira-blue-16.png">
+		<action id="ThePlugin.AddJIRAServerAction" class="com.atlassian.theplugin.idea.config.serverconfig.action.AddJIRAServerAction" text="JIRA Server" description="Add a new JIRA server" icon="/icons/jira-blue-16.png">
             <add-to-group group-id="ThePlugin.ServerTypePopup" anchor="last"/>
         </action>		
 
 		<group id="ThePlugin.JIRA.ServerToolBar" popup="false">
 			<reference id="ThePlugin.ShowSettings" />
 			<reference id="ThePlugin.HelpJIRA" />
-			<reference id="ThePlugin.JIRA.RefreshIssues" />
+
 			<separator />
             <reference id="ThePlugin.JIRA.ServerCombo"/>
             <separator />
@@ -197,9 +198,12 @@
 		</group>
 
         <group id="ThePlugin.JIRA.FilterToolBarTop" popup="false">
-            <reference id="ThePlugin.JIRA.SavedFilterCombo"/>
-			<separator />
+			<reference id="ThePlugin.JIRA.FilterType" />
+			<reference id="ThePlugin.JIRA.SavedFilterCombo"/>
 			<reference id="ThePlugin.JIRA.ShowFilter"/>
+			<separator />
+			<reference id="ThePlugin.JIRA.RefreshIssues" />
+			<separator />
 			<reference id="ThePlugin.JIRA.PreviousPage" anchor="last" />
 			<reference id="ThePlugin.JIRA.NextPage" anchor="last" />						
 		</group>

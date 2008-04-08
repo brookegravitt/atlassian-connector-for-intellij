@@ -34,5 +34,20 @@ public class JIRAShowIssuesFilterAction extends AnAction {
 
 		}
 	}
+
+	public void update(AnActionEvent event) {
+		super.update(event);
+
+		if (IdeaHelper.getJIRAToolWindowPanel(event) != null) {
+			if (IdeaHelper.getJIRAToolWindowPanel(event).getFilters().getSavedFilterUsed()) {
+				event.getPresentation().setEnabled(false);
+			} else {
+				event.getPresentation().setEnabled(true);
+			}
+		} else {
+			event.getPresentation().setEnabled(false);
+		}
+
+	}
 }
 
