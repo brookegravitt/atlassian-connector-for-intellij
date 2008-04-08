@@ -24,7 +24,7 @@
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<properties>
-		<!-- set <clover.licenseLocation /> in your settings.xml file -->
+	<!-- set <clover.licenseLocation /> in your settings.xml file -->
 		<clover.database>${basedir}/target/clover/clover.db</clover.database>
 		<clover.mergeDatabase>${basedir}/target/clover/cloverMerge.db</clover.mergeDatabase>
 		<jdkLevel>1.5</jdkLevel>
@@ -60,10 +60,7 @@
 			<name>Atlassian Maven 2.x Repository</name>
 			<url>http://repository.atlassian.com/maven2</url>
 		</pluginRepository>
-
 	</pluginRepositories>
-
-
 	<repositories>
 		<repository>
 			<id>atlassian-proxy</id>
@@ -100,11 +97,11 @@
 			<name>DDSteps Repo</name>
 			<url>http://repo.ddsteps.org/maven/release/</url>
 		</repository>
-        <!-- for XML-RPC, but this should come from m2proxy? No idea why not found in Atlassian's repository when it appears to be there fine? -->
-        <repository>
+		<!-- for XML-RPC, but this should come from m2proxy? No idea why not found in Atlassian's repository when it appears to be there fine? -->
+		<repository>
 			<id>repo1</id>
-            <name>Maven2</name>
-            <url>http://repo1.maven.org/maven2</url>
+			<name>Maven2</name>
+			<url>http://repo1.maven.org/maven2</url>
 		</repository>
 	</repositories>
 	<dependencies>
@@ -209,27 +206,27 @@
 			<artifactId>jaxen</artifactId>
 			<version>1.1.1</version>
 		</dependency>
- 	    <dependency>
- 	        <groupId>xmlrpc</groupId>
- 	        <artifactId>xmlrpc</artifactId>
- 	        <version>2.0</version>
-	    </dependency>
-		<!--<dependency>-->
- 	        <!--<groupId>org.apache.xmlrpc</groupId>-->
- 	        <!--<artifactId>xmlrpc-client</artifactId>-->
- 	        <!--<version>3.0</version>-->
-	    <!--</dependency>-->
+		<dependency>
+			<groupId>xmlrpc</groupId>
+			<artifactId>xmlrpc</artifactId>
+			<version>2.0</version>
+		</dependency>
+		<!--<dependency>
+			<groupId>org.apache.xmlrpc</groupId>
+			<artifactId>xmlrpc-client</artifactId>
+			<version>3.0</version>
+		</dependency>-->
 		<dependency>
 			<groupId>org.easymock</groupId>
 			<artifactId>easymock</artifactId>
 			<version>2.3</version>
 			<scope>test</scope>
 		</dependency>
-        <dependency>
+		<dependency>
 			<groupId>commons-httpclient</groupId>
 			<artifactId>commons-httpclient</artifactId>
 			<version>3.1</version>
-        </dependency>
+		</dependency>
 		<dependency>
 			<groupId>org.picocontainer</groupId>
 			<artifactId>picocontainer</artifactId>
@@ -242,7 +239,6 @@
 			<version>1.5.2</version>
 		</dependency>
 	</dependencies>
-
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<resources>
@@ -275,64 +271,66 @@
 			</plugins>
 		</pluginManagement>
 		<plugins>
-		<plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-release-plugin</artifactId>
-			<configuration>
-				<preparationGoals>assembly:directory-single</preparationGoals>
-				<arguments>-DupdateReleaseInfo</arguments>
-			</configuration>
-		</plugin>
-		<plugin>
-			<groupId>com.atlassian.maven.plugins</groupId>
-			<artifactId>maven-upload-plugin</artifactId>
-			<executions>
-				<execution>
-					<id>upload-artifact</id>
-					<phase>deploy</phase>
-					<goals>
-						<goal>upload</goal>
-					</goals>
-					<configuration>
-						<resourceSrc>${project.reporting.outputDirectory}/${downloadDir}/${pom.artifactId}-${pom.version}.zip</resourceSrc>
-						<resourceDest>${pom.artifactId}/Downloads</resourceDest>
-						<serverId>atlassian-documentation</serverId>
-						<url>dav:https://docs.atlassian.com/</url>
-					</configuration>
-				</execution>	
-				<execution>
-					<id>upload-stable-metadata</id>
-					<phase>site-deploy</phase>
-					<goals>
-						<goal>upload</goal>
-					</goals>
-					<configuration>
-						<resourceSrc>${project.reporting.outputDirectory}/${metadataDir}/${pom.artifactId}-${pom.version}-metadata.dir/latestStableVersion.xml</resourceSrc>
-						<resourceDest>${pom.artifactId}</resourceDest>
-						<serverId>atlassian-documentation</serverId>
-						<url>dav:https://docs.atlassian.com/</url>
-					</configuration>
-				</execution>	
-				<execution>
-					<id>upload-metadata</id>
-					<phase>deploy</phase>
-					<goals>
-						<goal>upload</goal>
-					</goals>
-					<configuration>
-						<resourceSrc>${project.reporting.outputDirectory}/${metadataDir}/${pom.artifactId}-${pom.version}-metadata.dir/latestPossibleVersion.xml</resourceSrc>
-						<resourceDest>${pom.artifactId}</resourceDest>
-						<serverId>atlassian-documentation</serverId>
-						<url>dav:https://docs.atlassian.com/</url>
-					</configuration>
-				</execution>	
-			</executions>
-		</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<configuration>
+					<preparationGoals>assembly:directory-single</preparationGoals>
+					<arguments>-DupdateReleaseInfo</arguments>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.atlassian.maven.plugins</groupId>
+				<artifactId>maven-upload-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>upload-artifact</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>upload</goal>
+						</goals>
+						<configuration>
+							<resourceSrc>${project.reporting.outputDirectory}/${downloadDir}/${pom.artifactId}-${pom.version}.zip</resourceSrc>
+							<resourceDest>${pom.artifactId}/Downloads</resourceDest>
+							<serverId>atlassian-documentation</serverId>
+							<url>dav:https://docs.atlassian.com/</url>
+						</configuration>
+					</execution>
+					<execution>
+						<id>upload-stable-metadata</id>
+						<phase>site-deploy</phase>
+						<goals>
+							<goal>upload</goal>
+						</goals>
+						<configuration>
+							<resourceSrc>${project.reporting.outputDirectory}/${metadataDir}/${pom.artifactId}-${pom.version}-metadata.dir/latestStableVersion.xml</resourceSrc>
+							<resourceDest>${pom.artifactId}</resourceDest>
+							<serverId>atlassian-documentation</serverId>
+							<url>dav:https://docs.atlassian.com/</url>
+						</configuration>
+					</execution>
+					<execution>
+						<id>upload-metadata</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>upload</goal>
+						</goals>
+						<configuration>
+							<resourceSrc>${project.reporting.outputDirectory}/${metadataDir}/${pom.artifactId}-${pom.version}-metadata.dir/latestPossibleVersion.xml</resourceSrc>
+							<resourceDest>${pom.artifactId}</resourceDest>
+							<serverId>atlassian-documentation</serverId>
+							<url>dav:https://docs.atlassian.com/</url>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
 				<executions>
-					<execution><!-- empty --></execution>
+					<execution>
+					<!-- empty -->
+					</execution>
 				</executions>
 			</plugin>
 			<plugin>
@@ -347,7 +345,6 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
 			</plugin>
-
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>buildnumber-maven-plugin</artifactId>
@@ -360,14 +357,13 @@
 						</goals>
 					</execution>
 				</executions>
-				<!--<configuration>-->
-				<!--<format> {0,date}, {0,time} </format>-->
-				<!--<items>-->
-				<!--<item>timestamp</item>-->
-				<!--</items>-->
-				<!--</configuration>-->
+				<!--configuration>
+					<format> {0,date}, {0,time} </format>
+					<items>
+						<item>timestamp</item>
+					</items>
+				</configuration-->
 			</plugin>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
@@ -520,7 +516,6 @@
 			</plugin>
 		</plugins>
 	</build>
-
 	<reporting>
 		<plugins>
 			<plugin>
@@ -552,9 +547,9 @@
 				<configuration>
 					<configLocation>java-regular.cs.xml</configLocation>
 					<excludes>
-                        **/idea/**/*Form.java,
+						**/idea/**/*Form.java,
 						**/idea/**/*Dialog.java,
-                        **/soap/xfire/**/*.java,
+						**/soap/xfire/**/*.java,
 						**/IssueComment.java,
 						**/IssueCreate.java,
 						**/ChangesetCreate.java,
@@ -574,15 +569,12 @@
 					<xmlOutput>true</xmlOutput>
 				</configuration>
 			</plugin>
-
 		</plugins>
-
 	</reporting>
-		 <distributionManagement>
-		   <site>
-		     <id>atlassian-documentation</id>
-		     <url>dav:https://internal.docs.atlassian.com/${project.artifactId}/${project.version}</url>
-		   </site>		     
-		 </distributionManagement>
+	<distributionManagement>
+		<site>
+			<id>atlassian-documentation</id>
+			<url>dav:https://internal.docs.atlassian.com/${project.artifactId}/${project.version}</url>
+		</site>
+	</distributionManagement>
 </project>
-
