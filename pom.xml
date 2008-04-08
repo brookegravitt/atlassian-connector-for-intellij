@@ -529,7 +529,7 @@
 			<plugin>
 				<groupId>com.google.code.maven-license-plugin</groupId>
 				<artifactId>maven-license-plugin</artifactId>
-				<version>1.2.5<version>
+				<version>1.2.5</version>
 				<configuration>
 					<basedir>${pom.basedir}</basedir>
 					<header>LICENSE</header>
