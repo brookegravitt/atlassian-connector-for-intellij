@@ -119,9 +119,9 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 				.getPollTime() * DateUtil.SECONDS_IN_MINUTE * DateUtil.MILISECONDS_IN_SECOND;
 	}
 
-	public void resetListeners() {
+	public void resetListenersState() {
 		for (StatusListener listener : listenerList) {
-			listener.reset();
+			listener.resetState();
 		}
 	}
 }

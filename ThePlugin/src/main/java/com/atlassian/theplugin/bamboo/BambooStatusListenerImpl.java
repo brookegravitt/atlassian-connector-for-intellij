@@ -160,7 +160,7 @@ public class BambooStatusListenerImpl implements BambooStatusListener {
 		return sb.toString();
 	}
 
-	public void reset() {
+	public void resetState() {
 		// do nothing
 	}
 }
