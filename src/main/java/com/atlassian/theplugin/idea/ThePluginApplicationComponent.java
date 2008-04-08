@@ -149,7 +149,7 @@ public class ThePluginApplicationComponent
 				scheduledComponents.add(newTask);
 				timer.schedule(newTask, delay, checker.getInterval());
 			} else {
-				checker.resetListeners();
+				checker.resetListenersState();
 			}
 		}
 	}

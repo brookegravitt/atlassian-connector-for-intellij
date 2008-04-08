@@ -323,7 +323,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 		setBuilds(buildStatuses);
 	}
 
-	public void reset() {
+	public void resetState() {
 		updateBuildStatuses(new ArrayList<BambooBuild>());
 	}
 

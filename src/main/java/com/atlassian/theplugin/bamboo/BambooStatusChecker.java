@@ -115,9 +115,9 @@ public final class BambooStatusChecker implements SchedulableChecker {
 	 * Resets listeners (sets them to default state)
 	 * Listeners should be set to default state if the checker topic list is empty
 	 */
-	public void resetListeners() {
+	public void resetListenersState() {
 		for (BambooStatusListener listener : listenerList) {
-			listener.reset();
+			listener.resetState();
 		}
 	}
 
