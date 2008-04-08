@@ -39,7 +39,7 @@ import java.util.Map;
 import java.util.concurrent.FutureTask;
 
 public class JIRAToolWindowPanel extends JPanel {
-	private static final int PAGE_SIZE = 25;
+	private static final int PAGE_SIZE = 50;
 
 	private JEditorPane editorPane;
 	private JPanel toolBarPanel;
