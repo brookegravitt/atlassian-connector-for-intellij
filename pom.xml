@@ -24,6 +24,13 @@
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<inceptionYear>2008</inceptionYear>
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 	<properties>
 	<!-- set <clover.licenseLocation /> in your settings.xml file -->
 		<clover.database>${basedir}/target/clover/clover.db</clover.database>
