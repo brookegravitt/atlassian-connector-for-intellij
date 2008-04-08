@@ -65,8 +65,7 @@ public class JIRAToolWindowPanel extends JPanel {
 	private static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
 	private transient ActionToolbar filterToolbarTop;
 	private JIRAIssueFilterPanel jiraIssueFilterPanel;
-	//private JPanel filterAndButtonsPanel;
-	private JIRAButtonPanel jiraButtonPanel;
+	private final transient JIRAButtonPanel jiraButtonPanel;
 
 	private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
 
