@@ -21,9 +21,7 @@ import org.jetbrains.annotations.NonNls;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -62,7 +60,8 @@ public class CollapsiblePanel extends JPanel {
 
     myToggleCollapseButton.setFocusable(true);
 
-    myToggleCollapseButton.getActionMap().put(COLLAPSE, new AbstractAction() {
+
+	myToggleCollapseButton.getActionMap().put(COLLAPSE, new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         collapse();
       }
@@ -95,8 +94,17 @@ public class CollapsiblePanel extends JPanel {
                                  GridBagConstraints.CENTER,
                                  new Insets(0, 3, 0, 3), 0,
                                  0));
+		myTitleLabel.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) { // on double click, just open the issue
+				if (myIsCollapsed) {
+					expand();
+				} else {
+					collapse();
+				}
+			}
+		});
 
-    }
+	}
 
 	myIsCollapsed = isCollapsed;
 	  
