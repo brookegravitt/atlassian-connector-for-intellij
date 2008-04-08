@@ -2,14 +2,18 @@ package com.atlassian.theplugin.idea.config;
 
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.HelpUrl;
+import com.atlassian.theplugin.idea.Logger;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.BrowserUtil;
+import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.ui.HyperlinkLabel;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import java.awt.*;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,9 +37,10 @@ public class FooterPanel extends JPanel {
 		versionMap.put("0.0.1", "10010");
 		versionMap.put("0.1.0", "10011");
 		versionMap.put("0.2.0", "10012");
-		versionMap.put("0.3.0", "10013");
+		versionMap.put("0.3.1", "10013");
 		versionMap.put("0.4.0", "10014");
 		versionMap.put("0.5.0", "10015");
+		versionMap.put("0.5.1", "10423");
 		versionMap.put("1.0.0", "10016");
 		versionMap.put("1.1.0", "10017");
 		versionMap.put("1.2.0", "10018");
@@ -80,10 +85,26 @@ public class FooterPanel extends JPanel {
 			versionCodeForJira = versionMap.get("0");
 		}
 
+		String environment = "";
+		try {
+			environment +=
+				"Java version=" + System.getProperty("java.version")
+				+ ", Java vendor=" + System.getProperty("java.vendor")
+				+ ", OS name=" + System.getProperty("os.name")
+				+ ", OS architecture=" + System.getProperty("os.arch")
+				+ ", IDEA build number=" + ApplicationInfo.getInstance().getBuildNumber();
+			environment = URLEncoder.encode(environment, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			Logger.getInstance().info(e);
+		}
+
 		final String bugUrl = BASE
-						+ "?pid=" + PROJECT_ID
-						+ "&versions=" + versionCodeForJira
-						+ "&issuetype=" + TICKET_TYPE_BUG;
+				+ "?pid=" + PROJECT_ID
+				+ "&versions=" + versionCodeForJira
+				+ "&issuetype=" + TICKET_TYPE_BUG
+				+ "&environment=" + environment;
+
+
 		final String storyUrl = BASE
 				+ "?pid=" + PROJECT_ID
 				+ "&versions=" + versionCodeForJira
