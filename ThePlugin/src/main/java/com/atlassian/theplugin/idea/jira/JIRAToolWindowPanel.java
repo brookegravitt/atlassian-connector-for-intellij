@@ -106,9 +106,9 @@ public class JIRAToolWindowPanel extends JPanel {
 		ActionToolbar actionToolbar = aManager.createActionToolbar(
 				"atlassian.toolwindow.serverToolBar", serverToolBar, true);
 
-		
+
 		toolBarPanel.add(actionToolbar.getComponent(), BorderLayout.NORTH);
-		
+
 		add(toolBarPanel, BorderLayout.NORTH);
 
 		editorPane = new ToolWindowBambooContent();
@@ -154,6 +154,8 @@ public class JIRAToolWindowPanel extends JPanel {
 				}
 			}
 		});
+
+
 
 		createFilterToolBar();
 		createFilterEditToolBar();
