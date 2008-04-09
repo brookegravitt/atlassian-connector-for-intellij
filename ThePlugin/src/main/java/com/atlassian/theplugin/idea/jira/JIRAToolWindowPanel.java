@@ -155,8 +155,6 @@ public class JIRAToolWindowPanel extends JPanel {
 			}
 		});
 
-
-
 		createFilterToolBar();
 		createFilterEditToolBar();
 
