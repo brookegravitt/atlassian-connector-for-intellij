@@ -255,6 +255,7 @@ public class JIRAIssueFilterPanel extends JPanel {
 				sel[j++] = integer;
 			}
 			list.setSelectedIndices(sel);
+			list.ensureIndexIsVisible(sel[0]);
 		}
 	}
 
