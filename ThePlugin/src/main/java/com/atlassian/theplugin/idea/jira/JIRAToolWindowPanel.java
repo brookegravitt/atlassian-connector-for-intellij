@@ -204,6 +204,7 @@ public class JIRAToolWindowPanel extends JPanel {
 	public void applyAdvancedFilter() {
 		advancedQuery.clear();
 		advancedQuery.addAll(jiraIssueFilterPanel.getFilter());
+		startIndex = 0;
 		updateIssues(IdeaHelper.getCurrentJIRAServer());
 		filters.setManualFilter(serializeQuery());
 		filters.setSavedFilterUsed(false);
@@ -229,7 +230,6 @@ public class JIRAToolWindowPanel extends JPanel {
 		JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer();
 		if (jiraServer != null) {
 			jiraIssueFilterPanel.setJiraServer(jiraServer, advancedQuery);
-			//jiraIssueFilterPanel.setInitialFilter(advancedQuery);
 		}
 		filterToolbarSetVisible(false);
 		filterEditToolbarSetVisible(true);
@@ -244,7 +244,6 @@ public class JIRAToolWindowPanel extends JPanel {
 		JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer();
 		if (jiraServer != null) {
 			jiraIssueFilterPanel.setJiraServer(jiraServer, advancedQuery);
-			//jiraIssueFilterPanel.setInitialFilter(advancedQuery);
 		}
 		filterToolbarSetVisible(false);
 		filterEditToolbarSetVisible(true);
@@ -290,11 +289,16 @@ public class JIRAToolWindowPanel extends JPanel {
 		return scrollPane;
 	}
 
-	public void refreshIssues() {
+	public void refreshIssuesPage() {
 		if (IdeaHelper.getCurrentJIRAServer() != null) {
 			updateIssues(IdeaHelper.getCurrentJIRAServer());
 			serializeQuery();
 		}
+	}
+
+	public void refreshIssues() {
+		startIndex = 0;
+		refreshIssuesPage();
 	}
 
 	public void clearIssues() {
@@ -317,7 +321,7 @@ public class JIRAToolWindowPanel extends JPanel {
 		table.setEnabled(true);
 		table.setForeground(UIUtil.getActiveTextColor());
 		checkNextPageAvailable(issues);
-		editorPane.setText(wrapBody("Loaded <b>" + issues.size() + "</b> issues starting at <b>" + startIndex + "</b>."));
+		editorPane.setText(wrapBody("Loaded <b>" + issues.size() + "</b> issues starting at <b>" + (startIndex + 1) + "</b>."));
 	}
 
 	private String wrapBody(String s) {
@@ -338,10 +342,6 @@ public class JIRAToolWindowPanel extends JPanel {
 
 	public ProgressAnimationProvider getProgressAnimation() {
 		return progressAnimation;
-	}
-
-	public void clearJIRAIssuesFilter() {
-		//To change body of created methods use File | Settings | File Templates.
 	}
 
 	private class SelectServerTask implements Runnable {
@@ -538,6 +538,7 @@ public class JIRAToolWindowPanel extends JPanel {
 		} else {
 			filters.setSavedFilterUsed(false);
 		}
+		startIndex = 0;
 		projectConfiguration.getJiraConfiguration().
 				setFiltersBean(IdeaHelper.getCurrentJIRAServer().getServer().getUid(), filters);
 	}
