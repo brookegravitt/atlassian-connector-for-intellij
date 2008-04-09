@@ -109,7 +109,7 @@
 
 		<action id="ThePlugin.RunBuild" class="com.atlassian.theplugin.idea.action.bamboo.RunBuildAction" text="Run build" description="Run Bamboo build" icon="/actions/execute.png">
 		</action>	
-		<action id="ThePlugin.AddLabelToBuild" class="com.atlassian.theplugin.idea.action.bamboo.LabelBuildAction" text="Add label to build" description="Add label to Bamboo build" icon="/modules/annotation.png">
+		<action id="ThePlugin.AddLabelToBuild" class="com.atlassian.theplugin.idea.action.bamboo.LabelBuildAction" text="Add label to build" description="Add label to Bamboo build" icon="/icons/icn_label.gif">
 		</action>
 		<action id="ThePlugin.AddCommentToBuild" class="com.atlassian.theplugin.idea.action.bamboo.CommentBuildAction" text="Add comment to build" description="Add comment to Bamboo build" icon="/actions/editSource.png">
 		</action>
