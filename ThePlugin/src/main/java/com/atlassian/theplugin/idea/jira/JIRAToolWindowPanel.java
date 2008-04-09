@@ -342,7 +342,7 @@ public class JIRAToolWindowPanel extends JPanel {
 		return progressAnimation;
 	}
 
-	private class SelectServerTask implements Runnable {
+	private final class SelectServerTask implements Runnable {
 		private JIRAServer jiraServer;
 
 		public SelectServerTask(JIRAServer jiraServer) {
@@ -470,7 +470,7 @@ public class JIRAToolWindowPanel extends JPanel {
 		new Thread(new IssueRefreshTask(jiraServer), "atlassian-idea-plugin jira tab update issues").start();
 	}
 
-	private class IssueRefreshTask implements Runnable {
+	private final class IssueRefreshTask implements Runnable {
 		private JIRAServer jiraServer;
 
 		private IssueRefreshTask(JIRAServer jiraServer) {
