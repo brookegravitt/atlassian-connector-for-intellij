@@ -134,6 +134,7 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
 		cbIconDescription = new JCheckBox();
 		cbIconDescription.setHorizontalTextPosition(11);
 		cbIconDescription.setText("Display icon description");
+		cbIconDescription.setToolTipText("Refresh in tool window required");
 		rootComponent.add(cbIconDescription, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 	}
 
