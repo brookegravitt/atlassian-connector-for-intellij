@@ -63,7 +63,7 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
 	}
 
 	public String getTitle() {
-		return "Jira";
+		return "JIRA";
 	}
 
 	public void getData() {
