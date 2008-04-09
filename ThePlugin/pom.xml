@@ -58,10 +58,6 @@
 		<system>Jira</system>
 		<url>https://studio.atlassian.com/browse/PL</url>
 	</issueManagement>
-	<ciManagement>
-		<system>Bamboo</system>
-		<url>https://spartez.dyndns.org/atlassian-bamboo-1.2.4</url>
-	</ciManagement>
 	<pluginRepositories>
 		<pluginRepository>
 			<id>atlassian-m2-repository</id>
@@ -568,12 +564,12 @@
 					</properties>
 				</configuration>
 				<executions>
-					<execution>
+					<!--execution>
 						<phase>test</phase>
 						<goals>
 							<goal>format</goal>
 						</goals>
-					</execution>
+					</execution-->
 				</executions>
 			</plugin>
 		</plugins>
