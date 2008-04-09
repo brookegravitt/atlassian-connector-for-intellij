@@ -25,6 +25,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  */
 public class JIRARefreshIssuesAction extends AnAction {
 	public void actionPerformed(AnActionEvent event) {
-        IdeaHelper.getJIRAToolWindowPanel(event).refreshIssues();
+        IdeaHelper.getJIRAToolWindowPanel(event).refreshIssuesPage();
     }
 }
