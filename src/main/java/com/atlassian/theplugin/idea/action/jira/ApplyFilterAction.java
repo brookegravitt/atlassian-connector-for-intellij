@@ -20,13 +20,6 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.atlassian.theplugin.idea.IdeaHelper;
 
-/**
- * Created by IntelliJ IDEA.
- * User: marek
- * Date: Apr 9, 2008
- * Time: 10:45:30 AM
- * To change this template use File | Settings | File Templates.
- */
 public class ApplyFilterAction extends AnAction {
 	public void actionPerformed(AnActionEvent event) {
 		if (IdeaHelper.getJIRAToolWindowPanel(event) != null) {
