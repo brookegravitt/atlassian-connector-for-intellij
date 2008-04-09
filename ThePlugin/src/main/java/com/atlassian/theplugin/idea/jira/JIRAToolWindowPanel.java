@@ -52,7 +52,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.FutureTask;
 
 public class JIRAToolWindowPanel extends JPanel {
 	private static final int PAGE_SIZE = 50;
@@ -468,42 +467,48 @@ public class JIRAToolWindowPanel extends JPanel {
 				+ server.getName() + "</b>...</td></tr></table>"));
 		editorPane.setCaretPosition(0);
 
-		FutureTask task = new FutureTask(new Runnable() {
-			public void run() {
-				clearIssues();
-				progressAnimation.startProgressAnimation();
-				JIRAServerFacade serverFacade = jiraServerFacade;
-				try {
-					List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
-					List result;
-					checkTableSort();
-					if (filters.getSavedFilterUsed()) {
-						if (savedQuery != null) {
-							query.add(savedQuery);
-							result = serverFacade.getSavedFilterIssues(jiraServer.getServer(),
-									query, sortColumn, sortOrder, startIndex, maxIndex);
-							setIssues(result);
-						}
-					} else {
-						for (JIRAQueryFragment jiraQueryFragment : advancedQuery) {
-							if (jiraQueryFragment.getId() != JIRAServer.ANY_ID) {
-								query.add(jiraQueryFragment);
-							}
-						}
-						result = serverFacade.getIssues(jiraServer.getServer(),
+		new Thread(new IssueRefreshTask(jiraServer), "atlassian-idea-plugin jira tab update issues").start();
+	}
+
+	private class IssueRefreshTask implements Runnable {
+		private JIRAServer jiraServer;
+
+		private IssueRefreshTask(JIRAServer jiraServer) {
+			this.jiraServer = jiraServer;
+		}
+
+		public void run() {
+			clearIssues();
+			progressAnimation.startProgressAnimation();
+			JIRAServerFacade serverFacade = jiraServerFacade;
+			try {
+				List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
+				List result;
+				checkTableSort();
+				if (filters.getSavedFilterUsed()) {
+					if (savedQuery != null) {
+						query.add(savedQuery);
+						result = serverFacade.getSavedFilterIssues(jiraServer.getServer(),
 								query, sortColumn, sortOrder, startIndex, maxIndex);
 						setIssues(result);
 					}
-				} catch (JIRAException e) {
-					editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">Error contacting server <b>"
-							+ server.getName() + "</b>?</td></tr></table>"));
-				} finally {
-					progressAnimation.stopProgressAnimation();
+				} else {
+					for (JIRAQueryFragment jiraQueryFragment : advancedQuery) {
+						if (jiraQueryFragment.getId() != JIRAServer.ANY_ID) {
+							query.add(jiraQueryFragment);
+						}
+					}
+					result = serverFacade.getIssues(jiraServer.getServer(),
+							query, sortColumn, sortOrder, startIndex, maxIndex);
+					setIssues(result);
 				}
+			} catch (JIRAException e) {
+				editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">Error contacting server <b>"
+						+ jiraServer.getServer().getName() + "</b>?</td></tr></table>"));
+			} finally {
+				progressAnimation.stopProgressAnimation();
 			}
-		}, null);
-
-		new Thread(task, "atlassian-idea-plugin jira tab update issues").start();
+		}
 	}
 
 	private void checkTableSort() {
