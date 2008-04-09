@@ -315,7 +315,7 @@
 							<url>dav:https://docs.atlassian.com/</url>
 						</configuration>
 					</execution>
-					<execution>
+					<!--execution>
 						<id>upload-stable-metadata</id>
 						<phase>site-deploy</phase>
 						<goals>
@@ -327,7 +327,7 @@
 							<serverId>atlassian-documentation</serverId>
 							<url>dav:https://docs.atlassian.com/</url>
 						</configuration>
-					</execution>
+					</execution-->
 					<execution>
 						<id>upload-metadata</id>
 						<phase>deploy</phase>
