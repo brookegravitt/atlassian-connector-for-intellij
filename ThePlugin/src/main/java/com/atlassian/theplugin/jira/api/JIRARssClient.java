@@ -75,8 +75,6 @@ public class JIRARssClient extends AbstractHttpSession {
 		url.append("&tempMax=" + max);
         url.append(appendAuthentication());
 
-		System.out.println("url.to = " + url.toString());
-
 		try {
             Document doc = retrieveGetResponse(url.toString());
             Element root = doc.getRootElement();
