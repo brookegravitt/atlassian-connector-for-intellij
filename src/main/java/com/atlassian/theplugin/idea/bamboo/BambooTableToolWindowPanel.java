@@ -58,8 +58,8 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 	private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
 
 	private static final Icon ICON_RUN = IconLoader.getIcon("/actions/execute.png");
-	private static final Icon ICON_LABEL = IconLoader.getIcon("/modules/annotation.png");
 	private static final Icon ICON_COMMENT = IconLoader.getIcon("/actions/editSource.png");
+	private static final Icon ICON_LABEL = IconLoader.getIcon("/icons/icn_label.gif");
 
 	public ProgressAnimationProvider getProgressAnimation() {
 		return progressAnimation;
