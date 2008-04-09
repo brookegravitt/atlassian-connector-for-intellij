@@ -76,9 +76,10 @@ public class JIRAIssueFilterPanel extends JPanel {
 
 	private JIRAServer jiraServer;
 
-	public JIRAIssueFilterPanel() {
+	public JIRAIssueFilterPanel(ProgressAnimationProvider progressAnimation) {
 		$$$setupUI$$$();
 
+		this.progressAnimation = progressAnimation;
 		this.projectList.setCellRenderer(new JIRAQueryFragmentListRenderer());
 		this.issueTypeList.setCellRenderer(new JIRAConstantListRenderer());
 		this.statusList.setCellRenderer(new JIRAConstantListRenderer());
@@ -109,10 +110,6 @@ public class JIRAIssueFilterPanel extends JPanel {
 				}
 			}
 		});
-	}
-
-	public void setProgressAnimation(ProgressAnimationProvider progressAnimation) {
-		this.progressAnimation = progressAnimation;
 	}
 
 	private void enableProjectDependentLists(boolean value) {
