@@ -212,7 +212,6 @@ public class JIRAToolWindowPanel extends JPanel {
 				getJiraConfiguration().setFiltersBean(IdeaHelper.getCurrentJIRAServer().getServer().getUid(), filters);
 		hideJIRAIssuesFilter();
 		filterToolbarSetVisible(true);
-		filterEditToolbarSetVisible(false);
 	}
 
 	public void cancelAdvancedFilter() {
@@ -222,7 +221,6 @@ public class JIRAToolWindowPanel extends JPanel {
 				getJiraConfiguration().setFiltersBean(IdeaHelper.getCurrentJIRAServer().getServer().getUid(), filters);
 		hideJIRAIssuesFilter();
 		filterToolbarSetVisible(true);
-		filterEditToolbarSetVisible(false);
 	}
 
 	public void clearAdvancedFilter() {
@@ -238,6 +236,7 @@ public class JIRAToolWindowPanel extends JPanel {
 
 	public final void hideJIRAIssuesFilter() {
 		setScrollPaneViewport(table);
+		filterEditToolbarSetVisible(false);
 	}
 
 	public final void showJIRAIssueFilter() {
@@ -352,6 +351,7 @@ public class JIRAToolWindowPanel extends JPanel {
 		}
 
 		public void run() {
+			hideJIRAIssuesFilter();
 			progressAnimation.startProgressAnimation();
 			filterToolbarSetVisible(false);
 			clearIssues();
