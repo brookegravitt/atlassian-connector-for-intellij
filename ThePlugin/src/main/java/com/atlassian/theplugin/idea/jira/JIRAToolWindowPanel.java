@@ -63,9 +63,9 @@ public class JIRAToolWindowPanel extends JPanel {
 	private AtlassianTableView table;
 	private JScrollPane scrollTable;
 	private static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
-	private transient ActionToolbar filterToolbarTop;
+	private transient ActionToolbar filterToolbar;
+	private transient ActionToolbar filterEditToolbar;
 	private JIRAIssueFilterPanel jiraIssueFilterPanel;
-	private final transient JIRAButtonPanel jiraButtonPanel;
 
 	private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
 
@@ -92,8 +92,6 @@ public class JIRAToolWindowPanel extends JPanel {
 
 		setLayout(new BorderLayout());
 
-		jiraButtonPanel = new JIRAButtonPanel();
-
 		this.pluginConfiguration = pluginConfiguration;
 		this.projectConfiguration = projectConfigurationBean;
 		this.project = project;
@@ -111,9 +109,6 @@ public class JIRAToolWindowPanel extends JPanel {
 		
 		toolBarPanel.add(actionToolbar.getComponent(), BorderLayout.NORTH);
 		
-		jiraButtonPanel.$$$getRootComponent$$$().setVisible(false);
-		toolBarPanel.add(jiraButtonPanel.$$$getRootComponent$$$(), BorderLayout.SOUTH);
-
 		add(toolBarPanel, BorderLayout.NORTH);
 
 		editorPane = new ToolWindowBambooContent();
@@ -160,9 +155,8 @@ public class JIRAToolWindowPanel extends JPanel {
 			}
 		});
 
-		
-
 		createFilterToolBar();
+		createFilterEditToolBar();
 
 		jiraIssueFilterPanel = new JIRAIssueFilterPanel();
 		scrollTable = new JScrollPane(table);
@@ -170,6 +164,7 @@ public class JIRAToolWindowPanel extends JPanel {
 
 		// initialize animated panel functionality
 		progressAnimation.configure(this, scrollTable, BorderLayout.CENTER);
+		jiraIssueFilterPanel.setProgressAnimation(progressAnimation);
 	}
 
 	public List<JiraFilterEntryBean> serializeQuery() {
@@ -207,12 +202,7 @@ public class JIRAToolWindowPanel extends JPanel {
 		}
 	}
 
-	public void clearAdvancedQuery() {
-		advancedQuery.clear();
-
-	}
-
-	public final synchronized void filterAndViewJiraIssues() {
+	public void applyAdvancedFilter() {
 		advancedQuery.clear();
 		advancedQuery.addAll(jiraIssueFilterPanel.getFilter());
 		updateIssues(IdeaHelper.getCurrentJIRAServer());
@@ -221,20 +211,45 @@ public class JIRAToolWindowPanel extends JPanel {
 		projectConfiguration.
 				getJiraConfiguration().setFiltersBean(IdeaHelper.getCurrentJIRAServer().getServer().getUid(), filters);
 		hideJIRAIssuesFilter();
+		filterToolbarSetVisible(true);
+		filterEditToolbarSetVisible(false);
+	}
+
+	public void cancelAdvancedFilter() {
+		filters.setManualFilter(serializeQuery());
+		filters.setSavedFilterUsed(false);
+		projectConfiguration.
+				getJiraConfiguration().setFiltersBean(IdeaHelper.getCurrentJIRAServer().getServer().getUid(), filters);
+		hideJIRAIssuesFilter();
+		filterToolbarSetVisible(true);
+		filterEditToolbarSetVisible(false);
+	}
+
+	public void clearAdvancedFilter() {
+		advancedQuery.clear();
+		JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer();
+		if (jiraServer != null) {
+			jiraIssueFilterPanel.setJiraServer(jiraServer, advancedQuery);
+			//jiraIssueFilterPanel.setInitialFilter(advancedQuery);
+		}
+		filterToolbarSetVisible(false);
+		filterEditToolbarSetVisible(true);
+		setScrollPaneViewport(jiraIssueFilterPanel.$$$getRootComponent$$$());
 	}
 
 	public final void hideJIRAIssuesFilter() {
 		setScrollPaneViewport(table);
-		jiraButtonPanel.$$$getRootComponent$$$().setVisible(false);
 	}
+
 	public final void showJIRAIssueFilter() {
 		JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer();
 		if (jiraServer != null) {
-			jiraIssueFilterPanel.setJiraServer(jiraServer);
-			jiraIssueFilterPanel.setInitialFilter(advancedQuery);
+			jiraIssueFilterPanel.setJiraServer(jiraServer, advancedQuery);
+			//jiraIssueFilterPanel.setInitialFilter(advancedQuery);
 		}
+		filterToolbarSetVisible(false);
+		filterEditToolbarSetVisible(true);
 		setScrollPaneViewport(jiraIssueFilterPanel.$$$getRootComponent$$$());
-		jiraButtonPanel.$$$getRootComponent$$$().setVisible(true);
 	}
 
 	private void setScrollPaneViewport(JComponent component) {
@@ -390,15 +405,28 @@ public class JIRAToolWindowPanel extends JPanel {
 
 	private void createFilterToolBar() {
 		ActionManager actionManager = ActionManager.getInstance();
-		ActionGroup filterToolBarTop = (ActionGroup) actionManager.getAction("ThePlugin.JIRA.FilterToolBarTop");
-		filterToolbarTop = actionManager.createActionToolbar("atlassian.toolwindow.filterToolBarTop",
-				filterToolBarTop, true);
-		toolBarPanel.add(filterToolbarTop.getComponent(), BorderLayout.CENTER);
+		ActionGroup filterToolBar = (ActionGroup) actionManager.getAction("ThePlugin.JIRA.FilterToolBar");
+		filterToolbar = actionManager.createActionToolbar("atlassian.toolwindow.filterToolBar",
+				filterToolBar, true);
+		toolBarPanel.add(filterToolbar.getComponent(), BorderLayout.CENTER);
 		filterToolbarSetVisible(false);
 	}
 
+	private void createFilterEditToolBar() {
+		ActionManager actionManager = ActionManager.getInstance();
+		ActionGroup filterEditToolBar = (ActionGroup) actionManager.getAction("ThePlugin.JIRA.FilterEditToolBar");
+		filterEditToolbar = actionManager.createActionToolbar("atlassian.toolwindow.filterEditToolBar",
+				filterEditToolBar, true);
+		toolBarPanel.add(filterEditToolbar.getComponent(), BorderLayout.SOUTH);
+		filterEditToolbarSetVisible(false);
+	}
+
 	private void filterToolbarSetVisible(boolean visible) {
-		filterToolbarTop.getComponent().setVisible(visible);
+		filterToolbar.getComponent().setVisible(visible);
+	}
+
+	private void filterEditToolbarSetVisible(boolean visible) {
+		filterEditToolbar.getComponent().setVisible(visible);
 	}
 
 	public void prevPage() {
