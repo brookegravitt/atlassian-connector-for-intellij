@@ -6,12 +6,12 @@
   </formats>
   <files>
     <file>
-      <source>latestStableVersion.xml</source>
+      <source>templates/latestStableVersion.xml</source>
       <outputDirectory>/</outputDirectory>
       <filtered>true</filtered>
     </file>
     <file>
-      <source>latestPossibleVersion.xml</source>
+      <source>templates/latestPossibleVersion.xml</source>
       <outputDirectory>/</outputDirectory>
       <filtered>true</filtered>
     </file>
