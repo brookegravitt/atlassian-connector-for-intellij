@@ -83,10 +83,9 @@ public final class NewVersionChecker implements SchedulableChecker {
 	}
 
 	private InfoServer.VersionInfo getLatestVersion() throws VersionServiceException, IncorrectVersionException {
-//		InfoServer server =  new InfoServer(PluginUtil.VERSION_INFO_URL,
+//		InfoServer server =  new InfoServer(PluginUtil.STABLE_VERSION_INFO_URL,
 //				pluginConfiguration.getUid());
 		return InfoServer.getLatestPluginVersion(
-				PluginUtil.VERSION_INFO_URL,
 				pluginConfiguration.getUid(),
 				pluginConfiguration.getCheckUnstableVersionsEnabled());
 	}
