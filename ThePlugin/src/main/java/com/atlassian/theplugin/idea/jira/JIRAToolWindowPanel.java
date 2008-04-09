@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -306,7 +306,7 @@ public class JIRAToolWindowPanel extends JPanel {
 		listTableModel.setItems(new ArrayList<JiraIssueAdapter>());
 		listTableModel.fireTableDataChanged();
 		table.setEnabled(false);
-		editorPane.setText(wrapBody("No issues for server."));
+		//editorPane.setText(wrapBody("No issues for server."));
 	}
 
 	public void setIssues(List<JIRAIssue> issues) {
@@ -457,7 +457,7 @@ public class JIRAToolWindowPanel extends JPanel {
 		} else {
 			nextPageAvailable = true;
 		}
-	}	
+	}
 
 	private void updateIssues(final JIRAServer jiraServer) {
 		table.setEnabled(false);
@@ -470,6 +470,7 @@ public class JIRAToolWindowPanel extends JPanel {
 
 		FutureTask task = new FutureTask(new Runnable() {
 			public void run() {
+				clearIssues();
 				progressAnimation.startProgressAnimation();
 				JIRAServerFacade serverFacade = jiraServerFacade;
 				try {
@@ -477,9 +478,12 @@ public class JIRAToolWindowPanel extends JPanel {
 					List result;
 					checkTableSort();
 					if (filters.getSavedFilterUsed()) {
-						query.add(savedQuery);
-						result = serverFacade.getSavedFilterIssues(jiraServer.getServer(),
-								query, sortColumn, sortOrder, startIndex, maxIndex);
+						if (savedQuery != null) {
+							query.add(savedQuery);
+							result = serverFacade.getSavedFilterIssues(jiraServer.getServer(),
+									query, sortColumn, sortOrder, startIndex, maxIndex);
+							setIssues(result);
+						}
 					} else {
 						for (JIRAQueryFragment jiraQueryFragment : advancedQuery) {
 							if (jiraQueryFragment.getId() != JIRAServer.ANY_ID) {
@@ -487,9 +491,9 @@ public class JIRAToolWindowPanel extends JPanel {
 							}
 						}
 						result = serverFacade.getIssues(jiraServer.getServer(),
-								query, sortColumn,	sortOrder, startIndex, maxIndex);
+								query, sortColumn, sortOrder, startIndex, maxIndex);
+						setIssues(result);
 					}
-					setIssues(result);
 				} catch (JIRAException e) {
 					editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">Error contacting server <b>"
 							+ server.getName() + "</b>?</td></tr></table>"));
@@ -521,7 +525,7 @@ public class JIRAToolWindowPanel extends JPanel {
 						}
 					}
 				}
-			}			
+			}
 		}
 		if (table.getTableViewModel().getSortingType() == 1) {
 			sortOrder = "ASC";
