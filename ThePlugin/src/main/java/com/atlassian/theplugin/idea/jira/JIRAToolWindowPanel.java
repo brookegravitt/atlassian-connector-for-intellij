@@ -158,13 +158,12 @@ public class JIRAToolWindowPanel extends JPanel {
 		createFilterToolBar();
 		createFilterEditToolBar();
 
-		jiraIssueFilterPanel = new JIRAIssueFilterPanel();
 		scrollTable = new JScrollPane(table);
 		add(scrollTable, BorderLayout.CENTER, 0);
 
 		// initialize animated panel functionality
 		progressAnimation.configure(this, scrollTable, BorderLayout.CENTER);
-		jiraIssueFilterPanel.setProgressAnimation(progressAnimation);
+		jiraIssueFilterPanel = new JIRAIssueFilterPanel(progressAnimation);
 	}
 
 	public List<JiraFilterEntryBean> serializeQuery() {
