@@ -34,11 +34,19 @@ public final class InfoServer {
 	private InfoServer() {
 	}
 
-	public static VersionInfo getLatestPluginVersion(String serviceUrl,
-													 long uid,
+	public static VersionInfo getLatestPluginVersion(long uid,
 													 boolean checkUnstableVersions)
 			throws VersionServiceException, IncorrectVersionException {
 
+		String serviceUrl = PluginUtil.STABLE_VERSION_INFO_URL;
+		if (checkUnstableVersions) {
+			serviceUrl = PluginUtil.LATEST_VERSION_INFO_URL;
+		}
+		return getLatestPluginVersion(serviceUrl, uid, checkUnstableVersions);
+	}
+
+	protected static VersionInfo getLatestPluginVersion(String serviceUrl, long uid, boolean checkUnstableVersions) 
+			throws VersionServiceException, IncorrectVersionException {
 		try {
 			HttpClient client = new HttpClient();
 			GetMethod method = new GetMethod(serviceUrl + "?uid=" + uid);
@@ -51,10 +59,7 @@ public final class InfoServer {
 			SAXBuilder builder = new SAXBuilder();
 			builder.setValidation(false);
 			Document doc = builder.build(is);
-			if (checkUnstableVersions) {
-				return new VersionInfo(doc, VersionInfo.Type.UNSTABLE);
-			}
-			return new VersionInfo(doc, VersionInfo.Type.STABLE);
+			return new VersionInfo(doc);
 		} catch (IOException e) {
 			throw new VersionServiceException("Connection error while retriving the latest plugin version", e);
 		} catch (JDOMException e) {
@@ -78,22 +83,13 @@ public final class InfoServer {
 
 		/**
 		 * Only for internal use (package scope)
-		 * @param doc doc
-		 * @param type type
+		 * @param doc
+		 * @throws VersionServiceException
+		 * @throws IncorrectVersionException
 		 */
-		VersionInfo(Document doc, VersionInfo.Type type) throws VersionServiceException, IncorrectVersionException {
-			switch (type) {
-				case STABLE:
-					version = new Version(getValue("/response/versions/stable/latestVersion", doc));
-					downloadUrl = getValue("/response/versions/stable/downloadUrl", doc);
-					break;
-				case UNSTABLE:
-					version = new Version(getValue("/response/versions/version/latestVersion", doc));
-					downloadUrl = getValue("/response/versions/version/downloadUrl", doc);
-					break;
-				default:
-					throw new VersionServiceException("neither stable nor unstable");
-			}
+		VersionInfo(Document doc) throws VersionServiceException, IncorrectVersionException {
+			version = new Version(getValue("/response/version/number", doc));
+			downloadUrl = getValue("/response/version/downloadUrl", doc);
 		}
 
 		/**
@@ -113,10 +109,10 @@ public final class InfoServer {
 				xpath = XPath.newInstance(path);
 				element = (Element) xpath.selectSingleNode(doc);
 				if (element == null) {
-					throw new VersionServiceException("Error while parsing " + PluginUtil.VERSION_INFO_URL);
+					throw new VersionServiceException("Error while parsing metadata file");
 				}
 			} catch (JDOMException e) {
-				throw new VersionServiceException("Error while parsing " + PluginUtil.VERSION_INFO_URL, e);
+				throw new VersionServiceException("Error while parsing metadata file", e);
 			}
 			return element.getValue();
 		}
