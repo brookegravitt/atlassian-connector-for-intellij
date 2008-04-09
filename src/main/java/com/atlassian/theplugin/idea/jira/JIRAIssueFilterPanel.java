@@ -26,11 +26,9 @@ import com.atlassian.theplugin.jira.api.JIRAProjectBean;
 import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.jira.api.JIRAReporterBean;
 import com.intellij.openapi.util.IconLoader;
-import com.intellij.uiDesigner.core.GridConstraints;
-import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -79,9 +77,10 @@ public class JIRAIssueFilterPanel extends JPanel {
 
 	private JIRAServer jiraServer;
 
-	public JIRAIssueFilterPanel() {
+	public JIRAIssueFilterPanel(ProgressAnimationProvider progressAnimation) {
 		$$$setupUI$$$();
 
+		this.progressAnimation = progressAnimation;
 		this.projectList.setCellRenderer(new JIRAQueryFragmentListRenderer());
 		this.issueTypeList.setCellRenderer(new JIRAConstantListRenderer());
 		this.statusList.setCellRenderer(new JIRAConstantListRenderer());
@@ -470,8 +469,8 @@ public class JIRAIssueFilterPanel extends JPanel {
 		final Spacer spacer1 = new Spacer();
 		rootPanel.add(spacer1, cc.xy(1, 11, CellConstraints.DEFAULT, CellConstraints.FILL));
 		fixForLabel.setLabelFor(fixForScrollPane);
-		componentsLabel.setLabelFor(componentsScrollPane);
 		componentsLabel.setNextFocusableComponent(componentsScrollPane);
+		componentsLabel.setLabelFor(componentsScrollPane);
 		affectsVersionsLabel.setLabelFor(affectVersionScrollPane);
 		reporterLabel.setLabelFor(reporterComboBox);
 		assigneeLabel.setLabelFor(assigneeComboBox);
