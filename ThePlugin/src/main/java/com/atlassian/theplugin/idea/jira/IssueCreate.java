@@ -32,6 +32,7 @@ import com.atlassian.theplugin.jira.api.*;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
@@ -104,7 +105,16 @@ public class IssueCreate extends DialogWrapper {
 	protected void doOKAction() {
 		JIRAIssueBean issueProxy = new JIRAIssueBean();
 		issueProxy.setSummary(summary.getText());
+
+		if (((JIRAProject) projectComboBox.getSelectedItem()).getId() == JIRAServer.ANY_ID) {
+			Messages.showErrorDialog(this.getContentPane(), "Project has to be selected", "Project not defined");
+			return;
+		}		
 		issueProxy.setProjectKey(((JIRAProject) projectComboBox.getSelectedItem()).getKey());
+		if (((JIRAConstant) typeComboBox.getSelectedItem()).getId() == JIRAServer.ANY_ID) {
+			Messages.showErrorDialog(this.getContentPane(), "Issue type has to be selected", "Issue type not defined");
+			return;
+		}
 		issueProxy.setType(((JIRAConstant) typeComboBox.getSelectedItem()));
 		issueProxy.setDescription(description.getText());
 		issueProxy.setPriority(((JIRAConstant) priorityComboBox.getSelectedItem()));
