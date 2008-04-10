@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,12 +19,14 @@ package com.atlassian.theplugin.jira;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.jira.api.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class JIRAServer {
 	public static final int LIST_SPECIAL_VALUES_COUNT = 1;
 	public static final int VERSION_SPECIAL_VALUES_COUNT = 4;
-	public static final int COMPONENTS_SPECIAL_VALUES_COUNT = 2;	
+	public static final int COMPONENTS_SPECIAL_VALUES_COUNT = 2;
 	public static final int ANY_ID = -1000;
 	private static final int NO_VERSION_ID = -1;
 	private static final int RELEASED_VERSION_ID = -3;
@@ -40,8 +42,9 @@ public class JIRAServer {
 	private List statuses;
 	private List issueTypes;
 	private List savedFilters;
+	private List<JIRAVersionBean> serverVersions;
 	private List<JIRAVersionBean> versions;
-	private List<JIRAFixForVersionBean> fixForVersions;	
+	private List<JIRAFixForVersionBean> fixForVersions;
 	private List components;
 	private List priorieties;
 	private List resolutions;
@@ -183,7 +186,7 @@ public class JIRAServer {
 				List<JIRAQueryFragment> retrieved = jiraServerFacade.getResolutions(server);
 				resolutions = new ArrayList<JIRAResolutionBean>(retrieved.size() + 1);
 				resolutions.add(new JIRAResolutionBean(ANY_ID, "Any"));
-				resolutions.add(new JIRAResolutionBean(UNRESOLVED_ID, "Unresolved"));				
+				resolutions.add(new JIRAResolutionBean(UNRESOLVED_ID, "Unresolved"));
 				resolutions.addAll(retrieved);
 				validServer = true;
 			} catch (JIRAException e) {
@@ -196,36 +199,53 @@ public class JIRAServer {
 		return resolutions;
 	}
 
-	public List<JIRAVersionBean> getVersions() {
+	private List<JIRAVersionBean> getAllVersions() {
 		validServer = false;
-		if (versions == null) {
+		if (serverVersions == null) {
 			errorMessage = null;
 			try {
 				if (currentProject != null) {
-					List<JIRAQueryFragment> retrieved = jiraServerFacade.getVersions(server, currentProject.getKey());
-					versions = new ArrayList<JIRAVersionBean>(retrieved.size() + VERSION_SPECIAL_VALUES_COUNT);
-					versions.add(new JIRAVersionBean(ANY_ID, "Any"));
-					versions.add(new JIRAVersionBean(NO_VERSION_ID, "No version"));
-					versions.add(new JIRAVersionBean(RELEASED_VERSION_ID, "Released versions"));
-					for (JIRAQueryFragment jiraQueryFragment : retrieved) {
-						if (((JIRAVersionBean) jiraQueryFragment).isReleased()) {
-							versions.add((JIRAVersionBean) jiraQueryFragment);
-						}
-					}
-					versions.add(new JIRAVersionBean(UNRELEASED_VERSION_ID, "Unreleased versions"));
-					for (JIRAQueryFragment jiraQueryFragment : retrieved) {
-						if (!((JIRAVersionBean) jiraQueryFragment).isReleased()) {
-							versions.add((JIRAVersionBean) jiraQueryFragment);
-						}
-					}
+					serverVersions = jiraServerFacade.getVersions(server, currentProject.getKey());
 					lastProject = currentProject;
 				} else {
-					versions = Collections.EMPTY_LIST;
+					serverVersions = Collections.EMPTY_LIST;
 				}
 				validServer = true;
 			} catch (JIRAException e) {
 				errorMessage = e.getMessage();
 			}
+		} else {
+			validServer = true;
+		}
+		return serverVersions;
+	}
+
+	public List<JIRAVersionBean> getVersions() {
+		validServer = false;
+		if (versions == null) {
+			errorMessage = null;
+			if (currentProject != null) {
+				List<JIRAVersionBean> retrieved = getAllVersions();
+				versions = new ArrayList<JIRAVersionBean>(retrieved.size() + VERSION_SPECIAL_VALUES_COUNT);
+				versions.add(new JIRAVersionBean(ANY_ID, "Any"));
+				versions.add(new JIRAVersionBean(NO_VERSION_ID, "No version"));
+				versions.add(new JIRAVersionBean(RELEASED_VERSION_ID, "Released versions"));
+				for (JIRAQueryFragment jiraQueryFragment : retrieved) {
+					if (((JIRAVersionBean) jiraQueryFragment).isReleased()) {
+						versions.add((JIRAVersionBean) jiraQueryFragment);
+					}
+				}
+				versions.add(new JIRAVersionBean(UNRELEASED_VERSION_ID, "Unreleased versions"));
+				for (JIRAQueryFragment jiraQueryFragment : retrieved) {
+					if (!((JIRAVersionBean) jiraQueryFragment).isReleased()) {
+						versions.add((JIRAVersionBean) jiraQueryFragment);
+					}
+				}
+				lastProject = currentProject;
+			} else {
+				versions = Collections.EMPTY_LIST;
+			}
+			validServer = true;
 		} else {
 			validServer = true;
 		}
@@ -237,36 +257,31 @@ public class JIRAServer {
 		validServer = false;
 		if (fixForVersions == null) {
 			errorMessage = null;
-			try {
-				if (currentProject != null) {
-					List<JIRAQueryFragment> retrieved = jiraServerFacade.getVersions(server, currentProject.getKey());
-					fixForVersions = new ArrayList<JIRAFixForVersionBean>(retrieved.size() + VERSION_SPECIAL_VALUES_COUNT);
-					fixForVersions.add(new JIRAFixForVersionBean(ANY_ID, "Any"));
-					fixForVersions.add(new JIRAFixForVersionBean(NO_VERSION_ID, "No version"));
-					fixForVersions.add(new JIRAFixForVersionBean(RELEASED_VERSION_ID, "Released versions"));
-					for (JIRAQueryFragment jiraQueryFragment : retrieved) {
-						if (((JIRAVersionBean) jiraQueryFragment).isReleased()) {
-							fixForVersions.add(new JIRAFixForVersionBean((JIRAVersionBean) jiraQueryFragment));
-						}
+			if (currentProject != null) {
+				List<JIRAVersionBean> retrieved = getAllVersions();
+				fixForVersions = new ArrayList<JIRAFixForVersionBean>(retrieved.size() + VERSION_SPECIAL_VALUES_COUNT);
+				fixForVersions.add(new JIRAFixForVersionBean(ANY_ID, "Any"));
+				fixForVersions.add(new JIRAFixForVersionBean(NO_VERSION_ID, "No version"));
+				fixForVersions.add(new JIRAFixForVersionBean(RELEASED_VERSION_ID, "Released versions"));
+				for (JIRAVersionBean jiraQueryFragment : retrieved) {
+					if (jiraQueryFragment.isReleased()) {
+						fixForVersions.add(new JIRAFixForVersionBean(jiraQueryFragment));
 					}
-					fixForVersions.add(new JIRAFixForVersionBean(UNRELEASED_VERSION_ID, "Unreleased versions"));
-					for (JIRAQueryFragment jiraQueryFragment : retrieved) {
-						if (!((JIRAVersionBean) jiraQueryFragment).isReleased()) {
-							fixForVersions.add(new JIRAFixForVersionBean((JIRAVersionBean) jiraQueryFragment));
-						}
-					}
-					lastProject = currentProject;
-				} else {
-					fixForVersions = Collections.EMPTY_LIST;
 				}
-				validServer = true;
-			} catch (JIRAException e) {
-				errorMessage = e.getMessage();
+				fixForVersions.add(new JIRAFixForVersionBean(UNRELEASED_VERSION_ID, "Unreleased versions"));
+				for (JIRAVersionBean jiraQueryFragment : retrieved) {
+					if (!jiraQueryFragment.isReleased()) {
+						fixForVersions.add(new JIRAFixForVersionBean(jiraQueryFragment));
+					}
+				}
+				lastProject = currentProject;
+			} else {
+				fixForVersions = Collections.EMPTY_LIST;
 			}
+			validServer = true;
 		} else {
 			validServer = true;
 		}
-
 		return fixForVersions;
 	}
 
