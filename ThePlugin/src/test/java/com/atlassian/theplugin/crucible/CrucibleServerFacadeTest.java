@@ -112,6 +112,8 @@ public class CrucibleServerFacadeTest extends TestCase {
 			throw new RuntimeException(e);
 		}
 
+		crucibleSessionMock.isLoggedIn();
+		EasyMock.expectLastCall().andReturn(false);
 		try {
 			crucibleSessionMock.login(VALID_LOGIN, VALID_PASSWORD);
 		} catch (RemoteApiLoginException e) {
@@ -134,6 +136,8 @@ public class CrucibleServerFacadeTest extends TestCase {
 		crucibleSessionMock.getReviewers(permId);
 		EasyMock.expectLastCall().andReturn(Arrays.asList("Alice", "Bob", "Charlie"));
 
+		crucibleSessionMock.isLoggedIn();
+		EasyMock.expectLastCall().andReturn(false);		
 		try {
 			crucibleSessionMock.login(validLogin2, validPassword2);
 		} catch (RemoteApiLoginException e) {
@@ -190,6 +194,8 @@ public class CrucibleServerFacadeTest extends TestCase {
 	}
 
 	public void testCreateReview() throws Exception {
+		crucibleSessionMock.isLoggedIn();
+		EasyMock.expectLastCall().andReturn(false);
 		try {
 			crucibleSessionMock.login(VALID_LOGIN, VALID_PASSWORD);
 		} catch (RemoteApiLoginException e) {
@@ -216,7 +222,8 @@ public class CrucibleServerFacadeTest extends TestCase {
 	}
 
 	public void testCreateReviewWithInvalidProjectKey() throws Exception {
-
+		crucibleSessionMock.isLoggedIn();
+		EasyMock.expectLastCall().andReturn(false);
 		try {
 			crucibleSessionMock.login(VALID_LOGIN, VALID_PASSWORD);
 		} catch (RemoteApiLoginException e) {
@@ -245,7 +252,8 @@ public class CrucibleServerFacadeTest extends TestCase {
 	}
 
 	public void testCreateReviewFromPatch() throws ServerPasswordNotProvidedException, RemoteApiException {
-
+		crucibleSessionMock.isLoggedIn();
+		EasyMock.expectLastCall().andReturn(false);
 		try {
 			crucibleSessionMock.login(VALID_LOGIN, VALID_PASSWORD);
 		} catch (RemoteApiLoginException e) {
@@ -271,7 +279,8 @@ public class CrucibleServerFacadeTest extends TestCase {
 	}
 
 	public void testCreateReviewFromPatchWithInvalidProjectKey() throws Exception {
-
+		crucibleSessionMock.isLoggedIn();
+		EasyMock.expectLastCall().andReturn(false);
 		try {
 			crucibleSessionMock.login(VALID_LOGIN, VALID_PASSWORD);
 		} catch (RemoteApiLoginException e) {
@@ -299,7 +308,8 @@ public class CrucibleServerFacadeTest extends TestCase {
 	}
 
 	public void testGetAllReviews() throws ServerPasswordNotProvidedException, RemoteApiException {
-
+		crucibleSessionMock.isLoggedIn();
+		EasyMock.expectLastCall().andReturn(false);
 		try {
 			crucibleSessionMock.login(VALID_LOGIN, VALID_PASSWORD);
 		} catch (RemoteApiLoginException e) {
@@ -347,7 +357,8 @@ public class CrucibleServerFacadeTest extends TestCase {
 	}
 
 	public void testGetActiveReviewsForUser() throws ServerPasswordNotProvidedException, RemoteApiException {
-
+		crucibleSessionMock.isLoggedIn();
+		EasyMock.expectLastCall().andReturn(false);
 		try {
 			crucibleSessionMock.login(VALID_LOGIN, VALID_PASSWORD);
 		} catch (RemoteApiLoginException e) {
@@ -385,6 +396,8 @@ public class CrucibleServerFacadeTest extends TestCase {
 	}
 
 	public void testGetProjects() throws ServerPasswordNotProvidedException, RemoteApiException {
+		crucibleSessionMock.isLoggedIn();
+		EasyMock.expectLastCall().andReturn(false);
 		try {
 			crucibleSessionMock.login(VALID_LOGIN, VALID_PASSWORD);
 		} catch (RemoteApiLoginException e) {
@@ -408,6 +421,8 @@ public class CrucibleServerFacadeTest extends TestCase {
 	}
 
 	public void testGetRepositories() throws ServerPasswordNotProvidedException, RemoteApiException {
+		crucibleSessionMock.isLoggedIn();
+		EasyMock.expectLastCall().andReturn(false);
 		try {
 			crucibleSessionMock.login(VALID_LOGIN, VALID_PASSWORD);
 		} catch (RemoteApiLoginException e) {
