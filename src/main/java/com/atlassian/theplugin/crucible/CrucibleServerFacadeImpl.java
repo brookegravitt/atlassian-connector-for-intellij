@@ -25,10 +25,7 @@ import com.atlassian.theplugin.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.remoteapi.RemoteApiLoginFailedException;
 import com.atlassian.theplugin.util.PluginUtil;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	private Map<String, CrucibleSession> sessions = new HashMap<String, CrucibleSession>();
@@ -146,6 +143,20 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 
 		try {
 			session = getSession(server);
+			List<State> states = new ArrayList<State>();
+			states.add(State.REVIEW);
+
+			List<ReviewData> reviews = session.getReviewsInStates(states);
+			List<ReviewDataInfo> result = new ArrayList<ReviewDataInfo>(reviews.size());
+
+			for (ReviewData reviewData : reviews) {
+				List<String> reviewers = session.getReviewers(reviewData.getPermaId());
+
+				if (reviewers.contains(server.getUserName())) {
+					result.add(new ReviewDataInfoImpl(reviewData, reviewers, server));
+				}
+			}
+			return result;
 		} catch (RemoteApiLoginFailedException e) {
 			if (server.getIsConfigInitialized()) {
 				PluginUtil.getLogger().error("Crucible login exception: " + e.getMessage());
@@ -155,21 +166,7 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 		} catch (RemoteApiException e) {
 			PluginUtil.getLogger().error("Crucible exception: " + e.getMessage());
 		}
-
-		List<State> states = new ArrayList<State>();
-		states.add(State.REVIEW);
-
-		List<ReviewData> reviews = session.getReviewsInStates(states);
-		List<ReviewDataInfo> result = new ArrayList<ReviewDataInfo>(reviews.size());
-
-		for (ReviewData reviewData : reviews) {
-			List<String> reviewers = session.getReviewers(reviewData.getPermaId());
-
-			if (reviewers.contains(server.getUserName())) {
-				result.add(new ReviewDataInfoImpl(reviewData, reviewers, server));
-			}
-		}
-		return result;
+		return Collections.EMPTY_LIST;
 	}
 
 }

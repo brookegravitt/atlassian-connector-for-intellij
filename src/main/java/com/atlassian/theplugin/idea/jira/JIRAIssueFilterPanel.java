@@ -174,7 +174,6 @@ public class JIRAIssueFilterPanel extends JPanel {
 		} else {
 			new Thread(new Runnable() {
 				public void run() {
-					System.out.println("READING!");
 					progressAnimation.startProgressAnimation();
 					issueTypeList.setListData(jiraServer.getIssueTypes().toArray());
 					progressAnimation.stopProgressAnimation();
