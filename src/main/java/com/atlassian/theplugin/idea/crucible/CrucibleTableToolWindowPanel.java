@@ -52,6 +52,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 	private static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
 	private static final DateFormat TIME_DF = new SimpleDateFormat("hh:mm a");
 	private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
+	private static final String WAITING_INFO_TEXT = "Waiting for Crucible review info.";
 
 	public ProgressAnimationProvider getProgressAnimation() {
 		return progressAnimation;
@@ -72,7 +73,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
 		editorPane = new ToolWindowCrucibleContent();
 		editorPane.setEditorKit(new ClasspathHTMLEditorKit());
-		JScrollPane pane = setupPane(editorPane, wrapBody("Waiting for Crucible review info."));
+		JScrollPane pane = setupPane(editorPane, wrapBody(WAITING_INFO_TEXT));
 		editorPane.setMinimumSize(ED_PANE_MINE_SIZE);
 		add(pane, BorderLayout.SOUTH);
 
@@ -201,6 +202,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 	}
 
 	public void resetState() {
-		//To change body of implemented methods use File | Settings | File Templates.
+
+		updateReviews(new ArrayList<ReviewDataInfo>());
 	}
 }

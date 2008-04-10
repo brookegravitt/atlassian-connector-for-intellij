@@ -18,6 +18,7 @@ package com.atlassian.theplugin.crucible;
 
 import com.atlassian.theplugin.StatusListener;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -75,6 +76,6 @@ public class HtmlCrucibleStatusListener implements StatusListener {
 	}
 
 	public void resetState() {
-		//To change body of implemented methods use File | Settings | File Templates.
+		updateReviews(new ArrayList<ReviewDataInfo>());
 	}
 }
