@@ -66,7 +66,7 @@ public class PasswordDialog extends JDialog implements LoginDataProvided {
 					serverFacade.testServerConnection(
 							super.getUrl(), super.getUserName(), super.getPassword());
 				} catch (RemoteApiException e) {
-					throw new ThePluginException("Error conecting bamboo server.", e);
+					throw new ThePluginException("Error connecting server.", e);
 				}
 			}
 
