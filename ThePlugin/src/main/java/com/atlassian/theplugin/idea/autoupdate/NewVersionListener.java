@@ -122,7 +122,7 @@ public class NewVersionListener implements ActionListener {
 					} else {
 						EventQueue.invokeLater(new Runnable() {
 							public void run() {
-								showMessageDialog("You have the latest version (\"" + PluginUtil.getVersion() + "\")",
+								showMessageDialog("You have the latest version (" + PluginUtil.getVersion() + ")",
 										"Version checked", Messages.getInformationIcon());
 							}
 						});
