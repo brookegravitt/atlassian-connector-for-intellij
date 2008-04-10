@@ -53,6 +53,7 @@ public class IssueCreate extends DialogWrapper {
 	private JComboBox projectComboBox;
 	private JComboBox typeComboBox;
 	private JTextField summary;
+	private JComboBox priorityComboBox;
 	private final JIRAServer jiraServer;
 	private final JIRAServerFacade jiraServerFacade;
 
@@ -77,12 +78,24 @@ public class IssueCreate extends DialogWrapper {
 			}
 		});
 
+		priorityComboBox.setRenderer(new ColoredListCellRenderer() {
+			protected void customizeCellRenderer(JList list, Object value, int index, boolean selected, boolean hasFocus) {
+				JIRAConstant priority = (JIRAConstant) value;
+				append(priority.getName(), SimpleTextAttributes.SIMPLE_CELL_ATTRIBUTES);
+				setIcon(CachedIconLoader.getIcon(priority.getIconUrl()));
+			}
+		});
+
 		for (JIRAProject project : jiraServer.getProjects()) {
 			projectComboBox.addItem(project);
 		}
 
 		for (JIRAConstant constant : jiraServer.getIssueTypes()) {
 			typeComboBox.addItem(constant);
+		}
+
+		for (JIRAConstant constant : jiraServer.getPriorieties()) {
+			priorityComboBox.addItem(constant);
 		}
 
 		getOKAction().putValue(Action.NAME, "Create");
@@ -94,6 +107,7 @@ public class IssueCreate extends DialogWrapper {
 		issueProxy.setProjectKey(((JIRAProject) projectComboBox.getSelectedItem()).getKey());
 		issueProxy.setType(((JIRAConstant) typeComboBox.getSelectedItem()));
 		issueProxy.setDescription(description.getText());
+		issueProxy.setPriority(((JIRAConstant) priorityComboBox.getSelectedItem()));
 		JEditorPane content = new JEditorPane();
 
 		JIRAIssue newIssue = null;
@@ -158,10 +172,10 @@ public class IssueCreate extends DialogWrapper {
 	 */
 	private void $$$setupUI$$$() {
 		mainPanel = new JPanel();
-		mainPanel.setLayout(new GridLayoutManager(4, 4, new Insets(5, 5, 5, 5), -1, -1));
+		mainPanel.setLayout(new GridLayoutManager(4, 6, new Insets(5, 5, 5, 5), -1, -1));
 		mainPanel.setMinimumSize(new Dimension(400, 100));
 		final JScrollPane scrollPane1 = new JScrollPane();
-		mainPanel.add(scrollPane1, new GridConstraints(3, 0, 1, 4, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+		mainPanel.add(scrollPane1, new GridConstraints(3, 0, 1, 6, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 		description = new JTextArea();
 		description.setLineWrap(true);
 		description.setMinimumSize(new Dimension(439, 120));
@@ -177,7 +191,7 @@ public class IssueCreate extends DialogWrapper {
 		projectComboBox = new JComboBox();
 		mainPanel.add(projectComboBox, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		summary = new JTextField();
-		mainPanel.add(summary, new GridConstraints(1, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+		mainPanel.add(summary, new GridConstraints(1, 1, 1, 5, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
 		final JLabel label3 = new JLabel();
 		label3.setText("Type:");
 		mainPanel.add(label3, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -186,6 +200,11 @@ public class IssueCreate extends DialogWrapper {
 		final JLabel label4 = new JLabel();
 		label4.setText("Description:");
 		mainPanel.add(label4, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		final JLabel label5 = new JLabel();
+		label5.setText("Priority:");
+		mainPanel.add(label5, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		priorityComboBox = new JComboBox();
+		mainPanel.add(priorityComboBox, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		label1.setLabelFor(summary);
 		label2.setLabelFor(projectComboBox);
 		label3.setLabelFor(typeComboBox);

@@ -312,6 +312,7 @@ public class JIRAXmlRpcClient {
 			issueMap.put("project", issue.getProjectKey());
 			issueMap.put("type", String.valueOf(issue.getTypeConstant().getId()));
 			issueMap.put("summary", issue.getSummary());
+			issueMap.put("priority", String.valueOf(issue.getPriorityConstant().getId()));
 
 			if (issue.getDescription() != null) {
 				issueMap.put("description", issue.getDescription());
