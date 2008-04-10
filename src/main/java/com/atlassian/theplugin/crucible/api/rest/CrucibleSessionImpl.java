@@ -37,7 +37,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Communication stub for Bamboo REST API.
+ * Communication stub for Crucible REST API.
  */
 public class CrucibleSessionImpl extends AbstractHttpSession implements CrucibleSession  {
 	private static final String AUTH_SERVICE = "/rest-service/auth-v1";
@@ -51,9 +51,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 	private String authToken = null;
 
 	/**
-	 * Public constructor for BambooSessionImpl.
+	 * Public constructor for CrucibleSessionImpl.
 	 *
-	 * @param baseUrl base URL for Bamboo instance
+	 * @param baseUrl base URL for Crucible instance
 	 */
 	public CrucibleSessionImpl(String baseUrl) throws RemoteApiMalformedUrlException {
 		super(baseUrl);
