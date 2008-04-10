@@ -22,6 +22,7 @@
  */
 package com.atlassian.theplugin.jira.api;
 
+import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.util.UrlUtil;
 import org.apache.xmlrpc.XmlRpcClient;
@@ -312,7 +313,9 @@ public class JIRAXmlRpcClient {
 			issueMap.put("project", issue.getProjectKey());
 			issueMap.put("type", String.valueOf(issue.getTypeConstant().getId()));
 			issueMap.put("summary", issue.getSummary());
-			issueMap.put("priority", String.valueOf(issue.getPriorityConstant().getId()));
+			if (issue.getPriorityConstant().getId() != JIRAServer.ANY_ID) {
+				issueMap.put("priority", String.valueOf(issue.getPriorityConstant().getId()));
+			}
 
 			if (issue.getDescription() != null) {
 				issueMap.put("description", issue.getDescription());
