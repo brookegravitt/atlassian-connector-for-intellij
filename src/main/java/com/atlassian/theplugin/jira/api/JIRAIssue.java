@@ -47,6 +47,8 @@ public interface JIRAIssue {
 
 	JIRAConstant getStatusConstant();
 
+	JIRAConstant getPriorityConstant();	
+
 	String getAssignee();
 
     void setAssignee(String assignee);
