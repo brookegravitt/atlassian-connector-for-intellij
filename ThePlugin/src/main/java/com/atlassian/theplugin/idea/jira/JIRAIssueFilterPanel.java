@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -106,7 +106,9 @@ public class JIRAIssueFilterPanel extends JPanel {
 						refreshProjectDependentLists();
 						break;
 					default:
+						jiraServer.setCurrentProject(null);
 						clearProjectDependentLists();
+						refreshGlobalIssueTypeList();
 						break;
 				}
 			}
@@ -164,6 +166,21 @@ public class JIRAIssueFilterPanel extends JPanel {
 		this.affectsVersionsList.setListData(new Object[0]);
 
 		enableProjectDependentLists(false);
+	}
+
+	private void refreshGlobalIssueTypeList() {
+		if (initialFilterSet) {
+			issueTypeList.setListData(jiraServer.getIssueTypes().toArray());
+		} else {
+			new Thread(new Runnable() {
+				public void run() {
+					System.out.println("READING!");
+					progressAnimation.startProgressAnimation();
+					issueTypeList.setListData(jiraServer.getIssueTypes().toArray());
+					progressAnimation.stopProgressAnimation();
+				}
+			}, "JIRA filter project values retrieve").start();
+		}
 
 	}
 
@@ -470,8 +487,8 @@ public class JIRAIssueFilterPanel extends JPanel {
 		final Spacer spacer1 = new Spacer();
 		rootPanel.add(spacer1, cc.xy(1, 11, CellConstraints.DEFAULT, CellConstraints.FILL));
 		fixForLabel.setLabelFor(fixForScrollPane);
-		componentsLabel.setNextFocusableComponent(componentsScrollPane);
 		componentsLabel.setLabelFor(componentsScrollPane);
+		componentsLabel.setNextFocusableComponent(componentsScrollPane);
 		affectsVersionsLabel.setLabelFor(affectVersionScrollPane);
 		reporterLabel.setLabelFor(reporterComboBox);
 		assigneeLabel.setLabelFor(assigneeComboBox);
