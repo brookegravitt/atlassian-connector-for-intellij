@@ -27,10 +27,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 public class JIRAServerFacadeImpl implements JIRAServerFacade {
-    private static final int MAX_ISSUES_DEFAULT = 50;
-
 	private Map<String, JIRARssClient> sessions = new WeakHashMap<String, JIRARssClient>();
-
 
 	private synchronized JIRARssClient getSession(Server server) throws RemoteApiException {
 		// @todo old server will stay on map - remove them !!!
@@ -42,7 +39,6 @@ public class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 		return session;
 	}
-
 
 	public void testServerConnection(String url, String userName, String password) throws RemoteApiException {
 

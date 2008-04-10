@@ -34,9 +34,10 @@ public class JIRAIssueBean implements JIRAIssue {
     private String projectKey;
 	private JIRAConstant statusConstant;
 	private JIRAConstant typeConstant;
+	private JIRAConstant priorityConstant;
 	private String assignee;
 
-    public JIRAIssueBean() {
+	public JIRAIssueBean() {
     }
 
     public JIRAIssueBean(String serverUrl, Element e) {
@@ -53,9 +54,14 @@ public class JIRAIssueBean implements JIRAIssue {
         this.typeUrl = getAttributeSafely(e, "type", "iconUrl");
     }
 
-	public void setPriority(String priority) {
-		this.priority = priority;
+	public JIRAConstant getPriorityConstant() {
+		return priorityConstant;
 	}
+
+	public void setPriority(JIRAConstant priority) {
+        this.priority = priority.getName();
+        this.priorityConstant = priority;
+    }
 
 	public JIRAIssueBean(String serverUrl, Map params) {
         this.serverUrl = serverUrl;
