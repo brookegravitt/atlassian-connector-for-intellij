@@ -393,7 +393,6 @@ public class JIRAToolWindowPanel extends JPanel {
 				updateIssues(jiraServer);
 				filterToolbarSetVisible(true);
 			}
-
 			progressAnimation.stopProgressAnimation();
 		}
 	}
