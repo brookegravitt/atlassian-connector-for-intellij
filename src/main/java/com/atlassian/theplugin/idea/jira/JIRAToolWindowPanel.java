@@ -460,10 +460,16 @@ public class JIRAToolWindowPanel extends JPanel {
 		}
 	}
 
+	private void disablePagesButton() {
+		prevPageAvailable = false;
+		nextPageAvailable = false;
+	}
+
 	private void updateIssues(final JIRAServer jiraServer) {
 		table.setEnabled(false);
 		table.setForeground(UIUtil.getInactiveTextColor());
 		clearIssues();
+		disablePagesButton();
 		new Thread(new IssueRefreshTask(jiraServer), "atlassian-idea-plugin jira tab update issues").start();
 	}
 
