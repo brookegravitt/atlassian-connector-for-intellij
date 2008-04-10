@@ -300,11 +300,10 @@ public class JIRAToolWindowPanel extends JPanel {
 	}
 
 	public void clearIssues() {
-		startIndex = 0;
 		listTableModel.setItems(new ArrayList<JiraIssueAdapter>());
 		listTableModel.fireTableDataChanged();
 		table.setEnabled(false);
-		//editorPane.setText(wrapBody("No issues for server."));
+		editorPane.setText(wrapBody("No issues for selected criteria."));
 	}
 
 	public void setIssues(List<JIRAIssue> issues) {
@@ -318,7 +317,10 @@ public class JIRAToolWindowPanel extends JPanel {
 		listTableModel.fireTableDataChanged();
 		table.setEnabled(true);
 		table.setForeground(UIUtil.getActiveTextColor());
+
+		checkPrevPageAvaialble();
 		checkNextPageAvailable(issues);
+
 		editorPane.setText(wrapBody("Loaded <b>" + issues.size() + "</b> issues starting at <b>" + (startIndex + 1) + "</b>."));
 	}
 
@@ -330,7 +332,7 @@ public class JIRAToolWindowPanel extends JPanel {
 	public void selectServer(Server server) {
 		if (server != null) {
 			projectConfiguration.getJiraConfiguration().setSelectedServerId(server.getUid());
-
+			hideJIRAIssuesFilter();
 			final JIRAServer jiraServer = new JIRAServer(server, jiraServerFacade);
 			IdeaHelper.setCurrentJIRAServer(jiraServer);
 
@@ -350,9 +352,9 @@ public class JIRAToolWindowPanel extends JPanel {
 		}
 
 		public void run() {
-			hideJIRAIssuesFilter();
 			progressAnimation.startProgressAnimation();
 			filterToolbarSetVisible(false);
+			startIndex = 0;
 			clearIssues();
 			setStatusMessage("Retrieving statuses...");
 			List statuses = jiraServer.getStatuses(); // ensure statuses are cached
@@ -461,12 +463,7 @@ public class JIRAToolWindowPanel extends JPanel {
 	private void updateIssues(final JIRAServer jiraServer) {
 		table.setEnabled(false);
 		table.setForeground(UIUtil.getInactiveTextColor());
-
-		final Server server = jiraServer.getServer();
-		editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">Retrieving your issues from <b>"
-				+ server.getName() + "</b>...</td></tr></table>"));
-		editorPane.setCaretPosition(0);
-
+		clearIssues();
 		new Thread(new IssueRefreshTask(jiraServer), "atlassian-idea-plugin jira tab update issues").start();
 	}
 
@@ -478,7 +475,6 @@ public class JIRAToolWindowPanel extends JPanel {
 		}
 
 		public void run() {
-			clearIssues();
 			progressAnimation.startProgressAnimation();
 			JIRAServerFacade serverFacade = jiraServerFacade;
 			try {
@@ -488,6 +484,9 @@ public class JIRAToolWindowPanel extends JPanel {
 				if (filters.getSavedFilterUsed()) {
 					if (savedQuery != null) {
 						query.add(savedQuery);
+						editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">Retrieving issues from <b>"
+								+ jiraServer.getServer().getName() + "</b>...</td></tr></table>"));
+						editorPane.setCaretPosition(0);
 						result = serverFacade.getSavedFilterIssues(jiraServer.getServer(),
 								query, sortColumn, sortOrder, startIndex, maxIndex);
 						setIssues(result);
@@ -498,6 +497,9 @@ public class JIRAToolWindowPanel extends JPanel {
 							query.add(jiraQueryFragment);
 						}
 					}
+					editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">Retrieving issues from <b>"
+							+ jiraServer.getServer().getName() + "</b>...</td></tr></table>"));
+					editorPane.setCaretPosition(0);
 					result = serverFacade.getIssues(jiraServer.getServer(),
 							query, sortColumn, sortOrder, startIndex, maxIndex);
 					setIssues(result);
