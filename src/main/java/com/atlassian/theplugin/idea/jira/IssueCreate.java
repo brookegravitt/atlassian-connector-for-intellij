@@ -43,8 +43,11 @@ import thirdparty.javaworld.ClasspathHTMLEditorKit;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 public class IssueCreate extends DialogWrapper {
 	private static final Logger LOGGER = Logger.getInstance("IssueCreate");
@@ -78,6 +81,7 @@ public class IssueCreate extends DialogWrapper {
 				setIcon(CachedIconLoader.getIcon(type.getIconUrl()));
 			}
 		});
+		typeComboBox.setEnabled(false);
 
 		priorityComboBox.setRenderer(new ColoredListCellRenderer() {
 			protected void customizeCellRenderer(JList list, Object value, int index, boolean selected, boolean hasFocus) {
@@ -88,19 +92,64 @@ public class IssueCreate extends DialogWrapper {
 		});
 
 		for (JIRAProject project : jiraServer.getProjects()) {
-			projectComboBox.addItem(project);
-		}
-
-		for (JIRAConstant constant : jiraServer.getIssueTypes()) {
-			typeComboBox.addItem(constant);
+			if (project.getId() != JIRAServer.ANY_ID) {
+				projectComboBox.addItem(project);
+			}
 		}
 
 		for (JIRAConstant constant : jiraServer.getPriorieties()) {
-			priorityComboBox.addItem(constant);
+			if (constant.getId() != JIRAServer.ANY_ID) {
+				priorityComboBox.addItem(constant);
+			}
+		}
+		if (priorityComboBox.getModel().getSize() > 0) {
+			priorityComboBox.setSelectedIndex(priorityComboBox.getModel().getSize() / 2);
+		}
+
+		projectComboBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				JIRAProject p = (JIRAProject) projectComboBox.getSelectedItem();
+				updateIssueTypes(p);
+			}
+		});
+		if (jiraServer.getCurrentProject() != null) {
+			projectComboBox.setSelectedItem(jiraServer.getCurrentProject());
+		} else {
+			if (projectComboBox.getModel().getSize() > 0) {
+				projectComboBox.setSelectedIndex(0);
+			}
 		}
 
 		getOKAction().putValue(Action.NAME, "Create");
 	}
+
+	private void updateIssueTypes(final JIRAProject project) {
+		typeComboBox.setEnabled(false);
+		typeComboBox.removeAllItems();
+		getOKAction().setEnabled(false);
+		new Thread(new Runnable() {
+			public void run() {
+				jiraServer.setCurrentProject(project);
+				final List<JIRAConstant> issueTypes = jiraServer.getIssueTypes();
+				EventQueue.invokeLater(new Runnable() {
+					public void run() {
+						addIssueTypes(issueTypes);
+					}
+				});
+			}
+		}, "atlassian-idea-plugin jira issue types retrieve on issue create").start();
+	}
+
+	private void addIssueTypes(List<JIRAConstant> issueTypes) {
+		for (JIRAConstant constant : issueTypes) {
+			if (constant.getId() != JIRAServer.ANY_ID) {
+				typeComboBox.addItem(constant);
+			}
+		}
+		typeComboBox.setEnabled(true);
+		getOKAction().setEnabled(true);
+	}
+
 
 	protected void doOKAction() {
 		JIRAIssueBean issueProxy = new JIRAIssueBean();
@@ -109,7 +158,7 @@ public class IssueCreate extends DialogWrapper {
 		if (((JIRAProject) projectComboBox.getSelectedItem()).getId() == JIRAServer.ANY_ID) {
 			Messages.showErrorDialog(this.getContentPane(), "Project has to be selected", "Project not defined");
 			return;
-		}		
+		}
 		issueProxy.setProjectKey(((JIRAProject) projectComboBox.getSelectedItem()).getKey());
 		if (((JIRAConstant) typeComboBox.getSelectedItem()).getId() == JIRAServer.ANY_ID) {
 			Messages.showErrorDialog(this.getContentPane(), "Issue type has to be selected", "Issue type not defined");
@@ -199,14 +248,14 @@ public class IssueCreate extends DialogWrapper {
 		label2.setText("Project:");
 		mainPanel.add(label2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		projectComboBox = new JComboBox();
-		mainPanel.add(projectComboBox, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		mainPanel.add(projectComboBox, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, new Dimension(150, -1), null, null, 0, false));
 		summary = new JTextField();
 		mainPanel.add(summary, new GridConstraints(1, 1, 1, 5, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
 		final JLabel label3 = new JLabel();
 		label3.setText("Type:");
 		mainPanel.add(label3, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		typeComboBox = new JComboBox();
-		mainPanel.add(typeComboBox, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		mainPanel.add(typeComboBox, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, new Dimension(150, -1), null, null, 0, false));
 		final JLabel label4 = new JLabel();
 		label4.setText("Description:");
 		mainPanel.add(label4, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -214,7 +263,7 @@ public class IssueCreate extends DialogWrapper {
 		label5.setText("Priority:");
 		mainPanel.add(label5, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		priorityComboBox = new JComboBox();
-		mainPanel.add(priorityComboBox, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		mainPanel.add(priorityComboBox, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, new Dimension(150, -1), null, null, 0, false));
 		label1.setLabelFor(summary);
 		label2.setLabelFor(projectComboBox);
 		label3.setLabelFor(typeComboBox);
