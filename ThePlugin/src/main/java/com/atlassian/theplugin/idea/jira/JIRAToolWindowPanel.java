@@ -390,7 +390,11 @@ public class JIRAToolWindowPanel extends JPanel {
 					filters = new JiraFiltersBean();
 				}
 				restoreQuery(filters.getManualFilter(), filters.getSavedFilter());
-				updateIssues(jiraServer);
+				EventQueue.invokeLater(new Runnable() {
+					public void run() {
+						updateIssues(jiraServer);
+					}
+				});				
 				filterToolbarSetVisible(true);
 			}
 			progressAnimation.stopProgressAnimation();
@@ -484,7 +488,7 @@ public class JIRAToolWindowPanel extends JPanel {
 			JIRAServerFacade serverFacade = jiraServerFacade;
 			try {
 				List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
-				List result;
+				final List result;
 				checkTableSort();
 				if (filters.getSavedFilterUsed()) {
 					if (savedQuery != null) {
@@ -494,7 +498,11 @@ public class JIRAToolWindowPanel extends JPanel {
 						editorPane.setCaretPosition(0);
 						result = serverFacade.getSavedFilterIssues(jiraServer.getServer(),
 								query, sortColumn, sortOrder, startIndex, maxIndex);
-						setIssues(result);
+						EventQueue.invokeLater(new Runnable() {
+							public void run() {
+								setIssues(result);
+							}
+						});
 					}
 				} else {
 					for (JIRAQueryFragment jiraQueryFragment : advancedQuery) {
@@ -507,7 +515,11 @@ public class JIRAToolWindowPanel extends JPanel {
 					editorPane.setCaretPosition(0);
 					result = serverFacade.getIssues(jiraServer.getServer(),
 							query, sortColumn, sortOrder, startIndex, maxIndex);
-					setIssues(result);
+					EventQueue.invokeLater(new Runnable() {
+						public void run() {
+							setIssues(result);
+						}
+					});
 				}
 			} catch (JIRAException e) {
 				editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">Error contacting server <b>"
