@@ -204,7 +204,7 @@
             <add-to-group group-id="ThePlugin.ServerTypePopup" anchor="last"/>
         </action>
 
-		<action id="ThePlugin.JIRA.ApplyFilter" class="com.atlassian.theplugin.idea.action.jira.ApplyFilterAction" text="Apply filter" icon="/actions/menu-saveall.png" />
+		<action id="ThePlugin.JIRA.ApplyFilter" class="com.atlassian.theplugin.idea.action.jira.ApplyFilterAction" text="Apply filter" icon="/actions/er-state.png" />
 		<action id="ThePlugin.JIRA.CancelFilter" class="com.atlassian.theplugin.idea.action.jira.CancelFilterChangeAction" text="Cancel" icon="/actions/cancel.png" />
 		<action id="ThePlugin.JIRA.ClearFilter" class="com.atlassian.theplugin.idea.action.jira.ClearFilterAction" text="Clear filter" icon="/actions/reset.png" />
 
