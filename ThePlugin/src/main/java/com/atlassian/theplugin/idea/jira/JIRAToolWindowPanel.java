@@ -552,9 +552,17 @@ public class JIRAToolWindowPanel extends JPanel {
 			}
 		}
 		if (table.getTableViewModel().getSortingType() == 1) {
-			sortOrder = "ASC";
+			if (IssuePriorityColumn.COLUMN_NAME.equals(columnName)) {
+				sortOrder = "DESC";
+			} else {
+				sortOrder = "ASC";
+			}
 		} else {
-			sortOrder = "DESC";
+			if (IssuePriorityColumn.COLUMN_NAME.equals(columnName)) {
+				sortOrder = "DESC";
+			} else {
+				sortOrder = "ASC";
+			}
 		}
 	}
 
