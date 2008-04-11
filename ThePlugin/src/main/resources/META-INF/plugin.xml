@@ -32,8 +32,8 @@
 		<![CDATA[
 		The plugin providing IDEA IDE integration for the following Atlassian products:
 		<ul>
-			<li>Bamboo (2.0 and above)</li>
-			<li>Crucible</li>
+			<li>Bamboo</li>
+			<li>Crucible 1.5 and above</li>
 			<li>Jira</li>
 			<li>Confluence - in the future</li>
 			<li>Fisheye - in the future</li>
