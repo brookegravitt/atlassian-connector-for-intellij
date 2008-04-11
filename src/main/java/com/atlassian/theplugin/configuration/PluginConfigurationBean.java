@@ -181,9 +181,9 @@ public class PluginConfigurationBean implements PluginConfiguration {
 		this.isAnonymousFeedbackEnabled = isAnonymousFeedbackEnabled;
 	}
 
-	public boolean isAnyTypeServerDefined(){
+	public boolean isAnyTypeServerDefined() {
 		boolean isDefined = false;
-		for(ServerType serverType: ServerType.values()){
+		for (ServerType serverType : ServerType.values()) {
 			isDefined = getProductServers(serverType).getServers().isEmpty();
 		}
 
