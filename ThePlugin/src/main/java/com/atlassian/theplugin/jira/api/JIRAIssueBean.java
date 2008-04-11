@@ -59,8 +59,7 @@ public class JIRAIssueBean implements JIRAIssue {
 		this.priorityUrl = getAttributeSafely(e, "priority", "iconUrl");
 		try {
 			this.priorityId = Long.parseLong(getAttributeSafely(e, "priority", "id"));
-		}
-		catch (NumberFormatException ex) {
+		} catch (NumberFormatException ex) {
 			this.priorityId = 0;
 		}
 		this.description = getTextSafely(e, "description");
@@ -68,8 +67,7 @@ public class JIRAIssueBean implements JIRAIssue {
 		this.typeUrl = getAttributeSafely(e, "type", "iconUrl");
 		try {
 			this.typeId = Long.parseLong(getAttributeSafely(e, "type", "id"));
-		}
-		catch (NumberFormatException ex) {
+		} catch (NumberFormatException ex) {
 			this.typeId = 0;
 		}			
 	}
