@@ -9,7 +9,7 @@
   <component name="CheckStyle-IDEA">
     <option name="configuration">
       <map>
-        <entry key="config-file" value="$PROJECT_DIR$/java-regular.cs.xml" />
+        <entry key="config-file" value="$PROJECT_DIR$/src/build-tools/checkstyle-config.xml" />
       </map>
     </option>
   </component>
@@ -164,9 +164,6 @@
       <item class="com.intellij.uiDesigner.VSpacer" tooltip-text="Vertical Spacer" icon="/com/intellij/uiDesigner/icons/vspacer.png" removable="false" auto-create-binding="false" can-attach-label="false">
         <default-constraints vsize-policy="6" hsize-policy="1" anchor="0" fill="2" />
       </item>
-      <item class="javax.swing.JPanel" icon="/com/intellij/uiDesigner/icons/panel.png" removable="false" auto-create-binding="false" can-attach-label="false">
-        <default-constraints vsize-policy="3" hsize-policy="3" anchor="0" fill="3" />
-      </item>
       <item class="javax.swing.JScrollPane" icon="/com/intellij/uiDesigner/icons/scrollPane.png" removable="false" auto-create-binding="false" can-attach-label="true">
         <default-constraints vsize-policy="7" hsize-policy="7" anchor="0" fill="3" />
       </item>
@@ -175,6 +172,9 @@
         <initial-values>
           <property name="text" value="Button" />
         </initial-values>
+      </item>
+      <item class="javax.swing.JPanel" icon="/com/intellij/uiDesigner/icons/panel.png" removable="false" auto-create-binding="false" can-attach-label="false">
+        <default-constraints vsize-policy="3" hsize-policy="3" anchor="0" fill="3" />
       </item>
       <item class="javax.swing.JRadioButton" icon="/com/intellij/uiDesigner/icons/radioButton.png" removable="false" auto-create-binding="true" can-attach-label="false">
         <default-constraints vsize-policy="0" hsize-policy="3" anchor="8" fill="0" />
@@ -299,39 +299,230 @@
     <option name="ADDITIONAL_OPTIONS_STRING" value="" />
   </component>
   <component name="ThePluginSettings">
-    <option name="activeToolWindowTab" value="JIRA" />
+    <option name="activeToolWindowTab" value="Crucible" />
     <option name="bambooConfiguration">
       <BambooProjectConfiguration>
         <option name="tableConfiguration">
-          <ProjectToolWindowTableConfiguration>
-            <option name="properties">
-              <map>
-                <entry key="Order0" value="7" />
-                <entry key="Order1" value="0" />
-                <entry key="Order2" value="1" />
-                <entry key="Order3" value="2" />
-                <entry key="Order4" value="3" />
-                <entry key="Order5" value="5" />
-                <entry key="Order6" value="4" />
-                <entry key="Order7" value="6" />
-                <entry key="Order8" value="8" />
-                <entry key="Width0" value="81" />
-                <entry key="Width1" value="29" />
-                <entry key="Width2" value="100" />
-                <entry key="Width3" value="100" />
-                <entry key="Width4" value="120" />
-                <entry key="Width5" value="100" />
-                <entry key="Width6" value="100" />
-                <entry key="Width7" value="42" />
-                <entry key="Width8" value="358" />
-              </map>
-            </option>
-          </ProjectToolWindowTableConfiguration>
+          <ProjectToolWindowTableConfiguration />
         </option>
       </BambooProjectConfiguration>
     </option>
     <option name="crucibleConfiguration">
       <CrucibleProjectConfiguration>
+        <option name="tableConfiguration">
+          <ProjectToolWindowTableConfiguration />
+        </option>
+      </CrucibleProjectConfiguration>
+    </option>
+    <option name="jiraConfiguration">
+      <JiraProjectConfiguration>
+        <option name="query">
+          <map>
+            <entry key="1206541626437">
+              <value>
+                <JiraFiltersBean>
+                  <option name="manualFilter">
+                    <list>
+                      <JiraFilterEntryBean>
+                        <option name="filterEntry">
+                          <map>
+                            <entry key="description" value="IDE plugin for various atlassian tools, like Crucible, bamboo, JIRA, etc. Currently only IDEA is in scope, but will expand to Eclipse and others" />
+                            <entry key="filterTypeClass" value="com.atlassian.theplugin.jira.api.JIRAProjectBean" />
+                            <entry key="id" value="10024" />
+                            <entry key="key" value="PL" />
+                            <entry key="lead" value="jgorycki" />
+                            <entry key="name" value="IDE Plugin" />
+                            <entry key="url" value="https://studio.atlassian.com/browse/PL" />
+                          </map>
+                        </option>
+                      </JiraFilterEntryBean>
+                      <JiraFilterEntryBean>
+                        <option name="filterEntry">
+                          <map>
+                            <entry key="filterTypeClass" value="com.atlassian.theplugin.jira.api.JIRAIssueTypeBean" />
+                            <entry key="icon" value="https://studio.atlassian.com/images/icons/bug.gif" />
+                            <entry key="id" value="1" />
+                            <entry key="name" value="Bug" />
+                          </map>
+                        </option>
+                      </JiraFilterEntryBean>
+                      <JiraFilterEntryBean>
+                        <option name="filterEntry">
+                          <map>
+                            <entry key="filterTypeClass" value="com.atlassian.theplugin.jira.api.JIRAIssueTypeBean" />
+                            <entry key="icon" value="https://studio.atlassian.com/images/icons/sales.gif" />
+                            <entry key="id" value="5" />
+                            <entry key="name" value="Story" />
+                          </map>
+                        </option>
+                      </JiraFilterEntryBean>
+                      <JiraFilterEntryBean>
+                        <option name="filterEntry">
+                          <map>
+                            <entry key="filterTypeClass" value="com.atlassian.theplugin.jira.api.JIRAStatusBean" />
+                            <entry key="id" value="-1000" />
+                            <entry key="name" value="Any" />
+                          </map>
+                        </option>
+                      </JiraFilterEntryBean>
+                      <JiraFilterEntryBean>
+                        <option name="filterEntry">
+                          <map>
+                            <entry key="filterTypeClass" value="com.atlassian.theplugin.jira.api.JIRAFixForVersionBean" />
+                            <entry key="id" value="-1000" />
+                            <entry key="name" value="Any" />
+                          </map>
+                        </option>
+                      </JiraFilterEntryBean>
+                      <JiraFilterEntryBean>
+                        <option name="filterEntry">
+                          <map>
+                            <entry key="filterTypeClass" value="com.atlassian.theplugin.jira.api.JIRAComponentBean" />
+                            <entry key="id" value="-1000" />
+                            <entry key="name" value="Any" />
+                          </map>
+                        </option>
+                      </JiraFilterEntryBean>
+                      <JiraFilterEntryBean>
+                        <option name="filterEntry">
+                          <map>
+                            <entry key="filterTypeClass" value="com.atlassian.theplugin.jira.api.JIRAVersionBean" />
+                            <entry key="id" value="-1000" />
+                            <entry key="name" value="Any" />
+                          </map>
+                        </option>
+                      </JiraFilterEntryBean>
+                      <JiraFilterEntryBean>
+                        <option name="filterEntry">
+                          <map>
+                            <entry key="filterTypeClass" value="com.atlassian.theplugin.jira.api.JIRAAssigneeBean" />
+                            <entry key="id" value="-1000" />
+                            <entry key="name" value="Any User" />
+                            <entry key="value" value="" />
+                          </map>
+                        </option>
+                      </JiraFilterEntryBean>
+                      <JiraFilterEntryBean>
+                        <option name="filterEntry">
+                          <map>
+                            <entry key="filterTypeClass" value="com.atlassian.theplugin.jira.api.JIRAReporterBean" />
+                            <entry key="id" value="-1000" />
+                            <entry key="name" value="Any User" />
+                            <entry key="value" value="null" />
+                          </map>
+                        </option>
+                      </JiraFilterEntryBean>
+                    </list>
+                  </option>
+                </JiraFiltersBean>
+              </value>
+            </entry>
+            <entry key="1207903998184">
+              <value>
+                <JiraFiltersBean>
+                  <option name="manualFilter">
+                    <list>
+                      <JiraFilterEntryBean>
+                        <option name="filterEntry">
+                          <map>
+                            <entry key="description" value="IDE plugin for various atlassian tools, like Crucible, bamboo, JIRA, etc. Currently only IDEA is in scope, but will expand to Eclipse and others" />
+                            <entry key="filterTypeClass" value="com.atlassian.theplugin.jira.api.JIRAProjectBean" />
+                            <entry key="id" value="10024" />
+                            <entry key="key" value="PL" />
+                            <entry key="lead" value="jgorycki" />
+                            <entry key="name" value="IDE Plugin" />
+                            <entry key="url" value="https://studio.atlassian.com/browse/PL" />
+                          </map>
+                        </option>
+                      </JiraFilterEntryBean>
+                      <JiraFilterEntryBean>
+                        <option name="filterEntry">
+                          <map>
+                            <entry key="filterTypeClass" value="com.atlassian.theplugin.jira.api.JIRAIssueTypeBean" />
+                            <entry key="icon" value="https://studio.atlassian.com/images/icons/bug.gif" />
+                            <entry key="id" value="1" />
+                            <entry key="name" value="Bug" />
+                          </map>
+                        </option>
+                      </JiraFilterEntryBean>
+                      <JiraFilterEntryBean>
+                        <option name="filterEntry">
+                          <map>
+                            <entry key="filterTypeClass" value="com.atlassian.theplugin.jira.api.JIRAIssueTypeBean" />
+                            <entry key="icon" value="https://studio.atlassian.com/images/icons/sales.gif" />
+                            <entry key="id" value="5" />
+                            <entry key="name" value="Story" />
+                          </map>
+                        </option>
+                      </JiraFilterEntryBean>
+                      <JiraFilterEntryBean>
+                        <option name="filterEntry">
+                          <map>
+                            <entry key="filterTypeClass" value="com.atlassian.theplugin.jira.api.JIRAStatusBean" />
+                            <entry key="icon" value="https://studio.atlassian.com/images/icons/status_open.gif" />
+                            <entry key="id" value="1" />
+                            <entry key="name" value="Open" />
+                          </map>
+                        </option>
+                      </JiraFilterEntryBean>
+                      <JiraFilterEntryBean>
+                        <option name="filterEntry">
+                          <map>
+                            <entry key="filterTypeClass" value="com.atlassian.theplugin.jira.api.JIRAStatusBean" />
+                            <entry key="icon" value="https://studio.atlassian.com/images/icons/status_inprogress.gif" />
+                            <entry key="id" value="3" />
+                            <entry key="name" value="In Progress" />
+                          </map>
+                        </option>
+                      </JiraFilterEntryBean>
+                      <JiraFilterEntryBean>
+                        <option name="filterEntry">
+                          <map>
+                            <entry key="filterTypeClass" value="com.atlassian.theplugin.jira.api.JIRAStatusBean" />
+                            <entry key="icon" value="https://studio.atlassian.com/images/icons/status_reopened.gif" />
+                            <entry key="id" value="4" />
+                            <entry key="name" value="Reopened" />
+                          </map>
+                        </option>
+                      </JiraFilterEntryBean>
+                      <JiraFilterEntryBean>
+                        <option name="filterEntry">
+                          <map>
+                            <entry key="filterTypeClass" value="com.atlassian.theplugin.jira.api.JIRAStatusBean" />
+                            <entry key="icon" value="https://studio.atlassian.com/images/icons/status_generic.gif" />
+                            <entry key="id" value="10000" />
+                            <entry key="name" value="Testing" />
+                          </map>
+                        </option>
+                      </JiraFilterEntryBean>
+                      <JiraFilterEntryBean>
+                        <option name="filterEntry">
+                          <map>
+                            <entry key="filterTypeClass" value="com.atlassian.theplugin.jira.api.JIRAAssigneeBean" />
+                            <entry key="id" value="-1000" />
+                            <entry key="name" value="Any User" />
+                            <entry key="value" value="" />
+                          </map>
+                        </option>
+                      </JiraFilterEntryBean>
+                      <JiraFilterEntryBean>
+                        <option name="filterEntry">
+                          <map>
+                            <entry key="filterTypeClass" value="com.atlassian.theplugin.jira.api.JIRAReporterBean" />
+                            <entry key="id" value="-1000" />
+                            <entry key="name" value="Any User" />
+                            <entry key="value" value="null" />
+                          </map>
+                        </option>
+                      </JiraFilterEntryBean>
+                    </list>
+                  </option>
+                </JiraFiltersBean>
+              </value>
+            </entry>
+          </map>
+        </option>
+        <option name="selectedServerId" value="1207903998184" />
         <option name="tableConfiguration">
           <ProjectToolWindowTableConfiguration>
             <option name="properties">
@@ -341,29 +532,11 @@
                 <entry key="Order2" value="2" />
                 <entry key="Order3" value="3" />
                 <entry key="Order4" value="4" />
-                <entry key="Width0" value="49" />
-                <entry key="Width1" value="200" />
-                <entry key="Width2" value="120" />
-                <entry key="Width3" value="200" />
-                <entry key="Width4" value="200" />
-              </map>
-            </option>
-          </ProjectToolWindowTableConfiguration>
-        </option>
-      </CrucibleProjectConfiguration>
-    </option>
-    <option name="jiraConfiguration">
-      <JiraProjectConfiguration>
-        <option name="tableConfiguration">
-          <ProjectToolWindowTableConfiguration>
-            <option name="properties">
-              <map>
-                <entry key="Order0" value="0" />
-                <entry key="Order1" value="1" />
-                <entry key="Order2" value="2" />
                 <entry key="Width0" value="20" />
-                <entry key="Width1" value="50" />
-                <entry key="Width2" value="500" />
+                <entry key="Width1" value="70" />
+                <entry key="Width2" value="71" />
+                <entry key="Width3" value="50" />
+                <entry key="Width4" value="500" />
               </map>
             </option>
           </ProjectToolWindowTableConfiguration>
@@ -430,6 +603,7 @@
   </component>
   <component name="uidesigner-configuration">
     <option name="INSTRUMENT_CLASSES" value="false" />
+    <option name="DEFAULT_LAYOUT_MANAGER" value="GridBagLayout" />
   </component>
 </project>
 
