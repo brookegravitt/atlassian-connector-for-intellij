@@ -39,5 +39,9 @@ public interface PluginConfiguration {
 
 	void setIsAnonymousFeedbackEnabled(boolean isAnonymousFeedbackEnabled);
 
+	boolean isAnyServerEnabled();
+
+	boolean isAnyServer();
+
 	boolean isAnyTypeServerDefined();
 }
