@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -70,24 +70,30 @@ public class IssueCreate extends DialogWrapper {
 
 		projectComboBox.setRenderer(new ColoredListCellRenderer() {
 			protected void customizeCellRenderer(JList list, Object value, int index, boolean selected, boolean hasFocus) {
-				append(((JIRAProject) value).getName(), SimpleTextAttributes.SIMPLE_CELL_ATTRIBUTES);
+				if (value != null) {
+					append(((JIRAProject) value).getName(), SimpleTextAttributes.SIMPLE_CELL_ATTRIBUTES);
+				}
 			}
 		});
 
 		typeComboBox.setRenderer(new ColoredListCellRenderer() {
 			protected void customizeCellRenderer(JList list, Object value, int index, boolean selected, boolean hasFocus) {
-				JIRAConstant type = (JIRAConstant) value;
-				append(type.getName(), SimpleTextAttributes.SIMPLE_CELL_ATTRIBUTES);
-				setIcon(CachedIconLoader.getIcon(type.getIconUrl()));
+				if (value != null) {
+					JIRAConstant type = (JIRAConstant) value;
+					append(type.getName(), SimpleTextAttributes.SIMPLE_CELL_ATTRIBUTES);
+					setIcon(CachedIconLoader.getIcon(type.getIconUrl()));
+				}
 			}
 		});
 		typeComboBox.setEnabled(false);
 
 		priorityComboBox.setRenderer(new ColoredListCellRenderer() {
 			protected void customizeCellRenderer(JList list, Object value, int index, boolean selected, boolean hasFocus) {
-				JIRAConstant priority = (JIRAConstant) value;
-				append(priority.getName(), SimpleTextAttributes.SIMPLE_CELL_ATTRIBUTES);
-				setIcon(CachedIconLoader.getIcon(priority.getIconUrl()));
+				if (value != null) {
+					JIRAConstant priority = (JIRAConstant) value;
+					append(priority.getName(), SimpleTextAttributes.SIMPLE_CELL_ATTRIBUTES);
+					setIcon(CachedIconLoader.getIcon(priority.getIconUrl()));
+				}
 			}
 		});
 
