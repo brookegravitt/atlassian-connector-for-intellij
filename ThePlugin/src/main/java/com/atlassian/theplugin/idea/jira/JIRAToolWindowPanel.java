@@ -559,9 +559,9 @@ public class JIRAToolWindowPanel extends JPanel {
 			}
 		} else {
 			if (IssuePriorityColumn.COLUMN_NAME.equals(columnName)) {
-				sortOrder = "DESC";
-			} else {
 				sortOrder = "ASC";
+			} else {
+				sortOrder = "DESC";
 			}
 		}
 	}
