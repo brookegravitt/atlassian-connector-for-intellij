@@ -73,4 +73,5 @@ public class BambooConfigurationBean extends AbstractConfigurationBean {
 	public void setBambooTooltipOption(BambooTooltipOption bambooTooltipOption) {
 		this.bambooTooltipOption = bambooTooltipOption;
 	}
+
 }
