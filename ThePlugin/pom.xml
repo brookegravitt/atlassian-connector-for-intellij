@@ -21,7 +21,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.atlassian.theplugin</groupId>
 	<artifactId>atlassian-idea-plugin</artifactId>
-	<version>1.1.0-SNSNAPSHOT</version>
+	<version>1.1.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<inceptionYear>2008</inceptionYear>
 	<licenses>
