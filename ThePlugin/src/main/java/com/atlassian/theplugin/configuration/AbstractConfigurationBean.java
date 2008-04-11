@@ -77,7 +77,24 @@ public class AbstractConfigurationBean implements ProductServerConfiguration {
         return iservers;
     }
 
-    @Transient
+	public boolean isAnyServerEnabled() {
+		for (Server s : servers) {
+			if (s.getEnabled()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 *
+	 * @return true if any server is configured or false otherwise
+	 */
+	public boolean isAnyServer() {
+		return servers.size() > 0;
+	}
+
+	@Transient
 	public synchronized Server getServer(Server aServer) {
         for (Server server : servers) {
             if (server.getUid() == aServer.getUid()) {

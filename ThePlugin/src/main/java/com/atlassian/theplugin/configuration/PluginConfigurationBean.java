@@ -181,6 +181,30 @@ public class PluginConfigurationBean implements PluginConfiguration {
 		this.isAnonymousFeedbackEnabled = isAnonymousFeedbackEnabled;
 	}
 
+	public boolean isAnyServerEnabled() {
+		if (bambooConfiguration.isAnyServerEnabled()) {
+			return true;
+		} else if (crucibleConfiguration.isAnyServerEnabled()) {
+			return true;
+		} else if (jiraConfiguration.isAnyServerEnabled()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public boolean isAnyServer() {
+		if (bambooConfiguration.isAnyServer()) {
+			return true;
+		} else if (crucibleConfiguration.isAnyServer()) {
+			return true;
+		} else if (jiraConfiguration.isAnyServer()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	public boolean isAnyTypeServerDefined() {
 		boolean isDefined = false;
 		for (ServerType serverType : ServerType.values()) {

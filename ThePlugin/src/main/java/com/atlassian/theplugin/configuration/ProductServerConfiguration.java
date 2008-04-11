@@ -32,4 +32,7 @@ public interface ProductServerConfiguration {
     void storeServer(Server server);
 	void setServers(Collection<Server> servers);
 	void removeServer(Server server);
+
+	boolean isAnyServerEnabled();
+	boolean isAnyServer();
 }

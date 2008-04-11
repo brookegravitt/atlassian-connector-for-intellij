@@ -30,6 +30,7 @@ import com.intellij.ui.content.ContentManager;
 import com.intellij.ui.content.ContentManagerAdapter;
 import com.intellij.ui.content.ContentManagerEvent;
 import com.intellij.util.containers.HashSet;
+import com.intellij.peer.PeerFactory;
 
 import java.util.Set;
 
@@ -49,6 +50,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 	//private String selectedContent = null;
 	public static final String TOOL_WINDOW_NAME = "Atlassian";
 	private static final int INITIAL_NUMBER_OF_TABS = 3;
+	private static final String CONFIGURE_TAB_NAME = "Configure";
 
 	public static void showHidePluginWindow(AnActionEvent event) {
 		ToolWindow tw = IdeaHelper.getToolWindow(IdeaHelper.getCurrentProject(event.getDataContext()));
@@ -119,6 +121,21 @@ public class PluginToolWindow extends ContentManagerAdapter {
 	public void showHidePanels() {
 
 		//stopTabChangeListener();
+
+		if (!ConfigurationFactory.getConfiguration().isAnyServer()) {
+			// no servers defined, show config panel
+			if (ideaToolWindow.getContentManager().findContent(CONFIGURE_TAB_NAME) == null) {
+				Content content = PeerFactory.getInstance().getContentFactory().
+						createContent(new ToolWindowConfigPanel(), CONFIGURE_TAB_NAME, false);
+				ideaToolWindow.getContentManager().addContent(content);
+			}
+		} else {
+			// servers defined, find config panel, hide config panel
+			Content content = ideaToolWindow.getContentManager().findContent(CONFIGURE_TAB_NAME);
+			if (content != null) {
+				ideaToolWindow.getContentManager().removeContent(content, true);
+			}
+		}
 
 		for (ToolWindowPanels entry : panels) {
 			try {
