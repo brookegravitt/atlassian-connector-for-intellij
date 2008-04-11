@@ -36,9 +36,21 @@ public class ReviewKeyComparator implements Comparator, Serializable {
         }
 
         // otherwise, if the same project - sort on review ID
-        Integer count = new Integer(key.substring(key.indexOf("-") + 1));
-        Integer count1 = new Integer(key1.substring(key1.indexOf("-") + 1));
+		Integer count = null;
+		try {
+			count = new Integer(key.substring(key.lastIndexOf("-") + 1));
+		} catch (NumberFormatException e) {
+			// unable to compare
+			return 0;
+		}
+		Integer count1 = null;
+		try {
+			count1 = new Integer(key1.substring(key1.lastIndexOf("-") + 1));
+		} catch (NumberFormatException e) {
+			// unable to compare
+			return 0;
+		}
 
-        return count.compareTo(count1);
+		return count.compareTo(count1);
     }
 }
