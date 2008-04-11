@@ -51,5 +51,11 @@ public interface JIRAIssue {
 
 	String getAssignee();
 
-    void setAssignee(String assignee);
+	long getPriorityId();
+
+	long getStatusId();
+
+	long getTypeId();
+
+	void setAssignee(String assignee);
 }

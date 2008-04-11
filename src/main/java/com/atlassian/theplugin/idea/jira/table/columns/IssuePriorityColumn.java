@@ -36,7 +36,9 @@ public class IssuePriorityColumn extends TableColumnInfo {
 	public Comparator getComparator() {
 		return new Comparator() {
 			public int compare(Object o, Object o1) {
-				return ((JiraIssueAdapter) o).getPriority().compareTo(((JiraIssueAdapter) o1).getPriority());
+				Long ol = Long.valueOf(((JiraIssueAdapter) o).getPriorityId());
+				Long ol1 = Long.valueOf(((JiraIssueAdapter) o1).getPriorityId());
+				return ol.compareTo(ol1);
 			}
 		};
 	}
