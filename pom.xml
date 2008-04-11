@@ -384,7 +384,7 @@
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
 					<descriptors>
-						<descriptor>${pom.basedir}/idea-metadata-assembly.xml</descriptor>
+						<descriptor>${pom.basedir}/src/main/assembly/idea-metadata-assembly.xml</descriptor>
 					</descriptors>
 				</configuration>
 				<executions>
@@ -396,7 +396,7 @@
 						</goals>
 						<configuration>
 							<descriptors>
-								<descriptor>${pom.basedir}/idea-plugin-assembly.xml</descriptor>
+								<descriptor>${pom.basedir}/src/main/assembly/idea-plugin-assembly.xml</descriptor>
 							</descriptors>
 							<outputDirectory>${project.reporting.outputDirectory}/${downloadDir}</outputDirectory>
 						</configuration>
@@ -610,7 +610,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
 				<configuration>
-					<configLocation>java-regular.cs.xml</configLocation>
+					<configLocation>src/build-tools/checkstyle-config.xml</configLocation>
 					<excludes>
 						**/idea/**/*Form.java,
 						**/idea/**/*Dialog.java,
@@ -631,7 +631,7 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
 				<configuration>
-					<excludeFilterFile>findbugs-exclude.xml</excludeFilterFile>
+					<excludeFilterFile>src/build-tools/findbugs-exclude.xml</excludeFilterFile>
 					<xmlOutput>true</xmlOutput>
 				</configuration>
 			</plugin>
