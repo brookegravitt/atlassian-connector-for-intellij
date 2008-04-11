@@ -356,33 +356,13 @@ public class JIRAToolWindowPanel extends JPanel {
 			filterToolbarSetVisible(false);
 			startIndex = 0;
 			clearIssues();
-			setStatusMessage("Retrieving statuses...");
-			List statuses = jiraServer.getStatuses(); // ensure statuses are cached
-			if (!jiraServer.isValidServer()) {
-				setStatusMessage("Unable to connect to server." + jiraServer.getErrorMessage());
-				return;
-			}
-			String msg = "Found <b>" + statuses.size() + "</b> statuses.<br>";
-			setStatusMessage(msg + "Retrieving issue types...");
-			List types = jiraServer.getIssueTypes(); // ensure types are cached
-			if (!jiraServer.isValidServer()) {
-				setStatusMessage("Unable to connect to server." + jiraServer.getErrorMessage());
-				return;
-			}
-			msg += "Found <b>" + types.size() + "</b> issue types.<br>";
-			setStatusMessage(msg + "Retrieving projects...");
-			jiraServer.getProjects(); // ensure projects are cached
-			if (!jiraServer.isValidServer()) {
-				setStatusMessage("Unable to connect to server." + jiraServer.getErrorMessage());
-				return;
-			}
+			String msg = "";
 			setStatusMessage(msg + "Retrieving saved filters...");
 			jiraServer.getSavedFilters();
 			if (!jiraServer.isValidServer()) {
 				setStatusMessage("Unable to connect to server." + jiraServer.getErrorMessage());
 				return;
 			}
-
 			if (jiraServer.equals(IdeaHelper.getCurrentJIRAServer())) {
 				filters = projectConfiguration.getJiraConfiguration()
 						.getJiraFilters(IdeaHelper.getCurrentJIRAServer().getServer().getUid());
