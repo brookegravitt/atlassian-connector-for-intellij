@@ -64,12 +64,20 @@ public class JiraIssueAdapter {
 		return new JiraIcon(issue.getStatus(), issue.getStatusTypeUrl());		
 	}
 
+	public long getStatusId() {
+		return issue.getStatusId();
+	}
+
 	public String getPriority() {
 		return issue.getPriority() != null ? issue.getPriority() : "";
 	}
 	
 	public JiraIcon getPriorityInfo() {
 		return new JiraIcon(issue.getPriority(), issue.getPriorityIconUrl());
+	}
+
+	public long getPriorityId() {
+		return issue.getPriorityId();
 	}
 
 	public String getSummary() {
@@ -82,6 +90,10 @@ public class JiraIssueAdapter {
 
 	public JiraIcon getTypeInfo() {
 		return new JiraIcon(issue.getType(), issue.getTypeIconUrl());
+	}
+
+	public long getTypeId() {
+		return issue.getTypeId();
 	}
 
 	public String getDescription() {
