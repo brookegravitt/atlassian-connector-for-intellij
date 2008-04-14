@@ -335,7 +335,6 @@ public class JIRAToolWindowPanel extends JPanel {
 			hideJIRAIssuesFilter();
 			final JIRAServer jiraServer = new JIRAServer(server, jiraServerFacade);
 			IdeaHelper.setCurrentJIRAServer(jiraServer);
-
 			new Thread(new SelectServerTask(jiraServer), "atlassian-idea-plugin jira tab select server").start();
 		}
 	}
@@ -356,13 +355,13 @@ public class JIRAToolWindowPanel extends JPanel {
 			filterToolbarSetVisible(false);
 			startIndex = 0;
 			clearIssues();
-			String msg = "";
-			setStatusMessage(msg + "Retrieving saved filters...");
-			jiraServer.getSavedFilters();
-			if (!jiraServer.isValidServer()) {
+
+			if (jiraServer.checkServer() == false) {
 				setStatusMessage("Unable to connect to server." + jiraServer.getErrorMessage());
 				return;
 			}
+			setStatusMessage("Retrieving saved filters...");
+			jiraServer.getSavedFilters();
 			if (jiraServer.equals(IdeaHelper.getCurrentJIRAServer())) {
 				filters = projectConfiguration.getJiraConfiguration()
 						.getJiraFilters(IdeaHelper.getCurrentJIRAServer().getServer().getUid());

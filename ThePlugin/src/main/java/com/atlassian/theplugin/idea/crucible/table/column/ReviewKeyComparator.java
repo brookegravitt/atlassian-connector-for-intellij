@@ -25,29 +25,35 @@ public class ReviewKeyComparator implements Comparator, Serializable {
 	static final long serialVersionUID = 903490105978352608L;
 
 	public int compare(Object o, Object o1) {
-        ReviewDataInfoAdapter review = (ReviewDataInfoAdapter) o;
+		if (o == null || o1 == null) {
+			return 0;
+		}
+		ReviewDataInfoAdapter review = (ReviewDataInfoAdapter) o;
         String key = review.getPermaId().getId();
         ReviewDataInfoAdapter review1 = (ReviewDataInfoAdapter) o1;
         String key1 = review1.getPermaId().getId();
 
-        // first, try to compare on projects
-        if (!review.getProjectKey().equals(review1.getProjectKey())) {
+		// first, try to compare on projects
+		if (review.getProjectKey() == null || review1.getProjectKey() == null) {
+			return 0;
+		}
+		if (!review.getProjectKey().equals(review1.getProjectKey())) {
             return review.getProjectKey().compareTo(review1.getProjectKey());
         }
 
         // otherwise, if the same project - sort on review ID
-		Integer count = null;
+		Integer count;
 		try {
 			count = new Integer(key.substring(key.lastIndexOf("-") + 1));
-		} catch (NumberFormatException e) {
+		} catch (Exception e) {
 			// unable to compare
 			return 0;
 		}
-		Integer count1 = null;
+		Integer count1;
 		try {
 			count1 = new Integer(key1.substring(key1.lastIndexOf("-") + 1));
-		} catch (NumberFormatException e) {
-			// unable to compare
+		} catch (Exception e) {
+			// unable to compare			
 			return 0;
 		}
 
