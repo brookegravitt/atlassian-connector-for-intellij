@@ -41,7 +41,7 @@ public interface PluginConfiguration {
 
 	boolean isAnyServerEnabled();
 
-	boolean isAnyServer();
+	boolean isAnyServerDefined();
 
-	boolean isAnyTypeServerDefined();
+	boolean isServerPresent(Server server);
 }

@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea;
 
 import com.intellij.openapi.options.ShowSettingsUtil;
+import com.intellij.openapi.util.IconLoader;
 import com.intellij.ui.HyperlinkLabel;
 
 import javax.swing.*;
@@ -34,7 +35,7 @@ import java.awt.*;
 public class ToolWindowConfigPanel extends JPanel {
 	public ToolWindowConfigPanel() {
 
-		super(new BorderLayout());
+		super(new GridBagLayout());
 
 		HyperlinkLabel link = new HyperlinkLabel("Configure Plugin");
 		link.addHyperlinkListener(new HyperlinkListener() {
@@ -44,6 +45,10 @@ public class ToolWindowConfigPanel extends JPanel {
 			}
 		});
 
-		this.add(link, BorderLayout.CENTER);
+		link.setIcon(IconLoader.getIcon("/general/ideOptions.png"));
+
+		GridBagConstraints c = new GridBagConstraints();
+		c.anchor = GridBagConstraints.CENTER;
+		this.add(link, c);
 	}
 }
