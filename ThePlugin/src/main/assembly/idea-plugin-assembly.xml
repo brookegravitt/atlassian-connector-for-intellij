@@ -36,6 +36,12 @@
       <outputDirectory>${pom.project.artifactId}/META-INF</outputDirectory>
     </fileSet>
   </fileSets>
+  <files>
+    <file>
+      <source>./LICENSE</source>
+	  <outputDirectory>${pom.project.artifactId}/</outputDirectory>
+	</file>
+  </files>
   <dependencySets>
     <dependencySet>
       <outputDirectory>${pom.project.artifactId}/lib</outputDirectory>
