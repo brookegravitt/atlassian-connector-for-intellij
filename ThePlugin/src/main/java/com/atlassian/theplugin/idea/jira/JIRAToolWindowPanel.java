@@ -608,13 +608,18 @@ public class JIRAToolWindowPanel extends JPanel {
 			if (changeList == null) {
 				ChangesetCreate c = new ChangesetCreate(issueKey);
 				c.setChangesetName(changeListName);
+				c.setChangestComment(changeListName + "\n");
 				c.show();
 				if (c.isOK()) {
 					changeListName = c.getChangesetName();
-					changeList = changeListManager.addChangeList(changeListName, changeListName + "\n");
-					changeListManager.setDefaultChangeList(changeList);
+					changeList = changeListManager.addChangeList(changeListName, c.getChangesetComment());
+					if (c.isActive()) {
+						changeListManager.setDefaultChangeList(changeList);
+					}
 				}
-			}
+			}  else {
+				changeListManager.setDefaultChangeList(changeList);
+			}			
 		}
 	}
 
