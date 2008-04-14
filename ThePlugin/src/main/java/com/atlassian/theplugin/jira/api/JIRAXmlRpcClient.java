@@ -109,7 +109,7 @@ public class JIRAXmlRpcClient {
 		params.add(token);
 		params.add(query.getQueryStringFragment());
 
-		List retrieved = null;
+		List retrieved;
 		try {
 			retrieved = (List) client.execute("jira1.getIssuesFromFilter", params);
 			List result = new ArrayList<JIRAProject>(retrieved.size());
