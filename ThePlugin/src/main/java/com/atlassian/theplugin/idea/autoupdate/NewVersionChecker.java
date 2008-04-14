@@ -47,7 +47,7 @@ public final class NewVersionChecker implements SchedulableChecker {
 		return new TimerTask() {
 			public void run() {
 				try {
-					doRun(new ForwardToIconHandler(pluginConfiguration));
+					doRun(new ForwardToIconHandler(pluginConfiguration), true);
 				} catch (ThePluginException e) {
 					PluginUtil.getLogger().info("Error checking new version: " + e.getMessage());
 				}
@@ -67,7 +67,7 @@ public final class NewVersionChecker implements SchedulableChecker {
 		// do nothing
 	}
 
-	protected void doRun(UpdateActionHandler action) throws ThePluginException {
+	protected void doRun(UpdateActionHandler action, boolean showConfigPath) throws ThePluginException {
 		if (!pluginConfiguration.isAutoUpdateEnabled()) {
 			return;
 		}
@@ -78,7 +78,7 @@ public final class NewVersionChecker implements SchedulableChecker {
 		Version newVersion = versionInfo.getVersion();
 		Version thisVersion = new Version(PluginUtil.getVersion());
 		if (newVersion.greater(thisVersion)) {
-			action.doAction(versionInfo);
+			action.doAction(versionInfo, showConfigPath);
 		}
 	}
 

@@ -35,7 +35,7 @@ public class ForwardToIconHandler implements UpdateActionHandler {
 		this.pluginConfiguration = pluginConfiguration;
 	}
 
-	public void doAction(InfoServer.VersionInfo versionInfo) throws ThePluginException {
+	public void doAction(InfoServer.VersionInfo versionInfo, boolean showConfigPath) throws ThePluginException {
 		if (!versionInfo.getVersion().equals(pluginConfiguration.getRejectedUpgrade())) {
 			ConfirmPluginUpdateHandler handler = ConfirmPluginUpdateHandler.getInstance();
 			handler.setNewVersionInfo(versionInfo);
