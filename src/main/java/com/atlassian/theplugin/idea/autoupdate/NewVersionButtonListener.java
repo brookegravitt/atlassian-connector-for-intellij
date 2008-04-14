@@ -40,14 +40,14 @@ import java.awt.event.ActionListener;
  * Time: 5:04:58 PM
  * To change this template use File | Settings | File Templates.
  */
-public class NewVersionListener implements ActionListener {
+public class NewVersionButtonListener implements ActionListener {
 	private ConnectionWrapper checkerThread;
 	private static final long CHECK_CANCEL_INTERVAL = 500; //milis
 	private NewVersionChecker checker;
 	private PluginConfiguration pluginConfiguration;
 	private InfoServer.VersionInfo newVersion;
 
-	public NewVersionListener(NewVersionChecker checker, PluginConfiguration pluginConfiguration) {
+	public NewVersionButtonListener(NewVersionChecker checker, PluginConfiguration pluginConfiguration) {
 		this.checker = checker;
 		this.pluginConfiguration = pluginConfiguration;
 	}
@@ -59,10 +59,10 @@ public class NewVersionListener implements ActionListener {
 	private class UpdateServerConnection extends Connector {
 		public void connect() throws ThePluginException {
 			checker.doRun(new UpdateActionHandler() {
-				public void doAction(InfoServer.VersionInfo versionInfo) throws ThePluginException {
+				public void doAction(InfoServer.VersionInfo versionInfo, boolean showConfigPath) throws ThePluginException {
 					newVersion = versionInfo;
 				}
-			});
+			}, false);
 		}
 	}
 
@@ -112,7 +112,7 @@ public class NewVersionListener implements ActionListener {
 						EventQueue.invokeLater(new Runnable() {
 							public void run() {
 								try {
-									new QueryOnUpdateHandler(pluginConfiguration).doAction(newVersion);
+									new NewVersionConfirmHandler(pluginConfiguration).doAction(newVersion, false);
 								} catch (ThePluginException e) {
 									showMessageDialog(e.getMessage(),
 											"Error retrieving new version", Messages.getErrorIcon());

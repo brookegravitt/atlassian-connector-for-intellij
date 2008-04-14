@@ -42,13 +42,13 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 
 	public PluginUpdateIcon(final Project project, final PluginConfiguration pluginConfiguration) {
 		super(project);
-		handler = new QueryOnUpdateHandler(pluginConfiguration);
+		handler = new NewVersionConfirmHandler(pluginConfiguration);
 
 		addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				stopBlinking();
 				try {
-					handler.doAction(version);
+					handler.doAction(version, true);
 				} catch (ThePluginException e1) {
 					PluginUtil.getLogger().info("Error retrieving new version: " + e1.getMessage(), e1);
 				}
