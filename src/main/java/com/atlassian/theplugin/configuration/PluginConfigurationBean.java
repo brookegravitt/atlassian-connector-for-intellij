@@ -182,37 +182,29 @@ public class PluginConfigurationBean implements PluginConfiguration {
 	}
 
 	public boolean isAnyServerEnabled() {
-		if (bambooConfiguration.isAnyServerEnabled()) {
-			return true;
-		} else if (crucibleConfiguration.isAnyServerEnabled()) {
-			return true;
-		} else if (jiraConfiguration.isAnyServerEnabled()) {
-			return true;
-		} else {
-			return false;
-		}
+		return bambooConfiguration.isAnyServerEnabled() || crucibleConfiguration.isAnyServerEnabled() ||
+			jiraConfiguration.isAnyServerEnabled();
 	}
 
-	public boolean isAnyServer() {
-		if (bambooConfiguration.isAnyServer()) {
-			return true;
-		} else if (crucibleConfiguration.isAnyServer()) {
-			return true;
-		} else if (jiraConfiguration.isAnyServer()) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	public boolean isAnyTypeServerDefined() {
-		boolean isDefined = false;
+	public boolean isAnyServerDefined() {
 		for (ServerType serverType : ServerType.values()) {
-			isDefined = getProductServers(serverType).getServers().isEmpty();
+			if (!getProductServers(serverType).getServers().isEmpty()) {
+				return true;
+			}
 		}
+		return false;
+//		return bambooConfiguration.isAnyServer() || crucibleConfiguration.isAnyServer() ||
+//			jiraConfiguration.isAnyServer();
+	}
 
-		return isDefined;
-	};
+	public boolean isServerPresent(Server server) {
+		for (ServerType serverType : ServerType.values()) {
+			if (getProductServers(serverType).getServer(server) != null) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	public void setIsAnonymousFeedbackEnabled(Boolean isAnonymousFeedbackEnabled) {
 		this.isAnonymousFeedbackEnabled = isAnonymousFeedbackEnabled;
