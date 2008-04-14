@@ -252,8 +252,15 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 			}
 			selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
 			if (selectedNode instanceof ServerNode) {
-				serverConfigPanel.editServer(
-						((ServerNode) selectedNode).getServerType(), ((ServerNode) selectedNode).getServer());
+				Server server = ((ServerNode) selectedNode).getServer();
+				if (pluginConfiguration.isServerPresent(server)) {
+					serverConfigPanel.editServer(
+							((ServerNode) selectedNode).getServerType(), server);
+				} else {
+					// PL-235 show blank panel if server from tree node does not exist in configuration
+					// it happens if you add server, click cancel and open config window again
+					serverConfigPanel.showEmptyPanel();
+				}
 			} else if (selectedNode instanceof ServerTypeNode) {
 				serverConfigPanel.showEmptyPanel();
 			}
