@@ -18,7 +18,7 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
-import com.atlassian.theplugin.idea.autoupdate.NewVersionListener;
+import com.atlassian.theplugin.idea.autoupdate.NewVersionButtonListener;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -45,7 +45,7 @@ public class GeneralConfigForm {
 	private Boolean isAnonymousFeedbackEnabled;
 
 	public GeneralConfigForm(NewVersionChecker checker, PluginConfiguration pluginConfiguration) {
-		checkNowButton.addActionListener(new NewVersionListener(checker, pluginConfiguration));
+		checkNowButton.addActionListener(new NewVersionButtonListener(checker, pluginConfiguration));
 		chkAutoUpdateEnabled.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				chkUnstableVersionsCheckBox.setEnabled(chkAutoUpdateEnabled.isSelected());
