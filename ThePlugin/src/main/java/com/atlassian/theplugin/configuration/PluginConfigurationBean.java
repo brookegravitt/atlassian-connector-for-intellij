@@ -182,8 +182,8 @@ public class PluginConfigurationBean implements PluginConfiguration {
 	}
 
 	public boolean isAnyServerEnabled() {
-		return bambooConfiguration.isAnyServerEnabled() || crucibleConfiguration.isAnyServerEnabled() ||
-			jiraConfiguration.isAnyServerEnabled();
+		return bambooConfiguration.isAnyServerEnabled() || crucibleConfiguration.isAnyServerEnabled()
+				|| jiraConfiguration.isAnyServerEnabled();
 	}
 
 	public boolean isAnyServerDefined() {
