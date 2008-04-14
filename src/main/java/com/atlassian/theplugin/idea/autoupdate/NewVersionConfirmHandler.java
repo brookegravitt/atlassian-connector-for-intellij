@@ -35,15 +35,15 @@ import com.intellij.openapi.ui.Messages;
  * Time: 1:27:49 PM
  * To change this template use File | Settings | File Templates.
  */
-public class QueryOnUpdateHandler implements UpdateActionHandler {
+public class NewVersionConfirmHandler implements UpdateActionHandler {
 	private static final String DOWNLOAD_TITLE = "Downloading new " + PluginUtil.getName() + " plugin version ";
-	public QueryOnUpdateHandler(PluginConfiguration pluginConfiguration) {
+	public NewVersionConfirmHandler(PluginConfiguration pluginConfiguration) {
 		this.pluginConfiguration = pluginConfiguration;
 	}
 
 	private PluginConfiguration pluginConfiguration;
 
-	public void doAction(final InfoServer.VersionInfo versionInfo) throws ThePluginException {
+	public void doAction(final InfoServer.VersionInfo versionInfo, boolean showConfigPath) throws ThePluginException {
 		Version aVersion = versionInfo.getVersion();
 		String message = "New plugin version " + aVersion + " is available. "
 				+ "Your version is " + PluginUtil.getVersion()
@@ -67,7 +67,7 @@ public class QueryOnUpdateHandler implements UpdateActionHandler {
 			};
 
 			ProgressManager.getInstance().run(downloader);
-		} else {
+		} else if (showConfigPath) {
 			Messages.showMessageDialog("You can always install " + aVersion
 					+ " version through " + PluginUtil.getName()
 					+ " configuration panel (Preferences | IDE Settings | "

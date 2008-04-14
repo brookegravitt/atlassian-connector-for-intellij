@@ -27,5 +27,5 @@ import com.atlassian.theplugin.util.InfoServer;
  * To change this template use File | Settings | File Templates.
  */
 public interface UpdateActionHandler {
-	void doAction(InfoServer.VersionInfo versionInfo) throws ThePluginException;
+	void doAction(InfoServer.VersionInfo versionInfo, boolean showConfigPath) throws ThePluginException;
 }
