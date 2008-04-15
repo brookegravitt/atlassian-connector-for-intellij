@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.configuration;
 
-public class CrucibleConfigurationBean extends AbstractConfigurationBean {
+public class CrucibleConfigurationBean extends AbstractServerConfigurationBean {
 	private int pollTime = 1;
 
 	public CrucibleConfigurationBean() {

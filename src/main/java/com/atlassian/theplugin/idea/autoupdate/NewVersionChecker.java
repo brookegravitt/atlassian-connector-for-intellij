@@ -68,7 +68,7 @@ public final class NewVersionChecker implements SchedulableChecker {
 	}
 
 	protected void doRun(UpdateActionHandler action, boolean showConfigPath) throws ThePluginException {
-		if (!pluginConfiguration.isAutoUpdateEnabled()) {
+		if (!pluginConfiguration.getGeneralConfigurationData().isAutoUpdateEnabled()) {
 			return;
 		}
 		if (action == null) {
@@ -86,8 +86,8 @@ public final class NewVersionChecker implements SchedulableChecker {
 //		InfoServer server =  new InfoServer(PluginUtil.STABLE_VERSION_INFO_URL,
 //				pluginConfiguration.getUid());
 		return InfoServer.getLatestPluginVersion(
-				pluginConfiguration.getUid(),
-				pluginConfiguration.getCheckUnstableVersionsEnabled());
+				pluginConfiguration.getGeneralConfigurationData().getUid(),
+				pluginConfiguration.getGeneralConfigurationData().isCheckUnstableVersionsEnabled());
 	}
 
 }
