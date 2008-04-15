@@ -115,8 +115,8 @@ public class PluginConfigurationBean implements PluginConfiguration {
 		return generalConfigurationBean;
 	}
 
-	public void setGeneralConfigurationData(GeneralConfigurationBean generalConfigurationBean) {
-		this.generalConfigurationBean = generalConfigurationBean;
+	public void setGeneralConfigurationData(GeneralConfigurationBean aGeneralConfigurationBean) {
+		this.generalConfigurationBean = aGeneralConfigurationBean;
 	}
 
 	/**

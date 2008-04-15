@@ -119,7 +119,9 @@ public class GeneralConfigurationBean {
 		if (uid != that.uid) {
 			return false;
 		}
-		if (anonymousFeedbackEnabled != null ? !anonymousFeedbackEnabled.equals(that.anonymousFeedbackEnabled) : that.anonymousFeedbackEnabled != null) {
+		if (anonymousFeedbackEnabled != null
+				? !anonymousFeedbackEnabled.equals(that.anonymousFeedbackEnabled)
+				: that.anonymousFeedbackEnabled != null) {
 			return false;
 		}
 		if (rejectedUpgrade != null ? !rejectedUpgrade.equals(that.rejectedUpgrade) : that.rejectedUpgrade != null) {
@@ -129,13 +131,16 @@ public class GeneralConfigurationBean {
 		return true;
 	}
 
+	private static final int THIRTY_ONE = 31;
+	private static final int THIRTY_TWO = 32;
+
 	public int hashCode() {
 		int result;
 		result = (autoUpdateEnabled ? 1 : 0);
-		result = 31 * result + (rejectedUpgrade != null ? rejectedUpgrade.hashCode() : 0);
-		result = 31 * result + (checkUnstableVersionsEnabled ? 1 : 0);
-		result = 31 * result + (anonymousFeedbackEnabled != null ? anonymousFeedbackEnabled.hashCode() : 0);
-		result = 31 * result + (int) (uid ^ (uid >>> 32));
+		result = THIRTY_ONE * result + (rejectedUpgrade != null ? rejectedUpgrade.hashCode() : 0);
+		result = THIRTY_ONE * result + (checkUnstableVersionsEnabled ? 1 : 0);
+		result = THIRTY_ONE * result + (anonymousFeedbackEnabled != null ? anonymousFeedbackEnabled.hashCode() : 0);
+		result = THIRTY_ONE * result + (int) (uid ^ (uid >>> THIRTY_TWO));
 		return result;
 	}
 

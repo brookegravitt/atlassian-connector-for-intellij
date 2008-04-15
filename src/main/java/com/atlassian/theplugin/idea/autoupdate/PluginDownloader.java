@@ -104,7 +104,8 @@ public class PluginDownloader { //implements Runnable {
 		ApplicationManager.getApplication().invokeLater(new Runnable() {
 			public void run() {
 				String title = "IDEA shutdown";
-				String message = "Plugin has been installed successfully. Do you want to restart IDEA to activate the plugin?";
+				String message =
+						"Plugin has been installed successfully. Do you want to restart IDEA to activate the plugin?";
 
 				int answer = Messages.showYesNoDialog(
 						message, title, Messages.getQuestionIcon());
@@ -135,7 +136,8 @@ public class PluginDownloader { //implements Runnable {
 		if (!pluginUrl.contains("?")) {
 			pluginUrl += "?";
 		}
-		pluginUrl += "uid=" + URLEncoder.encode(Long.toString(pluginConfiguration.getGeneralConfigurationData().getUid()), "UTF-8");
+		pluginUrl += "uid=" + URLEncoder.encode(Long.toString(
+				pluginConfiguration.getGeneralConfigurationData().getUid()), "UTF-8");
 
 		PluginUtil.getLogger().info("Downloading plugin archive from: " + pluginUrl);
 
@@ -227,7 +229,8 @@ public class PluginDownloader { //implements Runnable {
 		}
 
 		// add command to remove temp plugin file
-		StartupActionScriptManager.ActionCommand deleteTemp = new StartupActionScriptManager.DeleteCommand(localArchiveFile);
+		StartupActionScriptManager.ActionCommand deleteTemp =
+				new StartupActionScriptManager.DeleteCommand(localArchiveFile);
 		StartupActionScriptManager.addActionCommand(deleteTemp);
 	}
 
