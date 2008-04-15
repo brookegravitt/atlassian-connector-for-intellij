@@ -126,8 +126,8 @@ public class ChangesetCreate extends DialogWrapper {
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;
 		gbc.gridy = 1;
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.insets = new Insets(0, 0, 0, 12);
+		gbc.anchor = GridBagConstraints.NORTHWEST;
+		gbc.insets = new Insets(12, 0, 0, 12);
 		contentPane.add(label2, gbc);
 		isActive = new JCheckBox();
 		isActive.setSelected(false);
