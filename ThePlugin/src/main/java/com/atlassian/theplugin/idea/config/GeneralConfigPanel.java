@@ -36,7 +36,7 @@ public class GeneralConfigPanel extends JPanel implements ContentPanel {
 		this.globalPluginConfiguration = globalPluginConfiguration;
 		localPluginConfigurationCopy = this.globalPluginConfiguration;
 		setLayout(new CardLayout());
-		dialog = new GeneralConfigForm(checker, localPluginConfigurationCopy);
+		dialog = new GeneralConfigForm(checker);
 		add(dialog.getRootPane(), "GeneralConfig");
 	}
 

@@ -17,7 +17,7 @@
 package com.atlassian.theplugin.idea.autoupdate;
 
 import com.atlassian.theplugin.util.InfoServer;
-import com.atlassian.theplugin.configuration.PluginConfiguration;
+import com.atlassian.theplugin.configuration.GeneralConfigurationBean;
 import com.atlassian.theplugin.exception.ThePluginException;
 import com.intellij.openapi.application.ApplicationManager;
 
@@ -29,14 +29,14 @@ import com.intellij.openapi.application.ApplicationManager;
  * To change this template use File | Settings | File Templates.
  */
 public class ForwardToIconHandler implements UpdateActionHandler {
-	private PluginConfiguration pluginConfiguration;
+	private GeneralConfigurationBean generalConfiguration;
 
-	public ForwardToIconHandler(PluginConfiguration pluginConfiguration) {
-		this.pluginConfiguration = pluginConfiguration;
+	public ForwardToIconHandler(GeneralConfigurationBean generalConfiguration) {
+		this.generalConfiguration = generalConfiguration;
 	}
 
 	public void doAction(InfoServer.VersionInfo versionInfo, boolean showConfigPath) throws ThePluginException {
-		if (!versionInfo.getVersion().equals(pluginConfiguration.getGeneralConfigurationData().getRejectedUpgrade())) {
+		if (!versionInfo.getVersion().equals(generalConfiguration.getRejectedUpgrade())) {
 			ConfirmPluginUpdateHandler handler = ConfirmPluginUpdateHandler.getInstance();
 			handler.setNewVersionInfo(versionInfo);
 			ApplicationManager.getApplication().invokeLater(handler);
