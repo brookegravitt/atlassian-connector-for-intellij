@@ -253,6 +253,11 @@
 			<artifactId>joda-time</artifactId>
 			<version>1.5.2</version>
 		</dependency>
+		<dependency>
+			<groupId>xml-resolver</groupId>
+			<artifactId>xml-resolver</artifactId>
+			<version>1.1</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
