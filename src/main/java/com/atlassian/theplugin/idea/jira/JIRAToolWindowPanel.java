@@ -608,6 +608,7 @@ public class JIRAToolWindowPanel extends JPanel {
 				ChangesetCreate c = new ChangesetCreate(issueKey);
 				c.setChangesetName(changeListName);
 				c.setChangestComment(changeListName + "\n");
+				c.setActive(true);
 				c.show();
 				if (c.isOK()) {
 					changeListName = c.getChangesetName();
