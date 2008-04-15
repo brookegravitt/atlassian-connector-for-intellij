@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.autoupdate;
 
-import com.atlassian.theplugin.configuration.PluginConfiguration;
+import com.atlassian.theplugin.configuration.GeneralConfigurationBean;
 import com.atlassian.theplugin.exception.ThePluginException;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.util.InfoServer;
@@ -38,10 +38,10 @@ import com.intellij.openapi.ui.Messages;
 public class NewVersionConfirmHandler implements UpdateActionHandler {
 	private static final String DOWNLOAD_TITLE = "Downloading new " + PluginUtil.getName() + " plugin version ";
 
-	private PluginConfiguration pluginConfiguration;
+	private GeneralConfigurationBean updateConfiguration;
 
-	public NewVersionConfirmHandler(PluginConfiguration pluginConfiguration) {
-		this.pluginConfiguration = pluginConfiguration;
+	public NewVersionConfirmHandler(GeneralConfigurationBean updateConfiguration) {
+		this.updateConfiguration = updateConfiguration;
 	}
 
 	public void doAction(final InfoServer.VersionInfo versionInfo, boolean showConfigPath) throws ThePluginException {
@@ -63,7 +63,7 @@ public class NewVersionConfirmHandler implements UpdateActionHandler {
 
 			Task.Backgroundable downloader = new Task.Backgroundable(IdeaHelper.getCurrentProject(), DOWNLOAD_TITLE, false) {
 				public void run(ProgressIndicator indicator) {
-					new PluginDownloader(versionInfo, pluginConfiguration).run();
+					new PluginDownloader(versionInfo, updateConfiguration).run();
 				}
 			};
 
@@ -76,6 +76,6 @@ public class NewVersionConfirmHandler implements UpdateActionHandler {
 					Messages.getInformationIcon());
 		}
 		// so or so we mark this version so no more popups will appear
-		pluginConfiguration.getGeneralConfigurationData().setRejectedUpgrade(versionInfo.getVersion());
+		updateConfiguration.setRejectedUpgrade(versionInfo.getVersion());
 	}
 }

@@ -16,17 +16,16 @@
 
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.configuration.PluginConfiguration;
-import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
 import com.atlassian.theplugin.idea.autoupdate.NewVersionButtonListener;
+import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * Created by IntelliJ IDEA.
@@ -44,8 +43,9 @@ public class GeneralConfigForm {
 	private JCheckBox reportAnonymousUsageStatisticsCheckBox;
 	private Boolean isAnonymousFeedbackEnabled;
 
-	public GeneralConfigForm(NewVersionChecker checker, PluginConfiguration pluginConfiguration) {
-		checkNowButton.addActionListener(new NewVersionButtonListener(checker, pluginConfiguration));
+	public GeneralConfigForm(NewVersionChecker checker) {
+
+		checkNowButton.addActionListener(new NewVersionButtonListener(checker, this));
 		chkAutoUpdateEnabled.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				chkUnstableVersionsCheckBox.setEnabled(chkAutoUpdateEnabled.isSelected());
