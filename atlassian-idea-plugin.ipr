@@ -299,35 +299,12 @@
     <option name="ADDITIONAL_OPTIONS_STRING" value="" />
   </component>
   <component name="ThePluginSettings">
-    <option name="activeToolWindowTab" value="Bamboo" />
+    <option name="activeToolWindowTab" value="Crucible" />
     <option name="bambooConfiguration">
       <BambooProjectConfiguration>
         <option name="tableConfiguration">
-          <ProjectToolWindowTableConfiguration>
-            <option name="properties">
-              <map>
-                <entry key="Order0" value="0" />
-                <entry key="Order1" value="1" />
-                <entry key="Order2" value="2" />
-                <entry key="Order3" value="3" />
-                <entry key="Order4" value="4" />
-                <entry key="Order5" value="5" />
-                <entry key="Order6" value="6" />
-                <entry key="Order7" value="7" />
-                <entry key="Order8" value="8" />
-                <entry key="Width0" value="20" />
-                <entry key="Width1" value="100" />
-                <entry key="Width2" value="100" />
-                <entry key="Width3" value="120" />
-                <entry key="Width4" value="100" />
-                <entry key="Width5" value="100" />
-                <entry key="Width6" value="128" />
-                <entry key="Width7" value="100" />
-                <entry key="Width8" value="300" />
-              </map>
+          <ProjectToolWindowTableConfiguration />
             </option>
-          </ProjectToolWindowTableConfiguration>
-        </option>
       </BambooProjectConfiguration>
     </option>
     <option name="crucibleConfiguration">
@@ -412,69 +389,6 @@
                             <entry key="filterTypeClass" value="com.atlassian.theplugin.jira.api.JIRAVersionBean" />
                             <entry key="id" value="-1000" />
                             <entry key="name" value="Any" />
-                          </map>
-                        </option>
-                      </JiraFilterEntryBean>
-                      <JiraFilterEntryBean>
-                        <option name="filterEntry">
-                          <map>
-                            <entry key="filterTypeClass" value="com.atlassian.theplugin.jira.api.JIRAAssigneeBean" />
-                            <entry key="id" value="-1000" />
-                            <entry key="name" value="Any User" />
-                            <entry key="value" value="" />
-                          </map>
-                        </option>
-                      </JiraFilterEntryBean>
-                      <JiraFilterEntryBean>
-                        <option name="filterEntry">
-                          <map>
-                            <entry key="filterTypeClass" value="com.atlassian.theplugin.jira.api.JIRAReporterBean" />
-                            <entry key="id" value="-1000" />
-                            <entry key="name" value="Any User" />
-                            <entry key="value" value="null" />
-                          </map>
-                        </option>
-                      </JiraFilterEntryBean>
-                    </list>
-                  </option>
-                </JiraFiltersBean>
-              </value>
-            </entry>
-            <entry key="1207578991038">
-              <value>
-                <JiraFiltersBean>
-                  <option name="manualFilter">
-                    <list>
-                      <JiraFilterEntryBean>
-                        <option name="filterEntry">
-                          <map>
-                            <entry key="description" value="IDE plugin for various atlassian tools, like Crucible, bamboo, JIRA, etc. Currently only IDEA is in scope, but will expand to Eclipse and others" />
-                            <entry key="filterTypeClass" value="com.atlassian.theplugin.jira.api.JIRAProjectBean" />
-                            <entry key="id" value="10024" />
-                            <entry key="key" value="PL" />
-                            <entry key="lead" value="jgorycki" />
-                            <entry key="name" value="IDE Plugin" />
-                            <entry key="url" value="https://studio.atlassian.com/browse/PL" />
-                          </map>
-                        </option>
-                      </JiraFilterEntryBean>
-                      <JiraFilterEntryBean>
-                        <option name="filterEntry">
-                          <map>
-                            <entry key="filterTypeClass" value="com.atlassian.theplugin.jira.api.JIRAIssueTypeBean" />
-                            <entry key="icon" value="https://studio.atlassian.com/images/icons/bug.gif" />
-                            <entry key="id" value="1" />
-                            <entry key="name" value="Bug" />
-                          </map>
-                        </option>
-                      </JiraFilterEntryBean>
-                      <JiraFilterEntryBean>
-                        <option name="filterEntry">
-                          <map>
-                            <entry key="filterTypeClass" value="com.atlassian.theplugin.jira.api.JIRAStatusBean" />
-                            <entry key="icon" value="https://studio.atlassian.com/images/icons/status_open.gif" />
-                            <entry key="id" value="1" />
-                            <entry key="name" value="Open" />
                           </map>
                         </option>
                       </JiraFilterEntryBean>
@@ -608,7 +522,7 @@
             </entry>
           </map>
         </option>
-        <option name="selectedServerId" value="1207578991038" />
+        <option name="selectedServerId" value="1207903998184" />
         <option name="tableConfiguration">
           <ProjectToolWindowTableConfiguration>
             <option name="properties">
@@ -619,10 +533,10 @@
                 <entry key="Order3" value="3" />
                 <entry key="Order4" value="4" />
                 <entry key="Width0" value="20" />
-                <entry key="Width1" value="66" />
-                <entry key="Width2" value="78" />
+                <entry key="Width1" value="70" />
+                <entry key="Width2" value="71" />
                 <entry key="Width3" value="50" />
-                <entry key="Width4" value="556" />
+                <entry key="Width4" value="500" />
               </map>
             </option>
           </ProjectToolWindowTableConfiguration>
