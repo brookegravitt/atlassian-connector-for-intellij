@@ -104,8 +104,10 @@ public final class ConfigPanel extends JPanel {
 			int answer = Messages.showYesNoDialog("We would greatly appreciate if you allow us to collect anonymous "
 					+ "usage statistics to help us provide a better quality product. Is this ok?",
 					PluginUtil.getName() + " request", Messages.getQuestionIcon());
-			localPluginConfigurationCopy.getGeneralConfigurationData().setAnonymousFeedbackEnabled(answer == DialogWrapper.OK_EXIT_CODE);
-			globalConfigurationBean.getGeneralConfigurationData().setAnonymousFeedbackEnabled(answer == DialogWrapper.OK_EXIT_CODE);
+			localPluginConfigurationCopy.getGeneralConfigurationData().
+					setAnonymousFeedbackEnabled(answer == DialogWrapper.OK_EXIT_CODE);
+			globalConfigurationBean.getGeneralConfigurationData().
+					setAnonymousFeedbackEnabled(answer == DialogWrapper.OK_EXIT_CODE);
 			generalConfigPanel.setIsAnonymousFeedbackEnabled(answer == DialogWrapper.OK_EXIT_CODE);
 		}
 		return !this.localPluginConfigurationCopy.equals(globalConfigurationBean)
