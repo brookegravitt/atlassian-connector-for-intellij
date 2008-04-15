@@ -299,11 +299,34 @@
     <option name="ADDITIONAL_OPTIONS_STRING" value="" />
   </component>
   <component name="ThePluginSettings">
-    <option name="activeToolWindowTab" value="Crucible" />
+    <option name="activeToolWindowTab" value="Bamboo" />
     <option name="bambooConfiguration">
       <BambooProjectConfiguration>
         <option name="tableConfiguration">
-          <ProjectToolWindowTableConfiguration />
+          <ProjectToolWindowTableConfiguration>
+            <option name="properties">
+              <map>
+                <entry key="Order0" value="0" />
+                <entry key="Order1" value="1" />
+                <entry key="Order2" value="2" />
+                <entry key="Order3" value="3" />
+                <entry key="Order4" value="4" />
+                <entry key="Order5" value="5" />
+                <entry key="Order6" value="6" />
+                <entry key="Order7" value="7" />
+                <entry key="Order8" value="8" />
+                <entry key="Width0" value="20" />
+                <entry key="Width1" value="100" />
+                <entry key="Width2" value="100" />
+                <entry key="Width3" value="120" />
+                <entry key="Width4" value="100" />
+                <entry key="Width5" value="100" />
+                <entry key="Width6" value="128" />
+                <entry key="Width7" value="100" />
+                <entry key="Width8" value="300" />
+              </map>
+            </option>
+          </ProjectToolWindowTableConfiguration>
         </option>
       </BambooProjectConfiguration>
     </option>
@@ -389,6 +412,69 @@
                             <entry key="filterTypeClass" value="com.atlassian.theplugin.jira.api.JIRAVersionBean" />
                             <entry key="id" value="-1000" />
                             <entry key="name" value="Any" />
+                          </map>
+                        </option>
+                      </JiraFilterEntryBean>
+                      <JiraFilterEntryBean>
+                        <option name="filterEntry">
+                          <map>
+                            <entry key="filterTypeClass" value="com.atlassian.theplugin.jira.api.JIRAAssigneeBean" />
+                            <entry key="id" value="-1000" />
+                            <entry key="name" value="Any User" />
+                            <entry key="value" value="" />
+                          </map>
+                        </option>
+                      </JiraFilterEntryBean>
+                      <JiraFilterEntryBean>
+                        <option name="filterEntry">
+                          <map>
+                            <entry key="filterTypeClass" value="com.atlassian.theplugin.jira.api.JIRAReporterBean" />
+                            <entry key="id" value="-1000" />
+                            <entry key="name" value="Any User" />
+                            <entry key="value" value="null" />
+                          </map>
+                        </option>
+                      </JiraFilterEntryBean>
+                    </list>
+                  </option>
+                </JiraFiltersBean>
+              </value>
+            </entry>
+            <entry key="1207578991038">
+              <value>
+                <JiraFiltersBean>
+                  <option name="manualFilter">
+                    <list>
+                      <JiraFilterEntryBean>
+                        <option name="filterEntry">
+                          <map>
+                            <entry key="description" value="IDE plugin for various atlassian tools, like Crucible, bamboo, JIRA, etc. Currently only IDEA is in scope, but will expand to Eclipse and others" />
+                            <entry key="filterTypeClass" value="com.atlassian.theplugin.jira.api.JIRAProjectBean" />
+                            <entry key="id" value="10024" />
+                            <entry key="key" value="PL" />
+                            <entry key="lead" value="jgorycki" />
+                            <entry key="name" value="IDE Plugin" />
+                            <entry key="url" value="https://studio.atlassian.com/browse/PL" />
+                          </map>
+                        </option>
+                      </JiraFilterEntryBean>
+                      <JiraFilterEntryBean>
+                        <option name="filterEntry">
+                          <map>
+                            <entry key="filterTypeClass" value="com.atlassian.theplugin.jira.api.JIRAIssueTypeBean" />
+                            <entry key="icon" value="https://studio.atlassian.com/images/icons/bug.gif" />
+                            <entry key="id" value="1" />
+                            <entry key="name" value="Bug" />
+                          </map>
+                        </option>
+                      </JiraFilterEntryBean>
+                      <JiraFilterEntryBean>
+                        <option name="filterEntry">
+                          <map>
+                            <entry key="filterTypeClass" value="com.atlassian.theplugin.jira.api.JIRAStatusBean" />
+                            <entry key="icon" value="https://studio.atlassian.com/images/icons/status_open.gif" />
+                            <entry key="id" value="1" />
+                            <entry key="name" value="Open" />
                           </map>
                         </option>
                       </JiraFilterEntryBean>
@@ -522,7 +608,7 @@
             </entry>
           </map>
         </option>
-        <option name="selectedServerId" value="1207903998184" />
+        <option name="selectedServerId" value="1207578991038" />
         <option name="tableConfiguration">
           <ProjectToolWindowTableConfiguration>
             <option name="properties">
@@ -533,10 +619,10 @@
                 <entry key="Order3" value="3" />
                 <entry key="Order4" value="4" />
                 <entry key="Width0" value="20" />
-                <entry key="Width1" value="70" />
-                <entry key="Width2" value="71" />
+                <entry key="Width1" value="66" />
+                <entry key="Width2" value="78" />
                 <entry key="Width3" value="50" />
-                <entry key="Width4" value="500" />
+                <entry key="Width4" value="556" />
               </map>
             </option>
           </ProjectToolWindowTableConfiguration>
@@ -554,48 +640,48 @@
   <component name="libraryTable">
     <library name="CXF Runtime">
       <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/ant-1.6.5.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/aopalliance-1.0.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/asm-2.2.3.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/commons-lang-2.1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/commons-logging-1.1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/cxf-2.0.4-incubator.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/cxf-manifest-incubator.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/geronimo-activation_1.1_spec-1.0-M1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/geronimo-annotation_1.0_spec-1.1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/geronimo-javamail_1.4_spec-1.0-M1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/geronimo-jms_1.1_spec-1.1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/geronimo-stax-api_1.0_spec-1.0.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/geronimo-ws-metadata_2.0_spec-1.1.1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/jaxb-api-2.0.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/jaxb-impl-2.0.5.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/jaxen-1.1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/jaxws-api-2.0.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/jdom-1.0.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/jettison-1.0-RC2.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/jra-1.0-alpha-4.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/js-1.6R5.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/neethi-2.0.2.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/saaj-api-1.3.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/saaj-impl-1.3.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/slf4j-api-1.3.1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/slf4j-jdk14-1.3.1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/spring-beans-2.0.6.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/spring-context-2.0.6.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/spring-core-2.0.6.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/spring-web-2.0.6.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/stax-utils-20060502.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/velocity-1.4.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/velocity-dep-1.4.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/wsdl4j-1.6.1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/wss4j-1.5.1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/wstx-asl-3.2.1.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/xalan-2.7.0.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/xbean-2.2.0.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/xml-apis-1.3.02.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/xml-resolver-1.2.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/XmlSchema-1.3.2.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/xmlsec-1.3.0.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/ant-1.6.5.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/aopalliance-1.0.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/asm-2.2.3.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/commons-lang-2.1.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/commons-logging-1.1.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/cxf-2.0.4-incubator.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/cxf-manifest-incubator.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/geronimo-activation_1.1_spec-1.0-M1.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/geronimo-annotation_1.0_spec-1.1.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/geronimo-javamail_1.4_spec-1.0-M1.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/geronimo-jms_1.1_spec-1.1.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/geronimo-stax-api_1.0_spec-1.0.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/geronimo-ws-metadata_2.0_spec-1.1.1.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/jaxb-api-2.0.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/jaxb-impl-2.0.5.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/jaxen-1.1.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/jaxws-api-2.0.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/jdom-1.0.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/jettison-1.0-RC2.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/jra-1.0-alpha-4.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/js-1.6R5.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/neethi-2.0.2.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/saaj-api-1.3.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/saaj-impl-1.3.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/slf4j-api-1.3.1.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/slf4j-jdk14-1.3.1.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/spring-beans-2.0.6.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/spring-context-2.0.6.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/spring-core-2.0.6.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/spring-web-2.0.6.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/stax-utils-20060502.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/velocity-1.4.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/velocity-dep-1.4.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/wsdl4j-1.6.1.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/wss4j-1.5.1.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/wstx-asl-3.2.1.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/xalan-2.7.0.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/xbean-2.2.0.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/xml-apis-1.3.02.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/xml-resolver-1.2.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/XmlSchema-1.3.2.jar!/" />
+        <root url="jar:///../Jacek/.IntelliJIdea70/system/webservices/apache-cxf-2.0.4-incubator/lib/xmlsec-1.3.0.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />

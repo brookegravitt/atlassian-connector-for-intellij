@@ -25,13 +25,20 @@ import thirdparty.apache.EasySSLProtocolSocketFactory;
 public final class HttpClientFactory {
 	private static MultiThreadedHttpConnectionManager connectionManager;
 
+	private static final int CONNECTION_MANAGER_TIMEOUT = 80000;
 	private static final int CONNECTION_TIMOUT = 20000;
+
+	private static final int TOTAL_MAX_CONNECTIONS = 50;
+
+	private static final int DEFAULT_MAX_CONNECTIONS_PER_HOST = 3;
 
 	static {
 		Protocol.registerProtocol("https", new Protocol(
 				"https", (ProtocolSocketFactory) new EasySSLProtocolSocketFactory(), EasySSLProtocolSocketFactory.SSL_PORT));
 		connectionManager =	new MultiThreadedHttpConnectionManager();
 		connectionManager.getParams().setConnectionTimeout(CONNECTION_TIMOUT);
+		connectionManager.getParams().setMaxTotalConnections(TOTAL_MAX_CONNECTIONS);
+		connectionManager.getParams().setDefaultMaxConnectionsPerHost(DEFAULT_MAX_CONNECTIONS_PER_HOST);		
 	}
 
 	///CLOVER:OFF
@@ -40,7 +47,9 @@ public final class HttpClientFactory {
 	///CLOVER:ON
 
 	public static HttpClient getClient() {
-		return new HttpClient(connectionManager);
+		HttpClient httpClient = new HttpClient(connectionManager);
+		httpClient.getParams().setConnectionManagerTimeout(CONNECTION_MANAGER_TIMEOUT);
+		return httpClient;
 	}
 
 	public static MultiThreadedHttpConnectionManager getConnectionManager() {
