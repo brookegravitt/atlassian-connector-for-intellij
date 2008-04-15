@@ -21,13 +21,13 @@ import com.intellij.util.xmlb.annotations.Transient;
 import java.util.Collection;
 import java.util.ArrayList;
 
-public class AbstractConfigurationBean implements ProductServerConfiguration {
+public class AbstractServerConfigurationBean implements ProductServerConfiguration {
     protected Collection<ServerBean> servers = new ArrayList<ServerBean>();
 
-    public AbstractConfigurationBean() {
+    public AbstractServerConfigurationBean() {
     }
 
-    public AbstractConfigurationBean(ProductServerConfiguration cfg) {
+    public AbstractServerConfigurationBean(ProductServerConfiguration cfg) {
 		for (Server server : cfg.getServers()) {
 			Server newServer = new ServerBean(server);
 			storeServer(newServer);
@@ -144,7 +144,7 @@ public class AbstractConfigurationBean implements ProductServerConfiguration {
             return false;
         }
 
-        AbstractConfigurationBean that = (AbstractConfigurationBean) o;
+        AbstractServerConfigurationBean that = (AbstractServerConfigurationBean) o;
 
         if (!servers.equals(that.servers)) {
             return false;

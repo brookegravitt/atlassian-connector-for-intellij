@@ -135,7 +135,7 @@ public class PluginDownloader { //implements Runnable {
 		if (!pluginUrl.contains("?")) {
 			pluginUrl += "?";
 		}
-		pluginUrl += "uid=" + URLEncoder.encode(Long.toString(pluginConfiguration.getUid()), "UTF-8");
+		pluginUrl += "uid=" + URLEncoder.encode(Long.toString(pluginConfiguration.getGeneralConfigurationData().getUid()), "UTF-8");
 
 		PluginUtil.getLogger().info("Downloading plugin archive from: " + pluginUrl);
 
