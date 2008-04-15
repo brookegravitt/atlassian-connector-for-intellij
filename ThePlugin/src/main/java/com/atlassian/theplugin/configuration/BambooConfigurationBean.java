@@ -24,7 +24,7 @@ import java.util.ArrayList;
  * Bean storing information about Bamboo servers etc.<p>
  * The class serves both as a configuration provider for plugin logic and Bean for persistence.
  */
-public class BambooConfigurationBean extends AbstractConfigurationBean {
+public class BambooConfigurationBean extends AbstractServerConfigurationBean {
 
 	private BambooTooltipOption bambooTooltipOption;
 	private int pollTime = 1;

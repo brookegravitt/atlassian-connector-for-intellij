@@ -37,11 +37,12 @@ import com.intellij.openapi.ui.Messages;
  */
 public class NewVersionConfirmHandler implements UpdateActionHandler {
 	private static final String DOWNLOAD_TITLE = "Downloading new " + PluginUtil.getName() + " plugin version ";
+
+	private PluginConfiguration pluginConfiguration;
+
 	public NewVersionConfirmHandler(PluginConfiguration pluginConfiguration) {
 		this.pluginConfiguration = pluginConfiguration;
 	}
-
-	private PluginConfiguration pluginConfiguration;
 
 	public void doAction(final InfoServer.VersionInfo versionInfo, boolean showConfigPath) throws ThePluginException {
 		Version aVersion = versionInfo.getVersion();
@@ -75,6 +76,6 @@ public class NewVersionConfirmHandler implements UpdateActionHandler {
 					Messages.getInformationIcon());
 		}
 		// so or so we mark this version so no more popups will appear
-		pluginConfiguration.setRejectedUpgrade(versionInfo.getVersion());
+		pluginConfiguration.getGeneralConfigurationData().setRejectedUpgrade(versionInfo.getVersion());
 	}
 }

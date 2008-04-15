@@ -45,7 +45,7 @@ public class NewVersionCheckerTest extends TestCase {
 	@Override
 	protected void setUp() throws Exception {
 		config = new PluginConfigurationBean();
-		uid = config.getUid();
+		uid = config.getGeneralConfigurationData().getUid();
 
 		httpServer = new org.mortbay.jetty.Server(0);
 		httpServer.start();
