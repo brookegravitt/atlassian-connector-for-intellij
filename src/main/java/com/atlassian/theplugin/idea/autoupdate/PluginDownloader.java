@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.autoupdate;
 
-import com.atlassian.theplugin.configuration.PluginConfiguration;
+import com.atlassian.theplugin.configuration.GeneralConfigurationBean;
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
@@ -56,7 +56,7 @@ public class PluginDownloader { //implements Runnable {
 	private static final int TIMEOUT = 15000;
 	private static final int EXTENTION_LENGHT = 3;
 	private InfoServer.VersionInfo newVersion;
-	private PluginConfiguration pluginConfiguration;
+	private GeneralConfigurationBean updateConfiguration;
 
 	public void setTimeout(int timeout) {
 		this.timeout = timeout;
@@ -69,9 +69,9 @@ public class PluginDownloader { //implements Runnable {
 	private int timeout = TIMEOUT;
 	private int readTimeout = TIMEOUT;
 
-	public PluginDownloader(InfoServer.VersionInfo newVersion, PluginConfiguration pluginConfiguration) {
+	public PluginDownloader(InfoServer.VersionInfo newVersion, GeneralConfigurationBean updateConfiguration) {
 		this.newVersion = newVersion;
-		this.pluginConfiguration = pluginConfiguration;
+		this.updateConfiguration = updateConfiguration;
 	}
 
 	public void run() {
@@ -99,7 +99,7 @@ public class PluginDownloader { //implements Runnable {
 			PluginUtil.getLogger().info("Error registering action in IDEA", e);
 		}
 	}
-	
+
 	private void promptShutdownAndShutdown() {
 		ApplicationManager.getApplication().invokeLater(new Runnable() {
 			public void run() {
@@ -136,8 +136,7 @@ public class PluginDownloader { //implements Runnable {
 		if (!pluginUrl.contains("?")) {
 			pluginUrl += "?";
 		}
-		pluginUrl += "uid=" + URLEncoder.encode(Long.toString(
-				pluginConfiguration.getGeneralConfigurationData().getUid()), "UTF-8");
+		pluginUrl += "uid=" + URLEncoder.encode(Long.toString(updateConfiguration.getUid()), "UTF-8");
 
 		PluginUtil.getLogger().info("Downloading plugin archive from: " + pluginUrl);
 
@@ -178,7 +177,7 @@ public class PluginDownloader { //implements Runnable {
 		String srcName = connection.getURL().toString();
 		String ext = srcName.substring(srcName.lastIndexOf("."));
 		if (ext.contains("?")) {
-			ext = ext.substring(0, ext.indexOf("?"));	
+			ext = ext.substring(0, ext.indexOf("?"));
 		}
 		String newName = pluginArchiveFile.getPath().substring(0, pluginArchiveFile.getPath().length()
 				- EXTENTION_LENGHT) + ext;

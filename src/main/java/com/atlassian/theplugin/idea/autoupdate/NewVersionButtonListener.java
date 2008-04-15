@@ -17,8 +17,9 @@
 package com.atlassian.theplugin.idea.autoupdate;
 
 import com.atlassian.theplugin.ConnectionWrapper;
-import com.atlassian.theplugin.configuration.PluginConfiguration;
+import com.atlassian.theplugin.configuration.GeneralConfigurationBean;
 import com.atlassian.theplugin.exception.ThePluginException;
+import com.atlassian.theplugin.idea.GeneralConfigForm;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.util.Connector;
 import com.atlassian.theplugin.util.InfoServer;
@@ -44,16 +45,23 @@ public class NewVersionButtonListener implements ActionListener {
 	private ConnectionWrapper checkerThread;
 	private static final long CHECK_CANCEL_INTERVAL = 500; //milis
 	private NewVersionChecker checker;
-	private PluginConfiguration pluginConfiguration;
+	private GeneralConfigForm generalConfigForm;
 	private InfoServer.VersionInfo newVersion;
+	private GeneralConfigurationBean updateConfig = new GeneralConfigurationBean();
 
-	public NewVersionButtonListener(NewVersionChecker checker, PluginConfiguration pluginConfiguration) {
+	public NewVersionButtonListener(NewVersionChecker checker, GeneralConfigForm generalConfigForm) {
 		this.checker = checker;
-		this.pluginConfiguration = pluginConfiguration;
+		this.generalConfigForm = generalConfigForm;
 	}
 	
 	public void actionPerformed(ActionEvent event) {
+		updateConfig.setAnonymousFeedbackEnabled(generalConfigForm.getIsAnonymousFeedbackEnabled());
+		updateConfig.setAutoUpdateEnabled(generalConfigForm.getIsAutoUpdateEnabled());
+		updateConfig.setCheckUnstableVersionsEnabled(generalConfigForm.getIsCheckUnstableVersionsEnabled());
+		updateConfig.setUid(IdeaHelper.getAppComponent().getState().getGeneralConfigurationData().getUid());
+
 		ProgressManager.getInstance().run(new UpdateModalTask());
+
 	}
 
 	private class UpdateServerConnection extends Connector {
@@ -62,7 +70,7 @@ public class NewVersionButtonListener implements ActionListener {
 				public void doAction(InfoServer.VersionInfo versionInfo, boolean showConfigPath) throws ThePluginException {
 					newVersion = versionInfo;
 				}
-			}, false);
+			}, false, updateConfig);
 		}
 	}
 
@@ -112,7 +120,7 @@ public class NewVersionButtonListener implements ActionListener {
 						EventQueue.invokeLater(new Runnable() {
 							public void run() {
 								try {
-									new NewVersionConfirmHandler(pluginConfiguration).doAction(newVersion, false);
+									new NewVersionConfirmHandler(updateConfig).doAction(newVersion, false);
 								} catch (ThePluginException e) {
 									showMessageDialog(e.getMessage(),
 											"Error retrieving new version", Messages.getErrorIcon());

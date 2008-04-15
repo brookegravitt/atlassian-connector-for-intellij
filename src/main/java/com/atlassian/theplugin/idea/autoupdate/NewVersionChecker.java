@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea.autoupdate;
 
 import com.atlassian.theplugin.configuration.PluginConfiguration;
+import com.atlassian.theplugin.configuration.GeneralConfigurationBean;
 import com.atlassian.theplugin.exception.VersionServiceException;
 import com.atlassian.theplugin.exception.ThePluginException;
 import com.atlassian.theplugin.exception.IncorrectVersionException;
@@ -33,7 +34,7 @@ import java.util.TimerTask;
 public final class NewVersionChecker implements SchedulableChecker {
 	private static final long PLUGIN_UPDATE_ATTEMPT_DELAY = 60 * 60 * 1000; // every hour
 
-	private final transient PluginConfiguration pluginConfiguration;
+	private transient PluginConfiguration pluginConfiguration;
 
 	public NewVersionChecker(PluginConfiguration pluginConfiguration) {
 		this.pluginConfiguration = pluginConfiguration;
@@ -47,7 +48,7 @@ public final class NewVersionChecker implements SchedulableChecker {
 		return new TimerTask() {
 			public void run() {
 				try {
-					doRun(new ForwardToIconHandler(pluginConfiguration), true);
+					doRun(new ForwardToIconHandler(pluginConfiguration.getGeneralConfigurationData()), true);
 				} catch (ThePluginException e) {
 					PluginUtil.getLogger().info("Error checking new version: " + e.getMessage());
 				}
@@ -68,26 +69,35 @@ public final class NewVersionChecker implements SchedulableChecker {
 	}
 
 	protected void doRun(UpdateActionHandler action, boolean showConfigPath) throws ThePluginException {
-		if (!pluginConfiguration.getGeneralConfigurationData().isAutoUpdateEnabled()) {
+		doRun(action, showConfigPath, pluginConfiguration.getGeneralConfigurationData());
+	}
+
+	protected void doRun(UpdateActionHandler action, boolean showConfigPath, GeneralConfigurationBean configuration)
+			throws ThePluginException {
+		if (!configuration.isAutoUpdateEnabled()) {
 			return;
 		}
 		if (action == null) {
 			throw new IllegalArgumentException("Action handler not provided.");
 		}
-		InfoServer.VersionInfo versionInfo = getLatestVersion();
+
+		// get latest version
+		InfoServer.VersionInfo versionInfo = getLatestVersion(configuration);
 		Version newVersion = versionInfo.getVersion();
+		// get current version
 		Version thisVersion = new Version(PluginUtil.getVersion());
 		if (newVersion.greater(thisVersion)) {
 			action.doAction(versionInfo, showConfigPath);
 		}
 	}
 
-	private InfoServer.VersionInfo getLatestVersion() throws VersionServiceException, IncorrectVersionException {
+	private InfoServer.VersionInfo getLatestVersion(GeneralConfigurationBean configuration)
+			throws VersionServiceException, IncorrectVersionException {
 //		InfoServer server =  new InfoServer(PluginUtil.STABLE_VERSION_INFO_URL,
 //				pluginConfiguration.getUid());
 		return InfoServer.getLatestPluginVersion(
-				pluginConfiguration.getGeneralConfigurationData().getUid(),
-				pluginConfiguration.getGeneralConfigurationData().isCheckUnstableVersionsEnabled());
+				configuration.getUid(),
+				configuration.isCheckUnstableVersionsEnabled());
 	}
 
 }
