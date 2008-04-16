@@ -41,7 +41,17 @@ public class GeneralConfigForm {
 	private JPanel autoUpdateConfigPanel;
 	private JCheckBox chkUnstableVersionsCheckBox;
 	private JCheckBox reportAnonymousUsageStatisticsCheckBox;
+	private JRadioButton checkNewVersionStable;
+	private JRadioButton checkNewVersionAll;
 	private Boolean isAnonymousFeedbackEnabled;
+
+	public JRadioButton getCheckNewVersionStable() {
+		return checkNewVersionStable;
+	}
+
+	public JRadioButton getCheckNewVersionAll() {
+		return checkNewVersionAll;
+	}
 
 	public GeneralConfigForm(NewVersionChecker checker) {
 
@@ -112,7 +122,7 @@ public class GeneralConfigForm {
 		mainPanel.setLayout(new GridBagLayout());
 		mainPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12), null));
 		autoUpdateConfigPanel = new JPanel();
-		autoUpdateConfigPanel.setLayout(new GridLayoutManager(2, 3, new Insets(0, 12, 12, 12), -1, -1));
+		autoUpdateConfigPanel.setLayout(new GridLayoutManager(3, 3, new Insets(0, 12, 12, 12), -1, -1));
 		GridBagConstraints gbc;
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;
@@ -136,12 +146,19 @@ public class GeneralConfigForm {
 		final Spacer spacer1 = new Spacer();
 		panel1.add(spacer1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, new Dimension(12, -1), null, null, 0, false));
 		chkAutoUpdateEnabled = new JCheckBox();
-		chkAutoUpdateEnabled.setText("Enabled");
+		chkAutoUpdateEnabled.setText("Enabled (stable version)");
 		chkAutoUpdateEnabled.setMnemonic('E');
 		chkAutoUpdateEnabled.setDisplayedMnemonicIndex(0);
 		autoUpdateConfigPanel.add(chkAutoUpdateEnabled, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		final Spacer spacer2 = new Spacer();
 		autoUpdateConfigPanel.add(spacer2, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+		checkNewVersionStable = new JRadioButton();
+		checkNewVersionStable.setSelected(true);
+		checkNewVersionStable.setText("Stable only");
+		autoUpdateConfigPanel.add(checkNewVersionStable, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		checkNewVersionAll = new JRadioButton();
+		checkNewVersionAll.setText("Stable + snaphot");
+		autoUpdateConfigPanel.add(checkNewVersionAll, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		final JPanel spacer3 = new JPanel();
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;
@@ -160,6 +177,10 @@ public class GeneralConfigForm {
 		gbc.gridy = 2;
 		gbc.anchor = GridBagConstraints.WEST;
 		mainPanel.add(reportAnonymousUsageStatisticsCheckBox, gbc);
+		ButtonGroup buttonGroup;
+		buttonGroup = new ButtonGroup();
+		buttonGroup.add(checkNewVersionStable);
+		buttonGroup.add(checkNewVersionAll);
 	}
 
 	/**
