@@ -31,6 +31,7 @@ import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.jira.api.JIRASavedFilterBean;
+import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -335,7 +336,7 @@ public class JIRAToolWindowPanel extends JPanel {
 			hideJIRAIssuesFilter();
 			final JIRAServer jiraServer = new JIRAServer(server, jiraServerFacade);
 			IdeaHelper.setCurrentJIRAServer(jiraServer);
-			new Thread(new SelectServerTask(jiraServer), "atlassian-idea-plugin jira tab select server").start();
+			new Thread(new SelectServerTask(jiraServer, this), "atlassian-idea-plugin jira tab select server").start();
 		}
 	}
 
@@ -345,9 +346,11 @@ public class JIRAToolWindowPanel extends JPanel {
 
 	private final class SelectServerTask implements Runnable {
 		private JIRAServer jiraServer;
+		private JIRAToolWindowPanel jiraPanel;
 
-		public SelectServerTask(JIRAServer jiraServer) {
+		public SelectServerTask(JIRAServer jiraServer, JIRAToolWindowPanel jiraToolWindowPanel) {
 			this.jiraServer = jiraServer;
+			this.jiraPanel = jiraToolWindowPanel;
 		}
 
 		public void run() {
@@ -359,6 +362,7 @@ public class JIRAToolWindowPanel extends JPanel {
 			if (jiraServer.checkServer() == false) {
 				setStatusMessage("Unable to connect to server." + jiraServer.getErrorMessage());
 				progressAnimation.stopProgressAnimation();
+				EventQueue.invokeLater(new MissingPasswordHandlerJIRA(jiraServerFacade, jiraServer.getServer(), jiraPanel));
 				return;
 			}
 			setStatusMessage("Retrieving saved filters...");
