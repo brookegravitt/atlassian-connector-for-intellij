@@ -56,12 +56,11 @@ public class NewVersionButtonListener implements ActionListener {
 	
 	public void actionPerformed(ActionEvent event) {
 		updateConfig.setAnonymousFeedbackEnabled(generalConfigForm.getIsAnonymousFeedbackEnabled());
-		updateConfig.setAutoUpdateEnabled(generalConfigForm.getIsAutoUpdateEnabled());
-		updateConfig.setCheckUnstableVersionsEnabled(generalConfigForm.getIsCheckUnstableVersionsEnabled());
+		updateConfig.setAutoUpdateEnabled(true);
+		updateConfig.setCheckUnstableVersionsEnabled(generalConfigForm.getCheckNewVersionAll().isSelected());
 		updateConfig.setUid(IdeaHelper.getAppComponent().getState().getGeneralConfigurationData().getUid());
 
 		ProgressManager.getInstance().run(new UpdateModalTask());
-
 	}
 
 	private class UpdateServerConnection extends Connector {
