@@ -358,6 +358,7 @@ public class JIRAToolWindowPanel extends JPanel {
 
 			if (jiraServer.checkServer() == false) {
 				setStatusMessage("Unable to connect to server." + jiraServer.getErrorMessage());
+				progressAnimation.stopProgressAnimation();
 				return;
 			}
 			setStatusMessage("Retrieving saved filters...");
