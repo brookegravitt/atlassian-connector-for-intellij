@@ -21,7 +21,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.atlassian.theplugin</groupId>
 	<artifactId>atlassian-idea-plugin</artifactId>
-	<version>1.1.0-SNAPSHOT</version>
+	<version>1.0.2</version>
 	<packaging>jar</packaging>
 	<inceptionYear>2008</inceptionYear>
 	<licenses>
@@ -50,9 +50,9 @@
 		<version>14</version>
 	</parent>
 	<scm>
-		<connection>scm:svn:https://studio.atlassian.com/svn/PL/trunk/ThePlugin/</connection>
-		<developerConnection>scm:svn:https://studio.atlassian.com/svn/PL/trunk/ThePlugin/</developerConnection>
-		<url>https://studio.atlassian.com/svn/PL/trunk/ThePlugin/</url>
+		<connection>scm:svn:https://studio.atlassian.com/svn/PL/tags/atlassian-idea-plugin-1.0.2</connection>
+		<developerConnection>scm:svn:https://studio.atlassian.com/svn/PL/tags/atlassian-idea-plugin-1.0.2</developerConnection>
+		<url>https://studio.atlassian.com/svn/PL/tags/atlassian-idea-plugin-1.0.2</url>
 	</scm>
 	<profiles>
 		<profile>
