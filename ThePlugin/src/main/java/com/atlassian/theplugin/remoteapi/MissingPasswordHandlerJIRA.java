@@ -51,14 +51,14 @@ public class MissingPasswordHandlerJIRA implements Runnable {
 			isDialogShown = true;
 			boolean wasCanceled = false;
 
-			Server server = ConfigurationFactory.getConfiguration().getProductServers(serverFacade.getServerType()).
+			Server jiraServer = ConfigurationFactory.getConfiguration().getProductServers(serverFacade.getServerType()).
 					getServer(this.server);
 
 //			if (server.getIsConfigInitialized()) {
 //				return; //????
 //			}
-			PasswordDialog dialog = new PasswordDialog(server, serverFacade);
-			dialog.setUserName(server.getUserName());
+			PasswordDialog dialog = new PasswordDialog(jiraServer, serverFacade);
+			dialog.setUserName(jiraServer.getUserName());
 			dialog.pack();
 			JPanel panel = dialog.getPasswordPanel();
 
@@ -68,9 +68,9 @@ public class MissingPasswordHandlerJIRA implements Runnable {
 			if (answer == JOptionPane.OK_OPTION) {
 				String password = dialog.getPasswordString();
 				Boolean shouldPasswordBeStored = dialog.getShouldPasswordBeStored();
-				server.setPasswordString(password, shouldPasswordBeStored);
-				server.setUserName(dialog.getUserName());
-				jiraPanel.selectServer(server);
+				jiraServer.setPasswordString(password, shouldPasswordBeStored);
+				jiraServer.setUserName(dialog.getUserName());
+				jiraPanel.selectServer(jiraServer);
 			} else {
 				wasCanceled = true;
 			}
