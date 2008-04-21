@@ -22,10 +22,12 @@ import javax.swing.*;
 import java.awt.*;
 
 public class JIRAQueryFragmentListRenderer extends DefaultListCellRenderer {
-	public Component getListCellRendererComponent(JList jList, Object o, int i, boolean b, boolean b1) {
-		JLabel comp = (JLabel) super.getListCellRendererComponent(jList, o, i, b, b1);
-		JIRAQueryFragment c = (JIRAQueryFragment) o;
-		comp.setText(c.getName());
+	public Component getListCellRendererComponent(
+			JList jList, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+		JLabel comp = (JLabel) super.getListCellRendererComponent(jList, value, index, isSelected, cellHasFocus);
+		if (comp != null && value != null) {
+			comp.setText(((JIRAQueryFragment) value).getName());
+		}
 		return comp;
 	}
 }
