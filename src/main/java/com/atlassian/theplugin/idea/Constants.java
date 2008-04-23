@@ -33,6 +33,7 @@ public final class Constants {
 	public static final String HELP_BAMBOO       = "theplugin.bamboo";
 	public static final String HELP_CRUCIBLE     = "theplugin.crucible";
 	public static final String HELP_JIRA         = "theplugin.jira";
+	public static final String HELP_TEST_CONNECTION = "theplugin.testconnection";	
 
 	public static final Icon HELP_ICON = IconLoader.getIcon("/actions/help.png");
 }
