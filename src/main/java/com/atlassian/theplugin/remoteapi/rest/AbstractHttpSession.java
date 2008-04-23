@@ -79,6 +79,7 @@ public abstract class AbstractHttpSession {
 
 			try {
 				method.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
+				method.getParams().setSoTimeout(client.getParams().getSoTimeout());
 				adjustHttpHeader(method);
 
 				client.executeMethod(method);
@@ -118,6 +119,7 @@ public abstract class AbstractHttpSession {
 
 			try {
 				method.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
+				method.getParams().setSoTimeout(client.getParams().getSoTimeout());
 				adjustHttpHeader(method);
 
 				XMLOutputter serializer = new XMLOutputter(Format.getPrettyFormat());
