@@ -71,7 +71,7 @@
                 <artifactId>maven-deploy-plugin</artifactId>
                 <inherited>false</inherited>
                 <configuration>
-                    <altDeploymentRepository>atlassian-m2-snapshot-repository::default::dav:https://maven.atlassian.com/public-snapshot</altDeploymentRepository>
+                    <altDeploymentRepository>atlassian-m2-snapshot-repository::default::dav:https://maven.atlassian.com/public/</altDeploymentRepository>
                 </configuration>
             </plugin>
         </plugins>
