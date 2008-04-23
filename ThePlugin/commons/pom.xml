@@ -31,8 +31,8 @@
     <packaging>pom</packaging>
     <inceptionYear>2008</inceptionYear>
     
-    <name>Atlassian Intellij IDEA Plugin</name>
-    <description>An Intellij IDEA plugin for Atlassian's tools.</description>
+    <name>Atlassian Plugin POM</name>
+    <description>Parent POM for plugins integrating Atlassian tools.</description>
     
     <scm>
         <connection>scm:svn:https://studio.atlassian.com/svn/PL/trunk/ThePlugin/</connection>
