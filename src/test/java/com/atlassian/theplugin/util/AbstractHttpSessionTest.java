@@ -53,47 +53,11 @@ public class AbstractHttpSessionTest extends TestCase {
 	}
 
 
-	public void testRetrieveGetResponseWithConnectionTimeout() throws IOException, RemoteApiSessionExpiredException, JDOMException, RemoteApiMalformedUrlException {
-		int timeout; // 7 sec
-		long t1;
-		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort() + SOME_URL;
-		mockServer.expect(SOME_URL, new TimeoutingOnConnectCallback());
-		TestHttpSession session = new TestHttpSession(mockBaseUrl);
-
-		timeout = 7000;
-		HttpClientFactory.setConnectionTimout(timeout);
-		HttpClientFactory.setConnectionManagerTimeout(timeout);
-		t1 = System.currentTimeMillis();
-		try {
-			session.retrieveGetResponse(mockBaseUrl);
-			fail("It should fail but it didn't1");
-		} catch (SocketTimeoutException e) {
-			long diff = System.currentTimeMillis() - t1;
-			if (diff < timeout / 2) { //too fast
-				fail("Timeout doesn't work.");
-			}
-		}
-
-		timeout = 100;
-		HttpClientFactory.setConnectionTimout(timeout);
-		HttpClientFactory.setConnectionManagerTimeout(timeout);
-		t1 = System.currentTimeMillis();
-		try {
-			session.retrieveGetResponse(mockBaseUrl);
-			fail("It should fail but it didn't1");
-		} catch (SocketTimeoutException e) {
-			long diff = System.currentTimeMillis() - t1;
-			if (diff > timeout * 20) { //too slow
-				fail("Timeout doesn't work.");
-			}
-		}
-	}
-
 	public void testRetrieveGetResponseWithDataTransferTimeout() throws RemoteApiMalformedUrlException, IOException, RemoteApiSessionExpiredException, JDOMException {
 		int timeout; // 7 sec
 		long t1;
 		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort() + SOME_URL;
-		mockServer.expect(SOME_URL, new TimeoutingOnConnectCallback());
+		mockServer.expect(SOME_URL, new TimeoutingOnDataTransferCallback());
 		TestHttpSession session = new TestHttpSession(mockBaseUrl);
 
 		timeout = 100;
@@ -108,17 +72,6 @@ public class AbstractHttpSessionTest extends TestCase {
 				fail("Timeout doesn't work.");
 			}
 		}
-	}
-
-	private static class TimeoutingOnConnectCallback implements JettyMockServer.Callback {
-		public void onExpectedRequest(String s, HttpServletRequest request, HttpServletResponse response)
-				throws Exception {
-			Thread.sleep(10000);
-			response.setContentType("text/xml");
-			response.getOutputStream().write("<a/>".getBytes("UTF-8"));
-			response.getOutputStream().flush();
-		}
-
 	}
 
 	private class TimeoutingOnDataTransferCallback implements JettyMockServer.Callback {
