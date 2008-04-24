@@ -32,12 +32,15 @@ public final class HttpClientFactory {
 	private static final int TOTAL_MAX_CONNECTIONS = 50;
 
 	private static final int DEFAULT_MAX_CONNECTIONS_PER_HOST = 3;
+	private static int dataTimeout = DATA_TIMOUT;
+	private static int connectionTimout = CONNECTION_TIMOUT;
+	private static int connectionManagerTimeout = CONNECTION_MANAGER_TIMEOUT;
 
 	static {
 		Protocol.registerProtocol("https", new Protocol(
 				"https", (ProtocolSocketFactory) new EasySSLProtocolSocketFactory(), EasySSLProtocolSocketFactory.SSL_PORT));
 		connectionManager =	new MultiThreadedHttpConnectionManager();
-		connectionManager.getParams().setConnectionTimeout(CONNECTION_TIMOUT);
+		connectionManager.getParams().setConnectionTimeout(getConnectionTimeout());
 		connectionManager.getParams().setMaxTotalConnections(TOTAL_MAX_CONNECTIONS);
 		connectionManager.getParams().setDefaultMaxConnectionsPerHost(DEFAULT_MAX_CONNECTIONS_PER_HOST);
 	}
@@ -45,16 +48,42 @@ public final class HttpClientFactory {
 	///CLOVER:OFF
 	private HttpClientFactory() {		
 	}
-	///CLOVER:ON
+
+	protected static void setDataTimeout(int dataTimeout) {
+		HttpClientFactory.dataTimeout = dataTimeout;
+	}
+
+	protected static void setConnectionTimout(int connectionTimout) {
+		HttpClientFactory.connectionTimout = connectionTimout;
+	}
+
+	protected static void setConnectionManagerTimeout(int connectionManagerTimeout) {
+		HttpClientFactory.connectionManagerTimeout = connectionManagerTimeout;
+	}
+///CLOVER:ON
 
 	public static HttpClient getClient() {
 		HttpClient httpClient = new HttpClient(connectionManager);
-		httpClient.getParams().setConnectionManagerTimeout(CONNECTION_MANAGER_TIMEOUT);
-		httpClient.getParams().setSoTimeout(DATA_TIMOUT);
+		httpClient.getParams().setConnectionManagerTimeout(getConnectionManagerTimeout());
+		httpClient.getParams().setSoTimeout(getDataTimeout());
 		return httpClient;
 	}
+
+	private static int getConnectionManagerTimeout() {
+		return connectionManagerTimeout;
+	}
+
+	private static int getDataTimeout() {
+		return dataTimeout;
+	}
+
+	private static int getConnectionTimeout() {
+		return connectionTimout;
+	}
+
 
 	public static MultiThreadedHttpConnectionManager getConnectionManager() {
 		return connectionManager;
 	}
+
 }
