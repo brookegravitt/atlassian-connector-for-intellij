@@ -16,16 +16,13 @@
 
 package com.atlassian.theplugin;
 
-import com.intellij.psi.PsiFile;
 import com.intellij.psi.search.scope.packageSet.CustomScopesProvider;
 import com.intellij.psi.search.scope.packageSet.NamedScope;
-import com.intellij.psi.search.scope.packageSet.NamedScopesHolder;
 import com.intellij.psi.search.scope.packageSet.PackageSet;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -36,35 +33,52 @@ import java.util.List;
  */
 public class CrucibleReviewScopeProvider implements CustomScopesProvider {
 	public static final String SCOPE_NAME = "Crucible Reviews";
-	public static final NamedScope SCOPE = new NamedScope(SCOPE_NAME, new ToReviewPackageSet("CR-6"));
 
+	private Map<String, NamedScope> scopes = new HashMap<String, NamedScope>();
 
 	public CrucibleReviewScopeProvider() {
 	}
 
 	@NotNull
 	public List<NamedScope> getCustomScopes() {
-		return Collections.EMPTY_LIST;
+		return Collections.unmodifiableList(new ArrayList<NamedScope>(scopes.values()));
 	}
 
-	private static class ToReviewPackageSet implements PackageSet {
-		private String review;
+	public void addScope(String name, ToReviewAbstractPackageSet packageSet) {
+		if (scopes.containsKey(name)) {
+			throw new IllegalArgumentException("Scope of that name (" + name + ") already exists.");
+		}
+		packageSet.setName(name);
+		scopes.put(name, new NamedScope(name, packageSet));
+	}
 
-		public ToReviewPackageSet(String review) {
-			this.review = review;
+	public void removeScope(String name) {
+		if (!scopes.containsKey(name)) {
+			throw new IllegalArgumentException("Scope of that name (" + name + ") already exists.");
+		}
+		scopes.remove(name);
+	}
+
+
+	public abstract class ToReviewAbstractPackageSet implements PackageSet {
+
+		private String name;
+
+		protected void setName(String name) {
+			this.name = name;
 		}
 
-		public boolean contains(final PsiFile file, final NamedScopesHolder holder) {
-			return true;
+		protected ToReviewAbstractPackageSet() {
+			super();
 		}
 
 		public PackageSet createCopy() {
-			return new ToReviewPackageSet(review);
+			return this;
 		}
 
 		@NonNls
 		public String getText() {
-			return "Review " + review;
+			return "Review " + name;
 		}
 
 		public int getNodePriority() {
