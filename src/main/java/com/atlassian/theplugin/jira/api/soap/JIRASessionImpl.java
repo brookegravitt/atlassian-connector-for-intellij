@@ -63,12 +63,13 @@ public class JIRASessionImpl implements JIRASession {
 		}
 	}
 
-	public void logWork(JIRAIssue issue) throws RemoteApiException {
+	public void logWork(JIRAIssue issue, String timeSpent, String comment) throws RemoteApiException {
 		RemoteWorklog workLog = new RemoteWorklog();
-		Calendar yesterday = Calendar.getInstance();
-		yesterday.roll(Calendar.HOUR, ONE_DAY_AGO);
-		workLog.setStartDate(yesterday);
-		workLog.setTimeSpent("1d");
+		// todo: this is broken - we should actually ask for starting date instead of using the "right now" time
+		Calendar now = Calendar.getInstance();
+		workLog.setStartDate(now);
+		workLog.setTimeSpent(timeSpent);
+		workLog.setComment(comment);
 		try {
 			service.addWorklogAndAutoAdjustRemainingEstimate(token, issue.getKey(), workLog);
 		} catch (RemoteException e) {

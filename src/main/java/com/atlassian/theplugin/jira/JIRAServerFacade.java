@@ -58,5 +58,5 @@ public interface JIRAServerFacade extends ProductServerFacade {
 
     JIRAIssue createIssue(Server server, JIRAIssue issue) throws JIRAException;
 
-	void logWork(Server server, JIRAIssue issue) throws JIRAException;
+	void logWork(Server server, JIRAIssue issue, String timeSpent, String comment) throws JIRAException;
 }
