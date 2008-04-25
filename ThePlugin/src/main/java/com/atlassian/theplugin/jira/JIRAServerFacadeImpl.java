@@ -19,15 +19,38 @@ package com.atlassian.theplugin.jira;
 import com.atlassian.theplugin.ServerType;
 import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.jira.api.*;
+import com.atlassian.theplugin.jira.api.soap.JIRASessionImpl;
 import com.atlassian.theplugin.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.remoteapi.RemoteApiLoginException;
 
+import javax.xml.rpc.ServiceException;
+import java.net.URL;
+import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
 public class JIRAServerFacadeImpl implements JIRAServerFacade {
 	private Map<String, JIRARssClient> sessions = new WeakHashMap<String, JIRARssClient>();
+	private Map<String, JIRASession> soapSessions = new WeakHashMap<String, JIRASession>();
+
+	private synchronized JIRASession getSoapSession(Server server) throws RemoteApiException {
+		// @todo old server will stay on map - remove them !!!
+		String key = server.getUserName() + server.getUrlString() + server.getPasswordString();
+		JIRASession session = soapSessions.get(key);
+		if (session == null) {
+			try {
+				session = new JIRASessionImpl(new URL(server.getUrlString() + "/rpc/soap/jirasoapservice-v2"));
+				session.login(server.getUserName(), server.getPasswordString());
+			} catch (MalformedURLException e) {
+				throw new RemoteApiException(e);
+			} catch (ServiceException e) {
+				throw new RemoteApiException(e);
+			}
+			soapSessions.put(key, session);
+		}
+		return session;
+	}
 
 	private synchronized JIRARssClient getSession(Server server) throws RemoteApiException {
 		// @todo old server will stay on map - remove them !!!
@@ -79,7 +102,7 @@ public class JIRAServerFacadeImpl implements JIRAServerFacade {
 									 String sortOrder,
 									 int start,
 									 int size) throws JIRAException {
-		JIRARssClient rss = null;
+		JIRARssClient rss;
 		try {
 			rss = getSession(server);
 		} catch (RemoteApiException e) {
@@ -122,7 +145,18 @@ public class JIRAServerFacadeImpl implements JIRAServerFacade {
         return client.createIssue(issue);
     }
 
-    public List getComponents(Server server, String projectKey) throws JIRAException {
+	public void logWork(Server server, JIRAIssue issue) throws JIRAException {
+		JIRASession soap;
+		try {
+			soap = getSoapSession(server);
+			soap.logWork(issue);
+		} catch (RemoteApiException e) {
+			throw new JIRAException(e.getMessage(), e);
+		}
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	public List getComponents(Server server, String projectKey) throws JIRAException {
         JIRAXmlRpcClient client = new JIRAXmlRpcClient(server.getUrlString(), server.getUserName(), server.getPasswordString());
         return client.getComponents(projectKey);
     }
