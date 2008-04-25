@@ -87,17 +87,20 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	 * @return created revew date
 	 * @throws CrucibleException in case of createReview error or CrucibleLoginException in case of login error
 	 */
-	public ReviewData createReviewFromPatch(Server server, ReviewData reviewData, String patch) throws RemoteApiException {
+	public ReviewData createReviewFromPatch(Server server, ReviewData reviewData, String patch)
+			throws RemoteApiException {
 		CrucibleSession session = getSession(server);
 		return session.createReviewFromPatch(reviewData, patch);
 	}
 
-	public List<ReviewItemData> getReviewItems(Server server, PermId permId) throws RemoteApiException, ServerPasswordNotProvidedException {
+	public List<ReviewItemData> getReviewItems(Server server, PermId permId)
+			throws RemoteApiException, ServerPasswordNotProvidedException {
 		CrucibleSession session = getSession(server);
 		return session.getReviewItems(permId);
 	}
 
-	public List<GeneralComment> getComments(Server server, PermId permId) throws RemoteApiException, ServerPasswordNotProvidedException {
+	public List<GeneralComment> getComments(Server server, PermId permId)
+			throws RemoteApiException, ServerPasswordNotProvidedException {
 		CrucibleSession session = getSession(server);
 		return session.getComments(permId);
 	}
