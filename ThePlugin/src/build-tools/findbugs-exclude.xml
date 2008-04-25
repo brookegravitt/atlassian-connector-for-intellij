@@ -68,9 +68,14 @@
 		</Or>
 	</Match>
 
-	<!--method name the same as in SOAP CXF-generated stubs, ignoring-->
+	<!--method name the same as in SOAP-generated stubs, ignoring-->
 	<Match>
-		<Class name="com.atlassian.theplugin.crucible.api.ReviewDataBean"/>
+		<Or>
+			<Class name="com.atlassian.theplugin.crucible.api.ReviewDataBean"/>
+			<Class name="com.atlassian.theplugin.bamboo.CommitFileInfo" />
+			<Class name="com.atlassian.theplugin.idea.config.serverconfig.GenericServerConfigForm" />
+			<Class name="com.atlassian.theplugin.util.Connector" />
+		</Or>
 		<Bug pattern="NM_CONFUSING"/>
 	</Match>
 
