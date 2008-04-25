@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.crucible.api;
 
-public class ReviewItemIdBean implements ReviewItemId{
+public class ReviewItemIdBean implements ReviewItemId {
 	private String id;
 
 	public ReviewItemIdBean() {
