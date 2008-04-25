@@ -64,8 +64,7 @@
 	<!--genereated from WSDL-->
 	<Match>
 		<Or>
-			<Package name="com.atlassian.theplugin.crucible.api.soap.xfire.review"/>
-			<Package name="com.atlassian.theplugin.crucible.api.soap.xfire.auth"/>
+			<Package name="com.atlassian.theplugin.jira.api.soap.axis" />
 		</Or>
 	</Match>
 

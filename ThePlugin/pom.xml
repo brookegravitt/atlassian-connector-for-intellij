@@ -350,7 +350,7 @@
                     <jdkLevel>${jdkLevel}</jdkLevel>
                     <excludes>
                         <exclude>**/thirdparty/**/*.*</exclude>
-                        <exclude>**/soap/**/*.*</exclude>
+                        <exclude>**/soap/axis/**/*.*</exclude>
 					</excludes>
                 </configuration>
                 <executions>
@@ -539,7 +539,7 @@
                     <excludes>
                         **/idea/**/*Form.java,
                         **/idea/**/*Dialog.java,
-                        **/soap/**/*.java,
+                        **/soap/axis/**/*.java,
                         **/IssueComment.java,
                         **/IssueCreate.java,
                         **/ChangesetCreate.java,
