@@ -17,10 +17,9 @@
 package com.atlassian.theplugin.idea.jira.table;
 
 import com.atlassian.theplugin.idea.TableColumnInfo;
+import com.atlassian.theplugin.idea.ui.TooltipCellRenderer;
 import com.atlassian.theplugin.idea.jira.table.columns.*;
-import com.atlassian.theplugin.idea.jira.table.renderers.IssueStatusCellRenderer;
-import com.atlassian.theplugin.idea.jira.table.renderers.IssueTypeCellRenderer;
-import com.atlassian.theplugin.idea.jira.table.renderers.IssuePriorityCellRenderer;
+import com.atlassian.theplugin.idea.jira.table.renderers.*;
 
 import javax.swing.table.TableCellRenderer;
 
@@ -43,8 +42,8 @@ public final class JIRATableColumnProvider {
 				new IssueTypeCellRenderer(),
 				new IssueStatusCellRenderer(),
 				new IssuePriorityCellRenderer(),
-				null,
-				null
+				new TooltipCellRenderer(),
+				new TooltipCellRenderer()
 		};
 	}
 }
