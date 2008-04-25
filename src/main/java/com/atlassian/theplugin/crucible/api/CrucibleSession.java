@@ -41,5 +41,13 @@ public interface CrucibleSession {
 
 	List<RepositoryData> getRepositories() throws RemoteApiException;
 
+	List<ReviewItemData> getReviewItems(PermId id) throws RemoteApiException;
+
+	List<GeneralComment> getGeneralComments(PermId id) throws RemoteApiException;
+
+	List<VersionedComment> getVersionedComments(PermId id) throws RemoteApiException;	
+
+	List<GeneralComment> getComments(PermId id) throws RemoteApiException;
+
 	boolean isLoggedIn();	
 }

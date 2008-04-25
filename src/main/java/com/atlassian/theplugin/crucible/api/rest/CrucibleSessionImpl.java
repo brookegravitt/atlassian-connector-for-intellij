@@ -47,8 +47,11 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 	private static final String LOGIN = "/login";
 	private static final String GET_REVIEWS_IN_STATES = "?state=";
 	private static final String GET_REVIEWERS = "/reviewers";
+	private static final String GET_REVIEW_ITEMS = "/reviewitems";
+	private static final String GET_REVIEW_COMMENTS = "/comments";
 
 	private String authToken = null;
+
 
 	/**
 	 * Public constructor for CrucibleSessionImpl.
@@ -234,6 +237,125 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 				}
 			}
 			return repositories;
+		} catch (IOException e) {
+			throw new RemoteApiException(e.getMessage(), e);
+		} catch (JDOMException e) {
+			throw new RemoteApiException("Server returned malformed response", e);
+		}
+	}
+
+	public List<ReviewItemData> getReviewItems(PermId id) throws RemoteApiException {
+		if (!isLoggedIn()) {
+			throw new IllegalStateException("Calling method without calling login() first");
+		}
+
+		String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + GET_REVIEW_ITEMS;
+		try {
+			Document doc = retrieveGetResponse(requestUrl);
+
+			XPath xpath = XPath.newInstance("reviewItems/reviewItem");
+			@SuppressWarnings("unchecked")
+			List<Element> elements = xpath.selectNodes(doc);
+			List<ReviewItemData> reviewItems = new ArrayList<ReviewItemData>();
+
+			if (elements != null && !elements.isEmpty()) {
+				for (Element element : elements) {
+					reviewItems.add(CrucibleRestXmlHelper.parseReviewItemNode(element));
+				}
+			}
+			return reviewItems;
+		} catch (IOException e) {
+			throw new RemoteApiException(e.getMessage(), e);
+		} catch (JDOMException e) {
+			throw new RemoteApiException("Server returned malformed response", e);
+		}
+	}
+
+	public List<GeneralComment> getGeneralComments(PermId id) throws RemoteApiException {
+		if (!isLoggedIn()) {
+			throw new IllegalStateException("Calling method without calling login() first");
+		}
+
+		String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + GET_REVIEW_COMMENTS;
+		try {
+			Document doc = retrieveGetResponse(requestUrl);
+
+			XPath xpath = XPath.newInstance("comments/generalComment");
+			@SuppressWarnings("unchecked")
+			List<Element> elements = xpath.selectNodes(doc);
+			List<GeneralComment> comments = new ArrayList<GeneralComment>();
+
+			if (elements != null && !elements.isEmpty()) {
+				for (Element element : elements) {
+					comments.add(CrucibleRestXmlHelper.parseGeneralCommentNode(element));
+				}
+			}
+			return comments;
+		} catch (IOException e) {
+			throw new RemoteApiException(e.getMessage(), e);
+		} catch (JDOMException e) {
+			throw new RemoteApiException("Server returned malformed response", e);
+		}
+	}
+
+	public List<VersionedComment> getVersionedComments(PermId id) throws RemoteApiException {
+		if (!isLoggedIn()) {
+			throw new IllegalStateException("Calling method without calling login() first");
+		}
+
+		String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + GET_REVIEW_COMMENTS;
+		try {
+			Document doc = retrieveGetResponse(requestUrl);
+
+			XPath xpath = XPath.newInstance("comments/versionedComment");
+			@SuppressWarnings("unchecked")
+			List<Element> elements = xpath.selectNodes(doc);
+			List<VersionedComment> comments = new ArrayList<VersionedComment>();
+
+			if (elements != null && !elements.isEmpty()) {
+				for (Element element : elements) {
+					comments.add(CrucibleRestXmlHelper.parseVersionedCommentNode(element));
+				}
+			}
+			return comments;
+		} catch (IOException e) {
+			throw new RemoteApiException(e.getMessage(), e);
+		} catch (JDOMException e) {
+			throw new RemoteApiException("Server returned malformed response", e);
+		}
+	}
+
+	public List<GeneralComment> getComments(PermId id) throws RemoteApiException {
+		if (!isLoggedIn()) {
+			throw new IllegalStateException("Calling method without calling login() first");
+		}
+
+		String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + GET_REVIEW_COMMENTS;
+		try {
+			Document doc = retrieveGetResponse(requestUrl);
+
+			XPath xpath = XPath.newInstance("comments/generalComment");
+			@SuppressWarnings("unchecked")
+			List<Element> elements = xpath.selectNodes(doc);
+			List<GeneralComment> comments = new ArrayList<GeneralComment>();
+
+			if (elements != null && !elements.isEmpty()) {
+				for (Element element : elements) {
+					comments.add(CrucibleRestXmlHelper.parseGeneralCommentNode(element));
+				}
+			}
+
+			xpath = XPath.newInstance("comments/versionedComment");
+			@SuppressWarnings("unchecked")
+			List<Element> vElements = xpath.selectNodes(doc);
+
+			if (vElements != null && !vElements.isEmpty()) {
+				for (Element element : vElements) {
+					comments.add(CrucibleRestXmlHelper.parseVersionedCommentNode(element));
+				}
+			}
+
+			return comments;
 		} catch (IOException e) {
 			throw new RemoteApiException(e.getMessage(), e);
 		} catch (JDOMException e) {
