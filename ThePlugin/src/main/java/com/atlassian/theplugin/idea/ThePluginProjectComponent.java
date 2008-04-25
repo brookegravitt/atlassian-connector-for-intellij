@@ -40,9 +40,9 @@ import com.intellij.openapi.startup.StartupManager;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.wm.ToolWindowManager;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.peer.PeerFactory;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.search.scope.packageSet.CustomScopesProvider;
 import com.intellij.psi.search.scope.packageSet.NamedScopesHolder;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.table.TableView;
@@ -152,13 +152,20 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 		if (!created) {
 
 			CrucibleReviewScopeProvider provider;
-			provider = getCrucibleScopeProvider();
+			provider = CrucibleReviewScopeProvider.getCrucibleScopeProvider(project);
 
 			provider.addScope("CR-93", provider.new ToReviewAbstractPackageSet() {
 						public boolean contains(PsiFile psiFile, NamedScopesHolder namedScopesHolder) {
-							return true;
+							final VirtualFile virtualFile = psiFile.getVirtualFile();
+							if (virtualFile == null) {
+								return false;
+							}
+							if (virtualFile.getName().endsWith(".form")) {
+								return true;
+							}
+							return false;
 						}
-					});
+			});
 			// DependencyValidationManager.getHolder(project, "", )
 
 			// create tool window on the right
@@ -248,18 +255,6 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 
 			created = true;
 		}
-	}
-
-	private CrucibleReviewScopeProvider getCrucibleScopeProvider() {
-		CrucibleReviewScopeProvider provider = null;
-		CustomScopesProvider[] scopeProviders
-				= project.getExtensions(CustomScopesProvider.CUSTOM_SCOPES_PROVIDER);
-		for (CustomScopesProvider scopeProvider : scopeProviders) {
-			if (scopeProvider instanceof CrucibleReviewScopeProvider) {
-				provider = (CrucibleReviewScopeProvider) scopeProvider;
-			}
-		}
-		return provider;
 	}
 
 	public Content createBambooContent() {

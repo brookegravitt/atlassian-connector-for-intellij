@@ -19,6 +19,7 @@ package com.atlassian.theplugin;
 import com.intellij.psi.search.scope.packageSet.CustomScopesProvider;
 import com.intellij.psi.search.scope.packageSet.NamedScope;
 import com.intellij.psi.search.scope.packageSet.PackageSet;
+import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
@@ -57,6 +58,18 @@ public class CrucibleReviewScopeProvider implements CustomScopesProvider {
 			throw new IllegalArgumentException("Scope of that name (" + name + ") already exists.");
 		}
 		scopes.remove(name);
+	}
+
+	public static CrucibleReviewScopeProvider getCrucibleScopeProvider(Project project) {
+		CrucibleReviewScopeProvider provider = null;
+		CustomScopesProvider[] scopeProviders
+				= project.getExtensions(CustomScopesProvider.CUSTOM_SCOPES_PROVIDER);
+		for (CustomScopesProvider scopeProvider : scopeProviders) {
+			if (scopeProvider instanceof CrucibleReviewScopeProvider) {
+				provider = (CrucibleReviewScopeProvider) scopeProvider;
+			}
+		}
+		return provider;
 	}
 
 
