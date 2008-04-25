@@ -18,6 +18,9 @@ package com.atlassian.theplugin.jira.api.soap;
 
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.api.JIRASession;
+import com.atlassian.theplugin.jira.api.soap.axis.JiraSoapService;
+import com.atlassian.theplugin.jira.api.soap.axis.JiraSoapServiceServiceLocator;
+import com.atlassian.theplugin.jira.api.soap.axis.RemoteWorklog;
 import com.atlassian.theplugin.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.remoteapi.RemoteApiLoginException;
 
