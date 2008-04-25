@@ -16,6 +16,7 @@
 
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.theplugin.CrucibleReviewScopeProvider;
 import com.atlassian.theplugin.ServerType;
 import com.atlassian.theplugin.bamboo.*;
 import com.atlassian.theplugin.configuration.PluginConfiguration;
@@ -40,6 +41,9 @@ import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.peer.PeerFactory;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.search.scope.packageSet.CustomScopesProvider;
+import com.intellij.psi.search.scope.packageSet.NamedScopesHolder;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.table.TableView;
 import org.jetbrains.annotations.NotNull;
@@ -147,6 +151,16 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 
 		if (!created) {
 
+			CrucibleReviewScopeProvider provider;
+			provider = getCrucibleScopeProvider();
+
+			provider.addScope("CR-93", provider.new ToReviewAbstractPackageSet() {
+						public boolean contains(PsiFile psiFile, NamedScopesHolder namedScopesHolder) {
+							return true;
+						}
+					});
+			// DependencyValidationManager.getHolder(project, "", )
+
 			// create tool window on the right
 			toolWindow = new PluginToolWindow(toolWindowManager, project);
 			Icon toolWindowIcon = IconLoader.getIcon(THE_PLUGIN_TOOL_WINDOW_ICON);
@@ -234,6 +248,18 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 
 			created = true;
 		}
+	}
+
+	private CrucibleReviewScopeProvider getCrucibleScopeProvider() {
+		CrucibleReviewScopeProvider provider = null;
+		CustomScopesProvider[] scopeProviders
+				= project.getExtensions(CustomScopesProvider.CUSTOM_SCOPES_PROVIDER);
+		for (CustomScopesProvider scopeProvider : scopeProviders) {
+			if (scopeProvider instanceof CrucibleReviewScopeProvider) {
+				provider = (CrucibleReviewScopeProvider) scopeProvider;
+			}
+		}
+		return provider;
 	}
 
 	public Content createBambooContent() {
