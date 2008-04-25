@@ -21,6 +21,10 @@ import org.jdom.CDATA;
 import org.jdom.Document;
 import org.jdom.Element;
 
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
+import java.util.Date;
+
 
 public final class CrucibleRestXmlHelper {
 
@@ -126,4 +130,118 @@ public final class CrucibleRestXmlHelper {
 
 		return reviewData;
 	}
+
+	public static ReviewItemData parseReviewItemNode(Element reviewItemNode) {
+		ReviewItemDataBean reviewItem = new ReviewItemDataBean();
+
+		reviewItem.setFromPath(getChildText(reviewItemNode, "fromPath"));
+		reviewItem.setFromRevision(getChildText(reviewItemNode, "fromRevision"));
+		reviewItem.setToPath(getChildText(reviewItemNode, "toPath"));
+		reviewItem.setToRevision(getChildText(reviewItemNode, "toRevision"));
+		reviewItem.setRepositoryName(getChildText(reviewItemNode, "repositoryName"));		
+		if (reviewItemNode.getChild("permaId") != null) {
+			PermIdBean permId = new PermIdBean();
+			permId.setId(reviewItemNode.getChild("permaId").getChild("id").getText());
+			reviewItem.setPermId(permId);
+		}
+
+		return reviewItem;
+	}
+
+	public static GeneralComment parseGeneralCommentNode(Element reviewCommentNode) {
+		GeneralCommentBean commment = new GeneralCommentBean();
+
+		commment.setUser(getChildText(reviewCommentNode, "user"));
+		commment.setMessage(getChildText(reviewCommentNode, "message"));
+		commment.setDefectRaised(Boolean.parseBoolean(getChildText(reviewCommentNode, "defectRaised")));
+		commment.setDefectApproved(Boolean.parseBoolean(getChildText(reviewCommentNode, "defectApproved")));
+		commment.setDraft(Boolean.parseBoolean(getChildText(reviewCommentNode, "draft")));
+		commment.setDeleted(Boolean.parseBoolean(getChildText(reviewCommentNode, "deleted")));
+		commment.setCreateDate(parseCommentTime(getChildText(reviewCommentNode, "createDate")));
+
+		return commment;
+	}
+
+	public static VersionedComment parseVersionedCommentNode(Element reviewCommentNode) {
+		VersionedCommentBean comment = new VersionedCommentBean();
+
+		comment.setUser(getChildText(reviewCommentNode, "user"));
+		comment.setMessage(getChildText(reviewCommentNode, "message"));
+		comment.setDefectRaised(Boolean.parseBoolean(getChildText(reviewCommentNode, "defectRaised")));
+		comment.setDefectApproved(Boolean.parseBoolean(getChildText(reviewCommentNode, "defectApproved")));
+		comment.setDraft(Boolean.parseBoolean(getChildText(reviewCommentNode, "draft")));
+		comment.setDeleted(Boolean.parseBoolean(getChildText(reviewCommentNode, "deleted")));
+		comment.setCreateDate(parseCommentTime(getChildText(reviewCommentNode, "createDate")));
+
+		if (reviewCommentNode.getChild("permaId") != null) {
+			PermIdBean permId = new PermIdBean();
+			permId.setId(reviewCommentNode.getChild("permaId").getChild("id").getText());
+			comment.setPermId(permId);
+		}
+
+		if (reviewCommentNode.getChild("reviewItemId") != null) {
+			ReviewItemIdBean reviewItemId = new ReviewItemIdBean();
+			reviewItemId.setId(reviewCommentNode.getChild("reviewItemId").getChild("id").getText());
+			comment.setReviewItemId(reviewItemId);
+		}
+
+		if (reviewCommentNode.getChild("fromLineRange") != null) {
+			String toLineRange = getChildText(reviewCommentNode, "fromLineRange");
+			String[] tokens = toLineRange.split("-");
+			if (tokens.length > 0) {
+				comment.setFromLineInfo(true);
+				try {
+					int start = Integer.parseInt(tokens[0]);
+					comment.setFromStartLine(start);
+				} catch (NumberFormatException e) {
+					// leave 0 value
+				}
+				if (tokens.length > 1) {
+					try {
+						int stop = Integer.parseInt(tokens[1]);
+						comment.setFromEndLine(stop);
+					} catch (NumberFormatException e) {
+						// leave 0 value
+					}
+				}
+			}
+		}
+
+		if (reviewCommentNode.getChild("toLineRange") != null) {
+			String toLineRange = getChildText(reviewCommentNode, "toLineRange");
+			String[] tokens = toLineRange.split("-");
+			if (tokens.length > 0) {
+				comment.setToLineInfo(true);
+				try {
+					int start = Integer.parseInt(tokens[0]);
+					comment.setToStartLine(start);
+				} catch (NumberFormatException e) {
+					// leave 0 value
+				}
+				if (tokens.length > 1) {
+					try {
+						int stop = Integer.parseInt(tokens[1]);
+						comment.setToEndLine(stop);
+					} catch (NumberFormatException e) {
+						// leave 0 value
+					}
+				}
+			}
+		}
+
+		return comment;
+	}
+
+	private static SimpleDateFormat commentTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSz");
+
+	private static Date parseCommentTime(String date) {
+		try {
+			date = date.replace(":00", "00");
+			return commentTimeFormat.parse(date);
+		} catch (ParseException e) {
+			System.out.println("e = " + e);
+			return null;
+		}
+	}
+
 }

@@ -92,6 +92,16 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 		return session.createReviewFromPatch(reviewData, patch);
 	}
 
+	public List<ReviewItemData> getReviewItems(Server server, PermId permId) throws RemoteApiException, ServerPasswordNotProvidedException {
+		CrucibleSession session = getSession(server);
+		return session.getReviewItems(permId);
+	}
+
+	public List<GeneralComment> getComments(Server server, PermId permId) throws RemoteApiException, ServerPasswordNotProvidedException {
+		CrucibleSession session = getSession(server);
+		return session.getComments(permId);
+	}
+
 	/**
 	 * Retrieves list of projects defined on Crucible server
 	 *
