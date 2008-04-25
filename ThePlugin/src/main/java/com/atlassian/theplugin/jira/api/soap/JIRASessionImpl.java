@@ -31,16 +31,16 @@ import java.util.Calendar;
 
 public class JIRASessionImpl implements JIRASession {
 
-	URL address;
-	String token;
-	JiraSoapService service;
+	private String token;
+	private JiraSoapService service;
+
+	public static final int ONE_DAY_AGO = -24;
 
 	private boolean loggedIn = false;
 
 	public JIRASessionImpl(URL portAddress) throws ServiceException {
-		address = portAddress;
 		JiraSoapServiceServiceLocator loc = new JiraSoapServiceServiceLocator();
-		service = loc.getJirasoapserviceV2(address);
+		service = loc.getJirasoapserviceV2(portAddress);
 	}
 
 	public void login(String userName, String password) throws RemoteApiLoginException {
@@ -66,7 +66,7 @@ public class JIRASessionImpl implements JIRASession {
 	public void logWork(JIRAIssue issue) throws RemoteApiException {
 		RemoteWorklog workLog = new RemoteWorklog();
 		Calendar yesterday = Calendar.getInstance();
-		yesterday.roll(Calendar.HOUR, -24);
+		yesterday.roll(Calendar.HOUR, ONE_DAY_AGO);
 		workLog.setStartDate(yesterday);
 		workLog.setTimeSpent("1d");
 		try {
