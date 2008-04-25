@@ -43,7 +43,7 @@ public final class JIRATableColumnProvider {
 				new IssueStatusCellRenderer(),
 				new IssuePriorityCellRenderer(),
 				new TooltipCellRenderer(),
-				new TooltipCellRenderer()
+				new ExtendedIssueInfoCellRenderer()
 		};
 	}
 }

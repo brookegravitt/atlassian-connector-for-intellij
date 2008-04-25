@@ -36,6 +36,10 @@ public class JIRAIssueBean implements JIRAIssue {
 	private JIRAConstant typeConstant;
 	private JIRAConstant priorityConstant;
 	private String assignee;
+	private String reporter;
+	private String resolution;
+	private String created;
+	private String updated;
 	private long statusId;
 	private long priorityId;
 	private long typeId;
@@ -69,7 +73,12 @@ public class JIRAIssueBean implements JIRAIssue {
 			this.typeId = Long.parseLong(getAttributeSafely(e, "type", "id"));
 		} catch (NumberFormatException ex) {
 			this.typeId = 0;
-		}			
+		}
+		this.assignee = getTextSafely(e, "assignee");
+		this.reporter = getTextSafely(e, "reporter");
+		this.created = getTextSafely(e, "created");
+		this.updated = getTextSafely(e, "updated");
+		this.resolution = getTextSafely(e, "resolution");
 	}
 
 	public JIRAConstant getPriorityConstant() {
@@ -227,6 +236,38 @@ public class JIRAIssueBean implements JIRAIssue {
 	public long getTypeId() {
 		return typeId;
 	}
+
+	public String getReporter() {
+		return reporter;
+	}
+
+	public void setReporter(String reporter) {
+		this.reporter = reporter;
+	}
+
+	public String getResolution() {
+		return resolution;
+	}
+
+	public void setResolution(String resolution) {
+		this.resolution = resolution;
+	}
+
+	public String getCreated() {
+		return created;
+	}
+
+	public void setCreated(String created) {
+		this.created = created;
+	}
+
+	public String getUpdated() {
+		return updated;
+	}
+
+	public void setUpdated(String updated) {
+		this.updated = updated;
+	}	
 
 	public boolean equals(Object o) {
 		if (this == o) {
