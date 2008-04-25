@@ -25,7 +25,7 @@ public class GeneralCommentBean implements GeneralComment {
     private boolean defectRaised = false;
     private boolean defectApproved = false;
     private String user = null;
-	private Date createDate = null;
+	private Date createDate = new Date();
 
 	public GeneralCommentBean() {
 	}
