@@ -145,11 +145,11 @@ public class JIRAServerFacadeImpl implements JIRAServerFacade {
         return client.createIssue(issue);
     }
 
-	public void logWork(Server server, JIRAIssue issue) throws JIRAException {
+	public void logWork(Server server, JIRAIssue issue, String timeSpent, String comment) throws JIRAException {
 		JIRASession soap;
 		try {
 			soap = getSoapSession(server);
-			soap.logWork(issue);
+			soap.logWork(issue, timeSpent, comment);
 		} catch (RemoteApiException e) {
 			throw new JIRAException(e.getMessage(), e);
 		}
