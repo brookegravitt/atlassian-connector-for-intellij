@@ -194,7 +194,18 @@
             <artifactId>joda-time</artifactId>
             <version>1.5.2</version>
         </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>axis</groupId>
+			<artifactId>axis</artifactId>
+			<version>1.4</version>
+		</dependency>
+		<dependency>
+			<groupId>wsdl4j</groupId>
+			<artifactId>wsdl4j</artifactId>
+			<version>1.6.1</version>
+		</dependency>
+
+	</dependencies>
     <build>
         <resources>
             <resource>
@@ -339,8 +350,8 @@
                     <jdkLevel>${jdkLevel}</jdkLevel>
                     <excludes>
                         <exclude>**/thirdparty/**/*.*</exclude>
-                        <exclude>**/soap/xfire/**/*.*</exclude>
-                    </excludes>
+                        <exclude>**/soap/**/*.*</exclude>
+					</excludes>
                 </configuration>
                 <executions>
                     <execution>
@@ -528,7 +539,7 @@
                     <excludes>
                         **/idea/**/*Form.java,
                         **/idea/**/*Dialog.java,
-                        **/soap/xfire/**/*.java,
+                        **/soap/**/*.java,
                         **/IssueComment.java,
                         **/IssueCreate.java,
                         **/ChangesetCreate.java,
