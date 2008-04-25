@@ -37,7 +37,6 @@ import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
 import com.intellij.util.ui.ListTableModel;
@@ -596,8 +595,12 @@ public class JIRAToolWindowPanel extends JPanel {
 		public void actionPerformed(ActionEvent e) {
 			JIRAIssue issue = ((JiraIssueAdapter) table.getSelectedObject()).getIssue();
 			try {
-				jiraServerFacade.logWork(IdeaHelper.getCurrentJIRAServer().getServer(), issue);
-				Messages.showMessageDialog("Logged 1 day of work", "Info", Messages.getInformationIcon());
+				WorkLogCreate c = new WorkLogCreate(issue.getKey());
+				c.show();
+				if (c.isOK()) {
+					jiraServerFacade.logWork(IdeaHelper.getCurrentJIRAServer().getServer(),
+							issue, c.getTimeSpentString(), c.getComment());
+				}
 			} catch (JIRAException ex) {
 				ex.printStackTrace();
 			}
