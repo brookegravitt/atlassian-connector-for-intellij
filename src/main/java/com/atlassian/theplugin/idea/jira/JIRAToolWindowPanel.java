@@ -37,6 +37,7 @@ import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
 import com.intellij.util.ui.ListTableModel;
@@ -260,8 +261,9 @@ public class JIRAToolWindowPanel extends JPanel {
 				issue.getServerUrl() + "/secure/EditIssue!default.jspa?key=" + issue.getKey()));
 		contextMenu.addSeparator();
 		contextMenu.add(new JMenuItem(new CommentIssueAction()));
-		contextMenu.add(makeWebUrlMenu("Log Work", issue.getServerUrl()
-				+ "/secure/CreateWorklog!default.jspa?key=" + issue.getKey()));
+		contextMenu.add(new JMenuItem(new LogWorkAction()));
+//		contextMenu.add(makeWebUrlMenu("Log Work", issue.getServerUrl()
+//				+ "/secure/CreateWorklog!default.jspa?key=" + issue.getKey()));
 //		contextMenu.add(makeWebUrlMenu("Commit Changes Against Issue", issue.getServerUrl()
 //				+ "/secure/EditIssue!default.jspa?key=" + issue.getKey()));
 		contextMenu.add(new JMenuItem(new CreateChangeListAction(issue, project)));
@@ -583,6 +585,22 @@ public class JIRAToolWindowPanel extends JPanel {
 					jiraServerFacade, IdeaHelper.getCurrentJIRAServer(), getIssues());
 			issueComment.setIssue(issue);
 			issueComment.show();
+		}
+	}
+
+	public class LogWorkAction extends AbstractAction {
+		public LogWorkAction() {
+			putValue(Action.NAME, "Log Work");
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			JIRAIssue issue = ((JiraIssueAdapter) table.getSelectedObject()).getIssue();
+			try {
+				jiraServerFacade.logWork(IdeaHelper.getCurrentJIRAServer().getServer(), issue);
+				Messages.showMessageDialog("Logged 1 day of work", "Info", Messages.getInformationIcon());
+			} catch (JIRAException ex) {
+				ex.printStackTrace();
+			}
 		}
 	}
 
