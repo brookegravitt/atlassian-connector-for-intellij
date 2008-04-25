@@ -24,7 +24,7 @@ public interface JIRASession {
 
 	void logout();
 
-	void logWork(JIRAIssue issue) throws RemoteApiException;
+	void logWork(JIRAIssue issue, String timeSpent, String comment) throws RemoteApiException;
 
 	boolean isLoggedIn();
 }
