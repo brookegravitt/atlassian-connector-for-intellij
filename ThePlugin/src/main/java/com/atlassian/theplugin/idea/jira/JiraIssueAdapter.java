@@ -111,4 +111,20 @@ public class JiraIssueAdapter {
 	public String getAssignee() {
 		return issue.getAssignee();
 	}
+
+	public String getReporter() {
+		return issue.getReporter();
+	}
+
+	public String getResolution() {
+		return issue.getResolution();
+	}
+
+	public String getCreated() {
+		return issue.getCreated();
+	}
+
+	public String getUpdated() {
+		return issue.getUpdated();
+	}
 }

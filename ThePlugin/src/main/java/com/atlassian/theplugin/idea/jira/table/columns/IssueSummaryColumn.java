@@ -26,11 +26,11 @@ public class IssueSummaryColumn extends TableColumnInfo {
 	public static final String COLUMN_NAME = "Summary";
 
 	public Object valueOf(Object o) {
-		return ((JiraIssueAdapter) o).getSummary();
+		return (JiraIssueAdapter) o;
 	}
 
 	public Class getColumnClass() {
-		return String.class;
+		return JiraIssueAdapter.class;
 	}
 
 	public Comparator getComparator() {
