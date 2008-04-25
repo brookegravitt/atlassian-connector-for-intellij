@@ -76,10 +76,10 @@ public class GeneralCommentBean implements GeneralComment {
 	}
 
 	public Date getCreateDate() {
-		return createDate;
+		return new Date(createDate.getTime());
 	}
 
 	public void setCreateDate(Date createDate) {
-		this.createDate = createDate;
+		this.createDate = new Date(createDate.getTime());
 	}
 }
