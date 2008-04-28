@@ -195,7 +195,7 @@
                             <goal>upload</goal>
                         </goals>
                         <configuration>
-                            <resourceSrc>${project.reporting.outputDirectory}/${downloadDir}/${pom.artifactId}-${pom.version}.zip</resourceSrc>
+                            <resourceSrc>idea/${project.reporting.outputDirectory}/${downloadDir}/${pom.artifactId}-${pom.version}.zip</resourceSrc>
                             <resourceDest>${pom.artifactId}/Downloads</resourceDest>
                             <serverId>atlassian-documentation</serverId>
                             <url>dav:https://docs.atlassian.com/</url>
@@ -221,7 +221,7 @@
                             <goal>upload</goal>
                         </goals>
                         <configuration>
-                            <resourceSrc>${project.reporting.outputDirectory}/${metadataDir}/${pom.artifactId}-${pom.version}-metadata.dir/latestPossibleVersion.xml</resourceSrc>
+                            <resourceSrc>idea/${project.reporting.outputDirectory}/${metadataDir}/${pom.artifactId}-${pom.version}-metadata.dir/latestPossibleVersion.xml</resourceSrc>
                             <resourceDest>${pom.artifactId}</resourceDest>
                             <serverId>atlassian-documentation</serverId>
                             <url>dav:https://docs.atlassian.com/</url>
