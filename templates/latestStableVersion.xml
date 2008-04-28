@@ -1,0 +1,6 @@
+<response>
+	<version>
+		<number>${project.version}, SVN:${buildNumber}</number>
+		<downloadUrl>http://downloads.atlassian.com/software/atlassian-idea-plugin-${project.version}.zip</downloadUrl>
+	</version>
+</response>
