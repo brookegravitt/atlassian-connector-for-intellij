@@ -1,0 +1,134 @@
+<?xml  version="1.0"  encoding="UTF-8"?>
+<!--
+    ~  Licensed  to  the  Apache  Software  Foundation  (ASF)  under  one
+    ~  or  more  contributor  license  agreements.  See  the  NOTICE  file
+    ~  distributed  with  this  work  for  additional  information
+    ~  regarding  copyright  ownership.  The  ASF  licenses  this  file
+    ~  to  you  under  the  Apache  License,  Version  2.0  (the
+    ~  "License");  you  may  not  use  this  file  except  in  compliance
+    ~  with  the  License.  You  may  obtain  a  copy  of  the  License  at
+    ~
+    ~  http://www.apache.org/licenses/LICENSE-2.0
+    ~
+    ~  Unless  required  by  applicable  law  or  agreed  to  in  writing,
+    ~  software  distributed  under  the  License  is  distributed  on  an
+    ~  "AS  IS"  BASIS,  WITHOUT  WARRANTIES  OR  CONDITIONS  OF  ANY
+    ~  KIND,  either  express  or  implied.  See  the  License  for  the
+    ~  specific  language  governing  permissions  and  limitations
+    ~  under  the  License.
+    -->
+<project  xmlns="http://maven.apache.org/POM/4.0.0"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0  http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.atlassian.theplugin</groupId>
+    <artifactId>atlassian-eclipse-plugin</artifactId>
+    <version>1.2.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <inceptionYear>2008</inceptionYear>
+    <name>Atlassian  Eclipse  Plugin</name>
+    <description>An  Eclipse  plugin  for  Atlassian's  tools.</description>
+    <parent>
+        <groupId>com.atlassian.theplugin</groupId>
+        <artifactId>atlassian-plugin-pom</artifactId>
+	<version>1.2.0-SNAPSHOT</version>
+	<relativePath>../pom.xml</relativePath>
+    </parent>
+    <scm>
+        <connection>scm:svn:https://studio.atlassian.com/svn/PL/trunk/ThePlugin/</connection>
+        <developerConnection>scm:svn:https://studio.atlassian.com/svn/PL/trunk/ThePlugin/</developerConnection>
+        <url>https://studio.atlassian.com/svn/PL/trunk/ThePlugin/</url>
+    </scm>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>atlassian-m2-repository</id>
+            <name>Atlassian  Maven  2.x  Repository</name>
+            <url>http://repository.atlassian.com/maven2</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>mc-release</id>
+            <name>Local  Maven  repository  of  releases</name>
+            <url>http://mc-repo.googlecode.com/svn/maven2/releases</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </pluginRepository>
+    </pluginRepositories>
+    <repositories>
+        <repository>
+            <id>apache.incubating.releases</id>
+            <name>Apache  Incubating  Release  Distribution  Repository</name>
+            <url>http://people.apache.org/repo/m2-incubating-repository</url>
+        </repository>
+        <repository>
+            <id>eclipse-repo</id>
+            <name>eclipse  maven  repository</name>
+            <url>http://repo1.maven.org/eclipse</url>
+        </repository>
+        <repository>
+            <id>www.mvnrepository.com</id>
+            <name>maven  repository</name>
+            <url>http://www.mvnrepository.com/artifact/</url>
+        </repository>
+    </repositories>
+    <dependencies>
+        <dependency>
+            <groupId>com.atlassian.theplugin</groupId>
+            <artifactId>atlassian-plugin-commons</artifactId>
+	    <version>1.2.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+    <profiles>
+        <profile>
+            <id>org.eclipse.swt.win32</id>
+            <activation>
+                <os>
+                    <name>windows  xp</name>
+                    <arch>x86</arch>
+                </os>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.eclipse.swt.win32.win32</groupId>
+                    <artifactId>x86</artifactId>
+                    <version>3.3.0-v3346</version>
+                    <type>jar</type>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>org.eclipse.swt.macosx</id>
+            <activation>
+                <os>
+                    <name>mac  os  x</name>
+                    <arch>i386</arch>
+                </os>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.eclipse.swt.carbon</groupId>
+                    <artifactId>macosx</artifactId>
+                    <version>3.3.0-v3346</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>org.eclipse.swt.linux</id>
+            <activation>
+                <os>
+                    <name>linux</name>
+                    <arch>i386</arch>
+                </os>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.princetonsoftech.apollo</groupId>
+                    <artifactId>org.eclipse.swt.gtk.linux.x86</artifactId>
+                    <version>3.2.1</version>
+                    <type>jar</type>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+</project>
