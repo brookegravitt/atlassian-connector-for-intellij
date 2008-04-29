@@ -1,4 +1,4 @@
-package com.atlassian.theplugin.eclipse.preferences.view;
+package com.atlassian.theplugin.eclipse.preferences;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
