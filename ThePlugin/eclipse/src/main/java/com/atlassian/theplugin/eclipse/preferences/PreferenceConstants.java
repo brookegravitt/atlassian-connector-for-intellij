@@ -1,4 +1,4 @@
-package xmain.java.com.atlassian.theplugin;
+package com.atlassian.theplugin.eclipse.preferences;
 
 /**
  * Constant definitions for plug-in preferences
