@@ -1,4 +1,4 @@
-package xmain.java.com.atlassian.theplugin;
+package com.atlassian.theplugin.eclipse.preferences;
 
 
 import org.eclipse.jface.preference.*;
