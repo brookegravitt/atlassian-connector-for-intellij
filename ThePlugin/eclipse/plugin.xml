@@ -18,7 +18,7 @@
          <action
                label="Atlassian Sample Action"
                icon="icons/sample.gif"
-               class="com.atlassian.theplugin.eclipse.actions.AtlassianSampleAction"
+               class="xmain.java.com.atlassian.theplugin.AtlassianSampleAction"
                tooltip="Atlassian Sample Action"
                menubarPath="atlassianMenu/atlassianGroup"
                toolbarPath="atlassianGroup"
@@ -35,7 +35,7 @@
       <view
             allowMultiple="false"
             category="com.atlassian.theplugin.eclipse.viewcategory"
-            class="com.atlassian.theplugin.eclipse.view.ToolWindow"
+            class="xmain.java.com.atlassian.theplugin.ToolWindow"
             id="com.atlassian.theplugin.eclipse.viewmain"
             name="Atlassian (Bamboo)">
       </view>
@@ -43,7 +43,7 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            class="com.atlassian.theplugin.eclipse.preferences.PreferencePage"
+            class="xmain.java.com.atlassian.theplugin.PreferencePage"
             id="com.atlassian.theplugin.eclipse.preferences.PreferencePage"
             name="atlassian-eclipse-plugin">
       </page>
@@ -51,7 +51,7 @@
    <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
-            class="com.atlassian.theplugin.eclipse.preferences.PreferenceInitializer">
+            class="xmain.java.com.atlassian.theplugin.PreferenceInitializer">
       </initializer>
    </extension>
 

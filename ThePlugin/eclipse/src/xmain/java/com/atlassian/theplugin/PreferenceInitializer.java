@@ -1,9 +1,9 @@
-package com.atlassian.theplugin.eclipse.preferences;
+package xmain.java.com.atlassian.theplugin;
+
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
 
-import com.atlassian.theplugin.eclipse.Activator;
 
 /**
  * Class used to initialize default preference values.
