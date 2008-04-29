@@ -1,4 +1,4 @@
-package com.atlassian.theplugin.eclipse.actions;
+package xmain.java.com.atlassian.theplugin;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;

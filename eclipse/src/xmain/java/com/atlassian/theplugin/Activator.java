@@ -1,4 +1,4 @@
-package com.atlassian.theplugin.eclipse;
+package xmain.java.com.atlassian.theplugin;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
