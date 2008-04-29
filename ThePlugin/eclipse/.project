@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>testPlugin</name>
-	<comment></comment>
+	<name>atlassian-eclipse-plugin</name>
+	<comment>An  Eclipse  plugin  for  Atlassian&apos;s  tools.</comment>
 	<projects>
 	</projects>
 	<buildSpec>
