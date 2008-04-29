@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: atlassian-eclipse-plugin
+Bundle-SymbolicName: com.atlassian.theplugin.eclipse; singleton:=true
+Bundle-Version: 0.0.1
+Bundle-Activator: com.atlassian.theplugin.eclipse.Activator
+Bundle-Vendor: ATLASSIAN
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime
+Eclipse-LazyStart: true
+Export-Package: com.atlassian.theplugin.eclipse,
+ com.atlassian.theplugin.eclipse.actions,
+ com.atlassian.theplugin.eclipse.view
