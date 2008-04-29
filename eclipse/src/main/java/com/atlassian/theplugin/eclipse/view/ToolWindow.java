@@ -1,7 +1,7 @@
 /**
  * 
  */
-package xmain.java.com.atlassian.theplugin;
+package com.atlassian.theplugin.eclipse.view;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
