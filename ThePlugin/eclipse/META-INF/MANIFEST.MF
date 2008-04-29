@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: TestPlugin Plug-in
 Bundle-SymbolicName: testPlugin; singleton:=true
 Bundle-Version: 1.0.0
-Bundle-Activator: testplugin.Activator
+Bundle-Activator: com.atlassian.theplugin.eclipse.preferences.Activator
 Bundle-Vendor: Atlassian
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime
