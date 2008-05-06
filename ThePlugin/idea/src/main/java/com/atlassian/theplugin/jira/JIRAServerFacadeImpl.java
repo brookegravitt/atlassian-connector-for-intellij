@@ -16,12 +16,12 @@
 
 package com.atlassian.theplugin.jira;
 
-import com.atlassian.theplugin.ServerType;
-import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.api.soap.JIRASessionImpl;
-import com.atlassian.theplugin.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.remoteapi.RemoteApiLoginException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
+import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.ServerType;
 
 import javax.xml.rpc.ServiceException;
 import java.net.URL;
