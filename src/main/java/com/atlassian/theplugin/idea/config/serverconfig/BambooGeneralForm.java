@@ -57,7 +57,7 @@ public class BambooGeneralForm extends JComponent implements ContentPanel {
 
 
 	public static BambooGeneralForm getInstance(PluginConfigurationBean globalPluginConfiguration) {
-		if (instance == null){
+		if (instance == null) {
 			instance = new BambooGeneralForm(globalPluginConfiguration);
 		}
 		return instance;

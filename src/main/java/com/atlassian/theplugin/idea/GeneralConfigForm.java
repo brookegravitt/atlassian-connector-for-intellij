@@ -21,6 +21,9 @@ import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import com.intellij.util.net.HTTPProxySettingsDialog;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.CellConstraints;
 
 import javax.swing.*;
 import java.awt.*;
@@ -43,6 +46,8 @@ public class GeneralConfigForm {
 	private JCheckBox reportAnonymousUsageStatisticsCheckBox;
 	private JRadioButton checkNewVersionStable;
 	private JRadioButton checkNewVersionAll;
+	private JPanel httpProxyPanel;
+	private JButton httpProxyButton;
 	private Boolean isAnonymousFeedbackEnabled;
 
 	public JRadioButton getCheckNewVersionStable() {
@@ -53,7 +58,7 @@ public class GeneralConfigForm {
 		return checkNewVersionAll;
 	}
 
-	public GeneralConfigForm() {
+	public GeneralConfigForm(NewVersionChecker checker) {
 
 		checkNowButton.addActionListener(new NewVersionButtonListener(this));
 		chkAutoUpdateEnabled.addActionListener(new ActionListener() {
@@ -64,6 +69,14 @@ public class GeneralConfigForm {
 		reportAnonymousUsageStatisticsCheckBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				isAnonymousFeedbackEnabled = reportAnonymousUsageStatisticsCheckBox.isSelected();
+			}
+		});
+		httpProxyButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				HTTPProxySettingsDialog proxyDialog = new HTTPProxySettingsDialog();
+				proxyDialog.setModal(true);
+				proxyDialog.show();
+				proxyDialog.toFront();
 			}
 		});
 	}
@@ -119,17 +132,12 @@ public class GeneralConfigForm {
 	 */
 	private void $$$setupUI$$$() {
 		mainPanel = new JPanel();
-		mainPanel.setLayout(new GridBagLayout());
+		mainPanel.setLayout(new FormLayout("fill:d:grow", "center:max(d;4px):noGrow,top:3dlu:noGrow,center:d:grow,top:3dlu:noGrow,center:max(d;4px):noGrow"));
 		mainPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12), null));
 		autoUpdateConfigPanel = new JPanel();
 		autoUpdateConfigPanel.setLayout(new GridLayoutManager(3, 3, new Insets(0, 12, 12, 12), -1, -1));
-		GridBagConstraints gbc;
-		gbc = new GridBagConstraints();
-		gbc.gridx = 0;
-		gbc.gridy = 0;
-		gbc.weightx = 1.0;
-		gbc.fill = GridBagConstraints.BOTH;
-		mainPanel.add(autoUpdateConfigPanel, gbc);
+		CellConstraints cc = new CellConstraints();
+		mainPanel.add(autoUpdateConfigPanel, cc.xy(1, 1));
 		autoUpdateConfigPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Auto update"));
 		checkNowButton = new JButton();
 		checkNowButton.setText("Check now");
@@ -159,24 +167,20 @@ public class GeneralConfigForm {
 		checkNewVersionAll = new JRadioButton();
 		checkNewVersionAll.setText("Stable + snaphot");
 		autoUpdateConfigPanel.add(checkNewVersionAll, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-		final JPanel spacer3 = new JPanel();
-		gbc = new GridBagConstraints();
-		gbc.gridx = 0;
-		gbc.gridy = 1;
-		gbc.weighty = 1.0;
-		gbc.fill = GridBagConstraints.VERTICAL;
-		mainPanel.add(spacer3, gbc);
 		reportAnonymousUsageStatisticsCheckBox = new JCheckBox();
 		reportAnonymousUsageStatisticsCheckBox.setEnabled(true);
 		reportAnonymousUsageStatisticsCheckBox.setSelected(false);
 		reportAnonymousUsageStatisticsCheckBox.setText("Report anonymous usage statistics to help us develop a better plugin");
 		reportAnonymousUsageStatisticsCheckBox.setMnemonic('R');
 		reportAnonymousUsageStatisticsCheckBox.setDisplayedMnemonicIndex(0);
-		gbc = new GridBagConstraints();
-		gbc.gridx = 0;
-		gbc.gridy = 2;
-		gbc.anchor = GridBagConstraints.WEST;
-		mainPanel.add(reportAnonymousUsageStatisticsCheckBox, gbc);
+		mainPanel.add(reportAnonymousUsageStatisticsCheckBox, cc.xy(1, 5));
+		httpProxyPanel = new JPanel();
+		httpProxyPanel.setLayout(new FormLayout("fill:d:noGrow", "center:d:grow,top:3dlu:noGrow,center:d:grow"));
+		mainPanel.add(httpProxyPanel, cc.xy(1, 3, CellConstraints.DEFAULT, CellConstraints.TOP));
+		httpProxyPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "HTTP Proxy"));
+		httpProxyButton = new JButton();
+		httpProxyButton.setText("Settings");
+		httpProxyPanel.add(httpProxyButton, cc.xy(1, 3));
 		ButtonGroup buttonGroup;
 		buttonGroup = new ButtonGroup();
 		buttonGroup.add(checkNewVersionStable);
@@ -190,3 +194,4 @@ public class GeneralConfigForm {
 		return mainPanel;
 	}
 }
+
