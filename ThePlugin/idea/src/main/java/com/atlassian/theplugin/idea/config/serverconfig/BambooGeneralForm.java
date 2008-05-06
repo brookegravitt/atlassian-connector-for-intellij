@@ -16,7 +16,10 @@
 
 package com.atlassian.theplugin.idea.config.serverconfig;
 
-import com.atlassian.theplugin.ServerType;
+import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
+import com.atlassian.theplugin.commons.configuration.BambooTooltipOption;
+import com.atlassian.theplugin.commons.configuration.BambooConfigurationBean;
 import com.atlassian.theplugin.configuration.*;
 import com.atlassian.theplugin.idea.config.ContentPanel;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -41,13 +44,23 @@ public class BambooGeneralForm extends JComponent implements ContentPanel {
 
 	private final transient PluginConfigurationBean globalPluginConfiguration;
 
-	public BambooGeneralForm(PluginConfigurationBean globalPluginConfiguration) {
+	private static BambooGeneralForm instance;
+
+	private BambooGeneralForm(PluginConfigurationBean globalPluginConfiguration) {
 		this.globalPluginConfiguration = globalPluginConfiguration;
 		$$$setupUI$$$();
 		setLayout(new CardLayout());
 		model = new SpinnerNumberModel(1, 1, 1000, 1);
 		pollTimeSpinner.setModel(model);
 		add(rootComponent, "BambooGeneralForm");
+	}
+
+
+	public static BambooGeneralForm getInstance(PluginConfigurationBean globalPluginConfiguration) {
+		if (instance == null){
+			instance = new BambooGeneralForm(globalPluginConfiguration);
+		}
+		return instance;
 	}
 
 
@@ -77,7 +90,6 @@ public class BambooGeneralForm extends JComponent implements ContentPanel {
 		}
 		model.setValue(bambooConfiguration.getPollTime());
 	}
-
 
 	public void getData() {
 		((BambooConfigurationBean) getPluginConfiguration()

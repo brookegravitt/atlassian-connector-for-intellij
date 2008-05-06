@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.util;
 
-import com.atlassian.theplugin.exception.ThePluginException;
+import com.atlassian.theplugin.commons.exception.ThePluginException;
 
 /**
  * Created by IntelliJ IDEA.

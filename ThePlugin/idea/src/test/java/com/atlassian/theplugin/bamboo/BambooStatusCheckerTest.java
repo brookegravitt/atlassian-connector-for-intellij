@@ -16,9 +16,15 @@
 
 package com.atlassian.theplugin.bamboo;
 
-import com.atlassian.theplugin.UIActionScheduler;
-import com.atlassian.theplugin.bamboo.api.bamboomock.*;
+import com.atlassian.theplugin.commons.UIActionScheduler;
+import com.atlassian.theplugin.commons.bamboo.*;
+import com.atlassian.theplugin.commons.SubscribedPlan;
+import com.atlassian.theplugin.commons.configuration.BambooConfigurationBean;
+import com.atlassian.theplugin.commons.configuration.ServerBean;
+import com.atlassian.theplugin.commons.configuration.SubscribedPlanBean;
+import com.atlassian.theplugin.commons.bamboo.api.bamboomock.*;
 import com.atlassian.theplugin.configuration.*;
+import com.atlassian.theplugin.util.PluginUtil;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -35,7 +41,7 @@ public class BambooStatusCheckerTest extends TestCase {
 	private static final String USER_NAME = "someUser";
 	private static final String PASSWORD = "somePassword";
 	private static final String PLAN_ID = "TP-DEF"; // always the same - mock does the logic
-	private final BambooServerFacade bambooServerFacade = new BambooServerFacadeImpl();
+	private final BambooServerFacade bambooServerFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
 
 	public BambooStatusCheckerTest(String name) {
 		super(name);
@@ -43,6 +49,7 @@ public class BambooStatusCheckerTest extends TestCase {
 
 	public void setUp() throws Exception {
 		super.setUp();
+
 	}
 
 	public void tearDown() throws Exception {
@@ -53,12 +60,12 @@ public class BambooStatusCheckerTest extends TestCase {
 		PluginConfigurationBean config = createBambooTestConfiguration();
 		ConfigurationFactory.setConfiguration(config);
 
-		BambooStatusChecker checker = new BambooStatusChecker(null, config, bambooServerFacade);
+		BambooStatusChecker checker = BambooStatusChecker.getInstance(null, config, null, null);
 		assertEquals(60000, checker.getInterval());
 	}
 
 	public void testNewTimerTask() {
-		BambooStatusChecker checker = new BambooStatusChecker(null, null, bambooServerFacade);
+		BambooStatusChecker checker = BambooStatusChecker.getInstance(null, null, null, null);
 		TimerTask t1 = checker.newTimerTask();
 		TimerTask t2 = checker.newTimerTask();
 
@@ -68,11 +75,15 @@ public class BambooStatusCheckerTest extends TestCase {
 
 	public void testLogic() throws Exception {
 		// perform no-operation
+
 		PluginConfigurationBean config = createBambooTestConfiguration();
 		ConfigurationFactory.setConfiguration(config);
 
 		EasyInvoker invoker = new EasyInvoker();
-		BambooStatusChecker checker = new BambooStatusChecker(invoker, config, bambooServerFacade);
+		BambooStatusChecker checker = BambooStatusChecker.getInstance();
+
+		checker.setActionScheduler(invoker);
+		checker.setConfiguration(config);
 
 		TimerTask task = checker.newTimerTask();
 		task.run();

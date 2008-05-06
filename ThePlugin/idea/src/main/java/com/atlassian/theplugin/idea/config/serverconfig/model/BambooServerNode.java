@@ -16,8 +16,8 @@
 
 package com.atlassian.theplugin.idea.config.serverconfig.model;
 
-import com.atlassian.theplugin.ServerType;
-import com.atlassian.theplugin.configuration.Server;
+import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.Server;
 
 /**
  * Represents Bambbo server on servers JTree

@@ -16,9 +16,9 @@
 
 package com.atlassian.theplugin.idea.config.serverconfig;
 
-import com.atlassian.theplugin.ServerType;
+import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.configuration.CrucibleConfigurationBean;
-import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.idea.config.ContentPanel;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -41,10 +41,13 @@ public class CrucibleGeneralForm extends JComponent implements ContentPanel {
 	private SpinnerModel model;
 
 	private transient PluginConfigurationBean globalPluginConfiguration;
-	private transient CrucibleConfigurationBean crucibleConfiguration;
-	private transient PluginConfiguration localPluginConfigurationCopy;
 
-	public CrucibleGeneralForm(PluginConfigurationBean globalPluginConfiguration) {
+	private transient CrucibleConfigurationBean crucibleConfiguration;
+
+	private transient PluginConfiguration localPluginConfigurationCopy;
+	private static CrucibleGeneralForm instance;
+
+	private  CrucibleGeneralForm(PluginConfigurationBean globalPluginConfiguration) {
 
 		this.globalPluginConfiguration = globalPluginConfiguration;
 
@@ -57,10 +60,17 @@ public class CrucibleGeneralForm extends JComponent implements ContentPanel {
 		add(rootComponent, BorderLayout.WEST);
 	}
 
+	public static CrucibleGeneralForm getInstance(PluginConfigurationBean globalPluginConfiguration) {
+		if (instance == null){
+			instance = new CrucibleGeneralForm(globalPluginConfiguration);
+		}
+		return instance;
+	}
+
+
 	public boolean isEnabled() {
 		return true;  //To change body of implemented methods use File | Settings | File Templates.
 	}
-
 
 	public boolean isModified() {
 		return (Integer) model.getValue() != crucibleConfiguration.getPollTime();

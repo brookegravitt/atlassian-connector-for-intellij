@@ -16,8 +16,8 @@
 
 package com.atlassian.theplugin.idea.autoupdate;
 
-import com.atlassian.theplugin.configuration.PluginConfiguration;
-import com.atlassian.theplugin.exception.ThePluginException;
+import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
+import com.atlassian.theplugin.commons.exception.ThePluginException;
 import com.atlassian.theplugin.idea.StatusBarPluginIcon;
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -82,7 +82,7 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 		this.version = newVersion;
 		startBlinking();
 		this.setToolTipText("New version (" + newVersion.getVersion() + ") of the "
-				+ PluginUtil.getName() + " available");
+				+ PluginUtil.getInstance().getName() + " available");
 
 	}
 

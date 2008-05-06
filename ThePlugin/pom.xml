@@ -69,8 +69,29 @@
         <downloadDir>download</downloadDir>
         <metadataDir>metadata</metadataDir>
     </properties>
-    <dependencies>
-    </dependencies>
+	<dependencies>
+		<dependency>
+			<groupId>org.ddsteps</groupId>
+			<artifactId>ddsteps-httpserver-mock</artifactId>
+			<version>1.0-m1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>1.5.2</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+			<version>3.1</version>
+		</dependency>
+		<dependency>
+            <groupId>jdom</groupId>
+            <artifactId>jdom</artifactId>
+            <version>1.0</version>
+        </dependency>
+	</dependencies>
     <build>
         <plugins>
             <plugin>

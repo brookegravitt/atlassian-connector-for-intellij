@@ -16,13 +16,18 @@
 
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.bamboo.BambooStatusChecker;
+import com.atlassian.theplugin.commons.bamboo.BambooStatusChecker;
+import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
+import com.atlassian.theplugin.commons.SchedulableChecker;
+import com.atlassian.theplugin.commons.UIActionScheduler;
+import com.atlassian.theplugin.commons.util.Logger;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
-import com.atlassian.theplugin.util.PicoUtil;
-import com.atlassian.theplugin.util.PluginUtil;
+import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
+import com.atlassian.theplugin.util.*;
+import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
@@ -75,7 +80,7 @@ public class ThePluginApplicationComponent
 
 	@Nls
 	public String getDisplayName() {
-		return PluginUtil.getName();
+		return PluginUtil.getInstance().getName();
 	}
 
 	@Nullable
@@ -97,13 +102,13 @@ public class ThePluginApplicationComponent
 
 
 	public void initComponent() {
-		Logger.setFactory(new Logger.Factory() {
-						public Logger getLoggerInstance(String category) {
-							return new IdeaLogger(com.intellij.openapi.diagnostic.Logger.getInstance(category));
-						}
-					});
-
-			
+//		LoggerImpl.setFactory(new LoggerImpl.Factory() {
+//						public Logger getLoggerInstance(String category) {
+//							return new IdeaLoggerImpl(com.intellij.openapi.diagnostic.Logger.getInstance(category));
+//						}
+//					});
+//
+//
 
 	}
 
@@ -124,15 +129,19 @@ public class ThePluginApplicationComponent
 	}
 
 	public ThePluginApplicationComponent(PluginConfigurationBean configuration,
-										 BambooStatusChecker bambooStatusChecker,
-										 ConfigPanel configPanel,
+										 /*BambooStatusChecker bambooStatusChecker,*/
+										 /*ConfigPanel configPanel,*/
 										 SchedulableChecker[] schedulableCheckers,
-										 JIRAServerFacade jiraServerFacade) {
+										 UIActionScheduler actionScheduler) {
 		this.configuration = configuration;
-		this.bambooStatusChecker = bambooStatusChecker;
+		this.bambooStatusChecker = BambooStatusChecker.getInstance(
+				actionScheduler,
+				configuration,
+				new MissingPasswordHandler(BambooServerFacadeImpl.getInstance(PluginUtil.getLogger())),
+				PluginUtil.getLogger());
 		this.schedulableCheckers = schedulableCheckers; /* get lost, findbugs! */
-		this.configPanel = configPanel;
-		this.jiraServerFacade = jiraServerFacade;
+		this.configPanel = ConfigPanel.getInstance(configuration);
+		this.jiraServerFacade = JIRAServerFacadeImpl.getInstance();
 		ConfigurationFactory.setConfiguration(configuration);
 	}
 

@@ -20,7 +20,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.WindowManager;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
-import com.atlassian.theplugin.ServerType;
+import com.atlassian.theplugin.commons.ServerType;
 
 import javax.swing.*;
 

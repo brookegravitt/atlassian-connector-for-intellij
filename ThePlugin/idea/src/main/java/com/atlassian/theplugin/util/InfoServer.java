@@ -17,7 +17,8 @@
 package com.atlassian.theplugin.util;
 
 import com.atlassian.theplugin.exception.VersionServiceException;
-import com.atlassian.theplugin.exception.IncorrectVersionException;
+import com.atlassian.theplugin.commons.exception.IncorrectVersionException;
+import com.atlassian.theplugin.commons.util.Version;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.jdom.Document;
@@ -85,7 +86,7 @@ public final class InfoServer {
 		 * Only for internal use (package scope)
 		 * @param doc
 		 * @throws VersionServiceException
-		 * @throws IncorrectVersionException
+		 * @throws com.atlassian.theplugin.commons.exception.IncorrectVersionException
 		 */
 		VersionInfo(Document doc) throws VersionServiceException, IncorrectVersionException {
 			version = new Version(getValue("/response/version/number", doc));

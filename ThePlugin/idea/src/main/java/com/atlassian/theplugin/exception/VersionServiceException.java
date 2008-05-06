@@ -16,6 +16,8 @@
 
 package com.atlassian.theplugin.exception;
 
+import com.atlassian.theplugin.commons.exception.ThePluginException;
+
 /**
  * Created by IntelliJ IDEA.
  * User: lguminski

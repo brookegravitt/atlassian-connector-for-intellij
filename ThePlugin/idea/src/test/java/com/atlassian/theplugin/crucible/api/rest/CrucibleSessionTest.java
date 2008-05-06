@@ -16,11 +16,11 @@
 
 package com.atlassian.theplugin.crucible.api.rest;
 
-import com.atlassian.theplugin.bamboo.api.bamboomock.ErrorResponse;
+import com.atlassian.theplugin.commons.bamboo.api.bamboomock.ErrorResponse;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import com.atlassian.theplugin.crucible.api.*;
 import com.atlassian.theplugin.crucible.api.rest.cruciblemock.*;
-import com.atlassian.theplugin.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.remoteapi.RemoteApiLoginException;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 import org.mortbay.jetty.Server;

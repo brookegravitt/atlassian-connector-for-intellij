@@ -16,11 +16,11 @@
 
 package com.atlassian.theplugin.util;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
 import junit.framework.TestCase;
 
 import java.net.MalformedURLException;
+
+import com.atlassian.theplugin.commons.util.UrlUtil;
 
 
 public class UrlUtilTest extends TestCase {

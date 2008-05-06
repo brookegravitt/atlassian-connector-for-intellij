@@ -16,12 +16,12 @@
 
 package com.atlassian.theplugin.crucible;
 
-import com.atlassian.theplugin.configuration.ServerBean;
-import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.configuration.ServerBean;
+import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.crucible.api.*;
 import com.atlassian.theplugin.crucible.api.rest.cruciblemock.LoginCallback;
-import com.atlassian.theplugin.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.remoteapi.RemoteApiLoginException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 import org.easymock.EasyMock;
@@ -48,7 +48,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 
 		crucibleSessionMock = createMock(CrucibleSession.class);
 
-		facade = new CrucibleServerFacadeImpl();
+		facade = CrucibleServerFacadeImpl.getInstance();
 
 		try {
 			Field f = CrucibleServerFacadeImpl.class.getDeclaredField("sessions");

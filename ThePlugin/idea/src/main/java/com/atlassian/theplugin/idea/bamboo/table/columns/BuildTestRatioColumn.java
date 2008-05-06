@@ -16,9 +16,9 @@
 
 package com.atlassian.theplugin.idea.bamboo.table.columns;
 
-import com.atlassian.theplugin.bamboo.BuildStatus;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.idea.TableColumnInfo;
+import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 
 import java.util.Comparator;
 

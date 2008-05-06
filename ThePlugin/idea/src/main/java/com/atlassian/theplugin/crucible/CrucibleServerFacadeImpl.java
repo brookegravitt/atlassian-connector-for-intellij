@@ -16,21 +16,29 @@
 
 package com.atlassian.theplugin.crucible;
 
-import com.atlassian.theplugin.ServerType;
-import com.atlassian.theplugin.configuration.Server;
-import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.crucible.api.*;
 import com.atlassian.theplugin.crucible.api.rest.CrucibleSessionImpl;
-import com.atlassian.theplugin.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.remoteapi.RemoteApiLoginFailedException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginFailedException;
 import com.atlassian.theplugin.util.PluginUtil;
 
 import java.util.*;
 
 public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	private Map<String, CrucibleSession> sessions = new HashMap<String, CrucibleSession>();
+	private static CrucibleServerFacadeImpl instance;
 
-	public CrucibleServerFacadeImpl() {
+	private CrucibleServerFacadeImpl() {
+	}
+
+	public static CrucibleServerFacade getInstance() {
+		if (instance == null){
+			instance = new CrucibleServerFacadeImpl();
+		}
+		return instance;
 	}
 
 	public ServerType getServerType() {
@@ -105,6 +113,7 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 		return session.getComments(permId);
 	}
 
+
 	/**
 	 * Retrieves list of projects defined on Crucible server
 	 *
@@ -119,14 +128,13 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 		return session.getProjects();
 	}
 
-
 	/**
 	 * Retrieves list of repositories defined on Crucible server
 	 *
 	 * @param server
 	 * @return
 	 * @throws CrucibleException
-	 * @throws ServerPasswordNotProvidedException
+	 * @throws com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException
 	 *
 	 */
 	public List<RepositoryData> getRepositories(Server server) throws RemoteApiException, ServerPasswordNotProvidedException {
@@ -181,5 +189,4 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 		}
 		return Collections.EMPTY_LIST;
 	}
-
 }

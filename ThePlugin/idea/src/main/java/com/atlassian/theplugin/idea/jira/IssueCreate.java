@@ -22,7 +22,7 @@
  */
 package com.atlassian.theplugin.idea.jira;
 
-import com.atlassian.theplugin.bamboo.HtmlBambooStatusListener;
+import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListener;
 import com.atlassian.theplugin.idea.GenericHyperlinkListener;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;

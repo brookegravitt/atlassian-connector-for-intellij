@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.jira.api;
 
-import com.atlassian.theplugin.remoteapi.RemoteApiMalformedUrlException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
 import junit.framework.TestCase;
 
 import java.io.IOException;
