@@ -16,10 +16,11 @@
 
 package com.atlassian.theplugin.commons.remoteapi.rest;
 
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
-import com.atlassian.theplugin.commons.util.UrlUtil;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
 import com.atlassian.theplugin.commons.util.HttpClientFactory;
+import com.atlassian.theplugin.commons.util.UrlUtil;
+import com.atlassian.theplugin.exception.HttpProxySettingsException;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
@@ -51,7 +52,7 @@ public abstract class AbstractHttpSession {
 	 * Public constructor for AbstractHttpSession
 	 *
 	 * @param baseUrl base URL for server instance
-	 * @throws com.atlassian.commons.RemoteApiMalformedUrlException  for malformed url
+	 * @throws com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException for malformed url
 	 */
 	public AbstractHttpSession(String baseUrl) throws RemoteApiMalformedUrlException {
 
@@ -72,7 +73,11 @@ public abstract class AbstractHttpSession {
 		Document doc = null;
 		synchronized (clientLock) {
 			if (client == null) {
-				client = HttpClientFactory.getClient();
+				try {
+					client = HttpClientFactory.getClient();
+				} catch (HttpProxySettingsException e) {
+					throw (IOException) new IOException("Connection error. Please set up HTTP Proxy settings").initCause(e);
+				}
 			}
 
 			GetMethod method = new GetMethod(urlString);
@@ -112,7 +117,11 @@ public abstract class AbstractHttpSession {
 		Document doc = null;
 		synchronized (clientLock) {
 			if (client == null) {
-				client = HttpClientFactory.getClient();
+				try {
+					client = HttpClientFactory.getClient();
+				} catch (HttpProxySettingsException e) {
+					throw (IOException) new IOException("Connection error. Please set up HTTP Proxy settings").initCause(e);
+				}
 			}
 
 			PostMethod method = new PostMethod(urlString);
