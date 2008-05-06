@@ -18,9 +18,7 @@ package com.atlassian.theplugin.crucible;
 
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.Server;
-import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
-import com.atlassian.theplugin.commons.configuration.ServerBean;
-import com.atlassian.theplugin.configuration.*;
+import com.atlassian.theplugin.commons.configuration.*;
 import com.atlassian.theplugin.crucible.api.rest.cruciblemock.LoginCallback;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginFailedException;
