@@ -24,7 +24,7 @@ package com.atlassian.theplugin.jira.api;
 
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.atlassian.theplugin.util.UrlUtil;
+import com.atlassian.theplugin.commons.util.UrlUtil;
 import org.apache.xmlrpc.XmlRpcClient;
 import org.apache.xmlrpc.XmlRpcException;
 

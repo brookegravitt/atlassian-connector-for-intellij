@@ -21,8 +21,8 @@ import com.atlassian.theplugin.jira.api.JIRASession;
 import com.atlassian.theplugin.jira.api.soap.axis.JiraSoapService;
 import com.atlassian.theplugin.jira.api.soap.axis.JiraSoapServiceServiceLocator;
 import com.atlassian.theplugin.jira.api.soap.axis.RemoteWorklog;
-import com.atlassian.theplugin.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.remoteapi.RemoteApiLoginException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 
 import javax.xml.rpc.ServiceException;
 import java.net.URL;

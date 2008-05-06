@@ -17,11 +17,11 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.LoginDataProvided;
-import com.atlassian.theplugin.configuration.Server;
-import com.atlassian.theplugin.configuration.ServerBean;
+import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.configuration.ServerBean;
 import com.atlassian.theplugin.idea.TestConnectionListener;
 import com.atlassian.theplugin.util.Connector;
-import com.atlassian.theplugin.util.UrlUtil;
+import com.atlassian.theplugin.commons.util.UrlUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 

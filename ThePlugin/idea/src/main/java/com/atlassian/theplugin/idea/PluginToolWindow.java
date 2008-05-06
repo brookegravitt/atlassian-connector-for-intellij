@@ -16,9 +16,9 @@
 
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.ServerType;
+import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.exception.ThePluginException;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
-import com.atlassian.theplugin.exception.ThePluginException;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;

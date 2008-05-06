@@ -110,11 +110,11 @@
             <version>3.8.2</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>jdom</groupId>
-            <artifactId>jdom</artifactId>
-            <version>1.0</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>jdom</groupId>-->
+            <!--<artifactId>jdom</artifactId>-->
+            <!--<version>1.0</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>jaxen</groupId>
             <artifactId>jaxen</artifactId>
@@ -142,11 +142,7 @@
             <version>1.2</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-            <version>1.5.2</version>
-        </dependency>
+       
         <dependency>
             <groupId>axis</groupId>
             <artifactId>axis</artifactId>
@@ -357,10 +353,10 @@
                             <name>dom4j</name>
                             <exclude>true</exclude>
                         </library>
-                        <library>
-                            <name>xercesImpl</name>
-                            <exclude>true</exclude>
-                        </library>
+                        <!--<library>-->
+                            <!--<name>xercesImpl</name>-->
+                            <!--<exclude>true</exclude>-->
+                        <!--</library>-->
                         <library>
                             <name>xalan</name>
                             <exclude>true</exclude>

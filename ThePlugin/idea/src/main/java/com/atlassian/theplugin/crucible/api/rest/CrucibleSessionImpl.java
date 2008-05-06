@@ -17,15 +17,15 @@
 package com.atlassian.theplugin.crucible.api.rest;
 
 import com.atlassian.theplugin.crucible.api.*;
-import com.atlassian.theplugin.remoteapi.*;
-import com.atlassian.theplugin.remoteapi.rest.AbstractHttpSession;
+import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
+import com.atlassian.theplugin.commons.remoteapi.*;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpMethod;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.xpath.XPath;
-import thirdparty.net.iharder.base64.Base64;
+import com.atlassian.theplugin.commons.thirdparty.base64.Base64;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

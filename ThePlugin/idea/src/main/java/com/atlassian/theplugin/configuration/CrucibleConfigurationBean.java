@@ -16,6 +16,9 @@
 
 package com.atlassian.theplugin.configuration;
 
+import com.atlassian.theplugin.commons.configuration.ProductServerConfiguration;
+import com.atlassian.theplugin.commons.configuration.AbstractServerConfigurationBean;
+
 public class CrucibleConfigurationBean extends AbstractServerConfigurationBean {
 	private int pollTime = 1;
 

@@ -17,7 +17,12 @@
 package com.atlassian.theplugin.configuration;
 
 import com.atlassian.theplugin.util.PluginUtil;
-import com.atlassian.theplugin.ServerType;
+import com.atlassian.theplugin.commons.*;
+import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.configuration.ProductServerConfiguration;
+import com.atlassian.theplugin.commons.configuration.BambooConfigurationBean;
+import com.atlassian.theplugin.commons.configuration.ServerBean;
+import com.atlassian.theplugin.commons.configuration.SubscribedPlanBean;
 import junit.framework.TestCase;
 
 import java.util.ArrayList;
@@ -118,6 +123,6 @@ public class ConfigurationTest extends TestCase {
 
 
 	public void testProjectSettings() {
-        assertEquals("Atlassian", PluginUtil.getName());
+        assertEquals("Atlassian", PluginUtil.getInstance().getName());
     }
 }

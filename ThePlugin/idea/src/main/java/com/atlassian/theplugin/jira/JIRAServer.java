@@ -16,10 +16,10 @@
 
 package com.atlassian.theplugin.jira;
 
-import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.atlassian.theplugin.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.Server;
 
 import java.util.ArrayList;
 import java.util.Collections;
