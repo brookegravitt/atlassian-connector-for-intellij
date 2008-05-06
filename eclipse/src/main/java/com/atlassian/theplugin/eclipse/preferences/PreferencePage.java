@@ -54,7 +54,11 @@ public class PreferencePage
 //		addField(
 //			new StringFieldEditor(PreferenceConstants.P_STRING, "A &text preference:", getFieldEditorParent()));
 		
-		addField(new StringFieldEditor("blabla", "Name:", getFieldEditorParent()));
+		addField(new StringFieldEditor("", "Server Name:", getFieldEditorParent()));
+		addField(new StringFieldEditor("", "Server Url:", getFieldEditorParent()));
+		addField(new StringFieldEditor("", "User Name:", getFieldEditorParent()));
+		addField(new StringFieldEditor("", "Password:", getFieldEditorParent()));
+
 	}
 
 	/* (non-Javadoc)
