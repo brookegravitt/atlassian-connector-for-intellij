@@ -47,6 +47,10 @@ public class JIRAIssueBean implements JIRAIssue {
 	public JIRAIssueBean() {
 	}
 
+	public JIRAIssueBean(String serverUrl) {
+		this.serverUrl = serverUrl;
+	}
+
 	public JIRAIssueBean(String serverUrl, Element e) {
 		this.serverUrl = serverUrl;
 		this.summary = getTextSafely(e, "summary");

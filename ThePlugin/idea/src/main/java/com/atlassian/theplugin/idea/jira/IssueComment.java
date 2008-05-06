@@ -22,77 +22,28 @@
  */
 package com.atlassian.theplugin.idea.jira;
 
-import com.atlassian.theplugin.jira.JIRAServer;
-import com.atlassian.theplugin.jira.JIRAServerFacade;
-import com.atlassian.theplugin.jira.api.JIRAException;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.ui.ColoredListCellRenderer;
-import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
 
 public class IssueComment extends DialogWrapper {
-	private static final Logger LOGGER = Logger.getInstance("IssueComment");
-
 	private JPanel mainPanel;
 	private JTextArea comment;
-	private JComboBox issueComboBox;
-	private JIRAServer jiraServer;
-	private static final int MAX_SUM_LENGTH = 53;
-	private static final int MAX_SUM_LENGTH_MINUS_ELLIPSIS = 50;
 
-	private final JIRAServerFacade jiraServerFacade;
-
-	public IssueComment(JIRAServerFacade jiraServerFacade, final JIRAServer jiraServer, List<JiraIssueAdapter> issues) {
+	public IssueComment(String issueKey) {
 		super(false);
-		this.jiraServerFacade = jiraServerFacade;
 		init();
-		this.jiraServer = jiraServer;
-		setTitle("Add Comment");
-		issueComboBox.setRenderer(new ColoredListCellRenderer() {
-			protected void customizeCellRenderer(JList list, Object value, int index, boolean selected, boolean hasFocus) {
-				JIRAIssue issue = (JIRAIssue) value;
-				String summary = issue.getSummary();
-				String text = issue.getKey() + " : "
-						+ (summary.length() > MAX_SUM_LENGTH ? summary.substring(0, MAX_SUM_LENGTH_MINUS_ELLIPSIS)
-						+ "..." : summary);
-				append(text, SimpleTextAttributes.SIMPLE_CELL_ATTRIBUTES);
-				setIcon(CachedIconLoader.getIcon(issue.getTypeIconUrl()));
-			}
-		});
-
-		for (JiraIssueAdapter issue : issues) {
-			issueComboBox.addItem(issue.getIssue());
-		}
+		setTitle("Add Comment for " + issueKey);
 
 		getOKAction().putValue(Action.NAME, "Comment");
 	}
 
-	public void setIssue(JIRAIssue issue) {
-		setTitle("Add Comment: " + issue.getKey());
-		issueComboBox.setSelectedItem(issue);
-	}
-
-	public JIRAIssue getIssue() {
-		return (JIRAIssue) issueComboBox.getSelectedItem();
-	}
-
-	protected void doOKAction() {
-		try {
-			JIRAServerFacade facade = jiraServerFacade;
-			facade.addComment(jiraServer.getServer(), getIssue(), comment.getText());
-		} catch (JIRAException e1) {
-			e1.printStackTrace();
-		}
-
-		super.doOKAction();
+	public String getComment() {
+		return comment.getText();
 	}
 
 	public JComponent getPreferredFocusedComponent() {
@@ -120,18 +71,10 @@ public class IssueComment extends DialogWrapper {
 	 */
 	private void $$$setupUI$$$() {
 		mainPanel = new JPanel();
-		mainPanel.setLayout(new GridLayoutManager(2, 1, new Insets(5, 5, 5, 5), -1, -1));
+		mainPanel.setLayout(new GridLayoutManager(1, 1, new Insets(5, 5, 5, 5), -1, -1));
 		mainPanel.setMinimumSize(new Dimension(400, 100));
-		final JPanel panel1 = new JPanel();
-		panel1.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
-		mainPanel.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-		issueComboBox = new JComboBox();
-		panel1.add(issueComboBox, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-		final JLabel label1 = new JLabel();
-		label1.setText("Issue:");
-		panel1.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		final JScrollPane scrollPane1 = new JScrollPane();
-		mainPanel.add(scrollPane1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+		mainPanel.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 		comment = new JTextArea();
 		comment.setLineWrap(true);
 		comment.setMinimumSize(new Dimension(439, 120));

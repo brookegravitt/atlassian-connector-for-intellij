@@ -16,12 +16,12 @@
 
 package com.atlassian.theplugin.jira;
 
-import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.ServerType;
+import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.api.soap.JIRASessionImpl;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
+import com.atlassian.theplugin.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.remoteapi.RemoteApiLoginException;
 
 import javax.xml.rpc.ServiceException;
 import java.net.URL;
@@ -31,8 +31,18 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 public class JIRAServerFacadeImpl implements JIRAServerFacade {
-	private Map<String, JIRARssClient> sessions = new WeakHashMap<String, JIRARssClient>();
+	private JIRAServerFacadeImpl(){
 
+	}
+
+	public static JIRAServerFacade getInstance() {
+		if (instance == null) {
+			instance = new JIRAServerFacadeImpl();
+		}
+		return instance;
+	}
+
+	private Map<String, JIRARssClient> rssSessions = new WeakHashMap<String, JIRARssClient>();
 	private Map<String, JIRASession> soapSessions = new WeakHashMap<String, JIRASession>();
 	private static JIRAServerFacadeImpl instance;
 
@@ -42,7 +52,7 @@ public class JIRAServerFacadeImpl implements JIRAServerFacade {
 		JIRASession session = soapSessions.get(key);
 		if (session == null) {
 			try {
-				session = new JIRASessionImpl(new URL(server.getUrlString() + "/rpc/soap/jirasoapservice-v2"));
+				session = new JIRASessionImpl(server.getUrlString());
 				session.login(server.getUserName(), server.getPasswordString());
 			} catch (MalformedURLException e) {
 				throw new RemoteApiException(e);
@@ -54,24 +64,13 @@ public class JIRAServerFacadeImpl implements JIRAServerFacade {
 		return session;
 	}
 
-	private JIRAServerFacadeImpl(){
-
-	}
-
-	public static JIRAServerFacade getInstance() {
-		if (instance == null){
-			instance = new JIRAServerFacadeImpl();
-		}
-		return instance;
-	}
-
-	private synchronized JIRARssClient getSession(Server server) throws RemoteApiException {
+	private synchronized JIRARssClient getRssSession(Server server) throws RemoteApiException {
 		// @todo old server will stay on map - remove them !!!
 		String key = server.getUserName() + server.getUrlString() + server.getPasswordString();
-		JIRARssClient session = sessions.get(key);
+		JIRARssClient session = rssSessions.get(key);
 		if (session == null) {
 			session = new JIRARssClient(server.getUrlString(), server.getUserName(), server.getPasswordString());
-			sessions.put(key, session);
+			rssSessions.put(key, session);
 		}
 		return session;
 	}
@@ -79,15 +78,13 @@ public class JIRAServerFacadeImpl implements JIRAServerFacade {
 	public void testServerConnection(String url, String userName, String password) throws RemoteApiException {
 
         try {
-
-			JIRAXmlRpcClient client = new JIRAXmlRpcClient(url);
-
-			if (!client.login(userName, password)) {
-                throw new RemoteApiLoginException("Bad credentials");
-            }
-        } catch (JIRAException e) {
-            throw new RemoteApiLoginException(e.getMessage(), e);
-        }
+			JIRASession session = new JIRASessionImpl(url);
+			session.login(userName, password);
+		} catch (MalformedURLException e) {
+			throw new RemoteApiException(e);
+		} catch (ServiceException e) {
+			throw new RemoteApiLoginException(e.getMessage(), e);
+		}
 	}
 
 	public ServerType getServerType() {
@@ -100,9 +97,9 @@ public class JIRAServerFacadeImpl implements JIRAServerFacade {
 						  String sortOrder,
 						  int start,
 						  int size) throws JIRAException {
-		JIRARssClient rss = null;
+		JIRARssClient rss;
 		try {
-			rss = getSession(server);
+			rss = getRssSession(server);
 		} catch (RemoteApiException e) {
 			throw new JIRAException(e.getMessage(), e);
 		}
@@ -117,7 +114,7 @@ public class JIRAServerFacadeImpl implements JIRAServerFacade {
 									 int size) throws JIRAException {
 		JIRARssClient rss;
 		try {
-			rss = getSession(server);
+			rss = getRssSession(server);
 		} catch (RemoteApiException e) {
 			throw new JIRAException(e.getMessage(), e);
 		}
@@ -128,69 +125,111 @@ public class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public List getProjects(Server server) throws JIRAException {
-        JIRAXmlRpcClient client = new JIRAXmlRpcClient(server.getUrlString(), server.getUserName(), server.getPasswordString());
-        return client.getProjects();
+	public List<JIRAProject> getProjects(Server server) throws JIRAException {
+		try {
+			JIRASession soap = getSoapSession(server);
+			return soap.getProjects();
+		} catch (RemoteApiException e) {
+			throw new JIRAException(e.getMessage(), e);
+		}
     }
 
-	public List<JIRAConstant> getIssueTypes(Server server) throws JIRAException {
-        JIRAXmlRpcClient client = new JIRAXmlRpcClient(server.getUrlString(), server.getUserName(), server.getPasswordString());
-        return client.getIssueTypes();
+    public List<JIRAConstant> getIssueTypes(Server server) throws JIRAException {
+		try {
+			JIRASession soap = getSoapSession(server);
+			return soap.getIssueTypes();
+		} catch (RemoteApiException e) {
+			throw new JIRAException(e.getMessage(), e);
+		}
     }
 
-	public List<JIRAConstant> getStatuses(Server server) throws JIRAException {
-        JIRAXmlRpcClient client = new JIRAXmlRpcClient(server.getUrlString(), server.getUserName(), server.getPasswordString());
-        return client.getStatuses();
-    }
-
-	public List getIssueTypesForProject(Server server, String project) throws JIRAException {
-		JIRAXmlRpcClient client = new JIRAXmlRpcClient(server.getUrlString(), server.getUserName(), server.getPasswordString());
-		return client.getIssueTypesForProject(project);
+	public List<JIRAConstant> getIssueTypesForProject(Server server, String project) throws JIRAException {
+		try {
+			JIRASession soap = getSoapSession(server);
+			return soap.getIssueTypesForProject(project);
+		} catch (RemoteApiException e) {
+			throw new JIRAException(e.getMessage(), e);
+		}
 	}
 
-	public void addComment(Server server, JIRAIssue issue, String comment) throws JIRAException {
-        JIRAXmlRpcClient client = new JIRAXmlRpcClient(server.getUrlString(), server.getUserName(), server.getPasswordString());
-        client.addIssueComment(issue.getKey(), comment);
+    public List<JIRAConstant> getStatuses(Server server) throws JIRAException {
+		try {
+			JIRASession soap = getSoapSession(server);
+			return soap.getStatuses();
+		} catch (RemoteApiException e) {
+			throw new JIRAException(e.getMessage(), e);
+		}
     }
 
-	public JIRAIssue createIssue(Server server, JIRAIssue issue) throws JIRAException {
-        JIRAXmlRpcClient client = new JIRAXmlRpcClient(server.getUrlString(), server.getUserName(), server.getPasswordString());
-        return client.createIssue(issue);
+	public void addComment(Server server, JIRAIssue issue, String comment) throws JIRAException {
+		try {
+			JIRASession soap = getSoapSession(server);
+			soap.addComment(issue, comment);
+		} catch (RemoteApiException e) {
+			throw new JIRAException(e.getMessage(), e);
+		}
+    }
+
+    public JIRAIssue createIssue(Server server, JIRAIssue issue) throws JIRAException {
+		try {
+			JIRASession soap = getSoapSession(server);
+			return soap.createIssue(issue);
+		} catch (RemoteApiException e) {
+			throw new JIRAException(e.getMessage(), e);
+		}
     }
 
 	public void logWork(Server server, JIRAIssue issue, String timeSpent, String comment) throws JIRAException {
-		JIRASession soap;
 		try {
-			soap = getSoapSession(server);
+			JIRASession soap = getSoapSession(server);
 			soap.logWork(issue, timeSpent, comment);
 		} catch (RemoteApiException e) {
 			throw new JIRAException(e.getMessage(), e);
 		}
-		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
-	public List getComponents(Server server, String projectKey) throws JIRAException {
-        JIRAXmlRpcClient client = new JIRAXmlRpcClient(server.getUrlString(), server.getUserName(), server.getPasswordString());
-        return client.getComponents(projectKey);
+	public List<JIRAQueryFragment> getComponents(Server server, String projectKey) throws JIRAException {
+		try {
+			JIRASession soap = getSoapSession(server);
+			return soap.getComponents(projectKey);
+		} catch (RemoteApiException e) {
+			throw new JIRAException(e.getMessage(), e);
+		}
     }
 
-	public List getVersions(Server server, String projectKey) throws JIRAException {
-        JIRAXmlRpcClient client = new JIRAXmlRpcClient(server.getUrlString(), server.getUserName(), server.getPasswordString());
-        return client.getVersions(projectKey);
+    public List<JIRAVersionBean> getVersions(Server server, String projectKey) throws JIRAException {
+		try {
+			JIRASession soap = getSoapSession(server);
+			return soap.getVersions(projectKey);
+		} catch (RemoteApiException e) {
+			throw new JIRAException(e.getMessage(), e);
+		}
 	}
 
-	public List getPriorieties(Server server) throws JIRAException {
-		JIRAXmlRpcClient client = new JIRAXmlRpcClient(server.getUrlString(), server.getUserName(), server.getPasswordString());
-		return client.getPriorities();
+	public List<JIRAConstant> getPriorities(Server server) throws JIRAException {
+		try {
+			JIRASession soap = getSoapSession(server);
+			return soap.getPriorities();
+		} catch (RemoteApiException e) {
+			throw new JIRAException(e.getMessage(), e);
+		}
 	}
 
-	public List getResolutions(Server server) throws JIRAException {
-		JIRAXmlRpcClient client = new JIRAXmlRpcClient(server.getUrlString(), server.getUserName(), server.getPasswordString());
-		return client.getResolutions();
+	public List<JIRAQueryFragment> getResolutions(Server server) throws JIRAException {
+		try {
+			JIRASession soap = getSoapSession(server);
+			return soap.getResolutions();
+		} catch (RemoteApiException e) {
+			throw new JIRAException(e.getMessage(), e);
+		}
 	}
 
-	public List getSavedFilters(Server server) throws JIRAException {
-		JIRAXmlRpcClient client = new JIRAXmlRpcClient(server.getUrlString(), server.getUserName(), server.getPasswordString());
-		return client.getSavedFilters();
+	public List<JIRAQueryFragment> getSavedFilters(Server server) throws JIRAException {
+		try {
+			JIRASession soap = getSoapSession(server);
+			return soap.getSavedFilters();
+		} catch (RemoteApiException e) {
+			throw new JIRAException(e.getMessage(), e);
+		}
 	}
 }
