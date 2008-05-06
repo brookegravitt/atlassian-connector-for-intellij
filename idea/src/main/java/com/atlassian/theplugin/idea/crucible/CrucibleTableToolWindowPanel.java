@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.bamboo.HtmlBambooStatusListener;
+import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListener;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.crucible.CrucibleStatusListener;

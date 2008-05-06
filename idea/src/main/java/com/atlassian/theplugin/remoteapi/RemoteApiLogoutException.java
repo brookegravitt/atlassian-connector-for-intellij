@@ -16,6 +16,8 @@
 
 package com.atlassian.theplugin.remoteapi;
 
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+
 /**
  * Created by IntelliJ IDEA.
  * User: Jacek

@@ -16,8 +16,8 @@
 
 package com.atlassian.theplugin.crucible;
 
-import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.crucible.api.ReviewData;
+import com.atlassian.theplugin.commons.Server;
 
 import java.util.List;
 

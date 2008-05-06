@@ -16,9 +16,9 @@
 
 package com.atlassian.theplugin.idea.bamboo;
 
-import com.atlassian.theplugin.bamboo.BambooBuild;
-import com.atlassian.theplugin.bamboo.BuildStatus;
-import com.atlassian.theplugin.configuration.Server;
+import com.atlassian.theplugin.commons.bamboo.BuildStatus;
+import com.atlassian.theplugin.commons.bamboo.BambooBuild;
+import com.atlassian.theplugin.commons.Server;
 import com.intellij.openapi.util.IconLoader;
 
 import javax.swing.*;

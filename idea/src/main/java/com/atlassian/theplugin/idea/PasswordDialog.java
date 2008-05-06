@@ -17,10 +17,10 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.LoginDataProvided;
-import com.atlassian.theplugin.remoteapi.ProductServerFacade;
-import com.atlassian.theplugin.configuration.Server;
-import com.atlassian.theplugin.exception.ThePluginException;
-import com.atlassian.theplugin.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.exception.ThePluginException;
+import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.util.Connector;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;

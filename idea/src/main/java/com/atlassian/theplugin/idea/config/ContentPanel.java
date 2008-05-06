@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.config;
 
-import com.atlassian.theplugin.configuration.PluginConfiguration;
+import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 
 public interface ContentPanel {
 	boolean isEnabled();

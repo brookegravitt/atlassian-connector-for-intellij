@@ -16,9 +16,9 @@
 
 package com.atlassian.theplugin.idea.action.jira;
 
-import com.atlassian.theplugin.ServerType;
-import com.atlassian.theplugin.configuration.ProductServerConfiguration;
-import com.atlassian.theplugin.configuration.Server;
+import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.configuration.ProductServerConfiguration;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ThePluginApplicationComponent;
 import com.intellij.openapi.actionSystem.AnAction;

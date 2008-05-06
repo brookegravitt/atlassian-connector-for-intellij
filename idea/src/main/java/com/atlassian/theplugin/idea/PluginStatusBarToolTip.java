@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.exception.ThePluginException;
+import com.atlassian.theplugin.commons.exception.ThePluginException;
 import thirdparty.javaworld.ClasspathHTMLEditorKit;
 import com.intellij.openapi.util.IconLoader;
 

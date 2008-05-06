@@ -16,6 +16,8 @@
 
 package com.atlassian.theplugin.configuration;
 
+import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
+
 /**
  * Provide an instance of Bamboo BambooConfigurationBean.
  * User: sginter

@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.crucible;
 
-import com.atlassian.theplugin.StatusListener;
+import com.atlassian.theplugin.commons.StatusListener;
 
 import java.util.Collection;
 

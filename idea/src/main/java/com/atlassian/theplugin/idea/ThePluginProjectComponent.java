@@ -17,11 +17,11 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.CrucibleReviewScopeProvider;
-import com.atlassian.theplugin.ServerType;
-import com.atlassian.theplugin.bamboo.*;
-import com.atlassian.theplugin.configuration.PluginConfiguration;
+import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.bamboo.*;
+import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
-import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.idea.autoupdate.ConfirmPluginUpdateHandler;
 import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
@@ -207,7 +207,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 							+ "</div>");
 
 			// add icon listener to bamboo checker thread
-			iconBambooStatusListener = new HtmlBambooStatusListener(statusBarBambooIcon);
+			iconBambooStatusListener = new HtmlBambooStatusListener(statusBarBambooIcon, pluginConfiguration);
 			bambooStatusChecker.registerListener(iconBambooStatusListener);
 
 			// add simple bamboo listener to bamboo checker thread

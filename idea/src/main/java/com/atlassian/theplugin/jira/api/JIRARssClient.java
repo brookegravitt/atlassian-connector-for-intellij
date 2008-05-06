@@ -22,9 +22,9 @@
  */
 package com.atlassian.theplugin.jira.api;
 
-import com.atlassian.theplugin.remoteapi.RemoteApiMalformedUrlException;
-import com.atlassian.theplugin.remoteapi.RemoteApiSessionExpiredException;
-import com.atlassian.theplugin.remoteapi.rest.AbstractHttpSession;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
+import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
 import com.intellij.openapi.diagnostic.Logger;
 import org.apache.commons.httpclient.HttpMethod;
 import org.jdom.Document;

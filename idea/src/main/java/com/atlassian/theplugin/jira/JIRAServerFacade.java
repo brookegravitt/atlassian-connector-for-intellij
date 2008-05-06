@@ -16,9 +16,9 @@
 
 package com.atlassian.theplugin.jira;
 
-import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.jira.api.*;
-import com.atlassian.theplugin.remoteapi.ProductServerFacade;
+import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
+import com.atlassian.theplugin.commons.Server;
 
 import java.util.List;
 

@@ -16,9 +16,10 @@
 
 package com.atlassian.theplugin.util;
 
-import com.atlassian.theplugin.remoteapi.RemoteApiMalformedUrlException;
-import com.atlassian.theplugin.remoteapi.RemoteApiSessionExpiredException;
-import com.atlassian.theplugin.remoteapi.rest.AbstractHttpSession;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
+import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
+import com.atlassian.theplugin.commons.util.HttpClientFactory;
 import junit.framework.TestCase;
 import org.apache.commons.httpclient.HttpMethod;
 import org.ddsteps.mock.httpserver.JettyMockServer;
@@ -99,7 +100,7 @@ public class AbstractHttpSessionTest extends TestCase {
 		 * Public constructor for AbstractHttpSession
 		 *
 		 * @param baseUrl base URL for server instance
-		 * @throws com.atlassian.theplugin.remoteapi.RemoteApiMalformedUrlException
+		 * @throws com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException
 		 *          for malformed url
 		 */
 		public TestHttpSession(String baseUrl) throws RemoteApiMalformedUrlException {

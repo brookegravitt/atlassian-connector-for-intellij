@@ -16,9 +16,9 @@
 
 package com.atlassian.theplugin.idea.config.serverconfig;
 
-import com.atlassian.theplugin.ServerType;
+import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.configuration.JiraConfigurationBean;
-import com.atlassian.theplugin.configuration.PluginConfiguration;
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.idea.config.ContentPanel;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -42,10 +42,13 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
 	private JCheckBox cbIconDescription;
 
 	private transient PluginConfigurationBean globalPluginConfiguration;
-	private transient JiraConfigurationBean jiraConfiguration;
-	private transient PluginConfiguration localPluginConfigurationCopy;
 
-	public JiraGeneralForm(PluginConfigurationBean globalPluginConfiguration) {
+	private transient JiraConfigurationBean jiraConfiguration;
+
+	private transient PluginConfiguration localPluginConfigurationCopy;
+	private static JiraGeneralForm instance;
+
+	private JiraGeneralForm(PluginConfigurationBean globalPluginConfiguration) {
 
 		this.globalPluginConfiguration = globalPluginConfiguration;
 
@@ -57,6 +60,13 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
 		add(rootComponent, BorderLayout.WEST);
 	}
 
+
+	public static JiraGeneralForm getInstance(PluginConfigurationBean globalPluginConfiguration) {
+		if (instance == null) {
+			instance = new JiraGeneralForm(globalPluginConfiguration);
+		}
+		return instance;
+	}
 
 	public boolean isModified() {
 		return (Integer) model.getValue() != jiraConfiguration.getPollTime() || cbIconDescription.isSelected() != jiraConfiguration.isDisplayIconDescription();

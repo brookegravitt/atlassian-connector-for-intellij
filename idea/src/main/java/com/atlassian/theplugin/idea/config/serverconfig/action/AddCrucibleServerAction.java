@@ -18,8 +18,11 @@ package com.atlassian.theplugin.idea.config.serverconfig.action;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataKeys;
+import com.intellij.openapi.project.Project;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
-import com.atlassian.theplugin.ServerType;
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.commons.ServerType;
 
 /**
  * Created by IntelliJ IDEA.
@@ -30,6 +33,6 @@ import com.atlassian.theplugin.ServerType;
  */
 public class AddCrucibleServerAction extends AnAction {
     public void actionPerformed(AnActionEvent event) {
-		ConfigPanel.getInstance().addServer(ServerType.CRUCIBLE_SERVER);
+		ConfigPanel.getInstance(IdeaHelper.getPluginConfiguration()).addServer(ServerType.CRUCIBLE_SERVER);
     }
 }

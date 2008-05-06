@@ -20,7 +20,7 @@ import com.atlassian.theplugin.crucible.ReviewDataInfo;
 import com.atlassian.theplugin.crucible.api.PermId;
 import com.atlassian.theplugin.crucible.api.State;
 import com.atlassian.theplugin.idea.crucible.table.column.ReviewKeyComparator;
-import com.atlassian.theplugin.configuration.Server;
+import com.atlassian.theplugin.commons.Server;
 import junit.framework.TestCase;
 
 import java.util.List;

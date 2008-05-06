@@ -16,11 +16,11 @@
 
 package com.atlassian.theplugin.crucible;
 
-import com.atlassian.theplugin.configuration.Server;
-import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.crucible.api.*;
-import com.atlassian.theplugin.remoteapi.ProductServerFacade;
-import com.atlassian.theplugin.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.Server;
 
 import java.util.List;
 
