@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.crucible.api.rest;
 
-import com.atlassian.theplugin.commons.bamboo.api.bamboomock.ErrorResponse;
+import com.atlassian.theplugin.bamboo.api.bamboomock.ErrorResponse;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import com.atlassian.theplugin.crucible.api.*;
