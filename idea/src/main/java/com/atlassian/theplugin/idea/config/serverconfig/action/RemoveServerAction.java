@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea.config.serverconfig.action;
 
 import com.atlassian.theplugin.idea.config.ConfigPanel;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
@@ -29,7 +30,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  */
 public class RemoveServerAction extends AnAction {
     public void actionPerformed(AnActionEvent event) {
-		ConfigPanel panel = ConfigPanel.getInstance();
+		ConfigPanel panel = ConfigPanel.getInstance(IdeaHelper.getPluginConfiguration());
 		if (panel != null) {
 			panel.removeServer(); //safe		
 		}

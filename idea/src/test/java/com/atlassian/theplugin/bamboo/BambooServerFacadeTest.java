@@ -16,12 +16,19 @@
 
 package com.atlassian.theplugin.bamboo;
 
-import com.atlassian.theplugin.ServerType;
-import com.atlassian.theplugin.bamboo.api.bamboomock.*;
+import com.atlassian.theplugin.commons.*;
+import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
+import com.atlassian.theplugin.commons.configuration.BambooConfigurationBean;
+import com.atlassian.theplugin.commons.configuration.ServerBean;
+import com.atlassian.theplugin.commons.configuration.SubscribedPlanBean;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.bamboo.*;
+import com.atlassian.theplugin.commons.bamboo.api.bamboomock.*;
 import com.atlassian.theplugin.configuration.*;
-import com.atlassian.theplugin.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.remoteapi.RemoteApiLoginException;
-import com.atlassian.theplugin.remoteapi.RemoteApiMalformedUrlException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
+import com.atlassian.theplugin.util.PluginUtil;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 
@@ -30,7 +37,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * {@link com.atlassian.theplugin.bamboo.BambooServerFacadeImpl} test.
+ * {@link com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl} test.
  */
 public class BambooServerFacadeTest extends TestCase {
 
@@ -53,7 +60,7 @@ public class BambooServerFacadeTest extends TestCase {
 		mockServer = new JettyMockServer(httpServer);
 		ConfigurationFactory.setConfiguration(createBambooTestConfiguration(mockBaseUrl, true));
 
-		testedBambooServerFacade = new BambooServerFacadeImpl();
+		testedBambooServerFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
 	}
 
 	private static PluginConfiguration createBambooTestConfiguration(String serverUrl, boolean isPassInitialized) {
@@ -268,7 +275,7 @@ public class BambooServerFacadeTest extends TestCase {
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
 		server.getSubscribedPlans().clear();
-		BambooServerFacade facade = new BambooServerFacadeImpl();
+		BambooServerFacade facade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
 		Collection<BambooBuild> plans = facade.getSubscribedPlansResults(server);
 		assertEquals(0, plans.size());
 

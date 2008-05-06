@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.crucible.api;
 
-import com.atlassian.theplugin.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 
 /**
  * Created by IntelliJ IDEA.

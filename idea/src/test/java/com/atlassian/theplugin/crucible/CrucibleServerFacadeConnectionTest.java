@@ -16,12 +16,15 @@
 
 package com.atlassian.theplugin.crucible;
 
-import com.atlassian.theplugin.ServerType;
+import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
+import com.atlassian.theplugin.commons.configuration.ServerBean;
 import com.atlassian.theplugin.configuration.*;
 import com.atlassian.theplugin.crucible.api.rest.cruciblemock.LoginCallback;
-import com.atlassian.theplugin.remoteapi.RemoteApiLoginException;
-import com.atlassian.theplugin.remoteapi.RemoteApiLoginFailedException;
-import com.atlassian.theplugin.remoteapi.RemoteApiMalformedUrlException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginFailedException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 
@@ -47,7 +50,7 @@ public class CrucibleServerFacadeConnectionTest extends TestCase {
 		mockServer = new JettyMockServer(httpServer);
 		ConfigurationFactory.setConfiguration(createCrucibleTestConfiguration(mockBaseUrl, true));
 
-		testedCrucibleServerFacade = new CrucibleServerFacadeImpl();
+		testedCrucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 	}
 
 	private static PluginConfiguration createCrucibleTestConfiguration(String serverUrl, boolean isPassInitialized) {

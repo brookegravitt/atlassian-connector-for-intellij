@@ -20,6 +20,8 @@ import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.atlassian.theplugin.jira.JIRAServer;
+import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
+import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
@@ -80,6 +82,10 @@ public final class IdeaHelper {
         return ApplicationManager.getApplication().getComponent(ThePluginApplicationComponent.class);
     }
 
+	public static PluginConfigurationBean getPluginConfiguration(){
+		return getAppComponent().getState();
+	}
+
 	public static JIRAToolWindowPanel getCurrentJIRAToolWindowPanel() {
 		Project p = getCurrentProject();
 		if (p == null) {
@@ -133,4 +139,5 @@ public final class IdeaHelper {
 
 		return (CrucibleTableToolWindowPanel) content.getComponent();
 	}
+
 }

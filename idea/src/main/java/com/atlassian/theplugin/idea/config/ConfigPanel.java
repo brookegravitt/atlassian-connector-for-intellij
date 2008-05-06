@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.config;
 
-import com.atlassian.theplugin.ServerType;
+import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.idea.Constants;
@@ -45,22 +45,13 @@ public final class ConfigPanel extends JPanel {
 
 	private final transient PluginConfigurationBean globalConfigurationBean;
 
-	public ConfigPanel(ServerConfigPanel serverConfigPanel,
-					   BambooGeneralForm bambooConfigPanel,
-					   CrucibleGeneralForm crucibleConfigPanel,
-					   JiraGeneralForm jiraConfigPanel,
-					   GeneralConfigPanel generalConfigPanel,
-					   PluginConfigurationBean globalConfigurationBean) {
-		
-		/* Yes, I mean this. Assigning to a static field from within a constructor. Blame *Action. */
-		instance = this;
-		this.serverConfigPanel = serverConfigPanel;
-		this.bambooConfigPanel = bambooConfigPanel;
-		this.crucibleConfigPanel = crucibleConfigPanel;
-		this.jiraConfigPanel = jiraConfigPanel;
-		this.generalConfigPanel = generalConfigPanel;
+	private ConfigPanel(PluginConfigurationBean globalConfigurationBean){
+		this.serverConfigPanel = ServerConfigPanel.getInstance();
+		this.bambooConfigPanel = BambooGeneralForm.getInstance(globalConfigurationBean);
+		this.crucibleConfigPanel = CrucibleGeneralForm.getInstance(globalConfigurationBean);
+		this.jiraConfigPanel = JiraGeneralForm.getInstance(globalConfigurationBean);
+		this.generalConfigPanel = GeneralConfigPanel.getInstance(globalConfigurationBean);
 		this.globalConfigurationBean = globalConfigurationBean;
-
 		initLayout();
 	}
 
@@ -68,7 +59,13 @@ public final class ConfigPanel extends JPanel {
 	 * This one is still here because IDEA complains about AnAction objects having non-parameterless constructor.
 	 * @return single instance of ConfigPanel.
 	 */
-	public static ConfigPanel getInstance() {
+	public static ConfigPanel getInstance(PluginConfigurationBean globalConfigurationBean) {
+
+		/* Yes, I mean this. Assigning to a static field from within a constructor. Blame *Action. */
+		if (instance == null){
+			instance = new ConfigPanel(globalConfigurationBean);
+
+		}
 		return instance;
 	}
 
@@ -103,7 +100,7 @@ public final class ConfigPanel extends JPanel {
 		if (globalConfigurationBean.getGeneralConfigurationData().getAnonymousFeedbackEnabled() == null) {
 			int answer = Messages.showYesNoDialog("We would greatly appreciate if you allow us to collect anonymous "
 					+ "usage statistics to help us provide a better quality product. Is this ok?",
-					PluginUtil.getName() + " request", Messages.getQuestionIcon());
+					PluginUtil.getInstance().getName() + " request", Messages.getQuestionIcon());
 			localPluginConfigurationCopy.getGeneralConfigurationData().
 					setAnonymousFeedbackEnabled(answer == DialogWrapper.OK_EXIT_CODE);
 			globalConfigurationBean.getGeneralConfigurationData().

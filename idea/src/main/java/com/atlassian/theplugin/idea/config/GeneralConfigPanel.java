@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.config;
 
-import com.atlassian.theplugin.configuration.PluginConfiguration;
+import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.idea.GeneralConfigForm;
 import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
 
@@ -28,16 +28,27 @@ import java.awt.*;
  */
 public class GeneralConfigPanel extends JPanel implements ContentPanel {
 	private GeneralConfigForm dialog;
-	private PluginConfiguration localPluginConfigurationCopy;
-	private final PluginConfiguration globalPluginConfiguration;
 
-	public GeneralConfigPanel(PluginConfiguration globalPluginConfiguration, NewVersionChecker checker) {
+	private PluginConfiguration localPluginConfigurationCopy;
+
+	private final PluginConfiguration globalPluginConfiguration;
+	private static GeneralConfigPanel instance;
+
+	private GeneralConfigPanel(PluginConfiguration globalPluginConfiguration) {
 		super();
 		this.globalPluginConfiguration = globalPluginConfiguration;
 		localPluginConfigurationCopy = this.globalPluginConfiguration;
 		setLayout(new CardLayout());
-		dialog = new GeneralConfigForm(checker);
+		dialog = new GeneralConfigForm();
 		add(dialog.getRootPane(), "GeneralConfig");
+	}
+
+	public static GeneralConfigPanel getInstance(PluginConfiguration globalPluginConfiguration) {
+		if (instance == null) {
+			instance = new GeneralConfigPanel(globalPluginConfiguration);
+		}
+		
+		return instance;
 	}
 
 	public boolean isEnabled() {
@@ -54,7 +65,7 @@ public class GeneralConfigPanel extends JPanel implements ContentPanel {
 					!= globalPluginConfiguration.getGeneralConfigurationData().getAnonymousFeedbackEnabled();
 
 	}
-	
+
 	public void setIsAnonymousFeedbackEnabled(Boolean isAnonymousFeedbackEnabled) {
 		dialog.setIsAnonymousFeedbackEnabled(isAnonymousFeedbackEnabled);
 	}
@@ -88,5 +99,4 @@ public class GeneralConfigPanel extends JPanel implements ContentPanel {
 		dialog.setIsAnonymousFeedbackEnabled(localPluginConfigurationCopy.getGeneralConfigurationData().
 				getAnonymousFeedbackEnabled());
 	}
-
 }

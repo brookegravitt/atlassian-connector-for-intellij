@@ -17,11 +17,12 @@
 package com.atlassian.theplugin.remoteapi;
 
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
-import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PasswordDialog;
 import com.atlassian.theplugin.idea.ThePluginApplicationComponent;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.intellij.openapi.ui.Messages;
 
 import javax.swing.*;
@@ -59,7 +60,7 @@ public class MissingPasswordHandler implements Runnable {
 				JPanel panel = dialog.getPasswordPanel();
 
 				int answer = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(), panel,
-						PluginUtil.getName(), OK_CANCEL_OPTION, PLAIN_MESSAGE);
+						PluginUtil.getInstance().getName(), OK_CANCEL_OPTION, PLAIN_MESSAGE);
 
 				if (answer == JOptionPane.OK_OPTION) {
 					String password = dialog.getPasswordString();
@@ -79,7 +80,7 @@ public class MissingPasswordHandler implements Runnable {
 			if (wasCanceled) {
 				Messages.showMessageDialog(
 						"You can always change password by changing plugin settings (Preferences | IDE Settings | "
-								+ PluginUtil.getName() + ")", "Information", Messages.getInformationIcon());
+								+ PluginUtil.getInstance().getName() + ")", "Information", Messages.getInformationIcon());
 			}
 			isDialogShown = false;
 		}

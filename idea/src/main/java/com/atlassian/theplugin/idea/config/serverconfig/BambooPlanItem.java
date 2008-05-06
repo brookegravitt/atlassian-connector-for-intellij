@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.config.serverconfig;
 
-import com.atlassian.theplugin.bamboo.BambooPlan;
+import com.atlassian.theplugin.commons.bamboo.BambooPlan;
 
 public class BambooPlanItem {
 	private BambooPlan plan;

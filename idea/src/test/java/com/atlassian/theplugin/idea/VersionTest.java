@@ -16,8 +16,8 @@
 
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.exception.IncorrectVersionException;
-import com.atlassian.theplugin.util.Version;
+import com.atlassian.theplugin.commons.exception.IncorrectVersionException;
+import com.atlassian.theplugin.commons.util.Version;
 import junit.framework.TestCase;
 
 /**
