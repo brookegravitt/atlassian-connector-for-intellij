@@ -16,8 +16,8 @@
 
 package com.atlassian.theplugin.commons.util;
 
-import com.atlassian.theplugin.exception.HttpProxySettingsException;
 import com.atlassian.theplugin.commons.thirdparty.apache.EasySSLProtocolSocketFactory;
+import com.atlassian.theplugin.commons.exception.HttpProxySettingsException;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
