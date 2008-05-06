@@ -16,7 +16,9 @@
 
 package com.atlassian.theplugin.bamboo;
 
-import com.atlassian.theplugin.commons.*;
+import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.SubscribedPlan;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.configuration.*;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
