@@ -16,13 +16,13 @@
 
 package com.atlassian.theplugin.bamboo;
 
-import com.atlassian.theplugin.commons.bamboo.api.bamboomock.*;
 import com.atlassian.theplugin.commons.bamboo.api.BambooSession;
 import com.atlassian.theplugin.commons.bamboo.api.BambooSessionImpl;
 import com.atlassian.theplugin.commons.bamboo.api.AutoRenewBambooSession;
 import com.atlassian.theplugin.commons.bamboo.*;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
+import com.atlassian.theplugin.bamboo.api.bamboomock.*;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 import org.mortbay.jetty.Server;
@@ -103,7 +103,7 @@ public class BambooSessionTest extends TestCase {
 	}
 
 	public void testWrongUrlBambooLogin() throws Exception {
-		ErrorResponse error = new ErrorResponse(400, "Bad Request"); 
+		ErrorResponse error = new ErrorResponse(400, "Bad Request");
 		mockServer.expect("/wrongurl/api/rest/login.action", error);
 		RemoteApiLoginException exception = null;
 

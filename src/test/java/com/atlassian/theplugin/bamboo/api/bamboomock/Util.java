@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.crucible.api.rest.cruciblemock;
+package com.atlassian.theplugin.bamboo.api.bamboomock;
 
-import com.atlassian.theplugin.commons.bamboo.BambooPlan;
-import com.atlassian.theplugin.commons.bamboo.BambooProject;
-import com.atlassian.theplugin.bamboo.api.bamboomock.ErrorResponse;
 import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
+import com.atlassian.theplugin.commons.bamboo.BambooPlan;
+import com.atlassian.theplugin.commons.bamboo.BambooProject;
 import junit.framework.Assert;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.fail;
@@ -33,14 +32,16 @@ import java.util.Iterator;
 
 public abstract class Util {
 
-	private static final String RESOURCE_BASE = "/mock/crucible/api/rest/";
+	private static final String RESOURCE_BASE = "/mock/bamboo/1_2_4/api/rest/";
+	private static final String HTTP_400_TEXT = "Bad Request";
+	private static final int HTTP_400 = 400;
 
 
 	private Util() {
 	}
 
 	static void copyResource(OutputStream outputStream, String resource) {
-		BufferedInputStream is = new BufferedInputStream(com.atlassian.theplugin.crucible.api.rest.cruciblemock.Util.class.getResourceAsStream(RESOURCE_BASE + resource));
+		BufferedInputStream is = new BufferedInputStream(Util.class.getResourceAsStream(RESOURCE_BASE + resource));
 		int c;
 		try {
 			while ((c = is.read()) != -1) {
@@ -95,7 +96,7 @@ public abstract class Util {
 		Assert.assertSame(BuildStatus.UNKNOWN, build.getStatus());
 		Assert.assertTrue(build.getPollingTime().getTime() - System.currentTimeMillis() < 5000);
 		Assert.assertTrue(build.getMessage().startsWith(
-				ErrorResponse.getStaticErrorMessage(400, "Bad Request")));
+				ErrorResponse.getStaticErrorMessage(HTTP_400, HTTP_400_TEXT)));
 	}
 
 
@@ -118,10 +119,10 @@ public abstract class Util {
 
 
 	private static final String[][] expectedPlans = {
-			{ "PO-FP", "First Project - First Plan" },
-			{ "PO-SECPLAN", "First Project - Second Plan" },
-			{ "PO-TP", "First Project - Third Plan" },
-			{ "PT-TOP", "Second Project - The Only Plan" }
+			{ "PO-FP", "First Project - First Plan", "true" },
+			{ "PO-SECPLAN", "First Project - Second Plan", "true" },
+			{ "PO-TP", "First Project - Third Plan", "true" },
+			{ "PT-TOP", "Second Project - The Only Plan", "false" }
 	};
 
 	public static void verifyPlanListResult(Collection<BambooPlan> plans) {
@@ -131,6 +132,7 @@ public abstract class Util {
 			BambooPlan plan = iterator.next();
 			assertEquals(pair[0], plan.getPlanKey());
 			assertEquals(pair[1], plan.getPlanName());
+			assertEquals(Boolean.parseBoolean(pair[2]), plan.isEnabled());
 		}
 	}
 
@@ -167,5 +169,4 @@ public abstract class Util {
 			}
 		}
 	}
-
 }
