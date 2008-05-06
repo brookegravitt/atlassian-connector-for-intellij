@@ -18,17 +18,12 @@ package com.atlassian.theplugin.bamboo;
 
 import com.atlassian.theplugin.commons.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
-import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
-import com.atlassian.theplugin.commons.configuration.BambooConfigurationBean;
-import com.atlassian.theplugin.commons.configuration.ServerBean;
-import com.atlassian.theplugin.commons.configuration.SubscribedPlanBean;
+import com.atlassian.theplugin.commons.configuration.*;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.bamboo.*;
 import com.atlassian.theplugin.commons.bamboo.api.bamboomock.*;
-import com.atlassian.theplugin.configuration.*;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
-import com.atlassian.theplugin.util.PluginUtil;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 
@@ -60,7 +55,7 @@ public class BambooServerFacadeTest extends TestCase {
 		mockServer = new JettyMockServer(httpServer);
 		ConfigurationFactory.setConfiguration(createBambooTestConfiguration(mockBaseUrl, true));
 
-		testedBambooServerFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
+		testedBambooServerFacade = BambooServerFacadeImpl.getInstance(null);
 	}
 
 	private static PluginConfiguration createBambooTestConfiguration(String serverUrl, boolean isPassInitialized) {
@@ -275,7 +270,7 @@ public class BambooServerFacadeTest extends TestCase {
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).getServers().iterator().next();
 		server.getSubscribedPlans().clear();
-		BambooServerFacade facade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
+		BambooServerFacade facade = BambooServerFacadeImpl.getInstance(null);
 		Collection<BambooBuild> plans = facade.getSubscribedPlansResults(server);
 		assertEquals(0, plans.size());
 

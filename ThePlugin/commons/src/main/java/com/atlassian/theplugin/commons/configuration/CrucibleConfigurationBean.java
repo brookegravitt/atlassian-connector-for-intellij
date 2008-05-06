@@ -14,30 +14,23 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.configuration;
+package com.atlassian.theplugin.commons.configuration;
 
 import com.atlassian.theplugin.commons.configuration.ProductServerConfiguration;
 import com.atlassian.theplugin.commons.configuration.AbstractServerConfigurationBean;
 
-/**
- * Bean storing information about Bamboo servers etc.<p>
- * The class serves both as a configuration provider for plugin logic and Bean for persistence.
- */
-public class JiraConfigurationBean extends AbstractServerConfigurationBean {
-
+public class CrucibleConfigurationBean extends AbstractServerConfigurationBean {
 	private int pollTime = 1;
 
-	private boolean displayIconDescription = false;
+	public CrucibleConfigurationBean() {
+		super();
+	}
 
-	public JiraConfigurationBean() {
-        super();
-    }
+	public CrucibleConfigurationBean(ProductServerConfiguration cfg) {
 
-    public JiraConfigurationBean(ProductServerConfiguration cfg) {
 		super(cfg);
-		if (cfg instanceof JiraConfigurationBean) {
-			this.pollTime = ((JiraConfigurationBean) cfg).getPollTime();
-			this.displayIconDescription = ((JiraConfigurationBean) cfg).isDisplayIconDescription();
+		if (cfg instanceof CrucibleConfigurationBean) {
+			this.pollTime = ((CrucibleConfigurationBean) cfg).getPollTime();
 		}
 	}
 
@@ -47,13 +40,5 @@ public class JiraConfigurationBean extends AbstractServerConfigurationBean {
 
 	public void setPollTime(int pollTime) {
 		this.pollTime = pollTime;
-	}
-
-	public boolean isDisplayIconDescription() {
-		return displayIconDescription;
-	}
-
-	public void setDisplayIconDescription(boolean displayIconDescription) {
-		this.displayIconDescription = displayIconDescription;
 	}
 }
