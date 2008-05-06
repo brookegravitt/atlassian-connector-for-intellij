@@ -18,7 +18,7 @@ package com.atlassian.theplugin.idea.config;
 
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.HelpUrl;
-import com.atlassian.theplugin.idea.Logger;
+import com.atlassian.theplugin.idea.LoggerImpl;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.application.ApplicationInfo;
@@ -72,7 +72,7 @@ public class FooterPanel extends JPanel {
     }
 
 	private void initLayout() {
-		String versionName = PluginUtil.getVersion();
+		String versionName = PluginUtil.getInstance().getVersion();
 
 		GridBagLayout gb = new GridBagLayout();
 		setLayout(gb);
@@ -112,7 +112,7 @@ public class FooterPanel extends JPanel {
 				+ ", IDEA build number=" + ApplicationInfo.getInstance().getBuildNumber();
 			environment = URLEncoder.encode(environment, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			Logger.getInstance().info(e);
+			LoggerImpl.getInstance().info(e);
 		}
 
 		final String bugUrl = BASE

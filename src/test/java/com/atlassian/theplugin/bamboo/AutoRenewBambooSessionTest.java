@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.bamboo.api;
+package com.atlassian.theplugin.bamboo;
 
-import com.atlassian.theplugin.bamboo.*;
-import com.atlassian.theplugin.configuration.Server;
-import com.atlassian.theplugin.remoteapi.RemoteApiLoginException;
-import com.atlassian.theplugin.remoteapi.RemoteApiSessionExpiredException;
+import com.atlassian.theplugin.commons.bamboo.*;
+import com.atlassian.theplugin.commons.bamboo.api.BambooSession;
+import com.atlassian.theplugin.commons.bamboo.api.AutoRenewBambooSession;
+import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
 import junit.framework.TestCase;
 import org.easymock.EasyMock;
 

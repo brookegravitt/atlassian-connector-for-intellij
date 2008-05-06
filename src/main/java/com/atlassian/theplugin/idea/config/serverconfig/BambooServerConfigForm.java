@@ -16,11 +16,11 @@
 
 package com.atlassian.theplugin.idea.config.serverconfig;
 
-import com.atlassian.theplugin.bamboo.BambooServerFacade;
-import com.atlassian.theplugin.configuration.Server;
-import com.atlassian.theplugin.exception.ThePluginException;
-import com.atlassian.theplugin.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
+import com.atlassian.theplugin.commons.exception.ThePluginException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.util.Connector;
+import com.atlassian.theplugin.commons.Server;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import org.apache.log4j.Category;

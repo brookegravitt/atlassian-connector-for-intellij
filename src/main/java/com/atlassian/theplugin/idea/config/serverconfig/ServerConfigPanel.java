@@ -16,20 +16,24 @@
 
 package com.atlassian.theplugin.idea.config.serverconfig;
 
-import com.atlassian.theplugin.ServerType;
-import com.atlassian.theplugin.bamboo.BambooServerFacade;
+import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.exception.ThePluginException;
+import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
+import com.atlassian.theplugin.commons.configuration.ProductServerConfiguration;
+import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
+import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
 import com.atlassian.theplugin.configuration.ConfigurationFactory;
-import com.atlassian.theplugin.configuration.PluginConfiguration;
-import com.atlassian.theplugin.configuration.ProductServerConfiguration;
-import com.atlassian.theplugin.configuration.Server;
 import com.atlassian.theplugin.crucible.CrucibleServerFacade;
-import com.atlassian.theplugin.exception.ThePluginException;
+import com.atlassian.theplugin.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.config.ContentPanel;
 import com.atlassian.theplugin.idea.config.serverconfig.model.ServerNode;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
-import com.atlassian.theplugin.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.util.Connector;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.ui.Splitter;
@@ -60,21 +64,26 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
 	private final transient CrucibleServerFacade crucibleServerFacade;
 	private final transient BambooServerFacade bambooServerFacade;
 	private final transient JIRAServerFacade jiraServerFacade;
+	private static ServerConfigPanel instance;
 
-	public ServerConfigPanel(ServerTreePanel serverTreePanel,
-							 CrucibleServerFacade crucibleServerFacade,
-							 BambooServerFacade bambooServerFacade,
-							 JIRAServerFacade jiraServerFacade) {
-		this.serverTreePanel = serverTreePanel;
-		this.crucibleServerFacade = crucibleServerFacade;
-		this.bambooServerFacade = bambooServerFacade;
-		this.jiraServerFacade = jiraServerFacade;
+	private ServerConfigPanel() {
+		this.serverTreePanel = ServerTreePanel.getInstance();
+		this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
+		this.bambooServerFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
+		this.jiraServerFacade = JIRAServerFacadeImpl.getInstance();
 		/* required due to circular dependency unhandled by pico */
 		this.serverTreePanel.setServerConfigPanel(this);
 		initLayout();
     }
 
-    private void initLayout() {
+	public static ServerConfigPanel getInstance() {
+		if (instance == null){
+			instance = new ServerConfigPanel();
+		}
+		return instance;
+	}
+
+	private void initLayout() {
 		GridBagLayout gbl = new GridBagLayout();
 
 		setLayout(gbl);
@@ -96,7 +105,7 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
 		add(splitter, c);
     }
 
-    private JComponent createSelectPane() {
+	private JComponent createSelectPane() {
         JPanel selectPane = new JPanel();
 		GridBagLayout gbl = new GridBagLayout();
 		selectPane.setLayout(gbl);
@@ -120,13 +129,13 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
 		return selectPane;
     }
 
-    private JComponent createToolbar() {
+	private JComponent createToolbar() {
          ActionManager actionManager = ActionManager.getInstance();
         ActionGroup actionGroup = (ActionGroup) actionManager.getAction("ThePlugin.ServerConfigToolBar");
         return actionManager.createActionToolbar("ThePluginConfig", actionGroup, true).getComponent();
     }
 
-    private JComponent createEditPane() {
+	private JComponent createEditPane() {
         editPane = new JPanel();
         editPaneCardLayout = new CardLayout();
         editPane.setLayout(editPaneCardLayout);
@@ -225,11 +234,11 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
        }
     }
 
+
 	public void setData(PluginConfiguration config) {
 		localConfigCopy = config;
 		serverTreePanel.setData(getLocalPluginConfigurationCopy());
 	}
-
 
 	public void addServer(ServerType serverType) {
         serverTreePanel.addServer(serverType);

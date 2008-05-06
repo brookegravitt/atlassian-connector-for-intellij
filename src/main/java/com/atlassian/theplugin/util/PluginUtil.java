@@ -16,10 +16,11 @@
 
 package com.atlassian.theplugin.util;
 
-import com.atlassian.theplugin.idea.Logger;
+import com.atlassian.theplugin.idea.LoggerImpl;
 import com.atlassian.theplugin.idea.PluginToolWindow;
-import com.atlassian.theplugin.ServerType;
-import com.atlassian.theplugin.exception.ThePluginException;
+import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.util.Logger;
+import com.atlassian.theplugin.commons.exception.ThePluginException;
 import com.intellij.util.PathUtil;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -46,11 +47,12 @@ public final class PluginUtil {
 
 	private static String baseDir = PathUtil.getJarPathForClass(PluginUtil.class);
 
-	private static Document doc = setDoc();
+	private static Document doc;
 	public static final String STABLE_VERSION_INFO_URL =
 			"http://update.atlassian.com/atlassian-idea-plugin/latestStableVersion.xml";
 	public static final String LATEST_VERSION_INFO_URL =
 			"http://docs.atlassian.com/atlassian-idea-plugin/latestPossibleVersion.xml";
+	private static PluginUtil instance;
 
 	///CLOVER:OFF
 	private PluginUtil() {
@@ -63,26 +65,35 @@ public final class PluginUtil {
 //			if (!LogManager.getCurrentLoggers().hasMoreElements()) {
 //				DOMConfigurator.configure(PluginUtil.class.getResource("/properties/log4j.xml"));
 //			}
-		return Logger.getInstance();
+		return LoggerImpl.getInstance();
 	}
 
-	public static String getName() {
+	public static PluginUtil getInstance() {
+		if (instance == null) {
+			instance = new PluginUtil();
+			doc = instance.setDoc();
+		}
+
+		return instance;
+	}
+
+	public String getName() {
 		return getConfigValue("/idea-plugin/name");
 	}
 
-	public static String getVersion() {
+	public String getVersion() {
 		return getConfigValue("/idea-plugin/version");
 	}
 
-	public static String getVendor() {
+	public String getVendor() {
 		return getConfigValue("/idea-plugin/vendor");
 	}
 
-	public static String getPluginId() {
+	public String getPluginId() {
 		return getConfigValue("/idea-plugin/plugin-id");
 	}
 
-	private static Document setDoc() {
+	private Document setDoc() {
 		File base = new File(baseDir);
 		SAXBuilder builder = new SAXBuilder();
 		builder.setValidation(false);
@@ -123,7 +134,7 @@ public final class PluginUtil {
 		return doc;
 	}
 
-	private static String getConfigValue(String path) {
+	private String getConfigValue(String path) {
 		String result = null;
 		try {
 			XPath xpath = XPath.newInstance(path);

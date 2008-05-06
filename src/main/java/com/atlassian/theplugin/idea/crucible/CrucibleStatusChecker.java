@@ -16,19 +16,17 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.ServerType;
-import com.atlassian.theplugin.StatusListener;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.configuration.CrucibleConfigurationBean;
-import com.atlassian.theplugin.configuration.PluginConfiguration;
-import com.atlassian.theplugin.configuration.Server;
-import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.crucible.CrucibleStatusListener;
 import com.atlassian.theplugin.crucible.ReviewDataInfo;
-import com.atlassian.theplugin.idea.SchedulableChecker;
+import com.atlassian.theplugin.crucible.CrucibleServerFacadeImpl;
+import com.atlassian.theplugin.commons.*;
+import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
-import com.atlassian.theplugin.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.util.DateUtil;
+import com.atlassian.theplugin.commons.util.DateUtil;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
@@ -53,9 +51,9 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 	private final PluginConfiguration pluginConfiguration;
 	private final CrucibleServerFacade crucibleServerFacade;
 
-	public CrucibleStatusChecker(PluginConfiguration pluginConfiguration, CrucibleServerFacade crucibleServerFacade) {
+	public CrucibleStatusChecker(PluginConfiguration pluginConfiguration) {
 		this.pluginConfiguration = pluginConfiguration;
-		this.crucibleServerFacade = crucibleServerFacade;
+		this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 	}
 
 	public void registerListener(CrucibleStatusListener listener) {

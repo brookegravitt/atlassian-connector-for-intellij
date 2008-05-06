@@ -17,8 +17,8 @@
 package com.atlassian.theplugin.idea.autoupdate;
 
 import com.atlassian.theplugin.ConnectionWrapper;
-import com.atlassian.theplugin.configuration.GeneralConfigurationBean;
-import com.atlassian.theplugin.exception.ThePluginException;
+import com.atlassian.theplugin.commons.configuration.GeneralConfigurationBean;
+import com.atlassian.theplugin.commons.exception.ThePluginException;
 import com.atlassian.theplugin.idea.GeneralConfigForm;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.util.Connector;
@@ -44,13 +44,11 @@ import java.awt.event.ActionListener;
 public class NewVersionButtonListener implements ActionListener {
 	private ConnectionWrapper checkerThread;
 	private static final long CHECK_CANCEL_INTERVAL = 500; //milis
-	private NewVersionChecker checker;
 	private GeneralConfigForm generalConfigForm;
 	private InfoServer.VersionInfo newVersion;
 	private GeneralConfigurationBean updateConfig = new GeneralConfigurationBean();
 
-	public NewVersionButtonListener(NewVersionChecker checker, GeneralConfigForm generalConfigForm) {
-		this.checker = checker;
+	public NewVersionButtonListener(GeneralConfigForm generalConfigForm) {
 		this.generalConfigForm = generalConfigForm;
 	}
 	
@@ -65,7 +63,7 @@ public class NewVersionButtonListener implements ActionListener {
 
 	private class UpdateServerConnection extends Connector {
 		public void connect() throws ThePluginException {
-			checker.doRun(new UpdateActionHandler() {
+			NewVersionChecker.getInstance(IdeaHelper.getPluginConfiguration()).doRun(new UpdateActionHandler() {
 				public void doAction(InfoServer.VersionInfo versionInfo, boolean showConfigPath) throws ThePluginException {
 					newVersion = versionInfo;
 				}
@@ -129,7 +127,7 @@ public class NewVersionButtonListener implements ActionListener {
 					} else {
 						EventQueue.invokeLater(new Runnable() {
 							public void run() {
-								showMessageDialog("You have the latest version (" + PluginUtil.getVersion() + ")",
+								showMessageDialog("You have the latest version (" + PluginUtil.getInstance().getVersion() + ")",
 										"Version checked", Messages.getInformationIcon());
 							}
 						});

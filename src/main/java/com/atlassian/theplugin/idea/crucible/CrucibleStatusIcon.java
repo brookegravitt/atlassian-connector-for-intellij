@@ -17,7 +17,7 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.idea.StatusBarPluginIcon;
-import com.atlassian.theplugin.ServerType;
+import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.idea.PluginToolWindow;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;

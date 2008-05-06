@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.config.serverconfig;
 
-import com.atlassian.theplugin.configuration.Server;
+import com.atlassian.theplugin.commons.Server;
 
 import javax.swing.*;
 

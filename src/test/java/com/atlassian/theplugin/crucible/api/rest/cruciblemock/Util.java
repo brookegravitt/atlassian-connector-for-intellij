@@ -16,11 +16,11 @@
 
 package com.atlassian.theplugin.crucible.api.rest.cruciblemock;
 
-import com.atlassian.theplugin.bamboo.BambooBuild;
-import com.atlassian.theplugin.bamboo.BambooPlan;
-import com.atlassian.theplugin.bamboo.BambooProject;
-import com.atlassian.theplugin.bamboo.BuildStatus;
-import com.atlassian.theplugin.bamboo.api.bamboomock.ErrorResponse;
+import com.atlassian.theplugin.commons.bamboo.BambooPlan;
+import com.atlassian.theplugin.commons.bamboo.BambooProject;
+import com.atlassian.theplugin.commons.bamboo.api.bamboomock.ErrorResponse;
+import com.atlassian.theplugin.commons.bamboo.BambooBuild;
+import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import junit.framework.Assert;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.fail;

@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.bamboo.api;
+package com.atlassian.theplugin.bamboo;
 
-import com.atlassian.theplugin.bamboo.*;
-import com.atlassian.theplugin.bamboo.api.bamboomock.*;
-import com.atlassian.theplugin.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.remoteapi.RemoteApiLoginException;
+import com.atlassian.theplugin.commons.bamboo.api.bamboomock.*;
+import com.atlassian.theplugin.commons.bamboo.api.BambooSession;
+import com.atlassian.theplugin.commons.bamboo.api.BambooSessionImpl;
+import com.atlassian.theplugin.commons.bamboo.api.AutoRenewBambooSession;
+import com.atlassian.theplugin.commons.bamboo.*;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 import org.mortbay.jetty.Server;

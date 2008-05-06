@@ -16,15 +16,15 @@
 
 package com.atlassian.theplugin.idea.autoupdate;
 
-import com.atlassian.theplugin.configuration.PluginConfiguration;
-import com.atlassian.theplugin.configuration.GeneralConfigurationBean;
+import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
+import com.atlassian.theplugin.commons.configuration.GeneralConfigurationBean;
 import com.atlassian.theplugin.exception.VersionServiceException;
-import com.atlassian.theplugin.exception.ThePluginException;
-import com.atlassian.theplugin.exception.IncorrectVersionException;
+import com.atlassian.theplugin.commons.exception.ThePluginException;
+import com.atlassian.theplugin.commons.exception.IncorrectVersionException;
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.atlassian.theplugin.util.Version;
-import com.atlassian.theplugin.idea.SchedulableChecker;
+import com.atlassian.theplugin.commons.util.Version;
+import com.atlassian.theplugin.commons.SchedulableChecker;
 
 import java.util.TimerTask;
 
@@ -36,8 +36,18 @@ public final class NewVersionChecker implements SchedulableChecker {
 
 	private transient PluginConfiguration pluginConfiguration;
 
-	public NewVersionChecker(PluginConfiguration pluginConfiguration) {
+	private static NewVersionChecker instance;
+
+	private NewVersionChecker(PluginConfiguration pluginConfiguration) {
 		this.pluginConfiguration = pluginConfiguration;
+	}
+
+	public static NewVersionChecker getInstance(PluginConfiguration pluginConfiguration) {
+		if (instance == null){
+			instance = new NewVersionChecker(pluginConfiguration);
+		}
+
+		return instance;
 	}
 
 	/**
@@ -85,7 +95,7 @@ public final class NewVersionChecker implements SchedulableChecker {
 		InfoServer.VersionInfo versionInfo = getLatestVersion(configuration);
 		Version newVersion = versionInfo.getVersion();
 		// get current version
-		Version thisVersion = new Version(PluginUtil.getVersion());
+		Version thisVersion = new Version(PluginUtil.getInstance().getVersion());
 		if (newVersion.greater(thisVersion)) {
 			action.doAction(versionInfo, showConfigPath);
 		}
@@ -99,5 +109,4 @@ public final class NewVersionChecker implements SchedulableChecker {
 				configuration.getUid(),
 				configuration.isCheckUnstableVersionsEnabled());
 	}
-
 }

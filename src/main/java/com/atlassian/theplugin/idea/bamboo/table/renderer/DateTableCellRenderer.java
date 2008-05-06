@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.bamboo.table.renderer;
 
-import com.atlassian.theplugin.util.DateUtil;
+import com.atlassian.theplugin.commons.util.DateUtil;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;

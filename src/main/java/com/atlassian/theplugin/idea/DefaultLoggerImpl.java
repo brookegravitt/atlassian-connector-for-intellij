@@ -26,7 +26,7 @@ import java.io.PrintStream;
  * Time: 4:44:40 PM
  * To change this template use File | Settings | File Templates.
  */
-public class DefaultLogger extends Logger {
+public class DefaultLoggerImpl extends LoggerImpl {
 
 	private static final String[] LOG_LEVEL_STR = {
 				"ERROR",

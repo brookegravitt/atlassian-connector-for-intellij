@@ -114,11 +114,11 @@ junit.framework.ComparisonFailure: expected:&amp;...ugin Default Plan &amp; [PLA
         </testResult>
         <testResult testClass="com.atlassian.theplugin.idea.GenericServerConfigurationFormTest" testMethod="testGenericSetGetData" duration="0.008">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.api.BambooSessionTest" testMethod="testBuildForPlanFailure" duration="0.015">
+        <testResult testClass="com.atlassian.theplugin.bamboo.BambooSessionTest" testMethod="testBuildForPlanFailure" duration="0.015">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.ReviewDataInfoImplTest" testMethod="testSetGetReviewers" duration="0.001">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.api.BambooSessionSslTest" testMethod="testSuccessBambooLoginOnSSL" duration="0.336">
+        <testResult testClass="com.atlassian.theplugin.bamboo.BambooSessionSslTest" testMethod="testSuccessBambooLoginOnSSL" duration="0.336">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.idea.crucible.CruciblePatchSubmitCommitSessionTest" testMethod="testDiffAtFileStart" duration="0.001">
         </testResult>
@@ -126,9 +126,9 @@ junit.framework.ComparisonFailure: expected:&amp;...ugin Default Plan &amp; [PLA
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.api.rest.CrucibleSessionTest" testMethod="testCreateReviewFromNullPatch" duration="0.012">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.api.BambooSessionTest" testMethod="testSuccessBambooLogin" duration="0.061">
+        <testResult testClass="com.atlassian.theplugin.bamboo.BambooSessionTest" testMethod="testSuccessBambooLogin" duration="0.061">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.api.BambooSessionTest" testMethod="testFavouritePlanList" duration="0.015">
+        <testResult testClass="com.atlassian.theplugin.bamboo.BambooSessionTest" testMethod="testFavouritePlanList" duration="0.015">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.api.rest.CrucibleSessionTest" testMethod="testGetReviewsInStatesMalformedResponse" duration="0.21">
         </testResult>
@@ -142,11 +142,11 @@ junit.framework.ComparisonFailure: expected:&amp;...ugin Default Plan &amp; [PLA
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.api.rest.CrucibleSessionTest" testMethod="testGetReviewsInStates" duration="0.011">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.api.BambooSessionTest" testMethod="testNonExistingServerBambooLogin" duration="0.004">
+        <testResult testClass="com.atlassian.theplugin.bamboo.BambooSessionTest" testMethod="testNonExistingServerBambooLogin" duration="0.004">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.ReviewDataInfoImplTest" testMethod="testEqualsAndHashcode" duration="0.002">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.api.BambooSessionTest" testMethod="testWrongParamsBambooLogin" duration="0.001">
+        <testResult testClass="com.atlassian.theplugin.bamboo.BambooSessionTest" testMethod="testWrongParamsBambooLogin" duration="0.001">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.bamboo.BambooServerFacadeTest" testMethod="testFailedProjectList" duration="0.01">
         </testResult>
@@ -214,7 +214,7 @@ junit.framework.ComparisonFailure: expected:&amp;...ugin Default Plan &amp; [PLA
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.api.rest.CrucibleSessionTest" testMethod="testFailedCrucibleLogin" duration="0.006">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.api.BambooSessionTest" testMethod="testProjectList" duration="0.017">
+        <testResult testClass="com.atlassian.theplugin.bamboo.BambooSessionTest" testMethod="testProjectList" duration="0.017">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.api.rest.CrucibleSessionTest" testMethod="testGetAllReviewsMalformedResponse" duration="0.008">
         </testResult>
@@ -228,7 +228,7 @@ junit.framework.ComparisonFailure: expected:&amp;...ugin Default Plan &amp; [PLA
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.CrucibleServerFacadeTest" testMethod="testConnectionTestFailed" duration="0.001">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.api.BambooSessionTest" testMethod="testPlanList" duration="0.017">
+        <testResult testClass="com.atlassian.theplugin.bamboo.BambooSessionTest" testMethod="testPlanList" duration="0.017">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.api.rest.CrucibleSessionTest" testMethod="testWrongUrlBambooLogin" duration="0.003">
         </testResult>
@@ -238,7 +238,7 @@ junit.framework.ComparisonFailure: expected:&amp;...ugin Default Plan &amp; [PLA
         </testResult>
         <testResult testClass="com.atlassian.theplugin.bamboo.BambooStatusListenerTest" testMethod="testMultipleFailed2OK" duration="0.001">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.api.BambooSessionTest" testMethod="testBuildForPlanSuccess" duration="0.017">
+        <testResult testClass="com.atlassian.theplugin.bamboo.BambooSessionTest" testMethod="testBuildForPlanSuccess" duration="0.017">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.bamboo.BambooStatusListenerTest" testMethod="testMultiple" duration="0.005">
         </testResult>
@@ -260,7 +260,7 @@ junit.framework.ComparisonFailure: expected:&amp;...ugin Default Plan &amp; [PLA
         </testResult>
         <testResult testClass="com.atlassian.theplugin.idea.crucible.CruciblePatchSubmitCommitSessionTest" testMethod="testDiffMixed2" duration="0.003">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.api.BambooSessionTest" testMethod="testWrongUserBambooLogin" duration="0.007">
+        <testResult testClass="com.atlassian.theplugin.bamboo.BambooSessionTest" testMethod="testWrongUserBambooLogin" duration="0.007">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.api.rest.CrucibleSessionTest" testMethod="testGetEmptyReviewsForType" duration="0.015">
         </testResult>
@@ -272,13 +272,13 @@ junit.framework.ComparisonFailure: expected:&amp;...ugin Default Plan &amp; [PLA
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.CrucibleServerFacadeTest" testMethod="testGetActiveReviewsForUser" duration="0.002">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.api.BambooSessionTest" testMethod="testSuccessBambooLoginURLWithSlash" duration="0.025">
+        <testResult testClass="com.atlassian.theplugin.bamboo.BambooSessionTest" testMethod="testSuccessBambooLoginURLWithSlash" duration="0.025">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.CrucibleServerFacadeConnectionTest" testMethod="testFailedLoginGetAllReviews" duration="0.006">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.CrucibleServerFacadeConnectionTest" testMethod="testConnectionTestFailedNullUser" duration="0.001">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.api.BambooSessionTest" testMethod="testMalformedUrlBambooLogin" duration="0.009">
+        <testResult testClass="com.atlassian.theplugin.bamboo.BambooSessionTest" testMethod="testMalformedUrlBambooLogin" duration="0.009">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.idea.BambooServerConfigurationFormTest" testMethod="testBambooFormIsModified" duration="0.114">
         </testResult>
@@ -298,13 +298,13 @@ junit.framework.ComparisonFailure: expected:&amp;...ugin Default Plan &amp; [PLA
         </testResult>
         <testResult testClass="com.atlassian.theplugin.bamboo.BambooStatusListenerTest" testMethod="testSingleBuildUnknown" duration="0">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.api.BambooSessionTest" testMethod="testNullParamsLogin" duration="0.002">
+        <testResult testClass="com.atlassian.theplugin.bamboo.BambooSessionTest" testMethod="testNullParamsLogin" duration="0.002">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.CrucibleServerFacadeConnectionTest" testMethod="testConnectionTestSucceed" duration="0.007">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.api.BambooSessionTest" testMethod="testBuildForNonExistingPlan" duration="0.015">
+        <testResult testClass="com.atlassian.theplugin.bamboo.BambooSessionTest" testMethod="testBuildForNonExistingPlan" duration="0.015">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.api.BambooSessionTest" testMethod="testWrongUrlBambooLogin" duration="0.004">
+        <testResult testClass="com.atlassian.theplugin.bamboo.BambooSessionTest" testMethod="testWrongUrlBambooLogin" duration="0.004">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.bamboo.BambooStatusListenerTest" testMethod="testSingleBuildSequence" duration="0.001">
         </testResult>
