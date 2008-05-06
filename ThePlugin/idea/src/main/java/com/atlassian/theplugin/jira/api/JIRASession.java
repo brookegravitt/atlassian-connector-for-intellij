@@ -19,12 +19,36 @@ package com.atlassian.theplugin.jira.api;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 
+import java.util.List;
+
 public interface JIRASession {
 	void login(String userName, String password) throws RemoteApiLoginException;
 
 	void logout();
 
 	void logWork(JIRAIssue issue, String timeSpent, String comment) throws RemoteApiException;
+
+	void addComment(JIRAIssue issue, String comment) throws RemoteApiException;
+
+	JIRAIssue createIssue(JIRAIssue issue) throws RemoteApiException;
+
+	List<JIRAProject> getProjects() throws RemoteApiException;
+
+	List<JIRAConstant> getIssueTypes() throws RemoteApiException;
+
+	List<JIRAConstant> getIssueTypesForProject(String project) throws RemoteApiException;
+	
+	List<JIRAConstant> getStatuses() throws RemoteApiException;
+
+	List<JIRAQueryFragment> getComponents(String projectKey) throws RemoteApiException;
+
+	List<JIRAVersionBean> getVersions(String projectKey) throws RemoteApiException;
+
+	List<JIRAConstant> getPriorities() throws RemoteApiException;
+
+	List<JIRAQueryFragment> getResolutions() throws RemoteApiException;
+
+	List<JIRAQueryFragment> getSavedFilters() throws RemoteApiException;
 
 	boolean isLoggedIn();
 }

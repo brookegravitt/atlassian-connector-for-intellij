@@ -572,7 +572,11 @@ public class JIRAToolWindowPanel extends JPanel {
 	}
 
 	public JIRAIssue getCurrentIssue() {
-		return ((JiraIssueAdapter) table.getSelectedObject()).getIssue();
+		Object selectedObject = table.getSelectedObject();
+		if (selectedObject != null) {
+			return ((JiraIssueAdapter) selectedObject).getIssue();
+		}
+		return null;
 	}
 
 	public class CommentIssueAction extends AbstractAction {
@@ -582,10 +586,16 @@ public class JIRAToolWindowPanel extends JPanel {
 
 		public void actionPerformed(ActionEvent e) {
 			JIRAIssue issue = ((JiraIssueAdapter) table.getSelectedObject()).getIssue();
-			IssueComment issueComment = new IssueComment(
-					jiraServerFacade, IdeaHelper.getCurrentJIRAServer(), getIssues());
-			issueComment.setIssue(issue);
+			IssueComment issueComment = new IssueComment(issue.getKey());
 			issueComment.show();
+			if (issueComment.isOK()) {
+				try {
+					jiraServerFacade.addComment(IdeaHelper.getCurrentJIRAServer().getServer(), 
+							issue, issueComment.getComment());
+				} catch (JIRAException e1) {
+					e1.printStackTrace();
+				}
+			}
 		}
 	}
 
