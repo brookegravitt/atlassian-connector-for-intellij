@@ -20,7 +20,7 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
 import com.atlassian.theplugin.commons.util.HttpClientFactory;
 import com.atlassian.theplugin.commons.util.UrlUtil;
-import com.atlassian.theplugin.exception.HttpProxySettingsException;
+import com.atlassian.theplugin.commons.exception.HttpProxySettingsException;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
