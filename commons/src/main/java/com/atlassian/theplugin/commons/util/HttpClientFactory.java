@@ -17,7 +17,7 @@
 package com.atlassian.theplugin.commons.util;
 
 import com.atlassian.theplugin.commons.thirdparty.apache.EasySSLProtocolSocketFactory;
-import com.atlassian.theplugin.commons.exception.HttpProxySettingsException;
+import com.atlassian.theplugin.exception.HttpProxySettingsException;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
@@ -55,7 +55,7 @@ public final class HttpClientFactory {
 		this.httpConfigurableAdapter = httpConfigurableAdapter;
 	}
 
-	protected static void setDataTimeout(int dataTimeout) {
+	public static void setDataTimeout(int dataTimeout) {
 		HttpClientFactory.dataTimeout = dataTimeout;
 	}
 
