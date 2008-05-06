@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.commons.bamboo.api.bamboomock;
+package com.atlassian.theplugin.bamboo.api.bamboomock;
 
 import static junit.framework.Assert.*;
 import org.ddsteps.mock.httpserver.JettyMockServer;

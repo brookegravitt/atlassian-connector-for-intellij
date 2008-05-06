@@ -53,7 +53,7 @@ public class JIRARssClientTest extends TestCase
             // protected so that we can easily write tests by simply returning XML from a file instead of a URL!
             protected InputStream getUrlAsStream(String url) throws IOException {
                 mostRecentUrl = url;
-                return JIRAXmlRpcClientTest.class.getResourceAsStream(file);
+                return JIRARssClientTest.class.getResourceAsStream(file);
             }
         };
     }
