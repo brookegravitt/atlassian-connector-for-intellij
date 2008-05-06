@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.configuration;
+package com.atlassian.theplugin.commons.configuration;
 
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.Server;

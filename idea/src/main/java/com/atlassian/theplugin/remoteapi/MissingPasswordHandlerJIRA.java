@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.remoteapi;
 
-import com.atlassian.theplugin.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.idea.PasswordDialog;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.atlassian.theplugin.util.PluginUtil;
