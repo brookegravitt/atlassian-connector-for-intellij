@@ -16,21 +16,13 @@
 
 package com.atlassian.theplugin.util;
 
-import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
-import com.atlassian.theplugin.commons.bamboo.BambooStatusChecker;
-import com.atlassian.theplugin.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
-import com.atlassian.theplugin.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.idea.IdeaActionScheduler;
-import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
 import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
-import com.atlassian.theplugin.idea.config.ConfigPanel;
-import com.atlassian.theplugin.idea.config.GeneralConfigPanel;
-import com.atlassian.theplugin.idea.config.serverconfig.*;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
-import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import org.picocontainer.MutablePicoContainer;
 
 public final class PicoUtil {

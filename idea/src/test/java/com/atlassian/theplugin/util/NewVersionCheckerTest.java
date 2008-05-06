@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.util;
 
-import com.atlassian.theplugin.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.exception.IncorrectVersionException;
 import com.atlassian.theplugin.exception.VersionServiceException;
 import com.atlassian.theplugin.commons.util.Version;
