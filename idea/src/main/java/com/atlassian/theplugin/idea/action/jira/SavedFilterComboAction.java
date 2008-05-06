@@ -27,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.util.Iterator;
+import java.util.List;
 
 public class SavedFilterComboAction extends ComboBoxAction {
 	public static final String QF_NAME = "SavedFilter";
@@ -43,17 +44,21 @@ public class SavedFilterComboAction extends ComboBoxAction {
 		button = (ComboBoxButton) jComponent;
 
 		JIRAServer server = IdeaHelper.getCurrentJIRAServer();
-		for (Iterator iterator = server.getSavedFilters().iterator(); iterator.hasNext();) {
-			final JIRASavedFilter filter = (JIRASavedFilter) iterator.next();
-			group.add(new AnAction(filter.getName()) {
-				public void actionPerformed(AnActionEvent event) {
-					button.setText(event.getPresentation().getText());
-					IdeaHelper.getJIRAToolWindowPanel(event).addQueryFragment(filter);
-					IdeaHelper.getJIRAToolWindowPanel(event).refreshIssues();
+		if (server != null) {
+			List filters = server.getSavedFilters();
+			if (filters != null) {
+				for (Iterator iterator = filters.iterator(); iterator.hasNext();) {
+					final JIRASavedFilter filter = (JIRASavedFilter) iterator.next();
+					group.add(new AnAction(filter.getName()) {
+						public void actionPerformed(AnActionEvent event) {
+							button.setText(event.getPresentation().getText());
+							IdeaHelper.getJIRAToolWindowPanel(event).addQueryFragment(filter);
+							IdeaHelper.getJIRAToolWindowPanel(event).refreshIssues();
+						}
+					});
 				}
-			});
+			}
 		}
-
 		return group;
 	}
 

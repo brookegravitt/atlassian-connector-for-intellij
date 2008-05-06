@@ -22,6 +22,7 @@ import com.atlassian.theplugin.idea.jira.IssueComment;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.JiraIssueAdapter;
 import com.atlassian.theplugin.jira.JIRAServer;
+import com.atlassian.theplugin.jira.api.JIRAException;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
@@ -42,23 +43,39 @@ public class CommentIssueAction extends AnAction {
             if (l.isEmpty()) {
                 errorMsg = "Search for issues to comment on first.";
             } else {
-				IssueComment issueComment = new IssueComment(
-						IdeaHelper.getAppComponent().getJiraServerFacade(),
-						IdeaHelper.getCurrentJIRAServer(), l);
+				IssueComment issueComment = new IssueComment(toolWindowPanel.getCurrentIssue().getKey());
 
-                if (toolWindowPanel.getCurrentIssue() != null) {
-                    issueComment.setIssue(toolWindowPanel.getCurrentIssue());
-                }
                 issueComment.show();
-            }
+
+				if (issueComment.isOK()) {
+					try {
+						IdeaHelper.getAppComponent().getJiraServerFacade().addComment(
+								IdeaHelper.getCurrentJIRAServer().getServer(),
+								toolWindowPanel.getCurrentIssue(),
+								issueComment.getComment());
+					} catch (JIRAException e1) {
+						e1.printStackTrace();
+					}
+				}
+
+			}
         } else {
             errorMsg = "Select a JIRA server and query for issues before commenting.";
         }
-
 
         if (errorMsg != null) {
             PluginToolWindow.focusPanel(e, PluginToolWindow.ToolWindowPanels.JIRA);
             Messages.showErrorDialog(project, errorMsg, "JIRA Comment Issue");
         }
     }
+
+	public void update(AnActionEvent event) {
+		super.update(event);
+		if (IdeaHelper.getCurrentJIRAServer() != null) {
+			event.getPresentation().setEnabled(IdeaHelper.getJIRAToolWindowPanel(event).getCurrentIssue() != null);
+		} else {
+			event.getPresentation().setEnabled(false);
+		}
+	}
+
 }

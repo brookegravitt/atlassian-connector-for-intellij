@@ -43,7 +43,7 @@ public class JIRAServer {
 	private List<JIRAProject> projects;
 	private List statuses;
 	private List issueTypes;
-	private List savedFilters;
+	private List<JIRAQueryFragment> savedFilters;
 	private List<JIRAVersionBean> serverVersions;
 	private List<JIRAVersionBean> versions;
 	private List<JIRAFixForVersionBean> fixForVersions;
@@ -139,7 +139,7 @@ public class JIRAServer {
 		return issueTypes;
 	}
 
-	public List<JIRAConstant> getSavedFilters() {
+	public List<JIRAQueryFragment> getSavedFilters() {
 		if (savedFilters == null) {
 			try {
 				savedFilters = jiraServerFacade.getSavedFilters(server);
@@ -154,7 +154,7 @@ public class JIRAServer {
 	public List<JIRAConstant> getPriorieties() {
 		if (priorieties == null) {
 			try {
-				List<JIRAConstant> retrieved = jiraServerFacade.getPriorieties(server);
+				List<JIRAConstant> retrieved = jiraServerFacade.getPriorities(server);
 				priorieties = new ArrayList(retrieved.size() + 1);
 				priorieties.add(new JIRAPriorityBean(ANY_ID, "Any", null));
 				priorieties.addAll(retrieved);
