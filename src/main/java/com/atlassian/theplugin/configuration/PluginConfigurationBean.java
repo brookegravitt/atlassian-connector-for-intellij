@@ -16,7 +16,12 @@
 
 package com.atlassian.theplugin.configuration;
 
-import com.atlassian.theplugin.ServerType;
+import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
+import com.atlassian.theplugin.commons.configuration.ProductServerConfiguration;
+import com.atlassian.theplugin.commons.configuration.GeneralConfigurationBean;
+import com.atlassian.theplugin.commons.configuration.BambooConfigurationBean;
 
 public class PluginConfigurationBean implements PluginConfiguration {
     private BambooConfigurationBean bambooConfiguration = new BambooConfigurationBean();

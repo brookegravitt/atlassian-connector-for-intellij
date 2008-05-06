@@ -16,10 +16,10 @@
 
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.configuration.Server;
-import com.atlassian.theplugin.configuration.ServerBean;
-import com.atlassian.theplugin.configuration.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.configuration.ServerBean;
+import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.idea.config.serverconfig.GenericServerConfigForm;
+import com.atlassian.theplugin.commons.Server;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;

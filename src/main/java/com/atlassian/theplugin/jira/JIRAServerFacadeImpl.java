@@ -16,12 +16,12 @@
 
 package com.atlassian.theplugin.jira;
 
-import com.atlassian.theplugin.ServerType;
-import com.atlassian.theplugin.configuration.Server;
+import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.api.soap.JIRASessionImpl;
-import com.atlassian.theplugin.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.remoteapi.RemoteApiLoginException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 
 import javax.xml.rpc.ServiceException;
 import java.net.URL;
@@ -32,7 +32,9 @@ import java.util.WeakHashMap;
 
 public class JIRAServerFacadeImpl implements JIRAServerFacade {
 	private Map<String, JIRARssClient> sessions = new WeakHashMap<String, JIRARssClient>();
+
 	private Map<String, JIRASession> soapSessions = new WeakHashMap<String, JIRASession>();
+	private static JIRAServerFacadeImpl instance;
 
 	private synchronized JIRASession getSoapSession(Server server) throws RemoteApiException {
 		// @todo old server will stay on map - remove them !!!
@@ -50,6 +52,17 @@ public class JIRAServerFacadeImpl implements JIRAServerFacade {
 			soapSessions.put(key, session);
 		}
 		return session;
+	}
+
+	private JIRAServerFacadeImpl(){
+
+	}
+
+	public static JIRAServerFacade getInstance() {
+		if (instance == null){
+			instance = new JIRAServerFacadeImpl();
+		}
+		return instance;
 	}
 
 	private synchronized JIRARssClient getSession(Server server) throws RemoteApiException {
@@ -74,7 +87,7 @@ public class JIRAServerFacadeImpl implements JIRAServerFacade {
             }
         } catch (JIRAException e) {
             throw new RemoteApiLoginException(e.getMessage(), e);
-        } 
+        }
 	}
 
 	public ServerType getServerType() {
@@ -113,19 +126,19 @@ public class JIRAServerFacadeImpl implements JIRAServerFacade {
 		} else {
 			return rss.getSavedFilterIssues(query.get(0), sort, sortOrder, start, size);
 		}
-	}	
+	}
 
 	public List getProjects(Server server) throws JIRAException {
         JIRAXmlRpcClient client = new JIRAXmlRpcClient(server.getUrlString(), server.getUserName(), server.getPasswordString());
         return client.getProjects();
     }
 
-    public List<JIRAConstant> getIssueTypes(Server server) throws JIRAException {
+	public List<JIRAConstant> getIssueTypes(Server server) throws JIRAException {
         JIRAXmlRpcClient client = new JIRAXmlRpcClient(server.getUrlString(), server.getUserName(), server.getPasswordString());
         return client.getIssueTypes();
     }
 
-    public List<JIRAConstant> getStatuses(Server server) throws JIRAException {
+	public List<JIRAConstant> getStatuses(Server server) throws JIRAException {
         JIRAXmlRpcClient client = new JIRAXmlRpcClient(server.getUrlString(), server.getUserName(), server.getPasswordString());
         return client.getStatuses();
     }
@@ -140,7 +153,7 @@ public class JIRAServerFacadeImpl implements JIRAServerFacade {
         client.addIssueComment(issue.getKey(), comment);
     }
 
-    public JIRAIssue createIssue(Server server, JIRAIssue issue) throws JIRAException {
+	public JIRAIssue createIssue(Server server, JIRAIssue issue) throws JIRAException {
         JIRAXmlRpcClient client = new JIRAXmlRpcClient(server.getUrlString(), server.getUserName(), server.getPasswordString());
         return client.createIssue(issue);
     }
@@ -161,7 +174,7 @@ public class JIRAServerFacadeImpl implements JIRAServerFacade {
         return client.getComponents(projectKey);
     }
 
-    public List getVersions(Server server, String projectKey) throws JIRAException {
+	public List getVersions(Server server, String projectKey) throws JIRAException {
         JIRAXmlRpcClient client = new JIRAXmlRpcClient(server.getUrlString(), server.getUserName(), server.getPasswordString());
         return client.getVersions(projectKey);
 	}
@@ -178,6 +191,6 @@ public class JIRAServerFacadeImpl implements JIRAServerFacade {
 
 	public List getSavedFilters(Server server) throws JIRAException {
 		JIRAXmlRpcClient client = new JIRAXmlRpcClient(server.getUrlString(), server.getUserName(), server.getPasswordString());
-		return client.getSavedFilters();		
+		return client.getSavedFilters();
 	}
 }

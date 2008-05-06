@@ -134,7 +134,7 @@ public class CruciblePatchSubmitCommitSessionTest extends TestCase {
 
 class CruciblePatchSubmitCommitSessionWrapper extends CruciblePatchSubmitCommitSession {
 	CruciblePatchSubmitCommitSessionWrapper() {
-		super(null, new CrucibleServerFacadeImpl());
+		super(null, CrucibleServerFacadeImpl.getInstance());
 	}
 
 	protected String getPath(ContentRevision revision) {

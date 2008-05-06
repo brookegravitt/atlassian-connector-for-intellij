@@ -16,12 +16,12 @@
 
 package com.atlassian.theplugin.idea.autoupdate;
 
-import com.atlassian.theplugin.configuration.GeneralConfigurationBean;
-import com.atlassian.theplugin.exception.ThePluginException;
+import com.atlassian.theplugin.commons.configuration.GeneralConfigurationBean;
+import com.atlassian.theplugin.commons.exception.ThePluginException;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.atlassian.theplugin.util.Version;
+import com.atlassian.theplugin.commons.util.Version;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -36,7 +36,7 @@ import com.intellij.openapi.ui.Messages;
  * To change this template use File | Settings | File Templates.
  */
 public class NewVersionConfirmHandler implements UpdateActionHandler {
-	private static final String DOWNLOAD_TITLE = "Downloading new " + PluginUtil.getName() + " plugin version ";
+	private static final String DOWNLOAD_TITLE = "Downloading new " + PluginUtil.getInstance().getName() + " plugin version ";
 
 	private GeneralConfigurationBean updateConfiguration;
 
@@ -47,7 +47,7 @@ public class NewVersionConfirmHandler implements UpdateActionHandler {
 	public void doAction(final InfoServer.VersionInfo versionInfo, boolean showConfigPath) throws ThePluginException {
 		Version aVersion = versionInfo.getVersion();
 		String message = "New plugin version " + aVersion + " is available. "
-				+ "Your version is " + PluginUtil.getVersion()
+				+ "Your version is " + PluginUtil.getInstance().getVersion()
 				+ ". Do you want to download and install?";
 		String title = "New plugin version download";
 
@@ -70,9 +70,9 @@ public class NewVersionConfirmHandler implements UpdateActionHandler {
 			ProgressManager.getInstance().run(downloader);
 		} else if (showConfigPath) {
 			Messages.showMessageDialog("You can always install " + aVersion
-					+ " version through " + PluginUtil.getName()
+					+ " version through " + PluginUtil.getInstance().getName()
 					+ " configuration panel (Preferences | IDE Settings | "
-					+ PluginUtil.getName() + " | General | Auto update | Check now)", "Information",
+					+ PluginUtil.getInstance().getName() + " | General | Auto update | Check now)", "Information",
 					Messages.getInformationIcon());
 		}
 		// so or so we mark this version so no more popups will appear

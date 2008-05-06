@@ -16,8 +16,9 @@
 
 package com.atlassian.theplugin.bamboo;
 
-import com.atlassian.theplugin.configuration.Server;
-import com.atlassian.theplugin.configuration.ServerBean;
+import com.atlassian.theplugin.commons.configuration.ServerBean;
+import com.atlassian.theplugin.commons.bamboo.*;
+import com.atlassian.theplugin.commons.Server;
 import com.gargoylesoftware.htmlunit.StringWebResponse;
 import com.gargoylesoftware.htmlunit.TopLevelWindow;
 import com.gargoylesoftware.htmlunit.WebClient;
@@ -64,7 +65,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 		output = new StatusListenerResultCatcher();
         final ServerBean server = new ServerBean();
         server.setName("Test Server");
-        testedListener = new HtmlBambooStatusListener(output) {
+        testedListener = new HtmlBambooStatusListener(output, null) {
             protected Server getServerFromUrl(String serverUrl)   {
                 return server;
             }
@@ -77,7 +78,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 
 		// create mock and tested object
 		BambooStatusDisplay mockDisplay = EasyMock.createMock(BambooStatusDisplay.class);
-		HtmlBambooStatusListener bambooListener = new HtmlBambooStatusListener(mockDisplay) {
+		HtmlBambooStatusListener bambooListener = new HtmlBambooStatusListener(mockDisplay, null) {
 			protected Server getServerFromUrl(String serverUrl) {
 				return new ServerBean();
 			}
@@ -103,7 +104,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 
 		// create mock display and tested listener
 		BambooStatusDisplay mockDisplay = EasyMock.createMock(BambooStatusDisplay.class);
-		HtmlBambooStatusListener bambooListener = new HtmlBambooStatusListener(mockDisplay) {
+		HtmlBambooStatusListener bambooListener = new HtmlBambooStatusListener(mockDisplay, null) {
 			protected Server getServerFromUrl(String serverUrl) {
 				return new ServerBean();
 			}
@@ -128,7 +129,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 
 		// create mock display and tested listener
 		BambooStatusDisplay mockDisplay = EasyMock.createMock(BambooStatusDisplay.class);
-		HtmlBambooStatusListener bambooListener = new HtmlBambooStatusListener(mockDisplay) {
+		HtmlBambooStatusListener bambooListener = new HtmlBambooStatusListener(mockDisplay, null) {
 			protected Server getServerFromUrl(String serverUrl) {
 				return new ServerBean();
 			}
@@ -152,7 +153,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 
 		// create mock display and tested listener
 		BambooStatusDisplay mockDisplay = EasyMock.createMock(BambooStatusDisplay.class);
-		HtmlBambooStatusListener bambooListener = new HtmlBambooStatusListener(mockDisplay) {
+		HtmlBambooStatusListener bambooListener = new HtmlBambooStatusListener(mockDisplay, null) {
 			protected Server getServerFromUrl(String serverUrl) {
 				return new ServerBean();
 			}

@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.autoupdate;
 
-import com.atlassian.theplugin.configuration.GeneralConfigurationBean;
+import com.atlassian.theplugin.commons.configuration.GeneralConfigurationBean;
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
@@ -51,7 +51,7 @@ public class PluginDownloader { //implements Runnable {
 	public static final String PLUGIN_ID_TOKEN = "PLUGIN_ID";
 	public static final String VERSION_TOKEN = "BUILD";
 
-	private static String pluginName = PluginUtil.getName();
+	private static String pluginName = PluginUtil.getInstance().getName();
 
 	private static final int TIMEOUT = 15000;
 	private static final int EXTENTION_LENGHT = 3;
@@ -83,12 +83,12 @@ public class PluginDownloader { //implements Runnable {
 			// todo lguminski/jjaroczynski to find a better way of getting plugin descriptor
 			// theoritically openapi should provide a method so the plugin could get info on itself
 
-			IdeaPluginDescriptor pluginDescr = PluginManager.getPlugin(PluginId.getId(PluginUtil.getPluginId()));
+			IdeaPluginDescriptor pluginDescr = PluginManager.getPlugin(PluginId.getId(PluginUtil.getInstance().getPluginId()));
 			/* todo lguminsk when you debug the plugin it appears in registry as attlassian-idea-plugin, but when
 			 	you rinstall it notmally it appears as Atlassian. Thats why it is double checked here
 			    */
 			if (pluginDescr == null) {
-				pluginDescr = PluginManager.getPlugin(PluginId.getId(PluginUtil.getName()));
+				pluginDescr = PluginManager.getPlugin(PluginId.getId(PluginUtil.getInstance().getName()));
 			}
 			addActions(pluginDescr, localArchiveFile);
 

@@ -16,8 +16,8 @@
 
 package com.atlassian.theplugin.util;
 
-import com.atlassian.theplugin.bamboo.BambooServerFacadeImpl;
-import com.atlassian.theplugin.bamboo.BambooStatusChecker;
+import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
+import com.atlassian.theplugin.commons.bamboo.BambooStatusChecker;
 import com.atlassian.theplugin.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.crucible.CrucibleServerFacadeImpl;
@@ -42,19 +42,19 @@ public final class PicoUtil {
 	private static final Class[] GLOBAL_COMPONENTS = {
 			IdeaActionScheduler.class,
 			PluginConfigurationBean.class,
-			BambooStatusChecker.class,
+//			BambooStatusChecker.class,
 			CrucibleStatusChecker.class,
-			NewVersionChecker.class,
-			ConfigPanel.class,
-			ServerConfigPanel.class,
-			BambooGeneralForm.class,
-			CrucibleGeneralForm.class,
-			JiraGeneralForm.class,
-			GeneralConfigPanel.class,
-			ServerTreePanel.class,
-			CrucibleServerFacadeImpl.class,
-			BambooServerFacadeImpl.class,
-			JIRAServerFacadeImpl.class,
+//			NewVersionChecker.class,
+//			ConfigPanel.class,
+//			ServerConfigPanel.class,
+//			BambooGeneralForm.class,
+//			CrucibleGeneralForm.class,
+//			JiraGeneralForm.class,
+//			GeneralConfigPanel.class,
+//			ServerTreePanel.class,
+//			CrucibleServerFacadeImpl.class,
+//			BambooServerFacadeImpl.class,
+//			JIRAServerFacadeImpl.class,
 	};
 
 	private static final Class[] PROJECT_COMPONENTS = {

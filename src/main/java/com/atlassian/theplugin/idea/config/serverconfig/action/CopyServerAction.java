@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea.config.serverconfig.action;
 
 import com.atlassian.theplugin.idea.config.ConfigPanel;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
@@ -29,6 +30,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  */
 public class CopyServerAction extends AnAction {
     public void actionPerformed(AnActionEvent event) {
-		ConfigPanel.getInstance().copyServer();		
+		ConfigPanel.getInstance(IdeaHelper.getPluginConfiguration()).copyServer();		
     }
 }

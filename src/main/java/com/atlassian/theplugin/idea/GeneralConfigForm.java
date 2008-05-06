@@ -53,9 +53,9 @@ public class GeneralConfigForm {
 		return checkNewVersionAll;
 	}
 
-	public GeneralConfigForm(NewVersionChecker checker) {
+	public GeneralConfigForm() {
 
-		checkNowButton.addActionListener(new NewVersionButtonListener(checker, this));
+		checkNowButton.addActionListener(new NewVersionButtonListener(this));
 		chkAutoUpdateEnabled.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				chkUnstableVersionsCheckBox.setEnabled(chkAutoUpdateEnabled.isSelected());

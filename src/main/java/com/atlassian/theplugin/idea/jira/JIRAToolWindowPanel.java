@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.jira;
 
-import com.atlassian.theplugin.bamboo.HtmlBambooStatusListener;
+import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListener;
 import com.atlassian.theplugin.configuration.*;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
@@ -32,6 +32,7 @@ import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.jira.api.JIRASavedFilterBean;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
+import com.atlassian.theplugin.commons.Server;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;

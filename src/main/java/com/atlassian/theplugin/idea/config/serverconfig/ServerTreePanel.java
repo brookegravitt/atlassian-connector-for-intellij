@@ -16,11 +16,11 @@
 
 package com.atlassian.theplugin.idea.config.serverconfig;
 
-import com.atlassian.theplugin.ServerType;
-import com.atlassian.theplugin.configuration.PluginConfiguration;
-import com.atlassian.theplugin.configuration.ProductServerConfiguration;
-import com.atlassian.theplugin.configuration.Server;
-import com.atlassian.theplugin.configuration.ServerBean;
+import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
+import com.atlassian.theplugin.commons.configuration.ProductServerConfiguration;
+import com.atlassian.theplugin.commons.configuration.ServerBean;
 import com.atlassian.theplugin.idea.config.serverconfig.model.*;
 import com.atlassian.theplugin.idea.config.serverconfig.util.ServerNameUtil;
 import com.intellij.openapi.ui.Messages;
@@ -48,6 +48,7 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 	private static final int WIDTH = 150;
 	private static final int HEIGHT = 250;
 	private static final int VISIBLE_ROW_COUNT = 7;
+	private static ServerTreePanel instance;
 
 	/**
 	 * serverConfigPanel needs to be initialized outside of the constructor to avoid cyclic dependency.
@@ -59,8 +60,15 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 
 	private ServerConfigPanel serverConfigPanel;
 
-	public ServerTreePanel() {
+	private ServerTreePanel() {
 		initLayout();
+	}
+
+	public static ServerTreePanel getInstance() {
+		if (instance == null){
+			instance = new ServerTreePanel();
+		}
+		return instance;
 	}
 
 	private void initLayout() {
@@ -69,7 +77,7 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 		add(new JScrollPane(getServerTree()), BorderLayout.CENTER);
 	}
 
-    private void expandAllPaths() {
+	private void expandAllPaths() {
 		for (int i = 0; i < serverTree.getRowCount(); ++i) {
                  serverTree.expandRow(i);
         }
@@ -121,6 +129,7 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 		return newServer.getName();
 	}
 
+
 	public void copyServer() {
 /*
 		ServerBean newServer = new ServerBean();
@@ -130,7 +139,6 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 		return newServer.getName();
 */
 	}
-
 
 	public void removeServer() {
 		if (selectedNode != null) {

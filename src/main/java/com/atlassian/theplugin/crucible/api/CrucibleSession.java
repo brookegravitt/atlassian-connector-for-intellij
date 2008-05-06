@@ -16,8 +16,8 @@
 
 package com.atlassian.theplugin.crucible.api;
 
-import com.atlassian.theplugin.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.remoteapi.RemoteApiLoginException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 
 import java.util.List;
 

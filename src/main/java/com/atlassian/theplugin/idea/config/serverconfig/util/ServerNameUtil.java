@@ -16,7 +16,8 @@
 
 package com.atlassian.theplugin.idea.config.serverconfig.util;
 
-import com.atlassian.theplugin.configuration.Server;
+
+import com.atlassian.theplugin.commons.Server;
 
 import java.util.Collection;
 import java.util.Iterator;

@@ -16,6 +16,8 @@
 
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.theplugin.commons.util.Logger;
+
 /**
  * Created by IntelliJ IDEA.
  * User: pmaruszak
@@ -23,7 +25,7 @@ package com.atlassian.theplugin.idea;
  * Time: 10:27:32 AM 
  */
 
-public abstract class Logger {
+public abstract class LoggerImpl implements Logger {
 
     /**
      * For backward compatibility, support the overriding the factory
@@ -42,27 +44,32 @@ public abstract class Logger {
     }
 
     private static Factory factoryInstance = new Factory() {
-        public Logger getLoggerInstance(String category) {
-            return new DefaultLogger();
-        }
-    };
+//        public Logger getLoggerInstance(String category) {
+//            return new DefaultLoggerImpl();
+//        }
 
-    public static Logger getInstance(String category) {
+		public Logger getLoggerInstance(String category) {
+			return new IdeaLoggerImpl(com.intellij.openapi.diagnostic.Logger.getInstance(category));
+		}
+
+	};
+
+	public static void setFactory(Factory factory) {
+		factoryInstance = factory;
+	}
+
+	public static Logger getInstance(String category) {
         if (singleton != null) {
             return singleton;
         }
         return factoryInstance.getLoggerInstance(category);
     }
 
-    public static Logger getInstance() {
+	public static Logger getInstance() {
         return getInstance(LOGGER_CATEGORY);
     }
 
-    public static void setFactory(Factory factory) {
-        factoryInstance = factory;
-    }
-
-    private static boolean debug = false;
+	private static boolean debug = false;
 
     private static boolean verbose = false;
 
@@ -77,7 +84,7 @@ public abstract class Logger {
         singleton = instance;
     }
 
-    protected Logger() {
+    protected LoggerImpl() {
     }
 
     //these values mirror Ant's values
@@ -88,19 +95,19 @@ public abstract class Logger {
     public static final int LOG_DEBUG = 4;
 
     public static void setDebug(boolean debug) {
-        Logger.debug = debug;
+        LoggerImpl.debug = debug;
     }
 
     public static boolean isDebug() {
-        return Logger.debug;
+        return LoggerImpl.debug;
     }
 
     public static boolean isVerbose() {
-        return Logger.verbose;
+        return LoggerImpl.verbose;
     }
 
     public static void setVerbose(boolean verbose) {
-        Logger.verbose = verbose;
+        LoggerImpl.verbose = verbose;
     }
 
     public void error(String msg) {
@@ -173,9 +180,7 @@ public abstract class Logger {
         return !(verbose || debug) && (level == LOG_VERBOSE);
     }
 
-    public abstract void log(int level, String msg, Throwable t);
-
-    static class NullLogger /*extends Logger*/ {
+	static class NullLogger /*extends Logger*/ {
 
         public void log(int level, String msg, Throwable t) {
             //no-op

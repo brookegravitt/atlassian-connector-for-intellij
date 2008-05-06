@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.UIActionScheduler;
+import com.atlassian.theplugin.commons.UIActionScheduler;
 
 import java.awt.*;
 

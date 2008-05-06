@@ -22,11 +22,11 @@ package com.atlassian.theplugin.idea;
  * Date: Mar 17, 2008
  * Time: 4:40:34 PM
  */
-public class IdeaLogger extends Logger {
+public class IdeaLoggerImpl extends LoggerImpl {
 
     private com.intellij.openapi.diagnostic.Logger ideaLog;
 
-    public IdeaLogger(com.intellij.openapi.diagnostic.Logger ideaLog) {
+    public IdeaLoggerImpl(com.intellij.openapi.diagnostic.Logger ideaLog) {
         super();
         this.ideaLog = ideaLog;
 
@@ -37,8 +37,8 @@ public class IdeaLogger extends Logger {
     public void log(int level, String aMsg, Throwable t) {
 
         switch (level) {
-            case Logger.LOG_VERBOSE:
-            case Logger.LOG_DEBUG:
+            case LoggerImpl.LOG_VERBOSE:
+            case LoggerImpl.LOG_DEBUG:
                 ideaLog.debug(aMsg);
                 if (t != null) {
                     ideaLog.debug(t);
@@ -46,14 +46,14 @@ public class IdeaLogger extends Logger {
 
 				break;
 
-            case Logger.LOG_INFO:
+            case LoggerImpl.LOG_INFO:
                 ideaLog.info(aMsg);
                 if (t != null) {
                     ideaLog.info(t);
                 }
                 break;
 
-            case Logger.LOG_ERR:
+            case LoggerImpl.LOG_ERR:
                 if (t != null) {
                     ideaLog.info("ERROR:" + aMsg, t);
                 } else {
