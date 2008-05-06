@@ -1,4 +1,4 @@
-package com.atlassian.theplugin.exception;
+package com.atlassian.theplugin.commons.exception;
 
 /**
  * Created by IntelliJ IDEA.
