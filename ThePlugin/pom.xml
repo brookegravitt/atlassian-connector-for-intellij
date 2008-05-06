@@ -35,9 +35,9 @@
     <description>Parent POM for plugins integrating Atlassian tools.</description>
     
     <modules>
-        <module>idea</module>
-        <module>eclipse</module>
-        <module>commons</module>
+		<module>commons</module>
+		<module>idea</module>
+		<!--<module>eclipse</module>-->
     </modules>
 
     <scm>
