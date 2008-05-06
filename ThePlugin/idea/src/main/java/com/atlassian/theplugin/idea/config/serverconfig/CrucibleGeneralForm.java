@@ -47,7 +47,7 @@ public class CrucibleGeneralForm extends JComponent implements ContentPanel {
 	private transient PluginConfiguration localPluginConfigurationCopy;
 	private static CrucibleGeneralForm instance;
 
-	private  CrucibleGeneralForm(PluginConfigurationBean globalPluginConfiguration) {
+	private CrucibleGeneralForm(PluginConfigurationBean globalPluginConfiguration) {
 
 		this.globalPluginConfiguration = globalPluginConfiguration;
 
@@ -61,7 +61,7 @@ public class CrucibleGeneralForm extends JComponent implements ContentPanel {
 	}
 
 	public static CrucibleGeneralForm getInstance(PluginConfigurationBean globalPluginConfiguration) {
-		if (instance == null){
+		if (instance == null) {
 			instance = new CrucibleGeneralForm(globalPluginConfiguration);
 		}
 		return instance;
