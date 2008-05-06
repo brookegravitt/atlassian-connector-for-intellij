@@ -19,10 +19,7 @@ package com.atlassian.theplugin.configuration;
 import com.intellij.util.xmlb.XmlSerializer;
 import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.SubscribedPlan;
-import com.atlassian.theplugin.commons.configuration.ProductServerConfiguration;
-import com.atlassian.theplugin.commons.configuration.BambooConfigurationBean;
-import com.atlassian.theplugin.commons.configuration.ServerBean;
-import com.atlassian.theplugin.commons.configuration.SubscribedPlanBean;
+import com.atlassian.theplugin.commons.configuration.*;
 import junit.framework.TestCase;
 import org.jdom.Element;
 

@@ -19,12 +19,8 @@ package com.atlassian.theplugin.bamboo;
 import com.atlassian.theplugin.commons.UIActionScheduler;
 import com.atlassian.theplugin.commons.bamboo.*;
 import com.atlassian.theplugin.commons.SubscribedPlan;
-import com.atlassian.theplugin.commons.configuration.BambooConfigurationBean;
-import com.atlassian.theplugin.commons.configuration.ServerBean;
-import com.atlassian.theplugin.commons.configuration.SubscribedPlanBean;
+import com.atlassian.theplugin.commons.configuration.*;
 import com.atlassian.theplugin.commons.bamboo.api.bamboomock.*;
-import com.atlassian.theplugin.configuration.*;
-import com.atlassian.theplugin.util.PluginUtil;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -41,7 +37,7 @@ public class BambooStatusCheckerTest extends TestCase {
 	private static final String USER_NAME = "someUser";
 	private static final String PASSWORD = "somePassword";
 	private static final String PLAN_ID = "TP-DEF"; // always the same - mock does the logic
-	private final BambooServerFacade bambooServerFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
+	private final BambooServerFacade bambooServerFacade = BambooServerFacadeImpl.getInstance(null);
 
 	public BambooStatusCheckerTest(String name) {
 		super(name);

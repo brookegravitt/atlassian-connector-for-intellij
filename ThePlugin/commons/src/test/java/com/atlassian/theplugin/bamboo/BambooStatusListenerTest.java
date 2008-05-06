@@ -18,7 +18,7 @@ package com.atlassian.theplugin.bamboo;
 
 import com.atlassian.theplugin.commons.configuration.BambooConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.ServerBean;
-import com.atlassian.theplugin.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.bamboo.BambooStatusDisplay;

@@ -19,7 +19,7 @@ package com.atlassian.theplugin.idea;
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.commons.util.Version;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
-import com.atlassian.theplugin.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.idea.autoupdate.PluginDownloader;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
