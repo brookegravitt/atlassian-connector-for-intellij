@@ -228,7 +228,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 							build.getBuildKey(), build.getBuildNumber(), commentText);
 					setStatusMessage("Comment added to build");
 				} catch (ServerPasswordNotProvidedException e) {
-					setStatusMessage("Comment not added: Password on provided for server");
+					setStatusMessage("Comment not added: Password not provided for server");
 				} catch (RemoteApiException e) {
 					setStatusMessage("Comment not added: " + e.getMessage());
 				}
@@ -265,7 +265,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 					bambooFacade.executeBuild(build.getServer(), build.getBuildKey());
 					setStatusMessage("Build executed on plan: " + build.getBuildKey());
 				} catch (ServerPasswordNotProvidedException e) {
-					setStatusMessage("Build not executed: Password on provided for server");
+					setStatusMessage("Build not executed: Password not provided for server");
 				} catch (RemoteApiException e) {
 					setStatusMessage("Build not executed: " + e.getMessage());
 				}
