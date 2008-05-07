@@ -68,11 +68,11 @@ public class BambooServerConfigurationFormTest extends TestCase {
 		// form use cloned instance
 		assertNotSame(inServerBean, outServerBean);
 		checkServerBean(outServerBean);
-		assertEquals(0, outServerBean.getSubscribedPlans().size());
+		assertEquals(0, outServerBean.transientGetSubscribedPlans().size());
 
 		/*  */
 
-		inServerBean.getSubscribedPlans().add(new SubscribedPlanBean() {
+		inServerBean.transientGetSubscribedPlans().add(new SubscribedPlanBean() {
 			{
 				setPlanId("Plan-1");
 			}
@@ -86,7 +86,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 		//assertEquals("Plan-1", outServerBean.getSubscribedPlansData().get(0).getPlanId());
 
 		/*  */
-		inServerBean.getSubscribedPlans().add(new SubscribedPlanBean() {
+		inServerBean.transientGetSubscribedPlans().add(new SubscribedPlanBean() {
 			{
 				setPlanId("Plan-2");
 			}
@@ -100,7 +100,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 		//assertEquals(2, outServerBean.getSubscribedPlansData().size());
 		//checkSubscribedPlans(outServerBean, new String[]{ "Plan-1", "Plan-2" });
 		/*  */
-		inServerBean.getSubscribedPlans().add(new SubscribedPlanBean() {
+		inServerBean.transientGetSubscribedPlans().add(new SubscribedPlanBean() {
 			{
 				setPlanId("Plan-3");
 			}
@@ -116,7 +116,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 		//checkSubscribedPlans(outServerBean, new String[]{ "Plan-1", "Plan-2", "Plan-3" });
 
 		/*  */
-		inServerBean.getSubscribedPlans().clear();
+		inServerBean.transientGetSubscribedPlans().clear();
 
 		bambooPluginConfigurationForm.setData(inServerBean);
 
@@ -125,15 +125,15 @@ public class BambooServerConfigurationFormTest extends TestCase {
 
 		checkServerBean(outServerBean);
 
-		assertEquals(0, outServerBean.getSubscribedPlans().size());
+		assertEquals(0, outServerBean.transientGetSubscribedPlans().size());
 
 	}
 
 
 	private static void checkSubscribedPlans(ServerBean server, String[] ids) {
-		assertEquals(ids.length, server.getSubscribedPlans().size());
+		assertEquals(ids.length, server.transientGetSubscribedPlans().size());
 
-		Iterator<SubscribedPlan> i = server.getSubscribedPlans().iterator();
+		Iterator<SubscribedPlan> i = server.transientGetSubscribedPlans().iterator();
 		for (String id : ids) {
 			assertEquals(id, i.next().getPlanId());
 		}
@@ -144,7 +144,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 
 		ServerBean outServer = new ServerBean();
 		outServer.setName("name");
-		outServer.setPasswordString("password", true);
+		outServer.transientSetPasswordString("password", true);
 		outServer.setUrlString("url");
 		outServer.setUserName("userName");
 
@@ -155,7 +155,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 	private static void checkServerBean(Server outServer) throws ServerPasswordNotProvidedException {
 
 		assertEquals("name", outServer.getName());
-		assertEquals("password", outServer.getPasswordString());
+		assertEquals("password", outServer.transientGetPasswordString());
 		assertEquals("http://url", outServer.getUrlString());
 		assertEquals("userName", outServer.getUserName());
 	}

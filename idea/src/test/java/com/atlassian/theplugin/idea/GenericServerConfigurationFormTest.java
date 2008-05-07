@@ -72,7 +72,7 @@ public class GenericServerConfigurationFormTest extends TestCase {
 		/* equals vs == */
 
 		outServerBean.setName(new String("name"));
-		outServerBean.setPasswordString(new String("password"), true);
+		outServerBean.transientSetPasswordString(new String("password"), true);
 		outServerBean.setUrlString(new String("url"));
 		outServerBean.setUserName(new String("userName"));
 
@@ -94,7 +94,7 @@ public class GenericServerConfigurationFormTest extends TestCase {
 
 		formHelper.password.setText(outServerBean.getName() + "-chg");
 		assertTrue(genericServerConfigurationForm.isModified());
-		formHelper.password.setText(outServerBean.getPasswordString());
+		formHelper.password.setText(outServerBean.transientGetPasswordString());
 	}
 
 	public void testBambooFormFieldSetting() throws Exception {
@@ -104,8 +104,8 @@ public class GenericServerConfigurationFormTest extends TestCase {
 		assertEquals("", outServer.getName());
 		assertEquals("", outServer.getUrlString());
 		assertEquals("", outServer.getUserName());
-		assertEquals("", outServer.getPasswordString());
-		assertEquals(0, outServer.getSubscribedPlans().size());
+		assertEquals("", outServer.transientGetPasswordString());
+		assertEquals(0, outServer.transientGetSubscribedPlans().size());
 
 		PluginConfigurationFormHelper helper = new PluginConfigurationFormHelper(genericServerConfigurationForm);
 
@@ -123,7 +123,7 @@ public class GenericServerConfigurationFormTest extends TestCase {
 
 		ServerBean outServer = new ServerBean();
 		outServer.setName("name");
-		outServer.setPasswordString("password", true);
+		outServer.transientSetPasswordString("password", true);
 		outServer.setUrlString("url");
 		outServer.setUserName("userName");
 
@@ -134,7 +134,7 @@ public class GenericServerConfigurationFormTest extends TestCase {
 	private static void checkServerBean(Server outServer) throws ServerPasswordNotProvidedException {
 
 		assertEquals("name", outServer.getName());
-		assertEquals("password", outServer.getPasswordString());
+		assertEquals("password", outServer.transientGetPasswordString());
 		assertEquals("http://url", outServer.getUrlString());
 		assertEquals("userName", outServer.getUserName());
 	}

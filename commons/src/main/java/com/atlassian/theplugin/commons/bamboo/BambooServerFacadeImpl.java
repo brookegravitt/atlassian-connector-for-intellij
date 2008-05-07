@@ -59,14 +59,14 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 
 	private synchronized BambooSession getSession(Server server) throws RemoteApiException {
 		// @todo old server will stay on map - remove them !!!
-		String key = server.getUserName() + server.getUrlString() + server.getPasswordString();
+		String key = server.getUserName() + server.getUrlString() + server.transientGetPasswordString();
 		BambooSession session = sessions.get(key);
 		if (session == null) {
 			session = new AutoRenewBambooSession(server.getUrlString());
 			sessions.put(key, session);
 		}
 		if (!session.isLoggedIn()) {
-			session.login(server.getUserName(), server.getPasswordString().toCharArray());
+			session.login(server.getUserName(), server.transientGetPasswordString().toCharArray());
 			try {
 				if (session.getBamboBuildNumber() > 0) {
 					server.setIsBamboo2(true);
@@ -209,7 +209,7 @@ public class BambooServerFacadeImpl implements BambooServerFacade {
 				}
 			}
 		} else {
-			for (SubscribedPlan plan : bambooServer.getSubscribedPlans()) {
+			for (SubscribedPlan plan : bambooServer.transientGetSubscribedPlans()) {
 				if (api != null && api.isLoggedIn()) {
 					try {
 						BambooBuild buildInfo = api.getLatestBuildForPlan(plan.getPlanId());

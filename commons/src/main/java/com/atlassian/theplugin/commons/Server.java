@@ -38,11 +38,11 @@ public interface Server {
 
 	Boolean getIsConfigInitialized();
 
-	Collection<SubscribedPlan> getSubscribedPlans();
+	Collection<SubscribedPlan> transientGetSubscribedPlans();
 
-	void setSubscribedPlans(Collection<? extends SubscribedPlan> subscribedPlans);
+	void transientSetSubscribedPlans(Collection<? extends SubscribedPlan> subscribedPlans);
 
-	String getPasswordString();
+	String transientGetPasswordString();
 
 	Boolean getEnabled();
 
@@ -58,12 +58,12 @@ public interface Server {
 
 	void setUseFavourite(Boolean useFavourite);
 
-	void setPasswordString(String aPassword, Boolean shouldBeStoredPermanently);
+	void transientSetPasswordString(String aPassword, Boolean shouldBeStoredPermanently);
 
 	void setUid(long uid);
 
 	// Transient
-	void setIsConfigInitialized(Boolean isConfigInitialized);
+	void transientSetIsConfigInitialized(Boolean isConfigInitialized);
 
 	// Transient
 	boolean isBamboo2();

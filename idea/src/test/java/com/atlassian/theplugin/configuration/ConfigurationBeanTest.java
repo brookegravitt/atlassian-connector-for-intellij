@@ -68,7 +68,7 @@ public class ConfigurationBeanTest extends TestCase {
         Server server = new ServerBean();
         server.setUrlString("http://www.poland.pl");
         server.setUserName("sopot");
-        server.setPasswordString("gdansk", true);
+        server.transientSetPasswordString("gdansk", true);
         Element e = XmlSerializer.serialize(server);
         assertEquals(server, XmlSerializer.deserialize(e, ServerBean.class));
 
@@ -76,7 +76,7 @@ public class ConfigurationBeanTest extends TestCase {
         List plans = new ArrayList();
         SubscribedPlanBean plan = new SubscribedPlanBean("FOO-TESTS");
         plans.add(plan);
-        server.setSubscribedPlans(plans);
+        server.transientSetSubscribedPlans(plans);
         e = XmlSerializer.serialize(server);
         assertEquals(server, XmlSerializer.deserialize(e, ServerBean.class));
 
@@ -89,10 +89,10 @@ public class ConfigurationBeanTest extends TestCase {
         List<SubscribedPlan> plans2 = new ArrayList<SubscribedPlan>(plans);
         Server server2 = new ServerBean(server);
         plans2.add(new SubscribedPlanBean("FOO-TEST2"));
-        server2.setSubscribedPlans(plans2);
+        server2.transientSetSubscribedPlans(plans2);
         bambooConfig.storeServer(server2);
         Collection<Server> servers = bambooConfig.transientGetServers();
-        assertEquals(server2.getSubscribedPlans().size(), servers.iterator().next().getSubscribedPlans().size());
+        assertEquals(server2.transientGetSubscribedPlans().size(), servers.iterator().next().transientGetSubscribedPlans().size());
         // now roll that up into the global configuration
         PluginConfigurationBean config = new PluginConfigurationBean();
         config.setBambooConfigurationData(bambooConfig);

@@ -65,14 +65,14 @@ public class MissingPasswordHandler implements Runnable {
 				if (answer == JOptionPane.OK_OPTION) {
 					String password = dialog.getPasswordString();
 					Boolean shouldPasswordBeStored = dialog.getShouldPasswordBeStored();
-					server.setPasswordString(password, shouldPasswordBeStored);
+					server.transientSetPasswordString(password, shouldPasswordBeStored);
 					server.setUserName(dialog.getUserName());
 				} else {
 					wasCanceled = true;
 				}
 				// so or so we assume that user provided password
 
-				server.setIsConfigInitialized(true);
+				server.transientSetIsConfigInitialized(true);
 			}
 			ThePluginApplicationComponent appComponent = IdeaHelper.getAppComponent();
 			appComponent.rescheduleStatusCheckers(true);

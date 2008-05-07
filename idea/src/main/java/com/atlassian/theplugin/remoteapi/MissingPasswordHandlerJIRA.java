@@ -69,7 +69,7 @@ public class MissingPasswordHandlerJIRA implements Runnable {
 			if (answer == JOptionPane.OK_OPTION) {
 				String password = dialog.getPasswordString();
 				Boolean shouldPasswordBeStored = dialog.getShouldPasswordBeStored();
-				jiraServer.setPasswordString(password, shouldPasswordBeStored);
+				jiraServer.transientSetPasswordString(password, shouldPasswordBeStored);
 				jiraServer.setUserName(dialog.getUserName());
 				jiraPanel.selectServer(jiraServer);
 			} else {
@@ -77,7 +77,7 @@ public class MissingPasswordHandlerJIRA implements Runnable {
 			}
 			// so or so we assume that user provided password
 
-//			server.setIsConfigInitialized(true);
+//			server.transientSetIsConfigInitialized(true);
 
 			if (wasCanceled) {
 				Messages.showMessageDialog(

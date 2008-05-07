@@ -58,7 +58,7 @@ public class BambooServerConfigForm extends JComponent implements ServerPanel {
 		Server server = genericServerConfigForm.getData();
 
 		Server s = planList.getData();
-		server.setSubscribedPlans(s.getSubscribedPlans());
+		server.transientSetSubscribedPlans(s.transientGetSubscribedPlans());
 		server.setUseFavourite(s.getUseFavourite());
 
 		return server;
