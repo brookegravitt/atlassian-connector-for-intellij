@@ -29,7 +29,6 @@ import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
 import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;
-import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.*;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.atlassian.theplugin.jira.JIRAServer;
@@ -247,9 +246,9 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 			toolWindow.startTabChangeListener();
 			
 			IdeaHelper.getAppComponent().rescheduleStatusCheckers(false);
-			if (!pluginConfiguration.getProductServers(ServerType.JIRA_SERVER).getServers().isEmpty()) {
+			if (!pluginConfiguration.getProductServers(ServerType.JIRA_SERVER).transientGetServers().isEmpty()) {
 				long uuid = projectConfigurationBean.getJiraConfiguration().getSelectedServerId();
-				for (Server server : pluginConfiguration.getProductServers(ServerType.JIRA_SERVER).getServers()) {
+				for (Server server : pluginConfiguration.getProductServers(ServerType.JIRA_SERVER).transientGetServers()) {
 					if (server.getUid() == uuid) {
 						jiraToolWindowPanel.selectServer(server);
 					}

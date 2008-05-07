@@ -31,36 +31,36 @@ public class ConfigurationBeanTest extends TestCase {
     public void testBean() {
         ProductServerConfiguration config = new BambooConfigurationBean();
 
-        assertTrue(config.getEnabledServers().isEmpty());
+        assertTrue(config.transientgetEnabledServers().isEmpty());
 
         // try a single server
         Server server = new ServerBean();
         config.storeServer(server);
-        assertEquals(server, config.getServer(server));
+        assertEquals(server, config.transientGetServer(server));
 
         // now try another server
         Server server2 = new ServerBean();
         config.storeServer(server2);
-        assertEquals(2, config.getServers().size());
-        assertTrue(config.getServers().contains(server));
-        assertTrue(config.getServers().contains(server2));
+        assertEquals(2, config.transientGetServers().size());
+        assertTrue(config.transientGetServers().contains(server));
+        assertTrue(config.transientGetServers().contains(server2));
 
         // now disable and try to retrieve
         Server disabledServer = new ServerBean(server2);
         disabledServer.setEnabled(false);
         config.storeServer(disabledServer);
-        assertEquals(1, config.getEnabledServers().size());
-        assertTrue(config.getEnabledServers().contains(server));
-        assertTrue(!config.getEnabledServers().contains(server2));
-        assertTrue(!config.getEnabledServers().contains(disabledServer));
+        assertEquals(1, config.transientgetEnabledServers().size());
+        assertTrue(config.transientgetEnabledServers().contains(server));
+        assertTrue(!config.transientgetEnabledServers().contains(server2));
+        assertTrue(!config.transientgetEnabledServers().contains(disabledServer));
 
         // now try to remove
         config.removeServer(server);
-        assertEquals(1, config.getServers().size());
-        assertTrue(config.getServers().contains(server2));
+        assertEquals(1, config.transientGetServers().size());
+        assertTrue(config.transientGetServers().contains(server2));
 
         // now check our persisted data is right
-        assertEquals(config.getServers(), ((BambooConfigurationBean) config).getServersData());
+        assertEquals(config.transientGetServers(), ((BambooConfigurationBean) config).getServersData());
     }
 
     public void testPersistence() throws Exception {
@@ -91,7 +91,7 @@ public class ConfigurationBeanTest extends TestCase {
         plans2.add(new SubscribedPlanBean("FOO-TEST2"));
         server2.setSubscribedPlans(plans2);
         bambooConfig.storeServer(server2);
-        Collection<Server> servers = bambooConfig.getServers();
+        Collection<Server> servers = bambooConfig.transientGetServers();
         assertEquals(server2.getSubscribedPlans().size(), servers.iterator().next().getSubscribedPlans().size());
         // now roll that up into the global configuration
         PluginConfigurationBean config = new PluginConfigurationBean();
