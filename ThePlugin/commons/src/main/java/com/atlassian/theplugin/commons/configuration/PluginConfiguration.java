@@ -18,6 +18,7 @@ package com.atlassian.theplugin.commons.configuration;
 
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.util.HttpConfigurableAdapter;
 import com.atlassian.theplugin.commons.configuration.ProductServerConfiguration;
 
 public interface PluginConfiguration {
@@ -34,4 +35,9 @@ public interface PluginConfiguration {
 	GeneralConfigurationBean getGeneralConfigurationData();
 
 	void setGeneralConfigurationData(GeneralConfigurationBean generalConfigurationBean);
+
+	//set should be applied either in IDEA an Eclipse environment
+	void setHttpConfigurable(HttpConfigurableAdapter httpConfigurableAdapter);
+	HttpConfigurableAdapter getHttpConfigurable();
 }
+

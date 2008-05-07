@@ -18,6 +18,7 @@ package com.atlassian.theplugin.commons.configuration;
 
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.util.HttpConfigurableAdapter;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.configuration.ProductServerConfiguration;
 import com.atlassian.theplugin.commons.configuration.GeneralConfigurationBean;
@@ -31,6 +32,9 @@ public class PluginConfigurationBean implements PluginConfiguration {
 
 	private GeneralConfigurationBean generalConfigurationBean = new GeneralConfigurationBean();
 
+
+
+	private HttpConfigurableAdapter httpConfigurableAdapter;
 	/**
 	 * Default constructor.
 	 */
@@ -58,6 +62,7 @@ public class PluginConfigurationBean implements PluginConfiguration {
 		this.setBambooConfigurationData(new BambooConfigurationBean(cfg.getProductServers(ServerType.BAMBOO_SERVER)));
         this.setCrucibleConfigurationData(new CrucibleConfigurationBean(cfg.getProductServers(ServerType.CRUCIBLE_SERVER)));
         this.setJIRAConfigurationData(new JiraConfigurationBean(cfg.getProductServers(ServerType.JIRA_SERVER)));
+		this.setHttpConfigurable(cfg.getHttpConfigurable());
 	}
 
 	/**
@@ -124,6 +129,14 @@ public class PluginConfigurationBean implements PluginConfiguration {
 		this.generalConfigurationBean = aGeneralConfigurationBean;
 	}
 
+	public void setHttpConfigurable(HttpConfigurableAdapter httpConfigurableAdapter) {
+		this.httpConfigurableAdapter = httpConfigurableAdapter;
+	}
+
+	public HttpConfigurableAdapter getHttpConfigurable() {
+		return httpConfigurableAdapter;
+	}
+
 	/**
      * Implementation for the interface.
      * <p/>
@@ -168,7 +181,6 @@ public class PluginConfigurationBean implements PluginConfiguration {
 		}
 		return false;
 	}
-
 
 
 	public boolean equals(Object o) {

@@ -18,6 +18,7 @@ package com.atlassian.theplugin.commons.util;
 
 import com.atlassian.theplugin.commons.thirdparty.apache.EasySSLProtocolSocketFactory;
 import com.atlassian.theplugin.commons.exception.HttpProxySettingsException;
+import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
@@ -38,7 +39,6 @@ public final class HttpClientFactory {
 	private static int dataTimeout = DATA_TIMOUT;
 	private static int connectionTimout = CONNECTION_TIMOUT;
 	private static int connectionManagerTimeout = CONNECTION_MANAGER_TIMEOUT;
-	private static HttpConfigurableAdapter httpConfigurableAdapter;
 
 	static {
 		Protocol.registerProtocol("https", new Protocol(
@@ -51,9 +51,10 @@ public final class HttpClientFactory {
 	}
 
 	///CLOVER:OFF
-	private HttpClientFactory(HttpConfigurableAdapter httpConfigurableAdapter) {
-		this.httpConfigurableAdapter = httpConfigurableAdapter;
+	private HttpClientFactory() {
+
 	}
+
 
 	public static void setDataTimeout(int dataTimeout) {
 		HttpClientFactory.dataTimeout = dataTimeout;
@@ -72,6 +73,7 @@ public final class HttpClientFactory {
 		HttpClient httpClient = new HttpClient(connectionManager);
 		httpClient.getParams().setConnectionManagerTimeout(getConnectionManagerTimeout());
 		httpClient.getParams().setSoTimeout(getDataTimeout());
+		HttpConfigurableAdapter httpConfigurableAdapter = ConfigurationFactory.getConfiguration().getHttpConfigurable();
 
 		if (httpConfigurableAdapter != null) {
 			if (httpConfigurableAdapter.isUseHttpProxy()){
