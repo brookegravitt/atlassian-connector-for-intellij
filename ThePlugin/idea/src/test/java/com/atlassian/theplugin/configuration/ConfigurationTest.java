@@ -37,7 +37,7 @@ public class ConfigurationTest extends TestCase {
 		Collection<ServerBean> serversData = new ArrayList<ServerBean>();
 
 		assertNotNull(cfg);
-		assertFalse(cfg.getServers().iterator().hasNext());
+		assertFalse(cfg.transientGetServers().iterator().hasNext());
 
         ServerBean srv = new ServerBean();
         srv.setName("dummyName");
@@ -49,7 +49,7 @@ public class ConfigurationTest extends TestCase {
 
 		((BambooConfigurationBean) cfg).setServersData(serversData);
 
-        Server server = cfg.getServers().iterator().next();
+        Server server = cfg.transientGetServers().iterator().next();
 		assertNotNull(server);
 
         assertEquals("dummyName", server.getName());

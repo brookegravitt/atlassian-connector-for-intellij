@@ -50,7 +50,7 @@ public class MissingPasswordHandler implements Runnable {
 			boolean wasCanceled = false;
 
 			for (Server server : ConfigurationFactory.
-					getConfiguration().getProductServers(serverFacade.getServerType()).getServers()) {
+					getConfiguration().getProductServers(serverFacade.getServerType()).transientGetServers()) {
 				if (server.getIsConfigInitialized()) {
 					continue;
 				}

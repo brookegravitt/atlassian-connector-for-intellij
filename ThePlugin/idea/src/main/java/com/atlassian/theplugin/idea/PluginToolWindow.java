@@ -143,7 +143,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 				ServerType serverType = PluginUtil.toolWindowPanelsToServerType(entry);
 
 				// servers are defined
-				if (ConfigurationFactory.getConfiguration().getProductServers(serverType).getServers().size() > 0) {
+				if (ConfigurationFactory.getConfiguration().getProductServers(serverType).transientGetServers().size() > 0) {
 					// tab is not visible
 					if (ideaToolWindow.getContentManager().findContent(entry.toString()) == null) {
 
@@ -284,7 +284,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 			try {
 				ServerType serverType = PluginUtil.toolWindowPanelsToServerType(component);
 				// servers are defined
-				if (ConfigurationFactory.getConfiguration().getProductServers(serverType).getServers().size() > 0) {
+				if (ConfigurationFactory.getConfiguration().getProductServers(serverType).transientGetServers().size() > 0) {
 					// tab is not visible
 					Content content =  tw.getContentManager().findContent(component.toString());
 					if (content == null) {

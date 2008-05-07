@@ -222,11 +222,11 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
             for (ServerType type : serverPanels.keySet()) {
 				final ProductServerConfiguration conf = getLocalPluginConfigurationCopy().getProductServers(type);
 				if (serverPanels.get(type).isModified()) {
-                    if (conf.getServer(serverPanels.get(type).getData()) != null) {
+                    if (conf.transientGetServer(serverPanels.get(type).getData()) != null) {
                         conf.storeServer(serverPanels.get(type).getData());
                     }
                 }
-                Collection<Server> s = conf.getServers();
+                Collection<Server> s = conf.transientGetServers();
                 ConfigurationFactory.getConfiguration().getProductServers(type).setServers(s);
 			}
 

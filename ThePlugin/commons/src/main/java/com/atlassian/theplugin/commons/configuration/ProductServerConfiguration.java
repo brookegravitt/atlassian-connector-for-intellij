@@ -28,9 +28,9 @@ import java.util.Collection;
  * Time: 11:46:29 AM
  */
 public interface ProductServerConfiguration {
-    Collection<Server> getServers();
-	Collection<Server> getEnabledServers();
-	Server getServer(Server aServer);
+    Collection<Server> transientGetServers();
+	Collection<Server> transientgetEnabledServers();
+	Server transientGetServer(Server aServer);
     void storeServer(Server server);
 	void setServers(Collection<Server> servers);
 	void removeServer(Server server);
