@@ -18,8 +18,6 @@ package com.atlassian.theplugin.commons.configuration;
 
 import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.SubscribedPlan;
-import com.atlassian.theplugin.commons.configuration.ProductServerConfiguration;
-import com.atlassian.theplugin.commons.configuration.BambooTooltipOption;
 
 import java.util.ArrayList;
 
@@ -47,7 +45,7 @@ public class BambooConfigurationBean extends AbstractServerConfigurationBean {
 	@Override
 	//@Transient
 	public void storeServer(Server server) {
-		Server foundServer = getServer(server);
+		Server foundServer = transientGetServer(server);
 		if (foundServer == null) {
 			servers.add((ServerBean) server);
 		} else {

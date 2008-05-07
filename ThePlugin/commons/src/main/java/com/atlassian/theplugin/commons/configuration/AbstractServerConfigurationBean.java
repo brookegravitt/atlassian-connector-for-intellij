@@ -29,7 +29,7 @@ public class AbstractServerConfigurationBean implements ProductServerConfigurati
     }
 
     public AbstractServerConfigurationBean(ProductServerConfiguration cfg) {
-		for (Server server : cfg.getServers()) {
+		for (Server server : cfg.transientGetServers()) {
 			Server newServer = new ServerBean(server);
 			storeServer(newServer);
 		}
@@ -60,15 +60,15 @@ public class AbstractServerConfigurationBean implements ProductServerConfigurati
      *
      * @return
      */
-    // @Transient
-    public synchronized Collection<Server> getServers() {
+    //@Transient
+    public synchronized Collection<Server> transientGetServers() {
         ArrayList<Server> iservers = new ArrayList<Server>();
         iservers.addAll(servers);
         return iservers;
     }
 
-    // @Transient
-	public synchronized Collection<Server> getEnabledServers() {
+    //@Transient
+	public synchronized Collection<Server> transientgetEnabledServers() {
         ArrayList<Server> iservers = new ArrayList<Server>();
         for (Server s : servers) {
             if (s.getEnabled()) {
@@ -77,6 +77,7 @@ public class AbstractServerConfigurationBean implements ProductServerConfigurati
         }
         return iservers;
     }
+
 
 	public boolean isAnyServerEnabled() {
 		for (Server s : servers) {
@@ -95,8 +96,8 @@ public class AbstractServerConfigurationBean implements ProductServerConfigurati
 		return servers.size() > 0;
 	}
 
-	// @Transient
-	public synchronized Server getServer(Server aServer) {
+	//@Transient
+	public synchronized Server transientGetServer(Server aServer) {
         for (Server server : servers) {
             if (server.getUid() == aServer.getUid()) {
                 return server;
@@ -105,9 +106,9 @@ public class AbstractServerConfigurationBean implements ProductServerConfigurati
         return null;
     }
 
-    // @Transient
+    //@Transient
 	public void storeServer(Server server) {
-        Server foundServer = getServer(server);
+        Server foundServer = transientGetServer(server);
         if (foundServer == null) {
             servers.add((ServerBean) server);
         } else {
@@ -126,7 +127,7 @@ public class AbstractServerConfigurationBean implements ProductServerConfigurati
         }
     }
 
-    // @Transient
+    //@Transient
 	public synchronized void removeServer(Server serverToRemove) {
         for (Server server : servers) {
             if (server.getUid() == serverToRemove.getUid()) {
@@ -136,7 +137,7 @@ public class AbstractServerConfigurationBean implements ProductServerConfigurati
         }
     }
 
-    // @Transient
+    //@Transient
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -154,7 +155,7 @@ public class AbstractServerConfigurationBean implements ProductServerConfigurati
         return true;
     }
 
-    // @Transient
+    //@Transient
 	public int hashCode() {
         return (servers != null ? servers.hashCode() : 0);
     }

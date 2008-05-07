@@ -53,7 +53,7 @@ public class MissingPasswordHandlerJIRA implements Runnable {
 			boolean wasCanceled = false;
 
 			Server jiraServer = ConfigurationFactory.getConfiguration().getProductServers(serverFacade.getServerType()).
-					getServer(this.server);
+					transientGetServer(this.server);
 
 //			if (server.getIsConfigInitialized()) {
 //				return; //????
