@@ -21,6 +21,7 @@ import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.crucible.CrucibleStatusListener;
 import com.atlassian.theplugin.crucible.ReviewDataInfo;
+import com.atlassian.theplugin.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapter;
@@ -54,8 +55,18 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 	private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
 	private static final String WAITING_INFO_TEXT = "Waiting for Crucible review info.";
 
+	private static CrucibleTableToolWindowPanel instance;
+
 	public ProgressAnimationProvider getProgressAnimation() {
 		return progressAnimation;
+	}
+
+	public static CrucibleTableToolWindowPanel getInstance(ProjectConfigurationBean projectConfigurationBean) {
+		if (instance == null) {
+			instance = new CrucibleTableToolWindowPanel(CrucibleServerFacadeImpl.getInstance(),
+					projectConfigurationBean);
+		}
+		return instance;
 	}
 
 	public CrucibleTableToolWindowPanel(CrucibleServerFacade crucibleFacade,
@@ -80,7 +91,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 		TableColumnInfo[] columns = CrucibleTableColumnProvider.makeColumnInfo();
 
 		listTableModel = new ListTableModel(columns);
-		listTableModel.setSortable(true);		
+		listTableModel.setSortable(true);
 		table = new AtlassianTableView(listTableModel,
 				projectConfigurationBean.getCrucibleConfiguration().getTableConfiguration());
 		table.prepareColumns(columns, CrucibleTableColumnProvider.makeRendererInfo());
@@ -118,7 +129,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
 		JScrollPane tablePane = new JScrollPane(table,
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		tablePane.setWheelScrollingEnabled(true);		
+		tablePane.setWheelScrollingEnabled(true);
 		add(tablePane, BorderLayout.CENTER);
 
 		progressAnimation.configure(this, tablePane, BorderLayout.CENTER);
@@ -148,7 +159,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 		scrollPane.setWheelScrollingEnabled(true);
 		return scrollPane;
 	}
-	
+
 	public void updateReviews(Collection<ReviewDataInfo> reviews) {
 		List<ReviewDataInfoAdapter> reviewDataInfoAdapters = new ArrayList<ReviewDataInfoAdapter>();
 		for (ReviewDataInfo review : reviews) {
