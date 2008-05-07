@@ -43,7 +43,7 @@ public class ConfigurationTest extends TestCase {
         srv.setName("dummyName");
         srv.setUrlString("http://dummy.url");
         srv.setUserName("dummyUserName<a>aa</a>");
-        srv.setPasswordString("dummyPassword", true);
+        srv.transientSetPasswordString("dummyPassword", true);
 
 		serversData.add(srv);
 
@@ -55,7 +55,7 @@ public class ConfigurationTest extends TestCase {
         assertEquals("dummyName", server.getName());
         assertEquals("http://dummy.url", server.getUrlString());
         assertEquals("dummyUserName<a>aa</a>", server.getUserName());
-        assertEquals("dummyPassword", server.getPasswordString());
+        assertEquals("dummyPassword", server.transientGetPasswordString());
 
         // now let's test cloning a configuration
         PluginConfigurationBean newConfig = new PluginConfigurationBean(ConfigurationFactory.getConfiguration());
@@ -67,13 +67,13 @@ public class ConfigurationTest extends TestCase {
 		srv.setName("dummyName");
 		srv.setUrlString("http://dummy.url");
 		srv.setUserName("dummyUserName<a>aa</a>");
-		srv.setPasswordString("dummyPassword", true);
+		srv.transientSetPasswordString("dummyPassword", true);
 
 		List<SubscribedPlan> plans = new ArrayList<SubscribedPlan>();
 		SubscribedPlanBean plan = new SubscribedPlanBean();
 		plan.setPlanId("dummyPlan");
 		plans.add(plan);
-		srv.setSubscribedPlans(plans);
+		srv.transientSetSubscribedPlans(plans);
 
 		Server cloned = new ServerBean(srv);
 
@@ -106,11 +106,11 @@ public class ConfigurationTest extends TestCase {
 		assertFalse(srv.equals(clonedBean2));
 
 		clonedBean2 = new ServerBean(srv);
-		clonedBean2.setPasswordString("", true);
+		clonedBean2.transientSetPasswordString("", true);
 		assertFalse(srv.equals(clonedBean2));
 
 		clonedBean2 = new ServerBean(srv);
-		clonedBean2.getSubscribedPlans().clear();
+		clonedBean2.transientGetSubscribedPlans().clear();
 		assertFalse(srv.equals(clonedBean2));
 
 		clonedBean2 = new ServerBean(srv);

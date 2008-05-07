@@ -172,7 +172,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 		assertNull(ret.get(0).getParentReview());
 
 		server.setUserName(validLogin2);
-		server.setPasswordString(validPassword2, false);
+		server.transientSetPasswordString(validPassword2, false);
 		ret = facade.getAllReviews(server);
 		assertEquals(1, ret.size());
 		assertEquals(3, ret.get(0).getReviewers().size());
@@ -539,7 +539,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 		ServerBean server = new ServerBean();
 		server.setUrlString(VALID_URL);
 		server.setUserName(VALID_LOGIN);
-		server.setPasswordString(VALID_PASSWORD, false);
+		server.transientSetPasswordString(VALID_PASSWORD, false);
 		return server;
 	}
 
@@ -574,7 +574,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 		ServerBean server = new ServerBean();
 		server.setUrlString("http://lech.atlassian.pl:8060");
 		server.setUserName("test");
-		server.setPasswordString("test", false);
+		server.transientSetPasswordString("test", false);
 
 		ReviewData reviewData = prepareReviewData("test", State.DRAFT);
 
@@ -597,7 +597,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 		ServerBean server = new ServerBean();
 		server.setUrlString("http://lech.atlassian.pl:8060");
 		server.setUserName("test");
-		server.setPasswordString("test", false);
+		server.transientSetPasswordString("test", false);
 
 		try {
 			List<ReviewDataInfo> list = facade.getAllReviews(server);
