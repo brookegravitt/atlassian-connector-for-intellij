@@ -175,7 +175,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <configuration>
-                    <configLocation>src/build-tools/checkstyle-config.xml</configLocation>
+                    <configLocation>build-tools/checkstyle-config.xml</configLocation>
                     <excludes>
                         **/idea/**/*Form.java,
                         **/idea/**/*Dialog.java,
