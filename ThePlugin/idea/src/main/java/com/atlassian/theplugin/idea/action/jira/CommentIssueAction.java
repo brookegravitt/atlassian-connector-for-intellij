@@ -23,6 +23,7 @@ import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.JiraIssueAdapter;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.api.JIRAException;
+import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
@@ -32,41 +33,7 @@ import java.util.List;
 
 public class CommentIssueAction extends AnAction {
     public void actionPerformed(AnActionEvent e) {
-        Project project = IdeaHelper.getCurrentProject(e.getDataContext());
-        JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer();
-        JIRAToolWindowPanel toolWindowPanel = IdeaHelper.getJIRAToolWindowPanel(e);
-
-        String errorMsg = null;
-
-        if (jiraServer != null) {
-            List<JiraIssueAdapter> l = toolWindowPanel.getIssues();
-            if (l.isEmpty()) {
-                errorMsg = "Search for issues to comment on first.";
-            } else {
-				IssueComment issueComment = new IssueComment(toolWindowPanel.getCurrentIssue().getKey());
-
-                issueComment.show();
-
-				if (issueComment.isOK()) {
-					try {
-						IdeaHelper.getAppComponent().getJiraServerFacade().addComment(
-								IdeaHelper.getCurrentJIRAServer().getServer(),
-								toolWindowPanel.getCurrentIssue(),
-								issueComment.getComment());
-					} catch (JIRAException e1) {
-						e1.printStackTrace();
-					}
-				}
-
-			}
-        } else {
-            errorMsg = "Select a JIRA server and query for issues before commenting.";
-        }
-
-        if (errorMsg != null) {
-            PluginToolWindow.focusPanel(e, PluginToolWindow.ToolWindowPanels.JIRA);
-            Messages.showErrorDialog(project, errorMsg, "JIRA Comment Issue");
-        }
+		IdeaHelper.getJIRAToolWindowPanel(e).addCommentToIssue();
     }
 
 	public void update(AnActionEvent event) {
@@ -77,5 +44,4 @@ public class CommentIssueAction extends AnAction {
 			event.getPresentation().setEnabled(false);
 		}
 	}
-
 }
