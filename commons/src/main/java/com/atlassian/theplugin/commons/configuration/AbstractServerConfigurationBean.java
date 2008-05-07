@@ -113,7 +113,7 @@ public class AbstractServerConfigurationBean implements ProductServerConfigurati
             servers.add((ServerBean) server);
         } else {
             foundServer.setName(server.getName());
-            foundServer.setPasswordString(server.getPasswordString(), server.getShouldPasswordBeStored());
+            foundServer.transientSetPasswordString(server.transientGetPasswordString(), server.getShouldPasswordBeStored());
             foundServer.setUrlString(server.getUrlString());
             foundServer.setUserName(server.getUserName());
             foundServer.setEnabled(server.getEnabled());
