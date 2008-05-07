@@ -83,7 +83,7 @@ public class CrucibleServerFacadeConnectionTest extends TestCase {
 	public void testFailedLoginGetAllReviews() throws Exception {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
 
-		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.CRUCIBLE_SERVER).getServers().iterator().next();
+		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.CRUCIBLE_SERVER).transientGetServers().iterator().next();
 		try {
 			testedCrucibleServerFacade.getAllReviews(server);
 			fail();
