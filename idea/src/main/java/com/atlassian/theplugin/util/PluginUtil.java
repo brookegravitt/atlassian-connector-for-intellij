@@ -45,6 +45,10 @@ public final class PluginUtil {
 
 	//private static com.atlassian.theplugin.idea.Logger logger = null;
 
+	private final static String NAME = "Atlassian";
+	private final static String VENDOR = "Atlassian";
+	private final static String VERSION = "1.2.0, SVN:16163";
+
 	private static String baseDir = PathUtil.getJarPathForClass(PluginUtil.class);
 
 	private static Document doc;
@@ -57,6 +61,7 @@ public final class PluginUtil {
 	///CLOVER:OFF
 	private PluginUtil() {
 		super();
+		//doc = instance.setDoc();
 	}
 	///CLOVER:ON
 
@@ -71,22 +76,21 @@ public final class PluginUtil {
 	public static PluginUtil getInstance() {
 		if (instance == null) {
 			instance = new PluginUtil();
-			doc = instance.setDoc();
 		}
 
 		return instance;
 	}
 
 	public String getName() {
-		return getConfigValue("/idea-plugin/name");
+		return NAME; //getConfigValue("/idea-plugin/name");
 	}
 
 	public String getVersion() {
-		return getConfigValue("/idea-plugin/version");
+		return VERSION; //getConfigValue("/idea-plugin/version");
 	}
 
 	public String getVendor() {
-		return getConfigValue("/idea-plugin/vendor");
+		return VENDOR; //getConfigValue("/idea-plugin/vendor");
 	}
 
 	public String getPluginId() {
