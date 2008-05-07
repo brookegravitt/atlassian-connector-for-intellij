@@ -76,7 +76,7 @@ public class JIRAServer {
 
 	public boolean checkServer() {
 		try {
-			jiraServerFacade.testServerConnection(server.getUrlString(), server.getUserName(), server.getPasswordString());
+			jiraServerFacade.testServerConnection(server.getUrlString(), server.getUserName(), server.transientGetPasswordString());
 			validServer = true;
 		} catch (RemoteApiException e) {
 			errorMessage = e.getMessage();

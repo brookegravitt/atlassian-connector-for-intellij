@@ -50,12 +50,12 @@ public class BambooConfigurationBean extends AbstractServerConfigurationBean {
 			servers.add((ServerBean) server);
 		} else {
 			foundServer.setName(server.getName());
-			foundServer.setPasswordString(server.getPasswordString(), server.getShouldPasswordBeStored());
+			foundServer.transientSetPasswordString(server.transientGetPasswordString(), server.getShouldPasswordBeStored());
 			foundServer.setUrlString(server.getUrlString());
 			foundServer.setUserName(server.getUserName());
 			foundServer.setEnabled(server.getEnabled());
 			foundServer.setUseFavourite(server.getUseFavourite());			
-			foundServer.setSubscribedPlans(new ArrayList<SubscribedPlan>(server.getSubscribedPlans()));
+			foundServer.transientSetSubscribedPlans(new ArrayList<SubscribedPlan>(server.transientGetSubscribedPlans()));
 		}
 	}
 

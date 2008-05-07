@@ -56,13 +56,13 @@ public class ServerBean implements Server {
 		this.setName(cfg.getName());
 		this.setUid(cfg.getUid());
 		this.setUserName(cfg.getUserName());
-		this.setPasswordString(cfg.getPasswordString(), cfg.getShouldPasswordBeStored());
+		this.transientSetPasswordString(cfg.transientGetPasswordString(), cfg.getShouldPasswordBeStored());
 		this.setUrlString(cfg.getUrlString());
 		this.setEnabled(cfg.getEnabled());
 		this.setUseFavourite(cfg.getUseFavourite());
-		this.setIsConfigInitialized(cfg.getIsConfigInitialized());
+		this.transientSetIsConfigInitialized(cfg.getIsConfigInitialized());
 
-		for (SubscribedPlan plan : cfg.getSubscribedPlans()) {
+		for (SubscribedPlan plan : cfg.transientGetSubscribedPlans()) {
 			SubscribedPlan newPlan = new SubscribedPlanBean(plan);
 			((Collection<SubscribedPlan>) subscribedPlans).add(newPlan);
 		}
@@ -153,7 +153,7 @@ public class ServerBean implements Server {
 	/**
 	 * This one should be used by persistence logic ONLY.
 	 * <p/>
-	 * From the code you must use {@link #setPasswordString(String, Boolean)}, unless you really know what you are doing.
+	 * From the code you must use {@link #transientSetPasswordString(String, Boolean)}, unless you really know what you are doing.
 	 *
 	 * @param encryptedPassword encrypted (encoded actually) version of the password
 	 */
@@ -182,7 +182,7 @@ public class ServerBean implements Server {
 	}
 
 	//@Transient
-	public synchronized void setIsConfigInitialized(Boolean isConfigInitialized) {
+	public synchronized void transientSetIsConfigInitialized(Boolean isConfigInitialized) {
 		this.isConfigInitialized = isConfigInitialized;
 	}
 
@@ -191,12 +191,12 @@ public class ServerBean implements Server {
 	}
 
 	//@Transient
-	public synchronized Collection<SubscribedPlan> getSubscribedPlans() {
+	public synchronized Collection<SubscribedPlan> transientGetSubscribedPlans() {
 		return (Collection<SubscribedPlan>) subscribedPlans;
 	}
 
 	//@Transient
-	public synchronized void setSubscribedPlans(Collection<? extends SubscribedPlan> subscribedPlans) {
+	public synchronized void transientSetSubscribedPlans(Collection<? extends SubscribedPlan> subscribedPlans) {
 		this.subscribedPlans = subscribedPlans;
 	}
 
@@ -214,12 +214,12 @@ public class ServerBean implements Server {
 	}
 
 	//@Transient
-	public synchronized String getPasswordString() {
+	public synchronized String transientGetPasswordString() {
 		return password;
 	}
 
 	//@Transient
-	public synchronized void setPasswordString(String aPassword, Boolean shouldBeStoredPermanently) {
+	public synchronized void transientSetPasswordString(String aPassword, Boolean shouldBeStoredPermanently) {
 		this.shouldPasswordBeStored = shouldBeStoredPermanently;
 		this.password = aPassword;
 		isConfigInitialized = true;
@@ -293,7 +293,7 @@ public class ServerBean implements Server {
 		if (name != null ? !name.equals(that.getName()) : that.getName() != null) {
 			return false;
 		}
-		if (password != null ? !password.equals(that.getPasswordString()) : that.getPasswordString() != null) {
+		if (password != null ? !password.equals(that.transientGetPasswordString()) : that.transientGetPasswordString() != null) {
 			return false;
 		}
 		if (shouldPasswordBeStored != null
@@ -306,7 +306,7 @@ public class ServerBean implements Server {
 		if (useFavourite != null ? !useFavourite.equals(that.getUseFavourite()) : that.getUseFavourite() != null) {
 			return false;
 		}
-		if (subscribedPlans != null ? !subscribedPlans.equals(that.getSubscribedPlans()) : that.getSubscribedPlans() != null) {
+		if (subscribedPlans != null ? !subscribedPlans.equals(that.transientGetSubscribedPlans()) : that.transientGetSubscribedPlans() != null) {
 			return false;
 		}
 		if (urlString != null ? !urlString.equals(that.getUrlString()) : that.getUrlString() != null) {

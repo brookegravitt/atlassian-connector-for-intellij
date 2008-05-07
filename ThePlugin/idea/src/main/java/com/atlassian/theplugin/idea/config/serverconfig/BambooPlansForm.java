@@ -111,7 +111,7 @@ public class BambooPlansForm extends JPanel {
 			isUseFavourite = cbUseFavouriteBuilds.isSelected();
 		}
 		Server server = serverPanel.getData();
-		server.setSubscribedPlans(originalServer.getSubscribedPlans());
+		server.transientSetSubscribedPlans(originalServer.transientGetSubscribedPlans());
 		serverPlans.remove(getServerKey(originalServer));
 		retrievePlans(server);
 	}
@@ -210,8 +210,8 @@ public class BambooPlansForm extends JPanel {
 						}
 						msg.append("Build plans updated from server\n");
 					}
-					if (!server.getSubscribedPlans().isEmpty()) {
-						for (SubscribedPlan sPlan : server.getSubscribedPlans()) {
+					if (!server.transientGetSubscribedPlans().isEmpty()) {
+						for (SubscribedPlan sPlan : server.transientGetSubscribedPlans()) {
 							boolean exists = false;
 							for (BambooPlanItem bambooPlanItem : plansForServer) {
 								if (bambooPlanItem.getPlan().getPlanKey().equals(sPlan.getPlanId())) {
@@ -252,7 +252,7 @@ public class BambooPlansForm extends JPanel {
 				model.removeAllElements();
 				for (BambooPlanItem plan : plans) {
 					plan.setSelected(false);
-					for (SubscribedPlan sPlan : server.getSubscribedPlans()) {
+					for (SubscribedPlan sPlan : server.transientGetSubscribedPlans()) {
 						if (sPlan.getPlanId().equals(plan.getPlan().getPlanKey())) {
 							plan.setSelected(true);
 							break;
@@ -280,7 +280,7 @@ public class BambooPlansForm extends JPanel {
 				if (p.isSelected()) {
 					SubscribedPlan spb = new SubscribedPlanBean();
 					spb.setPlanId(p.getPlan().getPlanKey());
-					server.getSubscribedPlans().add(spb);
+					server.transientGetSubscribedPlans().add(spb);
 				}
 			}
 		}
