@@ -353,10 +353,10 @@
                             <name>dom4j</name>
                             <exclude>true</exclude>
                         </library>
-                        <!--<library>-->
-                            <!--<name>xercesImpl</name>-->
-                            <!--<exclude>true</exclude>-->
-                        <!--</library>-->
+                        <library>
+                            <name>xercesImpl</name>
+                            <exclude>true</exclude>
+                        </library>
                         <library>
                             <name>xalan</name>
                             <exclude>true</exclude>
