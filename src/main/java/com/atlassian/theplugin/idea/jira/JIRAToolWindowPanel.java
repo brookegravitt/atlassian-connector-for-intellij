@@ -27,6 +27,7 @@ import com.atlassian.theplugin.idea.jira.table.columns.*;
 import com.atlassian.theplugin.idea.ui.AtlassianTableView;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
+import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
@@ -86,6 +87,16 @@ public class JIRAToolWindowPanel extends JPanel {
 	private boolean prevPageAvailable = false;
 	private String sortColumn = "issuekey";
 	private String sortOrder = "ASC";
+
+	private static JIRAToolWindowPanel instance;
+
+	public static JIRAToolWindowPanel getInstance(ProjectConfigurationBean projectConfigurationBean, Project project) {
+		if (instance == null) {
+			instance = new JIRAToolWindowPanel(IdeaHelper.getPluginConfiguration(), projectConfigurationBean,
+					project, JIRAServerFacadeImpl.getInstance());
+		}
+		return instance;
+	}
 
 	public JIRAToolWindowPanel(PluginConfigurationBean pluginConfiguration,
 							   ProjectConfigurationBean projectConfigurationBean,
