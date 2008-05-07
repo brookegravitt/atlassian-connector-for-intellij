@@ -27,23 +27,7 @@ import com.intellij.openapi.ui.Messages;
 
 public class CreateIssueAction extends AnAction {
     public void actionPerformed(AnActionEvent e) {
-        Project project = IdeaHelper.getCurrentProject(e.getDataContext());
-        JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer();
-
-        String errorMsg = null;
-
-        if (jiraServer != null) {
-            IssueCreate issueCreate = new IssueCreate(IdeaHelper.getCurrentJIRAServer(),
-					IdeaHelper.getAppComponent().getJiraServerFacade());
-            issueCreate.show();
-        } else {
-            errorMsg = "Select a JIRA server before creating issues.";
-        }
-
-        if (errorMsg != null) {
-            PluginToolWindow.focusPanel(e, PluginToolWindow.ToolWindowPanels.JIRA);
-            Messages.showErrorDialog(project, errorMsg, "Create JIRA Issue");
-        }
+		IdeaHelper.getJIRAToolWindowPanel(e).createIssue();
     }
 
 	public void update(AnActionEvent event) {
