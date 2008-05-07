@@ -257,7 +257,7 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
         Server tempValue = serverPanels.get(serverNode.getServerType()).getData();
         switch (serverNode.getServerType()) {
             case BAMBOO_SERVER:
-                server.setSubscribedPlans(tempValue.getSubscribedPlans());
+                server.transientSetSubscribedPlans(tempValue.transientGetSubscribedPlans());
 				server.setUseFavourite(tempValue.getUseFavourite());
 				break;
             default:
@@ -265,7 +265,7 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
         }
         server.setName(tempValue.getName());
         server.setUserName(tempValue.getUserName());
-        server.setPasswordString(tempValue.getPasswordString(), tempValue.getShouldPasswordBeStored());
+        server.transientSetPasswordString(tempValue.transientGetPasswordString(), tempValue.getShouldPasswordBeStored());
 		server.setEnabled(tempValue.getEnabled());
         server.setUrlString(tempValue.getUrlString());
     }

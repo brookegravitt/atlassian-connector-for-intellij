@@ -61,8 +61,8 @@ public class CrucibleServerFacadeConnectionTest extends TestCase {
 		server.setUrlString(serverUrl);
 		server.setUserName(USER_NAME);
 
-		server.setPasswordString(isPassInitialized ? PASSWORD : "", isPassInitialized);
-		server.setIsConfigInitialized(isPassInitialized);
+		server.transientSetPasswordString(isPassInitialized ? PASSWORD : "", isPassInitialized);
+		server.transientSetIsConfigInitialized(isPassInitialized);
 		servers.add(server);
 
 		configuration.setServersData(servers);

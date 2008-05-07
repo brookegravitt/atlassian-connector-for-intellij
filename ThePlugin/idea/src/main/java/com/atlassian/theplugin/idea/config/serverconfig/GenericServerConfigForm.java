@@ -70,7 +70,7 @@ public class GenericServerConfigForm extends JComponent implements ServerPanel, 
 		serverUrl.setText(server.getUrlString());
 		username.setText(server.getUserName());
 		chkPasswordRemember.setSelected(server.getShouldPasswordBeStored());
-		password.setText(server.getPasswordString());
+		password.setText(server.transientGetPasswordString());
 		cbEnabled.setSelected(server.getEnabled());
 	}
 
@@ -81,7 +81,7 @@ public class GenericServerConfigForm extends JComponent implements ServerPanel, 
 		server.setName(serverName.getText());
 		server.setUrlString(serverUrl.getText());
 		server.setUserName(username.getText());
-		server.setPasswordString(String.valueOf(password.getPassword()), chkPasswordRemember.isSelected());
+		server.transientSetPasswordString(String.valueOf(password.getPassword()), chkPasswordRemember.isSelected());
 		server.setEnabled(cbEnabled.isSelected());
 		return server;
 	}
@@ -109,7 +109,7 @@ public class GenericServerConfigForm extends JComponent implements ServerPanel, 
 				return true;
 			}
 			String pass = String.valueOf(password.getPassword());
-			if (!pass.equals(originalServer.getPasswordString())) {
+			if (!pass.equals(originalServer.transientGetPasswordString())) {
 				return true;
 			}
 

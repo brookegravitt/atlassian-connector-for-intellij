@@ -24,7 +24,6 @@ import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.ServerType;
 
 import javax.xml.rpc.ServiceException;
-import java.net.URL;
 import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Map;
@@ -48,12 +47,12 @@ public class JIRAServerFacadeImpl implements JIRAServerFacade {
 
 	private synchronized JIRASession getSoapSession(Server server) throws RemoteApiException {
 		// @todo old server will stay on map - remove them !!!
-		String key = server.getUserName() + server.getUrlString() + server.getPasswordString();
+		String key = server.getUserName() + server.getUrlString() + server.transientGetPasswordString();
 		JIRASession session = soapSessions.get(key);
 		if (session == null) {
 			try {
 				session = new JIRASessionImpl(server.getUrlString());
-				session.login(server.getUserName(), server.getPasswordString());
+				session.login(server.getUserName(), server.transientGetPasswordString());
 			} catch (MalformedURLException e) {
 				throw new RemoteApiException(e);
 			} catch (ServiceException e) {
@@ -66,10 +65,10 @@ public class JIRAServerFacadeImpl implements JIRAServerFacade {
 
 	private synchronized JIRARssClient getRssSession(Server server) throws RemoteApiException {
 		// @todo old server will stay on map - remove them !!!
-		String key = server.getUserName() + server.getUrlString() + server.getPasswordString();
+		String key = server.getUserName() + server.getUrlString() + server.transientGetPasswordString();
 		JIRARssClient session = rssSessions.get(key);
 		if (session == null) {
-			session = new JIRARssClient(server.getUrlString(), server.getUserName(), server.getPasswordString());
+			session = new JIRARssClient(server.getUrlString(), server.getUserName(), server.transientGetPasswordString());
 			rssSessions.put(key, session);
 		}
 		return session;

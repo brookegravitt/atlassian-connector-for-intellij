@@ -70,8 +70,8 @@ public class BambooServerFacadeTest extends TestCase {
 		server.setUrlString(serverUrl);
 		server.setUserName(USER_NAME);
 
-		server.setPasswordString(isPassInitialized ? PASSWORD : "", isPassInitialized);
-		server.setIsConfigInitialized(isPassInitialized);
+		server.transientSetPasswordString(isPassInitialized ? PASSWORD : "", isPassInitialized);
+		server.transientSetIsConfigInitialized(isPassInitialized);
 		servers.add(server);
 
 		ArrayList<SubscribedPlan> plans = new ArrayList<SubscribedPlan>();
@@ -81,7 +81,7 @@ public class BambooServerFacadeTest extends TestCase {
 			plans.add(plan);
 		}
 
-		server.setSubscribedPlans(plans);
+		server.transientSetSubscribedPlans(plans);
 
 		configuration.setServersData(servers);
 		PluginConfigurationBean pluginConfig = new PluginConfigurationBean();
@@ -271,7 +271,7 @@ public class BambooServerFacadeTest extends TestCase {
 		mockServer.expect("/api/rest/getLatestUserBuilds.action", new FavouritePlanListCallback());
 
 		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.BAMBOO_SERVER).transientGetServers().iterator().next();
-		server.getSubscribedPlans().clear();
+		server.transientGetSubscribedPlans().clear();
 		BambooServerFacade facade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
 		Collection<BambooBuild> plans = facade.getSubscribedPlansResults(server);
 		assertEquals(0, plans.size());
