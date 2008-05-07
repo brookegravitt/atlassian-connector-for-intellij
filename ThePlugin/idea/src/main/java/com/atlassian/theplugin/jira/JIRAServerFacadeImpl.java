@@ -16,12 +16,12 @@
 
 package com.atlassian.theplugin.jira;
 
-import com.atlassian.theplugin.jira.api.*;
-import com.atlassian.theplugin.jira.api.soap.JIRASessionImpl;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
+import com.atlassian.theplugin.jira.api.*;
+import com.atlassian.theplugin.jira.api.soap.JIRASessionImpl;
 
 import javax.xml.rpc.ServiceException;
 import java.net.MalformedURLException;
@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-public class JIRAServerFacadeImpl implements JIRAServerFacade {
+public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 	private JIRAServerFacadeImpl(){
 
 	}
