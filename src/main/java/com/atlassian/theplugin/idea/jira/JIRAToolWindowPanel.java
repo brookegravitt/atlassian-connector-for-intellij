@@ -16,8 +16,12 @@
 
 package com.atlassian.theplugin.idea.jira;
 
+import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListener;
-import com.atlassian.theplugin.configuration.*;
+import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.configuration.JiraFilterEntryBean;
+import com.atlassian.theplugin.configuration.JiraFiltersBean;
+import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.TableColumnInfo;
@@ -33,8 +37,6 @@ import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.jira.api.JIRASavedFilterBean;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
-import com.atlassian.theplugin.commons.Server;
-import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -56,6 +58,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.FutureTask;
 
 public class JIRAToolWindowPanel extends JPanel {
 	private static final int PAGE_SIZE = 50;
@@ -272,7 +275,7 @@ public class JIRAToolWindowPanel extends JPanel {
 		contextMenu.add(makeWebUrlMenu("Edit",
 				issue.getServerUrl() + "/secure/EditIssue!default.jspa?key=" + issue.getKey()));
 		contextMenu.addSeparator();
-		contextMenu.add(new JMenuItem(new CommentIssueAction()));
+		contextMenu.add(new JMenuItem(new MenuCommentIssueAction()));
 		contextMenu.add(new JMenuItem(new LogWorkAction()));
 //		contextMenu.add(makeWebUrlMenu("Log Work", issue.getServerUrl()
 //				+ "/secure/CreateWorklog!default.jspa?key=" + issue.getKey()));
@@ -590,23 +593,13 @@ public class JIRAToolWindowPanel extends JPanel {
 		return null;
 	}
 
-	public class CommentIssueAction extends AbstractAction {
-		public CommentIssueAction() {
+	public class MenuCommentIssueAction extends AbstractAction {
+		public MenuCommentIssueAction() {
 			putValue(Action.NAME, "Add Comment");
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			JIRAIssue issue = ((JiraIssueAdapter) table.getSelectedObject()).getIssue();
-			IssueComment issueComment = new IssueComment(issue.getKey());
-			issueComment.show();
-			if (issueComment.isOK()) {
-				try {
-					jiraServerFacade.addComment(IdeaHelper.getCurrentJIRAServer().getServer(), 
-							issue, issueComment.getComment());
-				} catch (JIRAException e1) {
-					e1.printStackTrace();
-				}
-			}
+			addCommentToIssue();
 		}
 	}
 
@@ -616,17 +609,7 @@ public class JIRAToolWindowPanel extends JPanel {
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			JIRAIssue issue = ((JiraIssueAdapter) table.getSelectedObject()).getIssue();
-			try {
-				WorkLogCreate c = new WorkLogCreate(issue.getKey());
-				c.show();
-				if (c.isOK()) {
-					jiraServerFacade.logWork(IdeaHelper.getCurrentJIRAServer().getServer(),
-							issue, c.getTimeSpentString(), c.getComment());
-				}
-			} catch (JIRAException ex) {
-				ex.printStackTrace();
-			}
+			logWorkForIssue();
 		}
 	}
 
@@ -669,6 +652,80 @@ public class JIRAToolWindowPanel extends JPanel {
 			}  else {
 				changeListManager.setDefaultChangeList(changeList);
 			}			
+		}
+	}
+
+	public void addCommentToIssue() {
+		final JIRAIssue issue = ((JiraIssueAdapter) table.getSelectedObject()).getIssue();
+		final IssueComment issueComment = new IssueComment(issue.getKey());
+		issueComment.show();
+		if (issueComment.isOK()) {
+			FutureTask task = new FutureTask(new Runnable() {
+				public void run() {
+					setStatusMessage("Commenting issue " + issue.getKey() + "...");
+					try {
+						jiraServerFacade.addComment(IdeaHelper.getCurrentJIRAServer().getServer(),
+								issue, issueComment.getComment());
+						setStatusMessage("Commented issue " + issue.getKey());
+					} catch (JIRAException e) {
+						setStatusMessage("Issue not commented: " + e.getMessage());
+					}
+				}
+			}, null);
+			new Thread(task, "atlassian-idea-plugin comment issue").start();
+		}
+	}
+
+	public void logWorkForIssue() {
+		final JIRAIssue issue = ((JiraIssueAdapter) table.getSelectedObject()).getIssue();
+		final WorkLogCreate workLogCreate = new WorkLogCreate(issue.getKey());
+		workLogCreate.show();
+		if (workLogCreate.isOK()) {
+			FutureTask task = new FutureTask(new Runnable() {
+				public void run() {
+					setStatusMessage("Logging work for issue " + issue.getKey() + "...");
+					try {
+						jiraServerFacade.logWork(IdeaHelper.getCurrentJIRAServer().getServer(),
+								issue, workLogCreate.getTimeSpentString(), workLogCreate.getComment());
+						setStatusMessage("Logged work for issue " + issue.getKey());
+					} catch (JIRAException e) {
+						setStatusMessage("Work not logged: " + e.getMessage());
+					}
+				}
+			}, null);
+			new Thread(task, "atlassian-idea-plugin work log").start();
+		}
+	}
+
+	public void createIssue() {
+        final JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer();
+
+        if (jiraServer != null) {
+            final IssueCreate issueCreate = new IssueCreate(jiraServer, jiraServerFacade);
+            issueCreate.show();
+			if (issueCreate.isOK()) {
+				FutureTask task = new FutureTask(new Runnable() {
+					public void run() {
+						setStatusMessage("Creating new issue...");
+						JIRAIssue newIssue;
+						String message;
+						try {
+							newIssue = jiraServerFacade.createIssue(jiraServer.getServer(), issueCreate.getJIRAIssue());
+							message =
+									"New issue created: <a href="
+									+ newIssue.getIssueUrl()
+									+ ">"
+									+ newIssue.getKey() 
+									+ "</a>";
+						} catch (JIRAException e) {
+							message = "Failed to create new issue: " + e.getMessage();
+						}
+
+						setStatusMessage(message);
+					}
+				}, null);
+				new Thread(task, "atlassian-idea-plugin create issue").start();
+			}
 		}
 	}
 
