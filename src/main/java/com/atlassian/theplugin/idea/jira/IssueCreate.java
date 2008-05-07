@@ -156,9 +156,14 @@ public class IssueCreate extends DialogWrapper {
 		getOKAction().setEnabled(true);
 	}
 
+	private JIRAIssueBean issueProxy;
+
+	JIRAIssue getJIRAIssue() {
+		return issueProxy;
+	}
 
 	protected void doOKAction() {
-		JIRAIssueBean issueProxy = new JIRAIssueBean();
+		issueProxy = new JIRAIssueBean();
 		issueProxy.setSummary(summary.getText());
 
 		if (((JIRAProject) projectComboBox.getSelectedItem()).getId() == JIRAServer.ANY_ID) {
@@ -173,42 +178,6 @@ public class IssueCreate extends DialogWrapper {
 		issueProxy.setType(((JIRAConstant) typeComboBox.getSelectedItem()));
 		issueProxy.setDescription(description.getText());
 		issueProxy.setPriority(((JIRAConstant) priorityComboBox.getSelectedItem()));
-		JEditorPane content = new JEditorPane();
-
-		JIRAIssue newIssue = null;
-
-		String message = null;
-		try {
-			newIssue = jiraServerFacade.createIssue(jiraServer.getServer(), issueProxy);
-		} catch (JIRAException e) {
-			message = "Issue created failed?<br>" + e.getMessage();
-			content.setBackground(BuildStatusChangedToolTip.BACKGROUND_COLOR_FAILED);
-			e.printStackTrace();
-		}
-
-		if (newIssue != null) {
-			message = "<table width=100% height=100%><tr><td valign=center align=center>"
-					+ "<b style=\"font-size: 24pt;\"><a href='" + newIssue.getIssueUrl() + "'>"
-					+ newIssue.getKey() + "</a><br>created</b></td></tr></table>";
-			content.setBackground(BuildStatusChangedToolTip.BACKGROUND_COLOR_SUCCEED);
-		}
-
-		final JIRAIssue innerIssue = newIssue;
-
-		content.setEditable(false);
-		content.setContentType("text/html");
-		content.setEditorKit(new ClasspathHTMLEditorKit());
-		content.setText("<html>" + HtmlBambooStatusListener.BODY_WITH_STYLE + message + "</body></html>");
-		content.addHyperlinkListener(new GenericHyperlinkListener());
-		content.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				BrowserUtil.launchBrowser(innerIssue.getIssueUrl());
-			}
-		});
-		content.setCaretPosition(0); // do thi to make sure scroll pane is always at the top / header
-		WindowManager.getInstance().getStatusBar(IdeaHelper.getCurrentProject()).fireNotificationPopup(
-				new JScrollPane(content), null);
-
 		super.doOKAction();
 	}
 
