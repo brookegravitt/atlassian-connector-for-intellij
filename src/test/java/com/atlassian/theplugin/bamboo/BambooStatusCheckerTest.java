@@ -161,8 +161,8 @@ public class BambooStatusCheckerTest extends TestCase {
 		server.setUrlString(url);
 		server.setUserName(USER_NAME);
 
-		server.setPasswordString(PASSWORD, false);
-		server.setIsConfigInitialized(true);
+		server.transientSetPasswordString(PASSWORD, false);
+		server.transientSetIsConfigInitialized(true);
 		servers.add(server);
 
 		ArrayList<SubscribedPlan> plans = new ArrayList<SubscribedPlan>();
@@ -171,7 +171,7 @@ public class BambooStatusCheckerTest extends TestCase {
 		plan.setPlanId(PLAN_ID);
 		plans.add(plan);
 
-		server.setSubscribedPlans(plans);
+		server.transientSetSubscribedPlans(plans);
 
 		config.getBambooConfigurationData().setServersData(servers);
 

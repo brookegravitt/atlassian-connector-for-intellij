@@ -46,14 +46,14 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	}
 
 	private synchronized CrucibleSession getSession(Server server) throws RemoteApiException {
-		String key = server.getUrlString() + server.getUserName() + server.getPasswordString();
+		String key = server.getUrlString() + server.getUserName() + server.transientGetPasswordString();
 		CrucibleSession session = sessions.get(key);
 		if (session == null) {
 			session = new CrucibleSessionImpl(server.getUrlString());
 			sessions.put(key, session);
 		}
 		if (!session.isLoggedIn()) {
-			session.login(server.getUserName(), server.getPasswordString());
+			session.login(server.getUserName(), server.transientGetPasswordString());
 		}
 
 		return session;
