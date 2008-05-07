@@ -150,7 +150,7 @@ public class PluginConfigurationBean implements PluginConfiguration {
 
 	public boolean isAnyServerDefined() {
 		for (ServerType serverType : ServerType.values()) {
-			if (!getProductServers(serverType).getServers().isEmpty()) {
+			if (!getProductServers(serverType).transientGetServers().isEmpty()) {
 				return true;
 			}
 		}
@@ -162,7 +162,7 @@ public class PluginConfigurationBean implements PluginConfiguration {
 
 	public boolean isServerPresent(Server server) {
 		for (ServerType serverType : ServerType.values()) {
-			if (getProductServers(serverType).getServer(server) != null) {
+			if (getProductServers(serverType).transientGetServer(server) != null) {
 				return true;
 			}
 		}

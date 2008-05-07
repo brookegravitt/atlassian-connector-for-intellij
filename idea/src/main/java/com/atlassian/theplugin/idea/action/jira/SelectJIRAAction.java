@@ -40,7 +40,7 @@ public class SelectJIRAAction extends ComboBoxAction {
 		ProductServerConfiguration jConfig = appComponent.getState().getProductServers(ServerType.JIRA_SERVER);
 
 		final ComboBoxButton button = (ComboBoxButton) jComponent;
-		for (final Server server : jConfig.getEnabledServers()) {
+		for (final Server server : jConfig.transientgetEnabledServers()) {
 			g.add(new AnAction(server.getName()) {
 				public void actionPerformed(AnActionEvent event) {
 					button.setText(event.getPresentation().getText());

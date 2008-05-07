@@ -245,7 +245,7 @@ import java.util.regex.Pattern;
 	protected Server getServerFromUrl(String serverUrl) {
 		ProductServerConfiguration productServers =
 				configuration.getProductServers(ServerType.BAMBOO_SERVER);
-		for (Iterator<Server> iterator = productServers.getEnabledServers().iterator(); iterator.hasNext();) {
+		for (Iterator<Server> iterator = productServers.transientgetEnabledServers().iterator(); iterator.hasNext();) {
 			Server server = iterator.next();
 			if (serverUrl.equals(server.getUrlString())) {
 				return server;

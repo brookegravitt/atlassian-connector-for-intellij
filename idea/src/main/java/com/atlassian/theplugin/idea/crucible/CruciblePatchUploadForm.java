@@ -200,7 +200,7 @@ public class CruciblePatchUploadForm extends DialogWrapper {
 		ProductServerConfiguration crucibleConfiguration =
 				ConfigurationFactory.getConfiguration().getProductServers(ServerType.CRUCIBLE_SERVER);
 
-		Collection<Server> enabledServers = crucibleConfiguration.getEnabledServers();
+		Collection<Server> enabledServers = crucibleConfiguration.transientgetEnabledServers();
 		if (enabledServers.isEmpty()) {
 			crucibleServersComboBox.setEnabled(false);
 			crucibleServersComboBox.addItem("Enable a Crucible server first!");

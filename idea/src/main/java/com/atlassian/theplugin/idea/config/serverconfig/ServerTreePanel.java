@@ -113,7 +113,7 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 	public String addServer(ServerType serverType) {
 		Server newServer = new ServerBean();
 
-		Collection<Server> servers = pluginConfiguration.getProductServers(serverType).getServers();
+		Collection<Server> servers = pluginConfiguration.getProductServers(serverType).transientGetServers();
 		newServer.setName(ServerNameUtil.suggestNewName(servers));
 		pluginConfiguration.getProductServers(serverType).storeServer(newServer);
 
@@ -133,7 +133,7 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 	public void copyServer() {
 /*
 		ServerBean newServer = new ServerBean();
-		newServer.setName(suggestCopyName(ConfigurationFactory.getConfiguration().getBambooConfiguration().getServers()));
+		newServer.setName(suggestCopyName(ConfigurationFactory.getConfiguration().getBambooConfiguration().transientGetServers()));
 		ConfigurationFactory.getConfiguration().getBambooConfiguration().addServer(newServer);
 		serverTree.updateUI();
 		return newServer.getName();
@@ -178,7 +178,7 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 	}
 
 	private void updateServerTree(ServerType serverType) {
-		Collection<Server> servers = pluginConfiguration.getProductServers(serverType).getServers();
+		Collection<Server> servers = pluginConfiguration.getProductServers(serverType).transientGetServers();
 
 		if (servers.isEmpty()) {
 			// remove from list if it was there for any reason
