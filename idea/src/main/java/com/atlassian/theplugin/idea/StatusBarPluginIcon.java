@@ -63,7 +63,7 @@ public abstract class StatusBarPluginIcon extends JLabel {
 	 * @param serverType type of Icon to show/hide
 	 */
 	protected void showOrHideIcon(ServerType serverType) {
-		if (ConfigurationFactory.getConfiguration().getProductServers(serverType).getServers().size() > 0) {
+		if (ConfigurationFactory.getConfiguration().getProductServers(serverType).transientGetServers().size() > 0) {
 			showIcon();
 		} else {
 			hideIcon();

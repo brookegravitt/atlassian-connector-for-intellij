@@ -107,7 +107,7 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 
 	private Collection<Server> retrieveEnabledCrucibleServers() {
 		return pluginConfiguration.getProductServers(
-				ServerType.CRUCIBLE_SERVER).getEnabledServers();
+				ServerType.CRUCIBLE_SERVER).transientgetEnabledServers();
 	}
 
 	/**

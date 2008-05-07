@@ -134,7 +134,7 @@ public final class BambooStatusChecker implements SchedulableChecker {
     }
 
 	private Collection<Server> retrieveEnabledBambooServers() {
-		return configuration.getProductServers(ServerType.BAMBOO_SERVER).getEnabledServers();
+		return configuration.getProductServers(ServerType.BAMBOO_SERVER).transientgetEnabledServers();
 	}
 
 	/**
