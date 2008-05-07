@@ -16,16 +16,16 @@
 
 package com.atlassian.theplugin.idea.bamboo;
 
-import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
-import com.atlassian.theplugin.commons.bamboo.BambooStatusListener;
-import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListener;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ui.AtlassianTableView;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.commons.bamboo.BambooBuild;
+import com.atlassian.theplugin.commons.bamboo.*;
+import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -60,6 +60,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 	private static final Icon ICON_RUN = IconLoader.getIcon("/actions/execute.png");
 	private static final Icon ICON_COMMENT = IconLoader.getIcon("/actions/editSource.png");
 	private static final Icon ICON_LABEL = IconLoader.getIcon("/icons/icn_label.gif");
+	private static BambooTableToolWindowPanel instance;
 
 	public ProgressAnimationProvider getProgressAnimation() {
 		return progressAnimation;
@@ -130,6 +131,15 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 		add(tablePane, BorderLayout.CENTER);
 
 		progressAnimation.configure(this, tablePane, BorderLayout.CENTER);
+	}
+
+	public static BambooTableToolWindowPanel getInstance(ProjectConfigurationBean projectConfigurationBean) {
+
+		if (instance == null) {
+			instance = new BambooTableToolWindowPanel(BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()),
+					projectConfigurationBean);
+		}
+		return instance;
 	}
 
 	private JPopupMenu createContextMenu(BambooBuildAdapter buildAdapter) {
