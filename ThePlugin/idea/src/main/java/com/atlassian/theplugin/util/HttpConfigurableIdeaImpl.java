@@ -17,7 +17,7 @@ public class HttpConfigurableIdeaImpl implements HttpConfigurableAdapter {
 	private HttpConfigurableIdeaImpl(){}
 	private static HttpConfigurableIdeaImpl instance;
 
-	public HttpConfigurableIdeaImpl getInstance(){
+	public static HttpConfigurableIdeaImpl getInstance(){
 		if (instance == null){
 			instance = new HttpConfigurableIdeaImpl();
 		}
