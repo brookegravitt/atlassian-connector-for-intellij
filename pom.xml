@@ -119,6 +119,26 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-idea-plugin</artifactId>
+                <configuration>
+                    <ideaPlugin>false</ideaPlugin>
+                    <jdkName>IDEA 7590</jdkName>
+                    <jdkLevel>${jdkLevel}</jdkLevel>
+                    <downloadSources>true</downloadSources>
+                    <libraries>
+                        <library>
+                            <name>xercesImpl</name>
+                            <exclude>true</exclude>
+                        </library>
+                        <library>
+                            <name>xmlParserAPIs</name>
+                            <exclude>true</exclude>
+                        </library>
+                    </libraries>
+                </configuration>
+            </plugin>
+            <plugin>
                 <artifactId>maven-deploy-plugin</artifactId>
                 <inherited>false</inherited>
                 <configuration>
