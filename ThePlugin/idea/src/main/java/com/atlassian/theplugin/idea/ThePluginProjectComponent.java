@@ -23,11 +23,13 @@ import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.crucible.CrucibleServerFacade;
+import com.atlassian.theplugin.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.idea.autoupdate.ConfirmPluginUpdateHandler;
 import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
 import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;
+import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.*;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.atlassian.theplugin.jira.JIRAServer;
@@ -87,23 +89,24 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 	public ThePluginProjectComponent(Project project,
 									 CrucibleStatusChecker crucibleStatusChecker,
 									 ToolWindowManager toolWindowManager,
-									 BambooStatusChecker bambooStatusChecker,
+									 /*BambooStatusChecker bambooStatusChecker,*/
 									 PluginConfiguration pluginConfiguration,
-									 BambooTableToolWindowPanel bambooToolWindowPanel,
-									 CrucibleTableToolWindowPanel crucibleToolWindowPanel,
-									 JIRAToolWindowPanel jiraToolWindowPanel,
-									 ProjectConfigurationBean projectConfigurationBean,
-									 CrucibleServerFacade crucibleServerFacade) {
+									 /*BambooTableToolWindowPanel bambooToolWindowPanel,*/
+									 /*CrucibleTableToolWindowPanel crucibleToolWindowPanel,*/
+									 /*JIRAToolWindowPanel jiraToolWindowPanel,*/
+									 ProjectConfigurationBean projectConfigurationBean
+									 /*CrucibleServerFacade crucibleServerFacade*/) {
 		this.project = project;
 		this.crucibleStatusChecker = crucibleStatusChecker;
 		this.toolWindowManager = toolWindowManager;
-		this.bambooStatusChecker = bambooStatusChecker;
+		// todo remove that get instance as it can return null. it is better to get it from app component. 
+		this.bambooStatusChecker = BambooStatusChecker.getInstance();
 		this.pluginConfiguration = pluginConfiguration;
-		this.bambooToolWindowPanel = bambooToolWindowPanel;
-		this.crucibleToolWindowPanel = crucibleToolWindowPanel;
-		this.jiraToolWindowPanel = jiraToolWindowPanel;
+		this.bambooToolWindowPanel = BambooTableToolWindowPanel.getInstance(projectConfigurationBean);
+		this.crucibleToolWindowPanel = CrucibleTableToolWindowPanel.getInstance(projectConfigurationBean);
+		this.jiraToolWindowPanel = JIRAToolWindowPanel.getInstance(projectConfigurationBean, project);
 		this.projectConfigurationBean = projectConfigurationBean;
-		this.crucibleServerFacade = crucibleServerFacade;
+		this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 
 		// make findBugs happy
 		statusBarBambooIcon = null;
