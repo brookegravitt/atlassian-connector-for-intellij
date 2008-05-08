@@ -16,9 +16,6 @@
 
 package com.atlassian.theplugin.commons.configuration;
 
-import com.atlassian.theplugin.commons.configuration.ProductServerConfiguration;
-import com.atlassian.theplugin.commons.configuration.AbstractServerConfigurationBean;
-
 /**
  * Bean storing information about Bamboo servers etc.<p>
  * The class serves both as a configuration provider for plugin logic and Bean for persistence.

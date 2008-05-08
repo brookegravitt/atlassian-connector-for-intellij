@@ -72,7 +72,8 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
 	 * <p/>
 	 * The exception returned may have the getCause() examined for to get the actual exception reason.<br>
 	 * If the exception is caused by a valid error response from the server (no IOEXception, UnknownHostException,
-	 * MalformedURLException or JDOMException), the {@link com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginFailedException}
+	 * MalformedURLException or JDOMException), the
+	 * {@link com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginFailedException}
 	 * is actually thrown. This may be used as a hint that the password is invalid.
 	 *
 	 * @param name	  username defined on Bamboo server instance

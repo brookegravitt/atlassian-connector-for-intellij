@@ -77,16 +77,20 @@ public final class HttpClientFactory {
 
 		if (httpConfigurableAdapter != null) {
 			if (httpConfigurableAdapter.isUseHttpProxy()){
-				httpClient.getHostConfiguration().setProxy(httpConfigurableAdapter.getProxyHost(), httpConfigurableAdapter.getProxyPort());
+				httpClient.getHostConfiguration().setProxy(httpConfigurableAdapter.getProxyHost(),
+						httpConfigurableAdapter.getProxyPort());
 				if (httpConfigurableAdapter.isProxyAuthentication()) {
 
-					if (httpConfigurableAdapter.getPlainProxyPassword().length() == 0 &&
-							!httpConfigurableAdapter.isKeepProxyPassowrd()) {//ask user for proxy passowrd
+					if (httpConfigurableAdapter.getPlainProxyPassword().length() == 0
+							&& !httpConfigurableAdapter.isKeepProxyPassowrd()) { //ask user for proxy passowrd
 
 						throw new HttpProxySettingsException("HTTP Proxy password is incorrect");
 					}
-					httpClient.getState().setProxyCredentials(new AuthScope(httpConfigurableAdapter.getProxyHost(), httpConfigurableAdapter.getProxyPort()),
-							new UsernamePasswordCredentials(httpConfigurableAdapter.getProxyLogin(), httpConfigurableAdapter.getPlainProxyPassword()));
+
+					httpClient.getState().setProxyCredentials(
+							new AuthScope(httpConfigurableAdapter.getProxyHost(), httpConfigurableAdapter.getProxyPort()),
+							new UsernamePasswordCredentials(httpConfigurableAdapter.getProxyLogin(),
+									httpConfigurableAdapter.getPlainProxyPassword()));
 
 
 
