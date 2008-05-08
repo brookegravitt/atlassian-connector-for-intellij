@@ -110,45 +110,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 				projectConfigurationBean.getCrucibleConfiguration().getTableConfiguration());
 		table.prepareColumns(columns, CrucibleTableColumnProvider.makeRendererInfo());
 
-		table.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 1) {
-/*
-                    ReviewDataInfoAdapter reviewDataInfo = (ReviewDataInfoAdapter) table.getSelectedObject();
-					if (reviewDataInfo != null) {
-						addReviewScope(reviewDataInfo);
-					}
-*/
-				} else {
-					if (e.getClickCount() == 2) { // on double click, just open the issue
-						ReviewDataInfoAdapter reviewDataInfo = (ReviewDataInfoAdapter) table.getSelectedObject();
-						if (reviewDataInfo != null) {
-							BrowserUtil.launchBrowser(reviewDataInfo.getReviewUrl());
-						}
-					}
-				}
-			}
-
-			public void mousePressed(MouseEvent e) {
-				maybeShowPopup(e);
-			}
-
-			public void mouseReleased(MouseEvent e) {
-				maybeShowPopup(e);
-			}
-
-			private void maybeShowPopup(MouseEvent e) { // on right click, show a context menu for this issue
-				if (e.isPopupTrigger() && table.isEnabled()) {
-					ReviewDataInfoAdapter review = (ReviewDataInfoAdapter) table.getSelectedObject();
-
-					if (review != null) {
-						Point p = new Point(e.getX(), e.getY());
-						JPopupMenu contextMenu = createContextMenu(review);
-						contextMenu.show(table, p.x, p.y);
-					}
-				}
-			}
-		});
+		table.addMouseListener(new CrucibleContextMenuMouseAdapter());
 
 		JScrollPane tablePane = new JScrollPane(table,
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -279,7 +241,8 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 			List<GeneralComment> items = crucibleFacade.getComments(reviewAdapter.getServer(), reviewAdapter.getPermaId());
 
 			for (GeneralComment item : items) {
-				System.out.println(item.getClass().getName() + " -> User: " + item.getUser() + " left comment: " + item.getMessage() + " on " + item.getCreateDate().toString());
+				System.out.println(item.getClass().getName() + " -> User: " + item.getUser() + " left comment: "
+						+ item.getMessage() + " on " + item.getCreateDate().toString());
 				if (item instanceof VersionedComment) {
 					VersionedComment c = (VersionedComment) item;
 					System.out.print("c.getReviewItemId() + " + c.getReviewItemId().getId());
@@ -292,7 +255,8 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 					System.out.println("");
 				}
 				for (GeneralComment reply : item.getReplies()) {
-					System.out.println(reply.getClass().getName() + " -> User: " + reply.getUser() + " replied: " + reply.getMessage() + " on " + reply.getCreateDate().toString());
+					System.out.println(reply.getClass().getName() + " -> User: " + reply.getUser() + " replied: "
+							+ reply.getMessage() + " on " + reply.getCreateDate().toString());
 				}
 			}
 		} catch (
@@ -413,5 +377,45 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 	public void resetState() {
 
 		updateReviews(new ArrayList<ReviewDataInfo>());
+	}
+
+	private class CrucibleContextMenuMouseAdapter extends MouseAdapter {
+		public void mouseClicked(MouseEvent e) {
+			if (e.getClickCount() == 1) {
+/*
+ReviewDataInfoAdapter reviewDataInfo = (ReviewDataInfoAdapter) table.getSelectedObject();
+				if (reviewDataInfo != null) {
+					addReviewScope(reviewDataInfo);
+				}
+*/
+			} else {
+				if (e.getClickCount() == 2) { // on double click, just open the issue
+					ReviewDataInfoAdapter reviewDataInfo = (ReviewDataInfoAdapter) table.getSelectedObject();
+					if (reviewDataInfo != null) {
+						BrowserUtil.launchBrowser(reviewDataInfo.getReviewUrl());
+					}
+				}
+			}
+		}
+
+		public void mousePressed(MouseEvent e) {
+			maybeShowPopup(e);
+		}
+
+		public void mouseReleased(MouseEvent e) {
+			maybeShowPopup(e);
+		}
+
+		private void maybeShowPopup(MouseEvent e) { // on right click, show a context menu for this issue
+			if (e.isPopupTrigger() && table.isEnabled()) {
+				ReviewDataInfoAdapter review = (ReviewDataInfoAdapter) table.getSelectedObject();
+
+				if (review != null) {
+					Point p = new Point(e.getX(), e.getY());
+					JPopupMenu contextMenu = createContextMenu(review);
+					contextMenu.show(table, p.x, p.y);
+				}
+			}
+		}
 	}
 }
