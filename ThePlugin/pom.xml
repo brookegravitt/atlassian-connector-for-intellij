@@ -187,7 +187,8 @@
                         **/CollapsiblePanel.java,
                         **/thirdparty/**/*.*,
                         **/JIRAIssueFilterPanel.java,
-                        **/JIRAButtonPanel.java
+                        **/JIRAButtonPanel.java,
+			**/WorkLogCreate.java
                     </excludes>
                     <!--<failsOnError>true</failsOnError>-->
                     <!--<linkXRef>false</linkXRef>-->
