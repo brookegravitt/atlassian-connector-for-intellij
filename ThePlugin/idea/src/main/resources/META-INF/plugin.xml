@@ -73,7 +73,7 @@
 
 	<extensions xmlns="com.intellij">
 		<arealistener implementation="com.atlassian.theplugin.idea.PerProjectPicoInit" />		
-		<customScopesProvider implementation="com.atlassian.theplugin.CrucibleReviewScopeProvider"/>
+		<customScopesProvider implementation="com.atlassian.theplugin.idea.crucible.CrucibleReviewScopeProvider"/>
 	</extensions>
 	
 	<application-components>

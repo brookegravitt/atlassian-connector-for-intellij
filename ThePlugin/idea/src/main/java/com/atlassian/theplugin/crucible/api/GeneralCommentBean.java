@@ -16,7 +16,9 @@
 
 package com.atlassian.theplugin.crucible.api;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class GeneralCommentBean implements GeneralComment {
     private String message = null;
@@ -25,7 +27,10 @@ public class GeneralCommentBean implements GeneralComment {
     private boolean defectRaised = false;
     private boolean defectApproved = false;
     private String user = null;
+	private String displayUser = null;
 	private Date createDate = new Date();
+
+	private List<GeneralComment> replies = new ArrayList<GeneralComment>();
 
 	public GeneralCommentBean() {
 	}
@@ -78,11 +83,32 @@ public class GeneralCommentBean implements GeneralComment {
 		this.user = user;
 	}
 
+	public String getDisplayUser() {
+		return displayUser;
+	}
+
+	public void setDisplayUser(String displayUser) {
+		this.displayUser = displayUser;
+	}
+
+
 	public Date getCreateDate() {
 		return new Date(createDate.getTime());
 	}
 
 	public void setCreateDate(Date createDate) {
 		this.createDate = new Date(createDate.getTime());
+	}
+
+	public List<GeneralComment> getReplies() {
+		return replies;
+	}
+
+	public void setReplies(List<GeneralComment> replies) {
+		this.replies = replies;
+	}
+
+	public void addReply(GeneralComment comment) {
+		replies.add(comment);
 	}
 }

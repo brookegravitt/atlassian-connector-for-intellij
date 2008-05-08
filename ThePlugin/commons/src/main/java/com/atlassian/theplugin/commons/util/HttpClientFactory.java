@@ -73,7 +73,7 @@ public final class HttpClientFactory {
 		HttpClient httpClient = new HttpClient(connectionManager);
 		httpClient.getParams().setConnectionManagerTimeout(getConnectionManagerTimeout());
 		httpClient.getParams().setSoTimeout(getDataTimeout());
-		HttpConfigurableAdapter httpConfigurableAdapter = ConfigurationFactory.getConfiguration().getHttpConfigurable();
+		HttpConfigurableAdapter httpConfigurableAdapter = ConfigurationFactory.getConfiguration().transientGetHttpConfigurable();
 
 		if (httpConfigurableAdapter != null) {
 			if (httpConfigurableAdapter.isUseHttpProxy()){

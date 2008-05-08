@@ -54,9 +54,20 @@ public final class CrucibleRestXmlHelper {
 	public static RepositoryDataBean parseRepositoryNode(Element repoNode) {
 		RepositoryDataBean repo = new RepositoryDataBean();
 		repo.setName(getChildText(repoNode, "name"));
+		repo.setType(getChildText(repoNode, "type"));
+		repo.setEnabled(Boolean.parseBoolean(getChildText(repoNode, "enabled")));
 		return repo;
 	}
 
+	public static SvnRepositoryDataBean parseSvnRepositoryNode(Element repoNode) {
+		SvnRepositoryDataBean repo = new SvnRepositoryDataBean();
+		repo.setName(getChildText(repoNode, "name"));
+		repo.setType(getChildText(repoNode, "type"));
+		repo.setEnabled(Boolean.parseBoolean(getChildText(repoNode, "enabled")));
+		repo.setUrl(getChildText(repoNode, "url"));
+		repo.setPath(getChildText(repoNode, "path"));		
+		return repo;
+	}
 
 	public static ReviewData parseReviewNode(Element reviewNode) {
 		ReviewDataBean review = new ReviewDataBean();
@@ -131,7 +142,7 @@ public final class CrucibleRestXmlHelper {
 		return reviewData;
 	}
 
-	public static ReviewItemData parseReviewItemNode(Element reviewItemNode) {
+	public static ReviewItemDataBean parseReviewItemNode(Element reviewItemNode) {
 		ReviewItemDataBean reviewItem = new ReviewItemDataBean();
 
 		reviewItem.setFromPath(getChildText(reviewItemNode, "fromPath"));
@@ -148,24 +159,26 @@ public final class CrucibleRestXmlHelper {
 		return reviewItem;
 	}
 
-	public static GeneralComment parseGeneralCommentNode(Element reviewCommentNode) {
-		GeneralCommentBean commment = new GeneralCommentBean();
+	public static GeneralCommentBean parseGeneralCommentNode(Element reviewCommentNode) {
+		GeneralCommentBean commentBean = new GeneralCommentBean();
 
-		commment.setUser(getChildText(reviewCommentNode, "user"));
-		commment.setMessage(getChildText(reviewCommentNode, "message"));
-		commment.setDefectRaised(Boolean.parseBoolean(getChildText(reviewCommentNode, "defectRaised")));
-		commment.setDefectApproved(Boolean.parseBoolean(getChildText(reviewCommentNode, "defectApproved")));
-		commment.setDraft(Boolean.parseBoolean(getChildText(reviewCommentNode, "draft")));
-		commment.setDeleted(Boolean.parseBoolean(getChildText(reviewCommentNode, "deleted")));
-		commment.setCreateDate(parseCommentTime(getChildText(reviewCommentNode, "createDate")));
+		commentBean.setUser(getChildText(reviewCommentNode, "user"));
+		commentBean.setDisplayUser(getChildText(reviewCommentNode, "userDisplayName"));
+		commentBean.setMessage(getChildText(reviewCommentNode, "message"));
+		commentBean.setDefectRaised(Boolean.parseBoolean(getChildText(reviewCommentNode, "defectRaised")));
+		commentBean.setDefectApproved(Boolean.parseBoolean(getChildText(reviewCommentNode, "defectApproved")));
+		commentBean.setDraft(Boolean.parseBoolean(getChildText(reviewCommentNode, "draft")));
+		commentBean.setDeleted(Boolean.parseBoolean(getChildText(reviewCommentNode, "deleted")));
+		commentBean.setCreateDate(parseCommentTime(getChildText(reviewCommentNode, "createDate")));
 
-		return commment;
+		return commentBean;
 	}
 
-	public static VersionedComment parseVersionedCommentNode(Element reviewCommentNode) {
+	public static VersionedCommentBean parseVersionedCommentNode(Element reviewCommentNode) {
 		VersionedCommentBean comment = new VersionedCommentBean();
 
 		comment.setUser(getChildText(reviewCommentNode, "user"));
+		comment.setDisplayUser(getChildText(reviewCommentNode, "userDisplayName"));
 		comment.setMessage(getChildText(reviewCommentNode, "message"));
 		comment.setDefectRaised(Boolean.parseBoolean(getChildText(reviewCommentNode, "defectRaised")));
 		comment.setDefectApproved(Boolean.parseBoolean(getChildText(reviewCommentNode, "defectApproved")));
