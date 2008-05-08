@@ -21,6 +21,8 @@ import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.api.soap.axis.*;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
+import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.commons.util.HttpConfigurableAdapter;
 
 import javax.xml.rpc.ServiceException;
 import java.net.MalformedURLException;
@@ -29,6 +31,8 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import org.apache.axis.AxisProperties;
 
 public class JIRASessionImpl implements JIRASession {
 
@@ -41,10 +45,56 @@ public class JIRASessionImpl implements JIRASession {
 
 	private boolean loggedIn = false;
 
+	//
+	// AxisProperties are shit - if you try to set nonexistent property to null, NPE is thrown.
+	//
+	private void setAxisProperty(String name, String value) {
+		if (value == null) {
+			if (AxisProperties.getProperty(name) != null) {
+				AxisProperties.setProperty(name, null);
+			}
+		} else {
+			AxisProperties.setProperty(name, value);
+		}
+	}
+
+	private void setProxy() {
+		HttpConfigurableAdapter proxyInfo = ConfigurationFactory.getConfiguration().transientGetHttpConfigurable();
+		String host = null;
+		String port = null;
+		String user = null;
+		String password = null;
+		if (proxyInfo.isUseHttpProxy()) {
+			host = proxyInfo.getProxyHost();
+			port = String.valueOf(proxyInfo.getProxyPort());
+			if (proxyInfo.isProxyAuthentication()) {
+				user = proxyInfo.getProxyLogin();
+				password = proxyInfo.getPlainProxyPassword();
+			}
+		}
+
+		//
+		// well - re-setting proxy does not really work - Axis bug
+		// see: http://issues.apache.org/jira/browse/AXIS-2295
+		// So in order to apply new proxy settings, IDEA has to be restarted
+		// all software sucks
+		//
+		setAxisProperty("http.proxyHost", host);
+		setAxisProperty("http.proxyPort", port);
+		setAxisProperty("https.proxyHost", host);
+		setAxisProperty("https.proxyPort", port);
+		setAxisProperty("http.proxyUser", user);
+		setAxisProperty("https.proxyUser", user);
+		setAxisProperty("http.proxyPassword", password);
+		setAxisProperty("https.proxyPassword", password);
+	}
+
 	public JIRASessionImpl(String serverUrl) throws ServiceException, MalformedURLException {
 		portAddress = new URL(serverUrl + "/rpc/soap/jirasoapservice-v2");
 		JiraSoapServiceServiceLocator loc = new JiraSoapServiceServiceLocator();
 		service = loc.getJirasoapserviceV2(portAddress);
+		setProxy();
+
 		this.serverUrl = serverUrl;
 	}
 
