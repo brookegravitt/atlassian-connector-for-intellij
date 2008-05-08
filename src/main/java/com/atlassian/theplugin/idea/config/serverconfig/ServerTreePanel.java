@@ -65,7 +65,7 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 	}
 
 	public static ServerTreePanel getInstance() {
-		if (instance == null){
+		if (instance == null) {
 			instance = new ServerTreePanel();
 		}
 		return instance;
@@ -133,7 +133,8 @@ public class ServerTreePanel extends JPanel implements TreeSelectionListener {
 	public void copyServer() {
 /*
 		ServerBean newServer = new ServerBean();
-		newServer.setName(suggestCopyName(ConfigurationFactory.getConfiguration().getBambooConfiguration().transientGetServers()));
+		newServer.setName(suggestCopyName(ConfigurationFactory.getConfiguration()
+				.getBambooConfiguration().transientGetServers()));
 		ConfigurationFactory.getConfiguration().getBambooConfiguration().addServer(newServer);
 		serverTree.updateUI();
 		return newServer.getName();

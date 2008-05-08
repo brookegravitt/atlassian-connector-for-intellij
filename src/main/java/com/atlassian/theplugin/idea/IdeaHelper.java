@@ -94,7 +94,7 @@ public final class IdeaHelper {
 		return ApplicationManager.getApplication().getComponent(ThePluginApplicationComponent.class);
 	}
 
-	public static PluginConfigurationBean getPluginConfiguration(){
+	public static PluginConfigurationBean getPluginConfiguration() {
 		return getAppComponent().getState();
 	}
 

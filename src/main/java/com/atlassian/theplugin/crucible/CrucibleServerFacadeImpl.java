@@ -16,13 +16,13 @@
 
 package com.atlassian.theplugin.crucible;
 
-import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginFailedException;
 import com.atlassian.theplugin.crucible.api.*;
 import com.atlassian.theplugin.crucible.api.rest.CrucibleSessionImpl;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginFailedException;
 import com.atlassian.theplugin.util.PluginUtil;
 
 import java.util.*;
@@ -35,7 +35,7 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	}
 
 	public static CrucibleServerFacade getInstance() {
-		if (instance == null){
+		if (instance == null) {
 			instance = new CrucibleServerFacadeImpl();
 		}
 		return instance;
@@ -137,12 +137,14 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	 * @throws com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException
 	 *
 	 */
-	public List<RepositoryData> getRepositories(Server server) throws RemoteApiException, ServerPasswordNotProvidedException {
+	public List<RepositoryData> getRepositories(Server server)
+			throws RemoteApiException, ServerPasswordNotProvidedException {
 		CrucibleSession session = getSession(server);
 		return session.getRepositories();
 	}
 
-	public SvnRepositoryData getRepository(Server server, String repoName) throws RemoteApiException, ServerPasswordNotProvidedException {
+	public SvnRepositoryData getRepository(Server server, String repoName)
+			throws RemoteApiException, ServerPasswordNotProvidedException {
 		CrucibleSession session = getSession(server);
 		return session.getRepository(repoName);
 	}
