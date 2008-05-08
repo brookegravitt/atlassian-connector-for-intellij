@@ -45,7 +45,7 @@ public final class ConfigPanel extends JPanel {
 
 	private final transient PluginConfigurationBean globalConfigurationBean;
 
-	private ConfigPanel(PluginConfigurationBean globalConfigurationBean){
+	private ConfigPanel(PluginConfigurationBean globalConfigurationBean) {
 		this.serverConfigPanel = ServerConfigPanel.getInstance();
 		this.bambooConfigPanel = BambooGeneralForm.getInstance(globalConfigurationBean);
 		this.crucibleConfigPanel = CrucibleGeneralForm.getInstance(globalConfigurationBean);
@@ -62,7 +62,7 @@ public final class ConfigPanel extends JPanel {
 	public static ConfigPanel getInstance(PluginConfigurationBean globalConfigurationBean) {
 
 		/* Yes, I mean this. Assigning to a static field from within a constructor. Blame *Action. */
-		if (instance == null){
+		if (instance == null) {
 			instance = new ConfigPanel(globalConfigurationBean);
 
 		}
