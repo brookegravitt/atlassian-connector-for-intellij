@@ -17,13 +17,8 @@
 package com.atlassian.theplugin.idea.action.jira;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.PluginToolWindow;
-import com.atlassian.theplugin.idea.jira.IssueCreate;
-import com.atlassian.theplugin.jira.JIRAServer;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
 
 public class CreateIssueAction extends AnAction {
     public void actionPerformed(AnActionEvent e) {
