@@ -34,7 +34,6 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListener;
 import com.intellij.ide.BrowserUtil;
-import com.intellij.ide.projectView.ProjectView;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.diff.DiffContent;
@@ -45,7 +44,6 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.vcs.history.VcsFileRevision;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiFile;
 import com.intellij.psi.search.scope.packageSet.NamedScopeManager;
 import com.intellij.psi.search.scope.packageSet.NamedScopesHolder;
 import com.intellij.util.ui.ListTableModel;
@@ -328,7 +326,8 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 				final List<ReviewItemVirtualFile> files = getReviewVersionedVirtualFiles(reviewAdapter);
 				if (!files.isEmpty()) {
 					IdeaHelper.getScopeFiles().addAll(files);
-					provider.addScope(scopeName, provider.new ToReviewAbstractPackageSet() {
+/*
+                    provider.addScope(scopeName, provider.new ToReviewAbstractPackageSet() {
 						public boolean contains(PsiFile psiFile, NamedScopesHolder namedScopesHolder) {
 							final VirtualFile virtualFile = psiFile.getVirtualFile();
 							for (ReviewItemVirtualFile file : files) {
@@ -339,12 +338,13 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 							return false;
 						}
 					});
+*/
 					IdeaHelper.getCurrentProjectComponent().setReviewId(scopeName);
 				}
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
 						NamedScopeManager.getInstance(IdeaHelper.getCurrentProject()).fireScopeListeners();
-						ProjectView.getInstance(IdeaHelper.getCurrentProject()).changeView("Project");						
+//						ProjectView.getInstance(IdeaHelper.getCurrentProject()).changeView("Project");						
 					}
 				});
 			}
