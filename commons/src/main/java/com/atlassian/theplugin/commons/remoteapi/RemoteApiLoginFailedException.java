@@ -16,8 +16,6 @@
 
 package com.atlassian.theplugin.commons.remoteapi;
 
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
-
 /**
  * Thrown when the login operation fails in an orderly fashion - Bamboo returns a valid exception message.
  */
