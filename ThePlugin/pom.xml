@@ -180,6 +180,7 @@
                         **/idea/**/*Form.java,
                         **/idea/**/*Dialog.java,
                         **/soap/xfire/**/*.java,
+                        **/soap/axis/**/*.java,
                         **/IssueComment.java,
                         **/IssueCreate.java,
                         **/ChangesetCreate.java,
