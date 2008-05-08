@@ -33,7 +33,10 @@ public abstract class DateUtil /* extends TableColumnInfo */ {
 	public static final int SECONDS_IN_MINUTE = 60;
 	public static final int MILISECONDS_IN_SECOND = 1000;
 
-	public static String getRelativePastDate(Date comparedTo, Date someDate) {
+    private DateUtil() {        
+    }
+
+    public static String getRelativePastDate(Date comparedTo, Date someDate) {
 		if (someDate != null) {
 			Period period = new Period(someDate.getTime(), comparedTo.getTime());
 			StringBuffer buffer = new StringBuffer();
