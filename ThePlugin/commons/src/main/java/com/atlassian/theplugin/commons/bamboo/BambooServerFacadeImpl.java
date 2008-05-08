@@ -35,7 +35,7 @@ import java.util.*;
  * Date: Jan 15, 2008
  * Time: 5:12:27 PM
  */
-public class BambooServerFacadeImpl implements BambooServerFacade {
+public final class BambooServerFacadeImpl implements BambooServerFacade {
 	private Map<String, BambooSession> sessions = new WeakHashMap<String, BambooSession>();
 	private Logger loger;
 

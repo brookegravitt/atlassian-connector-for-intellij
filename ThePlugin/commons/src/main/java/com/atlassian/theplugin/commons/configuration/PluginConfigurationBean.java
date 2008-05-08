@@ -19,10 +19,6 @@ package com.atlassian.theplugin.commons.configuration;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.util.HttpConfigurableAdapter;
-import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
-import com.atlassian.theplugin.commons.configuration.ProductServerConfiguration;
-import com.atlassian.theplugin.commons.configuration.GeneralConfigurationBean;
-import com.atlassian.theplugin.commons.configuration.BambooConfigurationBean;
 
 public class PluginConfigurationBean implements PluginConfiguration {
     private BambooConfigurationBean bambooConfiguration = new BambooConfigurationBean();
@@ -129,8 +125,8 @@ public class PluginConfigurationBean implements PluginConfiguration {
 		this.generalConfigurationBean = aGeneralConfigurationBean;
 	}
 
-	public void transientSetHttpConfigurable(HttpConfigurableAdapter httpConfigurableAdapter) {
-		this.httpConfigurableAdapter = httpConfigurableAdapter;
+	public void transientSetHttpConfigurable(HttpConfigurableAdapter aHttpConfigurableAdapter) {
+		this.httpConfigurableAdapter = aHttpConfigurableAdapter;
 	}
 
 	public HttpConfigurableAdapter transientGetHttpConfigurable() {
