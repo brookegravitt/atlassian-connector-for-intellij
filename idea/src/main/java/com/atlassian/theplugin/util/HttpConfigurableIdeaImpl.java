@@ -14,11 +14,14 @@ import com.intellij.util.net.HTTPProxySettingsDialog;
 
 
 public class HttpConfigurableIdeaImpl implements HttpConfigurableAdapter {
-	private HttpConfigurableIdeaImpl(){}
+
 	private static HttpConfigurableIdeaImpl instance;
 
-	public static HttpConfigurableIdeaImpl getInstance(){
-		if (instance == null){
+	private HttpConfigurableIdeaImpl() {
+	}
+
+	public static HttpConfigurableIdeaImpl getInstance() {
+		if (instance == null) {
 			instance = new HttpConfigurableIdeaImpl();
 		}
 
@@ -31,30 +34,30 @@ public class HttpConfigurableIdeaImpl implements HttpConfigurableAdapter {
 	}
 
 	public boolean isProxyAuthentication() {
-		return HttpConfigurable.getInstance().PROXY_AUTHENTICATION;  //To change body of implemented methods use File | Settings | File Templates.
+		return HttpConfigurable.getInstance().PROXY_AUTHENTICATION;
 	}
 
 	public boolean isUseHttpProxy() {
-		return HttpConfigurable.getInstance().USE_HTTP_PROXY;  //To change body of implemented methods use File | Settings | File Templates.
+		return HttpConfigurable.getInstance().USE_HTTP_PROXY;
 	}
 
 	public String getPlainProxyPassword() {
-		return HttpConfigurable.getInstance().getPlainProxyPassword();  //To change body of implemented methods use File | Settings | File Templates.
+		return HttpConfigurable.getInstance().getPlainProxyPassword();
 	}
 
 	public String getProxyLogin() {
-		return HttpConfigurable.getInstance().PROXY_LOGIN;  //To change body of implemented methods use File | Settings | File Templates.
+		return HttpConfigurable.getInstance().PROXY_LOGIN;
 	}
 
 	public int getProxyPort() {
-		return HttpConfigurable.getInstance().PROXY_PORT;  //To change body of implemented methods use File | Settings | File Templates.
+		return HttpConfigurable.getInstance().PROXY_PORT;
 	}
 
 	public String getProxyHost() {
-		return HttpConfigurable.getInstance().PROXY_HOST;  //To change body of implemented methods use File | Settings | File Templates.
+		return HttpConfigurable.getInstance().PROXY_HOST;
 	}
 
 	public Object getHTTPProxySettingsDialog() {
-		return new HTTPProxySettingsDialog();  //To change body of implemented methods use File | Settings | File Templates.
+		return new HTTPProxySettingsDialog();
 	}
 }

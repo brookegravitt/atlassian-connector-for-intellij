@@ -25,7 +25,8 @@ public final class VcsIdeaHelper {
 	}
 
 	public static List<VcsFileRevision> getFileHistory(VirtualFile vFile) throws VcsException {
-		return ProjectLevelVcsManager.getInstance(IdeaHelper.getCurrentProject()).getVcsFor(vFile).getVcsHistoryProvider().createSessionFor(VcsUtil.getFilePath(vFile.getPath())).getRevisionList();
+		return ProjectLevelVcsManager.getInstance(IdeaHelper.getCurrentProject()).getVcsFor(vFile)
+				.getVcsHistoryProvider().createSessionFor(VcsUtil.getFilePath(vFile.getPath())).getRevisionList();
 	}
 
 	public static VcsFileRevision getFileRevision(VirtualFile vFile, String revision) {
@@ -65,7 +66,8 @@ public final class VcsIdeaHelper {
 		AbstractVcs vcs = ProjectLevelVcsManager.getInstance(IdeaHelper.getCurrentProject()).getVcsFor(vFile);
 		VcsRevisionNumber rev = revNumber.getRevisionNumber();
 		try {
-			return com.intellij.openapi.diff.SimpleContent.fromBytes(vcs.getDiffProvider().createFileContent(rev, vFile).getContent().getBytes(), vFile.getCharset().name(), vFile.getFileType());
+			return com.intellij.openapi.diff.SimpleContent.fromBytes(vcs.getDiffProvider()
+					.createFileContent(rev, vFile).getContent().getBytes(), vFile.getCharset().name(), vFile.getFileType());
 		} catch (UnsupportedEncodingException e) {
 			// nothing to do
 		} catch (VcsException e) {
