@@ -133,7 +133,7 @@ public class ThePluginApplicationComponent
 										 SchedulableChecker[] schedulableCheckers,
 										 UIActionScheduler actionScheduler) {
 		this.configuration = configuration;
-		this.configuration.setHttpConfigurable(HttpConfigurableIdeaImpl.getInstance());
+		this.configuration.transientSetHttpConfigurable(HttpConfigurableIdeaImpl.getInstance());
 		this.bambooStatusChecker = BambooStatusChecker.getInstance(
 				actionScheduler,
 				configuration,
@@ -216,7 +216,7 @@ public class ThePluginApplicationComponent
 	}
 
 	public void loadState(PluginConfigurationBean state) {
-		state.setHttpConfigurable(HttpConfigurableIdeaImpl.getInstance());
+		state.transientSetHttpConfigurable(HttpConfigurableIdeaImpl.getInstance());
 		configuration.setConfiguration(state);
 	}
 }

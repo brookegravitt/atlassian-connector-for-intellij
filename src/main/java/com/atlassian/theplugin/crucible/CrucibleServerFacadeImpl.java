@@ -113,7 +113,6 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 		return session.getComments(permId);
 	}
 
-
 	/**
 	 * Retrieves list of projects defined on Crucible server
 	 *
@@ -128,6 +127,7 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 		return session.getProjects();
 	}
 
+
 	/**
 	 * Retrieves list of repositories defined on Crucible server
 	 *
@@ -141,6 +141,12 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 		CrucibleSession session = getSession(server);
 		return session.getRepositories();
 	}
+
+	public SvnRepositoryData getRepository(Server server, String repoName) throws RemoteApiException, ServerPasswordNotProvidedException {
+		CrucibleSession session = getSession(server);
+		return session.getRepository(repoName);
+	}
+
 
 	/**
 	 * @param server server object with Url, Login and Password to connect to
@@ -189,4 +195,5 @@ public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 		}
 		return Collections.EMPTY_LIST;
 	}
+
 }

@@ -49,4 +49,7 @@ public interface CrucibleServerFacade extends ProductServerFacade {
 	List<RepositoryData> getRepositories(Server server) 
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
+	SvnRepositoryData getRepository(Server server, String repoName) 
+			throws RemoteApiException, ServerPasswordNotProvidedException;
+
 }
