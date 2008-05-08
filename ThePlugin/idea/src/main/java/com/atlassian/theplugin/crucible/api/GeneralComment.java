@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.crucible.api;
 
 import java.util.Date;
+import java.util.List;
 
 public interface GeneralComment {
 	String getMessage();
@@ -31,5 +32,9 @@ public interface GeneralComment {
 
 	String getUser();
 
+	String getDisplayUser();
+
 	Date getCreateDate();
+
+	List<GeneralComment> getReplies();
 }

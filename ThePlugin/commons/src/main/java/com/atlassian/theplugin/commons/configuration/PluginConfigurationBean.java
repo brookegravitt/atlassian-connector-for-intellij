@@ -62,7 +62,7 @@ public class PluginConfigurationBean implements PluginConfiguration {
 		this.setBambooConfigurationData(new BambooConfigurationBean(cfg.getProductServers(ServerType.BAMBOO_SERVER)));
         this.setCrucibleConfigurationData(new CrucibleConfigurationBean(cfg.getProductServers(ServerType.CRUCIBLE_SERVER)));
         this.setJIRAConfigurationData(new JiraConfigurationBean(cfg.getProductServers(ServerType.JIRA_SERVER)));
-		this.setHttpConfigurable(cfg.getHttpConfigurable());
+		this.transientSetHttpConfigurable(cfg.transientGetHttpConfigurable());
 	}
 
 	/**
@@ -129,11 +129,11 @@ public class PluginConfigurationBean implements PluginConfiguration {
 		this.generalConfigurationBean = aGeneralConfigurationBean;
 	}
 
-	public void setHttpConfigurable(HttpConfigurableAdapter httpConfigurableAdapter) {
+	public void transientSetHttpConfigurable(HttpConfigurableAdapter httpConfigurableAdapter) {
 		this.httpConfigurableAdapter = httpConfigurableAdapter;
 	}
 
-	public HttpConfigurableAdapter getHttpConfigurable() {
+	public HttpConfigurableAdapter transientGetHttpConfigurable() {
 		return httpConfigurableAdapter;
 	}
 
