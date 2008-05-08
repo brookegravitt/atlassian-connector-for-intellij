@@ -80,7 +80,13 @@ public class GeneralConfigForm {
 				proxyDialog.setModal(true);
 				proxyDialog.show();
 				proxyDialog.toFront();
-				showMessageDialog(IdeaHelper.getCurrentProject(), "Please restart IDEA to apply proxy settings change", "Please restart IDEA", Messages.getWarningIcon());			}
+				if (proxyDialog.isOK()) {
+					showMessageDialog(IdeaHelper.getCurrentProject(),
+							"Please restart IDEA to apply proxy settings change",
+							"Please restart IDEA",
+							Messages.getInformationIcon());
+				}
+			}
 		});
 	}
 
