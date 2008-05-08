@@ -4,16 +4,7 @@ import com.atlassian.theplugin.commons.util.HttpConfigurableAdapter;
 import com.intellij.util.net.HttpConfigurable;
 import com.intellij.util.net.HTTPProxySettingsDialog;
 
-/**
- * Created by IntelliJ IDEA.
- * User: pmaruszak
- * Date: May 6, 2008
- * Time: 3:39:42 PM
- * To change this template use File | Settings | File Templates.
- */
-
-
-public class HttpConfigurableIdeaImpl implements HttpConfigurableAdapter {
+public final class HttpConfigurableIdeaImpl implements HttpConfigurableAdapter {
 
 	private static HttpConfigurableIdeaImpl instance;
 

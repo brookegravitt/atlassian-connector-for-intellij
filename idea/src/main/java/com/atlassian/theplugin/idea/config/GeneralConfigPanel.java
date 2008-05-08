@@ -26,7 +26,7 @@ import java.awt.*;
 /**
  * General plugin config form.
  */
-public class GeneralConfigPanel extends JPanel implements ContentPanel {
+public final class GeneralConfigPanel extends JPanel implements ContentPanel {
 	private GeneralConfigForm dialog;
 
 	private PluginConfiguration localPluginConfigurationCopy;

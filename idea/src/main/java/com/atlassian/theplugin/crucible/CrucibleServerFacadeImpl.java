@@ -27,7 +27,7 @@ import com.atlassian.theplugin.util.PluginUtil;
 
 import java.util.*;
 
-public class CrucibleServerFacadeImpl implements CrucibleServerFacade {
+public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	private Map<String, CrucibleSession> sessions = new HashMap<String, CrucibleSession>();
 	private static CrucibleServerFacadeImpl instance;
 
