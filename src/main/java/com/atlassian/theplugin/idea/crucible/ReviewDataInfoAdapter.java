@@ -19,6 +19,7 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.theplugin.crucible.ReviewDataInfo;
 import com.atlassian.theplugin.crucible.api.PermId;
 import com.atlassian.theplugin.crucible.api.State;
+import com.atlassian.theplugin.commons.Server;
 
 import java.util.List;
 
@@ -76,5 +77,9 @@ public class ReviewDataInfoAdapter {
 
 	public State getState() {
 		return review.getState();
+	}
+
+	public Server getServer() {
+		return review.getServer();
 	}
 }

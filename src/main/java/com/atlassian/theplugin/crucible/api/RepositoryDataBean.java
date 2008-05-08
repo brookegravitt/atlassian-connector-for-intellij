@@ -18,6 +18,8 @@ package com.atlassian.theplugin.crucible.api;
 
 public class RepositoryDataBean implements RepositoryData {
 	private String name;
+	private String type;
+	private boolean enabled;
 
 	public String getName() {
 		return name;
@@ -26,4 +28,20 @@ public class RepositoryDataBean implements RepositoryData {
 	public void setName(String name) {
 		this.name = name;
 	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}	
 }

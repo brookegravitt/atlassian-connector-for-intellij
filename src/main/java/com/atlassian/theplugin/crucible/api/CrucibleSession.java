@@ -41,6 +41,8 @@ public interface CrucibleSession {
 
 	List<RepositoryData> getRepositories() throws RemoteApiException;
 
+	SvnRepositoryData getRepository(String repoName) throws RemoteApiException;	
+
 	List<ReviewItemData> getReviewItems(PermId id) throws RemoteApiException;
 
 	List<GeneralComment> getGeneralComments(PermId id) throws RemoteApiException;
