@@ -153,7 +153,8 @@ public class ServerBean implements Server {
 	/**
 	 * This one should be used by persistence logic ONLY.
 	 * <p/>
-	 * From the code you must use {@link #transientSetPasswordString(String, Boolean)}, unless you really know what you are doing.
+	 * From the code you must use {@link #transientSetPasswordString(String, Boolean)},
+	 * unless you really know what you are doing.
 	 *
 	 * @param encryptedPassword encrypted (encoded actually) version of the password
 	 */
@@ -182,8 +183,8 @@ public class ServerBean implements Server {
 	}
 
 	//@Transient
-	public synchronized void transientSetIsConfigInitialized(Boolean isConfigInitialized) {
-		this.isConfigInitialized = isConfigInitialized;
+	public synchronized void transientSetIsConfigInitialized(Boolean isInitialized) {
+		this.isConfigInitialized = isInitialized;
 	}
 
 	public synchronized void setShouldPasswordBeStored(Boolean shouldPasswordBeStored) {
@@ -196,8 +197,8 @@ public class ServerBean implements Server {
 	}
 
 	//@Transient
-	public synchronized void transientSetSubscribedPlans(Collection<? extends SubscribedPlan> subscribedPlans) {
-		this.subscribedPlans = subscribedPlans;
+	public synchronized void transientSetSubscribedPlans(Collection<? extends SubscribedPlan> plans) {
+		this.subscribedPlans = plans;
 	}
 
 
@@ -293,11 +294,13 @@ public class ServerBean implements Server {
 		if (name != null ? !name.equals(that.getName()) : that.getName() != null) {
 			return false;
 		}
-		if (password != null ? !password.equals(that.transientGetPasswordString()) : that.transientGetPasswordString() != null) {
+		if (password != null ? !password.equals(that.transientGetPasswordString())  
+				: that.transientGetPasswordString() != null) {
 			return false;
 		}
 		if (shouldPasswordBeStored != null
-				? !shouldPasswordBeStored.equals(that.getShouldPasswordBeStored()) : that.getShouldPasswordBeStored() != null) {
+				? !shouldPasswordBeStored.equals(that.getShouldPasswordBeStored())
+				: that.getShouldPasswordBeStored() != null) {
 			return false;
 		}
 		if (enabled != null ? !enabled.equals(that.getEnabled()) : that.getEnabled() != null) {
@@ -306,7 +309,8 @@ public class ServerBean implements Server {
 		if (useFavourite != null ? !useFavourite.equals(that.getUseFavourite()) : that.getUseFavourite() != null) {
 			return false;
 		}
-		if (subscribedPlans != null ? !subscribedPlans.equals(that.transientGetSubscribedPlans()) : that.transientGetSubscribedPlans() != null) {
+		if (subscribedPlans != null ? !subscribedPlans.equals(that.transientGetSubscribedPlans()) :
+				that.transientGetSubscribedPlans() != null) {
 			return false;
 		}
 		if (urlString != null ? !urlString.equals(that.getUrlString()) : that.getUrlString() != null) {

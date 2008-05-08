@@ -16,8 +16,6 @@
 
 package com.atlassian.theplugin.commons.remoteapi;
 
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-
 /**
  * Bamboo excepton related to session expired event process.
  */

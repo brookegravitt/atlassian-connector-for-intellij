@@ -17,8 +17,6 @@
 package com.atlassian.theplugin.commons.remoteapi;
 
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-
 
 public interface ProductServerFacade {
 	void testServerConnection(String url, String userName, String password) throws RemoteApiException;

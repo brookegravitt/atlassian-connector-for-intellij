@@ -40,4 +40,3 @@ public interface PluginConfiguration {
 	void transientSetHttpConfigurable(HttpConfigurableAdapter httpConfigurableAdapter);
 	HttpConfigurableAdapter transientGetHttpConfigurable();
 }
-
