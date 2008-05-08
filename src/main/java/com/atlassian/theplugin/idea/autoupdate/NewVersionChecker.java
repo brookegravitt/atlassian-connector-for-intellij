@@ -43,7 +43,7 @@ public final class NewVersionChecker implements SchedulableChecker {
 	}
 
 	public static NewVersionChecker getInstance(PluginConfiguration pluginConfiguration) {
-		if (instance == null){
+		if (instance == null) {
 			instance = new NewVersionChecker(pluginConfiguration);
 		}
 
