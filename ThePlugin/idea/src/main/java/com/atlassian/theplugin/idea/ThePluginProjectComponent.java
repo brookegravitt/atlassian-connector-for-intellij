@@ -31,10 +31,6 @@ import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;
 import com.atlassian.theplugin.idea.crucible.*;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.atlassian.theplugin.jira.JIRAServer;
-import com.intellij.ide.projectView.TreeStructureProvider;
-import com.intellij.ide.projectView.ViewSettings;
-import com.intellij.ide.projectView.ProjectViewNode;
-import com.intellij.ide.projectView.impl.nodes.PsiFileNode;
 import com.intellij.ide.util.treeView.AbstractTreeNode;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ProjectComponent;
@@ -48,8 +44,6 @@ import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.peer.PeerFactory;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.table.TableView;
-import com.intellij.psi.impl.source.PsiClassImpl;
-import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -64,8 +58,7 @@ import java.util.List;
 @State(name = "ThePluginSettings", storages = {@Storage(id = "thePlugin", file = "$PROJECT_FILE$")})
 public class ThePluginProjectComponent implements
         ProjectComponent,
-        PersistentStateComponent<ProjectConfigurationBean>,
-        TreeStructureProvider {
+        PersistentStateComponent<ProjectConfigurationBean> {
     private static final String THE_PLUGIN_TOOL_WINDOW_ICON = "/icons/ico_plugin_16.png";
 
     private final ProjectConfigurationBean projectConfigurationBean;
@@ -367,6 +360,7 @@ public class ThePluginProjectComponent implements
         return bambooStatusChecker;
     }
 
+    /*
     public Collection<AbstractTreeNode> modify(
             AbstractTreeNode abstractTreeNode,
             Collection<AbstractTreeNode> abstractTreeNodes,
@@ -374,7 +368,7 @@ public class ThePluginProjectComponent implements
         ArrayList<AbstractTreeNode> result = new ArrayList<AbstractTreeNode>();
 
         for (final AbstractTreeNode child : abstractTreeNodes) {
-/*
+
             ProjectViewNode treeNode = (ProjectViewNode) child;
             Object o = treeNode.getValue();
 
@@ -414,11 +408,11 @@ public class ThePluginProjectComponent implements
                 } else {
                     result.add(child);
                 }
-*/
-            result.add(child);
+            }
         }
         return result;
     }
+    */
 
     @Nullable
     public Object getData(Collection<AbstractTreeNode> abstractTreeNodes, String s) {
