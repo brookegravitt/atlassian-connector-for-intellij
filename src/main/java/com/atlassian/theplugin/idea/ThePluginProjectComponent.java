@@ -31,9 +31,9 @@ import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;
 import com.atlassian.theplugin.idea.crucible.*;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.atlassian.theplugin.jira.JIRAServer;
-import com.intellij.ide.projectView.ProjectViewNode;
 import com.intellij.ide.projectView.TreeStructureProvider;
 import com.intellij.ide.projectView.ViewSettings;
+import com.intellij.ide.projectView.ProjectViewNode;
 import com.intellij.ide.projectView.impl.nodes.PsiFileNode;
 import com.intellij.ide.util.treeView.AbstractTreeNode;
 import com.intellij.openapi.components.PersistentStateComponent;
@@ -46,10 +46,10 @@ import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.peer.PeerFactory;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.impl.source.PsiClassImpl;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.table.TableView;
+import com.intellij.psi.impl.source.PsiClassImpl;
+import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -367,10 +367,14 @@ public class ThePluginProjectComponent implements
         return bambooStatusChecker;
     }
 
-    public Collection<AbstractTreeNode> modify(AbstractTreeNode abstractTreeNode, Collection<AbstractTreeNode> abstractTreeNodes, ViewSettings viewSettings) {
+    public Collection<AbstractTreeNode> modify(
+            AbstractTreeNode abstractTreeNode,
+            Collection<AbstractTreeNode> abstractTreeNodes,
+            ViewSettings viewSettings) {
         ArrayList<AbstractTreeNode> result = new ArrayList<AbstractTreeNode>();
 
         for (final AbstractTreeNode child : abstractTreeNodes) {
+/*
             ProjectViewNode treeNode = (ProjectViewNode) child;
             Object o = treeNode.getValue();
 
@@ -410,7 +414,8 @@ public class ThePluginProjectComponent implements
                 } else {
                     result.add(child);
                 }
-            }
+*/
+            result.add(child);
         }
         return result;
     }

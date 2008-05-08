@@ -58,8 +58,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -115,14 +113,16 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 		table.prepareColumns(columns, CrucibleTableColumnProvider.makeRendererInfo());
 
 		table.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) { // on double click, just open the issue
+			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 1) {
-					ReviewDataInfoAdapter reviewDataInfo = (ReviewDataInfoAdapter) table.getSelectedObject();
+/*
+                    ReviewDataInfoAdapter reviewDataInfo = (ReviewDataInfoAdapter) table.getSelectedObject();
 					if (reviewDataInfo != null) {
 						addReviewScope(reviewDataInfo);
 					}
+*/
 				} else {
-					if (e.getClickCount() == 2) {
+					if (e.getClickCount() == 2) { // on double click, just open the issue
 						ReviewDataInfoAdapter reviewDataInfo = (ReviewDataInfoAdapter) table.getSelectedObject();
 						if (reviewDataInfo != null) {
 							BrowserUtil.launchBrowser(reviewDataInfo.getReviewUrl());
@@ -163,7 +163,8 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 	private JPopupMenu createContextMenu(final ReviewDataInfoAdapter reviewAdapter) {
 		JPopupMenu contextMenu = new JPopupMenu();
 		contextMenu.add(makeWebUrlMenu("View", reviewAdapter.getReviewUrl()));
-		contextMenu.addSeparator();
+/*
+        contextMenu.addSeparator();
 		contextMenu.add(makeMenuItem("Open review items", null, reviewAdapter, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				openReviewFiles(reviewAdapter);
@@ -190,12 +191,13 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 //				ProjectView.getInstance(IdeaHelper.getCurrentProject()).refresh();
 			}
 		}));
-
-
+*/		
 		return contextMenu;
 	}
 
-	private JMenuItem makeMenuItem(String menuName, Icon icon, final ReviewDataInfoAdapter reviewAdapter, ActionListener listener) {
+	private JMenuItem makeMenuItem(String menuName,
+                                   Icon icon,                                    
+                                   ActionListener listener) {
 		JMenuItem item = new JMenuItem();
 		item.setIcon(icon);
 		item.setText(menuName);
@@ -205,7 +207,8 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
 
 	private void openItemDiff(ReviewDataInfoAdapter reviewAdapter) {
-		VirtualFile vFile = FileDocumentManager.getInstance().getFile(FileEditorManager.getInstance(IdeaHelper.getCurrentProject()).getSelectedTextEditor().getDocument());
+		VirtualFile vFile = FileDocumentManager.getInstance().getFile(
+                FileEditorManager.getInstance(IdeaHelper.getCurrentProject()).getSelectedTextEditor().getDocument());
 		if (vFile != null) {
 			final List<ReviewItemVirtualFile> files = getReviewVersionedVirtualFiles(reviewAdapter);
 			for (ReviewItemVirtualFile file : files) {
@@ -226,7 +229,8 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 	private List<ReviewItemVirtualFile> getReviewVersionedVirtualFiles(ReviewDataInfoAdapter reviewAdapter) {
 		List<ReviewItemVirtualFile> files = new ArrayList<ReviewItemVirtualFile>();
 		try {
-			List<ReviewItemData> items = crucibleFacade.getReviewItems(reviewAdapter.getServer(), reviewAdapter.getPermaId());
+			List<ReviewItemData> items = crucibleFacade.getReviewItems(
+                    reviewAdapter.getServer(), reviewAdapter.getPermaId());
 			VirtualFile baseDir = IdeaHelper.getCurrentProject().getBaseDir();
 			String baseUrl = VcsIdeaHelper.getRepositoryUrlForFile(baseDir);
 			for (ReviewItemData item : items) {
