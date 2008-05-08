@@ -55,7 +55,7 @@ import java.util.List;
 /**
  * Per-project plugin component.
  */
-@State(name = "ThePluginSettings", storages = {@Storage(id = "thePlugin", file = "$PROJECT_FILE$")})
+@State(name = "ThePluginSettings", storages = {@Storage(id = "thePlugin", file = "$PROJECT_FILE$") })
 public class ThePluginProjectComponent implements
         ProjectComponent,
         PersistentStateComponent<ProjectConfigurationBean> {
@@ -359,60 +359,6 @@ public class ThePluginProjectComponent implements
     public BambooStatusChecker getBambooStatusChecker() {
         return bambooStatusChecker;
     }
-
-    /*
-    public Collection<AbstractTreeNode> modify(
-            AbstractTreeNode abstractTreeNode,
-            Collection<AbstractTreeNode> abstractTreeNodes,
-            ViewSettings viewSettings) {
-        ArrayList<AbstractTreeNode> result = new ArrayList<AbstractTreeNode>();
-
-        for (final AbstractTreeNode child : abstractTreeNodes) {
-
-            ProjectViewNode treeNode = (ProjectViewNode) child;
-            Object o = treeNode.getValue();
-
-            if (o instanceof PsiClassImpl) {
-                PsiClassImpl ci = (PsiClassImpl) o;
-                if (reviewScopeFiles != null) {
-                    boolean found = false;
-                    for (ReviewItemVirtualFile reviewScopeFile : reviewScopeFiles) {
-                        if (reviewScopeFile.getVirtualFile().equals(ci.getContainingFile().getVirtualFile())) {
-                            result.add(new ReviewTreeNode(reviewScopeFile.getReviewItem(), IdeaHelper.getCurrentProject(), ci, viewSettings));
-                            found = true;
-                        }
-                    }
-                    if (!found) {
-                        result.add(child);
-                    }
-                } else {
-                    result.add(child);
-                }
-            } else {
-                if (treeNode instanceof PsiFileNode) {
-                    PsiFile pi = (PsiFile) o;
-                    if (reviewScopeFiles != null) {
-                        boolean found = false;
-                        for (ReviewItemVirtualFile reviewScopeFile : reviewScopeFiles) {
-                            if (reviewScopeFile.getVirtualFile().equals(pi.getContainingFile().getVirtualFile())) {
-                                result.add(new ReviewFileNode(reviewScopeFile.getReviewItem(), IdeaHelper.getCurrentProject(), pi, viewSettings));
-                                found = true;
-                            }
-                        }
-                        if (!found) {
-                            result.add(child);
-                        }
-                    } else {
-                        result.add(child);
-                    }
-                } else {
-                    result.add(child);
-                }
-            }
-        }
-        return result;
-    }
-    */
 
     @Nullable
     public Object getData(Collection<AbstractTreeNode> abstractTreeNodes, String s) {
