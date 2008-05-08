@@ -35,7 +35,7 @@ import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 import java.util.Collection;
 
-public class ServerTreePanel extends JPanel implements TreeSelectionListener {
+public final class ServerTreePanel extends JPanel implements TreeSelectionListener {
 
 	private JTree serverTree = null;
 	private transient PluginConfiguration pluginConfiguration = null;
