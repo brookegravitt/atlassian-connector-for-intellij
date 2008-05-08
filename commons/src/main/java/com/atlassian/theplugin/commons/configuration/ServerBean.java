@@ -309,8 +309,8 @@ public class ServerBean implements Server {
 		if (useFavourite != null ? !useFavourite.equals(that.getUseFavourite()) : that.getUseFavourite() != null) {
 			return false;
 		}
-		if (subscribedPlans != null ? !subscribedPlans.equals(that.transientGetSubscribedPlans()) :
-				that.transientGetSubscribedPlans() != null) {
+		if (subscribedPlans != null ? !subscribedPlans.equals(that.transientGetSubscribedPlans())
+                : that.transientGetSubscribedPlans() != null) {
 			return false;
 		}
 		if (urlString != null ? !urlString.equals(that.getUrlString()) : that.getUrlString() != null) {
