@@ -18,6 +18,8 @@ package com.atlassian.theplugin.bamboo;
 
 import com.atlassian.theplugin.commons.bamboo.api.BambooSession;
 import com.atlassian.theplugin.commons.bamboo.api.BambooSessionImpl;
+import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.bamboo.api.bamboomock.LogoutCallback;
 import com.atlassian.theplugin.bamboo.api.bamboomock.LoginCallback;
 import junit.framework.TestCase;
@@ -35,9 +37,10 @@ public class BambooSessionSslTest extends TestCase {
 	private String mockBaseUrl;
 
 	protected void setUp() throws Exception {
-		String keystoreLocation = getClass().getResource("/mock/selfSigned.keystore").toExternalForm();
+        ConfigurationFactory.setConfiguration(new PluginConfigurationBean());        
 
-		SslSocketConnector sslConnector = new SslSocketConnector();
+        String keystoreLocation = getClass().getResource("/mock/selfSigned.keystore").toExternalForm();
+        SslSocketConnector sslConnector = new SslSocketConnector();
 
 		sslConnector.setPort(0);
 		sslConnector.setKeystore(keystoreLocation);
