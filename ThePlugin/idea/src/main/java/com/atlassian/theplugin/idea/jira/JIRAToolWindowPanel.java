@@ -404,6 +404,11 @@ public class JIRAToolWindowPanel extends JPanel {
 
 
 	private void setStatusMessage(String msg) {
+		setStatusMessage(msg, false);
+	}
+
+	private void setStatusMessage(String msg, boolean isError) {
+			editorPane.setBackground(isError ? Color.red : Color.white);
 		editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">" + msg + "</td></tr></table>"));
 	}
 
@@ -494,8 +499,7 @@ public class JIRAToolWindowPanel extends JPanel {
 				if (filters.getSavedFilterUsed()) {
 					if (savedQuery != null) {
 						query.add(savedQuery);
-						editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">Retrieving issues from <b>"
-								+ jiraServer.getServer().getName() + "</b>...</td></tr></table>"));
+						setStatusMessage("Retrieving issues from <b>" + jiraServer.getServer().getName() + "</b>...");
 						editorPane.setCaretPosition(0);
 						result = serverFacade.getSavedFilterIssues(jiraServer.getServer(),
 								query, sortColumn, sortOrder, startIndex, maxIndex);
@@ -511,8 +515,7 @@ public class JIRAToolWindowPanel extends JPanel {
 							query.add(jiraQueryFragment);
 						}
 					}
-					editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">Retrieving issues from <b>"
-							+ jiraServer.getServer().getName() + "</b>...</td></tr></table>"));
+					setStatusMessage("Retrieving issues from <b>" + jiraServer.getServer().getName() + "</b>...");
 					editorPane.setCaretPosition(0);
 					result = serverFacade.getIssues(jiraServer.getServer(),
 							query, sortColumn, sortOrder, startIndex, maxIndex);
@@ -523,8 +526,7 @@ public class JIRAToolWindowPanel extends JPanel {
 					});
 				}
 			} catch (JIRAException e) {
-				editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">Error contacting server <b>"
-						+ jiraServer.getServer().getName() + "</b>?</td></tr></table>"));
+				setStatusMessage("Error contacting server <b>" + jiraServer.getServer().getName() + "</b>", true);
 			} finally {
 				progressAnimation.stopProgressAnimation();
 			}
@@ -668,7 +670,7 @@ public class JIRAToolWindowPanel extends JPanel {
 								issue, issueComment.getComment());
 						setStatusMessage("Commented issue " + issue.getKey());
 					} catch (JIRAException e) {
-						setStatusMessage("Issue not commented: " + e.getMessage());
+						setStatusMessage("Issue not commented: " + e.getMessage(), true);
 					}
 				}
 			}, null);
@@ -689,7 +691,7 @@ public class JIRAToolWindowPanel extends JPanel {
 								issue, workLogCreate.getTimeSpentString(), workLogCreate.getComment());
 						setStatusMessage("Logged work for issue " + issue.getKey());
 					} catch (JIRAException e) {
-						setStatusMessage("Work not logged: " + e.getMessage());
+						setStatusMessage("Work not logged: " + e.getMessage(), true);
 					}
 				}
 			}, null);
@@ -709,6 +711,7 @@ public class JIRAToolWindowPanel extends JPanel {
 						setStatusMessage("Creating new issue...");
 						JIRAIssue newIssue;
 						String message;
+						boolean isError = false;
 						try {
 							newIssue = jiraServerFacade.createIssue(jiraServer.getServer(), issueCreate.getJIRAIssue());
 							message =
@@ -719,9 +722,10 @@ public class JIRAToolWindowPanel extends JPanel {
 									+ "</a>";
 						} catch (JIRAException e) {
 							message = "Failed to create new issue: " + e.getMessage();
+							isError = true;
 						}
 
-						setStatusMessage(message);
+						setStatusMessage(message, isError);
 					}
 				}, null);
 				new Thread(task, "atlassian-idea-plugin create issue").start();
