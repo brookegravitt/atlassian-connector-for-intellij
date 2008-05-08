@@ -3,12 +3,9 @@ package com.atlassian.theplugin.idea;
 import com.atlassian.theplugin.crucible.api.ReviewItemData;
 import com.intellij.ide.projectView.PresentationData;
 import com.intellij.ide.projectView.ViewSettings;
-import com.intellij.ide.projectView.impl.nodes.ClassTreeNode;
 import com.intellij.ide.projectView.impl.nodes.PsiFileNode;
-import com.intellij.navigation.ItemPresentation;
 import com.intellij.openapi.editor.colors.EditorColors;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 
 public class ReviewFileNode extends PsiFileNode {
