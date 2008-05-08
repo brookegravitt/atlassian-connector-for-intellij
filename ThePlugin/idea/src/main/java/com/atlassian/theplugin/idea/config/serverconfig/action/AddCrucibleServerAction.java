@@ -16,13 +16,11 @@
 
 package com.atlassian.theplugin.idea.config.serverconfig.action;
 
+import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.config.ConfigPanel;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DataKeys;
-import com.intellij.openapi.project.Project;
-import com.atlassian.theplugin.idea.config.ConfigPanel;
-import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.commons.ServerType;
 
 /**
  * Created by IntelliJ IDEA.

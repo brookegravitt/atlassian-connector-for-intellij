@@ -340,9 +340,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
 	}
 
-	public List<VersionedComment> getVersionedComments
-			(PermId
-					id) throws RemoteApiException {
+	public List<VersionedComment> getVersionedComments(PermId id) throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
@@ -369,9 +367,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
 	}
 
-	public List<GeneralComment> getComments
-			(PermId
-					id) throws RemoteApiException {
+	public List<GeneralComment> getComments(PermId id) throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
@@ -389,7 +385,8 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 				int i = 1;
 				for (Element element : elements) {
 					GeneralCommentBean comment = CrucibleRestXmlHelper.parseGeneralCommentNode(element);
-					XPath repliesPath = XPath.newInstance("comments/generalCommentData[" + (i++) + "]/replies/generalCommentData");
+					XPath repliesPath = XPath.newInstance("comments/generalCommentData[" + (i++)
+							+ "]/replies/generalCommentData");
 					List<Element> replies = repliesPath.selectNodes(doc);
 					if (replies != null && !replies.isEmpty()) {
 						for (Element reply : replies) {
@@ -408,7 +405,8 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 				int i = 1;
 				for (Element element : vElements) {
 					VersionedCommentBean comment = CrucibleRestXmlHelper.parseVersionedCommentNode(element);
-					XPath repliesPath = XPath.newInstance("comments/versionedLineCommentData[" + (i++) + "]/replies/generalCommentData");
+					XPath repliesPath = XPath.newInstance("comments/versionedLineCommentData[" + (i++)
+							+ "]/replies/generalCommentData");
 					List<Element> replies = repliesPath.selectNodes(doc);
 					if (replies != null && !replies.isEmpty()) {
 						for (Element reply : replies) {
@@ -427,19 +425,14 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
 	}
 
-	public ReviewData createReview
-			(ReviewData
-					reviewData) throws RemoteApiException {
+	public ReviewData createReview(ReviewData reviewData) throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
 		return createReviewFromPatch(reviewData, null);
 	}
 
-	public ReviewData createReviewFromPatch
-			(ReviewData
-					review, String
-					patch) throws RemoteApiException {
+	public ReviewData createReviewFromPatch(ReviewData review, String patch) throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
@@ -464,26 +457,19 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
 	}
 
-	protected void adjustHttpHeader
-			(HttpMethod
-					method) {
+	protected void adjustHttpHeader(HttpMethod method) {
 		method.addRequestHeader(new Header("Authorization", getAuthHeaderValue()));
 	}
 
-	protected void preprocessResult
-			(Document
-					doc) throws JDOMException, RemoteApiSessionExpiredException {
+	protected void preprocessResult(Document doc) throws JDOMException, RemoteApiSessionExpiredException {
 
 	}
 
-	private String getAuthHeaderValue
-			() {
+	private String getAuthHeaderValue() {
 		return "Basic " + encode(userName + ":" + password);
 	}
 
-	private synchronized String encode
-			(String
-					str2encode) {
+	private synchronized String encode(String str2encode) {
 		try {
 			return Base64.encodeBytes(str2encode.getBytes("UTF-8"));
 		} catch (UnsupportedEncodingException e) {
@@ -491,9 +477,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
 	}
 
-	private static String getExceptionMessages
-			(Document
-					doc) throws JDOMException {
+	private static String getExceptionMessages(Document doc) throws JDOMException {
 		XPath xpath = XPath.newInstance("/loginResult/error");
 		@SuppressWarnings("unchecked")
 		List<Element> elements = xpath.selectNodes(doc);
@@ -511,8 +495,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
 	}
 
-	public boolean isLoggedIn
-			() {
+	public boolean isLoggedIn() {
 		return authToken != null;
 	}
 }
