@@ -168,8 +168,7 @@ public class JIRASessionImpl implements JIRASession {
 			RemoteComment rComment = new RemoteComment();
 			rComment.setBody(comment);
 			service.addComment(token, issue.getKey(), rComment);
-		}
-		catch (RemoteException e) {
+		} catch (RemoteException e) {
 			throw new RemoteApiException(e.toString(), e);
 		}
 	}

@@ -30,7 +30,8 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 public final class JIRAServerFacadeImpl implements JIRAServerFacade {
-	private JIRAServerFacadeImpl(){
+
+	private JIRAServerFacadeImpl() {
 
 	}
 
