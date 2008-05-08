@@ -564,7 +564,15 @@ public class CrucibleServerFacadeTest extends TestCase {
 			public String getName() {
 				return "RepoName" + Integer.toString(i);
 			}
-		};
+
+            public String getType() {
+                return "svn";
+            }
+
+            public boolean isEnabled() {
+                return false;
+            }
+        };
 	}
 
 	public void _testCreateReviewHardcoded() throws ServerPasswordNotProvidedException {

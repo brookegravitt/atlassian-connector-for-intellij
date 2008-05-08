@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,7 +39,7 @@ import java.util.List;
 /**
  * Communication stub for Crucible REST API.
  */
-public class CrucibleSessionImpl extends AbstractHttpSession implements CrucibleSession  {
+public class CrucibleSessionImpl extends AbstractHttpSession implements CrucibleSession {
 	private static final String AUTH_SERVICE = "/rest-service/auth-v1";
 	private static final String REVIEW_SERVICE = "/rest-service/reviews-v1";
 	private static final String PROJECTS_SERVICE = "/rest-service/projects-v1";
@@ -244,6 +244,37 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
 	}
 
+	public SvnRepositoryData getRepository(String repoName) throws RemoteApiException {
+		if (!isLoggedIn()) {
+			throw new IllegalStateException("Calling method without calling login() first");
+		}
+
+		List<RepositoryData> repositories = getRepositories();
+		for (RepositoryData repository : repositories) {
+			if (repository.getName().equals(repoName)) {
+				if (repository.getType().equals("svn")) {
+					String requestUrl = baseUrl + REPOSITORIES_SERVICE + "/" + repoName + "/svn";
+					try {
+						Document doc = retrieveGetResponse(requestUrl);
+						XPath xpath = XPath.newInstance("/svnRepositoryData");
+						@SuppressWarnings("unchecked")
+						List<Element> elements = xpath.selectNodes(doc);
+						if (elements != null && !elements.isEmpty()) {
+							for (Element element : elements) {
+								return CrucibleRestXmlHelper.parseSvnRepositoryNode(element);
+							}
+						}
+					} catch (IOException e) {
+						throw new RemoteApiException(e.getMessage(), e);
+					} catch (JDOMException e) {
+						throw new RemoteApiException("Server returned malformed response", e);
+					}
+				}
+			}
+		}
+		return null;
+	}
+
 	public List<ReviewItemData> getReviewItems(PermId id) throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
@@ -260,7 +291,18 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 
 			if (elements != null && !elements.isEmpty()) {
 				for (Element element : elements) {
-					reviewItems.add(CrucibleRestXmlHelper.parseReviewItemNode(element));
+					ReviewItemDataBean review = CrucibleRestXmlHelper.parseReviewItemNode(element);
+					SvnRepositoryData repository = getRepository(review.getRepositoryName());
+					if (repository != null) {
+						String repoPath = repository.getUrl() + "/" + repository.getPath() + "/";
+						if (!"".equals(review.getFromPath())) {
+							review.setFromPath(repoPath + review.getFromPath());
+						}
+						if (!"".equals(review.getToPath())) {
+							review.setToPath(repoPath + review.getToPath());
+						}
+						reviewItems.add(review);
+					}
 				}
 			}
 			return reviewItems;
@@ -298,7 +340,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
 	}
 
-	public List<VersionedComment> getVersionedComments(PermId id) throws RemoteApiException {
+	public List<VersionedComment> getVersionedComments
+			(PermId
+					id) throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
@@ -325,7 +369,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
 	}
 
-	public List<GeneralComment> getComments(PermId id) throws RemoteApiException {
+	public List<GeneralComment> getComments
+			(PermId
+					id) throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
@@ -334,24 +380,42 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		try {
 			Document doc = retrieveGetResponse(requestUrl);
 
-			XPath xpath = XPath.newInstance("comments/generalComment");
+			XPath xpath = XPath.newInstance("comments/generalCommentData");
 			@SuppressWarnings("unchecked")
 			List<Element> elements = xpath.selectNodes(doc);
 			List<GeneralComment> comments = new ArrayList<GeneralComment>();
 
 			if (elements != null && !elements.isEmpty()) {
+				int i = 1;
 				for (Element element : elements) {
-					comments.add(CrucibleRestXmlHelper.parseGeneralCommentNode(element));
+					GeneralCommentBean comment = CrucibleRestXmlHelper.parseGeneralCommentNode(element);
+					XPath repliesPath = XPath.newInstance("comments/generalCommentData[" + (i++) + "]/replies/generalCommentData");
+					List<Element> replies = repliesPath.selectNodes(doc);
+					if (replies != null && !replies.isEmpty()) {
+						for (Element reply : replies) {
+							comment.addReply(CrucibleRestXmlHelper.parseGeneralCommentNode(reply));
+						}
+					}
+					comments.add(comment);
 				}
 			}
 
-			xpath = XPath.newInstance("comments/versionedComment");
+			xpath = XPath.newInstance("comments/versionedLineCommentData");
 			@SuppressWarnings("unchecked")
 			List<Element> vElements = xpath.selectNodes(doc);
 
 			if (vElements != null && !vElements.isEmpty()) {
+				int i = 1;
 				for (Element element : vElements) {
-					comments.add(CrucibleRestXmlHelper.parseVersionedCommentNode(element));
+					VersionedCommentBean comment = CrucibleRestXmlHelper.parseVersionedCommentNode(element);
+					XPath repliesPath = XPath.newInstance("comments/versionedLineCommentData[" + (i++) + "]/replies/generalCommentData");
+					List<Element> replies = repliesPath.selectNodes(doc);
+					if (replies != null && !replies.isEmpty()) {
+						for (Element reply : replies) {
+							comment.addReply(CrucibleRestXmlHelper.parseGeneralCommentNode(reply));
+						}
+					}
+					comments.add(comment);
 				}
 			}
 
@@ -363,14 +427,19 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
 	}
 
-	public ReviewData createReview(ReviewData reviewData) throws RemoteApiException {
+	public ReviewData createReview
+			(ReviewData
+					reviewData) throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
 		return createReviewFromPatch(reviewData, null);
 	}
 
-	public ReviewData createReviewFromPatch(ReviewData review, String patch) throws RemoteApiException {
+	public ReviewData createReviewFromPatch
+			(ReviewData
+					review, String
+					patch) throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
@@ -395,19 +464,26 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
 	}
 
-	protected void adjustHttpHeader(HttpMethod method) {
+	protected void adjustHttpHeader
+			(HttpMethod
+					method) {
 		method.addRequestHeader(new Header("Authorization", getAuthHeaderValue()));
 	}
 
-	protected void preprocessResult(Document doc) throws JDOMException, RemoteApiSessionExpiredException {
+	protected void preprocessResult
+			(Document
+					doc) throws JDOMException, RemoteApiSessionExpiredException {
 
 	}
 
-	private String getAuthHeaderValue() {
+	private String getAuthHeaderValue
+			() {
 		return "Basic " + encode(userName + ":" + password);
 	}
 
-	private synchronized String encode(String str2encode) {
+	private synchronized String encode
+			(String
+					str2encode) {
 		try {
 			return Base64.encodeBytes(str2encode.getBytes("UTF-8"));
 		} catch (UnsupportedEncodingException e) {
@@ -415,7 +491,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
 	}
 
-	private static String getExceptionMessages(Document doc) throws JDOMException {
+	private static String getExceptionMessages
+			(Document
+					doc) throws JDOMException {
 		XPath xpath = XPath.newInstance("/loginResult/error");
 		@SuppressWarnings("unchecked")
 		List<Element> elements = xpath.selectNodes(doc);
@@ -433,7 +511,8 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
 	}
 
-	public boolean isLoggedIn() {
+	public boolean isLoggedIn
+			() {
 		return authToken != null;
 	}
 }
