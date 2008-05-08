@@ -77,7 +77,7 @@ public final class ServerConfigPanel extends JPanel implements ContentPanel {
     }
 
 	public static ServerConfigPanel getInstance() {
-		if (instance == null){
+		if (instance == null) {
 			instance = new ServerConfigPanel();
 		}
 		return instance;
