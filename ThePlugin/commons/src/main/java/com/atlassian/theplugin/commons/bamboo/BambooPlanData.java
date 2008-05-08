@@ -16,8 +16,6 @@
 
 package com.atlassian.theplugin.commons.bamboo;
 
-import com.atlassian.theplugin.commons.bamboo.BambooPlan;
-
 public class BambooPlanData implements BambooPlan {
 	private String name;
 	private String key;

@@ -17,7 +17,6 @@
 package com.atlassian.theplugin.commons.configuration;
 
 import com.atlassian.theplugin.commons.Server;
-import com.atlassian.theplugin.commons.configuration.ProductServerConfiguration;
 
 import java.util.Collection;
 import java.util.ArrayList;

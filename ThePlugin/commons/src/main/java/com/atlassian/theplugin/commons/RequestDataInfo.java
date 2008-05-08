@@ -16,8 +16,6 @@
 
 package com.atlassian.theplugin.commons;
 
-import com.atlassian.theplugin.commons.RequestData;
-
 import java.util.Date;
 
 public class RequestDataInfo implements RequestData {
