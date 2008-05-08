@@ -17,6 +17,8 @@
 package com.atlassian.theplugin.crucible;
 
 import com.atlassian.theplugin.commons.configuration.ServerBean;
+import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.crucible.api.*;
 import com.atlassian.theplugin.crucible.api.rest.cruciblemock.LoginCallback;
@@ -45,8 +47,9 @@ public class CrucibleServerFacadeTest extends TestCase {
 
 	@SuppressWarnings("unchecked")
 	protected void setUp() {
+        ConfigurationFactory.setConfiguration(new PluginConfigurationBean());
 
-		crucibleSessionMock = createMock(CrucibleSession.class);
+        crucibleSessionMock = createMock(CrucibleSession.class);
 
 		facade = CrucibleServerFacadeImpl.getInstance();
 
