@@ -37,7 +37,7 @@ public interface PluginConfiguration {
 	void setGeneralConfigurationData(GeneralConfigurationBean generalConfigurationBean);
 
 	//set should be applied either in IDEA an Eclipse environment
-	void setHttpConfigurable(HttpConfigurableAdapter httpConfigurableAdapter);
-	HttpConfigurableAdapter getHttpConfigurable();
+	void transientSetHttpConfigurable(HttpConfigurableAdapter httpConfigurableAdapter);
+	HttpConfigurableAdapter transientGetHttpConfigurable();
 }
 

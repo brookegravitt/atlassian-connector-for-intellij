@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,10 +16,9 @@
 
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.CrucibleReviewScopeProvider;
+import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.bamboo.*;
-import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.crucible.CrucibleServerFacade;
@@ -32,6 +31,11 @@ import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;
 import com.atlassian.theplugin.idea.crucible.*;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.atlassian.theplugin.jira.JIRAServer;
+import com.intellij.ide.projectView.ProjectViewNode;
+import com.intellij.ide.projectView.TreeStructureProvider;
+import com.intellij.ide.projectView.ViewSettings;
+import com.intellij.ide.projectView.impl.nodes.PsiFileNode;
+import com.intellij.ide.util.treeView.AbstractTreeNode;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.components.State;
@@ -41,329 +45,394 @@ import com.intellij.openapi.startup.StartupManager;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.wm.ToolWindowManager;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.peer.PeerFactory;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.search.scope.packageSet.NamedScopesHolder;
+import com.intellij.psi.impl.source.PsiClassImpl;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.table.TableView;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Per-project plugin component.
  */
-@State(name = "ThePluginSettings", storages = { @Storage(id = "thePlugin", file = "$PROJECT_FILE$") })
-public class ThePluginProjectComponent implements ProjectComponent, PersistentStateComponent<ProjectConfigurationBean> {
-	private static final String THE_PLUGIN_TOOL_WINDOW_ICON = "/icons/ico_plugin_16.png";
+@State(name = "ThePluginSettings", storages = {@Storage(id = "thePlugin", file = "$PROJECT_FILE$")})
+public class ThePluginProjectComponent implements
+        ProjectComponent,
+        PersistentStateComponent<ProjectConfigurationBean>,
+        TreeStructureProvider {
+    private static final String THE_PLUGIN_TOOL_WINDOW_ICON = "/icons/ico_plugin_16.png";
 
-	private final ProjectConfigurationBean projectConfigurationBean;
+    private final ProjectConfigurationBean projectConfigurationBean;
 
-	private final Project project;
-	private BambooStatusIcon statusBarBambooIcon;
+    private final Project project;
+    private BambooStatusIcon statusBarBambooIcon;
 
-	private CrucibleStatusIcon statusBarCrucibleIcon;
-	private PluginUpdateIcon statusPluginUpdateIcon;
-	private final BambooStatusChecker bambooStatusChecker;
-	private HtmlBambooStatusListener iconBambooStatusListener;
-	private BambooStatusListenerImpl tooltipBambooStatusListener;
+    private CrucibleStatusIcon statusBarCrucibleIcon;
+    private PluginUpdateIcon statusPluginUpdateIcon;
+    private final BambooStatusChecker bambooStatusChecker;
+    private HtmlBambooStatusListener iconBambooStatusListener;
+    private BambooStatusListenerImpl tooltipBambooStatusListener;
 
-	private final BambooTableToolWindowPanel bambooToolWindowPanel;
-	private final CrucibleTableToolWindowPanel crucibleToolWindowPanel;
+    private final BambooTableToolWindowPanel bambooToolWindowPanel;
+    private final CrucibleTableToolWindowPanel crucibleToolWindowPanel;
 
-	private final CrucibleStatusChecker crucibleStatusChecker;
-	private final CrucibleServerFacade crucibleServerFacade;
+    private final CrucibleStatusChecker crucibleStatusChecker;
+    private final CrucibleServerFacade crucibleServerFacade;
 
-	private final ToolWindowManager toolWindowManager;
-	private boolean created;
-	private CrucibleNewReviewNotifier crucibleNewReviewNotifier;
+    private final ToolWindowManager toolWindowManager;
+    private boolean created;
+    private CrucibleNewReviewNotifier crucibleNewReviewNotifier;
 
-	private final PluginConfiguration pluginConfiguration;
+    private final PluginConfiguration pluginConfiguration;
 
-	private final JIRAToolWindowPanel jiraToolWindowPanel;
-	private JIRAServer currentJiraServer;
-	private PluginToolWindow toolWindow;
+    private final JIRAToolWindowPanel jiraToolWindowPanel;
+    private JIRAServer currentJiraServer;
+    private PluginToolWindow toolWindow;
 
-	public ThePluginProjectComponent(Project project,
-									 CrucibleStatusChecker crucibleStatusChecker,
-									 ToolWindowManager toolWindowManager,
-									 /*BambooStatusChecker bambooStatusChecker,*/
-									 PluginConfiguration pluginConfiguration,
-									 /*BambooTableToolWindowPanel bambooToolWindowPanel,*/
-									 /*CrucibleTableToolWindowPanel crucibleToolWindowPanel,*/
-									 /*JIRAToolWindowPanel jiraToolWindowPanel,*/
-									 ProjectConfigurationBean projectConfigurationBean
-									 /*CrucibleServerFacade crucibleServerFacade*/) {
-		this.project = project;
-		this.crucibleStatusChecker = crucibleStatusChecker;
-		this.toolWindowManager = toolWindowManager;
-		// todo remove that get instance as it can return null. it is better to get it from app component. 
-		this.bambooStatusChecker = BambooStatusChecker.getInstance();
-		this.pluginConfiguration = pluginConfiguration;
-		this.bambooToolWindowPanel = BambooTableToolWindowPanel.getInstance(projectConfigurationBean);
-		this.crucibleToolWindowPanel = CrucibleTableToolWindowPanel.getInstance(projectConfigurationBean);
-		this.jiraToolWindowPanel = JIRAToolWindowPanel.getInstance(projectConfigurationBean, project);
-		this.projectConfigurationBean = projectConfigurationBean;
-		this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
+    private List<ReviewItemVirtualFile> reviewScopeFiles;
+    private String reviewId;
 
-		// make findBugs happy
-		statusBarBambooIcon = null;
-		statusBarCrucibleIcon = null;
-		statusPluginUpdateIcon = null;
-		created = false;
-		StartupManager.getInstance(project).registerPostStartupActivity(new Runnable() {
-			public void run() {
-				System.out.println("Start: Project initializing");
-				initializePlugin();
-				System.out.println("End: Project initialized");
-			}
-		});
-	}
+    public ThePluginProjectComponent(Project project,
+                                     CrucibleStatusChecker crucibleStatusChecker,
+                                     ToolWindowManager toolWindowManager,
+                                     /*BambooStatusChecker bambooStatusChecker,*/
+                                     PluginConfiguration pluginConfiguration,
+                                     /*BambooTableToolWindowPanel bambooToolWindowPanel,*/
+                                     /*CrucibleTableToolWindowPanel crucibleToolWindowPanel,*/
+                                     /*JIRAToolWindowPanel jiraToolWindowPanel,*/
+                                     ProjectConfigurationBean projectConfigurationBean
+                                     /*CrucibleServerFacade crucibleServerFacade*/) {
+        this.project = project;
+        this.crucibleStatusChecker = crucibleStatusChecker;
+        this.toolWindowManager = toolWindowManager;
+        // todo remove that get instance as it can return null. it is better to get it from app component.
+        this.bambooStatusChecker = BambooStatusChecker.getInstance();
+        this.pluginConfiguration = pluginConfiguration;
+        this.bambooToolWindowPanel = BambooTableToolWindowPanel.getInstance(projectConfigurationBean);
+        this.crucibleToolWindowPanel = CrucibleTableToolWindowPanel.getInstance(projectConfigurationBean);
+        this.jiraToolWindowPanel = JIRAToolWindowPanel.getInstance(projectConfigurationBean, project);
+        this.projectConfigurationBean = projectConfigurationBean;
+        this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 
-	public void initComponent() {
-		System.out.println("Start: Init ThePlugin project component.");
-		System.out.println("End: Init ThePlugin project component.");
-		ChangeListManager.getInstance(project).registerCommitExecutor(
-				new CruciblePatchSubmitExecutor(project, crucibleServerFacade));
+        // make findBugs happy
+        statusBarBambooIcon = null;
+        statusBarCrucibleIcon = null;
+        statusPluginUpdateIcon = null;
+        created = false;
+        StartupManager.getInstance(project).registerPostStartupActivity(new Runnable() {
+            public void run() {
+                System.out.println("Start: Project initializing");
+                initializePlugin();
+                System.out.println("End: Project initialized");
+            }
+        });
 
-	}
+        reviewScopeFiles = new ArrayList<ReviewItemVirtualFile>();
+    }
 
-	public void disposeComponent() {
-		System.out.println("Start: Dispose ThePlugin project component");
-		System.out.println("End: Dispose ThePlugin project component");
-	}
+    public void initComponent() {
+        System.out.println("Start: Init ThePlugin project component.");
+        System.out.println("End: Init ThePlugin project component.");
+        ChangeListManager.getInstance(project).registerCommitExecutor(
+                new CruciblePatchSubmitExecutor(project, crucibleServerFacade));
 
-	@NotNull
-	public String getComponentName() {
-		return "ThePluginProjectComponent";
-	}
+    }
 
-	public PluginToolWindow getToolWindow() {
-		return toolWindow;
-	}
+    public void disposeComponent() {
+        System.out.println("Start: Dispose ThePlugin project component");
+        System.out.println("End: Dispose ThePlugin project component");
+    }
 
-	private void initializePlugin() {
-		// unregister changelistmanager?
-		// only open tool windows for each application that's registered
-		// show something nice if there are non
-		// swap listener for dataretrievedlistener and datachangelisteners
-		// store bamboo between runs in UDC
-		// clean up object model confusion
+    @NotNull
+    public String getComponentName() {
+        return "ThePluginProjectComponent";
+    }
 
-		if (!created) {
+    public PluginToolWindow getToolWindow() {
+        return toolWindow;
+    }
 
-			CrucibleReviewScopeProvider provider;
-			provider = CrucibleReviewScopeProvider.getCrucibleScopeProvider(project);
+    private void initializePlugin() {
+        // unregister changelistmanager?
+        // only open tool windows for each application that's registered
+        // show something nice if there are non
+        // swap listener for dataretrievedlistener and datachangelisteners
+        // store bamboo between runs in UDC
+        // clean up object model confusion
 
-			provider.addScope("CR-93", provider.new ToReviewAbstractPackageSet() {
-						public boolean contains(PsiFile psiFile, NamedScopesHolder namedScopesHolder) {
-							final VirtualFile virtualFile = psiFile.getVirtualFile();
-							if (virtualFile == null) {
-								return false;
-							}
-							if (virtualFile.getName().endsWith(".form")) {
-								return true;
-							}
-							return false;
-						}
-			});
-			// DependencyValidationManager.getHolder(project, "", )
+        if (!created) {
 
-			// create tool window on the right
-			toolWindow = new PluginToolWindow(toolWindowManager, project);
-			Icon toolWindowIcon = IconLoader.getIcon(THE_PLUGIN_TOOL_WINDOW_ICON);
-			toolWindow.getIdeaToolWindow().setIcon(toolWindowIcon);
+            // DependencyValidationManager.getHolder(project, "", )
 
-			// create tool window content
-			//Content bambooToolWindow = createBambooContent();
-			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.BAMBOO);
-			toolWindow.showHidePanels();
-			TableView.restore(projectConfigurationBean.getBambooConfiguration().getTableConfiguration(),
-					bambooToolWindowPanel.getTable());
+            // create tool window on the right
+            toolWindow = new PluginToolWindow(toolWindowManager, project);
+            Icon toolWindowIcon = IconLoader.getIcon(THE_PLUGIN_TOOL_WINDOW_ICON);
+            toolWindow.getIdeaToolWindow().setIcon(toolWindowIcon);
 
-			//Content crucibleToolWindow = createCrusibleContent();
-			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.CRUCIBLE);
-			toolWindow.showHidePanels();
-			TableView.restore(projectConfigurationBean.getCrucibleConfiguration().getTableConfiguration(),
-					crucibleToolWindowPanel.getTable());
+            // create tool window content
+            //Content bambooToolWindow = createBambooContent();
+            toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.BAMBOO);
+            toolWindow.showHidePanels();
+            TableView.restore(projectConfigurationBean.getBambooConfiguration().getTableConfiguration(),
+                    bambooToolWindowPanel.getTable());
 
-			//Content jiraToolWindow = createJiraContent();
-			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.JIRA);
-			toolWindow.showHidePanels();
-			//PluginToolWindow.focusPanel(project, PluginToolWindow.ToolWindowPanels.JIRA);
-			//toolWindow.getIdeaToolWindow().getContentManager().setSelectedContent(jiraToolWindow);
+            //Content crucibleToolWindow = createCrusibleContent();
+            toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.CRUCIBLE);
+            toolWindow.showHidePanels();
+            TableView.restore(projectConfigurationBean.getCrucibleConfiguration().getTableConfiguration(),
+                    crucibleToolWindowPanel.getTable());
 
-			TableView.restore(projectConfigurationBean.getJiraConfiguration().getTableConfiguration(),
-					jiraToolWindowPanel.getTable());
+            //Content jiraToolWindow = createJiraContent();
+            toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.JIRA);
+            toolWindow.showHidePanels();
+            //PluginToolWindow.focusPanel(project, PluginToolWindow.ToolWindowPanels.JIRA);
+            //toolWindow.getIdeaToolWindow().getContentManager().setSelectedContent(jiraToolWindow);
 
-			// add tool window bamboo content listener to bamboo checker thread
-			//toolWindowBambooListener = new HtmlBambooStatusListener(bambooToolWindowPanel.getBambooContent());
-			bambooStatusChecker.registerListener(bambooToolWindowPanel);
+            TableView.restore(projectConfigurationBean.getJiraConfiguration().getTableConfiguration(),
+                    jiraToolWindowPanel.getTable());
 
-			// create Bamboo status bar icon
-			statusBarBambooIcon = new BambooStatusIcon(this.project);
-			statusBarBambooIcon.updateBambooStatus(BuildStatus.UNKNOWN,
-					"<div style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">"
-							+ "Waiting for Bamboo build statuses."
-							+ "</div>");
+            // add tool window bamboo content listener to bamboo checker thread
+            //toolWindowBambooListener = new HtmlBambooStatusListener(bambooToolWindowPanel.getBambooContent());
+            bambooStatusChecker.registerListener(bambooToolWindowPanel);
 
-			// add icon listener to bamboo checker thread
-			iconBambooStatusListener = new HtmlBambooStatusListener(statusBarBambooIcon, pluginConfiguration);
-			bambooStatusChecker.registerListener(iconBambooStatusListener);
+            // create Bamboo status bar icon
+            statusBarBambooIcon = new BambooStatusIcon(this.project);
+            statusBarBambooIcon.updateBambooStatus(BuildStatus.UNKNOWN,
+                    "<div style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">"
+                            + "Waiting for Bamboo build statuses."
+                            + "</div>");
 
-			// add simple bamboo listener to bamboo checker thread
-			// this listener shows idea tooltip when buld failed
-			BambooStatusDisplay buildFailedToolTip = new BuildStatusChangedToolTip(project);
-			tooltipBambooStatusListener = new BambooStatusListenerImpl(buildFailedToolTip, pluginConfiguration);
-			bambooStatusChecker.registerListener(tooltipBambooStatusListener);
+            // add icon listener to bamboo checker thread
+            iconBambooStatusListener = new HtmlBambooStatusListener(statusBarBambooIcon, pluginConfiguration);
+            bambooStatusChecker.registerListener(iconBambooStatusListener);
 
-			// add bamboo icon to status bar
-			//statusBar = WindowManager.getInstance().getStatusBar(project);
-			//statusBar.addCustomIndicationComponent(statusBarBambooIcon);
-			statusBarBambooIcon.showOrHideIcon();
+            // add simple bamboo listener to bamboo checker thread
+            // this listener shows idea tooltip when buld failed
+            BambooStatusDisplay buildFailedToolTip = new BuildStatusChangedToolTip(project);
+            tooltipBambooStatusListener = new BambooStatusListenerImpl(buildFailedToolTip, pluginConfiguration);
+            bambooStatusChecker.registerListener(tooltipBambooStatusListener);
 
-			// setup Crucible status checker and listeners
-			crucibleStatusChecker.registerListener(crucibleToolWindowPanel);
+            // add bamboo icon to status bar
+            //statusBar = WindowManager.getInstance().getStatusBar(project);
+            //statusBar.addCustomIndicationComponent(statusBarBambooIcon);
+            statusBarBambooIcon.showOrHideIcon();
 
-			// create crucible status bar icon
-			statusBarCrucibleIcon = new CrucibleStatusIcon(project);
+            // setup Crucible status checker and listeners
+            crucibleStatusChecker.registerListener(crucibleToolWindowPanel);
 
-			crucibleNewReviewNotifier = new CrucibleNewReviewNotifier(statusBarCrucibleIcon);
-			crucibleStatusChecker.registerListener(crucibleNewReviewNotifier);
+            // create crucible status bar icon
+            statusBarCrucibleIcon = new CrucibleStatusIcon(project);
 
-			// add crucible icon to status bar
-			//statusBar.addCustomIndicationComponent(statusBarCrucibleIcon);
-			statusBarCrucibleIcon.showOrHideIcon();
+            crucibleNewReviewNotifier = new CrucibleNewReviewNotifier(statusBarCrucibleIcon);
+            crucibleStatusChecker.registerListener(crucibleNewReviewNotifier);
 
-			statusPluginUpdateIcon = new PluginUpdateIcon(project, pluginConfiguration);
-			ConfirmPluginUpdateHandler.getInstance().setDisplay(statusPluginUpdateIcon);
-			//statusPluginUpdateIcon.showOrHideIcon();
+            // add crucible icon to status bar
+            //statusBar.addCustomIndicationComponent(statusBarCrucibleIcon);
+            statusBarCrucibleIcon.showOrHideIcon();
 
-			toolWindow.showHidePanels();
-			// focus last active panel only if it exists (do not create panel)
-			PluginToolWindow.focusPanelIfExists(project, projectConfigurationBean.getActiveToolWindowTab());
-			toolWindow.startTabChangeListener();
-			
-			IdeaHelper.getAppComponent().rescheduleStatusCheckers(false);
-			if (!pluginConfiguration.getProductServers(ServerType.JIRA_SERVER).transientGetServers().isEmpty()) {
-				long uuid = projectConfigurationBean.getJiraConfiguration().getSelectedServerId();
-				for (Server server : pluginConfiguration.getProductServers(ServerType.JIRA_SERVER).transientGetServers()) {
-					if (server.getUid() == uuid) {
-						jiraToolWindowPanel.selectServer(server);
-					}
-				}
-			}
+            statusPluginUpdateIcon = new PluginUpdateIcon(project, pluginConfiguration);
+            ConfirmPluginUpdateHandler.getInstance().setDisplay(statusPluginUpdateIcon);
+            //statusPluginUpdateIcon.showOrHideIcon();
 
-			created = true;
-		}
-	}
+            toolWindow.showHidePanels();
+            // focus last active panel only if it exists (do not create panel)
+            PluginToolWindow.focusPanelIfExists(project, projectConfigurationBean.getActiveToolWindowTab());
+            toolWindow.startTabChangeListener();
 
-	public Content createBambooContent() {
-		PeerFactory peerFactory = PeerFactory.getInstance();
+            IdeaHelper.getAppComponent().rescheduleStatusCheckers(false);
+            if (!pluginConfiguration.getProductServers(ServerType.JIRA_SERVER).transientGetServers().isEmpty()) {
+                long uuid = projectConfigurationBean.getJiraConfiguration().getSelectedServerId();
+                for (Server server : pluginConfiguration.getProductServers(ServerType.JIRA_SERVER).transientGetServers()) {
+                    if (server.getUid() == uuid) {
+                        jiraToolWindowPanel.selectServer(server);
+                    }
+                }
+            }
 
-		Content content = peerFactory.getContentFactory().createContent(
-				bambooToolWindowPanel,
-				PluginToolWindow.ToolWindowPanels.BAMBOO.toString(),
-				false);
+            created = true;
+        }
+    }
 
-		content.setIcon(IconLoader.getIcon("/icons/tab_bamboo.png"));
-		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
+    public Content createBambooContent() {
+        PeerFactory peerFactory = PeerFactory.getInstance();
 
-		return content;
-	}
+        Content content = peerFactory.getContentFactory().createContent(
+                bambooToolWindowPanel,
+                PluginToolWindow.ToolWindowPanels.BAMBOO.toString(),
+                false);
 
-	public Content createCrusibleContent() {
-		PeerFactory peerFactory = PeerFactory.getInstance();
+        content.setIcon(IconLoader.getIcon("/icons/tab_bamboo.png"));
+        content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
 
-		Content content = peerFactory.getContentFactory().createContent(
-				crucibleToolWindowPanel, PluginToolWindow.ToolWindowPanels.CRUCIBLE.toString(), false);
-		content.setIcon(IconLoader.getIcon("/icons/tab_crucible.png"));
-		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
+        return content;
+    }
 
-		return content;
-	}
+    public Content createCrusibleContent() {
+        PeerFactory peerFactory = PeerFactory.getInstance();
+
+        Content content = peerFactory.getContentFactory().createContent(
+                crucibleToolWindowPanel, PluginToolWindow.ToolWindowPanels.CRUCIBLE.toString(), false);
+        content.setIcon(IconLoader.getIcon("/icons/tab_crucible.png"));
+        content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
+
+        return content;
+    }
 
 
-	public Content createJiraContent() {
-		PeerFactory peerFactory = PeerFactory.getInstance();
+    public Content createJiraContent() {
+        PeerFactory peerFactory = PeerFactory.getInstance();
 
-		Content content = peerFactory.getContentFactory().createContent(
-				jiraToolWindowPanel, PluginToolWindow.ToolWindowPanels.JIRA.toString(), false);
-		content.setIcon(IconLoader.getIcon("/icons/tab_jira.png"));
-		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
+        Content content = peerFactory.getContentFactory().createContent(
+                jiraToolWindowPanel, PluginToolWindow.ToolWindowPanels.JIRA.toString(), false);
+        content.setIcon(IconLoader.getIcon("/icons/tab_jira.png"));
+        content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
 
-		return content;
-	}
+        return content;
+    }
 
-	public void disposePlugin() {
-		if (created) {
-			// remove icon from status bar
-			statusBarBambooIcon.hideIcon();
-			statusBarBambooIcon = null;
-			statusBarCrucibleIcon.hideIcon();
-			statusBarCrucibleIcon = null;
-			statusPluginUpdateIcon.hideIcon();
-			statusPluginUpdateIcon = null;
+    public void disposePlugin() {
+        if (created) {
+            // remove icon from status bar
+            statusBarBambooIcon.hideIcon();
+            statusBarBambooIcon = null;
+            statusBarCrucibleIcon.hideIcon();
+            statusBarCrucibleIcon = null;
+            statusPluginUpdateIcon.hideIcon();
+            statusPluginUpdateIcon = null;
 
-			// unregister listeners
-			//bambooStatusChecker.unregisterListener(iconBambooStatusListener);
-			//bambooStatusChecker.unregisterListener(toolWindowBambooListener);
-			bambooStatusChecker.unregisterListener(tooltipBambooStatusListener);
-			crucibleStatusChecker.unregisterListener(crucibleToolWindowPanel);
-			crucibleStatusChecker.unregisterListener(crucibleNewReviewNotifier);
+            // unregister listeners
+            //bambooStatusChecker.unregisterListener(iconBambooStatusListener);
+            //bambooStatusChecker.unregisterListener(toolWindowBambooListener);
+            bambooStatusChecker.unregisterListener(tooltipBambooStatusListener);
+            crucibleStatusChecker.unregisterListener(crucibleToolWindowPanel);
+            crucibleStatusChecker.unregisterListener(crucibleNewReviewNotifier);
 
-			// remove tool window
-			toolWindow.stopTabChangeListener();
-			toolWindowManager.unregisterToolWindow(PluginToolWindow.TOOL_WINDOW_NAME);
+            // remove tool window
+            toolWindow.stopTabChangeListener();
+            toolWindowManager.unregisterToolWindow(PluginToolWindow.TOOL_WINDOW_NAME);
 
-			created = false;
-		}
-	}
+            created = false;
+        }
+    }
 
-	public void projectOpened() {
-		// content moved to StartupManager to wait until 
-	}
+    public void projectOpened() {
+        // content moved to StartupManager to wait until
+    }
 
-	public void projectClosed() {
-		System.out.println("Start: Project close");
-		disposePlugin();
-		System.out.println("End: Project close");
-	}
+    public void projectClosed() {
+        System.out.println("Start: Project close");
+        disposePlugin();
+        System.out.println("End: Project close");
+    }
 
-	public BambooStatusIcon getStatusBarBambooIcon() {
-		return statusBarBambooIcon;
-	}
+    public BambooStatusIcon getStatusBarBambooIcon() {
+        return statusBarBambooIcon;
+    }
 
-	public CrucibleStatusIcon getStatusBarCrucibleIcon() {
-		return statusBarCrucibleIcon;
-	}
+    public CrucibleStatusIcon getStatusBarCrucibleIcon() {
+        return statusBarCrucibleIcon;
+    }
 
-	public ProjectConfigurationBean getState() {
-		return projectConfigurationBean;
-	}
+    public ProjectConfigurationBean getState() {
+        return projectConfigurationBean;
+    }
 
-	public void loadState(ProjectConfigurationBean state) {
-		projectConfigurationBean.copyConfiguration(state);
-	}
+    public void loadState(ProjectConfigurationBean state) {
+        projectConfigurationBean.copyConfiguration(state);
+    }
 
-	public ProjectConfigurationBean getProjectConfigurationBean() {
-		return projectConfigurationBean;
-	}
+    public ProjectConfigurationBean getProjectConfigurationBean() {
+        return projectConfigurationBean;
+    }
 
-	public JIRAServer getCurrentJiraServer() {
-		return currentJiraServer;
-	}
+    public JIRAServer getCurrentJiraServer() {
+        return currentJiraServer;
+    }
 
-	public void setCurrentJiraServer(JIRAServer currentJiraServer) {
-		this.currentJiraServer = currentJiraServer;
-	}
+    public void setCurrentJiraServer(JIRAServer currentJiraServer) {
+        this.currentJiraServer = currentJiraServer;
+    }
 
-	public CrucibleStatusChecker getCrucibleStatusChecker() {
-		return crucibleStatusChecker;
-	}
+    public CrucibleStatusChecker getCrucibleStatusChecker() {
+        return crucibleStatusChecker;
+    }
 
-	public BambooStatusChecker getBambooStatusChecker() {
-		return bambooStatusChecker;
-	}
+    public BambooStatusChecker getBambooStatusChecker() {
+        return bambooStatusChecker;
+    }
+
+    public Collection<AbstractTreeNode> modify(AbstractTreeNode abstractTreeNode, Collection<AbstractTreeNode> abstractTreeNodes, ViewSettings viewSettings) {
+        ArrayList<AbstractTreeNode> result = new ArrayList<AbstractTreeNode>();
+
+        for (final AbstractTreeNode child : abstractTreeNodes) {
+            ProjectViewNode treeNode = (ProjectViewNode) child;
+            Object o = treeNode.getValue();
+
+            if (o instanceof PsiClassImpl) {
+                PsiClassImpl ci = (PsiClassImpl) o;
+                if (reviewScopeFiles != null) {
+                    boolean found = false;
+                    for (ReviewItemVirtualFile reviewScopeFile : reviewScopeFiles) {
+                        if (reviewScopeFile.getVirtualFile().equals(ci.getContainingFile().getVirtualFile())) {
+                            result.add(new ReviewTreeNode(reviewScopeFile.getReviewItem(), IdeaHelper.getCurrentProject(), ci, viewSettings));
+                            found = true;
+                        }
+                    }
+                    if (!found) {
+                        result.add(child);
+                    }
+                } else {
+                    result.add(child);
+                }
+            } else {
+                if (treeNode instanceof PsiFileNode) {
+                    PsiFile pi = (PsiFile) o;
+                    if (reviewScopeFiles != null) {
+                        boolean found = false;
+                        for (ReviewItemVirtualFile reviewScopeFile : reviewScopeFiles) {
+                            if (reviewScopeFile.getVirtualFile().equals(pi.getContainingFile().getVirtualFile())) {
+                                result.add(new ReviewFileNode(reviewScopeFile.getReviewItem(), IdeaHelper.getCurrentProject(), pi, viewSettings));
+                                found = true;
+                            }
+                        }
+                        if (!found) {
+                            result.add(child);
+                        }
+                    } else {
+                        result.add(child);
+                    }
+                } else {
+                    result.add(child);
+                }
+            }
+        }
+        return result;
+    }
+
+    @Nullable
+    public Object getData(Collection<AbstractTreeNode> abstractTreeNodes, String s) {
+        return null;
+    }
+
+    public List<ReviewItemVirtualFile> getReviewScopeFiles() {
+        return reviewScopeFiles;
+    }
+
+    public void setReviewScopeFiles(List<ReviewItemVirtualFile> reviewScopeFiles) {
+        this.reviewScopeFiles = reviewScopeFiles;
+    }
+
+    public String getReviewId() {
+        return reviewId;
+    }
+
+    public void setReviewId(String reviewId) {
+        this.reviewId = reviewId;
+    }
 }
