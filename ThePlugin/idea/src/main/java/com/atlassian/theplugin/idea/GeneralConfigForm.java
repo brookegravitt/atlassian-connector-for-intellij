@@ -22,6 +22,9 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import com.intellij.util.net.HTTPProxySettingsDialog;
+import com.intellij.openapi.project.Project;
+import static com.intellij.openapi.ui.Messages.showMessageDialog;
+import com.intellij.openapi.ui.Messages;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.CellConstraints;
 
@@ -77,7 +80,7 @@ public class GeneralConfigForm {
 				proxyDialog.setModal(true);
 				proxyDialog.show();
 				proxyDialog.toFront();
-			}
+				showMessageDialog(IdeaHelper.getCurrentProject(), "Please restart IDEA to apply proxy settings change", "Please restart IDEA", Messages.getWarningIcon());			}
 		});
 	}
 
