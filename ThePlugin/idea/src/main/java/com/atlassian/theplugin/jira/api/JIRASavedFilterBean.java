@@ -32,8 +32,9 @@ public class JIRASavedFilterBean implements JIRASavedFilter {
         id = Long.valueOf((String) projMap.get("id"));
     }
 
-	public JIRASavedFilterBean(String n) {
+	public JIRASavedFilterBean(String n, long id) {
 		name = n;
+		this.id = id;
 	}
 
 	public String getName() {
