@@ -94,7 +94,6 @@ public class ThePluginApplicationComponent
 	}
 
 	@NonNls
-	@NotNull
 	public String getComponentName() {
 		return "ThePluginApplicationComponent";
 	}
