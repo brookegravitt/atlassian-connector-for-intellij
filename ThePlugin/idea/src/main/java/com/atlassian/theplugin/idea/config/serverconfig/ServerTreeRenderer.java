@@ -46,7 +46,7 @@ public class ServerTreeRenderer extends DefaultTreeCellRenderer {
 		crucibleServerDisabledIcon = IconLoader.getIcon("/icons/crucible-grey-16.png");
 		jiraServersIcon = IconLoader.getIcon("/icons/jira-blue-16.png");
 		jiraServerEnabledIcon = IconLoader.getIcon("/icons/jira-blue-16.png");
-		jiraServerDisabledIcon = IconLoader.getIcon("/icons/jira-blue-16.png");
+		jiraServerDisabledIcon = IconLoader.getIcon("/icons/jira-grey-16.png");
 	}
 
 	public Component getTreeCellRendererComponent(
