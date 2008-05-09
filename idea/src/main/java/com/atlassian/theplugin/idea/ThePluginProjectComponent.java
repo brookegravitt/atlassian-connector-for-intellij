@@ -142,7 +142,6 @@ public class ThePluginProjectComponent implements
         System.out.println("End: Dispose ThePlugin project component");
     }
 
-    @NotNull
     public String getComponentName() {
         return "ThePluginProjectComponent";
     }
