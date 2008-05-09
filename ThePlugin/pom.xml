@@ -194,14 +194,6 @@
                     <!--<linkXRef>false</linkXRef>-->
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
-                <configuration>
-                    <excludeFilterFile>build-tools/findbugs-exclude.xml</excludeFilterFile>
-                    <xmlOutput>true</xmlOutput>
-                </configuration>
-            </plugin>
         </plugins>
     </reporting>
     <distributionManagement>
