@@ -17,6 +17,8 @@
 package com.atlassian.theplugin.commons.configuration;
 
 public class CrucibleConfigurationBean extends AbstractServerConfigurationBean {
+	private CrucibleTooltipOption crucibleTooltipOption;
+
 	private int pollTime = 1;
 
 	public CrucibleConfigurationBean() {
@@ -27,6 +29,7 @@ public class CrucibleConfigurationBean extends AbstractServerConfigurationBean {
 
 		super(cfg);
 		if (cfg instanceof CrucibleConfigurationBean) {
+			this.crucibleTooltipOption = ((CrucibleConfigurationBean) cfg).getCrucibleTooltipOption();
 			this.pollTime = ((CrucibleConfigurationBean) cfg).getPollTime();
 		}
 	}
@@ -38,4 +41,13 @@ public class CrucibleConfigurationBean extends AbstractServerConfigurationBean {
 	public void setPollTime(int pollTime) {
 		this.pollTime = pollTime;
 	}
+
+	public CrucibleTooltipOption getCrucibleTooltipOption() {
+		return crucibleTooltipOption;
+	}
+
+	public void setCrucibleTooltipOption(CrucibleTooltipOption crucibleTooltipOption) {
+		this.crucibleTooltipOption = crucibleTooltipOption;
+	}
+
 }

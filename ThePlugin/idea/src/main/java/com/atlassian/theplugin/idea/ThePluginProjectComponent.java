@@ -20,6 +20,7 @@ import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.bamboo.*;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
+import com.atlassian.theplugin.commons.configuration.CrucibleTooltipOption;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.crucible.CrucibleServerFacadeImpl;
@@ -173,7 +174,7 @@ public class ThePluginProjectComponent implements
             TableView.restore(projectConfigurationBean.getBambooConfiguration().getTableConfiguration(),
                     bambooToolWindowPanel.getTable());
 
-            //Content crucibleToolWindow = createCrusibleContent();
+            //Content crucibleToolWindow = createCrucibleContent();
             toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.CRUCIBLE);
             toolWindow.showHidePanels();
             TableView.restore(projectConfigurationBean.getCrucibleConfiguration().getTableConfiguration(),
@@ -221,9 +222,12 @@ public class ThePluginProjectComponent implements
             statusBarCrucibleIcon = new CrucibleStatusIcon(project);
 
             crucibleNewReviewNotifier = new CrucibleNewReviewNotifier(statusBarCrucibleIcon);
-            crucibleStatusChecker.registerListener(crucibleNewReviewNotifier);
+			if (IdeaHelper.getPluginConfiguration().getCrucibleConfigurationData().getCrucibleTooltipOption()
+					!= CrucibleTooltipOption.NEVER) {
+				crucibleStatusChecker.registerListener(crucibleNewReviewNotifier);
+			}
 
-            // add crucible icon to status bar
+			// add crucible icon to status bar
             //statusBar.addCustomIndicationComponent(statusBarCrucibleIcon);
             statusBarCrucibleIcon.showOrHideIcon();
 
@@ -264,7 +268,7 @@ public class ThePluginProjectComponent implements
         return content;
     }
 
-    public Content createCrusibleContent() {
+    public Content createCrucibleContent() {
         PeerFactory peerFactory = PeerFactory.getInstance();
 
         Content content = peerFactory.getContentFactory().createContent(
@@ -354,7 +358,11 @@ public class ThePluginProjectComponent implements
         return crucibleStatusChecker;
     }
 
-    public BambooStatusChecker getBambooStatusChecker() {
+	public CrucibleNewReviewNotifier getCrucibleNewReviewNotifier() {
+		return crucibleNewReviewNotifier;
+	}
+	
+	public BambooStatusChecker getBambooStatusChecker() {
         return bambooStatusChecker;
     }
 
