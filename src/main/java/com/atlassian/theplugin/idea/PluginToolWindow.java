@@ -155,7 +155,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 								content = project.getComponent(ThePluginProjectComponent.class).createBambooContent();
 								break;
 							case CRUCIBLE:
-								content = project.getComponent(ThePluginProjectComponent.class).createCrusibleContent();
+								content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContent();
 								break;
 							case JIRA:
 								content = project.getComponent(ThePluginProjectComponent.class).createJiraContent();
@@ -203,7 +203,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 						contentManager.addContent(content);
 						break;
 					case CRUCIBLE:
-						content = project.getComponent(ThePluginProjectComponent.class).createCrusibleContent();
+						content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContent();
 						contentManager.addContent(content);
 						break;
 					case JIRA:
@@ -295,7 +295,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 								content = project.getComponent(ThePluginProjectComponent.class).createBambooContent();
 								break;
 							case CRUCIBLE:
-								content = project.getComponent(ThePluginProjectComponent.class).createCrusibleContent();
+								content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContent();
 								break;
 							case JIRA:
 								content = project.getComponent(ThePluginProjectComponent.class).createJiraContent();
