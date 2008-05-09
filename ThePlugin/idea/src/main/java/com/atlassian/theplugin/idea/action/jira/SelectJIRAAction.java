@@ -31,7 +31,6 @@ import javax.swing.*;
 
 public class SelectJIRAAction extends ComboBoxAction {
 
-	@NotNull
 	protected DefaultActionGroup createPopupActionGroup(JComponent jComponent) {
 		ThePluginApplicationComponent appComponent = IdeaHelper.getAppComponent();
 

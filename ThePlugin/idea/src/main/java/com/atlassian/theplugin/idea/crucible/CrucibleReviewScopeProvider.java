@@ -39,8 +39,7 @@ public class CrucibleReviewScopeProvider implements CustomScopesProvider {
 
 	public CrucibleReviewScopeProvider() {
 	}
-
-	@NotNull
+	
 	public List<NamedScope> getCustomScopes() {
 		return Collections.unmodifiableList(new ArrayList<NamedScope>(scopes.values()));
 	}
@@ -77,7 +76,7 @@ public class CrucibleReviewScopeProvider implements CustomScopesProvider {
 	}
 
 
-	public abstract class ToReviewAbstractPackageSet implements PackageSet {
+	public static abstract class ToReviewAbstractPackageSet implements PackageSet {
 
 		private String name;
 

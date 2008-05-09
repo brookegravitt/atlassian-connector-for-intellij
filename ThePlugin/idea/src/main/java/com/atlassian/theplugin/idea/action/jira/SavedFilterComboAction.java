@@ -34,8 +34,7 @@ public class SavedFilterComboAction extends ComboBoxAction {
 	private static final String NO_SAVED_FILTER_TEXT = "Select saved filter";
 	private ComboBoxButton button = null;
 
-	@NotNull
-	protected DefaultActionGroup createPopupActionGroup(JComponent jComponent) {
+    protected DefaultActionGroup createPopupActionGroup(JComponent jComponent) {
 		if (!(jComponent instanceof ComboBoxButton)) {
 			throw new UnsupportedOperationException("This action can only be used as a combobox");
 		}
