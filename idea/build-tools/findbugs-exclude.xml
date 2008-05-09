@@ -32,11 +32,6 @@
 		<Bug pattern="DM_BOOLEAN_CTOR"/>
 	</Match>
 
-	<!--stupid findBugs does not like multithreading apparently :)-->
-	<Match>
-		<Class name="com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListener"/>
-		<Bug pattern="IS2_INCONSISTENT_SYNC"/>
-	</Match>
 
 	<!-- findBugs has something against in-place created anonymous inner classes -->
 	<Match>
@@ -50,17 +45,6 @@
 		<Bug pattern="URF_UNREAD_FIELD"/>
 	</Match>
 
-	<!--third party code-->
-	<!--TODO: we should probably narrow it down to specific bug codes, or some bugs may slip through-->
-	<!--when objects of these classes are called somewhere else-->
-	<Match>
-		<Or>
-			<Package name="com.atlassian.theplugin.commons.thirdparty.base64"/>
-			<Class   name="thirdparty.javaworld.ClasspathImageView"/>
-			<Class   name="thirdparty.javaworld.ClasspathHTMLEditorKit"/>
-		</Or>
-	</Match>
-
 	<!--genereated from WSDL-->
 	<Match>
 		<Or>
@@ -72,7 +56,6 @@
 	<Match>
 		<Or>
 			<Class name="com.atlassian.theplugin.crucible.api.ReviewDataBean"/>
-			<Class name="com.atlassian.theplugin.commons.bamboo.CommitFileInfo" />
 			<Class name="com.atlassian.theplugin.idea.config.serverconfig.GenericServerConfigForm" />
 			<Class name="com.atlassian.theplugin.util.Connector" />
 			<Class name="com.atlassian.theplugin.idea.PasswordDialog" />
@@ -80,14 +63,6 @@
 		<Bug pattern="NM_CONFUSING"/>
 	</Match>
 
-	<!--fields in these classes have getters and setters-->
-	<Match>
-		<Or>
-			<Class name="com.atlassian.theplugin.commons.bamboo.BambooBuildInfo"/>
-			<Class name="com.atlassian.theplugin.commons.bamboo.CommitInfo"/>
-		</Or>
-		<Bug pattern="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR"/>
-	</Match>
 	
 	<!--reflection is used to call these-->
 	<Match>
@@ -117,11 +92,6 @@
 	<Match>
 		<Class name="com.atlassian.theplugin.idea.ThePluginApplicationComponent"/>
 		<Bug pattern="EI_EXPOSE_REP2"/>
-	</Match>
-	<!-- findbug is too sensitive about the state of the Version object -->
-	<Match>
-		<Class name="com.atlassian.theplugin.commons.util.Version"/>
-		<Bug pattern="SE_TRANSIENT_FIELD_NOT_RESTORED"/>
 	</Match>
 	<Match>
 		<Class name="com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon"/>
