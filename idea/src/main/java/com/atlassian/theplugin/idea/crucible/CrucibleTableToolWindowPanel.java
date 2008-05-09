@@ -227,7 +227,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         } catch (RemoteApiException e1) {
             // @todo handle exception - not used methd currently
         } catch (ServerPasswordNotProvidedException e1) {
-            // @todo handle exception - not used methd currently 
+            // @todo handle exception - not used methd currently
         }
         return files;
     }
@@ -265,7 +265,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         } catch (RemoteApiException e1) {
             // @todo handle exception - not used methd currently
         } catch (ServerPasswordNotProvidedException e1) {
-            // @todo handle exception - not used methd currently 
+            // @todo handle exception - not used methd currently
         }
     }
 
