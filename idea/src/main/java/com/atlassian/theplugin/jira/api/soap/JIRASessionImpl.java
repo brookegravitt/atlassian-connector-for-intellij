@@ -102,7 +102,7 @@ public class JIRASessionImpl implements JIRASession {
 		try {
 			token = service.login(userName, password);
 		} catch (RemoteAuthenticationException e) {
-			throw new RemoteApiLoginException("Invalid username or password");
+			throw new RemoteApiLoginException("authentiaction failed");
 		} catch (RemoteException e) {
 	   		throw new RemoteApiLoginException(e.toString());
 		}
