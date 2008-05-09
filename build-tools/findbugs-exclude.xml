@@ -75,6 +75,7 @@
 			<Class name="com.atlassian.theplugin.commons.bamboo.CommitFileInfo" />
 			<Class name="com.atlassian.theplugin.idea.config.serverconfig.GenericServerConfigForm" />
 			<Class name="com.atlassian.theplugin.util.Connector" />
+			<Class name="com.atlassian.theplugin.idea.PasswordDialog" />
 		</Or>
 		<Bug pattern="NM_CONFUSING"/>
 	</Match>
@@ -124,6 +125,10 @@
 	</Match>
 	<Match>
 		<Class name="com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon"/>
+		<Bug pattern="SE_TRANSIENT_FIELD_NOT_RESTORED"/>
+	</Match>
+	<Match>
+		<Class name="com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel"/>
 		<Bug pattern="SE_TRANSIENT_FIELD_NOT_RESTORED"/>
 	</Match>
 	<Match>
