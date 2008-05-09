@@ -105,12 +105,9 @@ import com.atlassian.theplugin.commons.util.Logger;
  */
 
 public class EasySSLProtocolSocketFactory implements SecureProtocolSocketFactory {
-
 	public final static int SSL_PORT = 443;
-
-
     private SSLContext sslcontext = null;
-	private Logger logger;
+	//private Logger logger;
 
 	/**
      * Constructor for EasySSLProtocolSocketFactory.
