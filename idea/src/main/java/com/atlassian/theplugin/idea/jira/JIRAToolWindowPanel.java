@@ -703,7 +703,7 @@ public class JIRAToolWindowPanel extends JPanel {
         final JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer();
 
         if (jiraServer != null) {
-            final IssueCreate issueCreate = new IssueCreate(jiraServer, jiraServerFacade);
+            final IssueCreate issueCreate = new IssueCreate(jiraServer);
             issueCreate.show();
 			if (issueCreate.isOK()) {
 				FutureTask task = new FutureTask(new Runnable() {
