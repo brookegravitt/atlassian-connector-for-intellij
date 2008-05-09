@@ -17,9 +17,7 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
-import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
-import com.atlassian.theplugin.commons.configuration.CrucibleConfigurationBean;
+import com.atlassian.theplugin.commons.configuration.*;
 import com.atlassian.theplugin.idea.config.ContentPanel;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -38,6 +36,8 @@ import java.awt.*;
 public class CrucibleGeneralForm extends JComponent implements ContentPanel {
 	private JPanel rootComponent;
 	private JSpinner pollTimeSpinner;
+	private JRadioButton unreadCrucibleReviews;
+	private JRadioButton never;
 	private SpinnerModel model;
 
 	private transient PluginConfigurationBean globalPluginConfiguration;
@@ -73,6 +73,13 @@ public class CrucibleGeneralForm extends JComponent implements ContentPanel {
 	}
 
 	public boolean isModified() {
+		if (crucibleConfiguration.getCrucibleTooltipOption() != null) {
+			if (crucibleConfiguration.getCrucibleTooltipOption() != getCrucibleTooltipOption()) {
+				return true;
+			}
+		} else if (getCrucibleTooltipOption() != CrucibleTooltipOption.UNREAD_REVIEWS) {
+			return true;
+		}
 		return (Integer) model.getValue() != crucibleConfiguration.getPollTime();
 	}
 
@@ -80,12 +87,28 @@ public class CrucibleGeneralForm extends JComponent implements ContentPanel {
 		return "Crucible";
 	}
 
+	private CrucibleTooltipOption getCrucibleTooltipOption() {
+		if (unreadCrucibleReviews.isSelected()) {
+			return CrucibleTooltipOption.UNREAD_REVIEWS;
+		} else if (never.isSelected()) {
+			return CrucibleTooltipOption.NEVER;
+		} else {
+			return getDefaultTooltipOption();
+		}
+	}
+
 	public void getData() {
+		((CrucibleConfigurationBean) getLocalPluginConfigurationCopy()
+				.getProductServers(ServerType.CRUCIBLE_SERVER))
+				.setCrucibleTooltipOption(getCrucibleTooltipOption());
+
+		((CrucibleConfigurationBean) globalPluginConfiguration
+				.getProductServers(ServerType.CRUCIBLE_SERVER))
+				.setCrucibleTooltipOption(getCrucibleTooltipOption());
 
 		((CrucibleConfigurationBean) getLocalPluginConfigurationCopy()
 				.getProductServers(ServerType.CRUCIBLE_SERVER))
 				.setPollTime((Integer) model.getValue());
-
 
 		((CrucibleConfigurationBean) globalPluginConfiguration
 				.getProductServers(ServerType.CRUCIBLE_SERVER))
@@ -98,10 +121,33 @@ public class CrucibleGeneralForm extends JComponent implements ContentPanel {
 
 		crucibleConfiguration =
 				(CrucibleConfigurationBean) localPluginConfigurationCopy.getProductServers(ServerType.CRUCIBLE_SERVER);
+		CrucibleTooltipOption configOption = this.crucibleConfiguration.getCrucibleTooltipOption();
+
+		if (configOption != null) {
+			switch (configOption) {
+				case UNREAD_REVIEWS:
+					unreadCrucibleReviews.setSelected(true);
+					break;
+				case NEVER:
+					never.setSelected(true);
+					break;
+				default:
+					never.setSelected(true);
+					break;
+			}
+		} else {
+			setDefaultTooltipOption();
+		}
 
 		model.setValue(crucibleConfiguration.getPollTime());
+	}
 
+	private void setDefaultTooltipOption() {
+		unreadCrucibleReviews.setSelected(true);
+	}
 
+	private CrucibleTooltipOption getDefaultTooltipOption() {
+		return CrucibleTooltipOption.UNREAD_REVIEWS;
 	}
 
 	public PluginConfiguration getLocalPluginConfigurationCopy() {
@@ -138,5 +184,9 @@ public class CrucibleGeneralForm extends JComponent implements ContentPanel {
 	 */
 	public JComponent $$$getRootComponent$$$() {
 		return rootComponent;
+	}
+
+	private void createUIComponents() {
+		// TODO: place custom component creation code here
 	}
 }
