@@ -56,7 +56,8 @@
 	<change-notes>
 		<![CDATA[
 		<ul>
-		    <li>1.1.0: Bug fix release</li>
+			<li>1.2.0: proxy support, work loging for JIRA, switched from XMLRPC to SOAP</li>
+		    	<li>1.1.0: Bug fix release</li>
 			<li>1.0.1: Errata release</li>
 			<li>1.0.0: first public release. With advanced JIRA filtering capabilities</li>
 			<li>0.5.0: even more small improvements and bugfixes. UI looks really nice now</li>
