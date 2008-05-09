@@ -21,7 +21,6 @@ import com.intellij.psi.search.scope.packageSet.NamedScope;
 import com.intellij.psi.search.scope.packageSet.PackageSet;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -76,7 +75,7 @@ public class CrucibleReviewScopeProvider implements CustomScopesProvider {
 	}
 
 
-	public static abstract class ToReviewAbstractPackageSet implements PackageSet {
+	public abstract static class ToReviewAbstractPackageSet implements PackageSet {
 
 		private String name;
 
