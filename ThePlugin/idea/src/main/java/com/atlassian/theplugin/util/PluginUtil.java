@@ -58,10 +58,13 @@ public final class PluginUtil {
 			"http://docs.atlassian.com/atlassian-idea-plugin/latestPossibleVersion.xml";
 	private static PluginUtil instance;
 
-	///CLOVER:OFF
+    static {
+        doc = setDoc();
+    }
+
+    ///CLOVER:OFF
 	private PluginUtil() {
 		super();
-		doc = setDoc();
 	}
 	///CLOVER:ON
 
@@ -97,7 +100,7 @@ public final class PluginUtil {
 		return getConfigValue("/idea-plugin/plugin-id");
 	}
 
-	private Document setDoc() {
+	private static Document setDoc() {
 		File base = new File(baseDir);
 		SAXBuilder builder = new SAXBuilder();
 		builder.setValidation(false);
