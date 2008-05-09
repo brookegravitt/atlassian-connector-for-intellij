@@ -22,7 +22,9 @@ import com.atlassian.theplugin.commons.SchedulableChecker;
 import com.atlassian.theplugin.commons.UIActionScheduler;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.commons.configuration.CrucibleTooltipOption;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
+import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.util.*;
@@ -67,6 +69,7 @@ public class ThePluginApplicationComponent
 	private final Collection<TimerTask> scheduledComponents = new HashSet<TimerTask>();
 
 	private final BambooStatusChecker bambooStatusChecker;
+	private final CrucibleStatusChecker crucibleStatusChecker;
 
 	private final JIRAServerFacade jiraServerFacade;
 
@@ -126,11 +129,12 @@ public class ThePluginApplicationComponent
 	}
 
 	public ThePluginApplicationComponent(PluginConfigurationBean configuration,
-										 /*BambooStatusChecker bambooStatusChecker,*/
+										 CrucibleStatusChecker crucibleStatusChecker,
 										 /*ConfigPanel configPanel,*/
 										 SchedulableChecker[] schedulableCheckers,
 										 UIActionScheduler actionScheduler) {
 		this.configuration = configuration;
+		this.crucibleStatusChecker = crucibleStatusChecker;
 		this.configuration.transientSetHttpConfigurable(HttpConfigurableIdeaImpl.getInstance());
 		this.bambooStatusChecker = BambooStatusChecker.getInstance(
 				actionScheduler,
@@ -192,6 +196,13 @@ public class ThePluginApplicationComponent
 				projectComponent.getStatusBarCrucibleIcon().showOrHideIcon();
 
 				projectComponent.getToolWindow().showHidePanels();
+
+				if (configuration.getCrucibleConfigurationData().getCrucibleTooltipOption()
+						!= CrucibleTooltipOption.NEVER) {
+					crucibleStatusChecker.registerListener(projectComponent.getCrucibleNewReviewNotifier());
+				} else {
+					crucibleStatusChecker.unregisterListener(projectComponent.getCrucibleNewReviewNotifier());
+				}
 			}
 			rescheduleStatusCheckers(true);
 		}
