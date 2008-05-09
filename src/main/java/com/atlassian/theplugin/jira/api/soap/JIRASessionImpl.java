@@ -307,7 +307,7 @@ public class JIRASessionImpl implements JIRASession {
 
 			List<JIRAQueryFragment> filtersList = new ArrayList<JIRAQueryFragment>();
 			for (RemoteFilter f : filters) {
-				filtersList.add(new JIRASavedFilterBean(f.getName()));
+				filtersList.add(new JIRASavedFilterBean(f.getName(), Long.valueOf(f.getId())));
 			}
 			return filtersList;
 		} catch (RemoteException e) {
