@@ -18,17 +18,18 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.idea.autoupdate.NewVersionButtonListener;
 import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
+import com.atlassian.theplugin.idea.config.HTTPProxyDialog;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import com.intellij.util.net.HTTPProxySettingsDialog;
-import com.intellij.openapi.project.Project;
 import static com.intellij.openapi.ui.Messages.showMessageDialog;
-import com.intellij.openapi.ui.Messages;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.CellConstraints;
 
 import javax.swing.*;
+import static javax.swing.JOptionPane.OK_CANCEL_OPTION;
+import static javax.swing.JOptionPane.PLAIN_MESSAGE;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -76,16 +77,17 @@ public class GeneralConfigForm {
 		});
 		httpProxyButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
-				HTTPProxySettingsDialog proxyDialog = new HTTPProxySettingsDialog();
-				proxyDialog.setModal(true);
-				proxyDialog.show();
-				proxyDialog.toFront();
-				if (proxyDialog.isOK()) {
-					showMessageDialog(IdeaHelper.getCurrentProject(),
-							"Please restart IDEA to apply proxy settings change",
-							"Please restart IDEA",
-							Messages.getInformationIcon());
+				HTTPProxyDialog proxyDialog = new HTTPProxyDialog();
+
+				proxyDialog.pack();
+				int answer = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(), proxyDialog.getRootPanel(),
+				PluginUtil.getInstance().getName(), OK_CANCEL_OPTION, PLAIN_MESSAGE);
+
+				if (answer == JOptionPane.OK_OPTION) {
+					proxyDialog.getHttpProxyPanel().apply();
+
 				}
+
 			}
 		});
 	}
@@ -184,12 +186,12 @@ public class GeneralConfigForm {
 		reportAnonymousUsageStatisticsCheckBox.setDisplayedMnemonicIndex(0);
 		mainPanel.add(reportAnonymousUsageStatisticsCheckBox, cc.xy(1, 5));
 		httpProxyPanel = new JPanel();
-		httpProxyPanel.setLayout(new FormLayout("fill:d:noGrow", "center:d:grow,top:3dlu:noGrow,center:d:grow"));
+		httpProxyPanel.setLayout(new GridLayoutManager(2, 1, new Insets(0, 12, 12, 0), -1, -1));
 		mainPanel.add(httpProxyPanel, cc.xy(1, 3, CellConstraints.DEFAULT, CellConstraints.TOP));
 		httpProxyPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "HTTP Proxy"));
 		httpProxyButton = new JButton();
 		httpProxyButton.setText("Settings");
-		httpProxyPanel.add(httpProxyButton, cc.xy(1, 3));
+		httpProxyPanel.add(httpProxyButton, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_NORTHWEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		ButtonGroup buttonGroup;
 		buttonGroup = new ButtonGroup();
 		buttonGroup.add(checkNewVersionStable);
