@@ -59,11 +59,9 @@ public class IssueCreate extends DialogWrapper {
 	private JTextField summary;
 	private JComboBox priorityComboBox;
 	private final JIRAServer jiraServer;
-	private final JIRAServerFacade jiraServerFacade;
 
-	public IssueCreate(JIRAServer jiraServer, JIRAServerFacade jiraServerFacade) {
+	public IssueCreate(JIRAServer jiraServer) {
 		super(false);
-		this.jiraServerFacade = jiraServerFacade;
 		init();
 		this.jiraServer = jiraServer;
 		setTitle("Create JIRA Issue");

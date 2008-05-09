@@ -154,6 +154,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         return contextMenu;
     }
 
+/*
     private JMenuItem makeMenuItem(String menuName,
                                    Icon icon,
                                    ActionListener listener) {
@@ -184,6 +185,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
             }
         }
     }
+*/
 
     private List<ReviewItemVirtualFile> getReviewVersionedVirtualFiles(ReviewDataInfoAdapter reviewAdapter) {
         List<ReviewItemVirtualFile> files = new ArrayList<ReviewItemVirtualFile>();
@@ -209,6 +211,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         return files;
     }
 
+/*    
     private List<VirtualFile> getReviewVirtualFiles(ReviewDataInfoAdapter reviewAdapter) {
         List<VirtualFile> files = new ArrayList<VirtualFile>();
         try {
@@ -272,6 +275,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     private void addReviewScope(final ReviewDataInfoAdapter reviewAdapter) {
         new Thread(new AddReviewScopeWorker(reviewAdapter), "atlassian-crucible-apply-scope").start();
     }
+*/
 
     private final class AddReviewScopeWorker implements Runnable {
         private ReviewDataInfoAdapter reviewAdapter;
@@ -324,7 +328,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         }
     }
 
-
+/*
     private void showDiff(VirtualFile file, VcsFileRevision first, VcsFileRevision last) {
         SimpleDiffRequest diffData = new SimpleDiffRequest(IdeaHelper.getCurrentProject(), "Diff Tool");
         diffData.setContentTitles(
@@ -338,6 +342,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
         DiffManager.getInstance().getDiffTool().show(diffData);
     }
+*/
 
     private JMenuItem makeWebUrlMenu(String menuName, final String url) {
         JMenuItem viewInBrowser = new JMenuItem();
