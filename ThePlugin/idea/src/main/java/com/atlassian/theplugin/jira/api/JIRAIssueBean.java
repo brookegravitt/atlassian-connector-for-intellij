@@ -22,7 +22,8 @@ import java.util.Map;
 
 public class JIRAIssueBean implements JIRAIssue {
 	private String serverUrl;
-	private String key;
+    private Long id;
+    private String key;
 	private String summary;
 	private String status;
 	private String statusUrl;
@@ -55,7 +56,8 @@ public class JIRAIssueBean implements JIRAIssue {
 		this.serverUrl = serverUrl;
 		this.summary = getTextSafely(e, "summary");
 		this.key = getTextSafely(e, "key");
-		updateProjectKey();
+        this.id = new Long(getAttributeSafely(e, "key", "id"));
+        updateProjectKey();
 		this.status = getTextSafely(e, "status");
 		this.statusUrl = getAttributeSafely(e, "status", "iconUrl");
 		try {
@@ -99,6 +101,7 @@ public class JIRAIssueBean implements JIRAIssue {
 		this.summary = (String) params.get("summary");
 		this.status = (String) params.get("status");
 		this.key = (String) params.get("key");
+		this.id = new Long(params.get("key").toString());
 		updateProjectKey();
 		this.description = (String) params.get("description");
 		this.type = (String) params.get("type");
@@ -147,7 +150,11 @@ public class JIRAIssueBean implements JIRAIssue {
 		return serverUrl + "/browse/" + getKey();
 	}
 
-	public String getProjectKey() {
+    public Long getId() {
+        return id;
+    }
+
+    public String getProjectKey() {
 		return projectKey;
 	}
 
