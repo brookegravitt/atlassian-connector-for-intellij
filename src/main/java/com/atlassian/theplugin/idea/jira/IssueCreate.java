@@ -58,6 +58,7 @@ public class IssueCreate extends DialogWrapper {
 	private JComboBox typeComboBox;
 	private JTextField summary;
 	private JComboBox priorityComboBox;
+	private JTextField assignee;
 	private final JIRAServer jiraServer;
 
 	public IssueCreate(JIRAServer jiraServer) {
@@ -176,6 +177,10 @@ public class IssueCreate extends DialogWrapper {
 		issueProxy.setType(((JIRAConstant) typeComboBox.getSelectedItem()));
 		issueProxy.setDescription(description.getText());
 		issueProxy.setPriority(((JIRAConstant) priorityComboBox.getSelectedItem()));
+		String assignTo = assignee.getText(); 
+		if (assignTo.length() > 0) {
+			issueProxy.setAssignee(assignTo);
+		}
 		super.doOKAction();
 	}
 
