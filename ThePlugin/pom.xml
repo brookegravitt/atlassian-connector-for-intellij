@@ -30,14 +30,14 @@
     <version>1.3.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <inceptionYear>2008</inceptionYear>
-    
+
     <name>Atlassian Plugin POM</name>
     <description>Parent POM for plugins integrating Atlassian tools.</description>
     
     <modules>
 		<module>commons</module>
 		<module>idea</module>
-		<!--<module>eclipse</module>-->
+		<module>eclipse</module>
     </modules>
 
     <scm>
