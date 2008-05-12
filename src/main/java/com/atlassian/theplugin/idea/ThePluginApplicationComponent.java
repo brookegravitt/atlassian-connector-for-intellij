@@ -25,6 +25,7 @@ import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.configuration.CrucibleTooltipOption;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
+import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.util.*;
@@ -147,8 +148,9 @@ public class ThePluginApplicationComponent
             this.schedulableCheckers.add(schedulableChecker);
         }
         this.schedulableCheckers.add(bambooStatusChecker);
-        
-        this.configPanel = ConfigPanel.getInstance(configuration);
+		this.schedulableCheckers.add(NewVersionChecker.getInstance(configuration));
+
+		this.configPanel = ConfigPanel.getInstance(configuration);
 		this.jiraServerFacade = JIRAServerFacadeImpl.getInstance();
 		ConfigurationFactory.setConfiguration(configuration);
 	}
