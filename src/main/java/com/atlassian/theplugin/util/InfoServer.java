@@ -54,7 +54,7 @@ public final class InfoServer {
 			try {
 				client.executeMethod(method);
 			} catch (IllegalArgumentException e) {
-				throw new VersionServiceException("Connection error while retriving the latest plugin version", e);
+				throw new VersionServiceException("Connection error while retrieving the latest plugin version.", e);
 			}
 			InputStream is = method.getResponseBodyAsStream();
 			SAXBuilder builder = new SAXBuilder();
@@ -62,7 +62,7 @@ public final class InfoServer {
 			Document doc = builder.build(is);
 			return new VersionInfo(doc);
 		} catch (IOException e) {
-			throw new VersionServiceException("Connection error while retriving the latest plugin version", e);
+			throw new VersionServiceException("Connection error while retrieving the latest plugin version.", e);
 		} catch (JDOMException e) {
 			throw new VersionServiceException(
 					"Error while parsing xml response from version service server at "
