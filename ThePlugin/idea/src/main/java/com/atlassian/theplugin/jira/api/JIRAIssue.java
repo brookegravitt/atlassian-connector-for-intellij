@@ -23,6 +23,8 @@ public interface JIRAIssue {
 
     String getIssueUrl();
 
+    Long getId();
+
     String getKey();
 
     String getProjectKey();
