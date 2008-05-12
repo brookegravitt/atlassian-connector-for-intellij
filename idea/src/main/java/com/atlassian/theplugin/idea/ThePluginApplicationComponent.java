@@ -67,8 +67,9 @@ public class ThePluginApplicationComponent
 	private static final int TIMER_START_DELAY = 20000;
 
 	private final Collection<TimerTask> scheduledComponents = new HashSet<TimerTask>();
+	private final Collection<SchedulableChecker> schedulableCheckers = new HashSet<SchedulableChecker>();
 
-	private final BambooStatusChecker bambooStatusChecker;
+    private final BambooStatusChecker bambooStatusChecker;
 	private final CrucibleStatusChecker crucibleStatusChecker;
 
 	private final JIRAServerFacade jiraServerFacade;
@@ -141,8 +142,13 @@ public class ThePluginApplicationComponent
 				configuration,
 				new MissingPasswordHandler(BambooServerFacadeImpl.getInstance(PluginUtil.getLogger())),
 				PluginUtil.getLogger());
-		this.schedulableCheckers = schedulableCheckers; /* get lost, findbugs! */
-		this.configPanel = ConfigPanel.getInstance(configuration);
+
+        for (SchedulableChecker schedulableChecker : schedulableCheckers) {
+            this.schedulableCheckers.add(schedulableChecker);
+        }
+        this.schedulableCheckers.add(bambooStatusChecker);
+        
+        this.configPanel = ConfigPanel.getInstance(configuration);
 		this.jiraServerFacade = JIRAServerFacadeImpl.getInstance();
 		ConfigurationFactory.setConfiguration(configuration);
 	}
@@ -157,8 +163,6 @@ public class ThePluginApplicationComponent
 
 		timer.purge();
 	}
-
-	private final SchedulableChecker[] schedulableCheckers;
 
 	/**
 	 * Reschedule the BambooStatusChecker with immediate execution trigger.
