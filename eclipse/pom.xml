@@ -43,7 +43,7 @@
             <name>Atlassian  Maven  2.x  Repository</name>
             <url>http://repository.atlassian.com/maven2</url>
         </pluginRepository>
-        <pluginRepository>
+		<pluginRepository>
             <id>mc-release</id>
             <name>Local  Maven  repository  of  releases</name>
             <url>http://mc-repo.googlecode.com/svn/maven2/releases</url>
@@ -71,21 +71,93 @@
             <name>maven  repository</name>
             <url>http://www.mvnrepository.com/artifact/</url>
         </repository>
-    </repositories>
+		<repository>
+            <id>atlassian-m2-repository</id>
+            <name>Atlassian  Maven  2.x  Repository</name>
+            <url>https://maven.atlassian.com/restricted</url>
+        </repository>
+	</repositories>
     <dependencies>
         <dependency>
             <groupId>com.atlassian.theplugin</groupId>
             <artifactId>atlassian-plugin-commons</artifactId>
 	    <version>1.2.0-SNAPSHOT</version>
         </dependency>
-    </dependencies>
+
+		<dependency>
+			<groupId>org.eclipse</groupId>
+			<artifactId>jface</artifactId>
+			<version>3.3.2</version>
+			<classifier>M20080207-0800</classifier>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse</groupId>
+			<artifactId>ui</artifactId>
+			<version>3.3.1</version>
+			<classifier>M20071128-0800</classifier>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.ui</groupId>
+			<artifactId>workbench</artifactId>
+			<version>3.3.2</version>
+			<classifier>M20080207-0800</classifier>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse</groupId>
+			<artifactId>osgi</artifactId>
+			<version>3.3.2</version>
+			<classifier>R33x_v20080105</classifier>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.core</groupId>
+			<artifactId>runtime</artifactId>
+			<version>3.3.1</version>
+			<classifier>v20070530</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.equinox</groupId>
+			<artifactId>preferences</artifactId>
+			<version>3.2.1</version>
+			<classifier>R33x_v20080117</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.equinox</groupId>
+			<artifactId>common</artifactId>
+			<version>3.3.0</version>
+			<classifier>v20070426</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse</groupId>
+			<artifactId>swt</artifactId>
+			<version>3.3.2</version>
+			<classifier>v3349d</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.core</groupId>
+			<artifactId>commands</artifactId>
+			<version>3.3.0</version>
+			<classifier>I20070605-0010</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.equinox</groupId>
+			<artifactId>registry</artifactId>
+			<version>3.3.1</version>
+			<classifier>R33x_v20070802</classifier>
+		</dependency>
+
+	</dependencies>
     <profiles>
         <profile>
             <id>org.eclipse.swt.win32</id>
             <activation>
                 <os>
-                    <name>windows  xp</name>
-                    <arch>x86</arch>
+                    <!--<name>windows xp</name>-->
+					<family>Windows</family>
+					<arch>x86</arch>
                 </os>
             </activation>
             <dependencies>
@@ -95,13 +167,14 @@
                     <version>3.3.0-v3346</version>
                     <type>jar</type>
                 </dependency>
-            </dependencies>
+
+			</dependencies>
         </profile>
         <profile>
             <id>org.eclipse.swt.macosx</id>
             <activation>
                 <os>
-                    <name>mac  os  x</name>
+                    <name>mac os x</name>
                     <arch>i386</arch>
                 </os>
             </activation>
@@ -131,4 +204,24 @@
             </dependencies>
         </profile>
     </profiles>
+    <build>
+	<plugins>
+		<plugin>
+        		<artifactId>maven-eclipse-plugin</artifactId>
+       			 <configuration>
+					  <pde>true</pde>
+			          <!--<useProjectReferences>false</useProjectReferences>-->
+						<additionalBuildcommands>
+							<buildCommand>
+								<name>org.eclipse.pde.FeatureBuilder</name>
+							</buildCommand>
+						</additionalBuildcommands>
+						<additionalProjectnatures>
+							<projectnature>org.eclipse.pde.FeatureNature</projectnature>
+						</additionalProjectnatures>
+					</configuration>
+		</plugin>
+	</plugins>
+
+    </build>
 </project>
