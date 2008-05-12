@@ -220,7 +220,7 @@ import java.util.regex.Pattern;
 							break;
 						case BUILD_SUCCEED:
 							sb.append(getSuccessBuildRow(buildInfo));
-							if (status != BuildStatus.BUILD_SUCCEED) {
+							if (status != BuildStatus.BUILD_FAILED) {
 								status = BuildStatus.BUILD_SUCCEED;
 							}
 							break;
