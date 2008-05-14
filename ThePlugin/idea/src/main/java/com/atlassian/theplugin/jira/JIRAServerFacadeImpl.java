@@ -28,6 +28,7 @@ import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.Calendar;
 
 public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 
@@ -189,10 +190,10 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
     }
 
-	public void logWork(Server server, JIRAIssue issue, String timeSpent, String comment) throws JIRAException {
+	public void logWork(Server server, JIRAIssue issue, String timeSpent, Calendar startDate, String comment) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
-			soap.logWork(issue, timeSpent, comment);
+			soap.logWork(issue, timeSpent, startDate, comment);
 		} catch (RemoteApiException e) {
 			soapSessions.remove(getSoapSessionKey(server));
 			throw new JIRAException(e.getMessage(), e);
