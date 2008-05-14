@@ -58,6 +58,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Calendar;
 import java.util.concurrent.FutureTask;
 
 public class JIRAToolWindowPanel extends JPanel {
@@ -687,8 +688,11 @@ public class JIRAToolWindowPanel extends JPanel {
 				public void run() {
 					setStatusMessage("Logging work for issue " + issue.getKey() + "...");
 					try {
+						Calendar cal = Calendar.getInstance();
+						cal.setTime(workLogCreate.getStartDate());
 						jiraServerFacade.logWork(IdeaHelper.getCurrentJIRAServer().getServer(),
-								issue, workLogCreate.getTimeSpentString(), workLogCreate.getComment());
+								issue, workLogCreate.getTimeSpentString(),
+								cal, workLogCreate.getComment());
 						setStatusMessage("Logged work for issue " + issue.getKey());
 					} catch (JIRAException e) {
 						setStatusMessage("Work not logged: " + e.getMessage(), true);
