@@ -20,13 +20,14 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 
 import java.util.List;
+import java.util.Calendar;
 
 public interface JIRASession {
 	void login(String userName, String password) throws RemoteApiLoginException;
 
 	void logout();
 
-	void logWork(JIRAIssue issue, String timeSpent, String comment) throws RemoteApiException;
+	void logWork(JIRAIssue issue, String timeSpent, Calendar startDate, String comment) throws RemoteApiException;
 
 	void addComment(JIRAIssue issue, String comment) throws RemoteApiException;
 

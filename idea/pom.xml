@@ -93,7 +93,7 @@
             <classifier>7590</classifier>
             <scope>compile</scope>
         </dependency>
-        <!--
+		<!--
         <dependency>
             <groupId>com.intellij.idea</groupId>
             <artifactId>idea</artifactId>
@@ -163,6 +163,12 @@
             <artifactId>wsdl4j</artifactId>
             <version>1.6.1</version>
         </dependency>
+		<dependency>
+			<groupId>net.sf.nachocalendar</groupId>
+			<artifactId>nachocalendar</artifactId>
+			<version>0.23</version>
+		</dependency>
+
     </dependencies>
     <build>
         <resources>
@@ -464,5 +470,14 @@
             </plugin>
         </plugins>
     </build>
+	<repositories>
+		<repository>
+			<id>springRichclientRepository</id>
+			<name>Spring rich client repository</name>
+			<url>
+				http://spring-rich-c.sourceforge.net/maven2repository
+			</url>
+		</repository>
+	</repositories>
 </project>
 
