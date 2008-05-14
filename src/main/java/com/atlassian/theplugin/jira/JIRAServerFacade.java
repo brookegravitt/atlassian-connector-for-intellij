@@ -21,6 +21,7 @@ import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.commons.Server;
 
 import java.util.List;
+import java.util.Calendar;
 
 public interface JIRAServerFacade extends ProductServerFacade {
     List getIssues(Server server, List<JIRAQueryFragment> query,
@@ -58,5 +59,5 @@ public interface JIRAServerFacade extends ProductServerFacade {
 
     JIRAIssue createIssue(Server server, JIRAIssue issue) throws JIRAException;
 
-	void logWork(Server server, JIRAIssue issue, String timeSpent, String comment) throws JIRAException;
+	void logWork(Server server, JIRAIssue issue, String timeSpent, Calendar startDate, String comment) throws JIRAException;
 }
