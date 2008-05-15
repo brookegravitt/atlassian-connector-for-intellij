@@ -188,6 +188,12 @@
         </resources>
         <plugins>
             <plugin>
+                <artifactId>maven-eclipse-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
                 <configuration>
