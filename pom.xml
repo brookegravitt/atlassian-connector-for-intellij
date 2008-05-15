@@ -201,5 +201,10 @@
             <id>atlassian-public-repository</id>
             <url>https://maven.atlassian.com/public</url>
         </repository>
+        <repository>
+            <id>ddsteps.org</id>
+            <name>DDSteps Repo</name>
+            <url>http://repo.ddsteps.org/maven/release/</url>
+        </repository>
     </repositories>
 </project>
