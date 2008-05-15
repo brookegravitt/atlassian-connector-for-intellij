@@ -20,6 +20,7 @@ import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.exception.ThePluginException;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.atlassian.theplugin.util.Util;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
@@ -140,7 +141,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 
 		for (ToolWindowPanels entry : panels) {
 			try {
-				ServerType serverType = PluginUtil.toolWindowPanelsToServerType(entry);
+				ServerType serverType = Util.toolWindowPanelsToServerType(entry);
 
 				// servers are defined
 				if (ConfigurationFactory.getConfiguration().getProductServers(serverType).transientGetServers().size() > 0) {
@@ -282,7 +283,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 
 
 			try {
-				ServerType serverType = PluginUtil.toolWindowPanelsToServerType(component);
+				ServerType serverType = Util.toolWindowPanelsToServerType(component);
 				// servers are defined
 				if (ConfigurationFactory.getConfiguration().getProductServers(serverType).transientGetServers().size() > 0) {
 					// tab is not visible
