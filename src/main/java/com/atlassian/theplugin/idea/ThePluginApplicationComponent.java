@@ -20,6 +20,7 @@ import com.atlassian.theplugin.commons.bamboo.BambooStatusChecker;
 import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
 import com.atlassian.theplugin.commons.SchedulableChecker;
 import com.atlassian.theplugin.commons.UIActionScheduler;
+import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.configuration.CrucibleTooltipOption;
@@ -104,13 +105,7 @@ public class ThePluginApplicationComponent
 
 
 	public void initComponent() {
-//		LoggerImpl.setFactory(new LoggerImpl.Factory() {
-//						public Logger getLoggerInstance(String category) {
-//							return new IdeaLoggerImpl(com.intellij.openapi.diagnostic.Logger.getInstance(category));
-//						}
-//					});
-//
-//
+		new IdeaLoggerImpl(com.intellij.openapi.diagnostic.Logger.getInstance(LoggerImpl.LOGGER_CATEGORY));
 
 	}
 
