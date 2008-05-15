@@ -18,7 +18,7 @@ package com.atlassian.theplugin.idea.config;
 
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.HelpUrl;
-import com.atlassian.theplugin.idea.LoggerImpl;
+import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.application.ApplicationInfo;
