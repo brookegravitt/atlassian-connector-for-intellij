@@ -314,6 +314,18 @@ public class JIRASessionImpl implements JIRASession {
 
 	}
 
+	public void setAssignee(JIRAIssue issue, String assignee) throws RemoteApiException {
+		RemoteFieldValue v = new RemoteFieldValue();
+		RemoteFieldValue[] vTable = {v};
+		v.setId("assignee");
+		v.setValues(new String[]{assignee});
+		try {
+			service.updateIssue(token, issue.getKey(), vTable);
+		} catch (RemoteException e) {
+			throw new RemoteApiException(e.toString(), e);
+		}
+	}
+
 	public boolean isLoggedIn() {
 		return loggedIn;
 	}
