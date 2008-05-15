@@ -37,24 +37,6 @@
         <developerConnection>scm:svn:https://studio.atlassian.com/svn/PL/trunk/ThePlugin/</developerConnection>
         <url>https://studio.atlassian.com/svn/PL/trunk/ThePlugin/</url>
     </scm>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>atlassian-m2-repository</id>
-            <name>Atlassian  Maven  2.x  Repository</name>
-            <url>http://repository.atlassian.com/maven2</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>mc-release</id>
-            <name>Local  Maven  repository  of  releases</name>
-            <url>http://mc-repo.googlecode.com/svn/maven2/releases</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-        </pluginRepository>
-    </pluginRepositories>
     <repositories>
         <repository>
             <id>apache.incubating.releases</id>
