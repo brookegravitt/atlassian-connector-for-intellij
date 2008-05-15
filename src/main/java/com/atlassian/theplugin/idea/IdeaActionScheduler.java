@@ -23,6 +23,8 @@ import java.awt.*;
 public class IdeaActionScheduler implements UIActionScheduler {
 	private static UIActionScheduler instance = new IdeaActionScheduler();
 
+	private IdeaActionScheduler(){}
+
 	public void invokeLater(Runnable action) {
 		EventQueue.invokeLater(action);
 	}

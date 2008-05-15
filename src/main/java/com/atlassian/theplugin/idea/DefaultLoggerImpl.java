@@ -17,6 +17,8 @@
 package com.atlassian.theplugin.idea;
 
 
+import com.atlassian.theplugin.commons.util.LoggerImpl;
+
 import java.io.PrintStream;
 
 /**

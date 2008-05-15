@@ -16,6 +16,8 @@
 
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.theplugin.commons.util.LoggerImpl;
+
 /**
  * Created by IntelliJ IDEA.
  * User: pmaruszak
@@ -30,7 +32,7 @@ public class IdeaLoggerImpl extends LoggerImpl {
         super();
         this.ideaLog = ideaLog;
 
-
+		setInstance(this);
 	}
 
 
