@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.idea;
+package com.atlassian.theplugin.commons.util;
 
 import com.atlassian.theplugin.commons.util.Logger;
 
@@ -39,36 +39,15 @@ public abstract class LoggerImpl implements Logger {
 		return debug;
 	}
 
-	public interface Factory {
-        Logger getLoggerInstance(String category);
-    }
-
-    private static Factory factoryInstance = new Factory() {
-//        public Logger getLoggerInstance(String category) {
-//            return new DefaultLoggerImpl();
-//        }
-
-		public Logger getLoggerInstance(String category) {
-			return new IdeaLoggerImpl(com.intellij.openapi.diagnostic.Logger.getInstance(category));
-		}
-
-	};
-
-	public static void setFactory(Factory factory) {
-		factoryInstance = factory;
-	}
-
-	public static Logger getInstance(String category) {
-        if (singleton != null) {
-            return singleton;
-        }
-        return factoryInstance.getLoggerInstance(category);
-    }
-
 	public static Logger getInstance() {
-        return getInstance(LOGGER_CATEGORY);
+        if (singleton != null) {
+			return singleton;
+		} else {
+			System.out.println("Logger not initialized");
+			return new NullLogger();
+		}
     }
-
+	
 	private static boolean debug = false;
 
     private static boolean verbose = false;
@@ -85,7 +64,7 @@ public abstract class LoggerImpl implements Logger {
     }
 
     protected LoggerImpl() {
-    }
+	}
 
     //these values mirror Ant's values
     public static final int LOG_ERR = 0;
@@ -180,7 +159,7 @@ public abstract class LoggerImpl implements Logger {
         return !(verbose || debug) && (level == LOG_VERBOSE);
     }
 
-	static class NullLogger /*extends Logger*/ {
+	static class NullLogger extends LoggerImpl {
 
         public void log(int level, String msg, Throwable t) {
             //no-op
