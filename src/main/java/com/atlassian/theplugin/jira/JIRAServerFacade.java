@@ -18,6 +18,7 @@ package com.atlassian.theplugin.jira;
 
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.Server;
 
 import java.util.List;
@@ -59,5 +60,8 @@ public interface JIRAServerFacade extends ProductServerFacade {
 
     JIRAIssue createIssue(Server server, JIRAIssue issue) throws JIRAException;
 
-	void logWork(Server server, JIRAIssue issue, String timeSpent, Calendar startDate, String comment) throws JIRAException;
+	void logWork(Server server, JIRAIssue issue, String timeSpent, Calendar startDate, String comment)
+			throws JIRAException;
+
+	void setAssignee(Server server, JIRAIssue issue, String assignee) throws JIRAException;
 }
