@@ -283,6 +283,8 @@ public class JIRAToolWindowPanel extends JPanel {
 //		contextMenu.add(makeWebUrlMenu("Commit Changes Against Issue", issue.getServerUrl()
 //				+ "/secure/EditIssue!default.jspa?key=" + issue.getKey()));
 		contextMenu.add(new JMenuItem(new CreateChangeListAction(issue, project)));
+		contextMenu.add(new JMenuItem(new AssignIssueToSomebody(issue)));
+		contextMenu.add(new JMenuItem(new AssignIssueToMyselfAction(issue)));
 
 		return contextMenu;
 	}
@@ -616,6 +618,42 @@ public class JIRAToolWindowPanel extends JPanel {
 		}
 	}
 
+	public class AssignIssueToMyselfAction extends AbstractAction {
+		private JIRAIssue issue;
+		public AssignIssueToMyselfAction(JIRAIssue issue) {
+			putValue(Action.NAME, "Assign Issue to Myself");
+			this.issue = issue;
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			try {
+				assignIssue(issue, IdeaHelper.getCurrentJIRAServer().getServer().getUserName());
+			} catch (NullPointerException ex) {
+				// whatever, means action was called when no issue was selected. Let's just swallow it
+			}
+		}
+	}
+
+	public class AssignIssueToSomebody extends AbstractAction {
+		private JIRAIssue issue;
+		public AssignIssueToSomebody(JIRAIssue issue) {
+			putValue(Action.NAME, "Assign Issue to User");
+			this.issue = issue;
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			final GetUserName getUserName = new GetUserName(issue.getKey());
+			getUserName.show();
+			if (getUserName.isOK()) {
+				try {
+					assignIssue(issue, getUserName.getName());
+				} catch (NullPointerException ex) {
+					// whatever, means action was called when no issue was selected. Let's just swallow it
+				}
+			}
+		}
+	}
+
 	public static class CreateChangeListAction extends AbstractAction {
 		private final transient Project project;
 		private String changeListName;
@@ -701,6 +739,21 @@ public class JIRAToolWindowPanel extends JPanel {
 			}, null);
 			new Thread(task, "atlassian-idea-plugin work log").start();
 		}
+	}
+
+	public void assignIssue(final JIRAIssue issue, final String assignee) {
+		FutureTask task = new FutureTask(new Runnable() {
+			public void run() {
+				setStatusMessage("Assigning issue " + issue.getKey() + " to " + assignee + "...");
+				try {
+					jiraServerFacade.setAssignee(IdeaHelper.getCurrentJIRAServer().getServer(), issue, assignee);
+						setStatusMessage("Assigned issue " + issue.getKey() + " to " + assignee);
+					} catch (JIRAException e) {
+						setStatusMessage("Failed to assign issue: " + e.getMessage(), true);
+					}
+			}
+		}, null);
+		new Thread(task, "atlassian-idea-plugin assign issue issue").start();
 	}
 
 	public void createIssue() {
