@@ -53,6 +53,11 @@
 			<location>C:/Users/Jacek/.m2/repository/commons-httpclient/commons-httpclient/3.1/commons-httpclient-3.1.jar</location>
 		</link>
 		<link>
+			<name>log4j-1.2.12.jar</name>
+			<type>1</type>
+			<location>C:/Users/Jacek/.m2/repository/log4j/log4j/1.2.12/log4j-1.2.12.jar</location>
+		</link>
+		<link>
 			<name>atlassian-plugin-commons-1.2.0-SNAPSHOT.jar</name>
 			<type>1</type>
 			<location>C:/Users/Jacek/.m2/repository/com/atlassian/theplugin/atlassian-plugin-commons/1.2.0-SNAPSHOT/atlassian-plugin-commons-1.2.0-SNAPSHOT.jar</location>
