@@ -11,7 +11,6 @@ import org.eclipse.core.runtime.Preferences;
 
 import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.configuration.BambooConfigurationBean;
-import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.ServerBean;
 import com.atlassian.theplugin.commons.configuration.SubscribedPlanBean;
@@ -37,7 +36,7 @@ public class ProjectConfigurationWrapper {
 		ServerBean bambooServer = new ServerBean();
 		bambooServer.setEnabled(true);
 		bambooServer.setUserName(preferences.getString(PreferenceConstants.BAMBOO_USER_NAME));
-		bambooServer.setEncryptedPassword(preferences.getString(PreferenceConstants.BAMBOO_USER_PASSWORD));
+		bambooServer.transientSetPasswordString(preferences.getString(PreferenceConstants.BAMBOO_USER_PASSWORD), true);
 		bambooServer.setUrlString(preferences.getString(PreferenceConstants.BAMBOO_URL));
 		bambooServer.setSubscribedPlansData(subscribedPlans);
 

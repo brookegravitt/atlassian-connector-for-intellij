@@ -12,6 +12,7 @@ import org.osgi.framework.BundleContext;
 import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.bamboo.BambooStatusChecker;
 import com.atlassian.theplugin.commons.configuration.BambooConfigurationBean;
+import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.ServerBean;
@@ -50,9 +51,14 @@ public class Activator extends AbstractUIPlugin {
 //		IViewSite viewSite = (IViewSite) site;
 //		viewSite.getActionBars().getStatusLineManager().setMessage("dupa maryni");
 		
+		//Period period = new Period();
+		//PluginConfigurationBean pluginConfiguration = null;
+		//SubscribedPlanBean bean = new SubscribedPlanBean();
+		
 		// create configuration
 		ProjectConfigurationWrapper configurationWrapper = new ProjectConfigurationWrapper(getPluginPreferences());
 		PluginConfigurationBean pluginConfiguration = configurationWrapper.getPluginConfiguration();
+		ConfigurationFactory.setConfiguration(pluginConfiguration);
 		
 		// create logger
 		new EclipseLogger(getLog());	// now you can use PluginUtil.getLogger
