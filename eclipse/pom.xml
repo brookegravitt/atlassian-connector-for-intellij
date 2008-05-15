@@ -212,6 +212,35 @@
     </profiles>
     <build>
 	<plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>pde-maven-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <eclipseInstall>c:\Program Files\eclipse\</eclipseInstall>
+          <buildProperties>
+            <javacSource>1.5</javacSource>
+            <javacTarget>1.5</javacTarget>
+          </buildProperties>
+        </configuration>
+        <executions>
+          <execution>
+            <id>clean-pde</id>
+            <phase>clean</phase>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>build-pde</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>attach</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+		
 		<plugin>
         		<artifactId>maven-eclipse-plugin</artifactId>
        			 <configuration>
