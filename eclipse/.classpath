@@ -3,7 +3,6 @@
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry kind="lib" path="atlassian-plugin-commons-1.2.0-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="commons-codec-1.2.jar"/>
 	<classpathentry kind="var" path="M2_REPO/commons-collections/commons-collections/3.2/commons-collections-3.2.jar" sourcepath="M2_REPO/commons-collections/commons-collections/3.2/commons-collections-3.2-sources.jar"/>
 	<classpathentry kind="lib" path="commons-httpclient-3.1.jar"/>
@@ -19,6 +18,7 @@
 	<classpathentry kind="var" path="M2_REPO/rhino/js/1.6R7/js-1.6R7.jar"/>
 	<classpathentry kind="var" path="M2_REPO/junit/junit/3.8.2/junit-3.8.2.jar" sourcepath="M2_REPO/junit/junit/3.8.2/junit-3.8.2-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/junit-addons/junit-addons/1.4/junit-addons-1.4.jar"/>
+	<classpathentry kind="lib" path="log4j-1.2.12.jar"/>
 	<classpathentry kind="var" path="M2_REPO/nekohtml/nekohtml/0.9.5/nekohtml-0.9.5.jar" sourcepath="M2_REPO/nekohtml/nekohtml/0.9.5/nekohtml-0.9.5-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/xerces/xercesImpl/2.6.2/xercesImpl-2.6.2.jar" sourcepath="M2_REPO/xerces/xercesImpl/2.6.2/xercesImpl-2.6.2-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/xerces/xmlParserAPIs/2.6.2/xmlParserAPIs-2.6.2.jar"/>

@@ -26,7 +26,7 @@ public class PreferencePage
 	public PreferencePage() {
 		super(GRID);
 		setPreferenceStore(Activator.getDefault().getPreferenceStore());
-		setDescription("A demonstration of a preference page implementation");
+		setDescription("Bamboo Configuration");
 	}
 	
 	/**
@@ -54,10 +54,11 @@ public class PreferencePage
 //		addField(
 //			new StringFieldEditor(PreferenceConstants.P_STRING, "A &text preference:", getFieldEditorParent()));
 		
-		addField(new StringFieldEditor("", "Server Name:", getFieldEditorParent()));
-		addField(new StringFieldEditor("", "Server Url:", getFieldEditorParent()));
-		addField(new StringFieldEditor("", "User Name:", getFieldEditorParent()));
-		addField(new StringFieldEditor("", "Password:", getFieldEditorParent()));
+		addField(new StringFieldEditor(PreferenceConstants.BAMBOO_NAME, "Server Name:", getFieldEditorParent()));
+		addField(new StringFieldEditor(PreferenceConstants.BAMBOO_URL, "Server Url:", getFieldEditorParent()));
+		addField(new StringFieldEditor(PreferenceConstants.BAMBOO_USER_NAME, "User Name:", getFieldEditorParent()));
+		addField(new StringFieldEditor(PreferenceConstants.BAMBOO_USER_PASSWORD, "Password:", getFieldEditorParent()));
+		addField(new StringFieldEditor(PreferenceConstants.BAMBOO_BUILDS, "Password:", getFieldEditorParent()));
 
 	}
 

@@ -1,8 +1,25 @@
 package com.atlassian.theplugin.eclipse.preferences;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Timer;
+
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
+
+import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.bamboo.BambooStatusChecker;
+import com.atlassian.theplugin.commons.configuration.BambooConfigurationBean;
+import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
+import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.commons.configuration.ServerBean;
+import com.atlassian.theplugin.commons.configuration.SubscribedPlanBean;
+import com.atlassian.theplugin.eclipse.EclipseActionScheduler;
+import com.atlassian.theplugin.eclipse.EclipseLogger;
+import com.atlassian.theplugin.eclipse.MissingPasswordHandler;
+import com.atlassian.theplugin.eclipse.util.PluginUtil;
 
 
 /**
@@ -32,6 +49,23 @@ public class Activator extends AbstractUIPlugin {
 //		IWorkbenchPartSite site = this.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActivePart().getSite();
 //		IViewSite viewSite = (IViewSite) site;
 //		viewSite.getActionBars().getStatusLineManager().setMessage("dupa maryni");
+		
+		// create configuration
+		ProjectConfigurationWrapper configurationWrapper = new ProjectConfigurationWrapper(getPluginPreferences());
+		PluginConfigurationBean pluginConfiguration = configurationWrapper.getPluginConfiguration();
+		
+		// create logger
+		new EclipseLogger(getLog());	// now you can use PluginUtil.getLogger
+
+		// create checker
+		MissingPasswordHandler missingPasswordHandler = new MissingPasswordHandler();
+		BambooStatusChecker bambooChecker = BambooStatusChecker.getInstance(
+				EclipseActionScheduler.getInstance(), pluginConfiguration, missingPasswordHandler, PluginUtil.getLogger());
+		
+		Timer timer = new Timer("Atlassian Eclipse Plugin checkers");
+		
+		timer.schedule(bambooChecker.newTimerTask(), 0);
+		
 	}
 
 	/*
