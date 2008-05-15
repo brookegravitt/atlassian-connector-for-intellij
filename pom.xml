@@ -202,4 +202,11 @@
             <url>dav:https://docs.atlassian.com/${project.artifactId}/${project.version}</url>
         </site>
     </distributionManagement>
+    <repositories>
+	<repository>
+	       <id>atlassian-public-repository</id>
+	       <url>https://maven.atlassian.com/public</url>
+	</repository>
+    </repositories>
+
 </project>
