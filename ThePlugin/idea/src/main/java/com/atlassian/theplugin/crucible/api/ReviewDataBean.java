@@ -154,7 +154,7 @@ public class ReviewDataBean implements ReviewData {
      *
      * @return
      *     possible object is
-     *     {@link com.atlassian.theplugin.crucible.api.soap.xfire.review.PermId }
+     *     {@link com.atlassian.theplugin.commons.crucible.api.soap.xfire.review.PermId }
      *
      */
     public PermId getParentReview() {
@@ -166,7 +166,7 @@ public class ReviewDataBean implements ReviewData {
      *
      * @param value
      *     allowed object is
-     *     {@link com.atlassian.theplugin.crucible.api.soap.xfire.review.PermId }
+     *     {@link com.atlassian.theplugin.commons.crucible.api.soap.xfire.review.PermId }
      *
      */
     public void setParentReview(PermId value) {
@@ -178,7 +178,7 @@ public class ReviewDataBean implements ReviewData {
      *
      * @return
      *     possible object is
-     *     {@link com.atlassian.theplugin.crucible.api.soap.xfire.review.PermId }
+     *     {@link com.atlassian.theplugin.commons.crucible.api.soap.xfire.review.PermId }
      *
      */
     public PermId getPermaId() {
@@ -190,7 +190,7 @@ public class ReviewDataBean implements ReviewData {
      *
      * @param value
      *     allowed object is
-     *     {@link com.atlassian.theplugin.crucible.api.soap.xfire.review.PermId }
+     *     {@link com.atlassian.theplugin.commons.crucible.api.soap.xfire.review.PermId }
      *
      */
     public void setPermaId(PermId value) {
@@ -250,7 +250,7 @@ public class ReviewDataBean implements ReviewData {
      *
      * @return
      *     possible object is
-     *     {@link com.atlassian.theplugin.crucible.api.soap.xfire.review.State }
+     *     {@link com.atlassian.theplugin.commons.crucible.api.soap.xfire.review.State }
      *
      */
     public State getState() {
@@ -262,7 +262,7 @@ public class ReviewDataBean implements ReviewData {
      *
      * @param value
      *     allowed object is
-     *     {@link com.atlassian.theplugin.crucible.api.soap.xfire.review.State }
+     *     {@link com.atlassian.theplugin.commons.crucible.api.soap.xfire.review.State }
      *
      */
     public void setState(State value) {
