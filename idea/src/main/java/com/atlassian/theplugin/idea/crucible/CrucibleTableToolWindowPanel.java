@@ -21,16 +21,19 @@ import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListener;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
-import com.atlassian.theplugin.crucible.CrucibleServerFacade;
-import com.atlassian.theplugin.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.crucible.CrucibleStatusListener;
-import com.atlassian.theplugin.crucible.ReviewDataInfo;
-import com.atlassian.theplugin.crucible.api.ReviewItemData;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.atlassian.theplugin.idea.ui.AtlassianTableView;
+import com.atlassian.theplugin.crucible.CrucibleStatusListener;
+import com.atlassian.theplugin.crucible.CrucibleServerFacade;
+import com.atlassian.theplugin.crucible.CrucibleServerFacadeImpl;
+import com.atlassian.theplugin.crucible.ReviewDataInfo;
+import com.atlassian.theplugin.crucible.api.ReviewData;
+import com.atlassian.theplugin.crucible.api.PredefinedFilter;
+import com.atlassian.theplugin.crucible.api.CustomFilterData;
+import com.atlassian.theplugin.crucible.api.ReviewItemData;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -79,7 +82,6 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         super(new BorderLayout());
 
         this.crucibleFacade = crucibleFacade;
-
         setBackground(UIUtil.getTreeTextBackground());
 
         ActionManager actionManager = ActionManager.getInstance();
@@ -142,13 +144,72 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 //				ProjectView.getInstance(IdeaHelper.getCurrentProject()).refresh();
 			}
 		}));
+
+
+        contextMenu.addSeparator();
+		contextMenu.add(makeMenuItem("Open draft filter items", null, reviewAdapter, new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				openPredefinedFilter(reviewAdapter);
+			}
+		}));
+
+        contextMenu.addSeparator();
+		contextMenu.add(makeMenuItem("Open custom filter items", null, reviewAdapter, new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				openCustomFilter(reviewAdapter);
+			}
+		}));
 */
         return contextMenu;
     }
 
+    private void openPredefinedFilter(ReviewDataInfoAdapter reviewAdapter) {
+        try {
+            List<ReviewData> rev = crucibleFacade.getReviewsForFilter(reviewAdapter.getServer(), PredefinedFilter.Drafts);
+            for (ReviewData reviewDataInfo : rev) {
+                System.out.println("reviewDataInfo.getPermaId().getId() = " + reviewDataInfo.getPermaId().getId());
+                System.out.println("reviewDataInfo.getAuthor() = " + reviewDataInfo.getAuthor());
+                //System.out.println("reviewDataInfo.getReviewers() = " + reviewDataInfo.getReviewers());
+            }
+        } catch (RemoteApiException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (ServerPasswordNotProvidedException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
+
+    private void openCustomFilter(ReviewDataInfoAdapter reviewAdapter) {
+        CustomFilterData filter = new CustomFilterData();
 /*
+        filter.setTitle("test2");
+        filter.setAuthor("mwent");
+        filter.setCreator("mwent");
+        filter.setModerator("mwent");
+        filter.setReviewer("sginter");
+*/
+        filter.setState(new String[]{"Draft", "Summarize", "Closed"});
+        filter.setOrRoles(true);
+        //filter.setAllReviewersComplete(false);
+
+
+        try {
+            List<ReviewData> rev = crucibleFacade.getReviewsForCustomFilter(reviewAdapter.getServer(), filter);
+            for (ReviewData reviewDataInfo : rev) {
+                System.out.println("reviewDataInfo.getPermaId().getId() = " + reviewDataInfo.getPermaId().getId());
+                System.out.println("reviewDataInfo.getAuthor() = " + reviewDataInfo.getAuthor());
+                //System.out.println("reviewDataInfo.getReviewers() = " + reviewDataInfo.getReviewers());
+            }
+        } catch (RemoteApiException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (ServerPasswordNotProvidedException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
+
+
     private JMenuItem makeMenuItem(String menuName,
                                    Icon icon,
+                                   ReviewDataInfoAdapter reviewAdapter,
                                    ActionListener listener) {
         JMenuItem item = new JMenuItem();
         item.setIcon(icon);
@@ -157,7 +218,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         return item;
     }
 
-
+    /*
     private void openItemDiff(ReviewDataInfoAdapter reviewAdapter) {
         VirtualFile vFile = FileDocumentManager.getInstance().getFile(
                 FileEditorManager.getInstance(IdeaHelper.getCurrentProject()).getSelectedTextEditor().getDocument());
