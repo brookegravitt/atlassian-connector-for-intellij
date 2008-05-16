@@ -35,7 +35,11 @@ public interface CrucibleSession {
 
 	List<ReviewData> getAllReviews() throws RemoteApiException;
 
-	List<String> getReviewers(PermId arg1) throws RemoteApiException;
+    List<ReviewData> getReviewsForFilter(PredefinedFilter filter) throws RemoteApiException;
+
+    List<ReviewData> getReviewsForCustomFilter(CustomFilter filter) throws RemoteApiException;
+
+    List<String> getReviewers(PermId arg1) throws RemoteApiException;
 
 	List<ProjectData> getProjects() throws RemoteApiException;
 

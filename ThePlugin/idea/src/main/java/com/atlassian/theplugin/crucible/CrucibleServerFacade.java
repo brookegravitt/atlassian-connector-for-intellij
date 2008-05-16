@@ -17,10 +17,10 @@
 package com.atlassian.theplugin.crucible;
 
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
-import com.atlassian.theplugin.crucible.api.*;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.crucible.api.*;
 
 import java.util.List;
 
@@ -34,7 +34,13 @@ public interface CrucibleServerFacade extends ProductServerFacade {
 	List<ReviewDataInfo> getActiveReviewsForUser(Server server)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	ReviewData createReviewFromPatch(Server server, ReviewData reviewData, String patch)
+    List<ReviewData> getReviewsForFilter(Server server, com.atlassian.theplugin.crucible.api.PredefinedFilter filter)
+            throws RemoteApiException, ServerPasswordNotProvidedException;
+
+    List<ReviewData> getReviewsForCustomFilter(Server server, CustomFilter filter)
+            throws RemoteApiException, ServerPasswordNotProvidedException;    
+
+    ReviewData createReviewFromPatch(Server server, ReviewData reviewData, String patch)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
 	List<ReviewItemData> getReviewItems(Server server, PermId permId)

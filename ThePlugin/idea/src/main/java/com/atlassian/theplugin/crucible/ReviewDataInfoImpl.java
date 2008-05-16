@@ -20,6 +20,9 @@ import com.atlassian.theplugin.crucible.api.ReviewData;
 import com.atlassian.theplugin.crucible.api.PermId;
 import com.atlassian.theplugin.crucible.api.State;
 import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.crucible.api.ReviewData;
+import com.atlassian.theplugin.crucible.api.PermId;
+import com.atlassian.theplugin.crucible.api.State;
 
 import java.util.List;
 
