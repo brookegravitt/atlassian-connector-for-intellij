@@ -46,7 +46,8 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 	private static final String REPOSITORIES_SERVICE = "/rest-service/repositories-v1";
 	private static final String LOGIN = "/login";
 	private static final String GET_REVIEWS_IN_STATES = "?state=";
-	private static final String GET_REVIEWERS = "/reviewers";
+	private static final String GET_FILTERED_REVIEWS = "/filter";
+    private static final String GET_REVIEWERS = "/reviewers";
 	private static final String GET_REVIEW_ITEMS = "/reviewitems";
 	private static final String GET_REVIEW_COMMENTS = "/comments";
 
@@ -163,7 +164,63 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		return getReviewsInStates(null);
 	}
 
-	public List<String> getReviewers(PermId permId) throws RemoteApiException {
+    public List<ReviewData> getReviewsForFilter(PredefinedFilter filter) throws RemoteApiException {
+        if (!isLoggedIn()) {
+            throw new IllegalStateException("Calling method without calling login() first");
+        }
+
+        try {
+            Document doc = retrieveGetResponse(baseUrl
+                    + REVIEW_SERVICE
+                    +  GET_FILTERED_REVIEWS
+                    + "/" + userName + "/" + filter.getFilterUrl());
+
+            XPath xpath = XPath.newInstance("/reviews/reviewData");
+            @SuppressWarnings("unchecked")
+            List<Element> elements = xpath.selectNodes(doc);
+            List<ReviewData> reviews = new ArrayList<ReviewData>();
+
+            if (elements != null && !elements.isEmpty()) {
+                for (Element element : elements) {
+                    reviews.add(CrucibleRestXmlHelper.parseReviewNode(element));
+                }
+            }
+            return reviews;
+        } catch (IOException e) {
+            throw new RemoteApiException(e.getMessage(), e);
+        } catch (JDOMException e) {
+            throw new RemoteApiException("Server returned malformed response", e);
+        }
+    }
+
+    public List<ReviewData> getReviewsForCustomFilter(CustomFilter filter) throws RemoteApiException {
+        if (!isLoggedIn()) {
+            throw new IllegalStateException("Calling method without calling login() first");
+        }
+        Document request = CrucibleRestXmlHelper.prepareCustomFilter(filter);
+
+        try {
+            Document doc = retrievePostResponse(baseUrl + REVIEW_SERVICE + GET_FILTERED_REVIEWS, request);
+
+            XPath xpath = XPath.newInstance("/reviews/reviewData");
+            @SuppressWarnings("unchecked")
+            List<Element> elements = xpath.selectNodes(doc);
+            List<ReviewData> reviews = new ArrayList<ReviewData>();
+            
+            if (elements != null && !elements.isEmpty()) {
+                for (Element element : elements) {
+                    reviews.add(CrucibleRestXmlHelper.parseReviewNode(element));
+                }
+            }
+            return reviews;
+        } catch (IOException e) {
+            throw new RemoteApiException(e.getMessage(), e);
+        } catch (JDOMException e) {
+            throw new RemoteApiException("Server returned malformed response", e);
+        }
+    }
+
+    public List<String> getReviewers(PermId permId) throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
 		}

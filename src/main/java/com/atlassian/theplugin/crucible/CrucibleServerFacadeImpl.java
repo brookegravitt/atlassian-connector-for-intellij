@@ -23,7 +23,6 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginFailedException;
 import com.atlassian.theplugin.crucible.api.*;
 import com.atlassian.theplugin.crucible.api.rest.CrucibleSessionImpl;
-import com.atlassian.theplugin.util.PluginUtil;
 
 import java.util.*;
 
@@ -60,7 +59,7 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	}
 
 	/**
-	 * @param serverUrl @see com.atlassian.theplugin.crucible.remoteapi.soap.CrucibleSessionImpl#constructor(String baseUrl)
+	 * @param serverUrl @see com.atlassian.theplugin.commons.crucible.remoteapi.soap.CrucibleSessionImpl#constructor(String baseUrl)
 	 * @param userName
 	 * @param password
 	 * @throws com.atlassian.theplugin.crucible.api.CrucibleException
@@ -188,14 +187,31 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 			return result;
 		} catch (RemoteApiLoginFailedException e) {
 			if (server.getIsConfigInitialized()) {
-				PluginUtil.getLogger().error("Crucible login exception: " + e.getMessage());
+// @todo do something with logger
+//				PluginUtil.getLogger().error("Crucible login exception: " + e.getMessage());
 			} else {
 				throw new ServerPasswordNotProvidedException();
 			}
 		} catch (RemoteApiException e) {
-			PluginUtil.getLogger().error("Crucible exception: " + e.getMessage());
+// @todo do something with logger
+//            PluginUtil.getLogger().error("Crucible exception: " + e.getMessage());
 		}
 		return Collections.EMPTY_LIST;
 	}
+
+    public List<ReviewData> getReviewsForFilter(Server server, PredefinedFilter filter) throws RemoteApiException, ServerPasswordNotProvidedException {
+        CrucibleSession session = getSession(server);
+
+        List<ReviewData> result = session.getReviewsForFilter(filter);
+        return result;
+    }
+
+    public List<ReviewData> getReviewsForCustomFilter(Server server, CustomFilter filter)
+            throws RemoteApiException, ServerPasswordNotProvidedException {
+        CrucibleSession session = getSession(server);
+
+        List<ReviewData> result = session.getReviewsForCustomFilter(filter);
+        return result;        
+    }
 
 }
