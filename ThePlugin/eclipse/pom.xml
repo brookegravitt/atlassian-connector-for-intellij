@@ -170,8 +170,7 @@
             <id>org.eclipse.swt.linux</id>
             <activation>
                 <os>
-                    <name>linux</name>
-                    <arch>i386</arch>
+                    <family>unix</family>
                 </os>
             </activation>
             <dependencies>
