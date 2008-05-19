@@ -16,9 +16,9 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.crucible.ReviewDataInfo;
-import com.atlassian.theplugin.crucible.api.PermId;
-import com.atlassian.theplugin.crucible.api.State;
+import com.atlassian.theplugin.commons.crucible.ReviewDataInfo;
+import com.atlassian.theplugin.commons.crucible.api.PermId;
+import com.atlassian.theplugin.commons.crucible.api.State;
 import com.atlassian.theplugin.commons.Server;
 
 import java.util.List;

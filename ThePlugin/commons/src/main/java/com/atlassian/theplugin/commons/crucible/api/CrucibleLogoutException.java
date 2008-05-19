@@ -14,29 +14,25 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.idea.crucible;
-
-import com.atlassian.theplugin.commons.crucible.CrucibleStatusDisplay;
-import com.atlassian.theplugin.idea.GenericHyperlinkListener;
-
-import javax.swing.*;
+package com.atlassian.theplugin.commons.crucible.api;
 
 /**
  * Created by IntelliJ IDEA.
  * User: Jacek
- * Date: 2008-01-31
- * Time: 17:36:10
+ * Date: 2008-02-06
+ * Time: 12:25:28
  * To change this template use File | Settings | File Templates.
  */
-public class ToolWindowCrucibleContent extends JEditorPane implements CrucibleStatusDisplay {
-
-	public ToolWindowCrucibleContent() {
-		setEditable(false);
-        setContentType("text/html");
-		addHyperlinkListener(new GenericHyperlinkListener());
+public class CrucibleLogoutException extends CrucibleException {
+	public CrucibleLogoutException(String message) {
+		super(message);
 	}
 
-    public void updateCrucibleStatus(String htmlPage) {
-		this.setText(htmlPage);
+	public CrucibleLogoutException(Throwable throwable) {
+		super(throwable);
+	}
+	
+	public CrucibleLogoutException(String message, Throwable throwable) {
+		super(message, throwable);
 	}
 }

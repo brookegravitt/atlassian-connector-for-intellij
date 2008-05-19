@@ -17,8 +17,8 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListener;
-import com.atlassian.theplugin.crucible.CrucibleStatusListener;
-import com.atlassian.theplugin.crucible.ReviewDataInfo;
+import com.atlassian.theplugin.commons.crucible.CrucibleStatusListener;
+import com.atlassian.theplugin.commons.crucible.ReviewDataInfo;
 import com.atlassian.theplugin.idea.GenericHyperlinkListener;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PluginToolWindow;
