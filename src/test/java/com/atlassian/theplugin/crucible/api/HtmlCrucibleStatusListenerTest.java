@@ -17,11 +17,14 @@
 package com.atlassian.theplugin.crucible.api;
 
 import com.atlassian.theplugin.commons.configuration.ServerBean;
-import com.atlassian.theplugin.crucible.CrucibleStatusDisplay;
-import com.atlassian.theplugin.crucible.HtmlCrucibleStatusListener;
-import com.atlassian.theplugin.crucible.ReviewDataInfo;
-import com.atlassian.theplugin.crucible.ReviewDataInfoImpl;
+import com.atlassian.theplugin.commons.crucible.ReviewDataInfo;
+import com.atlassian.theplugin.commons.crucible.ReviewDataInfoImpl;
 import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.crucible.CrucibleStatusDisplay;
+import com.atlassian.theplugin.commons.crucible.HtmlCrucibleStatusListener;
+import com.atlassian.theplugin.commons.crucible.api.PermIdBean;
+import com.atlassian.theplugin.commons.crucible.api.ReviewDataBean;
+import com.atlassian.theplugin.commons.crucible.api.State;
 import com.gargoylesoftware.htmlunit.StringWebResponse;
 import com.gargoylesoftware.htmlunit.TopLevelWindow;
 import com.gargoylesoftware.htmlunit.WebClient;

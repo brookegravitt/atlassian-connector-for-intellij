@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.crucible.CrucibleServerFacade;
+import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.diff.LineTokenizer;

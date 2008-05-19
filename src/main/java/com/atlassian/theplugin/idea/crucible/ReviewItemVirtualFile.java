@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.crucible.api.ReviewItemData;
+import com.atlassian.theplugin.commons.crucible.api.ReviewItemData;
 import com.intellij.openapi.vfs.VirtualFile;
 
 public class ReviewItemVirtualFile {
