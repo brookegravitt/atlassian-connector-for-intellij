@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.crucible.CrucibleServerFacade;
+import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 
 public class CruciblePatchUploader implements Runnable {
 	private final String patch;
