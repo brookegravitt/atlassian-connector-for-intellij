@@ -176,9 +176,9 @@
             </activation>
             <dependencies>
                 <dependency>
-                    <groupId>com.princetonsoftech.apollo</groupId>
-                    <artifactId>org.eclipse.swt.gtk.linux.x86</artifactId>
-                    <version>3.2.1</version>
+                    <groupId>>org.eclipse.swt.gtk.linux</groupId>
+                    <artifactId>x86</artifactId>
+                    <version>3.3.0-v3346</version>
                     <type>jar</type>
                 </dependency>
             </dependencies>
