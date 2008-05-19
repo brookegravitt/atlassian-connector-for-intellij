@@ -22,6 +22,8 @@ import com.atlassian.theplugin.commons.bamboo.api.AutoRenewBambooSession;
 import com.atlassian.theplugin.commons.bamboo.*;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
+import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.bamboo.api.bamboomock.*;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
@@ -45,13 +47,15 @@ public class BambooSessionTest extends TestCase {
 	private String mockBaseUrl;
 
 	protected void setUp() throws Exception {
-		server = new Server(0);
+        ConfigurationFactory.setConfiguration(new PluginConfigurationBean());
+
+        server = new Server(0);
 		server.start();
 
 		mockBaseUrl = "http://localhost:" + server.getConnectors()[0].getLocalPort();
 
 		mockServer = new JettyMockServer(server);
-	}
+    }
 
 	protected void tearDown() throws Exception {
 		mockServer = null;
@@ -70,7 +74,7 @@ public class BambooSessionTest extends TestCase {
 			mockServer.expect("/api/rest/login.action", new LoginCallback(usernames[i], passwords[i]));
 			mockServer.expect("/api/rest/logout.action", new LogoutCallback());
 
-			apiHandler.login(usernames[i], passwords[i].toCharArray());
+            apiHandler.login(usernames[i], passwords[i].toCharArray());
 			assertTrue(apiHandler.isLoggedIn());
 			apiHandler.logout();
 			assertFalse(apiHandler.isLoggedIn());

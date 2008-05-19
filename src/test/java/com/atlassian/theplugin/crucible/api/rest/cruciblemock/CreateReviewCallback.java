@@ -16,10 +16,10 @@
 
 package com.atlassian.theplugin.crucible.api.rest.cruciblemock;
 
-import com.atlassian.theplugin.crucible.api.PermIdBean;
-import com.atlassian.theplugin.crucible.api.ReviewDataBean;
-import com.atlassian.theplugin.crucible.api.State;
-import com.atlassian.theplugin.crucible.api.rest.CrucibleRestXmlHelper;
+import com.atlassian.theplugin.commons.crucible.api.PermIdBean;
+import com.atlassian.theplugin.commons.crucible.api.ReviewDataBean;
+import com.atlassian.theplugin.commons.crucible.api.State;
+import com.atlassian.theplugin.commons.crucible.api.rest.CrucibleRestXmlHelper;
 import static junit.framework.Assert.assertTrue;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 import org.jdom.Document;

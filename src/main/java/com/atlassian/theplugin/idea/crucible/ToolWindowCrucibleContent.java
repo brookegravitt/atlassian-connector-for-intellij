@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.crucible.CrucibleStatusDisplay;
+import com.atlassian.theplugin.commons.crucible.CrucibleStatusDisplay;
 import com.atlassian.theplugin.idea.GenericHyperlinkListener;
 
 import javax.swing.*;

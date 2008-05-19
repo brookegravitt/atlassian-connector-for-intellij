@@ -26,14 +26,14 @@ import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.atlassian.theplugin.idea.ui.AtlassianTableView;
-import com.atlassian.theplugin.crucible.CrucibleStatusListener;
-import com.atlassian.theplugin.crucible.CrucibleServerFacade;
-import com.atlassian.theplugin.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.crucible.ReviewDataInfo;
-import com.atlassian.theplugin.crucible.api.ReviewData;
-import com.atlassian.theplugin.crucible.api.PredefinedFilter;
-import com.atlassian.theplugin.crucible.api.CustomFilterData;
-import com.atlassian.theplugin.crucible.api.ReviewItemData;
+import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
+import com.atlassian.theplugin.commons.crucible.CrucibleStatusListener;
+import com.atlassian.theplugin.commons.crucible.*;
+import com.atlassian.theplugin.commons.crucible.ReviewDataInfo;
+import com.atlassian.theplugin.commons.crucible.api.CustomFilterData;
+import com.atlassian.theplugin.commons.crucible.api.PredefinedFilter;
+import com.atlassian.theplugin.commons.crucible.api.*;
+import com.atlassian.theplugin.commons.crucible.api.ReviewItemData;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -145,7 +145,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 			}
 		}));
 
-
+*/
         contextMenu.addSeparator();
 		contextMenu.add(makeMenuItem("Open draft filter items", null, reviewAdapter, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -159,7 +159,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 				openCustomFilter(reviewAdapter);
 			}
 		}));
-*/
+
         return contextMenu;
     }
 
