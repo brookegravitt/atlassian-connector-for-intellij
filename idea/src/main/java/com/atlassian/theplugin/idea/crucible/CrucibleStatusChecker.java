@@ -19,11 +19,11 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.configuration.CrucibleConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
-import com.atlassian.theplugin.crucible.CrucibleServerFacade;
-import com.atlassian.theplugin.crucible.CrucibleStatusListener;
-import com.atlassian.theplugin.crucible.ReviewDataInfo;
-import com.atlassian.theplugin.crucible.CrucibleServerFacadeImpl;
+import com.atlassian.theplugin.commons.crucible.CrucibleStatusListener;
+import com.atlassian.theplugin.commons.crucible.ReviewDataInfo;
 import com.atlassian.theplugin.commons.*;
+import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
+import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
 import com.atlassian.theplugin.commons.util.DateUtil;
@@ -39,8 +39,8 @@ import java.util.TimerTask;
 
 
 /**
- * IDEA-specific class that uses {@link com.atlassian.theplugin.crucible.CrucibleServerFacade} to retrieve builds info and
- * passes raw data to configured {@link com.atlassian.theplugin.crucible.CrucibleStatusListener}s.<p>
+ * IDEA-specific class that uses {@link com.atlassian.theplugin.commons.crucible.CrucibleServerFacade} to retrieve builds info and
+ * passes raw data to configured {@link com.atlassian.theplugin.commons.crucible.CrucibleStatusListener}s.<p>
  * <p/>
  * Intended to be triggered by a {@link java.util.Timer} through the {@link #newTimerTask()}.<p>
  * <p/>
