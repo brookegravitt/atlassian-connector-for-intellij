@@ -411,7 +411,7 @@ public class JIRAToolWindowPanel extends JPanel {
 	}
 
 	private void setStatusMessage(String msg, boolean isError) {
-			editorPane.setBackground(isError ? Color.red : Color.white);
+		editorPane.setBackground(isError ? Color.RED : Color.WHITE);
 		editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">" + msg + "</td></tr></table>"));
 	}
 

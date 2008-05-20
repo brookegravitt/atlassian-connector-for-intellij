@@ -297,9 +297,16 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 	}
 
 	private void setBuilds(Collection<BambooBuild> builds) {
+		boolean haveErrors = false;
 		List<BambooBuildAdapter> buildAdapters = new ArrayList<BambooBuildAdapter>();
 		Date lastPollingTime = null;
 		for (BambooBuild build : builds) {
+			if (!haveErrors) {
+				if (build.getStatus() == BuildStatus.UNKNOWN) {
+					setStatusMessage(build.getMessage(), true);
+					haveErrors = true;
+				}
+			}
 			if (build.getPollingTime() != null) {
 				lastPollingTime = build.getPollingTime();
 			}
@@ -317,17 +324,19 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 		// restore selection
 		table.getSelectionModel().setSelectionInterval(selectedItem, selectedItem);
 
-		StringBuffer sb = new StringBuffer();
-		sb.append("Loaded <b>");
-		sb.append(builds.size());
-		sb.append("</b> builds");
-		if (lastPollingTime != null) {
-			sb.append(" at  <b>");
-			sb.append(TIME_DF.format(lastPollingTime));
-			sb.append("</b>");
+		if (!haveErrors) {
+			StringBuffer sb = new StringBuffer();
+			sb.append("Loaded <b>");
+			sb.append(builds.size());
+			sb.append("</b> builds");
+			if (lastPollingTime != null) {
+				sb.append(" at  <b>");
+				sb.append(TIME_DF.format(lastPollingTime));
+				sb.append("</b>");
+			}
+			sb.append(".");
+			setStatusMessage((sb.toString()));
 		}
-		sb.append(".");
-		editorPane.setText(wrapBody(sb.toString()));
 	}
 
 	private String wrapBody(String s) {
@@ -336,6 +345,11 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 	}
 
 	private void setStatusMessage(String msg) {
+		setStatusMessage(msg, false);
+	}
+
+	private void setStatusMessage(String msg, boolean isError) {
+		editorPane.setBackground(isError ? Color.RED : Color.WHITE);
 		editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">" + msg + "</td></tr></table>"));
 	}
 
