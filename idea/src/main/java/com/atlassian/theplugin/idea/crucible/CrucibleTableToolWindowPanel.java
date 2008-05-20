@@ -95,12 +95,8 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
             public void mouseClicked(MouseEvent e) {
                 ReviewDataInfoAdapter reviewDataInfo = (ReviewDataInfoAdapter) table.getSelectedObject();
                 if (reviewDataInfo != null) {
-                    if (e.getClickCount() == 1) {
-                        //addReviewScope(reviewDataInfo);
-                    } else {
-                        if (e.getClickCount() == 2) {
-                            BrowserUtil.launchBrowser(reviewDataInfo.getReviewUrl());
-                        }
+                    if (e.getClickCount() == 2) {
+                        BrowserUtil.launchBrowser(reviewDataInfo.getReviewUrl());
                     }
                 }
             }
@@ -115,9 +111,9 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
             private void maybeShowPopup(MouseEvent e) {
                 if (e.isPopupTrigger() && table.isEnabled()) {
-                    ActionGroup actionGroup = (ActionGroup) ActionManager.getInstance().getAction("ThePlugin.Crucible.ReviewPopupMenu");
+                    ActionGroup actionGroup = (ActionGroup) ActionManager
+                            .getInstance().getAction("ThePlugin.Crucible.ReviewPopupMenu");
                     ActionPopupMenu popup = ActionManager.getInstance().createActionPopupMenu("Review", actionGroup);
-
                     JPopupMenu jPopupMenu = popup.getComponent();
                     jPopupMenu.show(e.getComponent(), e.getX(), e.getY());
                 }
@@ -184,184 +180,185 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     }
 */
 
-
     /*
-    private void openItemDiff(ReviewDataInfoAdapter reviewAdapter) {
-        VirtualFile vFile = FileDocumentManager.getInstance().getFile(
-                FileEditorManager.getInstance(IdeaHelper.getCurrentProject()).getSelectedTextEditor().getDocument());
-        if (vFile != null) {
-            final List<ReviewItemVirtualFile> files = getReviewVersionedVirtualFiles(reviewAdapter);
-            for (ReviewItemVirtualFile file : files) {
-                if (file.getVirtualFile().getPath().equals(vFile.getPath())) {
-                    List<String> rev = new ArrayList<String>();
-                    rev.add(file.getFromRevision());
-                    rev.add(file.getToRevision());
-                    List<VcsFileRevision> revisions = VcsIdeaHelper.getFileRevisions(file.getVirtualFile(), rev);
-                    if (revisions.size() == 2) {
-                        showDiff(file.getVirtualFile(), revisions.get(0), revisions.get(1));
-                    }
-                }
-
-            }
-        }
-    }
-
-
-    private List<ReviewItemVirtualFile> getReviewVersionedVirtualFiles(ReviewDataInfoAdapter reviewAdapter) {
-        List<ReviewItemVirtualFile> files = new ArrayList<ReviewItemVirtualFile>();
-        try {
-            List<ReviewItemData> items = crucibleFacade.getReviewItems(
-                    reviewAdapter.getServer(), reviewAdapter.getPermaId());
-            VirtualFile baseDir = IdeaHelper.getCurrentProject().getBaseDir();
-            String baseUrl = VcsIdeaHelper.getRepositoryUrlForFile(baseDir);
-            for (ReviewItemData item : items) {
-                if (item.getToPath().startsWith(baseUrl)) {
-                    String relUrl = item.getToPath().substring(baseUrl.length());
-                    VirtualFile vf = VfsUtil.findRelativeFile(relUrl, baseDir);
-                    if (vf != null) {
-                        files.add(new ReviewItemVirtualFile(vf, item));
-                    }
-                }
-            }
-        } catch (RemoteApiException e1) {
-            // @todo handle exception - not used methd currently
-        } catch (ServerPasswordNotProvidedException e1) {
-            // @todo handle exception - not used methd currently
-        }
-        return files;
-    }
-
-    private List<VirtualFile> getReviewVirtualFiles(ReviewDataInfoAdapter reviewAdapter) {
-        List<VirtualFile> files = new ArrayList<VirtualFile>();
-        try {
-            List<ReviewItemData> items = crucibleFacade.getReviewItems(reviewAdapter.getServer(), reviewAdapter.getPermaId());
-            VirtualFile baseDir = IdeaHelper.getCurrentProject().getBaseDir();
-            String baseUrl = VcsIdeaHelper.getRepositoryUrlForFile(baseDir);
-            for (ReviewItemData item : items) {
-                if (item.getToPath().startsWith(baseUrl)) {
-                    String relUrl = item.getToPath().substring(baseUrl.length());
-                    VirtualFile vf = VfsUtil.findRelativeFile(relUrl, baseDir);
-                    if (vf != null) {
-                        files.add(vf);
-                    }
-                }
-            }
-        } catch (RemoteApiException e1) {
-            // @todo handle exception - not used methd currently
-        } catch (ServerPasswordNotProvidedException e1) {
-            // @todo handle exception - not used methd currently
-        }
-        return files;
-    }
-
-    public void openReviewFiles(ReviewDataInfoAdapter reviewAdapter) {
-        FileEditorManager fileEditorManager = FileEditorManager.getInstance(IdeaHelper.getCurrentProject());
-        for (ReviewItemVirtualFile vf : getReviewVersionedVirtualFiles(reviewAdapter)) {
-            fileEditorManager.openFile(vf.getVirtualFile(), false);
-        }
-    }
-
-    public void getComments(ReviewDataInfoAdapter reviewAdapter) {
-        try {
-            List<GeneralComment> items = crucibleFacade.getComments(reviewAdapter.getServer(), reviewAdapter.getPermaId());
-
-            for (GeneralComment item : items) {
-                System.out.println(item.getClass().getName() + " -> User: " + item.getUser() + " left comment: "
-                        + item.getMessage() + " on " + item.getCreateDate().toString());
-                if (item instanceof VersionedComment) {
-                    VersionedComment c = (VersionedComment) item;
-                    System.out.print("c.getReviewItemId() + " + c.getReviewItemId().getId());
-                    if (c.isFromLineInfo()) {
-                        System.out.print(" fromLines:  " + c.getFromStartLine() + " - " + c.getFromEndLine());
-                    }
-                    if (c.isToLineInfo()) {
-                        System.out.print(" toLines:  " + c.getToStartLine() + " - " + c.getToEndLine());
-                    }
-                    System.out.println("");
-                }
-                for (GeneralComment reply : item.getReplies()) {
-                    System.out.println(reply.getClass().getName() + " -> User: " + reply.getUser() + " replied: "
-                            + reply.getMessage() + " on " + reply.getCreateDate().toString());
-                }
-            }
-        } catch (RemoteApiException e1) {
-            // @todo handle exception - not used methd currently
-        } catch (ServerPasswordNotProvidedException e1) {
-            // @todo handle exception - not used methd currently
-        }
-    }
-
-    private void addReviewScope(final ReviewDataInfoAdapter reviewAdapter) {
-        new Thread(new AddReviewScopeWorker(reviewAdapter), "atlassian-crucible-apply-scope").start();
-    }
-
-
-    private final class AddReviewScopeWorker implements Runnable {
-        private ReviewDataInfoAdapter reviewAdapter;
-
-        private AddReviewScopeWorker(ReviewDataInfoAdapter reviewAdapter) {
-            this.reviewAdapter = reviewAdapter;
-        }
-
-        public void run() {
-            IdeaHelper.getScopeFiles().clear();
-            CrucibleReviewScopeProvider provider =
-                    CrucibleReviewScopeProvider.getCrucibleScopeProvider(IdeaHelper.getCurrentProject());
-            String previousReviewScope = IdeaHelper.getCurrentProjectComponent().getReviewId();
-            if (previousReviewScope != null) {
-                if (provider.isScopeDefined(previousReviewScope)) {
-                    provider.removeScope(previousReviewScope);
-                }
-            }
-            String scopeName = reviewAdapter.getPermaId().getId();
-
-            if (provider.isScopeDefined(scopeName)) {
-                provider.removeScope(scopeName);
-            }
-
-            final List<ReviewItemVirtualFile> files = getReviewVersionedVirtualFiles(reviewAdapter);
-            if (!files.isEmpty()) {
-                IdeaHelper.getScopeFiles().addAll(files);
-
-                provider.addScope(scopeName, provider.new ToReviewAbstractPackageSet() {
-                    public boolean contains(PsiFile psiFile, NamedScopesHolder namedScopesHolder) {
-                        final VirtualFile virtualFile = psiFile.getVirtualFile();
-                        for (ReviewItemVirtualFile file : files) {
-                            if (file.getVirtualFile().equals(virtualFile)) {
-                                return true;
-                            }
+        private void openItemDiff(ReviewDataInfoAdapter reviewAdapter) {
+            VirtualFile vFile = FileDocumentManager.getInstance().getFile(
+                    FileEditorManager.getInstance(IdeaHelper.getCurrentProject()).getSelectedTextEditor().getDocument());
+            if (vFile != null) {
+                final List<ReviewItemVirtualFile> files = getReviewVersionedVirtualFiles(reviewAdapter);
+                for (ReviewItemVirtualFile file : files) {
+                    if (file.getVirtualFile().getPath().equals(vFile.getPath())) {
+                        List<String> rev = new ArrayList<String>();
+                        rev.add(file.getFromRevision());
+                        rev.add(file.getToRevision());
+                        List<VcsFileRevision> revisions = VcsIdeaHelper.getFileRevisions(file.getVirtualFile(), rev);
+                        if (revisions.size() == 2) {
+                            showDiff(file.getVirtualFile(), revisions.get(0), revisions.get(1));
                         }
-                        return false;
+                    }
+
+                }
+            }
+        }
+
+
+        private List<ReviewItemVirtualFile> getReviewVersionedVirtualFiles(ReviewDataInfoAdapter reviewAdapter) {
+            List<ReviewItemVirtualFile> files = new ArrayList<ReviewItemVirtualFile>();
+            try {
+                List<ReviewItemData> items = crucibleFacade.getReviewItems(
+                        reviewAdapter.getServer(), reviewAdapter.getPermaId());
+                VirtualFile baseDir = IdeaHelper.getCurrentProject().getBaseDir();
+                String baseUrl = VcsIdeaHelper.getRepositoryUrlForFile(baseDir);
+                for (ReviewItemData item : items) {
+                    if (item.getToPath().startsWith(baseUrl)) {
+                        String relUrl = item.getToPath().substring(baseUrl.length());
+                        VirtualFile vf = VfsUtil.findRelativeFile(relUrl, baseDir);
+                        if (vf != null) {
+                            files.add(new ReviewItemVirtualFile(vf, item));
+                        }
+                    }
+                }
+            } catch (RemoteApiException e1) {
+                // @todo handle exception - not used methd currently
+            } catch (ServerPasswordNotProvidedException e1) {
+                // @todo handle exception - not used methd currently
+            }
+            return files;
+        }
+
+        private List<VirtualFile> getReviewVirtualFiles(ReviewDataInfoAdapter reviewAdapter) {
+            List<VirtualFile> files = new ArrayList<VirtualFile>();
+            try {
+                List<ReviewItemData> items = crucibleFacade.getReviewItems(
+                reviewAdapter.getServer(), reviewAdapter.getPermaId());
+                VirtualFile baseDir = IdeaHelper.getCurrentProject().getBaseDir();
+                String baseUrl = VcsIdeaHelper.getRepositoryUrlForFile(baseDir);
+                for (ReviewItemData item : items) {
+                    if (item.getToPath().startsWith(baseUrl)) {
+                        String relUrl = item.getToPath().substring(baseUrl.length());
+                        VirtualFile vf = VfsUtil.findRelativeFile(relUrl, baseDir);
+                        if (vf != null) {
+                            files.add(vf);
+                        }
+                    }
+                }
+            } catch (RemoteApiException e1) {
+                // @todo handle exception - not used methd currently
+            } catch (ServerPasswordNotProvidedException e1) {
+                // @todo handle exception - not used methd currently
+            }
+            return files;
+        }
+
+        public void openReviewFiles(ReviewDataInfoAdapter reviewAdapter) {
+            FileEditorManager fileEditorManager = FileEditorManager.getInstance(IdeaHelper.getCurrentProject());
+            for (ReviewItemVirtualFile vf : getReviewVersionedVirtualFiles(reviewAdapter)) {
+                fileEditorManager.openFile(vf.getVirtualFile(), false);
+            }
+        }
+
+        public void getComments(ReviewDataInfoAdapter reviewAdapter) {
+            try {
+                List<GeneralComment> items = crucibleFacade
+                .getComments(reviewAdapter.getServer(), reviewAdapter.getPermaId());
+
+                for (GeneralComment item : items) {
+                    System.out.println(item.getClass().getName() + " -> User: " + item.getUser() + " left comment: "
+                            + item.getMessage() + " on " + item.getCreateDate().toString());
+                    if (item instanceof VersionedComment) {
+                        VersionedComment c = (VersionedComment) item;
+                        System.out.print("c.getReviewItemId() + " + c.getReviewItemId().getId());
+                        if (c.isFromLineInfo()) {
+                            System.out.print(" fromLines:  " + c.getFromStartLine() + " - " + c.getFromEndLine());
+                        }
+                        if (c.isToLineInfo()) {
+                            System.out.print(" toLines:  " + c.getToStartLine() + " - " + c.getToEndLine());
+                        }
+                        System.out.println("");
+                    }
+                    for (GeneralComment reply : item.getReplies()) {
+                        System.out.println(reply.getClass().getName() + " -> User: " + reply.getUser() + " replied: "
+                                + reply.getMessage() + " on " + reply.getCreateDate().toString());
+                    }
+                }
+            } catch (RemoteApiException e1) {
+                // @todo handle exception - not used methd currently
+            } catch (ServerPasswordNotProvidedException e1) {
+                // @todo handle exception - not used methd currently
+            }
+        }
+
+        private void addReviewScope(final ReviewDataInfoAdapter reviewAdapter) {
+            new Thread(new AddReviewScopeWorker(reviewAdapter), "atlassian-crucible-apply-scope").start();
+        }
+
+
+        private final class AddReviewScopeWorker implements Runnable {
+            private ReviewDataInfoAdapter reviewAdapter;
+
+            private AddReviewScopeWorker(ReviewDataInfoAdapter reviewAdapter) {
+                this.reviewAdapter = reviewAdapter;
+            }
+
+            public void run() {
+                IdeaHelper.getScopeFiles().clear();
+                CrucibleReviewScopeProvider provider =
+                        CrucibleReviewScopeProvider.getCrucibleScopeProvider(IdeaHelper.getCurrentProject());
+                String previousReviewScope = IdeaHelper.getCurrentProjectComponent().getReviewId();
+                if (previousReviewScope != null) {
+                    if (provider.isScopeDefined(previousReviewScope)) {
+                        provider.removeScope(previousReviewScope);
+                    }
+                }
+                String scopeName = reviewAdapter.getPermaId().getId();
+
+                if (provider.isScopeDefined(scopeName)) {
+                    provider.removeScope(scopeName);
+                }
+
+                final List<ReviewItemVirtualFile> files = getReviewVersionedVirtualFiles(reviewAdapter);
+                if (!files.isEmpty()) {
+                    IdeaHelper.getScopeFiles().addAll(files);
+
+                    provider.addScope(scopeName, provider.new ToReviewAbstractPackageSet() {
+                        public boolean contains(PsiFile psiFile, NamedScopesHolder namedScopesHolder) {
+                            final VirtualFile virtualFile = psiFile.getVirtualFile();
+                            for (ReviewItemVirtualFile file : files) {
+                                if (file.getVirtualFile().equals(virtualFile)) {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        }
+                    });
+
+                    IdeaHelper.getCurrentProjectComponent().setReviewId(scopeName);
+                }
+                EventQueue.invokeLater(new Runnable() {
+                    public void run() {
+                        NamedScopeManager.getInstance(IdeaHelper.getCurrentProject()).fireScopeListeners();
+    //						ProjectView.getInstance(IdeaHelper.getCurrentProject()).changeView("Project");
                     }
                 });
 
-                IdeaHelper.getCurrentProjectComponent().setReviewId(scopeName);
             }
-            EventQueue.invokeLater(new Runnable() {
-                public void run() {
-                    NamedScopeManager.getInstance(IdeaHelper.getCurrentProject()).fireScopeListeners();
-//						ProjectView.getInstance(IdeaHelper.getCurrentProject()).changeView("Project");
-                }
-            });
-
         }
-    }
 
 
-    private void showDiff(VirtualFile file, VcsFileRevision first, VcsFileRevision last) {
-        SimpleDiffRequest diffData = new SimpleDiffRequest(IdeaHelper.getCurrentProject(), "Diff Tool");
-        diffData.setContentTitles(
-                "Repository revision: " + first.getRevisionNumber().asString(),
-                "Repository revision: " + last.getRevisionNumber().asString());
+        private void showDiff(VirtualFile file, VcsFileRevision first, VcsFileRevision last) {
+            SimpleDiffRequest diffData = new SimpleDiffRequest(IdeaHelper.getCurrentProject(), "Diff Tool");
+            diffData.setContentTitles(
+                    "Repository revision: " + first.getRevisionNumber().asString(),
+                    "Repository revision: " + last.getRevisionNumber().asString());
 
-        DiffContent firstContent = VcsIdeaHelper.getFileRevisionContent(file, first);
-        DiffContent lastContent = VcsIdeaHelper.getFileRevisionContent(file, last);
+            DiffContent firstContent = VcsIdeaHelper.getFileRevisionContent(file, first);
+            DiffContent lastContent = VcsIdeaHelper.getFileRevisionContent(file, last);
 
-        diffData.setContents(firstContent, lastContent);
+            diffData.setContents(firstContent, lastContent);
 
-        DiffManager.getInstance().getDiffTool().show(diffData);
-    }
-*/
+            DiffManager.getInstance().getDiffTool().show(diffData);
+        }
+    */
 
     private JScrollPane setupPane(JEditorPane pane, String initialText) {
         pane.setText(initialText);

@@ -20,10 +20,11 @@ import com.atlassian.theplugin.commons.UIActionScheduler;
 
 import java.awt.*;
 
-public class IdeaActionScheduler implements UIActionScheduler {
+public final class IdeaActionScheduler implements UIActionScheduler {
 	private static UIActionScheduler instance = new IdeaActionScheduler();
 
-	private IdeaActionScheduler(){}
+	private IdeaActionScheduler() {
+    }
 
 	public void invokeLater(Runnable action) {
 		EventQueue.invokeLater(action);

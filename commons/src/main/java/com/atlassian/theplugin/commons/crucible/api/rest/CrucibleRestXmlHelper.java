@@ -97,19 +97,18 @@ public final class CrucibleRestXmlHelper {
     public static void addTag(Element root, String tagName, String tagValue) {
         Element newElement = new Element(tagName);
         newElement.addContent(tagValue);
-        root.getContent().add(newElement);// .toString());// .addContent(newElement);
-
+        root.getContent().add(newElement);
     }
 
     public static Document prepareCreateReviewNode(ReviewData review, String patch) {
         Element root = new Element("createReview");
         Document doc = new Document(root);
 
-        root.addContent(prepareReviewNodeElement(review));
+        root.getContent().add(prepareReviewNodeElement(review));
 
         if (patch != null) {
             Element patchData = new Element("patch");
-            root.addContent(patchData);
+            root.getContent().add(patchData);
 
             CDATA patchT = new CDATA(patch);
             patchData.setContent(patchT);
@@ -137,7 +136,7 @@ public final class CrucibleRestXmlHelper {
         }
         if (review.getPermaId() != null) {
             Element permIdElement = new Element("permaId");
-            reviewData.addContent(permIdElement);
+            reviewData.getContent().add(permIdElement);
             addTag(permIdElement, "id", review.getPermaId().getId());
         }
 
