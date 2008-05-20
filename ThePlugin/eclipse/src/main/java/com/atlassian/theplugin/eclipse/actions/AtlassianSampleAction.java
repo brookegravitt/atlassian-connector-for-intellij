@@ -58,7 +58,7 @@ public class AtlassianSampleAction implements IWorkbenchWindowActionDelegate {
 	 * be able to provide parent shell for the message dialog.
 	 * @see IWorkbenchWindowActionDelegate#init
 	 */
-	public void init(IWorkbenchWindow window) {
-		this.window = window;
+	public void init(IWorkbenchWindow aWindow) {
+		this.window = aWindow;
 	}
 }
