@@ -10,8 +10,10 @@
 			<separator name="atlassianGroup">
             </separator>
          </menu>
-         <action label="Atlassian Sample Action" icon="icons/sample.gif" class="com.atlassian.theplugin.eclipse.actions.AtlassianSampleAction" tooltip="Atlassian Sample Action" menubarPath="atlassianMenu/atlassianGroup"  toolbarPath="atlassianGroup" id="com.atlassian.theplugin.eclipse.actions.SampleAction">
+         <!-- 
+         <action label="Atlassian Sample Action" icon="icons/sample.gif" class="com.atlassian.theplugin.eclipse.actions.AtlassianSampleAction" tooltip="Atlassian Sample Action" menubarPath="atlassianMenu/atlassianGroup"  toolbarPath="atlassianGroup" id="com.atlassian.theplugin.eclipse.actions.SampleAction"> 
          </action>
+         -->
       </actionSet>
    </extension>
    <extension point="org.eclipse.ui.views">
