@@ -22,22 +22,18 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.TableColumnInfo;
-import com.atlassian.theplugin.idea.jira.JiraIssueAdapter;
 import com.atlassian.theplugin.idea.ui.AtlassianTableView;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionPopupMenu;
-import com.intellij.openapi.util.IconLoader;
 import com.intellij.util.ui.ListTableModel;
 import com.intellij.util.ui.UIUtil;
 import thirdparty.javaworld.ClasspathHTMLEditorKit;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.DateFormat;
@@ -110,7 +106,8 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 
 			private void maybeShowPopup(MouseEvent e) {
 				if (e.isPopupTrigger() && table.isEnabled()) {
-                    ActionGroup actionGroup = (ActionGroup) ActionManager.getInstance().getAction("ThePlugin.Bamboo.BuildPopupMenu");
+                    ActionGroup actionGroup = (ActionGroup) ActionManager
+                            .getInstance().getAction("ThePlugin.Bamboo.BuildPopupMenu");
                     ActionPopupMenu popup = ActionManager.getInstance().createActionPopupMenu("Build", actionGroup);
 
                     JPopupMenu jPopupMenu = popup.getComponent();

@@ -60,7 +60,8 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	}
 
 	/**
-	 * @param serverUrl @see com.atlassian.theplugin.commons.crucible.remoteapi.soap.CrucibleSessionImpl#constructor(String baseUrl)
+	 * @param serverUrl @see
+     *          com.atlassian.theplugin.commons.crucible.remoteapi.soap.CrucibleSessionImpl#constructor(String baseUrl)
 	 * @param userName
 	 * @param password
 	 * @throws com.atlassian.theplugin.commons.crucible.api.CrucibleException
@@ -79,7 +80,8 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	 * @param server
 	 * @param reviewData data for new review to create (some fields have to be set e.g. projectKey)
 	 * @return created revew date
-	 * @throws com.atlassian.theplugin.commons.crucible.api.CrucibleException in case of createReview error or CrucibleLoginException in case of login error
+	 * @throws com.atlassian.theplugin.commons.crucible.api.CrucibleException
+     *          in case of createReview error or CrucibleLoginException in case of login error
 	 */
 	public ReviewData createReview(Server server, ReviewData reviewData) throws RemoteApiException {
 		CrucibleSession session = getSession(server);
@@ -93,7 +95,8 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	 * @param reviewData data for new review to create (some fields have to be set e.g. projectKey)
 	 * @param patch	  patch to assign with the review
 	 * @return created revew date
-	 * @throws com.atlassian.theplugin.commons.crucible.api.CrucibleException in case of createReview error or CrucibleLoginException in case of login error
+	 * @throws com.atlassian.theplugin.commons.crucible.api.CrucibleException
+     *          in case of createReview error or CrucibleLoginException in case of login error
 	 */
 	public ReviewData createReviewFromPatch(Server server, ReviewData reviewData, String patch)
 			throws RemoteApiException {
@@ -187,12 +190,13 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 			}
 			return result;
 		} catch (RemoteApiLoginFailedException e) {
-			if (server.getIsConfigInitialized()) {
+			if (!server.getIsConfigInitialized()) {
+                throw new ServerPasswordNotProvidedException();
+			} /* else {
 // @todo do something with logger
 //				PluginUtil.getLogger().error("Crucible login exception: " + e.getMessage());
-			} else {
-				throw new ServerPasswordNotProvidedException();
 			}
+			  */
 		} catch (RemoteApiException e) {
 // @todo do something with logger
 //            PluginUtil.getLogger().error("Crucible exception: " + e.getMessage());
@@ -200,7 +204,8 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 		return Collections.EMPTY_LIST;
 	}
 
-    public List<ReviewData> getReviewsForFilter(Server server, PredefinedFilter filter) throws RemoteApiException, ServerPasswordNotProvidedException {
+    public List<ReviewData> getReviewsForFilter(Server server, PredefinedFilter filter)
+            throws RemoteApiException, ServerPasswordNotProvidedException {
         CrucibleSession session = getSession(server);
 
         List<ReviewData> result = session.getReviewsForFilter(filter);

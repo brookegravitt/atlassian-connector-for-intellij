@@ -56,6 +56,6 @@ public class GetReviewersCallback implements JettyMockServer.Callback {
 	private static void addTag(Element root, String tagName, String tagValue) {
 		Element newElement = new Element(tagName);
 		newElement.addContent(tagValue);
-		root.addContent(newElement);
+		root.getContent().add(newElement);
 	}
 }
