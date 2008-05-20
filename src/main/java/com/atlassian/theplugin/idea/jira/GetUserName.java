@@ -5,8 +5,6 @@ import com.intellij.openapi.ui.DialogWrapper;
 import javax.swing.*;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.DocumentEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 public class GetUserName  extends DialogWrapper {
 	private JTextField userName;
