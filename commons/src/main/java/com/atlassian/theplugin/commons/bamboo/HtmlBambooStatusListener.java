@@ -103,9 +103,9 @@ import java.util.regex.Pattern;
 		sb.append(
 				"<td width=1%><a href='"
 						+ buildInfo.getBuildUrl()
-						+ "'><img src=\"/icons/"
-						+ icon
-						+ "\" height=\"16\" width=\"16\" border=\"0\" align=\"absmiddle\"></a></td>");
+						+ "'>" 
+						//+ "<img src=\"/icons/" + icon + "\" height=\"16\" width=\"16\" border=\"0\" align=\"absmiddle\">"
+						+ "</a></td>");
 		if (buildInfo.getStatus() == BuildStatus.UNKNOWN) {
 			// TODO: jgorycki: this generates bug PL-95
 			// In case of bamboo error garbage is displayed in the tooltip
