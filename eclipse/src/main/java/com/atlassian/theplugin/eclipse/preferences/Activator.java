@@ -1,8 +1,5 @@
 package com.atlassian.theplugin.eclipse.preferences;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Timer;
 
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -10,19 +7,12 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
-import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.bamboo.BambooStatusChecker;
-import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListener;
-import com.atlassian.theplugin.commons.configuration.BambooConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
-import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
-import com.atlassian.theplugin.commons.configuration.ServerBean;
-import com.atlassian.theplugin.commons.configuration.SubscribedPlanBean;
 import com.atlassian.theplugin.eclipse.EclipseActionScheduler;
 import com.atlassian.theplugin.eclipse.EclipseLogger;
 import com.atlassian.theplugin.eclipse.MissingPasswordHandler;
-import com.atlassian.theplugin.eclipse.bamboo.BambooTabDisplay;
 import com.atlassian.theplugin.eclipse.util.PluginUtil;
 
 
@@ -30,6 +20,8 @@ import com.atlassian.theplugin.eclipse.util.PluginUtil;
  * The activator class controls the plug-in life cycle
  */
 public class Activator extends AbstractUIPlugin {
+
+	private static final int ONE_MINUTE = 60000;
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "com.atlassian.theplugin.eclipse";
@@ -77,7 +69,7 @@ public class Activator extends AbstractUIPlugin {
 		bambooChecker = BambooStatusChecker.getInstance(
 				EclipseActionScheduler.getInstance(), pluginConfiguration, missingPasswordHandler, PluginUtil.getLogger());
 		timer = new Timer("Atlassian Eclipse Plugin checkers");
-		timer.schedule(bambooChecker.newTimerTask(), 0, 60000);
+		timer.schedule(bambooChecker.newTimerTask(), 0, ONE_MINUTE);
 	}
 
 	/*
