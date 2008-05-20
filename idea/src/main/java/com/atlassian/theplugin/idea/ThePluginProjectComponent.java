@@ -109,7 +109,7 @@ public class ThePluginProjectComponent implements
         this.pluginConfiguration = pluginConfiguration;
         this.bambooToolWindowPanel = BambooTableToolWindowPanel.getInstance(projectConfigurationBean);
         this.crucibleToolWindowPanel = CrucibleTableToolWindowPanel.getInstance(projectConfigurationBean);
-        this.jiraToolWindowPanel = JIRAToolWindowPanel.getInstance(projectConfigurationBean, project);
+        this.jiraToolWindowPanel = JIRAToolWindowPanel.getInstance(projectConfigurationBean);
         this.projectConfigurationBean = projectConfigurationBean;
         this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 
