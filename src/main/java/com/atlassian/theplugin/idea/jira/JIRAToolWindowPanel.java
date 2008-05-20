@@ -160,10 +160,9 @@ public class JIRAToolWindowPanel extends JPanel {
             private void maybeShowPopup(MouseEvent e) {
                 if (e.isPopupTrigger() && table.isEnabled()) {
                     selectedIssue = ((JiraIssueAdapter) table.getSelectedObject()).getIssue();
-
-                    ActionGroup actionGroup = (ActionGroup) ActionManager.getInstance().getAction("ThePlugin.JIRA.IssuePopupMenu");
+                    ActionGroup actionGroup = (ActionGroup) ActionManager
+                            .getInstance().getAction("ThePlugin.JIRA.IssuePopupMenu");
                     ActionPopupMenu popup = ActionManager.getInstance().createActionPopupMenu("Issue", actionGroup);
-
                     JPopupMenu jPopupMenu = popup.getComponent();
                     jPopupMenu.show(e.getComponent(), e.getX(), e.getY());
                 }

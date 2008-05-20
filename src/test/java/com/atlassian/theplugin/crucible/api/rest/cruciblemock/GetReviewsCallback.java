@@ -66,7 +66,7 @@ public class GetReviewsCallback implements JettyMockServer.Callback {
 		Element root = new Element("reviews");
 		Document doc = new Document(root);
 		for (State state : states) {
-			root.addContent(getReviewInState(state));
+			root.getContent().add(getReviewInState(state));
 		}
 		return doc;
 	}
@@ -95,6 +95,6 @@ public class GetReviewsCallback implements JettyMockServer.Callback {
 	void addTag(Element root, String tagName, String tagValue) {
 		Element newElement = new Element(tagName);
 		newElement.addContent(tagValue);
-		root.addContent(newElement);
+        root.getContent().add(newElement);
 	}
 }
