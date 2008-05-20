@@ -95,82 +95,80 @@
 		</action>
 		
 		<action id="ThePlugin.AddServerAction" class="com.atlassian.theplugin.idea.config.serverconfig.action.AddServerAction" text="Add (Insert)" description="Add a new server" icon="/general/add.png"/>
-        <action id="ThePlugin.RemoveServerAction" class="com.atlassian.theplugin.idea.config.serverconfig.action.RemoveServerAction" text="Remove (Delete)" description="Remove an existing server" icon="/general/remove.png">
-		</action>
+        <action id="ThePlugin.RemoveServerAction" class="com.atlassian.theplugin.idea.config.serverconfig.action.RemoveServerAction" text="Remove (Delete)" description="Remove an existing server" icon="/general/remove.png" />
 
-		<action id="ThePlugin.CopyServerAction" class="com.atlassian.theplugin.idea.config.serverconfig.action.CopyServerAction" text="Copy" description="Copy the selected server" icon="/general/copy.png"/>
+        <action id="ThePlugin.AddBambooServerAction" class="com.atlassian.theplugin.idea.config.serverconfig.action.AddBambooServerAction" text="Bamboo Server" description="Add a new Bamboo server" icon="/icons/blue-16.png" />
+		<action id="ThePlugin.AddCrucibleServerAction" class="com.atlassian.theplugin.idea.config.serverconfig.action.AddCrucibleServerAction" text="Crucible Server" description="Add a new Crucible server" icon="/icons/crucible-16.png" />
+		<action id="ThePlugin.AddJIRAServerAction" class="com.atlassian.theplugin.idea.config.serverconfig.action.AddJIRAServerAction" text="JIRA Server" description="Add a new JIRA server" icon="/icons/jira-blue-16.png" />
 
-        <action id="ThePlugin.AddBambooServerAction" class="com.atlassian.theplugin.idea.config.serverconfig.action.AddBambooServerAction" text="Bamboo Server" description="Add a new Bamboo server" icon="/icons/blue-16.png">
-		</action>
-		
+        <group id="ThePlugin.ServerConfigToolBar" popup="false" text="">
+            <reference id="ThePlugin.AddServerAction"/>
+            <reference id="ThePlugin.RemoveServerAction"/>
+        </group>
 
-		<action id="ThePlugin.AddCrucibleServerAction" class="com.atlassian.theplugin.idea.config.serverconfig.action.AddCrucibleServerAction" text="Crucible Server" description="Add a new Crucible server" icon="/icons/crucible-16.png">
-		</action>
+        <group id="ThePlugin.ServerTypePopup">
+            <reference id="ThePlugin.AddBambooServerAction"/>
+            <reference id="ThePlugin.AddCrucibleServerAction"/>
+            <reference id="ThePlugin.AddJIRAServerAction"/>
+        </group>
 
-		<action id="ThePlugin.ShowSettings" class="com.atlassian.theplugin.idea.action.ShowSettingsAction" text="Configure" description="Show plugin configuration" icon="/general/ideOptions.png">
+        <action id="ThePlugin.ShowSettings" class="com.atlassian.theplugin.idea.action.ShowSettingsAction" text="Configure" description="Show plugin configuration" icon="/general/ideOptions.png">
 			<keyboard-shortcut first-keystroke="shift control g" keymap="$default"/>
 		</action>
 
-		<action id="ThePlugin.Bamboo.RefreshStatus" class="com.atlassian.theplugin.idea.action.bamboo.RefreshBambooPanelAction" text="Refresh" description="Refresh" icon="/actions/sync.png" />
+        <action id="ThePlugin.HelpBamboo" class="com.atlassian.theplugin.idea.action.bamboo.BambooHelpAction" text="Help" description="Help" icon="/actions/help.png" />
+        <action id="ThePlugin.HelpCrucible" class="com.atlassian.theplugin.idea.action.crucible.CrucibleHelpAction" text="Help" description="Help" icon="/actions/help.png" />
+        <action id="ThePlugin.HelpJIRA" class="com.atlassian.theplugin.idea.action.jira.JIRAHelpAction" text="Help" description="Help" icon="/actions/help.png" />
 
-		<action id="ThePlugin.RunBuild" class="com.atlassian.theplugin.idea.action.bamboo.RunBuildAction" text="Run build" description="Run Bamboo build" icon="/actions/execute.png">
-		</action>	
-		<action id="ThePlugin.AddLabelToBuild" class="com.atlassian.theplugin.idea.action.bamboo.LabelBuildAction" text="Add label to build" description="Add label to Bamboo build" icon="/icons/icn_label.gif">
-		</action>
-		<action id="ThePlugin.AddCommentToBuild" class="com.atlassian.theplugin.idea.action.bamboo.CommentBuildAction" text="Add comment to build" description="Add comment to Bamboo build" icon="/actions/editSource.png">
-		</action>
+        <!-- Bamboo tool window panel related actions -->
+        <action id="ThePlugin.Bamboo.RefreshStatus" class="com.atlassian.theplugin.idea.action.bamboo.RefreshBambooPanelAction" text="Refresh" description="Refresh" icon="/actions/sync.png" />
+		<action id="ThePlugin.Bamboo.ViewBuild" class="com.atlassian.theplugin.idea.action.bamboo.ViewBuildAction" text="View" description="View Bamboo build" />        
+        <action id="ThePlugin.Bamboo.RunBuild" class="com.atlassian.theplugin.idea.action.bamboo.RunBuildAction" text="Run build" description="Run Bamboo build" icon="/actions/execute.png" />
+		<action id="ThePlugin.Bamboo.AddLabelToBuild" class="com.atlassian.theplugin.idea.action.bamboo.LabelBuildAction" text="Add label to build" description="Add label to Bamboo build" icon="/icons/icn_label.gif" />
+		<action id="ThePlugin.Bamboo.AddCommentToBuild" class="com.atlassian.theplugin.idea.action.bamboo.CommentBuildAction" text="Add comment to build" description="Add comment to Bamboo build" icon="/actions/editSource.png" />
 		<action id="ThePlugin.Bamboo.ShowHideBambooTab" class="com.atlassian.theplugin.idea.action.bamboo.ShowHideBambooTabAction" text="Show/Hide Bamboo tab" description="Shows or hides Bamboo tab in main plugin window">
 			<keyboard-shortcut first-keystroke="shift control b" keymap="$default"/>
 		</action>
-		<action id="ThePlugin.HelpBamboo" class="com.atlassian.theplugin.idea.action.bamboo.BambooHelpAction" text="Help" description="Help" icon="/actions/help.png">
-		</action>
-		<action id="ThePlugin.HelpCrucible" class="com.atlassian.theplugin.idea.action.crucible.CrucibleHelpAction" text="Help" description="Help" icon="/actions/help.png">
-		</action>
-		<action id="ThePlugin.HelpJIRA" class="com.atlassian.theplugin.idea.action.jira.JIRAHelpAction" text="Help" description="Help" icon="/actions/help.png">
-		</action>
 
-
-		<group id="ThePlugin.ServerConfigToolBar" popup="false" text="">
-            <reference id="ThePlugin.AddServerAction"/>
-            <reference id="ThePlugin.RemoveServerAction"/>
-<!--            <reference id="ThePlugin.CopyServerAction"/> -->
-        </group>
-
-		<group id="ThePlugin.ServerTypePopup">
-            <reference id="ThePlugin.AddBambooServerAction"/>
-            <reference id="ThePlugin.AddCrucibleServerAction"/>
-            <reference id="ThePlugin.ServerTypePopup"/>
-        </group>
-
-
-        <!-- Bamboo tool window panel related actions -->
 		<group id="ThePlugin.BambooToolWindowToolBar" popup="false" text="">
             <reference id="ThePlugin.ShowSettings" />
 			<reference id="ThePlugin.HelpBamboo" />
 			<reference id="ThePlugin.Bamboo.RefreshStatus" />
 			<separator />
-			<reference id="ThePlugin.RunBuild" />
-			<reference id="ThePlugin.AddLabelToBuild" />
-			<reference id="ThePlugin.AddCommentToBuild" />
+			<reference id="ThePlugin.Bamboo.RunBuild" />
+			<reference id="ThePlugin.Bamboo.AddLabelToBuild" />
+			<reference id="ThePlugin.Bamboo.AddCommentToBuild" />
 		</group>
 
-
+        <group id="ThePlugin.Bamboo.BuildPopupMenu" popup="true">
+            <reference id="ThePlugin.Bamboo.ViewBuild" />
+            <separator />
+            <reference id="ThePlugin.Bamboo.AddLabelToBuild" />
+            <reference id="ThePlugin.Bamboo.AddCommentToBuild" />
+            <separator />
+            <reference id="ThePlugin.Bamboo.RunBuild" />
+        </group>
 
         <!-- Crucible tool window panel related actions -->
 		<action id="ThePlugin.Crucible.ShowHideCrucibleTab" class="com.atlassian.theplugin.idea.action.crucible.ShowHideCrucibleTabAction" text="Show/Hide Crucible tab" description="Shows or hides Crucuble tab in main plugin window">
 			<keyboard-shortcut first-keystroke="shift control y" keymap="$default"/>
 		</action>
 		<action id="ThePlugin.Crucible.RefreshStatus" class="com.atlassian.theplugin.idea.action.crucible.RefreshCruciblePanelAction" text="Refresh" description="Refresh" icon="/actions/sync.png" />
-        <action id="ThePlugin.CrucibleFilterCombo" class="com.atlassian.theplugin.idea.action.crucible.CrucibleFilterComboAction" text="Select predefined filter"/>
+        <action id="ThePlugin.Crucible.CrucibleFilterCombo" class="com.atlassian.theplugin.idea.action.crucible.CrucibleFilterComboAction" text="Select predefined filter"/>
+        <action id="ThePlugin.Crucible.ViewReview" class="com.atlassian.theplugin.idea.action.crucible.ViewReviewAction" text="View review" />
 
         <group id="ThePlugin.CrucibleToolWindowToolBar" popup="false" text="">
             <reference id="ThePlugin.ShowSettings" />
 			<reference id="ThePlugin.HelpCrucible" />
 			<reference id="ThePlugin.Crucible.RefreshStatus" />
 			<separator />
-            <reference id="ThePlugin.CrucibleFilterCombo" />
+<!--            <reference id="ThePlugin.Crucible.CrucibleFilterCombo" /> -->
         </group>
 
+        <group id="ThePlugin.Crucible.ReviewPopupMenu" popup="true">
+            <reference id="ThePlugin.Crucible.ViewReview" />
+            <separator />
+        </group>
 
 
         <!-- JIRA tool window panel related actions -->
@@ -247,7 +245,6 @@
 			<reference id="ThePlugin.JIRA.CancelFilter"/>
 			<reference id="ThePlugin.JIRA.ClearFilter"/>
 		</group>
-
 
 	</actions>
 </idea-plugin>
