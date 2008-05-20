@@ -274,7 +274,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 		List<HtmlTableCell> cells = tableRow.getCells();
 		assertEquals(3, cells.size());
 
-        assertEquals("<td width=\"1%\"><a href=\"" + DEFAULT_SERVER_URL + "/browse/PLAN-ID\"><img src=\"/icons/icn_plan_passed.gif\" height=\"16\" width=\"16\" border=\"0\" align=\"absmiddle\"/></a></td>", trimWhitespace(cells.get(0).asXml()));
+        assertEquals("<td width=\"1%\"><a href=\"" + DEFAULT_SERVER_URL + "/browse/PLAN-ID\"/></td>", trimWhitespace(cells.get(0).asXml()));
 		assertEquals(DEFAULT_PROJECT_NAME + " " + DEFAULT_BUILD_NAME + " > PLAN-ID-777", cells.get(1).asText());
 
 		String buildTime = cells.get(2).asText().trim();
@@ -287,7 +287,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 		List<HtmlTableCell> cells = tableRow.getCells();
 		assertEquals(3, cells.size());
 
-        assertEquals("<td width=\"1%\"><a href=\"" + DEFAULT_SERVER_URL + "/browse/PLAN-ID\"><img src=\"/icons/icn_plan_disabled.gif\" height=\"16\" width=\"16\" border=\"0\" align=\"absmiddle\"/></a></td>", trimWhitespace(cells.get(0).asXml()));
+        assertEquals("<td width=\"1%\"><a href=\"" + DEFAULT_SERVER_URL + "/browse/PLAN-ID\"/></td>", trimWhitespace(cells.get(0).asXml()));
 		assertEquals(DEFAULT_PROJECT_NAME + " " + DEFAULT_BUILD_NAME + " > Disabled", cells.get(1).asText());
 
 		String buildTime = cells.get(2).asText().trim();
@@ -308,7 +308,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 		List<HtmlTableCell> cells = tableRow.getCells();
 		assertEquals(3, cells.size());
 
-        assertEquals("<td width=\"1%\"><a href=\"" + DEFAULT_SERVER_URL + "/browse/PLAN-ID\"><img src=\"/icons/icn_plan_failed.gif\" height=\"16\" width=\"16\" border=\"0\" align=\"absmiddle\"/></a></td>", trimWhitespace(cells.get(0).asXml()));
+        assertEquals("<td width=\"1%\"><a href=\"" + DEFAULT_SERVER_URL + "/browse/PLAN-ID\"/></td>", trimWhitespace(cells.get(0).asXml()));
 		assertEquals(DEFAULT_PROJECT_NAME + " " + DEFAULT_BUILD_NAME + " > PLAN-ID-777", cells.get(1).asText());
 
 		String buildTime = cells.get(2).asText().trim();
@@ -320,7 +320,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 		List<HtmlTableCell> cells = tableRow.getCells();
 		assertEquals(3, cells.size());
 
-        assertEquals("<td width=\"1%\"><a href=\"" + DEFAULT_SERVER_URL + "/browse/PLAN-ID\"><img src=\"/icons/icn_plan_disabled.gif\" height=\"16\" width=\"16\" border=\"0\" align=\"absmiddle\"/></a></td>", trimWhitespace(cells.get(0).asXml()));
+        assertEquals("<td width=\"1%\"><a href=\"" + DEFAULT_SERVER_URL + "/browse/PLAN-ID\"/></td>", trimWhitespace(cells.get(0).asXml()));
 		assertEquals(DEFAULT_PROJECT_NAME + " " + DEFAULT_BUILD_NAME + " > Disabled", cells.get(1).asText());
 
 		String buildTime = cells.get(2).asText().trim();
@@ -332,7 +332,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 		List<HtmlTableCell> cells = tableRow.getCells();
 		assertEquals(3, cells.size());
 
-        assertEquals("<td width=\"1%\"><a href=\"" + DEFAULT_SERVER_URL + "/browse/PLAN-ID\"><img src=\"/icons/icn_plan_disabled.gif\" height=\"16\" width=\"16\" border=\"0\" align=\"absmiddle\"/></a></td>", trimWhitespace(cells.get(0).asXml()));
+        assertEquals("<td width=\"1%\"><a href=\"" + DEFAULT_SERVER_URL + "/browse/PLAN-ID\"/></td>", trimWhitespace(cells.get(0).asXml()));
 		assertEquals(DEFAULT_ERROR_MESSAGE, cells.get(1).asText());
         assertEquals("<td width=\"100%\"><font color=\"#999999\">" + DEFAULT_ERROR_MESSAGE + "</font></td>", trimWhitespace(cells.get(1).asXml()));
 
