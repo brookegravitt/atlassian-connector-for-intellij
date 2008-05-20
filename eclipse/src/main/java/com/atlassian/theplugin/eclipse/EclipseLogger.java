@@ -7,7 +7,7 @@ import org.eclipse.core.runtime.Status;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.eclipse.util.PluginUtil;
 
-public class EclipseLogger extends LoggerImpl{
+public class EclipseLogger extends LoggerImpl {
 	
 	private ILog eclipseLogger;
 
