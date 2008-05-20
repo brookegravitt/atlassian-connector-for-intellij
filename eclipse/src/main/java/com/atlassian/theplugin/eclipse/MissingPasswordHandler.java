@@ -18,7 +18,7 @@ public class MissingPasswordHandler implements Runnable {
 	 * That method is designed to be run in UI thread.
 	 */
 	public void run() {
-		MessageBox missingPassword = new MessageBox(Activator.getDefault().getWorkbench().getDisplay().getActiveShell(), 
+		MessageBox missingPassword = new MessageBox(Activator.getDefault().getShell(), 
 				SWT.ICON_WARNING | SWT.OK);
 		
 		missingPassword.setText("Warning");

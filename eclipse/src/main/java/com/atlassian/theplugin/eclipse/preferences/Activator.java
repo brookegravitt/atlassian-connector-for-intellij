@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.Timer;
 
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.bamboo.BambooStatusChecker;
+import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListener;
 import com.atlassian.theplugin.commons.configuration.BambooConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
@@ -20,6 +22,7 @@ import com.atlassian.theplugin.commons.configuration.SubscribedPlanBean;
 import com.atlassian.theplugin.eclipse.EclipseActionScheduler;
 import com.atlassian.theplugin.eclipse.EclipseLogger;
 import com.atlassian.theplugin.eclipse.MissingPasswordHandler;
+import com.atlassian.theplugin.eclipse.bamboo.BambooTabDisplay;
 import com.atlassian.theplugin.eclipse.util.PluginUtil;
 
 
@@ -33,6 +36,12 @@ public class Activator extends AbstractUIPlugin {
 
 	// The shared instance
 	private static Activator plugin;
+
+	private Timer timer;
+
+	private PluginConfigurationBean pluginConfiguration;
+
+	private BambooStatusChecker bambooChecker;
 	
 	/**
 	 * The constructor
@@ -57,21 +66,18 @@ public class Activator extends AbstractUIPlugin {
 		
 		// create configuration
 		ProjectConfigurationWrapper configurationWrapper = new ProjectConfigurationWrapper(getPluginPreferences());
-		PluginConfigurationBean pluginConfiguration = configurationWrapper.getPluginConfiguration();
+		pluginConfiguration = configurationWrapper.getPluginConfiguration();
 		ConfigurationFactory.setConfiguration(pluginConfiguration);
 		
 		// create logger
 		new EclipseLogger(getLog());	// now you can use PluginUtil.getLogger
 
-		// create checker
+		// create bamboo checker
 		MissingPasswordHandler missingPasswordHandler = new MissingPasswordHandler();
-		BambooStatusChecker bambooChecker = BambooStatusChecker.getInstance(
+		bambooChecker = BambooStatusChecker.getInstance(
 				EclipseActionScheduler.getInstance(), pluginConfiguration, missingPasswordHandler, PluginUtil.getLogger());
-		
-		Timer timer = new Timer("Atlassian Eclipse Plugin checkers");
-		
-		timer.schedule(bambooChecker.newTimerTask(), 0);
-		
+		timer = new Timer("Atlassian Eclipse Plugin checkers");
+		timer.schedule(bambooChecker.newTimerTask(), 0, 60000);
 	}
 
 	/*
@@ -81,6 +87,8 @@ public class Activator extends AbstractUIPlugin {
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
 		super.stop(context);
+		
+		timer.cancel();
 	}
 
 	/**
@@ -102,4 +110,21 @@ public class Activator extends AbstractUIPlugin {
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
+
+	public Timer getTimer() {
+		return timer;
+	}
+
+	public PluginConfigurationBean getPluginConfiguration() {
+		return pluginConfiguration;
+	}
+
+	public BambooStatusChecker getBambooChecker() {
+		return bambooChecker;
+	}
+	
+	public Shell getShell() {
+		return this.getWorkbench().getDisplay().getActiveShell();
+	}
+	
 }
