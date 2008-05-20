@@ -139,7 +139,8 @@
 		<group id="ThePlugin.ServerTypePopup">
             <reference id="ThePlugin.AddBambooServerAction"/>
             <reference id="ThePlugin.AddCrucibleServerAction"/>
-		</group>
+            <reference id="ThePlugin.ServerTypePopup"/>
+        </group>
 
 
         <!-- Bamboo tool window panel related actions -->
@@ -197,14 +198,9 @@
         <action id="ThePlugin.JIRA.SavedFilterCombo" class="com.atlassian.theplugin.idea.action.jira.SavedFilterComboAction" text="Select saved filter"/>
 		<action id="ThePlugin.JIRA.FilterType" class="com.atlassian.theplugin.idea.action.jira.FilterTypeAction" text="Use server filters"/>
 
-		<action id="ThePlugin.AddJIRAServerAction" class="com.atlassian.theplugin.idea.config.serverconfig.action.AddJIRAServerAction" text="JIRA Server" description="Add a new JIRA server" icon="/icons/jira-blue-16.png">
-            <add-to-group group-id="ThePlugin.ServerTypePopup" anchor="last"/>
-        </action>
-
 		<action id="ThePlugin.JIRA.ApplyFilter" class="com.atlassian.theplugin.idea.action.jira.ApplyFilterAction" text="Apply filter" icon="/actions/er-state.png" />
 		<action id="ThePlugin.JIRA.CancelFilter" class="com.atlassian.theplugin.idea.action.jira.CancelFilterChangeAction" text="Cancel" icon="/actions/cancel.png" />
 		<action id="ThePlugin.JIRA.ClearFilter" class="com.atlassian.theplugin.idea.action.jira.ClearFilterAction" text="Clear filter" icon="/general/reset.png" />
-
 
 		<group id="ThePlugin.JIRA.ServerToolBar" popup="false">
 			<reference id="ThePlugin.ShowSettings" />
@@ -216,6 +212,26 @@
             <reference id="ThePlugin.JIRA.CreateIssue" />
             <reference id="ThePlugin.JIRA.QuickSearch" />
 		</group>
+
+        <action id="ThePlugin.JIRA.ViewIssue" class="com.atlassian.theplugin.idea.action.jira.ViewIssueAction" text="View" />
+        <action id="ThePlugin.JIRA.EditIssue" class="com.atlassian.theplugin.idea.action.jira.EditIssueAction" text="Edit" />
+        <action id="ThePlugin.JIRA.AddComment" class="com.atlassian.theplugin.idea.action.jira.AddCommentAction" text="Add comment" />
+        <action id="ThePlugin.JIRA.LogWork" class="com.atlassian.theplugin.idea.action.jira.LogWorkAction" text="Log work" />
+        <action id="ThePlugin.JIRA.AssignIssueToMyself" class="com.atlassian.theplugin.idea.action.jira.AssignIssueToMyselfAction" text="Assign Issue to Myself" />
+        <action id="ThePlugin.JIRA.AssignIssueToUser" class="com.atlassian.theplugin.idea.action.jira.AssignIssueToUserAction" text="Assign Issue to User" />
+        <action id="ThePlugin.JIRA.CreateChangeList" class="com.atlassian.theplugin.idea.action.jira.CreateChangeListAction" text="Create Change List" />        
+
+        <group id="ThePlugin.JIRA.IssuePopupMenu" popup="true">
+            <reference id="ThePlugin.JIRA.ViewIssue" />
+            <reference id="ThePlugin.JIRA.EditIssue" />
+            <separator />
+            <reference id="ThePlugin.JIRA.AddComment" />
+            <reference id="ThePlugin.JIRA.LogWork" />
+            <reference id="ThePlugin.JIRA.CreateChangeList" />
+            <separator />
+            <reference id="ThePlugin.JIRA.AssignIssueToMyself" />
+            <reference id="ThePlugin.JIRA.AssignIssueToUser" />
+        </group>
 
         <group id="ThePlugin.JIRA.FilterToolBar" popup="false">
 			<reference id="ThePlugin.JIRA.FilterType" />
