@@ -22,11 +22,13 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.TableColumnInfo;
+import com.atlassian.theplugin.idea.jira.JiraIssueAdapter;
 import com.atlassian.theplugin.idea.ui.AtlassianTableView;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionPopupMenu;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.util.ui.ListTableModel;
 import com.intellij.util.ui.UIUtil;
@@ -55,9 +57,6 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 	private static final DateFormat TIME_DF = new SimpleDateFormat("hh:mm a");
 	private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
 
-	private static final Icon ICON_RUN = IconLoader.getIcon("/actions/execute.png");
-	private static final Icon ICON_COMMENT = IconLoader.getIcon("/actions/editSource.png");
-	private static final Icon ICON_LABEL = IconLoader.getIcon("/icons/icn_label.gif");
 	private static BambooTableToolWindowPanel instance;
 
 	public ProgressAnimationProvider getProgressAnimation() {
@@ -92,7 +91,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 		table.prepareColumns(columns, BambooTableColumnProvider.makeRendererInfo());
 
 		table.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) { // on double click, just open the issue
+			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					BambooBuildAdapter build = (BambooBuildAdapter) table.getSelectedObject();
 					if (build != null) {
@@ -109,15 +108,13 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 				maybeShowPopup(e);
 			}
 
-			private void maybeShowPopup(MouseEvent e) { // on right click, show a context menu for this issue
+			private void maybeShowPopup(MouseEvent e) {
 				if (e.isPopupTrigger() && table.isEnabled()) {
-					BambooBuildAdapter build = (BambooBuildAdapter) table.getSelectedObject();
+                    ActionGroup actionGroup = (ActionGroup) ActionManager.getInstance().getAction("ThePlugin.Bamboo.BuildPopupMenu");
+                    ActionPopupMenu popup = ActionManager.getInstance().createActionPopupMenu("Build", actionGroup);
 
-					if (build != null) {
-						Point p = new Point(e.getX(), e.getY());
-						JPopupMenu contextMenu = createContextMenu(build);
-						contextMenu.show(table, p.x, p.y);
-					}
+                    JPopupMenu jPopupMenu = popup.getComponent();
+                    jPopupMenu.show(e.getComponent(), e.getX(), e.getY());
 				}
 			}
 		});
@@ -138,41 +135,6 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 					projectConfigurationBean);
 		}
 		return instance;
-	}
-
-	private JPopupMenu createContextMenu(BambooBuildAdapter buildAdapter) {
-		JPopupMenu contextMenu = new JPopupMenu();
-		contextMenu.add(makeWebUrlMenu("View", buildAdapter.getBuildResultUrl()));
-		contextMenu.addSeparator();
-		contextMenu.add(makeAddLabelMenu("Add label", buildAdapter));
-		contextMenu.add(makeAddCommentMenu("Add comment", buildAdapter));
-		contextMenu.addSeparator();
-		contextMenu.add(makeExecuteBuildMenu("Run build", buildAdapter));
-		return contextMenu;
-	}
-
-	private JMenuItem makeWebUrlMenu(String menuName, final String url) {
-		JMenuItem viewInBrowser = new JMenuItem();
-		viewInBrowser.setText(menuName);
-		viewInBrowser.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				BrowserUtil.launchBrowser(url);
-			}
-		});
-		return viewInBrowser;
-	}
-
-	private JMenuItem makeAddLabelMenu(String menuName, final BambooBuildAdapter build) {
-		JMenuItem addLabel = new JMenuItem();
-		addLabel.setIcon(ICON_LABEL);
-		addLabel.setText(menuName);
-		addLabel.setEnabled(getLabelBuildEnabled());
-		addLabel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				openLabelDialog(build);
-			}
-		});
-		return addLabel;
 	}
 
 	private void openLabelDialog(BambooBuildAdapter build) {
@@ -206,19 +168,6 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 		openLabelDialog(build);
 	}
 
-	private JMenuItem makeAddCommentMenu(String menuName, final BambooBuildAdapter build) {
-		JMenuItem addComment = new JMenuItem();
-		addComment.setIcon(ICON_COMMENT);
-		addComment.setText(menuName);
-		addComment.setEnabled(getCommentBuildEnabled());
-		addComment.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				openCommentDialog(build);
-			}
-		});
-		return addComment;
-	}
-
 	private void openCommentDialog(BambooBuildAdapter build) {
 		BuildCommentForm buildCommentForm = new BuildCommentForm(build);
 		buildCommentForm.show();
@@ -249,20 +198,6 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 	public void addCommentToBuild() {
 		BambooBuildAdapter build = (BambooBuildAdapter) table.getSelectedObject();
 		openCommentDialog(build);
-	}
-
-	private JMenuItem makeExecuteBuildMenu(String menuName, final BambooBuildAdapter build) {
-		JMenuItem executeBuild = new JMenuItem();
-		executeBuild.setIcon(ICON_RUN);
-		executeBuild.setText(menuName);
-		executeBuild.setEnabled(getExecuteBuildEnabled());
-
-		executeBuild.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				executeBuild(build);
-			}
-		});
-		return executeBuild;
 	}
 
 	private void executeBuild(final BambooBuildAdapter build) {
@@ -390,4 +325,9 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 	public AtlassianTableView getTable() {
 		return table;
 	}
+
+    public void viewBuild() {
+        BambooBuildAdapter build = (BambooBuildAdapter) table.getSelectedObject();
+        BrowserUtil.launchBrowser(build.getBuildResultUrl());       
+    }
 }
