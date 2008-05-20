@@ -45,7 +45,7 @@ public class PasswordFieldEditor extends FieldEditor {
      * Text limit constant (value <code>-1</code>) indicating unlimited
      * text limit and width.
      */
-    public static int UNLIMITED = -1;
+    public static final int UNLIMITED = -1;
 
     /**
      * Cached valid state.
@@ -60,7 +60,7 @@ public class PasswordFieldEditor extends FieldEditor {
     /**
      * The text field, or <code>null</code> if none.
      */
-    Text textField;
+    private Text textField;
 
     /**
      * Width of text field in characters; initially unlimited.
@@ -116,7 +116,7 @@ public class PasswordFieldEditor extends FieldEditor {
         setValidateStrategy(strategy);
         isValid = false;
         errorMessage = JFaceResources
-                .getString("StringFieldEditor.errorMessage");//$NON-NLS-1$
+                .getString("StringFieldEditor.errorMessage"); //$NON-NLS-1$
         createControl(parent);
     }
 
@@ -167,11 +167,13 @@ public class PasswordFieldEditor extends FieldEditor {
      */
     protected boolean checkState() {
         boolean result = false;
-        if (emptyStringAllowed)
+        if (emptyStringAllowed) {
             result = true;
+        }
 
-        if (textField == null)
+        if (textField == null) {
             result = false;
+        }
 
         String txt = textField.getText();
 
@@ -180,10 +182,11 @@ public class PasswordFieldEditor extends FieldEditor {
         // call hook for subclasses
         result = result && doCheckState();
 
-        if (result)
+        if (result) {
             clearErrorMessage();
-        else
+        } else {
             showErrorMessage(errorMessage);
+        }
 
         return result;
     }
@@ -220,7 +223,7 @@ public class PasswordFieldEditor extends FieldEditor {
         if (widthInChars != UNLIMITED) {
             GC gc = new GC(textField);
             try {
-                Point extent = gc.textExtent("X");//$NON-NLS-1$
+                Point extent = gc.textExtent("X"); //$NON-NLS-1$
                 gd.widthHint = widthInChars * extent.x;
             } finally {
                 gc.dispose();
@@ -285,10 +288,11 @@ public class PasswordFieldEditor extends FieldEditor {
      * @return the current value
      */
     public String getStringValue() {
-        if (textField != null)
+        if (textField != null) {
             return textField.getText();
-        else
+        } else {
             return getPreferenceStore().getString(getPreferenceName());
+        }
     }
 
     /**
@@ -345,14 +349,14 @@ public class PasswordFieldEditor extends FieldEditor {
                 });
                 break;
             default:
-                Assert.isTrue(false, "Unknown validate strategy");//$NON-NLS-1$
+                Assert.isTrue(false, "Unknown validate strategy"); //$NON-NLS-1$
             }
             textField.addDisposeListener(new DisposeListener() {
                 public void widgetDisposed(DisposeEvent event) {
                     textField = null;
                 }
             });
-            if (textLimit > 0) {//Only set limits above 0 - see SWT spec
+            if (textLimit > 0) { //Only set limits above 0 - see SWT spec
                 textField.setTextLimit(textLimit);
             }
         } else {
@@ -422,8 +426,9 @@ public class PasswordFieldEditor extends FieldEditor {
      */
     public void setStringValue(String value) {
         if (textField != null) {
-            if (value == null)
-                value = "";//$NON-NLS-1$
+            if (value == null) {
+                value = ""; //$NON-NLS-1$
+            }
             oldValue = textField.getText();
             if (!oldValue.equals(value)) {
                 textField.setText(value);
@@ -441,8 +446,9 @@ public class PasswordFieldEditor extends FieldEditor {
      */
     public void setTextLimit(int limit) {
         textLimit = limit;
-        if (textField != null)
+        if (textField != null) {
             textField.setTextLimit(limit);
+        }
     }
 
     /**
@@ -485,8 +491,9 @@ public class PasswordFieldEditor extends FieldEditor {
         boolean oldState = isValid;
         refreshValidState();
 
-        if (isValid != oldState)
+        if (isValid != oldState) {
             fireStateChanged(IS_VALID, oldState, isValid);
+        }
 
         String newValue = textField.getText();
         if (!newValue.equals(oldValue)) {

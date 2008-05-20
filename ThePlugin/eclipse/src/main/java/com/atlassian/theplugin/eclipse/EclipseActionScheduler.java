@@ -10,11 +10,12 @@ import com.atlassian.theplugin.eclipse.preferences.Activator;
  * @author Jacek
  *
  */
-public class EclipseActionScheduler implements UIActionScheduler {
+public final class EclipseActionScheduler implements UIActionScheduler {
 
 	private static UIActionScheduler instance = new EclipseActionScheduler();
 
-	private EclipseActionScheduler(){}
+	private EclipseActionScheduler() {
+	}
 
 	public static UIActionScheduler getInstance() {
 		return instance;

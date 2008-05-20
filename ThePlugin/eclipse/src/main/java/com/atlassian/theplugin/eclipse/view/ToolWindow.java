@@ -3,9 +3,7 @@
  */
 package com.atlassian.theplugin.eclipse.view;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.part.ViewPart;
 
 import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListener;
