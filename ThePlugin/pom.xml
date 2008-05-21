@@ -96,19 +96,24 @@
             <version>2.3</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>net.sourceforge.htmlunit</groupId>
-            <artifactId>htmlunit</artifactId>
-            <version>1.14</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>net.sourceforge.cssparser</groupId>
-                    <artifactId>cssparser</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>net.sourceforge.htmlunit</groupId>
+			<artifactId>htmlunit</artifactId>
+			<version>1.14</version>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>net.sourceforge.cssparser</groupId>
+					<artifactId>cssparser</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>jaxen</groupId>
+			<artifactId>jaxen</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+	</dependencies>
     <build>
         <plugins>
             <plugin>
@@ -119,6 +124,7 @@
                     <ideaPlugin>false</ideaPlugin>
                     <jdkName>IDEA 7590</jdkName>
                     <jdkLevel>${jdkLevel}</jdkLevel>
+		    <exclude>eclipse</exclude>
                     <downloadSources>true</downloadSources>
                     <libraries>
                         <library>
