@@ -5,21 +5,23 @@ using System.Drawing;
 using System.Data;
 using System.Text;
 using System.Windows.Forms;
-using VSJira.JIRA;
+using VSJira.api;
 
 namespace VSJira
 {
     public partial class JiraWindow : UserControl
     {
-        private JiraSoapServiceService service = new JiraSoapServiceService();
-        private string token = "";
-        private RemoteProject[] pTable;
+        private JiraServerFacade facade = new JiraServerFacade();
+        private JiraServer server;
+
+        private BindingSource issueSource = new BindingSource(); 
 
         public JiraWindow()
         {
             InitializeComponent();
+            setupIssueTable();
             url.Text = "https://studio.atlassian.com";
-            projects.SelectedIndexChanged += new System.EventHandler(this.projects_SelectedIndexChanged);
+            statusMessage.Text = "Login to a JIRA server";
         }
 
         private void JIRAWindow_Load(object sender, EventArgs e)
@@ -27,22 +29,24 @@ namespace VSJira
             login.Enabled = false;
         }
 
+        private class SavedFilterMenuEntry : ToolStripButton
+        {
+            public JiraSavedFilter filter;
+
+            public SavedFilterMenuEntry(JiraSavedFilter f): base(f.Name)
+            {
+                DisplayStyle = ToolStripItemDisplayStyle.Text;
+                filter = f;
+            }
+        }
+
         private void projects_SelectedIndexChanged(object sender, EventArgs e)
         {
-            try
-            {
-                issueTypes.Items.Clear();
-                RemoteIssueType[] types = service.getIssueTypesForProject(token, pTable[projects.SelectedIndex].id);
-                foreach (RemoteIssueType t in types)
-                {
-                    issueTypes.Items.Add(t.name);
-                }
-                issueTypes.SelectedIndex = 0;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            getSavedFilters();
+        }
+
+        private void savedFilters_SelectedIndexChanged(object sender, EventArgs e)
+        {
         }
 
         private void url_TextChanged(object sender, EventArgs e)
@@ -52,22 +56,10 @@ namespace VSJira
 
         private void login_Click(object sender, EventArgs e)
         {
-            service.Url = url.Text + "/rpc/soap/jirasoapservice-v2";
-            try
-            {
-                token = service.login(userName.Text, password.Text);
-                pTable = service.getProjectsNoSchemes(token);
-                foreach (RemoteProject p in pTable)
-                {
-                    string txt = p.key + ": " + p.name;
-                    projects.Items.Add(txt);
-                }
-                projects.SelectedIndex = 0;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            server = new JiraServer(url.Text, userName.Text, password.Text);
+            getSavedFilters();
+            statusMessage.Text = "Select saved filter from the menu";
+            //getProjects();
         }
 
         private void userName_TextChanged(object sender, EventArgs e)
@@ -78,6 +70,78 @@ namespace VSJira
         private void updateLoginButton()
         {
             login.Enabled = (url.Text.Length > 0) && (userName.Text.Length > 0);
+        }
+
+        private void savedFiltersMenu_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            string tooltip = savedFiltersMenu.ToolTipText;
+            savedFiltersMenu.Text = e.ClickedItem.Text;
+            savedFiltersMenu.ToolTipText = tooltip;
+
+            getFiteredIssues(((SavedFilterMenuEntry)e.ClickedItem).filter);
+        }
+
+        private void setupIssueTable()
+        {
+            issueTable.AutoGenerateColumns = false;
+            issueTable.AutoSize = true;
+
+            issueTable.DataSource = issueSource;
+
+            DataGridViewColumn column = new DataGridViewTextBoxColumn();
+            column.DataPropertyName = "Key";
+            column.Name = "key";
+            column.Width = 50;
+            issueTable.Columns.Add(column);
+            column = new DataGridViewTextBoxColumn();
+            column.DataPropertyName = "Summary";
+            column.Name = "summary";
+            column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            issueTable.Columns.Add(column);
+        }
+
+        private void getProjects()
+        {
+            try
+            {
+                List<JiraProject> list = facade.getProjects(server);
+                foreach (JiraProject p in list)
+                {
+                    projects.Items.Add(p);
+                }
+                projects.SelectedIndex = 0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void getSavedFilters()
+        {
+            try
+            {
+                List<JiraSavedFilter> list = facade.getSavedFilters(server);
+                foreach (JiraSavedFilter f in list)
+                {
+                    savedFiltersMenu.DropDown.Items.Add(new SavedFilterMenuEntry(f));
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void getFiteredIssues(JiraSavedFilter f)
+        {
+            issueSource.Clear();
+            List<JiraIssue> list = facade.getSavedFilterIssues(server, f);
+            foreach (JiraIssue issue in list)
+            {
+                issueSource.Add(issue);
+            }
+            statusMessage.Text = "Loaded " + list.Count + " issues";
         }
     }
 }
