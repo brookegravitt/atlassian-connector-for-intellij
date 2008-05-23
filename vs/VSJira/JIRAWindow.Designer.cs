@@ -1,6 +1,6 @@
 ﻿namespace VSJira
 {
-    partial class JIRAWindow
+    partial class JiraWindow
     {
         /// <summary> 
         /// Required designer variable.
