@@ -9,13 +9,13 @@ using VSJira.JIRA;
 
 namespace VSJira
 {
-    public partial class JIRAWindow : UserControl
+    public partial class JiraWindow : UserControl
     {
         private JiraSoapServiceService service = new JiraSoapServiceService();
         private string token = "";
         private RemoteProject[] pTable;
 
-        public JIRAWindow()
+        public JiraWindow()
         {
             InitializeComponent();
             url.Text = "https://studio.atlassian.com";
