@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="api\JiraServerFacade.cs" />
+    <Compile Include="api\soap\SoapSession.cs" />
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -50,6 +51,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="JiraIssue.cs" />
+    <Compile Include="JiraNamedEntity.cs" />
+    <Compile Include="JiraProject.cs" />
+    <Compile Include="JiraSavedFilter.cs" />
+    <Compile Include="JiraServer.cs" />
     <Compile Include="JIRAWindow.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -61,7 +66,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="RssClient.cs" />
+    <Compile Include="api\RssClient.cs" />
     <Compile Include="Web References\JIRA\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -120,9 +125,7 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\..\Addins\VSJira - For Testing.AddIn">
-      <Link>VSJira - For Testing.AddIn</Link>
-    </Content>
+    <Content Include="config\VSJira - For Testing.AddIn" />
     <Content Include="VSJira.AddIn" />
   </ItemGroup>
   <ItemGroup>

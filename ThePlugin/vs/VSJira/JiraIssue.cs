@@ -6,7 +6,7 @@ using System.Xml.XPath;
 
 namespace VSJira
 {
-    class JiraIssue
+    public class JiraIssue
     {
         public JiraIssue(string key, string description)
         {

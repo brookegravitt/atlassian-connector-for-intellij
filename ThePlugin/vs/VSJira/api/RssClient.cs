@@ -7,13 +7,18 @@ using System.IO;
 using System.Diagnostics;
 using System.Xml.XPath;
 
-namespace VSJira
+namespace VSJira.api
 {
     class RssClient
     {
         private string baseUrl;
         private string userName;
         private string password;
+
+        public RssClient(JiraServer server)
+            : this(server.Url, server.UserName, server.Password)
+        {
+        }
 
         public RssClient(string url, string userName, string password)
         {
