@@ -60,7 +60,7 @@ public class BambooSessionSslTest extends TestCase {
 	protected void tearDown() throws Exception {
 		mockServer = null;
 		mockBaseUrl = null;
-		server.stop();
+		//server.stop();
 	}
 
 	public void testSuccessBambooLoginOnSSL() throws Exception {
