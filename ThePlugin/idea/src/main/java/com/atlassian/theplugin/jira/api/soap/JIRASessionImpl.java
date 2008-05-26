@@ -241,11 +241,11 @@ public class JIRASessionImpl implements JIRASession {
 		}
 	}
 
-	public List<JIRAQueryFragment> getComponents(String projectKey) throws RemoteApiException {
+	public List<JIRAComponentBean> getComponents(String projectKey) throws RemoteApiException {
 		try {
 			RemoteComponent[] components = service.getComponents(token, projectKey);
 
-			List<JIRAQueryFragment> componentsList = new ArrayList<JIRAQueryFragment>();
+			List<JIRAComponentBean> componentsList = new ArrayList<JIRAComponentBean>();
 			for (RemoteComponent c : components) {
 				componentsList.add(new JIRAComponentBean(Long.valueOf(c.getId()), c.getName()));
 			}
@@ -285,11 +285,11 @@ public class JIRASessionImpl implements JIRASession {
 		}
 	}
 
-	public List<JIRAQueryFragment> getResolutions() throws RemoteApiException {
+	public List<JIRAResolutionBean> getResolutions() throws RemoteApiException {
 		try {
 			RemoteResolution[] resolutions = service.getResolutions(token);
 
-			List<JIRAQueryFragment> resolutionsList = new ArrayList<JIRAQueryFragment>();
+			List<JIRAResolutionBean> resolutionsList = new ArrayList<JIRAResolutionBean>();
 			for (RemoteResolution p : resolutions) {
 				resolutionsList.add(new JIRAResolutionBean(Long.valueOf(p.getId()), p.getName()));
 			}

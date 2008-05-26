@@ -201,7 +201,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public List<JIRAQueryFragment> getComponents(Server server, String projectKey) throws JIRAException {
+	public List<JIRAComponentBean> getComponents(Server server, String projectKey) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			return soap.getComponents(projectKey);
@@ -231,7 +231,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public List<JIRAQueryFragment> getResolutions(Server server) throws JIRAException {
+	public List<JIRAResolutionBean> getResolutions(Server server) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			return soap.getResolutions();
