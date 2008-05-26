@@ -103,7 +103,7 @@ public class JIRAIssueFilterPanel extends JPanel {
 					case 1:
 						JIRAProjectBean project = (JIRAProjectBean) projectList.getSelectedValues()[0];
 						jiraServer.setCurrentProject(project);
-						refreshProjectDependentLists();
+                        refreshProjectDependentLists();
 						break;
 					default:
 						jiraServer.setCurrentProject(null);
