@@ -22,7 +22,7 @@
           <forms/>
         </constraints>
         <properties/>
-        <border type="etched" title="Auto update"/>
+        <border type="etched" title="Auto-upgrade"/>
         <children>
           <component id="a66bf" class="javax.swing.JButton" binding="checkNowButton" default-binding="true">
             <constraints>
