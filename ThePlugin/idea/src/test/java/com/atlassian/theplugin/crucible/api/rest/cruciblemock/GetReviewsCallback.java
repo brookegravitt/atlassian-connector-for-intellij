@@ -86,8 +86,8 @@ public class GetReviewsCallback implements JettyMockServer.Callback {
 		Element newPermaId = new Element("permaId");
 		Element newId = new Element("id");
 		newId.addContent("PR-1");
-		newPermaId.addContent(newId);
-		reviewData.addContent(newPermaId);
+		newPermaId.getContent().add(newId);
+		reviewData.getContent().add(newPermaId);
 
 		return reviewData;
 	}
