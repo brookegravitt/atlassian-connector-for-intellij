@@ -364,6 +364,22 @@ public class JIRAToolWindowPanel extends JPanel {
             }
             setStatusMessage("Retrieving saved filters...");
             jiraServer.getSavedFilters();
+
+            setStatusMessage("Retrieving projects...");
+            jiraServer.getProjects();
+
+            setStatusMessage("Retrieving issue types...");
+            jiraServer.getIssueTypes();
+
+            setStatusMessage("Retrieving statuses...");
+            jiraServer.getStatuses();
+
+            setStatusMessage("Retrieving resolutions...");
+            jiraServer.getResolutions();
+
+            setStatusMessage("Retrieving priorities...");
+            jiraServer.getPriorieties();            
+
             if (jiraServer.equals(IdeaHelper.getCurrentJIRAServer())) {
                 filters = projectConfiguration.getJiraConfiguration()
                         .getJiraFilters(IdeaHelper.getCurrentJIRAServer().getServer().getUid());
@@ -378,6 +394,7 @@ public class JIRAToolWindowPanel extends JPanel {
                 });
                 filterToolbarSetVisible(true);
             }
+            
             progressAnimation.stopProgressAnimation();
         }
     }

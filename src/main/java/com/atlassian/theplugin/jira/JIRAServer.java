@@ -21,14 +21,10 @@ import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.Server;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class JIRAServer {
-	private static final int LIST_SPECIAL_VALUES_COUNT = 1;
 	private static final int VERSION_SPECIAL_VALUES_COUNT = 4;
-	private static final int COMPONENTS_SPECIAL_VALUES_COUNT = 2;
 	public static final int ANY_ID = -1000;
 	private static final int NO_VERSION_ID = -1;
 	private static final int RELEASED_VERSION_ID = -3;
@@ -41,30 +37,37 @@ public class JIRAServer {
 	private String errorMessage = null;
 
 	private List<JIRAProject> projects;
-	private List statuses;
-	private List issueTypes;
-	private List<JIRAQueryFragment> savedFilters;
-	private List<JIRAVersionBean> serverVersions;
-	private List<JIRAVersionBean> versions;
-	private List<JIRAFixForVersionBean> fixForVersions;
-	private List components;
-	private List priorieties;
-	private List resolutions;
+	private List<JIRAConstant> statuses;
 
-	private JIRAProject lastProject = null;
+	private List<JIRAQueryFragment> savedFilters;
+    private List<JIRAVersionBean> versions;
+	private List<JIRAFixForVersionBean> fixForVersions;
+	private List<JIRAConstant> priorieties;
+	private List<JIRAResolutionBean> resolutions;
+
+    private List<JIRAConstant> issueTypes;
+    private List<JIRAVersionBean> serverVersions;
+    private List<JIRAComponentBean> components;    
+
+    private Map<String, List<JIRAConstant>> issueTypesCache;
+    private Map<String, List<JIRAVersionBean>> serverVersionsCache;
+    private Map<String, List<JIRAComponentBean>> componentsCache;
+
 	private JIRAProject currentProject = null;
 
 	private final JIRAServerFacade jiraServerFacade;
 
-
 	public JIRAServer(JIRAServerFacade jiraServerFacade) {
 		this.jiraServerFacade = jiraServerFacade;
-	}
+        this.issueTypesCache = new HashMap<String, List<JIRAConstant>>();
+        this.serverVersionsCache = new HashMap<String, List<JIRAVersionBean>>();
+        this.componentsCache = new HashMap<String, List<JIRAComponentBean>>();
+    }
 
 	public JIRAServer(Server server, JIRAServerFacade jiraServerFacade) {
-		this.server = server;
-		this.jiraServerFacade = jiraServerFacade;
-	}
+        this(jiraServerFacade);
+        this.server = server;
+    }
 
 	public Server getServer() {
 		return server;
@@ -125,16 +128,26 @@ public class JIRAServer {
 					retrieved = jiraServerFacade.getIssueTypes(server);
 				} else {
 					retrieved = jiraServerFacade.getIssueTypesForProject(server, Long.toString(currentProject.getId()));
-				}
+                }
 				issueTypes = new ArrayList<JIRAConstant>(retrieved.size() + 1);
 				issueTypes.add(new JIRAIssueTypeBean(ANY_ID, "Any", null));
 				issueTypes.addAll(retrieved);
-
-				lastProject = currentProject;
-			} catch (JIRAException e) {
+                if (currentProject != null) {
+                    issueTypesCache.put(currentProject.getKey(), issueTypes);
+                } else {
+                    issueTypesCache.put("", issueTypes);
+                }
+            } catch (JIRAException e) {
 				PluginUtil.getLogger().error(e.getMessage());
-				issueTypes = Collections.EMPTY_LIST;
-			}
+                if (issueTypesCache.containsKey("")) {
+                    issueTypes = issueTypesCache.get("");
+                    if (currentProject != null) {
+                        issueTypesCache.put(currentProject.getKey(), issueTypes);
+                    }
+                } else {
+                    issueTypes = Collections.EMPTY_LIST;
+                }
+            }
 		}
 
 		return issueTypes;
@@ -167,10 +180,10 @@ public class JIRAServer {
 		return priorieties;
 	}
 
-	public List<JIRAConstant> getResolutions() {
+	public List<JIRAResolutionBean> getResolutions() {
 		if (resolutions == null) {
 			try {
-				List<JIRAQueryFragment> retrieved = jiraServerFacade.getResolutions(server);
+				List<JIRAResolutionBean> retrieved = jiraServerFacade.getResolutions(server);
 				resolutions = new ArrayList<JIRAResolutionBean>(retrieved.size() + 1);
 				resolutions.add(new JIRAResolutionBean(ANY_ID, "Any"));
 				resolutions.add(new JIRAResolutionBean(UNRESOLVED_ID, "Unresolved"));
@@ -188,7 +201,7 @@ public class JIRAServer {
 			try {
 				if (currentProject != null) {
 					serverVersions = jiraServerFacade.getVersions(server, currentProject.getKey());
-					lastProject = currentProject;
+                    serverVersionsCache.put(currentProject.getKey(), serverVersions);
 				} else {
 					serverVersions = Collections.EMPTY_LIST;
 				}
@@ -225,7 +238,6 @@ public class JIRAServer {
 				} else {
 					versions = Collections.EMPTY_LIST;
 				}
-				lastProject = currentProject;
 			} else {
 				versions = Collections.EMPTY_LIST;
 			}
@@ -257,7 +269,6 @@ public class JIRAServer {
 				} else {
 					fixForVersions = Collections.EMPTY_LIST;
 				}
-				lastProject = currentProject;
 			} else {
 				fixForVersions = Collections.EMPTY_LIST;
 			}
@@ -265,17 +276,19 @@ public class JIRAServer {
 		return fixForVersions;
 	}
 
-	public List<JIRAQueryFragment> getComponents() {
-		if (components == null || (currentProject != null && !currentProject.getKey().equals(lastProject.getKey()))) {
+	public List<JIRAComponentBean> getComponents() {
+		if (components == null) {
 			try {
 				if (currentProject != null) {
-					List<JIRAQueryFragment> retrieved = jiraServerFacade.getComponents(server, currentProject.getKey());
-					components = new ArrayList<JIRAVersionBean>(retrieved.size() + 1);
+					List<JIRAComponentBean> retrieved = jiraServerFacade.getComponents(server, currentProject.getKey());
+
+                    components = new ArrayList<JIRAComponentBean>(retrieved.size() + 1);
 					components.add(new JIRAComponentBean(ANY_ID, "Any"));
 					components.add(new JIRAComponentBean(NO_COMPONENT_ID, "No component"));
 					components.addAll(retrieved);
-					lastProject = currentProject;
-				} else {
+
+                    componentsCache.put(currentProject.getKey(), components);                    
+                } else {
 					components = Collections.EMPTY_LIST;
 				}
 			} catch (JIRAException e) {
@@ -301,9 +314,22 @@ public class JIRAServer {
 
 	public void setCurrentProject(JIRAProject currentProject) {
 		this.currentProject = currentProject;
-		versions = null;
+        if (serverVersionsCache.containsKey(currentProject.getKey())) {
+            serverVersions = serverVersionsCache.get(currentProject.getKey());
+        } else {
+            serverVersions = null;
+        }
+        versions = null;
 		fixForVersions = null;
-		components = null;
-		issueTypes = null;
-	}
+        if (componentsCache.containsKey(currentProject.getKey())) {
+            components = componentsCache.get(currentProject.getKey());
+        } else {
+            components = null;
+        }
+        if (issueTypesCache.containsKey(currentProject.getKey())) {
+            issueTypes = issueTypesCache.get(currentProject.getKey());
+        } else {
+            issueTypes = null;
+        }
+    }
 }

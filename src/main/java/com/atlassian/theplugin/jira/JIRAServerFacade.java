@@ -47,13 +47,13 @@ public interface JIRAServerFacade extends ProductServerFacade {
 
 	List<JIRAQueryFragment> getSavedFilters(Server server) throws JIRAException;	
 
-	List<JIRAQueryFragment> getComponents(Server server, String projectKey) throws JIRAException;
+	List<JIRAComponentBean> getComponents(Server server, String projectKey) throws JIRAException;
 
 	List<JIRAVersionBean> getVersions(Server server, String projectKey) throws JIRAException;
 
 	List<JIRAConstant> getPriorities(Server server) throws JIRAException;
 
-	List<JIRAQueryFragment> getResolutions(Server server) throws JIRAException;
+	List<JIRAResolutionBean> getResolutions(Server server) throws JIRAException;
 	
 	void addComment(Server server, JIRAIssue issue, String comment) throws JIRAException;
 
