@@ -41,13 +41,13 @@ public interface JIRASession {
 	
 	List<JIRAConstant> getStatuses() throws RemoteApiException;
 
-	List<JIRAQueryFragment> getComponents(String projectKey) throws RemoteApiException;
+	List<JIRAComponentBean> getComponents(String projectKey) throws RemoteApiException;
 
 	List<JIRAVersionBean> getVersions(String projectKey) throws RemoteApiException;
 
 	List<JIRAConstant> getPriorities() throws RemoteApiException;
 
-	List<JIRAQueryFragment> getResolutions() throws RemoteApiException;
+	List<JIRAResolutionBean> getResolutions() throws RemoteApiException;
 
 	List<JIRAQueryFragment> getSavedFilters() throws RemoteApiException;
 
