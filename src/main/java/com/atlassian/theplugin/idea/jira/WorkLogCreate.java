@@ -189,7 +189,7 @@ public class WorkLogCreate extends DialogWrapper {
 		}
 
 		public Date getSelectedTime() {
-			Date d = (Date) calendar.getValue();
+			Date d = calendar.getDate();
 			long newTime = d.getTime();
 			newTime += hourModel.getNumber().intValue() * Timer.ONE_HOUR;
 			newTime += minuteModel.getNumber().intValue() * Timer.ONE_MINUTE;
