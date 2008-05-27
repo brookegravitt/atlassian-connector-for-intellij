@@ -63,6 +63,7 @@ public class FooterPanel extends JPanel {
 		versionMap.put("1.2.0", "10018");
 		versionMap.put("1.2.1", "10470");
 		versionMap.put("1.3.0", "10019");
+		versionMap.put("1.3.1", "10472");
 		versionMap.put("1.4.0", "10020");
 		versionMap.put("1.5.0", "10021");
 		versionMap.put("2.0.0", "10022");
