@@ -54,8 +54,10 @@ public interface JIRAServerFacade extends ProductServerFacade {
 	List<JIRAConstant> getPriorities(Server server) throws JIRAException;
 
 	List<JIRAResolutionBean> getResolutions(Server server) throws JIRAException;
-	
-	void addComment(Server server, JIRAIssue issue, String comment) throws JIRAException;
+
+    List<JIRAAction> getAvailableActions(Server server, JIRAIssue issue) throws JIRAException;
+
+    void addComment(Server server, JIRAIssue issue, String comment) throws JIRAException;
 
     JIRAIssue createIssue(Server server, JIRAIssue issue) throws JIRAException;
 

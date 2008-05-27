@@ -51,7 +51,9 @@ public interface JIRASession {
 
 	List<JIRAQueryFragment> getSavedFilters() throws RemoteApiException;
 
-	void setAssignee(JIRAIssue issue, String assignee) throws RemoteApiException;
+    List<JIRAAction> getAvailableActions(JIRAIssue issue) throws RemoteApiException;
+
+    void setAssignee(JIRAIssue issue, String assignee) throws RemoteApiException;
 
 	boolean isLoggedIn();
 }
