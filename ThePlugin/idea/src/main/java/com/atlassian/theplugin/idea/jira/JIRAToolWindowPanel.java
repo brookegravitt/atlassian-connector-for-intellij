@@ -26,9 +26,10 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.atlassian.theplugin.idea.bamboo.ToolWindowBambooContent;
-import com.atlassian.theplugin.idea.jira.table.JIRATableColumnProvider;
+import com.atlassian.theplugin.idea.jira.table.JIRATableColumnProviderImpl;
 import com.atlassian.theplugin.idea.jira.table.columns.*;
 import com.atlassian.theplugin.idea.ui.AtlassianTableView;
+import com.atlassian.theplugin.idea.ui.CollapsibleTable;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
@@ -91,6 +92,7 @@ public class JIRAToolWindowPanel extends JPanel {
     private String sortOrder = "ASC";
 
     private static JIRAToolWindowPanel instance;
+	private CollapsibleTable collapsibleTable;
 
     private transient JIRAIssue selectedIssue = null;
 
@@ -126,18 +128,39 @@ public class JIRAToolWindowPanel extends JPanel {
 
         add(toolBarPanel, BorderLayout.NORTH);
 
-        editorPane = new ToolWindowBambooContent();
+//<<<<<<< .mine
+//		JIRATableColumnProviderImpl tableColumnProvider = new JIRATableColumnProviderImpl();
+//
+//		this.collapsibleTable = new CollapsibleTable(tableColumnProvider,
+//													projectConfigurationBean.getJiraConfiguration().getTableConfiguration(),
+//													"JIRA ISSUES");
+//		add(collapsibleTable, BorderLayout.SOUTH);
+//
+//		TableColumnInfo[] columns = tableColumnProvider.makeColumnInfo();
+//		listTableModel = new ListTableModel(columns);
+//		listTableModel.setSortable(true);
+//
+//
+//		table = new AtlassianTableView(listTableModel,
+//				projectConfigurationBean.getJiraConfiguration().getTableConfiguration());
+//		table.prepareColumns(columns, tableColumnProvider.makeRendererInfo());
+//=======
+
+
+		editorPane = new ToolWindowBambooContent();
         editorPane.setEditorKit(new ClasspathHTMLEditorKit());
         JScrollPane pane = setupPane(editorPane, wrapBody("Select a JIRA server to retrieve your issues."));
         editorPane.setMinimumSize(ED_PANE_MINE_SIZE);
         add(pane, BorderLayout.SOUTH);
 
-        TableColumnInfo[] columns = JIRATableColumnProvider.makeColumnInfo();
+
+		JIRATableColumnProviderImpl tableColumnProvider = new JIRATableColumnProviderImpl();
+		TableColumnInfo[] columns = tableColumnProvider.makeColumnInfo();
         listTableModel = new ListTableModel(columns);
         listTableModel.setSortable(true);
         table = new AtlassianTableView(listTableModel,
                 projectConfigurationBean.getJiraConfiguration().getTableConfiguration());
-        table.prepareColumns(columns, JIRATableColumnProvider.makeRendererInfo());
+        table.prepareColumns(columns, tableColumnProvider.makeRendererInfo());
 
         table.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) { // on double click, just open the issue
