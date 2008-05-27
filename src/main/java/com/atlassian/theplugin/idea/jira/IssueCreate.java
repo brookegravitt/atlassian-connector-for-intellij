@@ -99,9 +99,13 @@ public class IssueCreate extends DialogWrapper {
         getOKAction().putValue(Action.NAME, "Create");
     }
 
-    public void updateProject() {
+    public void initData() {
+        updatePriorities();
+        updateProject();
+    }
+
+    private void updateProject() {
         projectComboBox.setEnabled(false);
-        projectComboBox.removeAllItems();
         getOKAction().setEnabled(false);
 
         new Thread(new Runnable() {
@@ -117,6 +121,7 @@ public class IssueCreate extends DialogWrapper {
     }
 
     private void addProjects(List<JIRAProject> projects) {
+        projectComboBox.removeAllItems();        
         for (JIRAProject project : projects) {
             if (project.getId() != JIRAServer.ANY_ID) {
                 projectComboBox.addItem(project);
@@ -124,7 +129,6 @@ public class IssueCreate extends DialogWrapper {
         }
 
         if (jiraServer.getCurrentProject() != null) {
-            System.out.println("jiraServer = " + jiraServer.getCurrentProject().getName());
             projectComboBox.setSelectedItem(jiraServer.getCurrentProject());
         } else {
             if (projectComboBox.getModel().getSize() > 0) {
@@ -134,9 +138,8 @@ public class IssueCreate extends DialogWrapper {
         projectComboBox.setEnabled(true);
     }
 
-    public void updatePriorities() {
+    private void updatePriorities() {
         priorityComboBox.setEnabled(false);
-        priorityComboBox.removeAllItems();
         getOKAction().setEnabled(false);
         new Thread(new Runnable() {
             public void run() {
@@ -151,6 +154,7 @@ public class IssueCreate extends DialogWrapper {
     }
 
     private void addIssuePriorieties(List<JIRAConstant> priorieties) {
+        priorityComboBox.removeAllItems();
         for (JIRAConstant constant : priorieties) {
             if (constant.getId() != JIRAServer.ANY_ID) {
                 priorityComboBox.addItem(constant);
@@ -164,7 +168,6 @@ public class IssueCreate extends DialogWrapper {
 
     private void updateIssueTypes(final JIRAProject project) {
         typeComboBox.setEnabled(false);
-        typeComboBox.removeAllItems();
         getOKAction().setEnabled(false);
         new Thread(new Runnable() {
             public void run() {
@@ -180,6 +183,7 @@ public class IssueCreate extends DialogWrapper {
     }
 
     private void addIssueTypes(List<JIRAConstant> issueTypes) {
+        typeComboBox.removeAllItems();
         for (JIRAConstant constant : issueTypes) {
             if (constant.getId() != JIRAServer.ANY_ID) {
                 typeComboBox.addItem(constant);
