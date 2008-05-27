@@ -28,9 +28,9 @@ public class CollapsibleTable extends CollapsiblePanel {
 
 	public CollapsibleTable(TableColumnProvider tableColumnProvider,
 					 ProjectToolWindowTableConfiguration projectToolWindowConfiguration,
-					 String title){
+					 String title, String actionName, String toolbarName){
 
-		super(true, true, title);
+		super(true, true, title, actionName, toolbarName);
 
 		TableColumnInfo[] columns = tableColumnProvider.makeColumnInfo();
 		listTableModel = new ListTableModel(columns);
