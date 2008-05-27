@@ -152,6 +152,13 @@
           <text value="End time:"/>
         </properties>
       </component>
+      <component id="c2dd8" class="com.intellij.ui.HyperlinkLabel" binding="helpLabel" custom-create="true">
+        <constraints>
+          <grid row="3" column="7" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+          <gridbag top="0" left="0" bottom="0" right="12" weightx="0.0" weighty="0.0"/>
+        </constraints>
+        <properties/>
+      </component>
     </children>
   </grid>
 </form>
