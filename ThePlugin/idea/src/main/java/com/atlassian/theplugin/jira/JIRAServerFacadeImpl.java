@@ -251,7 +251,17 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public void setAssignee(Server server, JIRAIssue issue, String assignee) throws JIRAException {
+    public List<JIRAAction> getAvailableActions(Server server, JIRAIssue issue) throws JIRAException {
+        try {
+            JIRASession soap = getSoapSession(server);
+            return soap.getAvailableActions(issue);
+        } catch (RemoteApiException e) {
+            soapSessions.remove(getSoapSessionKey(server));
+            throw new JIRAException(e.getMessage(), e);
+        }
+    }
+
+    public void setAssignee(Server server, JIRAIssue issue, String assignee) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			soap.setAssignee(issue, assignee);

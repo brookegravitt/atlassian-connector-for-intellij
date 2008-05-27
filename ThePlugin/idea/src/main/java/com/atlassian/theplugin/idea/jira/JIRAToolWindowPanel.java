@@ -33,10 +33,7 @@ import com.atlassian.theplugin.idea.ui.CollapsibleTable;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
-import com.atlassian.theplugin.jira.api.JIRAException;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
-import com.atlassian.theplugin.jira.api.JIRASavedFilterBean;
+import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
@@ -299,6 +296,24 @@ public class JIRAToolWindowPanel extends JPanel {
     public void editIssue() {
         JIRAIssue issue = ((JiraIssueAdapter) table.getSelectedObject()).getIssue();
         BrowserUtil.launchBrowser(issue.getServerUrl() + "/secure/EditIssue!default.jspa?key=" + issue.getKey());
+    }
+
+    public void showIssueActions() {
+        final JIRAIssue issue = ((JiraIssueAdapter) table.getSelectedObject()).getIssue();
+        FutureTask task = new FutureTask(new Runnable() {
+            public void run() {
+                setStatusMessage("Getting available issue actions " + issue.getKey() + "...");
+                try {
+                    List<JIRAAction> actions =
+                            jiraServerFacade.getAvailableActions(IdeaHelper.getCurrentJIRAServer().getServer(), issue);
+                    setStatusMessage("");
+                } catch (JIRAException e) {
+                    setStatusMessage("Unable to retrieve available issue actions: " + e.getMessage(), true);
+                }
+            }
+        }, null);
+        new Thread(task, "atlassian-idea-plugin show issue actions").start();
+
     }
 
     private JScrollPane setupPane(JEditorPane pane, String initialText) {
