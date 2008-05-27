@@ -23,11 +23,11 @@ import com.atlassian.theplugin.idea.jira.table.renderers.*;
 
 import javax.swing.table.TableCellRenderer;
 
-public final class JIRATableColumnProvider {
-	private JIRATableColumnProvider() {
+public final class JIRATableColumnProviderImpl implements TableColumnProvider {
+	public JIRATableColumnProviderImpl() {
 	}
 
-	public static TableColumnInfo[] makeColumnInfo() {
+	public  TableColumnInfo[] makeColumnInfo() {
 		return new TableColumnInfo[]{
 				new IssueTypeColumn(),
 				new IssueStatusColumn(),
@@ -37,7 +37,7 @@ public final class JIRATableColumnProvider {
 		};
 	}
 
-	public static TableCellRenderer[] makeRendererInfo() {
+	public  TableCellRenderer[] makeRendererInfo() {
 		return new TableCellRenderer[]{
 				new IssueTypeCellRenderer(),
 				new IssueStatusCellRenderer(),

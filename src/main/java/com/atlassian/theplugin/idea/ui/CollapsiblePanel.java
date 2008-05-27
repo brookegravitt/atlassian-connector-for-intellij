@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea.ui;
 
 import com.intellij.util.ui.UIUtil;
+import com.intellij.openapi.util.IconLoader;
 import org.jetbrains.annotations.NonNls;
 
 import javax.swing.*;
@@ -26,13 +27,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class CollapsiblePanel extends JPanel {
-  private final JButton myToggleCollapseButton;
-  private final JComponent myContent;
+  private JButton myToggleCollapseButton;
+  private JComponent myContent;
   private boolean myIsCollapsed;
   private final Collection<CollapsingListener> myListeners = new ArrayList<CollapsingListener>();
   private boolean myIsInitialized = false;
-  private final Icon myExpandIcon;
-  private final Icon myCollapseIcon;
+  private  Icon myExpandIcon;
+  private  Icon myCollapseIcon;
   private JLabel myTitleLabel;
   public static final KeyStroke LEFT_KEY_STROKE = KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0);
   public static final KeyStroke RIGHT_KEY_STROKE = KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0);
@@ -40,84 +41,30 @@ public class CollapsiblePanel extends JPanel {
   public static final String EXPAND = "expand";
   @NonNls public static final String COLLAPSE = "collapse";
 
+  public CollapsiblePanel(boolean collapseButtonAtLeft,
+                          boolean isCollapsed, Icon collapseIcon, Icon expandIcon,
+                          String title){
+
+	  setupComponents(expandIcon, collapseIcon, title, true, true);
+  }
+	
   public CollapsiblePanel(JComponent content, boolean collapseButtonAtLeft,
                           boolean isCollapsed, Icon collapseIcon, Icon expandIcon,
                           String title) {
     super(new GridBagLayout());
-    myContent = content;
-    setBackground(content.getBackground());
-    myExpandIcon = expandIcon;
-    myCollapseIcon = collapseIcon;
-    final Dimension buttonDimension = getButtonDimension();
-    myToggleCollapseButton = new JButton();
-    myToggleCollapseButton.setOpaque(false);
-    myToggleCollapseButton.setBorderPainted(false);
-    myToggleCollapseButton.setBackground(content.getBackground());
-    myToggleCollapseButton.setSize(buttonDimension);
-    myToggleCollapseButton.setPreferredSize(buttonDimension);
-    myToggleCollapseButton.setMinimumSize(buttonDimension);
-    myToggleCollapseButton.setMaximumSize(buttonDimension);
-
-    myToggleCollapseButton.setFocusable(true);
-
-
-	myToggleCollapseButton.getActionMap().put(COLLAPSE, new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        collapse();
-      }
-    });
-
-    myToggleCollapseButton.getActionMap().put(EXPAND, new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        expand();
-      }
-    });
-
-    myToggleCollapseButton.getInputMap().put(LEFT_KEY_STROKE, COLLAPSE);
-    myToggleCollapseButton.getInputMap().put(RIGHT_KEY_STROKE, EXPAND);
-
-
-    final int iconAnchor = collapseButtonAtLeft ? GridBagConstraints.WEST : GridBagConstraints.EAST;
-    add(myToggleCollapseButton,
-        new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0,
-                               iconAnchor,
-                               GridBagConstraints.NONE,
-                               new Insets(1, collapseButtonAtLeft ? 0 : 1, 0, collapseButtonAtLeft ? 1 : 0), 0,
-                               0));
-    if (title != null) {
-      myTitleLabel = new JLabel(title);
-      myTitleLabel.setFont(UIUtil.getLabelFont().deriveFont(Font.BOLD));
-      myTitleLabel.setBackground(content.getBackground());
-      add(myTitleLabel,
-          new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0,
-                                 GridBagConstraints.CENTER,
-                                 GridBagConstraints.CENTER,
-                                 new Insets(0, 3, 0, 3), 0,
-                                 0));
-		myTitleLabel.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) { // on double click, just open the issue
-				if (myIsCollapsed) {
-					expand();
-				} else {
-					collapse();
-				}
-			}
-		});
-
-	}
-
-	myIsCollapsed = isCollapsed;
-	  
-	myToggleCollapseButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        setCollapsed(!myIsCollapsed);
-      }
-    });
-
-	setCollapsed(isCollapsed);
-
+	setupComponents(expandIcon, collapseIcon, title, collapseButtonAtLeft, isCollapsed);
+	setContent(content);
   }
 
+
+  public CollapsiblePanel(boolean collapseButtonAtLeft,
+                          boolean isCollapsed, String title) {
+    super(new GridBagLayout());
+	Icon collapseIcon = IconLoader.findIcon("/icons/navigate_down_10.gif");
+	Icon expandIcon = IconLoader.findIcon("/icons/navigate_right_10.gif");
+	  
+	setupComponents(expandIcon, collapseIcon, title, collapseButtonAtLeft, isCollapsed);	
+  }
   private Dimension getButtonDimension() {
     if (myExpandIcon == null) {
       return new Dimension(7, 7);
@@ -199,6 +146,87 @@ public class CollapsiblePanel extends JPanel {
       listener.onCollapsingChanged(this, isCollapsed());
     }
   }
+
+  public void setContent(JComponent content){
+	  this.myContent = content;
+	  myToggleCollapseButton.setBackground(content.getBackground());
+	  setBackground(content.getBackground());
+	  myTitleLabel.setBackground(content.getBackground());
+  }
+
+  private void setupComponents(Icon expandIcon, Icon collapseIcon,
+							   String title, boolean collapseButtonAtLeft,
+  							   boolean isCollapsed){
+
+
+	this.myToggleCollapseButton = new JButton();
+	final Dimension buttonDimension = getButtonDimension();
+	  
+	myToggleCollapseButton.setOpaque(false);
+    myToggleCollapseButton.setBorderPainted(false);
+
+	myToggleCollapseButton.setSize(buttonDimension);
+    myToggleCollapseButton.setPreferredSize(buttonDimension);
+    myToggleCollapseButton.setMinimumSize(buttonDimension);
+    myToggleCollapseButton.setMaximumSize(buttonDimension);
+
+    myToggleCollapseButton.setFocusable(true);
+
+
+	myToggleCollapseButton.getActionMap().put(COLLAPSE, new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        collapse();
+      }
+    });
+
+    myToggleCollapseButton.getActionMap().put(EXPAND, new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        expand();
+      }
+    });
+
+    myToggleCollapseButton.getInputMap().put(LEFT_KEY_STROKE, COLLAPSE);
+    myToggleCollapseButton.getInputMap().put(RIGHT_KEY_STROKE, EXPAND);
+
+	 myToggleCollapseButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        setCollapsed(!myIsCollapsed);
+      }
+    });
+
+    final int iconAnchor = collapseButtonAtLeft ? GridBagConstraints.WEST : GridBagConstraints.EAST;
+    add(myToggleCollapseButton,
+        new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0,
+                               iconAnchor,
+                               GridBagConstraints.NONE,
+                               new Insets(1, collapseButtonAtLeft ? 0 : 1, 0, collapseButtonAtLeft ? 1 : 0), 0,
+                               0));
+    if (title != null) {
+      myTitleLabel = new JLabel(title);
+      myTitleLabel.setFont(UIUtil.getLabelFont().deriveFont(Font.BOLD));
+      add(myTitleLabel,
+          new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0,
+                                 GridBagConstraints.CENTER,
+                                 GridBagConstraints.CENTER,
+                                 new Insets(0, 3, 0, 3), 0,
+                                 0));
+		myTitleLabel.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) { // on double click, just open the issue
+				if (myIsCollapsed) {
+					expand();
+				} else {
+					collapse();
+				}
+			}
+		});
+
+	}
+
+	myIsCollapsed = isCollapsed;
+	setCollapsed(isCollapsed);
+
+  }
+
 
   public void addCollapsingListener(CollapsingListener listener) {
     myListeners.add(listener);
