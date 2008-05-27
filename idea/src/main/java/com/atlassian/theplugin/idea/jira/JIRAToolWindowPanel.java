@@ -128,23 +128,7 @@ public class JIRAToolWindowPanel extends JPanel {
 
         add(toolBarPanel, BorderLayout.NORTH);
 
-//<<<<<<< .mine
-//		JIRATableColumnProviderImpl tableColumnProvider = new JIRATableColumnProviderImpl();
-//
-//		this.collapsibleTable = new CollapsibleTable(tableColumnProvider,
-//													projectConfigurationBean.getJiraConfiguration().getTableConfiguration(),
-//													"JIRA ISSUES");
-//		add(collapsibleTable, BorderLayout.SOUTH);
-//
-//		TableColumnInfo[] columns = tableColumnProvider.makeColumnInfo();
-//		listTableModel = new ListTableModel(columns);
-//		listTableModel.setSortable(true);
-//
-//
-//		table = new AtlassianTableView(listTableModel,
-//				projectConfigurationBean.getJiraConfiguration().getTableConfiguration());
-//		table.prepareColumns(columns, tableColumnProvider.makeRendererInfo());
-//=======
+
 
 
 		editorPane = new ToolWindowBambooContent();
@@ -155,12 +139,29 @@ public class JIRAToolWindowPanel extends JPanel {
 
 
 		JIRATableColumnProviderImpl tableColumnProvider = new JIRATableColumnProviderImpl();
+
+		this.collapsibleTable = new CollapsibleTable(tableColumnProvider,
+													projectConfigurationBean.getJiraConfiguration().getTableConfiguration(),
+													"JIRA ISSUES");
+		add(collapsibleTable, BorderLayout.SOUTH);
+
 		TableColumnInfo[] columns = tableColumnProvider.makeColumnInfo();
-        listTableModel = new ListTableModel(columns);
-        listTableModel.setSortable(true);
-        table = new AtlassianTableView(listTableModel,
-                projectConfigurationBean.getJiraConfiguration().getTableConfiguration());
-        table.prepareColumns(columns, tableColumnProvider.makeRendererInfo());
+		listTableModel = new ListTableModel(columns);
+		listTableModel.setSortable(true);
+
+
+		table = new AtlassianTableView(listTableModel,
+				projectConfigurationBean.getJiraConfiguration().getTableConfiguration());
+		table.prepareColumns(columns, tableColumnProvider.makeRendererInfo());
+
+
+//		JIRATableColumnProviderImpl tableColumnProvider = new JIRATableColumnProviderImpl();
+//		TableColumnInfo[] columns = tableColumnProvider.makeColumnInfo();
+//        listTableModel = new ListTableModel(columns);
+//        listTableModel.setSortable(true);
+//        table = new AtlassianTableView(listTableModel,
+//                projectConfigurationBean.getJiraConfiguration().getTableConfiguration());
+//        table.prepareColumns(columns, tableColumnProvider.makeRendererInfo());
 
         table.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) { // on double click, just open the issue
