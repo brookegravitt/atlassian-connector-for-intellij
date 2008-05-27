@@ -129,7 +129,7 @@ public class JIRAServer {
 				} else {
 					retrieved = jiraServerFacade.getIssueTypesForProject(server, Long.toString(currentProject.getId()));
                 }
-				issueTypes = new ArrayList<JIRAConstant>(retrieved.size() + 1);
+                issueTypes = new ArrayList<JIRAConstant>(retrieved.size() + 1);
 				issueTypes.add(new JIRAIssueTypeBean(ANY_ID, "Any", null));
 				issueTypes.addAll(retrieved);
                 if (currentProject != null) {
@@ -149,7 +149,6 @@ public class JIRAServer {
                 }
             }
 		}
-
 		return issueTypes;
 	}
 
