@@ -381,7 +381,7 @@ public class JIRAToolWindowPanel extends JPanel {
             clearIssues();
 
             if (jiraServer.checkServer() == false) {
-                setStatusMessage("Unable to connect to server." + jiraServer.getErrorMessage(), true);
+                setStatusMessage("Unable to connect to server. " + jiraServer.getErrorMessage(), true);
                 progressAnimation.stopProgressAnimation();
                 EventQueue.invokeLater(new MissingPasswordHandlerJIRA(jiraServerFacade, jiraServer.getServer(), jiraPanel));
                 return;
