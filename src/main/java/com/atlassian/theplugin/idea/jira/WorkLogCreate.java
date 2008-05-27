@@ -143,8 +143,16 @@ public class WorkLogCreate extends DialogWrapper {
 			init();
 
 			calendar = new CalendarPanel(1);
-			calendar.setDate(now);
 			calendar.setSelectionMode(DateSelectionModel.SINGLE_SELECTION);
+
+			Date nowZeroZero = (Date) now.clone();
+			nowZeroZero.setHours(0);
+			nowZeroZero.setMinutes(0);
+			nowZeroZero.setSeconds(0);
+
+			calendar.setDate(nowZeroZero);
+			calendar.setValue(nowZeroZero);
+
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(now);
 			hourModel = new SpinnerNumberModel(cal.get(Calendar.HOUR_OF_DAY), 0, 24, 1);
@@ -189,7 +197,7 @@ public class WorkLogCreate extends DialogWrapper {
 		}
 
 		public Date getSelectedTime() {
-			Date d = calendar.getDate();
+			Date d = (Date) calendar.getValue();
 			long newTime = d.getTime();
 			newTime += hourModel.getNumber().intValue() * Timer.ONE_HOUR;
 			newTime += minuteModel.getNumber().intValue() * Timer.ONE_MINUTE;
