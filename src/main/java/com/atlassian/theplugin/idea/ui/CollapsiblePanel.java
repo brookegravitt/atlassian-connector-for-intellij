@@ -69,7 +69,8 @@ public class CollapsiblePanel extends JPanel {
     if (myExpandIcon == null) {
       return new Dimension(7, 7);
     } else {
-      return new Dimension(myExpandIcon.getIconWidth(), myExpandIcon.getIconHeight());
+      return new Dimension((myExpandIcon.getIconWidth() > myCollapseIcon.getIconWidth()?myExpandIcon.getIconWidth():myCollapseIcon.getIconWidth()),
+			  				myExpandIcon.getIconHeight() > myCollapseIcon.getIconHeight()?myExpandIcon.getIconHeight():myCollapseIcon.getIconHeight());
     }
   }
 
@@ -160,7 +161,12 @@ public class CollapsiblePanel extends JPanel {
 
 
 	this.myToggleCollapseButton = new JButton();
+	this.myExpandIcon = expandIcon;
+	this.myCollapseIcon = collapseIcon;
+	  
 	final Dimension buttonDimension = getButtonDimension();
+
+
 	  
 	myToggleCollapseButton.setOpaque(false);
     myToggleCollapseButton.setBorderPainted(false);
