@@ -17,11 +17,16 @@
 package com.atlassian.theplugin.idea.jira;
 
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.ui.HyperlinkLabel;
+import com.intellij.ide.BrowserUtil;
 import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.HelpUrl;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.HyperlinkListener;
+import javax.swing.event.HyperlinkEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.*;
@@ -43,12 +48,24 @@ public class WorkLogCreate extends DialogWrapper {
 	private JTextArea comment;
 	private JButton endDateChange;
 	private JLabel endDateLabel;
+	private HyperlinkLabel helpLabel;
 	private Date endTime;
 	private final Calendar now = Calendar.getInstance();
 	SpinnerNumberModel weekModel = new SpinnerNumberModel(0, 0, null, 1);
 	SpinnerNumberModel dayModel = new SpinnerNumberModel(0, 0, null, 1);
 	SpinnerNumberModel hourModel = new SpinnerNumberModel(0, 0, null, 1);
 	SpinnerNumberModel minuteModel = new SpinnerNumberModel(0, 0, null, 1);
+
+	private void createUIComponents() {
+		helpLabel = new HyperlinkLabel("Help");
+		final String helpUrl = HelpUrl.getHelpUrl(Constants.HELP_JIRA_WORKLOG);
+
+		helpLabel.addHyperlinkListener(new HyperlinkListener() {
+			public void hyperlinkUpdate(HyperlinkEvent e) {
+				BrowserUtil.launchBrowser(helpUrl);
+			}
+		});
+	}
 
 	class NonZeroChangeListener implements ChangeListener {
 		public void stateChanged(ChangeEvent e) {
