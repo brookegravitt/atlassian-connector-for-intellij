@@ -33,6 +33,7 @@ import javax.management.timer.Timer;
 import net.sf.nachocalendar.components.CalendarPanel;
 import net.sf.nachocalendar.model.DateSelectionModel;
 
+
 public class WorkLogCreate extends DialogWrapper {
 	private JPanel contentPane;
 	private JSpinner minutes;

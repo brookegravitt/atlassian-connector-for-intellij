@@ -161,7 +161,11 @@ public class ServerBean implements Server {
 	public void setEncryptedPassword(String encryptedPassword) {
 		password = decode(encryptedPassword);
 		this.encryptedPassword = encryptedPassword;
-		this.isConfigInitialized = true;
+		//if (password.length() > 0) {
+			isConfigInitialized = true;
+//		} else {
+//			isConfigInitialized = false;
+//		}
 	}
 
 	/**
@@ -223,7 +227,11 @@ public class ServerBean implements Server {
 	public synchronized void transientSetPasswordString(String aPassword, Boolean shouldBeStoredPermanently) {
 		this.shouldPasswordBeStored = shouldBeStoredPermanently;
 		this.password = aPassword;
-		isConfigInitialized = true;
+		//if (password.length() > 0) {
+			isConfigInitialized = true;
+//		} else {
+//			isConfigInitialized = false;
+//		}
 //        if (shouldBeStoredPermanently && encryptedPassword != null) {
 //            this.encryptedPassword = new char[encryptedPassword.length()];
 //            encryptedPassword.getChars(0, encryptedPassword.length(), this.encryptedPassword, 0);
