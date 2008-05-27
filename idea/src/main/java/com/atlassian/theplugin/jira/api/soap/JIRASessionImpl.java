@@ -174,7 +174,7 @@ public class JIRASessionImpl implements JIRASession {
 	public List<JIRAProject> getProjects() throws RemoteApiException {
 		try {
 			RemoteProject[] projects = service.getProjectsNoSchemes(token);
-			List<JIRAProject> projectList = new ArrayList<JIRAProject>();
+			List<JIRAProject> projectList = new ArrayList<JIRAProject>(projects.length);
 
 			for (RemoteProject p : projects) {
 				JIRAProjectBean project = new JIRAProjectBean();
@@ -228,7 +228,7 @@ public class JIRASessionImpl implements JIRASession {
 		try {
 			RemoteStatus[] statuses = service.getStatuses(token);
 
-			List<JIRAConstant> statusesList = new ArrayList<JIRAConstant>();
+			List<JIRAConstant> statusesList = new ArrayList<JIRAConstant>(statuses.length);
 			for (RemoteStatus status : statuses) {
 				statusesList.add(new JIRAStatusBean(
 						Long.valueOf(status.getId()), status.getName(), new URL(status.getIcon())));
@@ -245,7 +245,7 @@ public class JIRASessionImpl implements JIRASession {
 		try {
 			RemoteComponent[] components = service.getComponents(token, projectKey);
 
-			List<JIRAComponentBean> componentsList = new ArrayList<JIRAComponentBean>();
+			List<JIRAComponentBean> componentsList = new ArrayList<JIRAComponentBean>(components.length);
 			for (RemoteComponent c : components) {
 				componentsList.add(new JIRAComponentBean(Long.valueOf(c.getId()), c.getName()));
 			}
@@ -259,7 +259,7 @@ public class JIRASessionImpl implements JIRASession {
 		try {
 			RemoteVersion[] versions = service.getVersions(token, projectKey);
 
-			List<JIRAVersionBean> versionsList = new ArrayList<JIRAVersionBean>();
+			List<JIRAVersionBean> versionsList = new ArrayList<JIRAVersionBean>(versions.length);
 			for (RemoteVersion v : versions) {
 				versionsList.add(new JIRAVersionBean(Long.valueOf(v.getId()), v.getName()));
 			}
@@ -273,7 +273,7 @@ public class JIRASessionImpl implements JIRASession {
 		try {
 			RemotePriority[] priorities = service.getPriorities(token);
 
-			List<JIRAConstant> prioritiesList = new ArrayList<JIRAConstant>();
+			List<JIRAConstant> prioritiesList = new ArrayList<JIRAConstant>(priorities.length);
 			for (RemotePriority p : priorities) {
 				prioritiesList.add(new JIRAPriorityBean(Long.valueOf(p.getId()), p.getName(), new URL(p.getIcon())));
 			}
@@ -289,7 +289,7 @@ public class JIRASessionImpl implements JIRASession {
 		try {
 			RemoteResolution[] resolutions = service.getResolutions(token);
 
-			List<JIRAResolutionBean> resolutionsList = new ArrayList<JIRAResolutionBean>();
+			List<JIRAResolutionBean> resolutionsList = new ArrayList<JIRAResolutionBean>(resolutions.length);
 			for (RemoteResolution p : resolutions) {
 				resolutionsList.add(new JIRAResolutionBean(Long.valueOf(p.getId()), p.getName()));
 			}
@@ -303,7 +303,7 @@ public class JIRASessionImpl implements JIRASession {
 		try {
 			RemoteFilter[] filters = service.getSavedFilters(token);
 
-			List<JIRAQueryFragment> filtersList = new ArrayList<JIRAQueryFragment>();
+			List<JIRAQueryFragment> filtersList = new ArrayList<JIRAQueryFragment>(filters.length);
 			for (RemoteFilter f : filters) {
 				filtersList.add(new JIRASavedFilterBean(f.getName(), Long.valueOf(f.getId())));
 			}
@@ -326,7 +326,20 @@ public class JIRASessionImpl implements JIRASession {
 		}
 	}
 
-	public boolean isLoggedIn() {
+    public List<JIRAAction> getAvailableActions(JIRAIssue issue) throws RemoteApiException {
+        try {
+            RemoteNamedObject[] actions = service.getAvailableActions(token, issue.getKey());
+            List<JIRAAction> actionList = new ArrayList<JIRAAction>(actions.length);
+            for (RemoteNamedObject action : actions) {
+                actionList.add(new JIRAActionBean(Long.valueOf(action.getId()), action.getName()));
+            }
+            return actionList;
+        } catch (RemoteException e) {
+            throw new RemoteApiException(e.toString(), e);
+        }
+    }
+
+    public boolean isLoggedIn() {
 		return loggedIn;
 	}
 }
