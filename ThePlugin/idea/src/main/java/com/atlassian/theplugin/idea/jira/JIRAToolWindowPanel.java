@@ -142,7 +142,7 @@ public class JIRAToolWindowPanel extends JPanel {
 
 		this.collapsibleTable = new CollapsibleTable(tableColumnProvider,
 													projectConfigurationBean.getJiraConfiguration().getTableConfiguration(),
-													"JIRA ISSUES");
+													"JIRA ISSUES", "ThePlugin.JIRA.ServerToolBar", "atlassian.toolwindow.serverToolBar");
 		add(collapsibleTable, BorderLayout.SOUTH);
 
 		TableColumnInfo[] columns = tableColumnProvider.makeColumnInfo();
