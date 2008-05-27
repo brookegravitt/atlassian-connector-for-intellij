@@ -704,8 +704,7 @@ public class JIRAToolWindowPanel extends JPanel {
 
         if (jiraServer != null) {
             final IssueCreate issueCreate = new IssueCreate(jiraServer);
-            issueCreate.updateProject();
-            issueCreate.updatePriorities();
+            issueCreate.initData();
             issueCreate.show();
             if (issueCreate.isOK()) {
                 FutureTask task = new FutureTask(new Runnable() {
