@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.jira.table;
 
 import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.atlassian.theplugin.idea.ui.TooltipCellRenderer;
+import com.atlassian.theplugin.idea.ui.TableColumnProvider;
 import com.atlassian.theplugin.idea.jira.table.columns.*;
 import com.atlassian.theplugin.idea.jira.table.renderers.*;
 
