@@ -22,6 +22,7 @@ import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraFilterEntryBean;
 import com.atlassian.theplugin.configuration.JiraFiltersBean;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
+import com.atlassian.theplugin.configuration.ProjectToolWindowTableConfiguration;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.TableColumnInfo;
@@ -30,6 +31,8 @@ import com.atlassian.theplugin.idea.jira.table.JIRATableColumnProviderImpl;
 import com.atlassian.theplugin.idea.jira.table.columns.*;
 import com.atlassian.theplugin.idea.ui.AtlassianTableView;
 import com.atlassian.theplugin.idea.ui.CollapsibleTable;
+import com.atlassian.theplugin.idea.ui.AbstractTableToolWindowPanel;
+import com.atlassian.theplugin.idea.ui.TableColumnProvider;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
@@ -58,20 +61,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.FutureTask;
 
-public class JIRAToolWindowPanel extends JPanel {
+public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
     private static final int PAGE_SIZE = 50;
 
-    private JEditorPane editorPane;
-    private JPanel toolBarPanel;
-    private ListTableModel listTableModel;
-    private AtlassianTableView table;
-    private JScrollPane scrollTable;
-    private static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
     private transient ActionToolbar filterToolbar;
     private transient ActionToolbar filterEditToolbar;
     private JIRAIssueFilterPanel jiraIssueFilterPanel;
 
-    private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
+    private TableColumnProvider columnProvider;
 
     private transient JiraFiltersBean filters;
     private transient JIRAQueryFragment savedQuery;
@@ -79,7 +76,6 @@ public class JIRAToolWindowPanel extends JPanel {
 
     private final transient JIRAServerFacade jiraServerFacade;
     private final transient PluginConfigurationBean pluginConfiguration;
-    private final transient ProjectConfigurationBean projectConfiguration;
 
     private int maxIndex = PAGE_SIZE;
     private int startIndex = 0;
@@ -89,115 +85,49 @@ public class JIRAToolWindowPanel extends JPanel {
     private String sortOrder = "ASC";
 
     private static JIRAToolWindowPanel instance;
-	private CollapsibleTable collapsibleTable;
 
     private transient JIRAIssue selectedIssue = null;
 
+    protected String getInitialMessage() {
+        return "Select a JIRA server to retrieve your issues.";
+    }
+
+    protected String getToolbarActionGroup() {
+        return "ThePlugin.JIRA.ServerToolBar";
+    }
+
+    protected String getPopupActionGroup() {
+        return "ThePlugin.JIRA.IssuePopupMenu";
+    }
+
+    protected TableColumnProvider getTableColumnProvider() {
+        if (columnProvider == null) {
+            columnProvider = new JIRATableColumnProviderImpl();
+        }
+        return columnProvider;
+    }
+
+    protected ProjectToolWindowTableConfiguration getTableConfiguration() {
+        return projectConfiguration.getJiraConfiguration().getTableConfiguration();
+    }
+
     public static JIRAToolWindowPanel getInstance(ProjectConfigurationBean projectConfigurationBean) {
         if (instance == null) {
-            instance = new JIRAToolWindowPanel(IdeaHelper.getPluginConfiguration(), projectConfigurationBean,
-                    JIRAServerFacadeImpl.getInstance());
+            instance = new JIRAToolWindowPanel(IdeaHelper.getPluginConfiguration(), projectConfigurationBean);
         }
         return instance;
     }
 
     public JIRAToolWindowPanel(PluginConfigurationBean pluginConfiguration,
-                               ProjectConfigurationBean projectConfigurationBean,                               
-                               JIRAServerFacade jiraServerFacade) {
-
-        setLayout(new BorderLayout());
-
+                               ProjectConfigurationBean projectConfigurationBean) {
+        super(projectConfigurationBean);
         this.pluginConfiguration = pluginConfiguration;
-        this.projectConfiguration = projectConfigurationBean;
-        this.jiraServerFacade = jiraServerFacade;
+        this.jiraServerFacade = JIRAServerFacadeImpl.getInstance();
         this.advancedQuery = new ArrayList<JIRAQueryFragment>();
-
-        setBackground(UIUtil.getTreeTextBackground());
-
-        toolBarPanel = new JPanel(new BorderLayout());
-        ActionManager aManager = ActionManager.getInstance();
-        ActionGroup serverToolBar = (ActionGroup) aManager.getAction("ThePlugin.JIRA.ServerToolBar");
-        ActionToolbar actionToolbar = aManager.createActionToolbar(
-                "atlassian.toolwindow.serverToolBar", serverToolBar, true);
-
-
-        toolBarPanel.add(actionToolbar.getComponent(), BorderLayout.NORTH);
-
-        add(toolBarPanel, BorderLayout.NORTH);
-
-
-
-
-		editorPane = new ToolWindowBambooContent();
-        editorPane.setEditorKit(new ClasspathHTMLEditorKit());
-        JScrollPane pane = setupPane(editorPane, wrapBody("Select a JIRA server to retrieve your issues."));
-        editorPane.setMinimumSize(ED_PANE_MINE_SIZE);
-        add(pane, BorderLayout.SOUTH);
-
-
-		JIRATableColumnProviderImpl tableColumnProvider = new JIRATableColumnProviderImpl();
-
-		this.collapsibleTable = new CollapsibleTable(tableColumnProvider,
-													projectConfigurationBean.getJiraConfiguration().getTableConfiguration(),
-													"JIRA ISSUES", "ThePlugin.JIRA.ServerToolBar", "atlassian.toolwindow.serverToolBar");
-		add(collapsibleTable, BorderLayout.SOUTH);
-
-		TableColumnInfo[] columns = tableColumnProvider.makeColumnInfo();
-		listTableModel = new ListTableModel(columns);
-		listTableModel.setSortable(true);
-
-
-		table = new AtlassianTableView(listTableModel,
-				projectConfigurationBean.getJiraConfiguration().getTableConfiguration());
-		table.prepareColumns(columns, tableColumnProvider.makeRendererInfo());
-
-
-//		JIRATableColumnProviderImpl tableColumnProvider = new JIRATableColumnProviderImpl();
-//		TableColumnInfo[] columns = tableColumnProvider.makeColumnInfo();
-//        listTableModel = new ListTableModel(columns);
-//        listTableModel.setSortable(true);
-//        table = new AtlassianTableView(listTableModel,
-//                projectConfigurationBean.getJiraConfiguration().getTableConfiguration());
-//        table.prepareColumns(columns, tableColumnProvider.makeRendererInfo());
-
-        table.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) { // on double click, just open the issue
-                if (e.getClickCount() == 2) {
-                    String issue = ((JiraIssueAdapter) table.getSelectedObject()).getIssueUrl();
-                    if (issue != null) {
-                        BrowserUtil.launchBrowser(issue);
-                    }
-                }
-            }
-
-            public void mousePressed(MouseEvent e) {
-                maybeShowPopup(e);
-            }
-
-            public void mouseReleased(MouseEvent e) {
-                maybeShowPopup(e);
-            }
-
-            private void maybeShowPopup(MouseEvent e) {
-                if (e.isPopupTrigger() && table.isEnabled()) {
-                    selectedIssue = ((JiraIssueAdapter) table.getSelectedObject()).getIssue();
-                    ActionGroup actionGroup = (ActionGroup) ActionManager
-                            .getInstance().getAction("ThePlugin.JIRA.IssuePopupMenu");
-                    ActionPopupMenu popup = ActionManager.getInstance().createActionPopupMenu("Issue", actionGroup);
-                    JPopupMenu jPopupMenu = popup.getComponent();
-                    jPopupMenu.show(e.getComponent(), e.getX(), e.getY());
-                }
-            }
-        });
 
         createFilterToolBar();
         createFilterEditToolBar();
 
-        scrollTable = new JScrollPane(table);
-        add(scrollTable, BorderLayout.CENTER, 0);
-
-        // initialize animated panel functionality
-        progressAnimation.configure(this, scrollTable, BorderLayout.CENTER);
         jiraIssueFilterPanel = new JIRAIssueFilterPanel(progressAnimation);
     }
 
@@ -284,9 +214,6 @@ public class JIRAToolWindowPanel extends JPanel {
         setScrollPaneViewport(jiraIssueFilterPanel.$$$getRootComponent$$$());
     }
 
-    private void setScrollPaneViewport(JComponent component) {
-        scrollTable.setViewportView(component);
-    }
 
     public void viewIssue() {
         JIRAIssue issue = ((JiraIssueAdapter) table.getSelectedObject()).getIssue();
@@ -316,13 +243,7 @@ public class JIRAToolWindowPanel extends JPanel {
 
     }
 
-    private JScrollPane setupPane(JEditorPane pane, String initialText) {
-        pane.setText(initialText);
-        JScrollPane scrollPane = new JScrollPane(pane,
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setWheelScrollingEnabled(true);
-        return scrollPane;
-    }
+
 
     public void refreshIssuesPage() {
         if (IdeaHelper.getCurrentJIRAServer() != null) {
@@ -361,10 +282,6 @@ public class JIRAToolWindowPanel extends JPanel {
         editorPane.setText(wrapBody("Loaded <b>" + issues.size() + "</b> issues starting at <b>" + (startIndex + 1) + "</b>."));
     }
 
-    private String wrapBody(String s) {
-        return "<html>" + HtmlBambooStatusListener.BODY_WITH_STYLE + s + "</body></html>";
-
-    }
 
     public void selectServer(Server server) {
         if (server != null) {
@@ -374,10 +291,6 @@ public class JIRAToolWindowPanel extends JPanel {
             IdeaHelper.setCurrentJIRAServer(jiraServer);
             new Thread(new SelectServerTask(jiraServer, this), "atlassian-idea-plugin jira tab select server").start();
         }
-    }
-
-    public ProgressAnimationProvider getProgressAnimation() {
-        return progressAnimation;
     }
 
     private final class SelectServerTask implements Runnable {
@@ -417,7 +330,7 @@ public class JIRAToolWindowPanel extends JPanel {
             jiraServer.getResolutions();
 
             setStatusMessage("Retrieving priorities...");
-            jiraServer.getPriorieties();            
+            jiraServer.getPriorieties();
 
             if (jiraServer.equals(IdeaHelper.getCurrentJIRAServer())) {
                 filters = projectConfiguration.getJiraConfiguration()
@@ -433,19 +346,9 @@ public class JIRAToolWindowPanel extends JPanel {
                 });
                 filterToolbarSetVisible(true);
             }
-            
+
             progressAnimation.stopProgressAnimation();
         }
-    }
-
-
-    private void setStatusMessage(String msg) {
-        setStatusMessage(msg, false);
-    }
-
-    private void setStatusMessage(String msg, boolean isError) {
-        editorPane.setBackground(isError ? Color.red : Color.white);
-        editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">" + msg + "</td></tr></table>"));
     }
 
     private void createFilterToolBar() {
@@ -771,10 +674,6 @@ public class JIRAToolWindowPanel extends JPanel {
                 new Thread(task, "atlassian-idea-plugin create issue").start();
             }
         }
-    }
-
-    public AtlassianTableView getTable() {
-        return table;
     }
 
     public JiraFiltersBean getFilters() {
