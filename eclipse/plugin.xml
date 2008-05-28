@@ -21,7 +21,7 @@
       </category>
       <view allowMultiple="false"
             category="com.atlassian.theplugin.eclipse.viewcategory"
-            class="com.atlassian.theplugin.eclipse.view.ToolWindow"
+            class="com.atlassian.theplugin.eclipse.view.bamboo.BambooToolWindow"
             id="com.atlassian.theplugin.eclipse.viewmain"
             name="Atlassian (Bamboo)">
       </view>

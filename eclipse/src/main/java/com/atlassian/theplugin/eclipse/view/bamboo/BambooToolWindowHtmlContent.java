@@ -1,4 +1,4 @@
-package com.atlassian.theplugin.eclipse.bamboo;
+package com.atlassian.theplugin.eclipse.view.bamboo;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -17,7 +17,7 @@ import com.atlassian.theplugin.commons.bamboo.BambooStatusDisplay;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.eclipse.preferences.Activator;
 
-public class BambooTabDisplay implements BambooStatusDisplay {
+public class BambooToolWindowHtmlContent implements BambooStatusDisplay {
 
 	private Composite parent;
 
@@ -27,7 +27,7 @@ public class BambooTabDisplay implements BambooStatusDisplay {
 
 	private static String html;
 
-	public BambooTabDisplay(Composite parent) {
+	public BambooToolWindowHtmlContent(Composite parent) {
 		this.parent = parent;
 		htmlBrowser = new Browser(parent, SWT.NONE);
 
@@ -54,7 +54,7 @@ public class BambooTabDisplay implements BambooStatusDisplay {
 		public void mouseUp(MouseEvent e) {
 			super.mouseUp(e);
 			// mouse clicked
-			BambooTabDisplay.linkClicked = true;
+			BambooToolWindowHtmlContent.linkClicked = true;
 			System.out.println("click");
 		}
 	}
@@ -71,7 +71,7 @@ public class BambooTabDisplay implements BambooStatusDisplay {
 		@Override
 		public void changing(LocationEvent event) {
 			super.changing(event);
-			if (BambooTabDisplay.linkClicked) {
+			if (BambooToolWindowHtmlContent.linkClicked) {
 				try {
 					Activator.getDefault().getWorkbench().getBrowserSupport()
 							.createBrowser(
@@ -88,7 +88,7 @@ public class BambooTabDisplay implements BambooStatusDisplay {
 
 				browser.stop();
 				browser.setText(html);
-				BambooTabDisplay.linkClicked = false;
+				BambooToolWindowHtmlContent.linkClicked = false;
 				System.out.println("changing");
 			}
 		}
