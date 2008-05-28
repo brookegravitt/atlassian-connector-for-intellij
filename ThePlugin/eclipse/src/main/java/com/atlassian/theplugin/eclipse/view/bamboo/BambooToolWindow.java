@@ -1,25 +1,25 @@
 /**
  * 
  */
-package com.atlassian.theplugin.eclipse.view;
+package com.atlassian.theplugin.eclipse.view.bamboo;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 
+import com.atlassian.theplugin.commons.bamboo.BambooStatusListener;
 import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListener;
-import com.atlassian.theplugin.eclipse.bamboo.BambooTabDisplay;
 import com.atlassian.theplugin.eclipse.preferences.Activator;
 
 /**
  * @author Jacek
  *
  */
-public class ToolWindow extends ViewPart {
+public class BambooToolWindow extends ViewPart {
 
 	/**
 	 * 
 	 */
-	public ToolWindow() {
+	public BambooToolWindow() {
 		// TODO Auto-generated constructor stub
 	}
 
@@ -29,15 +29,9 @@ public class ToolWindow extends ViewPart {
 	@Override
 	public void createPartControl(Composite parent) {
 		
-
-		// add display component to the current window (view)
-		BambooTabDisplay bambooTabDisplay = new BambooTabDisplay(parent);
-
-		//BambooTabListener bambooTabListener = new BambooTabListener(bambooTabDisplay);
-
 		// create bamboo status listeners
-		HtmlBambooStatusListener bambooListener = new HtmlBambooStatusListener(bambooTabDisplay, 
-				Activator.getDefault().getPluginConfiguration());
+		BambooStatusListener bambooListener = new BambooToolWindowContent(parent);
+		//(bambooTabContent, Activator.getDefault().getPluginConfiguration());
 		
 		Activator.getDefault().getBambooChecker().registerListener(bambooListener);
 		
