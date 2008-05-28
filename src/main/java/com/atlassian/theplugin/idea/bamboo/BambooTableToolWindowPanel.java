@@ -69,6 +69,16 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
         bambooFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
     }
 
+    protected void handlePopupClick(Object selectedObject) {
+    }
+
+    protected void handleDoubleClick(Object selectedObject) {
+        BambooBuildAdapter build = (BambooBuildAdapter) selectedObject;
+        if (build != null) {
+            BrowserUtil.launchBrowser(build.getBuildResultUrl());
+        }        
+    }
+
     public static BambooTableToolWindowPanel getInstance(ProjectConfigurationBean projectConfigurationBean) {
 
 		if (instance == null) {
