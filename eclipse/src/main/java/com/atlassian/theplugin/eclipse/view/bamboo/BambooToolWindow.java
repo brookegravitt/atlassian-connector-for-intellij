@@ -20,7 +20,6 @@ public class BambooToolWindow extends ViewPart {
 	 * 
 	 */
 	public BambooToolWindow() {
-		// TODO Auto-generated constructor stub
 	}
 
 	/* (non-Javadoc)
@@ -34,11 +33,14 @@ public class BambooToolWindow extends ViewPart {
 		//(bambooTabContent, Activator.getDefault().getPluginConfiguration());
 		
 		Activator.getDefault().getBambooChecker().registerListener(bambooListener);
-		
 
+		//getViewSite().registerContextMenu(menuManager, selectionProvider)
 		
-		//this.getSite().getWorkbenchWindow()
-
+		getViewSite().getActionBars().getToolBarManager().add(new RunBuildAction());
+		
+		getViewSite().getActionBars().updateActionBars();
+		
+		
 	}
 
 	/* (non-Javadoc)
@@ -46,7 +48,6 @@ public class BambooToolWindow extends ViewPart {
 	 */
 	@Override
 	public void setFocus() {
-		// TODO Auto-generated method stub
 
 	}
 
