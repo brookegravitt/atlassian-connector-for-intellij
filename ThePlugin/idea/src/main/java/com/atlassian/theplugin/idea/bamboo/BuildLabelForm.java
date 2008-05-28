@@ -33,7 +33,7 @@ public class BuildLabelForm extends DialogWrapper {
 	private JTextField buildNumberKey;
 	private JTextField labelField;
 
-	public BuildLabelForm(BambooBuildAdapter build) {
+	public BuildLabelForm(BambooBuildAdapterIdea build) {
 		super(false);
 		init();
 		pack();
