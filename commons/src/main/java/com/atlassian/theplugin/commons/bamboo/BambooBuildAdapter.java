@@ -1,10 +1,12 @@
 package com.atlassian.theplugin.commons.bamboo;
 
 import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.util.DateUtil;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 
 import java.util.Date;
+import java.text.SimpleDateFormat;
 
 /**
  * Created by IntelliJ IDEA.
@@ -15,6 +17,7 @@ import java.util.Date;
  */
 public class BambooBuildAdapter {
 	protected BambooBuild build;
+	public static SimpleDateFormat BAMBOO_BUILD_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	public BambooBuildAdapter(BambooBuild build) {
 		this.build = build;
@@ -100,12 +103,28 @@ public class BambooBuildAdapter {
 		return build.getTestsPassed() + build.getTestsFailed();
 	}
 
+	public String getTestsPassedSummary() {
+		if (getStatus() == BuildStatus.UNKNOWN) {
+			return "-/-";
+		} else {
+			return getTestsPassed() + "/" + getTestsNumber();
+		}
+	}
+
 	public Date getBuildTime() {
 		return build.getBuildTime();
 	}
 
 	public String getBuildRelativeBuildDate() {
 		return build.getBuildRelativeBuildDate() == null ? "" : build.getBuildRelativeBuildDate();
+	}
+
+	public String getBuildTimeFormated() {
+	if (getBuildTime() != null) {
+			return DateUtil.getRelativePastDate(new Date(), getBuildTime());
+		} else {
+			return "-";
+		}
 	}
 
 	public Date getPollingTime() {

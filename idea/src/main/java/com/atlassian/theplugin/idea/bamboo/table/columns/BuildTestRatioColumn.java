@@ -37,11 +37,12 @@ public class BuildTestRatioColumn extends TableColumnInfo {
 	}
 
 	public Object valueOf(Object o) {
-		if (((BambooBuildAdapterIdea) o).getStatus() == BuildStatus.UNKNOWN) {
-			return "-/-";
-		} else {
-			return ((BambooBuildAdapterIdea) o).getTestsPassed() + "/" + ((BambooBuildAdapterIdea) o).getTestsNumber();
-		}
+		return ((BambooBuildAdapterIdea) o).getTestsPassedSummary();
+//		if (((BambooBuildAdapterIdea) o).getStatus() == BuildStatus.UNKNOWN) {
+//			return "-/-";
+//		} else {
+//			return ((BambooBuildAdapterIdea) o).getTestsPassed() + "/" + ((BambooBuildAdapterIdea) o).getTestsNumber();
+//		}
 	}
 
 	public Class getColumnClass() {
