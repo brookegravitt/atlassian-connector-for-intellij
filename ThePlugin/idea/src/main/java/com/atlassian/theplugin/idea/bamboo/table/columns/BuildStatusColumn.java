@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.bamboo.table.columns;
 
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapter;
+import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.TableColumnInfo;
 
 import javax.swing.*;
@@ -37,7 +37,7 @@ public class BuildStatusColumn extends TableColumnInfo {
 	}
 
 	public Object valueOf(Object o) {
-		return ((BambooBuildAdapter) o).getBuildIcon();
+		return ((BambooBuildAdapterIdea) o).getBuildIcon();
 	}
 
 	public Class getColumnClass() {
@@ -47,7 +47,7 @@ public class BuildStatusColumn extends TableColumnInfo {
 	public Comparator getComparator() {
 		return new Comparator() {
 			public int compare(Object o, Object o1) {
-				return ((BambooBuildAdapter) o).getStatus().compareTo(((BambooBuildAdapter) o1).getStatus());
+				return ((BambooBuildAdapterIdea) o).getStatus().compareTo(((BambooBuildAdapterIdea) o1).getStatus());
 			}
 		};
 	}

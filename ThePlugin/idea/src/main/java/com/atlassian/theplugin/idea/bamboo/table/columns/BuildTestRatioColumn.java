@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.bamboo.table.columns;
 
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapter;
+import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 
@@ -37,10 +37,10 @@ public class BuildTestRatioColumn extends TableColumnInfo {
 	}
 
 	public Object valueOf(Object o) {
-		if (((BambooBuildAdapter) o).getStatus() == BuildStatus.UNKNOWN) {
+		if (((BambooBuildAdapterIdea) o).getStatus() == BuildStatus.UNKNOWN) {
 			return "-/-";
 		} else {
-			return ((BambooBuildAdapter) o).getTestsPassed() + "/" + ((BambooBuildAdapter) o).getTestsNumber();
+			return ((BambooBuildAdapterIdea) o).getTestsPassed() + "/" + ((BambooBuildAdapterIdea) o).getTestsNumber();
 		}
 	}
 
@@ -60,9 +60,9 @@ public class BuildTestRatioColumn extends TableColumnInfo {
 
 	private double getTestRatio(Object o) {
 		double oTests = 0;
-		if (((BambooBuildAdapter) o).getTestsNumber() > 0) {
-			oTests = ((double) ((BambooBuildAdapter) o).getTestsPassed())
-					/ ((double) ((BambooBuildAdapter) o).getTestsNumber());
+		if (((BambooBuildAdapterIdea) o).getTestsNumber() > 0) {
+			oTests = ((double) ((BambooBuildAdapterIdea) o).getTestsPassed())
+					/ ((double) ((BambooBuildAdapterIdea) o).getTestsNumber());
 		}
 		return oTests;
 	}
