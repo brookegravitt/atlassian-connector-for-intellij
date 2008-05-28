@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea.bamboo;
 
 import com.atlassian.theplugin.idea.TableColumnInfo;
+import com.atlassian.theplugin.idea.ui.TableColumnProvider;
 import com.atlassian.theplugin.idea.bamboo.table.columns.*;
 import com.atlassian.theplugin.idea.bamboo.table.renderer.BuildNumberCellRenderer;
 import com.atlassian.theplugin.idea.bamboo.table.renderer.BuildTestRatioCellRenderer;
@@ -25,11 +26,11 @@ import com.atlassian.theplugin.idea.bamboo.table.renderer.RightJustifyCellRender
 
 import javax.swing.table.TableCellRenderer;
 
-public final class BambooTableColumnProvider {
-	private BambooTableColumnProvider() {		
+public class BambooTableColumnProviderImpl implements TableColumnProvider {
+	public BambooTableColumnProviderImpl() {		
 	}
 
-	public static TableColumnInfo[] makeColumnInfo() {
+	public TableColumnInfo[] makeColumnInfo() {
 		return new TableColumnInfo[]{
 				new BuildStatusColumn(),
 				new BuildKeyColumn(),
@@ -43,7 +44,7 @@ public final class BambooTableColumnProvider {
 		};
 	}
 
-	public static TableCellRenderer[] makeRendererInfo() {
+	public TableCellRenderer[] makeRendererInfo() {
 		return new TableCellRenderer[]{
 				null,
 				null,

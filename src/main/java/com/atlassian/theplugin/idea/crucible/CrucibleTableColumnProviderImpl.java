@@ -17,15 +17,16 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.idea.TableColumnInfo;
+import com.atlassian.theplugin.idea.ui.TableColumnProvider;
 import com.atlassian.theplugin.idea.crucible.table.column.*;
 
 import javax.swing.table.TableCellRenderer;
 
-public final class CrucibleTableColumnProvider {
-	private CrucibleTableColumnProvider() {
+public final class CrucibleTableColumnProviderImpl implements TableColumnProvider {
+	public CrucibleTableColumnProviderImpl() {
 	}
 
-	public static TableColumnInfo[] makeColumnInfo() {
+	public TableColumnInfo[] makeColumnInfo() {
 		return new TableColumnInfo[]{
 				new ReviewKeyColumn(),
 				new ReviewSummaryColumn(),
@@ -35,7 +36,7 @@ public final class CrucibleTableColumnProvider {
 		};
 	}
 
-	public static TableCellRenderer[] makeRendererInfo() {
+	public TableCellRenderer[] makeRendererInfo() {
 		return new TableCellRenderer[]{
 				null,
 				null,

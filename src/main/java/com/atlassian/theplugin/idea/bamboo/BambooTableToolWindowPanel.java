@@ -20,22 +20,13 @@ import com.atlassian.theplugin.commons.bamboo.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
-import com.atlassian.theplugin.idea.ProgressAnimationProvider;
-import com.atlassian.theplugin.idea.TableColumnInfo;
-import com.atlassian.theplugin.idea.ui.AtlassianTableView;
+import com.atlassian.theplugin.configuration.ProjectToolWindowTableConfiguration;
+import com.atlassian.theplugin.idea.ui.AbstractTableToolWindowPanel;
+import com.atlassian.theplugin.idea.ui.TableColumnProvider;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.BrowserUtil;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionPopupMenu;
-import com.intellij.util.ui.ListTableModel;
 import com.intellij.util.ui.UIUtil;
-import thirdparty.javaworld.ClasspathHTMLEditorKit;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -44,92 +35,44 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.FutureTask;
 
-public class BambooTableToolWindowPanel extends JPanel implements BambooStatusListener {
-	private JEditorPane editorPane;
-	private ListTableModel listTableModel;
-	private AtlassianTableView table;
+public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel implements BambooStatusListener {
 	private final transient BambooServerFacade bambooFacade;
-	private static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
 	private static final DateFormat TIME_DF = new SimpleDateFormat("hh:mm a");
-	private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
-
 	private static BambooTableToolWindowPanel instance;
+    private TableColumnProvider columnProvider;
 
-	public ProgressAnimationProvider getProgressAnimation() {
-		return progressAnimation;
-	}
+    protected String getInitialMessage() {
+        return "Waiting for Bamboo statuses.";
+    }
 
-	public BambooTableToolWindowPanel(BambooServerFacade bambooFacade,
-									  ProjectConfigurationBean projectConfigurationBean) {
-		super(new BorderLayout());
+    protected String getToolbarActionGroup() {
+        return "ThePlugin.BambooToolWindowToolBar";
+    }
 
-		this.bambooFacade = bambooFacade;
+    protected String getPopupActionGroup() {
+        return "ThePlugin.Bamboo.BuildPopupMenu";
+    }
 
-		setBackground(UIUtil.getTreeTextBackground());
+    protected TableColumnProvider getTableColumnProvider() {
+        if (columnProvider == null) {
+            columnProvider = new BambooTableColumnProviderImpl();
+        }
+        return columnProvider;
+    }
 
-		ActionManager actionManager = ActionManager.getInstance();
-		ActionGroup toolbar = (ActionGroup) actionManager.getAction("ThePlugin.BambooToolWindowToolBar");
-		add(actionManager.createActionToolbar(
-				"atlassian.toolwindow.toolbar", toolbar, true).getComponent(), BorderLayout.NORTH);
+    protected ProjectToolWindowTableConfiguration getTableConfiguration() {
+        return this.projectConfiguration.getBambooConfiguration().getTableConfiguration();
+    }
 
-		editorPane = new ToolWindowBambooContent();
-		editorPane.setEditorKit(new ClasspathHTMLEditorKit());
-		JScrollPane pane = setupPane(editorPane, wrapBody("Waiting for Bamboo statuses."));
-		editorPane.setMinimumSize(ED_PANE_MINE_SIZE);
-		add(pane, BorderLayout.SOUTH);
+    public BambooTableToolWindowPanel(ProjectConfigurationBean projectConfigurationBean) {
+        super(projectConfigurationBean);
+        bambooFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
+    }
 
-		TableColumnInfo[] columns = BambooTableColumnProvider.makeColumnInfo();
-
-		listTableModel = new ListTableModel(columns);
-		listTableModel.setSortable(true);
-		table = new AtlassianTableView(listTableModel,
-				projectConfigurationBean.getBambooConfiguration().getTableConfiguration());
-		table.prepareColumns(columns, BambooTableColumnProvider.makeRendererInfo());
-
-		table.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2) {
-					BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) table.getSelectedObject();
-					if (build != null) {
-						BrowserUtil.launchBrowser(build.getBuildResultUrl());
-					}
-				}
-			}
-
-			public void mousePressed(MouseEvent e) {
-				maybeShowPopup(e);
-			}
-
-			public void mouseReleased(MouseEvent e) {
-				maybeShowPopup(e);
-			}
-
-			private void maybeShowPopup(MouseEvent e) {
-				if (e.isPopupTrigger() && table.isEnabled()) {
-                    ActionGroup actionGroup = (ActionGroup) ActionManager
-                            .getInstance().getAction("ThePlugin.Bamboo.BuildPopupMenu");
-                    ActionPopupMenu popup = ActionManager.getInstance().createActionPopupMenu("Build", actionGroup);
-
-                    JPopupMenu jPopupMenu = popup.getComponent();
-                    jPopupMenu.show(e.getComponent(), e.getX(), e.getY());
-				}
-			}
-		});
-
-		JScrollPane tablePane = new JScrollPane(table,
-				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		tablePane.setWheelScrollingEnabled(true);
-		//table.setMinimumSize(ED_PANE_MINE_SIZE);
-		add(tablePane, BorderLayout.CENTER);
-
-		progressAnimation.configure(this, tablePane, BorderLayout.CENTER);
-	}
-
-	public static BambooTableToolWindowPanel getInstance(ProjectConfigurationBean projectConfigurationBean) {
+    public static BambooTableToolWindowPanel getInstance(ProjectConfigurationBean projectConfigurationBean) {
 
 		if (instance == null) {
-			instance = new BambooTableToolWindowPanel(BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()),
-					projectConfigurationBean);
+            instance = new BambooTableToolWindowPanel(projectConfigurationBean);
 		}
 		return instance;
 	}
@@ -142,7 +85,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 		}
 	}
 
-	private void labelBuild(final BambooBuildAdapterIdea build, final String label) {
+	private void labelBuild(final BambooBuildAdapter build, final String label) {
 		FutureTask task = new FutureTask(new Runnable() {
 			public void run() {
 				setStatusMessage("Applying label on build...");
@@ -173,7 +116,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 		}
 	}
 
-	private void commentBuild(final BambooBuildAdapterIdea build, final String commentText) {
+	private void commentBuild(final BambooBuildAdapter build, final String commentText) {
 		FutureTask task = new FutureTask(new Runnable() {
 			public void run() {
 				setStatusMessage("Adding comment label on build...");
@@ -197,7 +140,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 		openCommentDialog(build);
 	}
 
-	private void executeBuild(final BambooBuildAdapterIdea build) {
+	private void executeBuild(final BambooBuildAdapter build) {
 		FutureTask task = new FutureTask(new Runnable() {
 			public void run() {
 				setStatusMessage("Executing build on plan " + build.getBuildKey());
@@ -216,21 +159,13 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 	}
 
 	public void runBuild() {
-		BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) table.getSelectedObject();
+		BambooBuildAdapter build = (BambooBuildAdapter) table.getSelectedObject();
 		executeBuild(build);
-	}
-
-	private JScrollPane setupPane(JEditorPane pane, String initialText) {
-		pane.setText(initialText);
-		JScrollPane scrollPane = new JScrollPane(pane,
-				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		scrollPane.setWheelScrollingEnabled(true);
-		return scrollPane;
 	}
 
 	private void setBuilds(Collection<BambooBuild> builds) {
 		boolean haveErrors = false;
-		List<BambooBuildAdapterIdea> buildAdapters = new ArrayList<BambooBuildAdapterIdea>();
+		List<BambooBuildAdapter> buildAdapters = new ArrayList<BambooBuildAdapter>();
 		Date lastPollingTime = null;
 		for (BambooBuild build : builds) {
 			if (!haveErrors) {
@@ -242,7 +177,7 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 			if (build.getPollingTime() != null) {
 				lastPollingTime = build.getPollingTime();
 			}
-			buildAdapters.add(new BambooBuildAdapterIdea(build));
+			buildAdapters.add(new BambooBuildAdapter(build));
 		}
 
 		// remember selection
@@ -271,22 +206,8 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 		}
 	}
 
-	private String wrapBody(String s) {
-		return "<html>" + HtmlBambooStatusListener.BODY_WITH_STYLE + s + "</body></html>";
-
-	}
-
-	private void setStatusMessage(String msg) {
-		setStatusMessage(msg, false);
-	}
-
-	private void setStatusMessage(String msg, boolean isError) {
-		editorPane.setBackground(isError ? Color.RED : Color.WHITE);
-		editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">" + msg + "</td></tr></table>"));
-	}
-
-	public List<BambooBuildAdapterIdea> getBuilds() {
-		return (List<BambooBuildAdapterIdea>) listTableModel.getItems();
+	public List<BambooBuildAdapter> getBuilds() {
+		return (List<BambooBuildAdapter>) listTableModel.getItems();
 	}
 
 	public void updateBuildStatuses(Collection<BambooBuild> buildStatuses) {
@@ -298,12 +219,12 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 	}
 
 	public boolean getExecuteBuildEnabled() {
-		BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) table.getSelectedObject();
+		BambooBuildAdapter build = (BambooBuildAdapter) table.getSelectedObject();
 		return build != null && build.getEnabled();
 	}
 
 	private boolean getBamboo2ActionsEnabled() {
-		BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) table.getSelectedObject();
+		BambooBuildAdapter build = (BambooBuildAdapter) table.getSelectedObject();
 		if (build != null) {
 			return build.isBamboo2() && build.getEnabled();
 		} else {
@@ -319,12 +240,8 @@ public class BambooTableToolWindowPanel extends JPanel implements BambooStatusLi
 		return getBamboo2ActionsEnabled();
 	}
 
-	public AtlassianTableView getTable() {
-		return table;
-	}
-
     public void viewBuild() {
-        BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) table.getSelectedObject();
+        BambooBuildAdapter build = (BambooBuildAdapter) table.getSelectedObject();
         BrowserUtil.launchBrowser(build.getBuildResultUrl());       
     }
 }
