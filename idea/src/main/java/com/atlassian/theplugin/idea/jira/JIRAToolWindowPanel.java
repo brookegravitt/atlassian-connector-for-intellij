@@ -90,6 +90,14 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
 
     private transient JIRAIssue selectedIssue = null;
 
+    protected void handlePopupClick(Object selectedObject) {
+        selectedIssue = ((JiraIssueAdapter) selectedObject).getIssue();
+    }
+
+    protected void handleDoubleClick(Object selectedObject) {
+        viewIssue();        
+    }
+
     protected String getInitialMessage() {
         return "Select a JIRA server to retrieve your issues.";
     }
