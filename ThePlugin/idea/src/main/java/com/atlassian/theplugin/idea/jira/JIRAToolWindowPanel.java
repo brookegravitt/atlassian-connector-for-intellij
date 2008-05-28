@@ -17,14 +17,20 @@
 package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListener;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraFilterEntryBean;
 import com.atlassian.theplugin.configuration.JiraFiltersBean;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.configuration.ProjectToolWindowTableConfiguration;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.ProgressAnimationProvider;
+import com.atlassian.theplugin.idea.TableColumnInfo;
+import com.atlassian.theplugin.idea.bamboo.ToolWindowBambooContent;
 import com.atlassian.theplugin.idea.jira.table.JIRATableColumnProviderImpl;
 import com.atlassian.theplugin.idea.jira.table.columns.*;
+import com.atlassian.theplugin.idea.ui.AtlassianTableView;
+import com.atlassian.theplugin.idea.ui.CollapsibleTable;
 import com.atlassian.theplugin.idea.ui.AbstractTableToolWindowPanel;
 import com.atlassian.theplugin.idea.ui.TableColumnProvider;
 import com.atlassian.theplugin.jira.JIRAServer;
@@ -35,13 +41,21 @@ import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionPopupMenu;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
+import com.intellij.openapi.ui.popup.PopupChooserBuilder;
+import com.intellij.openapi.ui.popup.JBPopupFactory;
+import com.intellij.util.ui.ListTableModel;
 import com.intellij.util.ui.UIUtil;
+import thirdparty.javaworld.ClasspathHTMLEditorKit;
 
+import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -217,12 +231,13 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
         final JIRAIssue issue = ((JiraIssueAdapter) table.getSelectedObject()).getIssue();
         FutureTask task = new FutureTask(new Runnable() {
             public void run() {
-                setStatusMessage("Getting available issue actions " + issue.getKey() + "...");
+                setStatusMessage("Getting available issue actions for issue " + issue.getKey() + "...");
                 try {
                     List<JIRAAction> actions =
                             jiraServerFacade.getAvailableActions(IdeaHelper.getCurrentJIRAServer().getServer(), issue);
-                    setStatusMessage("");
-                } catch (JIRAException e) {
+                    setStatusMessage("Retrieved actions for issue " + issue.getKey());
+					showActionsPopup(issue, actions);
+				} catch (JIRAException e) {
                     setStatusMessage("Unable to retrieve available issue actions: " + e.getMessage(), true);
                 }
             }
@@ -231,9 +246,44 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
 
     }
 
+	final class ActionsPopupListener implements Runnable {
+		private JIRAIssue issue;
+		private JList list;
 
+		public ActionsPopupListener(JIRAIssue issue, JList list) {
+			this.issue = issue;
+			this.list = list;
+		}
 
-    public void refreshIssuesPage() {
+		public void run() {
+			JIRAAction action = (JIRAAction) list.getSelectedValue();
+			BrowserUtil.launchBrowser(issue.getServerUrl()
+				+ "/secure/WorkflowUIDispatcher.jspa?id="
+				+ issue.getId()
+				+ "&"
+				+ action.getQueryStringFragment());
+		}
+	}
+
+	private void showActionsPopup(JIRAIssue issue, List<JIRAAction> actions) {
+		JList list = new JList();
+		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		DefaultListModel lm = new DefaultListModel();
+		for (JIRAAction a : actions) {
+			lm.addElement(a);
+		}
+		list.setModel(lm);
+		PopupChooserBuilder builder = JBPopupFactory.getInstance().createListPopupBuilder(list);
+	    builder.setTitle("Actions available for " + issue.getKey())
+			.setRequestFocus(true)
+			.setResizable(false)
+			.setMovable(true)
+			.setItemChoosenCallback(new ActionsPopupListener(issue, list))
+			.createPopup()
+			.showInCenterOf(this);
+	}
+
+	public void refreshIssuesPage() {
         if (IdeaHelper.getCurrentJIRAServer() != null) {
             updateIssues(IdeaHelper.getCurrentJIRAServer());
             serializeQuery();
