@@ -37,7 +37,6 @@ public class BambooToolWindowHtmlContent implements BambooStatusDisplay {
 	}
 
 	public void updateBambooStatus(BuildStatus arg0, String aHtml) {
-		// TODO Auto-generated method stub
 		this.html = aHtml;
 		linkClicked = false;
 		htmlBrowser.setText(html);
@@ -79,10 +78,8 @@ public class BambooToolWindowHtmlContent implements BambooStatusDisplay {
 									"aCustomId", "url", "url").openURL(
 									new URL(event.location));
 				} catch (PartInitException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (MalformedURLException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 
