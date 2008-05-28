@@ -85,7 +85,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
 		}
 	}
 
-	private void labelBuild(final BambooBuildAdapter build, final String label) {
+	private void labelBuild(final BambooBuildAdapterIdea build, final String label) {
 		FutureTask task = new FutureTask(new Runnable() {
 			public void run() {
 				setStatusMessage("Applying label on build...");
@@ -116,7 +116,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
 		}
 	}
 
-	private void commentBuild(final BambooBuildAdapter build, final String commentText) {
+	private void commentBuild(final BambooBuildAdapterIdea build, final String commentText) {
 		FutureTask task = new FutureTask(new Runnable() {
 			public void run() {
 				setStatusMessage("Adding comment label on build...");
@@ -140,7 +140,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
 		openCommentDialog(build);
 	}
 
-	private void executeBuild(final BambooBuildAdapter build) {
+	private void executeBuild(final BambooBuildAdapterIdea build) {
 		FutureTask task = new FutureTask(new Runnable() {
 			public void run() {
 				setStatusMessage("Executing build on plan " + build.getBuildKey());
@@ -159,13 +159,13 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
 	}
 
 	public void runBuild() {
-		BambooBuildAdapter build = (BambooBuildAdapter) table.getSelectedObject();
+		BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) table.getSelectedObject();
 		executeBuild(build);
 	}
 
 	private void setBuilds(Collection<BambooBuild> builds) {
 		boolean haveErrors = false;
-		List<BambooBuildAdapter> buildAdapters = new ArrayList<BambooBuildAdapter>();
+		List<BambooBuildAdapterIdea> buildAdapters = new ArrayList<BambooBuildAdapterIdea>();
 		Date lastPollingTime = null;
 		for (BambooBuild build : builds) {
 			if (!haveErrors) {
@@ -177,7 +177,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
 			if (build.getPollingTime() != null) {
 				lastPollingTime = build.getPollingTime();
 			}
-			buildAdapters.add(new BambooBuildAdapter(build));
+			buildAdapters.add(new BambooBuildAdapterIdea(build));
 		}
 
 		// remember selection
@@ -206,8 +206,8 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
 		}
 	}
 
-	public List<BambooBuildAdapter> getBuilds() {
-		return (List<BambooBuildAdapter>) listTableModel.getItems();
+	public List<BambooBuildAdapterIdea> getBuilds() {
+		return (List<BambooBuildAdapterIdea>) listTableModel.getItems();
 	}
 
 	public void updateBuildStatuses(Collection<BambooBuild> buildStatuses) {
@@ -219,12 +219,12 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
 	}
 
 	public boolean getExecuteBuildEnabled() {
-		BambooBuildAdapter build = (BambooBuildAdapter) table.getSelectedObject();
+		BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) table.getSelectedObject();
 		return build != null && build.getEnabled();
 	}
 
 	private boolean getBamboo2ActionsEnabled() {
-		BambooBuildAdapter build = (BambooBuildAdapter) table.getSelectedObject();
+		BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) table.getSelectedObject();
 		if (build != null) {
 			return build.isBamboo2() && build.getEnabled();
 		} else {
@@ -241,7 +241,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
 	}
 
     public void viewBuild() {
-        BambooBuildAdapter build = (BambooBuildAdapter) table.getSelectedObject();
+        BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) table.getSelectedObject();
         BrowserUtil.launchBrowser(build.getBuildResultUrl());       
     }
 }
