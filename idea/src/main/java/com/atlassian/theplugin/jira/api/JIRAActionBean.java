@@ -29,4 +29,8 @@ public class JIRAActionBean implements JIRAAction {
         map.put("id", Long.toString(id));
         return map;
     }
+
+	public String toString() {
+		return name;
+	}
 }
