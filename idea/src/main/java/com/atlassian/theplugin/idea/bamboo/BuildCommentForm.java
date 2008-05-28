@@ -32,7 +32,7 @@ public class BuildCommentForm extends DialogWrapper {
 	private JTextArea commentArea;
 	private JPanel mainPanel;
 
-	public BuildCommentForm(BambooBuildAdapter build) {
+	public BuildCommentForm(BambooBuildAdapterIdea build) {
 		super(false);
 		init();
 		pack();
