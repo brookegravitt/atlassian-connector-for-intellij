@@ -49,41 +49,7 @@ public class CollapsiblePanel extends JPanel {
   public static final String EXPAND = "expand";
   @NonNls public static final String COLLAPSE = "collapse";
 
-//  private class CollapsibleMouseListener implements MouseListener {
-//
-//	  JPopupMenu popupMenu;
-//
-//	  CollapsibleMouseListener(JPopupMenu popupMenu){
-//		this.popupMenu = popupMenu;
-//	  }
-//
-//	  public void mouseClicked(MouseEvent event) {
-//		  maybeShowPopup(event);
-//	  }
-//
-//	  public void mousePressed(MouseEvent event) {
-//		  maybeShowPopup(event);
-//	  }
-//
-//	  public void mouseReleased(MouseEvent event) {
-//		  //To change body of implemented methods use File | Settings | File Templates.
-//	  }
-//
-//	  public void mouseEntered(MouseEvent event) {
-//		  //To change body of implemented methods use File | Settings | File Templates.
-//	  }
-//
-//	  public void mouseExited(MouseEvent event) {
-//		  //To change body of implemented methods use File | Settings | File Templates.
-//	  }
-//
-//	  private void maybeShowPopup(MouseEvent event) {
-//                if (event.isPopupTrigger()) {
-//					this.popupMenu.show(event.getComponent(), event.getX(), event.getY());
-//				}
-//
-//	   }
-//  }
+
   public CollapsiblePanel(boolean collapseButtonAtLeft,
                           boolean isCollapsed, Icon collapseIcon, Icon expandIcon,
                           String title,  String toolbarPlace, String toolbarName,
