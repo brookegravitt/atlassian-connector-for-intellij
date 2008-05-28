@@ -21,6 +21,7 @@ import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.actionSystem.ActionPopupMenu;
 import org.jetbrains.annotations.NonNls;
 
 import javax.swing.*;
@@ -40,6 +41,7 @@ public class CollapsiblePanel extends JPanel {
   private JLabel myTitleLabel;
   private JPanel toolBarPanel;
   private JPanel contentPanel;
+  private JPopupMenu popupMenu;
 
   public static final KeyStroke LEFT_KEY_STROKE = KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0);
   public static final KeyStroke RIGHT_KEY_STROKE = KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0);
@@ -47,41 +49,86 @@ public class CollapsiblePanel extends JPanel {
   public static final String EXPAND = "expand";
   @NonNls public static final String COLLAPSE = "collapse";
 
+//  private class CollapsibleMouseListener implements MouseListener {
+//
+//	  JPopupMenu popupMenu;
+//
+//	  CollapsibleMouseListener(JPopupMenu popupMenu){
+//		this.popupMenu = popupMenu;
+//	  }
+//
+//	  public void mouseClicked(MouseEvent event) {
+//		  maybeShowPopup(event);
+//	  }
+//
+//	  public void mousePressed(MouseEvent event) {
+//		  maybeShowPopup(event);
+//	  }
+//
+//	  public void mouseReleased(MouseEvent event) {
+//		  //To change body of implemented methods use File | Settings | File Templates.
+//	  }
+//
+//	  public void mouseEntered(MouseEvent event) {
+//		  //To change body of implemented methods use File | Settings | File Templates.
+//	  }
+//
+//	  public void mouseExited(MouseEvent event) {
+//		  //To change body of implemented methods use File | Settings | File Templates.
+//	  }
+//
+//	  private void maybeShowPopup(MouseEvent event) {
+//                if (event.isPopupTrigger()) {
+//					this.popupMenu.show(event.getComponent(), event.getX(), event.getY());
+//				}
+//
+//	   }
+//  }
   public CollapsiblePanel(boolean collapseButtonAtLeft,
                           boolean isCollapsed, Icon collapseIcon, Icon expandIcon,
-                          String title,  String actionName, String toolbarName){
+                          String title,  String toolbarPlace, String toolbarName,
+						  String popupMenuPlace, String popupMenuName){
 
-	  setupComponents(expandIcon, collapseIcon, title, true, true, actionName, toolbarName);
+	  setupComponents(expandIcon, collapseIcon, title, collapseButtonAtLeft, isCollapsed);
+	  createToolbar(toolbarPlace, toolbarName);
+	  createPopupMenu(popupMenuPlace, popupMenuName);
   }
 	
   public CollapsiblePanel(JComponent content, boolean collapseButtonAtLeft,
                           boolean isCollapsed, Icon collapseIcon, Icon expandIcon,
-                          String title,  String actionName, String toolbarName) {
+                          String title,  String actionName, String toolbarName,
+						  String popupMenuPlace, String popupMenuName) {
     super(new GridBagLayout());	  
-	setupComponents(expandIcon, collapseIcon, title, collapseButtonAtLeft, isCollapsed, actionName, toolbarName);
+	setupComponents(expandIcon, collapseIcon, title, collapseButtonAtLeft, isCollapsed);
+	createToolbar(actionName, toolbarName);
+	createPopupMenu(popupMenuPlace, popupMenuName);
 	setContent(content);
   }
 
 
   public CollapsiblePanel(boolean collapseButtonAtLeft,
-                          boolean isCollapsed, String title, String actionName, String toolbarName) {
+                          boolean isCollapsed, String title,
+						  String actionName, String toolbarName,
+						  String popupMenuPlace, String popupMenuName) {
     super(new GridBagLayout());
 	Icon collapseIcon = IconLoader.findIcon("/icons/navigate_down_10.gif");
 	Icon expandIcon = IconLoader.findIcon("/icons/navigate_right_10.gif");
 	  
-	setupComponents(expandIcon, collapseIcon, title, collapseButtonAtLeft, isCollapsed, actionName, toolbarName);
+	setupComponents(expandIcon, collapseIcon, title, collapseButtonAtLeft, isCollapsed);
+	createToolbar(actionName, toolbarName);
+	createPopupMenu(popupMenuPlace, popupMenuName);
   }
   private Dimension getButtonDimension() {
     if (myExpandIcon == null) {
-      return new Dimension(7, 7);
+      return new Dimension(9, 9);
     } else {
-      return new Dimension((myExpandIcon.getIconWidth() > myCollapseIcon.getIconWidth()?myExpandIcon.getIconWidth():myCollapseIcon.getIconWidth()),
-			  				myExpandIcon.getIconHeight() > myCollapseIcon.getIconHeight()?myExpandIcon.getIconHeight():myCollapseIcon.getIconHeight());
+      return new Dimension((myExpandIcon.getIconWidth() > myCollapseIcon.getIconWidth() ? myExpandIcon.getIconWidth() : myCollapseIcon.getIconWidth()),
+			  				myExpandIcon.getIconHeight() > myCollapseIcon.getIconHeight() ? myExpandIcon.getIconHeight() : myCollapseIcon.getIconHeight());
     }
   }
 
   public CollapsiblePanel(JComponent content, boolean collapseButtonAtLeft) {
-    this(content, collapseButtonAtLeft, false, null, null, null, null, null);
+    this(content, collapseButtonAtLeft, false, null, null, null, null, null, null, null);
   }
 
   protected void setCollapsed(boolean collapse) {
@@ -92,6 +139,7 @@ public class CollapsiblePanel extends JPanel {
 			
 		  if (contentPanel != null) {
 			  contentPanel.setVisible(false);
+			  myContent.setVisible(false);
 		  }
 	  	}
 	  } else {
@@ -100,6 +148,7 @@ public class CollapsiblePanel extends JPanel {
             new GridBagConstraints(0, 1, 1, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                                    new Insets(3, 0, 0, 0), 0, 0));
 		  contentPanel.setVisible(true);
+		  myContent.setVisible(true);
 	  }
 
   }
@@ -118,11 +167,12 @@ public class CollapsiblePanel extends JPanel {
         setFocused(true);
         setSelected(true);
 
-	  } else if (contentPanel != null) {
-        contentPanel.requestFocusInWindow();
+	  } else if (myContent != null) {
+        myContent.requestFocusInWindow();
       }
 
-      notifyListners();
+
+	  notifyListners();
 
       revalidate();
       repaint();
@@ -155,33 +205,58 @@ public class CollapsiblePanel extends JPanel {
   }
 
   public void setContent(JComponent content){
+	  setBackground(content.getBackground());
 	  this.myContent = content;
+	  contentPanel.setBackground(content.getBackground());
 	  contentPanel.add(content, BorderLayout.CENTER);
 	  myToggleCollapseButton.setBackground(content.getBackground());
 	  setBackground(content.getBackground());
 	  myTitleLabel.setBackground(content.getBackground());
   }
 
-  private void setupComponents(Icon expandIcon, Icon collapseIcon,
-							   String title, boolean collapseButtonAtLeft,
-  							   boolean isCollapsed, String actionName, String toolbarName){
+  private void createPopupMenu(String popupMenuPlace, String popupMenuName){
 
-	contentPanel = new JPanel(new BorderLayout());
+	  if (popupMenuPlace != null && popupMenuName != null && popupMenuName.length() > 0 && myContent != null) {
+		  ActionGroup actionGroup = (ActionGroup) ActionManager.getInstance().getAction(popupMenuName);//"ThePlugin.JIRA.IssuePopupMenu"
 
-	if (actionName != null && toolbarName != null && actionName.length() > 0 && toolbarName.length() > 0) {
+		  ActionPopupMenu popup = ActionManager.getInstance().createActionPopupMenu(popupMenuPlace, actionGroup);//"Issue"
+		  this.popupMenu = popup.getComponent();
+		  //this.myContent.removeMouseListener();
+		  this.myContent.addMouseListener(new MouseAdapter() {
+
+			  public void mouseClicked(MouseEvent event) {
+				  CollapsiblePanel.this.popupMenu.show(event.getComponent(), event.getX(), event.getY());
+			  }
+		  });
+	  }
+
+  }
+
+  private void createToolbar(String toolbarPlace, String toolbarName) {
+
+	if (toolbarPlace != null && toolbarName != null && toolbarPlace.length() > 0 && toolbarName.length() > 0) {
 		toolBarPanel = new JPanel(new BorderLayout());
 
 		ActionManager aManager = ActionManager.getInstance();
-		ActionGroup serverToolBar = (ActionGroup) aManager.getAction(actionName);//"ThePlugin.JIRA.ServerToolBar");
+		ActionGroup serverToolBar = (ActionGroup) aManager.getAction(toolbarPlace);
 		ActionToolbar actionToolbar = aManager.createActionToolbar(
-					toolbarName, serverToolBar, true);//"atlassian.toolwindow.serverToolBar"
+					toolbarName, serverToolBar, true);
 
 
 		toolBarPanel.add(actionToolbar.getComponent(), BorderLayout.NORTH);
 
-		contentPanel.add(toolBarPanel, BorderLayout.NORTH);
+		if (contentPanel != null) {
+			contentPanel.add(toolBarPanel, BorderLayout.NORTH);
+		}
 	}
-	  
+
+ }
+ private void setupComponents(Icon expandIcon, Icon collapseIcon,
+							   String title, boolean collapseButtonAtLeft,
+  							   boolean isCollapsed){
+
+	contentPanel = new JPanel(new BorderLayout());
+	 
 	this.myToggleCollapseButton = new JButton();
 	this.myExpandIcon = expandIcon;
 	this.myCollapseIcon = collapseIcon;
