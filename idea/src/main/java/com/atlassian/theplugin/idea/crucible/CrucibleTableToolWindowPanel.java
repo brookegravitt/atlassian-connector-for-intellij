@@ -17,115 +17,57 @@
 package com.atlassian.theplugin.idea.crucible;
 
 
-import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListener;
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.CrucibleStatusListener;
 import com.atlassian.theplugin.commons.crucible.ReviewDataInfo;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
-import com.atlassian.theplugin.idea.ProgressAnimationProvider;
-import com.atlassian.theplugin.idea.TableColumnInfo;
-import com.atlassian.theplugin.idea.ui.AtlassianTableView;
+import com.atlassian.theplugin.configuration.ProjectToolWindowTableConfiguration;
+import com.atlassian.theplugin.idea.ui.AbstractTableToolWindowPanel;
+import com.atlassian.theplugin.idea.ui.TableColumnProvider;
+import com.atlassian.theplugin.idea.bamboo.BambooTableColumnProviderImpl;
 import com.intellij.ide.BrowserUtil;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionPopupMenu;
-import com.intellij.util.ui.ListTableModel;
 import com.intellij.util.ui.UIUtil;
-import thirdparty.javaworld.ClasspathHTMLEditorKit;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStatusListener {
-    private JEditorPane editorPane;
-    private ListTableModel listTableModel;
-    private AtlassianTableView table;
-    private final transient CrucibleServerFacade crucibleFacade;
-    private static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
-    private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
-    private static final String WAITING_INFO_TEXT = "Waiting for Crucible review info.";
-
+public class CrucibleTableToolWindowPanel extends AbstractTableToolWindowPanel implements CrucibleStatusListener {
+    //private final transient CrucibleServerFacade crucibleFacade;
     private static CrucibleTableToolWindowPanel instance;
+    private TableColumnProvider columnProvider;
 
-    public ProgressAnimationProvider getProgressAnimation() {
-        return progressAnimation;
+    protected String getInitialMessage() {
+        return "Waiting for Crucible review info.";
+    }
+
+    protected String getToolbarActionGroup() {
+        return "ThePlugin.CrucibleToolWindowToolBar";
+    }
+
+    protected String getPopupActionGroup() {
+        return "ThePlugin.Crucible.ReviewPopupMenu";
+    }
+
+    protected TableColumnProvider getTableColumnProvider() {
+        if (columnProvider == null) {
+            columnProvider = new CrucibleTableColumnProviderImpl();
+        }        
+        return columnProvider;
+    }
+
+    protected ProjectToolWindowTableConfiguration getTableConfiguration() {
+        return projectConfiguration.getCrucibleConfiguration().getTableConfiguration();
     }
 
     public static CrucibleTableToolWindowPanel getInstance(ProjectConfigurationBean projectConfigurationBean) {
         if (instance == null) {
-            instance = new CrucibleTableToolWindowPanel(CrucibleServerFacadeImpl.getInstance(),
-                    projectConfigurationBean);
+            instance = new CrucibleTableToolWindowPanel(projectConfigurationBean);
         }
         return instance;
     }
 
-    public CrucibleTableToolWindowPanel(CrucibleServerFacade crucibleFacade,
-                                        ProjectConfigurationBean projectConfigurationBean) {
-        super(new BorderLayout());
-
-        this.crucibleFacade = crucibleFacade;
-        setBackground(UIUtil.getTreeTextBackground());
-
-        ActionManager actionManager = ActionManager.getInstance();
-        ActionGroup toolbar = (ActionGroup) actionManager.getAction("ThePlugin.CrucibleToolWindowToolBar");
-        add(actionManager.createActionToolbar(
-                "atlassian.toolwindow.toolbar", toolbar, true).getComponent(), BorderLayout.NORTH);
-
-        editorPane = new ToolWindowCrucibleContent();
-        editorPane.setEditorKit(new ClasspathHTMLEditorKit());
-        JScrollPane pane = setupPane(editorPane, wrapBody(WAITING_INFO_TEXT));
-        editorPane.setMinimumSize(ED_PANE_MINE_SIZE);
-        add(pane, BorderLayout.SOUTH);
-
-        TableColumnInfo[] columns = CrucibleTableColumnProvider.makeColumnInfo();
-
-        listTableModel = new ListTableModel(columns);
-        listTableModel.setSortable(true);
-        table = new AtlassianTableView(listTableModel,
-                projectConfigurationBean.getCrucibleConfiguration().getTableConfiguration());
-        table.prepareColumns(columns, CrucibleTableColumnProvider.makeRendererInfo());
-
-        table.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                ReviewDataInfoAdapter reviewDataInfo = (ReviewDataInfoAdapter) table.getSelectedObject();
-                if (reviewDataInfo != null) {
-                    if (e.getClickCount() == 2) {
-                        BrowserUtil.launchBrowser(reviewDataInfo.getReviewUrl());
-                    }
-                }
-            }
-
-            public void mousePressed(MouseEvent e) {
-                maybeShowPopup(e);
-            }
-
-            public void mouseReleased(MouseEvent e) {
-                maybeShowPopup(e);
-            }
-
-            private void maybeShowPopup(MouseEvent e) {
-                if (e.isPopupTrigger() && table.isEnabled()) {
-                    ActionGroup actionGroup = (ActionGroup) ActionManager
-                            .getInstance().getAction("ThePlugin.Crucible.ReviewPopupMenu");
-                    ActionPopupMenu popup = ActionManager.getInstance().createActionPopupMenu("Review", actionGroup);
-                    JPopupMenu jPopupMenu = popup.getComponent();
-                    jPopupMenu.show(e.getComponent(), e.getX(), e.getY());
-                }
-            }
-        });
-
-        JScrollPane tablePane = new JScrollPane(table,
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        tablePane.setWheelScrollingEnabled(true);
-        add(tablePane, BorderLayout.CENTER);
-
-        progressAnimation.configure(this, tablePane, BorderLayout.CENTER);
+    public CrucibleTableToolWindowPanel(ProjectConfigurationBean projectConfigurationBean) {
+        super(projectConfigurationBean);
+        //crucibleFacade = CrucibleServerFacadeImpl.getInstance();
     }
 
     public void viewReview() {
@@ -360,19 +302,12 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         }
     */
 
-    private JScrollPane setupPane(JEditorPane pane, String initialText) {
-        pane.setText(initialText);
-        JScrollPane scrollPane = new JScrollPane(pane,
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setWheelScrollingEnabled(true);
-        return scrollPane;
-    }
-
     public void updateReviews(Collection<ReviewDataInfo> reviews) {
         List<ReviewDataInfoAdapter> reviewDataInfoAdapters = new ArrayList<ReviewDataInfoAdapter>();
         for (ReviewDataInfo review : reviews) {
             reviewDataInfoAdapters.add(new ReviewDataInfoAdapter(review));
         }
+
         listTableModel.setItems(reviewDataInfoAdapters);
         listTableModel.fireTableDataChanged();
         table.revalidate();
@@ -383,15 +318,6 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         sb.append(reviews.size());
         sb.append(" open code reviews</b> for you.");
         editorPane.setText(wrapBody(sb.toString()));
-    }
-
-    private String wrapBody(String s) {
-        return "<html>" + HtmlBambooStatusListener.BODY_WITH_STYLE + s + "</body></html>";
-
-    }
-
-    public AtlassianTableView getTable() {
-        return table;
     }
 
     public void resetState() {

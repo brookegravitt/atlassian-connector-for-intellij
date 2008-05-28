@@ -1,18 +1,11 @@
 package com.atlassian.theplugin.idea.ui;
 
-import com.atlassian.theplugin.idea.jira.table.TableColumnProvider;
-import com.atlassian.theplugin.idea.jira.JiraIssueAdapter;
+import com.atlassian.theplugin.idea.ui.TableColumnProvider;
 import com.atlassian.theplugin.idea.TableColumnInfo;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.configuration.ProjectToolWindowTableConfiguration;
 import com.intellij.util.ui.ListTableModel;
-import com.intellij.ide.BrowserUtil;
 
 import javax.swing.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -22,7 +15,7 @@ import java.awt.*;
  * To change this template use File | Settings | File Templates.
  */
 public class CollapsibleTable extends CollapsiblePanel {
-	private ListTableModel listTableModel;
+    private ListTableModel listTableModel;
 	private AtlassianTableView table;
 	private JScrollPane scrollTable;
 
@@ -47,5 +40,11 @@ public class CollapsibleTable extends CollapsiblePanel {
 	public AtlassianTableView getTable(){
 		return table;
 	}
+
+    public ListTableModel getListTableModel() {
+        this.setName("Setting data");
+        return listTableModel;
+    }
+
 }
 
