@@ -81,10 +81,7 @@ public abstract class AbstractTableToolWindowPanel extends JPanel {
 		table.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
-					BambooBuildAdapter build = (BambooBuildAdapter) table.getSelectedObject();
-					if (build != null) {
-						BrowserUtil.launchBrowser(build.getBuildResultUrl());
-					}
+                    handleDoubleClick(table.getSelectedObject());
 				}
 			}
 
@@ -104,7 +101,8 @@ public abstract class AbstractTableToolWindowPanel extends JPanel {
 
                     JPopupMenu jPopupMenu = popup.getComponent();
                     jPopupMenu.show(e.getComponent(), e.getX(), e.getY());
-				}
+                    handlePopupClick(table.getSelectedObject());
+                }
 			}
 		});
 
@@ -116,6 +114,8 @@ public abstract class AbstractTableToolWindowPanel extends JPanel {
 		progressAnimation.configure(this, tablePane, BorderLayout.CENTER);
 	}
 
+    protected abstract void handlePopupClick(Object selectedObject);
+    protected abstract void handleDoubleClick(Object selectedObject);
     protected abstract String getInitialMessage();
     protected abstract String getToolbarActionGroup();
     protected abstract String getPopupActionGroup();

@@ -70,6 +70,12 @@ public class CrucibleTableToolWindowPanel extends AbstractTableToolWindowPanel i
         //crucibleFacade = CrucibleServerFacadeImpl.getInstance();
     }
 
+    protected void handlePopupClick(Object selectedObject) {
+    }
+
+    protected void handleDoubleClick(Object selectedObject) {
+    }
+
     public void viewReview() {
         ReviewDataInfoAdapter reviewDataInfo = (ReviewDataInfoAdapter) table.getSelectedObject();
         if (reviewDataInfo != null) {
