@@ -17,10 +17,12 @@ import org.eclipse.swt.widgets.TableColumn;
 
 import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.commons.bamboo.BambooStatusListener;
+import com.atlassian.theplugin.commons.bamboo.BuildStatus;
+import com.atlassian.theplugin.eclipse.util.PluginUtil;
 
 public class BambooToolWindowContent implements BambooStatusListener {
 
-	private Collection<BambooBuildAdapter> buildStatuses = new ArrayList<BambooBuildAdapter>();
+	private Collection<BambooBuildAdapterEclipse> buildStatuses = new ArrayList<BambooBuildAdapterEclipse>();
 	private Table table;
 	private TableViewer tableViewer;
 
@@ -40,7 +42,7 @@ public class BambooToolWindowContent implements BambooStatusListener {
 		for (Column column : Column.values()) {
 			tableColumn = new TableColumn(table, SWT.LEFT);
 			tableColumn.setText(column.columnName());
-			tableColumn.setWidth(100);
+			tableColumn.setWidth(column.columnWidth());
 		}
 		
 		tableViewer.setInput(buildStatuses);
@@ -55,8 +57,10 @@ public class BambooToolWindowContent implements BambooStatusListener {
 	
 	public void updateBuildStatuses(Collection<BambooBuild> buildStatuses) {
 		
+		this.buildStatuses.clear();
+		
 		for (BambooBuild build : buildStatuses) {
-			this.buildStatuses.add(new BambooBuildAdapter(build));
+			this.buildStatuses.add(new BambooBuildAdapterEclipse(build));
 		}
 		 
 		tableViewer.setInput(buildStatuses);
@@ -83,24 +87,42 @@ public class BambooToolWindowContent implements BambooStatusListener {
 	private class BambooLabelProvider extends LabelProvider implements ITableLabelProvider {
 
 		public Image getColumnImage(Object element, int columnIndex) {
+			
+			BambooBuildAdapterEclipse build = (BambooBuildAdapterEclipse) element;
+			
+			Column column = Column.valueOfAlias(table.getColumn(columnIndex).getText());
+			
+			if (column == Column.BUILD_STATUS) {
+				switch (build.getStatus()) {
+					case BUILD_SUCCEED:
+						return PluginUtil.getImageRegistry().get(BuildStatus.BUILD_SUCCEED.toString());
+					case BUILD_FAILED:
+						return PluginUtil.getImageRegistry().get(BuildStatus.BUILD_FAILED.toString());
+					case UNKNOWN:
+						return PluginUtil.getImageRegistry().get(BuildStatus.UNKNOWN.toString());
+					default:
+						return null;
+				}
+			}
+			
 			return null;
 		}
 
 		public String getColumnText(Object element, int columnIndex) {
-			BambooBuildAdapter build = (BambooBuildAdapter) element;
+			BambooBuildAdapterEclipse build = (BambooBuildAdapterEclipse) element;
 			
 			Column column = Column.valueOfAlias(table.getColumn(columnIndex).getText());
 			
 			switch (column) {
 				
 				case BUILD_DATE:
-					return build.getBuildTime();
+					return build.getBuildTimeFormated();
 				case BUILD_NUMBER:
 					return build.getBuildNumber();
 				case BUILD_KEY:
 					return build.getBuildKey();
 				case BUILD_STATUS:
-					return build.getStatus();
+					return ""; //build.getStatus().toString();
 				case PROJECT_KEY:
 					return build.getProjectKey();
 				case BUILD_REASON:
@@ -110,7 +132,7 @@ public class BambooToolWindowContent implements BambooStatusListener {
 				case PASSED_TESTS:
 					return build.getTestsPassedSummary();
 				case SERVER:
-					return build.getServerConfigName();
+					return build.getServerName();
 				default:
 					return "";
 			}
@@ -119,21 +141,26 @@ public class BambooToolWindowContent implements BambooStatusListener {
 
 	}
 	
+	/**
+	 * That class provides column names and width for bamboo tab table
+	 */
 	private enum Column {
-		BUILD_STATUS ("Build Status"),
-		BUILD_KEY ("Build Plan"),
-		BUILD_NUMBER ("Build Number"),
-		BUILD_DATE ("Build Date"),
-		PROJECT_KEY ("Project"),
-		PASSED_TESTS ("Passed Tests"),
-		BUILD_REASON ("Reason"),
-		SERVER ("Server"),
-		MESSAGE ("Message");
+		BUILD_STATUS ("", 30),
+		BUILD_KEY ("Build Plan", 80),
+		BUILD_NUMBER ("Build Number", 100),
+		PROJECT_KEY ("Project", 100),
+		BUILD_DATE ("Build Date", 100),
+		PASSED_TESTS ("Passed Tests", 100),
+		BUILD_REASON ("Reason", 100),
+		SERVER ("Server", 100),
+		MESSAGE ("Message", 200);
 		
 		private String columnName;
+		private int columnWidth;
 
-		Column(String columnName) {
+		Column(String columnName, int columnWidth) {
 			this.columnName = columnName;
+			this.columnWidth = columnWidth;
 		}
 		
 		public static Column valueOfAlias(String text) {
@@ -148,7 +175,10 @@ public class BambooToolWindowContent implements BambooStatusListener {
 		public String columnName() {
 			return columnName;
 		}
-		
+
+		public int columnWidth() {
+			return columnWidth;
+		}
 	}
 
 }
