@@ -9,6 +9,7 @@ import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAActionField;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.idea.jira.JiraIssueAdapter;
+import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ui.AbstractTableToolWindowPanel;
 
@@ -19,9 +20,9 @@ public class RunJIRAActionAction extends AnAction {
 	private JiraIssueAdapter adapter;
 	private JIRAAction action;
 	private JIRAServerFacade facade;
-	private AbstractTableToolWindowPanel window;
+	private JIRAToolWindowPanel window;
 
-	public RunJIRAActionAction(AbstractTableToolWindowPanel toolWindow,
+	public RunJIRAActionAction(JIRAToolWindowPanel toolWindow,
 							   JIRAServerFacade facade, JiraIssueAdapter issueAdapter, JIRAAction jiraAction) {
 		super(jiraAction.getName());
 		adapter = issueAdapter;
@@ -54,7 +55,9 @@ public class RunJIRAActionAction extends AnAction {
 							+ "\" on issue "
 							+ adapter.getKey()
 							+ "...");
-						// todo transition
+						facade.progressWorkflowAction(
+								IdeaHelper.getCurrentJIRAServer().getServer(), adapter.getIssue(), action);
+						window.refreshIssuesPage();
 					} else {
 						window.setStatusMessage(
 							"Action \""
