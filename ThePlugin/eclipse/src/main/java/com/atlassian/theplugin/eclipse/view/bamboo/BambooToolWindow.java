@@ -35,7 +35,7 @@ public class BambooToolWindow extends ViewPart {
 	public void createPartControl(Composite parent) {
 		
 		// create bamboo status listeners which is also a tab component
-		BambooStatusListener bambooListener = new BambooToolWindowContent(parent);
+		BambooStatusListener bambooListener = new BambooToolWindowContent(parent, this);
 
 		// register listener
 		Activator.getDefault().getBambooChecker().registerListener(bambooListener);
@@ -54,7 +54,6 @@ public class BambooToolWindow extends ViewPart {
 		
 		getViewSite().getActionBars().updateActionBars();
 		
-		
 	}
 
 	/* (non-Javadoc)
@@ -63,6 +62,10 @@ public class BambooToolWindow extends ViewPart {
 	@Override
 	public void setFocus() {
 
+	}
+	
+	public void setHeader(String text) {
+		setContentDescription(text);
 	}
 
 }
