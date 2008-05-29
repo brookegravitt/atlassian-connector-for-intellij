@@ -16,6 +16,7 @@ public final class PluginUtil {
 	public static final String BAMBOO_RUN = "Run_bamboo_build";
 	public static final String BAMBOO_LABEL = "Label_bamboo_build";
 	public static final String BAMBOO_COMMENT = "Comment_bamboo_build";
+	public static final String REFRESH = "Refresh_bamboo_builds";
 	private static ImageRegistry imageRegistry;
 
 	private PluginUtil() {
@@ -37,9 +38,10 @@ public final class PluginUtil {
 			imageRegistry.put(BuildStatus.BUILD_FAILED.toString(), ImageDescriptor.createFromFile(PluginUtil.class, "/icons/bamboo_plan_failed.gif"));
 			imageRegistry.put(BuildStatus.UNKNOWN.toString(), ImageDescriptor.createFromFile(PluginUtil.class, "icons/bamboo_plan_unknown.gif"));
 
-			imageRegistry.put(BAMBOO_RUN, ImageDescriptor.createFromFile(PluginUtil.class, "/icons/bamboo_run.png"));
+			imageRegistry.put(BAMBOO_RUN, ImageDescriptor.createFromFile(PluginUtil.class, "/icons/run.gif"));
 			imageRegistry.put(BAMBOO_LABEL, ImageDescriptor.createFromFile(PluginUtil.class, "/icons/bamboo_label.gif"));
 			imageRegistry.put(BAMBOO_COMMENT, ImageDescriptor.createFromFile(PluginUtil.class, "/icons/bamboo_comment.png"));
+			imageRegistry.put(REFRESH, ImageDescriptor.createFromFile(PluginUtil.class, "/icons/refresh.gif"));
 			
 			
 			
