@@ -1,12 +1,17 @@
 package com.atlassian.theplugin.eclipse.view.bamboo;
 
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -17,11 +22,14 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 import org.eclipse.ui.part.ViewPart;
 
 import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.commons.bamboo.BambooStatusListener;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
+import com.atlassian.theplugin.eclipse.preferences.Activator;
 import com.atlassian.theplugin.eclipse.util.PluginUtil;
 
 public class BambooToolWindowContent implements BambooStatusListener {
@@ -49,12 +57,30 @@ public class BambooToolWindowContent implements BambooStatusListener {
 						} else {
 							viewPart.enableBambooBuildActions();
 						}
-						
-						//System.out.println(event.toString());
-						
 					}
 				}
 			);
+		
+		tableViewer.addDoubleClickListener(new IDoubleClickListener() {
+
+			public void doubleClick(DoubleClickEvent event) {
+				
+				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+				BambooBuildAdapterEclipse build = (BambooBuildAdapterEclipse) selection.getFirstElement();
+				
+				try {
+					Activator.getDefault().getWorkbench().getBrowserSupport().createBrowser(
+									IWorkbenchBrowserSupport.AS_EXTERNAL,
+									"browserId", "name", "tooltip").openURL(
+									new URL(build.getBuildResultUrl()));
+				} catch (PartInitException e) {
+					e.printStackTrace();
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+				}
+			}
+			
+		});
 		
 		table = tableViewer.getTable();
 		
