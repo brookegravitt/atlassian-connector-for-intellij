@@ -230,7 +230,7 @@
         <action id="ThePlugin.JIRA.ViewIssue" class="com.atlassian.theplugin.idea.action.jira.ViewIssueAction" text="View" />
         <action id="ThePlugin.JIRA.EditIssue" class="com.atlassian.theplugin.idea.action.jira.EditIssueAction" text="Edit" />
         <action id="ThePlugin.JIRA.WorkflowActions" class="com.atlassian.theplugin.idea.action.jira.IssueWorkflowAction" text="Workflow Actions" />
-        <action id="ThePlugin.JIRA.AddComment" class="com.atlassian.theplugin.idea.action.jira.AddCommentAction" text="Add comment" />
+		<action id="ThePlugin.JIRA.AddComment" class="com.atlassian.theplugin.idea.action.jira.AddCommentAction" text="Add comment" />
         <action id="ThePlugin.JIRA.LogWork" class="com.atlassian.theplugin.idea.action.jira.LogWorkAction" text="Log work" />
         <action id="ThePlugin.JIRA.AssignIssueToMyself" class="com.atlassian.theplugin.idea.action.jira.AssignIssueToMyselfAction" text="Assign Issue to Myself" />
         <action id="ThePlugin.JIRA.AssignIssueToUser" class="com.atlassian.theplugin.idea.action.jira.AssignIssueToUserAction" text="Assign Issue to User" />
@@ -240,17 +240,19 @@
         <group id="ThePlugin.JIRA.IssuePopupMenu" popup="true">
             <reference id="ThePlugin.JIRA.ViewIssue" />
             <reference id="ThePlugin.JIRA.EditIssue" />
-            <reference id="ThePlugin.JIRA.WorkflowActions"/>
-            <separator />
+			<separator />
             <reference id="ThePlugin.JIRA.AddComment" />
             <reference id="ThePlugin.JIRA.LogWork" />
             <reference id="ThePlugin.JIRA.CreateChangeList" />
             <separator />
             <reference id="ThePlugin.JIRA.AssignIssueToMyself" />
             <reference id="ThePlugin.JIRA.AssignIssueToUser" />
+			<separator />
+			<!--uncomment the line below to get the popup-style issue actions-->
+			<!--<reference id="ThePlugin.JIRA.WorkflowActions"/>-->
         </group>
 
-        <group id="ThePlugin.JIRA.FilterToolBar" popup="false">
+		<group id="ThePlugin.JIRA.FilterToolBar" popup="false">
 			<reference id="ThePlugin.JIRA.FilterType" />
 			<reference id="ThePlugin.JIRA.SavedFilterCombo"/>
 			<reference id="ThePlugin.JIRA.ShowFilter"/>
