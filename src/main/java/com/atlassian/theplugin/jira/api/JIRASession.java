@@ -53,7 +53,9 @@ public interface JIRASession {
 
     List<JIRAAction> getAvailableActions(JIRAIssue issue) throws RemoteApiException;
 
-    void setAssignee(JIRAIssue issue, String assignee) throws RemoteApiException;
+	List<JIRAActionField> getFieldsForAction(JIRAIssue issue, JIRAAction action) throws RemoteApiException;
+
+	void setAssignee(JIRAIssue issue, String assignee) throws RemoteApiException;
 
 	boolean isLoggedIn();
 }
