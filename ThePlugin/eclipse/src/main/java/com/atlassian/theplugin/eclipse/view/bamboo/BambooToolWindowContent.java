@@ -43,13 +43,16 @@ public class BambooToolWindowContent implements BambooStatusListener {
 		tableViewer.setLabelProvider(new BambooLabelProvider());
 		
 		tableViewer.addPostSelectionChangedListener(new ISelectionChangedListener() {
-
-			public void selectionChanged(SelectionChangedEvent event) {
-				viewPart.enableBambooBuildActions();
-				System.out.println(event.toString());
-				
-			}
-			
+					public void selectionChanged(SelectionChangedEvent event) {
+						if (event.getSelection().isEmpty()) {
+							viewPart.disableBambooBuildActions();
+						} else {
+							viewPart.enableBambooBuildActions();
+						}
+						
+						//System.out.println(event.toString());
+						
+					}
 				}
 			);
 		
