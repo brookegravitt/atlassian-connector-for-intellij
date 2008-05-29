@@ -224,41 +224,48 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
     }
 
     public void showIssueActions() {
-        final JIRAIssue issue = ((JiraIssueAdapter) table.getSelectedObject()).getIssue();
-        FutureTask task = new FutureTask(new Runnable() {
-            public void run() {
-                setStatusMessage("Getting available issue actions for issue " + issue.getKey() + "...");
-                try {
-                    List<JIRAAction> actions =
-                            jiraServerFacade.getAvailableActions(IdeaHelper.getCurrentJIRAServer().getServer(), issue);
-                    setStatusMessage("Retrieved actions for issue " + issue.getKey());
-					showActionsPopup(issue, actions);
-				} catch (JIRAException e) {
-                    setStatusMessage("Unable to retrieve available issue actions: " + e.getMessage(), true);
-                }
-            }
-        }, null);
-        new Thread(task, "atlassian-idea-plugin show issue actions").start();
-
+		final JiraIssueAdapter adapter = ((JiraIssueAdapter) table.getSelectedObject());
+		final JIRAIssue issue = adapter.getIssue();
+		List<JIRAAction> actions = adapter.getCachedActions();
+		if (actions != null) {
+			showActionsPopup(adapter, actions);
+		} else {
+			FutureTask task = new FutureTask(new Runnable() {
+				public void run() {
+					setStatusMessage("Getting available issue actions for issue " + issue.getKey() + "...");
+					try {
+						List<JIRAAction> actions =
+								jiraServerFacade.getAvailableActions(
+										IdeaHelper.getCurrentJIRAServer().getServer(), issue);
+						adapter.setCachedActions(actions);
+						setStatusMessage("Retrieved actions for issue " + issue.getKey());
+						showActionsPopup(adapter, actions);
+					} catch (JIRAException e) {
+						setStatusMessage("Unable to retrieve available issue actions: " + e.getMessage(), true);
+					}
+				}
+			}, null);
+			new Thread(task, "atlassian-idea-plugin show issue actions").start();
+		}
     }
 
 	final class ActionsPopupListener implements Runnable {
-		private JIRAIssue issue;
+		private JiraIssueAdapter adapter;
 		private JList list;
 
-		public ActionsPopupListener(JIRAIssue issue, JList list) {
-			this.issue = issue;
+		public ActionsPopupListener(JiraIssueAdapter adapter, JList list) {
+			this.adapter = adapter;
 			this.list = list;
 		}
 
 		public void run() {
 			JIRAAction action = (JIRAAction) list.getSelectedValue();
-			RunJIRAActionAction ja = new RunJIRAActionAction(issue, action);
+			RunJIRAActionAction ja = new RunJIRAActionAction(adapter, action);
 			ja.launchBrowser();
 		}
 	}
 
-	private void showActionsPopup(JIRAIssue issue, List<JIRAAction> actions) {
+	private void showActionsPopup(JiraIssueAdapter adapter, List<JIRAAction> actions) {
 		JList list = new JList();
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		DefaultListModel lm = new DefaultListModel();
@@ -267,11 +274,11 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
 		}
 		list.setModel(lm);
 		PopupChooserBuilder builder = JBPopupFactory.getInstance().createListPopupBuilder(list);
-	    builder.setTitle("Actions available for " + issue.getKey())
+	    builder.setTitle("Actions available for " + adapter.getKey())
 			.setRequestFocus(true)
 			.setResizable(false)
 			.setMovable(true)
-			.setItemChoosenCallback(new ActionsPopupListener(issue, list))
+			.setItemChoosenCallback(new ActionsPopupListener(adapter, list))
 			.createPopup()
 			.showInCenterOf(this);
 	}
@@ -288,33 +295,42 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
 		};
 		actionGroup.add(submenu);
 
-		new Thread() {
-			public void run() {
-				try {
-					final JIRAIssue issue = ((JiraIssueAdapter) table.getSelectedObject()).getIssue();
-					final List<JIRAAction> actions =
-						jiraServerFacade.getAvailableActions(IdeaHelper.getCurrentJIRAServer().getServer(), issue);
-					SwingUtilities.invokeLater(new Runnable() {
-						public void run() {
-							JPopupMenu pMenu = popup.getComponent();
-							if (pMenu.isVisible()) {
-								for (JIRAAction a : actions) {
-									submenu.add(new RunJIRAActionAction(issue, a));
+		final JiraIssueAdapter adapter = ((JiraIssueAdapter) table.getSelectedObject());
+		final JIRAIssue issue = adapter.getIssue();
+		List<JIRAAction> actions = adapter.getCachedActions();
+		if (actions != null) {
+			for (JIRAAction a : actions) {
+				submenu.add(new RunJIRAActionAction(adapter, a));
+			}
+		} else {
+			new Thread() {
+				public void run() {
+					try {
+						final List<JIRAAction> actions =
+							jiraServerFacade.getAvailableActions(IdeaHelper.getCurrentJIRAServer().getServer(), issue);
+						adapter.setCachedActions(actions);
+						SwingUtilities.invokeLater(new Runnable() {
+							public void run() {
+								JPopupMenu pMenu = popup.getComponent();
+								if (pMenu.isVisible()) {
+									for (JIRAAction a : actions) {
+										submenu.add(new RunJIRAActionAction(adapter, a));
+									}
+									// magic that makes the popup update itself. Don't ask - it is some sort of voodoo
+									pMenu.setVisible(false);
+									pMenu.setVisible(true);
 								}
-								// magic that makes the popup update itself. Don't ask - it is some sort of voodoo
-								pMenu.setVisible(false);
-								pMenu.setVisible(true);
 							}
-						}
-					});
-				} catch (JIRAException e) {
-					// todo: need to inform user that query for issue actions failed
-				} catch (NullPointerException e) {
-					// somebody unselected issue in the table, so let's just skip
+						});
+					} catch (JIRAException e) {
+						setStatusMessage("Query for issue actions failed: " + e.getMessage(), true);
+					} catch (NullPointerException e) {
+						// somebody unselected issue in the table, so let's just skip
+					}
 				}
 			}
+			.start();
 		}
-		.start();
 	}
 
 	
