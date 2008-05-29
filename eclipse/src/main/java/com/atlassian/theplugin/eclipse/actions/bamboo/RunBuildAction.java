@@ -9,14 +9,16 @@ public class RunBuildAction extends Action {
 	
 	private static final String RUN_BUILD = "Run Build";
 
+	public RunBuildAction() {
+		super();
+		setEnabled(false);	// action is disabled by default
+	}
+	
+	
 	@Override
 	public void run() {
 		super.run();
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+
 	}
 
 	@Override
@@ -33,9 +35,6 @@ public class RunBuildAction extends Action {
 	@Override
 	public String getToolTipText() {
 		return RUN_BUILD;
-	}
-	
-	
-	
+	}	
 
 }
