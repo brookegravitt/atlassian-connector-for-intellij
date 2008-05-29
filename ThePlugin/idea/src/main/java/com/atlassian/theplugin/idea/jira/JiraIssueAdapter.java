@@ -18,10 +18,18 @@ package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.jira.api.JIRAConstant;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.atlassian.theplugin.jira.api.JIRAAction;
 
-public class JiraIssueAdapter {
+import javax.management.timer.Timer;
+import java.util.List;
+import java.util.Date;
+
+public final class JiraIssueAdapter {
 	private JIRAIssue issue;
 	private boolean useIconDescription;
+
+	private List<JIRAAction> issueActionCache;
+	private long issueActionCacheTimestamp = 0;
 
 	public JiraIssueAdapter(JIRAIssue issue, boolean useIconDescription) {
 		this.issue = issue;
@@ -52,6 +60,10 @@ public class JiraIssueAdapter {
 		return issue.getKey();
 	}
 
+	public Long getId() {
+		return issue.getId();
+	}
+	
 	public String getProjectKey() {
 		return issue.getProjectKey();
 	}
@@ -126,5 +138,26 @@ public class JiraIssueAdapter {
 
 	public String getUpdated() {
 		return issue.getUpdated();
+	}
+
+	public synchronized List<JIRAAction> getCachedActions() {
+		if (issueActionCache == null) {
+			return null;
+		}
+		Date now = new Date();
+		// let's set cache validity interval to one minute
+		if (now.getTime() - issueActionCacheTimestamp > Timer.ONE_MINUTE) {
+			return null;
+		}
+		return issueActionCache;
+	}
+
+	public synchronized void setCachedActions(List<JIRAAction> actions) {
+		issueActionCache = actions;
+		issueActionCacheTimestamp = new Date().getTime();
+	}
+
+	public synchronized void clearCachedActions() {
+		issueActionCache = null;
 	}
 }
