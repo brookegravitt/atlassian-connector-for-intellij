@@ -1,11 +1,8 @@
-package com.atlassian.theplugin.eclipse.view.bamboo;
+package com.atlassian.theplugin.eclipse.actions.bamboo;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 
-import java.lang.Thread;
-
-import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.eclipse.util.PluginUtil;
 
 public class RunBuildAction extends Action {
