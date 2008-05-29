@@ -331,7 +331,7 @@ public class JIRASessionImpl implements JIRASession {
             RemoteNamedObject[] actions = service.getAvailableActions(token, issue.getKey());
             List<JIRAAction> actionList = new ArrayList<JIRAAction>(actions.length);
             for (RemoteNamedObject action : actions) {
-                actionList.add(new JIRAActionBean(Long.valueOf(action.getId()), action.getName()));
+				actionList.add(new JIRAActionBean(Long.valueOf(action.getId()), action.getName()));
             }
             return actionList;
         } catch (RemoteException e) {
@@ -339,7 +339,21 @@ public class JIRASessionImpl implements JIRASession {
         }
     }
 
-    public boolean isLoggedIn() {
+	public List<JIRAActionField> getFieldsForAction(JIRAIssue issue, JIRAAction action) throws RemoteApiException {
+		try {
+			RemoteField[] fields = service.getFieldsForAction(
+					token, issue.getKey(), Long.valueOf(action.getId()).toString());
+			List<JIRAActionField> fieldList = new ArrayList<JIRAActionField>(fields.length);
+			for (RemoteField f : fields) {
+				fieldList.add(new JIRAActionFieldBean(f.getId(), f.getName()));
+			}
+			return fieldList;
+		} catch (RemoteException e) {
+			throw new RemoteApiException(e.toString(), e);
+		}
+	}
+
+	public boolean isLoggedIn() {
 		return loggedIn;
 	}
 }
