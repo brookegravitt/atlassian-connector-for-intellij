@@ -18,6 +18,7 @@ package com.atlassian.theplugin.jira;
 
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.Server;
 
 import java.util.List;
@@ -58,6 +59,8 @@ public interface JIRAServerFacade extends ProductServerFacade {
     List<JIRAAction> getAvailableActions(Server server, JIRAIssue issue) throws JIRAException;
 
 	List<JIRAActionField> getFieldsForAction(Server server, JIRAIssue issue, JIRAAction action) throws JIRAException;
+
+	void progressWorkflowAction(Server server, JIRAIssue issue, JIRAAction action) throws JIRAException;
 
 	void addComment(Server server, JIRAIssue issue, String comment) throws JIRAException;
 
