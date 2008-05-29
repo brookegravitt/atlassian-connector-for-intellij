@@ -3,6 +3,7 @@
  */
 package com.atlassian.theplugin.eclipse.view.bamboo;
 
+import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 
@@ -28,15 +29,21 @@ public class BambooToolWindow extends ViewPart {
 	@Override
 	public void createPartControl(Composite parent) {
 		
-		// create bamboo status listeners
+		// create bamboo status listeners which is also a tab component
 		BambooStatusListener bambooListener = new BambooToolWindowContent(parent);
-		//(bambooTabContent, Activator.getDefault().getPluginConfiguration());
-		
+
+		// register listener
 		Activator.getDefault().getBambooChecker().registerListener(bambooListener);
 
+		
 		//getViewSite().registerContextMenu(menuManager, selectionProvider)
 		
-		getViewSite().getActionBars().getToolBarManager().add(new RunBuildAction());
+		IToolBarManager toolBarManager = getViewSite().getActionBars().getToolBarManager();
+		
+		toolBarManager.add(new RunBuildAction());
+		toolBarManager.add(new LabelBuildAction());
+		toolBarManager.add(new CommentBuildAction());
+		
 		
 		getViewSite().getActionBars().updateActionBars();
 		
