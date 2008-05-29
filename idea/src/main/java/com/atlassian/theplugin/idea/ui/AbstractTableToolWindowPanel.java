@@ -145,11 +145,11 @@ public abstract class AbstractTableToolWindowPanel extends JPanel {
 
 	}
 
-	protected void setStatusMessage(String msg) {
+	public void setStatusMessage(String msg) {
 		setStatusMessage(msg, false);
 	}
 
-	protected void setStatusMessage(String msg, boolean isError) {
+	public void setStatusMessage(String msg, boolean isError) {
 		editorPane.setBackground(isError ? Color.RED : Color.WHITE);
 		editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">" + msg + "</td></tr></table>"));
 	}
