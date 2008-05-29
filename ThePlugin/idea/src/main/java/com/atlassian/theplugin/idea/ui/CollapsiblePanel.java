@@ -25,6 +25,7 @@ import com.intellij.openapi.actionSystem.ActionPopupMenu;
 import org.jetbrains.annotations.NonNls;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
@@ -42,6 +43,7 @@ public class CollapsiblePanel extends JPanel {
   private JPanel toolBarPanel;
   private JPanel contentPanel;
   private JPopupMenu popupMenu;
+  private JPanel labelPanel;
 
   public static final KeyStroke LEFT_KEY_STROKE = KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0);
   public static final KeyStroke RIGHT_KEY_STROKE = KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0);
@@ -84,6 +86,12 @@ public class CollapsiblePanel extends JPanel {
 	createToolbar(actionName, toolbarName);
 	createPopupMenu(popupMenuPlace, popupMenuName);
   }
+
+  public void setTitle(String title){
+	  myTitleLabel.setText(title);	  
+  }
+
+  
   private Dimension getButtonDimension() {
     if (myExpandIcon == null) {
       return new Dimension(9, 9);
@@ -115,9 +123,9 @@ public class CollapsiblePanel extends JPanel {
                                    new Insets(3, 0, 0, 0), 0, 0));
 		  contentPanel.setVisible(true);
 		  myContent.setVisible(true);
-	  }
+	  	}
 
-  }
+  	  }
 	  myIsCollapsed = collapse;
 
       Icon icon = getIcon();
@@ -126,7 +134,8 @@ public class CollapsiblePanel extends JPanel {
         myToggleCollapseButton.setBorder(null);
         myToggleCollapseButton.setBorderPainted(false);
         myToggleCollapseButton.setToolTipText(getToggleButtonToolTipText());
-      }
+
+	  }
 
 
 	  if (collapse) {
@@ -178,6 +187,8 @@ public class CollapsiblePanel extends JPanel {
 	  myToggleCollapseButton.setBackground(content.getBackground());
 	  setBackground(content.getBackground());
 	  myTitleLabel.setBackground(content.getBackground());
+	  myTitleLabel.setBackground(Color.WHITE);
+	  myTitleLabel.setForeground(Color.WHITE);
   }
 
   private void createPopupMenu(String popupMenuPlace, String popupMenuName){
@@ -265,18 +276,23 @@ public class CollapsiblePanel extends JPanel {
 
     final int iconAnchor = collapseButtonAtLeft ? GridBagConstraints.WEST : GridBagConstraints.EAST;
     add(myToggleCollapseButton,
-        new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0,
+        new GridBagConstraints(0, 0, 1, 1, 0.01, 0.0,
                                iconAnchor,
                                GridBagConstraints.NONE,
                                new Insets(1, collapseButtonAtLeft ? 0 : 1, 0, collapseButtonAtLeft ? 1 : 0), 0,
                                0));
     if (title != null) {
-      myTitleLabel = new JLabel(title);
-      myTitleLabel.setFont(UIUtil.getLabelFont().deriveFont(Font.BOLD));
-      add(myTitleLabel,
-          new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0,
+
+	  myTitleLabel = new JLabel(title);
+	  myTitleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+	  myTitleLabel.setFont(UIUtil.getLabelFont().deriveFont(Font.BOLD));
+	  myTitleLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+
+	  add(myTitleLabel,
+          new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0,
                                  GridBagConstraints.CENTER,
-                                 GridBagConstraints.CENTER,
+                                 GridBagConstraints.HORIZONTAL,
                                  new Insets(0, 3, 0, 3), 0,
                                  0));
 		myTitleLabel.addMouseListener(new MouseAdapter() {
@@ -376,7 +392,10 @@ public class CollapsiblePanel extends JPanel {
     } else {
       myTitleLabel.setForeground(UIUtil.getLabelForeground());
       myTitleLabel.setBackground(myContent.getBackground());
-    }
+
+	}
+	  myTitleLabel.setBackground(Color.WHITE);
+	  myTitleLabel.setForeground(Color.WHITE);
   }
 
   private boolean paintAsSelected() {
