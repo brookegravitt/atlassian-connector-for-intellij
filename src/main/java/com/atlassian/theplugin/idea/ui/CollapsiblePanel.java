@@ -42,6 +42,7 @@ public class CollapsiblePanel extends JPanel {
   private JLabel myTitleLabel;
   private JPanel toolBarPanel;
   private JPanel contentPanel;
+  private JPanel labelPanel;
 
   public static final KeyStroke LEFT_KEY_STROKE = KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0);
   public static final KeyStroke RIGHT_KEY_STROKE = KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0);
@@ -61,7 +62,7 @@ public class CollapsiblePanel extends JPanel {
   public CollapsiblePanel(JComponent content, boolean collapseButtonAtLeft,
                           boolean isCollapsed, Icon collapseIcon, Icon expandIcon,
                           String title,  String actionName, String toolbarName) {
-    super(new GridBagLayout());	  
+    super(new GridBagLayout());
 	setupComponents(expandIcon, collapseIcon, title, collapseButtonAtLeft, isCollapsed);
 	createToolbar(actionName, toolbarName);
 	setContent(content);
@@ -74,16 +75,16 @@ public class CollapsiblePanel extends JPanel {
     super(new GridBagLayout());
 	Icon collapseIcon = IconLoader.findIcon("/icons/navigate_down_10.gif");
 	Icon expandIcon = IconLoader.findIcon("/icons/navigate_right_10.gif");
-	  
+
 	setupComponents(expandIcon, collapseIcon, title, collapseButtonAtLeft, isCollapsed);
 	createToolbar(actionName, toolbarName);
   }
 
   public void setTitle(String title){
-	  myTitleLabel.setText(title);	  
+	  myTitleLabel.setText(title);
   }
 
-  
+
   private Dimension getButtonDimension() {
     if (myExpandIcon == null) {
       return new Dimension(9, 9);
@@ -110,6 +111,7 @@ public class CollapsiblePanel extends JPanel {
 			  myContent.setVisible(false);
 		  }
 	  	}
+
 	  } else {
 	  	if (myContent != null) {
 			add(contentPanel,
@@ -143,6 +145,7 @@ public class CollapsiblePanel extends JPanel {
 	  } else if (myContent != null) {
         myContent.requestFocusInWindow();
       }
+
 
 
 	  notifyListners();
@@ -182,9 +185,8 @@ public class CollapsiblePanel extends JPanel {
 	  this.myContent = content;
 	  contentPanel.setBackground(content.getBackground());
 	  contentPanel.add(content, BorderLayout.CENTER);
-	  myToggleCollapseButton.setBackground(content.getBackground());
-	  setBackground(content.getBackground());
-	  myTitleLabel.setBackground(content.getBackground());
+
+
   }
 
   private void createToolbar(String toolbarPlace, String toolbarName) {
@@ -211,15 +213,15 @@ public class CollapsiblePanel extends JPanel {
   							   boolean isCollapsed){
 
 	contentPanel = new JPanel(new BorderLayout());
-	 
+
 	this.myToggleCollapseButton = new JButton();
 	this.myExpandIcon = expandIcon;
 	this.myCollapseIcon = collapseIcon;
-	  
+
 	final Dimension buttonDimension = getButtonDimension();
 
 
-	  
+
 	myToggleCollapseButton.setOpaque(false);
     myToggleCollapseButton.setBorderPainted(false);
 
@@ -253,25 +255,19 @@ public class CollapsiblePanel extends JPanel {
     });
 
     final int iconAnchor = collapseButtonAtLeft ? GridBagConstraints.WEST : GridBagConstraints.EAST;
-    add(myToggleCollapseButton,
-        new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0,
-                               iconAnchor,
-                               GridBagConstraints.NONE,
-                               new Insets(1, collapseButtonAtLeft ? 0 : 1, 0, collapseButtonAtLeft ? 1 : 0), 0,
-                               0));
+	labelPanel = new JPanel(new BorderLayout(20,0));
+
+	labelPanel.add(myToggleCollapseButton, BorderLayout.LINE_START);
+	labelPanel.setBackground(UIUtil.getTableSelectionBackground());
     if (title != null) {
 
 	  myTitleLabel = new JLabel(title);
-	  myTitleLabel.setFont(UIUtil.getLabelFont().deriveFont(Font.BOLD));	  
+	  myTitleLabel.setFont(UIUtil.getLabelFont().deriveFont(Font.BOLD));
 
+	  labelPanel.add(myTitleLabel, BorderLayout.CENTER);
 	  revalidate();
 	  repaint();
-	  add(myTitleLabel,
-          new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0,
-                                 GridBagConstraints.CENTER,
-                                 GridBagConstraints.HORIZONTAL,
-                                 new Insets(0, 0, 0, 0), 0,
-                                 0));
+
 		myTitleLabel.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) { // on double click, just open the issue
 				if (myIsCollapsed) {
@@ -283,6 +279,14 @@ public class CollapsiblePanel extends JPanel {
 		});
 
 	}
+
+
+	add(labelPanel,
+        new GridBagConstraints(0, 0, 1, 1, 1, 0.0,
+                               iconAnchor,
+                               GridBagConstraints.HORIZONTAL,
+                               new Insets(1, collapseButtonAtLeft ? 0 : 1, 0, collapseButtonAtLeft ? 1 : 0), 0,
+                               0));
 
 	myIsCollapsed = isCollapsed;
 	setCollapsed(isCollapsed);
@@ -336,11 +340,11 @@ public class CollapsiblePanel extends JPanel {
   }
 
   private void updatePanel() {
-    if (paintAsSelected()) {
+   // if (paintAsSelected()) {
       setBackground(UIUtil.getTableSelectionBackground());
-    } else {
-      setBackground(myContent.getBackground());
-    }
+   // } else {
+   //   setBackground(myContent.getBackground());
+    //}
   }
 
   protected void paintChildren(Graphics g) {
@@ -355,22 +359,14 @@ public class CollapsiblePanel extends JPanel {
   }
 
   private void updateToggleButton() {
-    if (paintAsSelected()) {
       myToggleCollapseButton.setBackground(UIUtil.getTableSelectionBackground());
-    } else {
-      myToggleCollapseButton.setBackground(myContent.getBackground());
-    }
+
   }
 
   private void updateTitle() {
-    if (paintAsSelected()) {
+
       myTitleLabel.setForeground(UIUtil.getTableSelectionForeground());
       myTitleLabel.setBackground(UIUtil.getTableSelectionBackground());
-    } else {
-      myTitleLabel.setForeground(UIUtil.getLabelForeground());
-      myTitleLabel.setBackground(myContent.getBackground());
-
-	}
   }
 
   private boolean paintAsSelected() {
