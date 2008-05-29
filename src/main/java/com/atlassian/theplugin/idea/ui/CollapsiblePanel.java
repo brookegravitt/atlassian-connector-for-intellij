@@ -107,10 +107,12 @@ public class CollapsiblePanel extends JPanel {
 
   protected void setCollapsed(boolean collapse) {
     try {
-      if (collapse) {
+
+	  if (collapse) {
         if (myIsInitialized) {
 			remove(contentPanel);
-			
+
+
 		  if (contentPanel != null) {
 			  contentPanel.setVisible(false);
 			  myContent.setVisible(false);
@@ -118,23 +120,27 @@ public class CollapsiblePanel extends JPanel {
 	  	}
 	  } else {
 	  	if (myContent != null) {
-        add(contentPanel,
-            new GridBagConstraints(0, 1, 1, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                                   new Insets(3, 0, 0, 0), 0, 0));
-		  contentPanel.setVisible(true);
-		  myContent.setVisible(true);
+			add(contentPanel,
+				new GridBagConstraints(0, 1, 1, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+									   new Insets(3, 0, 0, 0), 0, 0));
+			  contentPanel.setVisible(true);
+			  myContent.setVisible(true);
 	  	}
 
   	  }
 	  myIsCollapsed = collapse;
 
-      Icon icon = getIcon();
+
+      revalidate();
+	  repaint();
+
+	  Icon icon = getIcon();
       if (icon != null) {
-        myToggleCollapseButton.setIcon(icon);
+
+		myToggleCollapseButton.setIcon(icon);
         myToggleCollapseButton.setBorder(null);
         myToggleCollapseButton.setBorderPainted(false);
         myToggleCollapseButton.setToolTipText(getToggleButtonToolTipText());
-
 	  }
 
 
@@ -151,7 +157,7 @@ public class CollapsiblePanel extends JPanel {
 
       revalidate();
       repaint();
-    } finally {
+	} finally {
       myIsInitialized = true;
     }
   }
@@ -274,7 +280,7 @@ public class CollapsiblePanel extends JPanel {
 
     final int iconAnchor = collapseButtonAtLeft ? GridBagConstraints.WEST : GridBagConstraints.EAST;
     add(myToggleCollapseButton,
-        new GridBagConstraints(0, 0, 1, 1, 0.01, 0.0,
+        new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0,
                                iconAnchor,
                                GridBagConstraints.NONE,
                                new Insets(1, collapseButtonAtLeft ? 0 : 1, 0, collapseButtonAtLeft ? 1 : 0), 0,
@@ -282,15 +288,15 @@ public class CollapsiblePanel extends JPanel {
     if (title != null) {
 
 	  myTitleLabel = new JLabel(title);
-	  myTitleLabel.setHorizontalAlignment(SwingConstants.CENTER);
 	  myTitleLabel.setFont(UIUtil.getLabelFont().deriveFont(Font.BOLD));	  
 
-
+	  revalidate();
+	  repaint();
 	  add(myTitleLabel,
           new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0,
                                  GridBagConstraints.CENTER,
                                  GridBagConstraints.HORIZONTAL,
-                                 new Insets(0, 3, 0, 3), 0,
+                                 new Insets(0, 0, 0, 0), 0,
                                  0));
 		myTitleLabel.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) { // on double click, just open the issue
@@ -301,7 +307,6 @@ public class CollapsiblePanel extends JPanel {
 				}
 			}
 		});
-		this.validate();
 
 	}
 
