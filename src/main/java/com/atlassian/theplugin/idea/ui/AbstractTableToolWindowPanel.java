@@ -22,11 +22,7 @@ import com.atlassian.theplugin.configuration.ProjectToolWindowTableConfiguration
 import com.atlassian.theplugin.idea.bamboo.*;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.TableColumnInfo;
-import com.intellij.ide.BrowserUtil;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionPopupMenu;
-import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.util.ui.ListTableModel;
 import com.intellij.util.ui.UIUtil;
 import thirdparty.javaworld.ClasspathHTMLEditorKit;
@@ -64,7 +60,7 @@ public abstract class AbstractTableToolWindowPanel extends JPanel {
                 "atlassian.toolwindow.serverToolBar", toolbar, true);
         toolBarPanel.add(actionToolbar.getComponent(), BorderLayout.NORTH);
         add(toolBarPanel, BorderLayout.NORTH);
-               
+
 		editorPane = new ToolWindowBambooContent();
 		editorPane.setEditorKit(new ClasspathHTMLEditorKit());
 		JScrollPane pane = setupPane(editorPane, wrapBody(getInitialMessage()));
@@ -95,14 +91,21 @@ public abstract class AbstractTableToolWindowPanel extends JPanel {
 
 			private void maybeShowPopup(MouseEvent e) {
 				if (e.isPopupTrigger() && table.isEnabled()) {
-                    ActionGroup actionGroup = (ActionGroup) ActionManager
-                            .getInstance().getAction(getPopupActionGroup());
-                    ActionPopupMenu popup = ActionManager.getInstance().createActionPopupMenu("Context menu", actionGroup);
+					final DefaultActionGroup actionGroup = new DefaultActionGroup();
 
-                    JPopupMenu jPopupMenu = popup.getComponent();
-                    jPopupMenu.show(e.getComponent(), e.getX(), e.getY());
-                    handlePopupClick(table.getSelectedObject());
-                }
+					final ActionGroup configActionGroup = (ActionGroup) ActionManager
+                            .getInstance().getAction(getPopupActionGroup());
+					actionGroup.addAll(configActionGroup);
+
+					final ActionPopupMenu popup =
+							ActionManager.getInstance().createActionPopupMenu("Context menu", actionGroup);
+
+					addCustomSubmenus(actionGroup, popup);
+
+					final JPopupMenu jPopupMenu = popup.getComponent();
+					jPopupMenu.show(e.getComponent(), e.getX(), e.getY());
+					handlePopupClick(table.getSelectedObject());
+				}
 			}
 		});
 
@@ -114,9 +117,12 @@ public abstract class AbstractTableToolWindowPanel extends JPanel {
 		progressAnimation.configure(this, tablePane, BorderLayout.CENTER);
 	}
 
-    protected abstract void handlePopupClick(Object selectedObject);
-    protected abstract void handleDoubleClick(Object selectedObject);
-    protected abstract String getInitialMessage();
+	protected void addCustomSubmenus(DefaultActionGroup actionGroup, final ActionPopupMenu popup) {
+	}
+
+	protected abstract void handlePopupClick(Object selectedObject);
+	protected abstract void handleDoubleClick(Object selectedObject);
+	protected abstract String getInitialMessage();
     protected abstract String getToolbarActionGroup();
     protected abstract String getPopupActionGroup();
     protected abstract TableColumnProvider getTableColumnProvider();
