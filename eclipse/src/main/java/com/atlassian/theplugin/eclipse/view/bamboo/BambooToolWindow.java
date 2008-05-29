@@ -3,6 +3,7 @@
  */
 package com.atlassian.theplugin.eclipse.view.bamboo;
 
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.widgets.Composite;
@@ -21,6 +22,10 @@ import com.atlassian.theplugin.eclipse.preferences.Activator;
  *
  */
 public class BambooToolWindow extends ViewPart {
+
+	private IAction runBuildAction;
+	private IAction labelBuildAction;
+	private IAction commentBuildAction;
 
 	/**
 	 * 
@@ -45,14 +50,17 @@ public class BambooToolWindow extends ViewPart {
 		
 		IToolBarManager toolBarManager = getViewSite().getActionBars().getToolBarManager();
 		
-		toolBarManager.add(new RunBuildAction());
-		toolBarManager.add(new LabelBuildAction());
-		toolBarManager.add(new CommentBuildAction());
+		this.runBuildAction = new RunBuildAction(); 
+		this.labelBuildAction = new LabelBuildAction();
+		this.commentBuildAction = new CommentBuildAction();
+		
+		toolBarManager.add(runBuildAction);
+		toolBarManager.add(labelBuildAction);
+		toolBarManager.add(commentBuildAction);
 		toolBarManager.add(new Separator());
 		toolBarManager.add(new RefreshBuildsListAction());
 		
-		
-		getViewSite().getActionBars().updateActionBars();
+		//getViewSite().getActionBars().updateActionBars();
 		
 	}
 
@@ -68,4 +76,31 @@ public class BambooToolWindow extends ViewPart {
 		setContentDescription(text);
 	}
 
+	public IAction getRunBuildAction() {
+		return runBuildAction;
+	}
+
+	public IAction getLabelBuildAction() {
+		return labelBuildAction;
+	}
+	public IAction getCommentBuildAction() {
+		return commentBuildAction;
+	}
+
+	public void enableBambooBuildActions() {
+		runBuildAction.setEnabled(true);
+		labelBuildAction.setEnabled(true);
+		commentBuildAction.setEnabled(true);
+		
+		getViewSite().getActionBars().getToolBarManager().update(true);
+		getViewSite().getActionBars().getToolBarManager().update(true);
+		getViewSite().getActionBars().getToolBarManager().markDirty();
+		getViewSite().getActionBars().getToolBarManager().markDirty();
+		getViewSite().getActionBars().getToolBarManager().update(false);
+		getViewSite().getActionBars().updateActionBars();
+		getViewSite().getActionBars().updateActionBars();
+		
+	}
+
 }
+

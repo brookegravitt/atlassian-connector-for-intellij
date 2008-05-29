@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
@@ -27,9 +29,9 @@ public class BambooToolWindowContent implements BambooStatusListener {
 	private Collection<BambooBuildAdapterEclipse> buildStatuses = new ArrayList<BambooBuildAdapterEclipse>();
 	private Table table;
 	private TableViewer tableViewer;
-	private BambooToolWindow viewPart;
+	private final BambooToolWindow viewPart;
 
-	public BambooToolWindowContent(Composite parent, BambooToolWindow viewPart) {
+	public BambooToolWindowContent(Composite parent, final BambooToolWindow viewPart) {
 		
 		this.viewPart = viewPart;
 		
@@ -39,6 +41,17 @@ public class BambooToolWindowContent implements BambooStatusListener {
 		tableViewer = new TableViewer(parent, style);
 		tableViewer.setContentProvider(new BambooContentProvider());
 		tableViewer.setLabelProvider(new BambooLabelProvider());
+		
+		tableViewer.addPostSelectionChangedListener(new ISelectionChangedListener() {
+
+			public void selectionChanged(SelectionChangedEvent event) {
+				viewPart.enableBambooBuildActions();
+				System.out.println(event.toString());
+				
+			}
+			
+				}
+			);
 		
 		table = tableViewer.getTable();
 		
@@ -54,9 +67,6 @@ public class BambooToolWindowContent implements BambooStatusListener {
 		
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
-		
-		//table.update();
-		//table.pack(true);
 		
 	}
 	

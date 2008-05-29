@@ -9,6 +9,12 @@ public class LabelBuildAction extends Action {
 	
 	private static final String LABEL_BUILD = "Label Build";
 
+	public LabelBuildAction() {
+		super();
+		
+		setEnabled(false);	// action is disabled by default
+	}
+	
 	@Override
 	public void run() {
 		super.run();
@@ -31,7 +37,4 @@ public class LabelBuildAction extends Action {
 		return LABEL_BUILD;
 	}
 	
-	
-	
-
 }
