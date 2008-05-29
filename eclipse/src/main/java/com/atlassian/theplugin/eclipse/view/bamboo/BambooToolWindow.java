@@ -93,14 +93,18 @@ public class BambooToolWindow extends ViewPart {
 		commentBuildAction.setEnabled(true);
 		
 		getViewSite().getActionBars().getToolBarManager().update(true);
-		getViewSite().getActionBars().getToolBarManager().update(true);
-		getViewSite().getActionBars().getToolBarManager().markDirty();
-		getViewSite().getActionBars().getToolBarManager().markDirty();
-		getViewSite().getActionBars().getToolBarManager().update(false);
-		getViewSite().getActionBars().updateActionBars();
-		getViewSite().getActionBars().updateActionBars();
 		
 	}
+	
+	public void disableBambooBuildActions() {
+		runBuildAction.setEnabled(false);
+		labelBuildAction.setEnabled(false);
+		commentBuildAction.setEnabled(false);
+		
+		getViewSite().getActionBars().getToolBarManager().update(true);
+		
+	}
+
 
 }
 
