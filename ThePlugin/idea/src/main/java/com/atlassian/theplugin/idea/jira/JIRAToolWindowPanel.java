@@ -260,8 +260,8 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
 
 		public void run() {
 			JIRAAction action = (JIRAAction) list.getSelectedValue();
-			RunJIRAActionAction ja = new RunJIRAActionAction(adapter, action);
-			ja.launchBrowser();
+			RunJIRAActionAction ja = new RunJIRAActionAction(JIRAToolWindowPanel.this, jiraServerFacade, adapter, action);
+			ja.runIssueActionOrLaunchBrowser();
 		}
 	}
 
@@ -300,7 +300,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
 		List<JIRAAction> actions = adapter.getCachedActions();
 		if (actions != null) {
 			for (JIRAAction a : actions) {
-				submenu.add(new RunJIRAActionAction(adapter, a));
+				submenu.add(new RunJIRAActionAction(this, jiraServerFacade, adapter, a));
 			}
 		} else {
 			new Thread() {
@@ -314,7 +314,8 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
 								JPopupMenu pMenu = popup.getComponent();
 								if (pMenu.isVisible()) {
 									for (JIRAAction a : actions) {
-										submenu.add(new RunJIRAActionAction(adapter, a));
+										submenu.add(new RunJIRAActionAction(JIRAToolWindowPanel.this,
+												jiraServerFacade, adapter, a));
 									}
 									// magic that makes the popup update itself. Don't ask - it is some sort of voodoo
 									pMenu.setVisible(false);

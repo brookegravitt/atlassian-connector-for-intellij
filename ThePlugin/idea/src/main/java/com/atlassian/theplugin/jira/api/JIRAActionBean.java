@@ -1,33 +1,12 @@
 package com.atlassian.theplugin.jira.api;
 
-import java.util.Map;
-import java.util.HashMap;
-
-public class JIRAActionBean implements JIRAAction {
-    private String name;
-    private long id;
-
+public class JIRAActionBean extends AbstractJIRAConstantBean implements JIRAAction {
     public JIRAActionBean(long id, String name) {
-        this.id = id;
-        this.name = name;
+		super(id, name, null);
     }
+
     public String getQueryStringFragment() {
         return "action=" + id;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Map<String, String> getMap() {
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("name", getName());
-        map.put("id", Long.toString(id));
-        return map;
     }
 
 	public String toString() {
