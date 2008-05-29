@@ -5,15 +5,16 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.ide.BrowserUtil;
 import com.atlassian.theplugin.jira.api.JIRAAction;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.atlassian.theplugin.idea.jira.JiraIssueAdapter;
 
 public class RunJIRAActionAction extends AnAction {
 
-	private JIRAIssue issue;
+	private JiraIssueAdapter adapter;
 	private JIRAAction action;
 
-	public RunJIRAActionAction(JIRAIssue issue, JIRAAction jiraAction) {
+	public RunJIRAActionAction(JiraIssueAdapter issueAdapter, JIRAAction jiraAction) {
 		super(jiraAction.getName());
-		this.issue = issue;
+		adapter = issueAdapter;
 		action = jiraAction;
 	}
 
@@ -22,9 +23,10 @@ public class RunJIRAActionAction extends AnAction {
 	}
 
 	public void launchBrowser() {
-		BrowserUtil.launchBrowser(issue.getServerUrl()
+		adapter.clearCachedActions();
+		BrowserUtil.launchBrowser(adapter.getServerUrl()
 			+ "/secure/WorkflowUIDispatcher.jspa?id="
-			+ issue.getId()
+			+ adapter.getId()
 			+ "&"
 			+ action.getQueryStringFragment());
 	}
