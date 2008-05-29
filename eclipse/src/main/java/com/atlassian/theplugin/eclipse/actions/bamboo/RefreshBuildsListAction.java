@@ -3,6 +3,7 @@ package com.atlassian.theplugin.eclipse.actions.bamboo;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 
+import com.atlassian.theplugin.eclipse.preferences.Activator;
 import com.atlassian.theplugin.eclipse.util.PluginUtil;
 
 public class RefreshBuildsListAction extends Action {
@@ -12,6 +13,8 @@ public class RefreshBuildsListAction extends Action {
 	@Override
 	public void run() {
 		super.run();
+		
+		Activator.getDefault().rescheduleStatusCheckers();
 		
 	}
 
