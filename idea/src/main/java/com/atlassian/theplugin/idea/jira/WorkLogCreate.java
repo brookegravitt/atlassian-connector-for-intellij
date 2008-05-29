@@ -21,6 +21,12 @@ import com.intellij.ui.HyperlinkLabel;
 import com.intellij.ide.BrowserUtil;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.HelpUrl;
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.jira.JIRAServerFacade;
+import com.atlassian.theplugin.jira.api.JIRAException;
+import com.atlassian.theplugin.jira.api.JIRAAction;
+import com.atlassian.theplugin.jira.api.JIRAActionField;
+import com.atlassian.theplugin.commons.Server;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -32,6 +38,7 @@ import java.awt.event.ActionEvent;
 import java.awt.*;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.text.DateFormat;
 import javax.management.timer.Timer;
 
@@ -49,6 +56,12 @@ public class WorkLogCreate extends DialogWrapper {
 	private JButton endDateChange;
 	private JLabel endDateLabel;
 	private HyperlinkLabel helpLabel;
+	private JCheckBox stopProgress;
+	private JLabel stopProgressLabel;
+	private boolean haveIssueStopProgressInfo = false;
+	private JIRAAction inProgressAction;
+	NonZeroChangeListener listener;
+	JIRAServerFacade facade;
 	private Date endTime;
 	private final Calendar now = Calendar.getInstance();
 	SpinnerNumberModel weekModel = new SpinnerNumberModel(0, 0, null, 1);
@@ -74,16 +87,18 @@ public class WorkLogCreate extends DialogWrapper {
 							+ ((Integer) days.getValue()).intValue()
 							+ ((Integer) hours.getValue()).intValue()
 							+ ((Integer) minutes.getValue()).intValue()) > 0;
-			setOKActionEnabled(nonZero);
+			setOKActionEnabled(nonZero && haveIssueStopProgressInfo);
 		}
 	}
 
-	public WorkLogCreate(String issueKey) {
+	public WorkLogCreate(final JIRAServerFacade jiraFacade, final JiraIssueAdapter adapter) {
 		super(false);
-		init();
-		setOKActionEnabled(false);
 
-		setTitle("Add Worklog for " + issueKey);
+		this.facade = jiraFacade;
+
+		init();
+		setTitle("Add Worklog for " + adapter.getKey());
+		setOKActionEnabled(false);
 		getOKAction().putValue(Action.NAME, "Add Worklog");
 
 		weeks.setModel(weekModel);
@@ -91,7 +106,7 @@ public class WorkLogCreate extends DialogWrapper {
 		hours.setModel(hourModel);
 		minutes.setModel(minuteModel);
 
-		NonZeroChangeListener listener = new NonZeroChangeListener();
+		listener = new NonZeroChangeListener();
 		weeks.addChangeListener(listener);
 		days.addChangeListener(listener);
 		hours.addChangeListener(listener);
@@ -111,6 +126,29 @@ public class WorkLogCreate extends DialogWrapper {
 				}
 			}
 		});
+		new Thread(new Runnable() {
+			public void run() {
+				try {
+					Server server = IdeaHelper.getCurrentJIRAServer().getServer();
+					List<JIRAAction> actions = facade.getAvailableActions(server, adapter.getIssue());
+					for (JIRAAction a : actions) {
+						if (a.getId() == 301) {
+							List<JIRAActionField> fields = facade.getFieldsForAction(server, adapter.getIssue(), a);
+							if (fields.isEmpty()) {
+								stopProgress.setEnabled(true);
+								stopProgressLabel.setEnabled(true);
+								inProgressAction = a;
+							}
+							break;
+						}
+					}
+				} catch (JIRAException e) {
+					// well, let's ignore, this is an optional functionality anyway...
+				}
+				haveIssueStopProgressInfo = true;
+				listener.stateChanged(null);
+			}
+		}).start();
 	}
 
 	public String getTimeSpentString() {
@@ -141,6 +179,14 @@ public class WorkLogCreate extends DialogWrapper {
 		return comment.getText();
 	}
 
+	public boolean isStopProgressSelected() {
+		return stopProgress.isSelected();
+	}
+
+	public JIRAAction getInProgressAction() {
+		return inProgressAction;
+	}
+	
 	protected JComponent createCenterPanel() {
 		return contentPane;
 	}
