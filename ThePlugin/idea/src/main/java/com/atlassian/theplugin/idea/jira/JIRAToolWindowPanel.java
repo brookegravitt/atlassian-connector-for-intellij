@@ -693,8 +693,9 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
     }
 
     public void logWorkForIssue() {
-        final JIRAIssue issue = ((JiraIssueAdapter) table.getSelectedObject()).getIssue();
-        final WorkLogCreate workLogCreate = new WorkLogCreate(issue.getKey());
+		JiraIssueAdapter adapter = (JiraIssueAdapter) table.getSelectedObject();
+		final JIRAIssue issue = adapter.getIssue();
+        final WorkLogCreate workLogCreate = new WorkLogCreate(jiraServerFacade, adapter);
         workLogCreate.show();
         if (workLogCreate.isOK()) {
             FutureTask task = new FutureTask(new Runnable() {
@@ -703,11 +704,18 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
                     try {
                         Calendar cal = Calendar.getInstance();
                         cal.setTime(workLogCreate.getStartDate());
-                        jiraServerFacade.logWork(IdeaHelper.getCurrentJIRAServer().getServer(),
-                                issue, workLogCreate.getTimeSpentString(),
+						Server server = IdeaHelper.getCurrentJIRAServer().getServer();
+						jiraServerFacade.logWork(server, issue, workLogCreate.getTimeSpentString(),
                                 cal, workLogCreate.getComment());
-                        setStatusMessage("Logged work for issue " + issue.getKey());
-                    } catch (JIRAException e) {
+						if (workLogCreate.isStopProgressSelected()) {
+							setStatusMessage("Stopping work for issue " + issue.getKey() + "...");
+							jiraServerFacade.progressWorkflowAction(server, issue, workLogCreate.getInProgressAction());
+							setStatusMessage("Work logged and progress stopped for issue " + issue.getKey());
+							refreshIssuesPage();
+						} else {
+							setStatusMessage("Logged work for issue " + issue.getKey());
+						}
+					} catch (JIRAException e) {
                         setStatusMessage("Work not logged: " + e.getMessage(), true);
                     }
                 }
