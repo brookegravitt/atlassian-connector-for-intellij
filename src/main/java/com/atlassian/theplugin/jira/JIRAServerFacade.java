@@ -57,7 +57,9 @@ public interface JIRAServerFacade extends ProductServerFacade {
 
     List<JIRAAction> getAvailableActions(Server server, JIRAIssue issue) throws JIRAException;
 
-    void addComment(Server server, JIRAIssue issue, String comment) throws JIRAException;
+	List<JIRAActionField> getFieldsForAction(Server server, JIRAIssue issue, JIRAAction action) throws JIRAException;
+
+	void addComment(Server server, JIRAIssue issue, String comment) throws JIRAException;
 
     JIRAIssue createIssue(Server server, JIRAIssue issue) throws JIRAException;
 
