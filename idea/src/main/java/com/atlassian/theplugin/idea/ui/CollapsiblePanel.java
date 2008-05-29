@@ -42,8 +42,6 @@ public class CollapsiblePanel extends JPanel {
   private JLabel myTitleLabel;
   private JPanel toolBarPanel;
   private JPanel contentPanel;
-  private JPopupMenu popupMenu;
-  private JPanel labelPanel;
 
   public static final KeyStroke LEFT_KEY_STROKE = KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0);
   public static final KeyStroke RIGHT_KEY_STROKE = KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0);
@@ -54,37 +52,31 @@ public class CollapsiblePanel extends JPanel {
 
   public CollapsiblePanel(boolean collapseButtonAtLeft,
                           boolean isCollapsed, Icon collapseIcon, Icon expandIcon,
-                          String title,  String toolbarPlace, String toolbarName,
-						  String popupMenuPlace, String popupMenuName){
+                          String title,  String toolbarPlace, String toolbarName){
 
 	  setupComponents(expandIcon, collapseIcon, title, collapseButtonAtLeft, isCollapsed);
 	  createToolbar(toolbarPlace, toolbarName);
-	  createPopupMenu(popupMenuPlace, popupMenuName);
   }
-	
+
   public CollapsiblePanel(JComponent content, boolean collapseButtonAtLeft,
                           boolean isCollapsed, Icon collapseIcon, Icon expandIcon,
-                          String title,  String actionName, String toolbarName,
-						  String popupMenuPlace, String popupMenuName) {
+                          String title,  String actionName, String toolbarName) {
     super(new GridBagLayout());	  
 	setupComponents(expandIcon, collapseIcon, title, collapseButtonAtLeft, isCollapsed);
 	createToolbar(actionName, toolbarName);
-	createPopupMenu(popupMenuPlace, popupMenuName);
 	setContent(content);
   }
 
 
   public CollapsiblePanel(boolean collapseButtonAtLeft,
                           boolean isCollapsed, String title,
-						  String actionName, String toolbarName,
-						  String popupMenuPlace, String popupMenuName) {
+						  String actionName, String toolbarName) {
     super(new GridBagLayout());
 	Icon collapseIcon = IconLoader.findIcon("/icons/navigate_down_10.gif");
 	Icon expandIcon = IconLoader.findIcon("/icons/navigate_right_10.gif");
 	  
 	setupComponents(expandIcon, collapseIcon, title, collapseButtonAtLeft, isCollapsed);
 	createToolbar(actionName, toolbarName);
-	createPopupMenu(popupMenuPlace, popupMenuName);
   }
 
   public void setTitle(String title){
@@ -102,7 +94,7 @@ public class CollapsiblePanel extends JPanel {
   }
 
   public CollapsiblePanel(JComponent content, boolean collapseButtonAtLeft) {
-    this(content, collapseButtonAtLeft, false, null, null, null, null, null, null, null);
+    this(content, collapseButtonAtLeft, false, null, null, null, null, null);
   }
 
   protected void setCollapsed(boolean collapse) {
@@ -195,33 +187,15 @@ public class CollapsiblePanel extends JPanel {
 	  myTitleLabel.setBackground(content.getBackground());
   }
 
-  private void createPopupMenu(String popupMenuPlace, String popupMenuName){
-
-	  if (popupMenuPlace != null && popupMenuName != null && popupMenuName.length() > 0 && myContent != null) {
-		  ActionGroup actionGroup = (ActionGroup) ActionManager.getInstance().getAction(popupMenuName);//"ThePlugin.JIRA.IssuePopupMenu"
-
-		  ActionPopupMenu popup = ActionManager.getInstance().createActionPopupMenu(popupMenuPlace, actionGroup);//"Issue"
-		  this.popupMenu = popup.getComponent();
-		  //this.myContent.removeMouseListener();
-		  this.myContent.addMouseListener(new MouseAdapter() {
-
-			  public void mouseClicked(MouseEvent event) {
-				  CollapsiblePanel.this.popupMenu.show(event.getComponent(), event.getX(), event.getY());
-			  }
-		  });
-	  }
-
-  }
-
   private void createToolbar(String toolbarPlace, String toolbarName) {
 
 	if (toolbarPlace != null && toolbarName != null && toolbarPlace.length() > 0 && toolbarName.length() > 0) {
 		toolBarPanel = new JPanel(new BorderLayout());
 
 		ActionManager aManager = ActionManager.getInstance();
-		ActionGroup serverToolBar = (ActionGroup) aManager.getAction(toolbarPlace);
+		ActionGroup serverToolBar = (ActionGroup) aManager.getAction(toolbarName);
 		ActionToolbar actionToolbar = aManager.createActionToolbar(
-					toolbarName, serverToolBar, true);
+					toolbarPlace, serverToolBar, true);
 
 
 		toolBarPanel.add(actionToolbar.getComponent(), BorderLayout.NORTH);
