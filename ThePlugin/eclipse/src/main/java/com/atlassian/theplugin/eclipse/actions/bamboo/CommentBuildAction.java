@@ -9,10 +9,16 @@ public class CommentBuildAction extends Action {
 	
 	private static final String COMMENT_BUILD = "Comment Build";
 
+	public CommentBuildAction() {
+		super();
+		
+		setEnabled(false); // action is disabled by default
+	}
+	
+	
 	@Override
 	public void run() {
 		super.run();
-		
 	}
 
 	@Override
@@ -30,8 +36,5 @@ public class CommentBuildAction extends Action {
 	public String getToolTipText() {
 		return COMMENT_BUILD;
 	}
-	
-	
-	
 
 }
