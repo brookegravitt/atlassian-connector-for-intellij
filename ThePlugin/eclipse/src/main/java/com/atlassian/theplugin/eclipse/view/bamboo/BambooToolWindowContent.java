@@ -3,6 +3,7 @@ package com.atlassian.theplugin.eclipse.view.bamboo;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -14,6 +15,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.ui.part.ViewPart;
 
 import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.commons.bamboo.BambooStatusListener;
@@ -25,8 +27,11 @@ public class BambooToolWindowContent implements BambooStatusListener {
 	private Collection<BambooBuildAdapterEclipse> buildStatuses = new ArrayList<BambooBuildAdapterEclipse>();
 	private Table table;
 	private TableViewer tableViewer;
+	private BambooToolWindow viewPart;
 
-	public BambooToolWindowContent(Composite parent) {
+	public BambooToolWindowContent(Composite parent, BambooToolWindow viewPart) {
+		
+		this.viewPart = viewPart;
 		
 		int style = SWT.SINGLE | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | 
 		SWT.FULL_SELECTION | SWT.HIDE_SELECTION;
@@ -57,13 +62,17 @@ public class BambooToolWindowContent implements BambooStatusListener {
 	
 	public void updateBuildStatuses(Collection<BambooBuild> buildStatuses) {
 		
+		Date pollingTime = new Date();
+		
 		this.buildStatuses.clear();
 		
 		for (BambooBuild build : buildStatuses) {
 			this.buildStatuses.add(new BambooBuildAdapterEclipse(build));
+			pollingTime = build.getPollingTime();
 		}
 		 
 		tableViewer.setInput(buildStatuses);
+		viewPart.setHeader("Last polling time: " + pollingTime.toString());
 		
 	}
 

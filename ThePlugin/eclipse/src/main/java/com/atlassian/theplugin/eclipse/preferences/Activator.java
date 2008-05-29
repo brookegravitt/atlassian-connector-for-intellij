@@ -1,12 +1,18 @@
 package com.atlassian.theplugin.eclipse.preferences;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Timer;
+import java.util.TimerTask;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
+import com.atlassian.theplugin.commons.SchedulableChecker;
 import com.atlassian.theplugin.commons.bamboo.BambooStatusChecker;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
@@ -21,7 +27,7 @@ import com.atlassian.theplugin.eclipse.util.PluginUtil;
  */
 public class Activator extends AbstractUIPlugin {
 
-	private static final int ONE_MINUTE = 60000;
+	private static final int BAMBOO_CHECKER_POLLING = 60000;
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "com.atlassian.theplugin.eclipse";
@@ -34,6 +40,10 @@ public class Activator extends AbstractUIPlugin {
 	private PluginConfigurationBean pluginConfiguration;
 
 	private BambooStatusChecker bambooChecker;
+
+	private Collection<TimerTask> scheduledComponents = new ArrayList<TimerTask>();
+
+	private Collection<SchedulableChecker> schedulableCheckers = new ArrayList<SchedulableChecker>();
 	
 	/**
 	 * The constructor
@@ -48,13 +58,6 @@ public class Activator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-//		IWorkbenchPartSite site = this.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActivePart().getSite();
-//		IViewSite viewSite = (IViewSite) site;
-//		viewSite.getActionBars().getStatusLineManager().setMessage("dupa maryni");
-		
-		//Period period = new Period();
-		//PluginConfigurationBean pluginConfiguration = null;
-		//SubscribedPlanBean bean = new SubscribedPlanBean();
 		
 		// create configuration
 		ProjectConfigurationWrapper configurationWrapper = new ProjectConfigurationWrapper(getPluginPreferences());
@@ -68,8 +71,14 @@ public class Activator extends AbstractUIPlugin {
 		MissingPasswordHandler missingPasswordHandler = new MissingPasswordHandler();
 		bambooChecker = BambooStatusChecker.getInstance(
 				EclipseActionScheduler.getInstance(), pluginConfiguration, missingPasswordHandler, PluginUtil.getLogger());
+		schedulableCheckers.add(bambooChecker);
+		
+		// create timer
 		timer = new Timer("Atlassian Eclipse Plugin checkers");
-		timer.schedule(bambooChecker.newTimerTask(), 0, ONE_MINUTE);
+		
+		// start timer/checkers
+		startTimer();
+		//timer.schedule(bambooChecker.newTimerTask(), 0, BAMBOO_CHECKER_POLLING);
 	}
 
 	/*
@@ -118,5 +127,40 @@ public class Activator extends AbstractUIPlugin {
 	public Shell getShell() {
 		return this.getWorkbench().getDisplay().getActiveShell();
 	}
+	
+	private void disableTimer() {
+		
+		Iterator<TimerTask> i = scheduledComponents.iterator();
+		while (i.hasNext()) {
+			TimerTask timerTask = i.next();
+			i.remove();
+			timerTask.cancel();
+		}
+
+		timer.purge();
+	}
+	
+	private void startTimer() {
+		for (SchedulableChecker checker : schedulableCheckers) {
+			if (checker.canSchedule()) {
+				final TimerTask newTask = checker.newTimerTask();
+				scheduledComponents.add(newTask);
+				timer.schedule(newTask, 0, BAMBOO_CHECKER_POLLING);
+				//timer.schedule(newTask, 0, checker.getInterval());
+			} else {
+				checker.resetListenersState();
+			}
+		}
+	}
+	
+	public void rescheduleStatusCheckers() {
+
+		disableTimer();
+		
+		startTimer();
+
+	}
+
+
 	
 }
