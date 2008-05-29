@@ -187,8 +187,6 @@ public class CollapsiblePanel extends JPanel {
 	  myToggleCollapseButton.setBackground(content.getBackground());
 	  setBackground(content.getBackground());
 	  myTitleLabel.setBackground(content.getBackground());
-	  myTitleLabel.setBackground(Color.WHITE);
-	  myTitleLabel.setForeground(Color.WHITE);
   }
 
   private void createPopupMenu(String popupMenuPlace, String popupMenuName){
@@ -285,8 +283,7 @@ public class CollapsiblePanel extends JPanel {
 
 	  myTitleLabel = new JLabel(title);
 	  myTitleLabel.setHorizontalAlignment(SwingConstants.CENTER);
-	  myTitleLabel.setFont(UIUtil.getLabelFont().deriveFont(Font.BOLD));
-	  myTitleLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+	  myTitleLabel.setFont(UIUtil.getLabelFont().deriveFont(Font.BOLD));	  
 
 
 	  add(myTitleLabel,
@@ -304,6 +301,7 @@ public class CollapsiblePanel extends JPanel {
 				}
 			}
 		});
+		this.validate();
 
 	}
 
@@ -394,8 +392,6 @@ public class CollapsiblePanel extends JPanel {
       myTitleLabel.setBackground(myContent.getBackground());
 
 	}
-	  myTitleLabel.setBackground(Color.WHITE);
-	  myTitleLabel.setForeground(Color.WHITE);
   }
 
   private boolean paintAsSelected() {
