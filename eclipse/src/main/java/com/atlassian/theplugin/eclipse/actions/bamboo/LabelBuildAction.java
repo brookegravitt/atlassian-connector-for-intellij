@@ -1,13 +1,13 @@
-package com.atlassian.theplugin.eclipse.view.bamboo;
+package com.atlassian.theplugin.eclipse.actions.bamboo;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 import com.atlassian.theplugin.eclipse.util.PluginUtil;
 
-public class CommentBuildAction extends Action {
+public class LabelBuildAction extends Action {
 	
-	private static final String COMMENT_BUILD = "Comment Build";
+	private static final String LABEL_BUILD = "Label Build";
 
 	@Override
 	public void run() {
@@ -18,17 +18,17 @@ public class CommentBuildAction extends Action {
 	@Override
 	public ImageDescriptor getImageDescriptor() {
 		// TODO use eclipse resource handling
-		return ImageDescriptor.createFromImage(PluginUtil.getImageRegistry().get(PluginUtil.BAMBOO_COMMENT));
+		return ImageDescriptor.createFromImage(PluginUtil.getImageRegistry().get(PluginUtil.BAMBOO_LABEL));
 	}
 
 	@Override
 	public String getText() {
-		return COMMENT_BUILD;
+		return LABEL_BUILD;
 	}
 
 	@Override
 	public String getToolTipText() {
-		return COMMENT_BUILD;
+		return LABEL_BUILD;
 	}
 	
 	
