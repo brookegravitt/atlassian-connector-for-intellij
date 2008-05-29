@@ -17,20 +17,15 @@
 package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.commons.Server;
-import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListener;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraFilterEntryBean;
 import com.atlassian.theplugin.configuration.JiraFiltersBean;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.configuration.ProjectToolWindowTableConfiguration;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.ProgressAnimationProvider;
-import com.atlassian.theplugin.idea.TableColumnInfo;
-import com.atlassian.theplugin.idea.bamboo.ToolWindowBambooContent;
+import com.atlassian.theplugin.idea.action.jira.RunJIRAActionAction;
 import com.atlassian.theplugin.idea.jira.table.JIRATableColumnProviderImpl;
 import com.atlassian.theplugin.idea.jira.table.columns.*;
-import com.atlassian.theplugin.idea.ui.AtlassianTableView;
-import com.atlassian.theplugin.idea.ui.CollapsibleTable;
 import com.atlassian.theplugin.idea.ui.AbstractTableToolWindowPanel;
 import com.atlassian.theplugin.idea.ui.TableColumnProvider;
 import com.atlassian.theplugin.jira.JIRAServer;
@@ -39,23 +34,16 @@ import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
 import com.intellij.ide.BrowserUtil;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionPopupMenu;
-import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.popup.JBPopupFactory;
+import com.intellij.openapi.ui.popup.PopupChooserBuilder;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
-import com.intellij.openapi.ui.popup.PopupChooserBuilder;
-import com.intellij.openapi.ui.popup.JBPopupFactory;
-import com.intellij.util.ui.ListTableModel;
 import com.intellij.util.ui.UIUtil;
-import thirdparty.javaworld.ClasspathHTMLEditorKit;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -265,11 +253,8 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
 
 		public void run() {
 			JIRAAction action = (JIRAAction) list.getSelectedValue();
-			BrowserUtil.launchBrowser(issue.getServerUrl()
-				+ "/secure/WorkflowUIDispatcher.jspa?id="
-				+ issue.getId()
-				+ "&"
-				+ action.getQueryStringFragment());
+			RunJIRAActionAction ja = new RunJIRAActionAction(issue, action);
+			ja.launchBrowser();
 		}
 	}
 
@@ -291,6 +276,48 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
 			.showInCenterOf(this);
 	}
 
+	protected void addCustomSubmenus(DefaultActionGroup actionGroup, final ActionPopupMenu popup) {
+		final DefaultActionGroup submenu = new DefaultActionGroup("Querying For Actions... ", true) {
+			public void update(AnActionEvent event) {
+				super.update(event);
+
+				if (getChildrenCount() > 0) {
+					event.getPresentation().setText("Issue Actions");
+				}
+			}
+		};
+		actionGroup.add(submenu);
+
+		new Thread() {
+			public void run() {
+				try {
+					final JIRAIssue issue = ((JiraIssueAdapter) table.getSelectedObject()).getIssue();
+					final List<JIRAAction> actions =
+						jiraServerFacade.getAvailableActions(IdeaHelper.getCurrentJIRAServer().getServer(), issue);
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							JPopupMenu pMenu = popup.getComponent();
+							if (pMenu.isVisible()) {
+								for (JIRAAction a : actions) {
+									submenu.add(new RunJIRAActionAction(issue, a));
+								}
+								// magic that makes the popup update itself. Don't ask - it is some sort of voodoo
+								pMenu.setVisible(false);
+								pMenu.setVisible(true);
+							}
+						}
+					});
+				} catch (JIRAException e) {
+					// todo: need to inform user that query for issue actions failed
+				} catch (NullPointerException e) {
+					// somebody unselected issue in the table, so let's just skip
+				}
+			}
+		}
+		.start();
+	}
+
+	
 	public void refreshIssuesPage() {
         if (IdeaHelper.getCurrentJIRAServer() != null) {
             updateIssues(IdeaHelper.getCurrentJIRAServer());
