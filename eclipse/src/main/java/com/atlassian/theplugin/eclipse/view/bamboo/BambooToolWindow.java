@@ -26,6 +26,7 @@ public class BambooToolWindow extends ViewPart {
 	private IAction runBuildAction;
 	private IAction labelBuildAction;
 	private IAction commentBuildAction;
+	private BambooToolWindowContent bambooToolWindowContent;
 
 	/**
 	 * 
@@ -39,18 +40,16 @@ public class BambooToolWindow extends ViewPart {
 	@Override
 	public void createPartControl(Composite parent) {
 		
-		// create bamboo status listeners which is also a tab component
-		BambooStatusListener bambooListener = new BambooToolWindowContent(parent, this);
-
+		bambooToolWindowContent = new BambooToolWindowContent(parent, this);
 		// register listener
-		Activator.getDefault().getBambooChecker().registerListener(bambooListener);
+		Activator.getDefault().getBambooChecker().registerListener(bambooToolWindowContent);
 
 		
 		//getViewSite().registerContextMenu(menuManager, selectionProvider)
 		
 		IToolBarManager toolBarManager = getViewSite().getActionBars().getToolBarManager();
 		
-		this.runBuildAction = new RunBuildAction(); 
+		this.runBuildAction = new RunBuildAction(this); 
 		this.labelBuildAction = new LabelBuildAction();
 		this.commentBuildAction = new CommentBuildAction();
 		
@@ -72,19 +71,27 @@ public class BambooToolWindow extends ViewPart {
 
 	}
 	
-	public void setHeader(String text) {
+	public void setHeaderText(String text) {
 		setContentDescription(text);
 	}
-
-	public IAction getRunBuildAction() {
-		return runBuildAction;
+	
+	public void setStatusBarText(String text) {
+		getViewSite().getActionBars().getStatusLineManager().setMessage(text);
 	}
 
-	public IAction getLabelBuildAction() {
-		return labelBuildAction;
-	}
-	public IAction getCommentBuildAction() {
-		return commentBuildAction;
+//	public IAction getRunBuildAction() {
+//		return runBuildAction;
+//	}
+//
+//	public IAction getLabelBuildAction() {
+//		return labelBuildAction;
+//	}
+//	public IAction getCommentBuildAction() {
+//		return commentBuildAction;
+//	}
+
+	public BambooToolWindowContent getBambooToolWindowContent() {
+		return bambooToolWindowContent;
 	}
 
 	public void enableBambooBuildActions() {
