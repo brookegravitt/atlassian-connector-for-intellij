@@ -51,6 +51,9 @@ public class BambooToolWindowContent implements BambooStatusListener {
 		tableViewer.setLabelProvider(new BambooLabelProvider());
 		
 		tableViewer.addPostSelectionChangedListener(new ISelectionChangedListener() {
+					/**
+					 * Disable/enable toolbar buttons/actions 
+					 */
 					public void selectionChanged(SelectionChangedEvent event) {
 						if (event.getSelection().isEmpty()) {
 							viewPart.disableBambooBuildActions();
@@ -58,13 +61,14 @@ public class BambooToolWindowContent implements BambooStatusListener {
 							viewPart.enableBambooBuildActions();
 						}
 					}
-				}
-			);
+				});
 		
 		tableViewer.addDoubleClickListener(new IDoubleClickListener() {
 
+			/**
+			 * opens browser with build details
+			 */
 			public void doubleClick(DoubleClickEvent event) {
-				
 				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
 				BambooBuildAdapterEclipse build = (BambooBuildAdapterEclipse) selection.getFirstElement();
 				
@@ -111,7 +115,7 @@ public class BambooToolWindowContent implements BambooStatusListener {
 		}
 		 
 		tableViewer.setInput(buildStatuses);
-		viewPart.setHeader("Last polling time: " + pollingTime.toString());
+		viewPart.setHeaderText("Last polling time: " + pollingTime.toString());
 		
 	}
 
@@ -227,6 +231,10 @@ public class BambooToolWindowContent implements BambooStatusListener {
 		public int columnWidth() {
 			return columnWidth;
 		}
+	}
+
+	public TableViewer getTableViewer() {
+		return tableViewer;
 	}
 
 }
