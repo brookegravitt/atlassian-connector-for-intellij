@@ -57,6 +57,9 @@ public class BambooToolWindowContent implements BambooStatusListener {
 					public void selectionChanged(SelectionChangedEvent event) {
 						if (event.getSelection().isEmpty()) {
 							viewPart.disableBambooBuildActions();
+						} else if (getBuild(event).isBamboo2()) {
+							viewPart.enableBamboo2BuildActions();
+							viewPart.enableBambooBuildActions();
 						} else {
 							viewPart.enableBambooBuildActions();
 						}
@@ -69,8 +72,7 @@ public class BambooToolWindowContent implements BambooStatusListener {
 			 * opens browser with build details
 			 */
 			public void doubleClick(DoubleClickEvent event) {
-				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
-				BambooBuildAdapterEclipse build = (BambooBuildAdapterEclipse) selection.getFirstElement();
+				BambooBuildAdapterEclipse build = getBuild(event);
 				
 				try {
 					Activator.getDefault().getWorkbench().getBrowserSupport().createBrowser(
@@ -237,4 +239,16 @@ public class BambooToolWindowContent implements BambooStatusListener {
 		return tableViewer;
 	}
 
+	private BambooBuildAdapterEclipse getBuild(DoubleClickEvent event) {
+		IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+		BambooBuildAdapterEclipse build = (BambooBuildAdapterEclipse) selection.getFirstElement();
+		return build;
+	}
+	
+	private BambooBuildAdapterEclipse getBuild(SelectionChangedEvent event) {
+		IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+		BambooBuildAdapterEclipse build = (BambooBuildAdapterEclipse) selection.getFirstElement();
+		return build;
+	}
+	
 }
