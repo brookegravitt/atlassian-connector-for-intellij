@@ -417,65 +417,13 @@
             <plugin>
                 <artifactId>maven-pmd-plugin</artifactId>
             </plugin>
-            <plugin>
-                <groupId>com.google.code.maven-license-plugin</groupId>
-                <artifactId>maven-license-plugin</artifactId>
-                <version>1.2.5</version>
-                <configuration>
-                    <basedir>${pom.basedir}</basedir>
-                    <header>LICENSE</header>
-                    <quiet>false</quiet>
-                    <failIfMissing>true</failIfMissing>
-                    <includes>
-                        <include>src/**</include>
-                        <include>**/test/**</include>
-                    </includes>
-                    <excludes>
-                        <exclude>target/**</exclude>
-                        <exclude>.clover/**</exclude>
-                        <exclude>**/*png</exclude>
-                        <exclude>**/*gif</exclude>
-                        <exclude>**/*diff</exclude>
-                        <exclude>**/*orig</exclude>
-                        <exclude>**/*new</exclude>
-                        <exclude>**/*keystore</exclude>
-                        <exclude>**/*apt.vm</exclude>
-                    </excludes>
-                    <useDefaultExcludes>true</useDefaultExcludes>
-                    <mapping>
-                        <form>xml</form>
-                    </mapping>
-                    <useDefaultMapping>true</useDefaultMapping>
-                    <properties>
-                        <year>${project.inceptionYear}</year>
-                        <email>info@atlassian.com</email>
-                    </properties>
-                </configuration>
-                <executions>
-<!--execution>
-						<phase>test</phase>
-						<goals>
-							<goal>format</goal>
-						</goals>
-					</execution-->
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-scm-plugin</artifactId>
-                <configuration>
-                    <connectionType>connection</connectionType>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
     <repositories>
         <repository>
             <id>springRichclientRepository</id>
             <name>Spring rich client repository</name>
-            <url>
-				http://spring-rich-c.sourceforge.net/maven2repository
-			</url>
+            <url>http://spring-rich-c.sourceforge.net/maven2repository</url>
         </repository>
     </repositories>
 </project>
