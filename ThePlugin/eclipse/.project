@@ -23,9 +23,9 @@
   </natures>
   <linkedResources>
     <link>
-      <name>atlassian-plugin-commons-1.3.0-SNAPSHOT.jar</name>
+      <name>atlassian-plugin-commons-1.4.0-SNAPSHOT.jar</name>
       <type>1</type>
-      <location>C:/Users/Jacek/.m2/repository/com/atlassian/theplugin/atlassian-plugin-commons/1.3.0-SNAPSHOT/atlassian-plugin-commons-1.3.0-SNAPSHOT.jar</location>
+      <location>C:/Users/Jacek/.m2/repository/com/atlassian/theplugin/atlassian-plugin-commons/1.4.0-SNAPSHOT/atlassian-plugin-commons-1.4.0-SNAPSHOT.jar</location>
     </link>
     <link>
       <name>icu4j-2.6.1.jar</name>
