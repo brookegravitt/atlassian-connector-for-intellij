@@ -177,8 +177,6 @@ public class ThePluginProjectComponent implements
             //Content crucibleToolWindow = createCrucibleContent();
             toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.CRUCIBLE);
             toolWindow.showHidePanels();
-            TableView.restore(projectConfigurationBean.getCrucibleConfiguration().getTableConfiguration(),
-                    crucibleToolWindowPanel.getTable());
 
             //Content jiraToolWindow = createJiraContent();
             toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.JIRA);
