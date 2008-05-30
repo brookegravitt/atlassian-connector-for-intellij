@@ -131,7 +131,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         //crucibleFacade = CrucibleServerFacadeImpl.getInstance();
     }
 
-    private void addPredefinedFilters() {
+    private void switchToCrucible16Filter() {
         for (int i = 0; i < IdeaHelper.getPluginConfiguration().getCrucibleConfigurationData().getFilters().length; ++i)
         {
             if (crucible15Table != null) {
@@ -151,14 +151,13 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
      * @param visible panel added when true, removed when false
      */
     public void showPredefinedFilter(PredefinedFilter filter, boolean visible) {
-        System.out.println("Panel state: " + visible + " for filter filter.getFilterName() = " + filter.getFilterName());
         if (visible) {
             CollapsibleTable table = new CollapsibleTable(
                     tableColumnProvider,
                     projectConfiguration.getCrucibleConfiguration().getTableConfiguration(),
                     filter.getFilterName(),
                     "atlassian.toolwindow.serverToolBar",
-                    getToolbarActionGroup(),
+                    "ThePlugin.CrucibleReviewToolBar",
                     "Context menu",
                     getPopupActionGroup());
             table.addItemSelectedListener(this);
@@ -183,7 +182,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
                     projectConfiguration.getCrucibleConfiguration().getTableConfiguration(),
                     TO_REVIEW_AS_ACTIVE_REVIEWER,
                     "atlassian.toolwindow.serverToolBar",
-                    getToolbarActionGroup(),
+                    "ThePlugin.CrucibleReviewToolBar",
                     "Context menu",
                     getPopupActionGroup());
             crucible15Table.addItemSelectedListener(this);
@@ -490,7 +489,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         sb.append("Loaded <b>");
         sb.append(reviews.size());
         sb.append(" open code reviews</b> for you.");
-        editorPane.setText(wrapBody(sb.toString()));
+        setStatusMessage(sb.toString());
     }
 
     /*
@@ -499,8 +498,9 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     public void updateReviews(Map<PredefinedFilter, List<ReviewDataInfo>> reviews) {
         this.crucibleVersion = CrucibleVersion.CRUCIBLE_16;
         if (tables.isEmpty()) {
-            addPredefinedFilters();
+            switchToCrucible16Filter();
         }
+        int reviewCount = 0;
         for (PredefinedFilter predefinedFilter : reviews.keySet()) {
             List<ReviewDataInfo> reviewList = reviews.get(predefinedFilter);
             if (reviewList != null) {
@@ -517,8 +517,14 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
                     table.setForeground(UIUtil.getActiveTextColor());
                 }
                 table.setTitle(predefinedFilter.getFilterName() + " (" + reviewList.size() + ")");
+                reviewCount += reviewList.size();
             }
         }
+        StringBuffer sb = new StringBuffer();
+        sb.append("Loaded <b>");
+        sb.append(reviewCount);
+        sb.append(" code reviews</b> for defined filters.");
+        setStatusMessage(sb.toString());
     }
 
     public void itemSelected(Object item, int noClicks) {
