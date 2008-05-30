@@ -68,10 +68,12 @@ public class PreferencePage
 		addField(new StringFieldEditor(PreferenceConstants.BAMBOO_NAME, "Server Name:", getFieldEditorParent()));
 		addField(new StringFieldEditor(PreferenceConstants.BAMBOO_URL, "Server Url:", getFieldEditorParent()));
 		addField(new StringFieldEditor(PreferenceConstants.BAMBOO_USER_NAME, "User Name:", getFieldEditorParent()));
-		
 		addField(new PasswordFieldEditor(PreferenceConstants.BAMBOO_USER_PASSWORD, "Password:", getFieldEditorParent()));
-		addField(new StringFieldEditor(PreferenceConstants.BAMBOO_BUILDS, "Build:", getFieldEditorParent()));
-
+		
+		StringFieldEditor builds = new StringFieldEditor(PreferenceConstants.BAMBOO_BUILDS, "Builds:", getFieldEditorParent());
+		builds.getLabelControl(getFieldEditorParent()).setToolTipText("Space separated build names");
+		addField(builds);
+		
 	}
 
 	/* (non-Javadoc)
@@ -79,5 +81,5 @@ public class PreferencePage
 	 */
 	public void init(IWorkbench workbench) {
 	}
-	
+
 }

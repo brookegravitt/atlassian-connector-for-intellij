@@ -36,7 +36,7 @@ public final class PluginUtil {
 			
 			imageRegistry.put(BuildStatus.BUILD_SUCCEED.toString(), ImageDescriptor.createFromFile(PluginUtil.class, "/icons/bamboo_plan_passed.gif"));
 			imageRegistry.put(BuildStatus.BUILD_FAILED.toString(), ImageDescriptor.createFromFile(PluginUtil.class, "/icons/bamboo_plan_failed.gif"));
-			imageRegistry.put(BuildStatus.UNKNOWN.toString(), ImageDescriptor.createFromFile(PluginUtil.class, "icons/bamboo_plan_unknown.gif"));
+			imageRegistry.put(BuildStatus.UNKNOWN.toString(), ImageDescriptor.createFromFile(PluginUtil.class, "/icons/bamboo_plan_unknown.gif"));
 
 			imageRegistry.put(BAMBOO_RUN, ImageDescriptor.createFromFile(PluginUtil.class, "/icons/run.gif"));
 			imageRegistry.put(BAMBOO_LABEL, ImageDescriptor.createFromFile(PluginUtil.class, "/icons/bamboo_label.gif"));
