@@ -18,7 +18,7 @@
 
 <!--jgorycki: putting DOCTYPE here does evil things to the parser - it tries to parse the -->
 		<!--downloaded DTD file which happens to be corrupt (JetBrain sucks?)-->
-<!--<!DOCTYPE idea-plugin PUBLIC "Plugin/DTD" "http://plugins.intellij.net/plugin.dtd"> -->
+<!-- <!DOCTYPE idea-plugin PUBLIC "Plugin/DTD" "http://plugins.intellij.net/plugin.dtd"> -->
 <idea-plugin url="http://www.atlassian.com/software/ideplugin/">
 
 	<name>Atlassian</name>
@@ -159,13 +159,19 @@
         <action id="ThePlugin.Crucible.CrucibleFilterCombo" class="com.atlassian.theplugin.idea.action.crucible.CrucibleFilterComboAction" text="Select predefined filter"/>
         <action id="ThePlugin.Crucible.ViewReview" class="com.atlassian.theplugin.idea.action.crucible.ViewReviewAction" text="View review" />
 
-        <action id="ThePlugin.Crucible.ToReviewAction" class="com.atlassian.theplugin.idea.action.crucible.ToReviewAction" text="To review" icon="/ant/filter.png" />
-        <action id="ThePlugin.Crucible.RequireApprovalAction" class="com.atlassian.theplugin.idea.action.crucible.RequireApprovalAction" text="Require approval" icon="/ant/filter.png" />
-        <action id="ThePlugin.Crucible.OutForReviewAction" class="com.atlassian.theplugin.idea.action.crucible.OutForReviewAction" text="Out for review" icon="/ant/filter.png" />
-        <action id="ThePlugin.Crucible.DraftsAction" class="com.atlassian.theplugin.idea.action.crucible.DraftsAction" text="Drafts" icon="/ant/filter.png" />
-        <action id="ThePlugin.Crucible.OpenAction" class="com.atlassian.theplugin.idea.action.crucible.OpenAction" text="Open" icon="/ant/filter.png" />
-        <action id="ThePlugin.Crucible.ClosedAction" class="com.atlassian.theplugin.idea.action.crucible.ClosedAction" text="Closed" icon="/ant/filter.png" />
-        <action id="ThePlugin.Crucible.AbandonedAction" class="com.atlassian.theplugin.idea.action.crucible.AbandonedAction" text="Abandoned" icon="/ant/filter.png" />
+        <action id="ThePlugin.Crucible.ToReviewAction" class="com.atlassian.theplugin.idea.action.crucible.ToReviewAction" text="To review" icon="/actions/find.png" />
+        <action id="ThePlugin.Crucible.ToReviewComboAction" class="com.atlassian.theplugin.idea.action.crucible.ToReviewAction" text="To review" />
+        <action id="ThePlugin.Crucible.RequireApprovalAction" class="com.atlassian.theplugin.idea.action.crucible.RequireApprovalAction" text="Require approval"  />
+        <action id="ThePlugin.Crucible.ToSummarizeAction" class="com.atlassian.theplugin.idea.action.crucible.ToSummarizeAction" text="To summarize" />
+        <action id="ThePlugin.Crucible.OutForReviewAction" class="com.atlassian.theplugin.idea.action.crucible.OutForReviewAction" text="Out for review"  />
+        <action id="ThePlugin.Crucible.DraftsAction" class="com.atlassian.theplugin.idea.action.crucible.DraftsAction" text="Drafts" />
+        <action id="ThePlugin.Crucible.OpenAction" class="com.atlassian.theplugin.idea.action.crucible.OpenAction" text="Open"  />
+        <action id="ThePlugin.Crucible.ClosedAction" class="com.atlassian.theplugin.idea.action.crucible.ClosedAction" text="Closed" />
+        <action id="ThePlugin.Crucible.AbandonedAction" class="com.atlassian.theplugin.idea.action.crucible.AbandonedAction" text="Abandoned" />
+        <action id="ThePlugin.Crucible.AllOpen" class="com.atlassian.theplugin.idea.action.crucible.AllOpenAction" text="All open" />
+        <action id="ThePlugin.Crucible.AllClosed" class="com.atlassian.theplugin.idea.action.crucible.AllClosedAction" text="All closed" />
+        <action id="ThePlugin.Crucible.All" class="com.atlassian.theplugin.idea.action.crucible.AllAction" text="All" />        
+
 
         <group id="ThePlugin.CrucibleToolWindowToolBar" popup="false" text="">
             <reference id="ThePlugin.ShowSettings" />
@@ -173,12 +179,27 @@
 			<reference id="ThePlugin.Crucible.RefreshStatus" />
 			<separator />
             <reference id="ThePlugin.Crucible.ToReviewAction" />
+        </group>
+
+        <group id="ThePlugin.CrucibleFilterCombo" popup="true" text="" icon="/ant/filter.png">
+            <reference id="ThePlugin.Crucible.ToReviewComboAction" />
             <reference id="ThePlugin.Crucible.RequireApprovalAction" />
+            <reference id="ThePlugin.Crucible.ToSummarizeAction" />
             <reference id="ThePlugin.Crucible.OutForReviewAction" />
             <reference id="ThePlugin.Crucible.DraftsAction" />
             <reference id="ThePlugin.Crucible.OpenAction" />
             <reference id="ThePlugin.Crucible.ClosedAction" />
             <reference id="ThePlugin.Crucible.AbandonedAction" />
+            <separator/>
+            <reference id="ThePlugin.Crucible.AllOpen" />
+            <reference id="ThePlugin.Crucible.AllClosed" />
+            <reference id="ThePlugin.Crucible.All" />            
+            <add-to-group anchor="last" group-id="ThePlugin.CrucibleToolWindowToolBar" />
+        </group>        
+
+        <group id="ThePlugin.CrucibleReviewToolBar" popup="false" text="">
+            <reference id="ThePlugin.Crucible.ViewReview" />            
+            <separator />
         </group>
 
         <group id="ThePlugin.Crucible.ReviewPopupMenu" popup="true">
