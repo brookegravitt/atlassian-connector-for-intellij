@@ -11,8 +11,8 @@ import com.intellij.util.ui.ListTableModel;
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 public class CollapsibleTable extends CollapsiblePanel {
     private final List<TableItemSelectedListener> listenerList = new ArrayList<TableItemSelectedListener>();
@@ -38,10 +38,8 @@ public class CollapsibleTable extends CollapsiblePanel {
         if (popupMenuPlace != null && popupMenuName != null && popupMenuName.length() > 0) {
             table.addMouseListener(new MouseAdapter() {
                 public void mouseClicked(MouseEvent e) {
-                    if (e.getClickCount() == 2) {
-                        for (TableItemSelectedListener tableItemSelectedListener : listenerList) {
-                            tableItemSelectedListener.itemSelected(table.getSelectedObject(), 2);
-                        }
+                    for (TableItemSelectedListener tableItemSelectedListener : listenerList) {
+                        tableItemSelectedListener.itemSelected(table.getSelectedObject(), e.getClickCount());
                     }
                 }
 
@@ -99,6 +97,6 @@ public class CollapsibleTable extends CollapsiblePanel {
 
     public void removeItemSelectedListener(TableItemSelectedListener listener) {
         listenerList.remove(listener);
-    }       
+    }
 }
 
