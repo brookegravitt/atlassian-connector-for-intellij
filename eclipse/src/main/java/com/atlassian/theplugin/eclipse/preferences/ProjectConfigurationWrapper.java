@@ -33,8 +33,6 @@ public class ProjectConfigurationWrapper {
 		
 		String[] plans = preferences.getString(PreferenceConstants.BAMBOO_BUILDS).split(" ");
 		
-		System.out.println(preferences.getString(PreferenceConstants.BAMBOO_BUILDS));
-
 		for (String plan : plans) {
 			SubscribedPlanBean subscribedPlan = new SubscribedPlanBean(plan);
 			subscribedPlans.add(subscribedPlan);
