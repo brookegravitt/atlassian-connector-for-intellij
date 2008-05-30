@@ -140,6 +140,56 @@
                     <altDeploymentRepository>atlassian-m2-snapshot-repository::default::dav:https://maven.atlassian.com/public/</altDeploymentRepository>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>com.google.code.maven-license-plugin</groupId>
+                <artifactId>maven-license-plugin</artifactId>
+                <version>1.3.0</version>
+                <configuration>
+                    <basedir>${pom.basedir}</basedir>
+                    <header>LICENSE</header>
+                    <quiet>false</quiet>
+                    <failIfMissing>true</failIfMissing>
+                    <includes>
+                        <include>src/**</include>
+                        <include>**/test/**</include>
+                    </includes>
+                    <excludes>
+                        <exclude>**/target/**</exclude>
+                        <exclude>**/.clover/**</exclude>
+                        <exclude>**/*png</exclude>
+                        <exclude>**/*gif</exclude>
+                        <exclude>**/*diff</exclude>
+                        <exclude>**/*orig</exclude>
+                        <exclude>**/*new</exclude>
+                        <exclude>**/*keystore</exclude>
+                        <exclude>**/*apt.vm</exclude>
+                    </excludes>
+                    <useDefaultExcludes>true</useDefaultExcludes>
+                    <mapping>
+                        <form>xml</form>
+                    </mapping>
+                    <useDefaultMapping>true</useDefaultMapping>
+                    <properties>
+                        <year>${project.inceptionYear}</year>
+                        <email>info@atlassian.com</email>
+                    </properties>
+                </configuration>
+                <executions>
+<!--execution>
+						<phase>test</phase>
+						<goals>
+							<goal>format</goal>
+						</goals>
+					</execution-->
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-scm-plugin</artifactId>
+                <configuration>
+                    <connectionType>connection</connectionType>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <reporting>
@@ -218,5 +268,16 @@
             <id>atlassian-public-repository</id>
             <url>https://maven.atlassian.com/public</url>
         </pluginRepository>
+	<pluginRepository>
+	    <id>mc-release</id>
+	    <name>Local Maven repository of releases</name>
+	    <url>http://mc-repo.googlecode.com/svn/maven2/releases</url>
+	    <snapshots>
+	        <enabled>false</enabled>
+	    </snapshots>
+	    <releases>
+	        <enabled>true</enabled>
+	    </releases>
+	</pluginRepository>
     </pluginRepositories>
 </project>
