@@ -29,7 +29,7 @@ public class RunBuildAction extends BambooAction {
 				try {
 					setUIMessage("Starting build on plan " + build.getBuildKey());
 					bambooFacade.executeBuild(build.getServer(), build.getBuildKey());
-					setUIMessage("Build started on plan" + build.getBuildKey());
+					setUIMessage("Build started on plan " + build.getBuildKey());
 				} catch (ServerPasswordNotProvidedException e) {
 					setUIMessage("Build not started. Password not provided for server");
 				} catch (RemoteApiException e) {
