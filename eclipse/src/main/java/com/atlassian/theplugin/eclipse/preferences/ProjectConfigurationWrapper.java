@@ -29,9 +29,17 @@ public class ProjectConfigurationWrapper {
 
 	public PluginConfigurationBean getPluginConfiguration() {
 		
-		SubscribedPlanBean subscribedPlan = new SubscribedPlanBean(preferences.getString(PreferenceConstants.BAMBOO_BUILDS));
 		List<SubscribedPlanBean> subscribedPlans = new ArrayList<SubscribedPlanBean>();
-		subscribedPlans.add(subscribedPlan);
+		
+		String[] plans = preferences.getString(PreferenceConstants.BAMBOO_BUILDS).split(" ");
+		
+		System.out.println(preferences.getString(PreferenceConstants.BAMBOO_BUILDS));
+
+		for (String plan : plans) {
+			SubscribedPlanBean subscribedPlan = new SubscribedPlanBean(plan);
+			subscribedPlans.add(subscribedPlan);
+		}
+		
 		
 		ServerBean bambooServer = new ServerBean();
 		bambooServer.setEnabled(true);

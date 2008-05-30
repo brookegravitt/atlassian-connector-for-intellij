@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.eclipse.core.runtime.Preferences.IPropertyChangeListener;
+import org.eclipse.core.runtime.Preferences.PropertyChangeEvent;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -60,9 +62,7 @@ public class Activator extends AbstractUIPlugin {
 		plugin = this;
 		
 		// create configuration
-		ProjectConfigurationWrapper configurationWrapper = new ProjectConfigurationWrapper(getPluginPreferences());
-		pluginConfiguration = configurationWrapper.getPluginConfiguration();
-		ConfigurationFactory.setConfiguration(pluginConfiguration);
+		reloadConfiguration();
 		
 		// create logger
 		new EclipseLogger(getLog());	// now you can use PluginUtil.getLogger
@@ -73,12 +73,28 @@ public class Activator extends AbstractUIPlugin {
 				EclipseActionScheduler.getInstance(), pluginConfiguration, missingPasswordHandler, PluginUtil.getLogger());
 		schedulableCheckers.add(bambooChecker);
 		
+		// create configuration changes listener
+		getPluginPreferences().addPropertyChangeListener(new IPropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent event) {
+				reloadConfiguration();
+				bambooChecker.setConfiguration(pluginConfiguration);
+				rescheduleStatusCheckers();
+			}
+			
+		});
+		
 		// create timer
 		timer = new Timer("Atlassian Eclipse Plugin checkers");
 		
 		// start timer/checkers
 		startTimer();
 		//timer.schedule(bambooChecker.newTimerTask(), 0, BAMBOO_CHECKER_POLLING);
+	}
+
+	public void reloadConfiguration() {
+		ProjectConfigurationWrapper configurationWrapper = new ProjectConfigurationWrapper(getPluginPreferences());
+		pluginConfiguration = configurationWrapper.getPluginConfiguration();
+		ConfigurationFactory.setConfiguration(pluginConfiguration);
 	}
 
 	/*
