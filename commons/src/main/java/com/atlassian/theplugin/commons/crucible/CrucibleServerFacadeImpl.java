@@ -31,7 +31,7 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	private Map<String, CrucibleSession> sessions = new HashMap<String, CrucibleSession>();
 	private static CrucibleServerFacadeImpl instance;
 
-	private CrucibleServerFacadeImpl() {
+    private CrucibleServerFacadeImpl() {
 	}
 
 	public static CrucibleServerFacade getInstance() {
@@ -54,12 +54,11 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 		}
 		if (!session.isLoggedIn()) {
 			session.login(server.getUserName(), server.transientGetPasswordString());
-		}
-
+        }
 		return session;
 	}
 
-	/**
+    /**
 	 * @param serverUrl @see
      *          com.atlassian.theplugin.commons.crucible.remoteapi.soap.CrucibleSessionImpl#constructor(String baseUrl)
 	 * @param userName
@@ -204,19 +203,30 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 		return Collections.EMPTY_LIST;
 	}
 
-    public List<ReviewData> getReviewsForFilter(Server server, PredefinedFilter filter)
+    public List<ReviewDataInfo> getReviewsForFilter(Server server, PredefinedFilter filter)
             throws RemoteApiException, ServerPasswordNotProvidedException {
         CrucibleSession session = getSession(server);
 
-        List<ReviewData> result = session.getReviewsForFilter(filter);
+        List<ReviewData> reviews = session.getReviewsForFilter(filter);
+        List<ReviewDataInfo> result = new ArrayList<ReviewDataInfo>(reviews.size());
+
+        for (ReviewData reviewData : reviews) {
+            result.add(new ReviewDataInfoImpl(reviewData, null, server));
+        }
+
         return result;
     }
 
-    public List<ReviewData> getReviewsForCustomFilter(Server server, CustomFilter filter)
+    public List<ReviewDataInfo> getReviewsForCustomFilter(Server server, CustomFilter filter)
             throws RemoteApiException, ServerPasswordNotProvidedException {
         CrucibleSession session = getSession(server);
 
-        List<ReviewData> result = session.getReviewsForCustomFilter(filter);
+        List<ReviewData> reviews = session.getReviewsForCustomFilter(filter);
+        List<ReviewDataInfo> result = new ArrayList<ReviewDataInfo>(reviews.size());
+
+        for (ReviewData reviewData : reviews) {
+            result.add(new ReviewDataInfoImpl(reviewData, null, server));
+        }
         return result;        
     }
 

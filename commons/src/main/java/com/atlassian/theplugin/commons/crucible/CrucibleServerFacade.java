@@ -34,10 +34,10 @@ public interface CrucibleServerFacade extends ProductServerFacade {
 	List<ReviewDataInfo> getActiveReviewsForUser(Server server)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-    List<ReviewData> getReviewsForFilter(Server server, PredefinedFilter filter)
+    List<ReviewDataInfo> getReviewsForFilter(Server server, PredefinedFilter filter)
             throws RemoteApiException, ServerPasswordNotProvidedException;
 
-    List<ReviewData> getReviewsForCustomFilter(Server server, CustomFilter filter)
+    List<ReviewDataInfo> getReviewsForCustomFilter(Server server, CustomFilter filter)
             throws RemoteApiException, ServerPasswordNotProvidedException;    
 
     ReviewData createReviewFromPatch(Server server, ReviewData reviewData, String patch)

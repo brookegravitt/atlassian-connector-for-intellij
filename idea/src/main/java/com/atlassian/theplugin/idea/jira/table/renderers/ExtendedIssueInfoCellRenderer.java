@@ -47,7 +47,12 @@ public class ExtendedIssueInfoCellRenderer extends DefaultTableCellRenderer {
 		sb.append("");
 		sb.append("</td></tr>");
 
-		sb.append("<tr><td valign=\"top\"><b>Reporter:</b></td><td valign=\"top\">");
+        sb.append("<tr><td valign=\"top\"><b>Status:</b></td><td valign=\"top\">");
+        sb.append(a.getStatus());
+        sb.append("");
+        sb.append("</td></tr>");
+
+        sb.append("<tr><td valign=\"top\"><b>Reporter:</b></td><td valign=\"top\">");
 		sb.append(a.getReporter());
 		sb.append("");
 		sb.append("</td></tr>");
