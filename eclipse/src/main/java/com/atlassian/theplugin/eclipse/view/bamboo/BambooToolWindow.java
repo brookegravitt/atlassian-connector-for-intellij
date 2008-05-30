@@ -79,28 +79,19 @@ public class BambooToolWindow extends ViewPart {
 		getViewSite().getActionBars().getStatusLineManager().setMessage(text);
 	}
 
-//	public IAction getRunBuildAction() {
-//		return runBuildAction;
-//	}
-//
-//	public IAction getLabelBuildAction() {
-//		return labelBuildAction;
-//	}
-//	public IAction getCommentBuildAction() {
-//		return commentBuildAction;
-//	}
-
 	public BambooToolWindowContent getBambooToolWindowContent() {
 		return bambooToolWindowContent;
 	}
 
 	public void enableBambooBuildActions() {
 		runBuildAction.setEnabled(true);
+		getViewSite().getActionBars().getToolBarManager().update(true);
+	}
+	
+	public void enableBamboo2BuildActions() {
 		labelBuildAction.setEnabled(true);
 		commentBuildAction.setEnabled(true);
-		
 		getViewSite().getActionBars().getToolBarManager().update(true);
-		
 	}
 	
 	public void disableBambooBuildActions() {
@@ -109,7 +100,6 @@ public class BambooToolWindow extends ViewPart {
 		commentBuildAction.setEnabled(false);
 		
 		getViewSite().getActionBars().getToolBarManager().update(true);
-		
 	}
 
 
