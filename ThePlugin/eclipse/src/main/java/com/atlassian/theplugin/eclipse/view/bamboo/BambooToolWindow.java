@@ -9,8 +9,6 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 
-import com.atlassian.theplugin.commons.bamboo.BambooStatusListener;
-import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListener;
 import com.atlassian.theplugin.eclipse.actions.bamboo.CommentBuildAction;
 import com.atlassian.theplugin.eclipse.actions.bamboo.LabelBuildAction;
 import com.atlassian.theplugin.eclipse.actions.bamboo.RefreshBuildsListAction;
