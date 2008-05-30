@@ -536,4 +536,16 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
     public void resetState() {
     }
+
+    public void collapseAllPanels() {
+        for (CollapsibleTable collapsibleTable : tables.values()) {
+            collapsibleTable.collapse();
+        }
+    }
+
+    public void expandAllPanels() {
+        for (CollapsibleTable collapsibleTable : tables.values()) {
+            collapsibleTable.expand();
+        }
+    }
 }
