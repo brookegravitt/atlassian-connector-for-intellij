@@ -31,14 +31,12 @@ public final class CrucibleTableColumnProviderImpl implements TableColumnProvide
 				new ReviewKeyColumn(),
 				new ReviewSummaryColumn(),
 				new ReviewAuthorColumn(),
-				new ReviewStateColumn(),
-				new ReviewReviewersColumn()
+				new ReviewStateColumn()
 		};
 	}
 
 	public TableCellRenderer[] makeRendererInfo() {
 		return new TableCellRenderer[]{
-				null,
 				null,
 				null,
 				null,
