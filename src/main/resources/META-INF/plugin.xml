@@ -162,7 +162,7 @@
         <action id="ThePlugin.Crucible.ToReviewAction" class="com.atlassian.theplugin.idea.action.crucible.ToReviewAction" text="To review" icon="/ant/filter.png" />
         <action id="ThePlugin.Crucible.RequireApprovalAction" class="com.atlassian.theplugin.idea.action.crucible.RequireApprovalAction" text="Require approval" icon="/ant/filter.png" />
         <action id="ThePlugin.Crucible.OutForReviewAction" class="com.atlassian.theplugin.idea.action.crucible.OutForReviewAction" text="Out for review" icon="/ant/filter.png" />
-        <action id="ThePlugin.Crucible.DraftsAction" class="com.atlassian.theplugin.idea.action.crucible.DraftsAction" text="Require approval" icon="/ant/filter.png" />
+        <action id="ThePlugin.Crucible.DraftsAction" class="com.atlassian.theplugin.idea.action.crucible.DraftsAction" text="Drafts" icon="/ant/filter.png" />
         <action id="ThePlugin.Crucible.OpenAction" class="com.atlassian.theplugin.idea.action.crucible.OpenAction" text="Open" icon="/ant/filter.png" />
         <action id="ThePlugin.Crucible.ClosedAction" class="com.atlassian.theplugin.idea.action.crucible.ClosedAction" text="Closed" icon="/ant/filter.png" />
         <action id="ThePlugin.Crucible.AbandonedAction" class="com.atlassian.theplugin.idea.action.crucible.AbandonedAction" text="Abandoned" icon="/ant/filter.png" />
