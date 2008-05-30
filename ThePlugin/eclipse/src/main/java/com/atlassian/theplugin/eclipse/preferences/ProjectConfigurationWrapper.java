@@ -34,7 +34,7 @@ public class ProjectConfigurationWrapper {
 		String[] plans = preferences.getString(PreferenceConstants.BAMBOO_BUILDS).split(" ");
 		
 		for (String plan : plans) {
-			if (plan != null && !plan.isEmpty()) {
+			if (plan != null && plan.length() > 0) {
 				SubscribedPlanBean subscribedPlan = new SubscribedPlanBean(plan);
 				subscribedPlans.add(subscribedPlan);
 			}
