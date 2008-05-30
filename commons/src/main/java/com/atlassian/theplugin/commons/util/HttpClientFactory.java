@@ -19,9 +19,7 @@ package com.atlassian.theplugin.commons.util;
 import com.atlassian.theplugin.commons.thirdparty.apache.EasySSLProtocolSocketFactory;
 import com.atlassian.theplugin.commons.exception.HttpProxySettingsException;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
@@ -88,13 +86,32 @@ public final class HttpClientFactory {
 						throw new HttpProxySettingsException("HTTP Proxy password is incorrect");
 					}
 
+					Credentials creds = null;
+
+					//
+					// code below stolen from AXIS: /transport/http/CommonsHTTPSender.java
+					//
+					String proxyUser = httpConfigurableAdapter.getProxyLogin();
+					int domainIndex = proxyUser.indexOf("\\");
+					if (domainIndex > 0) {
+						// if the username is in the form "user\domain"
+						// then use NTCredentials instead of UsernamePasswordCredentials
+						String domain = proxyUser.substring(0, domainIndex);
+						if (proxyUser.length() > domainIndex + 1) {
+							String user = proxyUser.substring(domainIndex + 1);
+							creds = new NTCredentials(user,	httpConfigurableAdapter.getPlainProxyPassword(),
+											httpConfigurableAdapter.getProxyHost(), domain);
+						}
+					} else {
+						creds = new UsernamePasswordCredentials(proxyUser, httpConfigurableAdapter.getPlainProxyPassword());
+					}
+					//
+					// end of code stolen from AXIS
+					//
+
 					httpClient.getState().setProxyCredentials(
 							new AuthScope(httpConfigurableAdapter.getProxyHost(), httpConfigurableAdapter.getProxyPort()),
-							new UsernamePasswordCredentials(httpConfigurableAdapter.getProxyLogin(),
-									httpConfigurableAdapter.getPlainProxyPassword()));
-
-
-
+							creds);
 				}
 			}
 		}
