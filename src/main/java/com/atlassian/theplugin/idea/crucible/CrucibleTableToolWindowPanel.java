@@ -17,23 +17,58 @@
 package com.atlassian.theplugin.idea.crucible;
 
 
+import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListener;
 import com.atlassian.theplugin.commons.crucible.CrucibleStatusListener;
 import com.atlassian.theplugin.commons.crucible.ReviewDataInfo;
+import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
+import com.atlassian.theplugin.commons.crucible.api.PredefinedFilter;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
-import com.atlassian.theplugin.configuration.ProjectToolWindowTableConfiguration;
-import com.atlassian.theplugin.idea.ui.AbstractTableToolWindowPanel;
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.ProgressAnimationProvider;
+import com.atlassian.theplugin.idea.bamboo.ToolWindowBambooContent;
+import com.atlassian.theplugin.idea.ui.AtlassianTableView;
+import com.atlassian.theplugin.idea.ui.CollapsibleTable;
 import com.atlassian.theplugin.idea.ui.TableColumnProvider;
-import com.atlassian.theplugin.idea.bamboo.BambooTableColumnProviderImpl;
+import com.atlassian.theplugin.idea.ui.TableItemSelectedListener;
 import com.intellij.ide.BrowserUtil;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.ui.VerticalFlowLayout;
+import com.intellij.ui.table.TableView;
+import com.intellij.util.ui.ListTableModel;
 import com.intellij.util.ui.UIUtil;
-import java.util.ArrayList;
-import java.util.Collection;
+import thirdparty.javaworld.ClasspathHTMLEditorKit;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.*;
 import java.util.List;
 
-public class CrucibleTableToolWindowPanel extends AbstractTableToolWindowPanel implements CrucibleStatusListener {
+public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStatusListener, TableItemSelectedListener {
     //private final transient CrucibleServerFacade crucibleFacade;
     private static CrucibleTableToolWindowPanel instance;
     private TableColumnProvider columnProvider;
+    private ProjectConfigurationBean projectConfiguration;
+    private JPanel toolBarPanel;
+    private JPanel dataPanelsHolder;
+    private ToolWindowBambooContent editorPane;
+
+    protected JScrollPane tablePane;
+    protected ListTableModel listTableModel;
+    protected AtlassianTableView table;
+    protected static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
+    protected ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
+
+    protected TableColumnProvider tableColumnProvider = new CrucibleTableColumnProviderImpl();
+
+    private ReviewDataInfoAdapter selectedItem;
+
+    private Map<PredefinedFilter, CollapsibleTable> tables = new HashMap<PredefinedFilter, CollapsibleTable>();
+    private CollapsibleTable crucible15Table = null;
+
+    private CrucibleVersion crucibleVersion = CrucibleVersion.UNKNOWN;
+    private static final String TO_REVIEW_AS_ACTIVE_REVIEWER = "To review as active reviewer";
 
     protected String getInitialMessage() {
         return "Waiting for Crucible review info.";
@@ -50,12 +85,8 @@ public class CrucibleTableToolWindowPanel extends AbstractTableToolWindowPanel i
     protected TableColumnProvider getTableColumnProvider() {
         if (columnProvider == null) {
             columnProvider = new CrucibleTableColumnProviderImpl();
-        }        
+        }
         return columnProvider;
-    }
-
-    protected ProjectToolWindowTableConfiguration getTableConfiguration() {
-        return projectConfiguration.getCrucibleConfiguration().getTableConfiguration();
     }
 
     public static CrucibleTableToolWindowPanel getInstance(ProjectConfigurationBean projectConfigurationBean) {
@@ -66,20 +97,133 @@ public class CrucibleTableToolWindowPanel extends AbstractTableToolWindowPanel i
     }
 
     public CrucibleTableToolWindowPanel(ProjectConfigurationBean projectConfigurationBean) {
-        super(projectConfigurationBean);
+        super(new BorderLayout());
+
+        this.projectConfiguration = projectConfigurationBean;
+
+        setBackground(UIUtil.getTreeTextBackground());
+
+        toolBarPanel = new JPanel(new BorderLayout());
+        ActionManager actionManager = ActionManager.getInstance();
+        ActionGroup toolbar = (ActionGroup) actionManager.getAction(getToolbarActionGroup());
+        ActionToolbar actionToolbar = actionManager.createActionToolbar(
+                "atlassian.toolwindow.serverToolBar", toolbar, true);
+        toolBarPanel.add(actionToolbar.getComponent(), BorderLayout.NORTH);
+        add(toolBarPanel, BorderLayout.NORTH);
+
+        editorPane = new ToolWindowBambooContent();
+        editorPane.setEditorKit(new ClasspathHTMLEditorKit());
+        JScrollPane pane = setupPane(editorPane, wrapBody(getInitialMessage()));
+        editorPane.setMinimumSize(ED_PANE_MINE_SIZE);
+        add(pane, BorderLayout.SOUTH);
+
+        dataPanelsHolder = new JPanel();
+        dataPanelsHolder.setLayout(new VerticalFlowLayout());
+
+        tablePane = new JScrollPane(dataPanelsHolder,
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        tablePane.setWheelScrollingEnabled(true);
+
+        add(tablePane, BorderLayout.CENTER);
+
+        progressAnimation.configure(this, tablePane, BorderLayout.CENTER);
+
         //crucibleFacade = CrucibleServerFacadeImpl.getInstance();
     }
 
-    protected void handlePopupClick(Object selectedObject) {
+    private void addPredefinedFilters() {
+        for (int i = 0; i < IdeaHelper.getPluginConfiguration().getCrucibleConfigurationData().getFilters().length; ++i)
+        {
+            if (crucible15Table != null) {
+                dataPanelsHolder.remove(crucible15Table);
+                crucible15Table = null;
+            }
+            showPredefinedFilter(
+                    PredefinedFilter.values()[i],
+                    IdeaHelper.getPluginConfiguration().getCrucibleConfigurationData().getFilters()[i]);
+        }
     }
 
-    protected void handleDoubleClick(Object selectedObject) {
+    /**
+     * Method adds or removes CollapsibleTable for given filter type
+     *
+     * @param filter  predefined filter type
+     * @param visible panel added when true, removed when false
+     */
+    public void showPredefinedFilter(PredefinedFilter filter, boolean visible) {
+        System.out.println("Panel state: " + visible + " for filter filter.getFilterName() = " + filter.getFilterName());
+        if (visible) {
+            CollapsibleTable table = new CollapsibleTable(
+                    tableColumnProvider,
+                    projectConfiguration.getCrucibleConfiguration().getTableConfiguration(),
+                    filter.getFilterName(),
+                    "atlassian.toolwindow.serverToolBar",
+                    getToolbarActionGroup(),
+                    "Context menu",
+                    getPopupActionGroup());
+            table.addItemSelectedListener(this);
+            TableView.restore(projectConfiguration.getCrucibleConfiguration().getTableConfiguration(),
+                    table.getTable());
+
+            dataPanelsHolder.add(table);
+            tables.put(filter, table);
+        } else {
+            if (tables.containsKey(filter)) {
+                dataPanelsHolder.remove(tables.get(filter));
+                tables.remove(filter);
+            }
+        }
+        dataPanelsHolder.validate();
+        tablePane.repaint();
+    }
+
+    public void switchToCrucible15Filter() {
+            crucible15Table = new CollapsibleTable(
+                    tableColumnProvider,
+                    projectConfiguration.getCrucibleConfiguration().getTableConfiguration(),
+                    TO_REVIEW_AS_ACTIVE_REVIEWER,
+                    "atlassian.toolwindow.serverToolBar",
+                    getToolbarActionGroup(),
+                    "Context menu",
+                    getPopupActionGroup());
+            crucible15Table.addItemSelectedListener(this);
+            TableView.restore(projectConfiguration.getCrucibleConfiguration().getTableConfiguration(),
+                    crucible15Table.getTable());
+
+        for (CollapsibleTable table : tables.values()) {
+            dataPanelsHolder.remove(table);
+        }
+        tables.clear();
+        dataPanelsHolder.add(crucible15Table);
+        dataPanelsHolder.validate();
+        tablePane.repaint();
+    }
+
+    protected JScrollPane setupPane(JEditorPane pane, String initialText) {
+        pane.setText(initialText);
+        JScrollPane scrollPane = new JScrollPane(pane,
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setWheelScrollingEnabled(true);
+        return scrollPane;
+    }
+
+    protected String wrapBody(String s) {
+        return "<html>" + HtmlBambooStatusListener.BODY_WITH_STYLE + s + "</body></html>";
+
+    }
+
+    protected void setStatusMessage(String msg) {
+        setStatusMessage(msg, false);
+    }
+
+    protected void setStatusMessage(String msg, boolean isError) {
+        editorPane.setBackground(isError ? Color.RED : Color.WHITE);
+        editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">" + msg + "</td></tr></table>"));
     }
 
     public void viewReview() {
-        ReviewDataInfoAdapter reviewDataInfo = (ReviewDataInfoAdapter) table.getSelectedObject();
-        if (reviewDataInfo != null) {
-            BrowserUtil.launchBrowser(reviewDataInfo.getReviewUrl());
+        if (selectedItem != null) {
+            BrowserUtil.launchBrowser(selectedItem.getReviewUrl());
         }
     }
 
@@ -306,19 +450,42 @@ public class CrucibleTableToolWindowPanel extends AbstractTableToolWindowPanel i
 
             DiffManager.getInstance().getDiffTool().show(diffData);
         }
-    */
 
+
+    public void resetState() {
+        updateReviews(new ArrayList<ReviewDataInfo>());
+    }
+*/
+
+    public ProgressAnimationProvider getProgressAnimation() {
+        return progressAnimation;
+    }
+
+    public CrucibleVersion getCrucibleVersion() {
+        return crucibleVersion;
+    }
+        
+    /*
+    Crucible 1.5
+     */
     public void updateReviews(Collection<ReviewDataInfo> reviews) {
+        this.crucibleVersion = CrucibleVersion.CRUCIBLE_15;
+        if (crucible15Table == null) {
+            switchToCrucible15Filter();
+        }
         List<ReviewDataInfoAdapter> reviewDataInfoAdapters = new ArrayList<ReviewDataInfoAdapter>();
         for (ReviewDataInfo review : reviews) {
             reviewDataInfoAdapters.add(new ReviewDataInfoAdapter(review));
         }
 
-        listTableModel.setItems(reviewDataInfoAdapters);
-        listTableModel.fireTableDataChanged();
-        table.revalidate();
-        table.setEnabled(true);
-        table.setForeground(UIUtil.getActiveTextColor());
+        crucible15Table.getListTableModel().setItems(reviewDataInfoAdapters);
+        crucible15Table.getListTableModel().fireTableDataChanged();
+        crucible15Table.getTable().revalidate();
+        crucible15Table.getTable().setEnabled(true);
+        crucible15Table.getTable().setForeground(UIUtil.getActiveTextColor());
+        crucible15Table.setTitle(TO_REVIEW_AS_ACTIVE_REVIEWER + " (" + reviewDataInfoAdapters.size() + ")");
+        crucible15Table.expand();
+
         StringBuffer sb = new StringBuffer();
         sb.append("Loaded <b>");
         sb.append(reviews.size());
@@ -326,7 +493,41 @@ public class CrucibleTableToolWindowPanel extends AbstractTableToolWindowPanel i
         editorPane.setText(wrapBody(sb.toString()));
     }
 
+    /*
+    Crucible 1.6
+     */
+    public void updateReviews(Map<PredefinedFilter, List<ReviewDataInfo>> reviews) {
+        this.crucibleVersion = CrucibleVersion.CRUCIBLE_16;
+        if (tables.isEmpty()) {
+            addPredefinedFilters();
+        }
+        for (PredefinedFilter predefinedFilter : reviews.keySet()) {
+            List<ReviewDataInfo> reviewList = reviews.get(predefinedFilter);
+            if (reviewList != null) {
+                List<ReviewDataInfoAdapter> reviewDataInfoAdapters = new ArrayList<ReviewDataInfoAdapter>();
+                for (ReviewDataInfo review : reviewList) {
+                    reviewDataInfoAdapters.add(new ReviewDataInfoAdapter(review));
+                }
+                CollapsibleTable table = tables.get(predefinedFilter);
+                if (table != null) {
+                    table.getListTableModel().setItems(reviewDataInfoAdapters);
+                    table.getListTableModel().fireTableDataChanged();
+                    table.getTable().revalidate();
+                    table.setEnabled(true);
+                    table.setForeground(UIUtil.getActiveTextColor());
+                }
+                table.setTitle(predefinedFilter.getFilterName() + " (" + reviewList.size() + ")");
+            }
+        }
+    }
+
+    public void itemSelected(Object item, int noClicks) {
+        selectedItem = (ReviewDataInfoAdapter) item;
+        if (noClicks == 2) {
+            viewReview();
+        }
+    }
+
     public void resetState() {
-        updateReviews(new ArrayList<ReviewDataInfo>());
     }
 }
