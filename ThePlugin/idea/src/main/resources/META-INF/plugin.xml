@@ -157,7 +157,7 @@
 		</action>
 		<action id="ThePlugin.Crucible.RefreshStatus" class="com.atlassian.theplugin.idea.action.crucible.RefreshCruciblePanelAction" text="Refresh" description="Refresh" icon="/actions/sync.png" />
         <action id="ThePlugin.Crucible.CrucibleFilterCombo" class="com.atlassian.theplugin.idea.action.crucible.CrucibleFilterComboAction" text="Select predefined filter"/>
-        <action id="ThePlugin.Crucible.ViewReview" class="com.atlassian.theplugin.idea.action.crucible.ViewReviewAction" text="View review" />
+        <action id="ThePlugin.Crucible.ViewReview" class="com.atlassian.theplugin.idea.action.crucible.ViewReviewAction" text="View review" icon="/icons/crucible-blue-16.png" />
 
         <action id="ThePlugin.Crucible.ToReviewAction" class="com.atlassian.theplugin.idea.action.crucible.ToReviewAction" text="To review" icon="/actions/find.png" />
         <action id="ThePlugin.Crucible.ToReviewComboAction" class="com.atlassian.theplugin.idea.action.crucible.ToReviewAction" text="To review" />
@@ -172,12 +172,17 @@
         <action id="ThePlugin.Crucible.AllClosed" class="com.atlassian.theplugin.idea.action.crucible.AllClosedAction" text="All closed" />
         <action id="ThePlugin.Crucible.All" class="com.atlassian.theplugin.idea.action.crucible.AllAction" text="All" />        
 
+        <action id="ThePlugin.Crucible.ExpandAll" class="com.atlassian.theplugin.idea.action.crucible.ExpandAllAction" text="Expand all" icon="/actions/expandall.png"/>
+        <action id="ThePlugin.Crucible.CollapseAll" class="com.atlassian.theplugin.idea.action.crucible.CollapseAllAction" text="Collapse all" icon="/actions/collapseall.png"/>
 
         <group id="ThePlugin.CrucibleToolWindowToolBar" popup="false" text="">
             <reference id="ThePlugin.ShowSettings" />
 			<reference id="ThePlugin.HelpCrucible" />
 			<reference id="ThePlugin.Crucible.RefreshStatus" />
 			<separator />
+            <reference id="ThePlugin.Crucible.ExpandAll" />
+            <reference id="ThePlugin.Crucible.CollapseAll" /> 
+            <separator />
             <reference id="ThePlugin.Crucible.ToReviewAction" />
         </group>
 
