@@ -1,28 +1,43 @@
+/**
+ * Copyright (C) 2008 Atlassian
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.atlassian.theplugin.idea.crucible;
 
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.commons.configuration.ServerBean;
-import com.atlassian.theplugin.commons.configuration.ProductServerConfiguration;
-import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
-import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.Server;
-import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.commons.configuration.ProductServerConfiguration;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.commons.crucible.api.*;
-import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
-import com.atlassian.theplugin.util.PluginUtil;
+import com.atlassian.theplugin.commons.crucible.api.ProjectData;
+import com.atlassian.theplugin.commons.crucible.api.ProjectDataBean;
+import com.atlassian.theplugin.commons.crucible.api.UserData;
+import com.atlassian.theplugin.commons.crucible.api.UserDataBean;
+import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.AnAction;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.util.*;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -64,7 +79,9 @@ public class CrucibleCustomFilterPanel extends JPanel {
         crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		serverComboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (serverComboBox.getItemCount() > 0 && serverComboBox.getSelectedItem() != null && serverComboBox.getSelectedItem() instanceof ServerComboBoxItem) {
+				if (serverComboBox.getItemCount() > 0
+						&& serverComboBox.getSelectedItem() != null
+						&& serverComboBox.getSelectedItem() instanceof ServerComboBoxItem) {
 					fillServerRelatedCombos(((ServerComboBoxItem) serverComboBox.getSelectedItem()).getServer());
 				}
 			}
