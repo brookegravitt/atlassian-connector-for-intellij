@@ -60,6 +60,7 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
 	 * Public constructor for BambooSessionImpl.
 	 *
 	 * @param baseUrl base URL for Bamboo instance
+	 * @throws com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException
 	 */
 	public BambooSessionImpl(String baseUrl) throws RemoteApiMalformedUrlException {
 		super(baseUrl);
@@ -167,12 +168,10 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
 
 			XPath xpath = XPath.newInstance("/response/bambooBuildNumber");
 			@SuppressWarnings("unchecked")
-			List<Element> elements = xpath.selectNodes(doc);
-			if (elements != null) {
-				for (Element element : elements) {
-					String bNo = element.getText();
-					return Integer.parseInt(bNo);
-				}
+			Element element = (Element) xpath.selectSingleNode(doc);
+			if (element != null) {
+				String bNo = element.getText();
+				return Integer.parseInt(bNo);
 			}
 			return -1;
 		} catch (JDOMException e) {
@@ -285,6 +284,8 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
 			return constructBuildErrorInfo(planKey, e.getMessage(), new Date());
 		} catch (JDOMException e) {
 			return constructBuildErrorInfo(planKey, "Server returned malformed response", new Date());
+		} catch (RemoteApiException e) {
+			return constructBuildErrorInfo(planKey, e.getMessage(), new Date());
 		}
 	}
 
@@ -386,6 +387,7 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
 						duration = Double.valueOf(element.getAttributeValue("duration"));
 					} catch (NumberFormatException e) {
 						// leave 0
+						duration = 0;
 					}
 					tInfo.setTestDuration(duration);
 					tInfo.setTestResult(TestResult.TEST_SUCCEED);
@@ -406,6 +408,7 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
 						duration = Double.valueOf(element.getAttributeValue("duration"));
 					} catch (NumberFormatException e) {
 						// leave 0
+						duration = 0;
 					}
 					tInfo.setTestDuration(duration);
 					tInfo.setTestResult(TestResult.TEST_FAILED);
@@ -510,7 +513,7 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
 		return buildInfo;
 	}
 
-	private BambooBuildInfo constructBuildItem(Element buildItemNode, Date lastPollingTime) {
+	private BambooBuildInfo constructBuildItem(Element buildItemNode, Date lastPollingTime) throws RemoteApiException {
 		BambooBuildInfo buildInfo = new BambooBuildInfo();
 
 		buildInfo.setServerUrl(baseUrl);
@@ -527,12 +530,10 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
 		buildInfo.setBuildRelativeBuildDate(getChildText(buildItemNode, "buildRelativeBuildDate"));
         try {
             buildInfo.setBuildTestsPassed(Integer.parseInt(getChildText(buildItemNode, "successfulTestCount")));
-        } catch (NumberFormatException ex) {
-        }
-        try {
-            buildInfo.setBuildTestsFailed(Integer.parseInt(getChildText(buildItemNode, "failedTestCount")));
-        } catch (NumberFormatException ex) {
-        }
+        	buildInfo.setBuildTestsFailed(Integer.parseInt(getChildText(buildItemNode, "failedTestCount")));
+		} catch (NumberFormatException ex) {
+			throw new RemoteApiException("Invalid number", ex);
+		}
         buildInfo.setBuildTime(parseBuildTime(getChildText(buildItemNode, "buildTime")));
 		buildInfo.setPollingTime(lastPollingTime);
 
