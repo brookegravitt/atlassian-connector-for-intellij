@@ -184,7 +184,10 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
                 case CRUCIBLE_16:
                     doRunCrucible16();
                     break;
-            }
+				default:
+					throw new IllegalArgumentException("Illegal value of the crucibleVersion parameter ("
+							+ String.valueOf(crucibleVersion) + ")");
+			}
         } catch (Throwable t) {
             t.printStackTrace();
         }
