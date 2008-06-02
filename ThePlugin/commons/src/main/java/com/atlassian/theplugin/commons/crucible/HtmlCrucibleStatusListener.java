@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.commons.crucible;
 
 import com.atlassian.theplugin.commons.StatusListener;
+import com.atlassian.theplugin.commons.crucible.api.UserData;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -60,9 +61,9 @@ public class HtmlCrucibleStatusListener implements StatusListener {
                 sb.append("<td valign=\"top\">" + review.getAuthor() + "</td>");
                 sb.append("<td valign=\"top\">" + review.getState().value() + "</td>");
                 sb.append("<td valign=\"top\">");
-                for (Iterator<String> iterator = review.getReviewers().iterator(); iterator.hasNext();) {
-                    String reviewer = iterator.next();
-                    sb.append(reviewer);
+                for (Iterator<UserData> iterator = review.getReviewers().iterator(); iterator.hasNext();) {
+                    UserData reviewer = iterator.next();
+                    sb.append(reviewer.getUserName());
                     if (iterator.hasNext()) {
                         sb.append("<br>");
                     }

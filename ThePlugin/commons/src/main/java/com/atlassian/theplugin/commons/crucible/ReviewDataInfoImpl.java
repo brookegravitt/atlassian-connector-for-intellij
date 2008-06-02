@@ -20,16 +20,17 @@ import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.crucible.api.ReviewData;
 import com.atlassian.theplugin.commons.crucible.api.PermId;
 import com.atlassian.theplugin.commons.crucible.api.State;
+import com.atlassian.theplugin.commons.crucible.api.UserData;
 
 import java.util.List;
 
 
 public class ReviewDataInfoImpl implements ReviewDataInfo {
 	private final ReviewData reviewData;
-	private final List<String> reviewers;
+	private final List<UserData> reviewers;
 	private final Server server;
 
-	public ReviewDataInfoImpl(ReviewData reviewData, List<String> reviewers, Server server) {
+	public ReviewDataInfoImpl(ReviewData reviewData, List<UserData> reviewers, Server server) {
 		this.reviewData = reviewData;
 		this.reviewers = reviewers;
 		this.server = server;
@@ -45,7 +46,7 @@ public class ReviewDataInfoImpl implements ReviewDataInfo {
 
 	}
 
-	public List<String> getReviewers() {
+	public List<UserData> getReviewers() {
 		return reviewers;
 	}
 

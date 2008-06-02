@@ -220,7 +220,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         }
     }
 
-    public List<String> getReviewers(PermId permId) throws RemoteApiException {
+    public List<UserData> getReviewers(PermId permId) throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
@@ -232,11 +232,11 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			XPath xpath = XPath.newInstance("/reviewers/reviewer");
 			@SuppressWarnings("unchecked")
 			List<Element> elements = xpath.selectNodes(doc);
-			List<String> reviewers = new ArrayList<String>();
+			List<UserData> reviewers = new ArrayList<UserData>();
 
 			if (elements != null && !elements.isEmpty()) {
 				for (Element element : elements) {
-					reviewers.add(element.getText());
+					reviewers.add(CrucibleRestXmlHelper.parseUserNode(element));
 				}
 			}
 			return reviewers;
