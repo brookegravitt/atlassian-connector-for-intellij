@@ -378,15 +378,26 @@ public class CrucibleServerFacadeTest extends TestCase {
 			}
 		};
 
-		crucibleSessionMock.getReviewsInStates(Arrays.asList(State.REVIEW));
+        UserDataBean[] reviewers = new UserDataBean[4];
+        reviewers[0] = new UserDataBean();
+        reviewers[0].setUserName("Bob");
+        reviewers[1] = new UserDataBean();
+        reviewers[1].setUserName("Alice");
+        reviewers[2] = new UserDataBean();
+        reviewers[2].setUserName("Charlie");
+        reviewers[3] = new UserDataBean();
+        reviewers[3].setUserName("validLogin");
+
+
+        crucibleSessionMock.getReviewsInStates(Arrays.asList(State.REVIEW));
 		EasyMock.expectLastCall().andReturn(Arrays.asList(
 				new ReviewDataInfoImpl(prepareReviewData(VALID_LOGIN, "name", State.REVIEW, permId), null, null),
 				new ReviewDataInfoImpl(prepareReviewData(VALID_LOGIN, "name", State.REVIEW, permId), null, null)));
 
 		crucibleSessionMock.getReviewers(permId);
-		EasyMock.expectLastCall().andReturn(Arrays.asList(VALID_LOGIN, "Bob", "Charlie"));
+		EasyMock.expectLastCall().andReturn(Arrays.asList(new UserDataBean[]{reviewers[3], reviewers[0], reviewers[2]}));
 		crucibleSessionMock.getReviewers(permId);
-		EasyMock.expectLastCall().andReturn(Arrays.asList("Alice", "Bob", "Charlie"));
+        EasyMock.expectLastCall().andReturn(Arrays.asList(new UserDataBean[]{reviewers[1], reviewers[0], reviewers[2]}));
 
 		replay(crucibleSessionMock);
 
@@ -397,7 +408,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 		assertEquals(3, ret.get(0).getReviewers().size());
 		assertEquals(permId.getId(), ret.get(0).getPermaId().getId());
 		assertEquals("name", ret.get(0).getName());
-		assertEquals(VALID_LOGIN, ret.get(0).getReviewers().get(0));
+		assertEquals(VALID_LOGIN, ret.get(0).getReviewers().get(0).getUserName());
 
 		EasyMock.verify(crucibleSessionMock);
 	}

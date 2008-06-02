@@ -19,6 +19,7 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.theplugin.commons.crucible.ReviewDataInfo;
 import com.atlassian.theplugin.commons.crucible.api.PermId;
 import com.atlassian.theplugin.commons.crucible.api.State;
+import com.atlassian.theplugin.commons.crucible.api.UserData;
 import com.atlassian.theplugin.idea.crucible.table.column.ReviewKeyComparator;
 import com.atlassian.theplugin.commons.Server;
 import junit.framework.TestCase;
@@ -56,7 +57,7 @@ public class ReviewKeyComparatorTest extends TestCase {
 				return null;
 			}
 
-			public List<String> getReviewers() {
+			public List<UserData> getReviewers() {
 				return null;
 			}
 
