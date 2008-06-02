@@ -20,18 +20,13 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListener;
 import com.atlassian.theplugin.commons.crucible.*;
 import com.atlassian.theplugin.commons.crucible.api.PredefinedFilter;
-import com.atlassian.theplugin.commons.crucible.api.UserData;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.bamboo.ToolWindowBambooContent;
-import com.atlassian.theplugin.idea.ui.AtlassianTableView;
 import com.atlassian.theplugin.idea.ui.CollapsibleTable;
 import com.atlassian.theplugin.idea.ui.TableColumnProvider;
 import com.atlassian.theplugin.idea.ui.TableItemSelectedListener;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
@@ -62,7 +57,6 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
     protected JScrollPane tablePane;
     protected ListTableModel listTableModel;
-    protected AtlassianTableView table;
     protected static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
     protected ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
 
@@ -162,8 +156,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 	}
 
     private void switchToCrucible16Filter() {
-        for (int i = 0; i < IdeaHelper.getPluginConfiguration().getCrucibleConfigurationData().getFilters().length; ++i)
-        {
+        for (int i = 0; i < IdeaHelper.getPluginConfiguration().getCrucibleConfigurationData().getFilters().length; ++i) {
             if (crucible15Table != null) {
                 dataPanelsHolder.remove(crucible15Table);
                 crucible15Table = null;
@@ -255,236 +248,6 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
             BrowserUtil.launchBrowser(selectedItem.getReviewUrl());
         }
     }
-
-/*
-    private void openPredefinedFilter(ReviewDataInfoAdapter reviewAdapter) {
-        try {
-            List<ReviewData> rev = crucibleFacade.getReviewsForFilter(reviewAdapter.getServer(), PredefinedFilter.Drafts);
-            for (ReviewData reviewDataInfo : rev) {
-                System.out.println("reviewDataInfo.getPermaId().getId() = " + reviewDataInfo.getPermaId().getId());
-                System.out.println("reviewDataInfo.getAuthor() = " + reviewDataInfo.getAuthor());
-                //System.out.println("reviewDataInfo.getReviewers() = " + reviewDataInfo.getReviewers());
-            }
-        } catch (RemoteApiException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (ServerPasswordNotProvidedException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-    }
-
-    private void openCustomFilter(ReviewDataInfoAdapter reviewAdapter) {
-        CustomFilterData filter = new CustomFilterData();
-
-        filter.setTitle("test2");
-        filter.setAuthor("mwent");
-        filter.setCreator("mwent");
-        filter.setModerator("mwent");
-        filter.setReviewer("sginter");
-
-        filter.setState(new String[]{"Draft", "Summarize", "Closed"});
-        filter.setOrRoles(true);
-        //filter.setAllReviewersComplete(false);
-
-
-        try {
-            List<ReviewData> rev = crucibleFacade.getReviewsForCustomFilter(reviewAdapter.getServer(), filter);
-            for (ReviewData reviewDataInfo : rev) {
-                System.out.println("reviewDataInfo.getPermaId().getId() = " + reviewDataInfo.getPermaId().getId());
-                System.out.println("reviewDataInfo.getAuthor() = " + reviewDataInfo.getAuthor());
-                //System.out.println("reviewDataInfo.getReviewers() = " + reviewDataInfo.getReviewers());
-            }
-        } catch (RemoteApiException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (ServerPasswordNotProvidedException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-    }
-*/
-
-    /*
-        private void openItemDiff(ReviewDataInfoAdapter reviewAdapter) {
-            VirtualFile vFile = FileDocumentManager.getInstance().getFile(
-                    FileEditorManager.getInstance(IdeaHelper.getCurrentProject()).getSelectedTextEditor().getDocument());
-            if (vFile != null) {
-                final List<ReviewItemVirtualFile> files = getReviewVersionedVirtualFiles(reviewAdapter);
-                for (ReviewItemVirtualFile file : files) {
-                    if (file.getVirtualFile().getPath().equals(vFile.getPath())) {
-                        List<String> rev = new ArrayList<String>();
-                        rev.add(file.getFromRevision());
-                        rev.add(file.getToRevision());
-                        List<VcsFileRevision> revisions = VcsIdeaHelper.getFileRevisions(file.getVirtualFile(), rev);
-                        if (revisions.size() == 2) {
-                            showDiff(file.getVirtualFile(), revisions.get(0), revisions.get(1));
-                        }
-                    }
-
-                }
-            }
-        }
-
-
-        private List<ReviewItemVirtualFile> getReviewVersionedVirtualFiles(ReviewDataInfoAdapter reviewAdapter) {
-            List<ReviewItemVirtualFile> files = new ArrayList<ReviewItemVirtualFile>();
-            try {
-                List<ReviewItemData> items = crucibleFacade.getReviewItems(
-                        reviewAdapter.getServer(), reviewAdapter.getPermaId());
-                VirtualFile baseDir = IdeaHelper.getCurrentProject().getBaseDir();
-                String baseUrl = VcsIdeaHelper.getRepositoryUrlForFile(baseDir);
-                for (ReviewItemData item : items) {
-                    if (item.getToPath().startsWith(baseUrl)) {
-                        String relUrl = item.getToPath().substring(baseUrl.length());
-                        VirtualFile vf = VfsUtil.findRelativeFile(relUrl, baseDir);
-                        if (vf != null) {
-                            files.add(new ReviewItemVirtualFile(vf, item));
-                        }
-                    }
-                }
-            } catch (RemoteApiException e1) {
-                // @todo handle exception - not used methd currently
-            } catch (ServerPasswordNotProvidedException e1) {
-                // @todo handle exception - not used methd currently
-            }
-            return files;
-        }
-
-        private List<VirtualFile> getReviewVirtualFiles(ReviewDataInfoAdapter reviewAdapter) {
-            List<VirtualFile> files = new ArrayList<VirtualFile>();
-            try {
-                List<ReviewItemData> items = crucibleFacade.getReviewItems(
-                reviewAdapter.getServer(), reviewAdapter.getPermaId());
-                VirtualFile baseDir = IdeaHelper.getCurrentProject().getBaseDir();
-                String baseUrl = VcsIdeaHelper.getRepositoryUrlForFile(baseDir);
-                for (ReviewItemData item : items) {
-                    if (item.getToPath().startsWith(baseUrl)) {
-                        String relUrl = item.getToPath().substring(baseUrl.length());
-                        VirtualFile vf = VfsUtil.findRelativeFile(relUrl, baseDir);
-                        if (vf != null) {
-                            files.add(vf);
-                        }
-                    }
-                }
-            } catch (RemoteApiException e1) {
-                // @todo handle exception - not used methd currently
-            } catch (ServerPasswordNotProvidedException e1) {
-                // @todo handle exception - not used methd currently
-            }
-            return files;
-        }
-
-        public void openReviewFiles(ReviewDataInfoAdapter reviewAdapter) {
-            FileEditorManager fileEditorManager = FileEditorManager.getInstance(IdeaHelper.getCurrentProject());
-            for (ReviewItemVirtualFile vf : getReviewVersionedVirtualFiles(reviewAdapter)) {
-                fileEditorManager.openFile(vf.getVirtualFile(), false);
-            }
-        }
-
-        public void getComments(ReviewDataInfoAdapter reviewAdapter) {
-            try {
-                List<GeneralComment> items = crucibleFacade
-                .getComments(reviewAdapter.getServer(), reviewAdapter.getPermaId());
-
-                for (GeneralComment item : items) {
-                    System.out.println(item.getClass().getName() + " -> User: " + item.getUser() + " left comment: "
-                            + item.getMessage() + " on " + item.getCreateDate().toString());
-                    if (item instanceof VersionedComment) {
-                        VersionedComment c = (VersionedComment) item;
-                        System.out.print("c.getReviewItemId() + " + c.getReviewItemId().getId());
-                        if (c.isFromLineInfo()) {
-                            System.out.print(" fromLines:  " + c.getFromStartLine() + " - " + c.getFromEndLine());
-                        }
-                        if (c.isToLineInfo()) {
-                            System.out.print(" toLines:  " + c.getToStartLine() + " - " + c.getToEndLine());
-                        }
-                        System.out.println("");
-                    }
-                    for (GeneralComment reply : item.getReplies()) {
-                        System.out.println(reply.getClass().getName() + " -> User: " + reply.getUser() + " replied: "
-                                + reply.getMessage() + " on " + reply.getCreateDate().toString());
-                    }
-                }
-            } catch (RemoteApiException e1) {
-                // @todo handle exception - not used methd currently
-            } catch (ServerPasswordNotProvidedException e1) {
-                // @todo handle exception - not used methd currently
-            }
-        }
-
-        private void addReviewScope(final ReviewDataInfoAdapter reviewAdapter) {
-            new Thread(new AddReviewScopeWorker(reviewAdapter), "atlassian-crucible-apply-scope").start();
-        }
-
-
-        private final class AddReviewScopeWorker implements Runnable {
-            private ReviewDataInfoAdapter reviewAdapter;
-
-            private AddReviewScopeWorker(ReviewDataInfoAdapter reviewAdapter) {
-                this.reviewAdapter = reviewAdapter;
-            }
-
-            public void run() {
-                IdeaHelper.getScopeFiles().clear();
-                CrucibleReviewScopeProvider provider =
-                        CrucibleReviewScopeProvider.getCrucibleScopeProvider(IdeaHelper.getCurrentProject());
-                String previousReviewScope = IdeaHelper.getCurrentProjectComponent().getReviewId();
-                if (previousReviewScope != null) {
-                    if (provider.isScopeDefined(previousReviewScope)) {
-                        provider.removeScope(previousReviewScope);
-                    }
-                }
-                String scopeName = reviewAdapter.getPermaId().getId();
-
-                if (provider.isScopeDefined(scopeName)) {
-                    provider.removeScope(scopeName);
-                }
-
-                final List<ReviewItemVirtualFile> files = getReviewVersionedVirtualFiles(reviewAdapter);
-                if (!files.isEmpty()) {
-                    IdeaHelper.getScopeFiles().addAll(files);
-
-                    provider.addScope(scopeName, provider.new ToReviewAbstractPackageSet() {
-                        public boolean contains(PsiFile psiFile, NamedScopesHolder namedScopesHolder) {
-                            final VirtualFile virtualFile = psiFile.getVirtualFile();
-                            for (ReviewItemVirtualFile file : files) {
-                                if (file.getVirtualFile().equals(virtualFile)) {
-                                    return true;
-                                }
-                            }
-                            return false;
-                        }
-                    });
-
-                    IdeaHelper.getCurrentProjectComponent().setReviewId(scopeName);
-                }
-                EventQueue.invokeLater(new Runnable() {
-                    public void run() {
-                        NamedScopeManager.getInstance(IdeaHelper.getCurrentProject()).fireScopeListeners();
-    //						ProjectView.getInstance(IdeaHelper.getCurrentProject()).changeView("Project");
-                    }
-                });
-
-            }
-        }
-
-
-        private void showDiff(VirtualFile file, VcsFileRevision first, VcsFileRevision last) {
-            SimpleDiffRequest diffData = new SimpleDiffRequest(IdeaHelper.getCurrentProject(), "Diff Tool");
-            diffData.setContentTitles(
-                    "Repository revision: " + first.getRevisionNumber().asString(),
-                    "Repository revision: " + last.getRevisionNumber().asString());
-
-            DiffContent firstContent = VcsIdeaHelper.getFileRevisionContent(file, first);
-            DiffContent lastContent = VcsIdeaHelper.getFileRevisionContent(file, last);
-
-            diffData.setContents(firstContent, lastContent);
-
-            DiffManager.getInstance().getDiffTool().show(diffData);
-        }
-
-
-    public void resetState() {
-        updateReviews(new ArrayList<ReviewDataInfo>());
-    }
-*/
 
     public ProgressAnimationProvider getProgressAnimation() {
         return progressAnimation;
