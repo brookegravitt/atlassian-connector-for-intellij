@@ -133,8 +133,8 @@ public abstract class AbstractTableToolWindowPanel extends JPanel {
 		return filterEditToolbar;
 	}
 
-	public void transientSetFilterEditToolbar(ActionToolbar filterEditToolbar) {
-		this.filterEditToolbar = filterEditToolbar;
+	public void transientSetFilterEditToolbar(ActionToolbar newFilterEditToolbar) {
+		this.filterEditToolbar = newFilterEditToolbar;
 	}
 
 	protected   void createFilterEditToolBar(String place, String toolbarName) {
@@ -146,9 +146,9 @@ public abstract class AbstractTableToolWindowPanel extends JPanel {
         filterEditToolbarSetVisible(false);
     }
 
-	abstract public void applyAdvancedFilter();
-	abstract public void cancelAdvancedFilter();
-	abstract public void clearAdvancedFilter();
+	public abstract void applyAdvancedFilter();
+	public abstract void cancelAdvancedFilter();
+	public abstract void clearAdvancedFilter();
 
 	private class PopuMenuMouseAdapter extends MouseAdapter {
 		public void mouseClicked(MouseEvent e) {
