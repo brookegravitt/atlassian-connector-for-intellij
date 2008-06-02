@@ -41,8 +41,7 @@ public class ReviewReviewersColumn extends TableColumnInfo {
     private String getReviewersAsText(Object o) {
         StringBuffer sb = new StringBuffer();
         if (((ReviewDataInfoAdapter) o).getReviewers() != null) {
-            for (Iterator<UserData> iterator = ((ReviewDataInfoAdapter) o).getReviewers().iterator(); iterator.hasNext();)
-            {
+            for (Iterator<UserData> iterator = ((ReviewDataInfoAdapter) o).getReviewers().iterator(); iterator.hasNext();) {
                 sb.append(iterator.next().getUserName());
                 if (iterator.hasNext()) {
                     sb.append(", ");

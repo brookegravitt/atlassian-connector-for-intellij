@@ -75,40 +75,7 @@ public abstract class AbstractTableToolWindowPanel extends JPanel {
 		table = new AtlassianTableView(listTableModel, getTableConfiguration());
 		table.prepareColumns(columns, getTableColumnProvider().makeRendererInfo());
 
-		table.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2) {
-                    handleDoubleClick(table.getSelectedObject());
-				}
-			}
-
-			public void mousePressed(MouseEvent e) {
-				maybeShowPopup(e);
-			}
-
-			public void mouseReleased(MouseEvent e) {
-				maybeShowPopup(e);
-			}
-
-			private void maybeShowPopup(MouseEvent e) {
-				if (e.isPopupTrigger() && table.isEnabled()) {
-					final DefaultActionGroup actionGroup = new DefaultActionGroup();
-
-					final ActionGroup configActionGroup = (ActionGroup) ActionManager
-                            .getInstance().getAction(getPopupActionGroup());
-					actionGroup.addAll(configActionGroup);
-
-					final ActionPopupMenu popup =
-							ActionManager.getInstance().createActionPopupMenu("Context menu", actionGroup);
-
-					addCustomSubmenus(actionGroup, popup);
-
-					final JPopupMenu jPopupMenu = popup.getComponent();
-					jPopupMenu.show(e.getComponent(), e.getX(), e.getY());
-					handlePopupClick(table.getSelectedObject());
-				}
-			}
-		});
+		table.addMouseListener(new PopuMenuMouseAdapter());
 
 		tablePane = new JScrollPane(table,
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -182,4 +149,39 @@ public abstract class AbstractTableToolWindowPanel extends JPanel {
 	abstract public void applyAdvancedFilter();
 	abstract public void cancelAdvancedFilter();
 	abstract public void clearAdvancedFilter();
+
+	private class PopuMenuMouseAdapter extends MouseAdapter {
+		public void mouseClicked(MouseEvent e) {
+			if (e.getClickCount() == 2) {
+				handleDoubleClick(table.getSelectedObject());
+			}
+		}
+
+		public void mousePressed(MouseEvent e) {
+			maybeShowPopup(e);
+		}
+
+		public void mouseReleased(MouseEvent e) {
+			maybeShowPopup(e);
+		}
+
+		private void maybeShowPopup(MouseEvent e) {
+			if (e.isPopupTrigger() && table.isEnabled()) {
+				final DefaultActionGroup actionGroup = new DefaultActionGroup();
+
+				final ActionGroup configActionGroup = (ActionGroup) ActionManager
+						.getInstance().getAction(getPopupActionGroup());
+				actionGroup.addAll(configActionGroup);
+
+				final ActionPopupMenu popup =
+						ActionManager.getInstance().createActionPopupMenu("Context menu", actionGroup);
+
+				addCustomSubmenus(actionGroup, popup);
+
+				final JPopupMenu jPopupMenu = popup.getComponent();
+				jPopupMenu.show(e.getComponent(), e.getX(), e.getY());
+				handlePopupClick(table.getSelectedObject());
+			}
+		}
+	}
 }
