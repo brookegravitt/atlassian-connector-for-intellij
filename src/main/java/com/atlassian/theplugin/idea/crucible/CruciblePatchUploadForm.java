@@ -238,8 +238,6 @@ public class CruciblePatchUploadForm extends DialogWrapper {
 				});
 			}
 		}, "atlassian-idea-plugin crucible patch upload combos refresh").start();
-
-
 	}
 
 	private void updateServerRelatedCombos(List<ProjectData> projects, List<RepositoryData> repositories) {
