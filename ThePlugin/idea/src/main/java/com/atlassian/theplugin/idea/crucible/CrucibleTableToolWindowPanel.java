@@ -30,6 +30,8 @@ import com.atlassian.theplugin.idea.ui.AtlassianTableView;
 import com.atlassian.theplugin.idea.ui.CollapsibleTable;
 import com.atlassian.theplugin.idea.ui.TableColumnProvider;
 import com.atlassian.theplugin.idea.ui.TableItemSelectedListener;
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.jira.JIRAServer;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -46,13 +48,17 @@ import java.util.*;
 import java.util.List;
 
 public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStatusListener, TableItemSelectedListener {
-    //private final transient CrucibleServerFacade crucibleFacade;
+    private transient ActionToolbar filterEditToolbar;
     private static CrucibleTableToolWindowPanel instance;
     private TableColumnProvider columnProvider;
+
+	private CrucibleCustomFilterPanel crucibleCustomFilterPanel;
+
     private ProjectConfigurationBean projectConfiguration;
     private JPanel toolBarPanel;
     private JPanel dataPanelsHolder;
     private ToolWindowBambooContent editorPane;
+
 
     protected JScrollPane tablePane;
     protected ListTableModel listTableModel;
@@ -71,6 +77,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     private static final String TO_REVIEW_AS_ACTIVE_REVIEWER = "To review as active reviewer";
 
     protected String getInitialMessage() {
+
         return "Waiting for Crucible review info.";
     }
 
@@ -89,7 +96,26 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         return columnProvider;
     }
 
-    public static CrucibleTableToolWindowPanel getInstance(ProjectConfigurationBean projectConfigurationBean) {
+	public void applyAdvancedFilter() {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	public void cancelAdvancedFilter() {
+		//filters.setManualFilter(serializeQuery());
+		//filters.setSavedFilterUsed(false);
+		//projectConfiguration.
+		//		getJiraConfiguration().setFiltersBean(IdeaHelper.getCurrentJIRAServer().getServer().getUid(), filters);
+		
+		hideCrucibleCustomFilter();
+
+	}
+
+
+	public void clearAdvancedFilter() {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	public static CrucibleTableToolWindowPanel getInstance(ProjectConfigurationBean projectConfigurationBean) {
         if (instance == null) {
             instance = new CrucibleTableToolWindowPanel(projectConfigurationBean);
         }
@@ -129,7 +155,9 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         progressAnimation.configure(this, tablePane, BorderLayout.CENTER);
 
         //crucibleFacade = CrucibleServerFacadeImpl.getInstance();
-    }
+		createFilterEditToolBar("atlassian.toolwindow.crucibleFilterEditToolBar", "ThePlugin.Crucible.FilterEditToolBar");
+		this.crucibleCustomFilterPanel = new CrucibleCustomFilterPanel();
+	}
 
     private void switchToCrucible16Filter() {
         for (int i = 0; i < IdeaHelper.getPluginConfiguration().getCrucibleConfigurationData().getFilters().length; ++i)
@@ -537,6 +565,19 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     public void resetState() {
     }
 
+	public void showCrucibleCustomFilter() {
+        JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer();
+
+        filterEditToolbarSetVisible(true);
+		crucibleCustomFilterPanel.fillinFilter();
+		setScrollPaneViewport(crucibleCustomFilterPanel.$$$getRootComponent$$$());
+	}
+
+	public final void hideCrucibleCustomFilter() {
+        setScrollPaneViewport(dataPanelsHolder);
+        filterEditToolbarSetVisible(false);
+    }
+
     public void collapseAllPanels() {
         for (CollapsibleTable collapsibleTable : tables.values()) {
             collapsibleTable.collapse();
@@ -548,4 +589,23 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
             collapsibleTable.expand();
         }
     }
+
+	protected void filterEditToolbarSetVisible(boolean visible) {
+        filterEditToolbar.getComponent().setVisible(visible);
+    }
+
+	protected   void createFilterEditToolBar(String place, String toolbarName) {
+        ActionManager actionManager = ActionManager.getInstance();
+        ActionGroup filterEditToolBar = (ActionGroup) actionManager.getAction(toolbarName);
+        filterEditToolbar = actionManager.createActionToolbar(place,
+                filterEditToolBar, true);
+        toolBarPanel.add(filterEditToolbar.getComponent(), BorderLayout.SOUTH);
+        filterEditToolbarSetVisible(false);
+    }
+
+	protected void setScrollPaneViewport(JComponent component) {
+			tablePane.setViewportView(component);
+		}
+	
+
 }
