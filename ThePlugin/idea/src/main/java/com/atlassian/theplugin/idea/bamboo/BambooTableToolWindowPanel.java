@@ -64,7 +64,19 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
         return this.projectConfiguration.getBambooConfiguration().getTableConfiguration();
     }
 
-    public BambooTableToolWindowPanel(ProjectConfigurationBean projectConfigurationBean) {
+	public void applyAdvancedFilter() {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	public void cancelAdvancedFilter() {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	public void clearAdvancedFilter() {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	public BambooTableToolWindowPanel(ProjectConfigurationBean projectConfigurationBean) {
         super(projectConfigurationBean);
         bambooFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
     }

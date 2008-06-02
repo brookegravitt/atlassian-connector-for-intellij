@@ -262,6 +262,7 @@ public class CruciblePatchUploadForm extends DialogWrapper {
 		}
 	}
 
+
 	public JComponent getRootComponent() {
 		return rootComponent;
 	}
