@@ -44,7 +44,8 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 	private static final String REVIEW_SERVICE = "/rest-service/reviews-v1";
 	private static final String PROJECTS_SERVICE = "/rest-service/projects-v1";
 	private static final String REPOSITORIES_SERVICE = "/rest-service/repositories-v1";
-	private static final String LOGIN = "/login";
+	private static final String USER_SERVICE = "/rest-service/users-v1";
+    private static final String LOGIN = "/login";
 	private static final String GET_REVIEWS_IN_STATES = "?state=";
 	private static final String GET_FILTERED_REVIEWS = "/filter";
     private static final String GET_REVIEWERS = "/reviewers";
@@ -247,7 +248,34 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
 	}
 
-	public List<ProjectData> getProjects() throws RemoteApiException {
+    public List<UserData> getUsers() throws RemoteApiException {
+		if (!isLoggedIn()) {
+			throw new IllegalStateException("Calling method without calling login() first");
+		}
+
+		String requestUrl = baseUrl + USER_SERVICE;
+		try {
+			Document doc = retrieveGetResponse(requestUrl);
+
+			XPath xpath = XPath.newInstance("/users/userData");
+			@SuppressWarnings("unchecked")
+			List<Element> elements = xpath.selectNodes(doc);
+			List<UserData> users = new ArrayList<UserData>();
+
+			if (elements != null && !elements.isEmpty()) {
+				for (Element element : elements) {
+					users.add(CrucibleRestXmlHelper.parseUserNode(element));
+				}
+			}
+			return users;
+		} catch (IOException e) {
+			throw new RemoteApiException(e.getMessage(), e);
+		} catch (JDOMException e) {
+			throw new RemoteApiException("Server returned malformed response", e);
+		}
+    }
+
+    public List<ProjectData> getProjects() throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
