@@ -64,7 +64,7 @@
                 </constraints>
                 <properties>
                   <enabled value="false"/>
-                  <text value="Check unstable versions"/>
+                  <text value="Check snapshot versions"/>
                 </properties>
               </component>
               <hspacer id="dadcc">
