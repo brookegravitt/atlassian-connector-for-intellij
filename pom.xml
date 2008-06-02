@@ -224,6 +224,7 @@
                     <excludes>
                         **/idea/**/*Form.java,
                         **/idea/**/*Dialog.java,
+			**/idea/**/CrucibleCustomFilterPanel.java,
                         **/soap/xfire/**/*.java,
                         **/soap/axis/**/*.java,
                         **/IssueComment.java,
