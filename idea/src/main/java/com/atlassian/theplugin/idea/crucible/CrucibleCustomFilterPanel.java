@@ -12,8 +12,7 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.commons.crucible.api.ProjectData;
-import com.atlassian.theplugin.commons.crucible.api.RepositoryData;
+import com.atlassian.theplugin.commons.crucible.api.*;
 import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -53,11 +52,16 @@ public class CrucibleCustomFilterPanel extends JPanel {
 	private JComboBox serverComboBox;
 	private CrucibleServerFacade crucibleServerFacade;
 
+    private ProjectDataBean anyProject;
+    private UserDataBean anyUser;
 
-	CrucibleCustomFilterPanel() {
+    CrucibleCustomFilterPanel() {
+        anyProject = new ProjectDataBean();
+        anyProject.setName("Any");
+        anyUser = new UserDataBean();
+        anyUser.setDisplayName("Any");
 
-
-		crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
+        crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		serverComboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (serverComboBox.getItemCount() > 0 && serverComboBox.getSelectedItem() != null && serverComboBox.getSelectedItem() instanceof ServerComboBoxItem) {
@@ -73,31 +77,37 @@ public class CrucibleCustomFilterPanel extends JPanel {
 
 	private void fillServerRelatedCombos(final Server server) {
 		projectComboBox.removeAllItems();
-		authorComboBox.removeAllItems();
-		moderatorComboBox.removeAllItems();
-		creatorComboBox.removeAllItems();
-		reviewerStatusComboBox.removeAllItems();
+        projectComboBox.addItem(new ProjectComboBoxItem(anyProject));
+        authorComboBox.removeAllItems();
+        authorComboBox.addItem(new UserComboBoxItem(anyUser));
+        moderatorComboBox.removeAllItems();
+        moderatorComboBox.addItem(new UserComboBoxItem(anyUser));
+        creatorComboBox.removeAllItems();
+        creatorComboBox.addItem(new UserComboBoxItem(anyUser));
+        reviewerStatusComboBox.removeAllItems();
 		reviewerComboBox.removeAllItems();
+        reviewerComboBox.addItem(new UserComboBoxItem(anyUser));
 
 
-		new Thread(new Runnable() {
+        new Thread(new Runnable() {
 			public void run() {
 				List<ProjectData> projects = new ArrayList<ProjectData>();
-
+                List<UserData> users = new ArrayList<UserData>();
 				try {
 					projects = crucibleServerFacade.getProjects(server);
-
-				} catch (RemoteApiException e) {
+                    users = crucibleServerFacade.getUsers(server);
+                } catch (RemoteApiException e) {
 					// nothing can be done here
 				} catch (ServerPasswordNotProvidedException e) {
 					// nothing can be done here
 				}
 				final List<ProjectData> finalProjects = projects;
+                final List<UserData> finalUsers = users;
 
 
-				EventQueue.invokeLater(new Runnable() {
+                EventQueue.invokeLater(new Runnable() {
 					public void run() {
-						updateServerRelatedCombos(finalProjects);
+						updateServerRelatedCombos(finalProjects, finalUsers);
 					}
 				});
 			}
@@ -106,7 +116,7 @@ public class CrucibleCustomFilterPanel extends JPanel {
 
 	}
 
-	private void updateServerRelatedCombos(List<ProjectData> projects) {
+	private void updateServerRelatedCombos(List<ProjectData> projects, List<UserData> users) {
 		if (projects.isEmpty()) {
 			projectComboBox.setEnabled(false);
 			projectComboBox.addItem("No projects");
@@ -118,7 +128,15 @@ public class CrucibleCustomFilterPanel extends JPanel {
 			setEnabledApplyButton(true);
 		}
 
-	}
+		if (!users.isEmpty()) {
+            for (UserData user : users) {
+                authorComboBox.addItem(new UserComboBoxItem(user));
+                moderatorComboBox.addItem(new UserComboBoxItem(user));
+                creatorComboBox.addItem(new UserComboBoxItem(user));
+                reviewerComboBox.addItem(new UserComboBoxItem(user));
+            }
+		}                 
+    }
 
 	private void setEnabledApplyButton(Boolean enabled) {
 		ActionManager.getInstance().getAction("ThePlugin.Crucible.ShowFilter").getTemplatePresentation().setEnabled(enabled);
@@ -271,7 +289,7 @@ public class CrucibleCustomFilterPanel extends JPanel {
 		}
 
 		public String toString() {
-			return project.getKey();
+			return project.getName();
 		}
 
 		public ProjectData getProject() {
@@ -280,5 +298,20 @@ public class CrucibleCustomFilterPanel extends JPanel {
 	}
 
 
+    private class UserComboBoxItem extends Object {
+        private final UserData user;
+
+        public UserComboBoxItem(UserData user) {
+            this.user = user;
+        }
+
+        public String toString() {
+            return user.getDisplayName();
+        }
+
+        public UserData getUserData() {
+            return user;
+        }
+    }
 }
 
