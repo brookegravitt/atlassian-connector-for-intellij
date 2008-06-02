@@ -69,6 +69,13 @@ public final class CrucibleRestXmlHelper {
         return repo;
     }
 
+    public static UserDataBean parseUserNode(Element repoNode) {
+        UserDataBean userDataBean = new UserDataBean();
+        userDataBean.setUserName(getChildText(repoNode, "userName"));
+        userDataBean.setDisplayName(getChildText(repoNode, "displayNype"));
+        return userDataBean;
+    }
+        
     public static ReviewData parseReviewNode(Element reviewNode) {
         ReviewDataBean review = new ReviewDataBean();
 

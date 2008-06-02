@@ -21,6 +21,8 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import com.atlassian.theplugin.commons.crucible.api.*;
 import com.atlassian.theplugin.commons.crucible.api.rest.CrucibleSessionImpl;
+import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.crucible.api.rest.cruciblemock.*;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
@@ -46,7 +48,9 @@ public class CrucibleSessionTest extends TestCase {
 	private String mockBaseUrl;
 
 	protected void setUp() throws Exception {
-		server = new Server(0);
+        ConfigurationFactory.setConfiguration(new PluginConfigurationBean());        
+
+        server = new Server(0);
 		server.start();
 
 		mockBaseUrl = "http://localhost:" + server.getConnectors()[0].getLocalPort();
@@ -470,31 +474,38 @@ public class CrucibleSessionTest extends TestCase {
 
 	public void testGetEmptyReviewers() throws Exception {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/rest-service/reviews-v1/PR-1/reviewers", new GetReviewersCallback(new String[]{ }));
+		mockServer.expect("/rest-service/reviews-v1/PR-1/reviewers", new GetReviewersCallback(new UserData[]{ }));
 		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
 
 		apiHandler.login(USER_NAME, PASSWORD);
 		PermIdBean permId = new PermIdBean();
 		permId.setId("PR-1");
-		List<String> reviewers = apiHandler.getReviewers(permId);
+		List<UserData> reviewers = apiHandler.getReviewers(permId);
 		assertEquals(0, reviewers.size());
 		mockServer.verify();
 	}
 
 	public void testGetReviewers() throws Exception {
-		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/rest-service/reviews-v1/PR-1/reviewers", new GetReviewersCallback(new String[]{ "bob", "alice", "steve" }));
+        UserDataBean[] reviewers = new UserDataBean[3];
+        reviewers[0] = new UserDataBean();
+        reviewers[0].setUserName("bob");
+        reviewers[1] = new UserDataBean();
+        reviewers[1].setUserName("alice");
+        reviewers[2] = new UserDataBean();
+        reviewers[2].setUserName("steve");
+
+        mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
+        mockServer.expect("/rest-service/reviews-v1/PR-1/reviewers", new GetReviewersCallback(reviewers));
 		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
 
 		apiHandler.login(USER_NAME, PASSWORD);
 		PermIdBean permId = new PermIdBean();
 		permId.setId("PR-1");
-		List<String> reviewers = apiHandler.getReviewers(permId);
-		assertEquals(3, reviewers.size());
-		assertTrue(reviewers.contains("bob"));
-		assertTrue(reviewers.contains("alice"));
-		assertTrue(reviewers.contains("steve"));
-		assertTrue(!reviewers.contains("tom"));
+		List<UserData> result = apiHandler.getReviewers(permId);
+		assertEquals(3, result.size());
+		assertEquals(result.get(0).getUserName(), "bob");
+		assertEquals(result.get(1).getUserName(), "alice");
+		assertEquals(result.get(2).getUserName(), "steve");        
 		mockServer.verify();
 	}
 
