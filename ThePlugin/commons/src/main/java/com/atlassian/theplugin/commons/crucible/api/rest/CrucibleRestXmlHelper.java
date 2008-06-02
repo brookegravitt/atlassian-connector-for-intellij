@@ -74,13 +74,11 @@ public final class CrucibleRestXmlHelper {
         UserDataBean userDataBean = new UserDataBean();
 
         CrucibleVersion version = CrucibleVersion.CRUCIBLE_15;
-        try {
-            if (repoNode.getChild("userName").getText() != "") {
-                version = CrucibleVersion.CRUCIBLE_16;
-            }
-        } catch (Exception e) {
+		Element userName = repoNode.getChild("userName");
+		if (userName != null && !userName.getText().equals("")) {
+            version = CrucibleVersion.CRUCIBLE_16;
         }
-        if (version == CrucibleVersion.CRUCIBLE_15) {
+          if (version == CrucibleVersion.CRUCIBLE_15) {
             userDataBean.setUserName(repoNode.getText());
             userDataBean.setDisplayName(userDataBean.getUserName());
         } else {

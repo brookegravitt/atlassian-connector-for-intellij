@@ -139,13 +139,7 @@ public abstract class LoggerImpl implements Logger {
         log(LOG_DEBUG, msg, t);
     }
 
-    public void debug(Throwable t)
-
-
-
-
-
-	{
+    public void debug(Throwable t) {
         log(LOG_DEBUG, (t != null) ? t.getMessage() : "Exception", t);
     }
 
