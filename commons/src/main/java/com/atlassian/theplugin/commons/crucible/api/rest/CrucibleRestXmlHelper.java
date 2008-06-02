@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.commons.crucible.api.rest;
 
 import com.atlassian.theplugin.commons.crucible.api.*;
+import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
 import org.jdom.CDATA;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -71,8 +72,21 @@ public final class CrucibleRestXmlHelper {
 
     public static UserDataBean parseUserNode(Element repoNode) {
         UserDataBean userDataBean = new UserDataBean();
-        userDataBean.setUserName(getChildText(repoNode, "userName"));
-        userDataBean.setDisplayName(getChildText(repoNode, "displayNype"));
+
+        CrucibleVersion version = CrucibleVersion.CRUCIBLE_15;
+        try {
+            if (repoNode.getChild("userName").getText() != "") {
+                version = CrucibleVersion.CRUCIBLE_16;
+            }
+        } catch (Exception e) {
+        }
+        if (version == CrucibleVersion.CRUCIBLE_15) {
+            userDataBean.setUserName(repoNode.getText());
+            userDataBean.setDisplayName(userDataBean.getUserName());
+        } else {
+            userDataBean.setUserName(getChildText(repoNode, "userName"));
+            userDataBean.setDisplayName(getChildText(repoNode, "displayNype"));
+        }
         return userDataBean;
     }
         

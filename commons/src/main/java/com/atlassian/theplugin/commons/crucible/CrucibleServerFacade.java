@@ -49,7 +49,10 @@ public interface CrucibleServerFacade extends ProductServerFacade {
 	List<GeneralComment> getComments(Server server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	List<ProjectData> getProjects(Server server)
+    List<UserData> getUsers(Server server)
+            throws RemoteApiException, ServerPasswordNotProvidedException;
+
+    List<ProjectData> getProjects(Server server)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
 	List<RepositoryData> getRepositories(Server server) 

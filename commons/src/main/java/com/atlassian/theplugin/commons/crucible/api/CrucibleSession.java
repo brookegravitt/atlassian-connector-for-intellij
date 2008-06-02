@@ -41,7 +41,9 @@ public interface CrucibleSession {
 
     List<UserData> getReviewers(PermId arg1) throws RemoteApiException;
 
-	List<ProjectData> getProjects() throws RemoteApiException;
+    List<UserData> getUsers() throws RemoteApiException;
+
+    List<ProjectData> getProjects() throws RemoteApiException;
 
 	List<RepositoryData> getRepositories() throws RemoteApiException;
 

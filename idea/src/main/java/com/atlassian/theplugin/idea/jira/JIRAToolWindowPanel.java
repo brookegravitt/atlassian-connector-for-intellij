@@ -463,7 +463,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
         filterToolbar.getComponent().setVisible(visible);
     }
 
-    private void filterEditToolbarSetVisible(boolean visible) {
+    protected void filterEditToolbarSetVisible(boolean visible) {
         filterEditToolbar.getComponent().setVisible(visible);
     }
 
