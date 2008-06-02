@@ -16,13 +16,12 @@
 
 package com.atlassian.theplugin.jira;
 
-import com.atlassian.theplugin.jira.api.*;
-import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
+import com.atlassian.theplugin.jira.api.*;
 
-import java.util.List;
 import java.util.Calendar;
+import java.util.List;
 
 public interface JIRAServerFacade extends ProductServerFacade {
     List getIssues(Server server, List<JIRAQueryFragment> query,
