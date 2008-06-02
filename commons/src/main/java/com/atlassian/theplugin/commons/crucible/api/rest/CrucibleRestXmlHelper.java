@@ -85,7 +85,7 @@ public final class CrucibleRestXmlHelper {
             userDataBean.setDisplayName(userDataBean.getUserName());
         } else {
             userDataBean.setUserName(getChildText(repoNode, "userName"));
-            userDataBean.setDisplayName(getChildText(repoNode, "displayNype"));
+            userDataBean.setDisplayName(getChildText(repoNode, "displayName"));
         }
         return userDataBean;
     }

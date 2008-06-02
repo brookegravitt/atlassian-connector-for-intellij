@@ -197,8 +197,10 @@ public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
 	}
 
 	public void setBuildTime(Date buildTime) {
-		this.buildTime = new Date(buildTime.getTime());
-	}
+        if (buildTime != null) {
+            this.buildTime = new Date(buildTime.getTime());
+        }
+    }
 
 	public Date getBuildTime() {
 		return buildTime != null ? new Date(this.buildTime.getTime()) : null;

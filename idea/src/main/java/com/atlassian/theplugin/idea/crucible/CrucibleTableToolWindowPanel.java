@@ -18,10 +18,11 @@ package com.atlassian.theplugin.idea.crucible;
 
 
 import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListener;
-import com.atlassian.theplugin.commons.crucible.CrucibleStatusListener;
-import com.atlassian.theplugin.commons.crucible.ReviewDataInfo;
-import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
+import com.atlassian.theplugin.commons.crucible.*;
 import com.atlassian.theplugin.commons.crucible.api.PredefinedFilter;
+import com.atlassian.theplugin.commons.crucible.api.UserData;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
@@ -59,7 +60,6 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     private JPanel dataPanelsHolder;
     private ToolWindowBambooContent editorPane;
 
-
     protected JScrollPane tablePane;
     protected ListTableModel listTableModel;
     protected AtlassianTableView table;
@@ -73,6 +73,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     private Map<PredefinedFilter, CollapsibleTable> tables = new HashMap<PredefinedFilter, CollapsibleTable>();
     private CollapsibleTable crucible15Table = null;
 
+    private static CrucibleServerFacade serverFacade;
     private CrucibleVersion crucibleVersion = CrucibleVersion.UNKNOWN;
     private static final String TO_REVIEW_AS_ACTIVE_REVIEWER = "To review as active reviewer";
 
@@ -118,6 +119,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 	public static CrucibleTableToolWindowPanel getInstance(ProjectConfigurationBean projectConfigurationBean) {
         if (instance == null) {
             instance = new CrucibleTableToolWindowPanel(projectConfigurationBean);
+            serverFacade = CrucibleServerFacadeImpl.getInstance();
         }
         return instance;
     }
