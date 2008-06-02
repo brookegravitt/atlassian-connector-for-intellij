@@ -162,7 +162,7 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 		List<ReviewData> res = session.getAllReviews();
 		List<ReviewDataInfo> result = new ArrayList<ReviewDataInfo>(res.size());
 		for (ReviewData review : res) {
-			List<String> reviewers = session.getReviewers(review.getPermaId());
+			List<UserData> reviewers = session.getReviewers(review.getPermaId());
 			result.add(new ReviewDataInfoImpl(review, reviewers, server));
 		}
 		return result;
@@ -181,9 +181,10 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 			List<ReviewDataInfo> result = new ArrayList<ReviewDataInfo>(reviews.size());
 
 			for (ReviewData reviewData : reviews) {
-				List<String> reviewers = session.getReviewers(reviewData.getPermaId());
+				List<UserData> reviewers = session.getReviewers(reviewData.getPermaId());
 
-				if (reviewers.contains(server.getUserName())) {
+                for (UserData reviewer : reviewers) {
+                    if (reviewer.getUserName().equals(server.getUserName()))
 					result.add(new ReviewDataInfoImpl(reviewData, reviewers, server));
 				}
 			}

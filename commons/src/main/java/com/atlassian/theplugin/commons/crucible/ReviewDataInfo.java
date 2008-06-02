@@ -18,13 +18,14 @@ package com.atlassian.theplugin.commons.crucible;
 
 import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.crucible.api.ReviewData;
+import com.atlassian.theplugin.commons.crucible.api.UserData;
 
 import java.util.List;
 
 public interface ReviewDataInfo extends ReviewData {
 	String getReviewUrl();
 
-	List<String> getReviewers();
+	List<UserData> getReviewers();
 
 	Server getServer();
 }

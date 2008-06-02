@@ -26,10 +26,12 @@ import org.jdom.output.XMLOutputter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class GetReviewersCallback implements JettyMockServer.Callback {
-	private String[] reviewers;
+import com.atlassian.theplugin.commons.crucible.api.UserData;
 
-	public GetReviewersCallback(String[] reviewers) {
+public class GetReviewersCallback implements JettyMockServer.Callback {
+	private UserData[] reviewers;
+
+	public GetReviewersCallback(UserData[] reviewers) {
 		this.reviewers = reviewers;
 	}
 
@@ -44,13 +46,20 @@ public class GetReviewersCallback implements JettyMockServer.Callback {
 		outputter.output(doc, response.getOutputStream());
 	}
 
-	private static Document getReviewers(String[] reviewers) {
+	private Document getReviewers(UserData[] reviewers) {
 		Element root = new Element("reviewers");
 		Document doc = new Document(root);
-		for (String reviewer : reviewers) {
-			addTag(root, "reviewer", reviewer);
+		for (int i = 0; i < reviewers.length; i++) {
+            root.getContent().add(getUsers(i));
 		}
 		return doc;
+	}
+
+	private Element getUsers(int i) {
+		Element userData = new Element("reviewer");
+		addTag(userData, "userName", reviewers[i].getUserName());
+        addTag(userData, "displayName", reviewers[i].getDisplayName());        
+        return userData;
 	}
 
 	private static void addTag(Element root, String tagName, String tagValue) {
