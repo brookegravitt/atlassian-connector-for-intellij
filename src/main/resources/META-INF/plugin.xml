@@ -172,10 +172,18 @@
         <action id="ThePlugin.Crucible.AllClosed" class="com.atlassian.theplugin.idea.action.crucible.AllClosedAction" text="All closed" />
         <action id="ThePlugin.Crucible.All" class="com.atlassian.theplugin.idea.action.crucible.AllAction" text="All" />        
 
+
+		<action id="ThePlugin.Crucible.ShowFilter" class="com.atlassian.theplugin.idea.action.crucible.CrucibleShowCustomFilterAction" text="Show JIRA filter dialog"  icon="/actions/er-state.png"/>
+		<action id="ThePlugin.Crucible.ApplyFilter" class="com.atlassian.theplugin.idea.action.crucible.ApplyFilterAction" text="Apply filter" icon="/actions/er-state.png" />
+		<action id="ThePlugin.Crucible.CancelFilter" class="com.atlassian.theplugin.idea.action.crucible.CancelFilterChangeAction" text="Cancel" icon="/actions/cancel.png" />
+		<action id="ThePlugin.Crucible.ClearFilter" class="com.atlassian.theplugin.idea.action.crucible.ClearFilterAction" text="Clear filter" icon="/general/reset.png" />
+
+
         <action id="ThePlugin.Crucible.ExpandAll" class="com.atlassian.theplugin.idea.action.crucible.ExpandAllAction" text="Expand all" icon="/actions/expandall.png"/>
         <action id="ThePlugin.Crucible.CollapseAll" class="com.atlassian.theplugin.idea.action.crucible.CollapseAllAction" text="Collapse all" icon="/actions/collapseall.png"/>
 
         <group id="ThePlugin.CrucibleToolWindowToolBar" popup="false" text="">
+
             <reference id="ThePlugin.ShowSettings" />
 			<reference id="ThePlugin.HelpCrucible" />
 			<reference id="ThePlugin.Crucible.RefreshStatus" />
@@ -184,7 +192,8 @@
             <reference id="ThePlugin.Crucible.CollapseAll" /> 
             <separator />
             <reference id="ThePlugin.Crucible.ToReviewAction" />
-        </group>
+			<reference id="ThePlugin.Crucible.ShowFilter" />
+		</group>
 
         <group id="ThePlugin.CrucibleFilterCombo" popup="true" text="" icon="/ant/filter.png">
             <reference id="ThePlugin.Crucible.ToReviewComboAction" />
@@ -207,13 +216,20 @@
             <separator />
         </group>
 
+
         <group id="ThePlugin.Crucible.ReviewPopupMenu" popup="true">
             <reference id="ThePlugin.Crucible.ViewReview" />
             <separator />
         </group>
 
+		<group id="ThePlugin.Crucible.FilterEditToolBar" popup="false">
+			<reference id="ThePlugin.Crucible.ApplyFilter" />
+			<reference id="ThePlugin.Crucible.CancelFilter"/>
+			<reference id="ThePlugin.Crucible.ClearFilter"/>
+		</group>
 
-        <!-- JIRA tool window panel related actions -->
+
+		<!-- JIRA tool window panel related actions -->
 		<action id="ThePlugin.JIRA.ShowHideJIRATab" class="com.atlassian.theplugin.idea.action.jira.ShowHideJiraTabAction" text="Show/Hide Jira tab" description="Shows or hides Jira tab in main plugin window">
 			<keyboard-shortcut first-keystroke="shift control k" keymap="$default"/>
 		</action>
@@ -292,6 +308,8 @@
 			<reference id="ThePlugin.JIRA.CancelFilter"/>
 			<reference id="ThePlugin.JIRA.ClearFilter"/>
 		</group>
+
+
 
 	</actions>
 </idea-plugin>

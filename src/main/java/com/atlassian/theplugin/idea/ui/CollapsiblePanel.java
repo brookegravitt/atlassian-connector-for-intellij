@@ -110,7 +110,8 @@ public class CollapsiblePanel extends JPanel {
 			  contentPanel.setVisible(false);
 			  myContent.setVisible(false);
 		  }
-	  	}
+		  labelPanel.requestFocusInWindow();
+		  }
 
 	  } else {
 	  	if (myContent != null) {

@@ -33,7 +33,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public abstract class AbstractTableToolWindowPanel extends JPanel {
-    protected JPanel toolBarPanel;
+	private transient ActionToolbar filterEditToolbar;
+	protected JPanel toolBarPanel;
     protected JEditorPane editorPane;
     protected JScrollPane tablePane;
     protected ListTableModel listTableModel;
@@ -157,4 +158,28 @@ public abstract class AbstractTableToolWindowPanel extends JPanel {
 	public AtlassianTableView getTable() {
 		return table;
 	}
+
+	protected void filterEditToolbarSetVisible(boolean visible) {
+        filterEditToolbar.getComponent().setVisible(visible);
+    }
+	public ActionToolbar transientGetFilterEditToolbar() {
+		return filterEditToolbar;
+	}
+
+	public void transientSetFilterEditToolbar(ActionToolbar filterEditToolbar) {
+		this.filterEditToolbar = filterEditToolbar;
+	}
+
+	protected   void createFilterEditToolBar(String place, String toolbarName) {
+        ActionManager actionManager = ActionManager.getInstance();
+        ActionGroup filterEditToolBar = (ActionGroup) actionManager.getAction(toolbarName);
+        filterEditToolbar = actionManager.createActionToolbar(place,
+                filterEditToolBar, true);
+        toolBarPanel.add(filterEditToolbar.getComponent(), BorderLayout.SOUTH);
+        filterEditToolbarSetVisible(false);
+    }
+
+	abstract public void applyAdvancedFilter();
+	abstract public void cancelAdvancedFilter();
+	abstract public void clearAdvancedFilter();
 }
