@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.commons.configuration;
 
 import com.atlassian.theplugin.commons.crucible.api.PredefinedFilter;
+import com.atlassian.theplugin.commons.crucible.api.rest.CrucibleFiltersBean;
 
 import java.util.Arrays;
 
@@ -24,8 +25,10 @@ public class CrucibleConfigurationBean extends AbstractServerConfigurationBean {
 	private CrucibleTooltipOption crucibleTooltipOption;
     private int pollTime = 1;
     private Boolean[] filters = new Boolean[PredefinedFilter.values().length];
+	private CrucibleFiltersBean crucibleManualFilters;
 
-    public CrucibleConfigurationBean() {
+
+	public CrucibleConfigurationBean() {
 		super();
         Arrays.fill(filters, false);
     }
@@ -64,5 +67,14 @@ public class CrucibleConfigurationBean extends AbstractServerConfigurationBean {
 
     public void setFilters(Boolean[] filters) {
         this.filters = filters;
-    }    
+    }
+
+	public CrucibleFiltersBean getCrucibleManualFilters() {
+		return crucibleManualFilters;
+	}
+
+	public void setCrucibleManualFilters(CrucibleFiltersBean crucibleManualFilters) {
+		this.crucibleManualFilters = crucibleManualFilters;
+	}
+	
 }

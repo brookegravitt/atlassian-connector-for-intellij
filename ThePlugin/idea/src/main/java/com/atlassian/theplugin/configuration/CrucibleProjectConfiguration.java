@@ -16,6 +16,13 @@
 
 package com.atlassian.theplugin.configuration;
 
+import com.atlassian.theplugin.commons.crucible.api.rest.CrucibleFiltersBean;
+import com.atlassian.theplugin.commons.crucible.api.CustomFilterData;
+import com.intellij.util.xmlb.annotations.Transient;
+
+import java.util.Map;
+import java.util.HashMap;
+
 /**
  * Created by IntelliJ IDEA.
  * User: Jacek
@@ -27,6 +34,15 @@ public class CrucibleProjectConfiguration {
 	private ProjectToolWindowTableConfiguration tableConfiguration =
 			new ProjectToolWindowTableConfiguration();
 
+	private CrucibleFiltersBean crucibleFilters = new CrucibleFiltersBean();
+
+	public CrucibleFiltersBean getCrucibleFilters() {
+		return crucibleFilters;
+	}
+
+	public void setCrucibleFilters(CrucibleFiltersBean filters) {
+		this.crucibleFilters = filters;
+	}
 	public CrucibleProjectConfiguration() {
 
 	}
@@ -41,5 +57,10 @@ public class CrucibleProjectConfiguration {
 
 	public void copyConfiguration(CrucibleProjectConfiguration crucibleConfiguration) {
 		tableConfiguration.copyConfiguration(crucibleConfiguration.getTableConfiguration());
+	}
+
+	public void safeAddCrucibleFilter(CustomFilterData filter){
+		crucibleFilters.safeAddCrucibleFilter(filter);
+		
 	}
 }

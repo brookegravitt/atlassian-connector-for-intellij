@@ -16,6 +16,10 @@
 
 package com.atlassian.theplugin.commons.crucible.api;
 
+import org.joda.time.DateTime;
+
+import java.util.Arrays;
+
 
 public class CustomFilterData implements CustomFilter {
     private String title;
@@ -28,10 +32,52 @@ public class CustomFilterData implements CustomFilter {
     private boolean complete;
     private boolean allReviewersComplete;
     private String projectKey;
+	private static final double ID_DISCRIMINATOR = 1002d;
+
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		CustomFilterData that = (CustomFilterData) o;
+
+		if (uid != that.uid) return false;
+
+		return true;
+	}
+
+	public int hashCode() {
+		int result;
+		result = (title != null ? title.hashCode() : 0);
+		result = 31 * result + (state != null ? Arrays.hashCode(state) : 0);
+		result = 31 * result + (author != null ? author.hashCode() : 0);
+		result = 31 * result + (moderator != null ? moderator.hashCode() : 0);
+		result = 31 * result + (creator != null ? creator.hashCode() : 0);
+		result = 31 * result + (reviewer != null ? reviewer.hashCode() : 0);
+		result = 31 * result + (orRoles ? 1 : 0);
+		result = 31 * result + (complete ? 1 : 0);
+		result = 31 * result + (allReviewersComplete ? 1 : 0);
+		result = 31 * result + (projectKey != null ? projectKey.hashCode() : 0);
+		result = 31 * result + (int) (uid ^ (uid >>> 32));
+		result = 31 * result + (int) (serverUid ^ (serverUid >>> 32));
+		return result;
+	}
+
+	private transient long uid = System.currentTimeMillis() + (long) (Math.random() * ID_DISCRIMINATOR);;
+
+	public long getServerUid() {
+		return serverUid;
+	}
+
+	public void setServerUid(long serverUid) {
+		this.serverUid = serverUid;
+	}
+
+	private long serverUid = 0;
 
 
-    public CustomFilterData() {
-    }
+	public CustomFilterData() {
+
+	}
 
     public String getTitle() {
         return title;
