@@ -51,8 +51,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
     private static final String GET_REVIEWERS = "/reviewers";
 	private static final String GET_REVIEW_ITEMS = "/reviewitems";
 	private static final String GET_REVIEW_COMMENTS = "/comments";
+    private static final String APPROVE_ACTION = "/approve";    
 
-	private String authToken = null;
+    private String authToken = null;
 
 
 	/**
@@ -542,7 +543,51 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
 	}
 
-	protected void adjustHttpHeader(HttpMethod method) {
+    public void addReviewer(PermId permId, String userName) throws RemoteApiException {
+		if (!isLoggedIn()) {
+			throw new IllegalStateException("Calling method without calling login() first");
+		}
+
+        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + permId.getId() + GET_REVIEWERS;
+        Document request = CrucibleRestXmlHelper.prepareAddReviewerNode(userName);
+
+		try {
+			Document doc = retrievePostResponse(requestUrl, userName, false);
+		} catch (IOException e) {
+			throw new RemoteApiException(e.getMessage(), e);
+		} catch (JDOMException e) {
+			throw new RemoteApiException("Server returned malformed response", e);
+		}
+    }
+
+    public ReviewData approveReview(PermId permId) throws RemoteApiException {
+		if (!isLoggedIn()) {
+			throw new IllegalStateException("Calling method without calling login() first");
+		}
+
+		String requestUrl = baseUrl + REVIEW_SERVICE + "/" + permId.getId() + APPROVE_ACTION;
+		try {
+			Document doc = retrieveGetResponse(requestUrl);
+
+            XPath xpath = XPath.newInstance("reviewData");
+            @SuppressWarnings("unchecked")
+            List<Element> elements = xpath.selectNodes(doc);
+            ReviewData review = null;
+
+            if (elements != null && !elements.isEmpty()) {
+                for (Element element : elements) {
+                    review = CrucibleRestXmlHelper.parseReviewNode(element);
+                }
+            }
+            return review;
+        } catch (IOException e) {
+			throw new RemoteApiException(e.getMessage(), e);
+		} catch (JDOMException e) {
+			throw new RemoteApiException("Server returned malformed response", e);
+		}
+    }
+
+    protected void adjustHttpHeader(HttpMethod method) {
 		method.addRequestHeader(new Header("Authorization", getAuthHeaderValue()));
 	}
 
