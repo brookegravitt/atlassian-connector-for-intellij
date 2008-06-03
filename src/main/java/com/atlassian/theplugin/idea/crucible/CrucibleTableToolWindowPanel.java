@@ -20,7 +20,10 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListener;
 import com.atlassian.theplugin.commons.crucible.*;
 import com.atlassian.theplugin.commons.crucible.api.PredefinedFilter;
+import com.atlassian.theplugin.commons.crucible.api.CustomFilterData;
+import com.atlassian.theplugin.commons.crucible.api.rest.CrucibleFiltersBean;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
+import com.atlassian.theplugin.configuration.JiraFiltersBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.bamboo.ToolWindowBambooContent;
@@ -54,6 +57,13 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     private JPanel toolBarPanel;
     private JPanel dataPanelsHolder;
     private ToolWindowBambooContent editorPane;
+
+	public CrucibleFiltersBean getFilters() {
+		return filters;
+	}
+
+	private transient CrucibleFiltersBean filters;
+
 
     protected JScrollPane tablePane;
     protected ListTableModel listTableModel;
@@ -92,15 +102,18 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     }
 
 	public void applyAdvancedFilter() {
-		//To change body of implemented methods use File | Settings | File Templates.
+		if (crucibleCustomFilterPanel.getFilter() != null) {
+			CustomFilterData filter = crucibleCustomFilterPanel.getFilter();
+
+			filters.safeAddCrucibleFilter(filter);
+			projectConfiguration.
+                getCrucibleConfiguration().safeAddCrucibleFilter(filter);
+		}
+
+		hideCrucibleCustomFilter();
 	}
 
 	public void cancelAdvancedFilter() {
-		//filters.setManualFilter(serializeQuery());
-		//filters.setSavedFilterUsed(false);
-		//projectConfiguration.
-		//		getJiraConfiguration().setFiltersBean(IdeaHelper.getCurrentJIRAServer().getServer().getUid(), filters);
-		
 		hideCrucibleCustomFilter();
 
 	}
@@ -153,6 +166,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         //crucibleFacade = CrucibleServerFacadeImpl.getInstance();
 		createFilterEditToolBar("atlassian.toolwindow.crucibleFilterEditToolBar", "ThePlugin.Crucible.FilterEditToolBar");
 		this.crucibleCustomFilterPanel = new CrucibleCustomFilterPanel();
+		filters = projectConfiguration.getCrucibleConfiguration().getCrucibleFilters();
 	}
 
     private void switchToCrucible16Filter() {
@@ -256,7 +270,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     public CrucibleVersion getCrucibleVersion() {
         return crucibleVersion;
     }
-        
+
     /*
     Crucible 1.5
      */
@@ -334,7 +348,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer();
 
         filterEditToolbarSetVisible(true);
-		crucibleCustomFilterPanel.fillinFilter();
+	 	crucibleCustomFilterPanel.setFilter(filters.getManualFilter().isEmpty() ? null : filters.getManualFilter().get(0));		
 		setScrollPaneViewport(crucibleCustomFilterPanel.$$$getRootComponent$$$());
 	}
 
