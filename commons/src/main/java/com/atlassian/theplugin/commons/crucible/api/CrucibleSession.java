@@ -31,7 +31,11 @@ public interface CrucibleSession {
 
 	ReviewData createReviewFromPatch(ReviewData reviewData, String patch) throws RemoteApiException;
 
-	List<ReviewData> getReviewsInStates(List<State> arg1) throws RemoteApiException;
+    void addReviewer(PermId permId, String userName) throws RemoteApiException;
+
+    ReviewData approveReview(PermId permId) throws RemoteApiException;
+
+    List<ReviewData> getReviewsInStates(List<State> arg1) throws RemoteApiException;
 
 	List<ReviewData> getAllReviews() throws RemoteApiException;
 
