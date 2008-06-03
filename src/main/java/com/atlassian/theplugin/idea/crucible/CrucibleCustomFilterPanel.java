@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,16 +16,19 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.Server;
-import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.commons.configuration.ServerBean;
 import com.atlassian.theplugin.commons.configuration.ProductServerConfiguration;
+import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.commons.crucible.api.ProjectData;
-import com.atlassian.theplugin.commons.crucible.api.ProjectDataBean;
-import com.atlassian.theplugin.commons.crucible.api.UserData;
-import com.atlassian.theplugin.commons.crucible.api.UserDataBean;
+import com.atlassian.theplugin.commons.crucible.api.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -66,71 +69,124 @@ public class CrucibleCustomFilterPanel extends JPanel {
 	private JComboBox reviewerComboBox;
 	private JComboBox serverComboBox;
 	private CrucibleServerFacade crucibleServerFacade;
+	private transient CustomFilterData filter;
 
-    private ProjectDataBean anyProject;
-    private UserDataBean anyUser;
+	private ProjectDataBean anyProject;
+	private UserDataBean anyUser;
 
-    CrucibleCustomFilterPanel() {
-        anyProject = new ProjectDataBean();
-        anyProject.setName("Any");
-        anyUser = new UserDataBean();
-        anyUser.setDisplayName("Any");
+	CrucibleCustomFilterPanel() {
+		$$$setupUI$$$();
 
-        crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
+		anyProject = new ProjectDataBean();
+		anyProject.setName("Any");
+		anyUser = new UserDataBean();
+		anyUser.setDisplayName("Any");
+
+		crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		serverComboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (serverComboBox.getItemCount() > 0
-						&& serverComboBox.getSelectedItem() != null
-						&& serverComboBox.getSelectedItem() instanceof ServerComboBoxItem) {
-					fillServerRelatedCombos(((ServerComboBoxItem) serverComboBox.getSelectedItem()).getServer());
-				}
+				fillServerRelatedCombos(getSelectedServer());
+
 			}
 		});
+	}	
+
+	public void setFilter(CustomFilterData filter) {
+		ServerBean server = null;
+
+		if (filter == null) {
+			this.filter = new CustomFilterData();
+		} else {
+			this.filter = filter;
+			server = new ServerBean();
+			server.setUid(filter.getServerUid());
+			server = (ServerBean) ConfigurationFactory.getConfiguration().getProductServers(ServerType.CRUCIBLE_SERVER).transientGetServer(server);
+			filterTitle.setText((filter.getTitle()));
+		}
+
+		fillInCrucibleServers();
+		if (server == null && serverComboBox.getItemCount() > 0) {
+			serverComboBox.setSelectedIndex(0);
+		}
+
+
+		if (getSelectedServer() != null) {
+			fillServerRelatedCombos(server);
+
+		}
 	}
 
-	public void fillinFilter() {
-		fillInCrucibleServers();
+	private Server getSelectedServer() {
+		Server server = null;
+
+		if (serverComboBox.getItemCount() > 0 &&
+				serverComboBox.getSelectedItem() != null &&
+				serverComboBox.getSelectedItem() instanceof ServerComboBoxItem) {
+			server = ((ServerComboBoxItem) serverComboBox.getSelectedItem()).getServer();
+		}
+
+		return server;
 	}
+
+	public CustomFilterData getFilter() {
+
+		filter.setTitle(filterTitle.getText());
+		//customFilter.setAuthor((authorComboBox.getSelectedItem());
+		//filter.setServerUid(((Server) (serverComboBox.getSelectedItem())).getUid());
+
+		return filter;
+	}
+
+	;
 
 	private void fillServerRelatedCombos(final Server server) {
-		projectComboBox.removeAllItems();
-        projectComboBox.addItem(new ProjectComboBoxItem(anyProject));
-        authorComboBox.removeAllItems();
-        authorComboBox.addItem(new UserComboBoxItem(anyUser));
-        moderatorComboBox.removeAllItems();
-        moderatorComboBox.addItem(new UserComboBoxItem(anyUser));
-        creatorComboBox.removeAllItems();
-        creatorComboBox.addItem(new UserComboBoxItem(anyUser));
-        reviewerStatusComboBox.removeAllItems();
-		reviewerComboBox.removeAllItems();
-        reviewerComboBox.addItem(new UserComboBoxItem(anyUser));
+		ServerBean serverBean = (ServerBean) server;
 
 
-        new Thread(new Runnable() {
-			public void run() {
-				List<ProjectData> projects = new ArrayList<ProjectData>();
-                List<UserData> users = new ArrayList<UserData>();
-				try {
-					projects = crucibleServerFacade.getProjects(server);
-                    users = crucibleServerFacade.getUsers(server);
-                } catch (RemoteApiException e) {
-					// nothing can be done here
-				} catch (ServerPasswordNotProvidedException e) {
-					// nothing can be done here
-				}
-				final List<ProjectData> finalProjects = projects;
-                final List<UserData> finalUsers = users;
+		if (server == null) {
+			serverBean = (ServerBean) getSelectedServer();
+		}
 
+		if (serverBean != null) {
 
-                EventQueue.invokeLater(new Runnable() {
-					public void run() {
-						updateServerRelatedCombos(finalProjects, finalUsers);
+			projectComboBox.removeAllItems();
+			projectComboBox.addItem(new ProjectComboBoxItem(anyProject));
+			authorComboBox.removeAllItems();
+			authorComboBox.addItem(new UserComboBoxItem(anyUser));
+			moderatorComboBox.removeAllItems();
+			moderatorComboBox.addItem(new UserComboBoxItem(anyUser));
+			creatorComboBox.removeAllItems();
+			creatorComboBox.addItem(new UserComboBoxItem(anyUser));
+			reviewerStatusComboBox.removeAllItems();
+			reviewerComboBox.removeAllItems();
+			reviewerComboBox.addItem(new UserComboBoxItem(anyUser));
+
+			final ServerBean finalServerBean = serverBean;
+
+			new Thread(new Runnable() {
+				public void run() {
+					List<ProjectData> projects = new ArrayList<ProjectData>();
+					List<UserData> users = new ArrayList<UserData>();
+					try {
+						projects = crucibleServerFacade.getProjects(finalServerBean);
+
+					} catch (RemoteApiException e) {
+						// nothing can be done here
+					} catch (ServerPasswordNotProvidedException e) {
+						// nothing can be done here
 					}
-				});
-			}
-		}, "atlassian-idea-plugin crucible custom filter upload combos refresh").start();
+					final List<ProjectData> finalProjects = projects;
+					final List<UserData> finalUsers = users;
 
 
+					EventQueue.invokeLater(new Runnable() {
+						public void run() {
+							updateServerRelatedCombos(finalProjects, finalUsers);
+						}
+					});
+				}
+			}, "atlassian-idea-plugin crucible custom filter upload combos refresh").start();
+		}
 	}
 
 	private void updateServerRelatedCombos(List<ProjectData> projects, List<UserData> users) {
@@ -146,14 +202,14 @@ public class CrucibleCustomFilterPanel extends JPanel {
 		}
 
 		if (!users.isEmpty()) {
-            for (UserData user : users) {
-                authorComboBox.addItem(new UserComboBoxItem(user));
-                moderatorComboBox.addItem(new UserComboBoxItem(user));
-                creatorComboBox.addItem(new UserComboBoxItem(user));
-                reviewerComboBox.addItem(new UserComboBoxItem(user));
-            }
-		}                 
-    }
+			for (UserData user : users) {
+				authorComboBox.addItem(new UserComboBoxItem(user));
+				moderatorComboBox.addItem(new UserComboBoxItem(user));
+				creatorComboBox.addItem(new UserComboBoxItem(user));
+				reviewerComboBox.addItem(new UserComboBoxItem(user));
+			}
+		}
+	}
 
 	private void setEnabledApplyButton(Boolean enabled) {
 		ActionManager.getInstance().getAction("ThePlugin.Crucible.ShowFilter").getTemplatePresentation().setEnabled(enabled);
@@ -177,13 +233,6 @@ public class CrucibleCustomFilterPanel extends JPanel {
 		}
 
 
-	}
-
-	{
-// GUI initializer generated by IntelliJ IDEA GUI Designer
-// >>> IMPORTANT!! <<<
-// DO NOT EDIT OR ADD ANY CODE HERE!
-		$$$setupUI$$$();
 	}
 
 	/**
@@ -315,20 +364,20 @@ public class CrucibleCustomFilterPanel extends JPanel {
 	}
 
 
-    private class UserComboBoxItem extends Object {
-        private final UserData user;
+	private class UserComboBoxItem extends Object {
+		private final UserData user;
 
-        public UserComboBoxItem(UserData user) {
-            this.user = user;
-        }
+		public UserComboBoxItem(UserData user) {
+			this.user = user;
+		}
 
-        public String toString() {
-            return user.getDisplayName();
-        }
+		public String toString() {
+			return user.getDisplayName();
+		}
 
-        public UserData getUserData() {
-            return user;
-        }
-    }
+		public UserData getUserData() {
+			return user;
+		}
+	}
 }
 
