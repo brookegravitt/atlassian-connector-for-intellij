@@ -87,7 +87,17 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 		return session.createReview(reviewData);
 	}
 
-	/**
+    public void addReviewer(Server server, PermId permId, String userName) throws RemoteApiException, ServerPasswordNotProvidedException {
+        CrucibleSession session = getSession(server);
+        session.addReviewer(permId, userName);
+    }
+
+    public ReviewData approveReview(Server server, PermId permId) throws RemoteApiException, ServerPasswordNotProvidedException {
+        CrucibleSession session = getSession(server);
+        return session.approveReview(permId);
+    }
+
+    /**
 	 * Creates new review in Crucible
 	 *
 	 * @param server
