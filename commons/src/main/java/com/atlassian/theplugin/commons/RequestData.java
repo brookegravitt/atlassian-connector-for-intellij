@@ -29,5 +29,4 @@ public interface RequestData {
 	void setPollingTime(Date date);
 
 	Date getPollingTime();
-
 }
