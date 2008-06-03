@@ -135,6 +135,14 @@ public final class CrucibleRestXmlHelper {
         return doc;
     }
 
+    public static Document prepareAddReviewerNode(String userName) {
+        Element root = new Element("reviewer");
+        Document doc = new Document(root);
+
+        addTag(root, "reviewer", userName);
+        return doc;
+    }
+
     public static Document prepareReviewNode(ReviewData review) {
         Element reviewData = prepareReviewNodeElement(review);
         return new Document(reviewData);
