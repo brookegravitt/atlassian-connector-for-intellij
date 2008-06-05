@@ -25,6 +25,7 @@ import org.jdom.Element;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 
 public final class CrucibleRestXmlHelper {
@@ -131,6 +132,46 @@ public final class CrucibleRestXmlHelper {
 
             CDATA patchT = new CDATA(patch);
             patchData.setContent(patchT);
+        }
+        return doc;
+    }
+
+    public static Document prepareCreateReviewNode(ReviewData review, List<String> revisions) {
+        Element root = new Element("createReview");
+        Document doc = new Document(root);
+
+        root.getContent().add(prepareReviewNodeElement(review));
+
+        if (!revisions.isEmpty()) {
+            if (revisions.size() == 1) {
+                addTag(root, "changeSetId", revisions.get(0));
+            } else {
+                Element changes = new Element("revisionId");
+                root.getContent().add(changes);
+                for (String revision : revisions) {
+                    Element rev = new Element("revisionData");
+                    changes.getContent().add(rev);
+                    addTag(rev, "id", revision);
+                }
+            }
+        }
+        return doc;
+    }
+
+    public static Document prepareAddChangesetNode(String repoName, List<String> revisions) {
+        Element root = new Element("addChangeset");
+        Document doc = new Document(root);
+
+        addTag(root, "repository", repoName);
+
+        if (!revisions.isEmpty()) {
+                Element changes = new Element("revisionId");
+                root.getContent().add(changes);
+                for (String revision : revisions) {
+                    Element rev = new Element("revisionData");
+                    changes.getContent().add(rev);
+                    addTag(rev, "id", revision);
+                }
         }
         return doc;
     }
@@ -281,7 +322,7 @@ public final class CrucibleRestXmlHelper {
     private static Element prepareFilterNodeElement(CustomFilter filter) {
         Element filterData = new Element("customFilterData");
 
-        addTag(filterData, "title", filter.getTitle() != null ? filter.getTitle() : "");        
+        addTag(filterData, "title", /*filter.getTitle() != null ? filter.getTitle() :*/ "");        
         addTag(filterData, "author", filter.getAuthor() != null ? filter.getAuthor() : "");
         addTag(filterData, "creator", filter.getCreator() != null ? filter.getCreator() : "");
         addTag(filterData, "moderator", filter.getModerator() != null ? filter.getModerator() : "");

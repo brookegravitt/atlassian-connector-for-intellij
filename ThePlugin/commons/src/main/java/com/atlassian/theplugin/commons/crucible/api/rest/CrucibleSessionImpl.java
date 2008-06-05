@@ -51,7 +51,8 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
     private static final String GET_REVIEWERS = "/reviewers";
 	private static final String GET_REVIEW_ITEMS = "/reviewitems";
 	private static final String GET_REVIEW_COMMENTS = "/comments";
-    private static final String APPROVE_ACTION = "/approve";    
+    private static final String APPROVE_ACTION = "/approve";
+    private static final String ADD_CHANGESET = "/addChangeset";
 
     private String authToken = null;
 
@@ -542,6 +543,59 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			throw new RemoteApiException("Server returned malformed response", e);
 		}
 	}
+
+    public ReviewData createReviewFromRevision(ReviewData reviewData, List<String> revisions) throws RemoteApiException {
+		if (!isLoggedIn()) {
+			throw new IllegalStateException("Calling method without calling login() first");
+		}
+
+		Document request = CrucibleRestXmlHelper.prepareCreateReviewNode(reviewData, revisions);
+
+        try {
+			Document doc = retrievePostResponse(baseUrl + REVIEW_SERVICE, request);
+
+			XPath xpath = XPath.newInstance("/reviewData");
+			@SuppressWarnings("unchecked")
+			List<Element> elements = xpath.selectNodes(doc);
+
+			if (elements != null && !elements.isEmpty()) {
+				return CrucibleRestXmlHelper.parseReviewNode(elements.iterator().next());
+			}
+			return null;
+		} catch (IOException e) {
+			throw new RemoteApiException(e.getMessage(), e);
+		} catch (JDOMException e) {
+			throw new RemoteApiException("Server returned malformed response", e);
+		}
+    }
+
+    public ReviewData addRevisionsToReview(PermId permId, String repository, List<String> revisions) throws RemoteApiException {
+		if (!isLoggedIn()) {
+			throw new IllegalStateException("Calling method without calling login() first");
+		}
+
+		Document request = CrucibleRestXmlHelper.prepareAddChangesetNode(repository, revisions);
+
+        try {
+            String url = baseUrl + REVIEW_SERVICE + "/" + permId.getId() + ADD_CHANGESET;
+                        System.out.println("url = " + url);
+            Document doc = retrievePostResponse(url, request);
+
+
+            XPath xpath = XPath.newInstance("/reviewData");
+			@SuppressWarnings("unchecked")
+			List<Element> elements = xpath.selectNodes(doc);
+
+			if (elements != null && !elements.isEmpty()) {
+				return CrucibleRestXmlHelper.parseReviewNode(elements.iterator().next());
+			}
+			return null;
+		} catch (IOException e) {
+			throw new RemoteApiException(e.getMessage(), e);
+		} catch (JDOMException e) {
+			throw new RemoteApiException("Server returned malformed response", e);
+		}
+    }
 
     public void addReviewer(PermId permId, String userName) throws RemoteApiException {
 		if (!isLoggedIn()) {

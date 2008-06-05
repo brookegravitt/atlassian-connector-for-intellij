@@ -1,57 +1,32 @@
 package com.atlassian.theplugin.commons.crucible.api.rest;
 
 import com.atlassian.theplugin.commons.crucible.api.CustomFilterData;
+import com.atlassian.theplugin.commons.crucible.api.PredefinedFilter;
 
-import java.util.List;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 
-/**
- * Created by IntelliJ IDEA.
- * User: pmaruszak
- * Date: Jun 2, 2008
- * Time: 2:24:17 PM
- * To change this template use File | Settings | File Templates.
- */
 public class CrucibleFiltersBean {
-	private List<CustomFilterData> manualFilter = new ArrayList<CustomFilterData>();
-	private CustomFilterData savedFilter = null;
-	private boolean savedFilterUsed = false;
+    private Boolean[] predefinedFilters = new Boolean[PredefinedFilter.values().length];
+    private HashMap<String, CustomFilterData> manualFilter = new HashMap<String, CustomFilterData>();
 
-	public CrucibleFiltersBean() {
-	}
+    public CrucibleFiltersBean() {
+        Arrays.fill(predefinedFilters, false);
+    }
 
-	public List<CustomFilterData> getManualFilter() {
-		return manualFilter;
-	}
+    public HashMap<String, CustomFilterData> getManualFilter() {
+        return manualFilter;
+    }
 
-	public void setManualFilter(List<CustomFilterData> manualFilter) {
-		this.manualFilter = manualFilter;
-	}
+    public void setManualFilter(HashMap<String, CustomFilterData> manualFilter) {
+        this.manualFilter = manualFilter;
+    }
 
-	public CustomFilterData getSavedFilter() {
-		return savedFilter;
-	}
+    public Boolean[] getPredefinedFilters() {
+        return predefinedFilters;
+    }
 
-	public void setSavedFilter(CustomFilterData savedFilter) {
-		this.savedFilter = savedFilter;
-	}
-
-	public boolean getSavedFilterUsed() {
-		return savedFilterUsed;
-	}
-
-	public void setSavedFilterUsed(boolean savedFilterUsed) {
-		this.savedFilterUsed = savedFilterUsed;
-	}
-
-	public void safeAddCrucibleFilter(CustomFilterData filter){
-
-		if (manualFilter.contains(filter)){
-			manualFilter.remove(filter);
-		}
-
-		if (filter!=null) {
-			manualFilter.add(filter);
-		}
-	}
+    public void setPredefinedFilters(Boolean[] predefinedFilters) {
+        this.predefinedFilters = predefinedFilters;
+    }
 }

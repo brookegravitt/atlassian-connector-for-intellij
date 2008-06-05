@@ -114,7 +114,7 @@ public class CrucibleNewReviewNotifier implements CrucibleStatusListener {
     /*
         Works with Crucible 1.6
      */
-    public void updateReviews(Map<PredefinedFilter, List<ReviewDataInfo>> incomingReviews) {
+    public void updateReviews(Map<PredefinedFilter, List<ReviewDataInfo>> incomingReviews, Map<String, List<ReviewDataInfo>> customIncomingReviews) {
         if (!incomingReviews.isEmpty()) {
             StringBuilder sb = new StringBuilder("<table width=\"100%\">");
             final Project project = IdeaHelper.getCurrentProject();
