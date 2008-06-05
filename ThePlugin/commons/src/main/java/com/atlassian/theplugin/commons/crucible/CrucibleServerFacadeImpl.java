@@ -87,12 +87,42 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 		return session.createReview(reviewData);
 	}
 
-    public void addReviewer(Server server, PermId permId, String userName) throws RemoteApiException, ServerPasswordNotProvidedException {
+    public ReviewData createReviewFromRevision(
+            Server server,
+            ReviewData reviewData,
+            List<String> revisions) throws RemoteApiException {
+        CrucibleSession session = getSession(server);
+        ReviewData review = null;
+        if (!revisions.isEmpty()) {
+            review = session.createReviewFromRevision(reviewData, revisions);
+        }
+        return review;
+    }
+
+    public ReviewData addRevisionsToReview(
+            Server server,
+            PermId permId,
+            String repository,
+            List<String> revisions) throws RemoteApiException {
+        CrucibleSession session = getSession(server);
+        ReviewData review = null;
+        if (!revisions.isEmpty()) {
+            review = session.addRevisionsToReview(permId, repository, revisions);
+        }
+        return review;
+    }
+
+    public void addReviewer(
+            Server server,
+            PermId permId,
+            String userName) throws RemoteApiException, ServerPasswordNotProvidedException {
         CrucibleSession session = getSession(server);
         session.addReviewer(permId, userName);
     }
 
-    public ReviewData approveReview(Server server, PermId permId) throws RemoteApiException, ServerPasswordNotProvidedException {
+    public ReviewData approveReview(
+            Server server,
+            PermId permId) throws RemoteApiException, ServerPasswordNotProvidedException {
         CrucibleSession session = getSession(server);
         return session.approveReview(permId);
     }
@@ -166,8 +196,7 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 		return session.getRepository(repoName);
 	}
 
-
-	/**
+    /**
 	 * @param server server object with Url, Login and Password to connect to
 	 * @return List of reviews (empty list in case there is no review)
 	 */

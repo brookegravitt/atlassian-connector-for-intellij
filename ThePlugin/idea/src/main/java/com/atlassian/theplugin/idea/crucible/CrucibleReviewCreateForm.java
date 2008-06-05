@@ -13,6 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/**
+ * Copyright (C) 2008 Atlassian
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package com.atlassian.theplugin.idea.crucible;
 
@@ -28,6 +43,8 @@ import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import static com.intellij.openapi.ui.Messages.showMessageDialog;
+import com.intellij.openapi.vcs.changes.ChangeList;
+import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import org.jetbrains.annotations.Nullable;
@@ -40,7 +57,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class CruciblePatchUploadForm extends DialogWrapper {
+enum ReviewCreationMode {
+    EMPTY,
+    REVISION,
+    PATCH
+}
+
+public class CrucibleReviewCreateForm extends DialogWrapper {
+    private ReviewCreationMode mode;
+
     private JTextArea patchPreview;
     private JPanel rootComponent;
     private JTextField titleText;
@@ -54,12 +79,41 @@ public class CruciblePatchUploadForm extends DialogWrapper {
     private JList reviewersList;
     private JCheckBox allowCheckBox;
     private JCheckBox leaveAsDraftCheckBox;
+    private JScrollPane patchPanel;
+    private JLabel patchLabel;
     private String patchText;
     private DefaultListModel model;
 
     private CrucibleServerFacade crucibleServerFacade;
+    private ChangeList[] changes;
 
-    protected CruciblePatchUploadForm(CrucibleServerFacade crucibleServerFacade, String commitMessage) {
+    protected CrucibleReviewCreateForm(CrucibleServerFacade crucibleServerFacade, ChangeList[] changes) {
+        this(crucibleServerFacade, "");
+        this.mode = ReviewCreationMode.REVISION;
+        this.changes = changes;
+        if (changes.length == 1) {
+            titleText.setText(changes[0].getName());
+        } else {
+            titleText.setText("");
+        }
+        showPatchPanel(false);
+        setTitle("Create Review");
+    }
+
+    protected CrucibleReviewCreateForm(CrucibleServerFacade crucibleServerFacade, String commitMessage, String patch) {
+        this(crucibleServerFacade, commitMessage);
+        this.mode = ReviewCreationMode.PATCH;
+        setPatchPreview(patch);
+        showPatchPanel(true);
+        setTitle("Create Patch Review");
+    }
+
+    private void showPatchPanel(boolean visible) {
+        this.patchPanel.setVisible(visible);
+        this.patchLabel.setVisible(visible);
+    }
+
+    private CrucibleReviewCreateForm(CrucibleServerFacade crucibleServerFacade, String commitMessage) {
         super(false);
         this.crucibleServerFacade = crucibleServerFacade;
         $$$setupUI$$$();
@@ -150,8 +204,8 @@ public class CruciblePatchUploadForm extends DialogWrapper {
         final JLabel label2 = new JLabel();
         label2.setText("Statement of Objectives:");
         panel1.add(label2, new GridConstraints(8, 0, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JScrollPane scrollPane1 = new JScrollPane();
-        panel1.add(scrollPane1, new GridConstraints(11, 0, 1, 6, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        patchPanel = new JScrollPane();
+        panel1.add(patchPanel, new GridConstraints(11, 0, 1, 6, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         patchPreview = new JTextArea();
         patchPreview.setEditable(false);
         patchPreview.setEnabled(true);
@@ -159,52 +213,52 @@ public class CruciblePatchUploadForm extends DialogWrapper {
         patchPreview.setLineWrap(true);
         patchPreview.setRows(5);
         patchPreview.setText("");
-        scrollPane1.setViewportView(patchPreview);
-        final JScrollPane scrollPane2 = new JScrollPane();
-        panel1.add(scrollPane2, new GridConstraints(9, 0, 1, 6, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        patchPanel.setViewportView(patchPreview);
+        final JScrollPane scrollPane1 = new JScrollPane();
+        panel1.add(scrollPane1, new GridConstraints(9, 0, 1, 6, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         statementArea = new JTextArea();
         statementArea.setLineWrap(true);
         statementArea.setRows(5);
-        scrollPane2.setViewportView(statementArea);
-        final JLabel label3 = new JLabel();
-        label3.setText("Patch:");
-        panel1.add(label3, new GridConstraints(10, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        scrollPane1.setViewportView(statementArea);
+        patchLabel = new JLabel();
+        patchLabel.setText("Patch:");
+        panel1.add(patchLabel, new GridConstraints(10, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         openBrowserToCompleteCheckBox = new JCheckBox();
         openBrowserToCompleteCheckBox.setSelected(false);
         openBrowserToCompleteCheckBox.setText("Open browser to complete review creation");
         panel1.add(openBrowserToCompleteCheckBox, new GridConstraints(12, 0, 1, 4, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label3 = new JLabel();
+        label3.setText("Title:");
+        panel1.add(label3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label4 = new JLabel();
-        label4.setText("Title:");
-        panel1.add(label4, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label5 = new JLabel();
-        label5.setText("Moderator:");
-        panel1.add(label5, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        label4.setText("Moderator:");
+        panel1.add(label4, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         moderatorComboBox = new JComboBox();
         panel1.add(moderatorComboBox, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label6 = new JLabel();
-        label6.setInheritsPopupMenu(false);
-        label6.setText("Project Key:");
-        panel1.add(label6, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label5 = new JLabel();
+        label5.setInheritsPopupMenu(false);
+        label5.setText("Project Key:");
+        panel1.add(label5, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         projectsComboBox = new JComboBox();
         panel1.add(projectsComboBox, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label7 = new JLabel();
-        label7.setText("Repository Name:");
-        panel1.add(label7, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label6 = new JLabel();
+        label6.setText("Repository Name:");
+        panel1.add(label6, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         repoComboBox = new JComboBox();
         panel1.add(repoComboBox, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label8 = new JLabel();
-        label8.setText("Author:");
-        panel1.add(label8, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label7 = new JLabel();
+        label7.setText("Author:");
+        panel1.add(label7, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         authorComboBox = new JComboBox();
         panel1.add(authorComboBox, new GridConstraints(6, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         titleText = new JTextField();
         panel1.add(titleText, new GridConstraints(1, 0, 1, 6, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        final JScrollPane scrollPane3 = new JScrollPane();
-        panel1.add(scrollPane3, new GridConstraints(2, 3, 5, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, 1, null, null, null, 0, false));
-        scrollPane3.setViewportView(reviewersList);
-        final JLabel label9 = new JLabel();
-        label9.setText("Reviewers");
-        panel1.add(label9, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JScrollPane scrollPane2 = new JScrollPane();
+        panel1.add(scrollPane2, new GridConstraints(2, 3, 5, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, 1, null, null, null, 0, false));
+        scrollPane2.setViewportView(reviewersList);
+        final JLabel label8 = new JLabel();
+        label8.setText("Reviewers");
+        panel1.add(label8, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         allowCheckBox = new JCheckBox();
         allowCheckBox.setEnabled(false);
         allowCheckBox.setText("Allow anyone to join");
@@ -214,9 +268,9 @@ public class CruciblePatchUploadForm extends DialogWrapper {
         panel1.add(leaveAsDraftCheckBox, new GridConstraints(13, 0, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         label1.setLabelFor(crucibleServersComboBox);
         label2.setLabelFor(statementArea);
-        label3.setLabelFor(patchPreview);
-        label4.setLabelFor(titleText);
-        label8.setLabelFor(scrollPane3);
+        patchLabel.setLabelFor(patchPreview);
+        label3.setLabelFor(titleText);
+        label7.setLabelFor(scrollPane2);
     }
 
     /**
@@ -469,10 +523,29 @@ public class CruciblePatchUploadForm extends DialogWrapper {
             ReviewData reviewData = new ReviewDataProvider(server);
 
             try {
-                ReviewData draftReviewData =
-                        crucibleServerFacade.createReviewFromPatch(
-                                server, reviewData, patchText);
-                
+                ReviewData draftReviewData = null;
+                switch (mode) {
+                    case PATCH:
+                        draftReviewData =
+                                crucibleServerFacade.createReviewFromPatch(
+                                        server, reviewData, patchText);
+                        break;
+                    case REVISION:
+                        List<String> revisions = new ArrayList<String>();
+                        for (ChangeList change : changes) {
+                            for (Change change1 : change.getChanges()) {
+                                revisions.add(change1.getAfterRevision().getRevisionNumber().asString());
+                                break;
+                            }
+                        }
+                        draftReviewData =
+                                crucibleServerFacade.createReviewFromRevision(
+                                        server, reviewData, revisions);
+                        break;
+                    case EMPTY:
+                        break;
+                }
+
                 for (int i = 0; i < model.getSize(); ++i) {
                     UserListItem item = (UserListItem) model.get(i);
                     if (item.isSelected()) {
