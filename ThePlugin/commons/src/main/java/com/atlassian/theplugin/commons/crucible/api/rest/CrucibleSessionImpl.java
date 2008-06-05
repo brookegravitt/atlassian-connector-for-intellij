@@ -23,6 +23,8 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
+import org.jdom.output.XMLOutputter;
+import org.jdom.output.Format;
 import org.jdom.xpath.XPath;
 import com.atlassian.theplugin.commons.thirdparty.base64.Base64;
 import com.atlassian.theplugin.commons.crucible.api.*;
@@ -204,7 +206,6 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 
         try {
             Document doc = retrievePostResponse(baseUrl + REVIEW_SERVICE + GET_FILTERED_REVIEWS, request);
-
             XPath xpath = XPath.newInstance("/reviews/reviewData");
             @SuppressWarnings("unchecked")
             List<Element> elements = xpath.selectNodes(doc);
@@ -220,6 +221,15 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             throw new RemoteApiException(e.getMessage(), e);
         } catch (JDOMException e) {
             throw new RemoteApiException("Server returned malformed response", e);
+        }
+    }
+
+    private void printXml(Document request) {
+        XMLOutputter o = new XMLOutputter(Format.getPrettyFormat());
+        try {
+            o.output(request, System.out);
+        } catch (IOException e) {
+            // nothing to do - debug code
         }
     }
 
