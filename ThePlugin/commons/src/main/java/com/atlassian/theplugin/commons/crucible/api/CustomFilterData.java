@@ -22,6 +22,7 @@ import java.util.Arrays;
 
 
 public class CustomFilterData implements CustomFilter {
+	private long serverUid = 0;    
     private String title;
     private String[] state;
     private String author;
@@ -79,9 +80,6 @@ public class CustomFilterData implements CustomFilter {
 	public void setServerUid(long serverUid) {
 		this.serverUid = serverUid;
 	}
-
-	private long serverUid = 0;
-
 
 	public CustomFilterData() {
 	}
