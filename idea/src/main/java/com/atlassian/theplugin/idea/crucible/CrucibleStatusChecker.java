@@ -173,24 +173,26 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
                             .getCrucibleConfiguration().getCrucibleFilters().getManualFilter().get(s);
                     if (filter.isEnabled()) {
                         for (Server server : retrieveEnabledCrucibleServers()) {
-                            try {
-                                PluginUtil.getLogger().debug("Crucible: updating status for server: "
-                                        + server.getUrlString() + ", custom filter");
-                                List<ReviewDataInfo> customFilter
-                                        = crucibleServerFacade.getReviewsForCustomFilter(server, filter);
+                            if (server.getUid() == filter.getServerUid()) {
+                                try {
+                                    PluginUtil.getLogger().debug("Crucible: updating status for server: "
+                                            + server.getUrlString() + ", custom filter");
+                                    List<ReviewDataInfo> customFilter
+                                            = crucibleServerFacade.getReviewsForCustomFilter(server, filter);
 
-                                if (!customFilterReviews.containsKey(filter.getTitle())) {
-                                    List<ReviewDataInfo> list = new ArrayList<ReviewDataInfo>();
-                                    customFilterReviews.put(filter.getTitle(), list);
+                                    if (!customFilterReviews.containsKey(filter.getTitle())) {
+                                        List<ReviewDataInfo> list = new ArrayList<ReviewDataInfo>();
+                                        customFilterReviews.put(filter.getTitle(), list);
+                                    }
+                                    customFilterReviews.get(filter.getTitle()).addAll(customFilter);
+                                } catch (ServerPasswordNotProvidedException exception) {
+                                    ApplicationManager.getApplication().invokeLater(
+                                            new MissingPasswordHandler(crucibleServerFacade),
+                                            ModalityState.defaultModalityState());
+                                } catch (RemoteApiException e) {
+                                    PluginUtil.getLogger().info("Error getting Crucible reviews for " + server.getName()
+                                            + " server", e);
                                 }
-                                customFilterReviews.get(filter.getTitle()).addAll(customFilter);
-                            } catch (ServerPasswordNotProvidedException exception) {
-                                ApplicationManager.getApplication().invokeLater(
-                                        new MissingPasswordHandler(crucibleServerFacade),
-                                        ModalityState.defaultModalityState());
-                            } catch (RemoteApiException e) {
-                                PluginUtil.getLogger().info("Error getting Crucible reviews for " + server.getName()
-                                        + " server", e);
                             }
                         }
                     }
