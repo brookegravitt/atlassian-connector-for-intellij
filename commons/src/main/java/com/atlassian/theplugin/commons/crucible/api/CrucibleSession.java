@@ -31,6 +31,10 @@ public interface CrucibleSession {
 
 	ReviewData createReviewFromPatch(ReviewData reviewData, String patch) throws RemoteApiException;
 
+    ReviewData createReviewFromRevision(ReviewData reviewData, List<String> revisions) throws RemoteApiException;
+
+    ReviewData addRevisionsToReview(PermId permId, String repository, List<String> revisions) throws RemoteApiException;    
+
     void addReviewer(PermId permId, String userName) throws RemoteApiException;
 
     ReviewData approveReview(PermId permId) throws RemoteApiException;
@@ -61,5 +65,5 @@ public interface CrucibleSession {
 
 	List<GeneralComment> getComments(PermId id) throws RemoteApiException;
 
-	boolean isLoggedIn();	
+	boolean isLoggedIn();
 }

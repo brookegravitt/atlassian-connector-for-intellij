@@ -17,7 +17,7 @@
 package com.atlassian.theplugin.idea.action.crucible;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
-import com.atlassian.theplugin.commons.crucible.api.PredefinedFilter;
+import com.atlassian.theplugin.commons.crucible.api.CustomFilterData;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ThePluginProjectComponent;
@@ -25,41 +25,39 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.ToggleAction;
 import com.intellij.openapi.project.Project;
 
-public class PredefinedFilterAction extends ToggleAction {
-    protected PredefinedFilter filter;
-
-    public PredefinedFilterAction(PredefinedFilter filter) {
-        this.filter = filter;
+public class CustomFilterAction extends ToggleAction {
+    public CustomFilterAction() {
     }
 
-    private Boolean[] getPredefinedFilters(AnActionEvent event) {
+    private CustomFilterData getFilter(AnActionEvent event) {
         Project project = IdeaHelper.getCurrentProject(event);
         if (project != null) {
             ThePluginProjectComponent projectComponent = IdeaHelper.getCurrentProject(event).getComponent(ThePluginProjectComponent.class);
             ProjectConfigurationBean projectConfiguration = projectComponent.getProjectConfigurationBean();
-            return projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getPredefinedFilters();
+            if (!projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().isEmpty()) {
+                for (String s : projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().keySet()) {
+                    CustomFilterData filter = projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().get(s);
+                    return filter;
+                }
+            }
         }
         return null;
     }
 
     public boolean isSelected(AnActionEvent event) {
-        Boolean[] filters = getPredefinedFilters(event);
-        if (filters != null) {
-            if (filters[filter.ordinal()] == null) {
-                filters[filter.ordinal()] = false;
-            }
-            return filters[filter.ordinal()];
-        } else {
-            return false;
+        CustomFilterData filter = getFilter(event);
+        if (filter != null) {
+            return filter.isEnabled();
         }
+        return false;
     }
 
     public void setSelected(AnActionEvent event, boolean b) {
-        Boolean[] filters = getPredefinedFilters(event);
-        if (filters != null) {
-            filters[filter.ordinal()] = b;
-            IdeaHelper.getCrucibleToolWindowPanel(event).showPredefinedFilter(filter, b);
-        }        
+        CustomFilterData filter = getFilter(event);
+        if (filter != null) {
+            filter.setEnabled(b);
+            IdeaHelper.getCrucibleToolWindowPanel(event).showCustomFilter(b);
+        }       
     }
 
     public void update(AnActionEvent event) {

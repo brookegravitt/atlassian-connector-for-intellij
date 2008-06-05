@@ -17,20 +17,20 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
+import com.intellij.openapi.vcs.changes.ChangeList;
 
-public class CruciblePatchUploader implements Runnable {
-	private final String patch;
-	private final String commitMessage;
+
+public class CrucibleRevisionReviewCreator implements Runnable {
 	private final CrucibleServerFacade crucibleServerFacade;
+    private ChangeList[] changes;
 
-	public CruciblePatchUploader(CrucibleServerFacade crucibleServerFacade, String commitMessage, String patch) {
+    public CrucibleRevisionReviewCreator(CrucibleServerFacade crucibleServerFacade, ChangeList[] changes) {
 		this.crucibleServerFacade = crucibleServerFacade;
-		this.commitMessage = commitMessage;
-		this.patch = patch;
-	}
+        this.changes = changes;
+    }
 
 	public void run() {
-		final CrucibleReviewCreateForm reviewCreateForm = new CrucibleReviewCreateForm(crucibleServerFacade, commitMessage, patch);
+		final CrucibleReviewCreateForm reviewCreateForm = new CrucibleReviewCreateForm(crucibleServerFacade, changes);
 		reviewCreateForm.show();
 	}
 }

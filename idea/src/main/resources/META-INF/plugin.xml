@@ -172,15 +172,28 @@
         <action id="ThePlugin.Crucible.AllClosed" class="com.atlassian.theplugin.idea.action.crucible.AllClosedAction" text="All closed" />
         <action id="ThePlugin.Crucible.All" class="com.atlassian.theplugin.idea.action.crucible.AllAction" text="All" />        
 
+        <action id="ThePlugin.Crucible.CustomFilter" class="com.atlassian.theplugin.idea.action.crucible.CustomFilterAction" text="Custom filter" />        
 
-		<action id="ThePlugin.Crucible.ShowFilter" class="com.atlassian.theplugin.idea.action.crucible.CrucibleShowCustomFilterAction" text="Show JIRA filter dialog"  icon="/actions/er-state.png"/>
-		<action id="ThePlugin.Crucible.ApplyFilter" class="com.atlassian.theplugin.idea.action.crucible.ApplyFilterAction" text="Apply filter" icon="/actions/er-state.png" />
+        <action id="ThePlugin.Crucible.ShowFilter" class="com.atlassian.theplugin.idea.action.crucible.CrucibleShowCustomFilterAction" text="Show Crucible custom filter"  icon="/icons/crucible-blue-16.png"/>
+        <action id="ThePlugin.Crucible.AddCustomFilter" class="com.atlassian.theplugin.idea.action.crucible.CrucibleAddCustomFilterAction" text="Add Crucible custom filter" icon="/general/add.png" />
+        <action id="ThePlugin.Crucible.RemoveCustomFilter" class="com.atlassian.theplugin.idea.action.crucible.CrucibleRemoveCustomFilterAction" text="Remove Crucible custom filter" icon="/general/remove.png" />        
+        <action id="ThePlugin.Crucible.ApplyFilter" class="com.atlassian.theplugin.idea.action.crucible.ApplyFilterAction" text="Apply filter" icon="/actions/er-state.png" />
 		<action id="ThePlugin.Crucible.CancelFilter" class="com.atlassian.theplugin.idea.action.crucible.CancelFilterChangeAction" text="Cancel" icon="/actions/cancel.png" />
-		<action id="ThePlugin.Crucible.ClearFilter" class="com.atlassian.theplugin.idea.action.crucible.ClearFilterAction" text="Clear filter" icon="/general/reset.png" />
-
+		<action id="ThePlugin.Crucible.ClearFilter" class="com.atlassian.theplugin.idea.action.crucible.ClearFilterAction" text="Clear filter" icon="/general/reset.png" />                      
 
         <action id="ThePlugin.Crucible.ExpandAll" class="com.atlassian.theplugin.idea.action.crucible.ExpandAllAction" text="Expand all" icon="/actions/expandall.png"/>
         <action id="ThePlugin.Crucible.CollapseAll" class="com.atlassian.theplugin.idea.action.crucible.CollapseAllAction" text="Collapse all" icon="/actions/collapseall.png"/>
+
+        <action id="ThePlugin.Crucible.PostCommitReview" class="com.atlassian.theplugin.idea.action.crucible.PostCommitReviewAction" text="Create review" icon="/icons/crucible-blue-16.png" />
+        <action id="ThePlugin.Crucible.AddRevisionToReview" class="com.atlassian.theplugin.idea.action.crucible.AddRevisionToReviewAction" text="Add revision to review" icon="/icons/fisheye-16-plus.png" />
+        <action id="ThePlugin.Crucible.ViewFisheyeChangeset" class="com.atlassian.theplugin.idea.action.crucible.ViewFisheyeChangesetAction" text="View changeset" icon="/icons/fisheye-16.png" />
+
+        <group id="ThePlugin.Crucible.PostCommit" popup="false" text="">
+            <reference id="ThePlugin.Crucible.PostCommitReview" />
+            <reference id="ThePlugin.Crucible.AddRevisionToReview" />
+            <reference id="ThePlugin.Crucible.ViewFisheyeChangeset" />            
+            <add-to-group anchor="last" group-id="CommittedChangesToolbar" />
+        </group>
 
         <group id="ThePlugin.CrucibleToolWindowToolBar" popup="false" text="">
 
@@ -193,7 +206,11 @@
             <separator />
             <reference id="ThePlugin.Crucible.ToReviewAction" />
 			<reference id="ThePlugin.Crucible.ShowFilter" />
-		</group>
+            <!--
+            <reference id="ThePlugin.Crucible.AddCustomFilter" />
+            <reference id="ThePlugin.Crucible.RemoveCustomFilter" />
+            -->
+        </group>
 
         <group id="ThePlugin.CrucibleFilterCombo" popup="true" text="" icon="/ant/filter.png">
             <reference id="ThePlugin.Crucible.ToReviewComboAction" />
@@ -207,7 +224,9 @@
             <separator/>
             <reference id="ThePlugin.Crucible.AllOpen" />
             <reference id="ThePlugin.Crucible.AllClosed" />
-            <reference id="ThePlugin.Crucible.All" />            
+            <reference id="ThePlugin.Crucible.All" />
+            <separator/>
+            <reference id="ThePlugin.Crucible.CustomFilter" />
             <add-to-group anchor="last" group-id="ThePlugin.CrucibleToolWindowToolBar" />
         </group>        
 

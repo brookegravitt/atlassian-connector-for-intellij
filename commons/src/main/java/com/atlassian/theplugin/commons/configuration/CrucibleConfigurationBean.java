@@ -16,32 +16,19 @@
 
 package com.atlassian.theplugin.commons.configuration;
 
-import com.atlassian.theplugin.commons.crucible.api.PredefinedFilter;
-import com.atlassian.theplugin.commons.crucible.api.rest.CrucibleFiltersBean;
-
-import java.util.Arrays;
-
 public class CrucibleConfigurationBean extends AbstractServerConfigurationBean {
 	private CrucibleTooltipOption crucibleTooltipOption;
     private int pollTime = 1;
-    private Boolean[] filters = new Boolean[PredefinedFilter.values().length];
-	private CrucibleFiltersBean crucibleManualFilters;
-
 
 	public CrucibleConfigurationBean() {
 		super();
-        Arrays.fill(filters, false);
     }
 
 	public CrucibleConfigurationBean(ProductServerConfiguration cfg) {
 		super(cfg);
-        Arrays.fill(filters, false);
         if (cfg instanceof CrucibleConfigurationBean) {
 			this.crucibleTooltipOption = ((CrucibleConfigurationBean) cfg).getCrucibleTooltipOption();
 			this.pollTime = ((CrucibleConfigurationBean) cfg).getPollTime();
-            for (int i = 0; i < ((CrucibleConfigurationBean) cfg).getFilters().length; ++i) {
-                this.filters[i] = ((CrucibleConfigurationBean) cfg).getFilters()[i];                 
-            }
         }
     }
 
@@ -60,21 +47,4 @@ public class CrucibleConfigurationBean extends AbstractServerConfigurationBean {
 	public void setCrucibleTooltipOption(CrucibleTooltipOption crucibleTooltipOption) {
 		this.crucibleTooltipOption = crucibleTooltipOption;
 	}
-
-    public Boolean[] getFilters() {
-        return filters;
-    }
-
-    public void setFilters(Boolean[] filters) {
-        this.filters = filters;
-    }
-
-	public CrucibleFiltersBean getCrucibleManualFilters() {
-		return crucibleManualFilters;
-	}
-
-	public void setCrucibleManualFilters(CrucibleFiltersBean crucibleManualFilters) {
-		this.crucibleManualFilters = crucibleManualFilters;
-	}
-	
 }
