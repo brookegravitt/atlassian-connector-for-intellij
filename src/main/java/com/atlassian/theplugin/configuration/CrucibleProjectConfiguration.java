@@ -17,19 +17,7 @@
 package com.atlassian.theplugin.configuration;
 
 import com.atlassian.theplugin.commons.crucible.api.rest.CrucibleFiltersBean;
-import com.atlassian.theplugin.commons.crucible.api.CustomFilterData;
-import com.intellij.util.xmlb.annotations.Transient;
 
-import java.util.Map;
-import java.util.HashMap;
-
-/**
- * Created by IntelliJ IDEA.
- * User: Jacek
- * Date: 2008-03-17
- * Time: 16:33:11
- * To change this template use File | Settings | File Templates.
- */
 public class CrucibleProjectConfiguration {
 	private ProjectToolWindowTableConfiguration tableConfiguration =
 			new ProjectToolWindowTableConfiguration();
@@ -43,9 +31,10 @@ public class CrucibleProjectConfiguration {
 	public void setCrucibleFilters(CrucibleFiltersBean filters) {
 		this.crucibleFilters = filters;
 	}
-	public CrucibleProjectConfiguration() {
 
-	}
+    public CrucibleProjectConfiguration() {
+
+    }
 
 	public ProjectToolWindowTableConfiguration getTableConfiguration() {
 		return tableConfiguration;
@@ -57,10 +46,7 @@ public class CrucibleProjectConfiguration {
 
 	public void copyConfiguration(CrucibleProjectConfiguration crucibleConfiguration) {
 		tableConfiguration.copyConfiguration(crucibleConfiguration.getTableConfiguration());
-	}
-
-	public void safeAddCrucibleFilter(CustomFilterData filter){
-		crucibleFilters.safeAddCrucibleFilter(filter);
-		
-	}
+        crucibleFilters.setManualFilter(crucibleConfiguration.getCrucibleFilters().getManualFilter());
+        crucibleFilters.setPredefinedFilters(crucibleConfiguration.getCrucibleFilters().getPredefinedFilters());
+    }
 }

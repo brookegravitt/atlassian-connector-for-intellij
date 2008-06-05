@@ -19,18 +19,17 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListener;
 import com.atlassian.theplugin.commons.crucible.*;
-import com.atlassian.theplugin.commons.crucible.api.PredefinedFilter;
 import com.atlassian.theplugin.commons.crucible.api.CustomFilterData;
+import com.atlassian.theplugin.commons.crucible.api.PermId;
+import com.atlassian.theplugin.commons.crucible.api.PredefinedFilter;
 import com.atlassian.theplugin.commons.crucible.api.rest.CrucibleFiltersBean;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
-import com.atlassian.theplugin.configuration.JiraFiltersBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.bamboo.ToolWindowBambooContent;
 import com.atlassian.theplugin.idea.ui.CollapsibleTable;
 import com.atlassian.theplugin.idea.ui.TableColumnProvider;
 import com.atlassian.theplugin.idea.ui.TableItemSelectedListener;
-import com.atlassian.theplugin.jira.JIRAServer;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -51,19 +50,18 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     private static CrucibleTableToolWindowPanel instance;
     private TableColumnProvider columnProvider;
 
-	private CrucibleCustomFilterPanel crucibleCustomFilterPanel;
+    private CrucibleCustomFilterPanel crucibleCustomFilterPanel;
 
     private ProjectConfigurationBean projectConfiguration;
     private JPanel toolBarPanel;
     private JPanel dataPanelsHolder;
     private ToolWindowBambooContent editorPane;
 
-	public CrucibleFiltersBean getFilters() {
-		return filters;
-	}
+    public CrucibleFiltersBean getFilters() {
+        return filters;
+    }
 
-	private transient CrucibleFiltersBean filters;
-
+    private transient CrucibleFiltersBean filters;
 
     protected JScrollPane tablePane;
     protected ListTableModel listTableModel;
@@ -75,6 +73,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     private ReviewDataInfoAdapter selectedItem;
 
     private Map<PredefinedFilter, CollapsibleTable> tables = new HashMap<PredefinedFilter, CollapsibleTable>();
+    private Map<String, CollapsibleTable> customTables = new HashMap<String, CollapsibleTable>();
     private CollapsibleTable crucible15Table = null;
 
     private static CrucibleServerFacade serverFacade;
@@ -101,29 +100,28 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         return columnProvider;
     }
 
-	public void applyAdvancedFilter() {
-		if (crucibleCustomFilterPanel.getFilter() != null) {
-			CustomFilterData filter = crucibleCustomFilterPanel.getFilter();
+    public void applyAdvancedFilter() {
+        if (crucibleCustomFilterPanel.getFilter() != null) {
+            CustomFilterData filter = crucibleCustomFilterPanel.getFilter();
 
-			filters.safeAddCrucibleFilter(filter);
-			projectConfiguration.
-                getCrucibleConfiguration().safeAddCrucibleFilter(filter);
-		}
+            filters.getManualFilter().put(filter.getTitle(), filter);
+            projectConfiguration.
+                    getCrucibleConfiguration().getCrucibleFilters().getManualFilter().put(filter.getTitle(), filter);
+        }
 
-		hideCrucibleCustomFilter();
-	}
+        hideCrucibleCustomFilter();
+    }
 
-	public void cancelAdvancedFilter() {
-		hideCrucibleCustomFilter();
+    public void cancelAdvancedFilter() {
+        hideCrucibleCustomFilter();
+    }
 
-	}
 
+    public void clearAdvancedFilter() {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
 
-	public void clearAdvancedFilter() {
-		//To change body of implemented methods use File | Settings | File Templates.
-	}
-
-	public static CrucibleTableToolWindowPanel getInstance(ProjectConfigurationBean projectConfigurationBean) {
+    public static CrucibleTableToolWindowPanel getInstance(ProjectConfigurationBean projectConfigurationBean) {
         if (instance == null) {
             instance = new CrucibleTableToolWindowPanel(projectConfigurationBean);
             serverFacade = CrucibleServerFacadeImpl.getInstance();
@@ -164,20 +162,29 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         progressAnimation.configure(this, tablePane, BorderLayout.CENTER);
 
         //crucibleFacade = CrucibleServerFacadeImpl.getInstance();
-		createFilterEditToolBar("atlassian.toolwindow.crucibleFilterEditToolBar", "ThePlugin.Crucible.FilterEditToolBar");
-		this.crucibleCustomFilterPanel = new CrucibleCustomFilterPanel();
-		filters = projectConfiguration.getCrucibleConfiguration().getCrucibleFilters();
-	}
+        createFilterEditToolBar("atlassian.toolwindow.crucibleFilterEditToolBar", "ThePlugin.Crucible.FilterEditToolBar");
+        this.crucibleCustomFilterPanel = new CrucibleCustomFilterPanel();
+        filters = projectConfiguration.getCrucibleConfiguration().getCrucibleFilters();
+    }
 
     private void switchToCrucible16Filter() {
-        for (int i = 0; i < IdeaHelper.getPluginConfiguration().getCrucibleConfigurationData().getFilters().length; ++i) {
+        for (int i = 0; i < projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getPredefinedFilters().length; ++i)
+        {
             if (crucible15Table != null) {
                 dataPanelsHolder.remove(crucible15Table);
                 crucible15Table = null;
             }
             showPredefinedFilter(
                     PredefinedFilter.values()[i],
-                    IdeaHelper.getPluginConfiguration().getCrucibleConfigurationData().getFilters()[i]);
+                    projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getPredefinedFilters()[i]);
+        }
+
+        for (String s : projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().keySet()) {
+            CustomFilterData filter = projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().get(s);
+            if (filter.isEnabled()) {
+                this.showCustomFilter(true);
+                break;
+            }
         }
     }
 
@@ -214,17 +221,17 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     }
 
     public void switchToCrucible15Filter() {
-            crucible15Table = new CollapsibleTable(
-                    tableColumnProvider,
-                    projectConfiguration.getCrucibleConfiguration().getTableConfiguration(),
-                    TO_REVIEW_AS_ACTIVE_REVIEWER,
-                    "atlassian.toolwindow.serverToolBar",
-                    "ThePlugin.CrucibleReviewToolBar",
-                    "Context menu",
-                    getPopupActionGroup());
-            crucible15Table.addItemSelectedListener(this);
-            TableView.restore(projectConfiguration.getCrucibleConfiguration().getTableConfiguration(),
-                    crucible15Table.getTable());
+        crucible15Table = new CollapsibleTable(
+                tableColumnProvider,
+                projectConfiguration.getCrucibleConfiguration().getTableConfiguration(),
+                TO_REVIEW_AS_ACTIVE_REVIEWER,
+                "atlassian.toolwindow.serverToolBar",
+                "ThePlugin.CrucibleReviewToolBar",
+                "Context menu",
+                getPopupActionGroup());
+        crucible15Table.addItemSelectedListener(this);
+        TableView.restore(projectConfiguration.getCrucibleConfiguration().getTableConfiguration(),
+                crucible15Table.getTable());
 
         for (CollapsibleTable table : tables.values()) {
             dataPanelsHolder.remove(table);
@@ -302,7 +309,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     /*
     Crucible 1.6
      */
-    public void updateReviews(Map<PredefinedFilter, List<ReviewDataInfo>> reviews) {
+    public void updateReviews(Map<PredefinedFilter, List<ReviewDataInfo>> reviews, Map<String, List<ReviewDataInfo>> customFilterReviews) {
         this.crucibleVersion = CrucibleVersion.CRUCIBLE_16;
         if (tables.isEmpty()) {
             switchToCrucible16Filter();
@@ -322,11 +329,33 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
                     table.getTable().revalidate();
                     table.setEnabled(true);
                     table.setForeground(UIUtil.getActiveTextColor());
+                    table.setTitle(predefinedFilter.getFilterName() + " (" + reviewList.size() + ")");
                 }
-                table.setTitle(predefinedFilter.getFilterName() + " (" + reviewList.size() + ")");
                 reviewCount += reviewList.size();
             }
         }
+
+        for (String filterName : customFilterReviews.keySet()) {
+            List<ReviewDataInfo> reviewList = customFilterReviews.get(filterName);
+            if (reviewList != null) {
+                List<ReviewDataInfoAdapter> reviewDataInfoAdapters = new ArrayList<ReviewDataInfoAdapter>();
+                for (ReviewDataInfo review : reviewList) {
+                    reviewDataInfoAdapters.add(new ReviewDataInfoAdapter(review));
+                }
+                CollapsibleTable table = customTables.get(filterName);
+                if (table != null) {
+                    table.getListTableModel().setItems(reviewDataInfoAdapters);
+                    table.getListTableModel().fireTableDataChanged();
+                    table.getTable().revalidate();
+                    table.setEnabled(true);
+                    table.setForeground(UIUtil.getActiveTextColor());
+                    table.setTitle(filterName + " (" + reviewList.size() + ")");
+                }
+                reviewCount += reviewList.size();
+            }
+        }
+
+
         StringBuffer sb = new StringBuffer();
         sb.append("Loaded <b>");
         sb.append(reviewCount);
@@ -344,15 +373,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     public void resetState() {
     }
 
-	public void showCrucibleCustomFilter() {
-        JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer();
-
-        filterEditToolbarSetVisible(true);
-	 	crucibleCustomFilterPanel.setFilter(filters.getManualFilter().isEmpty() ? null : filters.getManualFilter().get(0));		
-		setScrollPaneViewport(crucibleCustomFilterPanel.$$$getRootComponent$$$());
-	}
-
-	public final void hideCrucibleCustomFilter() {
+    public final void hideCrucibleCustomFilter() {
         setScrollPaneViewport(dataPanelsHolder);
         filterEditToolbarSetVisible(false);
     }
@@ -369,11 +390,11 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         }
     }
 
-	protected void filterEditToolbarSetVisible(boolean visible) {
+    protected void filterEditToolbarSetVisible(boolean visible) {
         filterEditToolbar.getComponent().setVisible(visible);
     }
 
-	protected   void createFilterEditToolBar(String place, String toolbarName) {
+    protected void createFilterEditToolBar(String place, String toolbarName) {
         ActionManager actionManager = ActionManager.getInstance();
         ActionGroup filterEditToolBar = (ActionGroup) actionManager.getAction(toolbarName);
         filterEditToolbar = actionManager.createActionToolbar(place,
@@ -382,9 +403,74 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         filterEditToolbarSetVisible(false);
     }
 
-	protected void setScrollPaneViewport(JComponent component) {
-			tablePane.setViewportView(component);
-		}
-	
+    protected void setScrollPaneViewport(JComponent component) {
+        tablePane.setViewportView(component);
+    }
 
+
+    public PermId getSelectedReviewId() {
+        return this.selectedItem.getPermaId();
+    }
+
+    private void showCrucibleCustomFilterPanel() {
+        filterEditToolbarSetVisible(true);
+        setScrollPaneViewport(crucibleCustomFilterPanel.$$$getRootComponent$$$());
+    }
+
+    public void showCrucibleCustomFilter() {
+        if (!projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().isEmpty()) {
+            for (String filterName : projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().keySet()) {
+                crucibleCustomFilterPanel.setFilter(projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().get(filterName));
+                break;
+            }
+            showCrucibleCustomFilterPanel();
+        } else {
+            addCustomFilter();
+        }
+    }
+
+    public void addCustomFilter() {
+        String newName = FilterNameUtil.suggestNewName(projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter());
+        CustomFilterData newFilter = new CustomFilterData();
+        newFilter.setTitle(newName);
+        crucibleCustomFilterPanel.setFilter(newFilter);
+        showCrucibleCustomFilterPanel();
+    }
+
+    public void removeCustomFilter() {
+
+    }
+
+    public void showCustomFilter(boolean visible) {
+        if (!projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().isEmpty()) {
+            for (String filterName : projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().keySet()) {
+                CustomFilterData filter = projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().get(filterName);
+                if (visible) {
+                    if (!customTables.containsKey(filter.getTitle())) {
+                        CollapsibleTable table = new CollapsibleTable(
+                                tableColumnProvider,
+                                projectConfiguration.getCrucibleConfiguration().getTableConfiguration(),
+                                filter.getTitle(),
+                                "atlassian.toolwindow.serverToolBar",
+                                "ThePlugin.CrucibleReviewToolBar",
+                                "Context menu",
+                                getPopupActionGroup());
+                        table.addItemSelectedListener(this);
+                        TableView.restore(projectConfiguration.getCrucibleConfiguration().getTableConfiguration(),
+                                table.getTable());
+
+                        dataPanelsHolder.add(table);
+                        customTables.put(filter.getTitle(), table);
+                    }
+                } else {
+                    if (customTables.containsKey(filter.getTitle())) {
+                        dataPanelsHolder.remove(customTables.get(filter.getTitle()));
+                        customTables.remove(filter.getTitle());
+                    }
+                }
+            }
+            dataPanelsHolder.validate();
+            tablePane.repaint();
+        }
+    }
 }
