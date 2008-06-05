@@ -76,13 +76,15 @@ public class Activator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+
+		// create logger
+		PluginUtil.setLogger(new EclipseLogger(getLog()));	// now you can use PluginUtil.getLogger
+		
+		PluginUtil.getLogger().info(PluginUtil.getPluginName() + " started.");
 		
 		// create configuration
 		reloadConfiguration();
 		
-		// create logger
-		new EclipseLogger(getLog());	// now you can use PluginUtil.getLogger
-
 		// create bamboo checker
 		MissingPasswordHandler missingPasswordHandler = new MissingPasswordHandler();
 		bambooChecker = BambooStatusChecker.getInstance(
