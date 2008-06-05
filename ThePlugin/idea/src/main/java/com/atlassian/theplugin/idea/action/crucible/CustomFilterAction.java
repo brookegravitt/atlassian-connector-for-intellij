@@ -25,7 +25,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.ToggleAction;
 import com.intellij.openapi.project.Project;
 
-public class CustomFilterAction extends ToggleAction {
+public class CustomFilterAction extends Crucible16ToggleAction {
     public CustomFilterAction() {
     }
 
@@ -58,15 +58,5 @@ public class CustomFilterAction extends ToggleAction {
             filter.setEnabled(b);
             IdeaHelper.getCrucibleToolWindowPanel(event).showCustomFilter(b);
         }       
-    }
-
-    public void update(AnActionEvent event) {
-        super.update(event);
-        if (IdeaHelper.getCrucibleToolWindowPanel(event) != null) {
-            event.getPresentation().setVisible(
-                    (IdeaHelper.getCrucibleToolWindowPanel(event).getCrucibleVersion() == CrucibleVersion.CRUCIBLE_16));
-        } else {
-            event.getPresentation().setVisible(false);
-        }
     }
 }

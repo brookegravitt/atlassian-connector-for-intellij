@@ -118,7 +118,6 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
 
     public void clearAdvancedFilter() {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public static CrucibleTableToolWindowPanel getInstance(ProjectConfigurationBean projectConfigurationBean) {
@@ -236,7 +235,12 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         for (CollapsibleTable table : tables.values()) {
             dataPanelsHolder.remove(table);
         }
+        for (CollapsibleTable table : customTables.values()) {
+            dataPanelsHolder.remove(table);
+        }
+
         tables.clear();
+        customTables.clear();
         dataPanelsHolder.add(crucible15Table);
         dataPanelsHolder.validate();
         tablePane.repaint();
@@ -409,7 +413,10 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
 
     public PermId getSelectedReviewId() {
-        return this.selectedItem.getPermaId();
+        if (selectedItem != null) {
+            return this.selectedItem.getPermaId();
+        }
+        return null;
     }
 
     private void showCrucibleCustomFilterPanel() {

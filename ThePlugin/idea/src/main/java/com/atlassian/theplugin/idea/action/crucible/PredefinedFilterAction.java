@@ -25,7 +25,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.ToggleAction;
 import com.intellij.openapi.project.Project;
 
-public class PredefinedFilterAction extends ToggleAction {
+public class PredefinedFilterAction extends Crucible16ToggleAction {
     protected PredefinedFilter filter;
 
     public PredefinedFilterAction(PredefinedFilter filter) {
@@ -60,15 +60,5 @@ public class PredefinedFilterAction extends ToggleAction {
             filters[filter.ordinal()] = b;
             IdeaHelper.getCrucibleToolWindowPanel(event).showPredefinedFilter(filter, b);
         }        
-    }
-
-    public void update(AnActionEvent event) {
-        super.update(event);
-        if (IdeaHelper.getCrucibleToolWindowPanel(event) != null) {
-            event.getPresentation().setVisible(
-                    (IdeaHelper.getCrucibleToolWindowPanel(event).getCrucibleVersion() == CrucibleVersion.CRUCIBLE_16));
-        } else {
-            event.getPresentation().setVisible(false);
-        }
     }
 }
