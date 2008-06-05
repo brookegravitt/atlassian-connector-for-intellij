@@ -56,6 +56,7 @@ public class CrucibleCustomFilterPanel extends JPanel {
     private JComboBox reviewerStatusComboBox;
     private JComboBox reviewerComboBox;
     private JComboBox serverComboBox;
+    private JComboBox matchRoleComboBox;
     private CrucibleServerFacade crucibleServerFacade;
     private transient CustomFilterData filter;
 
@@ -70,6 +71,13 @@ public class CrucibleCustomFilterPanel extends JPanel {
         anyUser = new UserDataBean();
         anyUser.setDisplayName("Any");
         anyUser.setUserName("_any_");
+
+        reviewerStatusComboBox.addItem("Any");
+        reviewerStatusComboBox.addItem("Incomplete");
+        reviewerStatusComboBox.addItem("Complete");
+
+        matchRoleComboBox.addItem("Any");
+        matchRoleComboBox.addItem("All");
 
         crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
         serverComboBox.addActionListener(new ActionListener() {
@@ -91,21 +99,12 @@ public class CrucibleCustomFilterPanel extends JPanel {
             server.setUid(filter.getServerUid());
             server = (ServerBean) ConfigurationFactory.getConfiguration().getProductServers(ServerType.CRUCIBLE_SERVER).transientGetServer(server);
             filterTitle.setText((filter.getTitle()));
-
-
         }
 
         fillInCrucibleServers();
         if (server == null && serverComboBox.getItemCount() > 0) {
             serverComboBox.setSelectedIndex(0);
         }
-
-
-        if (getSelectedServer() != null) {
-            fillServerRelatedCombos(server);
-        }
-
-
     }
 
     private Server getSelectedServer() {
@@ -160,30 +159,24 @@ public class CrucibleCustomFilterPanel extends JPanel {
         }
         filter.setState(states.toArray(new String[states.size()]));
 
+        String role = (String) matchRoleComboBox.getSelectedItem();
+        filter.setOrRoles("Any".equals(role));
+
+        String complete = (String) reviewerStatusComboBox.getSelectedItem();
+        filter.setComplete("Complete".equals(complete));
+
         return filter;
     }
 
     private void fillServerRelatedCombos(final Server server) {
         ServerBean serverBean = (ServerBean) server;
 
-
         if (server == null) {
             serverBean = (ServerBean) getSelectedServer();
         }
 
         if (serverBean != null) {
-
-            projectComboBox.removeAllItems();
-            projectComboBox.addItem(new ProjectComboBoxItem(anyProject));
-            authorComboBox.removeAllItems();
-            authorComboBox.addItem(new UserComboBoxItem(anyUser));
-            moderatorComboBox.removeAllItems();
-            moderatorComboBox.addItem(new UserComboBoxItem(anyUser));
-            creatorComboBox.removeAllItems();
-            creatorComboBox.addItem(new UserComboBoxItem(anyUser));
-            reviewerStatusComboBox.removeAllItems();
-            reviewerComboBox.removeAllItems();
-            reviewerComboBox.addItem(new UserComboBoxItem(anyUser));
+            projectComboBox.setEnabled(false);
 
             final ServerBean finalServerBean = serverBean;
 
@@ -202,7 +195,6 @@ public class CrucibleCustomFilterPanel extends JPanel {
                     final List<ProjectData> finalProjects = projects;
                     final List<UserData> finalUsers = users;
 
-
                     EventQueue.invokeLater(new Runnable() {
                         public void run() {
                             updateServerRelatedCombos(finalProjects, finalUsers);
@@ -214,6 +206,17 @@ public class CrucibleCustomFilterPanel extends JPanel {
     }
 
     private void updateServerRelatedCombos(List<ProjectData> projects, List<UserData> users) {
+        projectComboBox.removeAllItems();
+        projectComboBox.addItem(new ProjectComboBoxItem(anyProject));
+        authorComboBox.removeAllItems();
+        authorComboBox.addItem(new UserComboBoxItem(anyUser));
+        moderatorComboBox.removeAllItems();
+        moderatorComboBox.addItem(new UserComboBoxItem(anyUser));
+        creatorComboBox.removeAllItems();
+        creatorComboBox.addItem(new UserComboBoxItem(anyUser));
+        reviewerComboBox.removeAllItems();
+        reviewerComboBox.addItem(new UserComboBoxItem(anyUser));
+
         if (projects.isEmpty()) {
             projectComboBox.setEnabled(false);
             projectComboBox.addItem("No projects");
@@ -222,6 +225,7 @@ public class CrucibleCustomFilterPanel extends JPanel {
             for (ProjectData project : projects) {
                 projectComboBox.addItem(new ProjectComboBoxItem(project));
             }
+            projectComboBox.setEnabled(true);
             setEnabledApplyButton(true);
         }
 
@@ -332,7 +336,7 @@ public class CrucibleCustomFilterPanel extends JPanel {
      */
     private void $$$setupUI$$$() {
         rootPanel = new JPanel();
-        rootPanel.setLayout(new FormLayout("fill:p:grow,fill:max(d;4px):noGrow", "top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:19px:noGrow,center:max(d;4px):noGrow,center:max(d;4px):noGrow,center:33px:noGrow,center:18px:noGrow,center:31px:noGrow,center:19px:noGrow,center:30px:noGrow,center:19px:noGrow,center:30px:noGrow,center:17px:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:24px:noGrow,center:23px:noGrow,center:25px:noGrow,center:max(d;4px):noGrow,center:25px:noGrow,center:24px:noGrow,center:24px:noGrow,center:max(d;4px):noGrow"));
+        rootPanel.setLayout(new FormLayout("fill:p:grow,fill:max(d;4px):noGrow", "top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:19px:noGrow,center:max(d;4px):noGrow,center:max(d;4px):noGrow,center:33px:noGrow,center:18px:noGrow,center:31px:noGrow,center:19px:noGrow,center:30px:noGrow,center:19px:noGrow,center:30px:noGrow,center:17px:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,top:4dlu:noGrow,center:24px:noGrow,center:23px:noGrow,center:25px:noGrow,center:max(d;4px):noGrow,center:25px:noGrow,center:24px:noGrow,center:24px:noGrow,center:max(d;4px):noGrow"));
         filterTitle = new JTextField();
         CellConstraints cc = new CellConstraints();
         rootPanel.add(filterTitle, cc.xyw(1, 7, 2, CellConstraints.FILL, CellConstraints.DEFAULT));
@@ -374,33 +378,40 @@ public class CrucibleCustomFilterPanel extends JPanel {
         rootPanel.add(label7, cc.xy(1, 19));
         draftCheckBox = new JCheckBox();
         draftCheckBox.setText("Draft");
-        rootPanel.add(draftCheckBox, cc.xy(1, 22));
+        rootPanel.add(draftCheckBox, cc.xy(1, 27));
         pendingApprovalCheckBox = new JCheckBox();
+        pendingApprovalCheckBox.setEnabled(false);
         pendingApprovalCheckBox.setText("Pending Approval");
-        rootPanel.add(pendingApprovalCheckBox, cc.xy(1, 23));
+        rootPanel.add(pendingApprovalCheckBox, cc.xy(1, 28));
         underReviewCheckBox = new JCheckBox();
         underReviewCheckBox.setText("Under Review");
-        rootPanel.add(underReviewCheckBox, cc.xy(1, 24));
+        rootPanel.add(underReviewCheckBox, cc.xy(1, 29));
         summarizeCheckBox = new JCheckBox();
         summarizeCheckBox.setText("Summarize");
-        rootPanel.add(summarizeCheckBox, cc.xy(1, 25));
+        rootPanel.add(summarizeCheckBox, cc.xy(1, 30));
         closedCheckBox = new JCheckBox();
         closedCheckBox.setText("Closed");
-        rootPanel.add(closedCheckBox, cc.xy(1, 26));
+        rootPanel.add(closedCheckBox, cc.xy(1, 31));
         abandonedCheckBox = new JCheckBox();
         abandonedCheckBox.setText("Abandoned");
-        rootPanel.add(abandonedCheckBox, cc.xy(1, 27));
+        rootPanel.add(abandonedCheckBox, cc.xy(1, 32));
         rejectedCheckBox = new JCheckBox();
         rejectedCheckBox.setText("Rejected");
-        rootPanel.add(rejectedCheckBox, cc.xy(1, 28));
+        rootPanel.add(rejectedCheckBox, cc.xy(1, 33));
         reviewNeedsFixingCheckBox = new JCheckBox();
+        reviewNeedsFixingCheckBox.setEnabled(false);
         reviewNeedsFixingCheckBox.setText("Review needs fixing");
-        rootPanel.add(reviewNeedsFixingCheckBox, cc.xy(1, 29));
+        rootPanel.add(reviewNeedsFixingCheckBox, cc.xy(1, 34));
         serverComboBox = new JComboBox();
         rootPanel.add(serverComboBox, cc.xy(1, 4));
         final JLabel label8 = new JLabel();
         label8.setText("Crucible server:");
         rootPanel.add(label8, cc.xy(1, 2));
+        final JLabel label9 = new JLabel();
+        label9.setText("Match role");
+        rootPanel.add(label9, cc.xy(1, 22));
+        matchRoleComboBox = new JComboBox();
+        rootPanel.add(matchRoleComboBox, cc.xy(1, 24));
         label1.setLabelFor(filterTitle);
         label2.setLabelFor(projectComboBox);
         label3.setLabelFor(authorComboBox);

@@ -156,7 +156,6 @@
 			<keyboard-shortcut first-keystroke="shift control y" keymap="$default"/>
 		</action>
 		<action id="ThePlugin.Crucible.RefreshStatus" class="com.atlassian.theplugin.idea.action.crucible.RefreshCruciblePanelAction" text="Refresh" description="Refresh" icon="/actions/sync.png" />
-        <action id="ThePlugin.Crucible.CrucibleFilterCombo" class="com.atlassian.theplugin.idea.action.crucible.CrucibleFilterComboAction" text="Select predefined filter"/>
         <action id="ThePlugin.Crucible.ViewReview" class="com.atlassian.theplugin.idea.action.crucible.ViewReviewAction" text="View review" icon="/icons/crucible-blue-16.png" />
 
         <action id="ThePlugin.Crucible.ToReviewAction" class="com.atlassian.theplugin.idea.action.crucible.ToReviewAction" text="To review" icon="/actions/find.png" />
@@ -174,7 +173,7 @@
 
         <action id="ThePlugin.Crucible.CustomFilter" class="com.atlassian.theplugin.idea.action.crucible.CustomFilterAction" text="Custom filter" />        
 
-        <action id="ThePlugin.Crucible.ShowFilter" class="com.atlassian.theplugin.idea.action.crucible.CrucibleShowCustomFilterAction" text="Show Crucible custom filter"  icon="/icons/crucible-blue-16.png"/>
+        <action id="ThePlugin.Crucible.ShowFilter" class="com.atlassian.theplugin.idea.action.crucible.CrucibleShowCustomFilterAction" text="Edit custom filter"  icon="/icons/crucible-blue-16.png"/>
         <action id="ThePlugin.Crucible.AddCustomFilter" class="com.atlassian.theplugin.idea.action.crucible.CrucibleAddCustomFilterAction" text="Add Crucible custom filter" icon="/general/add.png" />
         <action id="ThePlugin.Crucible.RemoveCustomFilter" class="com.atlassian.theplugin.idea.action.crucible.CrucibleRemoveCustomFilterAction" text="Remove Crucible custom filter" icon="/general/remove.png" />        
         <action id="ThePlugin.Crucible.ApplyFilter" class="com.atlassian.theplugin.idea.action.crucible.ApplyFilterAction" text="Apply filter" icon="/actions/er-state.png" />
@@ -204,7 +203,9 @@
             <reference id="ThePlugin.Crucible.ExpandAll" />
             <reference id="ThePlugin.Crucible.CollapseAll" /> 
             <separator />
+            <!--
             <reference id="ThePlugin.Crucible.ToReviewAction" />
+            -->
 			<reference id="ThePlugin.Crucible.ShowFilter" />
             <!--
             <reference id="ThePlugin.Crucible.AddCustomFilter" />
@@ -244,7 +245,7 @@
 		<group id="ThePlugin.Crucible.FilterEditToolBar" popup="false">
 			<reference id="ThePlugin.Crucible.ApplyFilter" />
 			<reference id="ThePlugin.Crucible.CancelFilter"/>
-			<reference id="ThePlugin.Crucible.ClearFilter"/>
+<!--			<reference id="ThePlugin.Crucible.ClearFilter"/> -->
 		</group>
 
 

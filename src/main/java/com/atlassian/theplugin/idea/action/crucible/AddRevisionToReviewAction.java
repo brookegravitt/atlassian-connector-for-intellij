@@ -10,17 +10,11 @@ import com.atlassian.theplugin.idea.crucible.CrucibleRevisionReviewCreator;
 import com.atlassian.theplugin.idea.crucible.CrucibleRevisionAddWorker;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
+import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
 import com.atlassian.theplugin.commons.crucible.api.ReviewData;
 import com.atlassian.theplugin.commons.crucible.api.PermId;
 
-/**
- * Created by IntelliJ IDEA.
- * User: marek
- * Date: Jun 4, 2008
- * Time: 11:09:17 AM
- * To change this template use File | Settings | File Templates.
- */
-public class AddRevisionToReviewAction extends AnAction {
+public class AddRevisionToReviewAction extends Crucible16RepositoryAction {
     public void actionPerformed(AnActionEvent event) {
         final ChangeList[] changes = DataKeys.CHANGE_LISTS.getData(event.getDataContext());
         final PermId permId = IdeaHelper.getCrucibleToolWindowPanel(event).getSelectedReviewId();
