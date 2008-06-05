@@ -188,6 +188,7 @@ public class CollapsiblePanel extends JPanel {
 	  contentPanel.add(content, BorderLayout.CENTER);
 
 
+
   }
 
   private void createToolbar(String toolbarPlace, String toolbarName) {
@@ -343,6 +344,10 @@ public class CollapsiblePanel extends JPanel {
   private void updatePanel() {
    // if (paintAsSelected()) {
       setBackground(UIUtil.getTableSelectionBackground());
+	  int height = (int)(myContent.getPreferredSize().getHeight() + 2*toolBarPanel.getPreferredSize().getHeight());
+	  int width = (int)Math.max(myContent.getPreferredSize().getWidth(), toolBarPanel.getPreferredSize().getWidth());
+
+	  contentPanel.setPreferredSize(new Dimension(width, height));
    // } else {
    //   setBackground(myContent.getBackground());
     //}
