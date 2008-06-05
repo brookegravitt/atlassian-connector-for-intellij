@@ -120,7 +120,9 @@ public class CrucibleCustomFilterPanel extends JPanel {
     }
 
     public CustomFilterData getFilter() {
-
+        Server s = ((ServerComboBoxItem) this.serverComboBox.getSelectedItem()).getServer();
+        filter.setServerUid(s.getUid());
+        
         filter.setTitle(filterTitle.getText());
         if (!((ProjectComboBoxItem) projectComboBox.getSelectedItem()).getProject().getName().equals(anyProject.getName())) {
             filter.setProjectKey(((ProjectComboBoxItem) projectComboBox.getSelectedItem()).getProject().getKey());
