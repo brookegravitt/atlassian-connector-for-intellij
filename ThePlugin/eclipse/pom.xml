@@ -216,7 +216,7 @@
                 <artifactId>maven-eclipse-plugin</artifactId>
                 <configuration>
                     <pde>true</pde>
-<!--<useProjectReferences>false</useProjectReferences>-->
+<useProjectReferences>false</useProjectReferences>
                     <additionalBuildcommands>
                         <buildCommand>
                             <name>org.eclipse.pde.FeatureBuilder</name>
