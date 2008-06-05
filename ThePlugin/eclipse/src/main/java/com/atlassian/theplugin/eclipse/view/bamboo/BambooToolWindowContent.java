@@ -127,6 +127,8 @@ public class BambooToolWindowContent implements BambooStatusListener {
 		
 		this.buildStatuses.clear();
 		
+		PluginUtil.getLogger().debug(buildStatuses.toString());
+		
 		for (BambooBuild build : buildStatuses) {
 			this.buildStatuses.add(new BambooBuildAdapterEclipse(build));
 			pollingTime = build.getPollingTime();
