@@ -17,9 +17,13 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.diff.LineTokenizer;
+import com.intellij.openapi.diff.impl.patch.FilePatch;
+import com.intellij.openapi.diff.impl.patch.PatchBuilder;
+import com.intellij.openapi.diff.impl.patch.UnifiedDiffWriter;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vcs.FilePath;
@@ -36,6 +40,10 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.util.Collection;
+import java.util.List;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.io.IOException;
 
 public class CruciblePatchSubmitCommitSession implements CommitSession {
 	{
@@ -70,10 +78,28 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 		System.out.println("Sending to the Crucible server: " + commitMessage);
 		String patch = generateUnifiedDiff(changes);
 
-		ApplicationManager.getApplication().invokeAndWait(
+        /*
+        Collection<FilePatch> patches = null;
+        try {
+            patches = PatchBuilder
+                        .buildPatch( changes, IdeaHelper.getCurrentProject().getBaseDir().getPath(), true, false );
+        } catch (VcsException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        Writer writer = new StringWriter( 2048 );
+        try {
+            UnifiedDiffWriter.write( patches, writer, "Ala ma kota" );
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        System.out.print( writer.toString() );
+        */
+
+        ApplicationManager.getApplication().invokeAndWait(
 				new CruciblePatchUploader(crucibleServerFacade, commitMessage, patch),
 				ModalityState.defaultModalityState());
-	}
+
+    }
 
 	String generateUnifiedDiff(Collection<Change> changes) {
 		StringBuilder sb = new StringBuilder();
