@@ -31,16 +31,15 @@ import com.atlassian.theplugin.jira.api.JIRAActionField;
 import com.atlassian.theplugin.commons.Server;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.HyperlinkListener;
-import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.*;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 import java.text.DateFormat;
 import javax.management.timer.Timer;
 
@@ -60,18 +59,90 @@ public class WorkLogCreate extends DialogWrapper {
     private HyperlinkLabel helpLabel;
     private JCheckBox stopProgress;
     private JLabel stopProgressLabel;
-    private boolean haveIssueStopProgressInfo = false;
+	private JTextField timeSpentField;
+	private boolean haveIssueStopProgressInfo = false;
     private JIRAAction inProgressAction;
-    NonZeroChangeListener listener;
     JIRAServerFacade facade;
     private Date endTime;
     private final Calendar now = Calendar.getInstance();
-    SpinnerNumberModel weekModel = new SpinnerNumberModel(0, 0, null, 1);
-    SpinnerNumberModel dayModel = new SpinnerNumberModel(0, 0, null, 1);
-    SpinnerNumberModel hourModel = new SpinnerNumberModel(0, 0, null, 1);
-    SpinnerNumberModel minuteModel = new SpinnerNumberModel(0, 0, null, 1);
 
-    private void createUIComponents() {
+	WdhmInputListener listener = new WdhmInputListener();
+
+	private class WdhmInputListener implements DocumentListener {
+
+		private final static String REGEX = "^\\s*(\\d+w)?\\s*(\\d+d)?\\s*(\\d+h)?\\s*(\\d+m)?\\s*$";
+
+		private class Period {
+			public Period(String r) {
+				regex = r;
+				interval = 0;
+			}
+			public long interval;
+			public String regex;
+
+			public void findAndSet(String txt) {
+				Pattern p = Pattern.compile("(\\d+)" + regex);
+				Matcher m = p.matcher(txt);
+				if (m.matches()) {
+					String subs = txt.substring(m.start(1), m.end(1));
+					interval = Long.valueOf(subs);
+				}
+			}
+		}
+		private Period weeks = new Period("w");
+		private Period days = new Period("d");
+		private Period hours = new Period("h");
+		private Period minutes = new Period("m");
+
+		public void insertUpdate(DocumentEvent e) {
+			stateChanged();
+		}
+
+		public void removeUpdate(DocumentEvent e) {
+			stateChanged();
+		}
+
+		public void changedUpdate(DocumentEvent e) {
+			stateChanged();
+		}
+
+		public void stateChanged() {
+			String text = timeSpentField.getText();
+
+			Pattern p = Pattern.compile(REGEX);
+			Matcher m = p.matcher(text);
+			Color c;
+
+			boolean matchFound = m.matches() && text.length() > 0;
+			c = matchFound ? Color.BLACK : Color.RED;
+			timeSpentField.setForeground(c);
+			setOKActionEnabled(matchFound && haveIssueStopProgressInfo);
+			if (matchFound) {
+				weeks.findAndSet(text);
+				days.findAndSet(text);
+				hours.findAndSet(text);
+				minutes.findAndSet(text);
+			}
+		}
+
+		public long getWeeks() {
+			return weeks.interval;
+		}
+
+		public long getDays() {
+			return days.interval;
+		}
+
+		public long getHours() {
+			return hours.interval;
+		}
+
+		public long getMinutes() {
+			return minutes.interval;
+		}
+	}
+	
+	private void createUIComponents() {
         helpLabel = new HyperlinkLabel("Help");
         final String helpUrl = HelpUrl.getHelpUrl(Constants.HELP_JIRA_WORKLOG);
 
@@ -255,16 +326,6 @@ public class WorkLogCreate extends DialogWrapper {
         return contentPane;
     }
 
-    class NonZeroChangeListener implements ChangeListener {
-        public void stateChanged(ChangeEvent e) {
-            boolean nonZero =
-                    (((Integer) weeks.getValue()).intValue()
-                            + ((Integer) days.getValue()).intValue()
-                            + ((Integer) hours.getValue()).intValue()
-                            + ((Integer) minutes.getValue()).intValue()) > 0;
-            setOKActionEnabled(nonZero && haveIssueStopProgressInfo);
-        }
-    }
 
     public WorkLogCreate(final JIRAServerFacade jiraFacade, final JiraIssueAdapter adapter) {
         super(false);
@@ -277,18 +338,9 @@ public class WorkLogCreate extends DialogWrapper {
         setOKActionEnabled(false);
         getOKAction().putValue(Action.NAME, "Add Worklog");
 
-        weeks.setModel(weekModel);
-        days.setModel(dayModel);
-        hours.setModel(hourModel);
-        minutes.setModel(minuteModel);
+		timeSpentField.getDocument().addDocumentListener(new WdhmInputListener());
 
-        listener = new NonZeroChangeListener();
-        weeks.addChangeListener(listener);
-        days.addChangeListener(listener);
-        hours.addChangeListener(listener);
-        minutes.addChangeListener(listener);
-
-        endTime = now.getTime();
+		endTime = now.getTime();
 
         endDateLabel.setText(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(now.getTime()));
 
@@ -322,18 +374,13 @@ public class WorkLogCreate extends DialogWrapper {
                     // well, let's ignore, this is an optional functionality anyway...
                 }
                 haveIssueStopProgressInfo = true;
-                listener.stateChanged(null);
+				listener.stateChanged();
             }
         }).start();
     }
 
     public String getTimeSpentString() {
-        StringBuffer b = new StringBuffer();
-        b.append(weeks.getValue().toString()).append("w");
-        b.append(days.getValue().toString()).append("d");
-        b.append(hours.getValue().toString()).append("h");
-        b.append(minutes.getValue().toString()).append("m");
-        return b.toString();
+		return timeSpentField.getText();
     }
 
     public Date getEndDate() {
@@ -343,10 +390,10 @@ public class WorkLogCreate extends DialogWrapper {
     public Date getStartDate() {
         Date d = endTime;
         long t = d.getTime()
-                - (weekModel.getNumber().longValue() * Timer.ONE_WEEK)
-                - (dayModel.getNumber().longValue() * Timer.ONE_DAY)
-                - (hourModel.getNumber().longValue() * Timer.ONE_HOUR)
-                - (minuteModel.getNumber().longValue() * Timer.ONE_MINUTE);
+					- (listener.getWeeks() * Timer.ONE_WEEK)
+					- (listener.getDays() * Timer.ONE_DAY)
+					- (listener.getHours() * Timer.ONE_HOUR)
+					- (listener.getMinutes() * Timer.ONE_MINUTE);
         d.setTime(t);
         return d;
     }
