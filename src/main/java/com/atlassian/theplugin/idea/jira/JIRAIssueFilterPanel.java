@@ -293,8 +293,7 @@ public class JIRAIssueFilterPanel extends JPanel {
     }
 
 
-    public List<JIRAQueryFragment> getFilter
-            () {
+    public List<JIRAQueryFragment> getFilter() {
         List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
         for (Object o : projectList.getSelectedValues()) {
             query.add((JIRAQueryFragment) o);
@@ -487,8 +486,8 @@ public class JIRAIssueFilterPanel extends JPanel {
         final Spacer spacer1 = new Spacer();
         rootPanel.add(spacer1, cc.xy(1, 11, CellConstraints.DEFAULT, CellConstraints.FILL));
         fixForLabel.setLabelFor(fixForScrollPane);
-        componentsLabel.setLabelFor(componentsScrollPane);
         componentsLabel.setNextFocusableComponent(componentsScrollPane);
+        componentsLabel.setLabelFor(componentsScrollPane);
         affectsVersionsLabel.setLabelFor(affectVersionScrollPane);
         reporterLabel.setLabelFor(reporterComboBox);
         assigneeLabel.setLabelFor(assigneeComboBox);

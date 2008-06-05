@@ -2,16 +2,10 @@ package com.atlassian.theplugin.idea.action.crucible;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
+import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
-/**
- * Created by IntelliJ IDEA.
- * User: pmaruszak
- * Date: May 30, 2008
- * Time: 9:47:14 AM
- * To change this template use File | Settings | File Templates.
- */
 public class CrucibleShowCustomFilterAction extends AnAction {
 
 	public void actionPerformed(AnActionEvent e) {
@@ -24,17 +18,11 @@ public class CrucibleShowCustomFilterAction extends AnAction {
 
 	public void update(AnActionEvent event) {
 		super.update(event);
-
-		//if (IdeaHelper.getCrucibleToolWindowPanel((event) != null) {
-
-//			if (IdeaHelper.getCrucibleToolWindowPanel(event).getFilters().getSavedFilterUsed()) {
-//				event.getPresentation().setEnabled(false);
-//			} else {
-//				event.getPresentation().setEnabled(true);
-//			}
-//		} else {
-//			event.getPresentation().setEnabled(false);
-//		}
-
+        if (IdeaHelper.getCrucibleToolWindowPanel(event) != null) {
+            event.getPresentation().setVisible(
+                    (IdeaHelper.getCrucibleToolWindowPanel(event).getCrucibleVersion() == CrucibleVersion.CRUCIBLE_16));
+        } else {
+            event.getPresentation().setVisible(false);
+        }
 	}
 }
