@@ -517,4 +517,8 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
             }
         }
     }
+
+    public ProjectConfigurationBean getProjectConfiguration() {
+        return projectConfiguration;
+    }    
 }
