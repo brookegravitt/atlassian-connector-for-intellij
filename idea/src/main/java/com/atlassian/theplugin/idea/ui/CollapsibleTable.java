@@ -25,10 +25,8 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.util.ui.ListTableModel;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,9 +55,15 @@ public class CollapsibleTable extends CollapsiblePanel {
         }
 
 		JScrollPane scrollTable = new JScrollPane(table);
-        setContent(scrollTable);
-		scrollTable.setPreferredSize(table.getTableDimension());
-		scrollTable.setMaximumSize(table.getTableDimension());
+		
+		//table.setPreferredScrollableViewportSize(super.calculatePreferedSize());
+		//table.setPreferredSize(table.getTableDimension());
+		setContent(scrollTable);
+
+		//scrollTable.setPreferredSize(super.calculatePreferedSize());
+		
+		//scrollTable.revalidate();
+		
 
 	}
 
