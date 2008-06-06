@@ -21,7 +21,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.atlassian.theplugin</groupId>
     <artifactId>atlassian-eclipse-plugin</artifactId>
-    <version>1.4.0-SNAPSHOT</version>
+    <version>0.0.1</version>
     <packaging>jar</packaging>
     <inceptionYear>2008</inceptionYear>
     <name>Atlassian  Eclipse  Plugin</name>
