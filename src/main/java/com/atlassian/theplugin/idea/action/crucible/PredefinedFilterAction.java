@@ -16,13 +16,12 @@
 
 package com.atlassian.theplugin.idea.action.crucible;
 
-import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
 import com.atlassian.theplugin.commons.crucible.api.PredefinedFilter;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ThePluginProjectComponent;
+import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.ToggleAction;
 import com.intellij.openapi.project.Project;
 
 public class PredefinedFilterAction extends Crucible16ToggleAction {
@@ -58,7 +57,14 @@ public class PredefinedFilterAction extends Crucible16ToggleAction {
         Boolean[] filters = getPredefinedFilters(event);
         if (filters != null) {
             filters[filter.ordinal()] = b;
-            IdeaHelper.getCrucibleToolWindowPanel(event).showPredefinedFilter(filter, b);
-        }        
+            CrucibleStatusChecker checker = null;
+            if (b) {
+                ThePluginProjectComponent projectComponent = IdeaHelper.getCurrentProjectComponent(event);
+                if (projectComponent != null) {
+                    checker = projectComponent.getCrucibleStatusChecker();
+                }
+            }
+            IdeaHelper.getCrucibleToolWindowPanel(event).showPredefinedFilter(filter, b, checker);
+        }
     }
 }
