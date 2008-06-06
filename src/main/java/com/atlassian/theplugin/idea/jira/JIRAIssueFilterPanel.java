@@ -126,27 +126,21 @@ public class JIRAIssueFilterPanel extends JPanel {
 
 		int visibleListCount = 0;
 		if (this.fixForList.getModel().getSize() == 0) {
-			this.fixForScrollPane.setVisible(false);
-			this.fixForLabel.setVisible(false);
+			this.fixForScrollPane.setEnabled(false);
 		} else {
-			this.fixForScrollPane.setVisible(true);
-			this.fixForLabel.setVisible(true);
+			this.fixForScrollPane.setEnabled(true);
 			visibleListCount++;
 		}
 		if (this.componentsList.getModel().getSize() == 0) {
-			this.componentsScrollPane.setVisible(false);
-			this.componentsLabel.setVisible(false);
+			this.componentsScrollPane.setEnabled(false);
 		} else {
-			this.componentsScrollPane.setVisible(true);
-			this.componentsLabel.setVisible(true);
+			this.componentsScrollPane.setEnabled(true);
 			visibleListCount++;
 		}
 		if (this.affectsVersionsList.getModel().getSize() == 0) {
-			this.affectVersionScrollPane.setVisible(false);
-			this.affectsVersionsLabel.setVisible(false);
+			this.affectVersionScrollPane.setEnabled(false);
 		} else {
-			this.affectVersionScrollPane.setVisible(true);
-			this.affectsVersionsLabel.setVisible(true);
+			this.affectVersionScrollPane.setEnabled(true);
 			visibleListCount++;
 		}
 
