@@ -173,7 +173,7 @@
 
         <action id="ThePlugin.Crucible.CustomFilter" class="com.atlassian.theplugin.idea.action.crucible.CustomFilterAction" text="Custom filter" />        
 
-        <action id="ThePlugin.Crucible.ShowFilter" class="com.atlassian.theplugin.idea.action.crucible.CrucibleShowCustomFilterAction" text="Edit custom filter"  icon="/icons/crucible-blue-16.png"/>
+        <action id="ThePlugin.Crucible.ShowFilter" class="com.atlassian.theplugin.idea.action.crucible.CrucibleShowCustomFilterAction" text="Edit custom filter"  icon="/general/toolWindowFavorites.png"/>
         <action id="ThePlugin.Crucible.AddCustomFilter" class="com.atlassian.theplugin.idea.action.crucible.CrucibleAddCustomFilterAction" text="Add Crucible custom filter" icon="/general/add.png" />
         <action id="ThePlugin.Crucible.RemoveCustomFilter" class="com.atlassian.theplugin.idea.action.crucible.CrucibleRemoveCustomFilterAction" text="Remove Crucible custom filter" icon="/general/remove.png" />        
         <action id="ThePlugin.Crucible.ApplyFilter" class="com.atlassian.theplugin.idea.action.crucible.ApplyFilterAction" text="Apply filter" icon="/actions/er-state.png" />
