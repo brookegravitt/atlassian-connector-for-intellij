@@ -21,6 +21,7 @@ import com.atlassian.theplugin.commons.crucible.api.CustomFilterData;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ThePluginProjectComponent;
+import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.ToggleAction;
 import com.intellij.openapi.project.Project;
@@ -56,7 +57,15 @@ public class CustomFilterAction extends Crucible16ToggleAction {
         CustomFilterData filter = getFilter(event);
         if (filter != null) {
             filter.setEnabled(b);
-            IdeaHelper.getCrucibleToolWindowPanel(event).showCustomFilter(b);
+            CrucibleStatusChecker checker = null;
+            if (b) {
+                ThePluginProjectComponent projectComponent = IdeaHelper.getCurrentProjectComponent(event);
+                if (projectComponent != null) {
+                    checker = projectComponent.getCrucibleStatusChecker();
+                }
+            }
+
+            IdeaHelper.getCrucibleToolWindowPanel(event).showCustomFilter(b, checker);
         }       
     }
 }
