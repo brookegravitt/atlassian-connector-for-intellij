@@ -55,16 +55,9 @@ public class CollapsibleTable extends CollapsiblePanel {
         }
 
 		JScrollPane scrollTable = new JScrollPane(table);
-		
-		//table.setPreferredScrollableViewportSize(super.calculatePreferedSize());
-		//table.setPreferredSize(table.getTableDimension());
+
 		setContent(scrollTable);
-
-		//scrollTable.setPreferredSize(super.calculatePreferedSize());
-		
-		//scrollTable.revalidate();
-		
-
+		table.setPreferredScrollableViewportSize(table.getTableDimension());
 	}
 
     public AtlassianTableView getTable() {

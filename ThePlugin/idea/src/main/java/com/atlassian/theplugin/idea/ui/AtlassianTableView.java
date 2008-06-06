@@ -36,6 +36,7 @@ import java.awt.*;
 public class AtlassianTableView extends TableView {
     private static final int DEFAULT_ROW_HEIGHT = 20;
 	private boolean autoAdjustHeight = true;
+	private static final int MAX_DISPLAYED_ROW_COUNT = 15;
 	private int preferredWidth = -1;
 
 	public AtlassianTableView(ListTableModel listTableModel, final Storage storage) {
@@ -55,11 +56,6 @@ public class AtlassianTableView extends TableView {
 				TableView.store(storage, AtlassianTableView.this);
 			}
 		});
-
-		//doLayout();
-
-
-		
 	}
 	
 	public void prepareColumns(TableColumnInfo[] cols, TableCellRenderer[] renderers) {
@@ -92,66 +88,16 @@ public class AtlassianTableView extends TableView {
 		TableView.store(storage, this);
 	}
 
-//	void setAutoAdjustHeight(boolean adjust){
-//		autoAdjustHeight = adjust;
-//
-//		doLayout();
-//
-//	}
-//
-//	public void doLayout() {
-//		if (autoAdjustHeight){
-//
-//				this.setRowHeight(DEFAULT_ROW_HEIGHT);
-//				setPreferredSize(getTableDimension());
-//				setMaximumSize(getTableDimension());
-//			}
-//	}
+
 
     public Dimension getTableDimension(){
-		   int maxHeight = -1;
-		   int maxWidth = -1;
-		   Dimension compSize;
-		   int tableWidth = 0, tableHeight = 0;
+		   int tableHeight = 0;
 
-			// for (int row = 0; row < getModel().getRowCount(); row++) {
-				 //for (int col = 0; col < getModel().getColumnCount(); col++) {
-					//JComponent it = (JComponent)getModel().getValueAt(row, col);
-						//getColumnModel().getColumn(col).getPreferredWidth();
-					 
-					 //if (it != null && getModel().getValueAt(row, col) != null) {  // Here we got an actual component
-
-					//	 compSize = ((JComponent)(getModel().getValueAt(row, col))).getPreferredSize();
-					//	 maxHeight = Math.max((int)compSize.getHeight(), maxHeight);
-					// }
-				 //}
-				 //int cellHeight = getRowHeight(row));
-				 //tableHeight += getRowHeight(row);
-				 //maxHeight = -1;
-			 //}
-
-			 tableHeight = getModel().getRowCount() * getRowHeight();
+			 tableHeight = Math.min(getModel().getRowCount(), MAX_DISPLAYED_ROW_COUNT) * getRowHeight();
 			 // Resize width
-			 for (int col = 0; col < getColumnModel().getColumnCount(); col++) {
-//				 for (int row = 0; row < getModel().getRowCount(); row++) {
-//					 JComponent it = (JComponent)getModel().getValueAt(row, col);
-//
-//					 if(it != null && getModel().getValueAt(row, col) != null) {
-//						 compSize = it.getPreferredSize();
-//						 maxWidth = Math.max((int)compSize.getWidth(), maxWidth);
-//
-//					 }
-//				 int cellWidth = Math.max(maxWidth,
-//						 ((getColumnModel().getColumn(col).getPreferredWidth())));
-
-				 tableWidth += (getColumnModel().getColumn(col).getPreferredWidth());
-				 //}
-
-
-			 }
-
-
-
+//			 for (int col = 0; col < getColumnModel().getColumnCount(); col++) {
+//				 tableWidth += (getColumnModel().getColumn(col).getPreferredWidth());
+//			 }
 
 		if (getTableHeader() != null) {
 			Dimension tableHeaderDimension = getTableHeader().getPreferredSize();			
@@ -167,7 +113,6 @@ public class AtlassianTableView extends TableView {
 
 		Dimension prefered = getTableDimension();
 		setPreferredScrollableViewportSize(prefered);
-		//setPreferredSize(prefered);
 		
 		super.tableChanged(e);
 	}
