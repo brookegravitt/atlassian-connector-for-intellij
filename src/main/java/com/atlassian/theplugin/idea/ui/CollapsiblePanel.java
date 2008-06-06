@@ -21,11 +21,9 @@ import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.actionSystem.ActionPopupMenu;
 import org.jetbrains.annotations.NonNls;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
@@ -120,7 +118,8 @@ public class CollapsiblePanel extends JPanel {
 									   new Insets(3, 0, 0, 0), 0, 0));
 			  contentPanel.setVisible(true);
 			  myContent.setVisible(true);
-	  	}
+
+		  }
 
   	  }
 	  myIsCollapsed = collapse;
@@ -186,9 +185,6 @@ public class CollapsiblePanel extends JPanel {
 	  this.myContent = content;
 	  contentPanel.setBackground(content.getBackground());
 	  contentPanel.add(content, BorderLayout.CENTER);
-
-
-
   }
 
   private void createToolbar(String toolbarPlace, String toolbarName) {
@@ -340,17 +336,24 @@ public class CollapsiblePanel extends JPanel {
     updatePanel();
     super.paintComponent(g);
   }
+	
+  protected Dimension calculatePreferedSize(){
+	  Dimension prefered;
 
-  private void updatePanel() {
-   // if (paintAsSelected()) {
-      setBackground(UIUtil.getTableSelectionBackground());
-	  int height = (int)(myContent.getPreferredSize().getHeight() + 2*toolBarPanel.getPreferredSize().getHeight());
+	if (myContent != null) {
+	  int height = (int)(Math.max(myContent.getPreferredSize().getHeight(),-1) + Math.max(toolBarPanel.getPreferredSize().getHeight(),-1));
 	  int width = (int)Math.max(myContent.getPreferredSize().getWidth(), toolBarPanel.getPreferredSize().getWidth());
 
-	  contentPanel.setPreferredSize(new Dimension(width, height));
-   // } else {
-   //   setBackground(myContent.getBackground());
-    //}
+	  prefered =  new Dimension(width, height);
+	} else {
+		prefered = getPreferredSize();
+	}
+	 return prefered;
+  }
+  private void updatePanel() {
+      setBackground(UIUtil.getTableSelectionBackground());
+	  contentPanel.setPreferredSize(calculatePreferedSize());
+	  
   }
 
   protected void paintChildren(Graphics g) {
