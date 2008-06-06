@@ -106,12 +106,14 @@ public class BambooToolWindowContent implements BambooStatusListener {
 		
 		table = tableViewer.getTable();
 		
+		// create columns
 		TableColumn tableColumn; 
 		
 		for (Column column : Column.values()) {
 			tableColumn = new TableColumn(table, SWT.LEFT);
 			tableColumn.setText(column.columnName());
 			tableColumn.setWidth(column.columnWidth());
+			tableColumn.setMoveable(true);
 		}
 		
 		tableViewer.setInput(buildStatuses);
@@ -217,7 +219,7 @@ public class BambooToolWindowContent implements BambooStatusListener {
 	 * That class provides column names and width for bamboo tab table
 	 */
 	private enum Column {
-		BUILD_STATUS ("", 30),
+		BUILD_STATUS ("S", 30),
 		BUILD_KEY ("Build Plan", 80),
 		BUILD_NUMBER ("Build Number", 100),
 		PROJECT_KEY ("Project", 100),
