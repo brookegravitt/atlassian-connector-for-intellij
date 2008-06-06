@@ -127,7 +127,7 @@ public class BambooToolWindowContent implements BambooStatusListener {
 		
 		this.buildStatuses.clear();
 		
-		PluginUtil.getLogger().debug(buildStatuses.toString());
+		//PluginUtil.getLogger().debug(buildStatuses.toString());
 		
 		for (BambooBuild build : buildStatuses) {
 			this.buildStatuses.add(new BambooBuildAdapterEclipse(build));
@@ -225,7 +225,7 @@ public class BambooToolWindowContent implements BambooStatusListener {
 		PASSED_TESTS ("Passed Tests", 100),
 		BUILD_REASON ("Reason", 100),
 		SERVER ("Server", 100),
-		MESSAGE ("Message", 200);
+		MESSAGE ("Message", 300);
 		
 		private String columnName;
 		private int columnWidth;
