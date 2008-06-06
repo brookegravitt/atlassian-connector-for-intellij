@@ -337,12 +337,18 @@ public class CollapsiblePanel extends JPanel {
     super.paintComponent(g);
   }
 	
-  protected Dimension calculatePreferedSize(){
+  protected Dimension getCustomPreferredSize(){
 	  Dimension prefered;
 
-	if (myContent != null) {
-	  int height = Math.max(myContent.getPreferredSize().height,0) + Math.max(toolBarPanel.getPreferredSize().height,0);
-	  int width = Math.max(myContent.getPreferredSize().width, toolBarPanel.getPreferredSize().width);
+	if (myContent != null && toolBarPanel != null) {
+		int height, width;
+		if (toolBarPanel != null){
+	  		height = Math.max(myContent.getPreferredSize().height,0) + Math.max(toolBarPanel.getPreferredSize().height,0);
+	  		width = Math.max(myContent.getPreferredSize().width, toolBarPanel.getPreferredSize().width);
+		} else {
+			height = Math.max(myContent.getPreferredSize().height,0);
+	  		width = Math.max(myContent.getPreferredSize().width,0);
+		}
 
 	  prefered =  new Dimension(width, height);
 	} else {
@@ -352,7 +358,7 @@ public class CollapsiblePanel extends JPanel {
   }
   private void updatePanel() {
       setBackground(UIUtil.getTableSelectionBackground());
-	  contentPanel.setPreferredSize(calculatePreferedSize());
+	  //contentPanel.setPreferredSize(getCustomPreferredSize());
 	  
   }
 
