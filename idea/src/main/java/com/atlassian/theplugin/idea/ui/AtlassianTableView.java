@@ -21,30 +21,24 @@ import com.intellij.ui.table.TableView;
 import com.intellij.util.config.Storage;
 import com.intellij.util.ui.ListTableModel;
 
-import javax.swing.*;
-import javax.swing.event.TableModelListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
-import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.ContainerListener;
-import java.awt.event.ComponentListener;
 import java.awt.*;
 
 public class AtlassianTableView extends TableView {
     private static final int DEFAULT_ROW_HEIGHT = 20;
-	private boolean autoAdjustHeight = true;
-	private static final int MAX_DISPLAYED_ROW_COUNT = 15;
-	private int preferredWidth = -1;
+    private boolean autoAdjustHeight = true;
+    private static final int MAX_DISPLAYED_ROW_COUNT = 15;
 
 	public AtlassianTableView(ListTableModel listTableModel, final Storage storage) {
         super(listTableModel);
 
         setBorder(BorderFactory.createEmptyBorder());
         getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
         getColumnModel().setColumnMargin(0);
 
 		setMinRowHeight(DEFAULT_ROW_HEIGHT);
@@ -60,11 +54,9 @@ public class AtlassianTableView extends TableView {
 	
 	public void prepareColumns(TableColumnInfo[] cols, TableCellRenderer[] renderers) {
 		TableColumnModel model = getColumnModel();
-		preferredWidth = 0;
 		for (int i = 0; i < model.getColumnCount(); ++i) {
 			model.getColumn(i).setResizable(true);
 			model.getColumn(i).setPreferredWidth(cols[i].getPrefferedWidth());
-			preferredWidth +=  cols[i].getPrefferedWidth();
 			if (renderers[i] != null) {
 				model.getColumn(i).setCellRenderer(renderers[i]);
 				
@@ -91,20 +83,19 @@ public class AtlassianTableView extends TableView {
 
 
     public Dimension getTableDimension(){
-		   int tableHeight = 0;
-
-			 tableHeight = Math.min(getModel().getRowCount(), MAX_DISPLAYED_ROW_COUNT) * getRowHeight();
-			 // Resize width
-//			 for (int col = 0; col < getColumnModel().getColumnCount(); col++) {
-//				 tableWidth += (getColumnModel().getColumn(col).getPreferredWidth());
-//			 }
+		int tableHeight = 0, tableWidth = 0;
+		tableHeight = Math.min(getModel().getRowCount(), MAX_DISPLAYED_ROW_COUNT) * getRowHeight();
+		// Resize width
+			 for (int col = 0; col < getColumnModel().getColumnCount(); col++) {
+				 tableWidth += (getColumnModel().getColumn(col).getPreferredWidth());
+			 }
 
 		if (getTableHeader() != null) {
-			Dimension tableHeaderDimension = getTableHeader().getPreferredSize();			
+			Dimension tableHeaderDimension = getTableHeader().getPreferredSize();
 			tableHeight += tableHeaderDimension.height;
 		}
 
-	   return new Dimension( preferredWidth, tableHeight);
+	   return new Dimension(tableWidth, tableHeight);
    }
 
 
@@ -112,8 +103,7 @@ public class AtlassianTableView extends TableView {
 	public void tableChanged(TableModelEvent e) {
 
 		Dimension prefered = getTableDimension();
-		setPreferredScrollableViewportSize(prefered);
-		
+		setPreferredScrollableViewportSize(prefered);		
 		super.tableChanged(e);
 	}
 };
