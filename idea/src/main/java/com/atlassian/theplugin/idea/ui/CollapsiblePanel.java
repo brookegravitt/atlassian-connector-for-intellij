@@ -341,8 +341,8 @@ public class CollapsiblePanel extends JPanel {
 	  Dimension prefered;
 
 	if (myContent != null) {
-	  int height = (int)(Math.max(myContent.getPreferredSize().getHeight(),-1) + Math.max(toolBarPanel.getPreferredSize().getHeight(),-1));
-	  int width = (int)Math.max(myContent.getPreferredSize().getWidth(), toolBarPanel.getPreferredSize().getWidth());
+	  int height = Math.max(myContent.getPreferredSize().height,0) + Math.max(toolBarPanel.getPreferredSize().height,0);
+	  int width = Math.max(myContent.getPreferredSize().width, toolBarPanel.getPreferredSize().width);
 
 	  prefered =  new Dimension(width, height);
 	} else {
