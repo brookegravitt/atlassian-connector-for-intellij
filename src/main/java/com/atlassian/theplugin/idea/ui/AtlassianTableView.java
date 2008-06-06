@@ -22,18 +22,21 @@ import com.intellij.util.config.Storage;
 import com.intellij.util.ui.ListTableModel;
 
 import javax.swing.*;
+import javax.swing.event.TableModelListener;
+import javax.swing.event.TableModelEvent;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.ContainerListener;
+import java.awt.event.ComponentListener;
 import java.awt.*;
 
 public class AtlassianTableView extends TableView {
     private static final int DEFAULT_ROW_HEIGHT = 20;
 	private boolean autoAdjustHeight = true;
-	private int rowHeight = 20;
-	private int maxTableDisplayedRowCount = 5;
+	private int preferredWidth = -1;
 
 	public AtlassianTableView(ListTableModel listTableModel, final Storage storage) {
         super(listTableModel);
@@ -53,15 +56,19 @@ public class AtlassianTableView extends TableView {
 			}
 		});
 
-		doLayout();
+		//doLayout();
 
+
+		
 	}
 	
 	public void prepareColumns(TableColumnInfo[] cols, TableCellRenderer[] renderers) {
 		TableColumnModel model = getColumnModel();
+		preferredWidth = 0;
 		for (int i = 0; i < model.getColumnCount(); ++i) {
 			model.getColumn(i).setResizable(true);
 			model.getColumn(i).setPreferredWidth(cols[i].getPrefferedWidth());
+			preferredWidth +=  cols[i].getPrefferedWidth();
 			if (renderers[i] != null) {
 				model.getColumn(i).setCellRenderer(renderers[i]);
 				
@@ -85,58 +92,83 @@ public class AtlassianTableView extends TableView {
 		TableView.store(storage, this);
 	}
 
-	void setAutoAdjustHeight(boolean adjust, int maxTableDiaplayedRowCount, int rowHeight ){
-		this.rowHeight = rowHeight;
-		autoAdjustHeight = adjust;
-		this.maxTableDisplayedRowCount = maxTableDiaplayedRowCount;
-		doLayout();
+//	void setAutoAdjustHeight(boolean adjust){
+//		autoAdjustHeight = adjust;
+//
+//		doLayout();
+//
+//	}
+//
+//	public void doLayout() {
+//		if (autoAdjustHeight){
+//
+//				this.setRowHeight(DEFAULT_ROW_HEIGHT);
+//				setPreferredSize(getTableDimension());
+//				setMaximumSize(getTableDimension());
+//			}
+//	}
 
-	}
+    public Dimension getTableDimension(){
+		   int maxHeight = -1;
+		   int maxWidth = -1;
+		   Dimension compSize;
+		   int tableWidth = 0, tableHeight = 0;
 
-	public void doLayout() {
-		if (autoAdjustHeight){
-			if (maxTableDisplayedRowCount > 0) {
-				this.setRowHeight(rowHeight <= 0 || rowHeight < DEFAULT_ROW_HEIGHT ? DEFAULT_ROW_HEIGHT : rowHeight);
-				setPreferredSize(getTableDimension());
-				setMaximumSize(getTableDimension());
-			}
-		} else {
+			// for (int row = 0; row < getModel().getRowCount(); row++) {
+				 //for (int col = 0; col < getModel().getColumnCount(); col++) {
+					//JComponent it = (JComponent)getModel().getValueAt(row, col);
+						//getColumnModel().getColumn(col).getPreferredWidth();
+					 
+					 //if (it != null && getModel().getValueAt(row, col) != null) {  // Here we got an actual component
 
+					//	 compSize = ((JComponent)(getModel().getValueAt(row, col))).getPreferredSize();
+					//	 maxHeight = Math.max((int)compSize.getHeight(), maxHeight);
+					// }
+				 //}
+				 //int cellHeight = getRowHeight(row));
+				 //tableHeight += getRowHeight(row);
+				 //maxHeight = -1;
+			 //}
+
+			 tableHeight = getModel().getRowCount() * getRowHeight();
+			 // Resize width
+			 for (int col = 0; col < getColumnModel().getColumnCount(); col++) {
+//				 for (int row = 0; row < getModel().getRowCount(); row++) {
+//					 JComponent it = (JComponent)getModel().getValueAt(row, col);
+//
+//					 if(it != null && getModel().getValueAt(row, col) != null) {
+//						 compSize = it.getPreferredSize();
+//						 maxWidth = Math.max((int)compSize.getWidth(), maxWidth);
+//
+//					 }
+//				 int cellWidth = Math.max(maxWidth,
+//						 ((getColumnModel().getColumn(col).getPreferredWidth())));
+
+				 tableWidth += (getColumnModel().getColumn(col).getPreferredWidth());
+				 //}
+
+
+			 }
+
+
+
+
+		if (getTableHeader() != null) {
+			Dimension tableHeaderDimension = getTableHeader().getPreferredSize();			
+			tableHeight += tableHeaderDimension.height;
 		}
-	}
 
-   public Dimension getTableDimension(){
-	  int tableWidth = 0, tableHeight = 0;
-
-
-		// Resize width
-		TableColumnModel model = getColumnModel();
-		for (int i = 0; i < model.getColumnCount(); ++i) {
-
-			tableWidth += model.getColumn(i).getPreferredWidth();
-		}
-	   for (int i = 0; i < getColumnCount() && i < maxTableDisplayedRowCount; ++i){
-			tableHeight += getColumnCount() * getRowHeight(i);
-
-
-	   }
-
-	   return new Dimension(tableWidth, tableHeight);
-
-
+	   return new Dimension( preferredWidth, tableHeight);
    }
 
-private class CustomTableCellRenderer extends DefaultTableCellRenderer {
-    public Component getTableCellRendererComponent (JTable table,
-Object obj, boolean isSelected, boolean hasFocus, int row, int column) {
-      Component cell = super.getTableCellRendererComponent(
-                         table, obj, isSelected, hasFocus, row, column);
-      if (!isSelected) {
-        if (!(row % 2 == 0)) {
-          cell.setBackground(Color.lightGray);
-        }
-      }
-      return cell;
-    }
-  }
+
+
+	public void tableChanged(TableModelEvent e) {
+
+		Dimension prefered = getTableDimension();
+		setPreferredScrollableViewportSize(prefered);
+		//setPreferredSize(prefered);
+		
+		super.tableChanged(e);
+	}
 };
