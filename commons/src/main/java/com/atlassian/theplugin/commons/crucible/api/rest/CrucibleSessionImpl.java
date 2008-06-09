@@ -37,6 +37,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Communication stub for Crucible REST API.
@@ -51,15 +52,16 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 	private static final String GET_REVIEWS_IN_STATES = "?state=";
 	private static final String GET_FILTERED_REVIEWS = "/filter";
     private static final String GET_REVIEWERS = "/reviewers";
-	private static final String GET_REVIEW_ITEMS = "/reviewitems";
+    private static final String ADD_REVIEWERS = "/addReviewers";    
+    private static final String GET_REVIEW_ITEMS = "/reviewitems";
 	private static final String GET_REVIEW_COMMENTS = "/comments";
     private static final String APPROVE_ACTION = "/approve";
     private static final String ADD_CHANGESET = "/addChangeset";
+    private static final String ADD_PATCH = "/addPatch";
 
     private String authToken = null;
 
-
-	/**
+    /**
 	 * Public constructor for CrucibleSessionImpl.
 	 *
 	 * @param baseUrl base URL for Crucible instance
@@ -535,7 +537,6 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
 
 		Document request = CrucibleRestXmlHelper.prepareCreateReviewNode(review, patch);
-
 		try {
 			Document doc = retrievePostResponse(baseUrl + REVIEW_SERVICE, request);
 
@@ -560,7 +561,6 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
 
 		Document request = CrucibleRestXmlHelper.prepareCreateReviewNode(reviewData, revisions);
-
         try {
 			Document doc = retrievePostResponse(baseUrl + REVIEW_SERVICE, request);
 
@@ -588,7 +588,6 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 
         try {
             String url = baseUrl + REVIEW_SERVICE + "/" + permId.getId() + ADD_CHANGESET;
-                        System.out.println("url = " + url);
             Document doc = retrievePostResponse(url, request);
 
 
@@ -607,16 +606,42 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
     }
 
-    public void addReviewer(PermId permId, String userName) throws RemoteApiException {
+    public ReviewData addPatchToReview(PermId permId, String repository, String patch) throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
 
-        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + permId.getId() + GET_REVIEWERS;
-        Document request = CrucibleRestXmlHelper.prepareAddReviewerNode(userName);
+		Document request = CrucibleRestXmlHelper.prepareAddPatchNode(repository, patch);
 
-		try {
-			Document doc = retrievePostResponse(requestUrl, userName, false);
+        try {
+            String url = baseUrl + REVIEW_SERVICE + "/" + permId.getId() + ADD_PATCH;
+            Document doc = retrievePostResponse(url, request);
+
+            XPath xpath = XPath.newInstance("/reviewData");
+			@SuppressWarnings("unchecked")
+			List<Element> elements = xpath.selectNodes(doc);
+
+			if (elements != null && !elements.isEmpty()) {
+				return CrucibleRestXmlHelper.parseReviewNode(elements.iterator().next());
+			}
+			return null;
+		} catch (IOException e) {
+			throw new RemoteApiException(e.getMessage(), e);
+		} catch (JDOMException e) {
+			throw new RemoteApiException("Server returned malformed response", e);
+		}
+    }
+
+    public void addReviewers(PermId permId, Set<String> users) throws RemoteApiException {
+		if (!isLoggedIn()) {
+			throw new IllegalStateException("Calling method without calling login() first");
+		}
+
+        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + permId.getId() + ADD_REVIEWERS;
+        Document request = CrucibleRestXmlHelper.prepareAddReviewersNode(users);
+
+        try {
+			retrievePostResponse(requestUrl, request, false);
 		} catch (IOException e) {
 			throw new RemoteApiException(e.getMessage(), e);
 		} catch (JDOMException e) {

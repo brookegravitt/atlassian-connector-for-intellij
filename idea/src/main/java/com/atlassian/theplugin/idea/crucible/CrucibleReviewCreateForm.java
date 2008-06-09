@@ -43,8 +43,8 @@ import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import static com.intellij.openapi.ui.Messages.showMessageDialog;
-import com.intellij.openapi.vcs.changes.ChangeList;
 import com.intellij.openapi.vcs.changes.Change;
+import com.intellij.openapi.vcs.changes.ChangeList;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import org.jetbrains.annotations.Nullable;
@@ -53,8 +53,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import static java.lang.System.arraycopy;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.*;
 import java.util.List;
 
 enum ReviewCreationMode {
@@ -546,11 +545,15 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
                         break;
                 }
 
+                Set<String> users = new HashSet<String>();
                 for (int i = 0; i < model.getSize(); ++i) {
                     UserListItem item = (UserListItem) model.get(i);
                     if (item.isSelected()) {
-                        crucibleServerFacade.addReviewer(server, draftReviewData.getPermaId(), item.getUser().getUserName());
+                        users.add(item.getUser().getUserName());
                     }
+                }
+                if (!users.isEmpty()) {
+                    crucibleServerFacade.addReviewers(server, draftReviewData.getPermaId(), users);
                 }
 
                 if (!leaveAsDraftCheckBox.isSelected()) {
