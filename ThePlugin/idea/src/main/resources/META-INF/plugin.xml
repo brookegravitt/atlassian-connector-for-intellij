@@ -33,7 +33,7 @@
 		The plugin providing IDEA IDE integration for the following Atlassian products:
 		<ul>
 			<li>Bamboo</li>
-			<li>Crucible 1.5 and above</li>
+			<li>Crucible 1.5 and above (1.6 version required for "enhanced" integration)</li>
 			<li>JIRA 3.7 and above</li>
 			<li>Confluence - in the future</li>
 			<li>Fisheye - in the future</li>
@@ -56,11 +56,13 @@
 	<change-notes>
 		<![CDATA[
 		<ul>
+			<li>1.4.1: errata release</li>
+		    <li>1.4.0: Crucible 1.6 integration "dashboard", JIRA action support</li>
             <li>1.3.1: errata release</li>
 		    <li>1.3.0: Several new JIRA features (logging work, assigning issues, etc.)</li>
 		    <li>1.2.1: Errata release - restored saved filters functionality (bug PL-329)</li>
 			<li>1.2.0: proxy support, work loging for JIRA, switched from XMLRPC to SOAP</li>
-		    	<li>1.1.0: Bug fix release</li>
+		    <li>1.1.0: Bug fix release</li>
 			<li>1.0.1: Errata release</li>
 			<li>1.0.0: first public release. With advanced JIRA filtering capabilities</li>
 			<li>0.5.0: even more small improvements and bugfixes. UI looks really nice now</li>
@@ -84,6 +86,9 @@
 		<component>
 			<implementation-class>com.atlassian.theplugin.idea.ThePluginApplicationComponent</implementation-class>
 		</component>
+		<!--<component>-->
+			<!--<implementation-class>com.atlassian.theplugin.idea.ThePluginJIRAEditorComponent</implementation-class>-->
+		<!--</component>-->
 	</application-components>
 	<project-components>
 		<component>
@@ -291,7 +296,8 @@
 
         <action id="ThePlugin.JIRA.ViewIssue" class="com.atlassian.theplugin.idea.action.jira.ViewIssueAction" text="View" />
         <action id="ThePlugin.JIRA.EditIssue" class="com.atlassian.theplugin.idea.action.jira.EditIssueAction" text="Edit" />
-        <action id="ThePlugin.JIRA.WorkflowActions" class="com.atlassian.theplugin.idea.action.jira.IssueWorkflowAction" text="Workflow Actions" />
+		<!--<action id="ThePlugin.JIRA.ShowComments" class="com.atlassian.theplugin.idea.action.jira.ShowCommentsAction" text="Comments" />-->
+		<action id="ThePlugin.JIRA.WorkflowActions" class="com.atlassian.theplugin.idea.action.jira.IssueWorkflowAction" text="Workflow Actions" />
 		<action id="ThePlugin.JIRA.AddComment" class="com.atlassian.theplugin.idea.action.jira.AddCommentAction" text="Add comment" />
         <action id="ThePlugin.JIRA.LogWork" class="com.atlassian.theplugin.idea.action.jira.LogWorkAction" text="Log work" />
         <action id="ThePlugin.JIRA.AssignIssueToMyself" class="com.atlassian.theplugin.idea.action.jira.AssignIssueToMyselfAction" text="Assign Issue to Myself" />
@@ -302,6 +308,7 @@
         <group id="ThePlugin.JIRA.IssuePopupMenu" popup="true">
             <reference id="ThePlugin.JIRA.ViewIssue" />
             <reference id="ThePlugin.JIRA.EditIssue" />
+			<!--<reference id="ThePlugin.JIRA.ShowComments" />-->
 			<separator />
             <reference id="ThePlugin.JIRA.AddComment" />
             <reference id="ThePlugin.JIRA.LogWork" />
