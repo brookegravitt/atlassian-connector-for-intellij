@@ -45,6 +45,7 @@ import java.util.List;
 
 enum AddMode {
     ADDREVISION,
+    ADDPATCH,
     VIEWREVISION
 }
 
@@ -57,6 +58,7 @@ public class CrucibleHelperForm extends DialogWrapper {
     private ChangeList[] changes;
     private PermId permId;
     private String rev;
+    private String patch;
     private AddMode mode;
 
     protected CrucibleHelperForm(CrucibleServerFacade crucibleServerFacade, PermId permId, ChangeList[] changes) {
@@ -74,6 +76,15 @@ public class CrucibleHelperForm extends DialogWrapper {
         this.mode = AddMode.VIEWREVISION;
         setTitle("View revision");
         getOKAction().putValue(Action.NAME, "View revision...");
+    }
+
+    protected CrucibleHelperForm(CrucibleServerFacade crucibleServerFacade, PermId permId, String patch) {
+        this(crucibleServerFacade);
+        this.permId = permId;
+        this.patch = patch;
+        this.mode = AddMode.ADDPATCH;
+        setTitle("Add patch");
+        getOKAction().putValue(Action.NAME, "Add patch...");
     }
 
     private CrucibleHelperForm(CrucibleServerFacade crucibleServerFacade) {
@@ -253,8 +264,24 @@ public class CrucibleHelperForm extends DialogWrapper {
                 } catch (RemoteApiException e) {
                     showMessageDialog(e.getMessage(),
                             "Error creating review: " + server.getUrlString(), Messages.getErrorIcon());
+                } catch (ServerPasswordNotProvidedException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
                 break;
+
+            case ADDPATCH:
+                try {
+                    ReviewData draftReviewData = crucibleServerFacade.addPatchToReview(server, permId, repo.getName(), patch);
+                    super.doOKAction();
+
+                } catch (RemoteApiException e) {
+                    showMessageDialog(e.getMessage(),
+                            "Error creating review: " + server.getUrlString(), Messages.getErrorIcon());
+                } catch (ServerPasswordNotProvidedException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
+                break;
+
             case VIEWREVISION:
                 String url = server.getUrlString() + "/changelog/" + repo.getName() + "/?cs=" + rev;
                 BrowserUtil.launchBrowser(url);

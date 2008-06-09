@@ -103,7 +103,7 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
             Server server,
             PermId permId,
             String repository,
-            List<String> revisions) throws RemoteApiException {
+            List<String> revisions) throws RemoteApiException, ServerPasswordNotProvidedException {
         CrucibleSession session = getSession(server);
         ReviewData review = null;
         if (!revisions.isEmpty()) {
@@ -112,12 +112,23 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
         return review;
     }
 
-    public void addReviewer(
+    public ReviewData addPatchToReview(
             Server server,
             PermId permId,
-            String userName) throws RemoteApiException, ServerPasswordNotProvidedException {
+            String repository,
+            String patch) throws RemoteApiException, ServerPasswordNotProvidedException {
         CrucibleSession session = getSession(server);
-        session.addReviewer(permId, userName);
+        ReviewData review = session.addPatchToReview(permId, repository, patch);
+        return review;
+    }
+
+
+    public void addReviewers(
+            Server server,
+            PermId permId,
+            Set<String> userNames) throws RemoteApiException, ServerPasswordNotProvidedException {
+        CrucibleSession session = getSession(server);
+        session.addReviewers(permId, userNames);
     }
 
     public ReviewData approveReview(
