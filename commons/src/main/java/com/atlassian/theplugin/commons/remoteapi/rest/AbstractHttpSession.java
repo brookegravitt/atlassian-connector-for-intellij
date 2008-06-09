@@ -111,50 +111,10 @@ public abstract class AbstractHttpSession {
 
 	protected Document retrievePostResponse(String urlString, Document request)
 			throws IOException, JDOMException, RemoteApiSessionExpiredException {
-		UrlUtil.validateUrl(urlString);
-
-
-		Document doc = null;
-		synchronized (clientLock) {
-			if (client == null) {
-				try {
-					client = HttpClientFactory.getClient();
-				} catch (HttpProxySettingsException e) {
-					throw (IOException) new IOException("Connection error. Please set up HTTP Proxy settings").initCause(e);
-				}
-			}
-
-			PostMethod method = new PostMethod(urlString);
-
-			try {
-				method.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
-				method.getParams().setSoTimeout(client.getParams().getSoTimeout());
-				adjustHttpHeader(method);
-
-				XMLOutputter serializer = new XMLOutputter(Format.getPrettyFormat());
-				method.setRequestEntity(
-						new StringRequestEntity(serializer.outputString(request), "application/xml", "UTF-8"));
-
-				client.executeMethod(method);
-
-				if (method.getStatusCode() != HttpStatus.SC_OK) {
-					throw new IOException("HTTP status code " + method.getStatusCode() + ": " + method.getStatusText());
-				}
-
-				SAXBuilder builder = new SAXBuilder();
-				doc = builder.build(method.getResponseBodyAsStream());
-
-				preprocessResult(doc);
-			} catch (NullPointerException e) {
-				throw (IOException) new IOException("Connection error").initCause(e);
-			} finally {
-				method.releaseConnection();
-			}
-		}
-		return doc;
+        return retrievePostResponse(urlString, request, true);
 	}
 
-	protected Document retrievePostResponse(String urlString, String request, boolean expectResponse)
+	protected Document retrievePostResponse(String urlString, Document request, boolean expectResponse)
 			throws IOException, JDOMException, RemoteApiSessionExpiredException {
 		UrlUtil.validateUrl(urlString);
 
@@ -175,8 +135,9 @@ public abstract class AbstractHttpSession {
 				method.getParams().setSoTimeout(client.getParams().getSoTimeout());
 				adjustHttpHeader(method);
 
-				method.setRequestEntity(
-						new StringRequestEntity(request, "application/xml", "UTF-8"));
+                XMLOutputter serializer = new XMLOutputter(Format.getPrettyFormat());
+                method.setRequestEntity(
+                        new StringRequestEntity(serializer.outputString(request), "application/xml", "UTF-8"));
 
 				client.executeMethod(method);
 

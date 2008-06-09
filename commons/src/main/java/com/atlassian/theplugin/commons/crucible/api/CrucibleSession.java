@@ -20,6 +20,7 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 
 import java.util.List;
+import java.util.Set;
 
 
 public interface CrucibleSession {
@@ -33,9 +34,11 @@ public interface CrucibleSession {
 
     ReviewData createReviewFromRevision(ReviewData reviewData, List<String> revisions) throws RemoteApiException;
 
-    ReviewData addRevisionsToReview(PermId permId, String repository, List<String> revisions) throws RemoteApiException;    
+    ReviewData addRevisionsToReview(PermId permId, String repository, List<String> revisions) throws RemoteApiException;
 
-    void addReviewer(PermId permId, String userName) throws RemoteApiException;
+    ReviewData addPatchToReview(PermId permId, String repository, String patch) throws RemoteApiException;    
+
+    void addReviewers(PermId permId, Set<String> userNames) throws RemoteApiException;
 
     ReviewData approveReview(PermId permId) throws RemoteApiException;
 
