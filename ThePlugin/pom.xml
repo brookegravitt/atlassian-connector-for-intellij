@@ -31,6 +31,10 @@
     <inceptionYear>2008</inceptionYear>
     <name>Atlassian Plugin POM</name>
     <description>Parent POM for plugins integrating Atlassian tools.</description>
+    <organization>
+        <name>Atlassian Pty Ltd</name>
+        <url>http://atlassian.com/</url>
+    </organization>
     <modules>
         <module>commons</module>
         <module>idea</module>
@@ -61,6 +65,7 @@
         <artifactZip>${project.build.finalName}.zip</artifactZip>
         <downloadDir>download</downloadDir>
         <metadataDir>metadata</metadataDir>
+        <bundle.namespace>com.atlassian.theplugin</bundle.namespace>
     </properties>
     <dependencies>
         <dependency>
