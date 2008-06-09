@@ -55,8 +55,6 @@ public class CruciblePatchSubmitCommitSessionTest extends TestCase {
 	}
 
 	public void testGenerateUnifiedPatch() throws Exception {
-		CruciblePatchSubmitCommitSession session = new CruciblePatchSubmitCommitSessionWrapper();
-
 		Collection<Change> changeSet = new ArrayList<Change>();
 		changeSet.add(createChange("modified-1", "modified-1.orig", "modified-1.new"));
 		changeSet.add(createChange("added", null, "added.new"));
@@ -67,45 +65,44 @@ public class CruciblePatchSubmitCommitSessionTest extends TestCase {
 		expectedPatch.append(loadResource("added.diff"));
 		expectedPatch.append(loadResource("deleted.diff"));
 
-//		String patch = session.generateUnifiedDiff(changeSet);
+		CruciblePatchSubmitCommitSessionWrapper session = new CruciblePatchSubmitCommitSessionWrapper(changeSet);
+		String patch = session.generateUnifiedDiff();
 
-//		assertEquals("Comparing expected patch to returned one", expectedPatch.toString(), patch);
+		assertEquals("Comparing expected patch to returned one", expectedPatch.toString(), patch);
 	}
 
 	public void testDiffAtFileStart() {
-		CruciblePatchSubmitCommitSession session = new CruciblePatchSubmitCommitSessionWrapper();
 		Collection<Change> changeSet = new ArrayList<Change>();
 		changeSet.add(createChange("modified-start", "modified-start.orig", "modified-start.new"));
 		StringBuilder expectedPatch = new StringBuilder();
 		expectedPatch.append(loadResource("modified-start.diff"));
 
-//		String patch = session.generateUnifiedDiff(changeSet);
+		CruciblePatchSubmitCommitSessionWrapper session = new CruciblePatchSubmitCommitSessionWrapper(changeSet);
+		String patch = session.generateUnifiedDiff();
 
-//		assertEquals("Comparing expected patch to returned one", expectedPatch.toString(), patch);
+		assertEquals("Comparing expected patch to returned one", expectedPatch.toString(), patch);
 	}
 
 	public void testDiffMixed() {
-		CruciblePatchSubmitCommitSession session = new CruciblePatchSubmitCommitSessionWrapper();
 		Collection<Change> changeSet = new ArrayList<Change>();
 		changeSet.add(createChange("modified-mixed", "modified-mixed.orig", "modified-mixed.new"));
 		StringBuilder expectedPatch = new StringBuilder();
 		expectedPatch.append(loadResource("modified-mixed.diff"));
+		CruciblePatchSubmitCommitSessionWrapper session = new CruciblePatchSubmitCommitSessionWrapper(changeSet);
+		String patch = session.generateUnifiedDiff();
 
-//		String patch = session.generateUnifiedDiff(changeSet);
-
-//		assertEquals("Comparing expected patch to returned one", expectedPatch.toString(), patch);
+		assertEquals("Comparing expected patch to returned one", expectedPatch.toString(), patch);
 	}
 
 	public void testDiffMixed2() {
-		CruciblePatchSubmitCommitSession session = new CruciblePatchSubmitCommitSessionWrapper();
 		Collection<Change> changeSet = new ArrayList<Change>();
 		changeSet.add(createChange("modified-mixed", "modified-mixed.orig", "modified-mixed-1.new"));
 		StringBuilder expectedPatch = new StringBuilder();
 		expectedPatch.append(loadResource("modified-mixed-1.diff"));
+		CruciblePatchSubmitCommitSessionWrapper session = new CruciblePatchSubmitCommitSessionWrapper(changeSet);
+		String patch = session.generateUnifiedDiff();
 
-//		String patch = session.generateUnifiedDiff(changeSet);
-
-//		assertEquals("Comparing expected patch to returned one", expectedPatch.toString(), patch);
+		assertEquals("Comparing expected patch to returned one", expectedPatch.toString(), patch);
 	}
 
 
@@ -132,9 +129,9 @@ public class CruciblePatchSubmitCommitSessionTest extends TestCase {
 }
 
 
-class CruciblePatchSubmitCommitSessionWrapper extends CruciblePatchSubmitCommitSession {
-	CruciblePatchSubmitCommitSessionWrapper() {
-		super(null, CrucibleServerFacadeImpl.getInstance());
+class CruciblePatchSubmitCommitSessionWrapper extends PatchProducer {
+	CruciblePatchSubmitCommitSessionWrapper(Collection<Change> changeSet) {
+		super(null, changeSet);
 	}
 
 	protected String getPath(ContentRevision revision) {
