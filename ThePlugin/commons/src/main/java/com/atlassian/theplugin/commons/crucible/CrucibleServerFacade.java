@@ -23,6 +23,7 @@ import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.crucible.api.*;
 
 import java.util.List;
+import java.util.Set;
 
 public interface CrucibleServerFacade extends ProductServerFacade {
 	ReviewData createReview(Server server, ReviewData review)
@@ -32,9 +33,12 @@ public interface CrucibleServerFacade extends ProductServerFacade {
             throws RemoteApiException;
 
     ReviewData addRevisionsToReview(Server server, PermId permId, String repository, List<String> revisions) 
-            throws RemoteApiException;
+            throws RemoteApiException, ServerPasswordNotProvidedException;
 
-    void addReviewer(Server server, PermId permId, String userName)
+    ReviewData addPatchToReview(Server server, PermId permId, String repository, String patch)
+            throws RemoteApiException, ServerPasswordNotProvidedException;
+
+    void addReviewers(Server server, PermId permId, Set<String> userName)
 		    throws RemoteApiException, ServerPasswordNotProvidedException;    
 
     ReviewData approveReview(Server server, PermId permId)

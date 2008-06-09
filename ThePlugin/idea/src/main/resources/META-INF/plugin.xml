@@ -191,12 +191,20 @@
         <action id="ThePlugin.Crucible.PostCommitReview" class="com.atlassian.theplugin.idea.action.crucible.PostCommitReviewAction" text="Create review" icon="/icons/crucible-blue-16.png" />
         <action id="ThePlugin.Crucible.AddRevisionToReview" class="com.atlassian.theplugin.idea.action.crucible.AddRevisionToReviewAction" text="Add revision to review" icon="/icons/fisheye-16-plus.png" />
         <action id="ThePlugin.Crucible.ViewFisheyeChangeset" class="com.atlassian.theplugin.idea.action.crucible.ViewFisheyeChangesetAction" text="View changeset" icon="/icons/fisheye-16.png" />
+        <action id="ThePlugin.Crucible.PreCommitReview" class="com.atlassian.theplugin.idea.action.crucible.PreCommitReview" text="Pre-commit review" icon="/icons/crucible-blue-16.png" />
+        <action id="ThePlugin.Crucible.AddPatchToReview" class="com.atlassian.theplugin.idea.action.crucible.AddPatchToReviewAction" text="Add patch to review" icon="/icons/fisheye-16-plus.png" />
 
         <group id="ThePlugin.Crucible.PostCommit" popup="false" text="">
             <reference id="ThePlugin.Crucible.PostCommitReview" />
             <reference id="ThePlugin.Crucible.AddRevisionToReview" />
             <reference id="ThePlugin.Crucible.ViewFisheyeChangeset" />            
             <add-to-group anchor="last" group-id="CommittedChangesToolbar" />
+        </group>
+
+        <group id="ThePlugin.Crucible.PreCommit" popup="false" text="">
+            <reference id="ThePlugin.Crucible.PreCommitReview" />
+            <reference id="ThePlugin.Crucible.AddPatchToReview" />            
+            <add-to-group anchor="last" group-id="ChangesViewToolbar" />
         </group>
 
         <group id="ThePlugin.CrucibleToolWindowToolBar" popup="false" text="">

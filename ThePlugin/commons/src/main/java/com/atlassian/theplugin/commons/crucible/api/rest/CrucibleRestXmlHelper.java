@@ -16,8 +16,8 @@
 
 package com.atlassian.theplugin.commons.crucible.api.rest;
 
-import com.atlassian.theplugin.commons.crucible.api.*;
 import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
+import com.atlassian.theplugin.commons.crucible.api.*;
 import org.jdom.CDATA;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -26,6 +26,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 
 public final class CrucibleRestXmlHelper {
@@ -75,11 +76,11 @@ public final class CrucibleRestXmlHelper {
         UserDataBean userDataBean = new UserDataBean();
 
         CrucibleVersion version = CrucibleVersion.CRUCIBLE_15;
-		Element userName = repoNode.getChild("userName");
-		if (userName != null && !userName.getText().equals("")) {
+        Element userName = repoNode.getChild("userName");
+        if (userName != null && !userName.getText().equals("")) {
             version = CrucibleVersion.CRUCIBLE_16;
         }
-          if (version == CrucibleVersion.CRUCIBLE_15) {
+        if (version == CrucibleVersion.CRUCIBLE_15) {
             userDataBean.setUserName(repoNode.getText());
             userDataBean.setDisplayName(userDataBean.getUserName());
         } else {
@@ -88,7 +89,7 @@ public final class CrucibleRestXmlHelper {
         }
         return userDataBean;
     }
-        
+
     public static ReviewData parseReviewNode(Element reviewNode) {
         ReviewDataBean review = new ReviewDataBean();
 
@@ -143,16 +144,12 @@ public final class CrucibleRestXmlHelper {
         root.getContent().add(prepareReviewNodeElement(review));
 
         if (!revisions.isEmpty()) {
-            if (revisions.size() == 1) {
-                addTag(root, "changeSetId", revisions.get(0));
-            } else {
-                Element changes = new Element("revisionId");
-                root.getContent().add(changes);
-                for (String revision : revisions) {
-                    Element rev = new Element("revisionData");
-                    changes.getContent().add(rev);
-                    addTag(rev, "id", revision);
-                }
+            Element changes = new Element("changesets");
+            root.getContent().add(changes);
+            for (String revision : revisions) {
+                Element rev = new Element("changesetData");
+                changes.getContent().add(rev);
+                addTag(rev, "id", revision);
             }
         }
         return doc;
@@ -165,22 +162,43 @@ public final class CrucibleRestXmlHelper {
         addTag(root, "repository", repoName);
 
         if (!revisions.isEmpty()) {
-                Element changes = new Element("revisionId");
-                root.getContent().add(changes);
-                for (String revision : revisions) {
-                    Element rev = new Element("revisionData");
-                    changes.getContent().add(rev);
-                    addTag(rev, "id", revision);
-                }
+            Element changes = new Element("changesets");
+            root.getContent().add(changes);
+            for (String revision : revisions) {
+                Element rev = new Element("changesetData");
+                changes.getContent().add(rev);
+                addTag(rev, "id", revision);
+            }
         }
         return doc;
     }
 
-    public static Document prepareAddReviewerNode(String userName) {
-        Element root = new Element("reviewer");
+    public static Document prepareAddPatchNode(String repoName, String patch) {
+        Element root = new Element("addPatch");
         Document doc = new Document(root);
 
-        addTag(root, "reviewer", userName);
+        addTag(root, "repository", repoName);
+
+        if (patch != null) {
+            Element patchData = new Element("patch");
+            root.getContent().add(patchData);
+
+            CDATA patchT = new CDATA(patch);
+            patchData.setContent(patchT);
+        }
+        return doc;
+    }
+
+    public static Document prepareAddReviewersNode(Set<String> users) {
+        Element root = new Element("addReviewers");
+        Document doc = new Document(root);
+
+        Element usersNode = new Element("users");
+        root.getContent().add(usersNode);
+
+        for (String user : users) {
+            addTag(usersNode, "user", user);
+        }
         return doc;
     }
 
@@ -322,7 +340,7 @@ public final class CrucibleRestXmlHelper {
     private static Element prepareFilterNodeElement(CustomFilter filter) {
         Element filterData = new Element("customFilterData");
 
-        addTag(filterData, "title", /*filter.getTitle() != null ? filter.getTitle() :*/ "");        
+        addTag(filterData, "title", /*filter.getTitle() != null ? filter.getTitle() :*/ "");
         addTag(filterData, "author", filter.getAuthor() != null ? filter.getAuthor() : "");
         addTag(filterData, "creator", filter.getCreator() != null ? filter.getCreator() : "");
         addTag(filterData, "moderator", filter.getModerator() != null ? filter.getModerator() : "");
