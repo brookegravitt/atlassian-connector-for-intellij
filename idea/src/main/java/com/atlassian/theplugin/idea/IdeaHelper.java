@@ -105,7 +105,10 @@ public final class IdeaHelper {
 		}
 		com.intellij.openapi.wm.ToolWindow tw = getToolWindow(p);
 		Content content = tw.getContentManager().findContent(PluginToolWindow.ToolWindowPanels.JIRA.toString());
-		return (JIRAToolWindowPanel) content.getComponent();
+        if (content == null) {
+            return null;
+        }
+        return (JIRAToolWindowPanel) content.getComponent();
 	}
 
 	public static JIRAToolWindowPanel getJIRAToolWindowPanel(AnActionEvent event) {
@@ -115,7 +118,10 @@ public final class IdeaHelper {
 		}
 		com.intellij.openapi.wm.ToolWindow tw = getToolWindow(p);
 		Content content = tw.getContentManager().findContent(PluginToolWindow.ToolWindowPanels.JIRA.toString());
-		return (JIRAToolWindowPanel) content.getComponent();
+        if (content == null) {
+            return null;
+        }
+        return (JIRAToolWindowPanel) content.getComponent();
 	}
 
 
@@ -127,7 +133,10 @@ public final class IdeaHelper {
 
 		ToolWindow tw = getToolWindow(p);
 		Content content = tw.getContentManager().findContent(PluginToolWindow.ToolWindowPanels.BAMBOO.toString());
-		return (BambooTableToolWindowPanel) content.getComponent();
+        if (content == null) {
+            return null;
+        }
+        return (BambooTableToolWindowPanel) content.getComponent();
 	}
 
 	public static ThePluginProjectComponent getCurrentProjectComponent(AnActionEvent e) {
@@ -148,7 +157,9 @@ public final class IdeaHelper {
 
 		ToolWindow tw = getToolWindow(p);
 		Content content = tw.getContentManager().findContent(PluginToolWindow.ToolWindowPanels.CRUCIBLE.toString());
-
-		return (CrucibleTableToolWindowPanel) content.getComponent();
+        if (content == null)  {
+            return null;
+        }
+        return (CrucibleTableToolWindowPanel) content.getComponent();
 	}
 }
