@@ -55,7 +55,7 @@ public class Activator extends AbstractUIPlugin {
 
 	private Timer timer;
 
-	private PluginConfigurationBean pluginConfiguration;
+	private EclipsePluginConfiguration pluginConfiguration;
 
 	private BambooStatusChecker bambooChecker;
 
@@ -79,7 +79,6 @@ public class Activator extends AbstractUIPlugin {
 
 		// create logger
 		PluginUtil.setLogger(new EclipseLogger(getLog()));	// now you can use PluginUtil.getLogger
-		
 		PluginUtil.getLogger().info(PluginUtil.getPluginName() + " started.");
 		
 		// create configuration
@@ -150,7 +149,7 @@ public class Activator extends AbstractUIPlugin {
 		return timer;
 	}
 
-	public PluginConfigurationBean getPluginConfiguration() {
+	public EclipsePluginConfiguration getPluginConfiguration() {
 		return pluginConfiguration;
 	}
 
@@ -194,7 +193,5 @@ public class Activator extends AbstractUIPlugin {
 		startTimer();
 
 	}
-
-
 	
 }

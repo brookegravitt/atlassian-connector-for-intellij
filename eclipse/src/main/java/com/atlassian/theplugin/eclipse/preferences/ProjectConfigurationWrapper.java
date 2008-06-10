@@ -43,7 +43,7 @@ public class ProjectConfigurationWrapper {
 		this.preferences = preferences;
 	}
 
-	public PluginConfigurationBean getPluginConfiguration() {
+	public EclipsePluginConfiguration getPluginConfiguration() {
 		
 		List<SubscribedPlanBean> subscribedPlans = new ArrayList<SubscribedPlanBean>();
 		
@@ -70,10 +70,9 @@ public class ProjectConfigurationWrapper {
 		BambooConfigurationBean bambooConfiguration = new BambooConfigurationBean();
 		bambooConfiguration.setServers(bambooServers);
 		
-		PluginConfigurationBean pluginConfiguration = new PluginConfigurationBean();
+		EclipsePluginConfiguration pluginConfiguration = new EclipsePluginConfiguration();
 		pluginConfiguration.setBambooConfigurationData(bambooConfiguration);
 		
 		return pluginConfiguration;
 	}
-
 }
