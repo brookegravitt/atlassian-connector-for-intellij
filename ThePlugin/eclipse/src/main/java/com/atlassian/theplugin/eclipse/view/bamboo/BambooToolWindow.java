@@ -30,6 +30,7 @@ import com.atlassian.theplugin.eclipse.actions.bamboo.LabelBuildAction;
 import com.atlassian.theplugin.eclipse.actions.bamboo.RefreshBuildsListAction;
 import com.atlassian.theplugin.eclipse.actions.bamboo.RunBuildAction;
 import com.atlassian.theplugin.eclipse.preferences.Activator;
+import com.atlassian.theplugin.eclipse.view.popup.NotificationPopup;
 
 /**
  * @author Jacek
@@ -55,8 +56,11 @@ public class BambooToolWindow extends ViewPart {
 	public void createPartControl(Composite parent) {
 		
 		bambooToolWindowContent = new BambooToolWindowContent(parent, this);
+		BambooStatusPopupListener popupListener = new BambooStatusPopupListener();
+		
 		// register listener
 		Activator.getDefault().getBambooChecker().registerListener(bambooToolWindowContent);
+		Activator.getDefault().getBambooChecker().registerListener(popupListener);
 
 		
 		//getViewSite().registerContextMenu(menuManager, selectionProvider)

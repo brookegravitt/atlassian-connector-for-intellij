@@ -20,6 +20,7 @@ package com.atlassian.theplugin.eclipse.view.bamboo;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 
@@ -34,6 +35,8 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
@@ -50,6 +53,7 @@ import com.atlassian.theplugin.eclipse.util.PluginUtil;
 
 public class BambooToolWindowContent implements BambooStatusListener {
 
+	
 	private Collection<BambooBuildAdapterEclipse> buildStatuses = new ArrayList<BambooBuildAdapterEclipse>();
 	private Table table;
 	private TableViewer tableViewer;
@@ -109,17 +113,22 @@ public class BambooToolWindowContent implements BambooStatusListener {
 		// create columns
 		TableColumn tableColumn; 
 		
+		ControlListener columnListener = new BambooTableColumnListener();
+		
 		for (Column column : Column.values()) {
 			tableColumn = new TableColumn(table, SWT.LEFT);
 			tableColumn.setText(column.columnName());
 			tableColumn.setWidth(column.columnWidth());
 			tableColumn.setMoveable(true);
+			
+			tableColumn.addControlListener(columnListener);
 		}
 		
 		tableViewer.setInput(buildStatuses);
 		
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
+		
 		
 	}
 	
@@ -142,6 +151,20 @@ public class BambooToolWindowContent implements BambooStatusListener {
 	}
 
 	public void resetState() {
+	}
+
+	private class BambooTableColumnListener implements ControlListener {
+		
+		public void controlMoved(ControlEvent e) {
+//			Activator.getDefault().getPluginConfiguration().getBambooTabConfiguration().
+//				setColumnsOrder( Arrays.asList(table.getColumnOrder()));
+			//System.out.println("Column Moved: " + Arrays.toString(table.getColumnOrder()));
+		}
+		
+		public void controlResized(ControlEvent e) {
+			System.out.println("Colum Resized");
+		}
+		
 	}
 
 	private class BambooContentProvider implements IStructuredContentProvider {
@@ -219,7 +242,7 @@ public class BambooToolWindowContent implements BambooStatusListener {
 	 * That class provides column names and width for bamboo tab table
 	 */
 	private enum Column {
-		BUILD_STATUS ("S", 30),
+		BUILD_STATUS ("ST", 30),
 		BUILD_KEY ("Build Plan", 80),
 		BUILD_NUMBER ("Build Number", 100),
 		PROJECT_KEY ("Project", 100),
