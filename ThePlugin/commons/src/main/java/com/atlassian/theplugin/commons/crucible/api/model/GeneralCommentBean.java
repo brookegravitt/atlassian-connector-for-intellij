@@ -16,8 +16,6 @@
 
 package com.atlassian.theplugin.commons.crucible.api.model;
 
-import com.jniwrapper.util.SoftCache;
-
 import java.util.*;
 
 public class GeneralCommentBean implements GeneralComment {
