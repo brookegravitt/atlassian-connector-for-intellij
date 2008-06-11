@@ -26,7 +26,7 @@
     </parent>
     <groupId>com.atlassian.theplugin</groupId>
     <artifactId>atlassian-plugin-pom</artifactId>
-    <version>1.5.0-SHAPSHOT</version>
+    <version>1.5.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <inceptionYear>2008</inceptionYear>
     <name>Atlassian Plugin POM</name>

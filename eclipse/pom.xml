@@ -10,7 +10,7 @@
     <parent>
         <groupId>com.atlassian.theplugin</groupId>
         <artifactId>atlassian-plugin-pom</artifactId>
-        <version>1.5.0-SHAPSHOT</version>
+        <version>1.5.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <scm>
@@ -39,7 +39,7 @@
         <dependency>
             <groupId>com.atlassian.theplugin</groupId>
             <artifactId>atlassian-plugin-commons</artifactId>
-            <version>1.5.0-SHAPSHOT</version>
+            <version>1.5.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse</groupId>
