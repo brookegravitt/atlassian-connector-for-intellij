@@ -167,6 +167,11 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 		return session.getComments(permId);
 	}
 
+    public GeneralComment addGeneralComment(Server server, PermId permId, GeneralComment comment) throws RemoteApiException, ServerPasswordNotProvidedException {
+        CrucibleSession session = getSession(server);
+        return session.addGeneralComment(permId, comment);
+    }
+
     public List<User> getUsers(Server server) throws RemoteApiException, ServerPasswordNotProvidedException {
         CrucibleSession session = getSession(server);
         return session.getUsers();

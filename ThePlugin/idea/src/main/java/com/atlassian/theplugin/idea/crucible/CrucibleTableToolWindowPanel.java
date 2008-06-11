@@ -544,6 +544,16 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
                         System.out.println("key: " + key + ", field.getHrValue() = " + field.getHrValue());
                     }
                 }
+
+                GeneralCommentBean gc = new GeneralCommentBean();
+                gc.setUser("mwent");
+                gc.setCreateDate(new Date());
+                gc.setMessage("ala ma kota");
+                gc.setDefectRaised(false);
+
+                GeneralComment gc1 = serverFacade.addGeneralComment(selectedItem.getServer(), selectedItem.getPermaId(), gc);
+                System.out.println("gc1.getPermId().getId() = " + gc1.getPermId().getId());
+
             } catch (RemoteApiException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             } catch (ServerPasswordNotProvidedException e) {

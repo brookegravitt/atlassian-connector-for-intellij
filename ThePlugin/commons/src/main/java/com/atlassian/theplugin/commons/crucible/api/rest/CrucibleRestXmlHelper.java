@@ -289,14 +289,10 @@ public final class CrucibleRestXmlHelper {
         }
     }
 
-    private static Document prepareComment(GeneralComment comment) {
-        Element commentNode = new Element("generalCommentData");
-        Document doc = new Document(commentNode);
-        String date = commentOutTimeFormat.format(comment.getCreateDate());
-        System.out.println("date = " + date);
+    private static void prepareComment(GeneralComment comment, Element commentNode) {
+        String date = commentTimeFormat.format(comment.getCreateDate());
         String strangeDate = date.substring(0, date.length() - 2);
         strangeDate += ":00";
-        System.out.println("strangeDate = " + strangeDate);
         addTag(commentNode, "createDate", strangeDate);
         addTag(commentNode, "user", comment.getUser());
         addTag(commentNode, "defectRaised", Boolean.toString(comment.isDefectRaised()));
@@ -304,17 +300,10 @@ public final class CrucibleRestXmlHelper {
         addTag(commentNode, "deleted", Boolean.toString(comment.isDeleted()));
         addTag(commentNode, "draft", Boolean.toString(comment.isDraft()));
         addTag(commentNode, "message", comment.getMessage());
-/*
-        Element permIdElement = new Element("permaId");
-        commentNode.getContent().add(permIdElement);
-        addTag(permIdElement, "id", comment.getPermId().getId());
-*/
         Element metrics = new Element("metrics");
         commentNode.getContent().add(metrics);
         Element replies = new Element("replies");
         commentNode.getContent().add(replies);
-
-        return doc;
     }
 
     public static GeneralCommentBean parseGeneralCommentNode(Element reviewCommentNode) {
@@ -324,7 +313,10 @@ public final class CrucibleRestXmlHelper {
     }
 
     public static Document prepareGeneralComment(GeneralComment comment) {
-        return prepareComment(comment);
+        Element commentNode = new Element("generalCommentData");
+        Document doc = new Document(commentNode);
+        prepareComment(comment, commentNode);
+        return doc;
     }
 
     public static VersionedCommentBean parseVersionedCommentNode(Element reviewCommentNode) {
@@ -465,8 +457,7 @@ public final class CrucibleRestXmlHelper {
     }
 
 
-    private static SimpleDateFormat commentTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSz");
-    private static SimpleDateFormat commentOutTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+    private static SimpleDateFormat commentTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
     private static Date parseCommentTime(String date) {
         try {

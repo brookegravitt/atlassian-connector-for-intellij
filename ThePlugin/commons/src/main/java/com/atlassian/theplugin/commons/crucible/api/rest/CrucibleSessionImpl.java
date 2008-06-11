@@ -441,7 +441,37 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
 	}
 
-	public List<VersionedComment> getVersionedComments(PermId id) throws RemoteApiException {
+    public GeneralComment addGeneralComment(PermId id, GeneralComment comment) throws RemoteApiException {
+		if (!isLoggedIn()) {
+			throw new IllegalStateException("Calling method without calling login() first");
+		}
+
+        Document request = CrucibleRestXmlHelper.prepareGeneralComment(comment);
+        printXml(request);
+
+        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + GET_REVIEW_COMMENTS;
+        System.out.println("requestUrl = " + requestUrl);
+        try {
+            Document doc = retrievePostResponse(requestUrl, request);
+
+			XPath xpath = XPath.newInstance("generalCommentData");
+			@SuppressWarnings("unchecked")
+			List<Element> elements = xpath.selectNodes(doc);
+
+			if (elements != null && !elements.isEmpty()) {
+				for (Element element : elements) {
+					return CrucibleRestXmlHelper.parseGeneralCommentNode(element);
+				}
+			}
+            return null;
+        } catch (IOException e) {
+			throw new RemoteApiException(e.getMessage(), e);
+		} catch (JDOMException e) {
+			throw new RemoteApiException("Server returned malformed response", e);
+		}
+    }
+
+    public List<VersionedComment> getVersionedComments(PermId id) throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
