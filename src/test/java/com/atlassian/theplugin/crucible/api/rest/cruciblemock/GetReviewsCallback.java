@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.crucible.api.rest.cruciblemock;
 
-import com.atlassian.theplugin.commons.crucible.api.State;
+import com.atlassian.theplugin.commons.crucible.api.model.State;
 import static junit.framework.Assert.assertTrue;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 import org.jdom.Document;

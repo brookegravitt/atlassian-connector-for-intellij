@@ -162,6 +162,7 @@
 		</action>
 		<action id="ThePlugin.Crucible.RefreshStatus" class="com.atlassian.theplugin.idea.action.crucible.RefreshCruciblePanelAction" text="Refresh" description="Refresh" icon="/actions/sync.png" />
         <action id="ThePlugin.Crucible.ViewReview" class="com.atlassian.theplugin.idea.action.crucible.ViewReviewAction" text="View review" icon="/icons/crucible-blue-16.png" />
+        <action id="ThePlugin.Crucible.GetComments" class="com.atlassian.theplugin.idea.action.crucible.GetCommentsAction" text="GetComments" icon="/icons/crucible-blue-16.png" />
 
         <action id="ThePlugin.Crucible.ToReviewAction" class="com.atlassian.theplugin.idea.action.crucible.ToReviewAction" text="To review" icon="/actions/find.png" />
         <action id="ThePlugin.Crucible.ToReviewComboAction" class="com.atlassian.theplugin.idea.action.crucible.ToReviewAction" text="To review" />
@@ -247,12 +248,14 @@
         <group id="ThePlugin.CrucibleReviewToolBar" popup="false" text="">
             <reference id="ThePlugin.Crucible.ViewReview" />            
             <separator />
+            <reference id="ThePlugin.Crucible.GetComments" />
         </group>
 
 
         <group id="ThePlugin.Crucible.ReviewPopupMenu" popup="true">
             <reference id="ThePlugin.Crucible.ViewReview" />
             <separator />
+            <reference id="ThePlugin.Crucible.GetComments" />            
         </group>
 
 		<group id="ThePlugin.Crucible.FilterEditToolBar" popup="false">

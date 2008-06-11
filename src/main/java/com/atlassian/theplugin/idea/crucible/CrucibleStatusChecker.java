@@ -23,8 +23,8 @@ import com.atlassian.theplugin.commons.StatusListener;
 import com.atlassian.theplugin.commons.configuration.CrucibleConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.crucible.*;
-import com.atlassian.theplugin.commons.crucible.api.CustomFilterData;
-import com.atlassian.theplugin.commons.crucible.api.PredefinedFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
+import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.DateUtil;
@@ -90,7 +90,7 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
     private void doRunCrucible15() {
         try {
             // collect build info from each server
-            final Collection<ReviewDataInfo> reviews = new ArrayList<ReviewDataInfo>();
+            final Collection<ReviewInfo> reviews = new ArrayList<ReviewInfo>();
             for (Server server : retrieveEnabledCrucibleServers()) {
                 try {
                     PluginUtil.getLogger().debug("Crucible: updating status for server: "
@@ -124,10 +124,10 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
     private void doRunCrucible16() {
         try {
             // collect review info from each server and each required filter
-            final Map<PredefinedFilter, List<ReviewDataInfo>> reviews
-                    = new HashMap<PredefinedFilter, List<ReviewDataInfo>>();
-            final Map<String, List<ReviewDataInfo>> customFilterReviews
-                    = new HashMap<String, List<ReviewDataInfo>>();
+            final Map<PredefinedFilter, List<ReviewInfo>> reviews
+                    = new HashMap<PredefinedFilter, List<ReviewInfo>>();
+            final Map<String, List<ReviewInfo>> customFilterReviews
+                    = new HashMap<String, List<ReviewInfo>>();
 
             ThePluginProjectComponent pcomp
                     = IdeaHelper.getCurrentProject().getComponent(ThePluginProjectComponent.class);
@@ -147,10 +147,10 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
                             PluginUtil.getLogger().debug("Crucible: updating status for server: "
                                     + server.getUrlString() + ", filter type: " + filter);
 
-                            List<ReviewDataInfo> review = crucibleServerFacade.getReviewsForFilter(server, filter);
+                            List<ReviewInfo> review = crucibleServerFacade.getReviewsForFilter(server, filter);
 
                             if (!reviews.containsKey(filter)) {
-                                List<ReviewDataInfo> list = new ArrayList<ReviewDataInfo>();
+                                List<ReviewInfo> list = new ArrayList<ReviewInfo>();
                                 reviews.put(filter, list);
                             }
                             reviews.get(filter).addAll(review);
@@ -169,7 +169,7 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
             if (!projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().isEmpty()) {
                 for (String s : projectConfiguration
                         .getCrucibleConfiguration().getCrucibleFilters().getManualFilter().keySet()) {
-                    CustomFilterData filter = projectConfiguration
+                    CustomFilterBean filter = projectConfiguration
                             .getCrucibleConfiguration().getCrucibleFilters().getManualFilter().get(s);
                     if (filter.isEnabled()) {
                         for (Server server : retrieveEnabledCrucibleServers()) {
@@ -177,11 +177,11 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
                                 try {
                                     PluginUtil.getLogger().debug("Crucible: updating status for server: "
                                             + server.getUrlString() + ", custom filter");
-                                    List<ReviewDataInfo> customFilter
+                                    List<ReviewInfo> customFilter
                                             = crucibleServerFacade.getReviewsForCustomFilter(server, filter);
 
                                     if (!customFilterReviews.containsKey(filter.getTitle())) {
-                                        List<ReviewDataInfo> list = new ArrayList<ReviewDataInfo>();
+                                        List<ReviewInfo> list = new ArrayList<ReviewInfo>();
                                         customFilterReviews.put(filter.getTitle(), list);
                                     }
                                     customFilterReviews.get(filter.getTitle()).addAll(customFilter);

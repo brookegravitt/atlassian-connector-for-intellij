@@ -36,7 +36,7 @@ import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.configuration.ProductServerConfiguration;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
-import com.atlassian.theplugin.commons.crucible.api.*;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.intellij.ide.BrowserUtil;
@@ -296,9 +296,9 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
     }
 
     private static final class ProjectComboBoxItem {
-        private final ProjectData project;
+        private final Project project;
 
-        private ProjectComboBoxItem(ProjectData project) {
+        private ProjectComboBoxItem(Project project) {
             this.project = project;
         }
 
@@ -306,15 +306,15 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
             return project.getKey();
         }
 
-        public ProjectData getProject() {
+        public Project getProject() {
             return project;
         }
     }
 
     private static final class RepositoryComboBoxItem {
-        private final RepositoryData repo;
+        private final Repository repo;
 
-        private RepositoryComboBoxItem(RepositoryData repo) {
+        private RepositoryComboBoxItem(Repository repo) {
             this.repo = repo;
         }
 
@@ -322,15 +322,15 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
             return repo.getName();
         }
 
-        public RepositoryData getRepository() {
+        public Repository getRepository() {
             return repo;
         }
     }
 
     private static final class UserComboBoxItem {
-        private final UserData user;
+        private final User user;
 
-        private UserComboBoxItem(UserData user) {
+        private UserComboBoxItem(User user) {
             this.user = user;
         }
 
@@ -338,7 +338,7 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
             return user.getDisplayName();
         }
 
-        public UserData getUser() {
+        public User getUser() {
             return user;
         }
     }
@@ -370,9 +370,9 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 
         new Thread(new Runnable() {
             public void run() {
-                List<ProjectData> projects = new ArrayList<ProjectData>();
-                List<RepositoryData> repositories = new ArrayList<RepositoryData>();
-                List<UserData> users = new ArrayList<UserData>();
+                List<Project> projects = new ArrayList<Project>();
+                List<Repository> repositories = new ArrayList<Repository>();
+                List<User> users = new ArrayList<User>();
 
                 try {
                     projects = crucibleServerFacade.getProjects(server);
@@ -383,9 +383,9 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
                 } catch (ServerPasswordNotProvidedException e) {
                     // nothing can be done here
                 }
-                final List<ProjectData> finalProjects = projects;
-                final List<RepositoryData> finalRepositories = repositories;
-                final List<UserData> finalUsers = users;
+                final List<Project> finalProjects = projects;
+                final List<Repository> finalRepositories = repositories;
+                final List<User> finalUsers = users;
                 EventQueue.invokeLater(new Runnable() {
                     public void run() {
                         updateServerRelatedCombos(server, finalProjects, finalRepositories, finalUsers);
@@ -397,22 +397,22 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 
     private void updateServerRelatedCombos(
             Server server,
-            List<ProjectData> projects,
-            List<RepositoryData> repositories,
-            List<UserData> users) {
+            List<Project> projects,
+            List<Repository> repositories,
+            List<User> users) {
         if (projects.isEmpty()) {
             projectsComboBox.setEnabled(false);
             projectsComboBox.addItem("No projects");
             getOKAction().setEnabled(false);
         } else {
-            for (ProjectData project : projects) {
+            for (Project project : projects) {
                 projectsComboBox.addItem(new ProjectComboBoxItem(project));
             }
             getOKAction().setEnabled(true);
         }
         repoComboBox.addItem("");
         if (!repositories.isEmpty()) {
-            for (RepositoryData repo : repositories) {
+            for (Repository repo : repositories) {
                 repoComboBox.addItem(new RepositoryComboBoxItem(repo));
             }
             getOKAction().setEnabled(true);
@@ -422,7 +422,7 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
         if (!users.isEmpty()) {
             int indexToSelect = -1;
             int index = 0;
-            for (UserData user : users) {
+            for (User user : users) {
                 authorComboBox.addItem(new UserComboBoxItem(user));
                 moderatorComboBox.addItem(new UserComboBoxItem(user));
                 if (!user.getUserName().equals(server.getUserName())) {
@@ -453,10 +453,10 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
         return getRootComponent();
     }
 
-    private class ReviewDataProvider implements ReviewData {
+    private class ReviewProvider implements Review {
         private final Server server;
 
-        public ReviewDataProvider(Server server) {
+        public ReviewProvider(Server server) {
             this.server = server;
         }
 
@@ -512,6 +512,10 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
             return null;
         }
 
+        public int getMetricsVersion() {
+            return 0;            
+        }
+
     }
 
     protected void doOKAction() {
@@ -519,15 +523,15 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 
         if (selectedItem != null) {
             final Server server = selectedItem.getServer();
-            ReviewData reviewData = new ReviewDataProvider(server);
+            Review review = new ReviewProvider(server);
 
             try {
-                ReviewData draftReviewData = null;
+                Review draftReview = null;
                 switch (mode) {
                     case PATCH:
-                        draftReviewData =
+                        draftReview =
                                 crucibleServerFacade.createReviewFromPatch(
-                                        server, reviewData, patchText);
+                                        server, review, patchText);
                         break;
                     case REVISION:
                         List<String> revisions = new ArrayList<String>();
@@ -537,9 +541,9 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
                                 break;
                             }
                         }
-                        draftReviewData =
+                        draftReview =
                                 crucibleServerFacade.createReviewFromRevision(
-                                        server, reviewData, revisions);
+                                        server, review, revisions);
                         break;
                     case EMPTY:
                         break;
@@ -553,16 +557,16 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
                     }
                 }
                 if (!users.isEmpty()) {
-                    crucibleServerFacade.addReviewers(server, draftReviewData.getPermaId(), users);
+                    crucibleServerFacade.addReviewers(server, draftReview.getPermaId(), users);
                 }
 
                 if (!leaveAsDraftCheckBox.isSelected()) {
-                    crucibleServerFacade.approveReview(server, draftReviewData.getPermaId());
+                    crucibleServerFacade.approveReview(server, draftReview.getPermaId());
                 }
                 if (openBrowserToCompleteCheckBox.isSelected()) {
                     BrowserUtil.launchBrowser(server.getUrlString()
                             + "/cru/"
-                            + draftReviewData.getPermaId().getId());
+                            + draftReview.getPermaId().getId());
                 }
 
                 super.doOKAction();

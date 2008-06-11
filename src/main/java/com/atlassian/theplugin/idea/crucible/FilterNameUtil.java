@@ -17,10 +17,6 @@
 package com.atlassian.theplugin.idea.crucible;
 
 
-import com.atlassian.theplugin.commons.Server;
-import com.atlassian.theplugin.commons.crucible.api.CustomFilterData;
-
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Pattern;
