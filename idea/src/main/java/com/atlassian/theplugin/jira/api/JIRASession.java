@@ -27,7 +27,8 @@ public interface JIRASession {
 
 	void logout();
 
-	void logWork(JIRAIssue issue, String timeSpent, Calendar startDate, String comment) throws RemoteApiException;
+	void logWork(JIRAIssue issue, String timeSpent, Calendar startDate, String comment, boolean updateEstimate)
+			throws RemoteApiException;
 
 	void addComment(JIRAIssue issue, String comment) throws RemoteApiException;
 

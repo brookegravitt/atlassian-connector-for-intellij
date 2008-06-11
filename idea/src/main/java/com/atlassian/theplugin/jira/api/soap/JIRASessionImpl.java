@@ -120,13 +120,18 @@ public class JIRASessionImpl implements JIRASession {
 		}
 	}
 
-	public void logWork(JIRAIssue issue, String timeSpent, Calendar startDate, String comment) throws RemoteApiException {
+	public void logWork(JIRAIssue issue, String timeSpent, Calendar startDate, String comment, boolean updateEstimate)
+			throws RemoteApiException {
 		RemoteWorklog workLog = new RemoteWorklog();
 		workLog.setStartDate(startDate);
 		workLog.setTimeSpent(timeSpent);
 		workLog.setComment(comment);
 		try {
-			service.addWorklogAndAutoAdjustRemainingEstimate(token, issue.getKey(), workLog);
+			if (updateEstimate) {
+				service.addWorklogAndAutoAdjustRemainingEstimate(token, issue.getKey(), workLog);
+			} else {
+				service.addWorklogAndRetainRemainingEstimate(token, issue.getKey(), workLog);
+			}
 		} catch (RemoteException e) {
 			throw new RemoteApiException(e.toString(), e);
 		}
