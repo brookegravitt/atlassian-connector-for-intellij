@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.commons.crucible;
+package com.atlassian.theplugin.commons.crucible.api.model;
 
-import com.atlassian.theplugin.commons.Server;
-import com.atlassian.theplugin.commons.crucible.api.ReviewData;
-import com.atlassian.theplugin.commons.crucible.api.UserData;
+public interface VersionedComment extends GeneralComment {
+	PermId getPermId();
 
-import java.util.List;
+	ReviewItemId getReviewItemId();
 
-public interface ReviewDataInfo extends ReviewData {
-	String getReviewUrl();
+	boolean isToLineInfo();
 
-	List<UserData> getReviewers();
+	int getToStartLine();
 
-	Server getServer();
+	int getToEndLine();
+
+	boolean isFromLineInfo();	
+
+	int getFromStartLine();
+
+	int getFromEndLine();	
 }

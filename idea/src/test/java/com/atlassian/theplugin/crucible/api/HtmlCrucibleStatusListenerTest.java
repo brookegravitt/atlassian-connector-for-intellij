@@ -17,15 +17,14 @@
 package com.atlassian.theplugin.crucible.api;
 
 import com.atlassian.theplugin.commons.configuration.ServerBean;
-import com.atlassian.theplugin.commons.crucible.ReviewDataInfo;
-import com.atlassian.theplugin.commons.crucible.ReviewDataInfoImpl;
+import com.atlassian.theplugin.commons.crucible.ReviewInfoImpl;
 import com.atlassian.theplugin.commons.Server;
-import com.atlassian.theplugin.commons.crucible.CrucibleStatusDisplay;
-import com.atlassian.theplugin.commons.crucible.HtmlCrucibleStatusListener;
-import com.atlassian.theplugin.commons.crucible.api.PermIdBean;
-import com.atlassian.theplugin.commons.crucible.api.ReviewDataBean;
-import com.atlassian.theplugin.commons.crucible.api.State;
-import com.atlassian.theplugin.commons.crucible.api.UserData;
+import com.atlassian.theplugin.commons.crucible.ReviewInfo;
+import com.atlassian.theplugin.commons.crucible.*;
+import com.atlassian.theplugin.commons.crucible.api.model.PermIdBean;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewBean;
+import com.atlassian.theplugin.commons.crucible.api.model.State;
+import com.atlassian.theplugin.commons.crucible.api.model.User;
 import com.gargoylesoftware.htmlunit.StringWebResponse;
 import com.gargoylesoftware.htmlunit.TopLevelWindow;
 import com.gargoylesoftware.htmlunit.WebClient;
@@ -88,7 +87,7 @@ public class HtmlCrucibleStatusListenerTest extends TestCase {
 	}
 
 	public void testEmptyStatusCollection() throws Exception {
-		testedListener.updateReviews(new ArrayList<ReviewDataInfo>());
+		testedListener.updateReviews(new ArrayList<ReviewInfo>());
 		assertEquals(1, output.count);
         assertEquals(
                 "<html>" + HtmlCrucibleStatusListener.BODY_WITH_STYLE + "No reviews at this time.</body></html>",
@@ -96,7 +95,7 @@ public class HtmlCrucibleStatusListenerTest extends TestCase {
 	}
 
 	public void testSingleSuccessResult() throws Exception {
-		Collection<ReviewDataInfo> reviewInfo = new ArrayList<ReviewDataInfo>();
+		Collection<ReviewInfo> reviewInfo = new ArrayList<ReviewInfo>();
 
 		reviewInfo.add(generateReviewDataInfo("1"));
 		testedListener.updateReviews(reviewInfo);
@@ -158,8 +157,8 @@ public class HtmlCrucibleStatusListenerTest extends TestCase {
         return result.toString();
     }
 
-	public static ReviewDataInfo generateReviewDataInfo(final String suffix) {
-		ReviewDataBean rd = new ReviewDataBean();
+	public static ReviewInfo generateReviewDataInfo(final String suffix) {
+		ReviewBean rd = new ReviewBean();
 		rd.setAuthor(DEFAULT_AUTHOR + suffix);
 		rd.setCreator(DEFAULT_CREATOR);
 		rd.setDescription(DEFAULT_DESCRIPTION);
@@ -173,7 +172,7 @@ public class HtmlCrucibleStatusListenerTest extends TestCase {
 		rd.setState(DEFAULT_STATE);
 
 		ArrayList reviewers = new ArrayList<String>();
-		reviewers.add(new UserData() {
+		reviewers.add(new User() {
             public String getUserName() {
                 return DEFAULT_REVIEW_NAME + suffix;
             }
@@ -184,7 +183,7 @@ public class HtmlCrucibleStatusListenerTest extends TestCase {
         });
 
 
-		ReviewDataInfoImpl rdi = new ReviewDataInfoImpl(rd, reviewers, server);
+		ReviewInfoImpl rdi = new ReviewInfoImpl(rd, reviewers, server);
 		return rdi;
 	}
 

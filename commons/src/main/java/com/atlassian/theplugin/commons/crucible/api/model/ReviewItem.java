@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.commons.crucible.api;
+package com.atlassian.theplugin.commons.crucible.api.model;
 
-/**
- * Created by IntelliJ IDEA.
- * User: mwent
- * Date: 2008-02-15
- * Time: 13:43:40
- * To change this template use File | Settings | File Templates.
- */
-public interface PermId {
-	String getId();
+public interface ReviewItem {
+	PermId getPermId();	
+
+	String getRepositoryName();
+
+	String getFromPath();
+
+	String getFromRevision();
+
+	String getToPath();
+
+	String getToRevision();
 }

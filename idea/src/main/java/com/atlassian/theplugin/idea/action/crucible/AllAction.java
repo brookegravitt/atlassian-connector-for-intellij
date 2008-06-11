@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.action.crucible;
 
-import com.atlassian.theplugin.commons.crucible.api.PredefinedFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 
 public class AllAction extends PredefinedFilterAction {
     public AllAction() {

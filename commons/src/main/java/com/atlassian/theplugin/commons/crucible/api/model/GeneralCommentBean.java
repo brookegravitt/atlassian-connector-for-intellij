@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.commons.crucible.api;
+package com.atlassian.theplugin.commons.crucible.api.model;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import com.jniwrapper.util.SoftCache;
+
+import java.util.*;
 
 public class GeneralCommentBean implements GeneralComment {
     private String message = null;
@@ -31,9 +31,11 @@ public class GeneralCommentBean implements GeneralComment {
 	private Date createDate = new Date();
 
 	private List<GeneralComment> replies = new ArrayList<GeneralComment>();
+    private Map<String, CustomField> customFields;
 
-	public GeneralCommentBean() {
-	}
+    public GeneralCommentBean() {
+        customFields = new HashMap<String, CustomField>();
+    }
 
 	public String getMessage() {
 		return message;
@@ -111,4 +113,8 @@ public class GeneralCommentBean implements GeneralComment {
 	public void addReply(GeneralComment comment) {
 		replies.add(comment);
 	}
+
+    public Map<String, CustomField> getCustomFields() {
+        return customFields;
+    }
 }

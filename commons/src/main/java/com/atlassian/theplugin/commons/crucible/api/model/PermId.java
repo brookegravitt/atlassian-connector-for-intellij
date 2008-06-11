@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.commons.crucible.api;
+package com.atlassian.theplugin.commons.crucible.api.model;
 
-public class ReviewItemIdBean implements ReviewItemId {
-	private String id;
-
-	public ReviewItemIdBean() {
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
+/**
+ * Created by IntelliJ IDEA.
+ * User: mwent
+ * Date: 2008-02-15
+ * Time: 13:43:40
+ * To change this template use File | Settings | File Templates.
+ */
+public interface PermId {
+	String getId();
 }

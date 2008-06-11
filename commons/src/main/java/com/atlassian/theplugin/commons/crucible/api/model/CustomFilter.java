@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.commons.crucible.api;
+package com.atlassian.theplugin.commons.crucible.api.model;
 
-public interface ReviewData {
-	String getAuthor();
+public interface CustomFilter {
+    String getTitle();    
 
-	String getCreator();
+    String[] getState();
 
-	String getDescription();
+    String getAuthor();
 
-	String getModerator();
+    String getModerator();
 
-	String getName();
+    String getCreator();
 
-	PermId getParentReview();
+    String getReviewer();
 
-	PermId getPermaId();
+    boolean isComplete();
 
-	String getProjectKey();
+    boolean isAllReviewersComplete();
 
-	String getRepoName();
+    String getProjectKey();
 
-	State getState();
+    boolean isOrRoles();
 }

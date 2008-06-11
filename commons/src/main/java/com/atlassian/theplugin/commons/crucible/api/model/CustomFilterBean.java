@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.commons.crucible.api;
-
-import org.joda.time.DateTime;
+package com.atlassian.theplugin.commons.crucible.api.model;
 
 import java.util.Arrays;
 
 
-public class CustomFilterData implements CustomFilter {
+public class CustomFilterBean implements CustomFilter {
 	private long serverUid = 0;    
     private String title;
     private String[] state;
@@ -45,7 +43,7 @@ public class CustomFilterData implements CustomFilter {
             return false;
         }
 
-		CustomFilterData that = (CustomFilterData) o;
+		CustomFilterBean that = (CustomFilterBean) o;
 
 		if (uid != that.uid) {
             return false;
@@ -81,7 +79,7 @@ public class CustomFilterData implements CustomFilter {
 		this.serverUid = serverUid;
 	}
 
-	public CustomFilterData() {
+	public CustomFilterBean() {
 	}
 
     public String getTitle() {

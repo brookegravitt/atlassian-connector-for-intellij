@@ -16,10 +16,10 @@
 
 package com.atlassian.theplugin.crucible;
 
-import com.atlassian.theplugin.commons.crucible.api.PermId;
-import com.atlassian.theplugin.commons.crucible.api.ReviewData;
+import com.atlassian.theplugin.commons.crucible.api.model.PermId;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.Server;
-import com.atlassian.theplugin.commons.crucible.ReviewDataInfoImpl;
+import com.atlassian.theplugin.commons.crucible.ReviewInfoImpl;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -63,7 +63,7 @@ public class ReviewDataInfoImplTest extends TestCase {
 				.andReturn("http://url//")
 				.andReturn("http://url/////");
 
-		ReviewData rd = EasyMock.createMock(ReviewData.class);
+		Review rd = EasyMock.createMock(Review.class);
 		rd.getPermaId();
 		EasyMock.expectLastCall().andReturn(new PermId() {
 			public String getId() {
@@ -74,7 +74,7 @@ public class ReviewDataInfoImplTest extends TestCase {
 		EasyMock.replay(server);
 		EasyMock.replay(rd);
 
-		ReviewDataInfoImpl tested = new ReviewDataInfoImpl(rd, null, server);
+		ReviewInfoImpl tested = new ReviewInfoImpl(rd, null, server);
 		assertEquals("http://url/cru/ID", tested.getReviewUrl());
 		assertEquals("http://url/cru/ID", tested.getReviewUrl());
 		assertEquals("http://url/cru/ID", tested.getReviewUrl());
@@ -83,14 +83,14 @@ public class ReviewDataInfoImplTest extends TestCase {
 
 	public void testEqualsAndHashcode() throws Exception {
 		Server server = EasyMock.createMock(Server.class);
-		ReviewData rd1 = EasyMock.createMock(ReviewData.class);
+		Review rd1 = EasyMock.createMock(Review.class);
 		rd1.getPermaId();
 		EasyMock.expectLastCall().andReturn(new PermId() {
 			public String getId() {
 				return new String("ID");
 			}
 		}).anyTimes();
-		ReviewData rd2 = EasyMock.createMock(ReviewData.class);
+		Review rd2 = EasyMock.createMock(Review.class);
 		rd2.getPermaId();
 		EasyMock.expectLastCall().andReturn(new PermId() {
 			public String getId() {
@@ -102,23 +102,23 @@ public class ReviewDataInfoImplTest extends TestCase {
 		EasyMock.replay(rd1);
 		EasyMock.replay(rd2);
 
-		ReviewDataInfoImpl r1 = new ReviewDataInfoImpl(rd1, null, server);
-		ReviewDataInfoImpl r2 = new ReviewDataInfoImpl(rd2, null, server);
+		ReviewInfoImpl r1 = new ReviewInfoImpl(rd1, null, server);
+		ReviewInfoImpl r2 = new ReviewInfoImpl(rd2, null, server);
 
 		assertEquals(r1, r1);
 
 		assertFalse(r1.equals(null));
 		assertFalse(r1.equals(r2));
 
-		r2 = new ReviewDataInfoImpl(rd1, null, null);
+		r2 = new ReviewInfoImpl(rd1, null, null);
 		assertFalse(r1.equals(r2));
 
-		r2 = new ReviewDataInfoImpl(rd1, null, server);
+		r2 = new ReviewInfoImpl(rd1, null, server);
 		assertEquals(r1, r2);
 		assertEquals(r1.hashCode(), r2.hashCode());
 
-		r1 = new ReviewDataInfoImpl(rd1, null, null);
-		r2 = new ReviewDataInfoImpl(rd1, null, null);
+		r1 = new ReviewInfoImpl(rd1, null, null);
+		r2 = new ReviewInfoImpl(rd1, null, null);
 
 		assertEquals(r1, r2);
 		assertEquals(r1.hashCode(), r2.hashCode());
