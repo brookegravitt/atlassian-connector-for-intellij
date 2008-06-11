@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.configuration;
 
-import com.atlassian.theplugin.commons.crucible.api.rest.CrucibleFiltersBean;
+import com.atlassian.theplugin.commons.crucible.CrucibleFiltersBean;
 
 public class CrucibleProjectConfiguration {
 	private ProjectToolWindowTableConfiguration tableConfiguration =
