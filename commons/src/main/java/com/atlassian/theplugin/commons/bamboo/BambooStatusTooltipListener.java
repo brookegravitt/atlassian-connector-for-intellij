@@ -28,7 +28,7 @@ import java.util.Map;
 /**
  * This listener fires notification tooltip if bamboo build has changes status between SUCCEED and FAILED
  */
-public class BambooStatusListenerImpl implements BambooStatusListener {
+public class BambooStatusTooltipListener implements BambooStatusListener {
 
 
 	private Map<String, BambooBuild> prevBuildStatuses = new HashMap<String, BambooBuild>(0);
@@ -42,7 +42,7 @@ public class BambooStatusListenerImpl implements BambooStatusListener {
 	 * @param display reference to display component
 	 * @param pluginConfiguration global plugin configuration
 	 */
-	public BambooStatusListenerImpl(BambooStatusDisplay display, PluginConfiguration pluginConfiguration) {
+	public BambooStatusTooltipListener(BambooStatusDisplay display, PluginConfiguration pluginConfiguration) {
 		this.display = display;
 		this.pluginConfiguration = pluginConfiguration;
 	}
@@ -86,7 +86,7 @@ public class BambooStatusListenerImpl implements BambooStatusListener {
 											&&
 										tooltipConfigOption == BambooTooltipOption.ALL_FAULIRES_AND_FIRST_SUCCESS)) {
 
-									// build has changes status from SUCCEED to FAILED
+									// build has changed status from SUCCEED to FAILED
 									// or this is new build and still failed
 									fireTooltip = true;
 									status = BuildStatus.BUILD_FAILED;
@@ -109,7 +109,7 @@ public class BambooStatusListenerImpl implements BambooStatusListener {
 
 							if (prevBuildStatuses.containsKey(currentBuild.getBuildKey())) {
 								if (prevBuildStatuses.get(currentBuild.getBuildKey()).getStatus() == BuildStatus.BUILD_FAILED) {
-									// build has changes status from FAILED to SUCCEED
+									// build has changed status from FAILED to SUCCEED
 									fireTooltip = true;
 									if (status == null) {
 										status = BuildStatus.BUILD_SUCCEED;
