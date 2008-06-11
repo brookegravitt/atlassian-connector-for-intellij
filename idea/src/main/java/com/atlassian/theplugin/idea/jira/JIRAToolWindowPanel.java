@@ -706,7 +706,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
                         cal.setTime(workLogCreate.getStartDate());
 						Server server = IdeaHelper.getCurrentJIRAServer().getServer();
 						jiraServerFacade.logWork(server, issue, workLogCreate.getTimeSpentString(),
-                                cal, workLogCreate.getComment());
+                                cal, workLogCreate.getComment(), !workLogCreate.getLeaveRemainingUnchanged());
 						if (workLogCreate.isStopProgressSelected()) {
 							setStatusMessage("Stopping work for issue " + issue.getKey() + "...");
 							jiraServerFacade.progressWorkflowAction(server, issue, workLogCreate.getInProgressAction());
