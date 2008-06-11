@@ -65,6 +65,9 @@ public interface CrucibleServerFacade extends ProductServerFacade {
 	List<GeneralComment> getComments(Server server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
+    GeneralComment addGeneralComment(Server server, PermId permId, GeneralComment comment) 
+            throws RemoteApiException, ServerPasswordNotProvidedException;
+
     List<User> getUsers(Server server)
             throws RemoteApiException, ServerPasswordNotProvidedException;
 
