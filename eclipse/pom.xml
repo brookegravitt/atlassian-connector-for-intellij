@@ -106,6 +106,17 @@
             <artifactId>log4j</artifactId>
             <version>1.2.12</version>
         </dependency>
+        <dependency>
+        	<groupId>jaxen</groupId>
+        	<artifactId>jaxen</artifactId>
+        	<version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.core</groupId>
+            <artifactId>jobs</artifactId>
+            <version>3.3.1</version>
+            <classifier>R33x_v20070709</classifier>
+        </dependency>
     </dependencies>
     <profiles>
         <profile>

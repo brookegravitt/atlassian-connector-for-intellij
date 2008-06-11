@@ -32,12 +32,14 @@ import org.osgi.framework.BundleContext;
 
 import com.atlassian.theplugin.commons.SchedulableChecker;
 import com.atlassian.theplugin.commons.bamboo.BambooStatusChecker;
+import com.atlassian.theplugin.commons.bamboo.BambooStatusTooltipListener;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.eclipse.EclipseActionScheduler;
 import com.atlassian.theplugin.eclipse.EclipseLogger;
 import com.atlassian.theplugin.eclipse.MissingPasswordHandler;
 import com.atlassian.theplugin.eclipse.util.PluginUtil;
+import com.atlassian.theplugin.eclipse.view.bamboo.BambooStatusTooltip;
 
 
 /**
@@ -62,6 +64,7 @@ public class Activator extends AbstractUIPlugin {
 	private Collection<TimerTask> scheduledComponents = new ArrayList<TimerTask>();
 
 	private Collection<SchedulableChecker> schedulableCheckers = new ArrayList<SchedulableChecker>();
+
 	
 	/**
 	 * The constructor
@@ -106,6 +109,7 @@ public class Activator extends AbstractUIPlugin {
 		// start timer/checkers
 		startTimer();
 		//timer.schedule(bambooChecker.newTimerTask(), 0, BAMBOO_CHECKER_POLLING);
+		
 	}
 
 	public void reloadConfiguration() {
