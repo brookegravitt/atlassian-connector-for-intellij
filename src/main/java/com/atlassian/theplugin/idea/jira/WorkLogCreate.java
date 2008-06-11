@@ -60,7 +60,11 @@ public class WorkLogCreate extends DialogWrapper {
     private JCheckBox stopProgress;
     private JLabel stopProgressLabel;
     private JTextField timeSpentField;
-    private boolean haveIssueStopProgressInfo = false;
+	private JRadioButton btnLeaveUnchanged;
+	private JRadioButton btnAutoUpdate;
+	private JRadioButton btnUpdateManually;
+	private JTextField remainingEstimateField;
+	private boolean haveIssueStopProgressInfo = false;
     private JIRAAction inProgressAction;
     JIRAServerFacade facade;
     private Date endTime;
@@ -376,7 +380,19 @@ public class WorkLogCreate extends DialogWrapper {
         return inProgressAction;
     }
 
-    protected JComponent createCenterPanel() {
+	public boolean getAutoUpdateRemaining() {
+		return btnAutoUpdate.isSelected();
+	}
+
+	public boolean getLeaveRemainingUnchanged() {
+		return btnLeaveUnchanged.isSelected();
+	}
+
+	public boolean getUpdateremainingManually() {
+		return btnUpdateManually.isSelected();
+	}
+	
+	protected JComponent createCenterPanel() {
         return contentPane;
     }
 
