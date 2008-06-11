@@ -18,8 +18,8 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListener;
 import com.atlassian.theplugin.commons.crucible.CrucibleStatusListener;
-import com.atlassian.theplugin.commons.crucible.ReviewDataInfo;
-import com.atlassian.theplugin.commons.crucible.api.PredefinedFilter;
+import com.atlassian.theplugin.commons.crucible.ReviewInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.idea.GenericHyperlinkListener;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PluginToolWindow;
@@ -39,9 +39,9 @@ import java.util.List;
  */
 public class CrucibleNewReviewNotifier implements CrucibleStatusListener {
     // Crucible 1.5
-    private List<ReviewDataInfo> reviews15 = new ArrayList<ReviewDataInfo>();
+    private List<ReviewInfo> reviews15 = new ArrayList<ReviewInfo>();
     // Crucible 1.6
-    private Map<PredefinedFilter, List<ReviewDataInfo>> reviews16 = new HashMap<PredefinedFilter, List<ReviewDataInfo>>();
+    private Map<PredefinedFilter, List<ReviewInfo>> reviews16 = new HashMap<PredefinedFilter, List<ReviewInfo>>();
 
 
     private final CrucibleStatusIcon display;
@@ -54,10 +54,10 @@ public class CrucibleNewReviewNotifier implements CrucibleStatusListener {
     /*
         Works with Crucible 1.5
      */
-    public void updateReviews(Collection<ReviewDataInfo> incomingReviews) {
+    public void updateReviews(Collection<ReviewInfo> incomingReviews) {
         if (!reviews15.containsAll(incomingReviews)) {
             // a set containing the 'last new reviews15' that we saw (for painting nicely)
-            List<ReviewDataInfo> newReviews = new ArrayList<ReviewDataInfo>(incomingReviews);
+            List<ReviewInfo> newReviews = new ArrayList<ReviewInfo>(incomingReviews);
             newReviews.removeAll(reviews15);
 
             // notify display
@@ -77,7 +77,7 @@ public class CrucibleNewReviewNotifier implements CrucibleStatusListener {
                         .append(newReviews.size() != 1 ? "s" : "")
                         .append("</b></td></tr>");
 
-                for (ReviewDataInfo newReview : newReviews) {
+                for (ReviewInfo newReview : newReviews) {
                     String id = newReview.getPermaId().getId();
                     sb.append("<tr><td colspan=2 width=\"1%\" nowrap valign=top><a href=\"")
                             .append(newReview.getReviewUrl()).append("\">")
@@ -104,7 +104,7 @@ public class CrucibleNewReviewNotifier implements CrucibleStatusListener {
             }
         }
 
-        reviews15 = new ArrayList<ReviewDataInfo>(incomingReviews);
+        reviews15 = new ArrayList<ReviewInfo>(incomingReviews);
     }
 
     public void resetState() {
@@ -114,18 +114,18 @@ public class CrucibleNewReviewNotifier implements CrucibleStatusListener {
     /*
         Works with Crucible 1.6
      */
-    public void updateReviews(Map<PredefinedFilter, List<ReviewDataInfo>> incomingReviews, Map<String, List<ReviewDataInfo>> customIncomingReviews) {
+    public void updateReviews(Map<PredefinedFilter, List<ReviewInfo>> incomingReviews, Map<String, List<ReviewInfo>> customIncomingReviews) {
         if (!incomingReviews.isEmpty()) {
             StringBuilder sb = new StringBuilder("<table width=\"100%\">");
             final Project project = IdeaHelper.getCurrentProject();
 
             int newCounter = 0;
             for (PredefinedFilter predefinedFilter : incomingReviews.keySet()) {
-                List<ReviewDataInfo> incomingCategory = incomingReviews.get(predefinedFilter);
-                List<ReviewDataInfo> existingCategory = reviews16.get(predefinedFilter);
-                List<ReviewDataInfo> newForCategory = new ArrayList<ReviewDataInfo>();
+                List<ReviewInfo> incomingCategory = incomingReviews.get(predefinedFilter);
+                List<ReviewInfo> existingCategory = reviews16.get(predefinedFilter);
+                List<ReviewInfo> newForCategory = new ArrayList<ReviewInfo>();
 
-                for (ReviewDataInfo reviewDataInfo : incomingCategory) {
+                for (ReviewInfo reviewDataInfo : incomingCategory) {
                     if (existingCategory != null) {
                         if (!existingCategory.contains(reviewDataInfo)) {
                             newForCategory.add(reviewDataInfo);
@@ -143,7 +143,7 @@ public class CrucibleNewReviewNotifier implements CrucibleStatusListener {
                             .append(" ").append(predefinedFilter.getFilterName())                            
                             .append("</b></td></tr>");
 
-                    for (ReviewDataInfo newReview : newForCategory) {
+                    for (ReviewInfo newReview : newForCategory) {
                         String id = newReview.getPermaId().getId();
                         sb.append("<tr><td colspan=2 width=\"1%\" nowrap valign=top><a href=\"")
                                 .append(newReview.getReviewUrl()).append("\">")
@@ -181,7 +181,7 @@ public class CrucibleNewReviewNotifier implements CrucibleStatusListener {
 
             reviews16.clear();
             for (PredefinedFilter predefinedFilter : incomingReviews.keySet()) {
-                reviews16.put(predefinedFilter, new ArrayList<ReviewDataInfo>(incomingReviews.get(predefinedFilter)));
+                reviews16.put(predefinedFilter, new ArrayList<ReviewInfo>(incomingReviews.get(predefinedFilter)));
             }
         }
     }

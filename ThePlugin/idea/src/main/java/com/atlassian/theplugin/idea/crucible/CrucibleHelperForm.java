@@ -21,7 +21,7 @@ import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.configuration.ProductServerConfiguration;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
-import com.atlassian.theplugin.commons.crucible.api.*;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -183,9 +183,9 @@ public class CrucibleHelperForm extends DialogWrapper {
 
         new Thread(new Runnable() {
             public void run() {
-                List<ProjectData> projects = new ArrayList<ProjectData>();
-                List<RepositoryData> repositories = new ArrayList<RepositoryData>();
-                List<UserData> users = new ArrayList<UserData>();
+                List<Project> projects = new ArrayList<Project>();
+                List<Repository> repositories = new ArrayList<Repository>();
+                List<User> users = new ArrayList<User>();
 
                 try {
                     projects = crucibleServerFacade.getProjects(server);
@@ -196,7 +196,7 @@ public class CrucibleHelperForm extends DialogWrapper {
                 } catch (ServerPasswordNotProvidedException e) {
                     // nothing can be done here
                 }
-                final List<RepositoryData> finalRepositories = repositories;
+                final List<Repository> finalRepositories = repositories;
                 EventQueue.invokeLater(new Runnable() {
                     public void run() {
                         updateServerRelatedCombos(server, finalRepositories);
@@ -208,10 +208,10 @@ public class CrucibleHelperForm extends DialogWrapper {
 
     private void updateServerRelatedCombos(
             Server server,
-            List<RepositoryData> repositories) {
+            List<Repository> repositories) {
         repoComboBox.addItem("");
         if (!repositories.isEmpty()) {
-            for (RepositoryData repo : repositories) {
+            for (Repository repo : repositories) {
                 repoComboBox.addItem(new RepositoryComboBoxItem(repo));
             }
             getOKAction().setEnabled(true);
@@ -219,9 +219,9 @@ public class CrucibleHelperForm extends DialogWrapper {
     }
 
     private static final class RepositoryComboBoxItem {
-        private final RepositoryData repo;
+        private final Repository repo;
 
-        private RepositoryComboBoxItem(RepositoryData repo) {
+        private RepositoryComboBoxItem(Repository repo) {
             this.repo = repo;
         }
 
@@ -229,7 +229,7 @@ public class CrucibleHelperForm extends DialogWrapper {
             return repo.getName();
         }
 
-        public RepositoryData getRepository() {
+        public Repository getRepository() {
             return repo;
         }
     }
@@ -247,7 +247,7 @@ public class CrucibleHelperForm extends DialogWrapper {
 
     protected void doOKAction() {
         Server server = ((ServerComboBoxItem) crucibleServersComboBox.getSelectedItem()).getServer();
-        RepositoryData repo = ((RepositoryComboBoxItem) this.repoComboBox.getSelectedItem()).getRepository();
+        Repository repo = ((RepositoryComboBoxItem) this.repoComboBox.getSelectedItem()).getRepository();
         switch (mode) {
             case ADDREVISION:
                 try {
@@ -258,7 +258,7 @@ public class CrucibleHelperForm extends DialogWrapper {
                             break;
                         }
                     }
-                    ReviewData draftReviewData = crucibleServerFacade.addRevisionsToReview(server, permId, repo.getName(), revisions);
+                    Review draftReview = crucibleServerFacade.addRevisionsToReview(server, permId, repo.getName(), revisions);
                     super.doOKAction();
 
                 } catch (RemoteApiException e) {
@@ -271,7 +271,7 @@ public class CrucibleHelperForm extends DialogWrapper {
 
             case ADDPATCH:
                 try {
-                    ReviewData draftReviewData = crucibleServerFacade.addPatchToReview(server, permId, repo.getName(), patch);
+                    Review draftReview = crucibleServerFacade.addPatchToReview(server, permId, repo.getName(), patch);
                     super.doOKAction();
 
                 } catch (RemoteApiException e) {

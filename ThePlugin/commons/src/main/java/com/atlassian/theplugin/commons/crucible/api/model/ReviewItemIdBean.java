@@ -14,27 +14,19 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.commons.crucible.api;
+package com.atlassian.theplugin.commons.crucible.api.model;
 
-import java.util.Date;
-import java.util.List;
+public class ReviewItemIdBean implements ReviewItemId {
+	private String id;
 
-public interface GeneralComment {
-	String getMessage();
+	public ReviewItemIdBean() {
+	}
 
-	boolean isDraft();
+	public String getId() {
+		return id;
+	}
 
-	boolean isDeleted();
-
-	boolean isDefectRaised();
-
-	boolean isDefectApproved();
-
-	String getUser();
-
-	String getDisplayUser();
-
-	Date getCreateDate();
-
-	List<GeneralComment> getReplies();
+	public void setId(String id) {
+		this.id = id;
+	}
 }

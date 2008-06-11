@@ -14,26 +14,33 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.commons.crucible.api;
+package com.atlassian.theplugin.commons.crucible.api.model;
 
-/**
- * Created by IntelliJ IDEA.
- * User: mwent
- * Date: 2008-02-21
- * Time: 10:42:50
- * To change this template use File | Settings | File Templates.
- */
-public class PermIdBean implements PermId {
-	private String id;
+public class SvnRepositoryBean extends RepositoryBean implements SvnRepository {
+	private String url;
+	private String path;
 
-	public PermIdBean() {
+	public SvnRepositoryBean() {
 	}
 
-	public String getId() {
-		return id;
+	public SvnRepositoryBean(String url, String path) {
+		this.url = url;
+		this.path = path;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
 	}
 }

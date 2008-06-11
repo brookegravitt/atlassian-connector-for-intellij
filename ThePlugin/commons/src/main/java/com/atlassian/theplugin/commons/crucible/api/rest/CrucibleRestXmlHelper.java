@@ -17,7 +17,7 @@
 package com.atlassian.theplugin.commons.crucible.api.rest;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
-import com.atlassian.theplugin.commons.crucible.api.*;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import org.jdom.CDATA;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -44,8 +44,18 @@ public final class CrucibleRestXmlHelper {
         }
     }
 
-    public static ProjectDataBean parseProjectNode(Element projectNode) {
-        ProjectDataBean project = new ProjectDataBean();
+    public static List<Element> getChildElements(Element node, String childName) {
+        try {
+            return node.getChildren(childName);
+        } catch (Exception e) {
+            System.out.println("e = " + e);
+            return null;
+        }
+
+    }
+
+    public static ProjectBean parseProjectNode(Element projectNode) {
+        ProjectBean project = new ProjectBean();
 
         project.setId(getChildText(projectNode, "id"));
         project.setKey(getChildText(projectNode, "key"));
@@ -54,16 +64,16 @@ public final class CrucibleRestXmlHelper {
         return project;
     }
 
-    public static RepositoryDataBean parseRepositoryNode(Element repoNode) {
-        RepositoryDataBean repo = new RepositoryDataBean();
+    public static RepositoryBean parseRepositoryNode(Element repoNode) {
+        RepositoryBean repo = new RepositoryBean();
         repo.setName(getChildText(repoNode, "name"));
         repo.setType(getChildText(repoNode, "type"));
         repo.setEnabled(Boolean.parseBoolean(getChildText(repoNode, "enabled")));
         return repo;
     }
 
-    public static SvnRepositoryDataBean parseSvnRepositoryNode(Element repoNode) {
-        SvnRepositoryDataBean repo = new SvnRepositoryDataBean();
+    public static SvnRepositoryBean parseSvnRepositoryNode(Element repoNode) {
+        SvnRepositoryBean repo = new SvnRepositoryBean();
         repo.setName(getChildText(repoNode, "name"));
         repo.setType(getChildText(repoNode, "type"));
         repo.setEnabled(Boolean.parseBoolean(getChildText(repoNode, "enabled")));
@@ -72,8 +82,8 @@ public final class CrucibleRestXmlHelper {
         return repo;
     }
 
-    public static UserDataBean parseUserNode(Element repoNode) {
-        UserDataBean userDataBean = new UserDataBean();
+    public static UserBean parseUserNode(Element repoNode) {
+        UserBean userDataBean = new UserBean();
 
         CrucibleVersion version = CrucibleVersion.CRUCIBLE_15;
         Element userName = repoNode.getChild("userName");
@@ -90,8 +100,8 @@ public final class CrucibleRestXmlHelper {
         return userDataBean;
     }
 
-    public static ReviewData parseReviewNode(Element reviewNode) {
-        ReviewDataBean review = new ReviewDataBean();
+    public static Review parseReviewNode(Element reviewNode) {
+        ReviewBean review = new ReviewBean();
 
         review.setAuthor(getChildText(reviewNode, "author"));
         review.setCreator(getChildText(reviewNode, "creator"));
@@ -112,6 +122,8 @@ public final class CrucibleRestXmlHelper {
             review.setPermaId(permId);
         }
 
+        review.setMetricsVersion(Integer.valueOf(getChildText(reviewNode, "metricsVersion")));
+
         return review;
     }
 
@@ -121,7 +133,7 @@ public final class CrucibleRestXmlHelper {
         root.getContent().add(newElement);
     }
 
-    public static Document prepareCreateReviewNode(ReviewData review, String patch) {
+    public static Document prepareCreateReviewNode(Review review, String patch) {
         Element root = new Element("createReview");
         Document doc = new Document(root);
 
@@ -137,7 +149,7 @@ public final class CrucibleRestXmlHelper {
         return doc;
     }
 
-    public static Document prepareCreateReviewNode(ReviewData review, List<String> revisions) {
+    public static Document prepareCreateReviewNode(Review review, List<String> revisions) {
         Element root = new Element("createReview");
         Document doc = new Document(root);
 
@@ -189,25 +201,12 @@ public final class CrucibleRestXmlHelper {
         return doc;
     }
 
-    public static Document prepareAddReviewersNode(Set<String> users) {
-        Element root = new Element("addReviewers");
-        Document doc = new Document(root);
-
-        Element usersNode = new Element("users");
-        root.getContent().add(usersNode);
-
-        for (String user : users) {
-            addTag(usersNode, "user", user);
-        }
-        return doc;
-    }
-
-    public static Document prepareReviewNode(ReviewData review) {
+    public static Document prepareReviewNode(Review review) {
         Element reviewData = prepareReviewNodeElement(review);
         return new Document(reviewData);
     }
 
-    private static Element prepareReviewNodeElement(ReviewData review) {
+    private static Element prepareReviewNodeElement(Review review) {
         Element reviewData = new Element("reviewData");
 
         addTag(reviewData, "author", review.getAuthor());
@@ -229,8 +228,8 @@ public final class CrucibleRestXmlHelper {
         return reviewData;
     }
 
-    public static ReviewItemDataBean parseReviewItemNode(Element reviewItemNode) {
-        ReviewItemDataBean reviewItem = new ReviewItemDataBean();
+    public static ReviewItemBean parseReviewItemNode(Element reviewItemNode) {
+        ReviewItemBean reviewItem = new ReviewItemBean();
 
         reviewItem.setFromPath(getChildText(reviewItemNode, "fromPath"));
         reviewItem.setFromRevision(getChildText(reviewItemNode, "fromRevision"));
@@ -246,9 +245,7 @@ public final class CrucibleRestXmlHelper {
         return reviewItem;
     }
 
-    public static GeneralCommentBean parseGeneralCommentNode(Element reviewCommentNode) {
-        GeneralCommentBean commentBean = new GeneralCommentBean();
-
+    private static void parseComment(GeneralCommentBean commentBean, Element reviewCommentNode) {
         commentBean.setUser(getChildText(reviewCommentNode, "user"));
         commentBean.setDisplayUser(getChildText(reviewCommentNode, "userDisplayName"));
         commentBean.setMessage(getChildText(reviewCommentNode, "message"));
@@ -258,11 +255,44 @@ public final class CrucibleRestXmlHelper {
         commentBean.setDeleted(Boolean.parseBoolean(getChildText(reviewCommentNode, "deleted")));
         commentBean.setCreateDate(parseCommentTime(getChildText(reviewCommentNode, "createDate")));
 
-        return commentBean;
+        List<Element> metrics = getChildElements(reviewCommentNode, "metrics");
+        if (metrics != null) {
+            for (Element metric : metrics) {
+                List<Element> entries = getChildElements(metric, "entry");
+                for (Element entry : entries) {
+                    String key = getChildText(entry, "key");
+                    List<Element> values = getChildElements(entry, "value");
+                    for (Element value : values) {
+                        CustomFieldBean field = new CustomFieldBean();
+                        field.setConfigVersion(Integer.parseInt(getChildText(value, "configVersion")));
+                        field.setFieldScope(getChildText(value, "fieldScope"));
+                        field.setHrValue(getChildText(value, "hrValue"));
+                        field.setType(CustomFieldValueType.valueOf(getChildText(value, "type")));
+                        switch (field.getType()) {
+                            case INTEGER:
+                                field.setValue(Integer.valueOf(getChildText(value, "value")));
+                                break;
+                            case STRING:
+                                field.setValue(getChildText(value, "value"));
+                                break;
+                        }
+                        commentBean.getCustomFields().put(key, field);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    public static GeneralCommentBean parseGeneralCommentNode(Element reviewCommentNode) {
+        GeneralCommentBean reviewCommentBean = new GeneralCommentBean();
+        parseComment(reviewCommentBean, reviewCommentNode);
+        return reviewCommentBean;
     }
 
     public static VersionedCommentBean parseVersionedCommentNode(Element reviewCommentNode) {
         VersionedCommentBean comment = new VersionedCommentBean();
+        parseComment(comment, reviewCommentNode);
 
         comment.setUser(getChildText(reviewCommentNode, "user"));
         comment.setDisplayUser(getChildText(reviewCommentNode, "userDisplayName"));
@@ -332,6 +362,40 @@ public final class CrucibleRestXmlHelper {
         return comment;
     }
 
+    private static CustomFieldValue getCustomFieldValue(CustomFieldValueType type, Element element) {
+        CustomFieldValue newValue = new CustomFieldValue();
+        newValue.setName(getChildText(element, "name"));
+        switch (type) {
+            case INTEGER:
+                newValue.setValue(Integer.valueOf(getChildText(element, "value")));
+                break;
+            case STRING:
+                newValue.setValue(getChildText(element, "value"));
+                break;
+        }
+        return newValue;
+    }
+
+    public static CustomFieldDefBean parseMetricsNode(Element element) {
+        CustomFieldDefBean field = new CustomFieldDefBean();
+
+        field.setName(getChildText(element, "name"));
+        field.setLabel(getChildText(element, "label"));
+        field.setType(CustomFieldValueType.valueOf(getChildText(element, "type")));
+        field.setConfigVersion(Integer.parseInt(getChildText(element, "configVersion")));
+
+        List<Element> defaultValue = getChildElements(element, "defaultValue");
+        for (Element value : defaultValue) {
+            field.setDefaultValue(getCustomFieldValue(field.getType(), value));
+        }
+        List<Element> values = getChildElements(element, "values");
+        for (Element value : values) {
+            field.getValues().add(getCustomFieldValue(field.getType(), value));
+        }
+
+        return field;
+    }
+
     public static Document prepareCustomFilter(CustomFilter filter) {
         Element filterData = prepareFilterNodeElement(filter);
         return new Document(filterData);
@@ -375,5 +439,4 @@ public final class CrucibleRestXmlHelper {
             return null;
         }
     }
-
 }

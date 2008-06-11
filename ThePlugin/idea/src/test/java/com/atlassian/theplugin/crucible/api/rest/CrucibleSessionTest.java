@@ -20,6 +20,7 @@ import com.atlassian.theplugin.bamboo.api.bamboomock.ErrorResponse;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import com.atlassian.theplugin.commons.crucible.api.*;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.crucible.api.rest.CrucibleSessionImpl;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
@@ -362,10 +363,10 @@ public class CrucibleSessionTest extends TestCase {
 		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		List<ReviewData> reviews = apiHandler.getAllReviews();
+		List<Review> reviews = apiHandler.getAllReviews();
 		assertEquals(states.size(), reviews.size());
 		int i = 0;
-		for (ReviewData review : reviews) {
+		for (Review review : reviews) {
 			assertEquals(review.getState(), states.get(i++));
 		}
 		mockServer.verify();
@@ -378,7 +379,7 @@ public class CrucibleSessionTest extends TestCase {
 		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		List<ReviewData> reviews = apiHandler.getAllReviews();
+		List<Review> reviews = apiHandler.getAllReviews();
 		assertEquals(states.size(), reviews.size());
 		assertTrue(reviews.isEmpty());
 		mockServer.verify();
@@ -391,7 +392,7 @@ public class CrucibleSessionTest extends TestCase {
 		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		List<ReviewData> reviews = apiHandler.getAllReviews();
+		List<Review> reviews = apiHandler.getAllReviews();
 		assertEquals(states.size(), reviews.size());
 		assertTrue(reviews.isEmpty());
 		mockServer.verify();
@@ -404,7 +405,7 @@ public class CrucibleSessionTest extends TestCase {
 		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		List<ReviewData> reviews = apiHandler.getReviewsInStates(states);
+		List<Review> reviews = apiHandler.getReviewsInStates(states);
 		assertEquals(states.size(), reviews.size());
 		assertTrue(!reviews.isEmpty());
 		mockServer.verify();
@@ -418,7 +419,7 @@ public class CrucibleSessionTest extends TestCase {
 
 		apiHandler.login(USER_NAME, PASSWORD);
 		List<State> req = Arrays.asList(State.CLOSED);
-		List<ReviewData> reviews = apiHandler.getReviewsInStates(req);
+		List<Review> reviews = apiHandler.getReviewsInStates(req);
 		assertTrue(reviews.isEmpty());
 		mockServer.verify();
 	}
@@ -431,7 +432,7 @@ public class CrucibleSessionTest extends TestCase {
 
 		apiHandler.login(USER_NAME, PASSWORD);
 		List<State> req = Arrays.asList();
-		List<ReviewData> reviews = apiHandler.getReviewsInStates(req);
+		List<Review> reviews = apiHandler.getReviewsInStates(req);
 		assertEquals(states.size(), reviews.size());
 		assertTrue(!reviews.isEmpty());
 		mockServer.verify();
@@ -474,24 +475,24 @@ public class CrucibleSessionTest extends TestCase {
 
 	public void testGetEmptyReviewers() throws Exception {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/rest-service/reviews-v1/PR-1/reviewers", new GetReviewersCallback(new UserData[]{ }));
+		mockServer.expect("/rest-service/reviews-v1/PR-1/reviewers", new GetReviewersCallback(new User[]{ }));
 		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
 
 		apiHandler.login(USER_NAME, PASSWORD);
 		PermIdBean permId = new PermIdBean();
 		permId.setId("PR-1");
-		List<UserData> reviewers = apiHandler.getReviewers(permId);
+		List<User> reviewers = apiHandler.getReviewers(permId);
 		assertEquals(0, reviewers.size());
 		mockServer.verify();
 	}
 
 	public void testGetReviewers() throws Exception {
-        UserDataBean[] reviewers = new UserDataBean[3];
-        reviewers[0] = new UserDataBean();
+        UserBean[] reviewers = new UserBean[3];
+        reviewers[0] = new UserBean();
         reviewers[0].setUserName("bob");
-        reviewers[1] = new UserDataBean();
+        reviewers[1] = new UserBean();
         reviewers[1].setUserName("alice");
-        reviewers[2] = new UserDataBean();
+        reviewers[2] = new UserBean();
         reviewers[2].setUserName("steve");
 
         mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
@@ -501,7 +502,7 @@ public class CrucibleSessionTest extends TestCase {
 		apiHandler.login(USER_NAME, PASSWORD);
 		PermIdBean permId = new PermIdBean();
 		permId.setId("PR-1");
-		List<UserData> result = apiHandler.getReviewers(permId);
+		List<User> result = apiHandler.getReviewers(permId);
 		assertEquals(3, result.size());
 		assertEquals(result.get(0).getUserName(), "bob");
 		assertEquals(result.get(1).getUserName(), "alice");
@@ -546,14 +547,14 @@ public class CrucibleSessionTest extends TestCase {
 	}
 
 	public void testCreateReview() throws Exception {
-		ReviewDataBean review = createReviewRequest();
+		ReviewBean review = createReviewRequest();
 
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
 		mockServer.expect("/rest-service/reviews-v1", new CreateReviewCallback());
 		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		ReviewData response = apiHandler.createReview(review);
+		Review response = apiHandler.createReview(review);
 		assertEquals(review.getAuthor(), response.getAuthor());
 		assertEquals(review.getCreator(), response.getCreator());
 		assertEquals(review.getDescription(), response.getDescription());
@@ -568,7 +569,7 @@ public class CrucibleSessionTest extends TestCase {
 	}
 
 	public void testCreateReviewMalformedResponse() throws Exception {
-		ReviewDataBean review = createReviewRequest();
+		ReviewBean review = createReviewRequest();
 
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
 		mockServer.expect("/rest-service/reviews-v1", new MalformedResponseCallback());
@@ -585,7 +586,7 @@ public class CrucibleSessionTest extends TestCase {
 	}
 
 	public void testCreateReviewErrorResponse() throws Exception {
-		ReviewDataBean review = createReviewRequest();
+		ReviewBean review = createReviewRequest();
 
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
 		mockServer.expect("/rest-service/reviews-v1", new ErrorResponse(500, ""));
@@ -609,8 +610,8 @@ public class CrucibleSessionTest extends TestCase {
 		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		ReviewDataBean review = createReviewRequest();
-		ReviewData response = apiHandler.createReviewFromPatch(review, "patch text");
+		ReviewBean review = createReviewRequest();
+		Review response = apiHandler.createReviewFromPatch(review, "patch text");
 		assertEquals(review.getAuthor(), response.getAuthor());
 		assertEquals(review.getCreator(), response.getCreator());
 		assertEquals(review.getDescription(), response.getDescription());
@@ -630,8 +631,8 @@ public class CrucibleSessionTest extends TestCase {
 		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		ReviewDataBean review = createReviewRequest();
-		ReviewData response = apiHandler.createReviewFromPatch(review, null);
+		ReviewBean review = createReviewRequest();
+		Review response = apiHandler.createReviewFromPatch(review, null);
 		assertEquals(review.getAuthor(), response.getAuthor());
 		assertEquals(review.getCreator(), response.getCreator());
 		assertEquals(review.getDescription(), response.getDescription());
@@ -651,8 +652,8 @@ public class CrucibleSessionTest extends TestCase {
 		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		ReviewDataBean review = createReviewRequest();
-		ReviewData response = apiHandler.createReviewFromPatch(review, "");
+		ReviewBean review = createReviewRequest();
+		Review response = apiHandler.createReviewFromPatch(review, "");
 		assertEquals(review.getAuthor(), response.getAuthor());
 		assertEquals(review.getCreator(), response.getCreator());
 		assertEquals(review.getDescription(), response.getDescription());
@@ -673,7 +674,7 @@ public class CrucibleSessionTest extends TestCase {
 
 		apiHandler.login(USER_NAME, PASSWORD);
 		try {
-			ReviewDataBean review = createReviewRequest();
+			ReviewBean review = createReviewRequest();
 			apiHandler.createReviewFromPatch(review, "patch text");
 			fail();
 		} catch (RemoteApiException e) {
@@ -692,7 +693,7 @@ public class CrucibleSessionTest extends TestCase {
 		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		List<ProjectData> project = apiHandler.getProjects();
+		List<Project> project = apiHandler.getProjects();
 		assertEquals(size, project.size());
 		for (int i = 0; i < size; i++) {
 			String id = Integer.toString(i);
@@ -712,7 +713,7 @@ public class CrucibleSessionTest extends TestCase {
 		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		List<ProjectData> project = apiHandler.getProjects();
+		List<Project> project = apiHandler.getProjects();
 		assertEquals(size, project.size());
 		for (int i = 0; i < size; i++) {
 			String id = Integer.toString(i);
@@ -732,7 +733,7 @@ public class CrucibleSessionTest extends TestCase {
 		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		List<RepositoryData> repositories = apiHandler.getRepositories();
+		List<Repository> repositories = apiHandler.getRepositories();
 		assertEquals(size, repositories.size());
 		for (int i = 0; i < size; i++) {
 			String id = Integer.toString(i);
@@ -750,7 +751,7 @@ public class CrucibleSessionTest extends TestCase {
 		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		List<RepositoryData> repositories = apiHandler.getRepositories();
+		List<Repository> repositories = apiHandler.getRepositories();
 		assertEquals(size, repositories.size());
 		for (int i = 0; i < size; i++) {
 			String id = Integer.toString(i);
@@ -759,8 +760,8 @@ public class CrucibleSessionTest extends TestCase {
 		mockServer.verify();
 	}
 
-	private ReviewDataBean createReviewRequest() {
-		ReviewDataBean review = new ReviewDataBean();
+	private ReviewBean createReviewRequest() {
+		ReviewBean review = new ReviewBean();
 		review.setAuthor("autor");
 		review.setCreator("creator");
 		review.setDescription("description");

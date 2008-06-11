@@ -16,19 +16,19 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.crucible.ReviewDataInfo;
-import com.atlassian.theplugin.commons.crucible.api.PermId;
-import com.atlassian.theplugin.commons.crucible.api.State;
-import com.atlassian.theplugin.commons.crucible.api.UserData;
+import com.atlassian.theplugin.commons.crucible.ReviewInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.PermId;
+import com.atlassian.theplugin.commons.crucible.api.model.State;
+import com.atlassian.theplugin.commons.crucible.api.model.User;
 import com.atlassian.theplugin.commons.Server;
 
 import java.util.List;
 
 
 public class ReviewDataInfoAdapter {
-	private ReviewDataInfo review;
+	private ReviewInfo review;
 
-	public ReviewDataInfoAdapter(ReviewDataInfo review) {
+	public ReviewDataInfoAdapter(ReviewInfo review) {
 		this.review = review;
 	}
 
@@ -52,7 +52,7 @@ public class ReviewDataInfoAdapter {
 		return review.getModerator();
 	}
 
-	public List<UserData> getReviewers() {
+	public List<User> getReviewers() {
 		return review.getReviewers();
 	}
 
@@ -80,7 +80,11 @@ public class ReviewDataInfoAdapter {
 		return review.getState();
 	}
 
-	public Server getServer() {
+    public int getMetricsVersion() {
+        return review.getMetricsVersion();
+    }
+
+    public Server getServer() {
 		return review.getServer();
 	}
 }

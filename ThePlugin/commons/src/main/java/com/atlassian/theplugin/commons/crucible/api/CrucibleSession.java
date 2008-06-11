@@ -18,6 +18,7 @@ package com.atlassian.theplugin.commons.crucible.api;
 
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 
 import java.util.List;
 import java.util.Set;
@@ -28,39 +29,39 @@ public interface CrucibleSession {
 
 	void logout();
 
-	ReviewData createReview(ReviewData reviewData) throws RemoteApiException;
+	Review createReview(Review review) throws RemoteApiException;
 
-	ReviewData createReviewFromPatch(ReviewData reviewData, String patch) throws RemoteApiException;
+	Review createReviewFromPatch(Review review, String patch) throws RemoteApiException;
 
-    ReviewData createReviewFromRevision(ReviewData reviewData, List<String> revisions) throws RemoteApiException;
+    Review createReviewFromRevision(Review review, List<String> revisions) throws RemoteApiException;
 
-    ReviewData addRevisionsToReview(PermId permId, String repository, List<String> revisions) throws RemoteApiException;
+    Review addRevisionsToReview(PermId permId, String repository, List<String> revisions) throws RemoteApiException;
 
-    ReviewData addPatchToReview(PermId permId, String repository, String patch) throws RemoteApiException;    
+    Review addPatchToReview(PermId permId, String repository, String patch) throws RemoteApiException;
 
     void addReviewers(PermId permId, Set<String> userNames) throws RemoteApiException;
 
-    ReviewData approveReview(PermId permId) throws RemoteApiException;
+    Review approveReview(PermId permId) throws RemoteApiException;
 
-    List<ReviewData> getReviewsInStates(List<State> arg1) throws RemoteApiException;
+    List<Review> getReviewsInStates(List<State> arg1) throws RemoteApiException;
 
-	List<ReviewData> getAllReviews() throws RemoteApiException;
+	List<Review> getAllReviews() throws RemoteApiException;
 
-    List<ReviewData> getReviewsForFilter(PredefinedFilter filter) throws RemoteApiException;
+    List<Review> getReviewsForFilter(PredefinedFilter filter) throws RemoteApiException;
 
-    List<ReviewData> getReviewsForCustomFilter(CustomFilter filter) throws RemoteApiException;
+    List<Review> getReviewsForCustomFilter(CustomFilter filter) throws RemoteApiException;
 
-    List<UserData> getReviewers(PermId arg1) throws RemoteApiException;
+    List<User> getReviewers(PermId arg1) throws RemoteApiException;
 
-    List<UserData> getUsers() throws RemoteApiException;
+    List<User> getUsers() throws RemoteApiException;
 
-    List<ProjectData> getProjects() throws RemoteApiException;
+    List<Project> getProjects() throws RemoteApiException;
 
-	List<RepositoryData> getRepositories() throws RemoteApiException;
+	List<Repository> getRepositories() throws RemoteApiException;
 
-	SvnRepositoryData getRepository(String repoName) throws RemoteApiException;	
+	SvnRepository getRepository(String repoName) throws RemoteApiException;
 
-	List<ReviewItemData> getReviewItems(PermId id) throws RemoteApiException;
+	List<ReviewItem> getReviewItems(PermId id) throws RemoteApiException;
 
 	List<GeneralComment> getGeneralComments(PermId id) throws RemoteApiException;
 
@@ -68,5 +69,7 @@ public interface CrucibleSession {
 
 	List<GeneralComment> getComments(PermId id) throws RemoteApiException;
 
-	boolean isLoggedIn();
+    List<CustomFieldDef> getMetrics(int version) throws RemoteApiException;    
+
+    boolean isLoggedIn();
 }

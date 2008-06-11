@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.action.crucible;
 
-import com.atlassian.theplugin.commons.crucible.api.CustomFilterData;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ThePluginProjectComponent;
@@ -29,14 +29,14 @@ public class CustomFilterAction extends Crucible16ToggleAction {
     public CustomFilterAction() {
     }
 
-    private CustomFilterData getFilter(AnActionEvent event) {
+    private CustomFilterBean getFilter(AnActionEvent event) {
         Project project = IdeaHelper.getCurrentProject(event);
         if (project != null) {
             ThePluginProjectComponent projectComponent = IdeaHelper.getCurrentProject(event).getComponent(ThePluginProjectComponent.class);
             ProjectConfigurationBean projectConfiguration = projectComponent.getProjectConfigurationBean();
             if (!projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().isEmpty()) {
                 for (String s : projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().keySet()) {
-                    CustomFilterData filter = projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().get(s);
+                    CustomFilterBean filter = projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().get(s);
                     return filter;
                 }
             }
@@ -45,7 +45,7 @@ public class CustomFilterAction extends Crucible16ToggleAction {
     }
 
     public boolean isSelected(AnActionEvent event) {
-        CustomFilterData filter = getFilter(event);
+        CustomFilterBean filter = getFilter(event);
         if (filter != null) {
             return filter.isEnabled();
         }
@@ -53,7 +53,7 @@ public class CustomFilterAction extends Crucible16ToggleAction {
     }
 
     public void setSelected(AnActionEvent event, boolean b) {
-        CustomFilterData filter = getFilter(event);
+        CustomFilterBean filter = getFilter(event);
         if (filter != null) {
             filter.setEnabled(b);
             CrucibleStatusChecker checker = null;

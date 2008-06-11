@@ -1,24 +1,24 @@
-package com.atlassian.theplugin.commons.crucible.api.rest;
+package com.atlassian.theplugin.commons.crucible;
 
-import com.atlassian.theplugin.commons.crucible.api.CustomFilterData;
-import com.atlassian.theplugin.commons.crucible.api.PredefinedFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
+import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 
 import java.util.Arrays;
 import java.util.HashMap;
 
 public class CrucibleFiltersBean {
     private Boolean[] predefinedFilters = new Boolean[PredefinedFilter.values().length];
-    private HashMap<String, CustomFilterData> manualFilter = new HashMap<String, CustomFilterData>();
+    private HashMap<String, CustomFilterBean> manualFilter = new HashMap<String, CustomFilterBean>();
 
     public CrucibleFiltersBean() {
         Arrays.fill(predefinedFilters, false);
     }
 
-    public HashMap<String, CustomFilterData> getManualFilter() {
+    public HashMap<String, CustomFilterBean> getManualFilter() {
         return manualFilter;
     }
 
-    public void setManualFilter(HashMap<String, CustomFilterData> manualFilter) {
+    public void setManualFilter(HashMap<String, CustomFilterBean> manualFilter) {
         this.manualFilter = manualFilter;
     }
 

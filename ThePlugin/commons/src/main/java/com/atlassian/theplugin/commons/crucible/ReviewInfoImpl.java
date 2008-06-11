@@ -17,21 +17,21 @@
 package com.atlassian.theplugin.commons.crucible;
 
 import com.atlassian.theplugin.commons.Server;
-import com.atlassian.theplugin.commons.crucible.api.ReviewData;
-import com.atlassian.theplugin.commons.crucible.api.PermId;
-import com.atlassian.theplugin.commons.crucible.api.State;
-import com.atlassian.theplugin.commons.crucible.api.UserData;
+import com.atlassian.theplugin.commons.crucible.api.model.State;
+import com.atlassian.theplugin.commons.crucible.api.model.User;
+import com.atlassian.theplugin.commons.crucible.api.model.PermId;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
 
 import java.util.List;
 
 
-public class ReviewDataInfoImpl implements ReviewDataInfo {
-	private final ReviewData reviewData;
-	private final List<UserData> reviewers;
+public class ReviewInfoImpl implements ReviewInfo {
+	private final Review review;
+	private final List<User> reviewers;
 	private final Server server;
 
-	public ReviewDataInfoImpl(ReviewData reviewData, List<UserData> reviewers, Server server) {
-		this.reviewData = reviewData;
+	public ReviewInfoImpl(Review review, List<User> reviewers, Server server) {
+		this.review = review;
 		this.reviewers = reviewers;
 		this.server = server;
 	}
@@ -42,11 +42,11 @@ public class ReviewDataInfoImpl implements ReviewDataInfo {
 			// quite ineffective, I know ...
 			baseUrl = baseUrl.substring(0,  baseUrl.length() - 1);
 		}
-		return baseUrl + "/cru/" + reviewData.getPermaId().getId();
+		return baseUrl + "/cru/" + review.getPermaId().getId();
 
 	}
 
-	public List<UserData> getReviewers() {
+	public List<User> getReviewers() {
 		return reviewers;
 	}
 
@@ -56,46 +56,50 @@ public class ReviewDataInfoImpl implements ReviewDataInfo {
 
 
 	public String getAuthor() {
-		return reviewData.getAuthor();
+		return review.getAuthor();
 	}
 
 	public String getCreator() {
-		return reviewData.getCreator();
+		return review.getCreator();
 	}
 
 	public String getDescription() {
-		return reviewData.getDescription();
+		return review.getDescription();
 	}
 
 	public String getModerator() {
-		return reviewData.getModerator();
+		return review.getModerator();
 	}
 
 	public String getName() {
-		return reviewData.getName();
+		return review.getName();
 	}
 
 	public PermId getParentReview() {
-		return reviewData.getParentReview();
+		return review.getParentReview();
 	}
 
 	public PermId getPermaId() {
-		return reviewData.getPermaId();
+		return review.getPermaId();
 	}
 
 	public String getProjectKey() {
-		return reviewData.getProjectKey();
+		return review.getProjectKey();
 	}
 
 	public String getRepoName() {
-		return reviewData.getRepoName();
+		return review.getRepoName();
 	}
 
 	public State getState() {
-		return reviewData.getState();
+		return review.getState();
 	}
 
-	public boolean equals(Object o) {
+    public int getMetricsVersion() {
+        return review.getMetricsVersion();
+    }
+
+    public boolean equals(Object o) {
 		if (this == o) {
 			return true;
 		}
@@ -103,9 +107,9 @@ public class ReviewDataInfoImpl implements ReviewDataInfo {
 			return false;
 		}
 
-		ReviewDataInfoImpl that = (ReviewDataInfoImpl) o;
+		ReviewInfoImpl that = (ReviewInfoImpl) o;
 
-		if (!reviewData.getPermaId().getId().equals(that.reviewData.getPermaId().getId())) {
+		if (!review.getPermaId().getId().equals(that.review.getPermaId().getId())) {
 			return false;
 		}
 		if (server != null ? !server.equals(that.server) : that.server != null) {
@@ -119,7 +123,7 @@ public class ReviewDataInfoImpl implements ReviewDataInfo {
 
 	public int hashCode() {
 		int result;
-		result = reviewData.getPermaId().getId().hashCode();
+		result = review.getPermaId().getId().hashCode();
 		result = ONE_EFF * result + (server != null ? server.hashCode() : 0);
 		return result;
 	}
