@@ -190,11 +190,12 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
     }
 
-	public void logWork(Server server, JIRAIssue issue, String timeSpent, Calendar startDate, String comment)
+	public void logWork(Server server, JIRAIssue issue, String timeSpent, Calendar startDate,
+						String comment, boolean updateEstimate)
             throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
-			soap.logWork(issue, timeSpent, startDate, comment);
+			soap.logWork(issue, timeSpent, startDate, comment, updateEstimate);
 		} catch (RemoteApiException e) {
 			soapSessions.remove(getSoapSessionKey(server));
 			throw new JIRAException(e.getMessage(), e);
