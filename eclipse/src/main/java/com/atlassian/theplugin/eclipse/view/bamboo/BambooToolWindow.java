@@ -25,12 +25,12 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 
+import com.atlassian.theplugin.commons.bamboo.BambooStatusTooltipListener;
 import com.atlassian.theplugin.eclipse.actions.bamboo.CommentBuildAction;
 import com.atlassian.theplugin.eclipse.actions.bamboo.LabelBuildAction;
 import com.atlassian.theplugin.eclipse.actions.bamboo.RefreshBuildsListAction;
 import com.atlassian.theplugin.eclipse.actions.bamboo.RunBuildAction;
 import com.atlassian.theplugin.eclipse.preferences.Activator;
-import com.atlassian.theplugin.eclipse.view.popup.NotificationPopup;
 
 /**
  * @author Jacek
@@ -42,6 +42,8 @@ public class BambooToolWindow extends ViewPart {
 	private IAction labelBuildAction;
 	private IAction commentBuildAction;
 	private BambooToolWindowContent bambooToolWindowContent;
+	
+	private BambooStatusTooltipListener popupListener;
 
 	/**
 	 * 
@@ -56,12 +58,14 @@ public class BambooToolWindow extends ViewPart {
 	public void createPartControl(Composite parent) {
 		
 		bambooToolWindowContent = new BambooToolWindowContent(parent, this);
-		BambooStatusPopupListener popupListener = new BambooStatusPopupListener();
 		
 		// register listener
 		Activator.getDefault().getBambooChecker().registerListener(bambooToolWindowContent);
+		
+		// create and register popup listener
+		BambooStatusTooltip popup = new BambooStatusTooltip();
+		popupListener = new BambooStatusTooltipListener(popup, Activator.getDefault().getPluginConfiguration());
 		Activator.getDefault().getBambooChecker().registerListener(popupListener);
-
 		
 		//getViewSite().registerContextMenu(menuManager, selectionProvider)
 		
@@ -120,6 +124,16 @@ public class BambooToolWindow extends ViewPart {
 		getViewSite().getActionBars().getToolBarManager().update(true);
 	}
 
+	@Override
+	public void dispose() {
+		super.dispose();
+		
+		if (bambooToolWindowContent != null) {
+			Activator.getDefault().getBambooChecker().unregisterListener(bambooToolWindowContent);
+		}
+	}
 
+	
+	
 }
 
