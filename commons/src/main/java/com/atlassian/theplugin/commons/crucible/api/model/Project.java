@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.commons.crucible.api;
+package com.atlassian.theplugin.commons.crucible.api.model;
 
-public interface ProjectData {
+public interface Project {
 	String getId();
 
 	String getKey();

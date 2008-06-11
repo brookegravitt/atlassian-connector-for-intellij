@@ -14,28 +14,12 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.commons.crucible.api;
+package com.atlassian.theplugin.commons.crucible.api.model;
 
-public class ProjectDataBean implements ProjectData {
-	private String id;
-	private String key;
+public class RepositoryBean implements Repository {
 	private String name;
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	public String getKey() {
-		return key;
-	}
-
-	public void setKey(String key) {
-		this.key = key;
-	}
+	private String type;
+	private boolean enabled;
 
 	public String getName() {
 		return name;
@@ -44,4 +28,20 @@ public class ProjectDataBean implements ProjectData {
 	public void setName(String name) {
 		this.name = name;
 	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}	
 }

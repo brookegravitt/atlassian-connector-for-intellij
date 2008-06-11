@@ -16,17 +16,17 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.crucible.api.ReviewItemData;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewItem;
 import com.intellij.openapi.vfs.VirtualFile;
 
 public class ReviewItemVirtualFile {
 	private VirtualFile virtualFile;
-	private ReviewItemData reviewItem;
+	private ReviewItem reviewItem;
 
 	public ReviewItemVirtualFile() {
 	}
 
-	public ReviewItemVirtualFile(VirtualFile virtualFile, ReviewItemData reviewItem) {
+	public ReviewItemVirtualFile(VirtualFile virtualFile, ReviewItem reviewItem) {
 		this.virtualFile = virtualFile;
 		this.reviewItem = reviewItem;
 	}
@@ -47,7 +47,7 @@ public class ReviewItemVirtualFile {
 		return reviewItem.getToRevision();
 	}
 
-	public ReviewItemData getReviewItem() {
+	public ReviewItem getReviewItem() {
 		return reviewItem;
 	}
 }

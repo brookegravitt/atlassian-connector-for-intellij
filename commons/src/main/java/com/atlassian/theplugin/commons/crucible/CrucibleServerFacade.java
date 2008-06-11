@@ -20,61 +20,64 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.Server;
-import com.atlassian.theplugin.commons.crucible.api.*;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 
 import java.util.List;
 import java.util.Set;
 
 public interface CrucibleServerFacade extends ProductServerFacade {
-	ReviewData createReview(Server server, ReviewData review)
+	Review createReview(Server server, Review review)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-    ReviewData createReviewFromRevision(Server server, ReviewData reviewData, List<String> revisions)
+    Review createReviewFromRevision(Server server, Review review, List<String> revisions)
             throws RemoteApiException;
 
-    ReviewData addRevisionsToReview(Server server, PermId permId, String repository, List<String> revisions) 
+    Review addRevisionsToReview(Server server, PermId permId, String repository, List<String> revisions)
             throws RemoteApiException, ServerPasswordNotProvidedException;
 
-    ReviewData addPatchToReview(Server server, PermId permId, String repository, String patch)
+    Review addPatchToReview(Server server, PermId permId, String repository, String patch)
             throws RemoteApiException, ServerPasswordNotProvidedException;
 
     void addReviewers(Server server, PermId permId, Set<String> userName)
 		    throws RemoteApiException, ServerPasswordNotProvidedException;    
 
-    ReviewData approveReview(Server server, PermId permId)
+    Review approveReview(Server server, PermId permId)
 		    throws RemoteApiException, ServerPasswordNotProvidedException;
 
-    List<ReviewDataInfo> getAllReviews(Server server)
+    List<ReviewInfo> getAllReviews(Server server)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	List<ReviewDataInfo> getActiveReviewsForUser(Server server)
+	List<ReviewInfo> getActiveReviewsForUser(Server server)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-    List<ReviewDataInfo> getReviewsForFilter(Server server, PredefinedFilter filter)
+    List<ReviewInfo> getReviewsForFilter(Server server, PredefinedFilter filter)
             throws RemoteApiException, ServerPasswordNotProvidedException;
 
-    List<ReviewDataInfo> getReviewsForCustomFilter(Server server, CustomFilter filter)
+    List<ReviewInfo> getReviewsForCustomFilter(Server server, CustomFilter filter)
             throws RemoteApiException, ServerPasswordNotProvidedException;    
 
-    ReviewData createReviewFromPatch(Server server, ReviewData reviewData, String patch)
+    Review createReviewFromPatch(Server server, Review review, String patch)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	List<ReviewItemData> getReviewItems(Server server, PermId permId)
+	List<ReviewItem> getReviewItems(Server server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
 	List<GeneralComment> getComments(Server server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-    List<UserData> getUsers(Server server)
+    List<User> getUsers(Server server)
             throws RemoteApiException, ServerPasswordNotProvidedException;
 
-    List<ProjectData> getProjects(Server server)
+    List<Project> getProjects(Server server)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	List<RepositoryData> getRepositories(Server server) 
+	List<Repository> getRepositories(Server server)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	SvnRepositoryData getRepository(Server server, String repoName)
+	SvnRepository getRepository(Server server, String repoName)
+			throws RemoteApiException, ServerPasswordNotProvidedException;
+
+    List<CustomFieldDef> getMetrics(Server server, int version)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
 }

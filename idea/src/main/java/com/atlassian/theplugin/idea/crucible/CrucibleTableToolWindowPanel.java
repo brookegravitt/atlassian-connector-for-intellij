@@ -19,11 +19,11 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListener;
 import com.atlassian.theplugin.commons.crucible.*;
-import com.atlassian.theplugin.commons.crucible.api.CustomFilterData;
-import com.atlassian.theplugin.commons.crucible.api.PermId;
-import com.atlassian.theplugin.commons.crucible.api.PredefinedFilter;
-import com.atlassian.theplugin.commons.crucible.api.rest.CrucibleFiltersBean;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.CrucibleFiltersBean;
 import com.atlassian.theplugin.commons.util.Logger;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
@@ -105,7 +105,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
     public void applyAdvancedFilter() {
         if (crucibleCustomFilterPanel.getFilter() != null) {
-            CustomFilterData filter = crucibleCustomFilterPanel.getFilter();
+            CustomFilterBean filter = crucibleCustomFilterPanel.getFilter();
 
             filters.getManualFilter().put(filter.getTitle(), filter);
             projectConfiguration.
@@ -188,7 +188,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         }
 
         for (String s : projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().keySet()) {
-            CustomFilterData filter = projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().get(s);
+            CustomFilterBean filter = projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().get(s);
             if (filter.isEnabled()) {
                 this.showCustomFilter(true, null);
                 break;
@@ -296,13 +296,13 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     /*
     Crucible 1.5
      */
-    public void updateReviews(Collection<ReviewDataInfo> reviews) {
+    public void updateReviews(Collection<ReviewInfo> reviews) {
         this.crucibleVersion = CrucibleVersion.CRUCIBLE_15;
         if (crucible15Table == null) {
             switchToCrucible15Filter();
         }
         List<ReviewDataInfoAdapter> reviewDataInfoAdapters = new ArrayList<ReviewDataInfoAdapter>();
-        for (ReviewDataInfo review : reviews) {
+        for (ReviewInfo review : reviews) {
             reviewDataInfoAdapters.add(new ReviewDataInfoAdapter(review));
         }
 
@@ -324,17 +324,17 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     /*
     Crucible 1.6
      */
-    public void updateReviews(Map<PredefinedFilter, List<ReviewDataInfo>> reviews, Map<String, List<ReviewDataInfo>> customFilterReviews) {
+    public void updateReviews(Map<PredefinedFilter, List<ReviewInfo>> reviews, Map<String, List<ReviewInfo>> customFilterReviews) {
         this.crucibleVersion = CrucibleVersion.CRUCIBLE_16;
         if (tables.isEmpty()) {
             switchToCrucible16Filter();
         }
         int reviewCount = 0;
         for (PredefinedFilter predefinedFilter : reviews.keySet()) {
-            List<ReviewDataInfo> reviewList = reviews.get(predefinedFilter);
+            List<ReviewInfo> reviewList = reviews.get(predefinedFilter);
             if (reviewList != null) {
                 List<ReviewDataInfoAdapter> reviewDataInfoAdapters = new ArrayList<ReviewDataInfoAdapter>();
-                for (ReviewDataInfo review : reviewList) {
+                for (ReviewInfo review : reviewList) {
                     reviewDataInfoAdapters.add(new ReviewDataInfoAdapter(review));
                 }
                 CollapsibleTable table = tables.get(predefinedFilter);
@@ -351,10 +351,10 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         }
 
         for (String filterName : customFilterReviews.keySet()) {
-            List<ReviewDataInfo> reviewList = customFilterReviews.get(filterName);
+            List<ReviewInfo> reviewList = customFilterReviews.get(filterName);
             if (reviewList != null) {
                 List<ReviewDataInfoAdapter> reviewDataInfoAdapters = new ArrayList<ReviewDataInfoAdapter>();
-                for (ReviewDataInfo review : reviewList) {
+                for (ReviewInfo review : reviewList) {
                     reviewDataInfoAdapters.add(new ReviewDataInfoAdapter(review));
                 }
                 CollapsibleTable table = customTables.get(filterName);
@@ -397,10 +397,16 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         for (CollapsibleTable collapsibleTable : tables.values()) {
             collapsibleTable.collapse();
         }
+        for (CollapsibleTable collapsibleTable : customTables.values()) {
+            collapsibleTable.collapse();
+        }
     }
 
     public void expandAllPanels() {
         for (CollapsibleTable collapsibleTable : tables.values()) {
+            collapsibleTable.expand();
+        }
+        for (CollapsibleTable collapsibleTable : customTables.values()) {
             collapsibleTable.expand();
         }
     }
@@ -449,7 +455,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
     public void addCustomFilter() {
         String newName = FilterNameUtil.suggestNewName(projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter());
-        CustomFilterData newFilter = new CustomFilterData();
+        CustomFilterBean newFilter = new CustomFilterBean();
         newFilter.setTitle(newName);
         crucibleCustomFilterPanel.setFilter(newFilter);
         showCrucibleCustomFilterPanel();
@@ -462,7 +468,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     public void showCustomFilter(boolean visible, CrucibleStatusChecker checker) {
         if (!projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().isEmpty()) {
             for (String filterName : projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().keySet()) {
-                CustomFilterData filter = projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().get(filterName);
+                CustomFilterBean filter = projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().get(filterName);
                 if (visible) {
                     if (!customTables.containsKey(filter.getTitle())) {
                         CollapsibleTable table = new CollapsibleTable(
@@ -520,5 +526,30 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
     public ProjectConfigurationBean getProjectConfiguration() {
         return projectConfiguration;
-    }    
+    }
+
+    public void getReviewComments() {
+        if (selectedItem != null) {
+            try {
+                List<CustomFieldDef> metrics = serverFacade.getMetrics(selectedItem.getServer(), selectedItem.getMetricsVersion());
+                for (CustomFieldDef metric : metrics) {
+                    System.out.println("metric.getName() = " + metric.getName());
+                }
+
+                List<GeneralComment> comments = serverFacade.getComments(selectedItem.getServer(), selectedItem.getPermaId());
+                for (GeneralComment comment : comments) {
+                    System.out.println("comment.getMessage() = " + comment.getMessage() + ", defect: " + comment.isDefectRaised());
+                    for (String key : comment.getCustomFields().keySet()) {
+                        CustomField field = comment.getCustomFields().get(key);
+                        System.out.println("key: " + key + ", field.getHrValue() = " + field.getHrValue());
+                    }
+                }
+            } catch (RemoteApiException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            } catch (ServerPasswordNotProvidedException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+
+        }
+    }
 }

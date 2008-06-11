@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.action.crucible;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.commons.crucible.api.PermId;
+import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CrucibleRevisionAddWorker;
 import com.intellij.openapi.actionSystem.AnActionEvent;

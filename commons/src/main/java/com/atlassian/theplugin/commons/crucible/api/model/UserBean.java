@@ -14,10 +14,25 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.commons.crucible.api;
+package com.atlassian.theplugin.commons.crucible.api.model;
 
-public interface RepositoryData {
-	String getName();
-	String getType();
-	boolean isEnabled();
+public class UserBean implements User {
+    private String userName;
+	private String displayName;
+    
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
 }

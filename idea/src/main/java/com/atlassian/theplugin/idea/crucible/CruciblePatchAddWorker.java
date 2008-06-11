@@ -17,7 +17,7 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
-import com.atlassian.theplugin.commons.crucible.api.PermId;
+import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.intellij.openapi.vcs.changes.ChangeList;
 import com.intellij.openapi.project.Project;
 

@@ -14,18 +14,30 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.commons.crucible.api;
+package com.atlassian.theplugin.commons.crucible.api.model;
 
-public interface ReviewItemData {
-	PermId getPermId();	
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
-	String getRepositoryName();
+public interface GeneralComment {
+	String getMessage();
 
-	String getFromPath();
+	boolean isDraft();
 
-	String getFromRevision();
+	boolean isDeleted();
 
-	String getToPath();
+	boolean isDefectRaised();
 
-	String getToRevision();
+	boolean isDefectApproved();
+
+	String getUser();
+
+	String getDisplayUser();
+
+	Date getCreateDate();
+
+	List<GeneralComment> getReplies();
+
+    Map<String, CustomField> getCustomFields();    
 }

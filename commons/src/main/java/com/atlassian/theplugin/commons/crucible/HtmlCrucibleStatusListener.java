@@ -17,7 +17,7 @@
 package com.atlassian.theplugin.commons.crucible;
 
 import com.atlassian.theplugin.commons.StatusListener;
-import com.atlassian.theplugin.commons.crucible.api.UserData;
+import com.atlassian.theplugin.commons.crucible.api.model.User;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,7 +37,7 @@ public class HtmlCrucibleStatusListener implements StatusListener {
 		display = aDisplay;
 	}
 
-    public void updateReviews(Collection<ReviewDataInfo> reviews) {
+    public void updateReviews(Collection<ReviewInfo> reviews) {
 		StringBuilder sb = new StringBuilder(
                 "<html>"
                 + BODY_WITH_STYLE);
@@ -51,7 +51,7 @@ public class HtmlCrucibleStatusListener implements StatusListener {
 						reviews.size()).append(
 							" open code reviews</b> for you.<br>&nbsp;</td></tr>");
 			sb.append("<tr><th>Key</th><th>Summary</th><th>Author</th><th>State</th><th>Reviewers</th></tr>");
-			for (ReviewDataInfo review : reviews) {
+			for (ReviewInfo review : reviews) {
                 sb.append("<tr><td valign=\"top\"><b><font color=blue><a href='");
                 sb.append(review.getReviewUrl());
                 sb.append("'>");
@@ -61,8 +61,8 @@ public class HtmlCrucibleStatusListener implements StatusListener {
                 sb.append("<td valign=\"top\">" + review.getAuthor() + "</td>");
                 sb.append("<td valign=\"top\">" + review.getState().value() + "</td>");
                 sb.append("<td valign=\"top\">");
-                for (Iterator<UserData> iterator = review.getReviewers().iterator(); iterator.hasNext();) {
-                    UserData reviewer = iterator.next();
+                for (Iterator<User> iterator = review.getReviewers().iterator(); iterator.hasNext();) {
+                    User reviewer = iterator.next();
                     sb.append(reviewer.getUserName());
                     if (iterator.hasNext()) {
                         sb.append("<br>");
@@ -77,6 +77,6 @@ public class HtmlCrucibleStatusListener implements StatusListener {
 	}
 
 	public void resetState() {
-		updateReviews(new ArrayList<ReviewDataInfo>());
+		updateReviews(new ArrayList<ReviewInfo>());
 	}
 }

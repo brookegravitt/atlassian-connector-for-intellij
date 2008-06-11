@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.commons.crucible.api;
+package com.atlassian.theplugin.commons.crucible.api.model;
 
 public class VersionedCommentBean extends GeneralCommentBean implements VersionedComment {
 	private PermId permId;
