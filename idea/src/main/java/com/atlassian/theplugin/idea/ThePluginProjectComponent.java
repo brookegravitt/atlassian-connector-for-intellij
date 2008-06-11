@@ -70,7 +70,7 @@ public class ThePluginProjectComponent implements
     private PluginUpdateIcon statusPluginUpdateIcon;
     private final BambooStatusChecker bambooStatusChecker;
     private HtmlBambooStatusListener iconBambooStatusListener;
-    private BambooStatusListenerImpl tooltipBambooStatusListener;
+    private BambooStatusTooltipListener tooltipBambooStatusListener;
 
     private final BambooTableToolWindowPanel bambooToolWindowPanel;
     private final CrucibleTableToolWindowPanel crucibleToolWindowPanel;
@@ -205,7 +205,7 @@ public class ThePluginProjectComponent implements
             // add simple bamboo listener to bamboo checker thread
             // this listener shows idea tooltip when buld failed
             BambooStatusDisplay buildFailedToolTip = new BuildStatusChangedToolTip(project);
-            tooltipBambooStatusListener = new BambooStatusListenerImpl(buildFailedToolTip, pluginConfiguration);
+            tooltipBambooStatusListener = new BambooStatusTooltipListener(buildFailedToolTip, pluginConfiguration);
             bambooStatusChecker.registerListener(tooltipBambooStatusListener);
 
             // add bamboo icon to status bar
