@@ -120,7 +120,8 @@ public class JIRASessionImpl implements JIRASession {
 		}
 	}
 
-	public void logWork(JIRAIssue issue, String timeSpent, Calendar startDate, String comment, boolean updateEstimate)
+	public void logWork(JIRAIssue issue, String timeSpent, Calendar startDate, String comment,
+						boolean updateEstimate, String newEstimate)
 			throws RemoteApiException {
 		RemoteWorklog workLog = new RemoteWorklog();
 		workLog.setStartDate(startDate);
@@ -128,7 +129,11 @@ public class JIRASessionImpl implements JIRASession {
 		workLog.setComment(comment);
 		try {
 			if (updateEstimate) {
-				service.addWorklogAndAutoAdjustRemainingEstimate(token, issue.getKey(), workLog);
+				if (newEstimate != null) {
+					service.addWorklogWithNewRemainingEstimate(token, issue.getKey(), workLog, newEstimate);	
+				} else {
+					service.addWorklogAndAutoAdjustRemainingEstimate(token, issue.getKey(), workLog);
+				}
 			} else {
 				service.addWorklogAndRetainRemainingEstimate(token, issue.getKey(), workLog);
 			}
