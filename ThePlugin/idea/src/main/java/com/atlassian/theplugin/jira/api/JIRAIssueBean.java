@@ -21,295 +21,299 @@ import org.jdom.Element;
 import java.util.Map;
 
 public class JIRAIssueBean implements JIRAIssue {
-	private String serverUrl;
+    private String serverUrl;
     private Long id;
     private String key;
-	private String summary;
-	private String status;
-	private String statusUrl;
-	private String type;
-	private String typeUrl;
-	private String priority;
-	private String priorityUrl;
-	private String description;
-	private String projectKey;
-	private JIRAConstant statusConstant;
-	private JIRAConstant typeConstant;
-	private JIRAConstant priorityConstant;
-	private String assignee;
-	private String reporter;
-	private String resolution;
-	private String created;
-	private String updated;
-	private long statusId;
-	private long priorityId;
-	private long typeId;
+    private String summary;
+    private String status;
+    private String statusUrl;
+    private String type;
+    private String typeUrl;
+    private String priority;
+    private String priorityUrl;
+    private String description;
+    private String projectKey;
+    private JIRAConstant statusConstant;
+    private JIRAConstant typeConstant;
+    private JIRAConstant priorityConstant;
+    private String assignee;
+    private String reporter;
+    private String resolution;
+    private String created;
+    private String updated;
+    private long statusId;
+    private long priorityId;
+    private long typeId;
 
-	public JIRAIssueBean() {
-	}
+    public JIRAIssueBean() {
+    }
 
-	public JIRAIssueBean(String serverUrl) {
-		this.serverUrl = serverUrl;
-	}
+    public JIRAIssueBean(String serverUrl) {
+        this.serverUrl = serverUrl;
+    }
 
-	public JIRAIssueBean(String serverUrl, Element e) {
-		this.serverUrl = serverUrl;
-		this.summary = getTextSafely(e, "summary");
-		this.key = getTextSafely(e, "key");
+    public JIRAIssueBean(String serverUrl, Element e) {
+        this.serverUrl = serverUrl;
+        this.summary = getTextSafely(e, "summary");
+        this.key = getTextSafely(e, "key");
         this.id = new Long(getAttributeSafely(e, "key", "id"));
         updateProjectKey();
-		this.status = getTextSafely(e, "status");
-		this.statusUrl = getAttributeSafely(e, "status", "iconUrl");
-		try {
-			this.statusId = Long.parseLong(getAttributeSafely(e, "status", "id"));
-		} catch (NumberFormatException ex) {
-			this.statusId = 0;
-		}
-		this.priority = getTextSafely(e, "priority");
-		this.priorityUrl = getAttributeSafely(e, "priority", "iconUrl");
-		try {
-			this.priorityId = Long.parseLong(getAttributeSafely(e, "priority", "id"));
-		} catch (NumberFormatException ex) {
-			this.priorityId = 0;
-		}
-		this.description = getTextSafely(e, "description");
-		this.type = getTextSafely(e, "type");
-		this.typeUrl = getAttributeSafely(e, "type", "iconUrl");
-		try {
-			this.typeId = Long.parseLong(getAttributeSafely(e, "type", "id"));
-		} catch (NumberFormatException ex) {
-			this.typeId = 0;
-		}
-		this.assignee = getTextSafely(e, "assignee");
-		this.reporter = getTextSafely(e, "reporter");
-		this.created = getTextSafely(e, "created");
-		this.updated = getTextSafely(e, "updated");
-		this.resolution = getTextSafely(e, "resolution");
-	}
+        this.status = getTextSafely(e, "status");
+        this.statusUrl = getAttributeSafely(e, "status", "iconUrl");
+        try {
+            this.statusId = Long.parseLong(getAttributeSafely(e, "status", "id"));
+        } catch (NumberFormatException ex) {
+            this.statusId = 0;
+        }
+        this.priority = getTextSafely(e, "priority");
+        this.priorityUrl = getAttributeSafely(e, "priority", "iconUrl");
+        try {
+            this.priorityId = Long.parseLong(getAttributeSafely(e, "priority", "id"));
+        } catch (NumberFormatException ex) {
+            this.priorityId = 0;
+        }
+        this.description = getTextSafely(e, "description");
+        this.type = getTextSafely(e, "type");
+        this.typeUrl = getAttributeSafely(e, "type", "iconUrl");
+        try {
+            this.typeId = Long.parseLong(getAttributeSafely(e, "type", "id"));
+        } catch (NumberFormatException ex) {
+            this.typeId = 0;
+        }
+        this.assignee = getTextSafely(e, "assignee");
+        this.reporter = getTextSafely(e, "reporter");
+        this.created = getTextSafely(e, "created");
+        this.updated = getTextSafely(e, "updated");
+        this.resolution = getTextSafely(e, "resolution");
+    }
 
-	public JIRAConstant getPriorityConstant() {
-		return priorityConstant;
-	}
+    public JIRAConstant getPriorityConstant() {
+        return priorityConstant;
+    }
 
-	public void setPriority(JIRAConstant priority) {
-		this.priority = priority.getName();
-		this.priorityConstant = priority;
-	}
+    public void setPriority(JIRAConstant priority) {
+        this.priority = priority.getName();
+        this.priorityConstant = priority;
+    }
 
-	public JIRAIssueBean(String serverUrl, Map params) {
-		this.serverUrl = serverUrl;
-		this.summary = (String) params.get("summary");
-		this.status = (String) params.get("status");
-		this.key = (String) params.get("key");
-		this.id = new Long(params.get("key").toString());
-		updateProjectKey();
-		this.description = (String) params.get("description");
-		this.type = (String) params.get("type");
-		this.priority = (String) params.get("priority");
-	}
+    public JIRAIssueBean(String serverUrl, Map params) {
+        this.serverUrl = serverUrl;
+        this.summary = (String) params.get("summary");
+        this.status = (String) params.get("status");
+        this.key = (String) params.get("key");
+        this.id = new Long(params.get("key").toString());
+        updateProjectKey();
+        this.description = (String) params.get("description");
+        this.type = (String) params.get("type");
+        this.priority = (String) params.get("priority");
+    }
 
-	private void updateProjectKey() {
-		if (key != null) {
-			projectKey = key.substring(0, key.indexOf("-"));
-		}
-	}
+    private void updateProjectKey() {
+        if (key != null) {
+            if (key.indexOf("-") >= 0) {
+                projectKey = key.substring(0, key.indexOf("-"));
+            } else {
+                projectKey = key;
+            }
+        }
+    }
 
-	private String getTextSafely(Element e, String name) {
-		Element child = e.getChild(name);
+    private String getTextSafely(Element e, String name) {
+        Element child = e.getChild(name);
 
-		if (child == null) {
-			return null;
-		}
+        if (child == null) {
+            return null;
+        }
 
-		return child.getText();
-	}
+        return child.getText();
+    }
 
-	private String getAttributeSafely(Element e, String elementName, String attributeName) {
-		Element child = e.getChild(elementName);
+    private String getAttributeSafely(Element e, String elementName, String attributeName) {
+        Element child = e.getChild(elementName);
 
-		if (child == null || child.getAttribute(attributeName) == null) {
-			return null;
-		}
+        if (child == null || child.getAttribute(attributeName) == null) {
+            return null;
+        }
 
-		return child.getAttributeValue(attributeName);
-	}
+        return child.getAttributeValue(attributeName);
+    }
 
-	public String getServerUrl() {
-		return serverUrl;
-	}
+    public String getServerUrl() {
+        return serverUrl;
+    }
 
-	public void setServerUrl(String serverUrl) {
-		this.serverUrl = serverUrl;
-	}
+    public void setServerUrl(String serverUrl) {
+        this.serverUrl = serverUrl;
+    }
 
-	public String getProjectUrl() {
-		return serverUrl + "/browse/" + getProjectKey();
-	}
+    public String getProjectUrl() {
+        return serverUrl + "/browse/" + getProjectKey();
+    }
 
-	public String getIssueUrl() {
-		return serverUrl + "/browse/" + getKey();
-	}
+    public String getIssueUrl() {
+        return serverUrl + "/browse/" + getKey();
+    }
 
     public Long getId() {
         return id;
     }
 
     public String getProjectKey() {
-		return projectKey;
-	}
+        return projectKey;
+    }
 
-	public String getStatus() {
-		return status;
-	}
+    public String getStatus() {
+        return status;
+    }
 
-	public String getStatusTypeUrl() {
-		return statusUrl;
-	}
+    public String getStatusTypeUrl() {
+        return statusUrl;
+    }
 
-	public String getPriority() {
-		return priority;
-	}
+    public String getPriority() {
+        return priority;
+    }
 
-	public String getPriorityIconUrl() {
-		return priorityUrl;
-	}
+    public String getPriorityIconUrl() {
+        return priorityUrl;
+    }
 
-	public String getKey() {
-		return key;
-	}
+    public String getKey() {
+        return key;
+    }
 
-	public void setKey(String key) {
-		this.key = key;
-	}
+    public void setKey(String key) {
+        this.key = key;
+    }
 
-	public String getSummary() {
-		return summary;
-	}
+    public String getSummary() {
+        return summary;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public String getTypeIconUrl() {
-		return typeUrl;
-	}
+    public String getTypeIconUrl() {
+        return typeUrl;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setSummary(String summary) {
-		this.summary = summary;
-	}
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
 
-	public void setProjectKey(String projectKey) {
-		this.projectKey = projectKey;
-	}
+    public void setProjectKey(String projectKey) {
+        this.projectKey = projectKey;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public JIRAConstant getTypeConstant() {
-		return typeConstant;
-	}
+    public JIRAConstant getTypeConstant() {
+        return typeConstant;
+    }
 
-	public void setType(JIRAConstant type) {
-		this.type = type.getName();
-		this.typeConstant = type;
-	}
+    public void setType(JIRAConstant type) {
+        this.type = type.getName();
+        this.typeConstant = type;
+    }
 
-	public JIRAConstant getStatusConstant() {
-		return statusConstant;
-	}
+    public JIRAConstant getStatusConstant() {
+        return statusConstant;
+    }
 
-	public void setStatus(JIRAConstant status) {
-		this.status = status.getName();
-		this.statusConstant = status;
-	}
+    public void setStatus(JIRAConstant status) {
+        this.status = status.getName();
+        this.statusConstant = status;
+    }
 
-	public String getAssignee() {
-		return assignee;
-	}
+    public String getAssignee() {
+        return assignee;
+    }
 
-	public void setAssignee(String assignee) {
-		this.assignee = assignee;
-	}
+    public void setAssignee(String assignee) {
+        this.assignee = assignee;
+    }
 
-	public long getPriorityId() {
-		return priorityId;
-	}
+    public long getPriorityId() {
+        return priorityId;
+    }
 
-	public long getStatusId() {
-		return statusId;
-	}
+    public long getStatusId() {
+        return statusId;
+    }
 
-	public long getTypeId() {
-		return typeId;
-	}
+    public long getTypeId() {
+        return typeId;
+    }
 
-	public String getReporter() {
-		return reporter;
-	}
+    public String getReporter() {
+        return reporter;
+    }
 
-	public void setReporter(String reporter) {
-		this.reporter = reporter;
-	}
+    public void setReporter(String reporter) {
+        this.reporter = reporter;
+    }
 
-	public String getResolution() {
-		return resolution;
-	}
+    public String getResolution() {
+        return resolution;
+    }
 
-	public void setResolution(String resolution) {
-		this.resolution = resolution;
-	}
+    public void setResolution(String resolution) {
+        this.resolution = resolution;
+    }
 
-	public String getCreated() {
-		return created;
-	}
+    public String getCreated() {
+        return created;
+    }
 
-	public void setCreated(String created) {
-		this.created = created;
-	}
+    public void setCreated(String created) {
+        this.created = created;
+    }
 
-	public String getUpdated() {
-		return updated;
-	}
+    public String getUpdated() {
+        return updated;
+    }
 
-	public void setUpdated(String updated) {
-		this.updated = updated;
-	}	
+    public void setUpdated(String updated) {
+        this.updated = updated;
+    }
 
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
-		JIRAIssueBean that = (JIRAIssueBean) o;
+        JIRAIssueBean that = (JIRAIssueBean) o;
 
-		if (key != null ? !key.equals(that.key) : that.key != null) {
-			return false;
-		}
-		if (serverUrl != null ? !serverUrl.equals(that.serverUrl) : that.serverUrl != null) {
-			return false;
-		}
-		if (summary != null ? !summary.equals(that.summary) : that.summary != null) {
-			return false;
-		}
+        if (key != null ? !key.equals(that.key) : that.key != null) {
+            return false;
+        }
+        if (serverUrl != null ? !serverUrl.equals(that.serverUrl) : that.serverUrl != null) {
+            return false;
+        }
+        if (summary != null ? !summary.equals(that.summary) : that.summary != null) {
+            return false;
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	private static final int ONE_EFF = 31;
+    private static final int ONE_EFF = 31;
 
-	public int hashCode() {
-		int result;
-		result = (serverUrl != null ? serverUrl.hashCode() : 0);
-		result = ONE_EFF * result + (key != null ? key.hashCode() : 0);
-		result = ONE_EFF * result + (summary != null ? summary.hashCode() : 0);
-		return result;
-	}
+    public int hashCode() {
+        int result;
+        result = (serverUrl != null ? serverUrl.hashCode() : 0);
+        result = ONE_EFF * result + (key != null ? key.hashCode() : 0);
+        result = ONE_EFF * result + (summary != null ? summary.hashCode() : 0);
+        return result;
+    }
 }
