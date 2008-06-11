@@ -26,8 +26,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
-
 
 public final class CrucibleRestXmlHelper {
 
@@ -122,7 +120,11 @@ public final class CrucibleRestXmlHelper {
             review.setPermaId(permId);
         }
 
-        review.setMetricsVersion(Integer.valueOf(getChildText(reviewNode, "metricsVersion")));
+        try {
+            review.setMetricsVersion(Integer.valueOf(getChildText(reviewNode, "metricsVersion")));
+        } catch (NumberFormatException e) {
+            review.setMetricsVersion(-1);
+        }
 
         return review;
     }
@@ -254,6 +256,9 @@ public final class CrucibleRestXmlHelper {
         commentBean.setDraft(Boolean.parseBoolean(getChildText(reviewCommentNode, "draft")));
         commentBean.setDeleted(Boolean.parseBoolean(getChildText(reviewCommentNode, "deleted")));
         commentBean.setCreateDate(parseCommentTime(getChildText(reviewCommentNode, "createDate")));
+        PermIdBean permId = new PermIdBean();
+        permId.setId(getChildText(reviewCommentNode, "permaIdAsString"));
+        commentBean.setPermId(permId);
 
         List<Element> metrics = getChildElements(reviewCommentNode, "metrics");
         if (metrics != null) {
@@ -284,10 +289,42 @@ public final class CrucibleRestXmlHelper {
         }
     }
 
+    private static Document prepareComment(GeneralComment comment) {
+        Element commentNode = new Element("generalCommentData");
+        Document doc = new Document(commentNode);
+        String date = commentOutTimeFormat.format(comment.getCreateDate());
+        System.out.println("date = " + date);
+        String strangeDate = date.substring(0, date.length() - 2);
+        strangeDate += ":00";
+        System.out.println("strangeDate = " + strangeDate);
+        addTag(commentNode, "createDate", strangeDate);
+        addTag(commentNode, "user", comment.getUser());
+        addTag(commentNode, "defectRaised", Boolean.toString(comment.isDefectRaised()));
+        addTag(commentNode, "defectApproved", Boolean.toString(comment.isDefectApproved()));
+        addTag(commentNode, "deleted", Boolean.toString(comment.isDeleted()));
+        addTag(commentNode, "draft", Boolean.toString(comment.isDraft()));
+        addTag(commentNode, "message", comment.getMessage());
+/*
+        Element permIdElement = new Element("permaId");
+        commentNode.getContent().add(permIdElement);
+        addTag(permIdElement, "id", comment.getPermId().getId());
+*/
+        Element metrics = new Element("metrics");
+        commentNode.getContent().add(metrics);
+        Element replies = new Element("replies");
+        commentNode.getContent().add(replies);
+
+        return doc;
+    }
+
     public static GeneralCommentBean parseGeneralCommentNode(Element reviewCommentNode) {
         GeneralCommentBean reviewCommentBean = new GeneralCommentBean();
         parseComment(reviewCommentBean, reviewCommentNode);
         return reviewCommentBean;
+    }
+
+    public static Document prepareGeneralComment(GeneralComment comment) {
+        return prepareComment(comment);
     }
 
     public static VersionedCommentBean parseVersionedCommentNode(Element reviewCommentNode) {
@@ -429,6 +466,7 @@ public final class CrucibleRestXmlHelper {
 
 
     private static SimpleDateFormat commentTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSz");
+    private static SimpleDateFormat commentOutTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
     private static Date parseCommentTime(String date) {
         try {
