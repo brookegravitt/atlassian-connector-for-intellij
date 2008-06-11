@@ -65,7 +65,9 @@ public interface CrucibleSession {
 
 	List<GeneralComment> getGeneralComments(PermId id) throws RemoteApiException;
 
-	List<VersionedComment> getVersionedComments(PermId id) throws RemoteApiException;	
+    GeneralComment addGeneralComment(PermId id, GeneralComment comment) throws RemoteApiException;
+
+    List<VersionedComment> getVersionedComments(PermId id) throws RemoteApiException;
 
 	List<GeneralComment> getComments(PermId id) throws RemoteApiException;
 
