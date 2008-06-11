@@ -114,7 +114,14 @@ public abstract class AbstractHttpSession {
         return retrievePostResponse(urlString, request, true);
 	}
 
-	protected Document retrievePostResponse(String urlString, Document request, boolean expectResponse)
+    protected Document retrievePostResponse(String urlString, Document request, boolean expectResponse)
+            throws IOException, JDOMException, RemoteApiSessionExpiredException {
+        XMLOutputter serializer = new XMLOutputter(Format.getPrettyFormat());
+        String requestString = serializer.outputString(request);
+        return retrievePostResponse(urlString, requestString, expectResponse);
+    }
+
+    protected Document retrievePostResponse(String urlString, String request, boolean expectResponse)
 			throws IOException, JDOMException, RemoteApiSessionExpiredException {
 		UrlUtil.validateUrl(urlString);
 
@@ -135,9 +142,8 @@ public abstract class AbstractHttpSession {
 				method.getParams().setSoTimeout(client.getParams().getSoTimeout());
 				adjustHttpHeader(method);
 
-                XMLOutputter serializer = new XMLOutputter(Format.getPrettyFormat());
                 method.setRequestEntity(
-                        new StringRequestEntity(serializer.outputString(request), "application/xml", "UTF-8"));
+                        new StringRequestEntity(request, "application/xml", "UTF-8"));
 
 				client.executeMethod(method);
 

@@ -14,26 +14,9 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.commons.crucible.api;
+package com.atlassian.theplugin.commons.crucible.api.model;
 
-public interface CustomFilter {
-    String getTitle();    
 
-    String[] getState();
-
-    String getAuthor();
-
-    String getModerator();
-
-    String getCreator();
-
-    String getReviewer();
-
-    boolean isComplete();
-
-    boolean isAllReviewersComplete();
-
-    String getProjectKey();
-
-    boolean isOrRoles();
+public interface ReviewItemId {
+	String getId();	
 }

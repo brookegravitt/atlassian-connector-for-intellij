@@ -28,6 +28,7 @@ import org.jdom.output.Format;
 import org.jdom.xpath.XPath;
 import com.atlassian.theplugin.commons.thirdparty.base64.Base64;
 import com.atlassian.theplugin.commons.crucible.api.*;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -58,6 +59,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
     private static final String APPROVE_ACTION = "/approve";
     private static final String ADD_CHANGESET = "/addChangeset";
     private static final String ADD_PATCH = "/addPatch";
+    private static final String GET_METRICS = "/metrics";    
 
     private String authToken = null;
 
@@ -127,7 +129,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
 	}
 
-	public List<ReviewData> getReviewsInStates(List<State> states) throws RemoteApiException {
+	public List<Review> getReviewsInStates(List<State> states) throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
@@ -152,7 +154,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			XPath xpath = XPath.newInstance("/reviews/reviewData");
 			@SuppressWarnings("unchecked")
 			List<Element> elements = xpath.selectNodes(doc);
-			List<ReviewData> reviews = new ArrayList<ReviewData>();
+			List<Review> reviews = new ArrayList<Review>();
 
 			if (elements != null && !elements.isEmpty()) {
 				for (Element element : elements) {
@@ -167,11 +169,11 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
 	}
 
-	public List<ReviewData> getAllReviews() throws RemoteApiException {
+	public List<Review> getAllReviews() throws RemoteApiException {
 		return getReviewsInStates(null);
 	}
 
-    public List<ReviewData> getReviewsForFilter(PredefinedFilter filter) throws RemoteApiException {
+    public List<Review> getReviewsForFilter(PredefinedFilter filter) throws RemoteApiException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Calling method without calling login() first");
         }
@@ -185,7 +187,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             XPath xpath = XPath.newInstance("/reviews/reviewData");
             @SuppressWarnings("unchecked")
             List<Element> elements = xpath.selectNodes(doc);
-            List<ReviewData> reviews = new ArrayList<ReviewData>();
+            List<Review> reviews = new ArrayList<Review>();
 
             if (elements != null && !elements.isEmpty()) {
                 for (Element element : elements) {
@@ -200,7 +202,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         }
     }
 
-    public List<ReviewData> getReviewsForCustomFilter(CustomFilter filter) throws RemoteApiException {
+    public List<Review> getReviewsForCustomFilter(CustomFilter filter) throws RemoteApiException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Calling method without calling login() first");
         }
@@ -211,7 +213,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             XPath xpath = XPath.newInstance("/reviews/reviewData");
             @SuppressWarnings("unchecked")
             List<Element> elements = xpath.selectNodes(doc);
-            List<ReviewData> reviews = new ArrayList<ReviewData>();
+            List<Review> reviews = new ArrayList<Review>();
             
             if (elements != null && !elements.isEmpty()) {
                 for (Element element : elements) {
@@ -235,7 +237,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         }
     }
 
-    public List<UserData> getReviewers(PermId permId) throws RemoteApiException {
+    public List<User> getReviewers(PermId permId) throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
@@ -247,7 +249,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			XPath xpath = XPath.newInstance("/reviewers/reviewer");
 			@SuppressWarnings("unchecked")
 			List<Element> elements = xpath.selectNodes(doc);
-			List<UserData> reviewers = new ArrayList<UserData>();
+			List<User> reviewers = new ArrayList<User>();
 
 			if (elements != null && !elements.isEmpty()) {
 				for (Element element : elements) {
@@ -262,7 +264,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
 	}
 
-    public List<UserData> getUsers() throws RemoteApiException {
+    public List<User> getUsers() throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
@@ -274,7 +276,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			XPath xpath = XPath.newInstance("/users/userData");
 			@SuppressWarnings("unchecked")
 			List<Element> elements = xpath.selectNodes(doc);
-			List<UserData> users = new ArrayList<UserData>();
+			List<User> users = new ArrayList<User>();
 
 			if (elements != null && !elements.isEmpty()) {
 				for (Element element : elements) {
@@ -289,7 +291,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
     }
 
-    public List<ProjectData> getProjects() throws RemoteApiException {
+    public List<Project> getProjects() throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
@@ -301,7 +303,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			XPath xpath = XPath.newInstance("/projects/projectData");
 			@SuppressWarnings("unchecked")
 			List<Element> elements = xpath.selectNodes(doc);
-			List<ProjectData> projects = new ArrayList<ProjectData>();
+			List<Project> projects = new ArrayList<Project>();
 
 			if (elements != null && !elements.isEmpty()) {
 				for (Element element : elements) {
@@ -316,7 +318,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
 	}
 
-	public List<RepositoryData> getRepositories() throws RemoteApiException {
+	public List<Repository> getRepositories() throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
@@ -328,7 +330,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			XPath xpath = XPath.newInstance("/repositories/repoData");
 			@SuppressWarnings("unchecked")
 			List<Element> elements = xpath.selectNodes(doc);
-			List<RepositoryData> repositories = new ArrayList<RepositoryData>();
+			List<Repository> repositories = new ArrayList<Repository>();
 
 			if (elements != null && !elements.isEmpty()) {
 				for (Element element : elements) {
@@ -343,13 +345,13 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
 	}
 
-	public SvnRepositoryData getRepository(String repoName) throws RemoteApiException {
+	public SvnRepository getRepository(String repoName) throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
 
-		List<RepositoryData> repositories = getRepositories();
-		for (RepositoryData repository : repositories) {
+		List<Repository> repositories = getRepositories();
+		for (Repository repository : repositories) {
 			if (repository.getName().equals(repoName)) {
 				if (repository.getType().equals("svn")) {
 					String requestUrl = baseUrl + REPOSITORIES_SERVICE + "/" + repoName + "/svn";
@@ -374,7 +376,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		return null;
 	}
 
-	public List<ReviewItemData> getReviewItems(PermId id) throws RemoteApiException {
+	public List<ReviewItem> getReviewItems(PermId id) throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
@@ -386,12 +388,12 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			XPath xpath = XPath.newInstance("reviewItems/reviewItem");
 			@SuppressWarnings("unchecked")
 			List<Element> elements = xpath.selectNodes(doc);
-			List<ReviewItemData> reviewItems = new ArrayList<ReviewItemData>();
+			List<ReviewItem> reviewItems = new ArrayList<ReviewItem>();
 
 			if (elements != null && !elements.isEmpty()) {
 				for (Element element : elements) {
-					ReviewItemDataBean review = CrucibleRestXmlHelper.parseReviewItemNode(element);
-					SvnRepositoryData repository = getRepository(review.getRepositoryName());
+					ReviewItemBean review = CrucibleRestXmlHelper.parseReviewItemNode(element);
+					SvnRepository repository = getRepository(review.getRepositoryName());
 					if (repository != null) {
 						String repoPath = repository.getUrl() + "/" + repository.getPath() + "/";
 						if (!"".equals(review.getFromPath())) {
@@ -524,14 +526,14 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
 	}
 
-	public ReviewData createReview(ReviewData reviewData) throws RemoteApiException {
+	public Review createReview(Review review) throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
-		return createReviewFromPatch(reviewData, null);
+		return createReviewFromPatch(review, null);
 	}
 
-	public ReviewData createReviewFromPatch(ReviewData review, String patch) throws RemoteApiException {
+	public Review createReviewFromPatch(Review review, String patch) throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
@@ -555,12 +557,12 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
 	}
 
-    public ReviewData createReviewFromRevision(ReviewData reviewData, List<String> revisions) throws RemoteApiException {
+    public Review createReviewFromRevision(Review review, List<String> revisions) throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
 
-		Document request = CrucibleRestXmlHelper.prepareCreateReviewNode(reviewData, revisions);
+		Document request = CrucibleRestXmlHelper.prepareCreateReviewNode(review, revisions);
         try {
 			Document doc = retrievePostResponse(baseUrl + REVIEW_SERVICE, request);
 
@@ -579,7 +581,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
     }
 
-    public ReviewData addRevisionsToReview(PermId permId, String repository, List<String> revisions) throws RemoteApiException {
+    public Review addRevisionsToReview(PermId permId, String repository, List<String> revisions) throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
@@ -606,7 +608,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
     }
 
-    public ReviewData addPatchToReview(PermId permId, String repository, String patch) throws RemoteApiException {
+    public Review addPatchToReview(PermId permId, String repository, String patch) throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
@@ -637,11 +639,17 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
 
-        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + permId.getId() + ADD_REVIEWERS;
-        Document request = CrucibleRestXmlHelper.prepareAddReviewersNode(users);
-
+        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + permId.getId() + GET_REVIEWERS;
+        String reviewers = "";
+        for (String user : users) {
+            if (reviewers.length() > 0) {
+                reviewers += ",";
+            }
+            reviewers += user;
+        }
+        
         try {
-			retrievePostResponse(requestUrl, request, false);
+			retrievePostResponse(requestUrl, reviewers, false);
 		} catch (IOException e) {
 			throw new RemoteApiException(e.getMessage(), e);
 		} catch (JDOMException e) {
@@ -649,7 +657,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
     }
 
-    public ReviewData approveReview(PermId permId) throws RemoteApiException {
+    public Review approveReview(PermId permId) throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
@@ -661,7 +669,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             XPath xpath = XPath.newInstance("reviewData");
             @SuppressWarnings("unchecked")
             List<Element> elements = xpath.selectNodes(doc);
-            ReviewData review = null;
+            Review review = null;
 
             if (elements != null && !elements.isEmpty()) {
                 for (Element element : elements) {
@@ -669,6 +677,33 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
                 }
             }
             return review;
+        } catch (IOException e) {
+			throw new RemoteApiException(e.getMessage(), e);
+		} catch (JDOMException e) {
+			throw new RemoteApiException("Server returned malformed response", e);
+		}
+    }
+
+    public List<CustomFieldDef> getMetrics(int version) throws RemoteApiException {
+		if (!isLoggedIn()) {
+			throw new IllegalStateException("Calling method without calling login() first");
+		}
+
+		String requestUrl = baseUrl + REVIEW_SERVICE + GET_METRICS + "/" + Integer.toString(version);
+		try {
+			Document doc = retrieveGetResponse(requestUrl);
+
+            XPath xpath = XPath.newInstance("metrics/metricsData");
+            @SuppressWarnings("unchecked")
+            List<Element> elements = xpath.selectNodes(doc);
+            List<CustomFieldDef> metrics = new ArrayList<CustomFieldDef>();
+
+            if (elements != null && !elements.isEmpty()) {
+                for (Element element : elements) {
+                    metrics.add(CrucibleRestXmlHelper.parseMetricsNode(element));
+                }
+            }
+            return metrics;
         } catch (IOException e) {
 			throw new RemoteApiException(e.getMessage(), e);
 		} catch (JDOMException e) {

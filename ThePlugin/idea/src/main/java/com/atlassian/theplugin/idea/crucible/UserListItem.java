@@ -1,21 +1,21 @@
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.crucible.api.UserData;
+import com.atlassian.theplugin.commons.crucible.api.model.User;
 
 public class UserListItem {
-    private UserData user;
+    private User user;
     private boolean selected;
 
-    public UserListItem(UserData user, boolean selected) {
+    public UserListItem(User user, boolean selected) {
         this.user = user;
         this.selected = selected;
     }
 
-    public UserData getUser() {
+    public User getUser() {
         return user;
     }
 
-    public void setUser(UserData user) {
+    public void setUser(User user) {
         this.user = user;
     }
 

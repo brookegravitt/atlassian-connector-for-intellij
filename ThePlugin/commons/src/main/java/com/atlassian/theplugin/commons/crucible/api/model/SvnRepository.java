@@ -14,33 +14,9 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.commons.crucible.api;
+package com.atlassian.theplugin.commons.crucible.api.model;
 
-public class SvnRepositoryDataBean extends RepositoryDataBean implements SvnRepositoryData {
-	private String url;
-	private String path;
-
-	public SvnRepositoryDataBean() {
-	}
-
-	public SvnRepositoryDataBean(String url, String path) {
-		this.url = url;
-		this.path = path;
-	}
-
-	public String getUrl() {
-		return url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
-	}
-
-	public String getPath() {
-		return path;
-	}
-
-	public void setPath(String path) {
-		this.path = path;
-	}
+public interface SvnRepository extends Repository {
+	String getUrl();
+	String getPath();
 }

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.commons.crucible.api;
+package com.atlassian.theplugin.commons.crucible.api.model;
 
-public class ReviewItemDataBean implements ReviewItemData {
+public class ReviewItemBean implements ReviewItem {
 	private PermId permId;
 	private String repositoryName;
 	private String fromPath;
@@ -24,7 +24,7 @@ public class ReviewItemDataBean implements ReviewItemData {
 	private String toPath;
 	private String toRevision;
 
-	public ReviewItemDataBean() {
+	public ReviewItemBean() {
 	}
 
 	public PermId getPermId() {

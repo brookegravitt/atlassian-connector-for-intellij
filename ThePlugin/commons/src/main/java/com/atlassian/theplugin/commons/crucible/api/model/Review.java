@@ -14,22 +14,30 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.commons.crucible.api;
+package com.atlassian.theplugin.commons.crucible.api.model;
 
-public interface VersionedComment extends GeneralComment {
-	PermId getPermId();
+import com.atlassian.theplugin.commons.crucible.api.model.State;
 
-	ReviewItemId getReviewItemId();
+public interface Review {
+	String getAuthor();
 
-	boolean isToLineInfo();
+	String getCreator();
 
-	int getToStartLine();
+	String getDescription();
 
-	int getToEndLine();
+	String getModerator();
 
-	boolean isFromLineInfo();	
+	String getName();
 
-	int getFromStartLine();
+	PermId getParentReview();
 
-	int getFromEndLine();	
+	PermId getPermaId();
+
+	String getProjectKey();
+
+	String getRepoName();
+
+	State getState();
+
+    int getMetricsVersion();
 }
