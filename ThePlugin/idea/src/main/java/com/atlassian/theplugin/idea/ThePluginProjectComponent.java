@@ -90,8 +90,9 @@ public class ThePluginProjectComponent implements
 
     private List<ReviewItemVirtualFile> reviewScopeFiles;
     private String reviewId;
+	private ReviewDetailsToolWindow reviewDetailsToolWindow;
 
-    public ThePluginProjectComponent(Project project,
+	public ThePluginProjectComponent(Project project,
                                      CrucibleStatusChecker crucibleStatusChecker,
                                      ToolWindowManager toolWindowManager,
                                      /*BambooStatusChecker bambooStatusChecker,*/
@@ -184,7 +185,9 @@ public class ThePluginProjectComponent implements
             //PluginToolWindow.focusPanel(project, PluginToolWindow.ToolWindowPanels.JIRA);
             //toolWindow.getIdeaToolWindow().getContentManager().setSelectedContent(jiraToolWindow);
 
-            TableView.restore(projectConfigurationBean.getJiraConfiguration().getTableConfiguration(),
+			reviewDetailsToolWindow = new ReviewDetailsToolWindow(toolWindowManager, project);
+
+			TableView.restore(projectConfigurationBean.getJiraConfiguration().getTableConfiguration(),
                     jiraToolWindowPanel.getTable());
 
             // add tool window bamboo content listener to bamboo checker thread
