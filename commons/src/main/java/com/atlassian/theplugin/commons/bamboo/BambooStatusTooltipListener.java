@@ -33,7 +33,7 @@ public class BambooStatusTooltipListener implements BambooStatusListener {
 	private Map<String, BambooBuild> prevBuildStatuses = new HashMap<String, BambooBuild>(0);
 	private final BambooStatusDisplay display;
 	private final PluginConfiguration pluginConfiguration;
-	private PopupInfo popupInfo = new PopupInfo();
+	private BambooPopupInfo popupInfo = new BambooPopupInfo();
 
 
 	/**
