@@ -72,7 +72,8 @@ public class ThePluginProjectComponent implements
     private StausIconBambooListener iconBambooStatusListener;
     private BambooStatusTooltipListener tooltipBambooStatusListener;
 
-    private final BambooTableToolWindowPanel bambooToolWindowPanel;
+	private final CrucibleBottomToolWindowPanel crucibleBottomToolWindowPanel;
+	private final BambooTableToolWindowPanel bambooToolWindowPanel;
     private final CrucibleTableToolWindowPanel crucibleToolWindowPanel;
 
     private final CrucibleStatusChecker crucibleStatusChecker;
@@ -86,7 +87,8 @@ public class ThePluginProjectComponent implements
 
     private final JIRAToolWindowPanel jiraToolWindowPanel;
     private JIRAServer currentJiraServer;
-    private PluginToolWindow toolWindow;
+
+	private PluginToolWindow toolWindow;
 
     private List<ReviewItemVirtualFile> reviewScopeFiles;
     private String reviewId;
@@ -113,8 +115,9 @@ public class ThePluginProjectComponent implements
         this.jiraToolWindowPanel = JIRAToolWindowPanel.getInstance(projectConfigurationBean);
         this.projectConfigurationBean = projectConfigurationBean;
         this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
+		this.crucibleBottomToolWindowPanel = CrucibleBottomToolWindowPanel.getInstance(projectConfigurationBean);
 
-        // make findBugs happy
+		// make findBugs happy
         statusBarBambooIcon = null;
         statusBarCrucibleIcon = null;
         statusPluginUpdateIcon = null;
@@ -185,7 +188,8 @@ public class ThePluginProjectComponent implements
             //PluginToolWindow.focusPanel(project, PluginToolWindow.ToolWindowPanels.JIRA);
             //toolWindow.getIdeaToolWindow().getContentManager().setSelectedContent(jiraToolWindow);
 
-			reviewDetailsToolWindow = new ReviewDetailsToolWindow(toolWindowManager, project);
+			toolWindow.registerBottomPanel(PluginToolWindow.ToolWindowPanels.CRUCIBLE_BOTTOM);
+			toolWindow.showHidePanels();
 
 			TableView.restore(projectConfigurationBean.getJiraConfiguration().getTableConfiguration(),
                     jiraToolWindowPanel.getTable());
@@ -266,7 +270,18 @@ public class ThePluginProjectComponent implements
         return content;
     }
 
-    public Content createCrucibleContent() {
+	public Content createCrucibleBottomContent() {
+		   PeerFactory peerFactory = PeerFactory.getInstance();
+
+		   Content content = peerFactory.getContentFactory().createContent(
+				   crucibleBottomToolWindowPanel, PluginToolWindow.ToolWindowPanels.CRUCIBLE_BOTTOM.toString(), false);
+		   content.setIcon(IconLoader.getIcon("/icons/tab_crucible.png"));
+		   content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
+
+		   return content;
+	   }
+
+	public Content createCrucibleContent() {
         PeerFactory peerFactory = PeerFactory.getInstance();
 
         Content content = peerFactory.getContentFactory().createContent(

@@ -59,7 +59,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
     private static final String APPROVE_ACTION = "/approve";
     private static final String ADD_CHANGESET = "/addChangeset";
     private static final String ADD_PATCH = "/addPatch";
-    private static final String GET_METRICS = "/metrics";    
+    private static final String GET_METRICS = "/metrics";
     private static final String REPLY = "/reply";
 
     private String authToken = null;
@@ -216,7 +216,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             @SuppressWarnings("unchecked")
             List<Element> elements = xpath.selectNodes(doc);
             List<Review> reviews = new ArrayList<Review>();
-            
+
             if (elements != null && !elements.isEmpty()) {
                 for (Element element : elements) {
                     reviews.add(CrucibleRestXmlHelper.parseReviewNode(element));
@@ -786,7 +786,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             }
             reviewers += user;
         }
-        
+
         try {
 			retrievePostResponse(requestUrl, reviewers, false);
 		} catch (IOException e) {

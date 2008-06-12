@@ -49,7 +49,9 @@ import java.util.*;
 import java.util.List;
 
 public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStatusListener, TableItemSelectedListener {
-    private transient ActionToolbar filterEditToolbar;
+	private Collection<TableItemSelectedListener> generalItemSelectedListeners = new ArrayList<TableItemSelectedListener>();
+
+	private transient ActionToolbar filterEditToolbar;
     private static CrucibleTableToolWindowPanel instance;
     private TableColumnProvider columnProvider;
 
@@ -383,7 +385,12 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         if (noClicks == 2) {
             viewReview();
         }
-    }
+
+		//make sure that all listeners are run in separate thread
+		for (TableItemSelectedListener listener : generalItemSelectedListeners){
+			listener.itemSelected(item, noClicks);
+		}
+	}
 
     public void resetState() {
     }
@@ -464,8 +471,35 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     public void removeCustomFilter() {
 
     }
+	
+	/*add item selected listener for all components in this ToolWindow*/
+	public void addItemSelectedListener(TableItemSelectedListener listener){
 
-    public void showCustomFilter(boolean visible, CrucibleStatusChecker checker) {
+		generalItemSelectedListeners.add(listener);
+
+//		for (CollapsibleTable table: tables.values()){
+//			table.addItemSelectedListener(listener);
+//		}
+//
+//
+//		for (CollapsibleTable table: customTables.values()){
+//			table.addItemSelectedListener(listener);
+//		}
+	}
+
+	public void removeItemSelectedListener(TableItemSelectedListener listener){
+		for (CollapsibleTable table: tables.values()){
+			table.removeItemSelectedListener(listener);
+		}
+
+
+		for (CollapsibleTable table: customTables.values()){
+			table.removeItemSelectedListener(listener);
+		}
+	}
+
+
+	public void showCustomFilter(boolean visible, CrucibleStatusChecker checker) {
         if (!projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().isEmpty()) {
             for (String filterName : projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().keySet()) {
                 CustomFilterBean filter = projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().get(filterName);
@@ -480,7 +514,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
                                 "Context menu",
                                 getPopupActionGroup());
                         table.addItemSelectedListener(this);
-                        TableView.restore(projectConfiguration.getCrucibleConfiguration().getTableConfiguration(),
+						TableView.restore(projectConfiguration.getCrucibleConfiguration().getTableConfiguration(),
                                 table.getTable());
 
                         dataPanelsHolder.add(table);
