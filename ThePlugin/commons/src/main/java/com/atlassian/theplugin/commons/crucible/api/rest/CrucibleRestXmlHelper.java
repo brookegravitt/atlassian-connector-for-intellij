@@ -21,7 +21,6 @@ import com.atlassian.theplugin.commons.crucible.api.model.*;
 import org.jdom.CDATA;
 import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.Namespace;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
