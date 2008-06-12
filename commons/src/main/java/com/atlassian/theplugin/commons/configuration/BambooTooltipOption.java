@@ -40,5 +40,14 @@ public enum BambooTooltipOption {
 		public String toString() {
 			return "Never";
 		}
+	};
+
+	public static BambooTooltipOption valueOfAlias(String optionText) {
+		for (BambooTooltipOption option : BambooTooltipOption.values()) {
+			if (option.toString().equals(optionText)) {
+				return option;
+			}
+		}
+		return null;
 	}
 }
