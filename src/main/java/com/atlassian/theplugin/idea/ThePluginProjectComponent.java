@@ -69,7 +69,7 @@ public class ThePluginProjectComponent implements
     private CrucibleStatusIcon statusBarCrucibleIcon;
     private PluginUpdateIcon statusPluginUpdateIcon;
     private final BambooStatusChecker bambooStatusChecker;
-    private HtmlBambooStatusListener iconBambooStatusListener;
+    private StausIconBambooListener iconBambooStatusListener;
     private BambooStatusTooltipListener tooltipBambooStatusListener;
 
     private final BambooTableToolWindowPanel bambooToolWindowPanel;
@@ -188,15 +188,15 @@ public class ThePluginProjectComponent implements
                     jiraToolWindowPanel.getTable());
 
             // add tool window bamboo content listener to bamboo checker thread
-            //toolWindowBambooListener = new HtmlBambooStatusListener(bambooToolWindowPanel.getBambooContent());
+            //toolWindowBambooListener = new StausIconBambooListener(bambooToolWindowPanel.getBambooContent());
             bambooStatusChecker.registerListener(bambooToolWindowPanel);
 
             // create Bamboo status bar icon
             statusBarBambooIcon = new BambooStatusIcon(this.project);
-            statusBarBambooIcon.updateBambooStatus(BuildStatus.UNKNOWN, new PopupInfo());
+            statusBarBambooIcon.updateBambooStatus(BuildStatus.UNKNOWN, new BambooPopupInfo());
 
             // add icon listener to bamboo checker thread
-            iconBambooStatusListener = new HtmlBambooStatusListener(statusBarBambooIcon, pluginConfiguration);
+            iconBambooStatusListener = new StausIconBambooListener(statusBarBambooIcon, pluginConfiguration);
             bambooStatusChecker.registerListener(iconBambooStatusListener);
 
             // add simple bamboo listener to bamboo checker thread
