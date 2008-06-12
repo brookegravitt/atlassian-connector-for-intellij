@@ -270,6 +270,13 @@
 -->
     </repositories>
     <pluginRepositories>
+             <pluginRepository>
+                    <id>maven.shapshot</id>
+                    <name>Maven snapshot repository</name>
+ 
+		<url>http://people.apache.org/repo/m2-snapshot-repository</url>
+             </pluginRepository>
+	
         <pluginRepository>
             <id>atlassian-public-repository</id>
             <url>https://maven.atlassian.com/public</url>

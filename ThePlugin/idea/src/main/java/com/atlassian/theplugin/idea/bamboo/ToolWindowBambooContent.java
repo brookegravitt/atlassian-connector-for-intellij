@@ -19,6 +19,7 @@ package com.atlassian.theplugin.idea.bamboo;
 import com.atlassian.theplugin.commons.bamboo.BambooStatusDisplay;
 import com.atlassian.theplugin.idea.GenericHyperlinkListener;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
+import com.atlassian.theplugin.commons.bamboo.PopupInfo;
 
 import javax.swing.*;
 
@@ -29,8 +30,8 @@ public class ToolWindowBambooContent extends JEditorPane implements BambooStatus
         addHyperlinkListener(new GenericHyperlinkListener());
 	}
     
-    public void updateBambooStatus(BuildStatus generalBuildStatus, String htmlPage) {
-        this.setText(htmlPage);
+    public void updateBambooStatus(BuildStatus generalBuildStatus, PopupInfo popupInfo) {
+        this.setText(popupInfo.toHtml());
         this.setCaretPosition(0);
     }
 }

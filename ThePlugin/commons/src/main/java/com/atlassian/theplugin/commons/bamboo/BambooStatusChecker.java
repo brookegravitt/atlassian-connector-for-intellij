@@ -20,6 +20,7 @@ import com.atlassian.theplugin.commons.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.configuration.BambooConfigurationBean;
+import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.util.DateUtil;
 import com.atlassian.theplugin.commons.util.Logger;
 
@@ -37,7 +38,7 @@ import java.util.TimerTask;
  * <p/>
  * Thread safe.
  */
-public final class BambooStatusChecker implements SchedulableChecker {
+public final class BambooStatusChecker implements SchedulableChecker, ConfigurationListener {
 
 	private final List<BambooStatusListener> listenerList = new ArrayList<BambooStatusListener>();
 
@@ -166,6 +167,10 @@ public final class BambooStatusChecker implements SchedulableChecker {
 		for (BambooStatusListener listener : listenerList) {
 			listener.resetState();
 		}
+	}
+
+	public void updateConfiguration(PluginConfigurationBean configuration) {
+		this.configuration = configuration;
 	}
 
 }
