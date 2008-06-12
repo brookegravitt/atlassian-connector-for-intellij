@@ -18,9 +18,13 @@ package com.atlassian.theplugin.commons.crucible.api.rest;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.extended.ISO8601DateConverter;
+import com.thoughtworks.xstream.io.xml.JDomDriver;
 import org.jdom.CDATA;
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.Namespace;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -129,10 +133,11 @@ public final class CrucibleRestXmlHelper {
         return review;
     }
 
-    public static void addTag(Element root, String tagName, String tagValue) {
+    public static Element addTag(Element root, String tagName, String tagValue) {
         Element newElement = new Element(tagName);
         newElement.addContent(tagValue);
         root.getContent().add(newElement);
+        return newElement;
     }
 
     public static Document prepareCreateReviewNode(Review review, String patch) {
@@ -248,6 +253,7 @@ public final class CrucibleRestXmlHelper {
     }
 
     private static void parseComment(GeneralCommentBean commentBean, Element reviewCommentNode) {
+
         commentBean.setUser(getChildText(reviewCommentNode, "user"));
         commentBean.setDisplayUser(getChildText(reviewCommentNode, "userDisplayName"));
         commentBean.setMessage(getChildText(reviewCommentNode, "message"));
@@ -302,6 +308,15 @@ public final class CrucibleRestXmlHelper {
         addTag(commentNode, "message", comment.getMessage());
         Element metrics = new Element("metrics");
         commentNode.getContent().add(metrics);
+
+        for (String key : comment.getCustomFields().keySet()) {
+            Element entry = new Element("entry");
+            metrics.getContent().add(entry);
+            addTag(entry, "key", key);
+            CustomField field = comment.getCustomFields().get(key);
+            entry.getContent().add(prepareCustomFieldValue(field));
+        }
+
         Element replies = new Element("replies");
         commentNode.getContent().add(replies);
     }
@@ -389,6 +404,25 @@ public final class CrucibleRestXmlHelper {
         }
 
         return comment;
+    }
+
+    private static Element prepareCustomFieldValue(CustomField value) {
+        Element entry = new Element("value");
+        addTag(entry, "configVersion", Integer.toString(value.getConfigVersion()));
+        addTag(entry, "fieldScope", value.getFieldScope());
+        addTag(entry, "type", value.getType().toString());
+        addTag(entry, "hrValue", value.getHrValue());
+        String v = "";
+        switch (value.getType()) {
+            case INTEGER:
+                v = ((Integer) value.getValue()).toString();
+                break;
+            case STRING:
+                v = (String) value.getValue();
+                break;
+        }
+        addTag(entry, "value", v);
+        return entry;
     }
 
     private static CustomFieldValue getCustomFieldValue(CustomFieldValueType type, Element element) {
