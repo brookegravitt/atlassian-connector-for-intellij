@@ -61,5 +61,7 @@ public interface JIRASession {
 
 	void setAssignee(JIRAIssue issue, String assignee) throws RemoteApiException;
 
+	List<JIRAComment> getComments(JIRAIssue issue) throws RemoteApiException;
+
 	boolean isLoggedIn();
 }

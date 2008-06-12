@@ -283,6 +283,16 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
+	public List<JIRAComment> getComments(Server server, JIRAIssue issue) throws JIRAException {
+		try {
+			JIRASession soap = getSoapSession(server);
+			return soap.getComments(issue);
+		} catch (RemoteApiException e) {
+			soapSessions.remove(getSoapSessionKey(server));
+			throw new JIRAException(e.getMessage(), e);
+		}
+	}
+
 	public void progressWorkflowAction(Server server, JIRAIssue issue, JIRAAction action) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
