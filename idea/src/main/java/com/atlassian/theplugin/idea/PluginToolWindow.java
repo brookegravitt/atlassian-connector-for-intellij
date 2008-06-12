@@ -45,13 +45,17 @@ import java.util.Set;
 public class PluginToolWindow extends ContentManagerAdapter {
 
 	private Set<ToolWindowPanels> panels = new HashSet<ToolWindowPanels>(INITIAL_NUMBER_OF_TABS);
+	private Set<ToolWindowPanels> bottomPanels = new HashSet<ToolWindowPanels>(INITIAL_NUMBER_OF_BOTTOM_TABS);
 
 	private ToolWindow ideaToolWindow;
 	private Project project;
 	//private String selectedContent = null;
 	public static final String TOOL_WINDOW_NAME = "Atlassian";
+	public static final String BOTTOM_WINDOW_NAME = "Atlassian Plugin";
 	private static final int INITIAL_NUMBER_OF_TABS = 3;
+	private static final int INITIAL_NUMBER_OF_BOTTOM_TABS = 1;
 	private static final String CONFIGURE_TAB_NAME = "Configure";
+	private ToolWindow bottomIdeaToolWindow;
 
 	public static void showHidePluginWindow(AnActionEvent event) {
 		ToolWindow tw = IdeaHelper.getToolWindow(IdeaHelper.getCurrentProject(event.getDataContext()));
@@ -83,6 +87,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 		this.ideaToolWindow = toolWindowManager.registerToolWindow(
 				TOOL_WINDOW_NAME, true, ToolWindowAnchor.RIGHT);
 		this.project = project;
+		this.bottomIdeaToolWindow = toolWindowManager.registerToolWindow(BOTTOM_WINDOW_NAME, true, ToolWindowAnchor.BOTTOM);
 	}
 
 	/**
@@ -91,6 +96,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 	 */
 	public void startTabChangeListener() {
 		this.ideaToolWindow.getContentManager().addContentManagerListener(this);
+		this.bottomIdeaToolWindow.getContentManager().addContentManagerListener(this);
 	}
 
 	/**
@@ -98,6 +104,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 	 */
 	public void stopTabChangeListener() {
 		this.ideaToolWindow.getContentManager().removeContentManagerListener(this);
+		this.bottomIdeaToolWindow.getContentManager().removeContentManagerListener(this);
 	}
 
 	/**
@@ -105,6 +112,10 @@ public class PluginToolWindow extends ContentManagerAdapter {
 	 */
 	public ToolWindow getIdeaToolWindow() {
 		return ideaToolWindow;
+	}
+
+	public ToolWindow getBottomIdeaToolWindow(){
+		return bottomIdeaToolWindow;
 	}
 
 	/**
@@ -115,12 +126,55 @@ public class PluginToolWindow extends ContentManagerAdapter {
 		panels.add(toolWindowPanel);
 	}
 
+	public void registerBottomPanel(ToolWindowPanels toolWindowPanel){
+		bottomPanels.add(toolWindowPanel);
+	}
+
 	/**
 	 * Show registered panels if servers are defined for the type of panel.
 	 * Hides registered panels if servers are not define for the type of panel.
 	 */
+	public void showHideBottomPanels(){
+				
+			for(ToolWindowPanels entry: bottomPanels){
+			try {
+				ServerType serverType = Util.toolWindowPanelsToServerType(entry);
+				if (ConfigurationFactory.getConfiguration().getProductServers(serverType).transientGetServers().size() > 0) {
+					if (bottomIdeaToolWindow.getContentManager().findContent(entry.toString()) == null) {
+
+						// show tab
+						Content content = null;
+
+						switch (entry) {
+							case CRUCIBLE_BOTTOM:
+								content = project.getComponent(ThePluginProjectComponent.class).createCrucibleBottomContent();
+								break;
+
+							default:
+								break;
+						}
+
+						bottomIdeaToolWindow.getContentManager().addContent(content);
+					}
+
+				} else {
+					// tab is visible
+					Content content = bottomIdeaToolWindow.getContentManager().findContent(entry.toString());
+					if (content != null) {
+						// hide tab
+						bottomIdeaToolWindow.getContentManager().removeContent(content, true);
+					}
+				}
+			} catch (ThePluginException e) {
+				PluginUtil.getLogger().error(e.getMessage(), e);
+			}
+
+		}
+
+	}
 	public void showHidePanels() {
 
+		showHideBottomPanels();
 		//stopTabChangeListener();
 
 		if (!ConfigurationFactory.getConfiguration().isAnyServerDefined()) {
@@ -139,6 +193,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 			}
 		}
 
+		 //bottomIdeaToolWindow
 		for (ToolWindowPanels entry : panels) {
 			try {
 				ServerType serverType = Util.toolWindowPanelsToServerType(entry);
@@ -160,7 +215,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 								break;
 							case JIRA:
 								content = project.getComponent(ThePluginProjectComponent.class).createJiraContent();
-								break;
+								break;							
 							default:
 								break;
 						}
@@ -211,6 +266,9 @@ public class PluginToolWindow extends ContentManagerAdapter {
 						content = project.getComponent(ThePluginProjectComponent.class).createJiraContent();
 						contentManager.addContent(content);
 						break;
+					case CRUCIBLE_BOTTOM:
+						content = project.getComponent(ThePluginProjectComponent.class).createCrucibleBottomContent();
+						contentManager.addContent(content);
 					default:
 						break;
 				}
@@ -373,6 +431,13 @@ public class PluginToolWindow extends ContentManagerAdapter {
 		JIRA {
 			public String toString() {
 				return "JIRA";
+			}
+
+		},
+
+		CRUCIBLE_BOTTOM {
+			public String toString(){
+				return "Atlassian Plugin";
 			}
 		}
 	}
