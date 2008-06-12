@@ -98,10 +98,10 @@ public class BambooStatusListenerTest extends TestCase {
 		}
 
 		public boolean matches(Object actual) {
-			if (!(actual instanceof PopupInfo)) {
+			if (!(actual instanceof BambooPopupInfo)) {
 				return false;
 			}
-			String actualMessage = ((PopupInfo) actual).toHtml();
+			String actualMessage = ((BambooPopupInfo) actual).toHtml();
 
 			return actualMessage.matches(expected);
 		}
@@ -113,7 +113,7 @@ public class BambooStatusListenerTest extends TestCase {
 		}
 	}
 
-	public static PopupInfo findPopupInfo(String pattern) {
+	public static BambooPopupInfo findPopupInfo(String pattern) {
 		EasyMock.reportMatcher(new PopupInfoHtmlContains(pattern));
 		return null;
 	}

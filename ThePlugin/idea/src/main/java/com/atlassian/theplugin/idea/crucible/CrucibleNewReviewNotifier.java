@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListener;
+import com.atlassian.theplugin.commons.bamboo.StausIconBambooListener;
 import com.atlassian.theplugin.commons.crucible.CrucibleStatusListener;
 import com.atlassian.theplugin.commons.crucible.ReviewInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
@@ -88,7 +88,7 @@ public class CrucibleNewReviewNotifier implements CrucibleStatusListener {
                 content.setEditable(false);
                 content.setContentType("text/html");
                 content.setEditorKit(new ClasspathHTMLEditorKit());
-                content.setText("<html>" + HtmlBambooStatusListener.BODY_WITH_STYLE + sb.toString() + "</body></html>");
+                content.setText("<html>" + StausIconBambooListener.BODY_WITH_STYLE + sb.toString() + "</body></html>");
                 content.setBackground(BACKGROUND_COLOR);
                 content.addHyperlinkListener(new GenericHyperlinkListener());
 
@@ -162,7 +162,7 @@ public class CrucibleNewReviewNotifier implements CrucibleStatusListener {
                     content.setEditable(false);
                     content.setContentType("text/html");
                     content.setEditorKit(new ClasspathHTMLEditorKit());
-                    content.setText("<html>" + HtmlBambooStatusListener.BODY_WITH_STYLE + sb.toString() + "</body></html>");
+                    content.setText("<html>" + StausIconBambooListener.BODY_WITH_STYLE + sb.toString() + "</body></html>");
                     content.setBackground(BACKGROUND_COLOR);
                     content.addHyperlinkListener(new GenericHyperlinkListener());
 

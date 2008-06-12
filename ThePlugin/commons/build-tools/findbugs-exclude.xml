@@ -25,7 +25,7 @@
 
 	<!--stupid findBugs does not like multithreading apparently :)-->
 	<Match>
-		<Class name="com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListener"/>
+		<Class name="com.atlassian.theplugin.commons.bamboo.StausIconBambooListener"/>
 		<Bug pattern="IS2_INCONSISTENT_SYNC"/>
 	</Match>
 	<!--third party code-->
