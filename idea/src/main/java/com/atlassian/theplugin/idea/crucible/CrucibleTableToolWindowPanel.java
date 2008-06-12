@@ -281,7 +281,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
     public void viewReview() {
         if (selectedItem != null) {
-            BrowserUtil.launchBrowser(selectedItem.getReviewUrl());
+			ReviewDetailsToolWindow.focusPanel(IdeaHelper.getCurrentProject(), selectedItem);
         }
     }
 
