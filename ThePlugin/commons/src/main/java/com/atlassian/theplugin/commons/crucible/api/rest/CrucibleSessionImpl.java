@@ -60,8 +60,10 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
     private static final String ADD_CHANGESET = "/addChangeset";
     private static final String ADD_PATCH = "/addPatch";
     private static final String GET_METRICS = "/metrics";    
+    private static final String REPLY = "/reply";
 
     private String authToken = null;
+
 
     /**
 	 * Public constructor for CrucibleSessionImpl.
@@ -447,10 +449,8 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
 
         Document request = CrucibleRestXmlHelper.prepareGeneralComment(comment);
-        printXml(request);
 
         String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + GET_REVIEW_COMMENTS;
-        System.out.println("requestUrl = " + requestUrl);
         try {
             Document doc = retrievePostResponse(requestUrl, request);
 
@@ -464,6 +464,85 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 				}
 			}
             return null;
+        } catch (IOException e) {
+			throw new RemoteApiException(e.getMessage(), e);
+		} catch (JDOMException e) {
+			throw new RemoteApiException("Server returned malformed response", e);
+		}
+    }
+
+    public void removeGeneralComment(PermId id, GeneralComment comment) throws RemoteApiException {
+		if (!isLoggedIn()) {
+			throw new IllegalStateException("Calling method without calling login() first");
+		}
+        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + GET_REVIEW_COMMENTS + "/" + comment.getPermId().getId();
+        try {
+            retrieveDeleteResponse(requestUrl, false);
+        } catch (IOException e) {
+			throw new RemoteApiException(e.getMessage(), e);
+		} catch (JDOMException e) {
+			throw new RemoteApiException("Server returned malformed response", e);
+		}
+    }
+
+    public void updateGeneralComment(PermId id, GeneralComment comment) throws RemoteApiException {
+		if (!isLoggedIn()) {
+			throw new IllegalStateException("Calling method without calling login() first");
+		}
+
+        Document request = CrucibleRestXmlHelper.prepareGeneralComment(comment);
+
+        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + GET_REVIEW_COMMENTS + "/" + comment.getPermId().getId();
+
+        try {
+            retrievePostResponse(requestUrl, request, false);
+        } catch (IOException e) {
+			throw new RemoteApiException(e.getMessage(), e);
+		} catch (JDOMException e) {
+			throw new RemoteApiException("Server returned malformed response", e);
+		}
+    }
+
+    public GeneralComment addReply(PermId id, PermId cId,  GeneralComment comment) throws RemoteApiException {
+		if (!isLoggedIn()) {
+			throw new IllegalStateException("Calling method without calling login() first");
+		}
+
+        Document request = CrucibleRestXmlHelper.prepareGeneralComment(comment);
+
+        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + REPLY + "/" + cId.getId();
+
+        try {
+            Document doc = retrievePostResponse(requestUrl, request);
+
+			XPath xpath = XPath.newInstance("generalCommentData");
+			@SuppressWarnings("unchecked")
+			List<Element> elements = xpath.selectNodes(doc);
+
+			if (elements != null && !elements.isEmpty()) {
+				for (Element element : elements) {
+					return CrucibleRestXmlHelper.parseGeneralCommentNode(element);
+				}
+			}
+            return null;
+        } catch (IOException e) {
+			throw new RemoteApiException(e.getMessage(), e);
+		} catch (JDOMException e) {
+			throw new RemoteApiException("Server returned malformed response", e);
+		}
+    }
+
+    public void updateReply(PermId id, PermId cId, PermId rId, GeneralComment comment) throws RemoteApiException {
+		if (!isLoggedIn()) {
+			throw new IllegalStateException("Calling method without calling login() first");
+		}
+
+        Document request = CrucibleRestXmlHelper.prepareGeneralComment(comment);
+
+        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + REPLY + "/" + cId.getId() + "/" + rId.getId();
+
+        try {
+            retrievePostResponse(requestUrl, request, false);
         } catch (IOException e) {
 			throw new RemoteApiException(e.getMessage(), e);
 		} catch (JDOMException e) {
