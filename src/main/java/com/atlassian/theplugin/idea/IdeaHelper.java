@@ -19,6 +19,8 @@ package com.atlassian.theplugin.idea;
 import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.ReviewItemVirtualFile;
+import com.atlassian.theplugin.idea.crucible.ReviewDetailsToolWindow;
+import com.atlassian.theplugin.idea.crucible.ReviewDetailsPanel;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
@@ -90,6 +92,10 @@ public final class IdeaHelper {
 		return ToolWindowManager.getInstance(p).getToolWindow(PluginToolWindow.TOOL_WINDOW_NAME);
 	}
 
+	public static com.intellij.openapi.wm.ToolWindow getReviewDetailsWindow(Project p) {
+		return ToolWindowManager.getInstance(p).getToolWindow(ReviewDetailsToolWindow.TOOL_WINDOW_NAME);
+	}
+
 	public static ThePluginApplicationComponent getAppComponent() {
 		return ApplicationManager.getApplication().getComponent(ThePluginApplicationComponent.class);
 	}
@@ -97,6 +103,16 @@ public final class IdeaHelper {
 	public static PluginConfigurationBean getPluginConfiguration() {
 		return getAppComponent().getState();
 	}
+
+	public static ReviewDetailsToolWindow getCurrentReviewDetailsToolWindow() {
+		Project p = getCurrentProject();
+		if (p == null) {
+			return null;
+		}
+		com.intellij.openapi.wm.ToolWindow tw = getReviewDetailsWindow(p);
+        return (ReviewDetailsToolWindow) tw;
+	}
+
 
 	public static JIRAToolWindowPanel getCurrentJIRAToolWindowPanel() {
 		Project p = getCurrentProject();
