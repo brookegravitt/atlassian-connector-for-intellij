@@ -239,9 +239,9 @@ public final class CrucibleRestXmlHelper {
         reviewItem.setToPath(getChildText(reviewItemNode, "toPath"));
         reviewItem.setToRevision(getChildText(reviewItemNode, "toRevision"));
         reviewItem.setRepositoryName(getChildText(reviewItemNode, "repositoryName"));
-        if (reviewItemNode.getChild("permaId") != null) {
+        if (reviewItemNode.getChild("permId") != null) {
             PermIdBean permId = new PermIdBean();
-            permId.setId(reviewItemNode.getChild("permaId").getChild("id").getText());
+            permId.setId(reviewItemNode.getChild("permId").getChild("id").getText());
             reviewItem.setPermId(permId);
         }
 
@@ -316,7 +316,7 @@ public final class CrucibleRestXmlHelper {
         Element replies = new Element("replies");
         commentNode.getContent().add(replies);
     }
-
+    
     public static GeneralCommentBean parseGeneralCommentNode(Element reviewCommentNode) {
         GeneralCommentBean reviewCommentBean = new GeneralCommentBean();
         parseComment(reviewCommentBean, reviewCommentNode);
@@ -330,24 +330,26 @@ public final class CrucibleRestXmlHelper {
         return doc;
     }
 
+    public static Document prepareVersionedComment(VersionedComment comment) {
+        Element commentNode = new Element("versionedLineCommentData");
+        Document doc = new Document(commentNode);
+        prepareComment(comment, commentNode);
+        Element reviewItemId = new Element("reviewItemId");
+        commentNode.getContent().add(reviewItemId);
+        addTag(reviewItemId, "id", comment.getReviewItemId().getId());
+        if (comment.getFromStartLine() > 0 && comment.getFromEndLine() > 0) {
+            addTag(commentNode, "fromLineRange", comment.getFromStartLine() + "-" + comment.getFromEndLine());
+        }
+        if (comment.getToStartLine() > 0 && comment.getToEndLine() > 0) {
+            addTag(commentNode, "toLineRange", comment.getToStartLine() + "-" + comment.getToEndLine());
+        }
+        return doc;
+    }
+
+
     public static VersionedCommentBean parseVersionedCommentNode(Element reviewCommentNode) {
         VersionedCommentBean comment = new VersionedCommentBean();
         parseComment(comment, reviewCommentNode);
-
-        comment.setUser(getChildText(reviewCommentNode, "user"));
-        comment.setDisplayUser(getChildText(reviewCommentNode, "userDisplayName"));
-        comment.setMessage(getChildText(reviewCommentNode, "message"));
-        comment.setDefectRaised(Boolean.parseBoolean(getChildText(reviewCommentNode, "defectRaised")));
-        comment.setDefectApproved(Boolean.parseBoolean(getChildText(reviewCommentNode, "defectApproved")));
-        comment.setDraft(Boolean.parseBoolean(getChildText(reviewCommentNode, "draft")));
-        comment.setDeleted(Boolean.parseBoolean(getChildText(reviewCommentNode, "deleted")));
-        comment.setCreateDate(parseCommentTime(getChildText(reviewCommentNode, "createDate")));
-
-        if (reviewCommentNode.getChild("permaId") != null) {
-            PermIdBean permId = new PermIdBean();
-            permId.setId(reviewCommentNode.getChild("permaId").getChild("id").getText());
-            comment.setPermId(permId);
-        }
 
         if (reviewCommentNode.getChild("reviewItemId") != null) {
             ReviewItemIdBean reviewItemId = new ReviewItemIdBean();

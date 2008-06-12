@@ -53,9 +53,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 	private static final String GET_REVIEWS_IN_STATES = "?state=";
 	private static final String GET_FILTERED_REVIEWS = "/filter";
     private static final String GET_REVIEWERS = "/reviewers";
-    private static final String ADD_REVIEWERS = "/addReviewers";    
     private static final String GET_REVIEW_ITEMS = "/reviewitems";
 	private static final String GET_REVIEW_COMMENTS = "/comments";
+    private static final String VERSIONED_COMMENTS = "/vcomments";
     private static final String APPROVE_ACTION = "/approve";
     private static final String ADD_CHANGESET = "/addChangeset";
     private static final String ADD_PATCH = "/addPatch";
@@ -395,7 +395,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			if (elements != null && !elements.isEmpty()) {
 				for (Element element : elements) {
 					ReviewItemBean review = CrucibleRestXmlHelper.parseReviewItemNode(element);
-					SvnRepository repository = getRepository(review.getRepositoryName());
+                    String repoName = review.getRepositoryName();
+                    String[] repoNameTokens = repoName.split(":");
+                    SvnRepository repository = getRepository(repoNameTokens.length > 0 ? repoNameTokens[1] : repoNameTokens[0]);
 					if (repository != null) {
 						String repoPath = repository.getUrl() + "/" + repository.getPath() + "/";
 						if (!"".equals(review.getFromPath())) {
@@ -496,6 +498,34 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 
         try {
             retrievePostResponse(requestUrl, request, false);
+        } catch (IOException e) {
+			throw new RemoteApiException(e.getMessage(), e);
+		} catch (JDOMException e) {
+			throw new RemoteApiException("Server returned malformed response", e);
+		}
+    }
+
+    public VersionedComment addVersionedComment(PermId id, VersionedComment comment) throws RemoteApiException {
+		if (!isLoggedIn()) {
+			throw new IllegalStateException("Calling method without calling login() first");
+		}
+
+        Document request = CrucibleRestXmlHelper.prepareVersionedComment(comment);
+
+        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + VERSIONED_COMMENTS;
+        try {
+            Document doc = retrievePostResponse(requestUrl, request);
+
+			XPath xpath = XPath.newInstance("versionedLineCommentData");
+			@SuppressWarnings("unchecked")
+			List<Element> elements = xpath.selectNodes(doc);
+
+			if (elements != null && !elements.isEmpty()) {
+				for (Element element : elements) {
+					return CrucibleRestXmlHelper.parseVersionedCommentNode(element);
+				}
+			}
+            return null;
         } catch (IOException e) {
 			throw new RemoteApiException(e.getMessage(), e);
 		} catch (JDOMException e) {
