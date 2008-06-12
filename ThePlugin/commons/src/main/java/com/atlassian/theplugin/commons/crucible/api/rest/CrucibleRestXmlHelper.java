@@ -18,9 +18,6 @@ package com.atlassian.theplugin.commons.crucible.api.rest;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.converters.extended.ISO8601DateConverter;
-import com.thoughtworks.xstream.io.xml.JDomDriver;
 import org.jdom.CDATA;
 import org.jdom.Document;
 import org.jdom.Element;
