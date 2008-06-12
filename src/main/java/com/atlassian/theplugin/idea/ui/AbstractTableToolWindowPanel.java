@@ -109,7 +109,7 @@ public abstract class AbstractTableToolWindowPanel extends JPanel {
 	}
 
 	protected String wrapBody(String s) {
-		return "<html>" + HtmlBambooStatusListener.BODY_WITH_STYLE + s + "</body></html>";
+		return "<html>" + StausIconBambooListener.BODY_WITH_STYLE + s + "</body></html>";
 
 	}
 

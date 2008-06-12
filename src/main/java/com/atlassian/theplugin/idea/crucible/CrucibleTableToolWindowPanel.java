@@ -17,7 +17,7 @@
 package com.atlassian.theplugin.idea.crucible;
 
 
-import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListener;
+import com.atlassian.theplugin.commons.bamboo.StausIconBambooListener;
 import com.atlassian.theplugin.commons.crucible.*;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.crucible.CrucibleFiltersBean;
@@ -266,7 +266,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     }
 
     protected String wrapBody(String s) {
-        return "<html>" + HtmlBambooStatusListener.BODY_WITH_STYLE + s + "</body></html>";
+        return "<html>" + StausIconBambooListener.BODY_WITH_STYLE + s + "</body></html>";
 
     }
 
