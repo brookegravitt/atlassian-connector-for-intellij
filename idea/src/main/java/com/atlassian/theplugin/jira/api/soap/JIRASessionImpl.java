@@ -374,6 +374,19 @@ public class JIRASessionImpl implements JIRASession {
 		}
 	}
 
+	public List<JIRAComment> getComments(JIRAIssue issue) throws RemoteApiException {
+		try {
+			RemoteComment[] comments = service.getComments(token, issue.getKey());
+
+			List<JIRAComment> commentsList = new ArrayList<JIRAComment>(comments.length);
+			for (RemoteComment c : comments) {
+				commentsList.add(new JIRACommentBean(c.getId(), c.getAuthor(), c.getBody()));
+			}
+			return commentsList;
+		} catch (RemoteException e) {
+			throw new RemoteApiException(e.toString(), e);
+		}
+	}
 	public boolean isLoggedIn() {
 		return loggedIn;
 	}
