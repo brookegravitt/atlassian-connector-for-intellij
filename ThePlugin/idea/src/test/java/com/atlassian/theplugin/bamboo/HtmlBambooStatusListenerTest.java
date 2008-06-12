@@ -33,7 +33,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * HtmlBambooStatusListener Tester.
+ * StausIconBambooListener Tester.
  *
  * @author <Authors name>
  * @version 1.0
@@ -42,7 +42,7 @@ import java.util.*;
 public class HtmlBambooStatusListenerTest extends TestCase {
 
 	private StatusListenerResultCatcher output;
-	private HtmlBambooStatusListener testedListener;
+	private StausIconBambooListener testedListener;
 
 	private static final String DEFAULT_PLAN_ID = "PLAN-ID";
 	private static final int DEFAULT_BUILD_NO = 777;
@@ -65,7 +65,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 		output = new StatusListenerResultCatcher();
         final ServerBean server = new ServerBean();
         server.setName("Test Server");
-        testedListener = new HtmlBambooStatusListener(output, null) {
+        testedListener = new StausIconBambooListener(output, null) {
             protected Server getServerFromUrl(String serverUrl)   {
                 return server;
             }
@@ -78,14 +78,14 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 
 		// create mock and tested object
 		BambooStatusDisplay mockDisplay = EasyMock.createMock(BambooStatusDisplay.class);
-		HtmlBambooStatusListener bambooListener = new HtmlBambooStatusListener(mockDisplay, null) {
+		StausIconBambooListener bambooListener = new StausIconBambooListener(mockDisplay, null) {
 			protected Server getServerFromUrl(String serverUrl) {
 				return new ServerBean();
 			}
 		};
 
 		// record mock
-		mockDisplay.updateBambooStatus(EasyMock.eq(BuildStatus.UNKNOWN), EasyMock.isA(PopupInfo.class));
+		mockDisplay.updateBambooStatus(EasyMock.eq(BuildStatus.UNKNOWN), EasyMock.isA(BambooPopupInfo.class));
 		EasyMock.replay(mockDisplay);
 
 		// test: empty builds (error connection) should be considered as unknown builds
@@ -104,14 +104,14 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 
 		// create mock display and tested listener
 		BambooStatusDisplay mockDisplay = EasyMock.createMock(BambooStatusDisplay.class);
-		HtmlBambooStatusListener bambooListener = new HtmlBambooStatusListener(mockDisplay, null) {
+		StausIconBambooListener bambooListener = new StausIconBambooListener(mockDisplay, null) {
 			protected Server getServerFromUrl(String serverUrl) {
 				return new ServerBean();
 			}
 		};
 
 		// record mock
-		mockDisplay.updateBambooStatus(EasyMock.eq(BuildStatus.BUILD_SUCCEED), EasyMock.isA(PopupInfo.class));
+		mockDisplay.updateBambooStatus(EasyMock.eq(BuildStatus.BUILD_SUCCEED), EasyMock.isA(BambooPopupInfo.class));
 		EasyMock.replay(mockDisplay);
 
 		// test: unknown and successful build should generate green (successful) state
@@ -129,14 +129,14 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 
 		// create mock display and tested listener
 		BambooStatusDisplay mockDisplay = EasyMock.createMock(BambooStatusDisplay.class);
-		HtmlBambooStatusListener bambooListener = new HtmlBambooStatusListener(mockDisplay, null) {
+		StausIconBambooListener bambooListener = new StausIconBambooListener(mockDisplay, null) {
 			protected Server getServerFromUrl(String serverUrl) {
 				return new ServerBean();
 			}
 		};
 
 		// record mock
-		mockDisplay.updateBambooStatus(EasyMock.eq(BuildStatus.BUILD_SUCCEED), EasyMock.isA(PopupInfo.class));
+		mockDisplay.updateBambooStatus(EasyMock.eq(BuildStatus.BUILD_SUCCEED), EasyMock.isA(BambooPopupInfo.class));
 		EasyMock.replay(mockDisplay);
 
 		// test: successful build should generate green (successful) state
@@ -153,14 +153,14 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 
 		// create mock display and tested listener
 		BambooStatusDisplay mockDisplay = EasyMock.createMock(BambooStatusDisplay.class);
-		HtmlBambooStatusListener bambooListener = new HtmlBambooStatusListener(mockDisplay, null) {
+		StausIconBambooListener bambooListener = new StausIconBambooListener(mockDisplay, null) {
 			protected Server getServerFromUrl(String serverUrl) {
 				return new ServerBean();
 			}
 		};
 
 		// record mock
-		mockDisplay.updateBambooStatus(EasyMock.eq(BuildStatus.UNKNOWN), EasyMock.isA(PopupInfo.class));
+		mockDisplay.updateBambooStatus(EasyMock.eq(BuildStatus.UNKNOWN), EasyMock.isA(BambooPopupInfo.class));
 		EasyMock.replay(mockDisplay);
 
 		// test: unknown build should generate grey (unknown) state
@@ -184,7 +184,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 		assertEquals(1, output.count);
 		assertSame(BuildStatus.UNKNOWN, output.buildStatus);
 //		assertEquals(
-//                "<html>" + HtmlBambooStatusListener.BODY_WITH_STYLE + "No plans defined.</body></html>",
+//                "<html>" + StausIconBambooListener.BODY_WITH_STYLE + "No plans defined.</body></html>",
 //                output.htmlPage);
 	}
 
@@ -193,7 +193,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 		assertEquals(1, output.count);
 		assertSame(BuildStatus.UNKNOWN, output.buildStatus);
 //        assertEquals(
-//                "<html>" + HtmlBambooStatusListener.BODY_WITH_STYLE + "No plans defined.</body></html>",
+//                "<html>" + StausIconBambooListener.BODY_WITH_STYLE + "No plans defined.</body></html>",
 //                output.htmlPage);
 	}
 
@@ -445,7 +445,7 @@ class StatusListenerResultCatcher implements BambooStatusDisplay {
 
 	public int count;
 
-	public void updateBambooStatus(BuildStatus generalBuildStatus, PopupInfo info) {
+	public void updateBambooStatus(BuildStatus generalBuildStatus, BambooPopupInfo info) {
 		buildStatus = generalBuildStatus;
 		this.htmlPage = info.toHtml();
 

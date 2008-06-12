@@ -26,7 +26,7 @@ import java.util.*;
 /**
  * Renders Bamboo build results
  */
-	public class HtmlBambooStatusListener implements BambooStatusListener {
+	public class StausIconBambooListener implements BambooStatusListener {
 
 	private final BambooStatusDisplay display;
 
@@ -34,7 +34,7 @@ import java.util.*;
 			"<body style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">";
 	private PluginConfiguration configuration;
 
-	public HtmlBambooStatusListener(BambooStatusDisplay aDisplay, PluginConfiguration configuration) {
+	public StausIconBambooListener(BambooStatusDisplay aDisplay, PluginConfiguration configuration) {
 		display = aDisplay;
 		this.configuration = configuration;
 	}
@@ -84,7 +84,7 @@ import java.util.*;
 				lastServer = buildInfo.getServerUrl();
 			}
 		}
-		display.updateBambooStatus(status, new PopupInfo());
+		display.updateBambooStatus(status, new BambooPopupInfo());
 	}
 
 	protected Server getServerFromUrl(String serverUrl) {

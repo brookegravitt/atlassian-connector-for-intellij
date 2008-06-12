@@ -10,7 +10,7 @@ import java.util.ArrayList;
 * Time: 12:17:12
 * To change this template use File | Settings | File Templates.
 */
-public class PopupInfo {
+public class BambooPopupInfo {
 
 	private static final String ICON_PLAN_PASSED = "icn_plan_passed.gif";
 	private static final String ICON_PLAN_FAILED = "icn_plan_failed.gif";

@@ -20,7 +20,7 @@ import com.atlassian.theplugin.commons.bamboo.BambooStatusDisplay;
 import com.atlassian.theplugin.idea.GenericHyperlinkListener;
 import com.atlassian.theplugin.idea.PluginToolWindow;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
-import com.atlassian.theplugin.commons.bamboo.PopupInfo;
+import com.atlassian.theplugin.commons.bamboo.BambooPopupInfo;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.WindowManager;
 import thirdparty.javaworld.ClasspathHTMLEditorKit;
@@ -59,7 +59,7 @@ public class BuildStatusChangedToolTip extends JPanel implements BambooStatusDis
 
 	}
 
-	public void updateBambooStatus(BuildStatus generalBuildStatus, PopupInfo popupInfo) {
+	public void updateBambooStatus(BuildStatus generalBuildStatus, BambooPopupInfo popupInfo) {
 		content.setText(popupInfo.toHtml());
 
 		switch (generalBuildStatus) {
