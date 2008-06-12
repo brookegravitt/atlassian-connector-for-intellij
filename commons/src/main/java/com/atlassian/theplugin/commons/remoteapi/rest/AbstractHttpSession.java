@@ -28,6 +28,7 @@ import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
@@ -164,6 +165,48 @@ public abstract class AbstractHttpSession {
 		}
 		return doc;
 	}
+
+    protected Document retrieveDeleteResponse(String urlString, boolean expectResponse)
+			throws IOException, JDOMException, RemoteApiSessionExpiredException {
+		UrlUtil.validateUrl(urlString);
+
+		Document doc = null;
+		synchronized (clientLock) {
+			if (client == null) {
+				try {
+					client = HttpClientFactory.getClient();
+				} catch (HttpProxySettingsException e) {
+					throw (IOException) new IOException("Connection error. Please set up HTTP Proxy settings").initCause(e);
+				}
+			}
+
+			DeleteMethod method = new DeleteMethod(urlString);
+
+			try {
+				method.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
+				method.getParams().setSoTimeout(client.getParams().getSoTimeout());
+				adjustHttpHeader(method);
+
+				client.executeMethod(method);
+
+				if (method.getStatusCode() != HttpStatus.SC_OK) {
+					throw new IOException("HTTP status code " + method.getStatusCode() + ": " + method.getStatusText());
+				}
+
+                if (expectResponse) {
+                    SAXBuilder builder = new SAXBuilder();
+				    doc = builder.build(method.getResponseBodyAsStream());
+				    preprocessResult(doc);
+                }
+            } catch (NullPointerException e) {
+				throw (IOException) new IOException("Connection error").initCause(e);
+			} finally {
+				method.releaseConnection();
+			}
+		}
+		return doc;
+	}
+
 
     protected abstract void adjustHttpHeader(HttpMethod method);
 
