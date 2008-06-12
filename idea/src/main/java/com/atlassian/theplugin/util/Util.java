@@ -29,9 +29,11 @@ public final class Util {
 			case BAMBOO:
 				return ServerType.BAMBOO_SERVER;
 			case CRUCIBLE:
+			case CRUCIBLE_BOTTOM:
 				return ServerType.CRUCIBLE_SERVER;
 			case JIRA:
 				return ServerType.JIRA_SERVER;
+				
 			default:
 				throw new ThePluginException("Unrecognized tool window type");
 		}
