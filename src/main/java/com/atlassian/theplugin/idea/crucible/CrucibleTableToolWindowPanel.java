@@ -550,9 +550,56 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
                 gc.setCreateDate(new Date());
                 gc.setMessage("ala ma kota");
                 gc.setDefectRaised(false);
+                CustomFieldBean v1 = new CustomFieldBean();
+                v1.setConfigVersion(3);
+                v1.setFieldScope("comment");
+                v1.setType(CustomFieldValueType.INTEGER);
+                v1.setValue(Integer.valueOf(1));
+                gc.getCustomFields().put("rank", v1);
+
+                CustomFieldBean v2 = new CustomFieldBean();
+                v2.setConfigVersion(3);
+                v2.setFieldScope("comment");
+                v2.setType(CustomFieldValueType.INTEGER);
+                v2.setValue(Integer.valueOf(3));
+                gc.getCustomFields().put("classification", v2);
+
 
                 GeneralComment gc1 = serverFacade.addGeneralComment(selectedItem.getServer(), selectedItem.getPermaId(), gc);
                 System.out.println("gc1.getPermId().getId() = " + gc1.getPermId().getId());
+
+                gc.getCustomFields().clear();
+                gc.setPermId(gc1.getPermId());
+                gc.setMessage("Ciekawe czy to bedzie widac");
+                CustomFieldBean v3 = new CustomFieldBean();
+                v3.setConfigVersion(3);
+                v3.setFieldScope("comment");
+                v3.setType(CustomFieldValueType.INTEGER);
+                v3.setValue(Integer.valueOf(0));
+                gc.getCustomFields().put("rank", v3);
+
+                CustomFieldBean v4 = new CustomFieldBean();
+                v4.setConfigVersion(3);
+                v4.setFieldScope("comment");
+                v4.setType(CustomFieldValueType.INTEGER);
+                v4.setValue(Integer.valueOf(8));
+                gc.getCustomFields().put("classification", v4);
+
+                serverFacade.updateGeneralComment(selectedItem.getServer(), selectedItem.getPermaId(), gc);
+
+                GeneralCommentBean reply = new GeneralCommentBean();
+                reply.setUser("mwent");
+                reply.setCreateDate(new Date());
+                reply.setMessage("Ola ma psa - to jest reply");
+                //reply.setDraft(true);
+
+                GeneralComment rc = serverFacade.addReply(selectedItem.getServer(), selectedItem.getPermaId(), gc1.getPermId(), reply);
+
+                reply.setMessage("A ja nie mam zwiarzaka");
+                serverFacade.updateReply(selectedItem.getServer(), selectedItem.getPermaId(), gc1.getPermId(), rc.getPermId(), reply);
+
+
+                //serverFacade.removeGeneralComment(selectedItem.getServer(), selectedItem.getPermaId(), gc1);
 
             } catch (RemoteApiException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
