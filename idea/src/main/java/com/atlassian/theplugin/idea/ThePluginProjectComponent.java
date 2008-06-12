@@ -193,10 +193,7 @@ public class ThePluginProjectComponent implements
 
             // create Bamboo status bar icon
             statusBarBambooIcon = new BambooStatusIcon(this.project);
-            statusBarBambooIcon.updateBambooStatus(BuildStatus.UNKNOWN,
-                    "<div style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">"
-                            + "Waiting for Bamboo build statuses."
-                            + "</div>");
+            statusBarBambooIcon.updateBambooStatus(BuildStatus.UNKNOWN, new PopupInfo());
 
             // add icon listener to bamboo checker thread
             iconBambooStatusListener = new HtmlBambooStatusListener(statusBarBambooIcon, pluginConfiguration);
