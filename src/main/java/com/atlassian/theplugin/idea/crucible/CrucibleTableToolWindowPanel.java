@@ -598,6 +598,81 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
                 reply.setMessage("A ja nie mam zwiarzaka");
                 serverFacade.updateReply(selectedItem.getServer(), selectedItem.getPermaId(), gc1.getPermId(), rc.getPermId(), reply);
 
+                List<ReviewItem> items = serverFacade.getReviewItems(selectedItem.getServer(), selectedItem.getPermaId());
+                for (ReviewItem item : items) {
+
+                    VersionedCommentBean vc = new VersionedCommentBean();
+                    vc.setUser("mwent");
+                    vc.setCreateDate(new Date());
+                    vc.setMessage("ala ma kota");
+                    vc.setDefectRaised(false);
+                    CustomFieldBean v5 = new CustomFieldBean();
+                    v5.setConfigVersion(3);
+                    v5.setFieldScope("comment");
+                    v5.setType(CustomFieldValueType.INTEGER);
+                    v5.setValue(Integer.valueOf(1));
+                    vc.getCustomFields().put("rank", v5);
+
+                    CustomFieldBean v6 = new CustomFieldBean();
+                    v6.setConfigVersion(3);
+                    v6.setFieldScope("comment");
+                    v6.setType(CustomFieldValueType.INTEGER);
+                    v6.setValue(Integer.valueOf(4));
+                    vc.getCustomFields().put("classification", v6);
+
+                    ReviewItemIdBean id = new ReviewItemIdBean();
+                    id.setId(item.getPermId().getId());
+                    vc.setReviewItemId(id);
+
+                    serverFacade.addVersionedComment(selectedItem.getServer(), item.getPermId(), vc);
+
+                    vc.getCustomFields().clear();
+                    CustomFieldBean v7 = new CustomFieldBean();
+                    v7.setConfigVersion(3);
+                    v7.setFieldScope("comment");
+                    v7.setType(CustomFieldValueType.INTEGER);
+                    v7.setValue(Integer.valueOf(0));
+                    vc.getCustomFields().put("rank", v7);
+
+                    CustomFieldBean v8 = new CustomFieldBean();
+                    v8.setConfigVersion(3);
+                    v8.setFieldScope("comment");
+                    v8.setType(CustomFieldValueType.INTEGER);
+                    v8.setValue(Integer.valueOf(5));
+                    vc.getCustomFields().put("classification", v8);
+
+
+
+                    vc.setFromStartLine(15);
+                    vc.setFromEndLine(19);
+
+                    serverFacade.addVersionedComment(selectedItem.getServer(), item.getPermId(), vc);
+
+                    vc.getCustomFields().clear();
+                    CustomFieldBean v9 = new CustomFieldBean();
+                    v9.setConfigVersion(3);
+                    v9.setFieldScope("comment");
+                    v9.setType(CustomFieldValueType.INTEGER);
+                    v9.setValue(Integer.valueOf(1));
+                    vc.getCustomFields().put("rank", v9);
+
+                    CustomFieldBean v10 = new CustomFieldBean();
+                    v10.setConfigVersion(3);
+                    v10.setFieldScope("comment");
+                    v10.setType(CustomFieldValueType.INTEGER);
+                    v10.setValue(Integer.valueOf(6));
+                    vc.getCustomFields().put("classification", v10);
+
+
+                    vc.setFromStartLine(25);
+                    vc.setFromEndLine(29);
+
+                    vc.setToStartLine(31);
+                    vc.setToEndLine(36);
+
+                    serverFacade.addVersionedComment(selectedItem.getServer(), item.getPermId(), vc);
+           
+                }
 
                 //serverFacade.removeGeneralComment(selectedItem.getServer(), selectedItem.getPermaId(), gc1);
 
