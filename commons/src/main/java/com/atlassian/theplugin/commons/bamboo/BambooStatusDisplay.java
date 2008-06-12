@@ -18,5 +18,5 @@ package com.atlassian.theplugin.commons.bamboo;
 
 public interface BambooStatusDisplay {
 	//void updateBambooStatus(BuildStatus generalBuildStatus, String htmlPage);
-	void updateBambooStatus(BuildStatus generalBuildStatus, PopupInfo info);
+	void updateBambooStatus(BuildStatus generalBuildStatus, BambooPopupInfo info);
 }
