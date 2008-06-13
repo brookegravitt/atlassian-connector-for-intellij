@@ -386,7 +386,7 @@ public class JIRASessionImpl implements JIRASession {
 
 			List<JIRAComment> commentsList = new ArrayList<JIRAComment>(comments.length);
 			for (RemoteComment c : comments) {
-				commentsList.add(new JIRACommentBean(c.getId(), c.getAuthor(), c.getBody()));
+				commentsList.add(new JIRACommentBean(c.getId(), c.getAuthor(), c.getBody(), c.getCreated()));
 			}
 			return commentsList;
 		} catch (RemoteException e) {
