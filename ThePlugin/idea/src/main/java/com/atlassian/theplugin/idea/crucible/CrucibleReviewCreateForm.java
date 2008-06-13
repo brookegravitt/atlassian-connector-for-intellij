@@ -50,6 +50,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import javax.swing.Action;
 import java.awt.*;
 import java.awt.event.*;
 import static java.lang.System.arraycopy;

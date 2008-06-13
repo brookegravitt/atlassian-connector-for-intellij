@@ -75,7 +75,7 @@ public abstract class AbstractHttpSession {
     protected Document retrieveGetResponse(String urlString, boolean expectResponse)
             throws IOException, JDOMException, RemoteApiSessionExpiredException {
         UrlUtil.validateUrl(urlString);
-
+        
         Document doc = null;
         synchronized (clientLock) {
             if (client == null) {

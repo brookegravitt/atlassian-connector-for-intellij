@@ -20,10 +20,10 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.theplugin.commons.bamboo.StausIconBambooListener;
 import com.atlassian.theplugin.commons.crucible.*;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
-import com.atlassian.theplugin.commons.crucible.CrucibleFiltersBean;
-import com.atlassian.theplugin.commons.util.Logger;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.util.Logger;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
@@ -33,7 +33,6 @@ import com.atlassian.theplugin.idea.ui.CollapsibleTable;
 import com.atlassian.theplugin.idea.ui.TableColumnProvider;
 import com.atlassian.theplugin.idea.ui.TableItemSelectedListener;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionToolbar;
@@ -49,9 +48,9 @@ import java.util.*;
 import java.util.List;
 
 public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStatusListener, TableItemSelectedListener {
-	private Collection<TableItemSelectedListener> generalItemSelectedListeners = new ArrayList<TableItemSelectedListener>();
+    private Collection<TableItemSelectedListener> generalItemSelectedListeners = new ArrayList<TableItemSelectedListener>();
 
-	private transient ActionToolbar filterEditToolbar;
+    private transient ActionToolbar filterEditToolbar;
     private static CrucibleTableToolWindowPanel instance;
     private TableColumnProvider columnProvider;
 
@@ -283,7 +282,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
     public void viewReview() {
         if (selectedItem != null) {
-			ReviewDetailsToolWindow.focusPanel(IdeaHelper.getCurrentProject(), selectedItem);
+            ReviewDetailsToolWindow.focusPanel(IdeaHelper.getCurrentProject(), selectedItem);
         }
     }
 
@@ -386,11 +385,11 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
             viewReview();
         }
 
-		//make sure that all listeners are run in separate thread
-		for (TableItemSelectedListener listener : generalItemSelectedListeners){
-			listener.itemSelected(item, noClicks);
-		}
-	}
+        //make sure that all listeners are run in separate thread
+        for (TableItemSelectedListener listener : generalItemSelectedListeners) {
+            listener.itemSelected(item, noClicks);
+        }
+    }
 
     public void resetState() {
     }
@@ -471,11 +470,11 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     public void removeCustomFilter() {
 
     }
-	
-	/*add item selected listener for all components in this ToolWindow*/
-	public void addItemSelectedListener(TableItemSelectedListener listener){
 
-		generalItemSelectedListeners.add(listener);
+    /*add item selected listener for all components in this ToolWindow*/
+    public void addItemSelectedListener(TableItemSelectedListener listener) {
+
+        generalItemSelectedListeners.add(listener);
 
 //		for (CollapsibleTable table: tables.values()){
 //			table.addItemSelectedListener(listener);
@@ -485,21 +484,21 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 //		for (CollapsibleTable table: customTables.values()){
 //			table.addItemSelectedListener(listener);
 //		}
-	}
+    }
 
-	public void removeItemSelectedListener(TableItemSelectedListener listener){
-		for (CollapsibleTable table: tables.values()){
-			table.removeItemSelectedListener(listener);
-		}
-
-
-		for (CollapsibleTable table: customTables.values()){
-			table.removeItemSelectedListener(listener);
-		}
-	}
+    public void removeItemSelectedListener(TableItemSelectedListener listener) {
+        for (CollapsibleTable table : tables.values()) {
+            table.removeItemSelectedListener(listener);
+        }
 
 
-	public void showCustomFilter(boolean visible, CrucibleStatusChecker checker) {
+        for (CollapsibleTable table : customTables.values()) {
+            table.removeItemSelectedListener(listener);
+        }
+    }
+
+
+    public void showCustomFilter(boolean visible, CrucibleStatusChecker checker) {
         if (!projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().isEmpty()) {
             for (String filterName : projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().keySet()) {
                 CustomFilterBean filter = projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().get(filterName);
@@ -514,7 +513,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
                                 "Context menu",
                                 getPopupActionGroup());
                         table.addItemSelectedListener(this);
-						TableView.restore(projectConfiguration.getCrucibleConfiguration().getTableConfiguration(),
+                        TableView.restore(projectConfiguration.getCrucibleConfiguration().getTableConfiguration(),
                                 table.getTable());
 
                         dataPanelsHolder.add(table);
@@ -564,7 +563,9 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
     public void getReviewComments() {
         if (selectedItem != null) {
+            /*
             try {
+
                 List<CustomFieldDef> metrics = serverFacade.getMetrics(selectedItem.getServer(), selectedItem.getMetricsVersion());
                 for (CustomFieldDef metric : metrics) {
                     System.out.println("metric.getName() = " + metric.getName());
@@ -584,6 +585,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
                 gc.setCreateDate(new Date());
                 gc.setMessage("ala ma kota");
                 gc.setDefectRaised(false);
+                gc.setDraft(true);
                 CustomFieldBean v1 = new CustomFieldBean();
                 v1.setConfigVersion(3);
                 v1.setFieldScope("comment");
@@ -625,17 +627,20 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
                 reply.setUser("mwent");
                 reply.setCreateDate(new Date());
                 reply.setMessage("Ola ma psa - to jest reply");
-                //reply.setDraft(true);
+                reply.setDraft(true);
 
                 GeneralComment rc = serverFacade.addReply(selectedItem.getServer(), selectedItem.getPermaId(), gc1.getPermId(), reply);
 
                 reply.setMessage("A ja nie mam zwiarzaka");
                 serverFacade.updateReply(selectedItem.getServer(), selectedItem.getPermaId(), gc1.getPermId(), rc.getPermId(), reply);
 
+
+
                 List<ReviewItem> items = serverFacade.getReviewItems(selectedItem.getServer(), selectedItem.getPermaId());
                 for (ReviewItem item : items) {
 
                     VersionedCommentBean vc = new VersionedCommentBean();
+                    vc.setDraft(true);
                     vc.setUser("mwent");
                     vc.setCreateDate(new Date());
                     vc.setMessage("ala ma kota");
@@ -677,8 +682,8 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
 
 
-                    vc.setFromStartLine(15);
-                    vc.setFromEndLine(19);
+                    vc.setToStartLine(15);
+                    vc.setToEndLine(19);
 
                     serverFacade.addVersionedComment(selectedItem.getServer(), item.getPermId(), vc);
 
@@ -705,17 +710,34 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
                     vc.setToEndLine(36);
 
                     serverFacade.addVersionedComment(selectedItem.getServer(), item.getPermId(), vc);
-           
-                }
 
-                //serverFacade.removeGeneralComment(selectedItem.getServer(), selectedItem.getPermaId(), gc1);
+                }
+                serverFacade.publishAllCommentsForReview(selectedItem.getServer(), selectedItem.getPermaId());
+
+                serverFacade.completeReview(selectedItem.getServer(), selectedItem.getPermaId(), true);
+
+                serverFacade.completeReview(selectedItem.getServer(), selectedItem.getPermaId(), false);
+
+                serverFacade.summarizeReview(selectedItem.getServer(), selectedItem.getPermaId());
+                serverFacade.closeReview(selectedItem.getServer(), selectedItem.getPermaId(), "To jest summary");
+                serverFacade.reopenReview(selectedItem.getServer(), selectedItem.getPermaId());
+                serverFacade.abandonReview(selectedItem.getServer(), selectedItem.getPermaId());
+                serverFacade.recoverReview(selectedItem.getServer(), selectedItem.getPermaId());
+                                                                                                serverFacade.approveReview(selectedItem.getServer(), selectedItem.getPermaId());
+                serverFacade.summarizeReview(selectedItem.getServer(), selectedItem.getPermaId());
+                serverFacade.abandonReview(selectedItem.getServer(), selectedItem.getPermaId());
+
+                List<CrucibleAction> crucibleActions = serverFacade.getAvailableActions(selectedItem.getServer(), selectedItem.getPermaId());
+                for (CrucibleAction crucibleAction : crucibleActions) {
+                    System.out.println("crucibleAction = " + crucibleAction.getName());
+                }
 
             } catch (RemoteApiException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             } catch (ServerPasswordNotProvidedException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
-
+            */
         }
     }
 }

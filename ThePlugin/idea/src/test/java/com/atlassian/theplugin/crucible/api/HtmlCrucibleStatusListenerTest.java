@@ -21,10 +21,7 @@ import com.atlassian.theplugin.commons.crucible.ReviewInfoImpl;
 import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.crucible.ReviewInfo;
 import com.atlassian.theplugin.commons.crucible.*;
-import com.atlassian.theplugin.commons.crucible.api.model.PermIdBean;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewBean;
-import com.atlassian.theplugin.commons.crucible.api.model.State;
-import com.atlassian.theplugin.commons.crucible.api.model.User;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.gargoylesoftware.htmlunit.StringWebResponse;
 import com.gargoylesoftware.htmlunit.TopLevelWindow;
 import com.gargoylesoftware.htmlunit.WebClient;
@@ -172,13 +169,17 @@ public class HtmlCrucibleStatusListenerTest extends TestCase {
 		rd.setState(DEFAULT_STATE);
 
 		ArrayList reviewers = new ArrayList<String>();
-		reviewers.add(new User() {
+		reviewers.add(new Reviewer() {
             public String getUserName() {
                 return DEFAULT_REVIEW_NAME + suffix;
             }
 
             public String getDisplayName() {
                 return "";
+            }
+
+            public boolean isCompleted() {
+                return false; 
             }
         });
 
