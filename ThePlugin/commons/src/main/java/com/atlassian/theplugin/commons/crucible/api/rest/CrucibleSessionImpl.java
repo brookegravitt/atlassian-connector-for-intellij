@@ -56,7 +56,19 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
     private static final String GET_REVIEW_ITEMS = "/reviewitems";
 	private static final String GET_REVIEW_COMMENTS = "/comments";
     private static final String VERSIONED_COMMENTS = "/vcomments";
+
     private static final String APPROVE_ACTION = "/approve";
+    private static final String SUMMARIZE_ACTION = "/summarize";
+    private static final String ABANDON_ACTION = "/abandon";
+    private static final String CLOSE_ACTION = "/close";
+    private static final String RECOVER_ACTION = "/recover";
+    private static final String REOPEN_ACTION = "/reopen";
+    private static final String REJECT_ACTION = "/reject";
+
+    private static final String PUBLISH_COMMENTS = "/publish";
+    private static final String COMPLETE_ACTION = "/complete";
+    private static final String UNCOMPLETE_ACTION = "/uncomplete";
+
     private static final String ADD_CHANGESET = "/addChangeset";
     private static final String ADD_PATCH = "/addPatch";
     private static final String GET_METRICS = "/metrics";
@@ -505,6 +517,27 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
     }
 
+    public void publishComment(PermId reviewId, PermId commentId) throws RemoteApiException {
+		if (!isLoggedIn()) {
+			throw new IllegalStateException("Calling method without calling login() first");
+		}
+
+        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + reviewId.getId() + PUBLISH_COMMENTS;
+        if (commentId != null) {
+            requestUrl += "/" + commentId.getId();
+        }
+
+        try {
+            retrieveGetResponse(requestUrl, false);
+        } catch (IOException e) {
+			throw new RemoteApiException(e.getMessage(), e);
+		} catch (JDOMException e) {
+			throw new RemoteApiException("Server returned malformed response", e);
+		} catch (RemoteApiSessionExpiredException e) {
+            throw new RemoteApiException(e.getMessage(), e);
+        }
+    }
+
     public VersionedComment addVersionedComment(PermId id, VersionedComment comment) throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
@@ -796,12 +829,12 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
     }
 
-    public Review approveReview(PermId permId) throws RemoteApiException {
+    private Review changeReviewState(PermId permId, String action) throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
 
-		String requestUrl = baseUrl + REVIEW_SERVICE + "/" + permId.getId() + APPROVE_ACTION;
+		String requestUrl = baseUrl + REVIEW_SERVICE + "/" + permId.getId() + action;
 		try {
 			Document doc = retrieveGetResponse(requestUrl);
 
@@ -816,6 +849,80 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
                 }
             }
             return review;
+        } catch (IOException e) {
+			throw new RemoteApiException(e.getMessage(), e);
+		} catch (JDOMException e) {
+			throw new RemoteApiException("Server returned malformed response", e);
+		}
+    }
+
+    public void completeReview(PermId permId, boolean complete) throws RemoteApiException {
+		if (!isLoggedIn()) {
+			throw new IllegalStateException("Calling method without calling login() first");
+		}
+
+        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + permId.getId();
+        if (complete) {
+            requestUrl += COMPLETE_ACTION;
+        } else {
+            requestUrl += UNCOMPLETE_ACTION;            
+        }
+
+		try {
+			retrieveGetResponse(requestUrl, false);
+        } catch (IOException e) {
+			throw new RemoteApiException(e.getMessage(), e);
+		} catch (JDOMException e) {
+			throw new RemoteApiException("Server returned malformed response", e);
+		}
+    }
+
+    public Review approveReview(PermId permId) throws RemoteApiException {
+        return changeReviewState(permId, APPROVE_ACTION);
+    }
+
+    public Review abandonReview(PermId permId) throws RemoteApiException {
+        return changeReviewState(permId, ABANDON_ACTION);
+    }
+
+    public Review closeReview(PermId permId) throws RemoteApiException {
+        return changeReviewState(permId, CLOSE_ACTION);
+    }
+
+    public Review recoverReview(PermId permId) throws RemoteApiException {
+        return changeReviewState(permId, RECOVER_ACTION);
+    }
+
+    public Review reopenReview(PermId permId) throws RemoteApiException {
+        return changeReviewState(permId, REOPEN_ACTION);
+    }
+
+    public Review rejectReview(PermId permId) throws RemoteApiException {
+        return changeReviewState(permId, REJECT_ACTION);
+    }
+
+    public Review summarizeReview(PermId permId, String summarizeMessage) throws RemoteApiException {
+		if (!isLoggedIn()) {
+			throw new IllegalStateException("Calling method without calling login() first");
+		}
+
+		Document request = CrucibleRestXmlHelper.prepareSummarizeNode(summarizeMessage);        
+
+        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + permId.getId() + SUMMARIZE_ACTION;
+		try {
+			Document doc = retrievePostResponse(requestUrl, request, false);
+
+            XPath xpath = XPath.newInstance("reviewData");
+            @SuppressWarnings("unchecked")
+            List<Element> elements = xpath.selectNodes(doc);
+            Review review = null;
+
+            if (elements != null && !elements.isEmpty()) {
+                for (Element element : elements) {
+                    review = CrucibleRestXmlHelper.parseReviewNode(element);
+                }
+            }
+            return review;            
         } catch (IOException e) {
 			throw new RemoteApiException(e.getMessage(), e);
 		} catch (JDOMException e) {

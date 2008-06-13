@@ -488,7 +488,10 @@ public final class CrucibleRestXmlHelper {
         return filterData;
     }
 
-
+    public static Document prepareSummarizeNode(String summarizeMessage) {
+        return null;  //To change body of created methods use File | Settings | File Templates.
+    }
+    
     private static SimpleDateFormat commentTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
     private static Date parseCommentTime(String date) {
