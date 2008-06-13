@@ -135,7 +135,11 @@
                             <name>xmlParserAPIs</name>
                             <exclude>true</exclude>
                         </library>
-                    </libraries>
+						<library>
+                            <name>jdom</name>
+                            <exclude>true</exclude>
+                        </library>
+					</libraries>
                 </configuration>
             </plugin>
             <plugin>
