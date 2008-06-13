@@ -339,7 +339,11 @@
                             <name>Clover</name>
                             <exclude>false</exclude>
                         </library>
-                        <library>
+						<library>
+                            <name>jdom</name>
+                            <exclude>true</exclude>
+                        </library>
+						<library>
                             <name>openapi</name>
                             <exclude>true</exclude>
                         </library>
