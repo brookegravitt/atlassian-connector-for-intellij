@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -30,6 +31,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
+import com.atlassian.theplugin.commons.ConfigurationListener;
 import com.atlassian.theplugin.commons.SchedulableChecker;
 import com.atlassian.theplugin.commons.bamboo.BambooStatusChecker;
 import com.atlassian.theplugin.commons.bamboo.BambooStatusTooltipListener;
@@ -65,6 +67,8 @@ public class Activator extends AbstractUIPlugin {
 
 	private Collection<SchedulableChecker> schedulableCheckers = new ArrayList<SchedulableChecker>();
 
+	private Set<ConfigurationListener> configurationListeners = new HashSet<ConfigurationListener>();
+
 	
 	/**
 	 * The constructor
@@ -92,17 +96,19 @@ public class Activator extends AbstractUIPlugin {
 		bambooChecker = BambooStatusChecker.getInstance(
 				EclipseActionScheduler.getInstance(), pluginConfiguration, missingPasswordHandler, PluginUtil.getLogger());
 		schedulableCheckers.add(bambooChecker);
+		registerConfigurationListener(bambooChecker);
 		
 		// create configuration changes listener
 		getPluginPreferences().addPropertyChangeListener(new IPropertyChangeListener() {
 			public void propertyChange(PropertyChangeEvent event) {
 				reloadConfiguration();
-				bambooChecker.setConfiguration(pluginConfiguration);
+				notifyConfigurationListeners();
+				//bambooChecker.setConfiguration(pluginConfiguration);
 				rescheduleStatusCheckers();
 			}
-			
 		});
 		
+
 		// create timer
 		timer = new Timer("Atlassian Eclipse Plugin checkers");
 		
@@ -110,6 +116,20 @@ public class Activator extends AbstractUIPlugin {
 		startTimer();
 		//timer.schedule(bambooChecker.newTimerTask(), 0, BAMBOO_CHECKER_POLLING);
 		
+	}
+	
+	private void notifyConfigurationListeners() {
+		for (ConfigurationListener listener : configurationListeners) {
+			listener.updateConfiguration(pluginConfiguration);
+		}
+	}
+	
+	public void registerConfigurationListener(ConfigurationListener configListener) {
+		this.configurationListeners.add(configListener);
+	}
+
+	public void unregisterConfigurationListener(ConfigurationListener configListener) {
+		this.configurationListeners.remove(configListener);
 	}
 
 	public void reloadConfiguration() {

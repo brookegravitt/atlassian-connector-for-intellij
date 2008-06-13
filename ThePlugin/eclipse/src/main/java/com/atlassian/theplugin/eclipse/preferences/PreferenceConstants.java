@@ -38,5 +38,7 @@ public class PreferenceConstants {
 	public static final String BAMBOO_USER_PASSWORD = "BAMBOO_USER_PASSWORD";
 
 	public static final String BAMBOO_BUILDS = "BAMBOO_BUILDS";
+
+	public static final String BAMBOO_POPUP = "BAMBOO_POPUP";
 	
 }
