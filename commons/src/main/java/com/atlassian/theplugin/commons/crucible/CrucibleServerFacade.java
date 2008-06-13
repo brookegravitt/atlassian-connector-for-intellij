@@ -32,6 +32,9 @@ public interface CrucibleServerFacade extends ProductServerFacade {
     Review createReviewFromRevision(Server server, Review review, List<String> revisions)
             throws RemoteApiException;
 
+    List<CrucibleAction> getAvailableActions(Server server, PermId permId)
+            throws RemoteApiException, ServerPasswordNotProvidedException;
+
     Review addRevisionsToReview(Server server, PermId permId, String repository, List<String> revisions)
             throws RemoteApiException, ServerPasswordNotProvidedException;
 
@@ -44,6 +47,24 @@ public interface CrucibleServerFacade extends ProductServerFacade {
     Review approveReview(Server server, PermId permId)
 		    throws RemoteApiException, ServerPasswordNotProvidedException;
 
+    Review summarizeReview(Server server, PermId permId)
+            throws RemoteApiException, ServerPasswordNotProvidedException;
+
+    Review abandonReview(Server server, PermId permId)
+            throws RemoteApiException, ServerPasswordNotProvidedException;
+
+    Review closeReview(Server server, PermId permId, String summary)
+            throws RemoteApiException, ServerPasswordNotProvidedException;
+
+    Review recoverReview(Server server, PermId permId)
+            throws RemoteApiException, ServerPasswordNotProvidedException;
+
+    Review reopenReview(Server server, PermId permId)
+            throws RemoteApiException, ServerPasswordNotProvidedException;
+
+    Review rejectReview(Server server, PermId permId)
+            throws RemoteApiException, ServerPasswordNotProvidedException;
+    
     void completeReview(Server server, PermId permId, boolean complete)
             throws RemoteApiException, ServerPasswordNotProvidedException;
 
@@ -67,6 +88,18 @@ public interface CrucibleServerFacade extends ProductServerFacade {
 
 	List<GeneralComment> getComments(Server server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
+
+    List<GeneralComment> getGeneralComments(Server server, PermId permId)
+            throws RemoteApiException, ServerPasswordNotProvidedException;
+
+    List<VersionedComment> getVersionedComments(Server server, PermId permId)
+            throws RemoteApiException, ServerPasswordNotProvidedException;
+
+    List<VersionedComment> getVersionedComments(Server server, PermId permId, PermId reviewItemId)
+            throws RemoteApiException, ServerPasswordNotProvidedException;
+
+    List<GeneralComment> getReplies(Server server, PermId permId, PermId commentId)
+            throws RemoteApiException, ServerPasswordNotProvidedException;
 
     GeneralComment addGeneralComment(Server server, PermId permId, GeneralComment comment) 
             throws RemoteApiException, ServerPasswordNotProvidedException;

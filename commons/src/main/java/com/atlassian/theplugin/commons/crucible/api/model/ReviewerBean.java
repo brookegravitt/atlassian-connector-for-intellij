@@ -16,23 +16,17 @@
 
 package com.atlassian.theplugin.commons.crucible.api.model;
 
-public class UserBean implements User {
-    protected String userName;
-	protected String displayName;
-    
-    public String getUserName() {
-        return userName;
+public class ReviewerBean extends UserBean implements Reviewer {
+    private boolean completed;
+
+    public ReviewerBean() {
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public boolean isCompleted() {
+        return completed;
     }
 
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
     }
 }

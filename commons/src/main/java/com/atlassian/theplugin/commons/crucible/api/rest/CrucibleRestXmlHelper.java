@@ -98,6 +98,33 @@ public final class CrucibleRestXmlHelper {
         return userDataBean;
     }
 
+    public static CrucibleAction parseActionNode(Element element) {
+        CrucibleActionBean actionBean = new CrucibleActionBean();
+
+        actionBean.setName(getChildText(element, "name"));
+        actionBean.setDisplayName(getChildText(element, "displayName"));
+        return actionBean;
+    }
+
+    public static ReviewerBean parseReviewerNode(Element reviewerNode) {
+        ReviewerBean reviewerBean = new ReviewerBean();
+
+        CrucibleVersion version = CrucibleVersion.CRUCIBLE_15;
+        Element userName = reviewerNode.getChild("userName");
+        if (userName != null && !userName.getText().equals("")) {
+            version = CrucibleVersion.CRUCIBLE_16;
+        }
+        if (version == CrucibleVersion.CRUCIBLE_15) {
+            reviewerBean.setUserName(reviewerNode.getText());
+            reviewerBean.setDisplayName(reviewerBean.getUserName());
+        } else {
+            reviewerBean.setUserName(getChildText(reviewerNode, "userName"));
+            reviewerBean.setDisplayName(getChildText(reviewerNode, "displayName"));
+            reviewerBean.setCompleted(Boolean.parseBoolean(getChildText(reviewerNode, "completed")));
+        }
+        return reviewerBean;
+    }
+
     public static Review parseReviewNode(Element reviewNode) {
         ReviewBean review = new ReviewBean();
 
@@ -148,6 +175,20 @@ public final class CrucibleRestXmlHelper {
 
             CDATA patchT = new CDATA(patch);
             patchData.setContent(patchT);
+        }
+        return doc;
+    }
+
+    public static Document prepareCloseReviewSummaryNode(String message) {
+        Element root = new Element("closeReviewSummary");
+        Document doc = new Document(root);
+
+        if (message != null) {
+            Element messageData = new Element("summary");
+            root.getContent().add(messageData);
+
+            CDATA patchT = new CDATA(message);
+            messageData.setContent(patchT);
         }
         return doc;
     }
@@ -316,7 +357,7 @@ public final class CrucibleRestXmlHelper {
         Element replies = new Element("replies");
         commentNode.getContent().add(replies);
     }
-    
+
     public static GeneralCommentBean parseGeneralCommentNode(Element reviewCommentNode) {
         GeneralCommentBean reviewCommentBean = new GeneralCommentBean();
         parseComment(reviewCommentBean, reviewCommentNode);
@@ -488,16 +529,14 @@ public final class CrucibleRestXmlHelper {
         return filterData;
     }
 
-    public static Document prepareSummarizeNode(String summarizeMessage) {
-        return null;  //To change body of created methods use File | Settings | File Templates.
-    }
-    
     private static SimpleDateFormat commentTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
     private static Date parseCommentTime(String date) {
         try {
-            date = date.replace(":00", "00");
-            return commentTimeFormat.parse(date);
+            int index = date.lastIndexOf(":");
+            String a = date.substring(0, index);
+            String b = date.substring(index + 1);
+            return commentTimeFormat.parse(a + b);
         } catch (ParseException e) {
             System.out.println("e = " + e);
             return null;
