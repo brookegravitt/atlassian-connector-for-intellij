@@ -35,11 +35,11 @@ import org.eclipse.ui.IWorkbench;
  * be accessed directly via the preference store.
  */
 
-public class PreferencePage
+public class PreferencePageServers
 	extends FieldEditorPreferencePage
 	implements IWorkbenchPreferencePage {
 
-	public PreferencePage() {
+	public PreferencePageServers() {
 		super(GRID);
 		setPreferenceStore(Activator.getDefault().getPreferenceStore());
 		setDescription("Bamboo Configuration");

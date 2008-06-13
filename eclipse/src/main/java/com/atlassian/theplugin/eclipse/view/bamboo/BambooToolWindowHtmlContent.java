@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 
+import com.atlassian.theplugin.commons.bamboo.BambooPopupInfo;
 import com.atlassian.theplugin.commons.bamboo.BambooStatusDisplay;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.eclipse.preferences.Activator;
@@ -52,8 +53,8 @@ public class BambooToolWindowHtmlContent implements BambooStatusDisplay {
 				.addLocationListener(new BrowserLocationListener(htmlBrowser));
 	}
 
-	public void updateBambooStatus(BuildStatus arg0, String aHtml) {
-		this.html = aHtml;
+	public void updateBambooStatus(BuildStatus arg0, BambooPopupInfo info) {
+		this.html = info.toHtml();
 		linkClicked = false;
 		htmlBrowser.setText(html);
 	}

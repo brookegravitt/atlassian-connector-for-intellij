@@ -27,6 +27,7 @@ import org.eclipse.core.runtime.Preferences;
 
 import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.configuration.BambooConfigurationBean;
+import com.atlassian.theplugin.commons.configuration.BambooTooltipOption;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.ServerBean;
 import com.atlassian.theplugin.commons.configuration.SubscribedPlanBean;
@@ -69,6 +70,14 @@ public class ProjectConfigurationWrapper {
 		
 		BambooConfigurationBean bambooConfiguration = new BambooConfigurationBean();
 		bambooConfiguration.setServers(bambooServers);
+		
+		try {
+			bambooConfiguration.setBambooTooltipOption(BambooTooltipOption.valueOf(preferences.getString(PreferenceConstants.BAMBOO_POPUP)));
+		} catch (IllegalArgumentException e) {
+			bambooConfiguration.setBambooTooltipOption(null);
+		} catch (NullPointerException e) {
+			bambooConfiguration.setBambooTooltipOption(null);
+		}
 		
 		EclipsePluginConfiguration pluginConfiguration = new EclipsePluginConfiguration();
 		pluginConfiguration.setBambooConfigurationData(bambooConfiguration);
