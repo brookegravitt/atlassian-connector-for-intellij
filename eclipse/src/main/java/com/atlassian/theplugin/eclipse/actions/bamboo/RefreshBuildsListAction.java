@@ -37,7 +37,7 @@ public class RefreshBuildsListAction extends Action {
 	@Override
 	public ImageDescriptor getImageDescriptor() {
 		// TODO use eclipse resource handling
-		return ImageDescriptor.createFromImage(PluginUtil.getImageRegistry().get(PluginUtil.REFRESH));
+		return ImageDescriptor.createFromImage(PluginUtil.getImageRegistry().get(PluginUtil.ICON_BAMBOO_REFRESH));
 	}
 
 	@Override
