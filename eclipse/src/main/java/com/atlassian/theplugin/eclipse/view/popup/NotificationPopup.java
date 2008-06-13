@@ -83,6 +83,7 @@ public class NotificationPopup extends AbstractNotificationPopup {
 		closeButton.setText("Close");
 		closeButton.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
 		closeButton.setCursor(parent.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
+		closeButton.setImage(PluginUtil.getImageRegistry().get(PluginUtil.ICON_CLOSE));
 		closeButton.addMouseListener(new MouseAdapter() {
 			public void mouseUp(MouseEvent e) {
 				close();
