@@ -39,6 +39,8 @@ public final class PluginUtil {
 	public static final String ICON_BAMBOO_UNKNOWN = BuildStatus.UNKNOWN.toString();
 	public static final String ICON_BAMBOO_FAILED = BuildStatus.BUILD_FAILED.toString();
 	public static final String ICON_BAMBOO_SUCCEEDED = BuildStatus.BUILD_SUCCEED.toString();
+
+	public static final String ICON_CLOSE = "Close";
 	
 	private static ImageRegistry imageRegistry;
 	
@@ -71,6 +73,9 @@ public final class PluginUtil {
 			imageRegistry.put(ICON_BAMBOO_LABEL, ImageDescriptor.createFromFile(PluginUtil.class, "/icons/bamboo_label.gif"));
 			imageRegistry.put(ICON_BAMBOO_COMMENT, ImageDescriptor.createFromFile(PluginUtil.class, "/icons/bamboo_comment.png"));
 			imageRegistry.put(ICON_BAMBOO_REFRESH, ImageDescriptor.createFromFile(PluginUtil.class, "/icons/refresh.gif"));
+			
+			imageRegistry.put(ICON_CLOSE, ImageDescriptor.createFromFile(PluginUtil.class, "/icons/close.gif"));
+			
 		}
 		
 		return imageRegistry;

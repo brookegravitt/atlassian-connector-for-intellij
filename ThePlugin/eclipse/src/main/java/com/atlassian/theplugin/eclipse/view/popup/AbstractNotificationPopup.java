@@ -53,7 +53,7 @@ public abstract class AbstractNotificationPopup extends Window {
 
 	private static final String LABEL_JOB_CLOSE = "Close Notification Job";
 
-	private static final int DEFAULT_WIDTH = 400;
+	private static final int DEFAULT_WIDTH = 200;
 
 	private static final int DEFAULT_HEIGHT = 100;
 
