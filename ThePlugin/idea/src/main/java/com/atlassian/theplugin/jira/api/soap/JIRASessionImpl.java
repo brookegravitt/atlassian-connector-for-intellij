@@ -23,6 +23,7 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.util.HttpConfigurableAdapter;
+import com.intellij.openapi.diagnostic.Logger;
 
 import javax.xml.rpc.ServiceException;
 import java.net.MalformedURLException;
@@ -46,12 +47,17 @@ public class JIRASessionImpl implements JIRASession {
 	private boolean loggedIn = false;
 
 	//
-	// AxisProperties are shit - if you try to set nonexistent property to null, NPE is thrown.
+	// AxisProperties are shit - if you try to set nonexistent property to null, NPE is thrown. Moreover, sometimes
+	// setting apparently *existing* property to null also throws NPE (see bug PL-412)! Crap, crap, crap...
 	//
 	private void setAxisProperty(String name, String value) {
 		if (value == null) {
 			if (AxisProperties.getProperty(name) != null) {
-				AxisProperties.setProperty(name, null);
+				try {
+					AxisProperties.setProperty(name, null);
+				} catch (NullPointerException e) {
+					Logger.getInstance(getClass().getName()).info("Setting property " + name + " to null", e);
+				}
 			}
 		} else {
 			AxisProperties.setProperty(name, value);
