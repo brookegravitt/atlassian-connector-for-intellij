@@ -19,6 +19,7 @@ package com.atlassian.theplugin.idea.crucible.table.column;
 import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.User;
+import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 
 import java.util.Comparator;
 import java.util.Iterator;
@@ -41,7 +42,7 @@ public class ReviewReviewersColumn extends TableColumnInfo {
     private String getReviewersAsText(Object o) {
         StringBuffer sb = new StringBuffer();
         if (((ReviewDataInfoAdapter) o).getReviewers() != null) {
-            for (Iterator<User> iterator = ((ReviewDataInfoAdapter) o).getReviewers().iterator(); iterator.hasNext();) {
+            for (Iterator<Reviewer> iterator = ((ReviewDataInfoAdapter) o).getReviewers().iterator(); iterator.hasNext();) {
                 sb.append(iterator.next().getUserName());
                 if (iterator.hasNext()) {
                     sb.append(", ");
