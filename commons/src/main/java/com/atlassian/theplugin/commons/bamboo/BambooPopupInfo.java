@@ -87,4 +87,12 @@ public class BambooPopupInfo {
 
 		return sb.toString();
 	}
+
+	public List<BambooBuild> getBambooBuilds() {
+		return bambooBuilds;
+	}
+
+	public void clear() {
+		bambooBuilds.clear();
+	}
 }
