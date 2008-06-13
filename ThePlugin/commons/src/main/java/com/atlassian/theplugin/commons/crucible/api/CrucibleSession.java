@@ -35,6 +35,8 @@ public interface CrucibleSession {
 
     Review createReviewFromRevision(Review review, List<String> revisions) throws RemoteApiException;
 
+    List<CrucibleAction> getAvailableActions(PermId permId) throws RemoteApiException;
+
     Review addRevisionsToReview(PermId permId, String repository, List<String> revisions) throws RemoteApiException;
 
     Review addPatchToReview(PermId permId, String repository, String patch) throws RemoteApiException;
@@ -45,7 +47,7 @@ public interface CrucibleSession {
 
     Review abandonReview(PermId permId) throws RemoteApiException;
 
-    Review closeReview(PermId permId) throws RemoteApiException;
+    Review closeReview(PermId permId, String summary) throws RemoteApiException;
 
     Review recoverReview(PermId permId) throws RemoteApiException;
 
@@ -53,7 +55,7 @@ public interface CrucibleSession {
 
     Review rejectReview(PermId permId) throws RemoteApiException;
 
-    Review summarizeReview(PermId permId, String summarizeMessage) throws RemoteApiException;
+    Review summarizeReview(PermId permId) throws RemoteApiException;
 
     void completeReview(PermId permId, boolean complete) throws RemoteApiException;
 
@@ -65,7 +67,7 @@ public interface CrucibleSession {
 
     List<Review> getReviewsForCustomFilter(CustomFilter filter) throws RemoteApiException;
 
-    List<User> getReviewers(PermId arg1) throws RemoteApiException;
+    List<Reviewer> getReviewers(PermId arg1) throws RemoteApiException;
 
     List<User> getUsers() throws RemoteApiException;
 
@@ -77,7 +79,15 @@ public interface CrucibleSession {
 
 	List<ReviewItem> getReviewItems(PermId id) throws RemoteApiException;
 
-	List<GeneralComment> getGeneralComments(PermId id) throws RemoteApiException;
+	List<GeneralComment> getComments(PermId id) throws RemoteApiException;
+
+    List<GeneralComment> getGeneralComments(PermId id) throws RemoteApiException;
+
+    List<VersionedComment> getAllVersionedComments(PermId id) throws RemoteApiException;      
+
+    List<VersionedComment> getVersionedComments(PermId id, PermId reviewItemId) throws RemoteApiException;
+
+    List<GeneralComment> getReplies(PermId id, PermId commentId) throws RemoteApiException;
 
     GeneralComment addGeneralComment(PermId id, GeneralComment comment) throws RemoteApiException;
 
@@ -92,10 +102,6 @@ public interface CrucibleSession {
     GeneralComment addReply(PermId id, PermId cId,  GeneralComment comment) throws RemoteApiException;
 
     void updateReply(PermId id, PermId cId,  PermId rId, GeneralComment comment) throws RemoteApiException;    
-
-    List<VersionedComment> getVersionedComments(PermId id) throws RemoteApiException;
-
-	List<GeneralComment> getComments(PermId id) throws RemoteApiException;
 
     List<CustomFieldDef> getMetrics(int version) throws RemoteApiException;    
 

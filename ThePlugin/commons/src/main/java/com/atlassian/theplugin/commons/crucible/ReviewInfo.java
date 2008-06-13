@@ -18,14 +18,14 @@ package com.atlassian.theplugin.commons.crucible;
 
 import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
-import com.atlassian.theplugin.commons.crucible.api.model.User;
+import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 
 import java.util.List;
 
 public interface ReviewInfo extends Review {
 	String getReviewUrl();
 
-	List<User> getReviewers();
+	List<Reviewer> getReviewers();
 
 	Server getServer();
 }

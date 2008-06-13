@@ -481,7 +481,7 @@ public class CrucibleSessionTest extends TestCase {
 		apiHandler.login(USER_NAME, PASSWORD);
 		PermIdBean permId = new PermIdBean();
 		permId.setId("PR-1");
-		List<User> reviewers = apiHandler.getReviewers(permId);
+		List<Reviewer> reviewers = apiHandler.getReviewers(permId);
 		assertEquals(0, reviewers.size());
 		mockServer.verify();
 	}
@@ -502,7 +502,7 @@ public class CrucibleSessionTest extends TestCase {
 		apiHandler.login(USER_NAME, PASSWORD);
 		PermIdBean permId = new PermIdBean();
 		permId.setId("PR-1");
-		List<User> result = apiHandler.getReviewers(permId);
+		List<Reviewer> result = apiHandler.getReviewers(permId);
 		assertEquals(3, result.size());
 		assertEquals(result.get(0).getUserName(), "bob");
 		assertEquals(result.get(1).getUserName(), "alice");
