@@ -44,6 +44,9 @@ public interface CrucibleServerFacade extends ProductServerFacade {
     Review approveReview(Server server, PermId permId)
 		    throws RemoteApiException, ServerPasswordNotProvidedException;
 
+    void completeReview(Server server, PermId permId, boolean complete)
+            throws RemoteApiException, ServerPasswordNotProvidedException;
+
     List<ReviewInfo> getAllReviews(Server server)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
@@ -72,6 +75,12 @@ public interface CrucibleServerFacade extends ProductServerFacade {
             throws RemoteApiException, ServerPasswordNotProvidedException;
     
     void updateGeneralComment(Server server, PermId id, GeneralComment comment)
+            throws RemoteApiException, ServerPasswordNotProvidedException;
+
+    void publishComment(Server server, PermId reviewId, PermId commentId)
+            throws RemoteApiException, ServerPasswordNotProvidedException;
+
+    void publishAllCommentsForReview(Server server, PermId reviewId)
             throws RemoteApiException, ServerPasswordNotProvidedException;
 
     GeneralComment addReply(Server server, PermId id, PermId cId, GeneralComment comment)

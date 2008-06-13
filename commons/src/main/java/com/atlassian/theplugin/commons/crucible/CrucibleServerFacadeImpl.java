@@ -139,6 +139,11 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
         return session.approveReview(permId);
     }
 
+    public void completeReview(Server server, PermId permId, boolean complete) throws RemoteApiException, ServerPasswordNotProvidedException {
+        CrucibleSession session = getSession(server);
+        session.completeReview(permId, complete);
+    }
+
     /**
 	 * Creates new review in Crucible
 	 *
@@ -180,6 +185,16 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
     public void updateGeneralComment(Server server, PermId id, GeneralComment comment) throws RemoteApiException, ServerPasswordNotProvidedException {
         CrucibleSession session = getSession(server);
         session.updateGeneralComment(id, comment);
+    }
+
+    public void publishComment(Server server, PermId reviewId, PermId commentId) throws RemoteApiException, ServerPasswordNotProvidedException {
+        CrucibleSession session = getSession(server);
+        session.publishComment(reviewId, commentId);
+    }
+
+    public void publishAllCommentsForReview(Server server, PermId reviewId) throws RemoteApiException, ServerPasswordNotProvidedException {
+        CrucibleSession session = getSession(server);
+        session.publishComment(reviewId, null);
     }
 
     public GeneralComment addReply(Server server, PermId id, PermId cId, GeneralComment comment) throws RemoteApiException, ServerPasswordNotProvidedException {

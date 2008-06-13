@@ -43,6 +43,20 @@ public interface CrucibleSession {
 
     Review approveReview(PermId permId) throws RemoteApiException;
 
+    Review abandonReview(PermId permId) throws RemoteApiException;
+
+    Review closeReview(PermId permId) throws RemoteApiException;
+
+    Review recoverReview(PermId permId) throws RemoteApiException;
+
+    Review reopenReview(PermId permId) throws RemoteApiException;
+
+    Review rejectReview(PermId permId) throws RemoteApiException;
+
+    Review summarizeReview(PermId permId, String summarizeMessage) throws RemoteApiException;
+
+    void completeReview(PermId permId, boolean complete) throws RemoteApiException;
+
     List<Review> getReviewsInStates(List<State> arg1) throws RemoteApiException;
 
 	List<Review> getAllReviews() throws RemoteApiException;
@@ -72,6 +86,8 @@ public interface CrucibleSession {
     void removeGeneralComment(PermId id, GeneralComment comment) throws RemoteApiException;
 
     void updateGeneralComment(PermId id, GeneralComment comment) throws RemoteApiException;
+
+    void publishComment(PermId reviewId, PermId commentId) throws RemoteApiException;    
 
     GeneralComment addReply(PermId id, PermId cId,  GeneralComment comment) throws RemoteApiException;
 
