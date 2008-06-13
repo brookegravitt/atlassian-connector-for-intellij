@@ -308,9 +308,9 @@
             <reference id="ThePlugin.JIRA.QuickSearch" />
 		</group>
 
+        <action id="ThePlugin.JIRA.OpenIssue" class="com.atlassian.theplugin.idea.action.jira.OpenIssueAction" text="View in IDE" />
         <action id="ThePlugin.JIRA.ViewIssue" class="com.atlassian.theplugin.idea.action.jira.ViewIssueAction" text="View in Browser" />
         <action id="ThePlugin.JIRA.EditIssue" class="com.atlassian.theplugin.idea.action.jira.EditIssueAction" text="Edit in Browser" />
-		<action id="ThePlugin.JIRA.OpenIssue" class="com.atlassian.theplugin.idea.action.jira.OpenIssueAction" text="Open" />
 		<action id="ThePlugin.JIRA.WorkflowActions" class="com.atlassian.theplugin.idea.action.jira.IssueWorkflowAction" text="Workflow Actions" />
 		<action id="ThePlugin.JIRA.AddComment" class="com.atlassian.theplugin.idea.action.jira.AddCommentAction" text="Add comment" />
         <action id="ThePlugin.JIRA.LogWork" class="com.atlassian.theplugin.idea.action.jira.LogWorkAction" text="Log work" />
@@ -320,8 +320,8 @@
 
 
         <group id="ThePlugin.JIRA.IssuePopupMenu" popup="true">
-			<reference id="ThePlugin.JIRA.OpenIssue" />
             <reference id="ThePlugin.JIRA.ViewIssue" />
+            <reference id="ThePlugin.JIRA.OpenIssue" />
             <reference id="ThePlugin.JIRA.EditIssue" />
 			<separator />
             <reference id="ThePlugin.JIRA.AddComment" />
