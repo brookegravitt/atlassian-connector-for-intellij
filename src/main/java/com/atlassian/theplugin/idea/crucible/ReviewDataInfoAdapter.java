@@ -20,6 +20,7 @@ import com.atlassian.theplugin.commons.crucible.ReviewInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.commons.crucible.api.model.State;
 import com.atlassian.theplugin.commons.crucible.api.model.User;
+import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 import com.atlassian.theplugin.commons.Server;
 
 import java.util.List;
@@ -52,7 +53,7 @@ public class ReviewDataInfoAdapter {
 		return review.getModerator();
 	}
 
-	public List<User> getReviewers() {
+	public List<Reviewer> getReviewers() {
 		return review.getReviewers();
 	}
 
