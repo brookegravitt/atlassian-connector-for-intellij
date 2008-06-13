@@ -27,13 +27,20 @@ import org.jetbrains.annotations.Nullable;
 import org.jdom.Element;
 
 import java.util.List;
+import java.util.ArrayList;
 import javax.swing.*;
+import javax.swing.table.TableModel;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.event.HyperlinkEvent;
 import java.beans.PropertyChangeListener;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
+import java.awt.event.ComponentListener;
+import java.awt.event.ComponentEvent;
 
 public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileEditorProvider {
 
@@ -134,7 +141,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 		public CommentsPanel() {
 			setLayout(new GridBagLayout());
 			GridBagConstraints gbc = new GridBagConstraints();
-			add(new JLabel("Comments:"), gbc);
+			add(new JLabel("Comments"), gbc);
 			gbc.gridy++;
 			add(new JSeparator(SwingConstants.HORIZONTAL));
 			gbc.gridy++;
@@ -145,14 +152,44 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			scroll.setViewportView(comments);
 			scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 			scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-			comments.setPreferredSize(new Dimension(1, 1));
+            updateSize();
             add(scroll, gbc);
-		}
+
+            scroll.addComponentListener(new ComponentListener() {
+                public void componentResized(ComponentEvent e) {
+                    updateSize();
+                }
+
+                public void componentMoved(ComponentEvent e) {
+                }
+
+                public void componentShown(ComponentEvent e) {
+                }
+
+                public void componentHidden(ComponentEvent e) {
+                }
+            });
+        }
 
 		public void addComment(JIRAComment c, JIRAServer server) {
 			comments.add(new CommentPanel(c, server));
-		}
-	}
+            updateSize();
+        }
+
+        private void updateSize() {
+            int w = scroll.getWidth();
+            JScrollBar sb = scroll.getVerticalScrollBar();
+            w -= sb.getWidth();
+            int h = 0;
+            Component[] comps = comments.getComponents();
+            for (Component c : comps) {
+                h += c.getHeight();
+            }
+            // todo: needed to add some padding so that last comment shows regardless of panel size.
+            // If somebody knows how to do it better, please fix this
+            comments.setPreferredSize(new Dimension(w, h + 100));
+        }
+    }
 
 	private class CommentPanel extends JPanel {
 
@@ -237,7 +274,76 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 		}
 	}
 
-	private class JIRAFileEditor implements FileEditor {
+    private class SummaryPanel extends JPanel {
+
+        private JIRAIssue issue;
+
+        public SummaryPanel(JIRAIssue issue) {
+            this.issue = issue;
+
+            setLayout(new GridBagLayout());
+            GridBagConstraints gbc1 = new GridBagConstraints();
+            GridBagConstraints gbc2 = new GridBagConstraints();
+            gbc1.anchor = GridBagConstraints.FIRST_LINE_START;
+            gbc2.anchor = GridBagConstraints.FIRST_LINE_START;
+            gbc2.fill = GridBagConstraints.HORIZONTAL;
+            gbc2.weightx = 1.0;
+            gbc1.gridx = 0;
+            gbc2.gridx = 1;
+            gbc1.gridy = 0;
+            gbc2.gridy = 0;
+            add(new JLabel("Summary"), gbc1);
+            JEditorPane summary = new JEditorPane();
+            summary.setContentType("text/html");
+            summary.setText("<html><head></head><body><b>" + issue.getSummary() + "</body></html>");
+            summary.setEditable(false);
+            summary.setOpaque(false);
+            add(summary, gbc2);
+            gbc1.gridy++;
+            gbc2.gridy++;
+            add(new JLabel("Description"), gbc1);
+            JEditorPane description = new JEditorPane();
+            description.setContentType("text/html");
+            description.setText("<html><head></head><body>" + issue.getDescription() + "</body></html>");
+            description.setEditable(false);
+            description.addHyperlinkListener(new HyperlinkListener() {
+                public void hyperlinkUpdate(HyperlinkEvent e) {
+                    if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                        BrowserUtil.launchBrowser(e.getURL().toString());
+                    }
+                }
+            });
+            description.setOpaque(false);
+            add(description, gbc2);
+            gbc1.gridy++;
+            gbc2.gridy++;
+            add(new JLabel("Status"), gbc1);
+            add(new JLabel(issue.getStatus()), gbc2);
+            gbc1.gridy++;
+            gbc2.gridy++;
+            add(new JLabel("Reporter"), gbc1);
+            add(new JLabel(issue.getReporter()), gbc2);
+            gbc1.gridy++;
+            gbc2.gridy++;
+            add(new JLabel("Assignee"), gbc1);
+            add(new JLabel(issue.getAssignee()), gbc2);
+            gbc1.gridy++;
+            gbc2.gridy++;
+            add(new JLabel("Resolution"), gbc1);
+            add(new JLabel(issue.getResolution()), gbc2);
+            gbc1.gridy++;
+            gbc2.gridy++;
+            add(new JLabel("Created"), gbc1);
+            add(new JLabel(issue.getCreated()), gbc2);
+            gbc1.gridy++;
+            gbc2.gridy++;
+            add(new JLabel("Updated"), gbc1);
+            add(new JLabel(issue.getUpdated()), gbc2);
+
+        }
+    }
+
+    private class JIRAFileEditor implements FileEditor {
 
 		private final JIRAServerFacade facade;
 		private final JIRAServer server;
@@ -264,8 +370,6 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 
 		private void setupUI() {
 			mainPanel = new JPanel();
-			mainPanel.setOpaque(true);
-			mainPanel.setBackground(Color.WHITE);
 			mainPanel.setLayout(new GridBagLayout());
 			GridBagConstraints gbc = new GridBagConstraints();
 			gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -282,8 +386,12 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			mainPanel.add(warning, gbc);
 			gbc.gridy++;
 			labelIssue = new JLabel(issue.getKey());
-			mainPanel.add(labelIssue, gbc);
-			gbc.anchor = GridBagConstraints.FIRST_LINE_START;
+            labelIssue.setHorizontalAlignment(SwingConstants.CENTER);
+            labelIssue.setForeground(Color.BLUE);
+            mainPanel.add(labelIssue, gbc);
+            gbc.gridy++;
+            mainPanel.add(new SummaryPanel(issue), gbc);
+            gbc.anchor = GridBagConstraints.FIRST_LINE_START;
 			gbc.gridy++;
 			mainPanel.add(new JSeparator(SwingConstants.HORIZONTAL), gbc);
 			gbc.gridy++;
