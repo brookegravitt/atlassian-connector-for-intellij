@@ -35,6 +35,9 @@ public interface CrucibleServerFacade extends ProductServerFacade {
     List<CrucibleAction> getAvailableActions(Server server, PermId permId)
             throws RemoteApiException, ServerPasswordNotProvidedException;
 
+    List<Transition> getAvailableTransitions(Server server, PermId permId)
+            throws RemoteApiException, ServerPasswordNotProvidedException;
+
     Review addRevisionsToReview(Server server, PermId permId, String repository, List<String> revisions)
             throws RemoteApiException, ServerPasswordNotProvidedException;
 

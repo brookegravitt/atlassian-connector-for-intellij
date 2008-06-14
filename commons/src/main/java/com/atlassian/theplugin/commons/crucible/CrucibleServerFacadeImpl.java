@@ -105,6 +105,11 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
         return session.getAvailableActions(permId);
     }
 
+    public List<Transition> getAvailableTransitions(Server server, PermId permId) throws RemoteApiException, ServerPasswordNotProvidedException {
+        CrucibleSession session = getSession(server);
+        return session.getAvailableTransitions(permId);
+    }
+
     public Review addRevisionsToReview(
             Server server,
             PermId permId,
