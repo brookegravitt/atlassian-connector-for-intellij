@@ -16,8 +16,6 @@
 
 package com.atlassian.theplugin.commons.crucible.api.model;
 
-import com.atlassian.theplugin.commons.crucible.api.model.State;
-
 public interface Review {
 	String getAuthor();
 
