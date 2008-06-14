@@ -15,7 +15,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 public class OpenIssueAction extends AnAction {
 	public void actionPerformed(AnActionEvent event) {
 		JIRAIssue issue = IdeaHelper.getJIRAToolWindowPanel(event).getCurrentIssue();
-        String fileName = issue.getKey() + "." + ThePluginJIRAEditorComponent.SUPPORTED_EXTENSION;
+        String fileName = issue.getKey();// + "." + ThePluginJIRAEditorComponent.SUPPORTED_EXTENSION;
         FileEditorManager manager =
                 FileEditorManager.getInstance(DataKeys.PROJECT.getData(event.getDataContext()));
         VirtualFile[] files = manager.getOpenFiles();
