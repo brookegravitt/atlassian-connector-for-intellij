@@ -106,6 +106,24 @@ public final class CrucibleRestXmlHelper {
         return actionBean;
     }
 
+    public static Transition parseTransitionNode(Element element) {
+        TransitionBean transitionBean = new TransitionBean();
+
+        transitionBean.setActionName(getChildText(element, "actionName"));
+        transitionBean.setDisplayName(getChildText(element, "displayName"));
+        String stateString = getChildText(element, "state");
+        if (!"".equals(stateString)) {
+            transitionBean.setState(State.fromValue(stateString));
+        }
+        stateString = getChildText(element, "nextState");
+        if (!"".equals(stateString)) {
+            transitionBean.setNextState(State.fromValue(stateString));
+        }
+
+        return transitionBean;
+    }
+
+
     public static ReviewerBean parseReviewerNode(Element reviewerNode) {
         ReviewerBean reviewerBean = new ReviewerBean();
 
