@@ -54,6 +54,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
     private static final String GET_REVIEWS_IN_STATES = "?state=";
     private static final String GET_FILTERED_REVIEWS = "/filter";
     private static final String GET_ACTIONS = "/actions";
+    private static final String GET_TRANSITIONS = "/transitions";
     private static final String GET_REVIEWERS = "/reviewers";
     private static final String GET_REVIEW_ITEMS = "/reviewitems";
 
@@ -82,9 +83,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
     private static final String ADD_PATCH = "/addPatch";
     private static final String GET_METRICS = "/metrics";
 
-
     private String authToken = null;
-
 
 
     /**
@@ -837,6 +836,33 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
                 }
             }
             return crucibleActions;
+        } catch (IOException e) {
+            throw new RemoteApiException(e.getMessage(), e);
+        } catch (JDOMException e) {
+            throw new RemoteApiException("Server returned malformed response", e);
+        }
+    }
+
+    public List<Transition> getAvailableTransitions(PermId permId) throws RemoteApiException {
+        if (!isLoggedIn()) {
+            throw new IllegalStateException("Calling method without calling login() first");
+        }
+
+        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + permId.getId() + GET_TRANSITIONS;
+        try {
+            Document doc = retrieveGetResponse(requestUrl);
+
+            XPath xpath = XPath.newInstance("/transitions/transitionData");
+            @SuppressWarnings("unchecked")
+            List<Element> elements = xpath.selectNodes(doc);
+            List<Transition> transitions = new ArrayList<Transition>();
+
+            if (elements != null && !elements.isEmpty()) {
+                for (Element element : elements) {
+                    transitions.add(CrucibleRestXmlHelper.parseTransitionNode(element));
+                }
+            }
+            return transitions;
         } catch (IOException e) {
             throw new RemoteApiException(e.getMessage(), e);
         } catch (JDOMException e) {
