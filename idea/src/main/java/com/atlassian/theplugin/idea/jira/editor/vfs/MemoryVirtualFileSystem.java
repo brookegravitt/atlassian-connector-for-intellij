@@ -31,7 +31,7 @@ public class MemoryVirtualFileSystem extends DeprecatedVirtualFileSystem impleme
    /**
     * The name of the component.
     */
-   private static final String COMPONENT_NAME = "MemoryFileSystem";
+   private static final String COMPONENT_NAME = "JIRA-MemoryFileSystem";
 
    /**
     * The files.
