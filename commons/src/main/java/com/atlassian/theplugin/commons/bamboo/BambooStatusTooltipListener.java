@@ -47,6 +47,8 @@ public class BambooStatusTooltipListener implements BambooStatusListener {
 	}
 
 	public void updateBuildStatuses(Collection<BambooBuild> newBuildStatuses) {
+		
+		popupInfo.clear();
 
 		// get config option for tooltip
 		BambooTooltipOption tooltipConfigOption =
@@ -56,8 +58,6 @@ public class BambooStatusTooltipListener implements BambooStatusListener {
 		if (tooltipConfigOption == BambooTooltipOption.NEVER) {
 			return;
 		}
-
-		StringBuilder tooltipContent = new StringBuilder();
 
 		BuildStatus status = null;
 		boolean fireTooltip = false;
@@ -79,15 +79,11 @@ public class BambooStatusTooltipListener implements BambooStatusListener {
 								if (prevBuild.getStatus() == BuildStatus.BUILD_SUCCEED
 										||
 										(prevBuild.getStatus() == BuildStatus.BUILD_FAILED
-										//	&&
-										//!prevBuild.getBuildNumber().equals(currentBuild.getBuildNumber()
+											&&
+										!prevBuild.getBuildNumber().equals(currentBuild.getBuildNumber()
 											)
 											&&
-										!prevBuild.getBuildNumber().equals(currentBuild.getBuildNumber())
-											&&
-										tooltipConfigOption == BambooTooltipOption.ALL_FAULIRES_AND_FIRST_SUCCESS) {
-									//) 
-
+										tooltipConfigOption == BambooTooltipOption.ALL_FAULIRES_AND_FIRST_SUCCESS)) {
 
 									// build has changed status from SUCCEED to FAILED
 									// or this is new build and still failed
@@ -100,7 +96,6 @@ public class BambooStatusTooltipListener implements BambooStatusListener {
 							}
 
 							prevBuildStatuses.put(currentBuild.getBuildKey(), currentBuild);
-
 							break;
 						case UNKNOWN:
 							// no action here
@@ -120,14 +115,13 @@ public class BambooStatusTooltipListener implements BambooStatusListener {
 							}
 
 							prevBuildStatuses.put(currentBuild.getBuildKey(), currentBuild);
-
 							break;
 						default:
 							throw new IllegalStateException("Unexpected build status encountered");
 					}
 				}
 			}
-
+		
 		if (fireTooltip && status != null) {
 			display.updateBambooStatus(status, popupInfo);
 			//display.updateBambooStatus(status, popupInfo.toString());
@@ -136,6 +130,6 @@ public class BambooStatusTooltipListener implements BambooStatusListener {
 
 
 	public void resetState() {
-		// do nothing
+		popupInfo.clear();
 	}
 }
