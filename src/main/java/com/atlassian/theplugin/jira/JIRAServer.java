@@ -18,6 +18,7 @@ package com.atlassian.theplugin.jira;
 
 import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.idea.jira.CachedIconLoader;
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.util.PluginUtil;
 
@@ -111,6 +112,9 @@ public class JIRAServer {
                 statuses = new ArrayList<JIRAConstant>(retrieved.size() + 1);
                 statuses.add(new JIRAStatusBean(ANY_ID, "Any", null));
                 statuses.addAll(retrieved);
+                for (JIRAConstant status : statuses) {
+                    CachedIconLoader.getIcon(status.getIconUrl());
+                }
             } catch (JIRAException e) {
                 PluginUtil.getLogger().error(e.getMessage());
                 statuses = Collections.EMPTY_LIST;
@@ -132,6 +136,11 @@ public class JIRAServer {
                 issueTypes = new ArrayList<JIRAConstant>(retrieved.size() + 1);
                 issueTypes.add(new JIRAIssueTypeBean(ANY_ID, "Any", null));
                 issueTypes.addAll(retrieved);
+
+                for (JIRAConstant issueType : issueTypes) {
+                    CachedIconLoader.getIcon(issueType.getIconUrl());
+                }
+
                 if (currentProject != null) {
                     issueTypesCache.put(currentProject.getKey(), issueTypes);
                 } else {
@@ -171,6 +180,9 @@ public class JIRAServer {
                 priorieties = new ArrayList(retrieved.size() + 1);
                 priorieties.add(new JIRAPriorityBean(ANY_ID, "Any", null));
                 priorieties.addAll(retrieved);
+                for (JIRAConstant priority : priorieties) {
+                    CachedIconLoader.getIcon(priority.getIconUrl());
+                }
             } catch (JIRAException e) {
                 PluginUtil.getLogger().error(e.getMessage());
                 priorieties = Collections.EMPTY_LIST;
