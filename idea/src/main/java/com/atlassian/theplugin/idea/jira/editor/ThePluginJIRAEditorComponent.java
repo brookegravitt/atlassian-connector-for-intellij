@@ -20,6 +20,9 @@ import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.ui.HyperlinkLabel;
 import org.jdom.Element;
 import org.jetbrains.annotations.NonNls;
@@ -40,8 +43,6 @@ import java.util.ArrayList;
 
 public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileEditorProvider {
 
-//	public static final String SUPPORTED_EXTENSION = "JIRAIssue";
-
 	@NonNls
 	@NotNull
 	public String getComponentName() {
@@ -56,10 +57,6 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 
 	public boolean accept(@NotNull Project project, @NotNull VirtualFile virtualFile) {
 		boolean shouldIAccept = true;
-//		String extension = virtualFile.getExtension();
-//		if (extension != null) {
-//		 	shouldIAccept = extension.equals(SUPPORTED_EXTENSION);
-//		}
         // todo: probably not too pretty and there IS a possibility
         // that some other custom editor will intercept our JIRA "file"
         // - as it now has no extension. Is there a better way to do this?
@@ -135,24 +132,47 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
         }
     }
 
-    private class CommentsPanel extends JPanel {
+	private class CommentsPanel extends JPanel {
 
 		private JPanel comments = new JPanel();
         private BoldLabel titleLabel = new BoldLabel("Comments");
         private JScrollPane scroll = new JScrollPane();
         private List<CommentPanel> commentList = new ArrayList<CommentPanel>();
 
-        public CommentsPanel() {
+		private class RefreshButton extends JButton {
+			private Icon icon = IconLoader.findIcon("/actions/sync.png");
+			public RefreshButton() {
+				setIcon(icon);
+			}
+		}
+
+		public CommentsPanel() {
 			setLayout(new GridBagLayout());
 			GridBagConstraints gbc = new GridBagConstraints();
             gbc.gridx = 0;
             gbc.gridy = 0;
-            JPanel p = new JPanel();
-            p.add(titleLabel);
-            p.add(new ShowHideAllCommentsButton(commentList, this));
-            add(p, gbc);
-            gbc.gridx = 0;
-            gbc.gridy++;
+			gbc.fill = GridBagConstraints.HORIZONTAL;
+			gbc.anchor = GridBagConstraints.PAGE_START;
+			gbc.weightx = 1.0;
+			JPanel p = new JPanel();
+			p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
+
+			ActionManager aManager = ActionManager.getInstance();
+			ActionGroup serverToolBar = (ActionGroup) aManager.getAction("ThePlugin.JIRA.CommentsToolBar");
+			ActionToolbar actionToolbar = aManager.createActionToolbar("comments panel", serverToolBar, true);
+			Dimension minSize = new Dimension(Constants.DIALOG_MARGIN, 1);
+			Dimension prefSize = new Dimension(Constants.DIALOG_MARGIN, 1);
+			Dimension maxSize = new Dimension(Short.MAX_VALUE, 1);
+			p.add(titleLabel);
+			p.add(Box.createHorizontalGlue());
+			p.add(new Box.Filler(minSize, prefSize, maxSize));
+			p.add(actionToolbar.getComponent());
+//            p.add(new ShowHideAllCommentsButton(commentList, this));
+			add(p, gbc);
+
+			gbc.gridx = 0;
+            gbc.gridy = 1;
+			gbc.insets = new Insets(0, 0, 0, 0);
 			gbc.fill = GridBagConstraints.BOTH;
 			gbc.weightx = 1.0;
 			gbc.weighty = 1.0;
@@ -160,7 +180,9 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			scroll.setViewportView(comments);
 			scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 			scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-            updateSize();
+			scroll.setBorder(BorderFactory.createEmptyBorder());
+
+			updateSize();
             add(scroll, gbc);
 
             scroll.addComponentListener(new ComponentListener() {
@@ -188,7 +210,8 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
             comments.add(p);
             commentList.add(p);
             updateSize();
-        }
+			scrollRectToVisible(new Rectangle(0, 0, 0, 0));
+		}
 
         private void updateSize() {
             int w = scroll.getWidth();
@@ -357,21 +380,44 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 
     private class DescriptionPanel extends JPanel {
 
-        private JEditorPane body;
+		private static final int MAX_HEIGHT = 200;
+		private JEditorPane body;
 
         public DescriptionPanel(final String description) {
             setLayout(new GridBagLayout());
             GridBagConstraints gbc = new GridBagConstraints();
 
             final JLabel descriptionLabel = new BoldLabel("Description");
+			gbc.insets = new Insets(0, 0, 0, Constants.DIALOG_MARGIN);
             gbc.gridx = 0;
             gbc.gridy = 0;
             gbc.anchor = GridBagConstraints.WEST;
             add(descriptionLabel, gbc);
 
             body = new JEditorPane();
-            ShowHideButton btnShowHide = new ShowHideButton(body, this);
-            gbc.gridx = 1;
+			JScrollPane sp = new JScrollPane(body,
+					ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+					ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+			sp.setBorder(BorderFactory.createEmptyBorder());
+			sp.setOpaque(false);
+			sp.addComponentListener(new ComponentListener() {
+				public void componentResized(ComponentEvent e) {
+					body.setPreferredSize(new Dimension(e.getComponent().getWidth(), MAX_HEIGHT));
+				}
+
+				public void componentMoved(ComponentEvent e) {
+				}
+
+				public void componentShown(ComponentEvent e) {
+					getParent().getParent().validate();
+				}
+
+				public void componentHidden(ComponentEvent e) {
+					getParent().getParent().validate();
+				}
+			});
+			ShowHideButton btnShowHide = new ShowHideButton(sp, this);
+			gbc.gridx = 1;
             gbc.gridy = 0;
             gbc.anchor = GridBagConstraints.WEST;
             add(btnShowHide, gbc);
@@ -386,15 +432,20 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
             body.setBorder(BorderFactory.createEmptyBorder());
             body.setContentType("text/html");
             body.setText("<html><head></head><body>" + description + "</body></html>");
-            gbc = new GridBagConstraints();
+			gbc = new GridBagConstraints();
             gbc.gridx = 0;
             gbc.gridy = 1;
             gbc.gridwidth = 3;
             gbc.weighty = 1.0;
             gbc.insets = new Insets(Constants.DIALOG_MARGIN, 0, Constants.DIALOG_MARGIN, 0);
             gbc.fill = GridBagConstraints.BOTH;
-            add(body, gbc);
-        }
+            add(sp, gbc);
+			Dimension d = body.getPreferredSize();
+			d.height = d.height < MAX_HEIGHT ? d.height : MAX_HEIGHT;
+			sp.setMinimumSize(d);
+			sp.getViewport().setOpaque(false);
+			body.setCaretPosition(0);
+		}
     }
 
     private class SummaryPanel extends JPanel {
@@ -404,7 +455,8 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
             GridBagConstraints gbc1 = new GridBagConstraints();
             GridBagConstraints gbc2 = new GridBagConstraints();
             gbc1.anchor = GridBagConstraints.FIRST_LINE_START;
-            gbc2.anchor = GridBagConstraints.FIRST_LINE_START;
+			gbc1.insets = new Insets(0, 0, 0, Constants.DIALOG_MARGIN);
+			gbc2.anchor = GridBagConstraints.FIRST_LINE_START;
             gbc2.fill = GridBagConstraints.HORIZONTAL;
             gbc2.weightx = 1.0;
             gbc1.gridx = 0;
@@ -424,7 +476,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
             GridBagConstraints gbc3 = new GridBagConstraints();
             gbc3.gridx = gbc1.gridx;
             gbc3.gridy = gbc1.gridy;
-            gbc3.fill = GridBagConstraints.HORIZONTAL;
+            gbc3.fill = GridBagConstraints.BOTH;
             gbc3.gridwidth = 2;
             DescriptionPanel description = new DescriptionPanel(issue.getDescription());
             add(description, gbc3);
@@ -514,7 +566,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
             mainPanel.add(new SummaryPanel(issue), gbc);
             gbc.anchor = GridBagConstraints.FIRST_LINE_START;
 			gbc.gridy++;
-            gbc.insets = new Insets(0, 0, 0, 0); 
+            gbc.insets = new Insets(0, Constants.DIALOG_MARGIN, 0, Constants.DIALOG_MARGIN); 
             mainPanel.add(new JSeparator(SwingConstants.HORIZONTAL), gbc);
 			gbc.gridy++;
             final CommentsPanel cp = new CommentsPanel();
