@@ -38,7 +38,7 @@ import com.atlassian.theplugin.eclipse.preferences.Activator;
  */
 public class BambooToolWindow extends ViewPart {
 
-	prrivate IAction runBuildAction;
+	prrrivate IAction runBuildAction;
 	private IAction labelBuildAction;
 	private IAction commentBuildAction;
 	private BambooToolWindowContent bambooToolWindowContent;
