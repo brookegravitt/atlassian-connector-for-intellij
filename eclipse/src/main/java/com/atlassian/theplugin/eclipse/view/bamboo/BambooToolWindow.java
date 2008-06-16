@@ -66,6 +66,7 @@ public class BambooToolWindow extends ViewPart {
 		BambooStatusTooltip popup = new BambooStatusTooltip();
 		popupListener = new BambooStatusTooltipListener(popup, Activator.getDefault().getPluginConfiguration());
 		Activator.getDefault().getBambooChecker().registerListener(popupListener);
+		Activator.getDefault().registerConfigurationListener(popupListener);
 		
 		//getViewSite().registerContextMenu(menuManager, selectionProvider)
 		
