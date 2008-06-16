@@ -50,10 +50,10 @@ import com.atlassian.theplugin.eclipse.view.bamboo.BambooStatusTooltip;
  */
 public class Activator extends AbstractUIPlugin {
 
-	private static final int BAMBOO_CHECKER_POLLING = 60000;
-
 	// The plug-in ID
 	public static final String PLUGIN_ID = "com.atlassian.theplugin.eclipse";
+
+	private static final int MILLISECONDS_IN_MINUTE = 1000*60;
 
 	// The shared instance
 	private static Activator plugin;
@@ -203,7 +203,7 @@ public class Activator extends AbstractUIPlugin {
 			if (checker.canSchedule()) {
 				final TimerTask newTask = checker.newTimerTask();
 				scheduledComponents.add(newTask);
-				timer.schedule(newTask, 0, BAMBOO_CHECKER_POLLING);
+				timer.schedule(newTask, 0, pluginConfiguration.getBambooConfigurationData().getPollTime() * MILLISECONDS_IN_MINUTE);
 				//timer.schedule(newTask, 0, checker.getInterval());
 			} else {
 				checker.resetListenersState();
@@ -212,11 +212,8 @@ public class Activator extends AbstractUIPlugin {
 	}
 	
 	public void rescheduleStatusCheckers() {
-
 		disableTimer();
-		
 		startTimer();
-
 	}
 
 	public Device getDisplay() {
