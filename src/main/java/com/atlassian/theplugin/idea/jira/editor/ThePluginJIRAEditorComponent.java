@@ -3,6 +3,7 @@ package com.atlassian.theplugin.idea.jira.editor;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.editor.vfs.MemoryVirtualFile;
+import com.atlassian.theplugin.idea.jira.IssueComment;
 import com.atlassian.theplugin.idea.ui.CollapsiblePanel;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
@@ -17,6 +18,7 @@ import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.fileEditor.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.VerticalFlowLayout;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -40,6 +42,8 @@ import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.concurrent.FutureTask;
 
 public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileEditorProvider {
 
@@ -139,40 +143,33 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
         private JScrollPane scroll = new JScrollPane();
         private List<CommentPanel> commentList = new ArrayList<CommentPanel>();
 
-		private class RefreshButton extends JButton {
-			private Icon icon = IconLoader.findIcon("/actions/sync.png");
-			public RefreshButton() {
-				setIcon(icon);
-			}
-		}
-
-		public CommentsPanel() {
+		public CommentsPanel(JIRAIssue issue) {
 			setLayout(new GridBagLayout());
 			GridBagConstraints gbc = new GridBagConstraints();
             gbc.gridx = 0;
             gbc.gridy = 0;
-			gbc.fill = GridBagConstraints.HORIZONTAL;
-			gbc.anchor = GridBagConstraints.PAGE_START;
-			gbc.weightx = 1.0;
-			JPanel p = new JPanel();
-			p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
+			gbc.fill = GridBagConstraints.NONE;
+            add(titleLabel, gbc);
 
-			ActionManager aManager = ActionManager.getInstance();
-			ActionGroup serverToolBar = (ActionGroup) aManager.getAction("ThePlugin.JIRA.CommentsToolBar");
-			ActionToolbar actionToolbar = aManager.createActionToolbar("comments panel", serverToolBar, true);
-			Dimension minSize = new Dimension(Constants.DIALOG_MARGIN, 1);
-			Dimension prefSize = new Dimension(Constants.DIALOG_MARGIN, 1);
-			Dimension maxSize = new Dimension(Short.MAX_VALUE, 1);
-			p.add(titleLabel);
-			p.add(Box.createHorizontalGlue());
-			p.add(new Box.Filler(minSize, prefSize, maxSize));
-			p.add(actionToolbar.getComponent());
-//            p.add(new ShowHideAllCommentsButton(commentList, this));
-			add(p, gbc);
+            gbc.gridx = 1;
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            add(new JSeparator(SwingConstants.HORIZONTAL), gbc);
+            gbc.gridx = 0;
+            gbc.gridy = 1;
+            gbc.gridwidth = 2;
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+
+			ActionManager manager = ActionManager.getInstance();
+			ActionGroup group = (ActionGroup) manager.getAction("ThePlugin.JIRA.CommentsToolBar");
+			ActionToolbar toolbar = manager.createActionToolbar(issue.getKey(), group, true);
+
+            JComponent comp = toolbar.getComponent();
+            add(comp, gbc);
 
 			gbc.gridx = 0;
-            gbc.gridy = 1;
-			gbc.insets = new Insets(0, 0, 0, 0);
+            gbc.gridy = 2;
+            gbc.gridwidth = 2;
+            gbc.insets = new Insets(0, 0, 0, 0);
 			gbc.fill = GridBagConstraints.BOTH;
 			gbc.weightx = 1.0;
 			gbc.weighty = 1.0;
@@ -210,8 +207,19 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
             comments.add(p);
             commentList.add(p);
             updateSize();
-			scrollRectToVisible(new Rectangle(0, 0, 0, 0));
 		}
+
+        public void clearComments() {
+            commentList.clear();
+            comments.removeAll();
+            updateSize();
+        }
+
+        public void setAllVisible(boolean visible) {
+            for (CommentPanel c : commentList) {
+                c.getShowHideButton().setState(visible);
+            }
+        }
 
         private void updateSize() {
             int w = scroll.getWidth();
@@ -227,29 +235,42 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
             comments.setPreferredSize(new Dimension(w, h + 300));
             comments.validate();
         }
+
+        public void scrollToFirst() {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    comments.scrollRectToVisible(new Rectangle(0, 0, 1, 1));
+                    scroll.getVerticalScrollBar().setValue(0);
+                }
+            });
+        }
     }
 
      private abstract class AbstractShowHideButton extends JLabel {
 
         private Icon right = IconLoader.findIcon("/icons/navigate_right_10.gif");
         private Icon down = IconLoader.findIcon("/icons/navigate_down_10.gif");
+        public boolean shown = true;
 
         public AbstractShowHideButton() {
             setHorizontalAlignment(0);
             setIcon(down);
             setToolTipText(getTooltip());
             addMouseListener(new MouseAdapter() {
-                public boolean shown = true;
                 public void mouseClicked(MouseEvent e) {
-                    shown = !shown;
-                    click(shown);
+                    click();
                 }
             });
         }
 
-        public void click(boolean shown) {
+        public void setState(boolean visible) {
+            shown = visible;
             setIcon(shown ?  down : right);
             setComponentVisible(shown);
+        }
+        public void click() {
+            shown = !shown;
+            setState(shown);
         }
 
         protected abstract void setComponentVisible(boolean visible);
@@ -276,6 +297,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
         }
     }
 
+/*
     private class ShowHideAllCommentsButton extends AbstractShowHideButton {
         private List<CommentPanel> components;
         private JComponent container;
@@ -287,7 +309,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 
         protected void setComponentVisible(boolean visible) {
             for (CommentPanel c : components) {
-                c.getShowHideButton().click(visible);
+                c.getShowHideButton().setState(visible);
             }
             container.validate();
             container.getParent().validate();
@@ -298,6 +320,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
         }
     }
 
+*/
     private class CommentPanel extends JPanel {
 
 		private JEditorPane commentBody;
@@ -380,8 +403,9 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 
     private class DescriptionPanel extends JPanel {
 
-		private static final int MAX_HEIGHT = 200;
+		private static final int MIN_HEIGHT = 200;
 		private JEditorPane body;
+        private ShowHideButton btnShowHide;
 
         public DescriptionPanel(final String description) {
             setLayout(new GridBagLayout());
@@ -402,7 +426,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			sp.setOpaque(false);
 			sp.addComponentListener(new ComponentListener() {
 				public void componentResized(ComponentEvent e) {
-					body.setPreferredSize(new Dimension(e.getComponent().getWidth(), MAX_HEIGHT));
+					body.setPreferredSize(new Dimension(e.getComponent().getWidth(), MIN_HEIGHT));
 				}
 
 				public void componentMoved(ComponentEvent e) {
@@ -416,7 +440,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 					getParent().getParent().validate();
 				}
 			});
-			ShowHideButton btnShowHide = new ShowHideButton(sp, this);
+			btnShowHide = new ShowHideButton(sp, this);
 			gbc.gridx = 1;
             gbc.gridy = 0;
             gbc.anchor = GridBagConstraints.WEST;
@@ -441,11 +465,16 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
             gbc.fill = GridBagConstraints.BOTH;
             add(sp, gbc);
 			Dimension d = body.getPreferredSize();
-			d.height = d.height < MAX_HEIGHT ? d.height : MAX_HEIGHT;
+			d.height = MIN_HEIGHT;
 			sp.setMinimumSize(d);
-			sp.getViewport().setOpaque(false);
+            sp.setPreferredSize(d);
+            sp.getViewport().setOpaque(false);
 			body.setCaretPosition(0);
-		}
+        }
+
+        public void setContentsVisible(boolean visible) {
+            btnShowHide.setState(visible);
+        }
     }
 
     private class SummaryPanel extends JPanel {
@@ -478,8 +507,12 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
             gbc3.gridy = gbc1.gridy;
             gbc3.fill = GridBagConstraints.BOTH;
             gbc3.gridwidth = 2;
-            DescriptionPanel description = new DescriptionPanel(issue.getDescription());
+            String d = issue.getDescription();
+            DescriptionPanel description = new DescriptionPanel(d);
             add(description, gbc3);
+            if (d.length() == 0) {
+                description.setContentsVisible(false);
+            }
             gbc1.gridy++;
             gbc2.gridy++;
             add(new BoldLabel("Status"), gbc1);
@@ -508,7 +541,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
         }
     }
 
-    private class JIRAFileEditor implements FileEditor {
+    public class JIRAFileEditor implements FileEditor {
 
 		private final JIRAServerFacade facade;
 		private final JIRAServer server;
@@ -516,8 +549,9 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 		private JPanel mainPanel;
 		private JLabel labelIssue;
 		private JIRAIssue issue;
-
-		public JIRAFileEditor() {
+        private CommentsPanel commentsPanel;
+        
+        public JIRAFileEditor() {
 			mainPanel = new JPanel();
 			mainPanel.setBackground(Color.RED);
 			// todo: fix this
@@ -530,10 +564,11 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			this.issue = issue;
 			facade = JIRAServerFacadeImpl.getInstance();
 			server = IdeaHelper.getCurrentJIRAServer();
-			setupUI();
+            editorMap.put(issue.getKey(), this);
+            setupUI();
 		}
 
-		private void setupUI() {
+        private void setupUI() {
 			mainPanel = new JPanel();
             mainPanel.setLayout(new GridBagLayout());
             final GridBagConstraints gbc = new GridBagConstraints();
@@ -566,16 +601,42 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
             mainPanel.add(new SummaryPanel(issue), gbc);
             gbc.anchor = GridBagConstraints.FIRST_LINE_START;
 			gbc.gridy++;
-            gbc.insets = new Insets(0, Constants.DIALOG_MARGIN, 0, Constants.DIALOG_MARGIN); 
-            mainPanel.add(new JSeparator(SwingConstants.HORIZONTAL), gbc);
-			gbc.gridy++;
-            final CommentsPanel cp = new CommentsPanel();
+            commentsPanel = new CommentsPanel(issue);
 			gbc.fill = GridBagConstraints.BOTH;
 			gbc.weighty = 1;
-            cp.setTitle("Fetching comments...");
-            mainPanel.add(cp, gbc);
-            
-            new Thread() {
+            mainPanel.add(commentsPanel, gbc);
+            refreshComments();
+		}
+
+        public void addComment() {
+            final IssueComment issueComment = new IssueComment(issue.getKey());
+            issueComment.show();
+            if (issueComment.isOK()) {
+                FutureTask task = new FutureTask(new Runnable() {
+                    public void run() {
+                        try {
+                            facade.addComment(server.getServer(), issue, issueComment.getComment());
+                            refreshComments();
+                        } catch (JIRAException e) {
+                            final String msg = e.getMessage();
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    Messages.showMessageDialog(
+                                            "Failed to add comment to issue " + issue.getKey() + ": " + msg,
+                                            "Error", Messages.getErrorIcon());
+                                }
+                            });
+                        }
+                    }
+                }, null);
+                new Thread(task, "atlassian-idea-plugin comment issue from editor").start();
+            }
+        }
+
+        public void refreshComments() {
+            commentsPanel.clearComments();
+            commentsPanel.setTitle("Fetching comments...");
+            FutureTask task = new FutureTask(new Runnable() {
                 public void run() {
                     try {
                         final List<JIRAComment> comments = facade.getComments(server.getServer(), issue);
@@ -583,25 +644,30 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
                             public void run() {
                                 int size = comments.size();
                                 if (size > 0) {
-                                    cp.setTitle("Comments (" + comments.size() + ")");
+                                    commentsPanel.setTitle("Comments (" + comments.size() + ")");
                                     for (JIRAComment c : comments) {
-                                        gbc.gridy++;
-                                        cp.addComment(c, server);
+                                        commentsPanel.addComment(c, server);
                                     }
-                                    cp.validate();
+                                    commentsPanel.validate();
+                                    commentsPanel.scrollToFirst();
                                 } else {
-                                    cp.setTitle("No comments");
+                                    commentsPanel.setTitle("No comments");
                                 }
                             }
                         });
                     } catch (JIRAException e) {
-                        cp.setTitle("Cannot fetch comments: " + e.getMessage());
+                        commentsPanel.setTitle("Cannot fetch comments: " + e.getMessage());
                     }
                 }
-            }.start();
-		}
+            }, null);
+            new Thread(task, "atlassian-idea-plugin refresh comments").start();
+        }
 
-		@NotNull
+        public void setCommentsExpanded(boolean expanded) {
+            commentsPanel.setAllVisible(expanded);
+        }
+        
+        @NotNull
 		public JComponent getComponent() {
 			return mainPanel;
 		}
@@ -668,6 +734,16 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 		}
 
 		public void dispose() {
-		}
+            editorMap.remove(issue.getKey());
+        }
 	}
+
+    private static HashMap<String, JIRAFileEditor> editorMap = new HashMap<String, JIRAFileEditor>();
+
+    public static JIRAFileEditor getEditorByKey(String key) {
+        if (editorMap.containsKey(key)) {
+            return editorMap.get(key);
+        }
+        return null;
+    }
 }
