@@ -27,6 +27,7 @@ import java.util.TimerTask;
 import org.eclipse.core.runtime.Preferences.IPropertyChangeListener;
 import org.eclipse.core.runtime.Preferences.PropertyChangeEvent;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -216,6 +217,10 @@ public class Activator extends AbstractUIPlugin {
 		
 		startTimer();
 
+	}
+
+	public Device getDisplay() {
+		return this.getWorkbench().getDisplay();
 	}
 	
 }
