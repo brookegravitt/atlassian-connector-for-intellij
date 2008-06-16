@@ -75,7 +75,6 @@ public abstract class AbstractHttpSession {
     protected Document retrieveGetResponse(String urlString, boolean expectResponse)
             throws IOException, JDOMException, RemoteApiSessionExpiredException {
         UrlUtil.validateUrl(urlString);
-        
         Document doc = null;
         synchronized (clientLock) {
             if (client == null) {
@@ -131,7 +130,6 @@ public abstract class AbstractHttpSession {
     protected Document retrievePostResponse(String urlString, String request, boolean expectResponse)
             throws IOException, JDOMException, RemoteApiSessionExpiredException {
         UrlUtil.validateUrl(urlString);
-
         Document doc = null;
         synchronized (clientLock) {
             if (client == null) {
@@ -149,8 +147,10 @@ public abstract class AbstractHttpSession {
                 method.getParams().setSoTimeout(client.getParams().getSoTimeout());
                 adjustHttpHeader(method);
 
-                method.setRequestEntity(
-                        new StringRequestEntity(request, "application/xml", "UTF-8"));
+                if (request != null && !"".equals(request)) {
+                    method.setRequestEntity(
+                            new StringRequestEntity(request, "application/xml", "UTF-8"));
+                }
 
                 client.executeMethod(method);
 
