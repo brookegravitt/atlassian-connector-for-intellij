@@ -21,14 +21,6 @@ package com.atlassian.theplugin.eclipse.preferences;
  */
 public class PreferenceConstants {
 
-	public static final String P_PATH = "pathPreference";
-
-	public static final String P_BOOLEAN = "booleanPreference";
-
-	public static final String P_CHOICE = "choicePreference";
-
-	public static final String P_STRING = "stringPreference";
-
 	public static final String BAMBOO_NAME = "BAMBOO_NAME";
 
 	public static final String BAMBOO_URL = "BAMBOO_URL";
@@ -40,5 +32,7 @@ public class PreferenceConstants {
 	public static final String BAMBOO_BUILDS = "BAMBOO_BUILDS";
 
 	public static final String BAMBOO_POPUP = "BAMBOO_POPUP";
+
+	public static final String BAMBOO_POLLING_TIME = "BAMBOO_POLLING_TIME";
 	
 }
