@@ -563,7 +563,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
     public void getReviewComments() {
         if (selectedItem != null) {
-            /*
+/*
             try {
 
                 List<CustomFieldDef> metrics = serverFacade.getMetrics(selectedItem.getServer(), selectedItem.getMetricsVersion());
@@ -718,6 +718,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
                 serverFacade.completeReview(selectedItem.getServer(), selectedItem.getPermaId(), false);
 
+                serverFacade.approveReview(selectedItem.getServer(), selectedItem.getPermaId());
                 serverFacade.summarizeReview(selectedItem.getServer(), selectedItem.getPermaId());
                 serverFacade.closeReview(selectedItem.getServer(), selectedItem.getPermaId(), "To jest summary");
                 serverFacade.reopenReview(selectedItem.getServer(), selectedItem.getPermaId());
@@ -737,7 +738,8 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
             } catch (ServerPasswordNotProvidedException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
-            */
+            
+ */
         }
     }
 }
