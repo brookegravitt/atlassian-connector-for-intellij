@@ -53,8 +53,8 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
     private static final String LOGIN = "/login";
     private static final String GET_REVIEWS_IN_STATES = "?state=";
     private static final String GET_FILTERED_REVIEWS = "/filter";
-    private static final String GET_ACTIONS = "/actions";
-    private static final String GET_TRANSITIONS = "/transitions";
+    private static final String GET_ACTIONS = "/action";
+    private static final String GET_TRANSITIONS = "/transition";
     private static final String GET_REVIEWERS = "/reviewers";
     private static final String GET_REVIEW_ITEMS = "/reviewitems";
 
@@ -66,14 +66,14 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
     private static final String VERSIONED_COMMENTS = "/versioned/comments";
     private static final String REPLY = "/reply";
 
-
-    private static final String APPROVE_ACTION = "/approve";
-    private static final String SUMMARIZE_ACTION = "/summarize";
-    private static final String ABANDON_ACTION = "/abandon";
-    private static final String CLOSE_ACTION = "/close";
-    private static final String RECOVER_ACTION = "/recover";
-    private static final String REOPEN_ACTION = "/reopen";
-    private static final String REJECT_ACTION = "/reject";
+    private static final String APPROVE_ACTION = "action:approveReview";
+    private static final String SUMMARIZE_ACTION = "action:summarizeReview";
+    private static final String ABANDON_ACTION = "action:abandonReview";
+    private static final String CLOSE_ACTION = "action:closeReview";
+    private static final String RECOVER_ACTION = "action:recoverReview";
+    private static final String REOPEN_ACTION = "action:reopenReview";
+    private static final String REJECT_ACTION = "action:rejectReview";
+    private static final String TRANSITION_ACTION = "/transition?action=";
 
     private static final String PUBLISH_COMMENTS = "/publish";
     private static final String COMPLETE_ACTION = "/complete";
@@ -676,7 +676,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         }
 
         try {
-            retrieveGetResponse(requestUrl, false);
+            retrievePostResponse(requestUrl, "", false);
         } catch (IOException e) {
             throw new RemoteApiException(e.getMessage(), e);
         } catch (JDOMException e) {
@@ -951,9 +951,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             throw new IllegalStateException("Calling method without calling login() first");
         }
 
-        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + permId.getId() + action;
+        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + permId.getId() + TRANSITION_ACTION + action;
         try {
-            Document doc = retrieveGetResponse(requestUrl);
+            Document doc = retrievePostResponse(requestUrl, "", true);
 
             XPath xpath = XPath.newInstance("reviewData");
             @SuppressWarnings("unchecked")
@@ -986,7 +986,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         }
 
         try {
-            retrieveGetResponse(requestUrl, false);
+            retrievePostResponse(requestUrl, "", false);
         } catch (IOException e) {
             throw new RemoteApiException(e.getMessage(), e);
         } catch (JDOMException e) {
@@ -1023,14 +1023,15 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             throw new IllegalStateException("Calling method without calling login() first");
         }
 
-        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + permId.getId() + CLOSE_ACTION;
         try {
             Document doc;
             if (summarizeMessage != null && !"".equals(summarizeMessage)) {
                 Document request = CrucibleRestXmlHelper.prepareCloseReviewSummaryNode(summarizeMessage);
+                String requestUrl = baseUrl + REVIEW_SERVICE + "/" + permId.getId() + "/close";
                 doc = retrievePostResponse(requestUrl, request);
             } else {
-                doc = retrieveGetResponse(requestUrl);
+                String requestUrl = baseUrl + REVIEW_SERVICE + "/" + permId.getId() + TRANSITION_ACTION + CLOSE_ACTION;
+                doc = retrievePostResponse(requestUrl, "", true);
             }
 
             XPath xpath = XPath.newInstance("reviewData");
