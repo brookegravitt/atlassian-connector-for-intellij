@@ -15,23 +15,22 @@ import com.intellij.openapi.vfs.VirtualFile;
 public class OpenIssueAction extends AnAction {
 	public void actionPerformed(AnActionEvent event) {
 		JIRAIssue issue = IdeaHelper.getJIRAToolWindowPanel(event).getCurrentIssue();
-        String fileName = issue.getKey();// + "." + ThePluginJIRAEditorComponent.SUPPORTED_EXTENSION;
+        String fileName = issue.getKey();
         FileEditorManager manager =
                 FileEditorManager.getInstance(DataKeys.PROJECT.getData(event.getDataContext()));
         VirtualFile[] files = manager.getOpenFiles();
         VirtualFile vf = null;
         for (VirtualFile f : files) {
-            if (f.getName().equals(fileName)) {
+            if (f.getName().equals(fileName) && (f instanceof MemoryVirtualFile)) {
                 vf = f;
                 break;
             }
+        }
 
-        }
-        if (vf == null) {
+		if (vf == null) {
             vf = new MemoryVirtualFile(fileName);
-		    manager.openFile(vf, false);
-        } else {
-            // todo: bring editor to front
         }
+		// either opens a new editor, or focuses the already open one
+		manager.openFile(vf, true);
     }
 }

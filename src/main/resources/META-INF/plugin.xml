@@ -350,6 +350,17 @@
 			<reference id="ThePlugin.JIRA.ClearFilter"/>
 		</group>
 
+		<action id="ThePlugin.JIRA.RefreshComments" class="com.atlassian.theplugin.idea.action.jira.editor.RefreshCommentsAction" text="Refresh" icon="/actions/sync.png" />
+		<action id="ThePlugin.JIRA.ExpandComments" class="com.atlassian.theplugin.idea.action.jira.editor.ExpandCommentsAction" text="Refresh" icon="/actions/expandall.png" />
+		<action id="ThePlugin.JIRA.CollapseComments" class="com.atlassian.theplugin.idea.action.jira.editor.CollapseCommentsAction" text="Refresh" icon="/actions/collapseall.png" />
+		<action id="ThePlugin.JIRA.AddEditorComment" class="com.atlassian.theplugin.idea.action.jira.editor.AddCommentAction" text="Refresh" icon="/general/add.png" />
+
+		<group id="ThePlugin.JIRA.CommentsToolBar" popup="false">
+			<reference id="ThePlugin.JIRA.RefreshComments" />
+			<reference id="ThePlugin.JIRA.ExpandComments"/>
+			<reference id="ThePlugin.JIRA.CollapseComments"/>
+			<reference id="ThePlugin.JIRA.AddEditorComment"/>
+		</group>
 
 
 	</actions>
