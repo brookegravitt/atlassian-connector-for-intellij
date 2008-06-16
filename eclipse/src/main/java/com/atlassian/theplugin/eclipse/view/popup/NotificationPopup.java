@@ -10,7 +10,8 @@ package com.atlassian.theplugin.eclipse.view.popup;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -20,6 +21,8 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.commons.bamboo.BambooPopupInfo;
+import com.atlassian.theplugin.commons.bamboo.BuildStatus;
+import com.atlassian.theplugin.eclipse.preferences.Activator;
 import com.atlassian.theplugin.eclipse.util.PluginUtil;
 
 /**
@@ -28,7 +31,10 @@ import com.atlassian.theplugin.eclipse.util.PluginUtil;
  */
 public class NotificationPopup extends AbstractNotificationPopup {
 
+	private static final RGB COLOR_BUILD_FAILED = new RGB(255, 220, 220);
+	private static final RGB COLOR_BUILD_SUCCEEDED = new RGB(220, 255, 220);
 	private BambooPopupInfo content = new BambooPopupInfo();
+	private BuildStatus status = BuildStatus.UNKNOWN;
 
 	public NotificationPopup(Display display) {
 		super(display);
@@ -40,44 +46,13 @@ public class NotificationPopup extends AbstractNotificationPopup {
 
 	protected void createTitleArea(Composite parent) {
 		
-//		((GridData) parent.getLayoutData()).heightHint = TITLE_HEIGHT;
-//
-//		Label titleImageLabel = new Label(parent, SWT.NONE);
-//		titleImageLabel.setImage(getPopupShellImage(TITLE_HEIGHT));
-//
-//		Label titleTextLabel = new Label(parent, SWT.NONE);
-//		titleTextLabel.setText(getPopupShellTitle());
-//		titleTextLabel.setFont(TaskListColorsAndFonts.BOLD);
-//		titleTextLabel.setForeground(color.getTitleText());
-//		titleTextLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
-//		titleTextLabel.setCursor(parent.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
-//
-//		Label button = new Label(parent, SWT.NONE);
-//		button.setImage(TasksUiImages.getImage(TasksUiImages.NOTIFICATION_CLOSE));
-//
-//		button.addMouseListener(new MouseListener() {
-//
-//			public void mouseDoubleClick(MouseEvent e) {
-//				// ignore
-//			}
-//
-//			public void mouseDown(MouseEvent e) {
-//				// ignore
-//			}
-//
-//			public void mouseUp(MouseEvent e) {
-//				close();
-//			}
-//
-//		});
-		
-		
 		((GridData) parent.getLayoutData()).heightHint = 24;
 
-		Label titleCircleLabel = new Label(parent, SWT.NONE);
-		titleCircleLabel.setText("Bamboo notification");
-		titleCircleLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
-		//titleCircleLabel.setCursor(parent.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
+		Label titleLabel = new Label(parent, SWT.NONE);
+		titleLabel.setText("Bamboo notification");
+		titleLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
+		titleLabel.setBackground(parent.getBackground());
+		
 
 		Label closeButton = new Label(parent, SWT.NONE);
 		closeButton.setText("Close");
@@ -93,7 +68,45 @@ public class NotificationPopup extends AbstractNotificationPopup {
 
 	protected void createContentArea(Composite parent) {
 		
+		Color backgroundColor;
+		
+		switch (status) {
+		case BUILD_FAILED:
+			backgroundColor = new Color(Activator.getDefault().getDisplay(), COLOR_BUILD_FAILED);
+			break;
+		case BUILD_SUCCEED:
+			backgroundColor = new Color(Activator.getDefault().getDisplay(), COLOR_BUILD_SUCCEEDED);
+			break;
+		default:
+			backgroundColor = parent.getBackground();
+		}
+		
+		parent.setBackground(backgroundColor);
+		
 		for (BambooBuild build : content.getBambooBuilds()) {
+			
+			String icon;
+			String st;
+			Color fontColor;
+						
+			
+			switch (build.getStatus()) {
+				case BUILD_SUCCEED:
+					icon = PluginUtil.ICON_BAMBOO_SUCCEEDED;
+					st = "succeeded";
+					fontColor = Activator.getDefault().getDisplay().getSystemColor(SWT.COLOR_BLACK);
+					break;
+				case BUILD_FAILED:
+					icon = PluginUtil.ICON_BAMBOO_FAILED;
+					st = "failed";
+					fontColor = Activator.getDefault().getDisplay().getSystemColor(SWT.COLOR_DARK_RED);
+					break;
+				default:
+					icon = PluginUtil.ICON_BAMBOO_UNKNOWN;
+					st = "unknown";
+					fontColor = Activator.getDefault().getDisplay().getSystemColor(SWT.COLOR_BLACK);
+					break;
+			}
 			
 			Composite notificationComposite = new Composite(parent, SWT.NO_FOCUS);
 			notificationComposite.setLayout(new GridLayout(2, false));
@@ -101,43 +114,16 @@ public class NotificationPopup extends AbstractNotificationPopup {
 
 			Label image = new Label(notificationComposite, SWT.NO_FOCUS);
 			image.setText("example build");
-			
-			String icon;
-			String st;
-		
-			switch (build.getStatus()) {
-				case BUILD_SUCCEED:
-					icon = PluginUtil.ICON_BAMBOO_SUCCEEDED;
-					st = "succeeded";
-					break;
-				case BUILD_FAILED:
-					icon = PluginUtil.ICON_BAMBOO_FAILED;
-					st = "failed";
-					break;
-				case BUILD_DISABLED:
-				default:
-					icon = PluginUtil.ICON_BAMBOO_UNKNOWN;
-					st = "unknown";
-					break;
-			}
-			
 			image.setImage(PluginUtil.getImageRegistry().get(icon));
 			image.setBackground(parent.getBackground());
 
 			Label l2 = new Label(notificationComposite, SWT.NO_FOCUS);
 			l2.setText(build.getBuildKey() + " " + build.getBuildNumber() + " " + st);
 			l2.setBackground(parent.getBackground());
-
+			//l2.setForeground(color);
+			
 		}
 
-		//parent.setLayout(new FillLayout());
-		
-		//Browser b = new Browser(parent, SWT.NONE);
-		//b.setText(content);
-		//b.setBackground(new Color(new Device(), SWT.COLOR_MAGENTA));
-//			Label l = new Label(parent, SWT.None);
-//			l.setText(contentHtml);
-//			l.setBackground(parent.getBackground());
 	}
 
 	@Override
@@ -148,7 +134,8 @@ public class NotificationPopup extends AbstractNotificationPopup {
 	public void resetState() {
 	}
 	
-	public void setContent(BambooPopupInfo popupInfo) {
+	public void setContent(BuildStatus status, BambooPopupInfo popupInfo) {
+		this.status  = status;
 		this.content = popupInfo;
 	}
 }
