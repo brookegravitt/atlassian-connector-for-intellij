@@ -21,7 +21,7 @@ public class BambooStatusTooltip implements BambooStatusDisplay {
 		Shell shell = new Shell(PlatformUI.getWorkbench().getDisplay());
 		
 		popup = new NotificationPopup(shell);
-		popup.setContent(popupInfo);
+		popup.setContent(status, popupInfo);
 		popup.open();
 	}
 }
