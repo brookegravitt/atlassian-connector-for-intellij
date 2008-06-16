@@ -28,7 +28,6 @@ import org.eclipse.core.runtime.Preferences;
 import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.configuration.BambooConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.BambooTooltipOption;
-import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.ServerBean;
 import com.atlassian.theplugin.commons.configuration.SubscribedPlanBean;
 
@@ -78,6 +77,12 @@ public class ProjectConfigurationWrapper {
 		} catch (NullPointerException e) {
 			bambooConfiguration.setBambooTooltipOption(null);
 		}
+		
+		int pollTime = preferences.getInt(PreferenceConstants.BAMBOO_POLLING_TIME);
+		if (pollTime == 0) {
+			pollTime = 1;
+		}
+		bambooConfiguration.setPollTime(pollTime);
 		
 		EclipsePluginConfiguration pluginConfiguration = new EclipsePluginConfiguration();
 		pluginConfiguration.setBambooConfigurationData(bambooConfiguration);

@@ -71,10 +71,16 @@ public class PreferencePageBamboo
 //		}, getFieldEditorParent()));
 		
 		addField(new RadioGroupFieldEditor(PreferenceConstants.BAMBOO_POPUP, "Show popup:", 1, 
-			new String[][] { { BambooTooltipOption.ALL_FAULIRES_AND_FIRST_SUCCESS.toString(), BambooTooltipOption.ALL_FAULIRES_AND_FIRST_SUCCESS.name() }, 
+			new String[][] { 
+				{BambooTooltipOption.ALL_FAULIRES_AND_FIRST_SUCCESS.toString(), BambooTooltipOption.ALL_FAULIRES_AND_FIRST_SUCCESS.name() }, 
 				{BambooTooltipOption.FIRST_FAILURE_AND_FIRST_SUCCESS.toString(), BambooTooltipOption.FIRST_FAILURE_AND_FIRST_SUCCESS.name() },
-				{BambooTooltipOption.NEVER.toString(), BambooTooltipOption.NEVER.name() }, 
+				{BambooTooltipOption.NEVER.toString(), BambooTooltipOption.NEVER.name()}, 
 		}, getFieldEditorParent()));
+		
+		MyIntegerFieldEditor pollingTime = new MyIntegerFieldEditor(PreferenceConstants.BAMBOO_POLLING_TIME, "Polling Time [min]:", getFieldEditorParent(), 3);
+		pollingTime.setValidRange(1, 999);
+		addField(pollingTime);
+		
 	}
 
 	/* (non-Javadoc)
