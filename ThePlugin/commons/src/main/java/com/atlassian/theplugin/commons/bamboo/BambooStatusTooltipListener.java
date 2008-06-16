@@ -16,10 +16,12 @@
 
 package com.atlassian.theplugin.commons.bamboo;
 
+import com.atlassian.theplugin.commons.ConfigurationListener;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.configuration.BambooTooltipOption;
 import com.atlassian.theplugin.commons.configuration.BambooConfigurationBean;
+import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -28,11 +30,11 @@ import java.util.Map;
 /**
  * This listener fires notification tooltip if bamboo build has changes status between SUCCEED and FAILED
  */
-public class BambooStatusTooltipListener implements BambooStatusListener {
+public class BambooStatusTooltipListener implements BambooStatusListener, ConfigurationListener {
 
 	private Map<String, BambooBuild> prevBuildStatuses = new HashMap<String, BambooBuild>(0);
 	private final BambooStatusDisplay display;
-	private final PluginConfiguration pluginConfiguration;
+	private PluginConfiguration pluginConfiguration;
 	private BambooPopupInfo popupInfo = new BambooPopupInfo();
 
 
@@ -131,5 +133,9 @@ public class BambooStatusTooltipListener implements BambooStatusListener {
 
 	public void resetState() {
 		popupInfo.clear();
+	}
+
+	public void updateConfiguration(PluginConfigurationBean configuration) {
+		this.pluginConfiguration = configuration;
 	}
 }
