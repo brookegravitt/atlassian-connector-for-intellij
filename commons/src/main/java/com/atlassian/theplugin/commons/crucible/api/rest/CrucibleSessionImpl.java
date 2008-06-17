@@ -418,7 +418,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
                     ReviewItemBean review = CrucibleRestXmlHelper.parseReviewItemNode(element);
                     String repoName = review.getRepositoryName();
                     String[] repoNameTokens = repoName.split(":");
-                    SvnRepository repository = getRepository(repoNameTokens.length > 0 ? repoNameTokens[1] : repoNameTokens[0]);
+                    SvnRepository repository = getRepository(repoNameTokens.length > 1 ? repoNameTokens[1] : repoNameTokens[0]);
                     if (repository != null) {
                         String repoPath = repository.getUrl() + "/" + repository.getPath() + "/";
                         if (!"".equals(review.getFromPath())) {
