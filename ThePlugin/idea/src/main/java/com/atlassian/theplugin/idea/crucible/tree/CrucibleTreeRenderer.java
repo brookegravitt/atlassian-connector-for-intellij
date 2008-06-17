@@ -54,36 +54,14 @@ public class CrucibleTreeRenderer extends DefaultTreeCellRenderer {
 
 		if (value instanceof ReviewItemDataNode) {
 			ReviewItem item =  ((ReviewItemDataNode)value).getReviewItem();
-
-			if (item.getFromPath().length() > 0 && item.getToPath().length() == 0){
-				//new file
-				labelText.append(getFileNameFromPath(item.getFromPath()));
-				labelText.append(NEW_FILE_STR);
-
-			} else if (item.getFromPath().length() > 0 && item.getToPath().length() > 0){
-
-				labelText.append(getFileNameFromPath(item.getToPath()));
-				labelText.append(" ").append(MODIFIED_FILE_STR);
-
-			} else if (item.getFromPath().length() == 0 && item.getToPath().length() > 0){
-				labelText.append(item.getToPath());
-				labelText.append(" ").append(DELETED_FILE_STR);
-
-			} else {
-				labelText.append((item.getFromPath().length() > 0 ? getFileNameFromPath(item.getFromPath()) : getFileNameFromPath(item.getToPath())));
-				labelText.append(" ").append(UNKNOWN_FILE_STR);
-			}
-
-			label.setText(labelText.toString());
+			label.setText(item.toString());
 			label.setIcon(crucibleSelectNoneIcon);
 
 			}
 		if (value instanceof CrucibleTreeRootNode) {
 			ReviewDataInfoAdapter adapter = ((CrucibleTreeRootNode) value).getReviewDataInfoAdapter();
 			if (adapter != null) {
-
-
-				labelText.append(adapter.getName());
+				labelText.append(adapter.toString());
 			}
 			label.setText(labelText.toString());
 			label.setIcon(crucibleServerEnabledIcon);

@@ -88,4 +88,9 @@ public class ReviewDataInfoAdapter {
     public Server getServer() {
 		return review.getServer();
 	}
+
+	@Override
+	public String toString() {
+		return getPermaId().getId() + ": " + getName();
+	}
 }
