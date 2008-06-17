@@ -1,14 +1,24 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.crucible.*;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewItem;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListenerNotUsed;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
+import com.atlassian.theplugin.idea.crucible.comments.ReviewComentsPanel;
+import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
+import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
+import com.atlassian.theplugin.idea.crucible.ReviewDetailsPanel;
 import com.atlassian.theplugin.idea.config.ContentPanel;
 import com.intellij.util.ui.UIUtil;
 import com.intellij.openapi.ui.Splitter;
+import com.intellij.openapi.wm.ToolWindow;
+import com.intellij.openapi.util.IconLoader;
+import com.intellij.ui.content.Content;
+import com.intellij.ui.content.ContentManager;
+import com.intellij.peer.PeerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -44,6 +54,8 @@ import java.awt.*;
 	static CrucibleBottomToolWindowPanel instance;
 	private static ReviewItemTreePanel reviewItemTreePanel;
 	private static Splitter splitter;
+	private static JComponent reviewComentsPanel;
+	private static CrucibleReviewActionListener tabManager;
 
 	protected String getInitialMessage() {
 
@@ -67,15 +79,17 @@ import java.awt.*;
 			splitter.setShowDividerControls(true);
 			splitter.setFirstComponent(reviewItemTreePanel);
 			splitter.setHonorComponentsMinimumSize(true);
-			splitter.setSecondComponent(new JLabel("Right Window"));
+			tabManager = new ReviewTabManager();
+			reviewComentsPanel = ReviewComentsPanel.getInstance();
+			splitter.setSecondComponent(reviewComentsPanel);
 			instance.add(splitter, BorderLayout.CENTER);
 		}
 	}
-	
+
 	public static CrucibleBottomToolWindowPanel getInstance(ProjectConfigurationBean projectConfigurationBean) {
-			init(projectConfigurationBean);
+		init(projectConfigurationBean);
 		return instance;
-    }
+	}
 
     private CrucibleBottomToolWindowPanel(ProjectConfigurationBean projectConfigurationBean) {
 		
@@ -141,5 +155,41 @@ import java.awt.*;
 
 	public void setData(PluginConfiguration config) {
 		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	private static class ReviewTabManager implements CrucibleReviewActionListener {
+		public ReviewTabManager() {
+			super();
+			IdeaHelper.getCurrentReviewActionEventBroker().registerListener(this);
+		}
+
+		public static Content findOrCreatePanel(String panelName) {
+			Content content = null;
+			PeerFactory peerFactory = PeerFactory.getInstance();
+			ToolWindow tw = IdeaHelper.getCurrentBottomIdeaToolWindow();
+			if (tw != null) {
+				ContentManager contentManager = tw.getContentManager();
+				content = contentManager.findContent(panelName);
+				if (content == null) {
+					ReviewDetailsPanel reviewDetailsPanel = new ReviewDetailsPanel();
+					content = peerFactory.getContentFactory().createContent(
+							reviewDetailsPanel, panelName, false);
+					content.setIcon(IconLoader.getIcon("/icons/tab_jira.png"));
+					content.putUserData(ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
+					contentManager.addContent(content);
+				}
+			}
+			return content;
+		}
+
+
+		public void focusOnReview(ReviewDataInfoAdapter reviewItem) {
+			//To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		public void focusOnFile(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem) {
+			findOrCreatePanel(reviewItem.toString());
+		}
+
 	}
 }

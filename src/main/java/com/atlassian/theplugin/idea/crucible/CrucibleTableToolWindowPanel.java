@@ -19,10 +19,9 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.bamboo.StausIconBambooListener;
 import com.atlassian.theplugin.commons.crucible.*;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
-import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
+import com.atlassian.theplugin.commons.crucible.api.model.PermId;
+import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.commons.util.Logger;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -48,7 +47,6 @@ import java.util.*;
 import java.util.List;
 
 public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStatusListener, TableItemSelectedListener {
-    private Collection<TableItemSelectedListener> generalItemSelectedListeners = new ArrayList<TableItemSelectedListener>();
 
     private transient ActionToolbar filterEditToolbar;
     private static CrucibleTableToolWindowPanel instance;
@@ -280,12 +278,6 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">" + msg + "</td></tr></table>"));
     }
 
-    public void viewReview() {
-        if (selectedItem != null) {
-            ReviewDetailsToolWindow.focusPanel(IdeaHelper.getCurrentProject(), selectedItem);
-        }
-    }
-
     public ProgressAnimationProvider getProgressAnimation() {
         return progressAnimation;
     }
@@ -381,14 +373,12 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
     public void itemSelected(Object item, int noClicks) {
         selectedItem = (ReviewDataInfoAdapter) item;
-        if (noClicks == 2) {
-            viewReview();
-        }
-
-        //make sure that all listeners are run in separate thread
-        for (TableItemSelectedListener listener : generalItemSelectedListeners) {
-            listener.itemSelected(item, noClicks);
-        }
+        if (noClicks == 1) {
+			if (item != null && item instanceof ReviewDataInfoAdapter) {
+				ReviewDataInfoAdapter review = (ReviewDataInfoAdapter) item;
+				IdeaHelper.getCurrentReviewActionEventBroker().focusOnReview(null, review);
+			}
+		}
     }
 
     public void resetState() {
@@ -469,21 +459,6 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
     public void removeCustomFilter() {
 
-    }
-
-    /*add item selected listener for all components in this ToolWindow*/
-    public void addItemSelectedListener(TableItemSelectedListener listener) {
-
-        generalItemSelectedListeners.add(listener);
-
-//		for (CollapsibleTable table: tables.values()){
-//			table.addItemSelectedListener(listener);
-//		}
-//
-//
-//		for (CollapsibleTable table: customTables.values()){
-//			table.addItemSelectedListener(listener);
-//		}
     }
 
     public void removeItemSelectedListener(TableItemSelectedListener listener) {
