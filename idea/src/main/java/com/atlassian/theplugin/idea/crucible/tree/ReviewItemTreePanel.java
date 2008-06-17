@@ -15,15 +15,13 @@ package com.atlassian.theplugin.idea.crucible.tree;
  * limitations under the License.
  */
 
-import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewItem;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.commons.crucible.api.model.PermId;
-import com.atlassian.theplugin.idea.ui.TableItemSelectedListener;
+import com.atlassian.theplugin.commons.util.Logger;
 import com.atlassian.theplugin.idea.crucible.tree.CrucibleReviewTreeModel;
 import com.atlassian.theplugin.idea.crucible.tree.CrucibleTreeRenderer;
 import com.atlassian.theplugin.idea.crucible.tree.CrucibleTreeRootNode;
@@ -31,8 +29,10 @@ import com.atlassian.theplugin.idea.crucible.tree.GeneralCommentNode;
 import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemDataNode;
 import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
+import com.atlassian.theplugin.idea.crucible.events.FocusOnFileEvent;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 
@@ -43,7 +43,8 @@ import javax.swing.tree.TreePath;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
 import java.awt.*;
-import java.util.Collection;
+import java.util.*;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -70,7 +71,9 @@ public class ReviewItemTreePanel extends JPanel
 
 	private static ReviewItem currentFileItem;
 	private static CrucibleTableToolWindowPanel crucibleTableToolWindowPanel;
+	public static final Logger LOGGER = PluginUtil.getLogger();
 
+	private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
 
 	private ReviewItemTreePanel(ProjectConfigurationBean projectConfigurationBean) {
 		initLayout();
@@ -79,6 +82,7 @@ public class ReviewItemTreePanel extends JPanel
 		crucibleTableToolWindowPanel =
 				CrucibleTableToolWindowPanel.getInstance(projectConfigurationBean);
 	}
+
 
 	public static ReviewItemTreePanel getInstance(ProjectConfigurationBean projectConfigurationBean) {
 		if (instance == null) {
@@ -90,9 +94,8 @@ public class ReviewItemTreePanel extends JPanel
 	private void initLayout() {
 		setLayout(new BorderLayout());
 		setMinimumSize(new Dimension(WIDTH, HEIGHT));
-		add(new JLabel("File/Comment tree"), BorderLayout.NORTH);
+		add(new JLabel("File list"), BorderLayout.NORTH);
 		add(new JScrollPane(getReviewItemTree()), BorderLayout.CENTER);
-
 	}
 
 	private void expandAllPaths() {
@@ -106,12 +109,13 @@ public class ReviewItemTreePanel extends JPanel
 			reviewFilesTree = new JTree();
 
 			reviewFilesTree.setName("Server tree");
-
 			CrucibleTreeRootNode root = new CrucibleTreeRootNode();
+
 			model = new CrucibleReviewTreeModel(root);
 			reviewFilesTree.setModel(model);
 
-			reviewFilesTree.setRootVisible(true);
+			reviewFilesTree.setRootVisible(false);
+			reviewFilesTree.expandRow(0);
 			reviewFilesTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 			reviewFilesTree.setVisibleRowCount(VISIBLE_ROW_COUNT);
 			reviewFilesTree.setShowsRootHandles(true);
@@ -132,10 +136,11 @@ public class ReviewItemTreePanel extends JPanel
 						if (selectedNode instanceof GeneralCommentNode) {
 							GeneralComment server = ((GeneralCommentNode) selectedNode).getGeneralComment();
 						} else if (selectedNode instanceof ReviewItemDataNode) {
-							IdeaHelper.getCurrentReviewActionEventBroker().focusOnFile(
-									ReviewItemTreePanel.this,
-									((CrucibleTreeRootNode)model.getRoot()).getReviewDataInfoAdapter(),
-									((ReviewItemDataNode)selectedNode).getReviewItem());
+							IdeaHelper.getCurrentReviewActionEventBroker().trigger(
+									new FocusOnFileEvent(
+											ReviewItemTreePanel.this,
+											((CrucibleTreeRootNode) model.getRoot()).getReviewDataInfoAdapter(),
+											((ReviewItemDataNode) selectedNode).getReviewItem()));
 						}
 					} else {
 						//@todo serverConfigPanel.showEmptyPanel();
@@ -156,62 +161,17 @@ public class ReviewItemTreePanel extends JPanel
 		getReviewItemTree().setEnabled(b);
 	}
 
-	//show list of files
-	private void updateFilesTree(Server crucibleServer, ReviewItem fileItem, PermId reviewPermId) {
-//		currentFileItem = fileItem;
-//
-//
-//		ReviewItemDataNode reviewItemDataNode = model.getOrInsertReviewItemDataNode(fileItem, true);
-//		TreePath itemNodePath = new TreePath(reviewItemDataNode.getPath());
-//		boolean doExpand = reviewFilesTree.isExpanded(itemNodePath);
 
-//		reviewItemDataNode.removeAllChildren();
-
-//		Collection<VersionedComment> fileVersionedComments = null;
-//		try {
-//			fileVersionedComments = crucibleServerFacade.getVersionedComments(crucibleServer, reviewPermId, fileItem.getPermId());
-//			for (VersionedComment comment : fileVersionedComments) {
-//				model.insertNodeInto(new VersionedCommentNode(comment), reviewItemDataNode, reviewItemDataNode.getChildCount());
-//			}
-//		} catch (RemoteApiException e) {
-//			PluginUtil.getLogger().error("Cannot retrieve comments : " + e.getMessage());
-//		} catch (ServerPasswordNotProvidedException e) {
-//			PluginUtil.getLogger().error("Password not provided: " + e.getMessage());
-//		}
-//
-//		model.nodeStructureChanged(reviewItemDataNode);
-//
-//		if (doExpand) {
-//			reviewFilesTree.expandPath(itemNodePath);
-//		}
-	}
-
-
-	private void updateTreeConfiguration(ReviewDataInfoAdapter reviewAdapter) {
-		Collection<ReviewItem> reviewFiles = null;
-		Collection<GeneralComment> generalComments = null;
+	private void updateTreeConfiguration(ReviewDataInfoAdapter reviewAdapter, Collection<ReviewItem> reviewFiles) {
 		firstItemNode = null;
 		newSelectedNode = selectedNode;
 
 		model.setRoot(new CrucibleTreeRootNode(reviewAdapter));
-		try {
-			reviewFiles = crucibleServerFacade.getReviewItems(reviewAdapter.getServer(), reviewAdapter.getPermaId());
-			for (ReviewItem reviewFile : reviewFiles) {
-				model.getOrInsertReviewItemDataNode(reviewFile, true);
-//				updateFilesTree(reviewAdapter.getServer(), reviewFile, reviewAdapter.getPermaId());
-			}
-
-//			generalComments = crucibleServerFacade.getGeneralComments(reviewAdapter.getServer(), reviewAdapter.getPermaId());
-//			for (GeneralComment generalComment: generalComments) {
-//				model.getGeneralCommentNode(generalComment, true);
-//			}
-		} catch (RemoteApiException e) {
-			PluginUtil.getLogger().error("Remote api error" + e.getMessage());
-		} catch (ServerPasswordNotProvidedException e) {
-			PluginUtil.getLogger().error("Password not provided: " + e.getMessage());
+		for (ReviewItem reviewFile : reviewFiles) {
+			model.getOrInsertReviewItemDataNode(reviewFile, true);
 		}
-
-
+		reviewFilesTree.setRootVisible(true);
+		reviewFilesTree.expandRow(0);
 		if (newSelectedNode != null) {
 			selectedNode = newSelectedNode;
 			TreePath path = new TreePath(selectedNode.getPath());
@@ -229,9 +189,27 @@ public class ReviewItemTreePanel extends JPanel
 		}
 	}
 
+	public ProgressAnimationProvider getProgressAnimation() {
+		return progressAnimation;
+	}
 
-	public void focusOnReview(ReviewDataInfoAdapter reviewItem) {
-		 updateTreeConfiguration(reviewItem);
+
+	public void focusOnReview(final ReviewDataInfoAdapter reviewItem) {
+		progressAnimation.startProgressAnimation();
+		try {
+			final List<ReviewItem> reviewFiles = crucibleServerFacade.getReviewItems(reviewItem.getServer(), reviewItem.getPermaId());
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					updateTreeConfiguration(reviewItem, reviewFiles);
+				}
+			});
+		} catch (RemoteApiException e) {
+			LOGGER.warn("Error retrieving the list of files attached to a review", e);
+		} catch (ServerPasswordNotProvidedException e) {
+			LOGGER.warn("Error retrieving the list of files attached to a review", e);
+		} finally {
+			progressAnimation.stopProgressAnimation();
+		}
 	}
 
 	public void focusOnFile(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem) {
