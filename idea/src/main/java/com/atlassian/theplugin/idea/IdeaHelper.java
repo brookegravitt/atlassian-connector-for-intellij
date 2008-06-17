@@ -19,8 +19,8 @@ package com.atlassian.theplugin.idea;
 import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.ReviewItemVirtualFile;
-import com.atlassian.theplugin.idea.crucible.ReviewDetailsToolWindow;
-import com.atlassian.theplugin.idea.crucible.ReviewDetailsPanel;
+import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
+import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
@@ -92,8 +92,8 @@ public final class IdeaHelper {
 		return ToolWindowManager.getInstance(p).getToolWindow(PluginToolWindow.TOOL_WINDOW_NAME);
 	}
 
-	public static com.intellij.openapi.wm.ToolWindow getReviewDetailsWindow(Project p) {
-		return ToolWindowManager.getInstance(p).getToolWindow(ReviewDetailsToolWindow.TOOL_WINDOW_NAME);
+	public static com.intellij.openapi.wm.ToolWindow getBottomIdeaToolWindow(Project p) {
+		return ToolWindowManager.getInstance(p).getToolWindow(PluginToolWindow.BOTTOM_WINDOW_NAME);
 	}
 
 	public static ThePluginApplicationComponent getAppComponent() {
@@ -104,13 +104,13 @@ public final class IdeaHelper {
 		return getAppComponent().getState();
 	}
 
-	public static ReviewDetailsToolWindow getCurrentReviewDetailsToolWindow() {
+	public static ToolWindow getCurrentBottomIdeaToolWindow() {
 		Project p = getCurrentProject();
 		if (p == null) {
 			return null;
 		}
-		com.intellij.openapi.wm.ToolWindow tw = getReviewDetailsWindow(p);
-        return (ReviewDetailsToolWindow) tw;
+		com.intellij.openapi.wm.ToolWindow tw = getBottomIdeaToolWindow(p);
+        return tw;
 	}
 
 
@@ -177,5 +177,17 @@ public final class IdeaHelper {
             return null;
         }
         return (CrucibleTableToolWindowPanel) content.getComponent();
+	}
+
+	public static ReviewActionEventBroker getCurrentReviewActionEventBroker() {
+		Project p = getCurrentProject();
+		if (p == null) {
+			return null;
+		}
+		return getReviewActionEventBroker(p);
+	}
+
+	private static ReviewActionEventBroker getReviewActionEventBroker(Project p) {
+		return ReviewActionEventBroker.getInstance(p);
 	}
 }
