@@ -127,11 +127,13 @@ public class BambooToolWindow extends ViewPart {
 
 	@Override
 	public void dispose() {
+		
 		super.dispose();
 		
 		if (bambooToolWindowContent != null) {
 			Activator.getDefault().getBambooChecker().unregisterListener(bambooToolWindowContent);
 		}
+		
 	}
 
 	
