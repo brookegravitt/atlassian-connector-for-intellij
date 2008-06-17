@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -43,6 +44,7 @@ import com.atlassian.theplugin.eclipse.EclipseLogger;
 import com.atlassian.theplugin.eclipse.MissingPasswordHandler;
 import com.atlassian.theplugin.eclipse.util.PluginUtil;
 import com.atlassian.theplugin.eclipse.view.bamboo.BambooStatusTooltip;
+import com.atlassian.theplugin.eclipse.view.bamboo.BambooToolWindowContent;
 
 
 /**
@@ -144,6 +146,15 @@ public class Activator extends AbstractUIPlugin {
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
+		
+		getPluginPreferences().setValue(PreferenceConstants.BAMBOO_TAB_COLUMNS_ORDER, 
+				getPluginConfiguration().getBambooTabConfiguration().getColumnsOrderString());
+		getPluginPreferences().setValue(PreferenceConstants.BAMBOO_TAB_COLUMNS_WIDTH, 
+				getPluginConfiguration().getBambooTabConfiguration().getColumnsWidthString());
+		
+		System.out.println(getPluginConfiguration().getBambooTabConfiguration().getColumnsWidthString());
+		
+		
 		plugin = null;
 		super.stop(context);
 		
