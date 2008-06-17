@@ -407,6 +407,16 @@ public class PluginToolWindow extends ContentManagerAdapter {
 	public static void focusPanelifExists(AnActionEvent e, ToolWindowPanels component) {
 		focusPanelIfExists(IdeaHelper.getCurrentProject(e.getDataContext()), component.toString());
 	}
+
+	@Override
+	public void contentRemoveQuery(ContentManagerEvent event) {
+		Content content = event.getContent();
+		if (content.getTabName().equals(ToolWindowPanels.CRUCIBLE_BOTTOM.toString())) {
+			event.consume();
+		}
+		super.contentRemoveQuery(event);
+	}
+
 	public void selectionChanged(ContentManagerEvent event) {
 		//this.selectedContent = event.getContent().getDisplayName();
 
@@ -437,7 +447,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 
 		CRUCIBLE_BOTTOM {
 			public String toString(){
-				return "Atlassian Plugin";
+				return "Review Details";
 			}
 		}
 	}
