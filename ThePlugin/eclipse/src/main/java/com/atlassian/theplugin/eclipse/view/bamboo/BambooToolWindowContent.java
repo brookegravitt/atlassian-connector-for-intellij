@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -43,7 +44,6 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
-import org.eclipse.ui.part.ViewPart;
 
 import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.commons.bamboo.BambooStatusListener;
@@ -115,20 +115,46 @@ public class BambooToolWindowContent implements BambooStatusListener {
 		
 		ControlListener columnListener = new BambooTableColumnListener();
 		
-		for (Column column : Column.values()) {
+		List<Integer> configColumnsWidth = 
+			Activator.getDefault().getPluginConfiguration().getBambooTabConfiguration().getColumnsWidth();
+		
+		for (int i = 0 ; i < Column.values().length ; ++i) {
+			Column column = Column.values()[i];
 			tableColumn = new TableColumn(table, SWT.LEFT);
 			tableColumn.setText(column.columnName());
-			tableColumn.setWidth(column.columnWidth());
-			tableColumn.setMoveable(true);
 			
-			tableColumn.addControlListener(columnListener);
+			tableColumn.setWidth(column.columnWidth());
+
+			tableColumn.setMoveable(true);
+			tableColumn.setResizable(true);
+			
+			
+		}
+		
+		// set columns width according to the config values
+		if (configColumnsWidth.size() == Column.values().length) {
+			for (int i = 0 ; i < configColumnsWidth.size() ; ++i) {
+				table.getColumn(i).setWidth(configColumnsWidth.get(i));
+			}
+		}
+
+		// set columns order
+		int[] order = 
+			Activator.getDefault().getPluginConfiguration().getBambooTabConfiguration().getColumnsOrder();
+		
+		if (order.length == Column.values().length) {
+			table.setColumnOrder(order);
+		}
+		
+		// add width and order listener
+		for (TableColumn column : table.getColumns()) {
+			column.addControlListener(columnListener);
 		}
 		
 		tableViewer.setInput(buildStatuses);
 		
 		table.setLinesVisible(true);
-		table.setHeaderVisible(true);
-		
+		table.setHeaderVisible(true);	
 		
 	}
 	
@@ -156,13 +182,19 @@ public class BambooToolWindowContent implements BambooStatusListener {
 	private class BambooTableColumnListener implements ControlListener {
 		
 		public void controlMoved(ControlEvent e) {
-//			Activator.getDefault().getPluginConfiguration().getBambooTabConfiguration().
-//				setColumnsOrder( Arrays.asList(table.getColumnOrder()));
-			//System.out.println("Column Moved: " + Arrays.toString(table.getColumnOrder()));
+			Activator.getDefault().getPluginConfiguration().getBambooTabConfiguration().
+				setColumnsOrder(table.getColumnOrder());
+			System.out.println(Arrays.toString(table.getColumnOrder()));
 		}
 		
 		public void controlResized(ControlEvent e) {
-			System.out.println("Colum Resized");
+			List<Integer> columnsWidth = new ArrayList<Integer>(table.getColumns().length);
+			for (TableColumn column : table.getColumns()) {
+				columnsWidth.add(column.getWidth());
+			}
+			Activator.getDefault().getPluginConfiguration().getBambooTabConfiguration().setColumnsWidth(columnsWidth);
+			System.out.println(columnsWidth.toString());
+			//System.out.println("Colum Resized");
 		}
 		
 	}
@@ -292,6 +324,18 @@ public class BambooToolWindowContent implements BambooStatusListener {
 		IStructuredSelection selection = (IStructuredSelection) event.getSelection();
 		BambooBuildAdapterEclipse build = (BambooBuildAdapterEclipse) selection.getFirstElement();
 		return build;
+	}
+
+	public void dispose() {
+		Activator.getDefault().getPluginConfiguration().getBambooTabConfiguration().
+		setColumnsOrder(table.getColumnOrder());
+		
+		List<Integer> columnsWidth = new ArrayList<Integer>(table.getColumns().length);
+		for (TableColumn column : table.getColumns()) {
+			columnsWidth.add(column.getWidth());
+		}
+		Activator.getDefault().getPluginConfiguration().getBambooTabConfiguration().setColumnsWidth(columnsWidth);
+		//System.out.println("Colum Resized");
 	}
 	
 }

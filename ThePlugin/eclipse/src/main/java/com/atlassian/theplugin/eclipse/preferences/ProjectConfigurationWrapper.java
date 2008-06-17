@@ -41,6 +41,7 @@ public class ProjectConfigurationWrapper {
 
 	public ProjectConfigurationWrapper(Preferences preferences) {
 		this.preferences = preferences;
+		//preferences.setValue("dupa", "maryni");
 	}
 
 	public EclipsePluginConfiguration getPluginConfiguration() {
@@ -86,6 +87,12 @@ public class ProjectConfigurationWrapper {
 		
 		EclipsePluginConfiguration pluginConfiguration = new EclipsePluginConfiguration();
 		pluginConfiguration.setBambooConfigurationData(bambooConfiguration);
+		
+		BambooTabConfiguration bambooTabConfiguration = new BambooTabConfiguration();
+		bambooTabConfiguration.setColumnsOrderString(preferences.getString(PreferenceConstants.BAMBOO_TAB_COLUMNS_ORDER));
+		bambooTabConfiguration.setColumnsWidthString(preferences.getString(PreferenceConstants.BAMBOO_TAB_COLUMNS_WIDTH));
+		
+		pluginConfiguration.setBambooTabConfiguration(bambooTabConfiguration);
 		
 		return pluginConfiguration;
 	}
