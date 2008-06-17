@@ -133,7 +133,7 @@ import java.awt.*;
 
 	public String getTitle() {
 		return null;  //To change body of implemented methods use File | Settings | File Templates.
-	}
+}
 
 	public void getData() {
 		//To change body of implemented methods use File | Settings | File Templates.
