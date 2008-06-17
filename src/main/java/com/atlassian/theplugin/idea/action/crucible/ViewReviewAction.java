@@ -29,6 +29,6 @@ import com.atlassian.theplugin.idea.IdeaHelper;
  */
 public class ViewReviewAction extends AnAction {
     public void actionPerformed(AnActionEvent event) {
-        IdeaHelper.getCrucibleToolWindowPanel(event).viewReview();
+        //
     }
 }

@@ -14,6 +14,7 @@ package com.atlassian.theplugin.idea.crucible.tree;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -22,7 +23,6 @@ import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewItem;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.idea.ui.TableItemSelectedListener;
 import com.atlassian.theplugin.idea.crucible.tree.CrucibleReviewTreeModel;
 import com.atlassian.theplugin.idea.crucible.tree.CrucibleTreeRenderer;
@@ -31,6 +31,8 @@ import com.atlassian.theplugin.idea.crucible.tree.GeneralCommentNode;
 import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemDataNode;
 import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
+import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 
@@ -50,7 +52,8 @@ import java.util.Collection;
  * Time: 10:56:46 AM
  * To change this template use File | Settings | File Templates.
  */
-public class ReviewItemTreePanel  extends JPanel implements TreeSelectionListener, TableItemSelectedListener {
+public class ReviewItemTreePanel extends JPanel
+		implements CrucibleReviewActionListener {
 
 	private JTree reviewFilesTree = null;
 	private CrucibleReviewTreeModel model;
@@ -71,11 +74,10 @@ public class ReviewItemTreePanel  extends JPanel implements TreeSelectionListene
 
 	private ReviewItemTreePanel(ProjectConfigurationBean projectConfigurationBean) {
 		initLayout();
-		crucibleServerFacade =  CrucibleServerFacadeImpl.getInstance();
+		IdeaHelper.getCurrentReviewActionEventBroker().registerListener(this);
+		crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		crucibleTableToolWindowPanel =
 				CrucibleTableToolWindowPanel.getInstance(projectConfigurationBean);
-
-		crucibleTableToolWindowPanel.addItemSelectedListener(this);
 	}
 
 	public static ReviewItemTreePanel getInstance(ProjectConfigurationBean projectConfigurationBean) {
@@ -95,10 +97,10 @@ public class ReviewItemTreePanel  extends JPanel implements TreeSelectionListene
 
 	private void expandAllPaths() {
 		for (int i = 0; i < reviewFilesTree.getRowCount(); ++i) {
-                 reviewFilesTree.expandRow(i);
-        }
-    }
-	
+			reviewFilesTree.expandRow(i);
+		}
+	}
+
 	private JTree getReviewItemTree() {
 		if (reviewFilesTree == null) {
 			reviewFilesTree = new JTree();
@@ -114,7 +116,34 @@ public class ReviewItemTreePanel  extends JPanel implements TreeSelectionListene
 			reviewFilesTree.setVisibleRowCount(VISIBLE_ROW_COUNT);
 			reviewFilesTree.setShowsRootHandles(true);
 
-			reviewFilesTree.addTreeSelectionListener(this);
+			reviewFilesTree.addTreeSelectionListener(new TreeSelectionListener() {
+				public void valueChanged(TreeSelectionEvent event) {
+					TreePath path = event.getNewLeadSelectionPath();
+
+					if (path != null) {
+						TreePath oldPath = event.getOldLeadSelectionPath();
+						if (oldPath != null) {
+							DefaultMutableTreeNode oldNode = (DefaultMutableTreeNode) oldPath.getLastPathComponent();
+							if (oldNode != null && oldNode instanceof GeneralCommentNode) {
+								//@todo ???serverConfigPanel.storeServer((GeneralCommentNode) oldNode);
+							}
+						}
+						selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
+						if (selectedNode instanceof GeneralCommentNode) {
+							GeneralComment server = ((GeneralCommentNode) selectedNode).getGeneralComment();
+						} else if (selectedNode instanceof ReviewItemDataNode) {
+							IdeaHelper.getCurrentReviewActionEventBroker().focusOnFile(
+									ReviewItemTreePanel.this,
+									((CrucibleTreeRootNode)model.getRoot()).getReviewDataInfoAdapter(),
+									((ReviewItemDataNode)selectedNode).getReviewItem());
+						}
+					} else {
+						//@todo serverConfigPanel.showEmptyPanel();
+//		}
+					}
+
+				}
+			});
 
 			reviewFilesTree.setCellRenderer(new CrucibleTreeRenderer());
 		}
@@ -129,32 +158,32 @@ public class ReviewItemTreePanel  extends JPanel implements TreeSelectionListene
 
 	//show list of files
 	private void updateFilesTree(Server crucibleServer, ReviewItem fileItem, PermId reviewPermId) {
-		currentFileItem = fileItem;
+//		currentFileItem = fileItem;
+//
+//
+//		ReviewItemDataNode reviewItemDataNode = model.getOrInsertReviewItemDataNode(fileItem, true);
+//		TreePath itemNodePath = new TreePath(reviewItemDataNode.getPath());
+//		boolean doExpand = reviewFilesTree.isExpanded(itemNodePath);
 
+//		reviewItemDataNode.removeAllChildren();
 
-			ReviewItemDataNode reviewItemDataNode = model.getReviewItemDataNode(fileItem, true);
-			TreePath itemNodePath = new TreePath(reviewItemDataNode.getPath());
-			boolean doExpand = reviewFilesTree.isExpanded(itemNodePath);
-
-			reviewItemDataNode.removeAllChildren();
-
-			Collection<VersionedComment> fileVersionedComments = null;
-			try {
-				fileVersionedComments = crucibleServerFacade.getVersionedComments(crucibleServer, reviewPermId, fileItem.getPermId());
-				for (VersionedComment comment: fileVersionedComments) {
-				model.insertNodeInto(new VersionedCommentNode(comment), reviewItemDataNode, reviewItemDataNode.getChildCount());
-			}
-			} catch (RemoteApiException e) {
-				PluginUtil.getLogger().error("Cannot retrieve comments : " + e.getMessage());
-			} catch (ServerPasswordNotProvidedException e) {
-				PluginUtil.getLogger().error("Password not provided: " + e.getMessage());
-			}
-
-			model.nodeStructureChanged(reviewItemDataNode);
-
-			if (doExpand) {
-				reviewFilesTree.expandPath(itemNodePath);
-			}
+//		Collection<VersionedComment> fileVersionedComments = null;
+//		try {
+//			fileVersionedComments = crucibleServerFacade.getVersionedComments(crucibleServer, reviewPermId, fileItem.getPermId());
+//			for (VersionedComment comment : fileVersionedComments) {
+//				model.insertNodeInto(new VersionedCommentNode(comment), reviewItemDataNode, reviewItemDataNode.getChildCount());
+//			}
+//		} catch (RemoteApiException e) {
+//			PluginUtil.getLogger().error("Cannot retrieve comments : " + e.getMessage());
+//		} catch (ServerPasswordNotProvidedException e) {
+//			PluginUtil.getLogger().error("Password not provided: " + e.getMessage());
+//		}
+//
+//		model.nodeStructureChanged(reviewItemDataNode);
+//
+//		if (doExpand) {
+//			reviewFilesTree.expandPath(itemNodePath);
+//		}
 	}
 
 
@@ -167,14 +196,15 @@ public class ReviewItemTreePanel  extends JPanel implements TreeSelectionListene
 		model.setRoot(new CrucibleTreeRootNode(reviewAdapter));
 		try {
 			reviewFiles = crucibleServerFacade.getReviewItems(reviewAdapter.getServer(), reviewAdapter.getPermaId());
-			for (ReviewItem reviewFile: reviewFiles) {
-				updateFilesTree(reviewAdapter.getServer(), reviewFile, reviewAdapter.getPermaId());
+			for (ReviewItem reviewFile : reviewFiles) {
+				model.getOrInsertReviewItemDataNode(reviewFile, true);
+//				updateFilesTree(reviewAdapter.getServer(), reviewFile, reviewAdapter.getPermaId());
 			}
 
-			generalComments = crucibleServerFacade.getGeneralComments(reviewAdapter.getServer(), reviewAdapter.getPermaId());
-			for (GeneralComment generalComment: generalComments) {
-				model.getGeneralCommentNode(generalComment, true);
-			}
+//			generalComments = crucibleServerFacade.getGeneralComments(reviewAdapter.getServer(), reviewAdapter.getPermaId());
+//			for (GeneralComment generalComment: generalComments) {
+//				model.getGeneralCommentNode(generalComment, true);
+//			}
 		} catch (RemoteApiException e) {
 			PluginUtil.getLogger().error("Remote api error" + e.getMessage());
 		} catch (ServerPasswordNotProvidedException e) {
@@ -199,46 +229,12 @@ public class ReviewItemTreePanel  extends JPanel implements TreeSelectionListene
 		}
 	}
 
-	public void valueChanged(TreeSelectionEvent e) {
-		TreePath path = e.getNewLeadSelectionPath();
 
-		if (path != null) {
-			TreePath oldPath = e.getOldLeadSelectionPath();
-			if (oldPath != null) {
-				DefaultMutableTreeNode oldNode = (DefaultMutableTreeNode) oldPath.getLastPathComponent();
-				if (oldNode != null && oldNode instanceof GeneralCommentNode) {
-					//@todo ???serverConfigPanel.storeServer((GeneralCommentNode) oldNode);
-				}
-			}
-			selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
-			if (selectedNode instanceof GeneralCommentNode) {
-				GeneralComment server = ((GeneralCommentNode) selectedNode).getGeneralComment();
-//				if (pluginConfiguration.isServerPresent(server)) {
-//					//@todo show on the right details of .... serverConfigPanel.editServer(
-////							((ServerNode) selectedNode).getServerType(), server);
-//				} else {
-//					// PL-235 show blank panel if server from tree node does not exist in configuration
-//					// it happens if you add server, click cancel and open config window again
-//					//@todo check serverConfigPanel.showEmptyPanel();
-//				}
-			} else if (selectedNode instanceof ReviewItemDataNode) {
-				//@todo serverConfigPanel.showEmptyPanel();
-			}
-		} else {
-			//@todo serverConfigPanel.showEmptyPanel();
-//		}
+	public void focusOnReview(ReviewDataInfoAdapter reviewItem) {
+		 updateTreeConfiguration(reviewItem);
 	}
 
+	public void focusOnFile(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem) {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
 }
-	//@todo: Change to thread
-	public void itemSelected(Object item, int noClicks) {
-		if (item != null && item instanceof ReviewDataInfoAdapter) {
-			ReviewDataInfoAdapter review = (ReviewDataInfoAdapter) item;
-
-
-			updateTreeConfiguration(review);
-		} else {
-			PluginUtil.getLogger().error("WTFFFFFFFFFFFFFFF");
-		}
-	}
-	}
