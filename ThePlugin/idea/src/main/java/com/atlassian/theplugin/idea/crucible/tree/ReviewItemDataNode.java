@@ -28,17 +28,9 @@ public class ReviewItemDataNode extends DefaultMutableTreeNode {
 		this.reviewItem = reviewItem;
 	}
 
+	@Override
 	public String toString() {
-		if (reviewItem.getFromPath().length() > 0 && reviewItem.getToPath().length() > 0){
-			return reviewItem.getFromPath() + " (mod)";
-
-		} else if (reviewItem.getFromPath().length() > 0) {
-			return reviewItem.getFromPath() + " (new)";
-		} else if (reviewItem.getToPath().length() > 0) {
-			return reviewItem.getToPath() + " (del)";
-		} else {
-			return "unknown";
-		}		
+		return this.reviewItem.toString();
 	}
 
 	public boolean equals(Object o) {
