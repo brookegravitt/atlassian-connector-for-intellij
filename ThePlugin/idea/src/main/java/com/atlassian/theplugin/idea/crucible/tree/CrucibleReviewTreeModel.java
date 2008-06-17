@@ -25,7 +25,7 @@ public class CrucibleReviewTreeModel extends DefaultTreeModel {
 		super(root);
 	}
 
-	public ReviewItemDataNode getReviewItemDataNode(ReviewItem reviewItem, boolean addIfMissing) {
+	public ReviewItemDataNode getOrInsertReviewItemDataNode(ReviewItem reviewItem, boolean addIfMissing) {
 		for (int i = 0; i < root.getChildCount(); ++i) {
 			if (root.getChildAt(i) instanceof ReviewItemDataNode) {
 				ReviewItemDataNode reviewItemDataNode = (ReviewItemDataNode) root.getChildAt(i);

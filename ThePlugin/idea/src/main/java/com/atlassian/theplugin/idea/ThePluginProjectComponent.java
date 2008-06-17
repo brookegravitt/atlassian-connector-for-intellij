@@ -30,6 +30,7 @@ import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
 import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;
 import com.atlassian.theplugin.idea.crucible.*;
+import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.intellij.ide.util.treeView.AbstractTreeNode;
@@ -72,9 +73,9 @@ public class ThePluginProjectComponent implements
     private StausIconBambooListener iconBambooStatusListener;
     private BambooStatusTooltipListener tooltipBambooStatusListener;
 
-	private final CrucibleBottomToolWindowPanel crucibleBottomToolWindowPanel;
-	private final BambooTableToolWindowPanel bambooToolWindowPanel;
-    private final CrucibleTableToolWindowPanel crucibleToolWindowPanel;
+	private CrucibleBottomToolWindowPanel crucibleBottomToolWindowPanel;
+	private BambooTableToolWindowPanel bambooToolWindowPanel;
+    private CrucibleTableToolWindowPanel crucibleToolWindowPanel;
 
     private final CrucibleStatusChecker crucibleStatusChecker;
     private final CrucibleServerFacade crucibleServerFacade;
@@ -92,7 +93,8 @@ public class ThePluginProjectComponent implements
 
     private List<ReviewItemVirtualFile> reviewScopeFiles;
     private String reviewId;
-	private ReviewDetailsToolWindow reviewDetailsToolWindow;
+	private ReviewActionEventBroker crucibleActionBroker;
+
 
 	public ThePluginProjectComponent(Project project,
                                      CrucibleStatusChecker crucibleStatusChecker,
@@ -104,19 +106,29 @@ public class ThePluginProjectComponent implements
                                      /*JIRAToolWindowPanel jiraToolWindowPanel,*/
                                      ProjectConfigurationBean projectConfigurationBean
                                      /*CrucibleServerFacade crucibleServerFacade*/) {
-        this.project = project;
-        this.crucibleStatusChecker = crucibleStatusChecker;
-        this.toolWindowManager = toolWindowManager;
-        // todo remove that get instance as it can return null. it is better to get it from app component.
-        this.bambooStatusChecker = BambooStatusChecker.getInstance();
-        this.pluginConfiguration = pluginConfiguration;
-        this.bambooToolWindowPanel = BambooTableToolWindowPanel.getInstance(projectConfigurationBean);
-        this.crucibleToolWindowPanel = CrucibleTableToolWindowPanel.getInstance(projectConfigurationBean);
-        this.jiraToolWindowPanel = JIRAToolWindowPanel.getInstance(projectConfigurationBean);
-        this.projectConfigurationBean = projectConfigurationBean;
-        this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
-		this.crucibleBottomToolWindowPanel = CrucibleBottomToolWindowPanel.getInstance(projectConfigurationBean);
+		this.project = project;
+		this.crucibleActionBroker = ReviewActionEventBroker.getInstance(project);
+		this.crucibleStatusChecker = crucibleStatusChecker;
+		this.toolWindowManager = toolWindowManager;
+		// todo remove that get instance as it can return null. it is better to get it from app component.
+		this.bambooStatusChecker = BambooStatusChecker.getInstance();
+		this.pluginConfiguration = pluginConfiguration;
+		this.jiraToolWindowPanel = JIRAToolWindowPanel.getInstance(projectConfigurationBean);
+		this.projectConfigurationBean = projectConfigurationBean;
+		this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
+		/*
 
+
+										WARNING!!!
+
+
+		BEFORE ADDING SOME INITIALIZATION CODE TO COSTRUCTOR THINK TWICE
+
+		...MAYBE YOU SHOULD PUT IT INTO THE initializePlugin METHOD
+		(WHICH IS INVOKED WHEN THE ENTIRE PLUGIN ENVIRONMENT IS SET UP)?
+
+
+		 */
 		// make findBugs happy
         statusBarBambooIcon = null;
         statusBarCrucibleIcon = null;
@@ -165,6 +177,9 @@ public class ThePluginProjectComponent implements
         if (!created) {
 
             // DependencyValidationManager.getHolder(project, "", )
+			this.bambooToolWindowPanel = BambooTableToolWindowPanel.getInstance(projectConfigurationBean);
+			this.crucibleToolWindowPanel = CrucibleTableToolWindowPanel.getInstance(projectConfigurationBean);
+			this.crucibleBottomToolWindowPanel = CrucibleBottomToolWindowPanel.getInstance(projectConfigurationBean);
 
             // create tool window on the right
             toolWindow = new PluginToolWindow(toolWindowManager, project);
