@@ -80,6 +80,7 @@
 	<extensions xmlns="com.intellij">
 		<arealistener implementation="com.atlassian.theplugin.idea.PerProjectPicoInit" />		
 		<customScopesProvider implementation="com.atlassian.theplugin.idea.crucible.CrucibleReviewScopeProvider"/>
+		<errorHandler implementation="com.atlassian.theplugin.idea.BlameAtlassian"/>
 	</extensions>
 	
 	<application-components>
