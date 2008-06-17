@@ -52,6 +52,15 @@ import com.atlassian.theplugin.eclipse.view.bamboo.BambooToolWindowContent;
  */
 public class Activator extends AbstractUIPlugin {
 
+	public class ConfigListener implements IPropertyChangeListener {
+		public void propertyChange(PropertyChangeEvent event) {
+			reloadConfiguration();
+			notifyConfigurationListeners();
+			// bambooChecker.setConfiguration(pluginConfiguration);
+			rescheduleStatusCheckers();
+		}
+	}
+
 	// The plug-in ID
 	public static final String PLUGIN_ID = "com.atlassian.theplugin.eclipse";
 
@@ -71,6 +80,8 @@ public class Activator extends AbstractUIPlugin {
 	private Collection<SchedulableChecker> schedulableCheckers = new ArrayList<SchedulableChecker>();
 
 	private Set<ConfigurationListener> configurationListeners = new HashSet<ConfigurationListener>();
+
+	private ConfigListener configListener;
 
 	
 	/**
@@ -102,14 +113,8 @@ public class Activator extends AbstractUIPlugin {
 		registerConfigurationListener(bambooChecker);
 		
 		// create configuration changes listener
-		getPluginPreferences().addPropertyChangeListener(new IPropertyChangeListener() {
-			public void propertyChange(PropertyChangeEvent event) {
-				reloadConfiguration();
-				notifyConfigurationListeners();
-				//bambooChecker.setConfiguration(pluginConfiguration);
-				rescheduleStatusCheckers();
-			}
-		});
+		configListener = new ConfigListener();
+		getPluginPreferences().addPropertyChangeListener(configListener);
 		
 
 		// create timer
@@ -147,13 +152,12 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public void stop(BundleContext context) throws Exception {
 		
+		getPluginPreferences().removePropertyChangeListener(configListener);
+		
 		getPluginPreferences().setValue(PreferenceConstants.BAMBOO_TAB_COLUMNS_ORDER, 
 				getPluginConfiguration().getBambooTabConfiguration().getColumnsOrderString());
 		getPluginPreferences().setValue(PreferenceConstants.BAMBOO_TAB_COLUMNS_WIDTH, 
 				getPluginConfiguration().getBambooTabConfiguration().getColumnsWidthString());
-		
-		System.out.println(getPluginConfiguration().getBambooTabConfiguration().getColumnsWidthString());
-		
 		
 		plugin = null;
 		super.stop(context);
