@@ -421,7 +421,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
             body = new JEditorPane();
 			JScrollPane sp = new JScrollPane(body,
 					ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-					ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+					ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 			sp.setBorder(BorderFactory.createEmptyBorder());
 			sp.setOpaque(false);
 			sp.addComponentListener(new ComponentListener() {
