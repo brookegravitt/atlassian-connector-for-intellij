@@ -26,7 +26,7 @@ public class CrucibleTreeRootNode extends DefaultMutableTreeNode {
 
 	public String toString() {
 		if (reviewDataInfoAdapter != null) {
-			return reviewDataInfoAdapter.getProjectKey() + ", " + reviewDataInfoAdapter.getPermaId() + ", " + reviewDataInfoAdapter.getName();
+			return reviewDataInfoAdapter.toString();
 		} else {
 			return "No Review is selected";
 		}
