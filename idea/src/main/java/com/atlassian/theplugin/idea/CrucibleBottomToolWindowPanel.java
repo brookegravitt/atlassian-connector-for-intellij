@@ -7,7 +7,7 @@ import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListenerNotUsed;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
-import com.atlassian.theplugin.idea.crucible.comments.ReviewComentsPanel;
+import com.atlassian.theplugin.idea.crucible.comments.ReviewCommentsPanel;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
 import com.atlassian.theplugin.idea.crucible.ReviewDetailsPanel;
@@ -25,13 +25,13 @@ import java.awt.*;
 
 /**
  * Copyright (C) 2008 Atlassian
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,35 +40,33 @@ import java.awt.*;
  */
 
 
-
-
-
-
- public class CrucibleBottomToolWindowPanel extends  JPanel implements ContentPanel {
+public class CrucibleBottomToolWindowPanel extends JPanel implements ContentPanel {
 	private static final float SPLIT_RATIO = 0.3f;
-    private ProjectConfigurationBean projectConfiguration;
-    protected static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
-    protected ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
-    private static CrucibleServerFacade serverFacade;
-    private CrucibleVersion crucibleVersion = CrucibleVersion.UNKNOWN;
+	private ProjectConfigurationBean projectConfiguration;
+	protected static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
+	protected ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
+	private static CrucibleServerFacade serverFacade;
+	private CrucibleVersion crucibleVersion = CrucibleVersion.UNKNOWN;
 	static CrucibleBottomToolWindowPanel instance;
 	private static ReviewItemTreePanel reviewItemTreePanel;
 	private static Splitter splitter;
 	private static JComponent reviewComentsPanel;
 	private static CrucibleReviewActionListener tabManager;
+	private static final int LEFT_WIDTH = 150;
+	private static final int LEFT_HEIGHT = 250;
+
 
 	protected String getInitialMessage() {
 
-        return "Waiting for Crucible review info.";
-    }
+		return "Waiting for Crucible review info.";
+	}
 
 
-
-	private static void init(ProjectConfigurationBean projectConfigurationBean){
+	private static void init(ProjectConfigurationBean projectConfigurationBean) {
 		if (instance == null) {
 
 			instance = new CrucibleBottomToolWindowPanel(projectConfigurationBean);
-			
+
 			instance.setLayout(new BorderLayout());
 			serverFacade = CrucibleServerFacadeImpl.getInstance();
 			instance.setLayout(new BorderLayout());
@@ -77,10 +75,16 @@ import java.awt.*;
 			reviewItemTreePanel = ReviewItemTreePanel.getInstance(projectConfigurationBean);
 			Splitter splitter = new Splitter(false, SPLIT_RATIO);
 			splitter.setShowDividerControls(true);
-			splitter.setFirstComponent(reviewItemTreePanel);
+			JPanel leftPanel = new JPanel();
+			leftPanel.setBackground(UIUtil.getTreeTextBackground());
+			leftPanel.setLayout(new BorderLayout());
+			leftPanel.setMinimumSize(new Dimension(LEFT_WIDTH, LEFT_HEIGHT));
+			leftPanel.add(reviewItemTreePanel);
+			reviewItemTreePanel.getProgressAnimation().configure(leftPanel, reviewItemTreePanel, BorderLayout.CENTER);
+			splitter.setFirstComponent(leftPanel);
 			splitter.setHonorComponentsMinimumSize(true);
 			tabManager = new ReviewTabManager();
-			reviewComentsPanel = ReviewComentsPanel.getInstance();
+			reviewComentsPanel = ReviewCommentsPanel.getInstance();
 			splitter.setSecondComponent(reviewComentsPanel);
 			instance.add(splitter, BorderLayout.CENTER);
 		}
@@ -91,55 +95,53 @@ import java.awt.*;
 		return instance;
 	}
 
-    private CrucibleBottomToolWindowPanel(ProjectConfigurationBean projectConfigurationBean) {
-		
-        this.projectConfiguration = projectConfigurationBean;
-        setBackground(UIUtil.getTreeTextBackground());
-        progressAnimation.configure(this, reviewItemTreePanel, BorderLayout.CENTER);
+	private CrucibleBottomToolWindowPanel(ProjectConfigurationBean projectConfigurationBean) {
+
+		this.projectConfiguration = projectConfigurationBean;
+		setBackground(UIUtil.getTreeTextBackground());
+		progressAnimation.configure(this, reviewItemTreePanel, BorderLayout.CENTER);
 
 	}
 
 
+	protected JScrollPane setupPane(JEditorPane pane, String initialText) {
+		pane.setText(initialText);
+		JScrollPane scrollPane = new JScrollPane(pane,
+				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.setWheelScrollingEnabled(true);
+		return scrollPane;
+	}
 
-    protected JScrollPane setupPane(JEditorPane pane, String initialText) {
-        pane.setText(initialText);
-        JScrollPane scrollPane = new JScrollPane(pane,
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setWheelScrollingEnabled(true);
-        return scrollPane;
-    }
+	protected String wrapBody(String s) {
+		return "<html>" + HtmlBambooStatusListenerNotUsed.BODY_WITH_STYLE + s + "</body></html>";
 
-    protected String wrapBody(String s) {
-        return "<html>" + HtmlBambooStatusListenerNotUsed.BODY_WITH_STYLE + s + "</body></html>";
+	}
 
-    }
+	protected void setStatusMessage(String msg) {
+		setStatusMessage(msg, false);
+	}
 
-    protected void setStatusMessage(String msg) {
-        setStatusMessage(msg, false);
-    }
-
-    protected void setStatusMessage(String msg, boolean isError) {
-        //editorPane.setBackground(isError ? Color.RED : Color.WHITE);
-        //editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">" + msg + "</td></tr></table>"));
-    }
-
-
-    public ProgressAnimationProvider getProgressAnimation() {
-        return progressAnimation;
-    }
-
-    public CrucibleVersion getCrucibleVersion() {
-        return crucibleVersion;
-    }
+	protected void setStatusMessage(String msg, boolean isError) {
+		//editorPane.setBackground(isError ? Color.RED : Color.WHITE);
+		//editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">" + msg + "</td></tr></table>"));
+	}
 
 
+	public ProgressAnimationProvider getProgressAnimation() {
+		return progressAnimation;
+	}
 
-    public void resetState() {
-    }
+	public CrucibleVersion getCrucibleVersion() {
+		return crucibleVersion;
+	}
 
-    public ProjectConfigurationBean getProjectConfiguration() {
-        return projectConfiguration;
-    }
+
+	public void resetState() {
+	}
+
+	public ProjectConfigurationBean getProjectConfiguration() {
+		return projectConfiguration;
+	}
 
 	public boolean isModified() {
 		return false;  //To change body of implemented methods use File | Settings | File Templates.
@@ -147,7 +149,7 @@ import java.awt.*;
 
 	public String getTitle() {
 		return null;  //To change body of implemented methods use File | Settings | File Templates.
-}
+	}
 
 	public void getData() {
 		//To change body of implemented methods use File | Settings | File Templates.
@@ -184,11 +186,27 @@ import java.awt.*;
 
 
 		public void focusOnReview(ReviewDataInfoAdapter reviewItem) {
-			//To change body of implemented methods use File | Settings | File Templates.
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					ToolWindow tw = IdeaHelper.getCurrentBottomIdeaToolWindow();
+					if (tw != null) {
+						ContentManager contentManager = tw.getContentManager();
+						for (Content content : contentManager.getContents()) {
+							if (content.getComponent() instanceof ReviewDetailsPanel) {
+								contentManager.removeContent(content, true);
+							}
+						}
+					}
+				}
+			});
 		}
 
-		public void focusOnFile(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem) {
-			findOrCreatePanel(reviewItem.toString());
+		public void focusOnFile(ReviewDataInfoAdapter reviewDataInfoAdapter, final ReviewItem reviewItem) {
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					findOrCreatePanel(reviewItem.toString());
+				}
+			});
 		}
 
 	}

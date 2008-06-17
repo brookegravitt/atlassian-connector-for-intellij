@@ -22,11 +22,14 @@ import com.atlassian.theplugin.commons.crucible.*;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewItem;
 import com.atlassian.theplugin.commons.util.Logger;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.ThePluginProjectComponent;
+import com.atlassian.theplugin.idea.crucible.events.FocusOnReviewEvent;
+import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.bamboo.ToolWindowBambooContent;
 import com.atlassian.theplugin.idea.ui.CollapsibleTable;
 import com.atlassian.theplugin.idea.ui.TableColumnProvider;
@@ -46,7 +49,8 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStatusListener, TableItemSelectedListener {
+public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStatusListener, TableItemSelectedListener,
+		CrucibleReviewActionListener {
 
     private transient ActionToolbar filterEditToolbar;
     private static CrucibleTableToolWindowPanel instance;
@@ -373,10 +377,10 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
     public void itemSelected(Object item, int noClicks) {
         selectedItem = (ReviewDataInfoAdapter) item;
-        if (noClicks == 1) {
+        if (noClicks == 2) {
 			if (item != null && item instanceof ReviewDataInfoAdapter) {
 				ReviewDataInfoAdapter review = (ReviewDataInfoAdapter) item;
-				IdeaHelper.getCurrentReviewActionEventBroker().focusOnReview(null, review);
+				IdeaHelper.getCurrentReviewActionEventBroker().trigger(new FocusOnReviewEvent(this, review));
 			}
 		}
     }
@@ -717,4 +721,12 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
  */
         }
     }
+
+	public void focusOnReview(ReviewDataInfoAdapter reviewItem) {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	public void focusOnFile(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem) {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
 }

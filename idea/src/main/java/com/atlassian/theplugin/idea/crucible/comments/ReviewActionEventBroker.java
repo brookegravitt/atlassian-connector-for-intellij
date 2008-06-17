@@ -3,10 +3,13 @@ package com.atlassian.theplugin.idea.crucible.comments;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.containers.WeakHashMap;
 import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
-import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
+import com.atlassian.theplugin.idea.crucible.events.CrucibleEvent;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewItem;
+import com.atlassian.theplugin.commons.util.Logger;
+import com.atlassian.theplugin.util.PluginUtil;
 
 import java.util.*;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Created by IntelliJ IDEA.
@@ -18,21 +21,24 @@ import java.util.*;
 public class ReviewActionEventBroker {
 	private static WeakHashMap<Project, ReviewActionEventBroker> brokers = new WeakHashMap<Project, ReviewActionEventBroker>();
 	private Set<CrucibleReviewActionListener> listeners = new HashSet<CrucibleReviewActionListener>();
+	private Queue<CrucibleEvent> events = new LinkedBlockingQueue<CrucibleEvent>();
+	public static final Logger LOGGER = PluginUtil.getLogger();
 
 	private ReviewActionEventBroker() {
 		super();
-
-		// IF YOU GET A COMPILATION ERROR HERE, SCROLL DOWN AND APPROPRIATE METHOD IN THE BROKER!!!
-		// (this piece of code below is just to remember about that)
-		CrucibleReviewActionListener defaultListener = new CrucibleReviewActionListener() {
-			public void focusOnReview(ReviewDataInfoAdapter reviewItem) {
-				//To change body of implemented methods use File | Settings | File Templates.
+		new Thread(new Runnable() {
+			public void run() {
+				try {
+					while (true) {
+						CrucibleEvent event = ((LinkedBlockingQueue<CrucibleEvent>) events).take();
+						event.run();
+					}
+				} catch (InterruptedException e) {
+					//swallowed
+				}
 			}
-
-			public void focusOnFile(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem) {
-				//To change body of implemented methods use File | Settings | File Templates.
-			}
-		};
+		}, "atlassian-idea-plugin Crucible events processor"
+		).start();
 	}
 
 	public static ReviewActionEventBroker getInstance(Project p) {
@@ -52,21 +58,12 @@ public class ReviewActionEventBroker {
 		listeners.remove(listener);
 	}
 
-	public void focusOnReview(CrucibleReviewActionListener caller, ReviewDataInfoAdapter reviewItem) {
-		for (CrucibleReviewActionListener listener : listeners) {
-			if (listener == caller) {
-				continue;
-			}
-			listener.focusOnReview(reviewItem);
-		}
+	public void trigger(CrucibleEvent event) {
+		events.add(event);
 	}
 
-	public void focusOnFile(CrucibleReviewActionListener caller, ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem) {
-		for (CrucibleReviewActionListener listener : listeners) {
-			if (listener == caller) {
-				continue;
-			}
-			listener.focusOnFile(reviewDataInfoAdapter, reviewItem);
-		}
+	public Iterable<? extends CrucibleReviewActionListener> getListeners() {
+		return Collections.unmodifiableSet(listeners);
 	}
+
 }
