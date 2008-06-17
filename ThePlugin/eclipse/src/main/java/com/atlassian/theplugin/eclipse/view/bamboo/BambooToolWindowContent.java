@@ -127,8 +127,6 @@ public class BambooToolWindowContent implements BambooStatusListener {
 
 			tableColumn.setMoveable(true);
 			tableColumn.setResizable(true);
-			
-			
 		}
 		
 		// set columns width according to the config values
@@ -184,7 +182,6 @@ public class BambooToolWindowContent implements BambooStatusListener {
 		public void controlMoved(ControlEvent e) {
 			Activator.getDefault().getPluginConfiguration().getBambooTabConfiguration().
 				setColumnsOrder(table.getColumnOrder());
-			System.out.println(Arrays.toString(table.getColumnOrder()));
 		}
 		
 		public void controlResized(ControlEvent e) {
@@ -193,10 +190,7 @@ public class BambooToolWindowContent implements BambooStatusListener {
 				columnsWidth.add(column.getWidth());
 			}
 			Activator.getDefault().getPluginConfiguration().getBambooTabConfiguration().setColumnsWidth(columnsWidth);
-			System.out.println(columnsWidth.toString());
-			//System.out.println("Colum Resized");
 		}
-		
 	}
 
 	private class BambooContentProvider implements IStructuredContentProvider {
@@ -210,7 +204,6 @@ public class BambooToolWindowContent implements BambooStatusListener {
 
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		}
-		
 	}
 	
 	private class BambooLabelProvider extends LabelProvider implements ITableLabelProvider {
@@ -265,9 +258,7 @@ public class BambooToolWindowContent implements BambooStatusListener {
 				default:
 					return "";
 			}
-			
 		}
-
 	}
 	
 	/**
@@ -324,18 +315,5 @@ public class BambooToolWindowContent implements BambooStatusListener {
 		IStructuredSelection selection = (IStructuredSelection) event.getSelection();
 		BambooBuildAdapterEclipse build = (BambooBuildAdapterEclipse) selection.getFirstElement();
 		return build;
-	}
-
-	public void dispose() {
-		Activator.getDefault().getPluginConfiguration().getBambooTabConfiguration().
-		setColumnsOrder(table.getColumnOrder());
-		
-		List<Integer> columnsWidth = new ArrayList<Integer>(table.getColumns().length);
-		for (TableColumn column : table.getColumns()) {
-			columnsWidth.add(column.getWidth());
-		}
-		Activator.getDefault().getPluginConfiguration().getBambooTabConfiguration().setColumnsWidth(columnsWidth);
-		//System.out.println("Colum Resized");
-	}
-	
+	}	
 }
