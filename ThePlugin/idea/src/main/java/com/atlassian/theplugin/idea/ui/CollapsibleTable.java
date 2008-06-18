@@ -40,8 +40,8 @@ public class CollapsibleTable extends CollapsiblePanel {
 
         listTableModel = new ListTableModel(tableColumnProvider.makeColumnInfo());
         listTableModel.setSortable(true);
-        table = new AtlassianTableViewWithToolbar(listTableModel, projectToolWindowConfiguration, toolbarPlace, toolbarName, popupMenuPlace, popupMenuName);
-        table.prepareColumns(tableColumnProvider);
+        table = new AtlassianTableViewWithToolbar(tableColumnProvider, listTableModel, projectToolWindowConfiguration,
+				toolbarPlace, toolbarName, popupMenuPlace, popupMenuName);
 		setContent(table);
 		table.setPreferredScrollableViewportSize(table.getTableDimension());
 	}
