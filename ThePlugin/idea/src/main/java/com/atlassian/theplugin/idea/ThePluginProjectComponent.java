@@ -93,8 +93,8 @@ public class ThePluginProjectComponent implements
 
     private List<ReviewItemVirtualFile> reviewScopeFiles;
     private String reviewId;
-	private ReviewActionEventBroker crucibleActionBroker;
-
+	private ReviewActionEventBroker crucibleActionBroker; // DON'T YOU DARE TO REMOVE IT!!!
+														// (a strong reference that lives as long as the project itself)
 
 	public ThePluginProjectComponent(Project project,
                                      CrucibleStatusChecker crucibleStatusChecker,

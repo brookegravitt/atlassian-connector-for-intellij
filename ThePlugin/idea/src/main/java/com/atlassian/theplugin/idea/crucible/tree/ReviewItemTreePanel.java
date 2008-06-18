@@ -21,6 +21,7 @@ import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewItem;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 import com.atlassian.theplugin.commons.util.Logger;
 import com.atlassian.theplugin.idea.crucible.tree.CrucibleReviewTreeModel;
 import com.atlassian.theplugin.idea.crucible.tree.CrucibleTreeRenderer;
@@ -33,8 +34,11 @@ import com.atlassian.theplugin.idea.crucible.events.FocusOnFileEvent;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
+import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
+import com.intellij.util.ui.UIUtil;
+import com.intellij.ui.TreeList;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -57,6 +61,7 @@ public class ReviewItemTreePanel extends JPanel
 		implements CrucibleReviewActionListener {
 
 	private JTree reviewFilesTree = null;
+	private JList list = null;
 	private CrucibleReviewTreeModel model;
 	private DefaultMutableTreeNode selectedNode = null;
 	private DefaultMutableTreeNode newSelectedNode = null;
@@ -74,6 +79,7 @@ public class ReviewItemTreePanel extends JPanel
 	public static final Logger LOGGER = PluginUtil.getLogger();
 
 	private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
+	private JLabel statusLabel;
 
 	private ReviewItemTreePanel(ProjectConfigurationBean projectConfigurationBean) {
 		initLayout();
@@ -96,6 +102,9 @@ public class ReviewItemTreePanel extends JPanel
 		setMinimumSize(new Dimension(WIDTH, HEIGHT));
 		add(new JLabel("File list"), BorderLayout.NORTH);
 		add(new JScrollPane(getReviewItemTree()), BorderLayout.CENTER);
+		statusLabel = new JLabel();
+		statusLabel.setBackground(UIUtil.getTreeTextBackground());
+		add(statusLabel, BorderLayout.SOUTH);
 	}
 
 	private void expandAllPaths() {
@@ -200,6 +209,37 @@ public class ReviewItemTreePanel extends JPanel
 			final List<ReviewItem> reviewFiles = crucibleServerFacade.getReviewItems(reviewItem.getServer(), reviewItem.getPermaId());
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
+					StringBuffer buffer = new StringBuffer();
+					buffer.append("<html>");
+					buffer.append("<body>");
+					buffer.append(reviewItem.getCreator());
+					buffer.append(" ");
+					buffer.append("<font size=-1 color=");
+					buffer.append(Constants.CRUCIBLE_AUTH_COLOR);
+					buffer.append(">AUTH</font>");
+					buffer.append(" ");
+					if (!reviewItem.getCreator().equals(reviewItem.getModerator())) {
+						buffer.append(reviewItem.getModerator());
+					}
+					buffer.append(" ");
+					buffer.append("<font size=-1 color=");
+					buffer.append(Constants.CRUCIBLE_MOD_COLOR);
+					buffer.append(">MOD</font>");
+					int i = 0;
+					List<Reviewer> reviewers = reviewItem.getReviewers();
+					if (reviewers != null) {
+						buffer.append("<br>");
+						for (Reviewer reviewer : reviewers) {
+							if (i > 0) {
+								buffer.append(", ");
+							}
+							buffer.append(reviewer.getDisplayName());
+							i++;
+						}
+					}
+					buffer.append("</body>");
+					buffer.append("</html>");
+					statusLabel.setText(buffer.toString());
 					updateTreeConfiguration(reviewItem, reviewFiles);
 				}
 			});

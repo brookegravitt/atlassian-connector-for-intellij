@@ -10,18 +10,18 @@ import java.util.Comparator;
  * Created by IntelliJ IDEA.
  * User: lguminski
  * Date: Jun 17, 2008
- * Time: 2:24:08 PM
+ * Time: 2:27:09 PM
  * To change this template use File | Settings | File Templates.
  */
-public class CommentSummaryColumn extends TableColumnInfo {
-	private static final int COL_WIDTH = 200;
+public class CommentAuthorColumn extends TableColumnInfo {
+	private static final int COL_WIDTH = 120;
 
 	public String getColumnName() {
-		return "Comment";
+		return "Author";
 	}
 
 	public Object valueOf(Object o) {
-         return ((GeneralComment) o).getMessage();
+         return ((GeneralComment) o).getDisplayUser();
 	}
 
 	public Class getColumnClass() {
@@ -31,7 +31,7 @@ public class CommentSummaryColumn extends TableColumnInfo {
 	public Comparator getComparator() {
 		return new Comparator() {
 			public int compare(Object o, Object o1) {
-				return ((GeneralComment) o).getMessage().compareTo(((GeneralComment) o1).getMessage());
+				return ((GeneralComment) o).getDisplayUser().compareTo(((GeneralComment) o1).getDisplayUser());
 			}
 		};
 	}
