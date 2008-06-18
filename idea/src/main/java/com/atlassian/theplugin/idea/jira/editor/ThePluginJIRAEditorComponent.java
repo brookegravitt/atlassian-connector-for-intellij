@@ -2,6 +2,7 @@ package com.atlassian.theplugin.idea.jira.editor;
 
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.PluginToolWindow;
 import com.atlassian.theplugin.idea.jira.editor.vfs.MemoryVirtualFile;
 import com.atlassian.theplugin.idea.jira.IssueComment;
 import com.atlassian.theplugin.idea.ui.CollapsiblePanel;
@@ -25,7 +26,16 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.wm.ToolWindowManager;
+import com.intellij.openapi.wm.ToolWindow;
+import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.ui.HyperlinkLabel;
+import com.intellij.ui.content.Content;
+import com.intellij.peer.PeerFactory;
+import com.intellij.execution.filters.TextConsoleBuilderFactory;
+import com.intellij.execution.filters.TextConsoleBuilder;
+import com.intellij.execution.ui.ConsoleViewContentType;
+import com.intellij.execution.ui.ConsoleView;
 import org.jdom.Element;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -202,8 +212,8 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
             titleLabel.setText(title);
         }
 
-        public void addComment(JIRAComment c, JIRAServer server) {
-            CommentPanel p = new CommentPanel(c, server);
+        public void addComment(JIRAIssue issue, JIRAComment c, JIRAServer server) {
+            CommentPanel p = new CommentPanel(issue, c, server);
             comments.add(p);
             commentList.add(p);
             updateSize();
@@ -323,24 +333,21 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 */
     private class CommentPanel extends JPanel {
 
-		private JEditorPane commentBody;
-		private HyperlinkLabel authorName;
-		private JLabel creationDate;
-        private ShowHideButton btnShowHide;
+		private ShowHideButton btnShowHide;
 
-        public CommentPanel(final JIRAComment comment, final JIRAServer server) {
+        public CommentPanel(final JIRAIssue issue, final JIRAComment comment, final JIRAServer server) {
 			setLayout(new GridBagLayout());
 			GridBagConstraints gbc;
 			gbc = new GridBagConstraints();
 
-            commentBody = new JEditorPane();
+			JEditorPane commentBody = new JEditorPane();
             btnShowHide = new ShowHideButton(commentBody, this);
 			gbc.gridx = 1;
 			gbc.gridy = 0;
 			gbc.anchor = GridBagConstraints.WEST;
 			add(btnShowHide, gbc);
 
-			authorName = new HyperlinkLabel(comment.getAuthor());
+			HyperlinkLabel authorName = new HyperlinkLabel(comment.getAuthor());
 			authorName.addHyperlinkListener(new HyperlinkListener() {
 				public void hyperlinkUpdate(HyperlinkEvent e) {
 					BrowserUtil.launchBrowser(
@@ -364,7 +371,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			gbc.insets = new Insets(0, Constants.DIALOG_MARGIN, 0, Constants.DIALOG_MARGIN);
 			add(label1, gbc);
 
-			creationDate = new JLabel();
+			final JLabel creationDate = new JLabel();
 			creationDate.setText(comment.getCreationDate().getTime().toString());
 			gbc = new GridBagConstraints();
 			gbc.gridx = 4;
@@ -374,14 +381,28 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			gbc.fill = GridBagConstraints.BOTH;
 			add(creationDate, gbc);
 
-            commentBody.setEditable(false);
+			HyperlinkLabel analyze = new HyperlinkLabel("analyze stack trace");
+			analyze.addHyperlinkListener(new HyperlinkListener() {
+				public void hyperlinkUpdate(HyperlinkEvent e) {
+					StackTraceConsole.getInstance().print(issue,
+							"comment: " + comment.getAuthor() + " - " + creationDate.getText(), comment.getBody());
+				}
+			});
+			gbc.gridx = 5;
+			gbc.gridy = 0;
+			gbc.weightx = 0.0;
+			gbc.anchor = GridBagConstraints.EAST;
+			gbc.insets = new Insets(0, Constants.DIALOG_MARGIN, 0, 0);
+			add(analyze, gbc);
+
+			commentBody.setEditable(false);
             commentBody.setOpaque(false);
             commentBody.setContentType("text/html");
 			commentBody.setText("<html><head></head><body>" + comment.getBody() + "</body></html>");
 			gbc = new GridBagConstraints();
 			gbc.gridx = 0;
 			gbc.gridy = 1;
-			gbc.gridwidth = 5;
+			gbc.gridwidth = 6;
 			gbc.weightx = 1.0;
 			gbc.weighty = 1.0;
             gbc.insets = new Insets(0, Constants.DIALOG_MARGIN, 0, 0);
@@ -407,7 +428,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 		private JEditorPane body;
         private ShowHideButton btnShowHide;
 
-        public DescriptionPanel(final String description) {
+        public DescriptionPanel(final JIRAIssue issue, final String description) {
             setLayout(new GridBagLayout());
             GridBagConstraints gbc = new GridBagConstraints();
 
@@ -446,10 +467,25 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
             gbc.anchor = GridBagConstraints.WEST;
             add(btnShowHide, gbc);
 
-            gbc.gridx = 2;
+			gbc.gridx = 2;
             gbc.fill = GridBagConstraints.HORIZONTAL;
             gbc.weightx = 1.0;
             add (new JPanel(), gbc);
+
+
+			HyperlinkLabel analyze = new HyperlinkLabel("analyze stack trace");
+			analyze.addHyperlinkListener(new HyperlinkListener() {
+				public void hyperlinkUpdate(HyperlinkEvent e) {
+					StackTraceConsole.getInstance().print(issue, "description", Html2text.translate(description));
+				}
+			});
+			gbc.gridx = 3;
+			gbc.gridy = 0;
+			gbc.anchor = GridBagConstraints.EAST;
+			gbc.fill = GridBagConstraints.NONE;
+			gbc.weightx = 0.0;
+			gbc.insets = new Insets(0, Constants.DIALOG_MARGIN, 0, 0);
+			add(analyze, gbc);
 
             body.setEditable(false);
             body.setOpaque(false);
@@ -459,7 +495,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			gbc = new GridBagConstraints();
             gbc.gridx = 0;
             gbc.gridy = 1;
-            gbc.gridwidth = 3;
+            gbc.gridwidth = 4;
             gbc.weighty = 1.0;
             gbc.insets = new Insets(Constants.DIALOG_MARGIN, 0, Constants.DIALOG_MARGIN, 0);
             gbc.fill = GridBagConstraints.BOTH;
@@ -508,7 +544,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
             gbc3.fill = GridBagConstraints.BOTH;
             gbc3.gridwidth = 2;
             String d = issue.getDescription();
-            DescriptionPanel description = new DescriptionPanel(d);
+            DescriptionPanel description = new DescriptionPanel(issue, d);
             add(description, gbc3);
             if (d.length() == 0) {
                 description.setContentsVisible(false);
@@ -547,11 +583,10 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 		private final JIRAServer server;
 
 		private JPanel mainPanel;
-		private JLabel labelIssue;
 		private JIRAIssue issue;
         private CommentsPanel commentsPanel;
-        
-        public JIRAFileEditor() {
+
+		public JIRAFileEditor() {
 			mainPanel = new JPanel();
 			mainPanel.setBackground(Color.RED);
 			// todo: fix this
@@ -565,10 +600,10 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			facade = JIRAServerFacadeImpl.getInstance();
 			server = IdeaHelper.getCurrentJIRAServer();
             editorMap.put(issue.getKey(), this);
-            setupUI();
+			setupUI();
 		}
 
-        private void setupUI() {
+		private void setupUI() {
 			mainPanel = new JPanel();
             mainPanel.setLayout(new GridBagLayout());
             final GridBagConstraints gbc = new GridBagConstraints();
@@ -588,7 +623,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			gbc.gridy++;
             gbc.insets = new Insets(
                     Constants.DIALOG_MARGIN, 0, 0, 0);
-            labelIssue = new JLabel(issue.getKey());
+			JLabel labelIssue = new JLabel(issue.getKey());
             labelIssue.setHorizontalAlignment(SwingConstants.CENTER);
             labelIssue.setForeground(Color.BLUE);
             Font f = labelIssue.getFont();
@@ -646,8 +681,8 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
                                 if (size > 0) {
                                     commentsPanel.setTitle("Comments (" + comments.size() + ")");
                                     for (JIRAComment c : comments) {
-                                        commentsPanel.addComment(c, server);
-                                    }
+                                        commentsPanel.addComment(issue, c, server);
+									}
                                     commentsPanel.validate();
                                     commentsPanel.scrollToFirst();
                                 } else {
