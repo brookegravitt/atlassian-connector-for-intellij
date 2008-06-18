@@ -27,13 +27,13 @@ public class AtlassianTableViewWithToolbar extends JPanel {
 	private JPanel toolBarPanel;
 
 
-	public AtlassianTableViewWithToolbar(ListTableModel listTableModel,
+	public AtlassianTableViewWithToolbar(TableColumnProvider tableColumnProvider, ListTableModel listTableModel,
 										 Storage storage,
 										 String toolbarPlace, String toolbarName,
 										 String popupMenuPlace, String popupMenuName) {
 		super(new BorderLayout());
 		toolBarPanel = new AtlassianToolbar(toolbarPlace, toolbarName);
-		table = new AtlassianTableView(listTableModel, storage, popupMenuPlace, popupMenuName);
+		table = new AtlassianTableView(tableColumnProvider, listTableModel, storage, popupMenuPlace, popupMenuName);
 		JScrollPane scrollTable = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollTable.setWheelScrollingEnabled(true);
