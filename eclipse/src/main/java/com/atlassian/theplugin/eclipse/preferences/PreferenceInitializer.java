@@ -20,6 +20,8 @@ package com.atlassian.theplugin.eclipse.preferences;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
 
+import com.atlassian.theplugin.commons.configuration.BambooTooltipOption;
+
 
 /**
  * Class used to initialize default preference values.
@@ -33,9 +35,9 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	 */
 	public void initializeDefaultPreferences() {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
-//		store.setDefault(PreferenceConstants.P_BOOLEAN, true);
-//		store.setDefault(PreferenceConstants.P_CHOICE, "choice2");
-//		store.setDefault(PreferenceConstants.P_STRING, "Default value");
+		
+		store.setDefault(PreferenceConstants.BAMBOO_POLLING_TIME, 1);
+		store.setDefault(PreferenceConstants.BAMBOO_POPUP, BambooTooltipOption.ALL_FAULIRES_AND_FIRST_SUCCESS.name());
 	}
 
 }
