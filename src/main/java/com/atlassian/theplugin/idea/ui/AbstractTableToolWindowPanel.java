@@ -70,8 +70,7 @@ public abstract class AbstractTableToolWindowPanel extends JPanel {
 
 		listTableModel = new ListTableModel(getTableColumnProvider().makeColumnInfo());
 		listTableModel.setSortable(true);
-		table = new AtlassianTableView(listTableModel, getTableConfiguration());
-		table.prepareColumns(getTableColumnProvider());
+		table = new AtlassianTableView(getTableColumnProvider(), listTableModel, getTableConfiguration());
 
 		table.addMouseListener(new PopuMenuMouseAdapter());
 
