@@ -38,7 +38,6 @@ public class CollapsiblePanel extends JPanel {
   private  Icon myExpandIcon;
   private  Icon myCollapseIcon;
   private JLabel myTitleLabel;
-  private JPanel toolBarPanel;
   private JPanel contentPanel;
   private JPanel labelPanel;
 
@@ -51,31 +50,26 @@ public class CollapsiblePanel extends JPanel {
 
   public CollapsiblePanel(boolean collapseButtonAtLeft,
                           boolean isCollapsed, Icon collapseIcon, Icon expandIcon,
-                          String title,  String toolbarPlace, String toolbarName){
-
+                          String title){
+	  super(new GridBagLayout());
 	  setupComponents(expandIcon, collapseIcon, title, collapseButtonAtLeft, isCollapsed);
-	  createToolbar(toolbarPlace, toolbarName);
   }
 
   public CollapsiblePanel(JComponent content, boolean collapseButtonAtLeft,
                           boolean isCollapsed, Icon collapseIcon, Icon expandIcon,
-                          String title,  String actionName, String toolbarName) {
+                          String title) {
     super(new GridBagLayout());
 	setupComponents(expandIcon, collapseIcon, title, collapseButtonAtLeft, isCollapsed);
-	createToolbar(actionName, toolbarName);
 	setContent(content);
   }
 
 
   public CollapsiblePanel(boolean collapseButtonAtLeft,
-                          boolean isCollapsed, String title,
-						  String actionName, String toolbarName) {
+                          boolean isCollapsed, String title) {
     super(new GridBagLayout());
 	Icon collapseIcon = IconLoader.findIcon("/icons/navigate_down_10.gif");
 	Icon expandIcon = IconLoader.findIcon("/icons/navigate_right_10.gif");
-
 	setupComponents(expandIcon, collapseIcon, title, collapseButtonAtLeft, isCollapsed);
-	createToolbar(actionName, toolbarName);
   }
 
   public void setTitle(String title){
@@ -93,7 +87,7 @@ public class CollapsiblePanel extends JPanel {
   }
 
   public CollapsiblePanel(JComponent content, boolean collapseButtonAtLeft) {
-    this(content, collapseButtonAtLeft, false, null, null, null, null, null);
+    this(content, collapseButtonAtLeft, false, null, null, null);
   }
 
   protected void setCollapsed(boolean collapse) {
@@ -187,25 +181,6 @@ public class CollapsiblePanel extends JPanel {
 	  contentPanel.add(content, BorderLayout.CENTER);
   }
 
-  private void createToolbar(String toolbarPlace, String toolbarName) {
-
-	if (toolbarPlace != null && toolbarName != null && toolbarPlace.length() > 0 && toolbarName.length() > 0) {
-		toolBarPanel = new JPanel(new BorderLayout());
-
-		ActionManager aManager = ActionManager.getInstance();
-		ActionGroup serverToolBar = (ActionGroup) aManager.getAction(toolbarName);
-		ActionToolbar actionToolbar = aManager.createActionToolbar(
-					toolbarPlace, serverToolBar, true);
-
-
-		toolBarPanel.add(actionToolbar.getComponent(), BorderLayout.NORTH);
-
-		if (contentPanel != null) {
-			contentPanel.add(toolBarPanel, BorderLayout.NORTH);
-		}
-	}
-
- }
  private void setupComponents(Icon expandIcon, Icon collapseIcon,
 							   String title, boolean collapseButtonAtLeft,
   							   boolean isCollapsed){
@@ -336,26 +311,7 @@ public class CollapsiblePanel extends JPanel {
     updatePanel();
     super.paintComponent(g);
   }
-	
-  protected Dimension getCustomPreferredSize(){
-	  Dimension prefered;
 
-	if (myContent != null && toolBarPanel != null) {
-		int height, width;
-		if (toolBarPanel != null){
-	  		height = Math.max(myContent.getPreferredSize().height,0) + Math.max(toolBarPanel.getPreferredSize().height,0);
-	  		width = Math.max(myContent.getPreferredSize().width, toolBarPanel.getPreferredSize().width);
-		} else {
-			height = Math.max(myContent.getPreferredSize().height,0);
-	  		width = Math.max(myContent.getPreferredSize().width,0);
-		}
-
-	  prefered =  new Dimension(width, height);
-	} else {
-		prefered = getPreferredSize();
-	}
-	 return prefered;
-  }
   private void updatePanel() {
       setBackground(UIUtil.getTableSelectionBackground());
 	  //contentPanel.setPreferredSize(getCustomPreferredSize());
