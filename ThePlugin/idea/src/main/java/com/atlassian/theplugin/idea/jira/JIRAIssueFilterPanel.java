@@ -325,8 +325,8 @@ public class JIRAIssueFilterPanel extends JPanel {
         componentsVersionsPanel = new JPanel();
         issueAttributesPanel = new JPanel();
 
-        componentsVersionsCollapsiblePanel = new CollapsiblePanel(componentsVersionsPanel, true, false, collapse, expand, "Components/Versions", null, null);
-        issueAttributesCollapsiblePanel = new CollapsiblePanel(issueAttributesPanel, true, false, collapse, expand, "Issue Attributes", null, null);
+        componentsVersionsCollapsiblePanel = new CollapsiblePanel(componentsVersionsPanel, true, false, collapse, expand, "Components/Versions");
+        issueAttributesCollapsiblePanel = new CollapsiblePanel(issueAttributesPanel, true, false, collapse, expand, "Issue Attributes");
     }
 
     /**
