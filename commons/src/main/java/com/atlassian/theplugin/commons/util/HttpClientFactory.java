@@ -71,10 +71,11 @@ public final class HttpClientFactory {
 		HttpClient httpClient = new HttpClient(connectionManager);
 		httpClient.getParams().setConnectionManagerTimeout(getConnectionManagerTimeout());
 		httpClient.getParams().setSoTimeout(getDataTimeout());
-		HttpConfigurableAdapter httpConfigurableAdapter
-                = ConfigurationFactory.getConfiguration().transientGetHttpConfigurable();
-
-		if (httpConfigurableAdapter != null) {
+		HttpConfigurableAdapter httpConfigurableAdapter =
+				ConfigurationFactory.getConfiguration().transientGetHttpConfigurable();
+		boolean useIdeaProxySettings =
+				ConfigurationFactory.getConfiguration().getGeneralConfigurationData().getUseIdeaProxySettings();
+		if (useIdeaProxySettings && (httpConfigurableAdapter != null)) {
 			if (httpConfigurableAdapter.isUseHttpProxy()) {
 				httpClient.getHostConfiguration().setProxy(httpConfigurableAdapter.getProxyHost(),
 						httpConfigurableAdapter.getProxyPort());
