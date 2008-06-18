@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewItem;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;?
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
