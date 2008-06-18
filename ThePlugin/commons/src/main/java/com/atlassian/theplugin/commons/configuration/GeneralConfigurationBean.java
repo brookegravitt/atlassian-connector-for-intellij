@@ -31,6 +31,7 @@ public class GeneralConfigurationBean {
 	private Version rejectedUpgrade = Version.NULL_VERSION;
 	private boolean checkUnstableVersionsEnabled = false;
 	private Boolean anonymousFeedbackEnabled = null;
+	private boolean useIdeaProxySettings = true;
 
 	private long uid = 0;
 
@@ -46,6 +47,7 @@ public class GeneralConfigurationBean {
 		this.checkUnstableVersionsEnabled = generalConfigurationData.isCheckUnstableVersionsEnabled();
 		this.autoUpdateEnabled = generalConfigurationData.isAutoUpdateEnabled();
 		this.uid = generalConfigurationData.getUid();
+		this.useIdeaProxySettings = generalConfigurationData.getUseIdeaProxySettings();
 	}
 
 	public long getUid() {
@@ -98,6 +100,14 @@ public class GeneralConfigurationBean {
 
 	public void setAnonymousFeedbackEnabled(Boolean isAnonymousFeedbackEnabled) {
 		this.anonymousFeedbackEnabled = isAnonymousFeedbackEnabled;
+	}
+
+	public boolean getUseIdeaProxySettings() {
+		return useIdeaProxySettings;
+	}
+
+	public void setUseIdeaProxySettings(boolean use) {
+		useIdeaProxySettings = use;
 	}
 
 	public boolean equals(Object o) {
