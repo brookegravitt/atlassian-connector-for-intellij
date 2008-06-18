@@ -18,50 +18,36 @@ package com.atlassian.theplugin.idea.ui;
 
 import com.atlassian.theplugin.configuration.ProjectToolWindowTableConfiguration;
 import com.atlassian.theplugin.idea.TableColumnInfo;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionPopupMenu;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.util.ui.ListTableModel;
+import com.intellij.util.ui.UIUtil;
 
 import javax.swing.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CollapsibleTable extends CollapsiblePanel {
-    private final List<TableItemSelectedListener> listenerList = new ArrayList<TableItemSelectedListener>();
 
     private ListTableModel listTableModel;
-    private AtlassianTableView table;
+	private AtlassianTableViewWithToolbar table;
 
 	public CollapsibleTable(TableColumnProvider tableColumnProvider,
                             ProjectToolWindowTableConfiguration projectToolWindowConfiguration,
                             String title, String toolbarPlace, String toolbarName,
                             final String popupMenuPlace, final String popupMenuName) {
 
-        super(true, true, title, toolbarPlace, toolbarName);
+        super(true, true, title);
 
-        TableColumnInfo[] columns = tableColumnProvider.makeColumnInfo();
-        listTableModel = new ListTableModel(columns);
+        listTableModel = new ListTableModel(tableColumnProvider.makeColumnInfo());
         listTableModel.setSortable(true);
-
-        table = new AtlassianTableView(listTableModel, projectToolWindowConfiguration);
-        table.prepareColumns(columns, tableColumnProvider.makeRendererInfo());
-
-        if (popupMenuPlace != null && popupMenuName != null && popupMenuName.length() > 0) {
-            table.addMouseListener(new ShowPopupMouseAdapter(popupMenuName));
-        }
-
-		JScrollPane scrollTable = new JScrollPane(table);
-
-		setContent(scrollTable);
+        table = new AtlassianTableViewWithToolbar(listTableModel, projectToolWindowConfiguration, toolbarPlace, toolbarName, popupMenuPlace, popupMenuName);
+        table.prepareColumns(tableColumnProvider);
+		setContent(table);
 		table.setPreferredScrollableViewportSize(table.getTableDimension());
 	}
 
     public AtlassianTableView getTable() {
-        return table;
+        return table.getTable();
     }
 
     public ListTableModel getListTableModel() {
@@ -74,55 +60,12 @@ public class CollapsibleTable extends CollapsiblePanel {
     }
 
     public void addItemSelectedListener(TableItemSelectedListener listener) {
-        listenerList.add(listener);
+        table.addItemSelectedListener(listener);
     }
 
     public void removeItemSelectedListener(TableItemSelectedListener listener) {
-        listenerList.remove(listener);
+        table.removeItemSelectedListener(listener);
     }
-
-	private class ShowPopupMouseAdapter extends MouseAdapter {
-		private final String popupMenuName;
-
-		public ShowPopupMouseAdapter(String popupMenuName) {
-			this.popupMenuName = popupMenuName;
-		}
-
-		public void mouseClicked(MouseEvent e) {
-			for (TableItemSelectedListener tableItemSelectedListener : listenerList) {
-				tableItemSelectedListener.itemSelected(table.getSelectedObject(), e.getClickCount());
-			}
-		}
-
-		public void mousePressed(MouseEvent e) {
-			maybeShowPopup(e);
-		}
-
-		public void mouseReleased(MouseEvent e) {
-			maybeShowPopup(e);
-		}
-
-		private void maybeShowPopup(MouseEvent e) {
-			if (e.isPopupTrigger() && table.isEnabled()) {
-
-				for (TableItemSelectedListener tableItemSelectedListener : listenerList) {
-					tableItemSelectedListener.itemSelected(table.getSelectedObject(), 1);
-				}
-
-				final DefaultActionGroup actionGroup = new DefaultActionGroup();
-
-				final ActionGroup configActionGroup = (ActionGroup) ActionManager
-						.getInstance().getAction(popupMenuName);
-				actionGroup.addAll(configActionGroup);
-
-				final ActionPopupMenu popup =
-						ActionManager.getInstance().createActionPopupMenu("Context menu", actionGroup);
-
-				final JPopupMenu jPopupMenu = popup.getComponent();
-				jPopupMenu.show(e.getComponent(), e.getX(), e.getY());
-			}
-		}
-	}
 
 
 }

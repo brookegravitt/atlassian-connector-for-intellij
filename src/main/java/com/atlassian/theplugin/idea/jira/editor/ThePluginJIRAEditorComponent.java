@@ -140,7 +140,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			commentBody.setContentType("text/html");
 			commentBody.setText("<html><head></head><body>" + c.getBody() + "</body></html>");
             CollapsiblePanel cp = new CollapsiblePanel(true, false,
-                          c.getAuthor() + " - " + c.getCreationDate().getTime().toString(),  null, null);
+                          c.getAuthor() + " - " + c.getCreationDate().getTime().toString());
             cp.setContent(commentBody);
             holder.add(cp);
         }

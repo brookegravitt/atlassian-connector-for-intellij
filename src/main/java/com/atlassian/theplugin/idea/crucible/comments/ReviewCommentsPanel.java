@@ -1,15 +1,11 @@
 package com.atlassian.theplugin.idea.crucible.comments;
 
-import com.intellij.openapi.ui.VerticalFlowLayout;
-import com.intellij.ui.table.TableView;
 import com.intellij.util.ui.UIUtil;
 import com.intellij.util.ui.ListTableModel;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
-import com.atlassian.theplugin.idea.ui.CollapsibleTable;
-import com.atlassian.theplugin.idea.ui.TableColumnProvider;
-import com.atlassian.theplugin.idea.ui.TableItemSelectedListener;
+import com.atlassian.theplugin.idea.ui.*;
 import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewItem;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
@@ -34,18 +30,17 @@ import java.util.List;
  */
 public class ReviewCommentsPanel extends JPanel implements CrucibleReviewActionListener {
 	private static ReviewCommentsPanel instance;
-	private JPanel toolBarPanel;
 	private ListTableModel listTableModel;
 	private JPanel dataPanelsHolder;
-	private JScrollPane tablePane;
 	protected ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
 	protected TableColumnProvider tableColumnProvider = new CommentColumnProvider();
 	private CrucibleServerFacade crucibleServerFacade;
 	public static final Logger LOGGER = PluginUtil.getLogger();
+	private AtlassianTableViewWithToolbar table;
 
 
 	private ReviewCommentsPanel() {
-		super();
+		super(new BorderLayout());
 		IdeaHelper.getCurrentReviewActionEventBroker().registerListener(this);
 		crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		initialize();
@@ -53,46 +48,37 @@ public class ReviewCommentsPanel extends JPanel implements CrucibleReviewActionL
 
 	private void initialize() {
 		setLayout(new BorderLayout());
-
 		setBackground(UIUtil.getTreeTextBackground());
-
-		toolBarPanel = new JPanel(new BorderLayout());
-//        ActionManager actionManager = ActionManager.getInstance();
-//        ActionGroup toolbar = (ActionGroup) actionManager.getAction(getToolbarActionGroup());
-//        ActionToolbar actionToolbar = actionManager.createActionToolbar(
-//                "atlassian.toolwindow.serverToolBar", toolbar, true);
-//        toolBarPanel.add(actionToolbar.getComponent(), BorderLayout.NORTH);
-		add(toolBarPanel, BorderLayout.NORTH);
-
-//		editorPane = new ToolWindowBambooContent();
-//		editorPane.setEditorKit(new ClasspathHTMLEditorKit());
-//		JScrollPane pane = setupPane(editorPane, wrapBody(getInitialMessage()));
-//		editorPane.setMinimumSize(ED_PANE_MINE_SIZE);
-//		add(pane, BorderLayout.SOUTH);
-//
-		TableColumnInfo[] columns = new TableColumnInfo[0];
-
-		listTableModel = new ListTableModel(columns);
+		listTableModel = new ListTableModel(tableColumnProvider.makeColumnInfo());
 		listTableModel.setSortable(true);
-		TableView table = new TableView(listTableModel);
+		table = new AtlassianTableViewWithToolbar(listTableModel, null,
+				"atlassian.toolwindow.serverToolBar",
+				"ThePlugin.CrucibleReviewToolBar",
+				"Context menu",
+				null);
+		table.prepareColumns(tableColumnProvider);
 		table.setBorder(BorderFactory.createEmptyBorder());
 		table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.getColumnModel().setColumnMargin(0);
 
 		table.setMinRowHeight(20);
-		table.setAutoResizeMode(TableView.AUTO_RESIZE_OFF);
+		//.setAutoResizeMode(TableView.AUTO_RESIZE_OFF);
 
 
 		dataPanelsHolder = new JPanel();
-		dataPanelsHolder.setLayout(new VerticalFlowLayout());
+		dataPanelsHolder.setLayout(new BorderLayout());
 		dataPanelsHolder.setBackground(UIUtil.getTreeTextBackground());
-		tablePane = new JScrollPane(dataPanelsHolder,
-				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		tablePane.setWheelScrollingEnabled(true);
+//		tablePane = new JScrollPane(dataPanelsHolder,
+//				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+//		tablePane.setWheelScrollingEnabled(true);
+//
+//		add(tablePane, BorderLayout.CENTER);
+//
 
-		add(tablePane, BorderLayout.CENTER);
-
-		progressAnimation.configure(this, tablePane, BorderLayout.CENTER);
+//		dataPanelsHolder.add(table, BorderLayout.CENTER);
+//		add(dataPanelsHolder, BorderLayout.CENTER);
+		add(table, BorderLayout.CENTER);
+		progressAnimation.configure(this, dataPanelsHolder, BorderLayout.CENTER);
 	}
 
 	public static ReviewCommentsPanel getInstance() {
@@ -104,17 +90,17 @@ public class ReviewCommentsPanel extends JPanel implements CrucibleReviewActionL
 
 
 	public void focusOnReview(ReviewDataInfoAdapter reviewItem) {
-		dataPanelsHolder.removeAll();
 		try {
 			progressAnimation.startProgressAnimation();
 			final List<GeneralComment> generalComments = crucibleServerFacade.getGeneralComments(reviewItem.getServer(),
 					reviewItem.getPermaId());
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
-					for (GeneralComment generalComment : generalComments) {
-						CollapsibleTable table = addCollapsiblePanel(generalComment.getMessage());
-						dataPanelsHolder.add(table);
-					}
+					listTableModel.setItems(generalComments);
+					listTableModel.fireTableDataChanged();
+					table.getTable().revalidate();
+					table.getTable().setEnabled(true);
+					table.getTable().setForeground(UIUtil.getActiveTextColor());
 				}
 			});
 		} catch (RemoteApiException e) {
@@ -129,27 +115,11 @@ public class ReviewCommentsPanel extends JPanel implements CrucibleReviewActionL
 	public void focusOnFile(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem) {
 	}
 
-	private CollapsibleTable addCollapsiblePanel(String title) {
-		CollapsibleTable table = new CollapsibleTable(
-				tableColumnProvider,
-				null,
-				title,
-				"atlassian.toolwindow.serverToolBar",
-				"ThePlugin.CrucibleReviewToolBar",
-				"Context menu",
-				null);
-		table.addItemSelectedListener(new TableItemSelectedListener() {
-			public void itemSelected(Object item, int noClicks) {
-				//To change body of implemented methods use File | Settings | File Templates.
-			}
-		});
-		return table;
-	}
-
 	private static class CommentColumnProvider implements TableColumnProvider {
 		public TableColumnInfo[] makeColumnInfo() {
 			return new TableColumnInfo[]{
-					new ComentAuthorColumn(),
+					new CommentCreateDateColumn(),
+					new CommentAuthorColumn(),
 					new CommentSummaryColumn(),
 					new CommentStateColumn()
 			};
