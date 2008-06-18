@@ -78,12 +78,12 @@ public class ProjectConfigurationWrapper {
 		} catch (NullPointerException e) {
 			bambooConfiguration.setBambooTooltipOption(null);
 		}
-		
-		int pollTime = preferences.getInt(PreferenceConstants.BAMBOO_POLLING_TIME);
-		if (pollTime == 0) {
-			pollTime = 1;
-		}
-		bambooConfiguration.setPollTime(pollTime);
+//		
+//		int pollTime = preferences.getInt(PreferenceConstants.BAMBOO_POLLING_TIME);
+//		if (pollTime == 0) {
+//			pollTime = 1;
+//		}
+		bambooConfiguration.setPollTime(preferences.getInt(PreferenceConstants.BAMBOO_POLLING_TIME));
 		
 		EclipsePluginConfiguration pluginConfiguration = new EclipsePluginConfiguration();
 		pluginConfiguration.setBambooConfigurationData(bambooConfiguration);
