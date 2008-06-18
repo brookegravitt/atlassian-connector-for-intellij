@@ -65,12 +65,14 @@ public class JIRASessionImpl implements JIRASession {
 	}
 
 	private void setProxy() {
+		boolean useIdeaProxySettings =
+				ConfigurationFactory.getConfiguration().getGeneralConfigurationData().getUseIdeaProxySettings();
 		HttpConfigurableAdapter proxyInfo = ConfigurationFactory.getConfiguration().transientGetHttpConfigurable();
 		String host = null;
 		String port = null;
 		String user = null;
 		String password = null;
-		if (proxyInfo.isUseHttpProxy()) {
+		if (useIdeaProxySettings && proxyInfo.isUseHttpProxy()) {
 			host = proxyInfo.getProxyHost();
 			port = String.valueOf(proxyInfo.getProxyPort());
 			if (proxyInfo.isProxyAuthentication()) {
