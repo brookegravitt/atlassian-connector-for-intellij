@@ -38,7 +38,7 @@ public class AtlassianTableView extends TableView {
 	private final java.util.List<TableItemSelectedListener> listenerList = new ArrayList<TableItemSelectedListener>();
 
 
-	public AtlassianTableView(ListTableModel listTableModel, final Storage storage) {
+	public AtlassianTableView(TableColumnProvider columnProvider, ListTableModel listTableModel, final Storage storage) {
 		super(listTableModel);
 
 		setBorder(BorderFactory.createEmptyBorder());
@@ -47,7 +47,7 @@ public class AtlassianTableView extends TableView {
 
 		setMinRowHeight(DEFAULT_ROW_HEIGHT);
 		setAutoResizeMode(TableView.AUTO_RESIZE_OFF);
-
+		prepareColumns(columnProvider);
 		getTableHeader().addMouseListener(new MouseAdapter() {
 			public void mouseReleased(MouseEvent e) {
 				// stores table configuration in Storage object
@@ -58,9 +58,9 @@ public class AtlassianTableView extends TableView {
 		});
 	}
 
-	public AtlassianTableView(ListTableModel listTableModel, final Storage storage,
+	public AtlassianTableView(TableColumnProvider columnProvider, ListTableModel listTableModel, final Storage storage,
 							  final String popupMenuPlace, final String popupMenuName) {
-		this(listTableModel, storage);
+		this(columnProvider, listTableModel, storage);
 		if (popupMenuPlace != null && popupMenuName != null && popupMenuName.length() > 0) {
 			addMouseListener(new ShowPopupMouseAdapter(this, popupMenuName));
 		}

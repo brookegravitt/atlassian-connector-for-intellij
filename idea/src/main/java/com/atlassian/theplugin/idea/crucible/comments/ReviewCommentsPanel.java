@@ -51,7 +51,7 @@ public class ReviewCommentsPanel extends JPanel implements CrucibleReviewActionL
 		setBackground(UIUtil.getTreeTextBackground());
 		listTableModel = new ListTableModel(tableColumnProvider.makeColumnInfo());
 		listTableModel.setSortable(true);
-		table = new AtlassianTableViewWithToolbar(listTableModel, null,
+		table = new AtlassianTableViewWithToolbar(tableColumnProvider, listTableModel, null,
 				"atlassian.toolwindow.serverToolBar",
 				"ThePlugin.CrucibleReviewToolBar",
 				"Context menu",

@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -73,5 +73,32 @@ public class ReviewItemBean implements ReviewItem {
 
 	public void setToRevision(String toRevision) {
 		this.toRevision = toRevision;
-	}	
+	}
+
+	public String toString() {
+		String fromPath = stripPath(getFromPath());
+		String toPath = stripPath(getToPath());
+
+		if (fromPath.length() > 0 && toPath.length() > 0) {
+			return fromPath + " (mod)";
+		} else if (fromPath.length() > 0) {
+			return fromPath + " (new)";
+		} else {
+			if (toPath.length() > 0) {
+				return toPath + " (del)";
+			} else {
+				return "unknown";
+			}
+		}
+	}
+
+	private static String stripPath(String path) {
+		int lastIndex;
+		lastIndex = path.lastIndexOf("/");
+		if (lastIndex != -1) {
+			path = path.substring(lastIndex + 1);
+		}
+		return path;
+	}
+
 }
