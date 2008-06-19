@@ -55,11 +55,7 @@ public final class CrucibleHelper {
 		try {
 
 			fileComments = CrucibleServerFacadeImpl.getInstance().getVersionedComments(reviewAdapter.getServer(), reviewAdapter.getPermaId(), reviewItem.getPermId());
-			Editor editor = showVirtualFileInEditor(reviewItem);
-			TextAttributes textAttributes = new TextAttributes();
-			textAttributes.setBackgroundColor(VERSIONED_COMMENT_BACKGROUND_COLOR);
-
-			highlightCommentsInEditor(editor, fileComments, textAttributes);
+			showVirtualFileWithComments(reviewItem, fileComments);
 		} catch (RemoteApiException e) {
 			PluginUtil.getLogger().error(e.getMessage());
 		} catch (ServerPasswordNotProvidedException e) {
