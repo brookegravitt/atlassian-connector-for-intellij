@@ -18,7 +18,14 @@ package com.atlassian.theplugin.idea.action.crucible;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.openapi.actionSystem.Presentation;
+import com.intellij.ide.BrowserUtil;
+import com.intellij.ide.DataManager;
+import com.intellij.ide.impl.DataManagerImpl;
 import com.atlassian.theplugin.idea.IdeaHelper;
+
+import java.awt.event.InputEvent;
 
 /**
  * Created by IntelliJ IDEA.
@@ -28,7 +35,16 @@ import com.atlassian.theplugin.idea.IdeaHelper;
  * To change this template use File | Settings | File Templates.
  */
 public class ViewReviewAction extends AnAction {
-    public void actionPerformed(AnActionEvent event) {
-        //
-    }
+
+	public void actionPerformed(AnActionEvent event) {
+		DataContext context = event.getDataContext();
+		DataManager manager = DataManager.getInstance();
+		manager.getDataContext();
+		String place = event.getPlace();
+		InputEvent input = event.getInputEvent();
+		Presentation present = event.getPresentation();
+//		BrowserUtil.launchBrowser();
+	}
+
+
 }
