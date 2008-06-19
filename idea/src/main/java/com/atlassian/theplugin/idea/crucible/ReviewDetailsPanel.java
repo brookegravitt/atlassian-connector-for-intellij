@@ -101,6 +101,8 @@ public class ReviewDetailsPanel extends AbstractCommentPanel {
 							new FocusOnVersionedCommentEvent(
 									I_WANT_THIS_MESSAGE_BACK,
 									reviewDataInfoAdapter,
+									reviewItem,
+									versionedComments,
 									selectedComment
 							)
 					);
@@ -134,8 +136,15 @@ public class ReviewDetailsPanel extends AbstractCommentPanel {
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
-	public void focusOnVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, VersionedComment versionedComment) {
-		EventQueue.invokeLater(new CommentSelectedListener(reviewDataInfoAdapter, versionedComment));	}
+	public void focusOnVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, final ReviewItem reviewItem,
+										Collection<VersionedComment> versionedComments, final VersionedComment versionedComment) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				CrucibleHelper.selectVersionedCommentLineInEditor(reviewItem, versionedComment);
+			}
+		});
+		// EventQueue.invokeLater(new CommentSelectedListener(reviewDataInfoAdapter, versionedComment));
+	}
 
 	public void focusOnVersionedCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
 		//To change body of implemented methods use File | Settings | File Templates.

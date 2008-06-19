@@ -3,6 +3,9 @@ package com.atlassian.theplugin.idea.crucible.events;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewItem;
+
+import java.util.Collection;
 
 /**
  * Created by IntelliJ IDEA.
@@ -13,17 +16,23 @@ import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
  */
 public class FocusOnVersionedCommentEvent extends CrucibleEvent {
 	private ReviewDataInfoAdapter reviewDataInfoAdapter;
-	private VersionedComment versionedComment;
+	private ReviewItem reviewItem;
+	private Collection<VersionedComment> versionedComments;
+	private VersionedComment selectedComment;
 
 	public FocusOnVersionedCommentEvent(CrucibleReviewActionListener caller,
 										ReviewDataInfoAdapter reviewDataInfoAdapter,
-										VersionedComment versionedComment) {
+										ReviewItem reviewItem,
+										Collection<VersionedComment> versionedComments,
+										VersionedComment selectedComment) {
 		super(caller);
 		this.reviewDataInfoAdapter = reviewDataInfoAdapter;
-		this.versionedComment = versionedComment;
+		this.reviewItem = reviewItem;
+		this.versionedComments = versionedComments;
+		this.selectedComment = selectedComment;
 	}
 
 	protected void notify(CrucibleReviewActionListener listener) {
-		listener.focusOnVersionedComment(reviewDataInfoAdapter, versionedComment);
+		listener.focusOnVersionedComment(reviewDataInfoAdapter, reviewItem, versionedComments, selectedComment);
 	}
 }

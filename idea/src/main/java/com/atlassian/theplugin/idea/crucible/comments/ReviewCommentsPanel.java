@@ -4,7 +4,6 @@ import com.intellij.util.ui.UIUtil;
 import com.intellij.util.ui.ListTableModel;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.TableColumnInfo;
-import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.ui.*;
 import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
 import com.atlassian.theplugin.idea.crucible.events.FocusOnGeneralCommentEvent;
@@ -19,10 +18,10 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.util.Logger;
 import com.atlassian.theplugin.util.PluginUtil;
 
-import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.util.List;
+import java.util.Collection;
 
 /**
  * Created by IntelliJ IDEA.
@@ -147,8 +146,8 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
-	public void focusOnVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, VersionedComment versionedComment) {
-		//To change body of implemented methods use File | Settings | File Templates.
+	public void focusOnVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, final ReviewItem reviewItem,
+										Collection<VersionedComment> versionedComments, final VersionedComment versionedComment) {
 	}
 
 	public void focusOnVersionedCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
