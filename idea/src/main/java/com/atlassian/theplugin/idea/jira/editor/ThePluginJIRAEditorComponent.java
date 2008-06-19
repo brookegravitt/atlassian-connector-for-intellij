@@ -381,19 +381,21 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			gbc.fill = GridBagConstraints.BOTH;
 			add(creationDate, gbc);
 
-			HyperlinkLabel analyze = new HyperlinkLabel("Analyse stack trace");
-			analyze.addHyperlinkListener(new HyperlinkListener() {
-				public void hyperlinkUpdate(HyperlinkEvent e) {
-					StackTraceConsole.getInstance().print(issue,
-							"comment: " + comment.getAuthor() + " - " + creationDate.getText(), comment.getBody());
-				}
-			});
-			gbc.gridx = 5;
-			gbc.gridy = 0;
-			gbc.weightx = 0.0;
-			gbc.anchor = GridBagConstraints.EAST;
-			gbc.insets = new Insets(0, Constants.DIALOG_MARGIN, 0, 0);
-			add(analyze, gbc);
+			if (StackTraceDetector.containsStackTrace(comment.getBody())) {
+				HyperlinkLabel analyze = new HyperlinkLabel("Analyse stack trace");
+				analyze.addHyperlinkListener(new HyperlinkListener() {
+					public void hyperlinkUpdate(HyperlinkEvent e) {
+						StackTraceConsole.getInstance().print(issue,
+								"comment: " + comment.getAuthor() + " - " + creationDate.getText(), comment.getBody());
+					}
+				});
+				gbc.gridx++;
+				gbc.gridy = 0;
+				gbc.weightx = 0.0;
+				gbc.anchor = GridBagConstraints.EAST;
+				gbc.insets = new Insets(0, Constants.DIALOG_MARGIN, 0, 0);
+				add(analyze, gbc);
+			}
 
 			commentBody.setEditable(false);
             commentBody.setOpaque(false);
@@ -472,22 +474,23 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
             gbc.weightx = 1.0;
             add (new JPanel(), gbc);
 
+			if (StackTraceDetector.containsStackTrace(Html2text.translate(description))) {
+				HyperlinkLabel analyze = new HyperlinkLabel("Analyse stack trace");
+				analyze.addHyperlinkListener(new HyperlinkListener() {
+					public void hyperlinkUpdate(HyperlinkEvent e) {
+						StackTraceConsole.getInstance().print(issue, "description", Html2text.translate(description));
+					}
+				});
+				gbc.gridx = 3;
+				gbc.gridy = 0;
+				gbc.anchor = GridBagConstraints.EAST;
+				gbc.fill = GridBagConstraints.NONE;
+				gbc.weightx = 0.0;
+				gbc.insets = new Insets(0, Constants.DIALOG_MARGIN, 0, 0);
+				add(analyze, gbc);
+			}
 
-			HyperlinkLabel analyze = new HyperlinkLabel("Analyse stack trace");
-			analyze.addHyperlinkListener(new HyperlinkListener() {
-				public void hyperlinkUpdate(HyperlinkEvent e) {
-					StackTraceConsole.getInstance().print(issue, "description", Html2text.translate(description));
-				}
-			});
-			gbc.gridx = 3;
-			gbc.gridy = 0;
-			gbc.anchor = GridBagConstraints.EAST;
-			gbc.fill = GridBagConstraints.NONE;
-			gbc.weightx = 0.0;
-			gbc.insets = new Insets(0, Constants.DIALOG_MARGIN, 0, 0);
-			add(analyze, gbc);
-
-            body.setEditable(false);
+			body.setEditable(false);
             body.setOpaque(false);
             body.setBorder(BorderFactory.createEmptyBorder());
             body.setContentType("text/html");
