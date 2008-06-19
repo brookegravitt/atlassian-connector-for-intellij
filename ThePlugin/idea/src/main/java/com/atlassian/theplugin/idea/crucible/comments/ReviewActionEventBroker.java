@@ -19,7 +19,8 @@ import java.util.concurrent.LinkedBlockingQueue;
  * To change this template use File | Settings | File Templates.
  */
 public class ReviewActionEventBroker {
-	private static WeakHashMap<Project, ReviewActionEventBroker> brokers = new WeakHashMap<Project, ReviewActionEventBroker>();
+//	private static WeakHashMap<Project, ReviewActionEventBroker> brokers = new WeakHashMap<Project, ReviewActionEventBroker>();
+	private static ReviewActionEventBroker broker;
 	private Set<CrucibleReviewActionListener> listeners = new HashSet<CrucibleReviewActionListener>();
 	private Queue<CrucibleEvent> events = new LinkedBlockingQueue<CrucibleEvent>();
 	public static final Logger LOGGER = PluginUtil.getLogger();
@@ -42,12 +43,13 @@ public class ReviewActionEventBroker {
 	}
 
 	public static ReviewActionEventBroker getInstance(Project p) {
-		ReviewActionEventBroker instance = brokers.get(p);
-		if (instance == null) {
-			instance = new ReviewActionEventBroker();
-			brokers.put(p, instance);
+//		ReviewActionEventBroker instance = brokers.get(p);
+		if (broker == null) {
+			broker = new ReviewActionEventBroker();
+			//brokers.put(p, instance);
+
 		}
-		return instance;
+		return broker;
 	}
 
 	public void registerListener(CrucibleReviewActionListener listener) {

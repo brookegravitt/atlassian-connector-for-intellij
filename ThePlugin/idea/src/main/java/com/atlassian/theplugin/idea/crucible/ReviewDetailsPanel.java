@@ -113,7 +113,7 @@ public class ReviewDetailsPanel extends AbstractCommentPanel {
 	}
 
 	protected String getCommentToolbarActionGroup() {
-		return "ThePlugin.CrucibleGeneralCommentToolBar";
+		return "ThePlugin.EmptyToolBar";
 	}
 
 	protected String getCommentReplyToolbarActionGroup() {
