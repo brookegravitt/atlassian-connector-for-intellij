@@ -93,6 +93,7 @@ public final class CrucibleHelper {
 			Project project = IdeaHelper.getCurrentProject();
 			FileEditorManager fem = FileEditorManager.getInstance(project);
 			OpenFileDescriptor ofd = new OpenFileDescriptor(project, vf, comment.getFromStartLine(), 1);
+			fem.openTextEditor(ofd, true);
 		}
 
 	}
