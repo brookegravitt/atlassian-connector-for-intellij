@@ -192,9 +192,9 @@ public class CrucibleBottomToolWindowPanel extends JPanel implements ContentPane
 					content.setIcon(IconLoader.getIcon("/icons/tab_jira.png"));
 					content.putUserData(ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
 					contentManager.addContent(content);
-					if (requestFocus) {
-						contentManager.requestFocus(content);
-					}
+				}
+				if (requestFocus) {
+					contentManager.requestFocus(content);
 				}
 			}
 			return content;
@@ -226,7 +226,6 @@ public class CrucibleBottomToolWindowPanel extends JPanel implements ContentPane
 					public void run() {
 						Content content = findOrCreatePanel(reviewItem.toString(),
 								new ReviewDetailsPanel(reviewDataInfoAdapter, reviewItem, versionedComments), true);
-//						content.
 						CrucibleHelper.showVirtualFileWithComments(reviewItem, versionedComments);
 
 					}
