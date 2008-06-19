@@ -19,6 +19,7 @@ package com.atlassian.theplugin.idea;
 import com.atlassian.theplugin.ConnectionWrapper;
 import com.atlassian.theplugin.LoginDataProvided;
 import com.atlassian.theplugin.util.Connector;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -78,9 +79,14 @@ public class TestConnectionListener implements ActionListener {
 
 		public void run(ProgressIndicator indicator) {
 
-			indicator.setText("Connecting...");
-			indicator.setFraction(0);
-			indicator.setIndeterminate(true);
+			if (indicator == null) {
+				PluginUtil.getLogger().error("Progress Indicator is null in TestConnectionTask!!!");
+				System.out.println("Progress Indicator is null in TestConnectionTask!!!");
+			} else {
+				indicator.setText("Connecting...");
+				indicator.setFraction(0);
+				indicator.setIndeterminate(true);
+			}
 
 			testConnector.start();
 
