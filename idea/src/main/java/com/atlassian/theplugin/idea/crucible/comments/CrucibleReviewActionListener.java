@@ -5,6 +5,8 @@ import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
 
+import java.util.Collection;
+
 /**
  * Created by IntelliJ IDEA.
  * User: lguminski
@@ -31,7 +33,8 @@ public interface CrucibleReviewActionListener {
 
 	void focusOnGeneralCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment);
 
-	void focusOnVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, VersionedComment versionedComment);
+	void focusOnVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem,
+								 Collection<VersionedComment> versionedComments, VersionedComment versionedComment);
 
 	void focusOnVersionedCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment);
 }
