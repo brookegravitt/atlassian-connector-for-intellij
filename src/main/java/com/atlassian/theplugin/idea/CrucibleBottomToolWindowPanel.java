@@ -4,7 +4,6 @@ import com.atlassian.theplugin.commons.crucible.*;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewItem;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.commons.crucible.api.rest.CrucibleSessionImpl;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListenerNotUsed;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -17,6 +16,7 @@ import com.atlassian.theplugin.idea.crucible.comments.ReviewCommentsPanel;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
 import com.atlassian.theplugin.idea.crucible.ReviewDetailsPanel;
+import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.config.ContentPanel;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.util.ui.UIUtil;
@@ -179,7 +179,7 @@ public class CrucibleBottomToolWindowPanel extends JPanel implements ContentPane
 			crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		}
 
-		public static Content findOrCreatePanel(String panelName, JPanel panel) {
+		public static Content findOrCreatePanel(String panelName, JPanel panel, Boolean requestFocus) {
 			Content content = null;
 			PeerFactory peerFactory = PeerFactory.getInstance();
 			ToolWindow tw = IdeaHelper.getCurrentBottomIdeaToolWindow();
@@ -192,6 +192,9 @@ public class CrucibleBottomToolWindowPanel extends JPanel implements ContentPane
 					content.setIcon(IconLoader.getIcon("/icons/tab_jira.png"));
 					content.putUserData(ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
 					contentManager.addContent(content);
+					if (requestFocus) {
+						contentManager.requestFocus(content);
+					}
 				}
 			}
 			return content;
@@ -221,8 +224,11 @@ public class CrucibleBottomToolWindowPanel extends JPanel implements ContentPane
 						reviewDataInfoAdapter.getServer(), reviewDataInfoAdapter.getPermaId(), reviewItem.getPermId());
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
-						findOrCreatePanel(reviewItem.toString(),
-								new ReviewDetailsPanel(reviewDataInfoAdapter, reviewItem, versionedComments));
+						Content content = findOrCreatePanel(reviewItem.toString(),
+								new ReviewDetailsPanel(reviewDataInfoAdapter, reviewItem, versionedComments), true);
+//						content.
+						CrucibleHelper.showVirtualFileWithComments(reviewItem, versionedComments);
+
 					}
 				});
 			} catch (RemoteApiException e) {
@@ -237,6 +243,10 @@ public class CrucibleBottomToolWindowPanel extends JPanel implements ContentPane
 		}
 
 		public void focusOnGeneralCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
+			//To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		public void focusOnVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem, Collection<VersionedComment> versionedComments, VersionedComment versionedComment) {
 			//To change body of implemented methods use File | Settings | File Templates.
 		}
 
