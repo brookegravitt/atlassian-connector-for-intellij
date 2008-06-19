@@ -11,6 +11,7 @@ import com.atlassian.theplugin.idea.crucible.events.FocusOnGeneralCommentEvent;
 import com.atlassian.theplugin.idea.crucible.events.FocusOnGeneralCommentReplyEvent;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewItem;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -30,35 +31,80 @@ import java.util.List;
  * Time: 6:57:26 PM
  * To change this template use File | Settings | File Templates.
  */
-public class ReviewCommentsPanel extends JPanel implements CrucibleReviewActionListener {
-	private static ReviewCommentsPanel instance;
-	private ListTableModel commentTableModel;
-	private JLayeredPane dataPanelsHolder;
-	protected ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
-	protected TableColumnProvider tableColumnProvider = new CommentColumnProvider();
+public class ReviewCommentsPanel extends AbstractCommentPanel {
+	private static ReviewCommentsPanel instance = null;
+	protected TableColumnProvider commentTableColumnProvider = new CommentColumnProvider();
+	protected TableColumnProvider commentReplyTableColumnProvider = new CommentColumnProvider();
 	private CrucibleServerFacade crucibleServerFacade;
 	public static final Logger LOGGER = PluginUtil.getLogger();
-	private AtlassianTableViewWithToolbar commentsTable;
-	private AtlassianTableViewWithToolbar replyCommentsTable;
 	private ReviewDataInfoAdapter reviewDataInfoAdapter;
 	private ReviewItem reviewItem;
-	private ListTableModel commentReplyTableModel;
 	private GeneralComment selectedComment;
 
 
-	private ReviewCommentsPanel() {
-		super(new BorderLayout());
+	protected ReviewCommentsPanel() {
+		super();
 		IdeaHelper.getCurrentReviewActionEventBroker().registerListener(this);
 		crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
+		setCommentTableModel(new ListTableModel(getCommentTableColumnProvider().makeColumnInfo()));
+		setCommentReplyTableModel(new ListTableModel(getCommentReplyTableColumnProvider().makeColumnInfo()));
+
 		initialize();
 	}
 
-	private void initialize() {
-		setLayout(new BorderLayout());
-		setBackground(UIUtil.getTreeTextBackground());
-		commentTableModel = new ListTableModel(tableColumnProvider.makeColumnInfo());
-		commentTableModel.setSortable(true);
-	    commentsTable = createCommentsTable(commentTableModel, "ThePlugin.CrucibleGeneralCommentToolBar", new TableItemSelectedListener() {
+	protected String getCommentToolbarPlace() {
+		return "atlassian.toolwindow.serverToolBar";
+	}
+
+	protected String getCommentReplyToolbarPlace() {
+		return "atlassian.toolwindow.serverToolBar";
+	}
+
+	protected String getCommentToolbarActionGroup() {
+		return "ThePlugin.CrucibleGeneralCommentToolBar";
+	}
+
+	protected String getCommentReplyToolbarActionGroup() {
+		return "ThePlugin.CrucibleGeneralCommentReplyToolBar";
+	}
+
+	protected TableColumnProvider getCommentTableColumnProvider() {
+		return commentTableColumnProvider;
+	}
+
+	protected TableColumnProvider getCommentReplyTableColumnProvider() {
+		return commentReplyTableColumnProvider;
+	}
+
+	public static ReviewCommentsPanel getInstance() {
+		if (instance == null) {
+			instance = new ReviewCommentsPanel();
+		}
+		return instance;
+	}
+
+	protected TableItemSelectedListener getCommentReplySelectedListener() {
+		TableItemSelectedListener commentReplySelectedListener;
+		commentReplySelectedListener = new TableItemSelectedListener() {
+			public void itemSelected(Object item, int noClicks) {
+				GeneralComment selectedComment = (GeneralComment) item;
+				if (noClicks == 2) {
+					IdeaHelper.getCurrentReviewActionEventBroker().trigger(
+							new FocusOnGeneralCommentReplyEvent(
+									I_WANT_THIS_MESSAGE_BACK,
+									reviewDataInfoAdapter,
+									selectedComment
+							)
+					);
+				}
+			}
+		};
+		return commentReplySelectedListener;
+	}
+
+	protected TableItemSelectedListener getCommentSelectedListener() {
+		TableItemSelectedListener commentSelectedListener;
+		commentSelectedListener = new TableItemSelectedListener() {
 			public void itemSelected(Object item, int noClicks) {
 				GeneralComment selectedComment = (GeneralComment) item;
 				if (noClicks == 2) {
@@ -71,61 +117,13 @@ public class ReviewCommentsPanel extends JPanel implements CrucibleReviewActionL
 					);
 				}
 			}
-		});
-
-		commentReplyTableModel = new ListTableModel(tableColumnProvider.makeColumnInfo());
-		commentReplyTableModel.setSortable(true);
-		replyCommentsTable = createCommentsTable(commentReplyTableModel, "ThePlugin.CrucibleGeneralCommentReplyToolBar", new TableItemSelectedListener() {
-			public void itemSelected(Object item, int noClicks) {
-				GeneralComment selectedComment = (GeneralComment) item;
-				if (noClicks == 2) {
-					IdeaHelper.getCurrentReviewActionEventBroker().trigger(
-							new FocusOnGeneralCommentReplyEvent(
-									I_WANT_THIS_MESSAGE_BACK, 
-									reviewDataInfoAdapter,
-									selectedComment
-							)
-					);
-				}
-			}
-		});
-
-		dataPanelsHolder = new JLayeredPane();
-		dataPanelsHolder.setLayout(new BorderLayout());
-		dataPanelsHolder.setBackground(UIUtil.getTreeTextBackground());
-//		dataPanelsHolder.add(replyCommentsTable, BorderLayout.CENTER, JLayeredPane.DEFAULT_LAYER);
-		dataPanelsHolder.add(commentsTable, BorderLayout.CENTER, JLayeredPane.POPUP_LAYER);
-		add(dataPanelsHolder, BorderLayout.CENTER);
-		progressAnimation.configure(this, dataPanelsHolder, BorderLayout.CENTER);
+		};
+		return commentSelectedListener;
 	}
-
-	private AtlassianTableViewWithToolbar createCommentsTable(ListTableModel listTableModel, String toolbarName, TableItemSelectedListener tableItemSelectedListener) {
-		AtlassianTableViewWithToolbar table = new AtlassianTableViewWithToolbar(tableColumnProvider, listTableModel, null,
-				"atlassian.toolwindow.serverToolBar",
-				toolbarName,
-				"Context menu",
-				 "ThePlugin.Crucible.ReviewPopupMenu"
-				);
-		table.setBorder(BorderFactory.createEmptyBorder());
-		table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		table.getColumnModel().setColumnMargin(0);
-
-		table.setMinRowHeight(20);
-		table.getTable().addItemSelectedListener(tableItemSelectedListener);
-		return table;
-	}
-
-	public static ReviewCommentsPanel getInstance() {
-		if (instance == null) {
-			instance = new ReviewCommentsPanel();
-		}
-		return instance;
-	}
-
 
 	public void focusOnReview(ReviewDataInfoAdapter reviewDataInfoAdapter) {
 		try {
-			progressAnimation.startProgressAnimation();
+			getProgressAnimation().startProgressAnimation();
 			final List<GeneralComment> generalComments = crucibleServerFacade.getGeneralComments(reviewDataInfoAdapter.getServer(),
 					reviewDataInfoAdapter.getPermaId());
 			EventQueue.invokeLater(new CommentListChangedListener(reviewDataInfoAdapter, generalComments));
@@ -134,7 +132,7 @@ public class ReviewCommentsPanel extends JPanel implements CrucibleReviewActionL
 		} catch (ServerPasswordNotProvidedException e) {
 			LOGGER.warn("Error retrieving comments", e);
 		} finally {
-			progressAnimation.stopProgressAnimation();
+			getProgressAnimation().stopProgressAnimation();
 		}
 	}
 
@@ -149,12 +147,16 @@ public class ReviewCommentsPanel extends JPanel implements CrucibleReviewActionL
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
-	public void switchToComments() {
-		dataPanelsHolder.removeAll();
-		dataPanelsHolder.add(commentsTable, BorderLayout.CENTER);
+	public void focusOnVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, VersionedComment versionedComment) {
+		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
-	private static class CommentColumnProvider implements TableColumnProvider {
+	public void focusOnVersionedCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+
+	public static class CommentColumnProvider implements TableColumnProvider {
 		public TableColumnInfo[] makeColumnInfo() {
 			return new TableColumnInfo[]{
 					new CommentCreateDateColumn(),
@@ -185,11 +187,11 @@ public class ReviewCommentsPanel extends JPanel implements CrucibleReviewActionL
 
 		public void run() {
 			ReviewCommentsPanel.this.reviewDataInfoAdapter = reviewDataInfoAdapter; // adapter changed to new one
-			commentTableModel.setItems(generalComments);
-			commentTableModel.fireTableDataChanged();
-			commentsTable.getTable().revalidate();
-			commentsTable.getTable().setEnabled(true);
-			commentsTable.getTable().setForeground(UIUtil.getActiveTextColor());
+			getCommentTableModel().setItems(generalComments);
+			getCommentTableModel().fireTableDataChanged();
+			getCommentsTable().getTable().revalidate();
+			getCommentsTable().getTable().setEnabled(true);
+			getCommentsTable().getTable().setForeground(UIUtil.getActiveTextColor());
 //			dataPanelsHolder.moveToFront(commentsTable);
 			switchToComments();
 		}
@@ -206,8 +208,8 @@ public class ReviewCommentsPanel extends JPanel implements CrucibleReviewActionL
 
 		public void run() {
 			ReviewCommentsPanel.this.selectedComment = comment; // adapter changed to the new one
-			commentReplyTableModel.setItems(comment.getReplies());
-			commentReplyTableModel.fireTableDataChanged();
+			getCommentReplyTableModel().setItems(comment.getReplies());
+			getCommentReplyTableModel().fireTableDataChanged();
 			StringBuffer buffer = new StringBuffer();
 			buffer.append("Replies to a comment \"");
 			buffer.append(comment.toString());
@@ -216,13 +218,13 @@ public class ReviewCommentsPanel extends JPanel implements CrucibleReviewActionL
 			buffer.append(" [");
 			buffer.append(CommentCreateDateColumn.FORMATTER.format(comment.getCreateDate()));
 			buffer.append("]");
-			replyCommentsTable.setStatusText(buffer.toString());
-			replyCommentsTable.getTable().revalidate();
-			replyCommentsTable.getTable().setEnabled(true);
-			replyCommentsTable.getTable().setForeground(UIUtil.getActiveTextColor());
+			getReplyCommentsTable().setStatusText(buffer.toString());
+			getReplyCommentsTable().getTable().revalidate();
+			getReplyCommentsTable().getTable().setEnabled(true);
+			getReplyCommentsTable().getTable().setForeground(UIUtil.getActiveTextColor());
 //			dataPanelsHolder.moveToFront(replyCommentsTable);
-			dataPanelsHolder.removeAll();
-			dataPanelsHolder.add(replyCommentsTable, BorderLayout.CENTER);
+			switchToCommentReplies();
 		}
 	}
+
 }
