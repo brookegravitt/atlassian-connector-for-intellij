@@ -35,6 +35,15 @@ public final class CrucibleHelper {
 
 	private CrucibleHelper(){};
 
+
+	public static void showVirtualFileWithComments(final ReviewItem reviewItem, final Collection<VersionedComment> fileComments){
+				
+			Editor editor = showVirtualFileInEditor(reviewItem);
+			TextAttributes textAttributes = new TextAttributes();
+			textAttributes.setBackgroundColor(VERSIONED_COMMENT_BACKGROUND_COLOR);
+			highlightCommentsInEditor(editor, fileComments, textAttributes);
+	}
+
 	/*
 	*	Shows virtual file taken from repository in Idea Editor.
 	* 	Higlights all versioned comments for given file
