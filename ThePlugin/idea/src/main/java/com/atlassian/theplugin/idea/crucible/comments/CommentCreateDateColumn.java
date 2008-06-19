@@ -14,8 +14,8 @@ import java.text.SimpleDateFormat;
  * To change this template use File | Settings | File Templates.
  */
 public class CommentCreateDateColumn extends TableColumnInfo {
-	private static final int COL_WIDTH = 80;
-	private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("d MMM yyyy, HH:mm Z");
+	private static final int COL_WIDTH = 120;
+	public static final SimpleDateFormat FORMATTER = new SimpleDateFormat("d MMM yyyy, HH:mm Z");
 
 	public String getColumnName() {
 		return "Created";

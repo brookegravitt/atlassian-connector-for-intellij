@@ -249,4 +249,12 @@ public class ReviewItemTreePanel extends JPanel
 	public void focusOnFile(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem) {
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
+
+	public void focusOnGeneralComment(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	public void focusOnGeneralCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
 }
