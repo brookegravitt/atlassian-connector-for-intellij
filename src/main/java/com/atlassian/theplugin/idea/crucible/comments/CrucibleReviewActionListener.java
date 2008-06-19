@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.crucible.comments;
 
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewItem;
+import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
 
 /**
@@ -11,11 +12,12 @@ import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
  * To change this template use File | Settings | File Templates.
  */
 public interface CrucibleReviewActionListener {
+	public static final CrucibleReviewActionListener I_WANT_THIS_MESSAGE_BACK = null;
 	/**
 	 * A method ivoked by a background thread when a new review needs to be focused
-	 * @param reviewItem
+	 * @param reviewDataInfoAdapter
 	 */
-	void focusOnReview(ReviewDataInfoAdapter reviewItem);
+	void focusOnReview(ReviewDataInfoAdapter reviewDataInfoAdapter);
 
 	/**
 	 * A method ivoked by a background thread when a new file within a review needs to be focused
@@ -23,4 +25,8 @@ public interface CrucibleReviewActionListener {
 	 * @param reviewItem
 	 */
 	void focusOnFile(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem);
+
+	void focusOnGeneralComment(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment);
+
+	void focusOnGeneralCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment);
 }
