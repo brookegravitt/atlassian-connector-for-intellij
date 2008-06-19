@@ -33,7 +33,7 @@ import java.util.Collection;
 public class ReviewCommentsPanel extends AbstractCommentPanel {
 	private static ReviewCommentsPanel instance = null;
 	protected TableColumnProvider commentTableColumnProvider = new CommentColumnProvider();
-	protected TableColumnProvider commentReplyTableColumnProvider = new CommentColumnProvider();
+	protected TableColumnProvider commentReplyTableColumnProvider = new CommentReplyColumnProvider();
 	private CrucibleServerFacade crucibleServerFacade;
 	public static final Logger LOGGER = PluginUtil.getLogger();
 	private ReviewDataInfoAdapter reviewDataInfoAdapter;
@@ -60,7 +60,7 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 	}
 
 	protected String getCommentToolbarActionGroup() {
-		return "ThePlugin.CrucibleGeneralCommentToolBar";
+		return "ThePlugin.EmptyToolBar";
 	}
 
 	protected String getCommentReplyToolbarActionGroup() {
@@ -161,6 +161,28 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 					new CommentCreateDateColumn(),
 					new CommentAuthorColumn(),
 					new CommentSummaryColumn(),
+					new CommentStateColumn(),
+					new CommentRepliesColumn()
+			};
+		}
+
+		public TableCellRenderer[] makeRendererInfo() {
+			return new TableCellRenderer[]{
+					null,
+					null,
+					null,
+					null,
+					null
+			};
+		}
+	}
+
+	public static class CommentReplyColumnProvider implements TableColumnProvider {
+		public TableColumnInfo[] makeColumnInfo() {
+			return new TableColumnInfo[]{
+					new CommentCreateDateColumn(),
+					new CommentAuthorColumn(),
+					new CommentSummaryColumn(),
 					new CommentStateColumn()
 			};
 		}
@@ -174,6 +196,7 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 			};
 		}
 	}
+
 
 	private class CommentListChangedListener implements Runnable {
 		private ReviewDataInfoAdapter reviewDataInfoAdapter;
