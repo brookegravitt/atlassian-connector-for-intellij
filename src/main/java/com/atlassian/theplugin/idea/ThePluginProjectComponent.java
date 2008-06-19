@@ -72,7 +72,6 @@ public class ThePluginProjectComponent implements
     private final BambooStatusChecker bambooStatusChecker;
     private StausIconBambooListener iconBambooStatusListener;
     private BambooStatusTooltipListener tooltipBambooStatusListener;
-
 	private CrucibleBottomToolWindowPanel crucibleBottomToolWindowPanel;
 	private BambooTableToolWindowPanel bambooToolWindowPanel;
     private CrucibleTableToolWindowPanel crucibleToolWindowPanel;
@@ -385,6 +384,10 @@ public class ThePluginProjectComponent implements
     public CrucibleStatusChecker getCrucibleStatusChecker() {
         return crucibleStatusChecker;
     }
+
+	public CrucibleBottomToolWindowPanel getCrucibleBottomToolWindowPanel() {
+		return crucibleBottomToolWindowPanel;
+	}
 
 	public CrucibleNewReviewNotifier getCrucibleNewReviewNotifier() {
 		return crucibleNewReviewNotifier;

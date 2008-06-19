@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.ui;
 
 import com.intellij.util.ui.ListTableModel;
+import com.intellij.util.ui.TableViewModel;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionToolbar;
@@ -25,6 +26,7 @@ import net.sf.nachocalendar.components.CalendarPanel;
 public class AtlassianTableViewWithToolbar extends JPanel {
 	private AtlassianTableView table;
 	private JPanel toolBarPanel;
+	private JLabel statusLabel;
 
 
 	public AtlassianTableViewWithToolbar(TableColumnProvider tableColumnProvider, ListTableModel listTableModel,
@@ -34,11 +36,18 @@ public class AtlassianTableViewWithToolbar extends JPanel {
 		super(new BorderLayout());
 		toolBarPanel = new AtlassianToolbar(toolbarPlace, toolbarName);
 		table = new AtlassianTableView(tableColumnProvider, listTableModel, storage, popupMenuPlace, popupMenuName);
+		statusLabel = new JLabel();
+
 		JScrollPane scrollTable = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollTable.setWheelScrollingEnabled(true);
 		add(toolBarPanel, BorderLayout.NORTH);
 		add(scrollTable, BorderLayout.CENTER);
+		add(statusLabel, BorderLayout.SOUTH);
+	}
+
+	public void setStatusText(String message) {
+		statusLabel.setText(message);
 	}
 
 	public void prepareColumns(TableColumnProvider tableColumnProvider) {
@@ -69,9 +78,15 @@ public class AtlassianTableViewWithToolbar extends JPanel {
 		return table;
 	}
 
+	public TableViewModel getTableViewModel() {
+		return table.getTableViewModel();
+	}
+
 	public ListSelectionModel getSelectionModel() {
 		return table.getSelectionModel();
 	}
+
+
 
 	public TableColumnModel getColumnModel() {
 		return table.getColumnModel();

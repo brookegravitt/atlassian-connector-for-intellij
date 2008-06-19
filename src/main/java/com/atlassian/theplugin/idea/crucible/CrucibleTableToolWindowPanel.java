@@ -19,10 +19,7 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.bamboo.StausIconBambooListener;
 import com.atlassian.theplugin.commons.crucible.*;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
-import com.atlassian.theplugin.commons.crucible.api.model.PermId;
-import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewItem;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.util.Logger;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -727,6 +724,14 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 	}
 
 	public void focusOnFile(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem) {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	public void focusOnGeneralComment(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	public void focusOnGeneralCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 }
