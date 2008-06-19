@@ -40,7 +40,6 @@ public class AtlassianTableView extends TableView {
 
 	public AtlassianTableView(TableColumnProvider columnProvider, ListTableModel listTableModel, final Storage storage) {
 		super(listTableModel);
-
 		setBorder(BorderFactory.createEmptyBorder());
 		getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		getColumnModel().setColumnMargin(0);
