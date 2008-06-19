@@ -58,7 +58,7 @@ public class ReviewActionEventBroker {
 		listeners.remove(listener);
 	}
 
-	public void trigger(CrucibleEvent event) {
+	synchronized public void trigger(CrucibleEvent event) {
 		events.add(event);
 	}
 
