@@ -381,7 +381,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			gbc.fill = GridBagConstraints.BOTH;
 			add(creationDate, gbc);
 
-			HyperlinkLabel analyze = new HyperlinkLabel("analyze stack trace");
+			HyperlinkLabel analyze = new HyperlinkLabel("Analyse stack trace");
 			analyze.addHyperlinkListener(new HyperlinkListener() {
 				public void hyperlinkUpdate(HyperlinkEvent e) {
 					StackTraceConsole.getInstance().print(issue,
@@ -473,7 +473,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
             add (new JPanel(), gbc);
 
 
-			HyperlinkLabel analyze = new HyperlinkLabel("analyze stack trace");
+			HyperlinkLabel analyze = new HyperlinkLabel("Analyse stack trace");
 			analyze.addHyperlinkListener(new HyperlinkListener() {
 				public void hyperlinkUpdate(HyperlinkEvent e) {
 					StackTraceConsole.getInstance().print(issue, "description", Html2text.translate(description));
