@@ -19,7 +19,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * To change this template use File | Settings | File Templates.
  */
 public class ReviewActionEventBroker {
-//	private static WeakHashMap<Project, ReviewActionEventBroker> brokers = new WeakHashMap<Project, ReviewActionEventBroker>();
+	//	private static WeakHashMap<Project, ReviewActionEventBroker> brokers = new WeakHashMap<Project, ReviewActionEventBroker>();
 	private static ReviewActionEventBroker broker;
 	private Set<CrucibleReviewActionListener> listeners = new HashSet<CrucibleReviewActionListener>();
 	private Queue<CrucibleEvent> events = new LinkedBlockingQueue<CrucibleEvent>();
@@ -42,7 +42,7 @@ public class ReviewActionEventBroker {
 		).start();
 	}
 
-	public static ReviewActionEventBroker getInstance(Project p) {
+	synchronized public static ReviewActionEventBroker getInstance(Project p) {
 //		ReviewActionEventBroker instance = brokers.get(p);
 		if (broker == null) {
 			broker = new ReviewActionEventBroker();
@@ -53,19 +53,27 @@ public class ReviewActionEventBroker {
 	}
 
 	public void registerListener(CrucibleReviewActionListener listener) {
-		listeners.add(listener);
+		synchronized (listeners) {
+			listeners.add(listener);
+		}
 	}
 
 	public void unregisterListener(CrucibleReviewActionListener listener) {
-		listeners.remove(listener);
+		synchronized (listeners) {
+			listeners.remove(listener);
+		}
 	}
 
-	synchronized public void trigger(CrucibleEvent event) {
-		events.add(event);
+	public void trigger(CrucibleEvent event) {
+		synchronized (events) {
+			events.add(event);
+		}
 	}
 
 	public Iterable<? extends CrucibleReviewActionListener> getListeners() {
-		return Collections.unmodifiableSet(listeners);
+		synchronized (listeners) {
+			return Collections.unmodifiableSet(listeners);
+		}
 	}
 
 }
