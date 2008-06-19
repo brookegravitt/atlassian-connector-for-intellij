@@ -16,14 +16,11 @@
 
 package com.atlassian.theplugin.idea.action.crucible;
 
+import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.Presentation;
-import com.intellij.ide.BrowserUtil;
-import com.intellij.ide.DataManager;
-import com.intellij.ide.impl.DataManagerImpl;
-import com.atlassian.theplugin.idea.IdeaHelper;
 
 import java.awt.event.InputEvent;
 
