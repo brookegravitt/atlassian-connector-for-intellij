@@ -268,11 +268,6 @@
                     </additionalProjectnatures>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>pde-maven-plugin</artifactId>
-                <version>1.0-alpha-2-SNAPSHOT</version>
-            </plugin>
         </plugins>
     </build>
     <pluginRepositories>
