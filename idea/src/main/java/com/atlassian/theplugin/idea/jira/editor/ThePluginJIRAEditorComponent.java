@@ -2,7 +2,6 @@ package com.atlassian.theplugin.idea.jira.editor;
 
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.PluginToolWindow;
 import com.atlassian.theplugin.idea.jira.editor.vfs.MemoryVirtualFile;
 import com.atlassian.theplugin.idea.jira.IssueComment;
 import com.atlassian.theplugin.idea.ui.CollapsiblePanel;
@@ -26,16 +25,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.wm.ToolWindowManager;
-import com.intellij.openapi.wm.ToolWindow;
-import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.ui.HyperlinkLabel;
-import com.intellij.ui.content.Content;
-import com.intellij.peer.PeerFactory;
-import com.intellij.execution.filters.TextConsoleBuilderFactory;
-import com.intellij.execution.filters.TextConsoleBuilder;
-import com.intellij.execution.ui.ConsoleViewContentType;
-import com.intellij.execution.ui.ConsoleView;
 import org.jdom.Element;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -121,6 +111,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 		}
 	}
 
+/*
     private class CommentsPanel2 extends JPanel {
         private JScrollPane scroll;
         private JPanel holder;
@@ -145,6 +136,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
             holder.add(cp);
         }
     }
+*/
 
 	private class CommentsPanel extends JPanel {
 
@@ -161,10 +153,6 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			gbc.fill = GridBagConstraints.NONE;
             add(titleLabel, gbc);
 
-            gbc.gridx = 1;
-            gbc.fill = GridBagConstraints.HORIZONTAL;
-            add(new JSeparator(SwingConstants.HORIZONTAL), gbc);
-            gbc.gridx = 0;
             gbc.gridy = 1;
             gbc.gridwidth = 2;
             gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -260,7 +248,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 
         private Icon right = IconLoader.findIcon("/icons/navigate_right_10.gif");
         private Icon down = IconLoader.findIcon("/icons/navigate_down_10.gif");
-        public boolean shown = true;
+        private boolean shown = true;
 
         public AbstractShowHideButton() {
             setHorizontalAlignment(0);
@@ -424,9 +412,37 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
         }
     }
 
-    private class DescriptionPanel extends JPanel {
+	private class FixedScroller extends JScrollPane {
 
-		private static final int MIN_HEIGHT = 200;
+		private int height;
+
+		public FixedScroller(int height, JComponent comp, int vPolicy, int hPolicy) {
+			super(comp, vPolicy, hPolicy);
+		    this.height = height;
+		}
+		
+		public Dimension getMaximumSize() {
+			Dimension d = super.getMaximumSize();
+			d.height = height;
+			return d;
+		}
+
+		public Dimension getMinimumSize() {
+			Dimension d = super.getMinimumSize();
+			d.height = height;
+			return d;
+		}
+
+		public Dimension getPreferredSize() {
+			Dimension d = super.getPreferredSize();
+			d.height = height;
+			return d;
+		}
+	}
+
+	private class DescriptionPanel extends JPanel {
+
+		private static final int DESCRIPTION_HEIGHT = 100;
 		private JEditorPane body;
         private ShowHideButton btnShowHide;
 
@@ -442,14 +458,13 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
             add(descriptionLabel, gbc);
 
             body = new JEditorPane();
-			JScrollPane sp = new JScrollPane(body,
+			JScrollPane sp = new FixedScroller(DESCRIPTION_HEIGHT, body,
 					ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 					ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 			sp.setBorder(BorderFactory.createEmptyBorder());
 			sp.setOpaque(false);
 			sp.addComponentListener(new ComponentListener() {
 				public void componentResized(ComponentEvent e) {
-					body.setPreferredSize(new Dimension(e.getComponent().getWidth(), MIN_HEIGHT));
 				}
 
 				public void componentMoved(ComponentEvent e) {
@@ -472,7 +487,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			gbc.gridx = 2;
             gbc.fill = GridBagConstraints.HORIZONTAL;
             gbc.weightx = 1.0;
-            add (new JPanel(), gbc);
+            add(new JPanel(), gbc);
 
 			if (StackTraceDetector.containsStackTrace(Html2text.translate(description))) {
 				HyperlinkLabel analyze = new HyperlinkLabel("Analyse stack trace");
@@ -500,23 +515,100 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
             gbc.gridy = 1;
             gbc.gridwidth = 4;
             gbc.weighty = 1.0;
-            gbc.insets = new Insets(Constants.DIALOG_MARGIN, 0, Constants.DIALOG_MARGIN, 0);
+            gbc.insets = new Insets(Constants.DIALOG_MARGIN, Constants.DIALOG_MARGIN, Constants.DIALOG_MARGIN, 0);
             gbc.fill = GridBagConstraints.BOTH;
             add(sp, gbc);
-			Dimension d = body.getPreferredSize();
-			d.height = MIN_HEIGHT;
-			sp.setMinimumSize(d);
-            sp.setPreferredSize(d);
             sp.getViewport().setOpaque(false);
 			body.setCaretPosition(0);
-        }
+		}
 
         public void setContentsVisible(boolean visible) {
             btnShowHide.setState(visible);
         }
-    }
+	}
 
-    private class SummaryPanel extends JPanel {
+	private class DetailsPanel extends JPanel {
+
+		private ShowHideButton btnShowHide;
+
+		public DetailsPanel(final JIRAIssue issue) {
+			setLayout(new GridBagLayout());
+			GridBagConstraints gbc = new GridBagConstraints();
+
+			final JLabel descriptionLabel = new BoldLabel("Details");
+			gbc.insets = new Insets(0, 0, 0, Constants.DIALOG_MARGIN);
+			gbc.gridx = 0;
+			gbc.gridy = 0;
+			gbc.anchor = GridBagConstraints.WEST;
+			add(descriptionLabel, gbc);
+
+			JPanel body = new JPanel();
+			body.setLayout(new GridBagLayout());
+			btnShowHide = new ShowHideButton(body, this);
+
+			gbc.gridx = 1;
+			gbc.gridy = 0;
+			gbc.anchor = GridBagConstraints.WEST;
+			add(btnShowHide, gbc);
+
+			gbc.gridx = 2;
+			gbc.fill = GridBagConstraints.HORIZONTAL;
+			gbc.weightx = 1.0;
+			add(new JPanel(), gbc);
+
+			GridBagConstraints gbc1 = new GridBagConstraints();
+			GridBagConstraints gbc2 = new GridBagConstraints();
+			gbc1.anchor = GridBagConstraints.FIRST_LINE_START;
+			gbc1.insets = new Insets(0, Constants.DIALOG_MARGIN, 0, Constants.DIALOG_MARGIN);
+			gbc2.anchor = GridBagConstraints.FIRST_LINE_START;
+			gbc2.fill = GridBagConstraints.HORIZONTAL;
+			gbc2.weightx = 1.0;
+			gbc1.gridx = 0;
+			gbc2.gridx = 1;
+			gbc1.gridy = 0;
+			gbc2.gridy = 0;
+
+			body.add(new BoldLabel("Status"), gbc1);
+			body.add(new JLabel(issue.getStatus()), gbc2);
+			gbc1.gridy++;
+			gbc2.gridy++;
+			body.add(new BoldLabel("Reporter"), gbc1);
+			body.add(new JLabel(issue.getReporter()), gbc2);
+			gbc1.gridy++;
+			gbc2.gridy++;
+			body.add(new BoldLabel("Assignee"), gbc1);
+			body.add(new JLabel(issue.getAssignee()), gbc2);
+			gbc1.gridy++;
+			gbc2.gridy++;
+			body.add(new BoldLabel("Resolution"), gbc1);
+			body.add(new JLabel(issue.getResolution()), gbc2);
+			gbc1.gridy++;
+			gbc2.gridy++;
+			body.add(new BoldLabel("Created"), gbc1);
+			body.add(new JLabel(issue.getCreated()), gbc2);
+			gbc1.gridy++;
+			gbc2.gridy++;
+			body.add(new BoldLabel("Updated"), gbc1);
+			body.add(new JLabel(issue.getUpdated()), gbc2);
+
+			body.setOpaque(false);
+			gbc = new GridBagConstraints();
+			gbc.gridx = 0;
+			gbc.gridy = 1;
+			gbc.gridwidth = 4;
+			gbc.weighty = 1.0;
+			gbc.insets = new Insets(Constants.DIALOG_MARGIN, 0, Constants.DIALOG_MARGIN, 0);
+			gbc.fill = GridBagConstraints.BOTH;
+			add(body, gbc);
+		}
+
+		public void setContentsVisible(boolean visible) {
+			btnShowHide.setState(visible);
+		}
+
+	}
+
+	private class SummaryPanel extends JPanel {
 
         public SummaryPanel(JIRAIssue issue) {
             setLayout(new GridBagLayout());
@@ -544,39 +636,19 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
             GridBagConstraints gbc3 = new GridBagConstraints();
             gbc3.gridx = gbc1.gridx;
             gbc3.gridy = gbc1.gridy;
-            gbc3.fill = GridBagConstraints.BOTH;
+            gbc3.fill = GridBagConstraints.HORIZONTAL;
             gbc3.gridwidth = 2;
-            String d = issue.getDescription();
+			gbc3.weighty = 1.0;
+			String d = issue.getDescription();
             DescriptionPanel description = new DescriptionPanel(issue, d);
             add(description, gbc3);
             if (d.length() == 0) {
                 description.setContentsVisible(false);
             }
-            gbc1.gridy++;
-            gbc2.gridy++;
-            add(new BoldLabel("Status"), gbc1);
-            add(new JLabel(issue.getStatus()), gbc2);
-            gbc1.gridy++;
-            gbc2.gridy++;
-            add(new BoldLabel("Reporter"), gbc1);
-            add(new JLabel(issue.getReporter()), gbc2);
-            gbc1.gridy++;
-            gbc2.gridy++;
-            add(new BoldLabel("Assignee"), gbc1);
-            add(new JLabel(issue.getAssignee()), gbc2);
-            gbc1.gridy++;
-            gbc2.gridy++;
-            add(new BoldLabel("Resolution"), gbc1);
-            add(new JLabel(issue.getResolution()), gbc2);
-            gbc1.gridy++;
-            gbc2.gridy++;
-            add(new BoldLabel("Created"), gbc1);
-            add(new JLabel(issue.getCreated()), gbc2);
-            gbc1.gridy++;
-            gbc2.gridy++;
-            add(new BoldLabel("Updated"), gbc1);
-            add(new JLabel(issue.getUpdated()), gbc2);
-
+			gbc3.gridy++;
+			DetailsPanel dp = new DetailsPanel(issue);
+			add(dp, gbc3);
+			dp.setContentsVisible(false);
         }
     }
 
@@ -615,17 +687,8 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			gbc.gridy = 0;
 			gbc.weightx = 1;
 			gbc.weighty = 0;
-			JTextArea warning = new JTextArea(
-					"Warning: this is panel work in progress.\n"
-                    + "It is not finished, we know it is ugly and buggy.\n"
-                    + "Please, don't post bugs against this feature yet :)!");
-			warning.setForeground(Color.RED);
-			warning.setEditable(false);
-			warning.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-			mainPanel.add(warning, gbc);
 			gbc.gridy++;
-            gbc.insets = new Insets(
-                    Constants.DIALOG_MARGIN, 0, 0, 0);
+            gbc.insets = new Insets(Constants.DIALOG_MARGIN, 0, 0, 0);
 			JLabel labelIssue = new JLabel(issue.getKey());
             labelIssue.setHorizontalAlignment(SwingConstants.CENTER);
             labelIssue.setForeground(Color.BLUE);
@@ -634,8 +697,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
             labelIssue.setFont(boldBigFont);
             mainPanel.add(labelIssue, gbc);
             gbc.gridy++;
-            gbc.insets = new Insets(
-                    Constants.DIALOG_MARGIN, Constants.DIALOG_MARGIN, Constants.DIALOG_MARGIN, Constants.DIALOG_MARGIN);
+            gbc.insets = new Insets(0, Constants.DIALOG_MARGIN, 0, Constants.DIALOG_MARGIN);
             mainPanel.add(new SummaryPanel(issue), gbc);
             gbc.anchor = GridBagConstraints.FIRST_LINE_START;
 			gbc.gridy++;
