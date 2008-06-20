@@ -36,13 +36,27 @@ public final class VcsIdeaHelper {
 	}
 
 	public static String getRepositoryUrlForFile(VirtualFile vFile) {
-		AbstractVcs vcs = ProjectLevelVcsManager.getInstance(IdeaHelper.getCurrentProject()).getVcsFor(vFile);
-		return vcs.getCommittedChangesProvider().getLocationFor(VcsUtil.getFilePath(vFile.getPath())).toPresentableString();
+		ProjectLevelVcsManager plm = ProjectLevelVcsManager.getInstance(IdeaHelper.getCurrentProject());
+		if (plm != null) {
+			AbstractVcs vcs = plm.getVcsFor(vFile);
+			if (vcs != null) {
+				return vcs.getCommittedChangesProvider().getLocationFor(VcsUtil.getFilePath(vFile.getPath())).toPresentableString();
+			}
+
+			return null;
+		}
+
+		return null;
 	}
 
 	public static List<VcsFileRevision> getFileHistory(VirtualFile vFile) throws VcsException {
-		return ProjectLevelVcsManager.getInstance(IdeaHelper.getCurrentProject()).getVcsFor(vFile)
-				.getVcsHistoryProvider().createSessionFor(VcsUtil.getFilePath(vFile.getPath())).getRevisionList();
+		ProjectLevelVcsManager vcsPLM = ProjectLevelVcsManager.getInstance(IdeaHelper.getCurrentProject());
+		
+		if (vcsPLM != null) {
+			return vcsPLM.getVcsFor(vFile).getVcsHistoryProvider().createSessionFor(VcsUtil.getFilePath(vFile.getPath())).getRevisionList();
+		} else {			
+			throw new VcsException("File: " + vFile.getPath() + " is not under VCS.");
+		}
 	}
 
 	public static VcsFileRevision getFileRevision(VirtualFile vFile, String revision) {
@@ -58,6 +72,7 @@ public final class VcsIdeaHelper {
 		}
 		return null;
 	}
+
 
 	public static List<VcsFileRevision> getFileRevisions(VirtualFile vFile, List<String> revisions) {
 		List<VcsFileRevision> allRevisions;
