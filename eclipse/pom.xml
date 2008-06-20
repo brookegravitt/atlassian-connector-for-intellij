@@ -216,7 +216,8 @@
 			<_include>-target/classes/META-INF/MANIFEST.MF</_include>
                     </instructions>
                 </configuration>
-                <executions>
+                <!--
+		<executions>
                     <execution>
                         <id>distribution-package</id>
                         <phase>package</phase>
@@ -225,6 +226,7 @@
                         </goals>
                     </execution>
                 </executions>
+		-->
             </plugin>
             <!--plugin>
                 <groupId>org.apache.maven.plugins</groupId>
