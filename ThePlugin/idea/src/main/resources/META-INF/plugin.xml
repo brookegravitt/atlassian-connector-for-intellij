@@ -168,7 +168,8 @@
         <action id="ThePlugin.Crucible.ViewReview" class="com.atlassian.theplugin.idea.action.crucible.ViewReviewAction" text="View review in browser" icon="/icons/crucible-blue-16.png" />
 		<action id="ThePlugin.Crucible.BackToGeneralComments" class="com.atlassian.theplugin.idea.action.crucible.BackToGeneralCommentsAction" text="Go back" icon="/actions/rollback.png" />
 		<action id="ThePlugin.Crucible.BackToRevisionComments" class="com.atlassian.theplugin.idea.action.crucible.BackToRevisionCommentsAction" text="Go back" icon="/actions/rollback.png" />
-        <action id="ThePlugin.Crucible.GetComments" class="com.atlassian.theplugin.idea.action.crucible.GetCommentsAction" text="GetComments" icon="/icons/crucible-blue-16.png" />
+        <action id="ThePlugin.Crucible.GetComments" class="com.atlassian.theplugin.idea.action.crucible.GetCommentsAction" text="Get Comments" icon="/icons/inspector/sortByCategory.png" />
+		<action id="ThePlugin.Crucible.GetGeneralCommentReplies" class="com.atlassian.theplugin.idea.action.crucible.GetGeneralCommentRepliesAction" text="View Replies" icon="/icons/inspector/sortByCategory.png" />
 
         <action id="ThePlugin.Crucible.ToReviewAction" class="com.atlassian.theplugin.idea.action.crucible.ToReviewAction" text="To review" icon="/actions/find.png" />
         <action id="ThePlugin.Crucible.ToReviewComboAction" class="com.atlassian.theplugin.idea.action.crucible.ToReviewAction" text="To review" />
@@ -260,15 +261,11 @@
         </group>
 
 		<group id="ThePlugin.CrucibleGeneralCommentToolBar" popup="false" text="">
-            <reference id="ThePlugin.Crucible.ViewReview" />
-            <separator />
-            <reference id="ThePlugin.Crucible.GetComments" />
+            <reference id="ThePlugin.Crucible.GetGeneralCommentReplies" />
         </group>
 
 		<group id="ThePlugin.CrucibleGeneralCommentReplyToolBar" popup="false" text="">
 			<reference id="ThePlugin.Crucible.BackToGeneralComments" />
-			<!--<separator />-->
-            <!--<reference id="ThePlugin.Crucible.ViewReview" />-->
             <!--<separator />-->
             <!--<reference id="ThePlugin.Crucible.GetComments" />-->
         </group>
