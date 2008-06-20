@@ -114,6 +114,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 	private class ScrollablePanel extends JPanel implements Scrollable {
 		private static final int A_LOT = 100000;
 
+		// cheating obviously but this seems to do the right thing, so whatever :)
 		public Dimension getPreferredScrollableViewportSize() {
 			return new Dimension(1, A_LOT);
 		}
