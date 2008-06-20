@@ -117,7 +117,7 @@ public final class CrucibleHelper {
 		String baseUrl = VcsIdeaHelper.getRepositoryUrlForFile(baseDir);
 		OpenFileDescriptor ofd = null;
 
-		if (filePath.startsWith(baseUrl)) {
+		if (baseUrl != null && filePath.startsWith(baseUrl)) {
 
 			String relUrl = filePath.substring(baseUrl.length());
 
@@ -157,13 +157,15 @@ public final class CrucibleHelper {
 		Collection<RangeHighlighter> ranges = new ArrayList<RangeHighlighter>();
 		Project project = IdeaHelper.getCurrentProject();
 
-		for (VersionedComment comment: fileVersionedComments) {
-				//for (int i = comment.getFromStartLine(); i <= comment.getFromEndLine(); i++){
-					RangeHighlighter rh = editor.getDocument().getMarkupModel(project).addLineHighlighter( comment.getFromStartLine(), HighlighterLayer.SELECTION, textAttribute);
-					rh.setErrorStripeTooltip(reviewItem.getPermId().getId() +":" + comment.getMessage());
-					rh.setErrorStripeMarkColor(VERSIONED_COMMENT_STRIP_MARK_COLOR);
+		if (editor != null) {
+			for (VersionedComment comment: fileVersionedComments) {
+					//for (int i = comment.getFromStartLine(); i <= comment.getFromEndLine(); i++){
+						RangeHighlighter rh = editor.getDocument().getMarkupModel(project).addLineHighlighter( comment.getFromStartLine(), HighlighterLayer.SELECTION, textAttribute);
+						rh.setErrorStripeTooltip(reviewItem.getPermId().getId() +":" + comment.getMessage());
+						rh.setErrorStripeMarkColor(VERSIONED_COMMENT_STRIP_MARK_COLOR);
 
-				//}
+					//}
 			}
+		}
 	}
 }
