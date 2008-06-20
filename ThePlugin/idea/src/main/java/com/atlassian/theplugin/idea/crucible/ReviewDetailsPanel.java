@@ -157,12 +157,14 @@ public class ReviewDetailsPanel extends AbstractCommentPanel {
 					new VCommentCreateDateColumn(),
 					new VCommentAuthorColumn(),
 					new VCommentSummaryColumn(),
-					new VCommentStateColumn()
+					new VCommentStateColumn(),
+					new VCommentRepliesColumn()
 			};
 		}
 
 		public TableCellRenderer[] makeRendererInfo() {
 			return new TableCellRenderer[]{
+					null,
 					null,
 					null,
 					null,
