@@ -42,6 +42,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.List;
 
@@ -124,40 +126,54 @@ public class ReviewItemTreePanel extends JPanel
 			reviewFilesTree.setVisibleRowCount(VISIBLE_ROW_COUNT);
 			reviewFilesTree.setShowsRootHandles(true);
 
-			reviewFilesTree.addTreeSelectionListener(new TreeSelectionListener() {
-				public void valueChanged(TreeSelectionEvent event) {
-					TreePath path = event.getNewLeadSelectionPath();
 
-					if (path != null) {
-						TreePath oldPath = event.getOldLeadSelectionPath();
-						if (oldPath != null) {
-							DefaultMutableTreeNode oldNode = (DefaultMutableTreeNode) oldPath.getLastPathComponent();
-							if (oldNode != null && oldNode instanceof GeneralCommentNode) {
-								//@todo ???serverConfigPanel.storeServer((GeneralCommentNode) oldNode);
-							}
+			reviewFilesTree.addMouseListener(new MouseListener() {
+				public void mouseClicked(MouseEvent event) {
+					//To change body of implemented methods use File | Settings | File Templates.
+				}
+
+				public void mousePressed(MouseEvent e) {
+					int selRow = reviewFilesTree.getRowForLocation(e.getX(), e.getY());
+					TreePath selPath = reviewFilesTree.getPathForLocation(e.getX(), e.getY());
+					if (selRow != -1) {
+						if (e.getClickCount() == 2) {
+							nodeClicked(selRow, selPath);
 						}
-						selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
-						if (selectedNode instanceof GeneralCommentNode) {
-							GeneralComment server = ((GeneralCommentNode) selectedNode).getGeneralComment();
-						} else if (selectedNode instanceof ReviewItemDataNode) {
-							IdeaHelper.getCurrentReviewActionEventBroker().trigger(
-									new FocusOnFileEvent(
-											ReviewItemTreePanel.this,
-											((CrucibleTreeRootNode) model.getRoot()).getReviewDataInfoAdapter(),
-											((ReviewItemDataNode) selectedNode).getReviewItem()));
-						}
-					} else {
-						//@todo serverConfigPanel.showEmptyPanel();
-//		}
 					}
+				}
 
+				public void mouseReleased(MouseEvent event) {
+					//To change body of implemented methods use File | Settings | File Templates.
+				}
+
+				public void mouseEntered(MouseEvent event) {
+					//To change body of implemented methods use File | Settings | File Templates.
+				}
+
+				public void mouseExited(MouseEvent event) {
+					//To change body of implemented methods use File | Settings | File Templates.
 				}
 			});
-
+			
 			reviewFilesTree.setCellRenderer(new CrucibleTreeRenderer());
 		}
 
 		return reviewFilesTree;
+	}
+
+	private void nodeClicked(int selRow, TreePath path) {
+		if (path != null) {
+			selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
+			if (selectedNode instanceof GeneralCommentNode) {
+				// GeneralComment server = ((GeneralCommentNode) selectedNode).getGeneralComment();
+			} else if (selectedNode instanceof ReviewItemDataNode) {
+				IdeaHelper.getCurrentReviewActionEventBroker().trigger(
+						new FocusOnFileEvent(
+								ReviewItemTreePanel.this,
+								((CrucibleTreeRootNode) model.getRoot()).getReviewDataInfoAdapter(),
+								((ReviewItemDataNode) selectedNode).getReviewItem()));
+			}
+		}
 	}
 
 	public void setEnabled(boolean b) {
