@@ -111,36 +111,33 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 		}
 	}
 
-/*
-    private class CommentsPanel2 extends JPanel {
-        private JScrollPane scroll;
-        private JPanel holder;
+	private class ScrollablePanel extends JPanel implements Scrollable {
+		private static final int A_LOT = 100000;
 
-        public CommentsPanel2() {
-            holder = new JPanel();
-            holder.setLayout(new VerticalFlowLayout());
+		public Dimension getPreferredScrollableViewportSize() {
+			return new Dimension(1, A_LOT);
+		}
 
-            scroll = new JScrollPane(holder,
-                    JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-            scroll.setWheelScrollingEnabled(true);
-            add(scroll);
-        }
+		public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
+			return 1;
+		}
 
-        public void addComment(JIRAComment c) {
-            JEditorPane commentBody = new JEditorPane();
-			commentBody.setContentType("text/html");
-			commentBody.setText("<html><head></head><body>" + c.getBody() + "</body></html>");
-            CollapsiblePanel cp = new CollapsiblePanel(true, false,
-                          c.getAuthor() + " - " + c.getCreationDate().getTime().toString());
-            cp.setContent(commentBody);
-            holder.add(cp);
-        }
-    }
-*/
+		public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
+			return 1;
+		}
+
+		public boolean getScrollableTracksViewportWidth() {
+			return true;
+		}
+
+		public boolean getScrollableTracksViewportHeight() {
+			return false;
+		}
+	}
 
 	private class CommentsPanel extends JPanel {
 
-		private JPanel comments = new JPanel();
+		private ScrollablePanel comments = new ScrollablePanel();
         private BoldLabel titleLabel = new BoldLabel("Comments");
         private JScrollPane scroll = new JScrollPane();
         private List<CommentPanel> commentList = new ArrayList<CommentPanel>();
@@ -173,27 +170,12 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			gbc.weighty = 1.0;
             comments.setLayout(new VerticalFlowLayout());
 			scroll.setViewportView(comments);
+			scroll.getViewport().setOpaque(false);
+			scroll.setOpaque(false);
 			scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 			scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 			scroll.setBorder(BorderFactory.createEmptyBorder());
-
-			updateSize();
             add(scroll, gbc);
-
-            scroll.addComponentListener(new ComponentListener() {
-                public void componentResized(ComponentEvent e) {
-                    updateSize();
-                }
-
-                public void componentMoved(ComponentEvent e) {
-                }
-
-                public void componentShown(ComponentEvent e) {
-                }
-
-                public void componentHidden(ComponentEvent e) {
-                }
-            });
         }
 
         public void setTitle(String title) {
@@ -204,13 +186,11 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
             CommentPanel p = new CommentPanel(issue, c, server);
             comments.add(p);
             commentList.add(p);
-            updateSize();
 		}
 
         public void clearComments() {
             commentList.clear();
             comments.removeAll();
-            updateSize();
         }
 
         public void setAllVisible(boolean visible) {
@@ -219,25 +199,9 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
             }
         }
 
-        private void updateSize() {
-            int w = scroll.getWidth();
-            JScrollBar sb = scroll.getVerticalScrollBar();
-            w -= sb.getWidth();
-            int h = 0;
-            Component[] comps = comments.getComponents();
-            for (Component c : comps) {
-                h += c.getHeight();
-            }
-            // todo: needed to add some padding so that last comment shows regardless of panel size.
-            // If somebody knows how to do it better, please fix this
-            comments.setPreferredSize(new Dimension(w, h + 300));
-            comments.validate();
-        }
-
-        public void scrollToFirst() {
+       public void scrollToFirst() {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                    comments.scrollRectToVisible(new Rectangle(0, 0, 1, 1));
                     scroll.getVerticalScrollBar().setValue(0);
                 }
             });
@@ -295,30 +259,6 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
         }
     }
 
-/*
-    private class ShowHideAllCommentsButton extends AbstractShowHideButton {
-        private List<CommentPanel> components;
-        private JComponent container;
-
-        public ShowHideAllCommentsButton(List<CommentPanel> components, JComponent container) {
-            this.components = components;
-            this.container = container;
-        }
-
-        protected void setComponentVisible(boolean visible) {
-            for (CommentPanel c : components) {
-                c.getShowHideButton().setState(visible);
-            }
-            container.validate();
-            container.getParent().validate();
-        }
-
-        protected String getTooltip() {
-            return "Collapse/Expand All";
-        }
-    }
-
-*/
     private class CommentPanel extends JPanel {
 
 		private ShowHideButton btnShowHide;
