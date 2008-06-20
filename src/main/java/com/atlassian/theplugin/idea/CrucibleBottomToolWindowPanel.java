@@ -194,7 +194,7 @@ public class CrucibleBottomToolWindowPanel extends JPanel implements ContentPane
 					contentManager.addContent(content);
 				}
 				if (requestFocus) {
-					contentManager.requestFocus(content);
+					contentManager.setSelectedContent(content);
 				}
 			}
 			return content;

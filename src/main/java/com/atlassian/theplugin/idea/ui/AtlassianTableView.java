@@ -65,6 +65,11 @@ public class AtlassianTableView extends TableView {
 		}
 	}
 
+	public ListTableModel getListTableModel() {
+		return super.getListTableModel();
+	}
+
+
 	public void prepareColumns(TableColumnProvider tableColumnProvider) {
 		TableColumnInfo[] cols = tableColumnProvider.makeColumnInfo();
 		TableCellRenderer[] renderers = tableColumnProvider.makeRendererInfo();

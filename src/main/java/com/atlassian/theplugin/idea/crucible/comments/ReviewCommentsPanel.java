@@ -61,6 +61,7 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 
 	protected String getCommentToolbarActionGroup() {
 		return "ThePlugin.EmptyToolBar";
+		// 		return "ThePlugin.CrucibleGeneralCommentToolBar";
 	}
 
 	protected String getCommentReplyToolbarActionGroup() {
@@ -211,6 +212,7 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 			ReviewCommentsPanel.this.reviewDataInfoAdapter = reviewDataInfoAdapter; // adapter changed to new one
 			getCommentTableModel().setItems(generalComments);
 			getCommentTableModel().fireTableDataChanged();
+			getCommentsTable().getHeaderLabel().setText("General comments to " + reviewDataInfoAdapter);
 			getCommentsTable().getTable().revalidate();
 			getCommentsTable().getTable().setEnabled(true);
 			getCommentsTable().getTable().setForeground(UIUtil.getActiveTextColor());
