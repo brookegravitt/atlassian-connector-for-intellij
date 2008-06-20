@@ -127,4 +127,7 @@ public class AtlassianTableViewWithToolbar extends JPanel {
 		table.removeAll();
 	}
 
+	public void setHeaderText(String msg) {
+		headerLabel.setText(msg);
+	}
 }
