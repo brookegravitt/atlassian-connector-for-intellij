@@ -194,7 +194,7 @@ public class ReviewDetailsPanel extends AbstractCommentPanel {
 			buffer.append(" [");
 			buffer.append(VCommentCreateDateColumn.FORMATTER.format(comment.getCreateDate()));
 			buffer.append("]");
-			getReplyCommentsTable().setStatusText(buffer.toString());
+			getReplyCommentsTable().setHeaderText(buffer.toString());
 			getReplyCommentsTable().getTable().revalidate();
 			getReplyCommentsTable().getTable().setEnabled(true);
 			getReplyCommentsTable().getTable().setForeground(UIUtil.getActiveTextColor());
