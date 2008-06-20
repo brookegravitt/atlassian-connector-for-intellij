@@ -2,19 +2,12 @@ package com.atlassian.theplugin.idea.ui;
 
 import com.intellij.util.ui.ListTableModel;
 import com.intellij.util.ui.TableViewModel;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.util.config.Storage;
-import com.atlassian.theplugin.configuration.ProjectToolWindowTableConfiguration;
+import com.atlassian.theplugin.idea.Constants;
 
 import javax.swing.*;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
-import java.util.*;
-import java.util.List;
-
-import net.sf.nachocalendar.components.CalendarPanel;
 
 /**
  * Created by IntelliJ IDEA.
@@ -27,6 +20,7 @@ public class AtlassianTableViewWithToolbar extends JPanel {
 	private AtlassianTableView table;
 	private JPanel toolBarPanel;
 	private JLabel statusLabel;
+	private JLabel headerLabel;
 
 
 	public AtlassianTableViewWithToolbar(TableColumnProvider tableColumnProvider, ListTableModel listTableModel,
@@ -37,13 +31,49 @@ public class AtlassianTableViewWithToolbar extends JPanel {
 		toolBarPanel = new AtlassianToolbar(toolbarPlace, toolbarName);
 		table = new AtlassianTableView(tableColumnProvider, listTableModel, storage, popupMenuPlace, popupMenuName);
 		statusLabel = new JLabel();
+		headerLabel = new JLabel();
 
 		JScrollPane scrollTable = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollTable.setWheelScrollingEnabled(true);
 		add(toolBarPanel, BorderLayout.NORTH);
+
+		//add(headerLabel, BorderLayout.NORTH);
 		add(scrollTable, BorderLayout.CENTER);
 		add(statusLabel, BorderLayout.SOUTH);
+
+		/*
+						GridBagConstraints gbc;
+		gbc = new GridBagConstraints();
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.insets = new Insets(0, 0, 0, Constants.DIALOG_MARGIN);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.PAGE_START;
+		add(toolBarPanel, gbc);
+
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.insets = new Insets(0, 0, 0, Constants.DIALOG_MARGIN);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.NORTH;
+		add(headerLabel, gbc);
+
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.insets = new Insets(0, 0, 0, Constants.DIALOG_MARGIN);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.CENTER;
+		add(scrollTable, gbc);
+
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc = new GridBagConstraints();
+		gbc.insets = new Insets(0, 0, 0, Constants.DIALOG_MARGIN);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.PAGE_START;
+		add(statusLabel, gbc);
+		*/
 	}
 
 	public void setStatusText(String message) {
@@ -52,6 +82,15 @@ public class AtlassianTableViewWithToolbar extends JPanel {
 
 	public void prepareColumns(TableColumnProvider tableColumnProvider) {
 		table.prepareColumns(tableColumnProvider);
+	}
+
+	public ListTableModel getListTableModel()
+	{
+		return table.getListTableModel();
+	}
+
+	public JLabel getHeaderLabel() {
+		return headerLabel;
 	}
 
 	public Dimension getTableDimension() {
