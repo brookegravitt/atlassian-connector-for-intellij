@@ -9,18 +9,28 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.editor.markup.RangeHighlighter;
 import com.intellij.openapi.editor.markup.HighlighterLayer;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VfsUtil;
+import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
+import com.intellij.openapi.fileEditor.FileEditor;
+import com.intellij.openapi.vcs.history.VcsFileRevision;
+import com.intellij.openapi.vcs.vfs.VcsVirtualFile;
+import com.intellij.openapi.vcs.vfs.VcsFileSystem;
 
 import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
 import java.awt.*;
+import java.net.URL;
+import java.net.MalformedURLException;
 
 /**
  * Created by IntelliJ IDEA.
@@ -30,6 +40,8 @@ import java.awt.*;
  * To change this template use File | Settings | File Templates.
  */
 public final class CrucibleHelper {
+	//private static Set<OpenFileDescriptor> openDescriptors = new Set<OpenFileDescriptor>();
+	
 	private static final Color VERSIONED_COMMENT_BACKGROUND_COLOR = Color.LIGHT_GRAY;
 	private static final Color VERSIONED_COMMENT_STRIP_MARK_COLOR = Color.BLUE;
 
@@ -37,11 +49,17 @@ public final class CrucibleHelper {
 
 
 	public static void showVirtualFileWithComments(final ReviewItem reviewItem, final Collection<VersionedComment> fileComments){
-				
-			Editor editor = showVirtualFileInEditor(reviewItem);
-			TextAttributes textAttributes = new TextAttributes();
-			textAttributes.setBackgroundColor(VERSIONED_COMMENT_BACKGROUND_COLOR);
-			highlightCommentsInEditor(editor, fileComments, textAttributes);
+
+		int line  = 1;
+
+		if (!fileComments.isEmpty()){
+			line = fileComments.iterator().next().getFromStartLine();
+		}
+
+		Editor editor = showVirtualFileInEditor(getOpenFileDescriptor(reviewItem.getToPath(), reviewItem.getToRevision(), line, 1));
+		TextAttributes textAttributes = new TextAttributes();
+		textAttributes.setBackgroundColor(VERSIONED_COMMENT_BACKGROUND_COLOR);
+		highlightCommentsInEditor(editor, reviewItem,fileComments, textAttributes);
 	}
 
 	/*
@@ -66,17 +84,14 @@ public final class CrucibleHelper {
 	/*
 	*	Shows taken file from VCS in editor but do not higlkights VersionedComments
 	* */
-	public static  Editor showVirtualFileInEditor(ReviewItem reviewItem){
+	public static  Editor showVirtualFileInEditor(OpenFileDescriptor ofd){
 		Project project = IdeaHelper.getCurrentProject();
 		Editor editor = null;
-		VirtualFile vf = getVirtualFile(reviewItem.getToPath());
 
-		if (vf != null) {
+
+		if (ofd != null) {
 			FileEditorManager fem = FileEditorManager.getInstance(project);
-			OpenFileDescriptor ofd = new OpenFileDescriptor(project, vf);
-
 			editor = fem.openTextEditor(ofd, true);
-
 		}
 
 		return editor;
@@ -84,42 +99,68 @@ public final class CrucibleHelper {
 	/*
 	  * Shows file taken from VCS ineditor asnd sets curson in specified by "comment" line.
 	  * If function showVirtualFileWithComments is not called before then no comment highlighting or
-	  * StripMarkap 
+	?  * StripMarkap
 	* */
 	public static void selectVersionedCommentLineInEditor(ReviewItem reviewItem, VersionedComment comment){
-		VirtualFile vf = getVirtualFile(reviewItem.getToPath());
+		OpenFileDescriptor ofd = getOpenFileDescriptor(reviewItem.getToPath(), reviewItem.getToRevision(), comment.getFromStartLine(), 1);
 
-		if (vf != null) {
+		if (ofd != null) {
 			Project project = IdeaHelper.getCurrentProject();
 			FileEditorManager fem = FileEditorManager.getInstance(project);
-			OpenFileDescriptor ofd = new OpenFileDescriptor(project, vf, comment.getFromStartLine(), 1);
 			fem.openTextEditor(ofd, true);
 		}
 
 	}
 
-	private static VirtualFile getVirtualFile(String filePath){
+	private static OpenFileDescriptor getOpenFileDescriptor(String filePath, String fileRevision, int line, int col){
 		VirtualFile baseDir = IdeaHelper.getCurrentProject().getBaseDir();
 		String baseUrl = VcsIdeaHelper.getRepositoryUrlForFile(baseDir);
-		VirtualFile vf = null;
+		OpenFileDescriptor ofd = null;
 
 		if (filePath.startsWith(baseUrl)) {
-		   String relUrl = filePath.substring(baseUrl.length());
-		   vf = VfsUtil.findRelativeFile(relUrl, baseDir);
+
+			String relUrl = filePath.substring(baseUrl.length());
+
+
+			VirtualFile vfl = null;
+//			try {
+//				vfl = (VcsVirtualFile)VfsUtil.findFileByURL(new URL(filePath), VirtualFileManager.getInstance());
+//			} catch (MalformedURLException e) {
+//				e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//			}
+
+			vfl = VfsUtil.findRelativeFile(relUrl, baseDir);
+
+			VirtualFile[] openFiles = FileEditorManager.getInstance(IdeaHelper.getCurrentProject()).getOpenFiles();
+
+			for(VirtualFile file: openFiles) {
+				if (file.getPath().equals(filePath)) {
+
+				}
+			}
+
+
+
+			VcsFileRevision revision = VcsIdeaHelper.getFileRevision(vfl, fileRevision);
+			if (revision != null) {
+				VcsVirtualFile vcvf = new VcsVirtualFile(filePath,revision, VcsFileSystem.getInstance());
+		  		ofd = new OpenFileDescriptor(IdeaHelper.getCurrentProject(), vcvf, line, col);
+			}
 
 		}
 
-		return vf;
+
+		return ofd;
 	}
 
-	private static void highlightCommentsInEditor(Editor fileEditor, Collection<VersionedComment> fileVersionedComments, TextAttributes textAttribute){
+	private static void highlightCommentsInEditor(Editor editor, ReviewItem reviewItem, Collection<VersionedComment> fileVersionedComments, TextAttributes textAttribute){
 		Collection<RangeHighlighter> ranges = new ArrayList<RangeHighlighter>();
 		Project project = IdeaHelper.getCurrentProject();
 
 		for (VersionedComment comment: fileVersionedComments) {
 				//for (int i = comment.getFromStartLine(); i <= comment.getFromEndLine(); i++){
-					RangeHighlighter rh = fileEditor.getDocument().getMarkupModel(project).addLineHighlighter( comment.getFromStartLine(), HighlighterLayer.SELECTION, textAttribute);
-					rh.setErrorStripeTooltip(comment.getMessage());
+					RangeHighlighter rh = editor.getDocument().getMarkupModel(project).addLineHighlighter( comment.getFromStartLine(), HighlighterLayer.SELECTION, textAttribute);
+					rh.setErrorStripeTooltip(reviewItem.getPermId().getId() +":" + comment.getMessage());
 					rh.setErrorStripeMarkColor(VERSIONED_COMMENT_STRIP_MARK_COLOR);
 
 				//}
