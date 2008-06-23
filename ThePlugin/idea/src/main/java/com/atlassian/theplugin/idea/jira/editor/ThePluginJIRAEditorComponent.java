@@ -327,7 +327,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			}
 
 			commentBody.setEditable(false);
-            commentBody.setOpaque(false);
+			commentBody.setOpaque(false);
             commentBody.setContentType("text/html");
 			commentBody.setText("<html><head></head><body>" + comment.getBody() + "</body></html>");
 			gbc = new GridBagConstraints();
@@ -447,7 +447,15 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			}
 
 			body.setEditable(false);
-            body.setOpaque(false);
+			body.addHyperlinkListener(new HyperlinkListener() {
+				public void hyperlinkUpdate(HyperlinkEvent e) {
+					if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+						BrowserUtil.launchBrowser(e.getURL().toString());
+					}
+				}
+			});
+
+			body.setOpaque(false);
             body.setBorder(BorderFactory.createEmptyBorder());
             body.setContentType("text/html");
             body.setText("<html><head></head><body>" + description + "</body></html>");
