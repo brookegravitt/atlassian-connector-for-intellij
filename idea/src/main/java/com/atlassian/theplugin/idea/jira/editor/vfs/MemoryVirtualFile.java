@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.jira.editor.vfs;
 
 import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.vfs.DeprecatedVirtualFile;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
@@ -9,6 +10,7 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -152,6 +154,10 @@ public class MemoryVirtualFile extends DeprecatedVirtualFile
    {
        return true;
    }
+
+	public Icon getIcon() {
+		return IconLoader.getIcon("/icons/jira-blue-16.png");
+	}
 
    /**
     * Sets the parent of this file.
