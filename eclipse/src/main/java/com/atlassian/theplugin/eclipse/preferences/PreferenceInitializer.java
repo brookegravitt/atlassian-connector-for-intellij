@@ -36,7 +36,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	public void initializeDefaultPreferences() {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 		
-		store.setDefault(PreferenceConstants.BAMBOO_POLLING_TIME, 1);
+		store.setDefault(PreferenceConstants.BAMBOO_POLLING_TIME, 10);
 		store.setDefault(PreferenceConstants.BAMBOO_POPUP, BambooTooltipOption.ALL_FAULIRES_AND_FIRST_SUCCESS.name());
 	}
 
