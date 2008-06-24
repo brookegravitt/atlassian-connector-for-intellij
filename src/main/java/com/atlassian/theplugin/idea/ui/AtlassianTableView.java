@@ -36,6 +36,7 @@ public class AtlassianTableView extends TableView {
 	private boolean autoAdjustHeight = true;
 	private static final int MAX_DISPLAYED_ROW_COUNT = 15;
 	private final java.util.List<TableItemSelectedListener> listenerList = new ArrayList<TableItemSelectedListener>();
+	private UserTableContext state = new UserTableContext();
 
 
 	public AtlassianTableView(TableColumnProvider columnProvider, ListTableModel listTableModel, final Storage storage) {
@@ -139,5 +140,13 @@ public class AtlassianTableView extends TableView {
 
 	public List<TableItemSelectedListener> getListenerList() {
 		return Collections.unmodifiableList(listenerList);
+	}
+
+	public UserTableContext getStateContext() {
+		return state;
+	}
+
+	public void setStateContext(UserTableContext context) {
+		state = context;
 	}
 }

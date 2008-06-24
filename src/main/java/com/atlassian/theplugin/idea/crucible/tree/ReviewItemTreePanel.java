@@ -30,14 +30,13 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
+import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
-import com.atlassian.theplugin.idea.crucible.events.FocusOnFileEvent;
+import com.atlassian.theplugin.idea.crucible.events.ShowReviewedFileItemEvent;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.util.ui.UIUtil;
 
 import javax.swing.*;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
@@ -168,7 +167,7 @@ public class ReviewItemTreePanel extends JPanel
 				// GeneralComment server = ((GeneralCommentNode) selectedNode).getGeneralComment();
 			} else if (selectedNode instanceof ReviewItemDataNode) {
 				IdeaHelper.getCurrentReviewActionEventBroker().trigger(
-						new FocusOnFileEvent(
+						new ShowReviewedFileItemEvent(
 								ReviewItemTreePanel.this,
 								((CrucibleTreeRootNode) model.getRoot()).getReviewDataInfoAdapter(),
 								((ReviewItemDataNode) selectedNode).getReviewItem()));
@@ -214,7 +213,31 @@ public class ReviewItemTreePanel extends JPanel
 	}
 
 
-	public void focusOnReview(final ReviewDataInfoAdapter reviewItem) {
+	public void focusOnReview(ReviewDataInfoAdapter reviewDataInfoAdapter) {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	public void focusOnFile(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem) {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	public void focusOnGeneralComment(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	public void focusOnGeneralCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	public void focusOnVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem, Collection<VersionedComment> versionedComments, VersionedComment versionedComment) {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	public void focusOnVersionedCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	public void showReview(final ReviewDataInfoAdapter reviewItem) {
 		progressAnimation.startProgressAnimation();
 		try {
 			final List<ReviewItem> reviewFiles = crucibleServerFacade.getReviewItems(reviewItem.getServer(), reviewItem.getPermaId());
@@ -226,7 +249,7 @@ public class ReviewItemTreePanel extends JPanel
 					buffer.append(reviewItem.getCreator());
 					buffer.append(" ");
 					buffer.append("<font size=-1 color=");
-					buffer.append(Constants.CRUCIBLE_AUTH_COLOR);
+					buffer.append(CrucibleConstants.CRUCIBLE_AUTH_COLOR);
 					buffer.append(">AUTH</font>");
 					buffer.append(" ");
 					if (!reviewItem.getCreator().equals(reviewItem.getModerator())) {
@@ -234,7 +257,7 @@ public class ReviewItemTreePanel extends JPanel
 					}
 					buffer.append(" ");
 					buffer.append("<font size=-1 color=");
-					buffer.append(Constants.CRUCIBLE_MOD_COLOR);
+					buffer.append(CrucibleConstants.CRUCIBLE_MOD_COLOR);
 					buffer.append(">MOD</font>");
 					int i = 0;
 					List<Reviewer> reviewers = reviewItem.getReviewers();
@@ -263,19 +286,19 @@ public class ReviewItemTreePanel extends JPanel
 		}
 	}
 
-	public void focusOnFile(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem) {
+	public void showReviewedFileItem(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem) {
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
-	public void focusOnGeneralComment(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
+	public void showGeneralComment(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
-	public void focusOnGeneralCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
+	public void showGeneralCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
-	public void focusOnVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem, Collection<VersionedComment> versionedComments, VersionedComment versionedComment) {
+	public void showVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem, Collection<VersionedComment> versionedComments, VersionedComment versionedComment) {
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
@@ -283,7 +306,7 @@ public class ReviewItemTreePanel extends JPanel
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
-	public void focusOnVersionedCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
+	public void showVersionedCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 }
