@@ -50,7 +50,6 @@ public abstract class BambooAction extends Action {
 			public void run() {
 				bambooToolWindow.setStatusBarText(message);
 			}
-			
 		});
 	}
 

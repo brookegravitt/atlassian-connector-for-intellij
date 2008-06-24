@@ -16,17 +16,23 @@
 
 package com.atlassian.theplugin.eclipse.actions.bamboo;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.SWT;
 
+import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.eclipse.dialogs.bamboo.LabelBuildDialog;
+import com.atlassian.theplugin.eclipse.preferences.Activator;
 import com.atlassian.theplugin.eclipse.util.PluginUtil;
+import com.atlassian.theplugin.eclipse.view.bamboo.BambooBuildAdapterEclipse;
+import com.atlassian.theplugin.eclipse.view.bamboo.BambooToolWindow;
 
-public class LabelBuildAction extends Action {
+public class LabelBuildAction extends BambooAction {
 	
 	private static final String LABEL_BUILD = "Label Build";
 
-	public LabelBuildAction() {
-		super();
+	public LabelBuildAction(BambooToolWindow bambooToolWindow) {
+		super(bambooToolWindow);
 		
 		setEnabled(false);	// action is disabled by default
 	}
@@ -34,6 +40,34 @@ public class LabelBuildAction extends Action {
 	@Override
 	public void run() {
 		super.run();
+		
+		LabelBuildDialog dialog = new LabelBuildDialog(Activator.getDefault().getShell());
+		dialog.open();
+
+		if (dialog.getReturnCode() == SWT.OK) {
+
+			final String label = dialog.getLabel();
+			final BambooBuildAdapterEclipse build = getBuild();
+
+			Thread labelBuild = new Thread(new Runnable() {
+
+				public void run() {
+					try {
+						setUIMessage("Labeling build on plan " + build.getBuildKey());
+						bambooFacade.addLabelToBuild(
+								build.getServer(), build.getBuildKey(), build.getBuildNumber(), label);
+						setUIMessage("Build labeled on plan " + build.getBuildKey());
+					} catch (ServerPasswordNotProvidedException e) {
+						setUIMessage("Build not labeled. Password not provided for server");
+					} catch (RemoteApiException e) {
+						setUIMessage("Build not labeled. " + e.getMessage());
+					}
+				}
+
+			}, "atlassian-eclipse-plugin: Label Build Action thread");
+
+			labelBuild.start();
+		}
 		
 	}
 
