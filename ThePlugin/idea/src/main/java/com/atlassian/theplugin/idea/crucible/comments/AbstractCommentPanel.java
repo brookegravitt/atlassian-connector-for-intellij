@@ -26,7 +26,7 @@ public abstract class AbstractCommentPanel extends JPanel implements CrucibleRev
 		return commentsTable;
 	}
 
-	public AtlassianTableViewWithToolbar getReplyCommentsTable() {
+	public AtlassianTableViewWithToolbar getCommentReplyTable() {
 		return replyCommentsTable;
 	}
 

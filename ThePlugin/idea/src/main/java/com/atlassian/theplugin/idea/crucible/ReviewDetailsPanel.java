@@ -1,10 +1,13 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.idea.crucible.comments.*;
-import com.atlassian.theplugin.idea.crucible.events.FocusOnVersionedCommentEvent;
+import com.atlassian.theplugin.idea.crucible.events.ShowVersionedCommentEvent;
+import com.atlassian.theplugin.idea.crucible.events.ShowRevisionCommentReplyEvent;
 import com.atlassian.theplugin.idea.crucible.events.FocusOnRevisionCommentReplyEvent;
+import com.atlassian.theplugin.idea.crucible.events.FocusOnVersionedCommentEvent;
 import com.atlassian.theplugin.idea.ui.TableItemSelectedListener;
 import com.atlassian.theplugin.idea.ui.TableColumnProvider;
+import com.atlassian.theplugin.idea.ui.UserTableContext;
 import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewItem;
@@ -26,21 +29,17 @@ import java.awt.*;
  * To change this template use File | Settings | File Templates.
  */
 public class ReviewDetailsPanel extends AbstractCommentPanel {
-	private ReviewDataInfoAdapter reviewDataInfoAdapter;
-	private ReviewItem reviewItem;
-	private Collection<VersionedComment> versionedComments;
-	private ListTableModel rCommentTableModel;
-	private ListTableModel rCommentReplyTableModel;
+	private UserTableContext context;
 	private TableColumnProvider commentTableColumnProvider = new CommentColumnProvider();
-	private VersionedComment selectedComment;
 	private TableColumnProvider commentReplyTableColumnProvider = new ReviewCommentsPanel.CommentColumnProvider();
 
 	public ReviewDetailsPanel(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem, Collection<VersionedComment> versionedComments) {
 		super();
 		IdeaHelper.getCurrentReviewActionEventBroker().registerListener(this);
-		this.reviewDataInfoAdapter = reviewDataInfoAdapter;
-		this.reviewItem = reviewItem;
-		this.versionedComments = versionedComments;
+		context = new UserTableContext();
+		CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.setValue(context, reviewDataInfoAdapter);
+		CrucibleConstants.CrucibleTableState.REVIEW_ITEM.setValue(context, reviewItem);
+		CrucibleConstants.CrucibleTableState.VERSIONED_COMMENTS.setValue(context, versionedComments);
 
 		ListTableModel commentTableModel = new ListTableModel(getCommentTableColumnProvider().makeColumnInfo());
 		commentTableModel.setItems(new ArrayList<VersionedComment>(versionedComments));
@@ -50,6 +49,10 @@ public class ReviewDetailsPanel extends AbstractCommentPanel {
 		setCommentReplyTableModel(replyTableModel);
 
 		initialize();
+
+		getCommentsTable().getTable().setStateContext(context);
+		getCommentReplyTable().getTable().setStateContext(context);
+
 	}
 
 	public static ReviewDetailsPanel getInstance(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem, Collection<VersionedComment> versionedComments) {
@@ -77,14 +80,27 @@ public class ReviewDetailsPanel extends AbstractCommentPanel {
 		commentReplySelectedListener = new TableItemSelectedListener() {
 			public void itemSelected(Object item, int noClicks) {
 				GeneralComment selectedComment = (GeneralComment) item;
-				if (noClicks == 2) {
-					IdeaHelper.getCurrentReviewActionEventBroker().trigger(
-							new FocusOnRevisionCommentReplyEvent(
-									I_WANT_THIS_MESSAGE_BACK,
-									reviewDataInfoAdapter,
-									selectedComment
-							)
-					);
+				switch (noClicks) {
+					case 1:
+						IdeaHelper.getCurrentReviewActionEventBroker().trigger(
+								new FocusOnRevisionCommentReplyEvent(
+										I_WANT_THIS_MESSAGE_BACK,
+										(ReviewDataInfoAdapter) CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
+										selectedComment
+								)
+						);
+						break;
+					case 2:
+						IdeaHelper.getCurrentReviewActionEventBroker().trigger(
+								new ShowRevisionCommentReplyEvent(
+										I_WANT_THIS_MESSAGE_BACK,
+										(ReviewDataInfoAdapter) CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
+										selectedComment
+								)
+						);
+						break;
+					default:
+						//
 				}
 			}
 		};
@@ -96,16 +112,32 @@ public class ReviewDetailsPanel extends AbstractCommentPanel {
 		commentReplySelectedListener = new TableItemSelectedListener() {
 			public void itemSelected(Object item, int noClicks) {
 				VersionedComment selectedComment = (VersionedComment) item;
-				if (noClicks == 2) {
-					IdeaHelper.getCurrentReviewActionEventBroker().trigger(
-							new FocusOnVersionedCommentEvent(
-									I_WANT_THIS_MESSAGE_BACK,
-									reviewDataInfoAdapter,
-									reviewItem,
-									versionedComments,
-									selectedComment
-							)
-					);
+				CrucibleConstants.CrucibleTableState.SELECTED_VERSIONED_COMMENT.setValue(context, selectedComment);
+				switch (noClicks) {
+					case 1:
+						IdeaHelper.getCurrentReviewActionEventBroker().trigger(
+								new FocusOnVersionedCommentEvent(
+										I_WANT_THIS_MESSAGE_BACK,
+										(ReviewDataInfoAdapter) CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
+										(ReviewItem) CrucibleConstants.CrucibleTableState.REVIEW_ITEM.getValue(context),
+										(Collection<VersionedComment>) CrucibleConstants.CrucibleTableState.VERSIONED_COMMENTS.getValue(context),
+										(VersionedComment) CrucibleConstants.CrucibleTableState.SELECTED_VERSIONED_COMMENT.getValue(context)
+								)
+						);
+						break;
+					case 2:
+						IdeaHelper.getCurrentReviewActionEventBroker().trigger(
+								new ShowVersionedCommentEvent(
+										I_WANT_THIS_MESSAGE_BACK,
+										(ReviewDataInfoAdapter) CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
+										(ReviewItem) CrucibleConstants.CrucibleTableState.REVIEW_ITEM.getValue(context),
+										(Collection<VersionedComment>) CrucibleConstants.CrucibleTableState.VERSIONED_COMMENTS.getValue(context),
+										(VersionedComment) CrucibleConstants.CrucibleTableState.SELECTED_VERSIONED_COMMENT.getValue(context)
+								)
+						);
+						break;
+					default:
+						//
 				}
 			}
 		};
@@ -121,32 +153,46 @@ public class ReviewDetailsPanel extends AbstractCommentPanel {
 	}
 
 	public void focusOnReview(ReviewDataInfoAdapter reviewDataInfoAdapter) {
-		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
 	public void focusOnFile(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem) {
-		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
 	public void focusOnGeneralComment(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
-		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
 	public void focusOnGeneralCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
-		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
-	public void focusOnVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, final ReviewItem reviewItem,
-										Collection<VersionedComment> versionedComments, final VersionedComment versionedComment) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				CrucibleHelper.selectVersionedCommentLineInEditor(reviewItem, versionedComment);
-			}
-		});
-		// EventQueue.invokeLater(new CommentSelectedListener(reviewDataInfoAdapter, versionedComment));
+	public void focusOnVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, final ReviewItem reviewItem, Collection<VersionedComment> versionedComments, final VersionedComment versionedComment) {
+//		EventQueue.invokeLater(new Runnable() {
+//			public void run() {
+//				CrucibleHelper.selectVersionedCommentLineInEditor(reviewItem, versionedComment);
+//			}
+//		});
 	}
 
 	public void focusOnVersionedCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
+	}
+
+	public void showReview(ReviewDataInfoAdapter reviewDataInfoAdapter) {
+	}
+
+	public void showReviewedFileItem(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem) {
+	}
+
+	public void showGeneralComment(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
+	}
+
+	public void showGeneralCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
+	}
+
+	public void showVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, final ReviewItem reviewItem,
+									 Collection<VersionedComment> versionedComments, final VersionedComment versionedComment) {
+//		EventQueue.invokeLater(new CommentSelectedListener(reviewDataInfoAdapter, versionedComment));
+	}
+
+	public void showVersionedCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
@@ -183,7 +229,6 @@ public class ReviewDetailsPanel extends AbstractCommentPanel {
 		}
 
 		public void run() {
-			ReviewDetailsPanel.this.selectedComment = comment; // adapter changed to the new one
 			getCommentReplyTableModel().setItems(comment.getReplies());
 			getCommentReplyTableModel().fireTableDataChanged();
 			StringBuffer buffer = new StringBuffer();
@@ -194,10 +239,12 @@ public class ReviewDetailsPanel extends AbstractCommentPanel {
 			buffer.append(" [");
 			buffer.append(VCommentCreateDateColumn.FORMATTER.format(comment.getCreateDate()));
 			buffer.append("]");
-			getReplyCommentsTable().setHeaderText(buffer.toString());
-			getReplyCommentsTable().getTable().revalidate();
-			getReplyCommentsTable().getTable().setEnabled(true);
-			getReplyCommentsTable().getTable().setForeground(UIUtil.getActiveTextColor());
+			getCommentReplyTable().getHeaderLabel().setText(buffer.toString());
+			getCommentReplyTable().getTable().invalidate();
+			getCommentReplyTable().getTable().revalidate();
+			getCommentReplyTable().getTable().setEnabled(true);
+			getCommentReplyTable().getTable().setForeground(UIUtil.getActiveTextColor());
+			getCommentReplyTable().getTable().repaint();
 //			dataPanelsHolder.moveToFront(replyCommentsTable);
 			switchToCommentReplies();
 		}
