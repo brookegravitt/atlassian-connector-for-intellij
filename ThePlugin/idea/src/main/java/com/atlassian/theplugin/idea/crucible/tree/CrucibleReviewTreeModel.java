@@ -5,10 +5,10 @@ import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.idea.crucible.tree.CrucibleTreeRootNode;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemDataNode;
 import com.atlassian.theplugin.idea.crucible.tree.GeneralCommentNode;
-import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
 
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
 
 /**
  * Created by IntelliJ IDEA.
@@ -25,7 +25,7 @@ public class CrucibleReviewTreeModel extends DefaultTreeModel {
 		super(root);
 	}
 
-	public ReviewItemDataNode getOrInsertReviewItemDataNode(ReviewDataInfoAdapter reviewAdapter, ReviewItem reviewItem, boolean addIfMissing) {
+	public ReviewItemDataNode getOrInsertReviewItemDataNode(ReviewItem reviewItem, boolean addIfMissing) {
 		for (int i = 0; i < root.getChildCount(); ++i) {
 			if (root.getChildAt(i) instanceof ReviewItemDataNode) {
 				ReviewItemDataNode reviewItemDataNode = (ReviewItemDataNode) root.getChildAt(i);
@@ -35,7 +35,7 @@ public class CrucibleReviewTreeModel extends DefaultTreeModel {
 			}
 		}
 		if (addIfMissing) {
-				final ReviewItemDataNode child = new ReviewItemDataNode(reviewAdapter, reviewItem);
+				final ReviewItemDataNode child = new ReviewItemDataNode(reviewItem);
 				insertNodeInto(child, (DefaultMutableTreeNode) root, root.getChildCount());
 				this.nodeChanged(root);
 				return child;
@@ -44,7 +44,7 @@ public class CrucibleReviewTreeModel extends DefaultTreeModel {
 		return null;
 	}
 
-	public GeneralCommentNode getOrInsertGeneralCommentNode(ReviewDataInfoAdapter reviewAdapter, GeneralComment generalComment, boolean addIfMissing) {
+	public GeneralCommentNode getGeneralCommentNode(GeneralComment generalComment, boolean addIfMissing) {
 		for (int i = 0; i < root.getChildCount(); ++i) {
 			if (root.getChildAt(i) instanceof GeneralComment) {
 				GeneralCommentNode node = (GeneralCommentNode) root.getChildAt(i);
@@ -56,11 +56,8 @@ public class CrucibleReviewTreeModel extends DefaultTreeModel {
 		}
 		if (addIfMissing) {
 
-				final GeneralCommentNode child = new GeneralCommentNode(reviewAdapter, generalComment);
-				//final GeneralCommentMessageNode childMessage = new GeneralCommentMessageNode(reviewAdapter, generalComment);
-
+				final GeneralCommentNode child = new GeneralCommentNode(generalComment);
 				insertNodeInto(child, (DefaultMutableTreeNode) root, root.getChildCount());
-				//insertNodeInto(childMessage, child, child.getChildCount());
 				this.nodeChanged(root);
 				return child;
 		}
