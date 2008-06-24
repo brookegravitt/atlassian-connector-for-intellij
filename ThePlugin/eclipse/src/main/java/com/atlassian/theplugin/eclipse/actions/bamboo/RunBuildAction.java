@@ -16,6 +16,10 @@
 
 package com.atlassian.theplugin.eclipse.actions.bamboo;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
@@ -39,9 +43,28 @@ public class RunBuildAction extends BambooAction {
 		
 		final BambooBuildAdapterEclipse build = getBuild();
 		
-		Thread runBuild = new Thread(new Runnable() {
+//		Thread runBuild = new Thread(new Runnable() {
+//
+//			public void run() {
+//				try {
+//					setUIMessage("Starting build on plan " + build.getBuildKey());
+//					bambooFacade.executeBuild(build.getServer(), build.getBuildKey());
+//					setUIMessage("Build started on plan " + build.getBuildKey());
+//				} catch (ServerPasswordNotProvidedException e) {
+//					setUIMessage("Build not started. Password not provided for server");
+//				} catch (RemoteApiException e) {
+//					setUIMessage("Build not started. " + e.getMessage());
+//				}
+//			}
+//			
+//		}, "atlassian-eclipse-plugin: Run Build Action thread");
+//		
+//		runBuild.start();
+		
+		Job runBuild = new Job("Starting build on plan " + build.getBuildKey()) {
 
-			public void run() {
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
 				try {
 					setUIMessage("Starting build on plan " + build.getBuildKey());
 					bambooFacade.executeBuild(build.getServer(), build.getBuildKey());
@@ -51,11 +74,13 @@ public class RunBuildAction extends BambooAction {
 				} catch (RemoteApiException e) {
 					setUIMessage("Build not started. " + e.getMessage());
 				}
+				return Status.OK_STATUS;
 			}
 			
-		}, "atlassian-eclipse-plugin: Run Build Action thread");
+		};
 		
-		runBuild.start();
+		runBuild.setPriority(Job.SHORT);
+		runBuild.schedule();
 	}
 
 
