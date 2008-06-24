@@ -99,6 +99,7 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 			serverTree.setShowsRootHandles(true);
 
 			serverTree.addTreeSelectionListener(this);
+			
 
 			serverTree.setCellRenderer(new ServerTreeRenderer());
 		}
