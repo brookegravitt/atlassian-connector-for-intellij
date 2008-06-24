@@ -18,7 +18,9 @@ package com.atlassian.theplugin.util;
 
 import com.atlassian.theplugin.exception.VersionServiceException;
 import com.atlassian.theplugin.commons.exception.IncorrectVersionException;
+import com.atlassian.theplugin.commons.exception.HttpProxySettingsException;
 import com.atlassian.theplugin.commons.util.Version;
+import com.atlassian.theplugin.commons.util.HttpClientFactory;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.jdom.Document;
@@ -49,7 +51,13 @@ public final class InfoServer {
 	protected static VersionInfo getLatestPluginVersion(String serviceUrl, long uid, boolean checkUnstableVersions) 
 			throws VersionServiceException, IncorrectVersionException {
 		try {
-			HttpClient client = new HttpClient();
+
+			HttpClient client = null;
+			try {
+				client = HttpClientFactory.getClient();
+			} catch (HttpProxySettingsException e) {
+				throw new VersionServiceException("Connection error while retrieving the latest plugin version.", e);
+			}
 			GetMethod method = new GetMethod(serviceUrl + "?uid=" + uid);
 			try {
 				client.executeMethod(method);
