@@ -278,10 +278,6 @@
 
 		<group id="ThePlugin.CrucibleRevisionCommentReplyToolBar" popup="false" text="">
 			<reference id="ThePlugin.Crucible.BackToRevisionComments" />
-			<separator />
-            <reference id="ThePlugin.Crucible.ViewReview" />
-            <separator />
-            <reference id="ThePlugin.Crucible.GetComments" />
         </group>
 
 		<group id="ThePlugin.Crucible.ReviewPopupMenu" popup="true">

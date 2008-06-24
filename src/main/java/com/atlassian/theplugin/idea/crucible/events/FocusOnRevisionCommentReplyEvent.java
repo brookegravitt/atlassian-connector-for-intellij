@@ -7,21 +7,21 @@ import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 /**
  * Created by IntelliJ IDEA.
  * User: lguminski
- * Date: Jun 19, 2008
- * Time: 8:14:59 AM
+ * Date: Jun 23, 2008
+ * Time: 4:32:23 PM
  * To change this template use File | Settings | File Templates.
  */
 public class FocusOnRevisionCommentReplyEvent extends CrucibleEvent {
 	private ReviewDataInfoAdapter reviewDataInfoAdapter;
-	private GeneralComment comment;
+	private GeneralComment selectedComment;
 
-	public FocusOnRevisionCommentReplyEvent(CrucibleReviewActionListener caller, ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
+	public FocusOnRevisionCommentReplyEvent(CrucibleReviewActionListener caller, ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment selectedComment) {
 		super(caller);
 		this.reviewDataInfoAdapter = reviewDataInfoAdapter;
-		this.comment = comment;
+		this.selectedComment = selectedComment;
 	}
 
 	protected void notify(CrucibleReviewActionListener listener) {
-		listener.focusOnVersionedCommentReply(reviewDataInfoAdapter, comment);
+		listener.focusOnVersionedCommentReply(reviewDataInfoAdapter, selectedComment);
 	}
 }
