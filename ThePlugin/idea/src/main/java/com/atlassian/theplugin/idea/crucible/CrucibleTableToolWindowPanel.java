@@ -25,7 +25,7 @@ import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.ThePluginProjectComponent;
-import com.atlassian.theplugin.idea.crucible.events.FocusOnReviewEvent;
+import com.atlassian.theplugin.idea.crucible.events.ShowReviewEvent;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.bamboo.ToolWindowBambooContent;
 import com.atlassian.theplugin.idea.ui.CollapsibleTable;
@@ -377,7 +377,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         if (noClicks == 2) {
 			if (item != null && item instanceof ReviewDataInfoAdapter) {
 				ReviewDataInfoAdapter review = (ReviewDataInfoAdapter) item;
-				IdeaHelper.getCurrentReviewActionEventBroker().trigger(new FocusOnReviewEvent(this, review));
+				IdeaHelper.getCurrentReviewActionEventBroker().trigger(new ShowReviewEvent(this, review));
 			}
 		}
     }
@@ -719,7 +719,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         }
     }
 
-	public void focusOnReview(ReviewDataInfoAdapter reviewItem) {
+	public void focusOnReview(ReviewDataInfoAdapter reviewDataInfoAdapter) {
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
@@ -739,11 +739,35 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
+	public void focusOnVersionedCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	public void showReview(ReviewDataInfoAdapter reviewItem) {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	public void showReviewedFileItem(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem) {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	public void showGeneralComment(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	public void showGeneralCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	public void showVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem, Collection<VersionedComment> versionedComments, VersionedComment versionedComment) {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
 	public void focusOnVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, VersionedComment versionedComment) {
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
-	public void focusOnVersionedCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
+	public void showVersionedCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 }

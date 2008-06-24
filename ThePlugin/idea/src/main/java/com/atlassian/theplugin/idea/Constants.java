@@ -39,8 +39,4 @@ public final class Constants {
 	public static final String HELP_JIRA_WORKLOG = "theplugin.jira.worklog";
 	public static final String HELP_TEST_CONNECTION = "theplugin.testconnection";
 	public static final Icon HELP_ICON = IconLoader.getIcon("/actions/help.png");
-
-	public static final String CRUCIBLE_AUTH_COLOR = "green";
-
-	public static final String CRUCIBLE_MOD_COLOR = "#FEA02C";
 }

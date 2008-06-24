@@ -201,7 +201,31 @@ public class CrucibleBottomToolWindowPanel extends JPanel implements ContentPane
 		}
 
 
-		public void focusOnReview(ReviewDataInfoAdapter reviewItem) {
+		public void focusOnReview(ReviewDataInfoAdapter reviewDataInfoAdapter) {
+			//To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		public void focusOnFile(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem) {
+			//To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		public void focusOnGeneralComment(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
+			//To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		public void focusOnGeneralCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
+			//To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		public void focusOnVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem, Collection<VersionedComment> versionedComments, VersionedComment versionedComment) {
+			//To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		public void focusOnVersionedCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
+			//To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		public void showReview(ReviewDataInfoAdapter reviewItem) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					ToolWindow tw = IdeaHelper.getCurrentBottomIdeaToolWindow();
@@ -217,7 +241,7 @@ public class CrucibleBottomToolWindowPanel extends JPanel implements ContentPane
 			});
 		}
 
-		public void focusOnFile(final ReviewDataInfoAdapter reviewDataInfoAdapter, final ReviewItem reviewItem) {
+		public void showReviewedFileItem(final ReviewDataInfoAdapter reviewDataInfoAdapter, final ReviewItem reviewItem) {
 			try {
 
 				final Collection<VersionedComment> versionedComments = crucibleServerFacade.getVersionedComments(
@@ -237,15 +261,15 @@ public class CrucibleBottomToolWindowPanel extends JPanel implements ContentPane
 			}
 		}
 
-		public void focusOnGeneralComment(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
+		public void showGeneralComment(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
 			//To change body of implemented methods use File | Settings | File Templates.
 		}
 
-		public void focusOnGeneralCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
+		public void showGeneralCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
 			//To change body of implemented methods use File | Settings | File Templates.
 		}
 
-		public void focusOnVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem, Collection<VersionedComment> versionedComments, VersionedComment versionedComment) {
+		public void showVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem, Collection<VersionedComment> versionedComments, VersionedComment versionedComment) {
 			//To change body of implemented methods use File | Settings | File Templates.
 		}
 
@@ -253,7 +277,7 @@ public class CrucibleBottomToolWindowPanel extends JPanel implements ContentPane
 			//To change body of implemented methods use File | Settings | File Templates.
 		}
 
-		public void focusOnVersionedCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
+		public void showVersionedCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
 			//To change body of implemented methods use File | Settings | File Templates.
 		}
 
