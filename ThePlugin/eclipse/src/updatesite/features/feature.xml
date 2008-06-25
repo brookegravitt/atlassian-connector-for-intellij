@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="atlassian_eclipse_plugin_feature"
+      label="Atlassian Eclipse Plugin Feature"
+      version="@project.version@"
+      provider-name="Atlassian Pty Ltd">
+
+   <description url="http://www.atlassian.com">
+      Feature provides functionality that integrates Eclipse IDE with
+Atlassian Bamboo continous integration system and other products
+in the future.
+   </description>
+
+   <copyright url="http://www.atlassian.com">
+      Copyright (C) 2008 Atlassian
+   </copyright>
+
+   <license url="http://www.eclipse.org/legal/epl-v10.html">
+      Eclipse Public License 1.0
+   </license>
+
+   <url>
+      <update label="Atlassian Eclipse Plugin Site" url="http://update.atlassian.com/atlassian-eclipse-plugin/"/>
+   </url>
+
+   <plugin
+         id="atlassian_eclipse_plugin"
+         download-size="0"
+         install-size="0"
+         version="@project.version@"
+         unpack="false"/>
+
+</feature>
