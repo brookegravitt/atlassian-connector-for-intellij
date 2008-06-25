@@ -56,14 +56,7 @@ import com.atlassian.theplugin.eclipse.view.bamboo.BambooToolWindowContent;
  */
 public class Activator extends AbstractUIPlugin {
 
-	public class ConfigListener implements IPropertyChangeListener {
-		public void propertyChange(PropertyChangeEvent event) {
-			reloadConfiguration();
-			notifyConfigurationListeners();
-			// bambooChecker.setConfiguration(pluginConfiguration);
-			rescheduleStatusCheckers();
-		}
-	}
+
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "com.atlassian.theplugin.eclipse";
@@ -122,26 +115,6 @@ public class Activator extends AbstractUIPlugin {
 		
 	}
 	
-	private void notifyConfigurationListeners() {
-		for (ConfigurationListener listener : configurationListeners) {
-			listener.updateConfiguration(pluginConfiguration);
-		}
-	}
-	
-	public void registerConfigurationListener(ConfigurationListener configListener) {
-		this.configurationListeners.add(configListener);
-	}
-
-	public void unregisterConfigurationListener(ConfigurationListener configListener) {
-		this.configurationListeners.remove(configListener);
-	}
-
-	public void reloadConfiguration() {
-		ProjectConfigurationWrapper configurationWrapper = new ProjectConfigurationWrapper(getPluginPreferences());
-		pluginConfiguration = configurationWrapper.getPluginConfiguration();
-		ConfigurationFactory.setConfiguration(pluginConfiguration);
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
@@ -159,6 +132,26 @@ public class Activator extends AbstractUIPlugin {
 		
 		plugin = null;
 		super.stop(context);
+	}
+	
+	public void registerConfigurationListener(ConfigurationListener configListener) {
+		this.configurationListeners.add(configListener);
+	}
+
+	public void unregisterConfigurationListener(ConfigurationListener configListener) {
+		this.configurationListeners.remove(configListener);
+	}
+	
+	private void notifyConfigurationListeners() {
+		for (ConfigurationListener listener : configurationListeners) {
+			listener.updateConfiguration(pluginConfiguration);
+		}
+	}
+
+	public void reloadConfiguration() {
+		ProjectConfigurationWrapper configurationWrapper = new ProjectConfigurationWrapper(getPluginPreferences());
+		pluginConfiguration = configurationWrapper.getPluginConfiguration();
+		ConfigurationFactory.setConfiguration(pluginConfiguration);
 	}
 
 	/**
@@ -192,19 +185,17 @@ public class Activator extends AbstractUIPlugin {
 	public BambooStatusChecker getBambooChecker() {
 		return bambooChecker;
 	}
-	
-	public Shell getShell() {
-		return this.getWorkbench().getDisplay().getActiveShell();
-	}
+
 	
 	private void disableTimer() {
+		Job.getJobManager().cancel(BackgroundTaskType.CHECKERS);
 		
-		Iterator<Job> i = scheduledComponents.iterator();
-		while (i.hasNext()) {
-			Job job = i.next();
-			i.remove();
-			job.cancel();
-		}
+//		Iterator<Job> i = scheduledComponents.iterator();
+//		while (i.hasNext()) {
+//			Job job = i.next();
+//			i.remove();
+//			job.cancel();
+//		}
 	}
 	
 	private void startTimer() {
@@ -218,6 +209,22 @@ public class Activator extends AbstractUIPlugin {
 						newTask.run();
 						schedule(checker.getInterval());
 						return Status.OK_STATUS;
+					}
+
+					@Override
+					public boolean belongsTo(Object family) {
+						if (! (family instanceof BackgroundTaskType)) {
+							return false;
+						}
+						
+						switch ((BackgroundTaskType) family) {
+						case ALL:
+							return true;
+						case CHECKERS:
+							return true;
+						default:
+							return false;
+						} 
 					}
 				};
 				newJob.schedule(0);		// start checker immediately 
@@ -239,6 +246,20 @@ public class Activator extends AbstractUIPlugin {
 
 	public Device getDisplay() {
 		return this.getWorkbench().getDisplay();
+	}
+	
+	
+	public Shell getShell() {
+		return this.getWorkbench().getDisplay().getActiveShell();
+	}
+	
+	public class ConfigListener implements IPropertyChangeListener {
+		public void propertyChange(PropertyChangeEvent event) {
+			reloadConfiguration();
+			notifyConfigurationListeners();
+			// bambooChecker.setConfiguration(pluginConfiguration);
+			rescheduleStatusCheckers();
+		}
 	}
 	
 }
