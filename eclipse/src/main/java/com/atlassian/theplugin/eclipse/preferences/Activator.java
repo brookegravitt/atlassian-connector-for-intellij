@@ -25,8 +25,12 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.Preferences.IPropertyChangeListener;
 import org.eclipse.core.runtime.Preferences.PropertyChangeEvent;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.widgets.Shell;
@@ -64,18 +68,15 @@ public class Activator extends AbstractUIPlugin {
 	// The plug-in ID
 	public static final String PLUGIN_ID = "com.atlassian.theplugin.eclipse";
 
-	private static final int MILLISECONDS_IN_MINUTE = 1000*60;
-
 	// The shared instance
 	private static Activator plugin;
-
-	private Timer timer;
 
 	private EclipsePluginConfiguration pluginConfiguration;
 
 	private BambooStatusChecker bambooChecker;
 
-	private Collection<TimerTask> scheduledComponents = new ArrayList<TimerTask>();
+	//private Collection<TimerTask> scheduledComponents = new ArrayList<TimerTask>();
+	private Collection<Job> scheduledComponents = new ArrayList<Job>();
 
 	private Collection<SchedulableChecker> schedulableCheckers = new ArrayList<SchedulableChecker>();
 
@@ -116,13 +117,8 @@ public class Activator extends AbstractUIPlugin {
 		configListener = new ConfigListener();
 		getPluginPreferences().addPropertyChangeListener(configListener);
 		
-
-		// create timer
-		timer = new Timer("Atlassian Eclipse Plugin checkers");
-		
 		// start timer/checkers
 		startTimer();
-		//timer.schedule(bambooChecker.newTimerTask(), 0, BAMBOO_CHECKER_POLLING);
 		
 	}
 	
@@ -159,10 +155,10 @@ public class Activator extends AbstractUIPlugin {
 		getPluginPreferences().setValue(PreferenceConstants.BAMBOO_TAB_COLUMNS_WIDTH, 
 				getPluginConfiguration().getBambooTabConfiguration().getColumnsWidthString());
 		
+		disableTimer();
+		
 		plugin = null;
 		super.stop(context);
-		
-		timer.cancel();
 	}
 
 	/**
@@ -185,9 +181,9 @@ public class Activator extends AbstractUIPlugin {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
 
-	public Timer getTimer() {
-		return timer;
-	}
+//	public Timer getTimer() {
+//		return timer;
+//	}
 
 	public EclipsePluginConfiguration getPluginConfiguration() {
 		return pluginConfiguration;
@@ -203,23 +199,33 @@ public class Activator extends AbstractUIPlugin {
 	
 	private void disableTimer() {
 		
-		Iterator<TimerTask> i = scheduledComponents.iterator();
+		Iterator<Job> i = scheduledComponents.iterator();
 		while (i.hasNext()) {
-			TimerTask timerTask = i.next();
+			Job job = i.next();
 			i.remove();
-			timerTask.cancel();
+			job.cancel();
 		}
-
-		timer.purge();
 	}
 	
 	private void startTimer() {
-		for (SchedulableChecker checker : schedulableCheckers) {
+		for (final SchedulableChecker checker : schedulableCheckers) {
 			if (checker.canSchedule()) {
 				final TimerTask newTask = checker.newTimerTask();
-				scheduledComponents.add(newTask);
-				timer.schedule(newTask, 0, pluginConfiguration.getBambooConfigurationData().getPollTime() * MILLISECONDS_IN_MINUTE);
-				//timer.schedule(newTask, 0, checker.getInterval());
+				final Job newJob = new Job(checker.getName()) {
+
+					@Override
+					protected IStatus run(IProgressMonitor monitor) {
+						newTask.run();
+						schedule(checker.getInterval());
+						return Status.OK_STATUS;
+					}
+				};
+				newJob.schedule(0);		// start checker immediately 
+				
+				scheduledComponents.add(newJob);
+//				scheduledComponents.add(newTask);
+//				timer.schedule(newTask, 0, pluginConfiguration.getBambooConfigurationData().getPollTime() * MILLISECONDS_IN_MINUTE);
+//				timer.schedule(newTask, 0, checker.getInterval());
 			} else {
 				checker.resetListenersState();
 			}
