@@ -195,57 +195,63 @@
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
-			    <outputDirectory>${project.build.directory}/lib</outputDirectory>
+						    <outputDirectory>${project.build.directory}/lib</outputDirectory>
+							<includeScope>runtime</includeScope>
+							<excludeGroupIds>org.eclipse,org.eclipse.ui,org.eclipse.core,org.eclipse.equinox</excludeGroupIds>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <version>1.4.0</version>
-                <extensions>true</extensions>
-<!--
-          the following instructions build a simple set of public/private classes into an OSGi bundle
-        -->
-                <configuration>
-                    <manifestLocation>META-INF</manifestLocation>
-                    <instructions>
-                        <Export-Package>${bundle.namespace}.eclipse.*;version="${pom.version}"</Export-Package>
-			<_include>-target/classes/META-INF/MANIFEST.MF</_include>
-                    </instructions>
-                </configuration>
-                <!--
-		<executions>
-                    <execution>
-                        <id>distribution-package</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>bundle</goal>
-                        </goals>
-                    </execution>
-                </executions>
-		-->
-            </plugin>
-            <!--plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>distribution-package</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>attached</goal>
-                        </goals>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>${pom.basedir}/src/main/assembly/plugin-assembly.xml</descriptor>
-                            </descriptors>
-                            <outputDirectory>${project.reporting.outputDirectory}/${downloadDir}</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin-->
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<property name="output.dir" value="${project.reporting.outputDirectory}/${downloadDir}"/>
+								<property name="tmp.dir" value="${project.build.directory}/updatesite"/>
+								<filterset id="maven.properties">
+									<filter token="project.version" value="${project.version}"/>
+								</filterset>
+
+								<mkdir dir="${output.dir}"/>
+								<mkdir dir="${output.dir}/features"/>
+								<mkdir dir="${output.dir}/plugins"/>
+								<mkdir dir="${tmp.dir}"/>
+
+								<copy file="src/updatesite/site.xml" todir="${output.dir}" filtering="true" overwrite="true">
+									<filterset refid="maven.properties"/>
+								</copy>
+
+								<!-- Create featurs file -->
+								<mkdir dir="${tmp.dir}/feature"/>
+								<copy file="src/updatesite/features/feature.xml" todir="${tmp.dir}/feature" filtering="true" overwrite="true">
+									<filterset refid="maven.properties"/>
+								</copy>
+
+								<jar destfile="${output.dir}/features/atlassian_eclipse_plugin_feature_${project.version}.jar"
+									basedir="${tmp.dir}/feature"/>
+
+								<!-- Create plugin file -->
+								<mkdir dir="${tmp.dir}/plugin"/>
+								<jar destfile="${output.dir}/plugins/atlassian_eclipse_plugin_${project.version}.jar" manifest="META-INF/MANIFEST.MF">
+									<fileset dir="${project.build.directory}/lib">
+										<include name="*"/>
+									</fileset>
+									<fileset dir="${project.build.outputDirectory}">
+										<include name="**/*"/>
+									</fileset>
+								</jar>
+
+							</tasks>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin> 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-idea-plugin</artifactId>
