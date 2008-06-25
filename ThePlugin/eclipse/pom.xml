@@ -119,6 +119,12 @@
         </dependency>
     </dependencies>
     <profiles>
+		<profile>
+			<id>release</id>
+			<properties>
+				<maven.release>true</maven.release>
+			</properties>
+		</profile>
         <profile>
             <id>org.eclipse.swt.win32</id>
             <activation>
@@ -186,6 +192,47 @@
         </resources>
         <plugins>
             <plugin>
+                <groupId>com.atlassian.maven.plugins</groupId>
+                <artifactId>maven-upload-plugin</artifactId>
+                <version>1.1</version>
+                <executions>
+                    <execution>
+                        <id>upload-updatesite</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>upload</goal>
+                        </goals>
+                        <configuration>
+                            <resourceSrc>${basedir}/${project.reporting.outputDirectory}/${downloadDir}/*</resourceSrc>
+                            <resourceDest>${pom.artifactId}/EclipseSite</resourceDest>
+                            <serverId>atlassian-documentation</serverId>
+                            <url>dav:https://docs.atlassian.com/</url>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <configuration>
+                    <preparationGoals>assembly:directory-single</preparationGoals>
+                    <arguments>-DupdateReleaseInfo -Prelease</arguments>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+                <version>1.0-beta-1</version>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
@@ -214,8 +261,12 @@
 							<tasks>
 								<property name="output.dir" value="${project.reporting.outputDirectory}/${downloadDir}"/>
 								<property name="tmp.dir" value="${project.build.directory}/updatesite"/>
+								<condition property="output.version" value="${project.version}" else="${buildNumber}">
+									<istrue value="${maven.release}"/>
+								</condition>
+
 								<filterset id="maven.properties">
-									<filter token="project.version" value="${project.version}"/>
+									<filter token="project.version" value="${output.version}"/>
 								</filterset>
 
 								<mkdir dir="${output.dir}"/>
@@ -233,12 +284,12 @@
 									<filterset refid="maven.properties"/>
 								</copy>
 
-								<jar destfile="${output.dir}/features/atlassian_eclipse_plugin_feature_${project.version}.jar"
+								<jar destfile="${output.dir}/features/atlassian_eclipse_plugin_feature_${output.version}.jar"
 									basedir="${tmp.dir}/feature"/>
 
 								<!-- Create plugin file -->
 								<mkdir dir="${tmp.dir}/plugin"/>
-								<jar destfile="${output.dir}/plugins/atlassian_eclipse_plugin_${project.version}.jar" manifest="META-INF/MANIFEST.MF">
+								<jar destfile="${output.dir}/plugins/atlassian_eclipse_plugin_${output.version}.jar" manifest="META-INF/MANIFEST.MF">
 									<fileset dir="${project.build.directory}/lib">
 										<include name="*"/>
 									</fileset>
