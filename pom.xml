@@ -205,7 +205,7 @@
                             <goal>upload</goal>
                         </goals>
                         <configuration>
-                            <resourceSrc>idea/${project.reporting.outputDirectory}/${downloadDir}/${pom.artifactId}-${pom.version}.zip</resourceSrc>
+                            <resourceSrc>${basedir}/${project.reporting.outputDirectory}/${downloadDir}/${pom.artifactId}-${pom.version}.zip</resourceSrc>
                             <resourceDest>${pom.artifactId}/Downloads</resourceDest>
                             <serverId>atlassian-documentation</serverId>
                             <url>dav:https://docs.atlassian.com/</url>
