@@ -112,8 +112,8 @@ public class BambooToolWindow extends ViewPart {
 	}
 	
 	public void enableBamboo2BuildActions() {
-		labelBuildAction.setEnabled(true);
-		commentBuildAction.setEnabled(true);
+//		labelBuildAction.setEnabled(true);
+//		commentBuildAction.setEnabled(true);
 		getViewSite().getActionBars().getToolBarManager().update(true);
 	}
 	
