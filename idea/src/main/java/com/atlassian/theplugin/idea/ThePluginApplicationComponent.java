@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -50,7 +50,7 @@ import javax.swing.*;
 import java.util.*;
 import java.util.Timer;
 
-@State(name = "ThePluginSettings", storages = { @Storage(id = "thePlugin", file = "$APP_CONFIG$/thePlugin.xml") })
+@State(name = "ThePluginSettings", storages = {@Storage(id = "thePlugin", file = "$APP_CONFIG$/thePlugin.xml")})
 public class ThePluginApplicationComponent
 		implements ApplicationComponent, Configurable, PersistentStateComponent<PluginConfigurationBean> {
 
@@ -71,7 +71,7 @@ public class ThePluginApplicationComponent
 	private final Collection<TimerTask> scheduledComponents = new HashSet<TimerTask>();
 	private final Collection<SchedulableChecker> schedulableCheckers = new HashSet<SchedulableChecker>();
 
-    private final BambooStatusChecker bambooStatusChecker;
+	private final BambooStatusChecker bambooStatusChecker;
 	private final CrucibleStatusChecker crucibleStatusChecker;
 
 	private final JIRAServerFacade jiraServerFacade;
@@ -79,7 +79,6 @@ public class ThePluginApplicationComponent
 	BambooStatusChecker getBambooStatusChecker() {
 		return bambooStatusChecker;
 	}
-
 
 
 	@Nls
@@ -131,25 +130,26 @@ public class ThePluginApplicationComponent
 										 SchedulableChecker[] schedulableCheckers,
 										 UIActionScheduler actionScheduler) {
 		this.configuration = configuration;
+
 		this.crucibleStatusChecker = crucibleStatusChecker;
-		this.configuration.transientSetHttpConfigurable(HttpConfigurableIdeaImpl.getInstance());
+		this.configuration.transientSetHttpConfigurable(HttpConfigurableIdeaImpl.getInstance(configuration));
 		this.bambooStatusChecker = BambooStatusChecker.getInstance(
 				actionScheduler,
 				configuration,
 				new MissingPasswordHandler(BambooServerFacadeImpl.getInstance(PluginUtil.getLogger())),
 				PluginUtil.getLogger());
 
-        for (SchedulableChecker schedulableChecker : schedulableCheckers) {
-            this.schedulableCheckers.add(schedulableChecker);
-        }
-        this.schedulableCheckers.add(bambooStatusChecker);
+		for (SchedulableChecker schedulableChecker : schedulableCheckers) {
+			this.schedulableCheckers.add(schedulableChecker);
+		}
+		this.schedulableCheckers.add(bambooStatusChecker);
 		this.schedulableCheckers.add(NewVersionChecker.getInstance(configuration));
 
 		this.configPanel = ConfigPanel.getInstance(configuration);
 		this.jiraServerFacade = JIRAServerFacadeImpl.getInstance();
 		ConfigurationFactory.setConfiguration(configuration);
 	}
-
+	
 	private void disableTimers() {
 		Iterator<TimerTask> i = scheduledComponents.iterator();
 		while (i.hasNext()) {
@@ -181,7 +181,6 @@ public class ThePluginApplicationComponent
 			}
 		}
 	}
-
 
 
 	public void apply() throws ConfigurationException {
@@ -226,7 +225,7 @@ public class ThePluginApplicationComponent
 	}
 
 	public void loadState(PluginConfigurationBean state) {
-		state.transientSetHttpConfigurable(HttpConfigurableIdeaImpl.getInstance());
 		configuration.setConfiguration(state);
+		configuration.transientSetHttpConfigurable(HttpConfigurableIdeaImpl.getInstance(configuration));
 	}
 }
