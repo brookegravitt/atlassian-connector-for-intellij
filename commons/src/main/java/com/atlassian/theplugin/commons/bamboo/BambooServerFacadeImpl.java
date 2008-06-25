@@ -237,6 +237,15 @@ public final class BambooServerFacadeImpl implements BambooServerFacade {
 		return builds;
 	}
 
+	/**
+	 * 
+	 * @param bambooServer
+	 * @param buildKey
+	 * @param buildNumber
+	 * @return
+	 * @throws ServerPasswordNotProvidedException
+	 * @throws RemoteApiException
+	 */
 	public BuildDetails getBuildDetails(Server bambooServer, String buildKey, String buildNumber)
 			throws ServerPasswordNotProvidedException, RemoteApiException {
 		try {
@@ -248,6 +257,15 @@ public final class BambooServerFacadeImpl implements BambooServerFacade {
 		}
 	}
 
+	/**
+	 * 
+	 * @param bambooServer
+	 * @param buildKey
+	 * @param buildNumber
+	 * @param buildLabel
+	 * @throws ServerPasswordNotProvidedException
+	 * @throws RemoteApiException
+	 */
 	public void addLabelToBuild(Server bambooServer, String buildKey, String buildNumber, String buildLabel)
 			throws ServerPasswordNotProvidedException, RemoteApiException {
 		try {
@@ -259,6 +277,15 @@ public final class BambooServerFacadeImpl implements BambooServerFacade {
 		}
 	}
 
+	/**
+	 * 
+	 * @param bambooServer
+	 * @param buildKey
+	 * @param buildNumber
+	 * @param buildComment
+	 * @throws ServerPasswordNotProvidedException
+	 * @throws RemoteApiException
+	 */
 	public void addCommentToBuild(Server bambooServer, String buildKey, String buildNumber, String buildComment)
 			throws ServerPasswordNotProvidedException, RemoteApiException {
 		try {
@@ -270,6 +297,13 @@ public final class BambooServerFacadeImpl implements BambooServerFacade {
 		}
 	}
 
+	/**
+	 * 
+	 * @param bambooServer
+	 * @param buildKey
+	 * @throws ServerPasswordNotProvidedException
+	 * @throws RemoteApiException
+	 */
 	public void executeBuild(Server bambooServer, String buildKey)
 			throws ServerPasswordNotProvidedException, RemoteApiException {
 		try {

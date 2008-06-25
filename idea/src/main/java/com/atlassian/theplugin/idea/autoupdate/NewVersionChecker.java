@@ -37,6 +37,7 @@ public final class NewVersionChecker implements SchedulableChecker {
 	private transient PluginConfiguration pluginConfiguration;
 
 	private static NewVersionChecker instance;
+	private static final String NAME = "New Version checker";
 
 	private NewVersionChecker(PluginConfiguration pluginConfiguration) {
 		this.pluginConfiguration = pluginConfiguration;
@@ -76,6 +77,10 @@ public final class NewVersionChecker implements SchedulableChecker {
 
 	public void resetListenersState() {
 		// do nothing
+	}
+
+	public String getName() {
+		return NAME;
 	}
 
 	protected void doRun(UpdateActionHandler action, boolean showConfigPath) throws ThePluginException {
