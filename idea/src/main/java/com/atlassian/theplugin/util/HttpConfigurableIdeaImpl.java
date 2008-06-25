@@ -17,19 +17,25 @@
 package com.atlassian.theplugin.util;
 
 import com.atlassian.theplugin.commons.util.HttpConfigurableAdapter;
+import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.idea.PluginTrustManager;
 import com.intellij.util.net.HttpConfigurable;
 import com.intellij.util.net.HTTPProxySettingsDialog;
+
+import javax.net.ssl.TrustManager;
 
 public final class HttpConfigurableIdeaImpl implements HttpConfigurableAdapter {
 
 	private static HttpConfigurableIdeaImpl instance;
+	private PluginConfigurationBean configuration;
 
-	private HttpConfigurableIdeaImpl() {
+	private HttpConfigurableIdeaImpl(PluginConfigurationBean configuration) {
+		this.configuration = configuration;
 	}
 
-	public static HttpConfigurableIdeaImpl getInstance() {
+	public static HttpConfigurableIdeaImpl getInstance(PluginConfigurationBean configuration) {
 		if (instance == null) {
-			instance = new HttpConfigurableIdeaImpl();
+			instance = new HttpConfigurableIdeaImpl(configuration);
 		}
 
 		return instance;
@@ -66,5 +72,9 @@ public final class HttpConfigurableIdeaImpl implements HttpConfigurableAdapter {
 
 	public Object getHTTPProxySettingsDialog() {
 		return new HTTPProxySettingsDialog();
+	}
+
+	public TrustManager getTrustManager() {
+		return PluginTrustManager.getInstance(configuration);
 	}
 }

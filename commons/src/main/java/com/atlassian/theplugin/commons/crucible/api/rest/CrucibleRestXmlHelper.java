@@ -555,7 +555,10 @@ public final class CrucibleRestXmlHelper {
             String a = date.substring(0, index);
             String b = date.substring(index + 1);
             return commentTimeFormat.parse(a + b);
-        } catch (ParseException e) {
+		} catch (StringIndexOutOfBoundsException e) {
+			System.out.println("e = " + e);
+			return null;
+		} catch (ParseException e) {
             System.out.println("e = " + e);
             return null;
         }

@@ -35,6 +35,7 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
+import javax.net.ssl.TrustManager;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
@@ -48,12 +49,13 @@ public abstract class AbstractHttpSession {
     protected HttpClient client = null;
 
     private final Object clientLock = new Object();
+	private HttpClientFactory httpClientFactory = HttpClientFactory.getInstance();
 
-    /**
+	/**
      * Public constructor for AbstractHttpSession
      *
      * @param baseUrl base URL for server instance
-     * @throws com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException
+	 * @throws com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException
      *          for malformed url
      */
     public AbstractHttpSession(String baseUrl) throws RemoteApiMalformedUrlException {
@@ -65,7 +67,7 @@ public abstract class AbstractHttpSession {
         } catch (MalformedURLException e) {
             throw new RemoteApiMalformedUrlException("Malformed server URL: " + baseUrl, e);
         }
-    }
+	}
 
     protected Document retrieveGetResponse(String urlString)
             throws IOException, JDOMException, RemoteApiSessionExpiredException {
@@ -79,7 +81,7 @@ public abstract class AbstractHttpSession {
         synchronized (clientLock) {
             if (client == null) {
                 try {
-                    client = HttpClientFactory.getClient();
+                    client = httpClientFactory.getClient();
                 } catch (HttpProxySettingsException e) {
                     throw (IOException) new IOException("Connection error. Please set up HTTP Proxy settings").initCause(e);
                 }
@@ -102,7 +104,7 @@ public abstract class AbstractHttpSession {
 
                 if (expectResponse) {
                     SAXBuilder builder = new SAXBuilder();
-                    doc = builder.build(method.getResponseBodyAsStream());
+					doc = builder.build(method.getResponseBodyAsStream());
                     preprocessResult(doc);
                 }
             } catch (NullPointerException e) {
@@ -134,7 +136,7 @@ public abstract class AbstractHttpSession {
         synchronized (clientLock) {
             if (client == null) {
                 try {
-                    client = HttpClientFactory.getClient();
+                    client = httpClientFactory.getClient();
                 } catch (HttpProxySettingsException e) {
                     throw (IOException) new IOException("Connection error. Please set up HTTP Proxy settings").initCause(e);
                 }
@@ -180,7 +182,7 @@ public abstract class AbstractHttpSession {
         synchronized (clientLock) {
             if (client == null) {
                 try {
-                    client = HttpClientFactory.getClient();
+                    client = httpClientFactory.getClient();
                 } catch (HttpProxySettingsException e) {
                     throw (IOException) new IOException("Connection error. Please set up HTTP Proxy settings").initCause(e);
                 }
