@@ -45,4 +45,10 @@ public interface SchedulableChecker {
 	 * Resets state of registered listeners (sets state to default/empty) 
 	 */
 	void resetListenersState();
+
+	/**
+	 *
+	 * @return name of the checker which can be used for example in UI
+	 */
+	String getName();
 }

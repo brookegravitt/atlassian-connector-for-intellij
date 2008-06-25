@@ -56,8 +56,9 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
     private final CrucibleServerFacade crucibleServerFacade;
 
     private CrucibleVersion crucibleVersion = CrucibleVersion.UNKNOWN;
+	private static final String NAME = "Crucible checker";
 
-    public CrucibleStatusChecker(PluginConfiguration pluginConfiguration) {
+	public CrucibleStatusChecker(PluginConfiguration pluginConfiguration) {
         this.pluginConfiguration = pluginConfiguration;
         this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
     }
@@ -274,4 +275,8 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
             listener.resetState();
         }
     }
+
+	public String getName() {
+		return NAME;
+	}
 }
