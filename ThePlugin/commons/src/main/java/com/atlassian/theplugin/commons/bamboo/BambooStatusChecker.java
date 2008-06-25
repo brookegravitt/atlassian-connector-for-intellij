@@ -43,6 +43,7 @@ public final class BambooStatusChecker implements SchedulableChecker, Configurat
 	private final List<BambooStatusListener> listenerList = new ArrayList<BambooStatusListener>();
 
 	private UIActionScheduler actionScheduler;
+	private static final String NAME = "Bamboo checker";
 
 	public void setActionScheduler(UIActionScheduler actionScheduler) {
 		this.actionScheduler = actionScheduler;
@@ -167,6 +168,10 @@ public final class BambooStatusChecker implements SchedulableChecker, Configurat
 		for (BambooStatusListener listener : listenerList) {
 			listener.resetState();
 		}
+	}
+
+	public String getName() {
+		return NAME;
 	}
 
 	public void updateConfiguration(PluginConfigurationBean configuration) {
