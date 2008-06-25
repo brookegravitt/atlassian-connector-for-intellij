@@ -24,6 +24,8 @@ import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 
+import javax.net.ssl.TrustManager;
+
 public final class HttpClientFactory {
 	private static MultiThreadedHttpConnectionManager connectionManager;
 
@@ -37,22 +39,27 @@ public final class HttpClientFactory {
 	private static int dataTimeout = DATA_TIMOUT;
 	private static int connectionTimout = CONNECTION_TIMOUT;
 	private static int connectionManagerTimeout = CONNECTION_MANAGER_TIMEOUT;
+	private HttpConfigurableAdapter httpConfigurableAdapter;
+	private static HttpClientFactory instance;
 
-	static {
+	///CLOVER:OFF
+	private HttpClientFactory() {
+		httpConfigurableAdapter =
+				ConfigurationFactory.getConfiguration().transientGetHttpConfigurable();
 		Protocol.registerProtocol("https", new Protocol(
-				"https", (ProtocolSocketFactory) new EasySSLProtocolSocketFactory(), EasySSLProtocolSocketFactory.SSL_PORT));
+				"https", (ProtocolSocketFactory) new EasySSLProtocolSocketFactory(httpConfigurableAdapter.getTrustManager()), EasySSLProtocolSocketFactory.SSL_PORT));
 		connectionManager =	new MultiThreadedHttpConnectionManager();
 		connectionManager.getParams().setConnectionTimeout(getConnectionTimeout());
 		connectionManager.getParams().setMaxTotalConnections(TOTAL_MAX_CONNECTIONS);
 		connectionManager.getParams().setDefaultMaxConnectionsPerHost(DEFAULT_MAX_CONNECTIONS_PER_HOST);
-		
 	}
 
-	///CLOVER:OFF
-	private HttpClientFactory() {
-
+	public static synchronized HttpClientFactory getInstance() {
+		if (instance == null) {
+			instance = new HttpClientFactory();
+		}
+		return instance;
 	}
-
 
 	public static void setDataTimeout(int dataTimeout) {
 		HttpClientFactory.dataTimeout = dataTimeout;
@@ -67,12 +74,10 @@ public final class HttpClientFactory {
 	}
 ///CLOVER:ON
 
-	public static HttpClient getClient() throws HttpProxySettingsException {
+	public HttpClient getClient() throws HttpProxySettingsException {
 		HttpClient httpClient = new HttpClient(connectionManager);
 		httpClient.getParams().setConnectionManagerTimeout(getConnectionManagerTimeout());
 		httpClient.getParams().setSoTimeout(getDataTimeout());
-		HttpConfigurableAdapter httpConfigurableAdapter =
-				ConfigurationFactory.getConfiguration().transientGetHttpConfigurable();
 		boolean useIdeaProxySettings =
 				ConfigurationFactory.getConfiguration().getGeneralConfigurationData().getUseIdeaProxySettings();
 		if (useIdeaProxySettings && (httpConfigurableAdapter != null)) {

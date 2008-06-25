@@ -44,6 +44,7 @@ package com.atlassian.theplugin.commons.thirdparty.apache;
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  *
+ * The original has been modified by Lukasz Guminski.
  */
 
 import org.apache.commons.httpclient.ConnectTimeoutException;
@@ -107,22 +108,24 @@ import com.atlassian.theplugin.commons.util.Logger;
 public class EasySSLProtocolSocketFactory implements SecureProtocolSocketFactory {
 	public final static int SSL_PORT = 443;
     private SSLContext sslcontext = null;
+	private TrustManager trustManager;
 	//private Logger logger;
 
 	/**
      * Constructor for EasySSLProtocolSocketFactory.
      */
-    public EasySSLProtocolSocketFactory() {
+    public EasySSLProtocolSocketFactory(TrustManager trustManager) {
         super();
 		//this.logger = logger;
+		this.trustManager = trustManager;
 	}
 
-    private static SSLContext createEasySSLContext() {
+    private SSLContext createEasySSLContext() {
         try {
             SSLContext context = SSLContext.getInstance("SSL");
             context.init(
               null,
-              new TrustManager[] {new EasyX509TrustManager(null)},
+              new TrustManager[] {trustManager},
               null);
             return context;
         } catch (Exception e) {
