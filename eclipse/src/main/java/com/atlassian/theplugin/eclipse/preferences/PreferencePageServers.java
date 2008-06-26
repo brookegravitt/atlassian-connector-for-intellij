@@ -52,22 +52,6 @@ public class PreferencePageServers
 	 * restore itself.
 	 */
 	public void createFieldEditors() {
-//		addField(new DirectoryFieldEditor(PreferenceConstants.P_PATH, 
-//				"&Directory preference:", getFieldEditorParent()));
-//		addField(
-//			new BooleanFieldEditor(
-//				PreferenceConstants.P_BOOLEAN,
-//				"&An example of a boolean preference",
-//				getFieldEditorParent()));
-//
-//		addField(new RadioGroupFieldEditor(
-//				PreferenceConstants.P_CHOICE,
-//			"An example of a multiple-choice preference",
-//			1,
-//			new String[][] { { "&Choice 1", "choice1" }, {
-//				"C&hoice 2", "choice2" }
-//		}, getFieldEditorParent()));
-	
 		addField(new StringFieldEditor(PreferenceConstants.BAMBOO_NAME, "Server Name:", getFieldEditorParent()));
 		addField(new StringFieldEditor(PreferenceConstants.BAMBOO_URL, "Server Url:", getFieldEditorParent()));
 		addField(new StringFieldEditor(PreferenceConstants.BAMBOO_USER_NAME, "User Name:", getFieldEditorParent()));
@@ -76,6 +60,8 @@ public class PreferencePageServers
 		StringFieldEditor builds = new StringFieldEditor(PreferenceConstants.BAMBOO_BUILDS, "Builds:", getFieldEditorParent());
 		builds.getLabelControl(getFieldEditorParent()).setToolTipText("Space separated build names");
 		addField(builds);
+		
+		addField(new MyTableFieldEditor("BUILDSXXX", "Builds:", getFieldEditorParent()));
 		
 	}
 
