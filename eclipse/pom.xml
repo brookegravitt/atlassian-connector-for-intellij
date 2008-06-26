@@ -261,7 +261,7 @@
 							<tasks>
 								<property name="output.dir" value="${project.reporting.outputDirectory}/${downloadDir}"/>
 								<property name="tmp.dir" value="${project.build.directory}/updatesite"/>
-								<condition property="output.version" value="${project.version}" else="${buildNumber}">
+								<condition property="output.version" value="${project.version}" else="0.0.${buildNumber}">
 									<istrue value="${maven.release}"/>
 								</condition>
 
