@@ -23,8 +23,18 @@
       <view allowMultiple="false"
             category="com.atlassian.theplugin.eclipse.viewcategory"
             class="com.atlassian.theplugin.eclipse.view.bamboo.BambooToolWindow"
-            id="com.atlassian.theplugin.eclipse.viewmain"
-            name="Bamboo">
+            id="com.atlassian.theplugin.eclipse.view.bamboo.BambooToolWindow"
+            name="Bamboo Watched Plans">
+      </view>
+   </extension>
+   <extension point="org.eclipse.ui.views">
+      <category id="com.atlassian.theplugin.eclipse.viewcategory" name="Atlassian Plugin">
+      </category>
+      <view allowMultiple="false"
+            category="com.atlassian.theplugin.eclipse.viewcategory"
+            class="com.atlassian.theplugin.eclipse.view.bamboo.BambooServers"
+            id="com.atlassian.theplugin.eclipse.view.bamboo.BambooServers"
+            name="Bamboo Servers">
       </view>
    </extension>
    <extension
