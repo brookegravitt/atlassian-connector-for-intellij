@@ -19,14 +19,12 @@ package com.atlassian.theplugin.eclipse.preferences;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Set;
-import java.util.Timer;
 import java.util.TimerTask;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.Preferences.IPropertyChangeListener;
 import org.eclipse.core.runtime.Preferences.PropertyChangeEvent;
@@ -40,15 +38,12 @@ import org.osgi.framework.BundleContext;
 import com.atlassian.theplugin.commons.ConfigurationListener;
 import com.atlassian.theplugin.commons.SchedulableChecker;
 import com.atlassian.theplugin.commons.bamboo.BambooStatusChecker;
-import com.atlassian.theplugin.commons.bamboo.BambooStatusTooltipListener;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
-import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.eclipse.EclipseActionScheduler;
 import com.atlassian.theplugin.eclipse.EclipseLogger;
 import com.atlassian.theplugin.eclipse.MissingPasswordHandler;
+import com.atlassian.theplugin.eclipse.util.FileUtil;
 import com.atlassian.theplugin.eclipse.util.PluginUtil;
-import com.atlassian.theplugin.eclipse.view.bamboo.BambooStatusTooltip;
-import com.atlassian.theplugin.eclipse.view.bamboo.BambooToolWindowContent;
 
 
 /**
@@ -160,6 +155,9 @@ public class Activator extends AbstractUIPlugin {
 	 * @return the shared instance
 	 */
 	public static Activator getDefault() {
+		while (Activator.plugin == null) {
+    		try {Thread.sleep(100);} catch (InterruptedException ex) {break;}
+    	}
 		return plugin;
 	}
 
@@ -174,6 +172,10 @@ public class Activator extends AbstractUIPlugin {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
 
+    public String getResource(String key) {
+        return FileUtil.getResource(Platform.getResourceBundle(this.getBundle()), key);
+    }
+    
 //	public Timer getTimer() {
 //		return timer;
 //	}
