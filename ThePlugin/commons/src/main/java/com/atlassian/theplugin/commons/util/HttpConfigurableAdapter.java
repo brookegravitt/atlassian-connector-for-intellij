@@ -16,8 +16,6 @@
 
 package com.atlassian.theplugin.commons.util;
 
-import javax.net.ssl.TrustManager;
-
 public interface HttpConfigurableAdapter {
 
 	boolean isKeepProxyPassowrd();
@@ -28,5 +26,5 @@ public interface HttpConfigurableAdapter {
 	int	getProxyPort();
 	String getProxyHost();
 	Object getHTTPProxySettingsDialog();
-	TrustManager getTrustManager();
+
 }
