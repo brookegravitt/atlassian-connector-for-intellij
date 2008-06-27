@@ -39,7 +39,7 @@ public class PluginTrustManager implements X509TrustManager {
 
 	private static PluginTrustManager instance;
 	private PluginConfiguration configuration;
-	private Collection<String> certs;
+	private Collection<String> aceptedCerts;
 
 	private PluginTrustManager(PluginConfiguration configuration) {
 		this.configuration = configuration;
@@ -102,42 +102,49 @@ public class PluginTrustManager implements X509TrustManager {
 				throw e;
 			}
 
-			certs = configuration.getGeneralConfigurationData().getCerts();
-			if (certs.contains(strCert)) {
-				return; // already accepted
+			aceptedCerts = configuration.getGeneralConfigurationData().getCerts();
+			for (X509Certificate cert : chain) {
+				if (aceptedCerts.contains(cert.toString())) {
+					return; // certificate already accepted
+				}
 			}
 
 			final boolean[] accepted = new boolean[]{false};
-			try {
-				EventQueue.invokeAndWait(new Runnable() {
-					public void run() {
-						CertMessageDialog dialog = new CertMessageDialog("");
-						for (X509Certificate cert : chain) {
-							dialog.addCert(cert.toString());
+			synchronized (PluginTrustManager.class) {
+				try {
+					EventQueue.invokeAndWait(new Runnable() {
+						public void run() {
+							CertMessageDialog dialog = new CertMessageDialog("");
+							for (X509Certificate cert : chain) {
+								dialog.addCert(cert.toString());
+							}
+							dialog.show();
+							if (dialog.isOK()) {
+								accepted[0] = true;
+							}
 						}
-						dialog.show();
-						if (dialog.isOK()) {
-							accepted[0] = true;
-						}
-					}
-				});
-			} catch (InterruptedException e1) {
-				// swallow
-			} catch (InvocationTargetException e1) {
-				// swallow
+					});
+				} catch (InterruptedException e1) {
+					// swallow
+				} catch (InvocationTargetException e1) {
+					// swallow
+				}
 			}
 
 			if (accepted[0] == true) {
-				certs.add(strCert);
-
-				ConfigurationFactory.getConfiguration().
-						getGeneralConfigurationData().setCerts(certs);
-			} else {
-				synchronized (alreadyRejectedCerts) {
-					alreadyRejectedCerts.add(strCert);
+				synchronized (configuration) {
+					// taken once again because something could change in the state
+					aceptedCerts = configuration.getGeneralConfigurationData().getCerts();
+					aceptedCerts.add(strCert);
+					configuration.
+							getGeneralConfigurationData().setCerts(aceptedCerts);
 				}
-				throw e;
+				return;
 			}
+			synchronized (alreadyRejectedCerts) {
+				alreadyRejectedCerts.add(strCert);
+			}
+			throw e;
 		}
 	}
 
@@ -193,7 +200,8 @@ public class PluginTrustManager implements X509TrustManager {
 		protected JComponent createCenterPanel() {
 			JPanel panel = new JPanel(new GridBagLayout());
 			JScrollPane scroll = new JScrollPane();
-			JLabel titleLabel = new BoldLabel("Server " + server + " uses an invalid security certificate.");
+			JLabel titleLabel = new BoldLabel("Server " + server
+					+ " uses an invalid security certificate. Do you want to add an exception and connect?");
 
 			GridBagConstraints gbc = new GridBagConstraints();
 			gbc.weightx = 1.0;
@@ -224,8 +232,8 @@ public class PluginTrustManager implements X509TrustManager {
 			gbc.weighty = 0;
 			gbc.fill = GridBagConstraints.HORIZONTAL;
 
-			JLabel bottomLabel = new BoldLabel("Do you want to add an exception and connect?");
-			panel.add(bottomLabel, gbc);
+//			JLabel bottomLabel = new BoldLabel("Do you want to add an exception and connect?");
+//			panel.add(bottomLabel, gbc);
 
 			return panel;
 		}
