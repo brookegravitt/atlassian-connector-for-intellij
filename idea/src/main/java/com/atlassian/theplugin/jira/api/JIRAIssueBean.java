@@ -37,7 +37,9 @@ public class JIRAIssueBean implements JIRAIssue {
     private JIRAConstant typeConstant;
     private JIRAConstant priorityConstant;
     private String assignee;
+    private String assigneeId;
     private String reporter;
+    private String reporterId;
     private String resolution;
     private String created;
     private String updated;
@@ -81,7 +83,9 @@ public class JIRAIssueBean implements JIRAIssue {
             this.typeId = 0;
         }
         this.assignee = getTextSafely(e, "assignee");
+        this.assigneeId = getAttributeSafely(e, "assignee", "username");
         this.reporter = getTextSafely(e, "reporter");
+        this.reporterId = getAttributeSafely(e, "reporter", "username");
         this.created = getTextSafely(e, "created");
         this.updated = getTextSafely(e, "updated");
         this.resolution = getTextSafely(e, "resolution");
@@ -315,5 +319,21 @@ public class JIRAIssueBean implements JIRAIssue {
         result = ONE_EFF * result + (key != null ? key.hashCode() : 0);
         result = ONE_EFF * result + (summary != null ? summary.hashCode() : 0);
         return result;
+    }
+
+    public String getAssigneeId() {
+        return assigneeId;
+    }
+
+    public void setAssigneeId(String assigneeId) {
+        this.assigneeId = assigneeId;
+    }
+
+    public String getReporterId() {
+        return reporterId;
+    }
+
+    public void setReporterId(String reporterId) {
+        this.reporterId = reporterId;
     }
 }

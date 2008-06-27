@@ -4,6 +4,7 @@ import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.editor.vfs.MemoryVirtualFile;
 import com.atlassian.theplugin.idea.jira.IssueComment;
+import com.atlassian.theplugin.idea.jira.CachedIconLoader;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
@@ -38,6 +39,8 @@ import javax.swing.event.HyperlinkListener;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.ArrayList;
@@ -261,6 +264,20 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
         }
     }
 
+    private class UserLabel extends HyperlinkLabel {
+        UserLabel(final String serverUrl, final String userName, final String userNameId) {
+            super(userName);
+            addHyperlinkListener(new HyperlinkListener() {
+                    public void hyperlinkUpdate(HyperlinkEvent e) {
+                        BrowserUtil.launchBrowser(
+                                serverUrl
+                                + "/secure/ViewProfile.jspa?name="
+                                + userNameId);
+                    }
+            });
+        }
+    }
+
     private class CommentPanel extends JPanel {
 
 		private ShowHideButton btnShowHide;
@@ -277,20 +294,12 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			gbc.anchor = GridBagConstraints.WEST;
 			add(btnShowHide, gbc);
 
-			HyperlinkLabel authorName = new HyperlinkLabel(comment.getAuthor());
-			authorName.addHyperlinkListener(new HyperlinkListener() {
-				public void hyperlinkUpdate(HyperlinkEvent e) {
-					BrowserUtil.launchBrowser(
-                            server.getServer().getUrlString()
-                            + "/secure/ViewProfile.jspa?name="
-							+ comment.getAuthor());
-				}
-			});
 			gbc.gridx = 2;
 			gbc.gridy = 0;
 			gbc.anchor = GridBagConstraints.WEST;
 			gbc.insets = new Insets(0, Constants.DIALOG_MARGIN, 0, 0);
-			add(authorName, gbc);
+            // unfortunately comments do not have "full user name" filed, just login names
+            add(new UserLabel(server.getServer().getUrlString(), comment.getAuthor(), comment.getAuthor()), gbc);
 
 			final JLabel label1 = new JLabel();
             label1.setText("-");
@@ -355,7 +364,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
         }
     }
 
-	private class DescriptionPanel extends JPanel {
+    private class DescriptionPanel extends JPanel {
 		public DescriptionPanel(final JIRAIssue issue) {
 			setLayout(new GridBagLayout());
 			GridBagConstraints gbc = new GridBagConstraints();
@@ -441,28 +450,39 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			gbc1.gridy = 0;
 			gbc2.gridy = 0;
 
+            body.add(new BoldLabel("Type"), gbc1);
+            body.add(new JLabel(issue.getType(), CachedIconLoader.getIcon(issue.getTypeIconUrl()),
+                    SwingConstants.LEFT), gbc2);
+            gbc1.gridy++;
+            gbc2.gridy++;
 			body.add(new BoldLabel("Status"), gbc1);
-			body.add(new JLabel(issue.getStatus()), gbc2);
+			body.add(new JLabel(issue.getStatus(), CachedIconLoader.getIcon(issue.getStatusTypeUrl()),
+                    SwingConstants.LEFT), gbc2);
 			gbc1.gridy++;
 			gbc2.gridy++;
-			body.add(new BoldLabel("Reporter"), gbc1);
-			body.add(new JLabel(issue.getReporter()), gbc2);
-			gbc1.gridy++;
-			gbc2.gridy++;
+            body.add(new BoldLabel("Priority"), gbc1);
+            body.add(new JLabel(issue.getPriority(), CachedIconLoader.getIcon(issue.getPriorityIconUrl()),
+                    SwingConstants.LEFT), gbc2);
+            gbc1.gridy++;
+            gbc2.gridy++;
 			body.add(new BoldLabel("Assignee"), gbc1);
-			body.add(new JLabel(issue.getAssignee()), gbc2);
+            body.add(new UserLabel(issue.getServerUrl(), issue.getAssignee(), issue.getAssigneeId()), gbc2);
 			gbc1.gridy++;
 			gbc2.gridy++;
+            body.add(new BoldLabel("Reporter"), gbc1);
+            body.add(new UserLabel(issue.getServerUrl(), issue.getReporter(), issue.getReporterId()), gbc2);
+            gbc1.gridy++;
+            gbc2.gridy++;
 			body.add(new BoldLabel("Resolution"), gbc1);
 			body.add(new JLabel(issue.getResolution()), gbc2);
 			gbc1.gridy++;
 			gbc2.gridy++;
 			body.add(new BoldLabel("Created"), gbc1);
 			body.add(new JLabel(issue.getCreated()), gbc2);
-			gbc1.gridy++;
-			gbc2.gridy++;
-			body.add(new BoldLabel("Updated"), gbc1);
-			body.add(new JLabel(issue.getUpdated()), gbc2);
+            gbc1.gridy++;
+            gbc2.gridy++;
+            body.add(new BoldLabel("Updated"), gbc1);
+            body.add(new JLabel(issue.getUpdated()), gbc2);
 			gbc1.gridy++;
 			gbc1.weighty = 1.0;
 			gbc1.fill = GridBagConstraints.VERTICAL;
@@ -486,6 +506,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 	}
 
 	private class SummaryPanel extends JPanel {
+        private final Icon EDIT_ICON = IconLoader.getIcon("/actions/editSource.png");
 
         public SummaryPanel(final JIRAIssue issue) {
 			setLayout(new GridBagLayout());
@@ -493,7 +514,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 
 			gbc.gridx = 0;
 			gbc.gridy = 0;
-			gbc.anchor = GridBagConstraints.CENTER;
+            gbc.anchor = GridBagConstraints.FIRST_LINE_START;
 
 			HyperlinkLabel labelIssue = new HyperlinkLabel(issue.getKey());
 			labelIssue.addHyperlinkListener(new HyperlinkListener() {
@@ -507,14 +528,29 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
             labelIssue.setFont(boldBigFont);
             add(labelIssue, gbc);
 
-			gbc.gridy = 1;
-			gbc.anchor = GridBagConstraints.FIRST_LINE_START;
-            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.gridy = 1;
+            gbc.anchor = GridBagConstraints.PAGE_START;
+            JButton editButton = new JButton(EDIT_ICON);
+            editButton.setToolTipText("Edit Issue");
+            editButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    BrowserUtil.launchBrowser(issue.getServerUrl()
+                            + "/secure/EditIssue!default.jspa?key=" + issue.getKey());
+                }
+            });
+            add(editButton, gbc);
+
+            gbc.gridy = 0;
+            gbc.gridx = 1;
+            gbc.gridheight = 2;
+            gbc.anchor = GridBagConstraints.FIRST_LINE_START;
+            gbc.fill = GridBagConstraints.BOTH;
 			JEditorPane summary = new JEditorPane();
             summary.setBorder(BorderFactory.createEmptyBorder());
             summary.setContentType("text/plain");
             summary.setText(issue.getSummary());
             summary.setEditable(false);
+            summary.setFont(summary.getFont().deriveFont(Font.BOLD));
             summary.setOpaque(false);
 			JPanel p = new JPanel();
 			p.setLayout(new GridBagLayout());
@@ -528,8 +564,10 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			p.add(summary, gbcp);
 			add(p, gbc);
 
-			gbc.gridy = 2;
-			gbc.fill = GridBagConstraints.BOTH;
+            gbc.gridx = 0;
+            gbc.gridy = 2;
+            gbc.gridwidth = 2;
+            gbc.fill = GridBagConstraints.BOTH;
 			gbc.weightx = 1.0;
 			gbc.weighty = 1.0;
 			Splitter split = new Splitter(true);
