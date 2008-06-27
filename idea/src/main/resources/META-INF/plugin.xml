@@ -345,8 +345,8 @@
 
 
         <group id="ThePlugin.JIRA.IssuePopupMenu" popup="true">
+			<reference id="ThePlugin.JIRA.OpenIssue" />
             <reference id="ThePlugin.JIRA.ViewIssue" />
-            <reference id="ThePlugin.JIRA.OpenIssue" />
             <reference id="ThePlugin.JIRA.EditIssue" />
 			<separator />
             <reference id="ThePlugin.JIRA.AddComment" />
