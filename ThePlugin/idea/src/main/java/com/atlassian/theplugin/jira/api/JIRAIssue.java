@@ -53,9 +53,13 @@ public interface JIRAIssue {
 
 	String getAssignee();
 
-	String getReporter();
+    String getAssigneeId();
 
-	String getResolution();
+    String getReporter();
+
+    String getReporterId();
+
+    String getResolution();
 
 	String getCreated();
 
