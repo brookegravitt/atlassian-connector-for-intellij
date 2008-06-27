@@ -34,6 +34,7 @@ import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
 import com.intellij.ide.BrowserUtil;
+import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
@@ -83,7 +84,10 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
     }
 
     protected void handleDoubleClick(Object selectedObject) {
-        viewIssue();        
+		AnAction action = ActionManager.getInstance().getAction("ThePlugin.JIRA.OpenIssue");
+		action.actionPerformed(new AnActionEvent(null, DataManager.getInstance().getDataContext(this),
+				ActionPlaces.UNKNOWN, action.getTemplatePresentation(),
+				ActionManager.getInstance(), 0));
     }
 
     protected String getInitialMessage() {
