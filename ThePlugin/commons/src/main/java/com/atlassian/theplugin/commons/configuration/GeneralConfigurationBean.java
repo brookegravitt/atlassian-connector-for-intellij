@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *    http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,8 +18,9 @@ package com.atlassian.theplugin.commons.configuration;
 
 import com.atlassian.theplugin.commons.util.Version;
 
-import java.util.List;
-import java.util.ArrayList;
+import java.security.cert.X509Certificate;
+import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * Created by IntelliJ IDEA.
@@ -35,8 +36,8 @@ public class GeneralConfigurationBean {
 	private boolean checkUnstableVersionsEnabled = false;
 	private Boolean anonymousFeedbackEnabled = null;
 	private boolean useIdeaProxySettings = true;
-	private List<String> cacerts = new ArrayList<String>();
-
+	private Collection<String> certs = new HashSet<String>();
+	
 	private long uid = 0;
 
 	private static final double ID_DISCRIMINATOR = 1e3d;
@@ -52,7 +53,7 @@ public class GeneralConfigurationBean {
 		this.autoUpdateEnabled = generalConfigurationData.isAutoUpdateEnabled();
 		this.uid = generalConfigurationData.getUid();
 		this.useIdeaProxySettings = generalConfigurationData.getUseIdeaProxySettings();
-		this.cacerts = generalConfigurationData.getCacerts();
+		this.certs = generalConfigurationData.getCerts();
 	}
 
 	public long getUid() {
@@ -111,16 +112,16 @@ public class GeneralConfigurationBean {
 		return useIdeaProxySettings;
 	}
 
+	public Collection<String> getCerts() {
+		return certs;
+	}
+
+	public void setCerts(Collection<String> certs) {
+		this.certs = certs;
+	}
+
 	public void setUseIdeaProxySettings(boolean use) {
 		useIdeaProxySettings = use;
-	}
-
-	public List<String> getCacerts() {
-		return cacerts;
-	}
-
-	public void setCacerts(List<String> cacerts) {
-		this.cacerts = cacerts;
 	}
 
 	public boolean equals(Object o) {
@@ -150,7 +151,7 @@ public class GeneralConfigurationBean {
 		if (rejectedUpgrade != null ? !rejectedUpgrade.equals(that.rejectedUpgrade) : that.rejectedUpgrade != null) {
 			return false;
 		}
-		if (!cacerts.equals(that.cacerts)) {
+		if (!certs.equals(that.certs)) {
 			return false;
 		}
 		return true;
@@ -166,6 +167,7 @@ public class GeneralConfigurationBean {
 		result = THIRTY_ONE * result + (checkUnstableVersionsEnabled ? 1 : 0);
 		result = THIRTY_ONE * result + (anonymousFeedbackEnabled != null ? anonymousFeedbackEnabled.hashCode() : 0);
 		result = THIRTY_ONE * result + (int) (uid ^ (uid >>> THIRTY_TWO));
+		result = THIRTY_ONE * result + certs.hashCode();
 		return result;
 	}
 

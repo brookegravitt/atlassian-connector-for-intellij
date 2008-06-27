@@ -54,7 +54,7 @@ public final class InfoServer {
 
 			HttpClient client = null;
 			try {
-				client = HttpClientFactory.getInstance().getClient();
+				client = HttpClientFactory.getClient();
 			} catch (HttpProxySettingsException e) {
 				throw new VersionServiceException("Connection error while retrieving the latest plugin version.", e);
 			}

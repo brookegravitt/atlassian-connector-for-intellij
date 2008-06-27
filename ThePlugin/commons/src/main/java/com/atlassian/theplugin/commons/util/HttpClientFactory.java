@@ -39,27 +39,25 @@ public final class HttpClientFactory {
 	private static int dataTimeout = DATA_TIMOUT;
 	private static int connectionTimout = CONNECTION_TIMOUT;
 	private static int connectionManagerTimeout = CONNECTION_MANAGER_TIMEOUT;
-	private HttpConfigurableAdapter httpConfigurableAdapter;
-	private static HttpClientFactory instance;
 
-	///CLOVER:OFF
-	private HttpClientFactory() {
-		httpConfigurableAdapter =
-				ConfigurationFactory.getConfiguration().transientGetHttpConfigurable();
-		Protocol.registerProtocol("https", new Protocol(
-				"https", (ProtocolSocketFactory) new EasySSLProtocolSocketFactory(httpConfigurableAdapter.getTrustManager()), EasySSLProtocolSocketFactory.SSL_PORT));
+	static {
 		connectionManager =	new MultiThreadedHttpConnectionManager();
 		connectionManager.getParams().setConnectionTimeout(getConnectionTimeout());
 		connectionManager.getParams().setMaxTotalConnections(TOTAL_MAX_CONNECTIONS);
 		connectionManager.getParams().setDefaultMaxConnectionsPerHost(DEFAULT_MAX_CONNECTIONS_PER_HOST);
 	}
 
-	public static synchronized HttpClientFactory getInstance() {
-		if (instance == null) {
-			instance = new HttpClientFactory();
-		}
-		return instance;
+	public static void initializeTrustManagers(TrustManager manager) {
+		Protocol.registerProtocol("https", new Protocol(
+				"https", (ProtocolSocketFactory) new EasySSLProtocolSocketFactory(manager),
+				EasySSLProtocolSocketFactory.SSL_PORT));
 	}
+
+	///CLOVER:OFF
+	private HttpClientFactory() {
+
+	}
+
 
 	public static void setDataTimeout(int dataTimeout) {
 		HttpClientFactory.dataTimeout = dataTimeout;
@@ -74,10 +72,12 @@ public final class HttpClientFactory {
 	}
 ///CLOVER:ON
 
-	public HttpClient getClient() throws HttpProxySettingsException {
+	public static HttpClient getClient() throws HttpProxySettingsException {
 		HttpClient httpClient = new HttpClient(connectionManager);
 		httpClient.getParams().setConnectionManagerTimeout(getConnectionManagerTimeout());
 		httpClient.getParams().setSoTimeout(getDataTimeout());
+		HttpConfigurableAdapter httpConfigurableAdapter =
+				ConfigurationFactory.getConfiguration().transientGetHttpConfigurable();
 		boolean useIdeaProxySettings =
 				ConfigurationFactory.getConfiguration().getGeneralConfigurationData().getUseIdeaProxySettings();
 		if (useIdeaProxySettings && (httpConfigurableAdapter != null)) {

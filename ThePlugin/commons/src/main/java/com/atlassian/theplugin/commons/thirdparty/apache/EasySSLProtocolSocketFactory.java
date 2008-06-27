@@ -44,7 +44,6 @@ package com.atlassian.theplugin.commons.thirdparty.apache;
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  *
- * The original has been modified by Lukasz Guminski.
  */
 
 import org.apache.commons.httpclient.ConnectTimeoutException;

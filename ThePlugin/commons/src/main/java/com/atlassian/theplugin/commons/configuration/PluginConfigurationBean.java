@@ -19,9 +19,10 @@ package com.atlassian.theplugin.commons.configuration;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.util.HttpConfigurableAdapter;
-import static com.atlassian.theplugin.commons.util.HttpConfigurableAdapter.*;
 
-import javax.net.ssl.TrustManager;
+import java.security.cert.X509Certificate;
+import java.util.Collection;
+import java.util.HashSet;
 
 public class PluginConfigurationBean implements PluginConfiguration {
     private BambooConfigurationBean bambooConfiguration = new BambooConfigurationBean();
@@ -34,48 +35,15 @@ public class PluginConfigurationBean implements PluginConfiguration {
 
 
 	private HttpConfigurableAdapter httpConfigurableAdapter;
+
+
+
+
 	/**
 	 * Default constructor.
 	 */
 	public PluginConfigurationBean() {
-		transientSetHttpConfigurable(new HttpConfigurableAdapter() {
-			public boolean isKeepProxyPassowrd() {
-				return false;  //To change body of implemented methods use File | Settings | File Templates.
-			}
-
-			public boolean isProxyAuthentication() {
-				return false;  //To change body of implemented methods use File | Settings | File Templates.
-			}
-
-			public boolean isUseHttpProxy() {
-				return false;  //To change body of implemented methods use File | Settings | File Templates.
-			}
-
-			public String getPlainProxyPassword() {
-				return null;  //To change body of implemented methods use File | Settings | File Templates.
-			}
-
-			public String getProxyLogin() {
-				return null;  //To change body of implemented methods use File | Settings | File Templates.
-			}
-
-			public int getProxyPort() {
-				return 0;  //To change body of implemented methods use File | Settings | File Templates.
-			}
-
-			public String getProxyHost() {
-				return null;  //To change body of implemented methods use File | Settings | File Templates.
-			}
-
-			public Object getHTTPProxySettingsDialog() {
-				return null;  //To change body of implemented methods use File | Settings | File Templates.
-			}
-
-			public TrustManager getTrustManager() {
-				return null;  //To change body of implemented methods use File | Settings | File Templates.
-			}
-		});
-	}
+    }
 
 
 	/**
