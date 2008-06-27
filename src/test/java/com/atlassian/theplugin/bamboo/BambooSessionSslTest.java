@@ -20,8 +20,12 @@ import com.atlassian.theplugin.commons.bamboo.api.BambooSession;
 import com.atlassian.theplugin.commons.bamboo.api.BambooSessionImpl;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
+import com.atlassian.theplugin.commons.util.HttpClientFactory;
+import com.atlassian.theplugin.commons.thirdparty.apache.EasyX509TrustManager;
 import com.atlassian.theplugin.bamboo.api.bamboomock.LogoutCallback;
 import com.atlassian.theplugin.bamboo.api.bamboomock.LoginCallback;
+import com.atlassian.theplugin.util.PluginTrustManager;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 import org.mortbay.jetty.Server;
@@ -37,9 +41,12 @@ public class BambooSessionSslTest extends TestCase {
 	private String mockBaseUrl;
 
 	protected void setUp() throws Exception {
-        ConfigurationFactory.setConfiguration(new PluginConfigurationBean());        
+		HttpClientFactory.initializeTrustManagers(new EasyX509TrustManager(null));
+		PluginConfiguration configuration = new PluginConfigurationBean();
+		ConfigurationFactory.setConfiguration(configuration);
 
-        String keystoreLocation = getClass().getResource("/mock/selfSigned.keystore").toExternalForm();
+
+		String keystoreLocation = getClass().getResource("/mock/selfSigned.keystore").toExternalForm();
         SslSocketConnector sslConnector = new SslSocketConnector();
 
 		sslConnector.setPort(0);
