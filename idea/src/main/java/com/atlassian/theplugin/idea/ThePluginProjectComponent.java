@@ -85,7 +85,7 @@ public class ThePluginProjectComponent implements
 
     private final PluginConfiguration pluginConfiguration;
 
-    private final JIRAToolWindowPanel jiraToolWindowPanel;
+    private JIRAToolWindowPanel jiraToolWindowPanel;
     private JIRAServer currentJiraServer;
 
 	private PluginToolWindow toolWindow;
@@ -112,7 +112,6 @@ public class ThePluginProjectComponent implements
 		// todo remove that get instance as it can return null. it is better to get it from app component.
 		this.bambooStatusChecker = BambooStatusChecker.getInstance();
 		this.pluginConfiguration = pluginConfiguration;
-		this.jiraToolWindowPanel = JIRAToolWindowPanel.getInstance(projectConfigurationBean);
 		this.projectConfigurationBean = projectConfigurationBean;
 		this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		/*
@@ -179,8 +178,9 @@ public class ThePluginProjectComponent implements
 			this.bambooToolWindowPanel = BambooTableToolWindowPanel.getInstance(projectConfigurationBean);
 			this.crucibleToolWindowPanel = CrucibleTableToolWindowPanel.getInstance(projectConfigurationBean);
 			this.crucibleBottomToolWindowPanel = CrucibleBottomToolWindowPanel.getInstance(projectConfigurationBean);
+			this.jiraToolWindowPanel = JIRAToolWindowPanel.getInstance(projectConfigurationBean);
 
-            // create tool window on the right
+			// create tool window on the right
             toolWindow = new PluginToolWindow(toolWindowManager, project);
             Icon toolWindowIcon = IconLoader.getIcon(THE_PLUGIN_TOOL_WINDOW_ICON);
             toolWindow.getIdeaToolWindow().setIcon(toolWindowIcon);
