@@ -23,15 +23,16 @@ import com.atlassian.theplugin.commons.configuration.BambooConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.util.DateUtil;
 import com.atlassian.theplugin.commons.util.Logger;
+import com.atlassian.theplugin.commons.util.LoggerImpl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.TimerTask;
+import java.util.*;
+import java.text.SimpleDateFormat;
+
+import org.joda.time.DateTime;
 
 
 /**
- * IDEA-specific class that uses {@link com.atlassian.theplugin.bamboo.BambooServerFactory} to retrieve builds info and
+ * IDEA-specific class that uses  to retrieve builds info and
  * passes raw data to configured {@link BambooStatusListener}s.<p>
  * <p/>
  * Intended to be triggered by a {@link java.util.Timer} through the {@link #newTimerTask()}.<p>
@@ -43,6 +44,9 @@ public final class BambooStatusChecker implements SchedulableChecker, Configurat
 	private final List<BambooStatusListener> listenerList = new ArrayList<BambooStatusListener>();
 
 	private UIActionScheduler actionScheduler;
+	private static Date lastActionRun = new Date();
+	private static SimpleDateFormat dateFormat = new SimpleDateFormat("H:mm:ss:SSS");
+	private static StringBuffer sb = new StringBuffer();
 	private static final String NAME = "Bamboo checker";
 
 	public void setActionScheduler(UIActionScheduler actionScheduler) {
@@ -107,13 +111,25 @@ public final class BambooStatusChecker implements SchedulableChecker, Configurat
 	 */
 	private void doRun() {
         try {
-            // collect build info from each server
+
+			// collect build info from each server
             final Collection<BambooBuild> newServerBuildsStatus = new ArrayList<BambooBuild>();
             for (Server server : retrieveEnabledBambooServers()) {
                         try {
-                            newServerBuildsStatus.addAll(
+
+							Date newRun = new Date();
+							sb.delete(0, sb.length());
+							sb.append(server.getName()).append(":");
+							sb.append("last result time: ").append(dateFormat.format(lastActionRun));
+							sb.append(" current run time : ").append(dateFormat.format(newRun));
+							sb.append(" time difference: ").append(dateFormat.format((newRun.getTime()-lastActionRun.getTime())));
+							LoggerImpl.getInstance().debug(sb.toString());
+
+							newServerBuildsStatus.addAll(
                                     bambooServerFacade.getSubscribedPlansResults(server));
-                        } catch (ServerPasswordNotProvidedException exception) {
+							lastActionRun = newRun;
+
+						} catch (ServerPasswordNotProvidedException exception) {
                             actionScheduler.invokeLater(missingPasswordHandler);
                         }
                     }
