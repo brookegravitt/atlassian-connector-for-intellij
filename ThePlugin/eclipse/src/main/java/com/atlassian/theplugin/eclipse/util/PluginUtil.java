@@ -41,6 +41,9 @@ public final class PluginUtil {
 	public static final String ICON_BAMBOO_SUCCEEDED = BuildStatus.BUILD_SUCCEED.toString();
 
 	public static final String ICON_CLOSE = "Close";
+
+	public static final String ICON_FAVOURITE_ON = "Favourite on";
+	public static final String ICON_FAVOURITE_OFF = "Favourite off";
 	
 	private static ImageRegistry imageRegistry;
 	
@@ -75,6 +78,9 @@ public final class PluginUtil {
 			imageRegistry.put(ICON_BAMBOO_REFRESH, ImageDescriptor.createFromFile(PluginUtil.class, "/icons/refresh.gif"));
 			
 			imageRegistry.put(ICON_CLOSE, ImageDescriptor.createFromFile(PluginUtil.class, "/icons/close.gif"));
+			
+			imageRegistry.put(ICON_FAVOURITE_ON, ImageDescriptor.createFromFile(PluginUtil.class, "/icons/favourite_on.gif"));
+			imageRegistry.put(ICON_FAVOURITE_OFF, ImageDescriptor.createFromFile(PluginUtil.class, "/icons/favourite_off.gif"));
 			
 		}
 		
