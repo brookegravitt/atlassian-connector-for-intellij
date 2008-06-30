@@ -39,6 +39,7 @@ import com.intellij.openapi.application.ModalityState;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.text.SimpleDateFormat;
 
 
 /**
@@ -54,8 +55,11 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
     private final List<CrucibleStatusListener> listenerList = new ArrayList<CrucibleStatusListener>();
     private final PluginConfiguration pluginConfiguration;
     private final CrucibleServerFacade crucibleServerFacade;
+	private static Date lastActionRun = new Date();
+	private static SimpleDateFormat dateFormat = new SimpleDateFormat("H:mm:ss:SSS");
+	private static StringBuffer sb = new StringBuffer();
 
-    private CrucibleVersion crucibleVersion = CrucibleVersion.UNKNOWN;
+	private CrucibleVersion crucibleVersion = CrucibleVersion.UNKNOWN;
 	private static final String NAME = "Crucible checker";
 
 	public CrucibleStatusChecker(PluginConfiguration pluginConfiguration) {
@@ -78,8 +82,17 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
     private CrucibleVersion getCrucibleVersion() {
         for (Server server : retrieveEnabledCrucibleServers()) {
             try {
-                crucibleServerFacade.getReviewsForFilter(server, PredefinedFilter.Open);
-            } catch (RemoteApiException e) {
+				Date newRun = new Date();
+				sb.delete(0, sb.length());
+				sb.append(server.getName()).append(":");
+				sb.append("last result time: ").append(dateFormat.format(lastActionRun));
+				sb.append(" current run time : ").append(dateFormat.format(newRun));
+				sb.append(" time difference: ").append(dateFormat.format((newRun.getTime()-lastActionRun.getTime())));
+				
+				crucibleServerFacade.getReviewsForFilter(server, PredefinedFilter.Open);
+
+				lastActionRun = newRun;
+			} catch (RemoteApiException e) {
                 return CrucibleVersion.CRUCIBLE_15;
             } catch (ServerPasswordNotProvidedException e) {
                 return CrucibleVersion.CRUCIBLE_16;
