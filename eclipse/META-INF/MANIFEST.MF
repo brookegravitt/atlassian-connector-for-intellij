@@ -5,9 +5,14 @@ Bundle-SymbolicName: atlassian-eclipse-plugin;singleton:=true
 Bundle-Version: 0.2.0.SNAPSHOT
 Bundle-Activator: com.atlassian.theplugin.eclipse.preferences.Activator
 Bundle-Vendor: Atlassian Pty Ltd
+Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.eclipse.core.resources
+ org.eclipse.core.resources,
+ org.eclipse.team.core,
+ org.eclipse.team.ui,
+ org.eclipse.compare,
+ org.eclipse.ui.ide
 Eclipse-LazyStart: true
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ClassPath: .,
@@ -17,6 +22,8 @@ Bundle-ClassPath: .,
  commons-httpclient-3.1.jar,
  commons-logging-1.0.4.jar,
  dom4j-1.6.1.jar,
+ activation-1.1.jar,
+ mail-1.4.jar,
  jaxen-1.1.1.jar,
  jdom-1.0.jar,
  joda-time-1.5.2.jar,
