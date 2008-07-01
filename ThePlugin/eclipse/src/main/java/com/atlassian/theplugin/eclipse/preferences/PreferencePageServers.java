@@ -61,6 +61,10 @@ public class PreferencePageServers
 	extends FieldEditorPreferencePage
 	implements IWorkbenchPreferencePage {
 
+	private StringFieldEditor bambooUrlEditor;
+	private StringFieldEditor bambooUserNameEditor;
+	private PasswordFieldEditor bambooPasswordEditor;
+
 	public PreferencePageServers() {
 		super(GRID);
 		setPreferenceStore(Activator.getDefault().getPreferenceStore());
@@ -75,16 +79,38 @@ public class PreferencePageServers
 	 */
 	public void createFieldEditors() {
 		addField(new StringFieldEditor(PreferenceConstants.BAMBOO_NAME, "Server Name:", getFieldEditorParent()));
-		addField(new StringFieldEditor(PreferenceConstants.BAMBOO_URL, "Server Url:", getFieldEditorParent()));
-		addField(new StringFieldEditor(PreferenceConstants.BAMBOO_USER_NAME, "User Name:", getFieldEditorParent()));
-		addField(new PasswordFieldEditor(PreferenceConstants.BAMBOO_USER_PASSWORD, "Password:", getFieldEditorParent()));
-		addField(new BambooPlanListFieldEditor(PreferenceConstants.BAMBOO_BUILDS, "Builds:", getFieldEditorParent()));
+		
+		this.bambooUrlEditor = new StringFieldEditor(PreferenceConstants.BAMBOO_URL, "Server Url:", getFieldEditorParent());
+		addField(bambooUrlEditor);
+		
+		this.bambooUserNameEditor = new StringFieldEditor(PreferenceConstants.BAMBOO_USER_NAME, "User Name:", getFieldEditorParent());
+		addField(bambooUserNameEditor);
+		
+		this.bambooPasswordEditor = new PasswordFieldEditor(PreferenceConstants.BAMBOO_USER_PASSWORD, "Password:", getFieldEditorParent()); 
+		addField(bambooPasswordEditor);
+		
+		BambooPlanListFieldEditor planList = 
+			new BambooPlanListFieldEditor(PreferenceConstants.BAMBOO_BUILDS, "Builds:", getFieldEditorParent(), this);
+		Activator.getDefault().getPluginPreferences().addPropertyChangeListener(planList);
+		addField(planList);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
 	 */
 	public void init(IWorkbench workbench) {
+	}
+	
+	public String getPassword() {
+		return bambooPasswordEditor.getStringValue();
+	}
+	
+	public String getUserName() {
+		return bambooUserNameEditor.getStringValue();
+	}
+	
+	public String getBambooUrl() {
+		return bambooUrlEditor.getStringValue();
 	}
 
 }
