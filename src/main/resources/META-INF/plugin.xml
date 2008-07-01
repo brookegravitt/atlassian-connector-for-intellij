@@ -376,9 +376,18 @@
 		</group>
 
 		<action id="ThePlugin.JIRA.RefreshComments" class="com.atlassian.theplugin.idea.action.jira.editor.RefreshCommentsAction" text="Refresh" icon="/actions/sync.png" />
-		<action id="ThePlugin.JIRA.ExpandComments" class="com.atlassian.theplugin.idea.action.jira.editor.ExpandCommentsAction" text="Refresh" icon="/actions/expandall.png" />
-		<action id="ThePlugin.JIRA.CollapseComments" class="com.atlassian.theplugin.idea.action.jira.editor.CollapseCommentsAction" text="Refresh" icon="/actions/collapseall.png" />
-		<action id="ThePlugin.JIRA.AddEditorComment" class="com.atlassian.theplugin.idea.action.jira.editor.AddCommentAction" text="Refresh" icon="/general/add.png" />
+		<action id="ThePlugin.JIRA.ExpandComments" class="com.atlassian.theplugin.idea.action.jira.editor.ExpandCommentsAction" text="Expand All Comments" icon="/actions/expandall.png" />
+		<action id="ThePlugin.JIRA.CollapseComments" class="com.atlassian.theplugin.idea.action.jira.editor.CollapseCommentsAction" text="Collapse All Aomments" icon="/actions/collapseall.png" />
+		<action id="ThePlugin.JIRA.AddEditorComment" class="com.atlassian.theplugin.idea.action.jira.editor.AddCommentAction" text="Add Comment" icon="/general/add.png" />
+		<action id="ThePlugin.JIRA.EditorViewIssue" class="com.atlassian.theplugin.idea.action.jira.editor.EditorViewIssueAction" text="View in Browser" icon="/general/web.png"/>
+		<action id="ThePlugin.JIRA.EditorEditIssue" class="com.atlassian.theplugin.idea.action.jira.editor.EditorEditIssueAction" text="Edit in Browser" icon="/actions/editSource.png"/>
+		<action id="ThePlugin.JIRA.EditorAnalyseStackTrace" class="com.atlassian.theplugin.idea.action.jira.editor.EditorAnalyseStackTraceAction" text="Analyse Description Stack Trace" icon="/debugger/stackFrame.png"/>
+
+		<group id="ThePlugin.JIRA.EditorToolBar" popup="false">
+			<reference id="ThePlugin.JIRA.EditorViewIssue" />
+			<reference id="ThePlugin.JIRA.EditorEditIssue"/>
+			<reference id="ThePlugin.JIRA.EditorAnalyseStackTrace"/>
+		</group>
 
 		<group id="ThePlugin.JIRA.CommentsToolBar" popup="false">
 			<reference id="ThePlugin.JIRA.RefreshComments" />
