@@ -60,7 +60,7 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 	private static StringBuffer sb = new StringBuffer();
 
 	private CrucibleVersion crucibleVersion = CrucibleVersion.UNKNOWN;
-	private static final String NAME = "Crucible checker";
+	private static final String NAME = "Atlassian Crucible checker";
 
 	public CrucibleStatusChecker(PluginConfiguration pluginConfiguration) {
         this.pluginConfiguration = pluginConfiguration;
