@@ -78,19 +78,7 @@ public class PreferencePageServers
 		addField(new StringFieldEditor(PreferenceConstants.BAMBOO_URL, "Server Url:", getFieldEditorParent()));
 		addField(new StringFieldEditor(PreferenceConstants.BAMBOO_USER_NAME, "User Name:", getFieldEditorParent()));
 		addField(new PasswordFieldEditor(PreferenceConstants.BAMBOO_USER_PASSWORD, "Password:", getFieldEditorParent()));
-		
-//		StringFieldEditor builds = new StringFieldEditor(PreferenceConstants.BAMBOO_BUILDS, "Builds:", getFieldEditorParent());
-//		builds.getLabelControl(getFieldEditorParent()).setToolTipText("Space separated build names");
-//		addField(builds);
-		
-		final MyTableFieldEditor myTableFieldEditor = new MyTableFieldEditor(PreferenceConstants.BAMBOO_BUILDS, "Builds:", getFieldEditorParent());
-		addField(myTableFieldEditor);
-//		Activator.getDefault().getPluginPreferences().addPropertyChangeListener(new IPropertyChangeListener() {
-//			public void propertyChange(PropertyChangeEvent event) {
-//				if (event.getProperty().equals(PreferenceConstants.BAMBOO_URL)
-//			}
-//		});
-		
+		addField(new BambooPlanListFieldEditor(PreferenceConstants.BAMBOO_BUILDS, "Builds:", getFieldEditorParent()));
 	}
 
 	/* (non-Javadoc)
