@@ -9,12 +9,18 @@ import java.util.Set;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.Preferences.IPropertyChangeListener;
+import org.eclipse.core.runtime.Preferences.PropertyChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
@@ -39,11 +45,15 @@ import com.atlassian.theplugin.eclipse.util.PluginUtil;
  * This class may be used as is, or subclassed as required.
  * </p>
  */
-public class BambooPlanListFieldEditor extends FieldEditor {
+public class BambooPlanListFieldEditor extends FieldEditor implements IPropertyChangeListener {
 
 	private Table table;
 
 	private Set<SubscribedPlan> subscribedPlans;
+
+	private PreferencePageServers parentPreferencePage;
+
+	private Button refreshButton;
 
     /**
      * Creates a new string field editor 
@@ -58,10 +68,13 @@ public class BambooPlanListFieldEditor extends FieldEditor {
      * @param name the name of the preference this field editor works on
      * @param labelText the label text of the field editor
      * @param parent the parent of the field editor's control
+     * @param preferencePageServers 
      */
-    public BambooPlanListFieldEditor(String name, String labelText, Composite parent) {
+    public BambooPlanListFieldEditor(String name, String labelText, Composite parent, 
+    		PreferencePageServers preferencePageServers) {
     	init(name, labelText);
         createControl(parent);
+        this.parentPreferencePage = preferencePageServers;
     }
 
     /* (non-Javadoc)
@@ -92,15 +105,34 @@ public class BambooPlanListFieldEditor extends FieldEditor {
     	label.setLayoutData(gdLabel);
         
         table = getTableControl(parent);
-
         GridData gd = new GridData();
         gd.horizontalSpan = numColumns - 1;
         gd.horizontalAlignment = GridData.FILL;
         gd.grabExcessHorizontalSpace = true;
         gd.heightHint = convertVerticalDLUsToPixels(table, 90);
         gd.verticalAlignment = GridData.FILL;
-
         table.setLayoutData(gd);
+        
+        Label empty = new Label(parent, SWT.NONE);
+    	
+    	refreshButton = new Button(parent, SWT.PUSH);
+		refreshButton.setText("Refresh");
+    	refreshButton.setEnabled(false);
+    	refreshButton.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseUp(MouseEvent e) {
+				super.mouseUp(e);
+				
+				ServerBean bambooServer = new ServerBean();
+				bambooServer.setUrlString(parentPreferencePage.getBambooUrl());
+				bambooServer.setUserName(parentPreferencePage.getUserName());
+				bambooServer.transientSetPasswordString(parentPreferencePage.getPassword(), true);
+				
+				loadServerPlans(bambooServer);
+			}
+			
+    	});
     }
 
 
@@ -112,7 +144,7 @@ public class BambooPlanListFieldEditor extends FieldEditor {
     	this.subscribedPlans = 
     		subscribedPlansString2Collection(getPreferenceStore().getString(getPreferenceName()));
     	
-    	loadBuildPlans();
+    	loadServerPlans();
     }
 
     /* (non-Javadoc)
@@ -226,10 +258,13 @@ public class BambooPlanListFieldEditor extends FieldEditor {
      */
 	private void setPlans(Collection<BambooPlan> allPlans) {
 		fillTable(allPlans);
+		refreshButton.setEnabled(true);
+		
 	}
 	
 	private void fillTable(Collection<BambooPlan> serverPlans) {
 		table.clearAll();
+		table.setItemCount(0);	// this is unfortunately necessary to clear the table
 		
 		TableItem item;
 		
@@ -318,25 +353,30 @@ public class BambooPlanListFieldEditor extends FieldEditor {
 	}
 
 
-	private void loadBuildPlans() {
+	private void loadServerPlans() {
 		
-		//TODO add refresh button to retrieve plan keys manually (e.g. in case server has changed)
+		Collection<ServerBean> servers = Activator.getDefault().getPluginConfiguration().getBambooConfigurationData().getServersData();
+		final Iterator<ServerBean> iterator = servers.iterator();
+		
+		// we take only first server right now
+		if (iterator.hasNext()) {
+			ServerBean serverBean = iterator.next();
+			loadServerPlans(serverBean);
+		}
+	}
+	
+	private void loadServerPlans(final ServerBean bambooServer) {
 		
 		Job planListJob = new Job("Atlassian Bamboo plans") {
-
+			
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 
+				Collection<BambooPlan> serverPlans = new ArrayList<BambooPlan>(0);
 				BambooServerFacade bambooFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
 		
-				Collection<ServerBean> servers = Activator.getDefault().getPluginConfiguration().getBambooConfigurationData().getServersData();
-				Iterator<ServerBean> iterator = servers.iterator();
-		
-				// we take only first server right now
-				if (iterator.hasNext()) {
-					Collection<BambooPlan> serverPlans = new ArrayList<BambooPlan>(0);
 					try {
-						serverPlans = bambooFacade.getPlanList(iterator.next());
+						serverPlans = bambooFacade.getPlanList(bambooServer);
 					} catch (ServerPasswordNotProvidedException e1) {
 						e1.printStackTrace();
 					} catch (RemoteApiException e1) {
@@ -350,13 +390,23 @@ public class BambooPlanListFieldEditor extends FieldEditor {
 							BambooPlanListFieldEditor.this.setPlans(plans);
 						}
 					});
-				}
-	
-				return Status.OK_STATUS;
-			}
-		};
+
+					return Status.OK_STATUS;
+			}};
 		
 		planListJob.schedule();
+
+	}
+	
+
+	public void propertyChange(PropertyChangeEvent event) {
+		if (event.getProperty().equals(PreferenceConstants.BAMBOO_URL) 
+				|| event.getProperty().equals(PreferenceConstants.BAMBOO_USER_NAME) 
+				|| event.getProperty().equals(PreferenceConstants.BAMBOO_USER_PASSWORD)) {
+			
+			doLoad();
+			
+		}
 	}
 }
 	
