@@ -1,14 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
-
 package com.atlassian.theplugin.eclipse.preferences;
 
 import java.util.ArrayList;
@@ -22,14 +11,9 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.preference.FieldEditor;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -55,33 +39,16 @@ import com.atlassian.theplugin.eclipse.util.PluginUtil;
  * This class may be used as is, or subclassed as required.
  * </p>
  */
-public class MyTableFieldEditor extends FieldEditor {
-
-	/**
-     * Cached valid state.
-     */
-    private boolean isValid;
-
-    /**
-     * Old text value.
-     */
-    private String oldValue;
-
-     /**
-     * The error message, or <code>null</code> if none.
-     */
-    private String errorMessage;
+public class BambooPlanListFieldEditor extends FieldEditor {
 
 	private Table table;
-
-	private Collection<BambooPlan> serverPlans;
 
 	private Set<SubscribedPlan> subscribedPlans;
 
     /**
      * Creates a new string field editor 
      */
-    protected MyTableFieldEditor() {
+    protected BambooPlanListFieldEditor() {
     }
 
     /**
@@ -92,11 +59,8 @@ public class MyTableFieldEditor extends FieldEditor {
      * @param labelText the label text of the field editor
      * @param parent the parent of the field editor's control
      */
-    public MyTableFieldEditor(String name, String labelText, Composite parent) {
+    public BambooPlanListFieldEditor(String name, String labelText, Composite parent) {
     	init(name, labelText);
-        isValid = false;
-        errorMessage = JFaceResources
-                .getString("StringFieldEditor.errorMessage");//$NON-NLS-1$
         createControl(parent);
     }
 
@@ -110,31 +74,6 @@ public class MyTableFieldEditor extends FieldEditor {
         // If another field editor has more columns then
         // we assume it is setting the width.
         gd.grabExcessHorizontalSpace = gd.horizontalSpan == 1;
-    }
-
-    /**
-     * Checks whether the text input field contains a valid value or not.
-     *
-     * @return <code>true</code> if the field value is valid,
-     *   and <code>false</code> if invalid
-     */
-    protected boolean checkState() {
-    	return true;
-    }
-
-    /**
-     * Hook for subclasses to do specific state checks.
-     * <p>
-     * The default implementation of this framework method does
-     * nothing and returns <code>true</code>.  Subclasses should 
-     * override this method to specific state checks.
-     * </p>
-     *
-     * @return <code>true</code> if the field value is valid,
-     *   and <code>false</code> if invalid
-     */
-    protected boolean doCheckState() {
-        return true;
     }
 
     /**
@@ -174,7 +113,6 @@ public class MyTableFieldEditor extends FieldEditor {
     		subscribedPlansString2Collection(getPreferenceStore().getString(getPreferenceName()));
     	
     	loadBuildPlans();
-    	
     }
 
     /* (non-Javadoc)
@@ -188,16 +126,6 @@ public class MyTableFieldEditor extends FieldEditor {
      */
     protected void doStore() {
         getPreferenceStore().setValue(getPreferenceName(), getStringValue());
-    }
-
-    /**
-     * Returns the error message that will be displayed when and if 
-     * an error occurs.
-     *
-     * @return the error message, or <code>null</code> if none
-     */
-    public String getErrorMessage() {
-        return errorMessage;
     }
 
     /* (non-Javadoc)
@@ -223,7 +151,6 @@ public class MyTableFieldEditor extends FieldEditor {
         			ret.append(" ");
         		}
         	}
-        	
 			return ret.toString();
 		}
         
@@ -274,29 +201,6 @@ public class MyTableFieldEditor extends FieldEditor {
 		return table;
 	}
 
-    /*
-	 * (non-Javadoc) Method declared on FieldEditor.
-	 */
-    public boolean isValid() {
-        return isValid;
-    }
-
-    /*
-	 * (non-Javadoc) Method declared on FieldEditor.
-	 */
-    protected void refreshValidState() {
-        isValid = checkState();
-    }
-
-    /**
-     * Sets the error message that will be displayed when and if 
-     * an error occurs.
-     *
-     * @param message the error message
-     */
-    public void setErrorMessage(String message) {
-        errorMessage = message;
-    }
 
     /* (non-Javadoc)
      * Method declared on FieldEditor.
@@ -307,58 +211,6 @@ public class MyTableFieldEditor extends FieldEditor {
         }
     }
 
-//    /**
-//     * Sets this field editor's value.
-//     *
-//     * @param value the new value, or <code>null</code> meaning the empty string
-//     */
-//    public void setStringValue(String value) {
-//        if (table != null) {
-//            if (value != null) {
-//				
-//            	
-//            	
-//            	
-//			}
-//            //oldValue = textField.getText();
-//            if (!oldValue.equals(value)) {
-//            //    textField.setText(value);
-//                valueChanged();
-//            }
-//        }
-//    }
-
-    /**
-     * Shows the error message set via <code>setErrorMessage</code>.
-     */
-    public void showErrorMessage() {
-        showErrorMessage(errorMessage);
-    }
-
-    /**
-     * Informs this field editor's listener, if it has one, about a change
-     * to the value (<code>VALUE</code> property) provided that the old and
-     * new values are different.
-     * <p>
-     * This hook is <em>not</em> called when the text is initialized 
-     * (or reset to the default value) from the preference store.
-     * </p>
-     */
-    protected void valueChanged() {
-        setPresentsDefaultValue(false);
-        boolean oldState = isValid;
-        refreshValidState();
-
-        if (isValid != oldState) {
-			fireStateChanged(IS_VALID, oldState, isValid);
-		}
-
-        String newValue = ""; //textField.getText();
-        if (!newValue.equals(oldValue)) {
-            fireValueChanged(VALUE, oldValue, newValue);
-            oldValue = newValue;
-        }
-    }
 
     /*
      * @see FieldEditor.setEnabled(boolean,Composite).
@@ -373,11 +225,10 @@ public class MyTableFieldEditor extends FieldEditor {
      * @param allPlans
      */
 	private void setPlans(Collection<BambooPlan> allPlans) {
-		this.serverPlans = allPlans;
-		fillTable();
+		fillTable(allPlans);
 	}
 	
-	private void fillTable() {
+	private void fillTable(Collection<BambooPlan> serverPlans) {
 		table.clearAll();
 		
 		TableItem item;
@@ -392,11 +243,11 @@ public class MyTableFieldEditor extends FieldEditor {
 			}
 			
 			if (plan.isFavourite()) {
-				item.setImage(1, PluginUtil.getImageRegistry().get(PluginUtil.ICON_FAVOURITE_ON));
+				item.setImage(Column.FAVOURITE.ordinal(), PluginUtil.getImageRegistry().get(PluginUtil.ICON_FAVOURITE_ON));
 			} else {
-				item.setImage(1, PluginUtil.getImageRegistry().get(PluginUtil.ICON_FAVOURITE_OFF));
+				item.setImage(Column.FAVOURITE.ordinal(), PluginUtil.getImageRegistry().get(PluginUtil.ICON_FAVOURITE_OFF));
 			}
-			item.setText(2, plan.getPlanKey());
+			item.setText(Column.PLAN_KEY.ordinal(), plan.getPlanKey());
 		}
 		
 		// add to the list subscribed plans which do not exist on the server (with grey icon)  
@@ -404,10 +255,8 @@ public class MyTableFieldEditor extends FieldEditor {
 			if (! serverPlans.contains(new BambooPlanData(plan.getPlanId()))) {
 				item = new TableItem(table, SWT.NONE);
 				item.setChecked(true);
-				item.setImage(1, PluginUtil.getImageRegistry().get(PluginUtil.ICON_BAMBOO_UNKNOWN));
-				item.setText(2, plan.getPlanId());
-				//item.setGrayed(true);
-				
+				item.setImage(Column.FAVOURITE.ordinal(), PluginUtil.getImageRegistry().get(PluginUtil.ICON_BAMBOO_UNKNOWN));
+				item.setText(Column.PLAN_KEY.ordinal(), plan.getPlanId());
 			}
 		}
 		
@@ -485,20 +334,20 @@ public class MyTableFieldEditor extends FieldEditor {
 		
 				// we take only first server right now
 				if (iterator.hasNext()) {
-					Collection<BambooPlan> plans = new ArrayList<BambooPlan>(0);
+					Collection<BambooPlan> serverPlans = new ArrayList<BambooPlan>(0);
 					try {
-						plans = bambooFacade.getPlanList(iterator.next());
+						serverPlans = bambooFacade.getPlanList(iterator.next());
 					} catch (ServerPasswordNotProvidedException e1) {
 						e1.printStackTrace();
 					} catch (RemoteApiException e1) {
 						e1.printStackTrace();
 					}
 					
-					final Collection<BambooPlan> finalPlans = plans;
+					final Collection<BambooPlan> plans = serverPlans;
 				
 					EclipseActionScheduler.getInstance().invokeLater(new Runnable() {
 						public void run() {
-							MyTableFieldEditor.this.setPlans(finalPlans);
+							BambooPlanListFieldEditor.this.setPlans(plans);
 						}
 					});
 				}
