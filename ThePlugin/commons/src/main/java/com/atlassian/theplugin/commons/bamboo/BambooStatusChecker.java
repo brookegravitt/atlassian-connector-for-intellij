@@ -47,7 +47,7 @@ public final class BambooStatusChecker implements SchedulableChecker, Configurat
 	private static Date lastActionRun = new Date();
 	private static SimpleDateFormat dateFormat = new SimpleDateFormat("H:mm:ss:SSS");
 	private static StringBuffer sb = new StringBuffer();
-	private static final String NAME = "Bamboo checker";
+	private static final String NAME = "Atlassian Bamboo checker";
 
 	public void setActionScheduler(UIActionScheduler actionScheduler) {
 		this.actionScheduler = actionScheduler;
