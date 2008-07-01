@@ -79,11 +79,11 @@ public class PreferencePageServers
 		addField(new StringFieldEditor(PreferenceConstants.BAMBOO_USER_NAME, "User Name:", getFieldEditorParent()));
 		addField(new PasswordFieldEditor(PreferenceConstants.BAMBOO_USER_PASSWORD, "Password:", getFieldEditorParent()));
 		
-		StringFieldEditor builds = new StringFieldEditor(PreferenceConstants.BAMBOO_BUILDS, "Builds:", getFieldEditorParent());
-		builds.getLabelControl(getFieldEditorParent()).setToolTipText("Space separated build names");
-		addField(builds);
+//		StringFieldEditor builds = new StringFieldEditor(PreferenceConstants.BAMBOO_BUILDS, "Builds:", getFieldEditorParent());
+//		builds.getLabelControl(getFieldEditorParent()).setToolTipText("Space separated build names");
+//		addField(builds);
 		
-		final MyTableFieldEditor myTableFieldEditor = new MyTableFieldEditor("BUILDSXXX", "Builds:", getFieldEditorParent());
+		final MyTableFieldEditor myTableFieldEditor = new MyTableFieldEditor(PreferenceConstants.BAMBOO_BUILDS, "Builds:", getFieldEditorParent());
 		addField(myTableFieldEditor);
 //		Activator.getDefault().getPluginPreferences().addPropertyChangeListener(new IPropertyChangeListener() {
 //			public void propertyChange(PropertyChangeEvent event) {
@@ -91,52 +91,6 @@ public class PreferencePageServers
 //			}
 //		});
 		
-		// TODO add refresh button to retrieve plan keys manually (e.g. in case server has changed)
-		Job planListJob = new Job("Atlassian Bamboo") {
-
-			@Override
-			protected IStatus run(IProgressMonitor monitor) {
-
-				BambooServerFacade bambooFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
-				
-				Collection<ServerBean> servers = Activator.getDefault().getPluginConfiguration().getBambooConfigurationData().getServersData();
-				Iterator<ServerBean> iterator = servers.iterator();
-				
-				// we take only first server right now
-				if (iterator.hasNext()) {
-					Collection<BambooPlan> plans = new ArrayList<BambooPlan>(0);
-					try {
-						plans = bambooFacade.getPlanList(iterator.next());
-					} catch (ServerPasswordNotProvidedException e1) {
-						e1.printStackTrace();
-					} catch (RemoteApiException e1) {
-						e1.printStackTrace();
-					}
-				
-					StringBuffer plansString = new StringBuffer();
-					for (BambooPlan plan : plans) {
-						plansString.append(plan.getPlanKey());
-						plansString.append(" ");
-					}
-					//System.out.println(plansString.toString());
-					// myTableFieldEditor.setStringValue(plans.toString());
-					
-					final Collection<BambooPlan> allPlans = plans;
-					
-					EclipseActionScheduler.getInstance().invokeLater(new Runnable() {
-						public void run() {
-							myTableFieldEditor.setPlans(allPlans);
-						}
-					});
-					
-				}
-				
-			
-				return Status.OK_STATUS;
-			}
-		};
-		
-		planListJob.schedule();
 	}
 
 	/* (non-Javadoc)
