@@ -15,7 +15,7 @@
  * Contributors:
  *    Alexander Gurov - Initial API and implementation
  *******************************************************************************/
-package com.atlassian.theplugin.eclipse.view.bamboo;
+package com.atlassian.theplugin.eclipse.ui.bamboo;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -37,6 +37,9 @@ import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
+
+import com.atlassian.theplugin.eclipse.view.bamboo.IDataTreeNode;
+import com.atlassian.theplugin.eclipse.view.bamboo.IParentTreeNode;
 
 public class BambooTreeViewer extends TreeViewer {
 

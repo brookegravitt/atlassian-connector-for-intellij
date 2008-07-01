@@ -15,7 +15,7 @@
  * Contributors:
  *    Alexander Gurov - Initial API and implementation
  *******************************************************************************/
-package com.atlassian.theplugin.eclipse.view.bamboo;
+package com.atlassian.theplugin.eclipse.ui.bamboo;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -48,6 +48,8 @@ import org.eclipse.ui.part.DrillDownAdapter;
 import org.eclipse.ui.part.ViewPart;
 
 import com.atlassian.theplugin.eclipse.preferences.Activator;
+import com.atlassian.theplugin.eclipse.ui.action.bamboo.NewBambooServerAction;
+import com.atlassian.theplugin.eclipse.ui.bamboo.BambooTreeViewer.IRefreshVisitor;
 
 public class BambooServers extends ViewPart {
 
@@ -67,7 +69,7 @@ public class BambooServers extends ViewPart {
 		MenuManager menuMgr = new MenuManager();
         menuMgr.addMenuListener(new IMenuListener() {
             public void menuAboutToShow(IMenuManager manager) {
-        		MenuManager sub = new MenuManager(Activator.getDefault().getResource("RepositoriesView.New"), "addMenu");
+        		MenuManager sub = new MenuManager(Activator.getDefault().getResource("BambooServers.New"), "addMenu");
         		sub.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
         		sub.add(new Separator("mainGroup"));
         		sub.add(new Separator("managementGroup"));
@@ -161,29 +163,30 @@ public class BambooServers extends ViewPart {
                 }
             }
         }); 
-        tAction.setImageDescriptor(Activator.getDefault().getImageDescriptor("icons/common/refresh.gif"));
+        tAction.setImageDescriptor(Activator.getDefault().getImageDescriptor("icons/refresh.gif"));
         tAction.setToolTipText(Activator.getDefault().getResource("SVNView.Refresh.ToolTip"));
         
 		tbm.add(new Separator("collapseAllGroup"));
 		
-        tbm.add(tAction = new Action(Activator.getDefault().getResource("RepositoriesView.CollapseAll.Label")) {
+        tbm.add(tAction = new Action(Activator.getDefault().getResource("BambooServers.CollapseAll.Label")) {
 			public void run() {
 			    BambooServers.this.bambooTree.collapseAll();				
 			}
         }); 
         tAction.setImageDescriptor(Activator.getDefault().getImageDescriptor("icons/common/collapseall.gif"));
-        tAction.setToolTipText(Activator.getDefault().getResource("RepositoriesView.CollapseAll.ToolTip"));
+        tAction.setToolTipText(Activator.getDefault().getResource("BambooServers.CollapseAll.ToolTip"));
         
 		tbm.add(new Separator("repositoryGroup"));
         
-        tbm.add(tAction = new Action(Activator.getDefault().getResource("RepositoriesView.NewLocation.Label")) {
+        tbm.add(tAction = new Action(Activator.getDefault().getResource("BambooServers.NewServer.Label")) {
 			public void run() {
-				//new NewRepositoryLocationAction().run(this);
+				new NewBambooServerAction().run(this);
 			}
         }); 
         tAction.setImageDescriptor(Activator.getDefault().getImageDescriptor("icons/views/repositories/new_location.gif"));
-        tAction.setToolTipText(Activator.getDefault().getResource("RepositoriesView.NewLocation.ToolTip"));
+        tAction.setToolTipText(Activator.getDefault().getResource("BambooServers.NewServer.ToolTip"));
         
+        /*
         tbm.add(this.showBrowserAction = new Action(Activator.getDefault().getResource("RepositoriesView.ShowBrowser.Label"), Action.AS_CHECK_BOX) {
 			public void run() {
 				if (this.isChecked()) {
@@ -196,7 +199,8 @@ public class BambooServers extends ViewPart {
         });        
         this.showBrowserAction.setImageDescriptor(Activator.getDefault().getImageDescriptor("icons/views/repositories/browser.gif"));
         this.showBrowserAction.setToolTipText(Activator.getDefault().getResource("RepositoriesView.ShowBrowser.ToolTip"));
-
+        */
+        
         this.bambooTree.getControl().addKeyListener(new KeyAdapter() {
         	public void keyPressed(KeyEvent event) {
     			if (BambooServers.this.bambooTree.getSelection() instanceof IStructuredSelection) {

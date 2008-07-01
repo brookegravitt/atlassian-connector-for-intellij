@@ -42,6 +42,7 @@ import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.eclipse.EclipseActionScheduler;
 import com.atlassian.theplugin.eclipse.EclipseLogger;
 import com.atlassian.theplugin.eclipse.MissingPasswordHandler;
+import com.atlassian.theplugin.eclipse.core.operation.IConsoleStream;
 import com.atlassian.theplugin.eclipse.util.FileUtil;
 import com.atlassian.theplugin.eclipse.util.PluginUtil;
 
@@ -262,6 +263,11 @@ public class Activator extends AbstractUIPlugin {
 			// bambooChecker.setConfiguration(pluginConfiguration);
 			rescheduleStatusCheckers();
 		}
+	}
+
+	public IConsoleStream getConsoleStream() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

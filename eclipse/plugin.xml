@@ -32,7 +32,7 @@
       </category>
       <view allowMultiple="false"
             category="com.atlassian.theplugin.eclipse.viewcategory"
-            class="com.atlassian.theplugin.eclipse.view.bamboo.BambooServers"
+            class="com.atlassian.theplugin.eclipse.ui.bamboo.BambooServers"
             id="com.atlassian.theplugin.eclipse.view.bamboo.BambooServers"
             name="Bamboo Servers">
       </view>
