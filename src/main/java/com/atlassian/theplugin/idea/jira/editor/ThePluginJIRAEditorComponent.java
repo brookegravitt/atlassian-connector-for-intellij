@@ -27,6 +27,7 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.ui.HyperlinkLabel;
+import com.intellij.util.ui.UIUtil;
 import org.jdom.Element;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -39,8 +40,6 @@ import javax.swing.event.HyperlinkListener;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.ArrayList;
@@ -265,9 +264,19 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
     }
 
     private class UserLabel extends HyperlinkLabel {
-        UserLabel(final String serverUrl, final String userName, final String userNameId) {
+		UserLabel(final String serverUrl, final String userNameId) {
+			super(userNameId, UIUtil.getTableSelectionForeground(),
+					UIUtil.getTableSelectionBackground(), UIUtil.getTableSelectionForeground());
+			addListener(serverUrl, userNameId);
+		}
+
+		UserLabel(final String serverUrl, final String userName, final String userNameId) {
             super(userName);
-            addHyperlinkListener(new HyperlinkListener() {
+			addListener(serverUrl, userNameId);
+		}
+
+		private void addListener(final String serverUrl, final String userNameId) {
+			addHyperlinkListener(new HyperlinkListener() {
                     public void hyperlinkUpdate(HyperlinkEvent e) {
                         BrowserUtil.launchBrowser(
                                 serverUrl
@@ -275,14 +284,35 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
                                 + userNameId);
                     }
             });
-        }
-    }
+		}
+	}
 
-    private class CommentPanel extends JPanel {
+	private class BoldLabel extends JLabel {
+		public BoldLabel(String text) {
+			super(text);
+			setFont(getFont().deriveFont(Font.BOLD));
+		}
+
+		public BoldLabel() {
+			this("");
+		}
+	}
+
+	private class WhiteLabel extends BoldLabel {
+		public WhiteLabel() {
+			super();
+			setForeground(UIUtil.getTableSelectionForeground());
+		}
+	}
+	
+	private class CommentPanel extends JPanel {
 
 		private ShowHideButton btnShowHide;
 
-        public CommentPanel(final JIRAIssue issue, final JIRAComment comment, final JIRAServer server) {
+		public CommentPanel(final JIRAIssue issue, final JIRAComment comment, final JIRAServer server) {
+			setOpaque(true);
+			setBackground(UIUtil.getTableSelectionBackground());
+			
 			setLayout(new GridBagLayout());
 			GridBagConstraints gbc;
 			gbc = new GridBagConstraints();
@@ -298,19 +328,19 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			gbc.gridy = 0;
 			gbc.anchor = GridBagConstraints.WEST;
 			gbc.insets = new Insets(0, Constants.DIALOG_MARGIN, 0, 0);
-            // unfortunately comments do not have "full user name" filed, just login names
-            add(new UserLabel(server.getServer().getUrlString(), comment.getAuthor(), comment.getAuthor()), gbc);
+			UserLabel ul = new UserLabel(server.getServer().getUrlString(), comment.getAuthor());
+			add(ul, gbc);
 
-			final JLabel label1 = new JLabel();
-            label1.setText("-");
+			final JLabel hyphen = new WhiteLabel();
+            hyphen.setText("-");
 			gbc = new GridBagConstraints();
 			gbc.gridx = 3;
 			gbc.gridy = 0;
 			gbc.anchor = GridBagConstraints.WEST;
 			gbc.insets = new Insets(0, Constants.DIALOG_MARGIN, 0, Constants.DIALOG_MARGIN);
-			add(label1, gbc);
+			add(hyphen, gbc);
 
-			final JLabel creationDate = new JLabel();
+			final JLabel creationDate = new WhiteLabel();
 			creationDate.setText(comment.getCreationDate().getTime().toString());
 			gbc = new GridBagConstraints();
 			gbc.gridx = 4;
@@ -321,7 +351,8 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			add(creationDate, gbc);
 
 			if (StackTraceDetector.containsStackTrace(comment.getBody())) {
-				HyperlinkLabel analyze = new HyperlinkLabel("Analyse stack trace");
+				HyperlinkLabel analyze = new HyperlinkLabel("Analyse stack trace", UIUtil.getTableSelectionForeground(),
+					UIUtil.getTableSelectionBackground(), UIUtil.getTableSelectionForeground());
 				analyze.addHyperlinkListener(new HyperlinkListener() {
 					public void hyperlinkUpdate(HyperlinkEvent e) {
 						StackTraceConsole.getInstance().print(issue,
@@ -338,7 +369,8 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 
 			commentBody.setEditable(false);
 			commentBody.setOpaque(true);
-			commentBody.setBackground(Color.WHITE);
+			commentBody.setBackground(UIUtil.getPanelBackground());
+			commentBody.setMargin(new Insets(0, Constants.DIALOG_MARGIN, 0, 0));
 			commentBody.setContentType("text/html");
 			commentBody.setText("<html><head></head><body>" + comment.getBody() + "</body></html>");
 			gbc = new GridBagConstraints();
@@ -347,20 +379,13 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			gbc.gridwidth = 6;
 			gbc.weightx = 1.0;
 			gbc.weighty = 1.0;
-            gbc.insets = new Insets(0, Constants.DIALOG_MARGIN, 0, 0);
+            gbc.insets = new Insets(0, 0, 0, 0);
             gbc.fill = GridBagConstraints.BOTH;
 			add(commentBody, gbc);
 		}
 
         public AbstractShowHideButton getShowHideButton() {
             return btnShowHide;
-        }
-    }
-
-    private class BoldLabel extends JLabel {
-        public BoldLabel(String text) {
-            super(text);
-            setFont(getFont().deriveFont(Font.BOLD));
         }
     }
 
@@ -400,32 +425,10 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			body.setCaretPosition(0);
 			add(sp, gbc);
 
-			boolean hasStackTrace = StackTraceDetector.containsStackTrace(
-					Html2text.translate(issue.getDescription()));
-			int traceLabelHeight = 0;
-			if (hasStackTrace) {
-				HyperlinkLabel analyze = new HyperlinkLabel("Analyse stack trace");
-				analyze.addHyperlinkListener(new HyperlinkListener() {
-					public void hyperlinkUpdate(HyperlinkEvent e) {
-						StackTraceConsole.getInstance().print(issue, "description",
-								Html2text.translate(issue.getDescription()));
-					}
-				});
-				gbc.gridx = 0;
-				gbc.gridy = 1;
-				gbc.anchor = GridBagConstraints.EAST;
-				gbc.fill = GridBagConstraints.NONE;
-				gbc.weightx = 0.0;
-				gbc.weighty = 0.0;
-				gbc.insets = new Insets(0, Constants.DIALOG_MARGIN, 0, 0);
-				add(analyze, gbc);
-				traceLabelHeight = analyze.getFont().getSize();
-			}
-
 			Border b = BorderFactory.createTitledBorder("Description");
 			setBorder(b);
 			Insets i = b.getBorderInsets(this);
-			int minHeight = i.top + i.bottom + traceLabelHeight;
+			int minHeight = i.top + i.bottom;
 			setMinimumSize(new Dimension(0, minHeight));
 		}
 	}
@@ -506,7 +509,6 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 	}
 
 	private class SummaryPanel extends JPanel {
-        private final Icon EDIT_ICON = IconLoader.getIcon("/actions/editSource.png");
 
         public SummaryPanel(final JIRAIssue issue) {
 			setLayout(new GridBagLayout());
@@ -514,47 +516,37 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 
 			gbc.gridx = 0;
 			gbc.gridy = 0;
-            gbc.anchor = GridBagConstraints.FIRST_LINE_START;
+			gbc.fill = GridBagConstraints.HORIZONTAL;
+			
+			ActionManager manager = ActionManager.getInstance();
+			ActionGroup group = (ActionGroup) manager.getAction("ThePlugin.JIRA.EditorToolBar");
+			ActionToolbar toolbar = manager.createActionToolbar(issue.getKey(), group, true);
 
-			HyperlinkLabel labelIssue = new HyperlinkLabel(issue.getKey());
-			labelIssue.addHyperlinkListener(new HyperlinkListener() {
-				public void hyperlinkUpdate(HyperlinkEvent e) {
-					BrowserUtil.launchBrowser(issue.getIssueUrl());
-				}
-			});
-
-            Font f = labelIssue.getFont();
-            Font boldBigFont = f.deriveFont(Font.BOLD, f.getSize2D() * 2);
-            labelIssue.setFont(boldBigFont);
-            add(labelIssue, gbc);
+            JComponent comp = toolbar.getComponent();
+            add(comp, gbc);
 
             gbc.gridy = 1;
-            gbc.anchor = GridBagConstraints.PAGE_START;
-            JButton editButton = new JButton(EDIT_ICON);
-            editButton.setToolTipText("Edit Issue");
-            editButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    BrowserUtil.launchBrowser(issue.getServerUrl()
-                            + "/secure/EditIssue!default.jspa?key=" + issue.getKey());
-                }
-            });
-            add(editButton, gbc);
-
-            gbc.gridy = 0;
-            gbc.gridx = 1;
-            gbc.gridheight = 2;
-            gbc.anchor = GridBagConstraints.FIRST_LINE_START;
+            gbc.gridx = 0;
+            gbc.anchor = GridBagConstraints.LINE_START;
             gbc.fill = GridBagConstraints.BOTH;
+			gbc.weightx = 1.0;
 			JEditorPane summary = new JEditorPane();
-            summary.setBorder(BorderFactory.createEmptyBorder());
-            summary.setContentType("text/plain");
-            summary.setText(issue.getSummary());
+            summary.setContentType("text/html");
+			Color bg = UIUtil.getTableSelectionBackground();
+			Color fg = UIUtil.getTableSelectionForeground();
+			String bgColor = String.format("#%1$2X%2$2X%3$2X", bg.getRed(), bg.getGreen(), bg.getBlue());
+			String fgColor = String.format("#%1$2X%2$2X%3$2X", fg.getRed(), fg.getGreen(), fg.getBlue());
+			String txt = "<html><body bgcolor=" + bgColor + " color=" + fgColor
+					+ "><font size=\"+1\"><a href=\"" + issue.getIssueUrl() + "\">"
+					+ issue.getKey() + "</a> " + issue.getSummary() + "</font></body></html>";
+			summary.setText(txt);
             summary.setEditable(false);
             summary.setFont(summary.getFont().deriveFont(Font.BOLD));
             summary.setOpaque(false);
 			JPanel p = new JPanel();
 			p.setLayout(new GridBagLayout());
 			p.setBorder(BorderFactory.createTitledBorder("Summary"));
+			p.setBorder(BorderFactory.createLineBorder(bg, 6));
 			GridBagConstraints gbcp = new GridBagConstraints();
 			gbcp.fill = GridBagConstraints.BOTH;
 			gbcp.weightx = 1.0;
@@ -564,7 +556,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			p.add(summary, gbcp);
 			add(p, gbc);
 
-            gbc.gridx = 0;
+			gbc.gridx = 0;
             gbc.gridy = 2;
             gbc.gridwidth = 2;
             gbc.fill = GridBagConstraints.BOTH;
@@ -590,6 +582,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 		private JPanel mainPanel;
 		private JIRAIssue issue;
         private CommentsPanel commentsPanel;
+		private boolean hasStackTrace;
 
 		public JIRAFileEditor() {
 			mainPanel = new JPanel();
@@ -605,6 +598,9 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			facade = JIRAServerFacadeImpl.getInstance();
 			server = IdeaHelper.getCurrentJIRAServer();
             editorMap.put(issue.getKey(), this);
+
+			hasStackTrace = StackTraceDetector.containsStackTrace(Html2text.translate(issue.getDescription()));
+
 			setupUI();
 		}
 
@@ -685,7 +681,19 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
             new Thread(task, "atlassian-idea-plugin refresh comments").start();
         }
 
-        public void setCommentsExpanded(boolean expanded) {
+		public JIRAIssue getIssue() {
+			return issue;
+		}
+
+		public boolean hasStackTraceInDescription() {
+			return hasStackTrace;
+		}
+
+		public void analyzeDescriptionStackTrace() {
+			StackTraceConsole.getInstance().print(issue, "description",	Html2text.translate(issue.getDescription()));
+		}
+
+		public void setCommentsExpanded(boolean expanded) {
             commentsPanel.setAllVisible(expanded);
         }
         
