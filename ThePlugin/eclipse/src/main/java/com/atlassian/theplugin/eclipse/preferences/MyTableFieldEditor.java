@@ -13,36 +13,25 @@ package com.atlassian.theplugin.eclipse.preferences;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.CheckboxCellEditor;
-import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
-import org.eclipse.jface.viewers.ColumnViewerEditorDeactivationEvent;
-import org.eclipse.jface.viewers.ComboBoxCellEditor;
-import org.eclipse.jface.viewers.ICellModifier;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TextCellEditor;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerCell;
-import org.eclipse.jface.viewers.ViewerRow;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -50,7 +39,14 @@ import org.eclipse.swt.widgets.TableItem;
 
 import com.atlassian.theplugin.commons.SubscribedPlan;
 import com.atlassian.theplugin.commons.bamboo.BambooPlan;
+import com.atlassian.theplugin.commons.bamboo.BambooPlanData;
+import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
+import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
+import com.atlassian.theplugin.commons.configuration.ServerBean;
 import com.atlassian.theplugin.commons.configuration.SubscribedPlanBean;
+import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.eclipse.EclipseActionScheduler;
 import com.atlassian.theplugin.eclipse.util.PluginUtil;
 
 /**
@@ -60,54 +56,6 @@ import com.atlassian.theplugin.eclipse.util.PluginUtil;
  * </p>
  */
 public class MyTableFieldEditor extends FieldEditor {
-
-     private class PlansLabelProvider extends LabelProvider implements ITableLabelProvider {
-
-		public Image getColumnImage(Object element, int columnIndex) {
-
-			BambooPlan plan = (BambooPlan) element;
-			Column column = Column.valueOfAlias(table.getColumn(columnIndex).getText());
-			
-			if (column == Column.FAVOURITE) {
-				if (plan.isFavourite()) {
-					return PluginUtil.getImageRegistry().get(PluginUtil.ICON_FAVOURITE_ON);
-				} else {
-					return PluginUtil.getImageRegistry().get(PluginUtil.ICON_FAVOURITE_OFF);
-				}
-			}
-			return null;
-		}
-
-		public String getColumnText(Object element, int columnIndex) {
-			
-			BambooPlan plan = (BambooPlan) element;
-			Column column = Column.valueOfAlias(table.getColumn(columnIndex).getText());
-			
-			if (column == Column.PLAN_KEY) {
-				return plan.getPlanKey();
-			}
-			
-			return null;
-		}
-
-	}
-
-	private class PlansContentProvider implements IStructuredContentProvider {
-
-		public Object[] getElements(Object inputElement) {
-			if (inputElement instanceof Collection) {
-				return ((Collection<BambooPlan>) inputElement).toArray();
-			}
-			
-			return new ArrayList<BambooPlan>(0).toArray();
-		}
-			
-		public void dispose() {
-		}
-
-		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		}
-	}
 
 	/**
      * Cached valid state.
@@ -126,11 +74,9 @@ public class MyTableFieldEditor extends FieldEditor {
 
 	private Table table;
 
-	private Collection<BambooPlan> allPlans;
+	private Collection<BambooPlan> serverPlans;
 
-	private TableViewer tableViewer;
-
-	private ArrayList<SubscribedPlan> subscribedPlans;
+	private Set<SubscribedPlan> subscribedPlans;
 
     /**
      * Creates a new string field editor 
@@ -206,17 +152,14 @@ public class MyTableFieldEditor extends FieldEditor {
     	gdLabel.verticalAlignment = GridData.BEGINNING;
     	label.setLayoutData(gdLabel);
         
-        
         table = getTableControl(parent);
 
-//        textField = getTextControl(parent);
         GridData gd = new GridData();
         gd.horizontalSpan = numColumns - 1;
         gd.horizontalAlignment = GridData.FILL;
         gd.grabExcessHorizontalSpace = true;
         gd.heightHint = convertVerticalDLUsToPixels(table, 90);
         gd.verticalAlignment = GridData.FILL;
-        
 
         table.setLayoutData(gd);
     }
@@ -227,31 +170,24 @@ public class MyTableFieldEditor extends FieldEditor {
      */
     protected void doLoad() {
     	
-    	this.subscribedPlans = parseSubscribedPlans(
-				Activator.getDefault().getPluginPreferences().getString(PreferenceConstants.BAMBOO_BUILDS));
+    	this.subscribedPlans = 
+    		subscribedPlansString2Collection(getPreferenceStore().getString(getPreferenceName()));
     	
-        if (table != null) {
-             
-        }
+    	loadBuildPlans();
+    	
     }
 
     /* (non-Javadoc)
      * Method declared on FieldEditor.
      */
     protected void doLoadDefault() {
-        if (table != null) {
-            String value = getPreferenceStore().getDefaultString(
-                    getPreferenceName());
-            //textField.setText(value);
-        }
-        valueChanged();
     }
 
     /* (non-Javadoc)
      * Method declared on FieldEditor.
      */
     protected void doStore() {
-        //getPreferenceStore().setValue(getPreferenceName(), textField.getText());
+        getPreferenceStore().setValue(getPreferenceName(), getStringValue());
     }
 
     /**
@@ -271,18 +207,28 @@ public class MyTableFieldEditor extends FieldEditor {
         return 2;
     }
 
-//    /**
-//     * Returns the field editor's value.
-//     *
-//     * @return the current value
-//     */
-//    public String getStringValue() {
-////        if (table != null) {
-////			return textField.getText();
-////		}
-//        
-//        return getPreferenceStore().getString(getPreferenceName());
-//    }
+    /**
+     * Returns the field editor's value.
+     *
+     * @return the current value
+     */
+    private String getStringValue() {
+        if (table != null) {
+        	
+        	StringBuffer ret = new StringBuffer();
+        	
+        	for (TableItem item : table.getItems()) {
+        		if (item.getChecked()) {
+        			ret.append(item.getText(2));
+        			ret.append(" ");
+        		}
+        	}
+        	
+			return ret.toString();
+		}
+        
+        return getPreferenceStore().getString(getPreferenceName());
+    }
 
     /**
      * Returns this field editor's text control.
@@ -312,6 +258,7 @@ public class MyTableFieldEditor extends FieldEditor {
 				tableColumn.setWidth(column.columnWidth());
 				tableColumn.setMoveable(false);
 				tableColumn.setResizable(false);
+				
 			}
 
 			table.addDisposeListener(new DisposeListener() {
@@ -320,37 +267,6 @@ public class MyTableFieldEditor extends FieldEditor {
 				}
 			});
 			
-			tableViewer = new TableViewer(table);
-//
-//			CellEditor editors[] = new CellEditor[Column.values().length];
-//			
-//			editors[0] = new CheckboxCellEditor(table);
-//			editors[1] = new TextCellEditor(table);
-//			editors[2] = new TextCellEditor(table);
-//			
-//			tableViewer.setCellEditors(editors);
-//			tableViewer.setColumnProperties(Column.getNames());
-//			
-//			tableViewer.setCellModifier(new ICellModifier() {
-//
-//				public boolean canModify(Object element, String property) {
-//					return true;
-//				}
-//
-//				public Object getValue(Object element, String property) {
-//									
-//					return new Boolean(true);
-//				}
-//
-//				public void modify(Object element, String property, Object value) {
-//				}
-//				
-//			});
-
-			tableViewer.setContentProvider(new PlansContentProvider());
-			tableViewer.setLabelProvider(new PlansLabelProvider());
-			
-
 		} else {
 			checkParent(table, parent);
 		}
@@ -456,17 +372,21 @@ public class MyTableFieldEditor extends FieldEditor {
      * Sets plans (fills the whole list). 
      * @param allPlans
      */
-	public void setPlans(Collection<BambooPlan> allPlans) {
-//		this.subscribedPlans = parseSubscribedPlans(
-//				Activator.getDefault().getPluginPreferences().getString(PreferenceConstants.BAMBOO_BUILDS));
-		//tableViewer.setInput(allPlans);
+	private void setPlans(Collection<BambooPlan> allPlans) {
+		this.serverPlans = allPlans;
+		fillTable();
+	}
+	
+	private void fillTable() {
 		table.clearAll();
 		
 		TableItem item;
 		
-		for (BambooPlan plan : allPlans) {
+		// add server plans to the list
+		for (BambooPlan plan : serverPlans) {
 			item = new TableItem(table, SWT.NONE);
 			
+			// check the plan if was subscribed
 			if (subscribedPlans.contains(new SubscribedPlanBean(plan.getPlanKey()))) {
 				item.setChecked(true);
 			}
@@ -479,10 +399,23 @@ public class MyTableFieldEditor extends FieldEditor {
 			item.setText(2, plan.getPlanKey());
 		}
 		
+		// add to the list subscribed plans which do not exist on the server (with grey icon)  
+		for (SubscribedPlan plan : subscribedPlans) {
+			if (! serverPlans.contains(new BambooPlanData(plan.getPlanId()))) {
+				item = new TableItem(table, SWT.NONE);
+				item.setChecked(true);
+				item.setImage(1, PluginUtil.getImageRegistry().get(PluginUtil.ICON_BAMBOO_UNKNOWN));
+				item.setText(2, plan.getPlanId());
+				//item.setGrayed(true);
+				
+			}
+		}
+		
+
 	}
-	
-	private ArrayList<SubscribedPlan> parseSubscribedPlans(String subscribedPlans) {
-		ArrayList<SubscribedPlan> plansList = new ArrayList<SubscribedPlan>();
+
+	private Set<SubscribedPlan> subscribedPlansString2Collection(String subscribedPlans) {
+		Set<SubscribedPlan> plansList = new HashSet<SubscribedPlan>();
 		
 		String[] plansArray = subscribedPlans.split(" ");
 		
@@ -498,7 +431,7 @@ public class MyTableFieldEditor extends FieldEditor {
 
 	private enum Column {
 		WATCHED ("Watched", 25),
-		FAVOURITE ("Favourite", 25),
+		FAVOURITE ("Favourite", 20),
 		PLAN_KEY ("Plan Key", 150);
 
 		private String columnName;
@@ -534,5 +467,49 @@ public class MyTableFieldEditor extends FieldEditor {
 			return list.toArray(new String[0]);
 		}
 	}
+
+
+	private void loadBuildPlans() {
+		
+		//TODO add refresh button to retrieve plan keys manually (e.g. in case server has changed)
+		
+		Job planListJob = new Job("Atlassian Bamboo plans") {
+
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
+
+				BambooServerFacade bambooFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
+		
+				Collection<ServerBean> servers = Activator.getDefault().getPluginConfiguration().getBambooConfigurationData().getServersData();
+				Iterator<ServerBean> iterator = servers.iterator();
+		
+				// we take only first server right now
+				if (iterator.hasNext()) {
+					Collection<BambooPlan> plans = new ArrayList<BambooPlan>(0);
+					try {
+						plans = bambooFacade.getPlanList(iterator.next());
+					} catch (ServerPasswordNotProvidedException e1) {
+						e1.printStackTrace();
+					} catch (RemoteApiException e1) {
+						e1.printStackTrace();
+					}
+					
+					final Collection<BambooPlan> finalPlans = plans;
+				
+					EclipseActionScheduler.getInstance().invokeLater(new Runnable() {
+						public void run() {
+							MyTableFieldEditor.this.setPlans(finalPlans);
+						}
+					});
+				}
+	
+				return Status.OK_STATUS;
+			}
+		};
+		
+		planListJob.schedule();
+	}
 }
+	
+
 
