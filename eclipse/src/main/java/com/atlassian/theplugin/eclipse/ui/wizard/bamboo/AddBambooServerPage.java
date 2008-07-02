@@ -11,32 +11,37 @@
 
 package com.atlassian.theplugin.eclipse.ui.wizard.bamboo;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.team.core.RepositoryProvider;
-import org.eclipse.ui.PlatformUI;
 
 import com.atlassian.theplugin.eclipse.core.bamboo.BambooServer;
+import com.atlassian.theplugin.eclipse.core.bamboo.IBambooServer;
+import com.atlassian.theplugin.eclipse.core.operation.AbstractActionOperation;
+import com.atlassian.theplugin.eclipse.core.operation.AbstractNonLockingOperation;
+import com.atlassian.theplugin.eclipse.core.operation.CompositeOperation;
 import com.atlassian.theplugin.eclipse.core.operation.IActionOperation;
+import com.atlassian.theplugin.eclipse.core.operation.bamboo.AddBambooServerOperation;
+import com.atlassian.theplugin.eclipse.core.operation.bamboo.RefreshBambooServersOperation;
+import com.atlassian.theplugin.eclipse.core.operation.bamboo.SaveBambooServersOperation;
 import com.atlassian.theplugin.eclipse.preferences.Activator;
 import com.atlassian.theplugin.eclipse.ui.composite.bamboo.BambooServerPropertiesTabFolder;
+import com.atlassian.theplugin.eclipse.ui.dialog.DefaultDialog;
 import com.atlassian.theplugin.eclipse.ui.panel.AbstractDialogPanel;
+import com.atlassian.theplugin.eclipse.ui.utility.UIMonitorUtil;
 import com.atlassian.theplugin.eclipse.ui.verifier.AbstractFormattedVerifier;
 import com.atlassian.theplugin.eclipse.ui.wizard.AbstractVerifiedWizardPage;
+import com.atlassian.theplugin.eclipse.view.bamboo.BambooConfigurationStorage;
 
 /**
  * Add repository location wizard page
@@ -46,7 +51,7 @@ import com.atlassian.theplugin.eclipse.ui.wizard.AbstractVerifiedWizardPage;
 public class AddBambooServerPage extends AbstractVerifiedWizardPage {
 	protected BambooServerPropertiesTabFolder propertiesTabFolder;
 	protected IActionOperation operationToPerform;
-	protected BambooServer editable;
+	protected IBambooServer editable;
 	protected boolean alreadyConnected;
 	protected boolean createNew;
 	protected String initialUrl;
@@ -58,7 +63,7 @@ public class AddBambooServerPage extends AbstractVerifiedWizardPage {
 		this(null);
 	}
 	
-	public AddBambooServerPage(BambooServer editable) {
+	public AddBambooServerPage(IBambooServer editable) {
 		super(AddBambooServerPage.class.getName(), 
 			Activator.getDefault().getResource("AddBambooServerPage.Title"), 
 			Activator.getDefault().getImageDescriptor("icons/ico_plugin.png"));
@@ -91,7 +96,7 @@ public class AddBambooServerPage extends AbstractVerifiedWizardPage {
 		this.initialUrl = initialUrl;
 	    if (this.alreadyConnected = initialUrl != null) {
 	    	this.createNew = initialUrl.trim().length() == 0;
-	    	this.getRepositoryLocation().setUrl(initialUrl);
+	    	this.getBambooServer().setUrl(initialUrl);
 		    this.propertiesTabFolder.resetChanges();
 	    }
 	}
@@ -115,7 +120,7 @@ public class AddBambooServerPage extends AbstractVerifiedWizardPage {
 		});
 	}
 
-	public BambooServer getRepositoryLocation() {
+	public IBambooServer getBambooServer() {
 		return this.propertiesTabFolder.getBambooServer();
 	}
 	
@@ -136,8 +141,8 @@ public class AddBambooServerPage extends AbstractVerifiedWizardPage {
 		this.operationToPerform = null;
 	}
 
-	/*
 	public boolean performFinish() {
+		/*
 		String newUrl = this.propertiesTabFolder.getServerUrl();
 		ProjectListPanel panel = null;
 		ArrayList connectedProjects = new ArrayList();
@@ -164,9 +169,11 @@ public class AddBambooServerPage extends AbstractVerifiedWizardPage {
 //					this.oldUuid = info.getUuid();
 //				}
 			}
-		}
+		}*/
+		
 		this.propertiesTabFolder.saveChanges();	
 		
+		/*
 		if (this.propertiesTabFolder.isStructureEnabled()) {
 			IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 
@@ -181,13 +188,13 @@ public class AddBambooServerPage extends AbstractVerifiedWizardPage {
 														MessageDialog.WARNING,
 														new String[] {IDialogConstants.YES_LABEL, IDialogConstants.NO_LABEL},
 														0);
-				UIMonitorUtility.getDisplay().syncExec(new Runnable() {
+				UIMonitorUtil.getDisplay().syncExec(new Runnable() {
 					public void run() {
 						result[0] = dialog.open();
 					}
 				});
 				if (result[0] == IDialogConstants.OK_ID) {
-					BambooServer location = this.editable == null ? this.getRepositoryLocation() : this.editable;
+					BambooServer location = this.editable == null ? this.getBambooServer() : this.editable;
 					boolean useCustomLabel = false;
 					useCustomLabel = !location.getUrl().equals(location.getLabel());
 					newUrl = (new Path(newUrl)).removeLastSegments(1).toString();
@@ -199,7 +206,9 @@ public class AddBambooServerPage extends AbstractVerifiedWizardPage {
 				}
 			}
 		}
+		*/
 		
+		/*
 		if (connectedProjects.size() > 0) {
 			if (panel == null) {
 				this.editable.reconfigure();
@@ -217,11 +226,13 @@ public class AddBambooServerPage extends AbstractVerifiedWizardPage {
 				this.editable.reconfigure();
 				new DefaultDialog(this.getShell(), panel).open();
 			}
-		}
+		}*/
 		
+		/*
+		FIXME: this should be enabled
 		if (this.propertiesTabFolder.isValidateOnFinishRequested() && panel == null) {
 			final Exception []problem = new Exception[1];
-			UIMonitorUtility.doTaskNowDefault(this.getShell(), new AbstractNonLockingOperation("Operation.ValidateLocation") {
+			UIMonitorUtil.doTaskNowDefault(this.getShell(), new AbstractNonLockingOperation("Operation.ValidateLocation") {
 				protected void runImpl(IProgressMonitor monitor) throws Exception {
 					problem[0] = SVNUtility.validateRepositoryLocation(AddBambooServerPage.this.propertiesTabFolder.getRepositoryLocation());
 				}
@@ -233,32 +244,30 @@ public class AddBambooServerPage extends AbstractVerifiedWizardPage {
 					return false;
 				}
 			}
-		}
+		}*/
 		
-		boolean shouldntBeAdded = this.editable == null ? false : (SVNRemoteStorage.instance().getRepositoryLocation(this.editable.getId()) != null);
+		boolean shouldntBeAdded = this.editable == null 
+			? false : (BambooConfigurationStorage.instance().getBambooServer(this.editable.getId()) != null);
 
 		AbstractActionOperation mainOp = 
 			shouldntBeAdded ?
 			new AbstractNonLockingOperation("Operation.CommitLocationChanges") {
 				protected void runImpl(IProgressMonitor monitor) throws Exception {
-					AddBambooServerPage.this.editable.reconfigure();
+					//FIXME: AddBambooServerPage.this.editable.reconfigure();
 				}
 			} :
-			(AbstractActionOperation)new AddRepositoryLocationOperation(this.getRepositoryLocation());
+			(AbstractActionOperation) new AddBambooServerOperation(this.getBambooServer());
 		
 		CompositeOperation op = new CompositeOperation(mainOp.getId());
 		
 		op.add(mainOp);
-		op.add(new SaveRepositoryLocationsOperation());
-		op.add(shouldntBeAdded ? new RefreshRepositoryLocationsOperation(new BambooServer[] {this.editable}, true) : new RefreshRepositoryLocationsOperation(false));
+		op.add(new SaveBambooServersOperation());
+		op.add(shouldntBeAdded ? new RefreshBambooServersOperation(
+				new IBambooServer[] {this.editable}, true) : new RefreshBambooServersOperation(false));
 		
 		this.operationToPerform = op;
 		
 		return true;
-	}*/
-	
-	public boolean performFinish() {
-		return false;
 	}
 	
 	public IActionOperation getOperationToPeform() {

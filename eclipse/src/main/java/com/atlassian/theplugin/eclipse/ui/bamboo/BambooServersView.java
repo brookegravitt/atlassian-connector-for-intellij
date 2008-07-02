@@ -49,11 +49,10 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.atlassian.theplugin.eclipse.preferences.Activator;
 import com.atlassian.theplugin.eclipse.ui.action.bamboo.NewBambooServerAction;
-import com.atlassian.theplugin.eclipse.ui.bamboo.BambooTreeViewer.IRefreshVisitor;
 
-public class BambooServers extends ViewPart {
+public class BambooServersView extends ViewPart {
 
-	public static final String VIEW_ID = BambooServers.class.getName();
+	public static final String VIEW_ID = BambooServersView.class.getName();
 	
 	protected BambooTreeViewer bambooTree;
 	//protected RepositoriesRoot root;
@@ -61,7 +60,7 @@ public class BambooServers extends ViewPart {
 	protected Action showBrowserAction;
 	protected IPartListener2 partListener;
 	
-	public BambooServers() {
+	public BambooServersView() {
 		super();
 	}
 	
@@ -76,7 +75,7 @@ public class BambooServers extends ViewPart {
         		sub.add(new Separator("repositoryGroup"));
         		Action newRepositoryLocation = new Action(Activator.getDefault().getResource("RepositoriesView.RepositoryLocation")) {
 					public void run() {
-						//new NewRepositoryLocationAction().run(this);
+						new NewBambooServerAction().run(this);
 					}
         		};
         		newRepositoryLocation.setImageDescriptor(Activator.getDefault().getImageDescriptor("icons/objects/repository.gif"));
@@ -136,7 +135,7 @@ public class BambooServers extends ViewPart {
 
 	public void createPartControl(Composite parent) {
 		this.bambooTree = new BambooTreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		//this.bambooTree.setContentProvider(new BambooContentProvider(this.bambooTree));
+		this.bambooTree.setContentProvider(new BambooContentProvider(this.bambooTree));
 		this.bambooTree.setLabelProvider(new WorkbenchLabelProvider());
 		this.getSite().setSelectionProvider(this.bambooTree);
 		//this.bambooTree.setInput(this.root = new RepositoriesRoot());
@@ -146,7 +145,7 @@ public class BambooServers extends ViewPart {
 		
 		// popup menu
         Tree tree = this.bambooTree.getTree(); 
-        MenuManager menuMgr = BambooServers.newMenuInstance(this.bambooTree);
+        MenuManager menuMgr = BambooServersView.newMenuInstance(this.bambooTree);
         tree.setMenu(menuMgr.createContextMenu(tree));
         this.getSite().registerContextMenu(menuMgr, this.bambooTree);
         
@@ -157,9 +156,9 @@ public class BambooServers extends ViewPart {
         Action tAction = null;
         tbm.add(tAction = new Action(Activator.getDefault().getResource("SVNView.Refresh.Label")) {
             public void run() {
-                if (BambooServers.this.bambooTree.getSelection() instanceof IStructuredSelection) {
-                    IStructuredSelection selection = (IStructuredSelection)BambooServers.this.bambooTree.getSelection();
-                    BambooServers.this.handleRefresh(selection);
+                if (BambooServersView.this.bambooTree.getSelection() instanceof IStructuredSelection) {
+                    IStructuredSelection selection = (IStructuredSelection)BambooServersView.this.bambooTree.getSelection();
+                    BambooServersView.this.handleRefresh(selection);
                 }
             }
         }); 
@@ -170,7 +169,7 @@ public class BambooServers extends ViewPart {
 		
         tbm.add(tAction = new Action(Activator.getDefault().getResource("BambooServers.CollapseAll.Label")) {
 			public void run() {
-			    BambooServers.this.bambooTree.collapseAll();				
+			    BambooServersView.this.bambooTree.collapseAll();				
 			}
         }); 
         tAction.setImageDescriptor(Activator.getDefault().getImageDescriptor("icons/common/collapseall.gif"));
@@ -203,13 +202,13 @@ public class BambooServers extends ViewPart {
         
         this.bambooTree.getControl().addKeyListener(new KeyAdapter() {
         	public void keyPressed(KeyEvent event) {
-    			if (BambooServers.this.bambooTree.getSelection() instanceof IStructuredSelection) {
-        			IStructuredSelection selection = (IStructuredSelection)BambooServers.this.bambooTree.getSelection();
+    			if (BambooServersView.this.bambooTree.getSelection() instanceof IStructuredSelection) {
+        			IStructuredSelection selection = (IStructuredSelection)BambooServersView.this.bambooTree.getSelection();
 	        		if (event.keyCode == SWT.F5) {
-	    				BambooServers.this.handleRefresh(selection);
+	    				BambooServersView.this.handleRefresh(selection);
 	        		}
 	        		else if (event.keyCode == SWT.DEL) {
-	        		    BambooServers.this.handleDeleteKey(selection);
+	        		    BambooServersView.this.handleDeleteKey(selection);
 	        		}
     			}
         	}
@@ -221,7 +220,7 @@ public class BambooServers extends ViewPart {
 				if (selection instanceof IStructuredSelection) {
 					IStructuredSelection structured = (IStructuredSelection)selection;
 					if (structured.size() == 1) {
-						BambooServers.this.handleDoubleClick(structured);
+						BambooServersView.this.handleDoubleClick(structured);
 					}
 				}
 			}
@@ -229,8 +228,8 @@ public class BambooServers extends ViewPart {
 		
 		this.partListener = new IPartListener2() {
 			public void partVisible(IWorkbenchPartReference partRef) {
-				if (partRef.getId().equals(BambooServers.VIEW_ID)) {
-					BambooServers.this.refreshRepositoriesImpl(false);
+				if (partRef.getId().equals(BambooServersView.VIEW_ID)) {
+					BambooServersView.this.refreshRepositoriesImpl(false);
 				}				
 			}
 			public void partHidden(IWorkbenchPartReference partRef) {
@@ -242,8 +241,8 @@ public class BambooServers extends ViewPart {
 			public void partDeactivated(IWorkbenchPartReference partRef) {
 			}
 			public void partClosed(IWorkbenchPartReference partRef) {
-				if (partRef.getId().equals(BambooServers.VIEW_ID)) {
-					BambooServers.this.getViewSite().getPage().removePartListener(this);
+				if (partRef.getId().equals(BambooServersView.VIEW_ID)) {
+					BambooServersView.this.getViewSite().getPage().removePartListener(this);
 				}
 			}
 			public void partBroughtToTop(IWorkbenchPartReference partRef) {
@@ -268,18 +267,18 @@ public class BambooServers extends ViewPart {
 	}
 	
 	public static void refresh(Object where) {
-		BambooServers.refresh(where, null);
+		BambooServersView.refresh(where, null);
 	}
 	
 	public static void refresh(Object where, BambooTreeViewer.IRefreshVisitor visitor) {
-		BambooServers instance = BambooServers.instance();
+		BambooServersView instance = BambooServersView.instance();
 		if (instance != null) {
 			instance.bambooTree.refresh(where, visitor, false);
 		}
 	}
 	
 	public static void refreshRepositories(boolean deep) {
-		BambooServers instance = BambooServers.instance();
+		BambooServersView instance = BambooServersView.instance();
 		if (instance != null) {
 			instance.refreshRepositoriesImpl(deep);
 		}
@@ -296,13 +295,13 @@ public class BambooServers extends ViewPart {
 		this.showBrowserAction.setChecked(false);
 	}
 	
-	public static BambooServers instance() {
-		final BambooServers []view = new BambooServers[1];
+	public static BambooServersView instance() {
+		final BambooServersView []view = new BambooServersView[1];
 		Display.getCurrent().syncExec(new Runnable() {
 			public void run() {
 				IWorkbenchWindow window = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow();
 				if (window != null && window.getActivePage() != null) {
-					view[0] = (BambooServers)window.getActivePage().findView(BambooServers.VIEW_ID);
+					view[0] = (BambooServersView)window.getActivePage().findView(BambooServersView.VIEW_ID);
 				}
 			}
 		});
@@ -332,7 +331,7 @@ public class BambooServers extends ViewPart {
 	
 	protected void hideRepositoryBrowser() {
     	IWorkbenchPage page = this.getSite().getPage();
-    	IViewPart part = page.findView(BambooServers.VIEW_ID);
+    	IViewPart part = page.findView(BambooServersView.VIEW_ID);
     	if (part != null) {
         	page.hideView(part);
     	}

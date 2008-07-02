@@ -16,10 +16,12 @@ import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 
 import com.atlassian.theplugin.eclipse.core.bamboo.BambooServer;
+import com.atlassian.theplugin.eclipse.core.bamboo.IBambooServer;
 import com.atlassian.theplugin.eclipse.core.operation.IActionOperation;
 import com.atlassian.theplugin.eclipse.preferences.Activator;
 import com.atlassian.theplugin.eclipse.ui.utility.UIMonitorUtil;
 import com.atlassian.theplugin.eclipse.ui.wizard.AbstractSVNWizard;
+import com.atlassian.theplugin.eclipse.view.bamboo.BambooConfigurationStorage;
 
 /**
  * Repository location registration wizard
@@ -28,9 +30,9 @@ import com.atlassian.theplugin.eclipse.ui.wizard.AbstractSVNWizard;
  */
 public class NewBambooServerWizard extends AbstractSVNWizard implements INewWizard {
 	protected AddBambooServerPage serverPage;
-	protected BambooServer editable;
+	protected IBambooServer editable;
 	protected boolean performAction;
-	protected BambooServer backup;
+	protected IBambooServer backup;
 	
 	public NewBambooServerWizard() {
 		this(null, true);
@@ -42,8 +44,8 @@ public class NewBambooServerWizard extends AbstractSVNWizard implements INewWiza
 		this.editable = editable;
 		if (this.editable != null) {
 			this.setWindowTitle(Activator.getDefault().getResource("NewBambooServerWizard.Title.Edit"));
-			this.backup = new BambooServer();
-			this.editable.copyTo(this.backup);
+			this.backup = BambooConfigurationStorage.instance().newBambooServer();
+			BambooConfigurationStorage.instance().copyBambooServer(this.backup, this.editable);
 		}
 		else {
 			this.setWindowTitle(Activator.getDefault().getResource("NewBambooServerWizard.Title.New"));
@@ -60,7 +62,7 @@ public class NewBambooServerWizard extends AbstractSVNWizard implements INewWiza
 	
 	public boolean performCancel() {
 		if (this.editable != null) {
-			this.backup.copyTo(this.editable);
+			BambooConfigurationStorage.instance().copyBambooServer(this.editable, this.backup);
 		}
 		return super.performCancel();
 	}

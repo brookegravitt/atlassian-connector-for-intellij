@@ -16,14 +16,17 @@
 
 package com.atlassian.theplugin.eclipse.preferences;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TimerTask;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.Preferences.IPropertyChangeListener;
@@ -45,6 +48,7 @@ import com.atlassian.theplugin.eclipse.MissingPasswordHandler;
 import com.atlassian.theplugin.eclipse.core.operation.IConsoleStream;
 import com.atlassian.theplugin.eclipse.util.FileUtil;
 import com.atlassian.theplugin.eclipse.util.PluginUtil;
+import com.atlassian.theplugin.eclipse.view.bamboo.BambooConfigurationStorage;
 
 
 /**
@@ -148,6 +152,28 @@ public class Activator extends AbstractUIPlugin {
 		ProjectConfigurationWrapper configurationWrapper = new ProjectConfigurationWrapper(getPluginPreferences());
 		pluginConfiguration = configurationWrapper.getPluginConfiguration();
 		ConfigurationFactory.setConfiguration(pluginConfiguration);
+	
+		try {
+			IPath stateLocation = this.getStateLocation();
+			
+			BambooConfigurationStorage storage = BambooConfigurationStorage.instance();
+			storage.initialize(stateLocation);
+			
+			// check for previous plugin versions repository info storage 
+			if (storage.getBambooServers().length == 0) {
+				String coreFolderName = stateLocation.lastSegment();
+				IPath uiLocation = stateLocation.removeLastSegments(1).append(coreFolderName.substring(0, coreFolderName.length() - 4) + "ui");
+				File previousStore = new File(uiLocation + "/" + BambooConfigurationStorage.STATE_INFO_FILE_NAME);
+				if (previousStore.exists()) {
+					FileUtil.copyFile(new File(stateLocation.toString() + "/" + BambooConfigurationStorage.STATE_INFO_FILE_NAME), 
+							previousStore, new NullProgressMonitor());
+					previousStore.delete();
+					storage.initialize(stateLocation);
+				}
+			}
+		} catch(Exception e) {
+			//FIXME: Probably we should do something about this
+		}
 	}
 
 	/**
@@ -169,7 +195,7 @@ public class Activator extends AbstractUIPlugin {
 	 * @param path the path
 	 * @return the image descriptor
 	 */
-	public static ImageDescriptor getImageDescriptor(String path) {
+	public ImageDescriptor getImageDescriptor(String path) {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
 

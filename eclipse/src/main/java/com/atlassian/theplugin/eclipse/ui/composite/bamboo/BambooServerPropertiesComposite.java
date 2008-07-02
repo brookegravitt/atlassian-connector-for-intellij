@@ -11,7 +11,6 @@
 
 package com.atlassian.theplugin.eclipse.ui.composite.bamboo;
 
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -26,38 +25,40 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-import com.atlassian.theplugin.eclipse.core.bamboo.BambooServer;
+import com.atlassian.theplugin.eclipse.core.bamboo.IBambooServer;
 import com.atlassian.theplugin.eclipse.preferences.Activator;
+import com.atlassian.theplugin.eclipse.ui.composite.CredentialsComposite;
 import com.atlassian.theplugin.eclipse.ui.dialog.DefaultDialog;
 import com.atlassian.theplugin.eclipse.ui.panel.IPropertiesPanel;
 import com.atlassian.theplugin.eclipse.ui.utility.UserInputHistory;
 import com.atlassian.theplugin.eclipse.ui.verifier.AbstractVerifier;
+import com.atlassian.theplugin.eclipse.ui.verifier.AbstractVerifierProxy;
 import com.atlassian.theplugin.eclipse.ui.verifier.CompositeVerifier;
 import com.atlassian.theplugin.eclipse.ui.verifier.IValidationManager;
+import com.atlassian.theplugin.eclipse.ui.verifier.NonEmptyFieldVerifier;
+import com.atlassian.theplugin.eclipse.ui.verifier.URLVerifier;
 
 /**
- * Repository properties editor panel
- * 
- * @author Alexander Gurov
+ * Bamboo server properties editor panel
  */
 public class BambooServerPropertiesComposite extends Composite implements IPropertiesPanel {
     protected static final String URL_HISTORY_NAME = "bambooServerURL";
     
-	protected Text repositoryLabel;
+	protected Text serverLabel;
 	protected Combo url;
 	protected CompositeVerifier urlVerifier;
 	protected UserInputHistory urlHistory;
 	protected Button browse;
 	protected Button useLocationButton;
 	protected Button newLabelButton;
-	//protected CredentialsComposite credentialsComposite;
+	protected CredentialsComposite credentialsComposite;
 	
-	protected BambooServer repositoryLocation;
+	protected IBambooServer bambooServer;
 	protected String rootUrl;
 	
 	protected IValidationManager validationManager;
 	
-	protected BambooServer credentialsInput;
+	protected IBambooServer credentialsInput;
 
 	public BambooServerPropertiesComposite(Composite parent, int style, IValidationManager validationManager) {
 		super(parent, style);
@@ -89,7 +90,7 @@ public class BambooServerPropertiesComposite extends Composite implements IPrope
 		Label description = new Label(rootURLGroup, SWT.NULL);
 		data = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
 		description.setLayoutData(data);
-		description.setText(Activator.getDefault().getResource("RepositoryPropertiesComposite.URL"));
+		description.setText(Activator.getDefault().getResource("BambooServerPropertiesComposite.URL"));
 		
 		this.urlHistory = new UserInputHistory(BambooServerPropertiesComposite.URL_HISTORY_NAME);
 		
@@ -115,8 +116,7 @@ public class BambooServerPropertiesComposite extends Composite implements IPrope
 		data = new GridData(GridData.HORIZONTAL_ALIGN_END);	
 		data.widthHint = DefaultDialog.computeButtonWidth(this.browse);
 		this.browse.setLayoutData(data);
-		/*
-		this.browse.addSelectionListener(new SelectionAdapter() {
+		/*this.browse.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 			    SVNRemoteStorage storage = SVNRemoteStorage.instance();
 				IRepositoryLocation location = storage.newRepositoryLocation();
@@ -148,76 +148,73 @@ public class BambooServerPropertiesComposite extends Composite implements IPrope
 		layout = new GridLayout();
 		labelGroup.setLayout(layout);
 		labelGroup.setLayoutData(data);
-		labelGroup.setText(Activator.getDefault().getResource("RepositoryPropertiesComposite.Label"));
+		labelGroup.setText(Activator.getDefault().getResource("BambooServerPropertiesComposite.Label"));
 		
 		this.useLocationButton = new Button(labelGroup, SWT.RADIO);
 		this.useLocationButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		/*
 		this.useLocationButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-			    RepositoryPropertiesComposite.this.validationManager.validateContent();
+			    BambooServerPropertiesComposite.this.validationManager.validateContent();
 				Button button = (Button)e.widget;
-				RepositoryPropertiesComposite.this.repositoryLabel.setEnabled(!button.getSelection());
+				BambooServerPropertiesComposite.this.serverLabel.setEnabled(!button.getSelection());
 				if (!button.getSelection()) {
-					RepositoryPropertiesComposite.this.repositoryLabel.selectAll();
+					BambooServerPropertiesComposite.this.serverLabel.selectAll();
 				}
 				else {
-					RepositoryPropertiesComposite.this.repositoryLabel.setText("");
+					BambooServerPropertiesComposite.this.serverLabel.setText("");
 				}
 			}
-		});*/
-		this.useLocationButton.setText(Activator.getDefault().getResource("RepositoryPropertiesComposite.UseURL"));
+		});
+		this.useLocationButton.setText(Activator.getDefault().getResource("BambooServerPropertiesComposite.UseURL"));
 		
 		this.newLabelButton = new Button(labelGroup, SWT.RADIO);
 		this.newLabelButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		this.newLabelButton.setText(Activator.getDefault().getResource("RepositoryPropertiesComposite.UseCustom")); 
+		this.newLabelButton.setText(Activator.getDefault().getResource("BambooServerPropertiesComposite.UseCustom")); 
 		
-		this.repositoryLabel = new Text(labelGroup, SWT.SINGLE | SWT.BORDER);
+		this.serverLabel = new Text(labelGroup, SWT.SINGLE | SWT.BORDER);
 		data = new GridData(GridData.FILL_HORIZONTAL);
 		data.grabExcessHorizontalSpace = true;
 		data.widthHint = IDialogConstants.ENTRY_FIELD_WIDTH;
-		this.repositoryLabel.setLayoutData(data);
-		/*
-		this.validationManager.attachTo(this.repositoryLabel, new AbstractVerifierProxy(
-				new NonEmptyFieldVerifier(Activator.getDefault().getResource("RepositoryPropertiesComposite.UseCustom.Verifier"))) {
+		this.serverLabel.setLayoutData(data);
+		this.validationManager.attachTo(this.serverLabel, new AbstractVerifierProxy(
+				new NonEmptyFieldVerifier(Activator.getDefault().getResource("BambooServerPropertiesComposite.UseCustom.Verifier"))) {
 			protected boolean isVerificationEnabled(Control input) {
-				return RepositoryPropertiesComposite.this.newLabelButton.getSelection();
+				return BambooServerPropertiesComposite.this.newLabelButton.getSelection();
 			}			
-		});*/
-		this.repositoryLabel.setEnabled(false);
+		});
+		this.serverLabel.setEnabled(false);
 		
-		//this.credentialsComposite = new CredentialsComposite(this, SWT.NONE);
-		//this.credentialsComposite.initialize();
+		this.credentialsComposite = new CredentialsComposite(this, SWT.NONE);
+		this.credentialsComposite.initialize();
 		
 		this.url.setFocus();
 		
 		this.resetChanges();
 	}
 	
-	public void setRepositoryLocation(BambooServer location, String rootUrl) {
-		this.credentialsInput = this.repositoryLocation = location;
+	public void setBambooServer(IBambooServer location, String rootUrl) {
+		this.credentialsInput = this.bambooServer = location;
 		this.rootUrl = rootUrl;
 	}
 	
-	public BambooServer getRepositoryLocation() {
-		return this.repositoryLocation;
+	public IBambooServer getBambooServer() {
+		return this.bambooServer;
 	}
 	
 	public String getLocationUrl() {
 		return this.url.getText();
 	}
 	
-	public void setCredentialsInput(BambooServer location) {
+	public void setCredentialsInput(IBambooServer location) {
 		this.credentialsInput = location;
 	}
 	
 	public void defineUrlVerifier(AbstractVerifier verifier) {
-		/*
-		String name = Activator.getDefault().getResource("RepositoryPropertiesComposite.URL.Verifier");
+		String name = Activator.getDefault().getResource("BambooServerPropertiesComposite.URL.Verifier");
 		this.urlVerifier.removeAll();
 		this.urlVerifier.add(new URLVerifier(name));
-		this.urlVerifier.add(new AbsolutePathVerifier(name));
-		if (this.rootUrl != null) {
+		//this.urlVerifier.add(new AbsolutePathVerifier(name));
+		/*if (this.rootUrl != null) {
 			this.urlVerifier.add(new AbstractFormattedVerifier(name) {
 				protected Boolean relatedProjects;
 				
@@ -247,48 +244,47 @@ public class BambooServerPropertiesComposite extends Composite implements IPrope
 					return null;
 				}
 			});
-		}
+		}*/
 
 		if (verifier != null) {
 			this.urlVerifier.add(verifier);
-		}*/
+		}
 	}
 	
 	public void saveChanges() {
-		/*if (this.useLocationButton.getSelection()) {
-			this.repositoryLocation.setLabel(this.url.getText());
+		if (this.useLocationButton.getSelection()) {
+			this.bambooServer.setLabel(this.url.getText());
 		}
 		else {
-			this.repositoryLocation.setLabel(this.repositoryLabel.getText());
+			this.bambooServer.setLabel(this.serverLabel.getText());
 		}
 		String newUrl = this.url.getText();
 		this.urlHistory.addLine(newUrl);
-		this.repositoryLocation.setUrl(newUrl);
+		this.bambooServer.setUrl(newUrl);
 
-		this.credentialsComposite.getUserHistory().addLine(this.credentialsComposite.userName.getText());
+		this.credentialsComposite.getUserHistory().addLine(this.credentialsComposite.getUsername().getText());
 		
 		this.credentialsInput.setUsername(this.credentialsComposite.getUsername().getText());
 		this.credentialsInput.setPassword(this.credentialsComposite.getPassword().getText());
 		this.credentialsInput.setPasswordSaved(this.credentialsComposite.getSavePassword().getSelection());
-		*/
 	}
 	
 	public void resetChanges() {
-		/*String url = this.repositoryLocation.getUrlAsIs();
+		String url = this.bambooServer.getUrl();
 		url = url == null ? "" : url;
-		if (this.repositoryLocation.getLabel() == null || 
-			this.repositoryLocation.getLabel().equalsIgnoreCase(this.repositoryLocation.getUrlAsIs()) ||
-			this.repositoryLocation.getLabel().equalsIgnoreCase(this.repositoryLocation.getUrl())) {
-			this.repositoryLabel.setText(url);
+		if (this.bambooServer.getLabel() == null || 
+			/*this.bambooServer.getLabel().equalsIgnoreCase(this.bambooServer.getUrlAsIs()) ||*/
+			this.bambooServer.getLabel().equalsIgnoreCase(this.bambooServer.getUrl())) {
+			this.serverLabel.setText(url);
 			this.useLocationButton.setSelection(true);
 			this.newLabelButton.setSelection(false);
 		}
 		else {
-			this.repositoryLabel.setText(this.repositoryLocation.getLabel());
+			this.serverLabel.setText(this.bambooServer.getLabel());
 			this.useLocationButton.setSelection(false);
 			this.newLabelButton.setSelection(true);
 		}
-		RepositoryPropertiesComposite.this.repositoryLabel.setEnabled(!this.useLocationButton.getSelection());
+		BambooServerPropertiesComposite.this.serverLabel.setEnabled(!this.useLocationButton.getSelection());
 		this.url.setText(url);
 
 		String username = this.credentialsInput.getUsername();
@@ -297,7 +293,6 @@ public class BambooServerPropertiesComposite extends Composite implements IPrope
 		this.credentialsComposite.getPassword().setText(password == null ? "" : password);
 		
 		this.credentialsComposite.getSavePassword().setSelection(this.credentialsInput.isPasswordSaved());
-		*/
 	}
 	
 	public void cancelChanges() {
