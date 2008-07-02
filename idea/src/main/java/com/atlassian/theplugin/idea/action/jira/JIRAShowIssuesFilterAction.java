@@ -24,7 +24,8 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 public class JIRAShowIssuesFilterAction extends AnAction {
 
 	public void actionPerformed(AnActionEvent e) {
-		final JIRAToolWindowPanel jiraPanel = IdeaHelper.getCurrentJIRAToolWindowPanel();
+		
+		final JIRAToolWindowPanel jiraPanel = IdeaHelper.getJIRAToolWindowPanel(e);
 
 		if (jiraPanel != null) {
 			jiraPanel.showJIRAIssueFilter();

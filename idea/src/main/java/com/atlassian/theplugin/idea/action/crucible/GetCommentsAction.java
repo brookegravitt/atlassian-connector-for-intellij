@@ -56,6 +56,6 @@ public class GetCommentsAction extends TableSelectedAction implements CrucibleRe
 	}
 
 	protected void itemSelected(Object row) {
-		IdeaHelper.getCurrentReviewActionEventBroker().trigger(new ShowReviewEvent(this, (ReviewDataInfoAdapter) row));
+		IdeaHelper.getReviewActionEventBroker().trigger(new ShowReviewEvent(this, (ReviewDataInfoAdapter) row));
 	}
 }

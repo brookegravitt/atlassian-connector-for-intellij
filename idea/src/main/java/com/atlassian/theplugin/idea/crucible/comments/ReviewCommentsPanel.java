@@ -43,7 +43,7 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 	protected ReviewCommentsPanel() {
 		super();
 		context = new UserTableContext();
-		IdeaHelper.getCurrentReviewActionEventBroker().registerListener(this);
+		IdeaHelper.getReviewActionEventBroker().registerListener(this);
 		crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		setCommentTableModel(new ListTableModel(getCommentTableColumnProvider().makeColumnInfo()));
 		setCommentReplyTableModel(new ListTableModel(getCommentReplyTableColumnProvider().makeColumnInfo()));
@@ -92,7 +92,7 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 			public void itemSelected(Object item, int noClicks) {
 				GeneralComment selectedComment = (GeneralComment) item;
 				if (noClicks == 2) {
-					IdeaHelper.getCurrentReviewActionEventBroker().trigger(
+					IdeaHelper.getReviewActionEventBroker().trigger(
 							new FocusOnGeneralCommentReplyEvent(
 									I_WANT_THIS_MESSAGE_BACK,
 									(ReviewDataInfoAdapter) CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
@@ -111,7 +111,7 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 			public void itemSelected(Object item, int noClicks) {
 				GeneralComment selectedComment = (GeneralComment) item;
 				if (noClicks == 2) {
-					IdeaHelper.getCurrentReviewActionEventBroker().trigger(
+					IdeaHelper.getReviewActionEventBroker().trigger(
 							new ShowGeneralCommentEvent(
 									I_WANT_THIS_MESSAGE_BACK,
 									(ReviewDataInfoAdapter) CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
