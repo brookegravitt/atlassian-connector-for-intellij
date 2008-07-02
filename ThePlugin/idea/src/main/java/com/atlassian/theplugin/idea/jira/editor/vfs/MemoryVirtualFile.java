@@ -117,7 +117,7 @@ public class MemoryVirtualFile extends DeprecatedVirtualFile
    @NotNull
    public VirtualFileSystem getFileSystem()
    {
-       return VirtualFileManager.getInstance().getFileSystem(Constants.JIRAISSUE_PROTOCOL);
+       return MemoryVirtualFileSystem.getInstance();
    }
 
    /** {@inheritDoc} */
