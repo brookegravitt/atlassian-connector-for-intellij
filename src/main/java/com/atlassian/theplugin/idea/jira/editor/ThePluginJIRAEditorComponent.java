@@ -11,6 +11,7 @@ import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.api.JIRAComment;
 import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.atlassian.theplugin.jira.api.JIRAConstant;
 import com.intellij.codeHighlighting.BackgroundEditorHighlighter;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.ide.structureView.StructureViewBuilder;
@@ -435,6 +436,10 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 
 	private class DetailsPanel extends JPanel {
 
+		private JLabel affectsVersions = new JLabel("Fetching...");
+		private JLabel fixVersions = new JLabel("Fetching...");
+		private JLabel components = new JLabel("Fetching...");
+
 		public DetailsPanel(final JIRAIssue issue) {
 			JPanel body = new JPanel();
 
@@ -487,6 +492,19 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
             body.add(new BoldLabel("Updated"), gbc1);
             body.add(new JLabel(issue.getUpdated()), gbc2);
 			gbc1.gridy++;
+			gbc2.gridy++;
+			body.add(new BoldLabel("Affects Version/s"), gbc1);
+			body.add(affectsVersions, gbc2);
+			gbc1.gridy++;
+			gbc2.gridy++;
+			body.add(new BoldLabel("Fix Version/s"), gbc1);
+			body.add(fixVersions, gbc2);
+			gbc1.gridy++;
+			gbc2.gridy++;
+			body.add(new BoldLabel("Component/s"), gbc1);
+			body.add(components, gbc2);
+
+			gbc1.gridy++;
 			gbc1.weighty = 1.0;
 			gbc1.fill = GridBagConstraints.VERTICAL;
 			body.add(new JPanel(), gbc1);
@@ -506,11 +524,25 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			Insets i = b.getBorderInsets(this);
 			setMinimumSize(new Dimension(0, i.top + i.bottom));
 		}
+
+		public JLabel getAffectVersionsLabel() {
+			return affectsVersions;
+		}
+
+		public JLabel getFixVersionsLabel() {
+			return fixVersions;
+		}
+
+		public JLabel getComponentsLabel() {
+			return components;
+		}
 	}
 
 	private class SummaryPanel extends JPanel {
 
-        public SummaryPanel(final JIRAIssue issue) {
+		private DetailsPanel details;
+
+		public SummaryPanel(final JIRAIssue issue) {
 			setLayout(new GridBagLayout());
 			GridBagConstraints gbc = new GridBagConstraints();
 
@@ -564,7 +596,8 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			gbc.weighty = 1.0;
 			Splitter split = new Splitter(true);
 			split.setFirstComponent(new DescriptionPanel(issue));
-			split.setSecondComponent(new DetailsPanel(issue));
+			details = new DetailsPanel(issue);
+			split.setSecondComponent(details);
 			split.setShowDividerControls(true);
 			split.setHonorComponentsMinimumSize(true);
 			add(split, gbc);
@@ -572,7 +605,35 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 				split.setProportion(0);
 			}
         }
-    }
+
+		public void setAffectsVersions(String[] versions) {
+			setLabelText(details.getAffectVersionsLabel(), versions);
+		}
+
+		public void setFixVersions(String[] versions) {
+			setLabelText(details.getFixVersionsLabel(), versions);
+		}
+
+		public void setComponents(String[] components) {
+			setLabelText(details.getComponentsLabel(), components);
+		}
+
+		private void setLabelText(JLabel label, String[] texts) {
+			if (texts.length == 0) {
+				label.setText("None");
+			} else {
+
+				StringBuffer txt = new StringBuffer();
+				for (int i = 0; i < texts.length; ++i) {
+					if (i > 0) {
+						txt.append(", ");
+					}
+					txt.append(texts[i]);
+				}
+				label.setText(txt.toString());
+			}
+		}
+	}
 
     public class JIRAFileEditor implements FileEditor {
 
@@ -582,6 +643,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 		private JPanel mainPanel;
 		private JIRAIssue issue;
         private CommentsPanel commentsPanel;
+		private SummaryPanel summaryPanel;
 		private boolean hasStackTrace;
 
 		public JIRAFileEditor() {
@@ -619,11 +681,13 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			Splitter split = new Splitter(true);
 			split.setShowDividerControls(true);
 			split.setHonorComponentsMinimumSize(true);
-			split.setFirstComponent(new SummaryPanel(issue));
+			summaryPanel = new SummaryPanel(issue);
+			split.setFirstComponent(summaryPanel);
             commentsPanel = new CommentsPanel(issue);
 			split.setSecondComponent(commentsPanel);
 			mainPanel.add(split, gbc);
-            refreshComments();
+			getMoreIssueDetails();
+			refreshComments();
 		}
 
         public void addComment() {
@@ -651,7 +715,39 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
             }
         }
 
-        public void refreshComments() {
+		public void getMoreIssueDetails() {
+			FutureTask task = new FutureTask(new Runnable() {
+
+				private String[] getStringArray(List<JIRAConstant> l) {
+					List<String> sl = new ArrayList<String>(l.size());
+					for (JIRAConstant c : l) {
+						 sl.add(c.getName());
+					}
+					return sl.toArray(new String[l.size()]);
+				}
+
+				public void run() {
+					try {
+						final JIRAIssue issueDetails = facade.getIssueDetails(server.getServer(), issue);
+						SwingUtilities.invokeLater(new Runnable() {
+							public void run() {
+								summaryPanel.setAffectsVersions(getStringArray(issueDetails.getAffectsVersions()));
+								summaryPanel.setFixVersions(getStringArray(issueDetails.getFixVersions()));
+								summaryPanel.setComponents(getStringArray(issueDetails.getComponents()));
+							}
+						});
+					} catch (JIRAException e) {
+						summaryPanel.setAffectsVersions(new String[]{new String("Cannot retrieve: " + e.getMessage())});
+						summaryPanel.setFixVersions(new String[]{new String("Cannot retrieve: " + e.getMessage())});
+						summaryPanel.setComponents(new String[]{new String("Cannot retrieve: " + e.getMessage())});
+					}
+				}
+			}, null);
+			new Thread(task, "atlassian-idea-plugin get issue details").start();
+
+		}
+
+		public void refreshComments() {
             commentsPanel.clearComments();
             commentsPanel.setTitle("Fetching comments...");
             FutureTask task = new FutureTask(new Runnable() {
