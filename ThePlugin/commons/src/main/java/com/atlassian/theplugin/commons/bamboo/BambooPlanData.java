@@ -27,6 +27,10 @@ public class BambooPlanData implements BambooPlan {
 		this.key = key;
 	}
 
+	public BambooPlanData(String key) {
+		this.key = key;
+	}
+
 	public String getPlanName() {
 		return this.name;
 	}
