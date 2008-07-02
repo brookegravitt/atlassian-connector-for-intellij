@@ -36,11 +36,13 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 
 import com.atlassian.theplugin.eclipse.core.bamboo.BambooServer;
+import com.atlassian.theplugin.eclipse.core.bamboo.IBambooServer;
 import com.atlassian.theplugin.eclipse.preferences.Activator;
 import com.atlassian.theplugin.eclipse.ui.dialog.DefaultDialog;
 import com.atlassian.theplugin.eclipse.ui.panel.IPropertiesPanel;
 import com.atlassian.theplugin.eclipse.ui.verifier.AbstractVerifier;
 import com.atlassian.theplugin.eclipse.ui.verifier.IValidationManager;
+import com.atlassian.theplugin.eclipse.view.bamboo.BambooConfigurationStorage;
 
 /**
  * Repository properties tab folder
@@ -50,7 +52,7 @@ import com.atlassian.theplugin.eclipse.ui.verifier.IValidationManager;
 public class BambooServerPropertiesTabFolder extends Composite implements IPropertiesPanel {
 	
 	protected Composite parent;
-	protected BambooServer bambooServer;
+	protected IBambooServer bambooServer;
 	protected int style;
 	protected IValidationManager validationManager;
 	protected Button validateButton;
@@ -61,9 +63,9 @@ public class BambooServerPropertiesTabFolder extends Composite implements IPrope
 	protected Combo cachedRealms;
 	protected BambooServerPropertiesComposite serverPropertiesPanel;
 	
-	protected BambooServer backup;
+	protected IBambooServer backup;
 	
-	public BambooServerPropertiesTabFolder(Composite parent, int style, IValidationManager validationManager, BambooServer bambooServer) {
+	public BambooServerPropertiesTabFolder(Composite parent, int style, IValidationManager validationManager, IBambooServer bambooServer) {
 		super(parent, style);
 		this.parent = parent;
 		this.style = style;
@@ -71,11 +73,11 @@ public class BambooServerPropertiesTabFolder extends Composite implements IPrope
 		this.bambooServer = bambooServer;
 		this.createNew = bambooServer == null;
 		if (this.createNew) {
-			this.bambooServer = new BambooServer();
+			this.bambooServer = BambooConfigurationStorage.instance().newBambooServer();
 		}
 		else {
-			this.backup = new BambooServer();
-			this.bambooServer.copyTo(this.backup);
+			this.backup = BambooConfigurationStorage.instance().newBambooServer();
+			BambooConfigurationStorage.instance().copyBambooServer(this.backup, this.bambooServer);
 		}
 	}
 	
@@ -204,7 +206,7 @@ public class BambooServerPropertiesTabFolder extends Composite implements IPrope
 	
 	protected Control createBambooServerPropertiesPanel(TabFolder tabFolder) {
 		this.serverPropertiesPanel = new BambooServerPropertiesComposite(tabFolder, this.style, this.validationManager);
-		this.serverPropertiesPanel.setRepositoryLocation(this.bambooServer, this.createNew 
+		this.serverPropertiesPanel.setBambooServer(this.bambooServer, this.createNew 
 				? null : this.bambooServer.getUrl());
 		this.serverPropertiesPanel.initialize();
 		
@@ -250,7 +252,7 @@ public class BambooServerPropertiesTabFolder extends Composite implements IPrope
 		}
 	}*/
 	
-	public BambooServer getBambooServer() {
+	public IBambooServer getBambooServer() {
 		return this.bambooServer;
 	}
 	
@@ -259,8 +261,8 @@ public class BambooServerPropertiesTabFolder extends Composite implements IPrope
 	}
 	
 	public void saveChanges() {
-	/*
-		this.repositoryPropertiesPanel.saveChanges();
+		this.serverPropertiesPanel.saveChanges();
+		/*
 		if (CoreExtensionsManager.instance().getSVNClientWrapperFactory().isSSHOptionsAllowed()) {
 			this.sshComposite.saveChanges();
 		}
@@ -301,13 +303,13 @@ public class BambooServerPropertiesTabFolder extends Composite implements IPrope
 				it.remove();
 			}
 		}
-		this.validateOnFinish = this.validateButton.getSelection();
 		*/
+		this.validateOnFinish = this.validateButton.getSelection();
 	}
 
 	public void resetChanges() {
+		this.serverPropertiesPanel.resetChanges();
 		/*
-		this.repositoryPropertiesPanel.resetChanges();
 		if (CoreExtensionsManager.instance().getSVNClientWrapperFactory().isSSHOptionsAllowed()) {
 			this.sshComposite.resetChanges();
 		}
@@ -321,7 +323,7 @@ public class BambooServerPropertiesTabFolder extends Composite implements IPrope
 
 	public void cancelChanges() {
 		if (!this.createNew) {
-			this.backup.copyTo(this.bambooServer);
+			BambooConfigurationStorage.instance().copyBambooServer(this.bambooServer, this.backup);
 		}
 	}
 
@@ -337,9 +339,7 @@ public class BambooServerPropertiesTabFolder extends Composite implements IPrope
 	}
 
 	public String getServerUrl() {
-		//return this.repositoryPropertiesPanel.getLocationUrl();
-		// FIXME 
-		return null;
+		return this.serverPropertiesPanel.getLocationUrl();
 	}
 	
 }
