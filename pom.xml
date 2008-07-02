@@ -117,6 +117,17 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>com.atlassian.maven.plugins</groupId>
+                <artifactId>maven-clover2-plugin</artifactId>
+                <version>2.3.1</version>
+                <configuration>
+                    <resolveReportDescriptor>false</resolveReportDescriptor>
+                    <generateXml>true</generateXml>
+                    <generateHtml>true</generateHtml>
+                    <historyDir>${user.home}/clover-studio-history/${pom.artifactId}</historyDir>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-idea-plugin</artifactId>
                 <version>2.1</version>
