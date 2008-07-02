@@ -31,7 +31,6 @@ import java.util.WeakHashMap;
 import java.util.Calendar;
 
 public final class JIRAServerFacadeImpl implements JIRAServerFacade {
-
 	private JIRAServerFacadeImpl() {
 
 	}
@@ -301,6 +300,15 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 			soapSessions.remove(getSoapSessionKey(server));
 			throw new JIRAException(e.getMessage(), e);
 		}
+	}
 
+	public JIRAIssue getIssueDetails(Server server, JIRAIssue issue) throws JIRAException {
+		try {
+			JIRASession soap = getSoapSession(server);
+			return soap.getIssueDetails(issue);
+		} catch (RemoteApiException e) {
+			soapSessions.remove(getSoapSessionKey(server));
+			throw new JIRAException(e.getMessage(), e);
+		}
 	}
 }

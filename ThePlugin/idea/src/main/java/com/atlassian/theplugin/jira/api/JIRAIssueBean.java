@@ -19,6 +19,7 @@ package com.atlassian.theplugin.jira.api;
 import org.jdom.Element;
 
 import java.util.Map;
+import java.util.List;
 
 public class JIRAIssueBean implements JIRAIssue {
     private String serverUrl;
@@ -46,15 +47,47 @@ public class JIRAIssueBean implements JIRAIssue {
     private long statusId;
     private long priorityId;
     private long typeId;
+	private List<JIRAConstant> affectsVersions;
+	private List<JIRAConstant> fixVersions;
+	private List<JIRAConstant> components;
 
-    public JIRAIssueBean() {
+	public JIRAIssueBean() {
     }
 
     public JIRAIssueBean(String serverUrl) {
         this.serverUrl = serverUrl;
     }
 
-    public JIRAIssueBean(String serverUrl, Element e) {
+	public JIRAIssueBean(JIRAIssue issue) {
+		serverUrl = issue.getServerUrl();
+		id = issue.getId();
+		key = issue.getKey();
+		summary = issue.getSummary();
+		status = issue.getStatus();
+		statusUrl = issue.getStatusTypeUrl();
+		type = issue.getType();
+		typeUrl = issue.getTypeIconUrl();
+		priority = issue.getPriority();
+		priorityUrl = issue.getPriorityIconUrl();
+		description = issue.getDescription();
+		projectKey = issue.getProjectKey();
+		statusConstant = issue.getStatusConstant();
+		typeConstant = issue.getTypeConstant();
+		priorityConstant = issue.getTypeConstant();
+		assignee = issue.getAssignee();
+		assigneeId = issue.getAssigneeId();
+		reporter = issue.getReporter();
+		reporterId = issue.getReporterId();
+		resolution = issue.getResolution();
+		created = issue.getCreated();
+		updated = issue.getUpdated();
+		statusId = issue.getStatusId();
+		priorityId = issue.getPriorityId();
+		typeId = issue.getTypeId();
+
+	}
+
+	public JIRAIssueBean(String serverUrl, Element e) {
         this.serverUrl = serverUrl;
         this.summary = getTextSafely(e, "summary");
         this.key = getTextSafely(e, "key");
@@ -336,4 +369,28 @@ public class JIRAIssueBean implements JIRAIssue {
     public void setReporterId(String reporterId) {
         this.reporterId = reporterId;
     }
+
+	public List<JIRAConstant> getAffectsVersions() {
+		return affectsVersions;
+	}
+
+	public void setAffectsVersions(List<JIRAConstant> affectsVersions) {
+		this.affectsVersions = affectsVersions;
+	}
+
+	public List<JIRAConstant> getFixVersions() {
+		return fixVersions;
+	}
+
+	public void setFixVersions(List<JIRAConstant> fixVersions) {
+		this.fixVersions = fixVersions;
+	}
+
+	public List<JIRAConstant> getComponents() {
+		return components;
+	}
+
+	public void setComponents(List<JIRAConstant> components) {
+		this.components = components;
+	}
 }

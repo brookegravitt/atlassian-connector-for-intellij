@@ -16,6 +16,8 @@
 
 package com.atlassian.theplugin.jira.api;
 
+import java.util.List;
+
 public interface JIRAIssue {
     String getServerUrl();
 
@@ -72,4 +74,10 @@ public interface JIRAIssue {
 	long getTypeId();
 
 	void setAssignee(String assignee);
+
+	List<JIRAConstant> getAffectsVersions();
+
+	List<JIRAConstant> getFixVersions();
+	
+	List<JIRAConstant> getComponents();
 }
