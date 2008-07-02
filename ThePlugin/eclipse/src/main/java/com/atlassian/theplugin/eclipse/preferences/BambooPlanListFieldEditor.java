@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 
 import com.atlassian.theplugin.commons.SubscribedPlan;
 import com.atlassian.theplugin.commons.bamboo.BambooPlan;
@@ -47,6 +48,8 @@ import com.atlassian.theplugin.eclipse.util.PluginUtil;
  */
 public class BambooPlanListFieldEditor extends FieldEditor implements IPropertyChangeListener {
 
+	private static final String WAITING_FOR_PLANS_MESSAGE = "Waiting for plans list...";
+
 	private Table table;
 
 	private Set<SubscribedPlan> subscribedPlans;
@@ -54,6 +57,8 @@ public class BambooPlanListFieldEditor extends FieldEditor implements IPropertyC
 	private PreferencePageServers parentPreferencePage;
 
 	private Button refreshButton;
+
+	private Text messageArea;
 
     /**
      * Creates a new string field editor 
@@ -99,25 +104,11 @@ public class BambooPlanListFieldEditor extends FieldEditor implements IPropertyC
      */
     protected void doFillIntoGrid(Composite parent, int numColumns) {
         
-    	Label label = getLabelControl(parent);
-    	GridData gdLabel = new GridData();
-    	gdLabel.verticalAlignment = GridData.BEGINNING;
-    	label.setLayoutData(gdLabel);
-        
-        table = getTableControl(parent);
-        GridData gd = new GridData();
-        gd.horizontalSpan = numColumns - 1;
-        gd.horizontalAlignment = GridData.FILL;
-        gd.grabExcessHorizontalSpace = true;
-        gd.heightHint = convertVerticalDLUsToPixels(table, 90);
-        gd.verticalAlignment = GridData.FILL;
-        table.setLayoutData(gd);
-        
-        Label empty = new Label(parent, SWT.NONE);
+    	Label empty1 = new Label(parent, SWT.NONE);
     	
     	refreshButton = new Button(parent, SWT.PUSH);
 		refreshButton.setText("Refresh");
-    	refreshButton.setEnabled(false);
+    	refreshButton.setToolTipText("Refresh list using form values instead of saved ones");
     	refreshButton.addMouseListener(new MouseAdapter() {
 
 			@Override
@@ -130,9 +121,38 @@ public class BambooPlanListFieldEditor extends FieldEditor implements IPropertyC
 				bambooServer.transientSetPasswordString(parentPreferencePage.getPassword(), true);
 				
 				loadServerPlans(bambooServer);
+				refreshButton.setEnabled(false);
+				table.setEnabled(false);
+				messageArea.setText(WAITING_FOR_PLANS_MESSAGE);
 			}
 			
     	});
+    	
+    	Label label = getLabelControl(parent);
+    	GridData gdLabel = new GridData();
+    	gdLabel.verticalAlignment = GridData.BEGINNING;
+    	label.setLayoutData(gdLabel);
+        
+        table = getTableControl(parent);
+        GridData gd = new GridData();
+        gd.horizontalSpan = numColumns - 1;
+        gd.horizontalAlignment = GridData.FILL;
+        gd.grabExcessHorizontalSpace = true;
+        gd.heightHint = convertVerticalDLUsToPixels(table, 70);
+        gd.verticalAlignment = GridData.FILL;
+        table.setLayoutData(gd);
+    	
+    	Label empty2 = new Label(parent, SWT.NONE);
+    	
+    	messageArea = new Text(parent, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.READ_ONLY);
+		gd = new GridData();
+        gd.horizontalSpan = numColumns - 1;
+        gd.horizontalAlignment = GridData.FILL;
+        gd.grabExcessHorizontalSpace = true;
+        gd.verticalAlignment = GridData.FILL;
+        gd.heightHint = 35;
+        //gd.grabExcessVerticalSpace = true;
+    	messageArea.setLayoutData(gd);
     }
 
 
@@ -258,13 +278,11 @@ public class BambooPlanListFieldEditor extends FieldEditor implements IPropertyC
      */
 	private void setPlans(Collection<BambooPlan> allPlans) {
 		fillTable(allPlans);
-		refreshButton.setEnabled(true);
-		
 	}
 	
 	private void fillTable(Collection<BambooPlan> serverPlans) {
 		table.clearAll();
-		table.setItemCount(0);	// this is unfortunately necessary to clear the table
+		table.setItemCount(0);	// this is necessary to clear the table
 		
 		TableItem item;
 		
@@ -295,6 +313,8 @@ public class BambooPlanListFieldEditor extends FieldEditor implements IPropertyC
 			}
 		}
 		
+		table.setEnabled(true);
+		refreshButton.setEnabled(true);
 
 	}
 
@@ -367,6 +387,10 @@ public class BambooPlanListFieldEditor extends FieldEditor implements IPropertyC
 	
 	private void loadServerPlans(final ServerBean bambooServer) {
 		
+		table.setEnabled(false);
+		refreshButton.setEnabled(false);
+		messageArea.setText(WAITING_FOR_PLANS_MESSAGE);
+		
 		Job planListJob = new Job("Atlassian Bamboo plans") {
 			
 			@Override
@@ -374,19 +398,22 @@ public class BambooPlanListFieldEditor extends FieldEditor implements IPropertyC
 
 				Collection<BambooPlan> serverPlans = new ArrayList<BambooPlan>(0);
 				BambooServerFacade bambooFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
+				String message = "";
 		
 					try {
 						serverPlans = bambooFacade.getPlanList(bambooServer);
-					} catch (ServerPasswordNotProvidedException e1) {
-						e1.printStackTrace();
-					} catch (RemoteApiException e1) {
-						e1.printStackTrace();
+					} catch (ServerPasswordNotProvidedException ex) {
+						message = ex.getMessage();
+					} catch (RemoteApiException ex) {
+						message = ex.getMessage();
 					}
 					
 					final Collection<BambooPlan> plans = serverPlans;
+					final String finalMessage = message;
 				
 					EclipseActionScheduler.getInstance().invokeLater(new Runnable() {
 						public void run() {
+							messageArea.setText(finalMessage);
 							BambooPlanListFieldEditor.this.setPlans(plans);
 						}
 					});
