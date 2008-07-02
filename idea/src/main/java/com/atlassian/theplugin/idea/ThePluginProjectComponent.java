@@ -106,7 +106,7 @@ public class ThePluginProjectComponent implements
                                      ProjectConfigurationBean projectConfigurationBean
                                      /*CrucibleServerFacade crucibleServerFacade*/) {
 		this.project = project;
-		this.crucibleActionBroker = ReviewActionEventBroker.getInstance(project);
+		this.crucibleActionBroker = ReviewActionEventBroker.getInstance();
 		this.crucibleStatusChecker = crucibleStatusChecker;
 		this.toolWindowManager = toolWindowManager;
 		// todo remove that get instance as it can return null. it is better to get it from app component.
@@ -175,10 +175,10 @@ public class ThePluginProjectComponent implements
         if (!created) {
 
             // DependencyValidationManager.getHolder(project, "", )
-			this.bambooToolWindowPanel = BambooTableToolWindowPanel.getInstance(projectConfigurationBean);
-			this.crucibleToolWindowPanel = CrucibleTableToolWindowPanel.getInstance(projectConfigurationBean);
-			this.crucibleBottomToolWindowPanel = CrucibleBottomToolWindowPanel.getInstance(projectConfigurationBean);
-			this.jiraToolWindowPanel = JIRAToolWindowPanel.getInstance(projectConfigurationBean);
+			this.bambooToolWindowPanel = BambooTableToolWindowPanel.getInstance(project, projectConfigurationBean);
+			this.crucibleToolWindowPanel = CrucibleTableToolWindowPanel.getInstance(project, projectConfigurationBean);
+			this.crucibleBottomToolWindowPanel = CrucibleBottomToolWindowPanel.getInstance(project, projectConfigurationBean);
+			this.jiraToolWindowPanel = JIRAToolWindowPanel.getInstance(project, projectConfigurationBean);
 
 			// create tool window on the right
             toolWindow = new PluginToolWindow(toolWindowManager, project);
@@ -237,7 +237,7 @@ public class ThePluginProjectComponent implements
             // create crucible status bar icon
             statusBarCrucibleIcon = new CrucibleStatusIcon(project);
 
-            crucibleNewReviewNotifier = new CrucibleNewReviewNotifier(statusBarCrucibleIcon);
+            crucibleNewReviewNotifier = new CrucibleNewReviewNotifier(statusBarCrucibleIcon, project);
 			if (IdeaHelper.getPluginConfiguration().getCrucibleConfigurationData().getCrucibleTooltipOption()
 					!= CrucibleTooltipOption.NEVER) {
 				crucibleStatusChecker.registerListener(crucibleNewReviewNotifier);

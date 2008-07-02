@@ -35,7 +35,7 @@ public class ReviewDetailsPanel extends AbstractCommentPanel {
 
 	public ReviewDetailsPanel(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem, Collection<VersionedComment> versionedComments) {
 		super();
-		IdeaHelper.getCurrentReviewActionEventBroker().registerListener(this);
+		IdeaHelper.getReviewActionEventBroker().registerListener(this);
 		context = new UserTableContext();
 		CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.setValue(context, reviewDataInfoAdapter);
 		CrucibleConstants.CrucibleTableState.REVIEW_ITEM.setValue(context, reviewItem);
@@ -82,7 +82,7 @@ public class ReviewDetailsPanel extends AbstractCommentPanel {
 				GeneralComment selectedComment = (GeneralComment) item;
 				switch (noClicks) {
 					case 1:
-						IdeaHelper.getCurrentReviewActionEventBroker().trigger(
+						IdeaHelper.getReviewActionEventBroker().trigger(
 								new FocusOnRevisionCommentReplyEvent(
 										I_WANT_THIS_MESSAGE_BACK,
 										(ReviewDataInfoAdapter) CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
@@ -91,7 +91,7 @@ public class ReviewDetailsPanel extends AbstractCommentPanel {
 						);
 						break;
 					case 2:
-						IdeaHelper.getCurrentReviewActionEventBroker().trigger(
+						IdeaHelper.getReviewActionEventBroker().trigger(
 								new ShowRevisionCommentReplyEvent(
 										I_WANT_THIS_MESSAGE_BACK,
 										(ReviewDataInfoAdapter) CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
@@ -115,7 +115,7 @@ public class ReviewDetailsPanel extends AbstractCommentPanel {
 				CrucibleConstants.CrucibleTableState.SELECTED_VERSIONED_COMMENT.setValue(context, selectedComment);
 				switch (noClicks) {
 					case 1:
-						IdeaHelper.getCurrentReviewActionEventBroker().trigger(
+						IdeaHelper.getReviewActionEventBroker().trigger(
 								new FocusOnVersionedCommentEvent(
 										I_WANT_THIS_MESSAGE_BACK,
 										(ReviewDataInfoAdapter) CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
@@ -126,7 +126,7 @@ public class ReviewDetailsPanel extends AbstractCommentPanel {
 						);
 						break;
 					case 2:
-						IdeaHelper.getCurrentReviewActionEventBroker().trigger(
+						IdeaHelper.getReviewActionEventBroker().trigger(
 								new ShowVersionedCommentEvent(
 										I_WANT_THIS_MESSAGE_BACK,
 										(ReviewDataInfoAdapter) CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),

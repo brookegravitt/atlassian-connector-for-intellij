@@ -36,6 +36,9 @@ import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.ui.VerticalFlowLayout;
+import com.intellij.openapi.util.Key;
+import com.intellij.openapi.project.*;
+import com.intellij.openapi.project.Project;
 import com.intellij.ui.table.TableView;
 import com.intellij.util.ui.ListTableModel;
 import com.intellij.util.ui.UIUtil;
@@ -49,7 +52,9 @@ import java.util.List;
 public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStatusListener, TableItemSelectedListener,
 		CrucibleReviewActionListener {
 
-    private transient ActionToolbar filterEditToolbar;
+	private static final Key<CrucibleTableToolWindowPanel> WINDOW_PROJECT_KEY =  Key.create(CrucibleTableToolWindowPanel.class.getName());
+	private Project project;
+	private transient ActionToolbar filterEditToolbar;
     private static CrucibleTableToolWindowPanel instance;
     private TableColumnProvider columnProvider;
 
@@ -128,17 +133,21 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     public void clearAdvancedFilter() {
     }
 
-    public static CrucibleTableToolWindowPanel getInstance(ProjectConfigurationBean projectConfigurationBean) {
-        if (instance == null) {
-            instance = new CrucibleTableToolWindowPanel(projectConfigurationBean);
-            serverFacade = CrucibleServerFacadeImpl.getInstance();
-        }
-        return instance;
+	public static CrucibleTableToolWindowPanel getInstance(com.intellij.openapi.project.Project project, ProjectConfigurationBean projectConfigurationBean) {
+
+        CrucibleTableToolWindowPanel window = project.getUserData(WINDOW_PROJECT_KEY);
+
+        if (window == null) {
+            window = new CrucibleTableToolWindowPanel(project, projectConfigurationBean);
+            project.putUserData(WINDOW_PROJECT_KEY, window);
+			serverFacade = CrucibleServerFacadeImpl.getInstance();
+		}
+        return window;
     }
 
-    public CrucibleTableToolWindowPanel(ProjectConfigurationBean projectConfigurationBean) {
+	public CrucibleTableToolWindowPanel(Project project, ProjectConfigurationBean projectConfigurationBean) {
         super(new BorderLayout());
-
+		this.project = project;
         this.projectConfiguration = projectConfigurationBean;
 
         setBackground(UIUtil.getTreeTextBackground());
@@ -377,7 +386,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         if (noClicks == 2) {
 			if (item != null && item instanceof ReviewDataInfoAdapter) {
 				ReviewDataInfoAdapter review = (ReviewDataInfoAdapter) item;
-				IdeaHelper.getCurrentReviewActionEventBroker().trigger(new ShowReviewEvent(this, review));
+				IdeaHelper.getReviewActionEventBroker().trigger(new ShowReviewEvent(this, review));
 			}
 		}
     }
