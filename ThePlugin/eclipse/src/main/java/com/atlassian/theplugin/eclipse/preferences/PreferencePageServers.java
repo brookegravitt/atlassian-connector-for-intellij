@@ -89,6 +89,8 @@ public class PreferencePageServers
 		this.bambooPasswordEditor = new PasswordFieldEditor(PreferenceConstants.BAMBOO_USER_PASSWORD, "Password:", getFieldEditorParent()); 
 		addField(bambooPasswordEditor);
 		
+		addField(new TestConnection(getFieldEditorParent(), this));
+		
 		BambooPlanListFieldEditor planList = 
 			new BambooPlanListFieldEditor(PreferenceConstants.BAMBOO_BUILDS, "Build plans:", getFieldEditorParent(), this);
 		Activator.getDefault().getPluginPreferences().addPropertyChangeListener(planList);
