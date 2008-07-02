@@ -90,7 +90,7 @@ public class PreferencePageServers
 		addField(bambooPasswordEditor);
 		
 		BambooPlanListFieldEditor planList = 
-			new BambooPlanListFieldEditor(PreferenceConstants.BAMBOO_BUILDS, "Builds:", getFieldEditorParent(), this);
+			new BambooPlanListFieldEditor(PreferenceConstants.BAMBOO_BUILDS, "Build plans:", getFieldEditorParent(), this);
 		Activator.getDefault().getPluginPreferences().addPropertyChangeListener(planList);
 		addField(planList);
 	}
