@@ -18,8 +18,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Time: 10:53:01 AM
  * To change this template use File | Settings | File Templates.
  */
-public class ReviewActionEventBroker {
-	//	private static WeakHashMap<Project, ReviewActionEventBroker> brokers = new WeakHashMap<Project, ReviewActionEventBroker>();
+public class ReviewActionEventBroker {	
 	private static ReviewActionEventBroker broker;
 	private Set<CrucibleReviewActionListener> listeners = new HashSet<CrucibleReviewActionListener>();
 	private Queue<CrucibleEvent> events = new LinkedBlockingQueue<CrucibleEvent>();
@@ -42,11 +41,10 @@ public class ReviewActionEventBroker {
 		).start();
 	}
 
-	synchronized public static ReviewActionEventBroker getInstance(Project p) {
-//		ReviewActionEventBroker instance = brokers.get(p);
+	synchronized public static ReviewActionEventBroker getInstance() {
+
 		if (broker == null) {
 			broker = new ReviewActionEventBroker();
-			//brokers.put(p, instance);
 
 		}
 		return broker;

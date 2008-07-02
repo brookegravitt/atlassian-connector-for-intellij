@@ -408,6 +408,14 @@ public class PluginToolWindow extends ContentManagerAdapter {
 		focusPanelIfExists(IdeaHelper.getCurrentProject(e.getDataContext()), component.toString());
 	}
 
+	public void contentAdded(ContentManagerEvent event) {
+		super.contentAdded(event);	//To change body of overridden methods use File | Settings | File Templates.
+	}
+
+	public void contentRemoved(ContentManagerEvent event) {
+		super.contentRemoved(event);	//To change body of overridden methods use File | Settings | File Templates.
+	}
+
 	@Override
 	public void contentRemoveQuery(ContentManagerEvent event) {
 		Content content = event.getContent();
@@ -422,6 +430,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 
 		project.getComponent(ThePluginProjectComponent.class).getProjectConfigurationBean().
 				setActiveToolWindowTab(event.getContent().getDisplayName());
+
 	}
 
 	/**

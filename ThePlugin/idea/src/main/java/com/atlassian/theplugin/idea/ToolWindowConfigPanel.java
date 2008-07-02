@@ -19,6 +19,7 @@ package com.atlassian.theplugin.idea;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.ui.HyperlinkLabel;
+import com.intellij.ide.DataManager;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
@@ -40,8 +41,9 @@ public class ToolWindowConfigPanel extends JPanel {
 		HyperlinkLabel link = new HyperlinkLabel("Configure Plugin");
 		link.addHyperlinkListener(new HyperlinkListener() {
 			public void hyperlinkUpdate(HyperlinkEvent e) {
+
 				ShowSettingsUtil.getInstance().
-						editConfigurable(IdeaHelper.getCurrentProject(), IdeaHelper.getAppComponent());
+						editConfigurable(IdeaHelper.getCurrentProject(DataManager.getInstance().getDataContext(ToolWindowConfigPanel.this)), IdeaHelper.getAppComponent());
 			}
 		});
 

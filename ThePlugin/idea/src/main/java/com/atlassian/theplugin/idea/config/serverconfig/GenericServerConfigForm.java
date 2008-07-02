@@ -24,6 +24,7 @@ import com.atlassian.theplugin.util.Connector;
 import com.atlassian.theplugin.commons.util.UrlUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.intellij.ide.DataManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -48,7 +49,7 @@ public class GenericServerConfigForm extends JComponent implements ServerPanel, 
 	public GenericServerConfigForm(final Connector tester) {
 
 		$$$setupUI$$$();
-		testConnection.addActionListener(new TestConnectionListener(tester, this));
+		testConnection.addActionListener(new TestConnectionListener(tester, this,DataManager.getInstance().getDataContext(this)));
 		serverUrl.addFocusListener(new FocusAdapter() {
 			public void focusLost(FocusEvent e) {
 				adjustUrl();
