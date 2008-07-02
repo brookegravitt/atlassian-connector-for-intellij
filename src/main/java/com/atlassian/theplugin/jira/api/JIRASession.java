@@ -35,6 +35,8 @@ public interface JIRASession {
 
 	JIRAIssue createIssue(JIRAIssue issue) throws RemoteApiException;
 
+	JIRAIssue getIssueDetails(JIRAIssue issue) throws RemoteApiException;
+
 	List<JIRAProject> getProjects() throws RemoteApiException;
 
 	List<JIRAConstant> getIssueTypes() throws RemoteApiException;
