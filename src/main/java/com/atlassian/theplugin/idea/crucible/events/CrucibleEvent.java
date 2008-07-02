@@ -21,7 +21,7 @@ public abstract class CrucibleEvent implements Runnable {
 	protected abstract void notify(CrucibleReviewActionListener listener);
 
 	public void run() {
-		ReviewActionEventBroker broker = IdeaHelper.getCurrentReviewActionEventBroker();
+		ReviewActionEventBroker broker = IdeaHelper.getReviewActionEventBroker();
 		for (CrucibleReviewActionListener listener : broker.getListeners()) {
 			if (listener == caller) {
 				continue;

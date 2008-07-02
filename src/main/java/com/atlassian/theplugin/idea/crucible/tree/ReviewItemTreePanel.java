@@ -71,7 +71,6 @@ public class ReviewItemTreePanel extends JPanel
 	private static CrucibleServerFacade crucibleServerFacade;
 
 	private static ReviewItem currentFileItem;
-	private static CrucibleTableToolWindowPanel crucibleTableToolWindowPanel;
 	public static final Logger LOGGER = PluginUtil.getLogger();
 
 	private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
@@ -79,10 +78,8 @@ public class ReviewItemTreePanel extends JPanel
 
 	private ReviewItemTreePanel(ProjectConfigurationBean projectConfigurationBean) {
 		initLayout();
-		IdeaHelper.getCurrentReviewActionEventBroker().registerListener(this);
-		crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
-		crucibleTableToolWindowPanel =
-				CrucibleTableToolWindowPanel.getInstance(projectConfigurationBean);
+		IdeaHelper.getReviewActionEventBroker().registerListener(this);
+		crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();		
 	}
 
 
@@ -166,7 +163,7 @@ public class ReviewItemTreePanel extends JPanel
 			if (selectedNode instanceof GeneralCommentNode) {
 				// GeneralComment server = ((GeneralCommentNode) selectedNode).getGeneralComment();
 			} else if (selectedNode instanceof ReviewItemDataNode) {
-				IdeaHelper.getCurrentReviewActionEventBroker().trigger(
+				IdeaHelper.getReviewActionEventBroker().trigger(
 						new ShowReviewedFileItemEvent(
 								ReviewItemTreePanel.this,
 								((CrucibleTreeRootNode) model.getRoot()).getReviewDataInfoAdapter(),

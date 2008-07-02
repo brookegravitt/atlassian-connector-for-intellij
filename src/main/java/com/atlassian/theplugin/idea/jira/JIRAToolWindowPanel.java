@@ -41,6 +41,7 @@ import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.ui.popup.PopupChooserBuilder;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
+import com.intellij.openapi.util.Key;
 import com.intellij.util.ui.UIUtil;
 
 import javax.swing.*;
@@ -54,8 +55,10 @@ import java.util.concurrent.FutureTask;
 
 public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
     private static final int PAGE_SIZE = 50;
-
-    private transient ActionToolbar filterToolbar;
+	private static final Key<JIRAToolWindowPanel> WINDOW_PROJECT_KEY =  Key.create(JIRAToolWindowPanel.class.getName());
+	private Project project;
+	
+	private transient ActionToolbar filterToolbar;
     private transient ActionToolbar filterEditToolbar;
     private JIRAIssueFilterPanel jiraIssueFilterPanel;
 
@@ -75,7 +78,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
     private String sortColumn = "issuekey";
     private String sortOrder = "ASC";
 
-    private static JIRAToolWindowPanel instance;
+
 
     private transient JIRAIssue selectedIssue = null;
 
@@ -83,7 +86,19 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
         selectedIssue = ((JiraIssueAdapter) selectedObject).getIssue();
     }
 
-    protected void handleDoubleClick(Object selectedObject) {
+
+    public static JIRAToolWindowPanel getInstance(Project project, ProjectConfigurationBean projectConfigurationBean) {
+
+        JIRAToolWindowPanel window = project.getUserData(WINDOW_PROJECT_KEY);
+
+        if (window == null) {
+            window = new JIRAToolWindowPanel(project, IdeaHelper.getPluginConfiguration(), projectConfigurationBean);
+            project.putUserData(WINDOW_PROJECT_KEY, window);
+        }
+        return window;
+    }
+
+	protected void handleDoubleClick(Object selectedObject) {
 		AnAction action = ActionManager.getInstance().getAction("ThePlugin.JIRA.OpenIssue");
 		action.actionPerformed(new AnActionEvent(null, DataManager.getInstance().getDataContext(this),
 				ActionPlaces.UNKNOWN, action.getTemplatePresentation(),
@@ -113,17 +128,11 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
         return projectConfiguration.getJiraConfiguration().getTableConfiguration();
     }
 
-    public static JIRAToolWindowPanel getInstance(ProjectConfigurationBean projectConfigurationBean) {
-        if (instance == null) {
-            instance = new JIRAToolWindowPanel(IdeaHelper.getPluginConfiguration(), projectConfigurationBean);
-        }
-        return instance;
-    }
-
-    public JIRAToolWindowPanel(PluginConfigurationBean pluginConfiguration,
+    public JIRAToolWindowPanel(Project project, PluginConfigurationBean pluginConfiguration,
                                ProjectConfigurationBean projectConfigurationBean) {
         super(projectConfigurationBean);
-        this.pluginConfiguration = pluginConfiguration;
+		this.project = project;
+		this.pluginConfiguration = pluginConfiguration;
         this.jiraServerFacade = JIRAServerFacadeImpl.getInstance();
         this.advancedQuery = new ArrayList<JIRAQueryFragment>();
 

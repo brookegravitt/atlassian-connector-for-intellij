@@ -23,9 +23,12 @@ import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.configuration.ProjectToolWindowTableConfiguration;
 import com.atlassian.theplugin.idea.ui.AbstractTableToolWindowPanel;
 import com.atlassian.theplugin.idea.ui.TableColumnProvider;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.util.ui.UIUtil;
+import com.intellij.openapi.util.Key;
+import com.intellij.openapi.project.Project;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -36,12 +39,14 @@ import java.util.List;
 import java.util.concurrent.FutureTask;
 
 public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel implements BambooStatusListener {
+	private static final Key<BambooTableToolWindowPanel> WINDOW_PROJECT_KEY =  Key.create(BambooTableToolWindowPanel.class.getName());
 	private final transient BambooServerFacade bambooFacade;
 	private static final DateFormat TIME_DF = new SimpleDateFormat("hh:mm a");
 	private static BambooTableToolWindowPanel instance;
     private TableColumnProvider columnProvider;
+	private Project project;
 
-    protected String getInitialMessage() {
+	protected String getInitialMessage() {
         return "Waiting for Bamboo statuses.";
     }
 
@@ -76,12 +81,14 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
-	public BambooTableToolWindowPanel(ProjectConfigurationBean projectConfigurationBean) {
+	public BambooTableToolWindowPanel(Project project, ProjectConfigurationBean projectConfigurationBean) {
         super(projectConfigurationBean);
-        bambooFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
+		this.project = project;
+		bambooFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
     }
 
-    protected void handlePopupClick(Object selectedObject) {
+
+	protected void handlePopupClick(Object selectedObject) {
     }
 
     protected void handleDoubleClick(Object selectedObject) {
@@ -91,13 +98,18 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
         }        
     }
 
-    public static BambooTableToolWindowPanel getInstance(ProjectConfigurationBean projectConfigurationBean) {
 
-		if (instance == null) {
-            instance = new BambooTableToolWindowPanel(projectConfigurationBean);
-		}
-		return instance;
-	}
+	public static BambooTableToolWindowPanel getInstance(Project project, ProjectConfigurationBean projectConfigurationBean) {
+
+        BambooTableToolWindowPanel window = project.getUserData(WINDOW_PROJECT_KEY);
+
+        if (window == null) {
+            window = new BambooTableToolWindowPanel(project, projectConfigurationBean);
+            project.putUserData(WINDOW_PROJECT_KEY, window);
+        }
+        return window;
+    }
+
 
 	private void openLabelDialog(BambooBuildAdapterIdea build) {
 		BuildLabelForm buildLabelForm = new BuildLabelForm(build);
