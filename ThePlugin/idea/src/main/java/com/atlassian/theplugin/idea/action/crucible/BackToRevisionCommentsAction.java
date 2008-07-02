@@ -33,7 +33,7 @@ public class BackToRevisionCommentsAction extends TableSelectedAction implements
 		if (table != null) {
 			UserTableContext context = table.getStateContext();
 
-			IdeaHelper.getCurrentReviewActionEventBroker().trigger(
+			IdeaHelper.getReviewActionEventBroker().trigger(
 					new ShowReviewedFileItemEvent(
 							this,
 							(ReviewDataInfoAdapter) CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),

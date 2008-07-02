@@ -49,7 +49,7 @@ public final class VcsIdeaHelper {
 		return null;
 	}
 
-	public static List<VcsFileRevision> getFileHistory(VirtualFile vFile) throws VcsException {
+	public static List<VcsFileRevision> getFileHistory(VirtualFile vFile) throws VcsException {		
 		ProjectLevelVcsManager vcsPLM = ProjectLevelVcsManager.getInstance(IdeaHelper.getCurrentProject());
 		
 		if (vcsPLM != null) {

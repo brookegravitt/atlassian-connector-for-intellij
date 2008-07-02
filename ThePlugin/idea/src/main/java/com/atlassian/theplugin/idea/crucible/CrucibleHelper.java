@@ -48,7 +48,7 @@ public final class CrucibleHelper {
 	private CrucibleHelper(){};
 
 
-	public static void showVirtualFileWithComments(final ReviewItem reviewItem, final Collection<VersionedComment> fileComments){
+	public static void showVirtualFileWithComments(final Project project, final ReviewItem reviewItem, final Collection<VersionedComment> fileComments){
 
 		int line  = 1;
 
@@ -56,10 +56,10 @@ public final class CrucibleHelper {
 			line = fileComments.iterator().next().getFromStartLine();
 		}
 
-		Editor editor = showVirtualFileInEditor(getOpenFileDescriptor(reviewItem.getToPath(), reviewItem.getToRevision(), line, 1));
+		Editor editor = showVirtualFileInEditor(project, getOpenFileDescriptor(project, reviewItem.getToPath(), reviewItem.getToRevision(), line, 1));
 		TextAttributes textAttributes = new TextAttributes();
 		textAttributes.setBackgroundColor(VERSIONED_COMMENT_BACKGROUND_COLOR);
-		highlightCommentsInEditor(editor, reviewItem,fileComments, textAttributes);
+		highlightCommentsInEditor(project, editor, reviewItem,fileComments, textAttributes);
 	}
 
 	/*
@@ -68,12 +68,12 @@ public final class CrucibleHelper {
 	* 	Adds StripeMark on the right side of file window with set tool tip text that corresponde to VersionedComment.getMessage content
 
 	* */
-	public static void showVirtualFileWithComments(final ReviewDataInfoAdapter reviewAdapter, final ReviewItem reviewItem){
+	public static void showVirtualFileWithComments(Project project, final ReviewDataInfoAdapter reviewAdapter, final ReviewItem reviewItem){
 		Collection<VersionedComment> fileComments = null;
 		try {
 
 			fileComments = CrucibleServerFacadeImpl.getInstance().getVersionedComments(reviewAdapter.getServer(), reviewAdapter.getPermaId(), reviewItem.getPermId());
-			showVirtualFileWithComments(reviewItem, fileComments);
+			showVirtualFileWithComments(project, reviewItem, fileComments);
 		} catch (RemoteApiException e) {
 			PluginUtil.getLogger().error(e.getMessage());
 		} catch (ServerPasswordNotProvidedException e) {
@@ -84,10 +84,8 @@ public final class CrucibleHelper {
 	/*
 	*	Shows taken file from VCS in editor but do not higlkights VersionedComments
 	* */
-	public static  Editor showVirtualFileInEditor(OpenFileDescriptor ofd){
-		Project project = IdeaHelper.getCurrentProject();
+	public static  Editor showVirtualFileInEditor(Project project, OpenFileDescriptor ofd){
 		Editor editor = null;
-
 
 		if (ofd != null) {
 			FileEditorManager fem = FileEditorManager.getInstance(project);
@@ -101,21 +99,21 @@ public final class CrucibleHelper {
 	  * If function showVirtualFileWithComments is not called before then no comment highlighting or
 	?  * StripMarkap
 	* */
-	public static void selectVersionedCommentLineInEditor(ReviewItem reviewItem, VersionedComment comment){
-		OpenFileDescriptor ofd = getOpenFileDescriptor(reviewItem.getToPath(), reviewItem.getToRevision(), comment.getFromStartLine(), 1);
+	public static void selectVersionedCommentLineInEditor(Project project, ReviewItem reviewItem, VersionedComment comment){
+		OpenFileDescriptor ofd = getOpenFileDescriptor(project, reviewItem.getToPath(), reviewItem.getToRevision(), comment.getFromStartLine(), 1);
 
 		if (ofd != null) {
-			Project project = IdeaHelper.getCurrentProject();
 			FileEditorManager fem = FileEditorManager.getInstance(project);
 			fem.openTextEditor(ofd, true);
 		}
 
 	}
 
-	private static OpenFileDescriptor getOpenFileDescriptor(String filePath, String fileRevision, int line, int col){
-		VirtualFile baseDir = IdeaHelper.getCurrentProject().getBaseDir();
+	private static OpenFileDescriptor getOpenFileDescriptor(Project project, String filePath, String fileRevision, int line, int col){
+		VirtualFile baseDir = project.getBaseDir();
 		String baseUrl = VcsIdeaHelper.getRepositoryUrlForFile(baseDir);
 		OpenFileDescriptor ofd = null;
+		VcsVirtualFile vcvf = null;
 
 		if (baseUrl != null && filePath.startsWith(baseUrl)) {
 
@@ -131,21 +129,23 @@ public final class CrucibleHelper {
 
 			vfl = VfsUtil.findRelativeFile(relUrl, baseDir);
 
-			VirtualFile[] openFiles = FileEditorManager.getInstance(IdeaHelper.getCurrentProject()).getOpenFiles();
+			VirtualFile[] openFiles = FileEditorManager.getInstance(project).getOpenFiles();
 
 			for(VirtualFile file: openFiles) {
-				if (file.getPath().equals(filePath)) {
-
+				if (file.getPath().equals(filePath) && file instanceof VcsVirtualFile && ((VcsVirtualFile)file).getRevision().equals(fileRevision)) {
+					vcvf = (VcsVirtualFile)file;
 				}
 			}
 
 
-
-			VcsFileRevision revision = VcsIdeaHelper.getFileRevision(vfl, fileRevision);
-			if (revision != null) {
-				VcsVirtualFile vcvf = new VcsVirtualFile(filePath,revision, VcsFileSystem.getInstance());
-		  		ofd = new OpenFileDescriptor(IdeaHelper.getCurrentProject(), vcvf, line, col);
+			if (vcvf == null) {
+				VcsFileRevision revision = VcsIdeaHelper.getFileRevision(vfl, fileRevision);
+				if (revision != null) {
+					 vcvf = new VcsVirtualFile(filePath,revision, VcsFileSystem.getInstance());
+				}
 			}
+
+			ofd = new OpenFileDescriptor(project, vcvf, line, col);
 
 		}
 
@@ -153,9 +153,9 @@ public final class CrucibleHelper {
 		return ofd;
 	}
 
-	private static void highlightCommentsInEditor(Editor editor, ReviewItem reviewItem, Collection<VersionedComment> fileVersionedComments, TextAttributes textAttribute){
+	private static void highlightCommentsInEditor(Project project, Editor editor, ReviewItem reviewItem, Collection<VersionedComment> fileVersionedComments, TextAttributes textAttribute){
 		Collection<RangeHighlighter> ranges = new ArrayList<RangeHighlighter>();
-		Project project = IdeaHelper.getCurrentProject();
+
 
 		if (editor != null) {
 			for (VersionedComment comment: fileVersionedComments) {

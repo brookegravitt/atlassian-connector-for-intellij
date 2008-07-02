@@ -24,6 +24,7 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.util.Connector;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.intellij.ide.DataManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -70,7 +71,7 @@ public class PasswordDialog extends JDialog implements LoginDataProvided {
 				}
 			}
 
-		}, this));
+		}, this, DataManager.getInstance().getDataContext(this)));
 	}
 
 	private void onCancel() {

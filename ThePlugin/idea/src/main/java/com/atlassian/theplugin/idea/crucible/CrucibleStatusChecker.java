@@ -35,6 +35,7 @@ import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
+import com.intellij.openapi.project.Project;
 
 import java.awt.*;
 import java.util.*;
@@ -62,10 +63,12 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 	private CrucibleVersion crucibleVersion = CrucibleVersion.UNKNOWN;
 	private static final String NAME = "Atlassian Crucible checker";
 
+
 	public CrucibleStatusChecker(PluginConfiguration pluginConfiguration) {
         this.pluginConfiguration = pluginConfiguration;
         this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
-    }
+
+	}
 
     public void registerListener(CrucibleStatusListener listener) {
         synchronized (listenerList) {

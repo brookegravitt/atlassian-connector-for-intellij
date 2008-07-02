@@ -25,6 +25,7 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PluginToolWindow;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.WindowManager;
+import com.intellij.ide.DataManager;
 import thirdparty.javaworld.ClasspathHTMLEditorKit;
 
 import javax.swing.*;
@@ -46,10 +47,12 @@ public class CrucibleNewReviewNotifier implements CrucibleStatusListener {
 
     private final CrucibleStatusIcon display;
     private static final Color BACKGROUND_COLOR = new Color(255, 255, 200);
+	private Project project;
 
-    public CrucibleNewReviewNotifier(CrucibleStatusIcon display) {
+	public CrucibleNewReviewNotifier(CrucibleStatusIcon display, Project project) {
         this.display = display;
-    }
+		this.project = project;
+	}
 
     /*
         Works with Crucible 1.5
@@ -65,8 +68,6 @@ public class CrucibleNewReviewNotifier implements CrucibleStatusListener {
                 display.triggerNewReviewAction(newReviews.size());
             }
 
-
-            final Project project = IdeaHelper.getCurrentProject();
 
             if (project != null) {
                 StringBuilder sb = new StringBuilder("<table width=\"100%\">");
@@ -116,8 +117,7 @@ public class CrucibleNewReviewNotifier implements CrucibleStatusListener {
      */
     public void updateReviews(Map<PredefinedFilter, List<ReviewInfo>> incomingReviews, Map<String, List<ReviewInfo>> customIncomingReviews) {
         if (!incomingReviews.isEmpty()) {
-            StringBuilder sb = new StringBuilder("<table width=\"100%\">");
-            final Project project = IdeaHelper.getCurrentProject();
+            StringBuilder sb = new StringBuilder("<table width=\"100%\">");            
 
             int newCounter = 0;
             for (PredefinedFilter predefinedFilter : incomingReviews.keySet()) {

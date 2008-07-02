@@ -60,7 +60,7 @@ public class NewVersionConfirmHandler implements UpdateActionHandler {
 			// fire downloading and updating plugin in the new thread
 			//Thread downloader = new Thread(new PluginDownloader(versionInfo, pluginConfiguration));
 			//downloader.start();
-
+			
 			Task.Backgroundable downloader = new Task.Backgroundable(IdeaHelper.getCurrentProject(), DOWNLOAD_TITLE, false) {
 				public void run(ProgressIndicator indicator) {
 					new PluginDownloader(versionInfo, updateConfiguration).run();
