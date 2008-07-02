@@ -23,9 +23,12 @@ import com.intellij.util.ui.UIUtil;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.openapi.util.Key;
+import com.intellij.openapi.project.Project;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
 import com.intellij.peer.PeerFactory;
+import com.intellij.ide.DataManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -49,6 +52,8 @@ import java.util.Collection;
 
 
 public class CrucibleBottomToolWindowPanel extends JPanel implements ContentPanel {
+		private static final Key<CrucibleBottomToolWindowPanel> WINDOW_PROJECT_KEY =  Key.create(CrucibleBottomToolWindowPanel.class.getName());
+	private Project project;
 	private static final float SPLIT_RATIO = 0.3f;
 	private ProjectConfigurationBean projectConfiguration;
 	protected static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
@@ -74,19 +79,22 @@ public class CrucibleBottomToolWindowPanel extends JPanel implements ContentPane
 	}
 
 
-	public static CrucibleBottomToolWindowPanel getInstance(ProjectConfigurationBean projectConfigurationBean) {
-		if (instance == null) {
 
-			instance = new CrucibleBottomToolWindowPanel(projectConfigurationBean);
+	public static CrucibleBottomToolWindowPanel getInstance(Project project, ProjectConfigurationBean projectConfigurationBean) {
 
-		}
-		return instance;
-	}
+        CrucibleBottomToolWindowPanel window = project.getUserData(WINDOW_PROJECT_KEY);
 
-	private CrucibleBottomToolWindowPanel(ProjectConfigurationBean projectConfigurationBean) {
+        if (window == null) {
+            window = new CrucibleBottomToolWindowPanel(project, projectConfigurationBean);
+            project.putUserData(WINDOW_PROJECT_KEY, window);
+        }
+        return window;
+    }
+
+	private CrucibleBottomToolWindowPanel(Project project, ProjectConfigurationBean projectConfigurationBean) {
 		super(new BorderLayout());
 
-
+		this.project = project;
 		this.projectConfiguration = projectConfigurationBean;
 
 		serverFacade = CrucibleServerFacadeImpl.getInstance();
@@ -175,14 +183,14 @@ public class CrucibleBottomToolWindowPanel extends JPanel implements ContentPane
 
 		public ReviewTabManager() {
 			super();
-			IdeaHelper.getCurrentReviewActionEventBroker().registerListener(this);
+			IdeaHelper.getReviewActionEventBroker().registerListener(this);
 			crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		}
 
 		public static Content findOrCreatePanel(String panelName, JPanel panel, Boolean requestFocus) {
 			Content content = null;
 			PeerFactory peerFactory = PeerFactory.getInstance();
-			ToolWindow tw = IdeaHelper.getCurrentBottomIdeaToolWindow();
+			ToolWindow tw = IdeaHelper.getCurrentBottomIdeaToolWindow(DataManager.getInstance().getDataContext(panel));
 			if (tw != null) {
 				ContentManager contentManager = tw.getContentManager();
 				content = contentManager.findContent(panelName);
@@ -228,7 +236,7 @@ public class CrucibleBottomToolWindowPanel extends JPanel implements ContentPane
 		public void showReview(ReviewDataInfoAdapter reviewItem) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
-					ToolWindow tw = IdeaHelper.getCurrentBottomIdeaToolWindow();
+					ToolWindow tw = IdeaHelper.getCurrentBottomIdeaToolWindow(DataManager.getInstance().getDataContext(CrucibleBottomToolWindowPanel.instance));
 					if (tw != null) {
 						ContentManager contentManager = tw.getContentManager();
 						for (Content content : contentManager.getContents()) {
@@ -248,9 +256,11 @@ public class CrucibleBottomToolWindowPanel extends JPanel implements ContentPane
 						reviewDataInfoAdapter.getServer(), reviewDataInfoAdapter.getPermaId(), reviewItem.getPermId());
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
+						Project project = IdeaHelper.getCurrentProject(DataManager.getInstance().getDataContext(instance));
+
 						Content content = findOrCreatePanel(reviewItem.toString(),
 								new ReviewDetailsPanel(reviewDataInfoAdapter, reviewItem, versionedComments), true);
-						CrucibleHelper.showVirtualFileWithComments(reviewItem, versionedComments);
+						CrucibleHelper.showVirtualFileWithComments(project, reviewItem, versionedComments);
 
 					}
 				});

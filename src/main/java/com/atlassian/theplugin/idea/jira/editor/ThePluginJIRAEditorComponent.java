@@ -75,7 +75,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 	@NotNull
 	public FileEditor createEditor(@NotNull Project project, @NotNull VirtualFile virtualFile) {
 		String issueFromFileName = virtualFile.getNameWithoutExtension();
-		JIRAIssue issue = IdeaHelper.getCurrentJIRAToolWindowPanel().getCurrentIssue();
+		JIRAIssue issue = IdeaHelper.getJIRAToolWindowPanel(project).getCurrentIssue();
 		if (issueFromFileName.equals(issue.getKey())) {
 			return new JIRAFileEditor(issue);
 		}

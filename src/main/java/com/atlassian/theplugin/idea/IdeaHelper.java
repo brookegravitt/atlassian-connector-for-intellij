@@ -104,8 +104,8 @@ public final class IdeaHelper {
 		return getAppComponent().getState();
 	}
 
-	public static ToolWindow getCurrentBottomIdeaToolWindow() {
-		Project p = getCurrentProject();
+	public static ToolWindow getCurrentBottomIdeaToolWindow(DataContext dataContext) {
+		Project p = getCurrentProject(dataContext);
 		if (p == null) {
 			return null;
 		}
@@ -113,10 +113,9 @@ public final class IdeaHelper {
         return tw;
 	}
 
-
-	public static JIRAToolWindowPanel getCurrentJIRAToolWindowPanel() {
-		Project p = getCurrentProject();
-		if (p == null) {
+  
+	public static JIRAToolWindowPanel getJIRAToolWindowPanel(Project p){
+		if (p == null){
 			return null;
 		}
 		com.intellij.openapi.wm.ToolWindow tw = getToolWindow(p);
@@ -126,7 +125,6 @@ public final class IdeaHelper {
         }
         return (JIRAToolWindowPanel) content.getComponent();
 	}
-
 	public static JIRAToolWindowPanel getJIRAToolWindowPanel(AnActionEvent event) {
 		Project p = getCurrentProject(event.getDataContext());
 		if (p == null) {
@@ -179,15 +177,7 @@ public final class IdeaHelper {
         return (CrucibleTableToolWindowPanel) content.getComponent();
 	}
 
-	public static ReviewActionEventBroker getCurrentReviewActionEventBroker() {
-		Project p = getCurrentProject();
-		if (p == null) {
-			return null;
-		}
-		return getReviewActionEventBroker(p);
-	}
-
-	private static ReviewActionEventBroker getReviewActionEventBroker(Project p) {
-		return ReviewActionEventBroker.getInstance(p);
+	public static ReviewActionEventBroker getReviewActionEventBroker() {
+		return ReviewActionEventBroker.getInstance();
 	}
 }
