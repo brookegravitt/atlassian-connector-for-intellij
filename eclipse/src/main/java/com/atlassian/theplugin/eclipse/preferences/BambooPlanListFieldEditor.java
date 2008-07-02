@@ -277,7 +277,9 @@ public class BambooPlanListFieldEditor extends FieldEditor implements IPropertyC
      * @param allPlans
      */
 	private void setPlans(Collection<BambooPlan> allPlans) {
-		fillTable(allPlans);
+		if (table != null && !table.isDisposed()) {
+			fillTable(allPlans);
+		}
 	}
 	
 	private void fillTable(Collection<BambooPlan> serverPlans) {
@@ -413,7 +415,9 @@ public class BambooPlanListFieldEditor extends FieldEditor implements IPropertyC
 				
 					EclipseActionScheduler.getInstance().invokeLater(new Runnable() {
 						public void run() {
-							messageArea.setText(finalMessage);
+							if (messageArea != null && !messageArea.isDisposed()) {
+								messageArea.setText(finalMessage);
+							}
 							BambooPlanListFieldEditor.this.setPlans(plans);
 						}
 					});
