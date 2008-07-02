@@ -179,6 +179,40 @@ public class JIRASessionImpl implements JIRASession {
 		return retVal;
 	}
 
+	public JIRAIssue getIssueDetails(JIRAIssue issue) throws RemoteApiException {
+		try {
+			RemoteIssue rIssue = service.getIssue(token, issue.getKey());
+			JIRAIssueBean issueBean = new JIRAIssueBean(issue);
+
+			RemoteVersion[] aVers = rIssue.getAffectsVersions();
+			List<JIRAConstant> av = new ArrayList<JIRAConstant>();
+			for (RemoteVersion v : aVers) {
+				av.add(new JIRAVersionBean(Long.valueOf(v.getId()), v.getName()));
+			}
+			issueBean.setAffectsVersions(av);
+
+			RemoteVersion[] fVers = rIssue.getFixVersions();
+			List<JIRAConstant> fv = new ArrayList<JIRAConstant>();
+			for (RemoteVersion v : fVers) {
+				fv.add(new JIRAVersionBean(Long.valueOf(v.getId()), v.getName()));
+			}
+			issueBean.setFixVersions(fv);
+
+			RemoteComponent[] comps = rIssue.getComponents();
+			List<JIRAConstant> c = new ArrayList<JIRAConstant>();
+			for (RemoteComponent rc : comps) {
+				c.add(new JIRAComponentBean(Long.valueOf(rc.getId()), rc.getName()));
+			}
+			issueBean.setComponents(c);
+
+			return issueBean;
+
+		} catch (RemoteException e) {
+			throw new RemoteApiException(e.toString(), e);
+		}
+
+	}
+
 	public void addComment(JIRAIssue issue, String comment) throws RemoteApiException {
 		try {
 			RemoteComment rComment = new RemoteComment();
