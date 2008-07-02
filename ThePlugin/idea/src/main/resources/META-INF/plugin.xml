@@ -90,9 +90,9 @@
 		<component>
 			<implementation-class>com.atlassian.theplugin.idea.jira.editor.ThePluginJIRAEditorComponent</implementation-class>
 		</component>
-		<component>
-			<implementation-class>com.atlassian.theplugin.idea.jira.editor.vfs.MemoryVirtualFileSystem</implementation-class>
-		</component>
+		<!--<component>-->
+			<!--<implementation-class>com.atlassian.theplugin.idea.jira.editor.vfs.MemoryVirtualFileSystem</implementation-class>-->
+		<!--</component>-->
 	</application-components>
 	<project-components>
 		<component>
