@@ -26,7 +26,7 @@
     </parent>
     <groupId>com.atlassian.theplugin</groupId>
     <artifactId>atlassian-plugin-pom</artifactId>
-    <version>1.6.0-SNAPSHOT</version>
+    <version>1.6.0</version>
     <packaging>pom</packaging>
     <inceptionYear>2008</inceptionYear>
     <name>Atlassian Plugin POM</name>
@@ -41,9 +41,9 @@
         <module>eclipse</module>
     </modules>
     <scm>
-        <connection>scm:svn:https://studio.atlassian.com/svn/PL/trunk/ThePlugin/</connection>
-        <developerConnection>scm:svn:https://studio.atlassian.com/svn/PL/trunk/ThePlugin/</developerConnection>
-        <url>https://studio.atlassian.com/svn/PL/trunk/ThePlugin/</url>
+        <connection>scm:svn:https://studio.atlassian.com/svn/PL/tags/atlassian-plugin-pom-1.6.0</connection>
+        <developerConnection>scm:svn:https://studio.atlassian.com/svn/PL/tags/atlassian-plugin-pom-1.6.0</developerConnection>
+        <url>https://studio.atlassian.com/svn/PL/tags/atlassian-plugin-pom-1.6.0</url>
     </scm>
     <issueManagement>
         <system>Jira</system>
