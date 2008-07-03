@@ -19,8 +19,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.InvocationTargetException;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateExpiredException;
+import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 import java.util.*;
 
@@ -38,57 +42,37 @@ public class PluginTrustManager implements X509TrustManager {
 			Collections.synchronizedCollection(new HashSet<String>());
 
 	private Collection<String> aceptedCerts;
-	X509TrustManager X509TM = null;		   //default X.509 TrustManager
-	TrustManagerFactory ClientTMF = null;   //SunX509 factory from SunJSSE provider
 
-	KeyStore ClientKS = null;							   //keystore SSLCert - just an example
-
-	TrustManager[] ClientTMs = null;				 //all the TrustManagers from SunX509 factory
 	private static PluginTrustManager instance;
 	private PluginConfiguration configuration;
+	static String JKS_FILENAME = "cacert";
+	private static final char[] JKS_PASSWORD = "secret".toCharArray();
+	private X509TrustManager standardTrustManager;
 
-	private PluginTrustManager(PluginConfiguration configuration) {
+	private PluginTrustManager(PluginConfiguration configuration) throws NoSuchAlgorithmException, KeyStoreException {
 		this.configuration = configuration;
-		//get an KeyStore object of type JKS (default type)
-		try {
-			ClientKS = KeyStore.getInstance("JKS");
-		} catch (java.security.KeyStoreException e) {
+		TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+		factory.init((KeyStore) null);
+		TrustManager[] trustmanagers = factory.getTrustManagers();
+		if (trustmanagers.length == 0) {
+			throw new NoSuchAlgorithmException("no trust manager found");
 		}
-
-//		InputStream inStream = new FileInputStream("fileName-of-cert");
-//		CertificateFactory cf = CertificateFactory.getInstance("X.509");
-//		X509Certificate cert = (X509Certificate)cf.generateCertificate(inStream);
-
-		//TrustManagerFactory of SunJSSE
-		try {
-			ClientTMF = TrustManagerFactory.getInstance("SunX509", "SunJSSE");
-		} catch (java.security.NoSuchAlgorithmException e) {
-			System.out.println("5: " + e.getMessage());
-		} catch (java.security.NoSuchProviderException e) {
-		}
-
-		//call init method for ClientTMF
-		try {
-			ClientTMF.init(ClientKS);
-		} catch (java.security.KeyStoreException e) {
-		}
-		//get all the TrustManagers
-		ClientTMs = ClientTMF.getTrustManagers();
 
 		//looking for a X509TrustManager instance
-		for (int i = 0; i < ClientTMs.length; i++) {
-			if (ClientTMs[i] instanceof X509TrustManager) {
-				X509TM = (X509TrustManager) ClientTMs[i];
+		for (int i = 0; i < trustmanagers.length; i++) {
+			if (trustmanagers[i] instanceof X509TrustManager) {
+				standardTrustManager = (X509TrustManager) trustmanagers[i];
 				return;
 			}
 		}
+
 	}
 
 	//checkClientTrusted
 	public void checkClientTrusted(X509Certificate[] chain, String authType)
 			throws CertificateException {
 		try {
-			X509TM.checkClientTrusted(chain, authType);
+			standardTrustManager.checkClientTrusted(chain, authType);
 		} catch (java.security.cert.CertificateException e) {
 			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
 		}
@@ -98,14 +82,14 @@ public class PluginTrustManager implements X509TrustManager {
 	private boolean isSelfSigned(X509Certificate certificate) {
 		return certificate.getSubjectDN().equals(certificate.getIssuerDN());
 	}
-	
+
 	//checkServerTrusted
-	public void checkServerTrusted(final X509Certificate[] chain, String authType)
-			throws CertificateException {
+	public void checkServerTrusted(final X509Certificate[] chain, String authType) throws CertificateException {
 		try {
-			X509TM.checkServerTrusted(chain, authType);
+			standardTrustManager.checkServerTrusted(chain, authType);
 		} catch (final CertificateException
 				e) {
+
 			String strCert = chain[0].toString();
 			if (alreadyRejectedCerts.contains(strCert)) {
 				throw e;
@@ -118,16 +102,26 @@ public class PluginTrustManager implements X509TrustManager {
 			}
 
 			String message = e.getMessage();
+			message = message.substring(message.lastIndexOf(":") + 1);
 			if (isSelfSigned(chain[0])) {
 				message = "Self-signed certificate";
 			}
+			try {
+				chain[0].checkValidity();
+			} catch (CertificateExpiredException e1) {
+				message = "Certificate expired";
+			} catch (CertificateNotYetValidException e1) {
+				message = "Certificate not yet valid";
+			}
+
 			// check if it should be accepted
 			final int[] accepted = new int[]{0}; // 0 rejected 1 accepted temporarily 2 - accepted perm.
 			synchronized (PluginTrustManager.class) {
 				try {
+					final String message1 = message;
 					EventQueue.invokeAndWait(new Runnable() {
 						public void run() {
-							CertMessageDialog dialog = new CertMessageDialog("", e.getMessage(), chain);
+							CertMessageDialog dialog = new CertMessageDialog("", message1, chain);
 							dialog.show();
 							if (dialog.isOK()) {
 								if (dialog.isTemporarily()) {
@@ -179,10 +173,10 @@ public class PluginTrustManager implements X509TrustManager {
 
 	//getAcceptedIssuers
 	public X509Certificate[] getAcceptedIssuers() {
-		return X509TM.getAcceptedIssuers();
+		return standardTrustManager.getAcceptedIssuers();
 	}
 
-	public synchronized static PluginTrustManager getInstance(PluginConfiguration cofiguration) {
+	public synchronized static PluginTrustManager getInstance(PluginConfiguration cofiguration) throws NoSuchAlgorithmException, KeyStoreException {
 		return new PluginTrustManager(cofiguration);
 	}
 
