@@ -17,9 +17,7 @@
 package com.atlassian.theplugin.idea;
 
 import com.intellij.openapi.diff.DiffContent;
-import com.intellij.openapi.vcs.AbstractVcs;
-import com.intellij.openapi.vcs.ProjectLevelVcsManager;
-import com.intellij.openapi.vcs.VcsException;
+import com.intellij.openapi.vcs.*;
 import com.intellij.openapi.vcs.history.VcsFileRevision;
 import com.intellij.openapi.vcs.history.VcsRevisionNumber;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -39,8 +37,10 @@ public final class VcsIdeaHelper {
 		ProjectLevelVcsManager plm = ProjectLevelVcsManager.getInstance(IdeaHelper.getCurrentProject());
 		if (plm != null) {
 			AbstractVcs vcs = plm.getVcsFor(vFile);
-			if (vcs != null) {
-				return vcs.getCommittedChangesProvider().getLocationFor(VcsUtil.getFilePath(vFile.getPath())).toPresentableString();
+			RepositoryLocation repositoryLocation = vcs.getCommittedChangesProvider().getLocationFor(VcsUtil.getFilePath(vFile.getPath()));
+
+			if (vcs != null && repositoryLocation != null) {
+				return repositoryLocation.toPresentableString();
 			}
 
 			return null;

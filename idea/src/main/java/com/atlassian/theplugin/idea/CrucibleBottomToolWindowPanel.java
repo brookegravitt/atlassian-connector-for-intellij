@@ -256,7 +256,7 @@ public class CrucibleBottomToolWindowPanel extends JPanel implements ContentPane
 						reviewDataInfoAdapter.getServer(), reviewDataInfoAdapter.getPermaId(), reviewItem.getPermId());
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
-						Project project = IdeaHelper.getCurrentProject(DataManager.getInstance().getDataContext(instance));
+						Project project = IdeaHelper.getCurrentProject();
 
 						Content content = findOrCreatePanel(reviewItem.toString(),
 								new ReviewDetailsPanel(reviewDataInfoAdapter, reviewItem, versionedComments), true);
