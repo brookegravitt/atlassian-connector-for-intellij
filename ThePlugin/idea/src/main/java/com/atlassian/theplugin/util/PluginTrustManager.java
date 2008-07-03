@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.util;
 
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
+import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
 import com.atlassian.theplugin.idea.ui.CollapsiblePanel;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.VerticalFlowLayout;
@@ -43,10 +44,7 @@ public class PluginTrustManager implements X509TrustManager {
 
 	private Collection<String> aceptedCerts;
 
-	private static PluginTrustManager instance;
 	private PluginConfiguration configuration;
-	static String JKS_FILENAME = "cacert";
-	private static final char[] JKS_PASSWORD = "secret".toCharArray();
 	private X509TrustManager standardTrustManager;
 
 	private PluginTrustManager(PluginConfiguration configuration) throws NoSuchAlgorithmException, KeyStoreException {
@@ -71,11 +69,7 @@ public class PluginTrustManager implements X509TrustManager {
 	//checkClientTrusted
 	public void checkClientTrusted(X509Certificate[] chain, String authType)
 			throws CertificateException {
-		try {
-			standardTrustManager.checkClientTrusted(chain, authType);
-		} catch (java.security.cert.CertificateException e) {
-			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-		}
+		standardTrustManager.checkClientTrusted(chain, authType);
 	}
 
 
@@ -113,6 +107,8 @@ public class PluginTrustManager implements X509TrustManager {
 			} catch (CertificateNotYetValidException e1) {
 				message = "Certificate not yet valid";
 			}
+			final String server =
+					AbstractHttpSession.getServerNameFromUrl((String) AbstractHttpSession.url.get());
 
 			// check if it should be accepted
 			final int[] accepted = new int[]{0}; // 0 rejected 1 accepted temporarily 2 - accepted perm.
@@ -121,7 +117,7 @@ public class PluginTrustManager implements X509TrustManager {
 					final String message1 = message;
 					EventQueue.invokeAndWait(new Runnable() {
 						public void run() {
-							CertMessageDialog dialog = new CertMessageDialog("", message1, chain);
+							CertMessageDialog dialog = new CertMessageDialog(server, message1, chain);
 							dialog.show();
 							if (dialog.isOK()) {
 								if (dialog.isTemporarily()) {
