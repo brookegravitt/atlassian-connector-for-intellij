@@ -40,14 +40,11 @@ public class GenericServerConfigurationFormTest extends TestCase {
 
 
 	protected void setUp() throws Exception {
-//		super.setUp();
-//		genericServerConfigurationForm = new GenericServerConfigForm(null);
+		super.setUp();
+		genericServerConfigurationForm = new GenericServerConfigForm(null);
 	}
 
-	public void testFake(){
-		assertTrue(true);
-	}
-	public void xtestGenericSetGetData() throws Exception {
+	public void testGenericSetGetData() throws Exception {
 		assertNotNull(genericServerConfigurationForm.getRootComponent());
 
 		ServerBean inServerBean = createServerBean();
@@ -62,7 +59,7 @@ public class GenericServerConfigurationFormTest extends TestCase {
 	}
 
 	@SuppressWarnings({ "RedundantStringConstructorCall" })
-	public void xtestBambooFormIsModified() throws Exception {
+	public void testBambooFormIsModified() throws Exception {
 		ServerBean inServerBean = createServerBean();
 
 		genericServerConfigurationForm.setData(inServerBean);
@@ -100,7 +97,7 @@ public class GenericServerConfigurationFormTest extends TestCase {
 		formHelper.password.setText(outServerBean.transientGetPasswordString());
 	}
 
-	public void xtestBambooFormFieldSetting() throws Exception {
+	public void testBambooFormFieldSetting() throws Exception {
 		genericServerConfigurationForm.setData(new ServerBean());
 
 		Server outServer = genericServerConfigurationForm.getData();

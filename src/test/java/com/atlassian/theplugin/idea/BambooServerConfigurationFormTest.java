@@ -47,7 +47,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 
 	protected void setUp() throws Exception {
 		super.setUp();
-		//revert bambooPluginConfigurationForm = new BambooServerConfigForm(BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()));
+		bambooPluginConfigurationForm = new BambooServerConfigForm(BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()));
 	}
 
 	/*    public void testDummyFail(){
@@ -55,14 +55,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 
 		}
 	 */
-	public void testBambooFake(){
-		assertTrue(true);
-	}
-	
-	public void xtestBambooSetGetData() throws Exception {
-
-		//@todo revert
-		
+	public void testBambooSetGetData() throws Exception {
 		assertNotNull(bambooPluginConfigurationForm.getRootComponent());
 
 		ServerBean inServerBean = createServerBean();
