@@ -41,28 +41,27 @@ public class BambooSessionSslTest extends TestCase {
 	private String mockBaseUrl;
 
 	protected void setUp() throws Exception {
+		HttpClientFactory.initializeTrustManagers(new EasyX509TrustManager(null));
+		PluginConfiguration configuration = new PluginConfigurationBean();
+		ConfigurationFactory.setConfiguration(configuration);
 
-//		HttpClientFactory.initializeTrustManagers(new EasyX509TrustManager(null));
-//		PluginConfiguration configuration = new PluginConfigurationBean();
-//		ConfigurationFactory.setConfiguration(configuration);
-//
-//
-//		String keystoreLocation = getClass().getResource("/mock/selfSigned.keystore").toExternalForm();
-//        SslSocketConnector sslConnector = new SslSocketConnector();
-//
-//		sslConnector.setPort(0);
-//		sslConnector.setKeystore(keystoreLocation);
-//		sslConnector.setPassword("password");
-//		sslConnector.setKeyPassword("password");
-//
-//		server = new Server();
-//
-//		server.addConnector(sslConnector);
-//		server.start();
-//
-//		mockBaseUrl = "https://localhost:" + sslConnector.getLocalPort();
-//
-//		mockServer = new JettyMockServer(server);
+
+		String keystoreLocation = getClass().getResource("/mock/selfSigned.keystore").toExternalForm();
+        SslSocketConnector sslConnector = new SslSocketConnector();
+
+		sslConnector.setPort(0);
+		sslConnector.setKeystore(keystoreLocation);
+		sslConnector.setPassword("password");
+		sslConnector.setKeyPassword("password");
+
+		server = new Server();
+
+		server.addConnector(sslConnector);
+		server.start();
+
+		mockBaseUrl = "https://localhost:" + sslConnector.getLocalPort();
+
+		mockServer = new JettyMockServer(server);
 	}
 
 	protected void tearDown() throws Exception {
@@ -71,10 +70,7 @@ public class BambooSessionSslTest extends TestCase {
 		//server.stop();
 	}
 
-	public void testFake(){
-		assertTrue(true);
-	}
-	public void xtestSuccessBambooLoginOnSSL() throws Exception {
+	public void testSuccessBambooLoginOnSSL() throws Exception {
 		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
 		mockServer.expect("/api/rest/logout.action", new LogoutCallback(LoginCallback.AUTH_TOKEN));
 
