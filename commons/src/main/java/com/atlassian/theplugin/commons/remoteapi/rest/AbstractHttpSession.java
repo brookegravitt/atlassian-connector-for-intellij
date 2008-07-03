@@ -49,7 +49,9 @@ public abstract class AbstractHttpSession {
 
     private final Object clientLock = new Object();
 
-    /**
+	public static ThreadLocal url = new ThreadLocal();
+
+	/**
      * Public constructor for AbstractHttpSession
      *
      * @param baseUrl base URL for server instance
@@ -75,11 +77,12 @@ public abstract class AbstractHttpSession {
     protected Document retrieveGetResponse(String urlString, boolean expectResponse)
             throws IOException, JDOMException, RemoteApiSessionExpiredException {
         UrlUtil.validateUrl(urlString);
-        Document doc = null;
+		url.set(urlString);
+		Document doc = null;
         synchronized (clientLock) {
             if (client == null) {
-                try {
-                    client = HttpClientFactory.getClient();
+                try {					
+					client = HttpClientFactory.getClient();
                 } catch (HttpProxySettingsException e) {
                     throw (IOException) new IOException("Connection error. Please set up HTTP Proxy settings").initCause(e);
                 }
@@ -130,7 +133,8 @@ public abstract class AbstractHttpSession {
     protected Document retrievePostResponse(String urlString, String request, boolean expectResponse)
             throws IOException, JDOMException, RemoteApiSessionExpiredException {
         UrlUtil.validateUrl(urlString);
-        Document doc = null;
+		url.set(urlString);
+		Document doc = null;
         synchronized (clientLock) {
             if (client == null) {
                 try {
@@ -217,4 +221,16 @@ public abstract class AbstractHttpSession {
     protected abstract void adjustHttpHeader(HttpMethod method);
 
     protected abstract void preprocessResult(Document doc) throws JDOMException, RemoteApiSessionExpiredException;
+
+	public static String getServerNameFromUrl(String server) {
+		int pos = server.indexOf("://");
+		if (pos != -1) {
+			server = server.substring(pos + 1 + 2);
+		}
+		pos = server.indexOf("/");
+		if (pos != -1) {
+			server = server.substring(0, pos);
+		}
+		return server;
+	}
 }

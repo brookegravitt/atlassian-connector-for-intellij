@@ -164,13 +164,6 @@ public class ThePluginApplicationComponent
 		} catch (KeyStoreException e) {
 			PluginUtil.getLogger().error("Error initializing custom trust manager");
 		}
-//		try {
-//			HttpClientFactory.initializeTrustManagers(new EasyX509TrustManager(null));
-//		} catch (NoSuchAlgorithmException e) {
-//			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//		} catch (KeyStoreException e) {
-//			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//		}
 	}
 
 	private void disableTimers() {
