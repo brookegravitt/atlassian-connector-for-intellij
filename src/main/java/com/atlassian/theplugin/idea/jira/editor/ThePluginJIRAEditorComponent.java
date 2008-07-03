@@ -574,10 +574,10 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			summary.setText(txt);
             summary.setEditable(false);
             summary.setFont(summary.getFont().deriveFont(Font.BOLD));
-            summary.setOpaque(false);
+            summary.setBackground(bg);
+            summary.setOpaque(true);
 			JPanel p = new JPanel();
 			p.setLayout(new GridBagLayout());
-			p.setBorder(BorderFactory.createTitledBorder("Summary"));
 			p.setBorder(BorderFactory.createLineBorder(bg, 6));
 			GridBagConstraints gbcp = new GridBagConstraints();
 			gbcp.fill = GridBagConstraints.BOTH;
