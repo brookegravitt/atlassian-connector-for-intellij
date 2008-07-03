@@ -28,13 +28,11 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import static com.intellij.openapi.ui.Messages.showDialog;
 import static com.intellij.openapi.ui.Messages.showMessageDialog;
-import com.intellij.openapi.actionSystem.DataContext;
 import org.apache.log4j.Category;
 
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import java.awt.*;
-
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * Listens for the click action (usually on a 'Test Connection' button), displays progress dialog with Cancel button
@@ -45,22 +43,20 @@ public class TestConnectionListener implements ActionListener {
 
 	private Connector connectionTester = null;
 	private LoginDataProvided loginDataProvided = null;
-	private final DataContext dataContext;
 
 	/**
 	 * @param tester			object which provide testConnection method specific to the product (Bamboo/Crucible, etc.)
 	 * @param loginDataProvided object with methods which provide userName, password and url for connection
 	 */
-	public TestConnectionListener(Connector tester, LoginDataProvided loginDataProvided, DataContext dataContext) {
+	public TestConnectionListener(Connector tester, LoginDataProvided loginDataProvided) {
 		connectionTester = tester;
 		this.loginDataProvided = loginDataProvided;
-		this.dataContext = dataContext;
 	}
 
 	public void actionPerformed(ActionEvent e) {
 
 		Task.Modal testConnectionTask = new TestConnectionTask(
-				IdeaHelper.getCurrentProject(dataContext), "Testing Connection", true, connectionTester);
+				IdeaHelper.getCurrentProject(), "Testing Connection", true, connectionTester);
 		testConnectionTask.setCancelText("Stop");
 
 		ProgressManager.getInstance().run(testConnectionTask);
@@ -113,7 +109,7 @@ public class TestConnectionListener implements ActionListener {
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
 							if (showDialog(
-									IdeaHelper.getCurrentProject(dataContext),
+									IdeaHelper.getCurrentProject(),
 									testConnector.getErrorMessage(),
 									"Connection Error",
 									new String[]{ "OK", "Help" },
@@ -131,7 +127,7 @@ public class TestConnectionListener implements ActionListener {
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
 							showMessageDialog(
-									IdeaHelper.getCurrentProject(dataContext),
+									IdeaHelper.getCurrentProject(),
 									"Connected successfully",
 									"Connection OK",
 									Messages.getInformationIcon());
