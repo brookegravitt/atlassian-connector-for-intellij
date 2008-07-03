@@ -80,4 +80,11 @@ public interface JIRAIssue {
 	List<JIRAConstant> getFixVersions();
 	
 	List<JIRAConstant> getComponents();
+
+	void setAffectsVersions(List<JIRAConstant> versions);
+
+	void setFixVersions(List<JIRAConstant> versions);
+
+	void setComponents(List<JIRAConstant> components);
+
 }
