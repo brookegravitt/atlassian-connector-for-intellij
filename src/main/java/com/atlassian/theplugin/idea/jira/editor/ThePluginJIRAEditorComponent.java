@@ -690,12 +690,27 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			refreshComments();
 		}
 
-        public void addComment() {
+		// the real reason I am introducing this task is for IDEA not to color all my bodies of future tasks yellow :P
+		private class FutureTaskNoResult extends FutureTask {
+			public FutureTaskNoResult(Runnable r) {
+				super(r, null);
+			}
+		}
+
+		private String[] getStringArray(List<JIRAConstant> l) {
+			List<String> sl = new ArrayList<String>(l.size());
+			for (JIRAConstant c : l) {
+				 sl.add(c.getName());
+			}
+			return sl.toArray(new String[l.size()]);
+		}
+
+		public void addComment() {
             final IssueComment issueComment = new IssueComment(issue.getKey());
             issueComment.show();
             if (issueComment.isOK()) {
-                FutureTask task = new FutureTask(new Runnable() {
-                    public void run() {
+				FutureTask task = new FutureTaskNoResult(new Runnable() {
+					public void run() {
                         try {
                             facade.addComment(server.getServer(), issue, issueComment.getComment());
                             refreshComments();
@@ -710,47 +725,56 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
                             });
                         }
                     }
-                }, null);
+                });
                 new Thread(task, "atlassian-idea-plugin comment issue from editor").start();
             }
         }
 
-		public void getMoreIssueDetails() {
-			FutureTask task = new FutureTask(new Runnable() {
+		public synchronized void getMoreIssueDetails() {
+			if ((issue.getAffectsVersions() == null)
+					|| (issue.getFixVersions() == null)
+					|| (issue.getComponents() == null)) {
 
-				private String[] getStringArray(List<JIRAConstant> l) {
-					List<String> sl = new ArrayList<String>(l.size());
-					for (JIRAConstant c : l) {
-						 sl.add(c.getName());
-					}
-					return sl.toArray(new String[l.size()]);
-				}
+				FutureTask task = new FutureTaskNoResult(new Runnable() {
+					private String[] errorString = null;
 
-				public void run() {
-					try {
-						final JIRAIssue issueDetails = facade.getIssueDetails(server.getServer(), issue);
+					public void run() {
+
+						try {
+							final JIRAIssue issueDetails = facade.getIssueDetails(server.getServer(), issue);
+							issue.setAffectsVersions(issueDetails.getAffectsVersions());
+							issue.setFixVersions(issueDetails.getFixVersions());
+							issue.setComponents(issueDetails.getComponents());
+						} catch (JIRAException e) {
+							errorString = new String[] { "Cannot retrieve: " + e.getMessage() };
+						}
 						SwingUtilities.invokeLater(new Runnable() {
 							public void run() {
-								summaryPanel.setAffectsVersions(getStringArray(issueDetails.getAffectsVersions()));
-								summaryPanel.setFixVersions(getStringArray(issueDetails.getFixVersions()));
-								summaryPanel.setComponents(getStringArray(issueDetails.getComponents()));
+								if (errorString == null) {
+									summaryPanel.setAffectsVersions(getStringArray(issue.getAffectsVersions()));
+									summaryPanel.setFixVersions(getStringArray(issue.getFixVersions()));
+									summaryPanel.setComponents(getStringArray(issue.getComponents()));
+								} else {
+									summaryPanel.setAffectsVersions(errorString);
+									summaryPanel.setFixVersions(errorString);
+									summaryPanel.setComponents(errorString);
+								}
 							}
 						});
-					} catch (JIRAException e) {
-						summaryPanel.setAffectsVersions(new String[]{new String("Cannot retrieve: " + e.getMessage())});
-						summaryPanel.setFixVersions(new String[]{new String("Cannot retrieve: " + e.getMessage())});
-						summaryPanel.setComponents(new String[]{new String("Cannot retrieve: " + e.getMessage())});
 					}
-				}
-			}, null);
-			new Thread(task, "atlassian-idea-plugin get issue details").start();
-
+				});
+				new Thread(task, "atlassian-idea-plugin get issue details").start();
+			} else {
+				summaryPanel.setAffectsVersions(getStringArray(issue.getAffectsVersions()));
+				summaryPanel.setFixVersions(getStringArray(issue.getFixVersions()));
+				summaryPanel.setComponents(getStringArray(issue.getComponents()));
+			}
 		}
 
 		public void refreshComments() {
             commentsPanel.clearComments();
             commentsPanel.setTitle("Fetching comments...");
-            FutureTask task = new FutureTask(new Runnable() {
+            FutureTask task = new FutureTaskNoResult(new Runnable() {
                 public void run() {
                     try {
                         final List<JIRAComment> comments = facade.getComments(server.getServer(), issue);
@@ -773,7 +797,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
                         commentsPanel.setTitle("Cannot fetch comments: " + e.getMessage());
                     }
                 }
-            }, null);
+            });
             new Thread(task, "atlassian-idea-plugin refresh comments").start();
         }
 
