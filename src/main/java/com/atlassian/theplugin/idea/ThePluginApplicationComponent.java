@@ -16,22 +16,25 @@
 
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.commons.bamboo.BambooStatusChecker;
-import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
 import com.atlassian.theplugin.commons.SchedulableChecker;
 import com.atlassian.theplugin.commons.UIActionScheduler;
-import com.atlassian.theplugin.commons.util.LoggerImpl;
-import com.atlassian.theplugin.commons.util.HttpClientFactory;
-import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
+import com.atlassian.theplugin.commons.bamboo.BambooStatusChecker;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.configuration.CrucibleTooltipOption;
+import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.commons.util.HttpClientFactory;
+import com.atlassian.theplugin.commons.util.LoggerImpl;
+import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
-import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
-import com.atlassian.theplugin.util.*;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
+import com.atlassian.theplugin.util.HttpConfigurableIdeaImpl;
+import com.atlassian.theplugin.util.PicoUtil;
+import com.atlassian.theplugin.util.PluginTrustManager;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
@@ -47,7 +50,10 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.Nullable;
 
+import javax.net.ssl.TrustManager;
 import javax.swing.*;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.Timer;
 
@@ -149,7 +155,22 @@ public class ThePluginApplicationComponent
 		this.configPanel = ConfigPanel.getInstance(configuration);
 		this.jiraServerFacade = JIRAServerFacadeImpl.getInstance();
 		ConfigurationFactory.setConfiguration(configuration);
-		HttpClientFactory.initializeTrustManagers(PluginTrustManager.getInstance(configuration));
+		TrustManager trustManager = null;
+		try {
+			trustManager = PluginTrustManager.getInstance(configuration);
+			HttpClientFactory.initializeTrustManagers(trustManager);
+		} catch (NoSuchAlgorithmException e) {
+			PluginUtil.getLogger().error("Error initializing custom trust manager");
+		} catch (KeyStoreException e) {
+			PluginUtil.getLogger().error("Error initializing custom trust manager");
+		}
+//		try {
+//			HttpClientFactory.initializeTrustManagers(new EasyX509TrustManager(null));
+//		} catch (NoSuchAlgorithmException e) {
+//			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//		} catch (KeyStoreException e) {
+//			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//		}
 	}
 
 	private void disableTimers() {
