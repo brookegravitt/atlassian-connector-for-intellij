@@ -105,7 +105,9 @@ public class CrucibleCustomFilterPanel extends JPanel {
         if (server == null && serverComboBox.getItemCount() > 0) {
             serverComboBox.setSelectedIndex(0);
         }
-    }
+
+		 fillServerRelatedCombos(getSelectedServer());		
+	}
 
     private Server getSelectedServer() {
         Server server = null;
