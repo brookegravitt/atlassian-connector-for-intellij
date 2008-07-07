@@ -134,4 +134,4 @@ public class LabelBuildDialog {
 		return returnText;
 	}
 
-}  //  @jve:decl-index=0:visual-constraint="76,151"
+}

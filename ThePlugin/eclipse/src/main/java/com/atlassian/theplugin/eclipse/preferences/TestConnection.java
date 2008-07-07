@@ -1,9 +1,13 @@
 package com.atlassian.theplugin.eclipse.preferences;
 
+import java.lang.reflect.InvocationTargetException;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
@@ -14,6 +18,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.ui.progress.WorkbenchJob;
 
 import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
 import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
@@ -58,6 +63,7 @@ public class TestConnection extends FieldEditor {
 		
 		Button button = new Button(parent, SWT.PUSH);
 		button.setText("Test Connection");
+		button.setToolTipText("Test connection using form values");
 		
 		button.addMouseListener(new TestConnectionListener());
 		
@@ -90,12 +96,49 @@ public class TestConnection extends FieldEditor {
 			final String url = parentPreferencePage.getBambooUrl();
 			final String user = parentPreferencePage.getUserName();
 			final String password = parentPreferencePage.getPassword();
+			
+//			try {
+//				Activator.getDefault().getWorkbench().getProgressService().busyCursorWhile(new IRunnableWithProgress() {
+//
+//					public void run(IProgressMonitor monitor)
+//							throws InvocationTargetException, InterruptedException {
+//						
+//						Thread.sleep(5000);
+//					}
+//					
+//
+//				});
+//			} catch (InvocationTargetException e1) {
+//				e1.printStackTrace();
+//			} catch (InterruptedException e1) {
+//				e1.printStackTrace();
+//			}
+			
+//			try {
+//				new ProgressMonitorDialog(Activator.getDefault().getShell()).run(true, true, new IRunnableWithProgress() {
+//
+//					public void run(IProgressMonitor monitor)
+//							throws InvocationTargetException, InterruptedException {
+//						
+//						monitor.beginTask("aaa", IProgressMonitor.UNKNOWN);
+//						Thread.sleep(5000);
+//						monitor.done();
+//					}
+//					
+//				});
+//			} catch (InvocationTargetException e1) {
+//				e1.printStackTrace();
+//			} catch (InterruptedException e1) {
+//				e1.printStackTrace();
+//			}
+			
 
+			
 			Job job = new Job("Atlassian test connection") {
 
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
-
+					
 					BambooServerFacade bambooFacade = BambooServerFacadeImpl
 							.getInstance(PluginUtil.getLogger());
 
@@ -131,7 +174,7 @@ public class TestConnection extends FieldEditor {
 									dialog.open();
 								}
 							});
-
+					
 					return Status.OK_STATUS;
 				}
 			};
