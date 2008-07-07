@@ -60,6 +60,10 @@ public class BambooPlanListFieldEditor extends FieldEditor implements IPropertyC
 
 	private Text messageArea;
 
+	private boolean useFavourites = false;
+
+	private Composite parent;
+
     /**
      * Creates a new string field editor 
      */
@@ -79,6 +83,7 @@ public class BambooPlanListFieldEditor extends FieldEditor implements IPropertyC
     		PreferencePageServers preferencePageServers) {
     	init(name, labelText);
         createControl(parent);
+        this.parent = parent;
         this.parentPreferencePage = preferencePageServers;
     }
 
@@ -102,7 +107,7 @@ public class BambooPlanListFieldEditor extends FieldEditor implements IPropertyC
      * but must call <code>super.doFillIntoGrid</code>.
      * </p>
      */
-    protected void doFillIntoGrid(Composite parent, int numColumns) {
+    protected void doFillIntoGrid(final Composite parent, int numColumns) {
         
     	Label empty1 = new Label(parent, SWT.NONE);
     	
@@ -122,7 +127,7 @@ public class BambooPlanListFieldEditor extends FieldEditor implements IPropertyC
 				
 				loadServerPlans(bambooServer);
 				refreshButton.setEnabled(false);
-				table.setEnabled(false);
+				setEnabled(false, parent);
 				messageArea.setText(WAITING_FOR_PLANS_MESSAGE);
 			}
 			
@@ -267,9 +272,12 @@ public class BambooPlanListFieldEditor extends FieldEditor implements IPropertyC
     /*
      * @see FieldEditor.setEnabled(boolean,Composite).
      */
-    public void setEnabled(boolean enabled, Composite parent) {
-        super.setEnabled(enabled, parent);
-        getTableControl(parent).setEnabled(enabled);
+    public void setEnabled(boolean enabled) {
+    	if ((enabled == true && useFavourites == false) || enabled == false) {
+    		super.setEnabled(enabled, parent);
+            getTableControl(parent).setEnabled(enabled);
+            //refreshButton.setEnabled(enabled);
+    	}
     }
 
     /**
@@ -315,7 +323,7 @@ public class BambooPlanListFieldEditor extends FieldEditor implements IPropertyC
 			}
 		}
 		
-		table.setEnabled(true);
+		setEnabled(true);
 		refreshButton.setEnabled(true);
 
 	}
@@ -389,7 +397,7 @@ public class BambooPlanListFieldEditor extends FieldEditor implements IPropertyC
 	
 	private void loadServerPlans(final ServerBean bambooServer) {
 		
-		table.setEnabled(false);
+		setEnabled(false);
 		refreshButton.setEnabled(false);
 		messageArea.setText(WAITING_FOR_PLANS_MESSAGE);
 		
@@ -438,6 +446,11 @@ public class BambooPlanListFieldEditor extends FieldEditor implements IPropertyC
 			doLoad();
 			
 		}
+	}
+
+	public void setFavourites(boolean useFavourites) {
+		this.useFavourites = useFavourites;
+		this.setEnabled(!useFavourites);
 	}
 }
 	

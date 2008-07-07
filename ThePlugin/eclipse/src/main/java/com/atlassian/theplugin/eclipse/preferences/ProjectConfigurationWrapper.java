@@ -64,6 +64,7 @@ public class ProjectConfigurationWrapper {
 		bambooServer.transientSetPasswordString(preferences.getString(PreferenceConstants.BAMBOO_USER_PASSWORD), true);
 		bambooServer.setUrlString(preferences.getString(PreferenceConstants.BAMBOO_URL));
 		bambooServer.setSubscribedPlansData(subscribedPlans);
+		bambooServer.setUseFavourite(new Boolean(preferences.getString(PreferenceConstants.BAMBOO_USE_FAVOURITES)));
 
 		Collection<Server> bambooServers = new ArrayList<Server>();
 		bambooServers.add(bambooServer);

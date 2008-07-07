@@ -35,8 +35,10 @@ public class PreferenceConstants {
 
 	public static final String BAMBOO_POLLING_TIME = "BAMBOO_POLLING_TIME";
 
-	static final String BAMBOO_TAB_COLUMNS_ORDER = "BAMBOO_TAB_COLUMNS_ORDER";
+	public static final String BAMBOO_TAB_COLUMNS_ORDER = "BAMBOO_TAB_COLUMNS_ORDER";
 
 	public static final String BAMBOO_TAB_COLUMNS_WIDTH = "BAMBOO_TAB_COLUMNS_WIDTH";
+
+	public static final String BAMBOO_USE_FAVOURITES = "BAMBOO_USE_FAVOURITES";
 	
 }

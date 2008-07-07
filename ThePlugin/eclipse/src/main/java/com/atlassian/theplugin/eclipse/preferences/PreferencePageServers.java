@@ -17,31 +17,13 @@
 package com.atlassian.theplugin.eclipse.preferences;
 
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.Preferences.IPropertyChangeListener;
-import org.eclipse.core.runtime.Preferences.PropertyChangeEvent;
-import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.StringFieldEditor;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
-
-import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.bamboo.BambooBuild;
-import com.atlassian.theplugin.commons.bamboo.BambooPlan;
-import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
-import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
-import com.atlassian.theplugin.commons.configuration.ServerBean;
-import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.eclipse.EclipseActionScheduler;
-import com.atlassian.theplugin.eclipse.util.PluginUtil;
 
 /**
  * This class represents a preference page that
@@ -91,10 +73,21 @@ public class PreferencePageServers
 		
 		addField(new TestConnection(getFieldEditorParent(), this));
 		
-		BambooPlanListFieldEditor planList = 
+		UseFavouritesFieldEditor useFavourites = new UseFavouritesFieldEditor(PreferenceConstants.BAMBOO_USE_FAVOURITES, "Use favourites:", BooleanFieldEditor.SEPARATE_LABEL, getFieldEditorParent()); 
+		addField(useFavourites);
+		
+		final BambooPlanListFieldEditor planList = 
 			new BambooPlanListFieldEditor(PreferenceConstants.BAMBOO_BUILDS, "Build plans:", getFieldEditorParent(), this);
 		Activator.getDefault().getPluginPreferences().addPropertyChangeListener(planList);
-		addField(planList);
+		addField(planList);	
+		planList.setFavourites(getPreferenceStore().getBoolean(PreferenceConstants.BAMBOO_USE_FAVOURITES));
+		
+		useFavourites.addValueChangedListener(new IUseFavouriteListener() {
+			public void valueChanged(Boolean newValue) {
+				planList.setFavourites(newValue);
+			}
+		});
+		
 	}
 
 	/* (non-Javadoc)
