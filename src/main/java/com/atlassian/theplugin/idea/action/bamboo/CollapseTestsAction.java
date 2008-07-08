@@ -6,7 +6,7 @@ import com.atlassian.theplugin.idea.bamboo.TestResultsToolWindow;
 
 public class CollapseTestsAction extends AnAction {
 	public void actionPerformed(AnActionEvent event) {
-		TestResultsToolWindow.Expandable exp = TestResultsToolWindow.getExpandable(event.getPlace());
+		TestResultsToolWindow.TestTree exp = TestResultsToolWindow.getTestTree(event.getPlace());
 		exp.collapse();
 	}
 }
