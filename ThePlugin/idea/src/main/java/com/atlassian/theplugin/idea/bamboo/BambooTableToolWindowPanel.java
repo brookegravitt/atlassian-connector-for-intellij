@@ -297,11 +297,12 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
 				try {
 					BuildDetails details = bambooFacade.getBuildDetails(
 							build.getServer(), build.getBuildKey(), build.getBuildNumber());
-					final List<TestDetails> tests = details.getFailedTestDetails();
-					SwingUtilities.invokeLater(new Runnable() {
+					final List<TestDetails> failedTests = details.getFailedTestDetails();
+                    final List<TestDetails> succeededTests = details.getSuccessfulTestDetails();
+                    SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
 							TestResultsToolWindow.getInstance().showTestResults(
-									build.getBuildKey(), build.getBuildNumber(), tests);
+									build.getBuildKey(), build.getBuildNumber(), failedTests, succeededTests);
 						}
 					});
 					setStatusMessage("Test results for build " + build.getBuildKey() + " received");
