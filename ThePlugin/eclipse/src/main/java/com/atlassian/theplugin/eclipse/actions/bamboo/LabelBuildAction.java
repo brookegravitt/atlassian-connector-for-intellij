@@ -16,6 +16,10 @@
 
 package com.atlassian.theplugin.eclipse.actions.bamboo;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 
@@ -50,26 +54,30 @@ public class LabelBuildAction extends BambooAction {
 		if (dialog.getReturnCode() == SWT.OK && dialog.getLabel().length() > 0) {
 
 			final String label = dialog.getLabel();
+			final String buildDesc = build.getBuildKey() + " " + build.getBuildNumber();
 
-			Thread labelBuild = new Thread(new Runnable() {
-
-				public void run() {
+			Job labelBuild = new Job("Labeling build " + buildDesc) {
+	
+				@Override
+				protected IStatus run(IProgressMonitor monitor) {
+					
 					try {
-						setUIMessage("Labeling build on plan " + build.getBuildKey());
+						setUIMessage("Labeling build " + buildDesc);
 						bambooFacade.addLabelToBuild(
 								build.getServer(), build.getBuildKey(), build.getBuildNumber(), label);
-						setUIMessage("Build labeled on plan " + build.getBuildKey());
+						setUIMessage("Build " + buildDesc + " labeled");
 					} catch (ServerPasswordNotProvidedException e) {
-						setUIMessage("Build not labeled. Password not provided for server");
+						setUIMessage("Build " + buildDesc + "  not labeled. Password not provided for server");
 					} catch (RemoteApiException e) {
-						setUIMessage("Build not labeled. " + e.getMessage());
+						setUIMessage("Build  " + buildDesc + " not labeled. " + e.getMessage());
 					}
+					return Status.OK_STATUS;
 				}
-
-			}, "atlassian-eclipse-plugin: Label Build Action thread");
-
-			labelBuild.start();
-		}
+			};
+			
+			labelBuild.setPriority(Job.SHORT);
+			labelBuild.schedule();
+		};
 	}
 
 	@Override

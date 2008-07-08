@@ -103,7 +103,7 @@ public class LabelBuildDialog {
 		//compositeRowUpper.setLayoutData(gridData);
 		compositeRowUpper.setLayout(gridLayout);
 		Label text = new Label(compositeRowUpper, SWT.NONE);
-		text.setText("Add label for build " + this.buildPlan);
+		text.setText("Add label to build " + this.buildPlan);
 	}
 
 	/**
