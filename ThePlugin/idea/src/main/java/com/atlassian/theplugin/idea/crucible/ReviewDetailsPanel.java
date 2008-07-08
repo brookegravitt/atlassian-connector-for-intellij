@@ -32,9 +32,14 @@ public class ReviewDetailsPanel extends AbstractCommentPanel {
 	private UserTableContext context;
 	private TableColumnProvider commentTableColumnProvider = new CommentColumnProvider();
 	private TableColumnProvider commentReplyTableColumnProvider = new ReviewCommentsPanel.CommentColumnProvider();
+	private ReviewDataInfoAdapter reviewDataInfoAdapter;
+	private ReviewItem reviewItem;
 
 	public ReviewDetailsPanel(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem, Collection<VersionedComment> versionedComments) {
 		super();
+		this.reviewDataInfoAdapter = reviewDataInfoAdapter;
+		this.reviewItem = reviewItem;
+
 		IdeaHelper.getReviewActionEventBroker().registerListener(this);
 		context = new UserTableContext();
 		CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.setValue(context, reviewDataInfoAdapter);
@@ -179,6 +184,13 @@ public class ReviewDetailsPanel extends AbstractCommentPanel {
 	}
 
 	public void showReviewedFileItem(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem) {
+		if (this.reviewDataInfoAdapter == reviewDataInfoAdapter && this.reviewItem == reviewItem) {
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					switchToComments();
+				}
+			});
+		}
 	}
 
 	public void showGeneralComment(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
