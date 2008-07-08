@@ -46,6 +46,7 @@ public final class StackTraceConsole {
 		ToolWindow consoleToolWindow = twm.getToolWindow(TOOL_WINDOW_TITLE);
 		if (consoleToolWindow == null) {
 			consoleToolWindow = twm.registerToolWindow(TOOL_WINDOW_TITLE, true, ToolWindowAnchor.BOTTOM);
+			consoleToolWindow.setIcon(IconLoader.getIcon("/icons/tab_jira.png"));
 		}
 
 		Content content = consoleToolWindow.getContentManager().findContent(contentKey);

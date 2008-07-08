@@ -133,19 +133,21 @@
 
         <!-- Bamboo tool window panel related actions -->
         <action id="ThePlugin.Bamboo.RefreshStatus" class="com.atlassian.theplugin.idea.action.bamboo.RefreshBambooPanelAction" text="Refresh" description="Refresh" icon="/actions/sync.png" />
-		<action id="ThePlugin.Bamboo.ViewBuild" class="com.atlassian.theplugin.idea.action.bamboo.ViewBuildAction" text="View" description="View Bamboo build" />        
+		<action id="ThePlugin.Bamboo.ViewBuild" class="com.atlassian.theplugin.idea.action.bamboo.ViewBuildAction" text="View" description="View Bamboo build" icon="/general/web.png" />
         <action id="ThePlugin.Bamboo.RunBuild" class="com.atlassian.theplugin.idea.action.bamboo.RunBuildAction" text="Run build" description="Run Bamboo build" icon="/actions/execute.png" />
 		<action id="ThePlugin.Bamboo.AddLabelToBuild" class="com.atlassian.theplugin.idea.action.bamboo.LabelBuildAction" text="Add label to build" description="Add label to Bamboo build" icon="/icons/icn_label.gif" />
 		<action id="ThePlugin.Bamboo.AddCommentToBuild" class="com.atlassian.theplugin.idea.action.bamboo.CommentBuildAction" text="Add comment to build" description="Add comment to Bamboo build" icon="/actions/editSource.png" />
 		<action id="ThePlugin.Bamboo.ShowHideBambooTab" class="com.atlassian.theplugin.idea.action.bamboo.ShowHideBambooTabAction" text="Show/Hide Bamboo tab" description="Shows or hides Bamboo tab in main plugin window">
 			<keyboard-shortcut first-keystroke="shift control b" keymap="$default"/>
 		</action>
+		<action id="ThePlugin.Bamboo.ShowStackTrace" class="com.atlassian.theplugin.idea.action.bamboo.BuildStackTraceAction" text="Show Failed Tests" description="Show Failed Tests" icon="/debugger/stackFrame.png" />
 
 		<group id="ThePlugin.BambooToolWindowToolBar" popup="false" text="">
             <reference id="ThePlugin.ShowSettings" />
 			<reference id="ThePlugin.HelpBamboo" />
 			<reference id="ThePlugin.Bamboo.RefreshStatus" />
 			<separator />
+			<reference id="ThePlugin.Bamboo.ShowStackTrace" />
 			<reference id="ThePlugin.Bamboo.RunBuild" />
 			<reference id="ThePlugin.Bamboo.AddLabelToBuild" />
 			<reference id="ThePlugin.Bamboo.AddCommentToBuild" />
@@ -153,7 +155,8 @@
 
         <group id="ThePlugin.Bamboo.BuildPopupMenu" popup="true">
             <reference id="ThePlugin.Bamboo.ViewBuild" />
-            <separator />
+			<reference id="ThePlugin.Bamboo.ShowStackTrace" />
+			<separator />
             <reference id="ThePlugin.Bamboo.AddLabelToBuild" />
             <reference id="ThePlugin.Bamboo.AddCommentToBuild" />
             <separator />

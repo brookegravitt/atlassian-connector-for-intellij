@@ -156,7 +156,7 @@ public class MemoryVirtualFile extends DeprecatedVirtualFile
    }
 
 	public Icon getIcon() {
-		return IconLoader.getIcon("/icons/jira-blue-16.png");
+		return IconLoader.getIcon("/icons/tab_jira.png");
 	}
 
    /**
