@@ -43,24 +43,6 @@ public class RunBuildAction extends BambooAction {
 		
 		final BambooBuildAdapterEclipse build = getBuild();
 		
-//		Thread runBuild = new Thread(new Runnable() {
-//
-//			public void run() {
-//				try {
-//					setUIMessage("Starting build on plan " + build.getBuildKey());
-//					bambooFacade.executeBuild(build.getServer(), build.getBuildKey());
-//					setUIMessage("Build started on plan " + build.getBuildKey());
-//				} catch (ServerPasswordNotProvidedException e) {
-//					setUIMessage("Build not started. Password not provided for server");
-//				} catch (RemoteApiException e) {
-//					setUIMessage("Build not started. " + e.getMessage());
-//				}
-//			}
-//			
-//		}, "atlassian-eclipse-plugin: Run Build Action thread");
-//		
-//		runBuild.start();
-		
 		Job runBuild = new Job("Starting build on plan " + build.getBuildKey()) {
 
 			@Override

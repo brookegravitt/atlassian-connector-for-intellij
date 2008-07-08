@@ -3,7 +3,11 @@ package com.atlassian.theplugin.eclipse.dialogs.bamboo;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -13,6 +17,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.atlassian.theplugin.eclipse.view.bamboo.BambooBuildAdapterEclipse;
+
 public class LabelBuildDialog {
 	
 	private Shell shell = null;
@@ -20,18 +26,20 @@ public class LabelBuildDialog {
 	private int returnCode = 0;
 	private String returnText = null;
 
-	private Label label = null;
-	private Label label1 = null;
-	private Label label2 = null;
-	private Label label3 = null;
-	private Label label4 = null;
+	private String buildPlan = null;
 	private Text text = null;
 
 	private Composite compositeRowButtons;
 
-	public LabelBuildDialog(Shell parent) {
-		shell = new Shell(parent, SWT.BORDER | SWT.CLOSE);
+	public LabelBuildDialog(Shell parent, BambooBuildAdapterEclipse build) {
+		shell = new Shell(parent, SWT.BORDER | SWT.CLOSE | SWT.APPLICATION_MODAL);
 		shell.setText("Label Build");
+		
+		// place the window in the center of parent
+		shell.setLocation(parent.getLocation().x + parent.getSize().x/2, parent.getLocation().y + parent.getSize().y/2);
+		
+		this.buildPlan = build.getBuildKey() + " " + build.getBuildNumber();
+		
 		initialize();
 	}
 
@@ -39,39 +47,44 @@ public class LabelBuildDialog {
 		GridLayout gridLayout = new GridLayout();
 		gridLayout.numColumns = 1;
 		shell.setLayout(gridLayout);
-		shell.setSize(new Point(383, 135));
+		
+		shell.setSize(260,140);
 		createRowUpper();
 		createRowBottom();
 		createButtons();
 	}
 
 	private void createButtons() {
-		GridData gridData1 = new GridData();
-		gridData1.horizontalSpan = 4;
-		gridData1.widthHint = 200;
-		GridLayout gridLayout2 = new GridLayout();
-		gridLayout2.numColumns = 5;
+		GridLayout gridLayout = new GridLayout();
+		gridLayout.numColumns = 2;
 		compositeRowButtons = new Composite(shell, SWT.NONE);
-		compositeRowButtons.setLayout(gridLayout2);
+		compositeRowButtons.setLayout(gridLayout);
 		Button buttonOk = new Button(compositeRowButtons, SWT.NONE);
 		buttonOk.setText("OK");
-		buttonOk.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseUp(MouseEvent e) {
+		
+		buttonOk.addSelectionListener(new SelectionAdapter() {
+
+			public void widgetSelected(SelectionEvent e) {
 				LabelBuildDialog.this.returnCode = SWT.OK;
 				LabelBuildDialog.this.returnText = text.getText();
 				shell.close();
 			}
+			
 		});
+		
+		shell.setDefaultButton(buttonOk);
 		
 		Button buttonCancel = new Button(compositeRowButtons, SWT.NONE);
 		buttonCancel.setText("Cancel");
-		buttonCancel.addMouseListener(new MouseAdapter() {
+		buttonCancel.addSelectionListener(new SelectionAdapter() {
+
 			@Override
-			public void mouseUp(MouseEvent e) {
+			public void widgetSelected(SelectionEvent e) {
+				super.widgetSelected(e);
 				LabelBuildDialog.this.returnCode = SWT.CANCEL;
 				shell.close();
 			}
+			
 		});
 		
 		
@@ -83,20 +96,14 @@ public class LabelBuildDialog {
 	 */
 	private void createRowUpper() {
 		Composite compositeRowUpper = null;
-		GridLayout gridLayout1 = new GridLayout();
-		gridLayout1.numColumns = 4;
-		GridData gridData = new GridData();
+		GridLayout gridLayout = new GridLayout();
+		gridLayout.numColumns = 2;
+		//GridData gridData = new GridData();
 		compositeRowUpper = new Composite(shell, SWT.NONE);
-		compositeRowUpper.setLayoutData(gridData);
-		compositeRowUpper.setLayout(gridLayout1);
-		label = new Label(compositeRowUpper, SWT.NONE);
-		label.setText("Label");
-		label2 = new Label(compositeRowUpper, SWT.NONE);
-		label2.setText("Label");
-		label3 = new Label(compositeRowUpper, SWT.NONE);
-		label3.setText("Label");
-		label4 = new Label(compositeRowUpper, SWT.NONE);
-		label4.setText("Label");
+		//compositeRowUpper.setLayoutData(gridData);
+		compositeRowUpper.setLayout(gridLayout);
+		Label text = new Label(compositeRowUpper, SWT.NONE);
+		text.setText("Add label for build " + this.buildPlan);
 	}
 
 	/**
@@ -105,17 +112,15 @@ public class LabelBuildDialog {
 	 */
 	private void createRowBottom() {
 		Composite compositeRowBottom = null;
-		GridData gridData1 = new GridData();
-		gridData1.horizontalSpan = 4;
-		gridData1.widthHint = 200;
-		GridLayout gridLayout2 = new GridLayout();
-		gridLayout2.numColumns = 5;
+		GridData gridData = new GridData();
+		gridData.horizontalSpan = 1;
+		gridData.widthHint = 220;
+		GridLayout gridLayout = new GridLayout();
+		gridLayout.numColumns = 1;
 		compositeRowBottom = new Composite(shell, SWT.NONE);
-		compositeRowBottom.setLayout(gridLayout2);
-		label1 = new Label(compositeRowBottom, SWT.NONE);
-		label1.setText("Label");
+		compositeRowBottom.setLayout(gridLayout);
 		text = new Text(compositeRowBottom, SWT.BORDER);
-		text.setLayoutData(gridData1);
+		text.setLayoutData(gridData);
 	}
 	
 	public void open() {
