@@ -18,9 +18,10 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Time: 10:53:01 AM
  * To change this template use File | Settings | File Templates.
  */
-public class ReviewActionEventBroker {	
+public class ReviewActionEventBroker {
 	private static ReviewActionEventBroker broker;
-	private Set<CrucibleReviewActionListener> listeners = new HashSet<CrucibleReviewActionListener>();
+	private Set<CrucibleReviewActionListener> listeners =
+			Collections.synchronizedSet(new HashSet<CrucibleReviewActionListener>());
 	private Queue<CrucibleEvent> events = new LinkedBlockingQueue<CrucibleEvent>();
 	public static final Logger LOGGER = PluginUtil.getLogger();
 
@@ -51,27 +52,18 @@ public class ReviewActionEventBroker {
 	}
 
 	public void registerListener(CrucibleReviewActionListener listener) {
-		synchronized (listeners) {
-			listeners.add(listener);
-		}
+		listeners.add(listener);
 	}
 
 	public void unregisterListener(CrucibleReviewActionListener listener) {
-		synchronized (listeners) {
-			listeners.remove(listener);
-		}
+		listeners.remove(listener);
 	}
 
 	public void trigger(CrucibleEvent event) {
-		synchronized (events) {
-			events.add(event);
-		}
+		events.add(event);
 	}
 
 	public Iterable<? extends CrucibleReviewActionListener> getListeners() {
-		synchronized (listeners) {
-			return Collections.unmodifiableSet(listeners);
-		}
+		return Collections.unmodifiableSet(listeners);
 	}
-
 }
