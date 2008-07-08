@@ -13,10 +13,10 @@ package com.atlassian.theplugin.eclipse.core.operation.bamboo;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
-import com.atlassian.theplugin.eclipse.core.bamboo.BambooServer;
 import com.atlassian.theplugin.eclipse.core.bamboo.IBambooServer;
 import com.atlassian.theplugin.eclipse.core.operation.AbstractNonLockingOperation;
 import com.atlassian.theplugin.eclipse.core.operation.IUnprotectedOperation;
+import com.atlassian.theplugin.eclipse.ui.bamboo.BambooServer;
 import com.atlassian.theplugin.eclipse.ui.bamboo.BambooServersView;
 import com.atlassian.theplugin.eclipse.ui.bamboo.BambooTreeViewer;
 
@@ -52,7 +52,7 @@ public class RefreshBambooServersOperation extends AbstractNonLockingOperation {
 					BambooServersView.refresh(current, new BambooTreeViewer.IRefreshVisitor() {
 						public void visit(Object data) {
 							if (data instanceof BambooServer && RefreshBambooServersOperation.this.deep) {
-								//FIXME: ((BambooServer)data).refresh();
+								((BambooServer)data).refresh();
 							}
 						}
 					});

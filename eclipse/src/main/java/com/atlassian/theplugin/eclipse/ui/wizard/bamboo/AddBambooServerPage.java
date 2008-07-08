@@ -18,6 +18,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.swt.SWT;
@@ -41,6 +42,7 @@ import com.atlassian.theplugin.eclipse.ui.panel.AbstractDialogPanel;
 import com.atlassian.theplugin.eclipse.ui.utility.UIMonitorUtil;
 import com.atlassian.theplugin.eclipse.ui.verifier.AbstractFormattedVerifier;
 import com.atlassian.theplugin.eclipse.ui.wizard.AbstractVerifiedWizardPage;
+import com.atlassian.theplugin.eclipse.util.PluginUtil;
 import com.atlassian.theplugin.eclipse.view.bamboo.BambooConfigurationStorage;
 
 /**
@@ -65,8 +67,8 @@ public class AddBambooServerPage extends AbstractVerifiedWizardPage {
 	
 	public AddBambooServerPage(IBambooServer editable) {
 		super(AddBambooServerPage.class.getName(), 
-			Activator.getDefault().getResource("AddBambooServerPage.Title"), 
-			Activator.getDefault().getImageDescriptor("icons/ico_plugin.png"));
+			Activator.getDefault().getResource("AddBambooServerPage.Title"),
+			ImageDescriptor.createFromImage(PluginUtil.getImageRegistry().get(PluginUtil.ICON_BAMBOO_LARGE)));
 		
 		this.setDescription(Activator.getDefault().getResource("AddBambooServerPage.Description"));
 		this.editable = editable;
