@@ -238,7 +238,7 @@ public class CrucibleBottomToolWindowPanel extends JPanel implements ContentPane
 		public void showReview(ReviewDataInfoAdapter reviewItem) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
-					ToolWindow tw = IdeaHelper.getCurrentBottomIdeaToolWindow(DataManager.getInstance().getDataContext(CrucibleBottomToolWindowPanel.instance));
+					ToolWindow tw = IdeaHelper.getBottomIdeaToolWindow(project);
 					if (tw != null) {
 						ContentManager contentManager = tw.getContentManager();
 						for (Content content : contentManager.getContents()) {
