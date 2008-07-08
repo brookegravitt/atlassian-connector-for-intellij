@@ -103,16 +103,6 @@ public final class IdeaHelper {
 	public static PluginConfigurationBean getPluginConfiguration() {
 		return getAppComponent().getState();
 	}
-
-	public static ToolWindow getCurrentBottomIdeaToolWindow(DataContext dataContext) {
-		Project p = getCurrentProject(dataContext);
-		if (p == null) {
-			return null;
-		}
-		com.intellij.openapi.wm.ToolWindow tw = getBottomIdeaToolWindow(p);
-        return tw;
-	}
-
   
 	public static JIRAToolWindowPanel getJIRAToolWindowPanel(Project p){
 		if (p == null){

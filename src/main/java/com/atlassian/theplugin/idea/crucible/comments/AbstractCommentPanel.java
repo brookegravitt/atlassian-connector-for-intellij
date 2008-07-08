@@ -19,7 +19,7 @@ import java.awt.*;
  */
 public abstract class AbstractCommentPanel extends JPanel implements CrucibleReviewActionListener {
 	private ListTableModel commentTableModel;
-	private JLayeredPane dataPanelsHolder;
+	private JPanel dataPanelsHolder;
 	private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
 
 	public AtlassianTableViewWithToolbar getCommentsTable() {
@@ -50,11 +50,11 @@ public abstract class AbstractCommentPanel extends JPanel implements CrucibleRev
 				getCommentReplyToolbarActionGroup(),
 				getCommentReplySelectedListener(), getCommentReplyToolbarPlace());
 
-		dataPanelsHolder = new JLayeredPane();
+		dataPanelsHolder = new JPanel();
 		dataPanelsHolder.setLayout(new BorderLayout());
 		dataPanelsHolder.setBackground(UIUtil.getTreeTextBackground());
 //		dataPanelsHolder.add(replyCommentsTable, BorderLayout.CENTER, JLayeredPane.DEFAULT_LAYER);
-		dataPanelsHolder.add(commentsTable, BorderLayout.CENTER, JLayeredPane.POPUP_LAYER);
+		dataPanelsHolder.add(commentsTable, BorderLayout.CENTER);
 		add(dataPanelsHolder, BorderLayout.CENTER);
 		progressAnimation.configure(this, dataPanelsHolder, BorderLayout.CENTER);
 	}
@@ -116,11 +116,17 @@ public abstract class AbstractCommentPanel extends JPanel implements CrucibleRev
 	public void switchToComments() {
 		dataPanelsHolder.removeAll();
 		dataPanelsHolder.add(commentsTable, BorderLayout.CENTER);
+		dataPanelsHolder.invalidate();
+		dataPanelsHolder.revalidate();
+		dataPanelsHolder.repaint();
 	}
 
 	protected void switchToCommentReplies() {
 		dataPanelsHolder.removeAll();
 		dataPanelsHolder.add(replyCommentsTable, BorderLayout.CENTER);
+		dataPanelsHolder.invalidate();
+		dataPanelsHolder.revalidate();
+		dataPanelsHolder.repaint();
 	}
 
 
