@@ -26,6 +26,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.ArrayList;
 
 public final class CrucibleRestXmlHelper {
 
@@ -320,6 +321,19 @@ public final class CrucibleRestXmlHelper {
         PermIdBean permId = new PermIdBean();
         permId.setId(getChildText(reviewCommentNode, "permaIdAsString"));
         commentBean.setPermId(permId);
+
+        List<Element> replies = getChildElements(reviewCommentNode, "replies");
+        if (replies != null) {
+            List<GeneralComment> rep = new ArrayList<GeneralComment>();
+            for (Element repliesNode : replies) {
+                List<Element> entries = getChildElements(repliesNode, "generalCommentData");
+                for (Element replyNode : entries) {
+                    GeneralCommentBean reply = parseGeneralCommentNode(replyNode);
+                    rep.add(reply);
+                }
+            }
+            commentBean.setReplies(rep);
+        }
 
         List<Element> metrics = getChildElements(reviewCommentNode, "metrics");
         if (metrics != null) {
