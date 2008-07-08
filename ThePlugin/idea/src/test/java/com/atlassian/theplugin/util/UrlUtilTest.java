@@ -33,6 +33,10 @@ public class UrlUtilTest extends TestCase {
         super.tearDown();
     }
 
+	public void testFailMe() {
+		assertTrue(false);
+	}
+
 	public void testAddHttpPrefix() {
 
 		String url = null;
