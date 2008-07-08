@@ -57,7 +57,19 @@ public class AbstractHttpSessionTest extends TestCase {
         mockServer = new JettyMockServer(httpServer);
 	}
 
-    public void testRetrieveGetResponseWithDataTransferTimeout() throws RemoteApiMalformedUrlException, IOException, RemoteApiSessionExpiredException, JDOMException {
+	public void testFailMe1() {
+		assertTrue(false);
+	}
+
+	public void testFailMe2() {
+		assertTrue(false);
+	}
+
+	public void testFailMe3() {
+		assertTrue(false);
+	}
+	
+	public void testRetrieveGetResponseWithDataTransferTimeout() throws RemoteApiMalformedUrlException, IOException, RemoteApiSessionExpiredException, JDOMException {
 		int timeout; // 7 sec
 		long t1;
 		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort() + SOME_URL;
