@@ -21,7 +21,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class ReviewActionEventBroker {
 	private static ReviewActionEventBroker broker;
 	private Set<CrucibleReviewActionListener> listeners =
-			Collections.synchronizedSet(new HashSet<CrucibleReviewActionListener>());
+			new HashSet<CrucibleReviewActionListener>();
 	private Queue<CrucibleEvent> events = new LinkedBlockingQueue<CrucibleEvent>();
 	public static final Logger LOGGER = PluginUtil.getLogger();
 
@@ -52,11 +52,15 @@ public class ReviewActionEventBroker {
 	}
 
 	public void registerListener(CrucibleReviewActionListener listener) {
-		listeners.add(listener);
+		synchronized (listeners) {
+			listeners.add(listener);
+		}
 	}
 
 	public void unregisterListener(CrucibleReviewActionListener listener) {
-		listeners.remove(listener);
+		synchronized (listeners) {
+			listeners.remove(listener);
+		}
 	}
 
 	public void trigger(CrucibleEvent event) {
@@ -64,6 +68,8 @@ public class ReviewActionEventBroker {
 	}
 
 	public Iterable<? extends CrucibleReviewActionListener> getListeners() {
-		return Collections.unmodifiableSet(listeners);
+		synchronized (listeners) {
+			return Collections.unmodifiableSet(new HashSet<CrucibleReviewActionListener>(listeners));
+		}
 	}
 }
