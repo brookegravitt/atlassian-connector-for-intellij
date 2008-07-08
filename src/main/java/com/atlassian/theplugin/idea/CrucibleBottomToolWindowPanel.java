@@ -112,7 +112,7 @@ public class CrucibleBottomToolWindowPanel extends JPanel implements ContentPane
 		reviewItemTreePanel.getProgressAnimation().configure(leftPanel, reviewItemTreePanel, BorderLayout.CENTER);
 		splitter.setFirstComponent(leftPanel);
 		splitter.setHonorComponentsMinimumSize(true);
-		tabManager = new ReviewTabManager();
+		tabManager = new ReviewTabManager(project);
 		reviewComentsPanel = ReviewCommentsPanel.getInstance();
 		splitter.setSecondComponent(reviewComentsPanel);
 		add(splitter, BorderLayout.CENTER);
@@ -180,17 +180,19 @@ public class CrucibleBottomToolWindowPanel extends JPanel implements ContentPane
 	private static class ReviewTabManager implements CrucibleReviewActionListener {
 		private CrucibleServerFacade crucibleServerFacade;
 		private static final Logger LOGGER = PluginUtil.getLogger();
+		private Project project;
 
-		public ReviewTabManager() {
+		public ReviewTabManager(Project project) {
 			super();
+			this.project = project;
 			IdeaHelper.getReviewActionEventBroker().registerListener(this);
 			crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		}
 
-		public static Content findOrCreatePanel(String panelName, JPanel panel, Boolean requestFocus) {
+		public Content findOrCreatePanel(String panelName, JPanel panel, Boolean requestFocus) {
 			Content content = null;
 			PeerFactory peerFactory = PeerFactory.getInstance();
-			ToolWindow tw = IdeaHelper.getCurrentBottomIdeaToolWindow(DataManager.getInstance().getDataContext(panel));
+			ToolWindow tw = IdeaHelper.getBottomIdeaToolWindow(project);
 			if (tw != null) {
 				ContentManager contentManager = tw.getContentManager();
 				content = contentManager.findContent(panelName);

@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,26 +35,31 @@ public final class VcsIdeaHelper {
 
 	public static String getRepositoryUrlForFile(VirtualFile vFile) {
 		ProjectLevelVcsManager plm = ProjectLevelVcsManager.getInstance(IdeaHelper.getCurrentProject());
-		if (plm != null) {
-			AbstractVcs vcs = plm.getVcsFor(vFile);
-			RepositoryLocation repositoryLocation = vcs.getCommittedChangesProvider().getLocationFor(VcsUtil.getFilePath(vFile.getPath()));
-
-			if (vcs != null && repositoryLocation != null) {
-				return repositoryLocation.toPresentableString();
-			}
-
+		if (plm == null) {
 			return null;
 		}
-
-		return null;
+		AbstractVcs vcs = plm.getVcsFor(vFile);
+		if (vcs == null) {
+			return null;
+		}
+		CommittedChangesProvider provider = vcs.getCommittedChangesProvider();
+		if (provider == null) {
+			return null;
+		}
+		RepositoryLocation repositoryLocation
+				= provider.getLocationFor(VcsUtil.getFilePath(vFile.getPath()));
+		if (repositoryLocation == null) {
+			return null;
+		}
+		return repositoryLocation.toPresentableString();
 	}
 
-	public static List<VcsFileRevision> getFileHistory(VirtualFile vFile) throws VcsException {		
+	public static List<VcsFileRevision> getFileHistory(VirtualFile vFile) throws VcsException {
 		ProjectLevelVcsManager vcsPLM = ProjectLevelVcsManager.getInstance(IdeaHelper.getCurrentProject());
-		
+
 		if (vcsPLM != null) {
 			return vcsPLM.getVcsFor(vFile).getVcsHistoryProvider().createSessionFor(VcsUtil.getFilePath(vFile.getPath())).getRevisionList();
-		} else {			
+		} else {
 			throw new VcsException("File: " + vFile.getPath() + " is not under VCS.");
 		}
 	}
