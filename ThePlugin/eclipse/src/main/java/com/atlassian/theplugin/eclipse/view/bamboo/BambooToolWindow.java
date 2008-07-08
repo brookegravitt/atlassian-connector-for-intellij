@@ -112,15 +112,15 @@ public class BambooToolWindow extends ViewPart {
 	}
 	
 	public void enableBamboo2BuildActions() {
-//		labelBuildAction.setEnabled(true);
-//		commentBuildAction.setEnabled(true);
+		labelBuildAction.setEnabled(true);
+		commentBuildAction.setEnabled(true);
 		getViewSite().getActionBars().getToolBarManager().update(true);
 	}
 	
 	public void disableBambooBuildActions() {
 		runBuildAction.setEnabled(false);
-//		labelBuildAction.setEnabled(false);
-//		commentBuildAction.setEnabled(false);
+		labelBuildAction.setEnabled(false);
+		commentBuildAction.setEnabled(false);
 		
 		getViewSite().getActionBars().getToolBarManager().update(true);
 	}

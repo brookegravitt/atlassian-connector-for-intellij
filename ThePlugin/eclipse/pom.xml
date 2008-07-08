@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.atlassian.theplugin</groupId>
     <artifactId>atlassian-eclipse-plugin</artifactId>
-    <version>1.7.0-SNAPSHOT</version>
+    <version>0.3.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <inceptionYear>2008</inceptionYear>
     <name>Atlassian  Eclipse  Plugin</name>
@@ -245,6 +245,7 @@
 						    <outputDirectory>${project.build.directory}/lib</outputDirectory>
 							<includeScope>runtime</includeScope>
 							<excludeGroupIds>org.eclipse,org.eclipse.ui,org.eclipse.core,org.eclipse.equinox</excludeGroupIds>
+							<excludeArtifactIds>icu4j,log4j,xalan,xercesImpl</excludeArtifactIds>
                         </configuration>
                     </execution>
                 </executions>

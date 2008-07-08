@@ -41,13 +41,15 @@ public class LabelBuildAction extends BambooAction {
 	public void run() {
 		super.run();
 		
-		LabelBuildDialog dialog = new LabelBuildDialog(Activator.getDefault().getShell());
+		
+		final BambooBuildAdapterEclipse build = getBuild();
+		
+		LabelBuildDialog dialog = new LabelBuildDialog(Activator.getDefault().getShell(), build);
 		dialog.open();
 
-		if (dialog.getReturnCode() == SWT.OK) {
+		if (dialog.getReturnCode() == SWT.OK && dialog.getLabel().length() > 0) {
 
 			final String label = dialog.getLabel();
-			final BambooBuildAdapterEclipse build = getBuild();
 
 			Thread labelBuild = new Thread(new Runnable() {
 
@@ -68,7 +70,6 @@ public class LabelBuildAction extends BambooAction {
 
 			labelBuild.start();
 		}
-		
 	}
 
 	@Override
