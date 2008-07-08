@@ -26,6 +26,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
+import com.intellij.openapi.util.IconLoader;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
 import com.intellij.ui.content.ContentManagerAdapter;
@@ -33,6 +34,7 @@ import com.intellij.ui.content.ContentManagerEvent;
 import com.intellij.util.containers.HashSet;
 import com.intellij.peer.PeerFactory;
 
+import javax.swing.*;
 import java.util.Set;
 
 /**
@@ -51,11 +53,13 @@ public class PluginToolWindow extends ContentManagerAdapter {
 	private Project project;
 	//private String selectedContent = null;
 	public static final String TOOL_WINDOW_NAME = "Atlassian";
-	public static final String BOTTOM_WINDOW_NAME = "Atlassian Plugin";
+	public static final String BOTTOM_WINDOW_NAME = "Crucible Review";
 	private static final int INITIAL_NUMBER_OF_TABS = 3;
 	private static final int INITIAL_NUMBER_OF_BOTTOM_TABS = 1;
 	private static final String CONFIGURE_TAB_NAME = "Configure";
 	private ToolWindow bottomIdeaToolWindow;
+	private static final Icon ICON_CRUCIBLE = IconLoader.getIcon("/icons/crucible-16.png");
+
 
 	public static void showHidePluginWindow(AnActionEvent event) {
 		ToolWindow tw = IdeaHelper.getToolWindow(IdeaHelper.getCurrentProject(event.getDataContext()));
@@ -88,6 +92,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 				TOOL_WINDOW_NAME, true, ToolWindowAnchor.RIGHT);
 		this.project = project;
 		this.bottomIdeaToolWindow = toolWindowManager.registerToolWindow(BOTTOM_WINDOW_NAME, true, ToolWindowAnchor.BOTTOM);
+		this.bottomIdeaToolWindow.setIcon(ICON_CRUCIBLE);
 	}
 
 	/**

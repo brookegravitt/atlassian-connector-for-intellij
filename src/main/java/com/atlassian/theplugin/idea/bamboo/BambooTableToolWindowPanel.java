@@ -30,6 +30,7 @@ import com.intellij.util.ui.UIUtil;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.project.Project;
 
+import javax.swing.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -278,4 +279,40 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
         BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) table.getSelectedObject();
         BrowserUtil.launchBrowser(build.getBuildResultUrl());       
     }
+
+	public boolean canShowFailedTests() {
+		BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) table.getSelectedObject();
+		if (build == null) {
+			return false;
+		}
+		return (build.isBamboo2() && (build.getTestsFailed() > 0));
+	}
+
+	public void showBuildStackTrace() {
+		final BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) table.getSelectedObject();
+
+		FutureTask task = new FutureTask(new Runnable() {
+			public void run() {
+				setStatusMessage("Getting test results for build " + build.getBuildKey() + "...");
+				try {
+					BuildDetails details = bambooFacade.getBuildDetails(
+							build.getServer(), build.getBuildKey(), build.getBuildNumber());
+					final List<TestDetails> tests = details.getFailedTestDetails();
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							TestResultsToolWindow.getInstance().showTestResults(
+									build.getBuildKey(), build.getBuildNumber(), tests);
+						}
+					});
+					setStatusMessage("Test results for build " + build.getBuildKey() + " received");
+				} catch (ServerPasswordNotProvidedException e) {
+					setStatusMessage("Failed to get test results: Password not provided for server");
+				} catch (RemoteApiException e) {
+					setStatusMessage("Failed to get test results: " + e.getMessage());
+				}
+
+			}
+		}, null);
+		new Thread(task, "atlassian-idea-plugin get stack traces").start();
+	}
 }
