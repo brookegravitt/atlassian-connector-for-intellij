@@ -47,6 +47,7 @@ import com.atlassian.theplugin.eclipse.preferences.Activator;
 import com.atlassian.theplugin.eclipse.ui.panel.IDialogManager;
 import com.atlassian.theplugin.eclipse.ui.panel.IDialogPanel;
 import com.atlassian.theplugin.eclipse.ui.utility.UIMonitorUtil;
+import com.atlassian.theplugin.eclipse.util.PluginUtil;
 
 /**
  * Default dialog implementation
@@ -393,8 +394,7 @@ public class DefaultDialog extends MessageDialog implements IDialogManager {
 	}
 	
 	protected Image findImage(String imagePath) {
-	    Activator plugin = Activator.getDefault();
-	    ImageDescriptor descriptor = plugin.getImageDescriptor(imagePath == null ? "icons/wizards/newconnect.gif" : imagePath);
+	    ImageDescriptor descriptor = ImageDescriptor.createFromImage(PluginUtil.getImageRegistry().get(PluginUtil.ICON_PLUGIN));
 	    if (descriptor == null) {
 	        descriptor = ImageDescriptor.getMissingImageDescriptor();
 	    }

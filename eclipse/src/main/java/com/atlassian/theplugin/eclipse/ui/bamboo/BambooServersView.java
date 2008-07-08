@@ -24,14 +24,19 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Tree;
@@ -48,7 +53,10 @@ import org.eclipse.ui.part.DrillDownAdapter;
 import org.eclipse.ui.part.ViewPart;
 
 import com.atlassian.theplugin.eclipse.preferences.Activator;
+import com.atlassian.theplugin.eclipse.ui.action.AbstractAction;
 import com.atlassian.theplugin.eclipse.ui.action.bamboo.NewBambooServerAction;
+import com.atlassian.theplugin.eclipse.ui.action.bamboo.RefreshBambooServerAction;
+import com.atlassian.theplugin.eclipse.util.PluginUtil;
 
 public class BambooServersView extends ViewPart {
 
@@ -59,6 +67,8 @@ public class BambooServersView extends ViewPart {
 	protected DrillDownAdapter ddAdapter;
 	protected Action showBrowserAction;
 	protected IPartListener2 partListener;
+
+	private BambooServersRoot root;
 	
 	public BambooServersView() {
 		super();
@@ -78,7 +88,8 @@ public class BambooServersView extends ViewPart {
 						new NewBambooServerAction().run(this);
 					}
         		};
-        		newRepositoryLocation.setImageDescriptor(Activator.getDefault().getImageDescriptor("icons/objects/repository.gif"));
+        		newRepositoryLocation.setImageDescriptor(
+        				ImageDescriptor.createFromImage(PluginUtil.getImageRegistry().get(PluginUtil.ICON_BAMBOO)));
         		sub.add(newRepositoryLocation);
         		manager.add(sub);
         		
@@ -138,7 +149,7 @@ public class BambooServersView extends ViewPart {
 		this.bambooTree.setContentProvider(new BambooContentProvider(this.bambooTree));
 		this.bambooTree.setLabelProvider(new WorkbenchLabelProvider());
 		this.getSite().setSelectionProvider(this.bambooTree);
-		//this.bambooTree.setInput(this.root = new RepositoriesRoot());
+		this.bambooTree.setInput(this.root = new BambooServersRoot());
 		//this.repositoryTree.setSorter(new ViewSorter())
 		
 		this.ddAdapter = new DrillDownAdapter(this.bambooTree);
@@ -162,7 +173,8 @@ public class BambooServersView extends ViewPart {
                 }
             }
         }); 
-        tAction.setImageDescriptor(Activator.getDefault().getImageDescriptor("icons/refresh.gif"));
+        tAction.setImageDescriptor(
+        		ImageDescriptor.createFromImage(PluginUtil.getImageRegistry().get(PluginUtil.ICON_BAMBOO_REFRESH)));
         tAction.setToolTipText(Activator.getDefault().getResource("SVNView.Refresh.ToolTip"));
         
 		tbm.add(new Separator("collapseAllGroup"));
@@ -172,7 +184,8 @@ public class BambooServersView extends ViewPart {
 			    BambooServersView.this.bambooTree.collapseAll();				
 			}
         }); 
-        tAction.setImageDescriptor(Activator.getDefault().getImageDescriptor("icons/common/collapseall.gif"));
+        tAction.setImageDescriptor(
+        		ImageDescriptor.createFromImage(PluginUtil.getImageRegistry().get(PluginUtil.ICON_COLLAPSE_ALL)));
         tAction.setToolTipText(Activator.getDefault().getResource("BambooServers.CollapseAll.ToolTip"));
         
 		tbm.add(new Separator("repositoryGroup"));
@@ -182,7 +195,8 @@ public class BambooServersView extends ViewPart {
 				new NewBambooServerAction().run(this);
 			}
         }); 
-        tAction.setImageDescriptor(Activator.getDefault().getImageDescriptor("icons/views/repositories/new_location.gif"));
+        tAction.setImageDescriptor(
+        		ImageDescriptor.createFromImage(PluginUtil.getImageRegistry().get(PluginUtil.ICON_BAMBOO_NEW)));
         tAction.setToolTipText(Activator.getDefault().getResource("BambooServers.NewServer.ToolTip"));
         
         /*
@@ -254,7 +268,7 @@ public class BambooServersView extends ViewPart {
 		this.getViewSite().getPage().addPartListener(this.partListener);
 		
 		//Setting context help
-	    PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, "org.eclipse.team.svn.help.repositoryViewContext");
+	    //FIXME: PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, "org.eclipse.team.svn.help.repositoryViewContext");
 	}
 	
 	public void dispose() {
@@ -271,10 +285,10 @@ public class BambooServersView extends ViewPart {
 	}
 	
 	public static void refresh(Object where, BambooTreeViewer.IRefreshVisitor visitor) {
-		BambooServersView instance = BambooServersView.instance();
+		/*BambooServersView instance = BambooServersView.instance();
 		if (instance != null) {
 			instance.bambooTree.refresh(where, visitor, false);
-		}
+		}*/
 	}
 	
 	public static void refreshRepositories(boolean deep) {
@@ -284,9 +298,11 @@ public class BambooServersView extends ViewPart {
 		}
 	}
 
+	/*
 	public BambooTreeViewer getRepositoryTree() {
 		return this.bambooTree;
 	}
+	*/
 	
 	public void refreshButtonsState() {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
@@ -309,12 +325,12 @@ public class BambooServersView extends ViewPart {
 	}
 	
 	protected void refreshRepositoriesImpl(boolean deep) {
-		/*if (deep) {
+		if (deep) {
 			this.root.refresh();
 		}
 		else {
 			this.root.softRefresh();
-		}*/
+		}
 		this.bambooTree.refresh();
 	}
 
@@ -338,22 +354,24 @@ public class BambooServersView extends ViewPart {
 	}
 
 	protected void handleRefresh(IStructuredSelection selection) {
-	    /*Action tmp = new Action() {};
-	    AbstractSVNTeamAction action = null;
+	    Action tmp = new Action() {};
+	    AbstractAction action = null;
 	    
+	    /*
 	    action = new RefreshAction();
 	    action.selectionChanged(tmp, selection);
-	    action.setActivePart(tmp, RepositoriesView.this);
+	    action.setActivePart(tmp, BambooServersView.this);
 	    if (tmp.isEnabled()) {
 		    action.run(tmp);
 	    }
+	    */
 	    
-    	action = new RefreshRepositoryLocationAction();
+    	action = new RefreshBambooServerAction();
 	    action.selectionChanged(tmp, selection);
-	    action.setActivePart(tmp, RepositoriesView.this);
+	    action.setActivePart(tmp, BambooServersView.this);
 	    if (tmp.isEnabled()) {
 		    action.run(tmp);
-	    }*/
+	    }
 	}
 
 	protected void handleDeleteKey(IStructuredSelection selection) {

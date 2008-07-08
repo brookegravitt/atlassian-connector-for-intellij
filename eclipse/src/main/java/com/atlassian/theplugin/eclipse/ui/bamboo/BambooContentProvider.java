@@ -24,11 +24,11 @@ import com.atlassian.theplugin.eclipse.view.bamboo.IParentTreeNode;
  * @author Alexander Gurov
  */
 public class BambooContentProvider extends WorkbenchContentProvider {
-	protected BambooTreeViewer repositoryTree;
+	protected BambooTreeViewer bambooTree;
 	protected IBambooContentFilter filter;
 
-	public BambooContentProvider(BambooTreeViewer repositoryTree) {
-		this.repositoryTree = repositoryTree;
+	public BambooContentProvider(BambooTreeViewer bambooTree) {
+		this.bambooTree = bambooTree;
 	}
 	
 	public IBambooContentFilter getFilter() {
@@ -40,35 +40,33 @@ public class BambooContentProvider extends WorkbenchContentProvider {
 	}
 
 	public boolean hasChildren(Object element) {
-		/*
 		IWorkbenchAdapter adapter = this.getAdapter(element);
 		if (adapter instanceof IParentTreeNode) {
 			return ((IParentTreeNode)adapter).hasChildren();
 		}
-		*/
 		return false;
 	}
 	
 	public Object []getChildren(Object parentElement) {
-		/*IWorkbenchAdapter adapter = this.getAdapter(parentElement);
+		IWorkbenchAdapter adapter = this.getAdapter(parentElement);
 		if (adapter instanceof IParentTreeNode) {
-			if (adapter instanceof IResourceTreeNode) {
-				((IResourceTreeNode)adapter).setViewer(this.repositoryTree);
+			if (adapter instanceof IBambooTreeNode) {
+				((IBambooTreeNode)adapter).setViewer(this.bambooTree);
 			}
 			ArrayList filtered = new ArrayList();
 			Object []children = adapter.getChildren(parentElement);
 			if (children != null) {
 				for (int i = 0; i < children.length; i++) {
 					if (this.filter == null || this.filter.accept(children[i])) {
-						if (children[i] instanceof IResourceTreeNode) {
-							((IResourceTreeNode)children[i]).setViewer(this.repositoryTree);
+						if (children[i] instanceof IBambooTreeNode) {
+							((IBambooTreeNode)children[i]).setViewer(this.bambooTree);
 						}
 						filtered.add(children[i]);
 					}
 				}
 			}
 			return filtered.toArray();
-		}*/
+		}
 		return new Object[0];
 	}
 	
