@@ -141,6 +141,9 @@
 			<keyboard-shortcut first-keystroke="shift control b" keymap="$default"/>
 		</action>
 		<action id="ThePlugin.Bamboo.ShowStackTrace" class="com.atlassian.theplugin.idea.action.bamboo.BuildStackTraceAction" text="Show Failed Tests" description="Show Failed Tests" icon="/debugger/stackFrame.png" />
+		<action id="ThePlugin.Bamboo.ExpandTests" class="com.atlassian.theplugin.idea.action.bamboo.ExpandTestsAction" text="Expand all" icon="/actions/expandall.png"/>
+		<action id="ThePlugin.Bamboo.CollapseTests" class="com.atlassian.theplugin.idea.action.bamboo.CollapseTestsAction" text="Collapse all" icon="/actions/collapseall.png"/>
+
 
 		<group id="ThePlugin.BambooToolWindowToolBar" popup="false" text="">
             <reference id="ThePlugin.ShowSettings" />
@@ -163,7 +166,13 @@
             <reference id="ThePlugin.Bamboo.RunBuild" />
         </group>
 
-        <!-- Crucible tool window panel related actions -->
+		<group id="ThePlugin.Bamboo.TestResultsToolBar" popup="false">
+			<reference id="ThePlugin.Bamboo.ExpandTests"/>
+			<reference id="ThePlugin.Bamboo.CollapseTests"/>
+		</group>
+
+
+		<!-- Crucible tool window panel related actions -->
 		<action id="ThePlugin.Crucible.ShowHideCrucibleTab" class="com.atlassian.theplugin.idea.action.crucible.ShowHideCrucibleTabAction" text="Show/Hide Crucible tab" description="Shows or hides Crucuble tab in main plugin window">
 			<keyboard-shortcut first-keystroke="shift control y" keymap="$default"/>
 		</action>
