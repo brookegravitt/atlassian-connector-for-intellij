@@ -189,7 +189,7 @@ public class ReviewDetailsPanel extends AbstractCommentPanel {
 
 	public void showVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, final ReviewItem reviewItem,
 									 Collection<VersionedComment> versionedComments, final VersionedComment versionedComment) {
-//		EventQueue.invokeLater(new CommentSelectedListener(reviewDataInfoAdapter, versionedComment));
+		EventQueue.invokeLater(new CommentSelectedListener(reviewDataInfoAdapter, versionedComment));
 	}
 
 	public void showVersionedCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
@@ -240,11 +240,7 @@ public class ReviewDetailsPanel extends AbstractCommentPanel {
 			buffer.append(VCommentCreateDateColumn.FORMATTER.format(comment.getCreateDate()));
 			buffer.append("]");
 			getCommentReplyTable().getHeaderLabel().setText(buffer.toString());
-			getCommentReplyTable().getTable().invalidate();
-			getCommentReplyTable().getTable().revalidate();
-			getCommentReplyTable().getTable().setEnabled(true);
-			getCommentReplyTable().getTable().setForeground(UIUtil.getActiveTextColor());
-			getCommentReplyTable().getTable().repaint();
+
 //			dataPanelsHolder.moveToFront(replyCommentsTable);
 			switchToCommentReplies();
 		}

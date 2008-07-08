@@ -240,9 +240,6 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 			getCommentTableModel().setItems(generalComments);
 			getCommentTableModel().fireTableDataChanged();
 			getCommentsTable().getHeaderLabel().setText("General comments to " + reviewDataInfoAdapter);
-			getCommentsTable().getTable().revalidate();
-			getCommentsTable().getTable().setEnabled(true);
-			getCommentsTable().getTable().setForeground(UIUtil.getActiveTextColor());
 //			dataPanelsHolder.moveToFront(commentsTable);
 			switchToComments();
 		}
