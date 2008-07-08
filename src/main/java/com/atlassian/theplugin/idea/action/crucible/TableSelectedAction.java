@@ -1,18 +1,14 @@
 package com.atlassian.theplugin.idea.action.crucible;
 
+import com.atlassian.theplugin.idea.ui.AtlassianTableView;
+import com.atlassian.theplugin.idea.ui.AtlassianTableViewWithToolbar;
+import com.intellij.ide.navigationToolbar.NavBarPanel;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.DataKeys;
-import com.intellij.openapi.vcs.VcsDataConstants;
 import com.intellij.ui.table.TableView;
 import com.intellij.util.ui.TableViewModel;
-import com.intellij.ide.navigationToolbar.NavBarPanel;
-import com.atlassian.theplugin.idea.ui.AtlassianTableView;
-import com.atlassian.theplugin.idea.ui.AtlassianTableViewWithToolbar;
-import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
-
-import javax.swing.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -42,7 +38,7 @@ public abstract class TableSelectedAction extends AnAction {
 		} else if (component instanceof AtlassianTableViewWithToolbar) {
 			table = ((AtlassianTableViewWithToolbar) component).getTable();
 		} else if (component instanceof NavBarPanel) {
-			NavBarPanel navBarPanel = (NavBarPanel) component;
+//			NavBarPanel navBarPanel = (NavBarPanel) component;
 			// todo lguminski to identify a table
 			//table = ((AtlassianTableViewWithToolbar) pane).getTable();
 		}
