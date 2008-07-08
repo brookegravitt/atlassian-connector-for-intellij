@@ -2,12 +2,11 @@ package com.atlassian.theplugin.idea.action.crucible;
 
 import com.atlassian.theplugin.idea.ui.AtlassianTableView;
 import com.atlassian.theplugin.idea.ui.AtlassianTableViewWithToolbar;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DataContext;
-import com.intellij.openapi.actionSystem.DataKeys;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.ui.table.TableView;
 import com.intellij.util.ui.TableViewModel;
+
+import java.awt.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -36,8 +35,19 @@ public abstract class TableSelectedAction extends AnAction {
 			table = (AtlassianTableView) component;
 		} else if (component instanceof AtlassianTableViewWithToolbar) {
 			table = ((AtlassianTableViewWithToolbar) component).getTable();
-		} 
-
+		} else if (component instanceof ActionToolbar) {
+			Container mComponent = ((ActionToolbar) component).getComponent();
+			while(mComponent != null) {
+				if (mComponent instanceof AtlassianTableViewWithToolbar) {
+					break;
+				}
+				mComponent = mComponent.getParent();
+			}
+			if (mComponent != null) {
+				table = ((AtlassianTableViewWithToolbar) mComponent).getTable();
+			}
+				
+		}
 		return table;
 	}
 
