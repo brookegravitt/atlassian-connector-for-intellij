@@ -2,7 +2,6 @@ package com.atlassian.theplugin.idea.action.crucible;
 
 import com.atlassian.theplugin.idea.ui.AtlassianTableView;
 import com.atlassian.theplugin.idea.ui.AtlassianTableViewWithToolbar;
-import com.intellij.ide.navigationToolbar.NavBarPanel;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
@@ -37,11 +36,8 @@ public abstract class TableSelectedAction extends AnAction {
 			table = (AtlassianTableView) component;
 		} else if (component instanceof AtlassianTableViewWithToolbar) {
 			table = ((AtlassianTableViewWithToolbar) component).getTable();
-		} else if (component instanceof NavBarPanel) {
-//			NavBarPanel navBarPanel = (NavBarPanel) component;
-			// todo lguminski to identify a table
-			//table = ((AtlassianTableViewWithToolbar) pane).getTable();
-		}
+		} 
+
 		return table;
 	}
 
