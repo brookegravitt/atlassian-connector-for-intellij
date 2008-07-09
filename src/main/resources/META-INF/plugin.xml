@@ -141,6 +141,7 @@
 			<keyboard-shortcut first-keystroke="shift control b" keymap="$default"/>
 		</action>
 		<action id="ThePlugin.Bamboo.ShowStackTrace" class="com.atlassian.theplugin.idea.action.bamboo.BuildStackTraceAction" text="Show Failed Tests" description="Show Failed Tests" icon="/debugger/stackFrame.png" />
+		<action id="ThePlugin.Bamboo.ShowChanges" class="com.atlassian.theplugin.idea.action.bamboo.BuildChangesAction" text="Show Changed Files" description="Show Changed Files" icon="/actions/createPatch.png" />
 		<action id="ThePlugin.Bamboo.ExpandTests" class="com.atlassian.theplugin.idea.action.bamboo.ExpandTestsAction" text="Expand All" icon="/actions/expandall.png"/>
 		<action id="ThePlugin.Bamboo.CollapseTests" class="com.atlassian.theplugin.idea.action.bamboo.CollapseTestsAction" text="Collapse All" icon="/actions/collapseall.png"/>
         <action id="ThePlugin.Bamboo.ToggleAllTests" class="com.atlassian.theplugin.idea.action.bamboo.ToggleAllTestsAction" text="Hide Passed" icon="/runConfigurations/hidePassed.png"/>
@@ -152,6 +153,7 @@
 			<reference id="ThePlugin.Bamboo.RefreshStatus" />
 			<separator />
 			<reference id="ThePlugin.Bamboo.ShowStackTrace" />
+			<reference id="ThePlugin.Bamboo.ShowChanges" />
 			<reference id="ThePlugin.Bamboo.RunBuild" />
 			<reference id="ThePlugin.Bamboo.AddLabelToBuild" />
 			<reference id="ThePlugin.Bamboo.AddCommentToBuild" />
@@ -160,6 +162,7 @@
         <group id="ThePlugin.Bamboo.BuildPopupMenu" popup="true">
             <reference id="ThePlugin.Bamboo.ViewBuild" />
 			<reference id="ThePlugin.Bamboo.ShowStackTrace" />
+			<reference id="ThePlugin.Bamboo.ShowChanges" />
 			<separator />
             <reference id="ThePlugin.Bamboo.AddLabelToBuild" />
             <reference id="ThePlugin.Bamboo.AddCommentToBuild" />
