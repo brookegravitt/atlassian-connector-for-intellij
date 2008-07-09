@@ -45,7 +45,6 @@ public class LabelBuildAction extends BambooAction {
 	public void run() {
 		super.run();
 		
-		
 		final BambooBuildAdapterEclipse build = getBuild();
 		
 		LabelBuildDialog dialog = new LabelBuildDialog(Activator.getDefault().getShell(), build);
