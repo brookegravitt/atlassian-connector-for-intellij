@@ -316,4 +316,40 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
 		}, null);
 		new Thread(task, "atlassian-idea-plugin get stack traces").start();
 	}
+
+	public boolean canShowChanges() {
+		BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) table.getSelectedObject();
+		if (build == null) {
+			return false;
+		}
+		return build.isBamboo2();
+	}
+
+	public void showChanges() {
+		final BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) table.getSelectedObject();
+
+		FutureTask task = new FutureTask(new Runnable() {
+			public void run() {
+				setStatusMessage("Getting changes for build " + build.getBuildKey() + "...");
+				try {
+					BuildDetails details = bambooFacade.getBuildDetails(
+							build.getServer(), build.getBuildKey(), build.getBuildNumber());
+					final List<Commit> commits = details.getCommitInfo();
+                    SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							BuildChangesToolWindow.getInstance().showBuildChanges(
+									build.getBuildKey(), build.getBuildNumber(), commits);
+						}
+					});
+					setStatusMessage("Changes for build " + build.getBuildKey() + " received");
+				} catch (ServerPasswordNotProvidedException e) {
+					setStatusMessage("Failed to get changes: Password not provided for server");
+				} catch (RemoteApiException e) {
+					setStatusMessage("Failed to get changes: " + e.getMessage());
+				}
+
+			}
+		}, null);
+		new Thread(task, "atlassian-idea-plugin get changes").start();
+	}
 }

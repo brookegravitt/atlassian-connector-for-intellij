@@ -20,6 +20,7 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.commons.bamboo.TestDetails;
 
 import javax.swing.*;
@@ -71,7 +72,7 @@ public final class TestResultsToolWindow {
 		ToolWindow testDetailsToolWindow = twm.getToolWindow(TOOL_WINDOW_TITLE);
 		if (testDetailsToolWindow == null) {
 			testDetailsToolWindow = twm.registerToolWindow(TOOL_WINDOW_TITLE, true, ToolWindowAnchor.BOTTOM);
-			testDetailsToolWindow.setIcon(IconLoader.getIcon("/icons/bamboo-blue-16.png"));
+			testDetailsToolWindow.setIcon(Constants.BAMBOO_TRACE_ICON);
 		}
 
 		Content content = testDetailsToolWindow.getContentManager().findContent(contentKey);
@@ -86,7 +87,7 @@ public final class TestResultsToolWindow {
 
 				PeerFactory peerFactory = PeerFactory.getInstance();
 				content = peerFactory.getContentFactory().createContent(detailsPanel, contentKey, true);
-				content.setIcon(IconLoader.getIcon("/icons/bamboo-blue-16.png"));
+				content.setIcon(Constants.BAMBOO_TRACE_ICON);
 				content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
 				testDetailsToolWindow.getContentManager().addContent(content);
 			}
