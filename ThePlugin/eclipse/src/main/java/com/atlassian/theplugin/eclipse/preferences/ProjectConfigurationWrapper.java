@@ -65,6 +65,7 @@ public class ProjectConfigurationWrapper {
 		bambooServer.setUrlString(preferences.getString(PreferenceConstants.BAMBOO_URL));
 		bambooServer.setSubscribedPlansData(subscribedPlans);
 		bambooServer.setUseFavourite(new Boolean(preferences.getString(PreferenceConstants.BAMBOO_USE_FAVOURITES)));
+		bambooServer.setName(preferences.getString(PreferenceConstants.BAMBOO_NAME));
 
 		Collection<Server> bambooServers = new ArrayList<Server>();
 		bambooServers.add(bambooServer);
