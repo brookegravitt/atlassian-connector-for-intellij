@@ -1,43 +1,27 @@
 package com.atlassian.theplugin.idea.bamboo;
 
-import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.fileTypes.FileTypeManager;
+import com.intellij.openapi.fileTypes.FileType;
+import com.intellij.openapi.util.IconLoader;
 import com.intellij.ui.content.Content;
-import com.intellij.ui.dualView.TreeTableView;
 import com.intellij.peer.PeerFactory;
-import com.intellij.execution.ui.ConsoleView;
-import com.intellij.execution.ui.ConsoleViewContentType;
-import com.intellij.execution.filters.TextConsoleBuilderFactory;
-import com.intellij.execution.filters.TextConsoleBuilder;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiManager;
-import com.intellij.psi.PsiMethod;
-import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.util.ui.treetable.ListTreeTableModelOnColumns;
-import com.intellij.util.ui.treetable.TreeColumnInfo;
-import com.intellij.util.ui.ColumnInfo;
-import com.atlassian.theplugin.commons.bamboo.TestDetails;
 import com.atlassian.theplugin.commons.bamboo.Commit;
 import com.atlassian.theplugin.commons.bamboo.CommitFile;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.Constants;
 
 import javax.swing.*;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.*;
 import java.util.*;
 import java.util.List;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.*;
 
 public final class BuildChangesToolWindow {
@@ -148,8 +132,8 @@ public final class BuildChangesToolWindow {
 
 			split.setFirstComponent(treePanel);
 
-			JPanel consolePanel = new JPanel();
-			consolePanel.setLayout(new GridBagLayout());
+			JPanel fileTreePanel = new JPanel();
+			fileTreePanel.setLayout(new GridBagLayout());
 
 			gbc1.gridy = 0;
 			gbc1.weighty = 0.0;
@@ -162,55 +146,81 @@ public final class BuildChangesToolWindow {
 			d.height = toolbar.getMaxButtonHeight();
 			label.setMinimumSize(d);
 			label.setPreferredSize(d);
-			consolePanel.add(label, gbc1);
+			fileTreePanel.add(label, gbc1);
 
 			gbc1.gridy = 1;
 			gbc1.weighty = 1.0;
 			gbc1.fill = GridBagConstraints.BOTH;
 
-			consolePanel.add(new JScrollPane(createFileTree(commits.get(0).getFiles())), gbc1);
+			if (commits.size() > 0) {
+				fileTreePanel.add(new JScrollPane(createFileTree(commits.get(0).getFiles())), gbc1);
+			} else {
+				fileTreePanel.add(new JLabel("No commits"), gbc1);
+			}
 
-			split.setSecondComponent(consolePanel);
+			split.setSecondComponent(fileTreePanel);
 
 			add(split, gbc);
 		}
 
-        private class FileTreeModel implements TreeModel {
+		private class FileNode extends DefaultMutableTreeNode {
 
-            private class FileNode extends DefaultMutableTreeNode {
-                public Map<String, FileNode> children;
+			public Map<String, FileNode> children;
+			private String name;
 
-                public FileNode(String fullName) {
-                    super(fullName);
-                    children = new HashMap<String, FileNode>();
-                }
+			public FileNode(String fullName) {
+				super(fullName);
+				name = fullName;
+				children = new HashMap<String, FileNode>();
+			}
 
-                public void addChild(String fullName, FileNode child) {
-                    if (!children.containsKey(fullName)) {
-                        children.put(fullName, child);
-                        add(child);
-                    }
-                }
+			public void addChild(FileNode child) {
+				if (!children.containsKey(child.getName())) {
+					children.put(child.getName(), child);
+					add(child);
+				}
+			}
 
-                public boolean hasNode(String fullName) {
-                    return children.containsKey(fullName);
-                }
+			public boolean hasNode(String fullName) {
+				return children.containsKey(fullName);
+			}
 
-                public FileNode getNode(String fullName) {
-                    return children.get(fullName);
-                }
+			public FileNode getNode(String fullName) {
+				return children.get(fullName);
+			}
 
-                public String toString() {
-                    String s = super.toString();
-                    int idx = s.lastIndexOf('/');
-                    if (idx == -1) {
-                        return s;
-                    }
-                    return s.substring(idx + 1);
-                }
-            }
+			public String toString() {
+				String s = super.toString();
+				int idx = s.lastIndexOf('/');
+				if (idx == -1) {
+					return s;
+				}
+				return s.substring(idx + 1);
+			}
 
-            private FileNode root;
+			public String getName() {
+				return name;
+			}
+		}
+
+		private class LeafFileNode extends FileNode {
+
+			private CommitFile file;
+
+			public LeafFileNode(CommitFile file) {
+				super(file.getFileName().substring(file.getFileName().lastIndexOf('/')));
+				this.file = file;
+			}
+
+			public String toString() {
+				String name = super.toString();
+				return name + " - " + file.getRevision();
+			}
+		}
+
+		private class FileTreeModel implements TreeModel {
+
+			private FileNode root;
 
             public FileTreeModel(List<CommitFile> files) {
                 root = new FileNode("/");
@@ -229,7 +239,7 @@ public final class BuildChangesToolWindow {
                         String newNodeName = fileName.substring(1, newIdx);
                         if (!node.hasNode(newNodeName)) {
                             FileNode newNode = new FileNode(fileName.substring(1, newIdx));
-                            node.addChild(fileName.substring(1, newIdx), newNode);
+                            node.addChild(newNode);
                             node = newNode;
                         } else {
                             node = node.getNode(newNodeName);
@@ -237,7 +247,8 @@ public final class BuildChangesToolWindow {
                     }
                     idx = newIdx + 1;
                 } while (idx > 0);
-            }
+				node.addChild(new LeafFileNode(file));
+			}
 
             public Object getRoot() {
                 return root;
@@ -271,7 +282,38 @@ public final class BuildChangesToolWindow {
 
         private JTree createFileTree(List<CommitFile> files) {
             JTree tree = new JTree(new FileTreeModel(files));
-            tree.setRootVisible(false);
+			DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer() {
+                public Component getTreeCellRendererComponent(JTree tree,
+                                   Object value,
+                                   boolean selected,
+                                   boolean expanded,
+                                   boolean leaf,
+                                   int row,
+                                   boolean hasFocus) {
+                    Component c = super.getTreeCellRendererComponent(
+                            tree, value, selected, expanded, leaf, row, hasFocus);
+
+					try {
+						FileNode node = (FileNode) value;
+						if (node.isLeaf()) {
+							FileTypeManager mgr = FileTypeManager.getInstance();
+							FileType type = mgr.getFileTypeByFileName(node.getName());
+							setIcon(type.getIcon());
+                        }
+					} catch (ClassCastException e) {
+                        // should not happen, making compiler happy
+                        setIcon(null);
+                    }
+
+					return c;
+                }
+            };
+			renderer.setOpenIcon(IconLoader.getIcon("/nodes/folderOpen.png"));
+			renderer.setClosedIcon(IconLoader.getIcon("/nodes/folder.png"));
+			tree.setCellRenderer(renderer);
+			tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+
+			tree.setRootVisible(false);
             return tree;
         }
     }
