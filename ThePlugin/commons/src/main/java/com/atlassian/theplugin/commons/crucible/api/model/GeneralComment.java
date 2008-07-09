@@ -33,6 +33,8 @@ public interface GeneralComment {
 
 	boolean isDefectApproved();
 
+	boolean isReply();
+
 	String getUser();
 
 	String getDisplayUser();
