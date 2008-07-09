@@ -16,17 +16,29 @@
 
 package com.atlassian.theplugin.eclipse.actions.bamboo;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.SWT;
 
+import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.eclipse.dialogs.bamboo.CommentBuildDialog;
+import com.atlassian.theplugin.eclipse.dialogs.bamboo.LabelBuildDialog;
+import com.atlassian.theplugin.eclipse.preferences.Activator;
 import com.atlassian.theplugin.eclipse.util.PluginUtil;
+import com.atlassian.theplugin.eclipse.view.bamboo.BambooBuildAdapterEclipse;
+import com.atlassian.theplugin.eclipse.view.bamboo.BambooToolWindow;
 
-public class CommentBuildAction extends Action {
+public class CommentBuildAction extends BambooAction {
 	
 	private static final String COMMENT_BUILD = "Comment Build";
 
-	public CommentBuildAction() {
-		super();
+	public CommentBuildAction(BambooToolWindow bambooToolWindow) {
+		super(bambooToolWindow);
 		
 		setEnabled(false); // action is disabled by default
 	}
@@ -35,6 +47,39 @@ public class CommentBuildAction extends Action {
 	@Override
 	public void run() {
 		super.run();
+		
+		final BambooBuildAdapterEclipse build = getBuild();
+		
+		CommentBuildDialog dialog = new CommentBuildDialog(Activator.getDefault().getShell(), build);
+		dialog.open();
+
+		if (dialog.getReturnCode() == SWT.OK && dialog.getComment().length() > 0) {
+
+			final String comment = dialog.getComment();
+			final String buildDesc = build.getBuildKey() + " " + build.getBuildNumber();
+
+			Job labelBuild = new Job("Commenting build " + buildDesc) {
+	
+				@Override
+				protected IStatus run(IProgressMonitor monitor) {
+					
+					try {
+						setUIMessage("Commenting build " + buildDesc);
+						bambooFacade.addCommentToBuild(
+								build.getServer(), build.getBuildKey(), build.getBuildNumber(), comment);
+						setUIMessage("Build " + buildDesc + " commented");
+					} catch (ServerPasswordNotProvidedException e) {
+						setUIMessage("Build " + buildDesc + "  not commented. Password not provided for server");
+					} catch (RemoteApiException e) {
+						setUIMessage("Build  " + buildDesc + " not commented. " + e.getMessage());
+					}
+					return Status.OK_STATUS;
+				}
+			};
+			
+			labelBuild.setPriority(Job.SHORT);
+			labelBuild.schedule();
+		};
 	}
 
 	@Override

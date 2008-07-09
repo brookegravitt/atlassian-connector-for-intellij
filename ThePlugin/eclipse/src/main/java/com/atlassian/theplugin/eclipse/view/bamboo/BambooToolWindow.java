@@ -74,7 +74,7 @@ public class BambooToolWindow extends ViewPart {
 		
 		this.runBuildAction = new RunBuildAction(this); 
 		this.labelBuildAction = new LabelBuildAction(this);
-		this.commentBuildAction = new CommentBuildAction();
+		this.commentBuildAction = new CommentBuildAction(this);
 		
 		toolBarManager.add(runBuildAction);
 		toolBarManager.add(labelBuildAction);
