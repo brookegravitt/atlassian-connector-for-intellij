@@ -12,34 +12,40 @@ import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.project.Project;
 import com.intellij.ui.content.Content;
 import com.intellij.peer.PeerFactory;
+import com.intellij.psi.PsiManager;
+import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiMethod;
+import com.intellij.psi.search.GlobalSearchScope;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.commons.bamboo.TestDetails;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeSelectionModel;
-import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.*;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
 import java.util.*;
 import java.util.List;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
-public class TestResultsToolWindow {
+public final class TestResultsToolWindow {
 
 	public interface TestTree {
-		public void expand();
-		public void collapse();
-        public void toggleAll();
-    }
+		boolean PASSED_TESTS_VISIBLE_DEFAULT = false;
+		
+		void expand();
+		void collapse();
+        void setPassedTestsVisible(boolean visible);
+		boolean isPassedTestsVisible();
+	}
 
 	private static final String TOOL_WINDOW_TITLE = "Bamboo Failed Tests";
-	private static final Icon LEAF_ICON = IconLoader.getIcon("/nodes/method.png");
-	private static final Icon FOLDER_OPEN_ICON = IconLoader.getIcon("/nodes/TreeOpen.png");
-	private static final Icon FOLDER_CLOSED_ICON = IconLoader.getIcon("/nodes/TreeClosed.png");
+	private static final Icon TEST_PASSED_ICON = IconLoader.getIcon("/runConfigurations/testPassed.png");
+	private static final Icon TEST_FAILED_ICON = IconLoader.getIcon("/runConfigurations/testFailed.png");
 
 	private static TestResultsToolWindow instance = new TestResultsToolWindow();
 
@@ -93,29 +99,34 @@ public class TestResultsToolWindow {
 		private static final float SPLIT_RATIO = 0.3f;
 
 		private JTree tree;
-        JScrollPane scroll;
-        private boolean showAllTests;
+        private JScrollPane scroll;
 
         private List<TestDetails> succeededTests;
         private List<TestDetails> failedTests;
 
         private ConsoleView console;
+		private boolean passedTestsVisible;
 
 		private abstract class AbstractTreeNode extends DefaultMutableTreeNode {
-            public AbstractTreeNode(String s) {
+			public AbstractTreeNode(String s) {
 				super(s);
 			}
 
 			public abstract void selected();
             public abstract boolean isFailed();
-        }
+			public String getTestStats() { return "";}
 
-		private class NonLeafNode extends AbstractTreeNode {
-            private boolean failed;
+			public abstract void navigate();
+		}
 
-            public NonLeafNode(String s, boolean failed) {
+		private abstract class NonLeafNode extends AbstractTreeNode {
+			protected int totalTests;
+			protected int failedTests;
+
+            public NonLeafNode(String s, int totalTests, int failedTests) {
 				super(s);
-                this.failed = failed;
+				this.totalTests = totalTests;
+				this.failedTests = failedTests;
             }
 
 			public void selected() {
@@ -123,16 +134,84 @@ public class TestResultsToolWindow {
 			}
 
             public boolean isFailed() {
-                return failed;
+                return failedTests > 0;
             }
-        }
 
-		private class TestErrorInfoNode extends AbstractTreeNode {
-			private TestDetails details;
+			public String getTestStats() {
+				return " (" + failedTests + "/" + totalTests + " failed)";
+			}
 
-			public TestErrorInfoNode(TestDetails details) {
+			public void addFailedTest() {
+				++failedTests;
+			}
+
+			public void addTest() {
+				++totalTests;
+			}
+
+			public int getFailedTests() {
+				return failedTests;
+			}
+
+			public int getTotalTests() {
+				return totalTests;
+			}
+		}
+
+		private class PackageNode extends NonLeafNode {
+			public PackageNode(String s, int totalTests, int failedTests) {
+				super(s, totalTests, failedTests);
+			}
+
+			public void navigate() {
+				// no-op for packages
+			}
+
+		}
+
+		private class ClassNode extends NonLeafNode {
+			private String className;
+
+			public ClassNode(String fqcn, int totalTests, int failedTests) {
+				super(fqcn.substring(fqcn.lastIndexOf('.') + 1), totalTests, failedTests);
+				className = fqcn;
+			}
+
+			public void navigate() {
+				Project proj = IdeaHelper.getCurrentProject();
+				PsiClass cls = PsiManager.getInstance(proj).findClass(className,
+						GlobalSearchScope.allScope(proj));
+				if (cls != null) {
+					cls.navigate(true);
+				}
+			}
+		}
+
+		private abstract class TestNode extends AbstractTreeNode {
+			protected TestDetails details;
+
+			public TestNode(TestDetails details) {
 				super(details.getTestMethodName());
 				this.details = details;
+			}
+
+			public void navigate() {
+				Project proj = IdeaHelper.getCurrentProject();
+				PsiClass cls = PsiManager.getInstance(proj).findClass(details.getTestClassName(),
+						GlobalSearchScope.allScope(proj));
+				if (cls == null) {
+					return;
+				}
+				PsiMethod[] methods = cls.findMethodsByName(details.getTestMethodName(), false);
+				if (methods == null || methods[0] == null) {
+					return;
+				}
+				methods[0].navigate(true);
+			}
+		}
+		private class TestErrorInfoNode extends TestNode {
+			public TestErrorInfoNode(TestDetails details) {
+				super(details);
 			}
 
 			public void selected() {
@@ -144,103 +223,119 @@ public class TestResultsToolWindow {
             }
 		}
 
-        private class TestSuccessInfoNode extends AbstractTreeNode {
-            private TestDetails details;
-
+        private class TestSuccessInfoNode extends TestNode {
             public TestSuccessInfoNode(TestDetails details) {
-                super(details.getTestMethodName());
-                this.details = details;
+                super(details);
             }
 
             public void selected() {
-                print(details.getTestResult().toString());
+                print("Test successful");
             }
 
             public boolean isFailed() {
                 return false;
             }
-        }
+		}
 
-        private JTree createTestTree() {
-			DefaultMutableTreeNode root = new NonLeafNode("root", false);
+		private JTree createTestTree() {
+			NonLeafNode root = new PackageNode("All Tests",
+					failedTests.size() + succeededTests.size(), failedTests.size());
 
-            //
-            // warning: somewhat tricky algorithm below:
-            // package and class tree nodes are first populated as leaf nodes. Because of the fact
-            // that we iterate over failed tests after succeeded tests, packages and classes are
-            // automagically determined to be failing if at least one of their test methods fails
-            // after determining whether a node should be failing or not, it is replaced with a non-leaf node
-            //
-            HashMap<String, AbstractTreeNode> packages = new HashMap<String, AbstractTreeNode>();
-            if (showAllTests) {
-                for (TestDetails d : succeededTests) {
-                    String fqcn = d.getTestClassName();
-                    String pkg = fqcn.substring(0, fqcn.lastIndexOf('.'));
-                    packages.put(pkg, new TestSuccessInfoNode(d));
-                }
+            Map<String, NonLeafNode> packages = new LinkedHashMap<String, NonLeafNode>();
+			for (TestDetails d : succeededTests) {
+				String fqcn = d.getTestClassName();
+				String pkg = fqcn.substring(0, fqcn.lastIndexOf('.'));
+				NonLeafNode n = packages.get(pkg);
+				if (n == null) {
+					packages.put(pkg, new PackageNode(pkg, 1, 0));
+				} else {
+					n.addTest();
+				}
             }
             for (TestDetails d : failedTests) {
                 String fqcn = d.getTestClassName();
                 String pkg = fqcn.substring(0, fqcn.lastIndexOf('.'));
-                packages.put(pkg, new TestErrorInfoNode(d));
-            }
-
-            for (Map.Entry<String, AbstractTreeNode> p : packages.entrySet()) {
-                AbstractTreeNode pkgNode = new NonLeafNode(p.getKey(), p.getValue().isFailed());
-                p.setValue(pkgNode);
-				root.add(pkgNode);
+				NonLeafNode n = packages.get(pkg);
+				if (n == null) {
+	                packages.put(pkg, new PackageNode(pkg, 1, 1));
+				} else {
+					n.addTest();
+					n.addFailedTest();
+				}
 			}
 
-			HashMap<String, AbstractTreeNode> classes = new HashMap<String, AbstractTreeNode>();
-            if (showAllTests) {
-                for (TestDetails d : succeededTests) {
-                    String fqcn = d.getTestClassName();
-                    classes.put(fqcn, new TestSuccessInfoNode(d));
-                }
-            }
+            for (Map.Entry<String, NonLeafNode> p : packages.entrySet()) {
+				NonLeafNode n = p.getValue();
+				if (n.isFailed() || passedTestsVisible) {
+					root.add(n);
+				}
+			}
+
+			Map<String, NonLeafNode> classes = new LinkedHashMap<String, NonLeafNode>();
+			for (TestDetails d : succeededTests) {
+				String fqcn = d.getTestClassName();
+				NonLeafNode n = classes.get(fqcn);
+				if (n == null) {
+					classes.put(fqcn, new ClassNode(fqcn, 1, 0));
+				} else {
+					n.addTest();
+				}
+			}
             for (TestDetails d : failedTests) {
                 String fqcn = d.getTestClassName();
-                classes.put(fqcn, new TestErrorInfoNode(d));
-            }
-
-            for (Map.Entry<String, AbstractTreeNode> c : classes.entrySet()) {
-				String fqcn = c.getKey();
-				String pkg = fqcn.substring(0, fqcn.lastIndexOf('.'));
-				String cls = fqcn.substring(fqcn.lastIndexOf('.') + 1);
-				AbstractTreeNode clsNode = new NonLeafNode(cls, c.getValue().isFailed());
-				packages.get(pkg).add(clsNode);
-				c.setValue(clsNode);
+				NonLeafNode n = classes.get(fqcn);
+				if (n == null) {
+					classes.put(fqcn, new ClassNode(fqcn, 1, 1));
+				} else {
+					n.addTest();
+					n.addFailedTest();
+				}
 			}
 
-            if (showAllTests) {
+            for (Map.Entry<String, NonLeafNode> c : classes.entrySet()) {
+				String fqcn = c.getKey();
+				String pkg = fqcn.substring(0, fqcn.lastIndexOf('.'));
+				NonLeafNode n = c.getValue(); packages.get(pkg);
+				if (n.isFailed() || passedTestsVisible) {
+					packages.get(pkg).add(n);
+				}
+			}
+
+            if (passedTestsVisible) {
                 for (TestDetails d : succeededTests) {
                     String fqcn = d.getTestClassName();
-                    DefaultMutableTreeNode node = classes.get(fqcn);
+                    AbstractTreeNode node = classes.get(fqcn);
                     node.add(new TestSuccessInfoNode(d));
                 }
             }
             for (TestDetails d : failedTests) {
                 String fqcn = d.getTestClassName();
-                DefaultMutableTreeNode node = classes.get(fqcn);
+                AbstractTreeNode node = classes.get(fqcn);
                 node.add(new TestErrorInfoNode(d));
             }
 
-            //
-            // end of tricky algorithm
-            //
-
             DefaultTreeModel tm = new DefaultTreeModel(root);
-			tree = new JTree(tm);
-			tree.setRootVisible(false);
-			tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-			tree.addTreeSelectionListener(new TreeSelectionListener() {
+			JTree testTree = new JTree(tm);
+			testTree.setRootVisible(true);
+			testTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+			testTree.addTreeSelectionListener(new TreeSelectionListener() {
 				public void valueChanged(TreeSelectionEvent e) {
 					AbstractTreeNode errInfoNode = (AbstractTreeNode) e.getPath().getLastPathComponent();
 					errInfoNode.selected();
 				}
 			});
+			testTree.addMouseListener(new MouseAdapter() {
 
-            DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer() {
+				public void mouseClicked(MouseEvent e) {
+					if (e.getClickCount() >= 2) {
+						TreePath path = tree.getPathForLocation(e.getX(), e.getY());
+						AbstractTreeNode node = (AbstractTreeNode) path.getLastPathComponent();
+						node.navigate();
+					}
+				}
+			});
+
+			DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer() {
                 public Component getTreeCellRendererComponent(JTree tree,
                                    Object value,
                                    boolean selected,
@@ -250,27 +345,36 @@ public class TestResultsToolWindow {
                                    boolean hasFocus) {
                     Component c = super.getTreeCellRendererComponent(
                             tree, value, selected, expanded, leaf, row, hasFocus);
-                    try {
-                        if (((AbstractTreeNode) value).isFailed()) {
-                            setIcon(LEAF_ICON);
+
+					// this sort of is not right, as it assumes that getTreeCellRendererComponent() of the
+					// DefaultTreeCellRenderer will always return _this_ (JLabel). If the implementation changes
+					// someday, we are screwed :)
+					try {
+						AbstractTreeNode node = (AbstractTreeNode) value;
+						if (node.isFailed()) {
+                            setIcon(TEST_FAILED_ICON);
                         } else {
-                            setIcon(FOLDER_CLOSED_ICON);
+                            setIcon(TEST_PASSED_ICON);
                         }
+						StringBuilder txt = new StringBuilder();
+						txt.append("<html><body>");
+						txt.append(getText());
+						txt.append(" <font color=\"GRAY\"><i>");
+						txt.append(node.getTestStats());
+						txt.append("</i></font>");
+						txt.append("</body></html>");
+						setText(txt.toString());
                     } catch (ClassCastException e) {
                         // should not happen, making compiler happy
-                        setIcon(FOLDER_OPEN_ICON);
+                        setIcon(null);
                     }
-                    return c;
+
+					return c;
                 }
             };
-            renderer.setOpenIcon(FOLDER_OPEN_ICON);
-            renderer.setClosedIcon(FOLDER_CLOSED_ICON);
-            renderer.setLeafIcon(LEAF_ICON);
-            tree.setCellRenderer(renderer);
+            testTree.setCellRenderer(renderer);
 
-			expand();
-
-			return tree;
+			return testTree;
 		}
 
 		public TestDetailsPanel(String name, final List<TestDetails> failedTests,
@@ -309,8 +413,10 @@ public class TestResultsToolWindow {
 				
 				treePanel.add(comp, gbc1);
 
-                showAllTests = true;
-                JTree tree = createTestTree();
+				passedTestsVisible = PASSED_TESTS_VISIBLE_DEFAULT;
+
+				tree = createTestTree();
+				expand();
 				scroll = new JScrollPane(tree);
 
 				gbc1.gridy = 1;
@@ -361,21 +467,26 @@ public class TestResultsToolWindow {
 		}
 
 		public void expand() {
-			for (int row = 0; row < tree.getRowCount(); ++row) {
+			for (int row = 1; row < tree.getRowCount(); ++row) {
 				tree.expandRow(row);
 			}
 		}
 
 		public void collapse() {
-			for (int row = tree.getRowCount() - 1; row >= 0; --row) {
+			for (int row = tree.getRowCount() - 1; row > 0; --row) {
 				tree.collapseRow(row);
 			}
 		}
 
-        public void toggleAll() {
-            showAllTests = !showAllTests;
-            tree = createTestTree();
-            scroll.setViewportView(tree);
+        public void setPassedTestsVisible(boolean visible) {
+			passedTestsVisible = visible;
+			tree = createTestTree();
+			expand();
+			scroll.setViewportView(tree);
         }
-    }
+
+		public boolean isPassedTestsVisible() {
+			return passedTestsVisible;
+		}
+	}
 }
