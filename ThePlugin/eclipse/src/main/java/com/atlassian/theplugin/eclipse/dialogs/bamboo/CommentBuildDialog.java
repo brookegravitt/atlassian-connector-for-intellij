@@ -27,7 +27,7 @@ public class CommentBuildDialog {
 	private Composite compositeRowButtons;
 
 	public CommentBuildDialog(Shell parent, BambooBuildAdapterEclipse build) {
-		shell = new Shell(parent, SWT.BORDER | SWT.CLOSE | SWT.APPLICATION_MODAL);
+		shell = new Shell(parent, SWT.BORDER | SWT.CLOSE | SWT.APPLICATION_MODAL | SWT.RESIZE);
 		shell.setText("Comment Build");
 		// place the window in the center of parent
 		shell.setLocation(
@@ -97,17 +97,29 @@ public class CommentBuildDialog {
 	}
 
 	private void createRowBottom() {
-		Composite compositeRowBottom = null;
-		GridData gridData = new GridData();
-		gridData.horizontalSpan = 1;
-		gridData.widthHint = 260;
-		gridData.heightHint = 100;
-		GridLayout gridLayout = new GridLayout();
-		gridLayout.numColumns = 1;
-		compositeRowBottom = new Composite(shell, SWT.NONE);
-		compositeRowBottom.setLayout(gridLayout);
+		Composite compositeRowBottom = new Composite(shell, SWT.NONE);
+		
+		GridLayout gridLayoutComposite = new GridLayout();
+		gridLayoutComposite.numColumns = 1;
+		
+		GridData gridDataComposite = new GridData(SWT.LEFT | SWT.FILL);
+		gridDataComposite.horizontalAlignment = GridData.FILL;
+ 		gridDataComposite.grabExcessHorizontalSpace = true;
+		gridDataComposite.verticalAlignment = GridData.FILL;
+		gridDataComposite.grabExcessVerticalSpace = true;
+		
+		compositeRowBottom.setLayout(gridLayoutComposite);
+		compositeRowBottom.setLayoutData(gridDataComposite);
+		
 		comment = new Text(compositeRowBottom, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
-		comment.setLayoutData(gridData);
+		
+		GridData gridDataText = new GridData(SWT.LEFT | SWT.FILL);
+		gridDataText.horizontalAlignment = GridData.FILL;
+ 		gridDataText.grabExcessHorizontalSpace = true;
+ 		gridDataText.verticalAlignment = GridData.FILL;
+ 		gridDataText.grabExcessVerticalSpace = true;
+
+		comment.setLayoutData(gridDataText);
 	}
 	
 	public void open() {
