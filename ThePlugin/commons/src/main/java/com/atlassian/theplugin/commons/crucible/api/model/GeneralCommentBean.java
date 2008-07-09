@@ -80,6 +80,10 @@ public class GeneralCommentBean implements GeneralComment {
 		return defectApproved;
 	}
 
+	public boolean isReply() {
+		return false;  //To change body of implemented methods use File | Settings | File Templates.
+	}
+
 	public void setDefectApproved(boolean defectApproved) {
 		this.defectApproved = defectApproved;
 	}
