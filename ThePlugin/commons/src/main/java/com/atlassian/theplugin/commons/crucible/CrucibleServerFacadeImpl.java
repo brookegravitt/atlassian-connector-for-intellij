@@ -396,7 +396,9 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
         List<ReviewInfo> result = new ArrayList<ReviewInfo>(reviews.size());
 
         for (Review review : reviews) {
-            result.add(new ReviewInfoImpl(review, null, server));
+			List<Reviewer> reviewers = session.getReviewers(review.getPermaId());
+			ReviewInfoImpl reviewInfo = new ReviewInfoImpl(review, reviewers, server);
+			result.add(reviewInfo);
         }
 
         return result;

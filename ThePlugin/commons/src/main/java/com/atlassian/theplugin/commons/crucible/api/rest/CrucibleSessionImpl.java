@@ -214,7 +214,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 
             if (elements != null && !elements.isEmpty()) {
                 for (Element element : elements) {
-                    reviews.add(CrucibleRestXmlHelper.parseReviewNode(element));
+					reviews.add(CrucibleRestXmlHelper.parseReviewNode(element));
                 }
             }
             return reviews;
