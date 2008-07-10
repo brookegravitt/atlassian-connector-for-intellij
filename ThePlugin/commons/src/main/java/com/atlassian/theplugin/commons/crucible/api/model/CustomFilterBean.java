@@ -34,6 +34,7 @@ public class CustomFilterBean implements CustomFilter {
     private boolean enabled;
     private static final double ID_DISCRIMINATOR = 1002d;
     private static final int HASHCODE_CONSTANT = 31;
+    private static final int SHIFT_32 = 32;
 
     public boolean equals(Object o) {
 		if (this == o) {
@@ -64,8 +65,8 @@ public class CustomFilterBean implements CustomFilter {
 		result = HASHCODE_CONSTANT * result + (complete ? 1 : 0);
 		result = HASHCODE_CONSTANT * result + (allReviewersComplete ? 1 : 0);
 		result = HASHCODE_CONSTANT * result + (projectKey != null ? projectKey.hashCode() : 0);
-		result = HASHCODE_CONSTANT * result + (int) (uid ^ (uid >>> 32));
-		result = HASHCODE_CONSTANT * result + (int) (serverUid ^ (serverUid >>> 32));
+		result = HASHCODE_CONSTANT * result + (int) (uid ^ (uid >>> SHIFT_32));
+		result = HASHCODE_CONSTANT * result + (int) (serverUid ^ (serverUid >>> SHIFT_32));
 		return result;
 	}
 

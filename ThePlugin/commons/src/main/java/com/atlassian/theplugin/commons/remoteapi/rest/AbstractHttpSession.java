@@ -49,9 +49,13 @@ public abstract class AbstractHttpSession {
 
     private final Object clientLock = new Object();
 
-	public static ThreadLocal url = new ThreadLocal();
+	private static ThreadLocal<String> url = new ThreadLocal<String>();
 
-	/**
+    public static String getUrl() {
+        return url.get();
+    }
+
+    /**
      * Public constructor for AbstractHttpSession
      *
      * @param baseUrl base URL for server instance

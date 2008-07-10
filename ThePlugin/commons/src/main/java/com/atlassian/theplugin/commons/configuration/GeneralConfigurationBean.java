@@ -18,7 +18,6 @@ package com.atlassian.theplugin.commons.configuration;
 
 import com.atlassian.theplugin.commons.util.Version;
 
-import java.security.cert.X509Certificate;
 import java.util.Collection;
 import java.util.HashSet;
 
