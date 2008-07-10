@@ -48,37 +48,29 @@ public interface GeneralComment {
 	STATE getState();
 
 	public enum STATE {
-		DRAFT {
-			public String GetColorString() {
-				return "#FFD415";
-			}},
-		REVIEW {
-			public String GetColorString() {
-				return "green";
-			}},
-		DEFECT_RAISED {
-			public String GetColorString() {
-				return "#FFD415";
-			}
+
+        DRAFT("#FFD415"),
+		REVIEW("green"),
+		DEFECT_RAISED("#FFD415") {
 			public String toString() {
 				return "DEFECT";
 			}
 		},
-		DEFECT_APPROVED {
-			public String GetColorString() {
-				return DEFECT_RAISED.GetColorString();
-			}
-
+		DEFECT_APPROVED(DEFECT_RAISED.getColorString()) {
 			public String toString() {
 				return "DEFECT APROVED";
 			}
 		},
-		DELETED {
-			public String GetColorString() {
-				return "black";
-			}
-		};
+		DELETED("black");
 
-		public abstract String GetColorString();
+        STATE(String colorString) {
+            this.colorString = colorString;
+        }
+
+        private String colorString;
+
+        public String getColorString() {
+            return colorString;
+        }
 	}
 }

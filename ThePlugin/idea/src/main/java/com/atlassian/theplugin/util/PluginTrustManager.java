@@ -108,7 +108,7 @@ public class PluginTrustManager implements X509TrustManager {
 				message = "Certificate not yet valid";
 			}
 			final String server =
-					AbstractHttpSession.getServerNameFromUrl((String) AbstractHttpSession.url.get());
+					AbstractHttpSession.getServerNameFromUrl(AbstractHttpSession.getUrl());
 
 			// check if it should be accepted
 			final int[] accepted = new int[]{0}; // 0 rejected 1 accepted temporarily 2 - accepted perm.

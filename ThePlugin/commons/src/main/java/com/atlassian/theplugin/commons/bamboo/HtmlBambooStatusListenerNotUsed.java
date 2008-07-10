@@ -27,7 +27,8 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 /**
- * Renders Bamboo build results as HTML and passes it to configured {@link com.atlassian.theplugin.commons.bamboo.BambooStatusDisplay}
+ * Renders Bamboo build results as HTML and passes it to configured
+ * {@link com.atlassian.theplugin.commons.bamboo.BambooStatusDisplay}
  */
 	public class HtmlBambooStatusListenerNotUsed implements BambooStatusListener {
 

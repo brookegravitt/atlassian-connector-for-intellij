@@ -28,7 +28,6 @@ import com.atlassian.theplugin.commons.util.LoggerImpl;
 import java.util.*;
 import java.text.SimpleDateFormat;
 
-import org.joda.time.DateTime;
 
 
 /**
@@ -122,7 +121,8 @@ public final class BambooStatusChecker implements SchedulableChecker, Configurat
 							sb.append(server.getName()).append(":");
 							sb.append("last result time: ").append(dateFormat.format(lastActionRun));
 							sb.append(" current run time : ").append(dateFormat.format(newRun));
-							sb.append(" time difference: ").append(dateFormat.format((newRun.getTime()-lastActionRun.getTime())));
+							sb.append(" time difference: ")
+                                    .append(dateFormat.format((newRun.getTime() - lastActionRun.getTime())));
 							LoggerImpl.getInstance().debug(sb.toString());
 
 							newServerBuildsStatus.addAll(
@@ -190,8 +190,8 @@ public final class BambooStatusChecker implements SchedulableChecker, Configurat
 		return NAME;
 	}
 
-	public void updateConfiguration(PluginConfigurationBean configuration) {
-		this.configuration = configuration;
+	public void updateConfiguration(PluginConfigurationBean configurationBean) {
+		this.configuration = configurationBean;
 	}
 
 }

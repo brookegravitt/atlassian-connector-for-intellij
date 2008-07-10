@@ -76,16 +76,16 @@ public class ReviewItemBean implements ReviewItem {
 	}
 
 	public String toString() {
-		String fromPath = stripPath(getFromPath());
-		String toPath = stripPath(getToPath());
+		String from = stripPath(getFromPath());
+		String to = stripPath(getToPath());
 
-		if (fromPath.length() > 0 && toPath.length() > 0) {
-			return fromPath + " (mod)";
-		} else if (fromPath.length() > 0) {
-			return fromPath + " (new)";
+		if (from.length() > 0 && to.length() > 0) {
+			return from + " (mod)";
+		} else if (from.length() > 0) {
+			return from + " (new)";
 		} else {
-			if (toPath.length() > 0) {
-				return toPath + " (del)";
+			if (to.length() > 0) {
+				return to + " (del)";
 			} else {
 				return "unknown";
 			}

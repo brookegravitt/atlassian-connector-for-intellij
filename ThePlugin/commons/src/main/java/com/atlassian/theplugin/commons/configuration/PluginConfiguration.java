@@ -20,8 +20,6 @@ import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.util.HttpConfigurableAdapter;
 
-import java.security.cert.X509Certificate;
-import java.util.Collection;
 
 public interface PluginConfiguration {
 	ProductServerConfiguration getProductServers(ServerType serverType);
