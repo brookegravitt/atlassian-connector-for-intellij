@@ -18,13 +18,23 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.Constants;
 
 import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
 import javax.swing.event.TreeModelListener;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.ListSelectionEvent;
 import javax.swing.tree.*;
 import java.util.*;
 import java.util.List;
 import java.awt.*;
 
 public final class BuildChangesToolWindow {
+
+	public interface ChangesTree extends Expandable {
+		void showDiff();
+		void showDiffWithLocal();
+		void showRepositoryVersion();
+	}
 
 	private static final String TOOL_WINDOW_TITLE = "Bamboo Build Changes";
 
@@ -37,6 +47,10 @@ public final class BuildChangesToolWindow {
 
 	public static BuildChangesToolWindow getInstance() {
 		return instance;
+	}
+
+	public static ChangesTree getChangesTree(String name) {
+		return panelMap.get(name);
 	}
 
 	public void showBuildChanges(String buildKey, String buildNumber, List<Commit> commits) {
@@ -53,27 +67,27 @@ public final class BuildChangesToolWindow {
 
 		Content content = commitDetailsToolWindow.getContentManager().findContent(contentKey);
 
-		synchronized (panelMap) {
-			if (content != null) {
-				detailsPanel = panelMap.get(contentKey);
-			} else {
-				detailsPanel = new CommitDetailsPanel(contentKey, commits);
-				panelMap.remove(contentKey);
-				panelMap.put(contentKey, detailsPanel);
+		if (content == null) {
+			detailsPanel = new CommitDetailsPanel(contentKey, commits);
+			panelMap.remove(contentKey);
+			panelMap.put(contentKey, detailsPanel);
 
-				PeerFactory peerFactory = PeerFactory.getInstance();
-				content = peerFactory.getContentFactory().createContent(detailsPanel, contentKey, true);
-				content.setIcon(Constants.BAMBOO_COMMITS_ICON);
-				content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
-				commitDetailsToolWindow.getContentManager().addContent(content);
-			}
+			PeerFactory peerFactory = PeerFactory.getInstance();
+			content = peerFactory.getContentFactory().createContent(detailsPanel, contentKey, true);
+			content.setIcon(Constants.BAMBOO_COMMITS_ICON);
+			content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
+			commitDetailsToolWindow.getContentManager().addContent(content);
 		}
+
 		commitDetailsToolWindow.getContentManager().setSelectedContent(content);
 		commitDetailsToolWindow.show(null);
 	}
 
-	private class CommitDetailsPanel extends JPanel {
+	private class CommitDetailsPanel extends JPanel implements ChangesTree {
 		private static final float SPLIT_RATIO = 0.6f;
+		private JTree fileTree;
+		private JTable commitsTable;
+		private JScrollPane fileScroll;
 
 		public CommitDetailsPanel(String name, final List<Commit> commits) {
 			super();
@@ -90,73 +104,46 @@ public final class BuildChangesToolWindow {
 			gbc.weighty = 1.0;
 			gbc.fill = GridBagConstraints.BOTH;
 
-			JPanel treePanel = new JPanel();
-			treePanel.setLayout(new GridBagLayout());
+			JPanel tablePanel = new JPanel();
+			tablePanel.setLayout(new GridBagLayout());
 			GridBagConstraints gbc1 = new GridBagConstraints();
-
-			ActionManager manager = ActionManager.getInstance();
-			ActionGroup group = (ActionGroup) manager.getAction("ThePlugin.Bamboo.TestResultsToolBar");
-			ActionToolbar toolbar = manager.createActionToolbar(name, group, true);
-//			JComponent comp = toolbar.getComponent();
 
 			gbc1.gridx = 0;
 			gbc1.gridy = 0;
 			gbc1.weightx = 1.0;
-			gbc1.weighty = 0.0;
-			gbc1.fill = GridBagConstraints.HORIZONTAL;
-
-//			treePanel.add(comp, gbc1);
-
-			DefaultMutableTreeNode root = new DefaultMutableTreeNode(name);
-			for (Commit c : commits) {
-				String info = c.getAuthor() + " - " + c.getCommitDate().toString();
-				DefaultMutableTreeNode node = new DefaultMutableTreeNode(info);
-				root.add(node);
-				for (CommitFile f : c.getFiles()) {
-					String fName = f.getFileName() + " - " + f.getRevision();
-					DefaultMutableTreeNode fNode = new DefaultMutableTreeNode(fName);
-					node.add(fNode);
-				}
-			}
-
-			DefaultTreeModel tm = new DefaultTreeModel(root);
-			JTree tree = new JTree(tm);
-			tree.setRootVisible(false);
-			tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-
-			gbc1.gridy = 1;
 			gbc1.weighty = 1.0;
 			gbc1.fill = GridBagConstraints.BOTH;
 
-			treePanel.add(new JScrollPane(tree), gbc1);
+			commitsTable = createCommistable(commits);
+			tablePanel.add(new JScrollPane(commitsTable), gbc1);
 
-			split.setFirstComponent(treePanel);
+			split.setFirstComponent(tablePanel);
 
 			JPanel fileTreePanel = new JPanel();
 			fileTreePanel.setLayout(new GridBagLayout());
 
 			gbc1.gridy = 0;
 			gbc1.weighty = 0.0;
-			gbc1.fill = GridBagConstraints.NONE;
+			gbc1.weightx = 1.0;
+			gbc1.fill = GridBagConstraints.HORIZONTAL;
 			gbc1.anchor = GridBagConstraints.LINE_START;
 
-			JLabel label = new JLabel("Commit Files");
-
-			Dimension d = label.getPreferredSize();
-			d.height = toolbar.getMaxButtonHeight();
-			label.setMinimumSize(d);
-			label.setPreferredSize(d);
-			fileTreePanel.add(label, gbc1);
+			ActionManager manager = ActionManager.getInstance();
+			ActionGroup group = (ActionGroup) manager.getAction("ThePlugin.Bamboo.CommitListToolBar");
+			ActionToolbar toolbar = manager.createActionToolbar(name, group, true);
+			JComponent comp = toolbar.getComponent();
+			fileTreePanel.add(comp, gbc1);
 
 			gbc1.gridy = 1;
+			JLabel label = new JLabel("Changed Files");
+			fileTreePanel.add(label, gbc1);
+
+			gbc1.gridy = 2;
 			gbc1.weighty = 1.0;
 			gbc1.fill = GridBagConstraints.BOTH;
 
-			if (commits.size() > 0) {
-				fileTreePanel.add(new JScrollPane(createFileTree(commits.get(0).getFiles())), gbc1);
-			} else {
-				fileTreePanel.add(new JLabel("No commits"), gbc1);
-			}
+			fileScroll = new JScrollPane();
+			fileTreePanel.add(fileScroll, gbc1);
 
 			split.setSecondComponent(fileTreePanel);
 
@@ -181,6 +168,18 @@ public final class BuildChangesToolWindow {
 				}
 			}
 
+			public void removeChild(FileNode child) {
+				if (children.containsKey(child.getName())) {
+					children.remove(child.getName());
+					remove(child);
+				}
+			}
+
+			public void removeChildren() {
+				children.clear();
+				removeAllChildren();
+			}
+
 			public boolean hasNode(String fullName) {
 				return children.containsKey(fullName);
 			}
@@ -189,17 +188,16 @@ public final class BuildChangesToolWindow {
 				return children.get(fullName);
 			}
 
-			public String toString() {
-				String s = super.toString();
-				int idx = s.lastIndexOf('/');
-				if (idx == -1) {
-					return s;
-				}
-				return s.substring(idx + 1);
-			}
-
 			public String getName() {
 				return name;
+			}
+
+			public void setName(String newName) {
+				name = newName;
+			}
+
+			public String toString() {
+				return getName();
 			}
 		}
 
@@ -208,7 +206,7 @@ public final class BuildChangesToolWindow {
 			private CommitFile file;
 
 			public LeafFileNode(CommitFile file) {
-				super(file.getFileName().substring(file.getFileName().lastIndexOf('/')));
+				super(file.getFileName().substring(file.getFileName().lastIndexOf('/') + 1));
 				this.file = file;
 			}
 
@@ -227,18 +225,49 @@ public final class BuildChangesToolWindow {
                 for (CommitFile f : files) {
                     addFile(f);
                 }
-            }
+				compactTree(root);
+			}
 
-            public void addFile(CommitFile file) {
+			private void compactTree(FileNode node) {
+				if (node.isLeaf()) {
+					return;
+				}
+
+				List<FileNode> ch = new ArrayList<FileNode>();
+
+				for (FileNode n : node.children.values()) {
+					ch.add(n);
+				}
+
+				node.removeChildren();
+
+				for (FileNode n : ch) {
+					compactTree(n);
+					if (n.getChildCount() == 1) {
+						FileNode cn = (FileNode) n.getFirstChild();
+						if (!cn.isLeaf()) {
+							String newName = n.getName() + "/" + cn.getName();
+							cn.setName(newName);
+							node.addChild(cn);
+						} else {
+							node.addChild(n);
+						}
+					} else {
+						node.addChild(n);
+					}
+				}
+			}
+
+			public void addFile(CommitFile file) {
                 int idx = 1;
                 String fileName = file.getFileName();
                 FileNode node = root;
                 do {
                     int newIdx = file.getFileName().indexOf('/', idx);
                     if (newIdx != -1) {
-                        String newNodeName = fileName.substring(1, newIdx);
+                        String newNodeName = fileName.substring(idx, newIdx);
                         if (!node.hasNode(newNodeName)) {
-                            FileNode newNode = new FileNode(fileName.substring(1, newIdx));
+							FileNode newNode = new FileNode(newNodeName);
                             node.addChild(newNode);
                             node = newNode;
                         } else {
@@ -280,7 +309,60 @@ public final class BuildChangesToolWindow {
             }
         }
 
-        private JTree createFileTree(List<CommitFile> files) {
+		private JTable createCommistable(final List<Commit> commits) {
+			TableModel model = new AbstractTableModel() {
+				private String[] columnNames = {"Date", "Author", "Comment"};
+				public String getColumnName(int col) {
+					return columnNames[col];
+				}
+				public int getRowCount() { return commits.size(); }
+				public int getColumnCount() { return columnNames.length; }
+				public Object getValueAt(int row, int col) {
+					Commit c = commits.get(row);
+					switch (col) {
+						case 0:
+							return c.getCommitDate();
+						case 1:
+							return c.getAuthor();
+						case 2:
+							return c.getComment();
+						default:
+							return null;
+					}
+				}
+				public boolean isCellEditable(int row, int col) { return false; }
+				public void setValueAt(Object value, int row, int col) { }
+			};
+
+			final JTable table = new JTable(model);
+			table.setShowVerticalLines(false);
+			table.setShowHorizontalLines(false);
+			table.setShowGrid(false);
+
+			// please someone fix this to not suck :)
+			table.getColumnModel().getColumn(0).setPreferredWidth(200);
+			table.getColumnModel().getColumn(1).setPreferredWidth(100);
+			table.getColumnModel().getColumn(2).setPreferredWidth(2000);
+			table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+			table.getColumnModel().setColumnMargin(0);
+			table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+				public void valueChanged(ListSelectionEvent e) {
+					Commit c = commits.get(table.getSelectedRow());
+					if (c.getFiles().size() > 0) {
+						fileTree = createFileTree(c.getFiles());
+						fileScroll.setViewportView(fileTree);
+						expand();
+					} else {
+						fileScroll.setViewportView(new JLabel("no commits", SwingConstants.CENTER));
+					}
+				}
+			});
+			return table;
+		}
+
+		private JTree createFileTree(List<CommitFile> files) {
             JTree tree = new JTree(new FileTreeModel(files));
 			DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer() {
                 public Component getTreeCellRendererComponent(JTree tree,
@@ -316,5 +398,35 @@ public final class BuildChangesToolWindow {
 			tree.setRootVisible(false);
             return tree;
         }
-    }
+
+		public void showDiff() {
+			// todo
+		}
+
+		public void showDiffWithLocal() {
+			// todo
+		}
+
+		public void showRepositoryVersion() {
+			// todo
+		}
+
+		public void expand() {
+			if (fileTree == null) {
+				return;
+			}
+			for (int row = 0; row < fileTree.getRowCount(); ++row) {
+				fileTree.expandRow(row);
+			}
+		}
+
+		public void collapse() {
+			if (fileTree == null) {
+				return;
+			}
+			for (int row = fileTree.getRowCount(); row >= 0; --row) {
+				fileTree.collapseRow(row);
+			}
+		}
+	}
 }

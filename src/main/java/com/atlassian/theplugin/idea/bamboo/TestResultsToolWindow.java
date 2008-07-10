@@ -35,11 +35,9 @@ import java.awt.event.MouseEvent;
 
 public final class TestResultsToolWindow {
 
-	public interface TestTree {
+	public interface TestTree extends Expandable {
 		boolean PASSED_TESTS_VISIBLE_DEFAULT = false;
 		
-		void expand();
-		void collapse();
         void setPassedTestsVisible(boolean visible);
 		boolean isPassedTestsVisible();
 	}
@@ -59,7 +57,7 @@ public final class TestResultsToolWindow {
 		return instance;
 	}
 
-	public static synchronized TestTree getTestTree(String name) {
+	public static TestTree getTestTree(String name) {
 		return panelMap.get(name);
 	}
 
@@ -77,21 +75,18 @@ public final class TestResultsToolWindow {
 
 		Content content = testDetailsToolWindow.getContentManager().findContent(contentKey);
 
-		synchronized (panelMap) {
-			if (content != null) {
-				detailsPanel = panelMap.get(contentKey);
-			} else {
-				detailsPanel = new TestDetailsPanel(contentKey, failedTests, succeededTests);
-				panelMap.remove(contentKey);
-				panelMap.put(contentKey, detailsPanel);
+		if (content == null) {
+			detailsPanel = new TestDetailsPanel(contentKey, failedTests, succeededTests);
+			panelMap.remove(contentKey);
+			panelMap.put(contentKey, detailsPanel);
 
-				PeerFactory peerFactory = PeerFactory.getInstance();
-				content = peerFactory.getContentFactory().createContent(detailsPanel, contentKey, true);
-				content.setIcon(Constants.BAMBOO_TRACE_ICON);
-				content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
-				testDetailsToolWindow.getContentManager().addContent(content);
-			}
+			PeerFactory peerFactory = PeerFactory.getInstance();
+			content = peerFactory.getContentFactory().createContent(detailsPanel, contentKey, true);
+			content.setIcon(Constants.BAMBOO_TRACE_ICON);
+			content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
+			testDetailsToolWindow.getContentManager().addContent(content);
 		}
+
 		testDetailsToolWindow.getContentManager().setSelectedContent(content);
 		testDetailsToolWindow.show(null);
 	}
