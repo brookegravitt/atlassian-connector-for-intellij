@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.atlassian.theplugin</groupId>
@@ -107,9 +108,9 @@
             <version>1.2.12</version>
         </dependency>
         <dependency>
-        	<groupId>jaxen</groupId>
-        	<artifactId>jaxen</artifactId>
-        	<version>1.1.1</version>
+            <groupId>jaxen</groupId>
+            <artifactId>jaxen</artifactId>
+            <version>1.1.1</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.core</groupId>
@@ -119,12 +120,12 @@
         </dependency>
     </dependencies>
     <profiles>
-		<profile>
-			<id>release</id>
-			<properties>
-				<maven.release>true</maven.release>
-			</properties>
-		</profile>
+        <profile>
+            <id>release</id>
+            <properties>
+                <maven.release>true</maven.release>
+            </properties>
+        </profile>
         <profile>
             <id>org.eclipse.swt.win32</id>
             <activation>
@@ -242,67 +243,60 @@
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
-						    <outputDirectory>${project.build.directory}/lib</outputDirectory>
-							<includeScope>runtime</includeScope>
-							<excludeGroupIds>org.eclipse,org.eclipse.ui,org.eclipse.core,org.eclipse.equinox</excludeGroupIds>
-							<excludeArtifactIds>icu4j,log4j,xalan,xercesImpl</excludeArtifactIds>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                            <includeScope>runtime</includeScope>
+                            <excludeGroupIds>org.eclipse,org.eclipse.ui,org.eclipse.core,org.eclipse.equinox</excludeGroupIds>
+                            <excludeArtifactIds>icu4j,log4j,xalan,xercesImpl</excludeArtifactIds>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
-			<plugin>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<configuration>
-							<tasks>
-								<property name="output.dir" value="${project.reporting.outputDirectory}/${downloadDir}" />
-								<property name="tmp.dir" value="${project.build.directory}/updatesite" />
-								<condition property="output.version" value="${project.version}" else="0.0.${buildNumber}">
-									<istrue value="${maven.release}" />
-								</condition>
-
-								<filterset id="maven.properties">
-									<filter token="project.version" value="${output.version}" />
-								</filterset>
-
-								<mkdir dir="${output.dir}" />
-								<mkdir dir="${output.dir}/features" />
-								<mkdir dir="${output.dir}/plugins" />
-								<mkdir dir="${tmp.dir}" />
-
-								<copy file="src/updatesite/site.xml" todir="${output.dir}" filtering="true" overwrite="true">
-									<filterset refid="maven.properties" />
-								</copy>
-
-								<!-- Create featurs file -->
-								<mkdir dir="${tmp.dir}/feature" />
-								<copy file="src/updatesite/features/feature.xml" todir="${tmp.dir}/feature" filtering="true" overwrite="true">
-									<filterset refid="maven.properties" />
-								</copy>
-
-								<jar destfile="${output.dir}/features/atlassian_eclipse_plugin_feature_${output.version}.jar" basedir="${tmp.dir}/feature" />
-
-								<!-- Create plugin file -->
-								<mkdir dir="${tmp.dir}/plugin" />
-								<jar destfile="${output.dir}/plugins/atlassian_eclipse_plugin_${output.version}.jar" manifest="META-INF/MANIFEST.MF">
-									<fileset dir="${project.build.directory}/lib">
-										<include name="*" />
-									</fileset>
-									<fileset dir="${project.build.outputDirectory}">
-										<include name="**/*" />
-									</fileset>
-								</jar>
-
-							</tasks>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin> 
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <property name="output.dir" value="${project.reporting.outputDirectory}/${downloadDir}"/>
+                                <property name="tmp.dir" value="${project.build.directory}/updatesite"/>
+                                <condition property="output.version" value="${project.version}" else="0.0.${buildNumber}">
+                                    <istrue value="${maven.release}"/>
+                                </condition>
+                                <filterset id="maven.properties">
+                                    <filter token="project.version" value="${output.version}"/>
+                                </filterset>
+                                <mkdir dir="${output.dir}"/>
+                                <mkdir dir="${output.dir}/features"/>
+                                <mkdir dir="${output.dir}/plugins"/>
+                                <mkdir dir="${tmp.dir}"/>
+                                <copy file="src/updatesite/site.xml" todir="${output.dir}" filtering="true" overwrite="true">
+                                    <filterset refid="maven.properties"/>
+                                </copy>
+<!-- Create featurs file -->
+                                <mkdir dir="${tmp.dir}/feature"/>
+                                <copy file="src/updatesite/features/feature.xml" todir="${tmp.dir}/feature" filtering="true" overwrite="true">
+                                    <filterset refid="maven.properties"/>
+                                </copy>
+                                <jar destfile="${output.dir}/features/atlassian_eclipse_plugin_feature_${output.version}.jar" basedir="${tmp.dir}/feature"/>
+<!-- Create plugin file -->
+                                <mkdir dir="${tmp.dir}/plugin"/>
+                                <jar destfile="${output.dir}/plugins/atlassian_eclipse_plugin_${output.version}.jar" manifest="META-INF/MANIFEST.MF">
+                                    <fileset dir="${project.build.directory}/lib">
+                                        <include name="*"/>
+                                    </fileset>
+                                    <fileset dir="${project.build.outputDirectory}">
+                                        <include name="**/*"/>
+                                    </fileset>
+                                </jar>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-idea-plugin</artifactId>

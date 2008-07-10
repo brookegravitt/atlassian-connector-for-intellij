@@ -101,19 +101,19 @@
             <version>2.3</version>
             <scope>test</scope>
         </dependency>
-		<dependency>
-			<groupId>net.sourceforge.htmlunit</groupId>
-			<artifactId>htmlunit</artifactId>
-			<version>1.14</version>
-			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>net.sourceforge.cssparser</groupId>
-					<artifactId>cssparser</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>net.sourceforge.htmlunit</groupId>
+            <artifactId>htmlunit</artifactId>
+            <version>1.14</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>net.sourceforge.cssparser</groupId>
+                    <artifactId>cssparser</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
     <build>
         <plugins>
             <plugin>
@@ -135,7 +135,7 @@
                     <ideaPlugin>false</ideaPlugin>
                     <jdkName>IDEA 7590</jdkName>
                     <jdkLevel>${jdkLevel}</jdkLevel>
-		    <exclude>eclipse,build-tools,vs</exclude>
+                    <exclude>eclipse,build-tools,vs</exclude>
                     <downloadSources>true</downloadSources>
                     <libraries>
                         <library>
@@ -146,11 +146,11 @@
                             <name>xmlParserAPIs</name>
                             <exclude>true</exclude>
                         </library>
-						<library>
+                        <library>
                             <name>jdom</name>
                             <exclude>true</exclude>
                         </library>
-					</libraries>
+                    </libraries>
                 </configuration>
             </plugin>
             <plugin>
@@ -274,7 +274,7 @@
             <url>https://maven.atlassian.com/public</url>
         </repository>
         <repository>
-	    <id>atlassian-3rdparty</id>
+            <id>atlassian-3rdparty</id>
             <url>https://maven.atlassian.com/3rdparty</url>
         </repository>
 <!--        <repository>
@@ -285,27 +285,47 @@
 -->
     </repositories>
     <pluginRepositories>
-             <pluginRepository>
-                    <id>maven.shapshot</id>
-                    <name>Maven snapshot repository</name>
- 
-		<url>http://people.apache.org/repo/m2-snapshot-repository</url>
-             </pluginRepository>
-	
+        <pluginRepository>
+            <id>maven.shapshot</id>
+            <name>Maven snapshot repository</name>
+            <url>http://people.apache.org/repo/m2-snapshot-repository</url>
+        </pluginRepository>
         <pluginRepository>
             <id>atlassian-public-repository</id>
             <url>https://maven.atlassian.com/public</url>
         </pluginRepository>
-	<pluginRepository>
-	    <id>mc-release</id>
-	    <name>Local Maven repository of releases</name>
-	    <url>http://mc-repo.googlecode.com/svn/maven2/releases</url>
-	    <snapshots>
-	        <enabled>false</enabled>
-	    </snapshots>
-	    <releases>
-	        <enabled>true</enabled>
-	    </releases>
-	</pluginRepository>
+        <pluginRepository>
+            <id>mc-release</id>
+            <name>Local Maven repository of releases</name>
+            <url>http://mc-repo.googlecode.com/svn/maven2/releases</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </pluginRepository>
     </pluginRepositories>
+    <profiles>
+        <profile>
+            <id>eclipse</id>
+            <build>
+                <defaultGoal>eclipse:eclipse</defaultGoal>
+            </build>
+            <modules>
+                <module>commons</module>
+                <module>eclipse</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>idea</id>
+            <build>
+                <defaultGoal>idea:idea</defaultGoal>
+            </build>
+            <modules>
+                <module>commons</module>
+                <module>idea</module>
+            </modules>
+        </profile>
+    </profiles>
 </project>
