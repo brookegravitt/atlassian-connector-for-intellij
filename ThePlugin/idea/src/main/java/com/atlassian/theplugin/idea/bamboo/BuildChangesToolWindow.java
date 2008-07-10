@@ -114,7 +114,7 @@ public final class BuildChangesToolWindow {
 			gbc1.weighty = 1.0;
 			gbc1.fill = GridBagConstraints.BOTH;
 
-			commitsTable = createCommistable(commits);
+			commitsTable = createCommitsTable(commits);
 			tablePanel.add(new JScrollPane(commitsTable), gbc1);
 
 			split.setFirstComponent(tablePanel);
@@ -309,7 +309,7 @@ public final class BuildChangesToolWindow {
             }
         }
 
-		private JTable createCommistable(final List<Commit> commits) {
+		private JTable createCommitsTable(final List<Commit> commits) {
 			TableModel model = new AbstractTableModel() {
 				private String[] columnNames = {"Date", "Author", "Comment"};
 				public String getColumnName(int col) {
