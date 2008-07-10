@@ -56,6 +56,9 @@
 	<change-notes>
 		<![CDATA[
 		<ul>
+			<li>1.7.0: Bamboo build stack traces; bamboo build commit list</li>
+			<li>1.6.0: JIRA issue editor improved; self-signed SSL certs handled + misc. fixes</li>
+			<li>1.5.0: JIRA Issue Editor view introduced; proxy improxements + misc fixes</li>
 			<li>1.4.1: errata release</li>
 		    <li>1.4.0: Crucible 1.6 integration "dashboard", JIRA action support</li>
             <li>1.3.1: errata release</li>
@@ -147,6 +150,13 @@
         <action id="ThePlugin.Bamboo.ToggleAllTests" class="com.atlassian.theplugin.idea.action.bamboo.ToggleAllTestsAction" text="Hide Passed" icon="/runConfigurations/hidePassed.png"/>
 
 
+		<action id="ThePlugin.Bamboo.Changes.ShowDiff" class="com.atlassian.theplugin.idea.action.bamboo.changes.ShowDiffAction" text="Show Diff" icon="/actions/diff.png"/>
+		<action id="ThePlugin.Bamboo.Changes.DiffWithLocal" class="com.atlassian.theplugin.idea.action.bamboo.changes.DiffWithLocalAction" text="Show Diff With Local" icon="/actions/diffWithCurrent.png"/>
+		<action id="ThePlugin.Bamboo.Changes.OpenRepoVersion" class="com.atlassian.theplugin.idea.action.bamboo.changes.OpenRepoVersionAction" text="Open Repository Version" icon="/objectBrowser/showEditorHighlighting.png"/>
+		<action id="ThePlugin.Bamboo.Changes.GroupByDir" class="com.atlassian.theplugin.idea.action.bamboo.changes.GroupByDirectoryAction" text="Group By Directory" icon="/nodes/folder.png"/>
+		<action id="ThePlugin.Bamboo.Changes.ExpandFiles" class="com.atlassian.theplugin.idea.action.bamboo.changes.ExpandFilesAction" text="Expand All" icon="/actions/expandall.png"/>
+		<action id="ThePlugin.Bamboo.Changes.CollapseFiles" class="com.atlassian.theplugin.idea.action.bamboo.changes.CollapseFilesAction" text="Collapse All" icon="/actions/collapseall.png"/>
+
 		<group id="ThePlugin.BambooToolWindowToolBar" popup="false" text="">
             <reference id="ThePlugin.ShowSettings" />
 			<reference id="ThePlugin.HelpBamboo" />
@@ -176,6 +186,16 @@
 			<separator />
 			<reference id="ThePlugin.Bamboo.ExpandTests"/>
 			<reference id="ThePlugin.Bamboo.CollapseTests"/>
+		</group>
+
+		<group id="ThePlugin.Bamboo.CommitListToolBar" popup="false">
+			<reference id="ThePlugin.Bamboo.Changes.ShowDiff"/>
+			<reference id="ThePlugin.Bamboo.Changes.DiffWithLocal"/>
+			<reference id="ThePlugin.Bamboo.Changes.OpenRepoVersion"/>
+			<separator />
+			<reference id="ThePlugin.Bamboo.Changes.GroupByDir"/>
+			<reference id="ThePlugin.Bamboo.Changes.ExpandFiles"/>
+			<reference id="ThePlugin.Bamboo.Changes.CollapseFiles"/>
 		</group>
 
 
