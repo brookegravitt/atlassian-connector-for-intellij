@@ -60,7 +60,8 @@ public final class VcsIdeaHelper {
 		if (vcsPLM != null) {
 
 
-			return vcsPLM.getVcsFor(vFile).getVcsHistoryProvider().createSessionFor(VcsUtil.getFilePath(vFile.getPath())).getRevisionList();
+			return vcsPLM.getVcsFor(vFile).getVcsHistoryProvider().createSessionFor(
+                    VcsUtil.getFilePath(vFile.getPath())).getRevisionList();
 		} else {
 			throw new VcsException("File: " + vFile.getPath() + " is not under VCS.");
 		}

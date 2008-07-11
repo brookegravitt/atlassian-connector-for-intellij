@@ -32,11 +32,15 @@ public class CustomFilterAction extends Crucible16ToggleAction {
     private CustomFilterBean getFilter(AnActionEvent event) {
         Project project = IdeaHelper.getCurrentProject(event);
         if (project != null) {
-            ThePluginProjectComponent projectComponent = IdeaHelper.getCurrentProject(event).getComponent(ThePluginProjectComponent.class);
+            ThePluginProjectComponent projectComponent
+                    = IdeaHelper.getCurrentProject(event).getComponent(ThePluginProjectComponent.class);
             ProjectConfigurationBean projectConfiguration = projectComponent.getProjectConfigurationBean();
             if (!projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().isEmpty()) {
-                for (String s : projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().keySet()) {
-                    CustomFilterBean filter = projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().get(s);
+                for (String s : projectConfiguration.getCrucibleConfiguration().
+                        getCrucibleFilters().getManualFilter().keySet()) {
+
+                    CustomFilterBean filter = projectConfiguration.getCrucibleConfiguration()
+                            .getCrucibleFilters().getManualFilter().get(s);
                     return filter;
                 }
             }

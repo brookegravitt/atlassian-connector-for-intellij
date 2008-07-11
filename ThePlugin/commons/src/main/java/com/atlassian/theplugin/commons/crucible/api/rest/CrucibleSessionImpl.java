@@ -690,7 +690,8 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 
         Document request = CrucibleRestXmlHelper.prepareVersionedComment(comment);
 
-        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + REVIEW_ITEMS + "/" + comment.getReviewItemId().getId() + COMMENTS;
+        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + REVIEW_ITEMS + "/"
+                + comment.getReviewItemId().getId() + COMMENTS;
         try {
             Document doc = retrievePostResponse(requestUrl, request);
 
@@ -747,7 +748,8 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 
         Document request = CrucibleRestXmlHelper.prepareGeneralComment(comment);
 
-        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + COMMENTS + "/" + cId.getId() + REPLIES + "/" + rId.getId();
+        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + COMMENTS + "/"
+                + cId.getId() + REPLIES + "/" + rId.getId();
 
         try {
             retrievePostResponse(requestUrl, request, false);
