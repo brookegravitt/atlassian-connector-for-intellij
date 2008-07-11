@@ -329,7 +329,8 @@ public final class CrucibleRestXmlHelper {
                 List<Element> entries = getChildElements(repliesNode, "generalCommentData");
                 for (Element replyNode : entries) {
                     GeneralCommentBean reply = parseGeneralCommentNode(replyNode);
-                    rep.add(reply);
+					reply.setReply(true);
+					rep.add(reply);
                 }
             }
             commentBean.setReplies(rep);

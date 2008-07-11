@@ -29,6 +29,9 @@ public class GeneralCommentBean implements GeneralComment {
 	private String displayUser = null;
 	private Date createDate = new Date();
 
+
+	private boolean isReply = false;
+
 	private List<GeneralComment> replies = new ArrayList<GeneralComment>();
 	private Map<String, CustomField> customFields;
 
@@ -82,6 +85,10 @@ public class GeneralCommentBean implements GeneralComment {
 
 	public boolean isReply() {
 		return false;  //To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	public void setReply(boolean reply) {
+		isReply = reply;
 	}
 
 	public void setDefectApproved(boolean defectApproved) {
