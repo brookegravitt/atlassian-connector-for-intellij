@@ -25,12 +25,6 @@ public class ShowPopupMouseAdapter extends MouseAdapter {
 		this.popupMenuName = popupMenuName;
 	}
 
-	public void mouseClicked(MouseEvent e) {
-		for (TableItemSelectedListener tableItemSelectedListener : tableView.getListenerList()) {
-			tableItemSelectedListener.itemSelected(tableView.getSelectedObject(), e.getClickCount());
-		}
-	}
-
 	public void mousePressed(MouseEvent e) {
 		maybeShowPopup(e);
 	}

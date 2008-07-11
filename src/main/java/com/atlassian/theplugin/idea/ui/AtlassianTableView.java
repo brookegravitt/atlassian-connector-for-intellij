@@ -25,8 +25,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import javax.swing.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
@@ -56,6 +55,18 @@ public class AtlassianTableView extends TableView {
 				}
 			}
 		});
+		ItemSelectedMouseAdapter l = new ItemSelectedMouseAdapter(this);
+		addMouseListener(l);
+		addKeyListener(new KeyAdapter() {
+			public void keyReleased(KeyEvent e) {
+				int key = e.getKeyCode();
+				if (key == KeyEvent.VK_DOWN || key == KeyEvent.VK_UP) {
+					for (TableItemSelectedListener tableItemSelectedListener : getListenerList()) {
+						tableItemSelectedListener.itemSelected(getSelectedObject(), 1);
+					}
+				}
+			}
+		});
 	}
 
 	public AtlassianTableView(TableColumnProvider columnProvider, ListTableModel listTableModel, final Storage storage,
@@ -64,6 +75,7 @@ public class AtlassianTableView extends TableView {
 		if (popupMenuPlace != null && popupMenuName != null && popupMenuName.length() > 0) {
 			addMouseListener(new ShowPopupMouseAdapter(this, popupMenuName));
 		}
+		addMouseListener(new ItemSelectedMouseAdapter(this));
 	}
 
 	public ListTableModel getListTableModel() {
