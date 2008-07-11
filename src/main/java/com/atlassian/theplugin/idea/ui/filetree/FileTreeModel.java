@@ -8,13 +8,6 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import java.util.ArrayList;
 
-/**
- * Created by IntelliJ IDEA.
-* User: lguminski
-* Date: Jul 11, 2008
-* Time: 2:45:53 AM
-* To change this template use File | Settings | File Templates.
-*/
 public class FileTreeModel implements TreeModel {
 
 	private FileNode root;
@@ -38,7 +31,7 @@ public class FileTreeModel implements TreeModel {
 
 		java.util.List<FileNode> ch = new ArrayList<FileNode>();
 
-		for (FileNode n : node.children.values()) {
+		for (FileNode n : node.getChildren().values()) {
 			ch.add(n);
 		}
 
@@ -91,11 +84,11 @@ public class FileTreeModel implements TreeModel {
 	}
 
 	public int getChildCount(Object parent) {
-		return ((FileNode) parent).children.size();
+		return ((FileNode) parent).getChildren().size();
 	}
 
 	public boolean isLeaf(Object node) {
-		return ((FileNode) node).children.size() == 0;
+		return ((FileNode) node).getChildren().size() == 0;
 	}
 
 	public void valueForPathChanged(TreePath path, Object newValue) {

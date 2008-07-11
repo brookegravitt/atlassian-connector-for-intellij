@@ -4,16 +4,9 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.Map;
 import java.util.HashMap;
 
-/**
- * Created by IntelliJ IDEA.
-* User: lguminski
-* Date: Jul 11, 2008
-* Time: 2:47:33 AM
-* To change this template use File | Settings | File Templates.
-*/
 class FileNode extends DefaultMutableTreeNode {
 
-	public Map<String, FileNode> children;
+	private Map<String, FileNode> children;
 	private String name;
 
 	public FileNode(String fullName) {
@@ -23,30 +16,30 @@ class FileNode extends DefaultMutableTreeNode {
 	}
 
 	public void addChild(FileNode child) {
-		if (!children.containsKey(child.getName())) {
-			children.put(child.getName(), child);
+		if (!getChildren().containsKey(child.getName())) {
+			getChildren().put(child.getName(), child);
 			add(child);
 		}
 	}
 
 	public void removeChild(FileNode child) {
-		if (children.containsKey(child.getName())) {
-			children.remove(child.getName());
+		if (getChildren().containsKey(child.getName())) {
+			getChildren().remove(child.getName());
 			remove(child);
 		}
 	}
 
 	public void removeChildren() {
-		children.clear();
+		getChildren().clear();
 		removeAllChildren();
 	}
 
 	public boolean hasNode(String fullName) {
-		return children.containsKey(fullName);
+		return getChildren().containsKey(fullName);
 	}
 
 	public FileNode getNode(String fullName) {
-		return children.get(fullName);
+		return getChildren().get(fullName);
 	}
 
 	public String getName() {
@@ -59,5 +52,9 @@ class FileNode extends DefaultMutableTreeNode {
 
 	public String toString() {
 		return getName();
+	}
+
+	public Map<String, FileNode> getChildren() {
+		return children;
 	}
 }
