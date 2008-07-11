@@ -12,7 +12,8 @@ import com.intellij.peer.PeerFactory;
 import com.atlassian.theplugin.commons.bamboo.Commit;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.Constants;
-import com.atlassian.theplugin.idea.ui.FileTree;
+import com.atlassian.theplugin.idea.ui.filetree.FileTree;
+import com.atlassian.theplugin.idea.ui.filetree.FileTreeModel;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -189,7 +190,7 @@ public final class BuildChangesToolWindow {
 				public void valueChanged(ListSelectionEvent e) {
 					Commit c = commits.get(table.getSelectedRow());
 					if (c.getFiles().size() > 0) {
-						fileTree = new FileTree(c.getFiles());
+						fileTree = new FileTree(new FileTreeModel(c.getFiles()));
 						fileScroll.setViewportView(fileTree);
 						expand();
 					} else {
