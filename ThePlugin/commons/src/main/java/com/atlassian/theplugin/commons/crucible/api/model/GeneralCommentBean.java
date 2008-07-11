@@ -84,7 +84,7 @@ public class GeneralCommentBean implements GeneralComment {
 	}
 
 	public boolean isReply() {
-		return false;  //To change body of implemented methods use File | Settings | File Templates.
+		return isReply;  //To change body of implemented methods use File | Settings | File Templates.
 	}
 
 	public void setReply(boolean reply) {
