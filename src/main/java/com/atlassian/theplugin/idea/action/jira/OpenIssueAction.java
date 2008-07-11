@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.idea.action.jira;
 
-import com.atlassian.theplugin.idea.jira.editor.ThePluginJIRAEditorComponent;
 import com.atlassian.theplugin.idea.jira.editor.vfs.MemoryVirtualFile;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
@@ -8,8 +7,6 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.fileEditor.FileEditorManager;
-import com.intellij.openapi.fileEditor.FileEditor;
-import com.intellij.openapi.fileEditor.FileEditorState;
 import com.intellij.openapi.vfs.VirtualFile;
 
 public class OpenIssueAction extends AnAction {

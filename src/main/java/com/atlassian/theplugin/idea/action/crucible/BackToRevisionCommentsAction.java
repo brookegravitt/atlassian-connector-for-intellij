@@ -7,12 +7,9 @@ import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ui.AtlassianTableView;
 import com.atlassian.theplugin.idea.ui.UserTableContext;
-import com.atlassian.theplugin.idea.crucible.events.FocusOnVersionedCommentEvent;
 import com.atlassian.theplugin.idea.crucible.events.ShowReviewedFileItemEvent;
 import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
-import com.atlassian.theplugin.idea.crucible.tree.CrucibleTreeRootNode;
-import com.atlassian.theplugin.idea.crucible.tree.ReviewItemDataNode;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 
 import java.util.Collection;
@@ -25,7 +22,6 @@ import java.util.Collection;
  * To change this template use File | Settings | File Templates.
  */
 public class BackToRevisionCommentsAction extends TableSelectedAction implements CrucibleReviewActionListener {
-	private AnActionEvent event;
 
 	@Override
 	public void actionPerformed(AnActionEvent event) {
@@ -62,7 +58,8 @@ public class BackToRevisionCommentsAction extends TableSelectedAction implements
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
-	public void focusOnVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem, Collection<VersionedComment> versionedComments, VersionedComment versionedComment) {
+	public void focusOnVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem,
+            Collection<VersionedComment> versionedComments, VersionedComment versionedComment) {
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
@@ -86,7 +83,8 @@ public class BackToRevisionCommentsAction extends TableSelectedAction implements
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
-	public void showVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem, Collection<VersionedComment> versionedComments, VersionedComment versionedComment) {
+	public void showVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem,
+            Collection<VersionedComment> versionedComments, VersionedComment versionedComment) {
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 

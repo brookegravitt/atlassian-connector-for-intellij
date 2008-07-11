@@ -34,7 +34,8 @@ public class PredefinedFilterAction extends Crucible16ToggleAction {
     private Boolean[] getPredefinedFilters(AnActionEvent event) {
         Project project = IdeaHelper.getCurrentProject(event);
         if (project != null) {
-            ThePluginProjectComponent projectComponent = IdeaHelper.getCurrentProject(event).getComponent(ThePluginProjectComponent.class);
+            ThePluginProjectComponent projectComponent
+                    = IdeaHelper.getCurrentProject(event).getComponent(ThePluginProjectComponent.class);
             ProjectConfigurationBean projectConfiguration = projectComponent.getProjectConfigurationBean();
             return projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getPredefinedFilters();
         }

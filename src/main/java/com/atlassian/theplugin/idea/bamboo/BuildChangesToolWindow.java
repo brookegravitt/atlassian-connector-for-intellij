@@ -9,7 +9,6 @@ import com.atlassian.theplugin.idea.ui.AtlassianTableView;
 import com.atlassian.theplugin.idea.ui.TableColumnProvider;
 import com.atlassian.theplugin.idea.ui.TableItemSelectedListener;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
-import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
 import com.atlassian.theplugin.idea.ui.tree.file.FileTreeModelBuilder;
 import com.atlassian.theplugin.util.ColorToHtml;
 import com.intellij.openapi.actionSystem.ActionGroup;
@@ -38,7 +37,7 @@ import java.util.List;
 public final class BuildChangesToolWindow {
 
 	public interface ChangesTree extends Expandable {
-		static boolean GROUP_BY_DIRECTORY_DEFAULT = true;
+		boolean GROUP_BY_DIRECTORY_DEFAULT = true;
 		void showDiff();
 		void showDiffWithLocal();
 		void showRepositoryVersion();
@@ -100,7 +99,7 @@ public final class BuildChangesToolWindow {
 		private boolean isByDir = ChangesTree.GROUP_BY_DIRECTORY_DEFAULT;
 
 		private List<Commit> commits;
-		AtlassianTableView commitsTable;
+		private AtlassianTableView commitsTable;
 
 		public CommitDetailsPanel(String name, final List<Commit> commits) {
 			super();
@@ -186,7 +185,9 @@ public final class BuildChangesToolWindow {
 
 
 		private class AuthorColumn extends TableColumnInfo {
-			public String getColumnName() {
+            private static final int PREFERRED_WIDTH = 100;
+
+            public String getColumnName() {
 				return "Author";
 			}
 
@@ -195,7 +196,7 @@ public final class BuildChangesToolWindow {
 			}
 
 			public int getPrefferedWidth() {
-				return 100;
+				return PREFERRED_WIDTH;
 			}
 
 			public Object valueOf(Object o) {
@@ -212,7 +213,9 @@ public final class BuildChangesToolWindow {
 		}
 
 		private class DateColumn extends TableColumnInfo {
-			public String getColumnName() {
+            private static final int PREFERRED_WIDTH = 100;
+
+            public String getColumnName() {
 				return "Date";
 			}
 
@@ -221,7 +224,7 @@ public final class BuildChangesToolWindow {
 			}
 
 			public int getPrefferedWidth() {
-				return 100;
+				return PREFERRED_WIDTH;
 			}
 
 			public Object valueOf(Object o) {
@@ -349,22 +352,18 @@ public final class BuildChangesToolWindow {
 				root.add(new FileNode(f));
 			}
 			TreeModel model = new DefaultTreeModel(root);
-			JTree tree = new JTree(model);
-			tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-			tree.setCellRenderer(new DefaultTreeCellRenderer() {
-				public Component getTreeCellRendererComponent(JTree tree,
-															  Object value,
-															  boolean selected,
-															  boolean expanded,
-															  boolean leaf,
-															  int row,
-															  boolean hasFocus) {
+			JTree myTree = new JTree(model);
+			myTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+			myTree.setCellRenderer(new DefaultTreeCellRenderer() {
+                @Override
+                public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected,
+                        boolean expanded, boolean leaf, int row, boolean hasFocus) {
+
 					Component c = super.getTreeCellRendererComponent(
 							tree, value, selected, expanded, leaf, row, hasFocus);
 
 					FileNode node = (FileNode) value;
-					Color statsColor = selected
-							? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeSelectionBackground();
+					Color statsColor = selected	? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeSelectionBackground();
 					StringBuilder txt = new StringBuilder();
 					txt.append("<html><body>");
 					txt.append(getText());
@@ -386,7 +385,7 @@ public final class BuildChangesToolWindow {
 				}
 			});
 
-			return tree;
+			return myTree;
 		}
 
 		public void expand() {
