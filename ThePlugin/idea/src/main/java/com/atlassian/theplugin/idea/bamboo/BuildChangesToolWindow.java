@@ -9,20 +9,25 @@ import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.ui.content.Content;
 import com.intellij.peer.PeerFactory;
+import com.intellij.util.ui.ListTableModel;
 import com.atlassian.theplugin.commons.bamboo.Commit;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.atlassian.theplugin.idea.ui.filetree.FileTree;
 import com.atlassian.theplugin.idea.ui.filetree.FileTreeModel;
+import com.atlassian.theplugin.idea.ui.AtlassianTableView;
+import com.atlassian.theplugin.idea.ui.TableColumnProvider;
+import com.atlassian.theplugin.idea.ui.TableItemSelectedListener;
 
 import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableModel;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.ListSelectionEvent;
+import javax.swing.table.*;
 import java.util.*;
 import java.util.List;
 import java.awt.*;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseAdapter;
 
 public final class BuildChangesToolWindow {
 
@@ -87,13 +92,24 @@ public final class BuildChangesToolWindow {
 
 		public CommitDetailsPanel(String name, final List<Commit> commits) {
 			super();
+
+			if (commits == null || commits.size() == 0) {
+				add(new JLabel("No commits in " + name));
+				return;
+			}
+			
 			setLayout(new GridBagLayout());
+
+			ActionManager manager = ActionManager.getInstance();
+			ActionGroup group = (ActionGroup) manager.getAction("ThePlugin.Bamboo.CommitListToolBar");
+			ActionToolbar toolbar = manager.createActionToolbar(name, group, true);
 
 			Splitter split = new Splitter(false, SPLIT_RATIO);
 			split.setShowDividerControls(true);
 
 			setLayout(new GridBagLayout());
 			GridBagConstraints gbc = new GridBagConstraints();
+
 			gbc.gridx = 0;
 			gbc.gridy = 0;
 			gbc.weightx = 1.0;
@@ -107,6 +123,17 @@ public final class BuildChangesToolWindow {
 			gbc1.gridx = 0;
 			gbc1.gridy = 0;
 			gbc1.weightx = 1.0;
+			gbc1.weighty = 0.0;
+			gbc1.fill = GridBagConstraints.HORIZONTAL;
+
+			JLabel l = new JLabel("Commit List");
+			Dimension d = l.getMinimumSize();
+			d.height = toolbar.getMaxButtonHeight();
+			l.setMinimumSize(d);
+
+			tablePanel.add(l, gbc1);
+
+			gbc1.gridy = 1;
 			gbc1.weighty = 1.0;
 			gbc1.fill = GridBagConstraints.BOTH;
 
@@ -124,9 +151,6 @@ public final class BuildChangesToolWindow {
 			gbc1.fill = GridBagConstraints.HORIZONTAL;
 			gbc1.anchor = GridBagConstraints.LINE_START;
 
-			ActionManager manager = ActionManager.getInstance();
-			ActionGroup group = (ActionGroup) manager.getAction("ThePlugin.Bamboo.CommitListToolBar");
-			ActionToolbar toolbar = manager.createActionToolbar(name, group, true);
 			JComponent comp = toolbar.getComponent();
 			fileTreePanel.add(comp, gbc1);
 
@@ -147,48 +171,99 @@ public final class BuildChangesToolWindow {
 		}
 
 
+		private class AuthorColumn extends TableColumnInfo {
+			public String getColumnName() {
+				return "Author";
+			}
+
+			public Class getColumnClass() {
+				return String.class;
+			}
+
+			public int getPrefferedWidth() {
+				return 100;
+			}
+
+			public Object valueOf(Object o) {
+				return ((Commit) o).getAuthor();
+			}
+
+			public Comparator getComparator() {
+				return new Comparator() {
+					public int compare(Object o, Object o1) {
+						return ((Commit) o).getAuthor().compareTo(((Commit) o1).getAuthor());
+					}
+				};
+			}
+		}
+
+		private class DateColumn extends TableColumnInfo {
+			public String getColumnName() {
+				return "Date";
+			}
+
+			public Class getColumnClass() {
+				return Date.class;
+			}
+
+			public int getPrefferedWidth() {
+				return 100;
+			}
+
+			public Object valueOf(Object o) {
+				return ((Commit) o).getCommitDate();
+			}
+
+			public Comparator getComparator() {
+				return new Comparator() {
+					public int compare(Object o, Object o1) {
+						return ((Commit) o).getCommitDate().compareTo(((Commit) o1).getCommitDate());
+					}
+				};
+			}
+		}
+
+		private class CommentColumn extends TableColumnInfo {
+			public String getColumnName() {
+				return "Comment";
+			}
+
+			public Class getColumnClass() {
+				return String.class;
+			}
+
+			public int getPrefferedWidth() {
+				return 600;
+			}
+
+			public Object valueOf(Object o) {
+				return ((Commit) o).getComment();
+			}
+
+			public Comparator getComparator() {
+				return new Comparator() {
+					public int compare(Object o, Object o1) {
+						return ((Commit) o).getComment().compareTo(((Commit) o1).getComment());
+					}
+				};
+			}
+		}
 
 		private JTable createCommitsTable(final List<Commit> commits) {
-			TableModel model = new AbstractTableModel() {
-				private String[] columnNames = {"Date", "Author", "Comment"};
-				public String getColumnName(int col) {
-					return columnNames[col];
+			TableColumnProvider prov = new TableColumnProvider() {
+				public TableColumnInfo[] makeColumnInfo() {
+					return new TableColumnInfo[] { new AuthorColumn(), new DateColumn(), new CommentColumn() };
 				}
-				public int getRowCount() { return commits.size(); }
-				public int getColumnCount() { return columnNames.length; }
-				public Object getValueAt(int row, int col) {
-					Commit c = commits.get(row);
-					switch (col) {
-						case 0:
-							return c.getCommitDate();
-						case 1:
-							return c.getAuthor();
-						case 2:
-							return c.getComment();
-						default:
-							return null;
-					}
+
+				public TableCellRenderer[] makeRendererInfo() {
+					return new TableCellRenderer[] { null, null, null };
 				}
-				public boolean isCellEditable(int row, int col) { return false; }
-				public void setValueAt(Object value, int row, int col) { }
 			};
-
-			final JTable table = new JTable(model);
-			table.setShowVerticalLines(false);
-			table.setShowHorizontalLines(false);
-			table.setShowGrid(false);
-
-			// please someone fix this to not suck :)
-			table.getColumnModel().getColumn(0).setPreferredWidth(200);
-			table.getColumnModel().getColumn(1).setPreferredWidth(100);
-			table.getColumnModel().getColumn(2).setPreferredWidth(2000);
-			table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-
-			table.getColumnModel().setColumnMargin(0);
-			table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-				public void valueChanged(ListSelectionEvent e) {
-					Commit c = commits.get(table.getSelectedRow());
+			final AtlassianTableView atv = new AtlassianTableView(prov,
+					new ListTableModel<Commit>(prov.makeColumnInfo(), commits, 0), null);
+			atv.addItemSelectedListener(new TableItemSelectedListener() {
+				public void itemSelected(Object item, int noClicks) {
+					Commit c = (Commit) item;
 					if (c.getFiles().size() > 0) {
 						fileTree = new FileTree(new FileTreeModel(c.getFiles()));
 						fileTree.setRootVisible(false);
@@ -199,7 +274,7 @@ public final class BuildChangesToolWindow {
 					}
 				}
 			});
-			return table;
+			return atv;
 		}
 
 		public void showDiff() {
