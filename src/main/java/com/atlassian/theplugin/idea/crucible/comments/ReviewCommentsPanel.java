@@ -2,11 +2,18 @@ package com.atlassian.theplugin.idea.crucible.comments;
 
 import com.intellij.util.ui.UIUtil;
 import com.intellij.util.ui.ListTableModel;
+import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.ide.DataManager;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.TableColumnInfo;
+import com.atlassian.theplugin.idea.CrucibleBottomToolWindowPanel;
 import com.atlassian.theplugin.idea.ui.*;
 import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
+import com.atlassian.theplugin.idea.crucible.tree.CrucibleTreeRootNode;
+import com.atlassian.theplugin.idea.crucible.tree.GeneralCommentNode;
+import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.crucible.events.ShowGeneralCommentEvent;
 import com.atlassian.theplugin.idea.crucible.events.FocusOnGeneralCommentReplyEvent;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewItem;
@@ -22,10 +29,13 @@ import com.atlassian.theplugin.commons.util.Logger;
 import com.atlassian.theplugin.util.PluginUtil;
 
 import javax.swing.table.TableCellRenderer;
+import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 import java.util.Collection;
 import java.util.Map;
+
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Created by IntelliJ IDEA.
@@ -94,6 +104,7 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 		commentReplySelectedListener = new TableItemSelectedListener() {
 			public void itemSelected(Object item, int noClicks) {
 				GeneralComment selectedComment = (GeneralComment) item;
+
 				if (noClicks == 2) {
 					IdeaHelper.getReviewActionEventBroker().trigger(
 							new FocusOnGeneralCommentReplyEvent(
@@ -113,6 +124,14 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 		commentSelectedListener = new TableItemSelectedListener() {
 			public void itemSelected(Object item, int noClicks) {
 				GeneralComment selectedComment = (GeneralComment) item;
+				if (noClicks ==1) {
+					// GeneralComment server = ((GeneralCommentNode) selectedNode).getGeneralComment();
+					DialogWrapper d = new DDialog(DataManager.getInstance().getDataContext(),
+						 (ReviewDataInfoAdapter) CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
+						selectedComment);
+					d.show();
+					d.toFront();
+				}
 				if (noClicks == 2) {
 					IdeaHelper.getReviewActionEventBroker().trigger(
 							new ShowGeneralCommentEvent(
@@ -184,6 +203,8 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 	public void showVersionedCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
+
+
 
 
 	public static class CommentColumnProvider implements TableColumnProvider {
@@ -274,6 +295,23 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 			getCommentReplyTable().getTable().setForeground(UIUtil.getActiveTextColor());
 //			dataPanelsHolder.moveToFront(replyCommentsTable);
 			switchToCommentReplies();
+		}
+	}
+
+
+		private class DDialog extends DialogWrapper {
+		CrucibleCommentPanel commentPanel;
+
+
+		public DDialog(DataContext dataContext, ReviewDataInfoAdapter adapter, GeneralComment comment){
+			super(true);			
+			this.commentPanel = new CrucibleCommentPanel(dataContext, adapter, comment);
+			init();
+		}
+
+		@Nullable
+		protected JComponent createCenterPanel() {
+			return commentPanel.getRootPanel();  //To change body of implemented methods use File | Settings | File Templates.
 		}
 	}
 

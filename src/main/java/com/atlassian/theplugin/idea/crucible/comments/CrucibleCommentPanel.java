@@ -18,6 +18,8 @@ import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.util.PluginUtil;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -32,8 +34,9 @@ import org.jetbrains.annotations.Nullable;
  * Time: 2:22:53 PM
  * To change this template use File | Settings | File Templates.
  */
-public class CrucibleCommentPanel extends JPanel {
+public class CrucibleCommentPanel extends JPanel implements ListSelectionListener, ListCellRenderer {
 	public static Map<Integer, List<CustomFieldDef>> METRICS_VERSIONS = new HashMap<Integer, List<CustomFieldDef>>();
+	protected DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
 
 	private JPanel rootPanel;
 	private JTextArea commentTextArea;
@@ -62,9 +65,20 @@ public class CrucibleCommentPanel extends JPanel {
 	private final CommentState commentState = CommentState.READ_ONLY;
 	private static final String RANK = "rank";
 	private static final String CLASSIFICATION = "classification";
+	private final DefaultListModel listModel;
+	private final DataContext dataContext;
 
 	public JPanel getRootPanel() {
 		return rootPanel;
+	}
+
+	public void valueChanged(ListSelectionEvent event) {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	public Component getListCellRendererComponent(JList jList, Object o, int i, boolean b, boolean b1) {
+
+		return new CrucibleCommentPanel(this.dataContext, this.reviewAdapter, ((GeneralComment) o));
 	}
 
 	/**
@@ -76,61 +90,65 @@ public class CrucibleCommentPanel extends JPanel {
 	 */
 	private void $$$setupUI$$$() {
 		rootPanel = new JPanel();
-		rootPanel.setLayout(new FormLayout("fill:max(d;4px):noGrow,fill:d:grow", "center:33px:noGrow,center:d:grow,center:m:noGrow,center:max(d;4px):noGrow"));
+		rootPanel.setLayout(new FormLayout("fill:d:grow", "center:28px:noGrow,center:d:grow,center:m:noGrow,center:max(d;4px):noGrow"));
 		final JScrollPane scrollPane1 = new JScrollPane();
 		CellConstraints cc = new CellConstraints();
-		rootPanel.add(scrollPane1, cc.xy(2, 2, CellConstraints.FILL, CellConstraints.FILL));
-		scrollPane1.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), null));
+		rootPanel.add(scrollPane1, cc.xy(1, 2, CellConstraints.FILL, CellConstraints.FILL));
+		scrollPane1.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), null));
 		commentTextArea = new JTextArea();
 		commentTextArea.setText("");
 		scrollPane1.setViewportView(commentTextArea);
 		bottomButtonsPanel = new JPanel();
-		bottomButtonsPanel.setLayout(new FormLayout("fill:67px:noGrow,left:4dlu:noGrow,fill:110px:noGrow,left:4dlu:noGrow,fill:107px:noGrow,fill:127px:noGrow,fill:80px:noGrow,fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:d:grow", "center:d:noGrow"));
-		rootPanel.add(bottomButtonsPanel, cc.xy(2, 3, CellConstraints.FILL, CellConstraints.CENTER));
+		bottomButtonsPanel.setLayout(new FormLayout("fill:67px:noGrow,left:4dlu:noGrow,fill:m:noGrow,fill:m:noGrow,fill:d:grow,fill:m:noGrow,fill:m:noGrow,fill:max(m;4px):noGrow", "center:d:noGrow"));
+		rootPanel.add(bottomButtonsPanel, cc.xy(1, 3, CellConstraints.FILL, CellConstraints.CENTER));
 		postButton = new JButton();
 		postButton.setText("Post");
-		bottomButtonsPanel.add(postButton, cc.xy(7, 1, CellConstraints.CENTER, CellConstraints.DEFAULT));
+		bottomButtonsPanel.add(postButton, cc.xy(7, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
 		saveAsDraftButton = new JButton();
 		saveAsDraftButton.setText("Save As Draft");
-		bottomButtonsPanel.add(saveAsDraftButton, cc.xy(6, 1, CellConstraints.CENTER, CellConstraints.DEFAULT));
+		bottomButtonsPanel.add(saveAsDraftButton, cc.xy(6, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
 		defectCheckBox = new JCheckBox();
 		defectCheckBox.setText("Defect");
-		bottomButtonsPanel.add(defectCheckBox, cc.xy(1, 1));
+		bottomButtonsPanel.add(defectCheckBox, cc.xy(1, 1, CellConstraints.LEFT, CellConstraints.DEFAULT));
 		cancelButton = new JButton();
 		cancelButton.setText("Cancel");
-		bottomButtonsPanel.add(cancelButton, cc.xy(8, 1, CellConstraints.CENTER, CellConstraints.DEFAULT));
+		bottomButtonsPanel.add(cancelButton, cc.xy(8, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
 		rankComboBox = new JComboBox();
-		bottomButtonsPanel.add(rankComboBox, cc.xy(3, 1));
+		bottomButtonsPanel.add(rankComboBox, cc.xy(3, 1, CellConstraints.LEFT, CellConstraints.DEFAULT));
 		classificationComboBox = new JComboBox();
-		bottomButtonsPanel.add(classificationComboBox, cc.xy(5, 1));
+		bottomButtonsPanel.add(classificationComboBox, cc.xy(4, 1, CellConstraints.LEFT, CellConstraints.DEFAULT));
 		final Spacer spacer1 = new Spacer();
-		bottomButtonsPanel.add(spacer1, cc.xy(10, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
+		bottomButtonsPanel.add(spacer1, cc.xy(5, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
 		topButtonsPanel = new JPanel();
-		topButtonsPanel.setLayout(new FormLayout("fill:m:grow,left:34dlu:noGrow,fill:d:noGrow,left:4dlu:noGrow,fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:max(d;4px):noGrow", "center:m:noGrow"));
-		rootPanel.add(topButtonsPanel, cc.xyw(1, 1, 2));
+		topButtonsPanel.setLayout(new FormLayout("fill:m:grow,left:34dlu:noGrow,fill:d:grow,fill:m:noGrow,fill:max(m;4px):noGrow,fill:max(m;4px):noGrow,fill:max(m;4px):noGrow", "center:m:noGrow"));
+		rootPanel.add(topButtonsPanel, cc.xy(1, 1));
 		editTopButton = new JButton();
 		editTopButton.setText("Edit");
-		topButtonsPanel.add(editTopButton, cc.xy(5, 1));
+		topButtonsPanel.add(editTopButton, cc.xy(5, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
 		replyTopButton = new JButton();
 		replyTopButton.setText("Reply");
-		topButtonsPanel.add(replyTopButton, cc.xy(3, 1));
+		topButtonsPanel.add(replyTopButton, cc.xy(4, 1, CellConstraints.RIGHT, CellConstraints.CENTER));
 		deleteTopButton = new JButton();
 		deleteTopButton.setText("Delete");
-		topButtonsPanel.add(deleteTopButton, cc.xy(7, 1, CellConstraints.CENTER, CellConstraints.DEFAULT));
+		topButtonsPanel.add(deleteTopButton, cc.xy(6, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
 		postTopButton = new JButton();
 		postTopButton.setText("Post");
-		topButtonsPanel.add(postTopButton, cc.xy(9, 1, CellConstraints.CENTER, CellConstraints.DEFAULT));
+		topButtonsPanel.add(postTopButton, cc.xy(7, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
 		commentTypeTopLabel = new JLabel();
 		commentTypeTopLabel.setText("Label");
 		topButtonsPanel.add(commentTypeTopLabel, cc.xy(2, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
 		generalInfoTopLabel = new JLabel();
 		generalInfoTopLabel.setText("Label");
 		topButtonsPanel.add(generalInfoTopLabel, cc.xy(1, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
+		final Spacer spacer2 = new Spacer();
+		topButtonsPanel.add(spacer2, cc.xy(3, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
 		replyPanel = new JPanel();
-		replyPanel.setLayout(new FormLayout("fill:d:noGrow", "center:d:noGrow"));
-		rootPanel.add(replyPanel, cc.xy(1, 4));
+		replyPanel.setLayout(new FormLayout("fill:d:grow", "center:80px:grow"));
+		rootPanel.add(replyPanel, cc.xy(1, 4, CellConstraints.DEFAULT, CellConstraints.FILL));
+		final JScrollPane scrollPane2 = new JScrollPane();
+		replyPanel.add(scrollPane2, new CellConstraints(1, 1, 1, 1, CellConstraints.FILL, CellConstraints.FILL, new Insets(0, 20, 0, 0)));
 		replyList = new JList();
-		replyPanel.add(replyList, new CellConstraints(1, 1, 1, 1, CellConstraints.DEFAULT, CellConstraints.FILL, new Insets(0, 20, 0, 0)));
+		scrollPane2.setViewportView(replyList);
 	}
 
 	/**
@@ -159,6 +177,7 @@ public class CrucibleCommentPanel extends JPanel {
 			try {
 				List<CustomFieldDef> customFields = CrucibleServerFacadeImpl.getInstance().getMetrics(server, metricVersion);
 				METRICS_VERSIONS.put(new Integer(metricVersion), customFields);
+				return customFields;
 			} catch (RemoteApiException e) {
 				PluginUtil.getLogger().error(e.getMessage());
 			} catch (ServerPasswordNotProvidedException e) {
@@ -174,6 +193,12 @@ public class CrucibleCommentPanel extends JPanel {
 		$$$setupUI$$$();
 		commentType = determineCommentType(comment);
 		this.project = IdeaHelper.getCurrentProject(dataContext);
+		this.dataContext = dataContext;
+		listModel = new DefaultListModel();
+		replyList.setCellRenderer(this);
+		replyList.setModel(listModel);
+		replyList.addListSelectionListener(this);
+
 		setComment(comment);
 		this.reviewAdapter = reviewAdapter;
 
@@ -185,12 +210,15 @@ public class CrucibleCommentPanel extends JPanel {
 
 		initActionListeners();
 		setMode(CommentState.READ_ONLY);
+
+		//replyList.setSelectionModel(ListSelectionModel.);
+
+
 	}
 
 
 	private void addReply(GeneralComment item) {
-		//add existing reply to list
-
+		listModel.addElement(item);
 	}
 
 	/*
@@ -205,8 +233,13 @@ public class CrucibleCommentPanel extends JPanel {
 		this.comment = comment;
 		commentTextArea.setText(comment.getMessage());
 
-		for (GeneralComment item : comment.getReplies()) {
-			addReply(item);
+		if (!comment.isReply() && comment.getReplies().size() > 0) {
+			for (GeneralComment item : comment.getReplies()) {
+				addReply(item);
+			}
+		} else {
+			//do not show reply panel if no replies or REPLY
+			replyPanel.setVisible(false);
 		}
 	}
 
@@ -265,18 +298,20 @@ public class CrucibleCommentPanel extends JPanel {
 		List<CustomFieldDef> fieldsDef = getMetricsVersion(reviewAdapter.getServer(), reviewAdapter.getMetricsVersion());
 
 		for (CustomFieldDef item : fieldsDef) {
-			CustomFieldDefBean itemBean = (CustomFieldDefBean) item;
 			List<CustomFieldValue> values;
-			if (itemBean.getName().equals(RANK)) {
-				values = itemBean.getValues();
-				rankComboBox.removeAll();
+			if (item.getName().equals(RANK)) {
+				values = item.getValues();
+				rankComboBox.removeAllItems();
+				rankComboBox.setName(item.getName());
 				for (CustomFieldValue value : values) {
 					rankComboBox.addItem(new CustomFieldValueComboBoxItem(value));
 
 				}
 			}
-			if (itemBean.getName().equals(CLASSIFICATION)) {
-				values = itemBean.getValues();
+			if (item.getName().equals(CLASSIFICATION)) {
+				values = item.getValues();
+				classificationComboBox.removeAllItems();
+				classificationComboBox.setName(item.getLabel());
 				for (CustomFieldValue value : values) {
 					classificationComboBox.addItem(new CustomFieldValueComboBoxItem(value));
 				}
@@ -292,7 +327,7 @@ public class CrucibleCommentPanel extends JPanel {
 	protected void onPost(boolean saveAsDraft) {
 		GeneralCommentBean generalComment = new GeneralCommentBean();
 
-		generalComment.setMessage(commentPanel.getText());
+		generalComment.setMessage(commentTextArea.getText());
 		generalComment.setPermId(reviewAdapter.getPermaId());
 		//generalComment.setUser(reviewAdapter.get);
 		//???What about defect???
@@ -375,7 +410,7 @@ public class CrucibleCommentPanel extends JPanel {
 					defectCheckBox.setVisible(true);
 					setDefectCombosVisible(defectCheckBox.isSelected());
 				}
-
+				break;
 			case NEW:
 				topButtonsPanel.setVisible(false);
 				bottomButtonsPanel.setVisible(true);
@@ -389,7 +424,7 @@ public class CrucibleCommentPanel extends JPanel {
 				topButtonsPanel.setVisible(true);
 				bottomButtonsPanel.setVisible(false);
 
-				if (reviewAdapter.getCreator().equals(reviewAdapter.getServer().getUserName())) {
+				if (true || reviewAdapter.getCreator().equals(reviewAdapter.getServer().getUserName())) {
 					//top EDIT, REPLY visible, editable
 					editTopButton.setVisible(true);
 					deleteTopButton.setVisible(true);
