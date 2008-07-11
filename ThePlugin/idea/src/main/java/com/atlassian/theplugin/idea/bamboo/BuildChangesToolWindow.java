@@ -191,6 +191,7 @@ public final class BuildChangesToolWindow {
 					Commit c = commits.get(table.getSelectedRow());
 					if (c.getFiles().size() > 0) {
 						fileTree = new FileTree(new FileTreeModel(c.getFiles()));
+						fileTree.setRootVisible(false);
 						fileScroll.setViewportView(fileTree);
 						expand();
 					} else {
