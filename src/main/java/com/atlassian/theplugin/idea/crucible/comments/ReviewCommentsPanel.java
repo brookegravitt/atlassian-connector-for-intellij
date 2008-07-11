@@ -12,6 +12,8 @@ import com.atlassian.theplugin.idea.crucible.events.FocusOnGeneralCommentReplyEv
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewItem;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomField;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldBean;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -23,6 +25,7 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.util.List;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -118,7 +121,7 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 									selectedComment
 							)
 					);
-				}
+                }
 			}
 		};
 		return commentSelectedListener;

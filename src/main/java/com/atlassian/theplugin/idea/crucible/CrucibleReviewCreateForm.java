@@ -461,25 +461,27 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
             this.server = server;
         }
 
-        public String getAuthor() {
+        public User getAuthor() {
             if (authorComboBox.getSelectedItem() instanceof UserComboBoxItem) {
-                return ((UserComboBoxItem) authorComboBox.getSelectedItem()).getUser().getUserName();
+                return ((UserComboBoxItem) authorComboBox.getSelectedItem()).getUser();
             } else {
                 return null;
             }
         }
 
-        public String getCreator() {
-            return server.getUserName();
+        public User getCreator() {
+            UserBean user = new UserBean();
+            user.setUserName(server.getUserName());
+            return user;
         }
 
         public String getDescription() {
             return statementArea.getText();
         }
 
-        public String getModerator() {
+        public User getModerator() {
             if (moderatorComboBox.getSelectedItem() instanceof UserComboBoxItem) {
-                return ((UserComboBoxItem) moderatorComboBox.getSelectedItem()).getUser().getUserName();
+                return ((UserComboBoxItem) moderatorComboBox.getSelectedItem()).getUser();
             } else {
                 return null;
             }

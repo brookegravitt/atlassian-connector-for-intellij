@@ -37,11 +37,11 @@ public class ReviewDataInfoAdapter {
 		return review.getReviewUrl();
 	}
 
-	public String getAuthor() {
+	public User getAuthor() {
 		return review.getAuthor();
 	}
 
-	public String getCreator() {
+	public User getCreator() {
 		return review.getCreator();
 	}
 
@@ -49,7 +49,7 @@ public class ReviewDataInfoAdapter {
 		return review.getDescription();
 	}
 
-	public String getModerator() {
+	public User getModerator() {
 		return review.getModerator();
 	}
 
