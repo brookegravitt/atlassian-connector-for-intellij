@@ -424,19 +424,19 @@ public class CrucibleCommentPanel extends JPanel implements ListSelectionListene
 				topButtonsPanel.setVisible(true);
 				bottomButtonsPanel.setVisible(false);
 
-				if (true || reviewAdapter.getCreator().equals(reviewAdapter.getServer().getUserName())) {
+				if (comment.getUser().equals(reviewAdapter.getServer().getUserName())) {
 					//top EDIT, REPLY visible, editable
 					editTopButton.setVisible(true);
 					deleteTopButton.setVisible(true);
-				} else {
+                } else {
 					//top EDIT, REPLY not visible
 					editTopButton.setVisible(false);
 					deleteTopButton.setVisible(false);
-				}
+                }
 
 				//for drafts top POST button is visible
-				if (comment.isDraft()) {
-					postTopButton.setVisible(true);
+				if (comment.isDraft() && comment.getUser().equals(reviewAdapter.getServer().getUserName())) {
+                    postTopButton.setVisible(true);
 				} else {
 					postTopButton.setVisible(false);
 				}
