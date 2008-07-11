@@ -9,7 +9,7 @@ import java.util.Map;
 import java.net.URLEncoder;
 import java.io.UnsupportedEncodingException;
 
-public class BugReporting {
+public final class BugReporting {
 
 	// TODO: this version list needs updating every time we add some new version to Jira.
 	// This is all basically incorrect code and will break beyond 2.0, but whatever

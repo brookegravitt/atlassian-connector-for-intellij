@@ -385,7 +385,7 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 // @todo do something with logger
 //            PluginUtil.getLogger().error("Crucible exception: " + e.getMessage());
         }
-        return Collections.<ReviewInfo>emptyList();
+        return Collections.emptyList();
     }
 
     public List<ReviewInfo> getReviewsForFilter(Server server, PredefinedFilter filter)

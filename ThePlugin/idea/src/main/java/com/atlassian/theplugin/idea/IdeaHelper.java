@@ -19,7 +19,6 @@ package com.atlassian.theplugin.idea;
 import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.ReviewItemVirtualFile;
-import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.atlassian.theplugin.jira.JIRAServer;
@@ -104,8 +103,8 @@ public final class IdeaHelper {
 		return getAppComponent().getState();
 	}
   
-	public static JIRAToolWindowPanel getJIRAToolWindowPanel(Project p){
-		if (p == null){
+	public static JIRAToolWindowPanel getJIRAToolWindowPanel(Project p) {
+		if (p == null) {
 			return null;
 		}
 		com.intellij.openapi.wm.ToolWindow tw = getToolWindow(p);

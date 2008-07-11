@@ -11,12 +11,12 @@ import com.atlassian.theplugin.commons.VersionedFileDescriptor;
  */
 public class ReviewedFileDescriptor extends VersionedFileDescriptor {
 
-	int numberOfComments = 0;
+	private int numberOfComments = 0;
 
 	/**
 	 * How many people think the file contains defects
 	 */
-	int numberOfDefects = 0;
+	private int numberOfDefects = 0;
 
 	public int getNumberOfComments() {
 		return numberOfComments;

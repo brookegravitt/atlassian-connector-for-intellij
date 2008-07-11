@@ -119,7 +119,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 		return ideaToolWindow;
 	}
 
-	public ToolWindow getBottomIdeaToolWindow(){
+	public ToolWindow getBottomIdeaToolWindow() {
 		return bottomIdeaToolWindow;
 	}
 
@@ -131,7 +131,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 		panels.add(toolWindowPanel);
 	}
 
-	public void registerBottomPanel(ToolWindowPanels toolWindowPanel){
+	public void registerBottomPanel(ToolWindowPanels toolWindowPanel) {
 		bottomPanels.add(toolWindowPanel);
 	}
 
@@ -139,9 +139,9 @@ public class PluginToolWindow extends ContentManagerAdapter {
 	 * Show registered panels if servers are defined for the type of panel.
 	 * Hides registered panels if servers are not define for the type of panel.
 	 */
-	public void showHideBottomPanels(){
+	public void showHideBottomPanels() {
 				
-			for(ToolWindowPanels entry: bottomPanels){
+			for (ToolWindowPanels entry : bottomPanels) {
 			try {
 				ServerType serverType = Util.toolWindowPanelsToServerType(entry);
 				if (ConfigurationFactory.getConfiguration().getProductServers(serverType).transientGetServers().size() > 0) {
@@ -442,27 +442,19 @@ public class PluginToolWindow extends ContentManagerAdapter {
 	 * List of available panels in tool window
 	 */
 	public enum ToolWindowPanels {
-		BAMBOO {
-			public String toString() {
-				return "Bamboo";
-			}
-		},
-		CRUCIBLE {
-			public String toString() {
-				return "Crucible";
-			}
-		},
-		JIRA {
-			public String toString() {
-				return "JIRA";
-			}
+        BAMBOO("Bamboo"),
+		CRUCIBLE("Crucible"),
+		JIRA("JIRA"),
+		CRUCIBLE_BOTTOM("Review Details");
 
-		},
+        private final String title;
 
-		CRUCIBLE_BOTTOM {
-			public String toString(){
-				return "Review Details";
-			}
-		}
-	}
+        ToolWindowPanels(String title) {
+            this.title = title;
+        }
+
+        public String toString() {
+            return title;
+        }
+    }
 }

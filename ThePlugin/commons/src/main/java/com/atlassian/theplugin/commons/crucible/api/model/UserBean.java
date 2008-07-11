@@ -19,6 +19,7 @@ package com.atlassian.theplugin.commons.crucible.api.model;
 public class UserBean implements User {
     protected String userName;
 	protected String displayName;
+    private static final int HASH_MAGIC = 31;
 
     public UserBean() {
     }
@@ -49,14 +50,22 @@ public class UserBean implements User {
     }
 
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         UserBean userBean = (UserBean) o;
 
-        if (displayName != null ? !displayName.equals(userBean.displayName) : userBean.displayName != null)
+        if (displayName != null ? !displayName.equals(userBean.displayName) : userBean.displayName != null) {
             return false;
-        if (userName != null ? !userName.equals(userBean.userName) : userBean.userName != null) return false;
+        }
+
+        if (userName != null ? !userName.equals(userBean.userName) : userBean.userName != null) {
+            return false;
+        }
 
         return true;
     }
@@ -64,7 +73,7 @@ public class UserBean implements User {
     public int hashCode() {
         int result;
         result = (userName != null ? userName.hashCode() : 0);
-        result = 31 * result + (displayName != null ? displayName.hashCode() : 0);
+        result = HASH_MAGIC * result + (displayName != null ? displayName.hashCode() : 0);
         return result;
     }
 
