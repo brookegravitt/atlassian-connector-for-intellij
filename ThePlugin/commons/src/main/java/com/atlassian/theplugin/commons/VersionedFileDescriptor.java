@@ -14,10 +14,25 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.commons.bamboo;
+package com.atlassian.theplugin.commons;
 
-public interface CommitFile {
-	String getFileName();
+public class VersionedFileDescriptor {
+	private String fileName;
+	private String revision;
 
-	String getRevision();
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+
+	public String getRevision() {
+		return revision;
+	}
+
+	public void setRevision(String revision) {
+		this.revision = revision;
+	}
 }

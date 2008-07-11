@@ -16,6 +16,8 @@
 
 package com.atlassian.theplugin.commons.bamboo;
 
+import com.atlassian.theplugin.commons.VersionedFileDescriptor;
+
 import java.util.Date;
 import java.util.List;
 
@@ -26,5 +28,5 @@ public interface Commit {
 
 	Date getCommitDate();
 
-	List<CommitFile> getFiles();
+	List<VersionedFileDescriptor> getFiles();
 }

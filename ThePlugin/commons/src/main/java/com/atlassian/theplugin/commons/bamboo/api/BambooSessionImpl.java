@@ -16,6 +16,7 @@
 
 package com.atlassian.theplugin.commons.bamboo.api;
 
+import com.atlassian.theplugin.commons.VersionedFileDescriptor;
 import com.atlassian.theplugin.commons.bamboo.*;
 import com.atlassian.theplugin.commons.remoteapi.*;
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
@@ -366,7 +367,7 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
 					XPath filesPath = XPath.newInstance(path);
 					List<Element> fileElements = filesPath.selectNodes(doc);
 					for (Element file : fileElements) {
-						CommitFileInfo fileInfo = new CommitFileInfo();
+						VersionedFileDescriptor fileInfo = new VersionedFileDescriptor();
 						fileInfo.setFileName(file.getAttributeValue("name"));
 						fileInfo.setRevision(file.getAttributeValue("revision"));
 						cInfo.addCommitFile(fileInfo);

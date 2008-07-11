@@ -16,6 +16,8 @@
 
 package com.atlassian.theplugin.commons.bamboo;
 
+import com.atlassian.theplugin.commons.VersionedFileDescriptor;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -24,10 +26,10 @@ public class CommitInfo implements Commit {
 	private String author;
 	private Date commitDate;
 	private String comment;
-	private List<CommitFile> files;
+	private List<VersionedFileDescriptor> files;
 
 	public CommitInfo() {
-		files = new ArrayList<CommitFile>();
+		files = new ArrayList<VersionedFileDescriptor>();
 	}
 
 	public String getAuthor() {
@@ -54,15 +56,15 @@ public class CommitInfo implements Commit {
 		this.commitDate = new Date(commitDate.getTime());
 	}
 
-	public List<CommitFile> getFiles() {
+	public List<VersionedFileDescriptor> getFiles() {
 		return files;
 	}
 
-	public void setFiles(List<CommitFile> files) {
+	public void setFiles(List<VersionedFileDescriptor> files) {
 		this.files = files;
 	}
 
-	public void addCommitFile(CommitFile file) {
+	public void addCommitFile(VersionedFileDescriptor file) {
 		files.add(file);
 	}
 }
