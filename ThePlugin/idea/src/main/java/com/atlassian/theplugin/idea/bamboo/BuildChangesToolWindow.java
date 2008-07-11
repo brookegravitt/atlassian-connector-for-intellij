@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.idea.bamboo;
 
+import com.atlassian.theplugin.commons.VersionedFileDescriptor;
 import com.atlassian.theplugin.commons.bamboo.Commit;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -8,10 +9,14 @@ import com.atlassian.theplugin.idea.ui.AtlassianTableView;
 import com.atlassian.theplugin.idea.ui.TableColumnProvider;
 import com.atlassian.theplugin.idea.ui.TableItemSelectedListener;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
 import com.atlassian.theplugin.idea.ui.tree.file.FileTreeModelBuilder;
+import com.atlassian.theplugin.util.ColorToHtml;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.fileTypes.FileType;
+import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
@@ -19,9 +24,11 @@ import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.peer.PeerFactory;
 import com.intellij.ui.content.Content;
 import com.intellij.util.ui.ListTableModel;
+import com.intellij.util.ui.UIUtil;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.tree.*;
 import java.awt.*;
 import java.util.Comparator;
 import java.util.Date;
@@ -31,9 +38,12 @@ import java.util.List;
 public final class BuildChangesToolWindow {
 
 	public interface ChangesTree extends Expandable {
+		static boolean GROUP_BY_DIRECTORY_DEFAULT = true;
 		void showDiff();
 		void showDiffWithLocal();
 		void showRepositoryVersion();
+		boolean isGroupByDirectory();
+		void setGroupByDirectory(boolean groupByDirectory);
 	}
 
 	private static final String TOOL_WINDOW_TITLE = "Bamboo Build Changes";
@@ -86,11 +96,16 @@ public final class BuildChangesToolWindow {
 	private class CommitDetailsPanel extends JPanel implements ChangesTree {
 		private static final float SPLIT_RATIO = 0.6f;
 		private JTree fileTree;
-		private JTable commitsTable;
 		private JScrollPane fileScroll;
+		private boolean isByDir = ChangesTree.GROUP_BY_DIRECTORY_DEFAULT;
+
+		private List<Commit> commits;
+		AtlassianTableView commitsTable;
 
 		public CommitDetailsPanel(String name, final List<Commit> commits) {
 			super();
+
+			this.commits = commits;
 
 			if (commits == null || commits.size() == 0) {
 				add(new JLabel("No commits in " + name));
@@ -248,7 +263,7 @@ public final class BuildChangesToolWindow {
 			}
 		}
 
-		private JTable createCommitsTable(final List<Commit> commits) {
+		private AtlassianTableView createCommitsTable(final List<Commit> commits) {
 			TableColumnProvider prov = new TableColumnProvider() {
 				public TableColumnInfo[] makeColumnInfo() {
 					return new TableColumnInfo[] { new AuthorColumn(), new DateColumn(), new CommentColumn() };
@@ -263,14 +278,7 @@ public final class BuildChangesToolWindow {
 			atv.addItemSelectedListener(new TableItemSelectedListener() {
 				public void itemSelected(Object item, int noClicks) {
 					Commit c = (Commit) item;
-					if (c.getFiles().size() > 0) {
-						fileTree = new AtlassianTree(FileTreeModelBuilder.buildTreeModelFromFiles(c.getFiles()));
-						fileTree.setRootVisible(false);
-						fileScroll.setViewportView(fileTree);
-						expand();
-					} else {
-						fileScroll.setViewportView(new JLabel("no commits", SwingConstants.CENTER));
-					}
+					createTree(c);
 				}
 			});
 			return atv;
@@ -286,6 +294,99 @@ public final class BuildChangesToolWindow {
 
 		public void showRepositoryVersion() {
 			// todo
+		}
+
+		public boolean isGroupByDirectory() {
+			return isByDir;
+		}
+
+		public void setGroupByDirectory(boolean groupByDirectory) {
+			isByDir = groupByDirectory;
+			createTree((Commit) commitsTable.getSelectedObject());
+		}
+
+		private void createTree(Commit commit) {
+			if (commit.getFiles().size() > 0) {
+				if (isByDir) {
+					fileTree = new AtlassianTree(FileTreeModelBuilder.buildTreeModelFromFiles(commit.getFiles()));
+					fileTree.setRootVisible(false);
+					fileScroll.setViewportView(fileTree);
+					expand();
+				} else {
+					fileTree = createFlatTree(commit.getFiles());
+					fileTree.setRootVisible(false);
+					fileScroll.setViewportView(fileTree);
+				}
+			} else {
+				fileScroll.setViewportView(new JLabel("no commits", SwingConstants.CENTER));
+			}
+		}
+
+		private class FileNode extends DefaultMutableTreeNode {
+			private VersionedFileDescriptor file;
+
+			public FileNode(VersionedFileDescriptor f) {
+				super(f.getFileName().substring(f.getFileName().lastIndexOf('/') + 1));
+				file = f;
+			}
+
+			public String getRevision() {
+				return file.getRevision();
+			}
+
+			public String getDirectory() {
+				return file.getFileName().substring(0, file.getFileName().lastIndexOf('/'));
+			}
+
+			public String getName() {
+				return file.getFileName();
+			}
+		}
+
+		private JTree createFlatTree(List<VersionedFileDescriptor> files) {
+			DefaultMutableTreeNode root = new DefaultMutableTreeNode();
+			for (VersionedFileDescriptor f : files) {
+				root.add(new FileNode(f));
+			}
+			TreeModel model = new DefaultTreeModel(root);
+			JTree tree = new JTree(model);
+			tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+			tree.setCellRenderer(new DefaultTreeCellRenderer() {
+				public Component getTreeCellRendererComponent(JTree tree,
+															  Object value,
+															  boolean selected,
+															  boolean expanded,
+															  boolean leaf,
+															  int row,
+															  boolean hasFocus) {
+					Component c = super.getTreeCellRendererComponent(
+							tree, value, selected, expanded, leaf, row, hasFocus);
+
+					FileNode node = (FileNode) value;
+					Color statsColor = selected
+							? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeSelectionBackground();
+					StringBuilder txt = new StringBuilder();
+					txt.append("<html><body>");
+					txt.append(getText());
+					txt.append(" <font color=");
+					txt.append(ColorToHtml.getHtmlFromColor(statsColor));
+					txt.append(">(");
+					txt.append(node.getDirectory());
+					txt.append(")</font>");
+					txt.append(" rev: ");
+					txt.append(node.getRevision());
+					txt.append("</body></html>");
+					setText(txt.toString());
+
+					FileTypeManager mgr = FileTypeManager.getInstance();
+					FileType type = mgr.getFileTypeByFileName(node.getName());
+					setIcon(type.getIcon());
+
+					return c;
+				}
+			});
+
+			return tree;
 		}
 
 		public void expand() {
