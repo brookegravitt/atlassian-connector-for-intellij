@@ -7,20 +7,14 @@ import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.ide.DataManager;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.TableColumnInfo;
-import com.atlassian.theplugin.idea.CrucibleBottomToolWindowPanel;
 import com.atlassian.theplugin.idea.ui.*;
 import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
-import com.atlassian.theplugin.idea.crucible.tree.CrucibleTreeRootNode;
-import com.atlassian.theplugin.idea.crucible.tree.GeneralCommentNode;
-import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.crucible.events.ShowGeneralCommentEvent;
 import com.atlassian.theplugin.idea.crucible.events.FocusOnGeneralCommentReplyEvent;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewItem;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomField;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldBean;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -33,7 +27,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 import java.util.Collection;
-import java.util.Map;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -305,7 +298,7 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 
 		public DDialog(DataContext dataContext, ReviewDataInfoAdapter adapter, GeneralComment comment){
 			super(true);			
-			this.commentPanel = new CrucibleCommentPanel(dataContext, adapter, comment);
+			this.commentPanel = new CrucibleCommentPanel(adapter, comment);
 			init();
 		}
 
