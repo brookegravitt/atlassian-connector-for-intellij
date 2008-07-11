@@ -1,10 +1,10 @@
 package com.atlassian.theplugin.idea.action.crucible;
 
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.crucible.events.FocusOnGeneralCommentReplyEvent;
+//import com.intellij.openapi.actionSystem.AnAction;
+//import com.intellij.openapi.actionSystem.AnActionEvent;
+//import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+//import com.atlassian.theplugin.idea.IdeaHelper;
+//import com.atlassian.theplugin.idea.crucible.events.FocusOnGeneralCommentReplyEvent;
 
 /**
  * Created by IntelliJ IDEA.

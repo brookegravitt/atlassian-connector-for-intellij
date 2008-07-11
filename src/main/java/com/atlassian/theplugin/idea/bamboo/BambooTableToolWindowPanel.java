@@ -23,7 +23,6 @@ import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.configuration.ProjectToolWindowTableConfiguration;
 import com.atlassian.theplugin.idea.ui.AbstractTableToolWindowPanel;
 import com.atlassian.theplugin.idea.ui.TableColumnProvider;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.util.ui.UIUtil;
@@ -40,7 +39,8 @@ import java.util.List;
 import java.util.concurrent.FutureTask;
 
 public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel implements BambooStatusListener {
-	private static final Key<BambooTableToolWindowPanel> WINDOW_PROJECT_KEY =  Key.create(BambooTableToolWindowPanel.class.getName());
+	private static final Key<BambooTableToolWindowPanel> WINDOW_PROJECT_KEY
+            = Key.create(BambooTableToolWindowPanel.class.getName());
 	private final transient BambooServerFacade bambooFacade;
 	private static final DateFormat TIME_DF = new SimpleDateFormat("hh:mm a");
 	private static BambooTableToolWindowPanel instance;

@@ -10,7 +10,6 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.util.Logger;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
-import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.crucible.comments.ReviewCommentsPanel;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
@@ -28,7 +27,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
 import com.intellij.peer.PeerFactory;
-import com.intellij.ide.DataManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -51,8 +49,9 @@ import java.util.Collection;
  */
 
 
-public class CrucibleBottomToolWindowPanel extends JPanel implements ContentPanel {
-		private static final Key<CrucibleBottomToolWindowPanel> WINDOW_PROJECT_KEY =  Key.create(CrucibleBottomToolWindowPanel.class.getName());
+public final class CrucibleBottomToolWindowPanel extends JPanel implements ContentPanel {
+	private static final Key<CrucibleBottomToolWindowPanel> WINDOW_PROJECT_KEY
+            = Key.create(CrucibleBottomToolWindowPanel.class.getName());
 	private Project project;
 	private static final float SPLIT_RATIO = 0.3f;
 	private ProjectConfigurationBean projectConfiguration;
@@ -60,9 +59,7 @@ public class CrucibleBottomToolWindowPanel extends JPanel implements ContentPane
 	protected ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
 	private static CrucibleServerFacade serverFacade;
 	private CrucibleVersion crucibleVersion = CrucibleVersion.UNKNOWN;
-	static CrucibleBottomToolWindowPanel instance;
 	private static ReviewItemTreePanel reviewItemTreePanel;
-	private static Splitter splitter;
 	private ReviewCommentsPanel reviewComentsPanel;
 	private static CrucibleReviewActionListener tabManager;
 	private static final int LEFT_WIDTH = 150;
@@ -80,7 +77,8 @@ public class CrucibleBottomToolWindowPanel extends JPanel implements ContentPane
 
 
 
-	public static CrucibleBottomToolWindowPanel getInstance(Project project, ProjectConfigurationBean projectConfigurationBean) {
+	public static CrucibleBottomToolWindowPanel getInstance(Project project,
+            ProjectConfigurationBean projectConfigurationBean) {
 
         CrucibleBottomToolWindowPanel window = project.getUserData(WINDOW_PROJECT_KEY);
 
@@ -100,7 +98,6 @@ public class CrucibleBottomToolWindowPanel extends JPanel implements ContentPane
 		serverFacade = CrucibleServerFacadeImpl.getInstance();
 
 		setBackground(UIUtil.getTreeTextBackground());
-		splitter = new Splitter();
 		reviewItemTreePanel = ReviewItemTreePanel.getInstance(projectConfigurationBean);
 		Splitter splitter = new Splitter(false, SPLIT_RATIO);
 		splitter.setShowDividerControls(true);
@@ -227,7 +224,8 @@ public class CrucibleBottomToolWindowPanel extends JPanel implements ContentPane
 			//To change body of implemented methods use File | Settings | File Templates.
 		}
 
-		public void focusOnVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem, Collection<VersionedComment> versionedComments, VersionedComment versionedComment) {
+		public void focusOnVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem,
+                Collection<VersionedComment> versionedComments, VersionedComment versionedComment) {
 			//To change body of implemented methods use File | Settings | File Templates.
 		}
 
@@ -258,11 +256,11 @@ public class CrucibleBottomToolWindowPanel extends JPanel implements ContentPane
 						reviewDataInfoAdapter.getServer(), reviewDataInfoAdapter.getPermaId(), reviewItem.getPermId());
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
-						Project project = IdeaHelper.getCurrentProject();
+						Project curProject = IdeaHelper.getCurrentProject();
 
 						Content content = findOrCreatePanel(reviewItem.toString(),
 								new ReviewDetailsPanel(reviewDataInfoAdapter, reviewItem, versionedComments), true);
-						CrucibleHelper.showVirtualFileWithComments(project, reviewItem, versionedComments);
+						CrucibleHelper.showVirtualFileWithComments(curProject, reviewItem, versionedComments);
 
 					}
 				});
@@ -281,7 +279,8 @@ public class CrucibleBottomToolWindowPanel extends JPanel implements ContentPane
 			//To change body of implemented methods use File | Settings | File Templates.
 		}
 
-		public void showVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem, Collection<VersionedComment> versionedComments, VersionedComment versionedComment) {
+		public void showVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem,
+                Collection<VersionedComment> versionedComments, VersionedComment versionedComment) {
 			//To change body of implemented methods use File | Settings | File Templates.
 		}
 

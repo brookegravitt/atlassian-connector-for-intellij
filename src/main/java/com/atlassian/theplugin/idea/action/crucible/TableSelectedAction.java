@@ -37,7 +37,7 @@ public abstract class TableSelectedAction extends AnAction {
 			table = ((AtlassianTableViewWithToolbar) component).getTable();
 		} else if (component instanceof ActionToolbar) {
 			Container mComponent = ((ActionToolbar) component).getComponent();
-			while(mComponent != null) {
+			while (mComponent != null) {
 				if (mComponent instanceof AtlassianTableViewWithToolbar) {
 					break;
 				}
