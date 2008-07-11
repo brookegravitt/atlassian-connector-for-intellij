@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.atlassian.theplugin.idea.crucible.comments.CrucibleCommentPanel">
   <grid id="27dc6" binding="rootPanel" layout-manager="FormLayout">
-    <rowspec value="center:28px:noGrow"/>
-    <rowspec value="center:d:grow"/>
+    <rowspec value="center:m:noGrow"/>
+    <rowspec value="center:m:grow"/>
     <rowspec value="center:m:noGrow"/>
     <rowspec value="center:max(d;4px):noGrow"/>
     <colspec value="fill:d:grow"/>
@@ -182,7 +182,7 @@
         </children>
       </grid>
       <grid id="aa601" binding="replyPanel" layout-manager="FormLayout">
-        <rowspec value="center:80px:grow"/>
+        <rowspec value="center:m:grow"/>
         <colspec value="fill:d:grow"/>
         <constraints>
           <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
