@@ -19,9 +19,11 @@ import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.util.ui.UIUtil;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.commons.bamboo.TestDetails;
+import com.atlassian.theplugin.util.ColorToHtml;
 
 import javax.swing.*;
 import javax.swing.tree.*;
@@ -352,10 +354,14 @@ public final class TestResultsToolWindow {
                         } else {
                             setIcon(TEST_PASSED_ICON);
                         }
+						Color statsColor = selected
+								? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeSelectionBackground();
 						StringBuilder txt = new StringBuilder();
 						txt.append("<html><body>");
 						txt.append(getText());
-						txt.append(" <font color=\"GRAY\"><i>");
+						txt.append(" <font color=");
+						txt.append(ColorToHtml.getHtmlFromColor(statsColor));
+						txt.append("><i>");
 						txt.append(node.getTestStats());
 						txt.append("</i></font>");
 						txt.append("</body></html>");

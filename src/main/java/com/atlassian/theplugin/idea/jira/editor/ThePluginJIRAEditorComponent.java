@@ -12,6 +12,7 @@ import com.atlassian.theplugin.jira.api.JIRAComment;
 import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.api.JIRAConstant;
+import com.atlassian.theplugin.util.ColorToHtml;
 import com.intellij.codeHighlighting.BackgroundEditorHighlighter;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.ide.structureView.StructureViewBuilder;
@@ -566,8 +567,8 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
             summary.setContentType("text/html");
 			Color bg = UIUtil.getTableSelectionBackground();
 			Color fg = UIUtil.getTableSelectionForeground();
-			String bgColor = String.format("#%1$2X%2$2X%3$2X", bg.getRed(), bg.getGreen(), bg.getBlue());
-			String fgColor = String.format("#%1$2X%2$2X%3$2X", fg.getRed(), fg.getGreen(), fg.getBlue());
+			String bgColor = ColorToHtml.getHtmlFromColor(bg);
+			String fgColor = ColorToHtml.getHtmlFromColor(fg);
 			String txt = "<html><body bgcolor=" + bgColor + " color=" + fgColor
 					+ "><font size=\"+1\"><a href=\"" + issue.getIssueUrl() + "\">"
 					+ issue.getKey() + "</a> " + issue.getSummary() + "</font></body></html>";
