@@ -147,9 +147,15 @@ public final class CrucibleRestXmlHelper {
     public static Review parseReviewNode(Element reviewNode) {
         ReviewBean review = new ReviewBean();
 
-        review.setAuthor(getChildText(reviewNode, "author"));
-        review.setCreator(getChildText(reviewNode, "creator"));
-        review.setModerator(getChildText(reviewNode, "moderator"));
+        if (reviewNode.getChild("author") != null) {
+            review.setAuthor(parseUserNode(reviewNode.getChild("author")));
+        }
+        if (reviewNode.getChild("creator") != null) {
+            review.setCreator(parseUserNode(reviewNode.getChild("creator")));
+        }
+        if (reviewNode.getChild("moderator") != null) {
+            review.setModerator(parseUserNode(reviewNode.getChild("moderator")));
+        }
         review.setDescription(getChildText(reviewNode, "description"));
         review.setName(getChildText(reviewNode, "name"));
         review.setProjectKey(getChildText(reviewNode, "projectKey"));
@@ -272,10 +278,19 @@ public final class CrucibleRestXmlHelper {
     private static Element prepareReviewNodeElement(Review review) {
         Element reviewData = new Element("reviewData");
 
-        addTag(reviewData, "author", review.getAuthor());
-        addTag(reviewData, "creator", review.getCreator());
+        Element authorElement = new Element("author");
+        reviewData.getContent().add(authorElement);
+        addTag(authorElement, "userName", review.getAuthor().getUserName());
+
+        Element creatorElement = new Element("creator");
+        reviewData.getContent().add(creatorElement);
+        addTag(creatorElement, "userName", review.getCreator().getUserName());
+
+        Element moderatorElement = new Element("moderator");
+        reviewData.getContent().add(moderatorElement);
+        addTag(moderatorElement, "userName", review.getModerator().getUserName());
+
         addTag(reviewData, "description", review.getDescription());
-        addTag(reviewData, "moderator", review.getModerator());
         addTag(reviewData, "name", review.getName());
         addTag(reviewData, "projectKey", review.getProjectKey());
         addTag(reviewData, "repoName", review.getRepoName());
@@ -346,17 +361,7 @@ public final class CrucibleRestXmlHelper {
                     for (Element value : values) {
                         CustomFieldBean field = new CustomFieldBean();
                         field.setConfigVersion(Integer.parseInt(getChildText(value, "configVersion")));
-                        field.setFieldScope(getChildText(value, "fieldScope"));
-                        field.setHrValue(getChildText(value, "hrValue"));
-                        field.setType(CustomFieldValueType.valueOf(getChildText(value, "type")));
-                        switch (field.getType()) {
-                            case INTEGER:
-                                field.setValue(Integer.valueOf(getChildText(value, "value")));
-                                break;
-                            case STRING:
-                                field.setValue(getChildText(value, "value"));
-                                break;
-                        }
+                        field.setValue(getChildText(value, "value"));              
                         commentBean.getCustomFields().put(key, field);
                         break;
                     }
@@ -481,19 +486,7 @@ public final class CrucibleRestXmlHelper {
     private static Element prepareCustomFieldValue(CustomField value) {
         Element entry = new Element("value");
         addTag(entry, "configVersion", Integer.toString(value.getConfigVersion()));
-        addTag(entry, "fieldScope", value.getFieldScope());
-        addTag(entry, "type", value.getType().toString());
-        addTag(entry, "hrValue", value.getHrValue());
-        String v = "";
-        switch (value.getType()) {
-            case INTEGER:
-                v = ((Integer) value.getValue()).toString();
-                break;
-            case STRING:
-                v = (String) value.getValue();
-                break;
-        }
-        addTag(entry, "value", v);
+        addTag(entry, "value", value.getValue());
         return entry;
     }
 

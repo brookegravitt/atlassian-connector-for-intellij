@@ -8,13 +8,7 @@ package com.atlassian.theplugin.commons.crucible.api.model;
  * To change this template use File | Settings | File Templates.
  */
 public interface CustomField {
-    CustomFieldValueType getType();
-
     int getConfigVersion();
 
-    String getFieldScope();
-
-    Object getValue();
-
-    String getHrValue();
+    String getValue();
 }

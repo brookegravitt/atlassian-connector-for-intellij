@@ -762,10 +762,10 @@ public class CrucibleSessionTest extends TestCase {
 
 	private ReviewBean createReviewRequest() {
 		ReviewBean review = new ReviewBean();
-		review.setAuthor("autor");
-		review.setCreator("creator");
+		review.setAuthor(new UserBean("autor",""));
+		review.setCreator(new UserBean("creator",""));
 		review.setDescription("description");
-		review.setModerator("moderator");
+		review.setModerator(new UserBean("moderator",""));
 		review.setName("name");
 		review.setProjectKey("PR");
 		return review;

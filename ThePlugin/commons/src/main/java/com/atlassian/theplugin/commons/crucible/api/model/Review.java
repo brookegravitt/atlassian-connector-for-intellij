@@ -17,13 +17,13 @@
 package com.atlassian.theplugin.commons.crucible.api.model;
 
 public interface Review {
-	String getAuthor();
+	User getAuthor();
 
-	String getCreator();
+	User getCreator();
 
 	String getDescription();
 
-	String getModerator();
+	User getModerator();
 
 	String getName();
 

@@ -66,11 +66,11 @@ public class ReviewKeyComparatorTest extends TestCase {
 				return null;
 			}
 
-			public String getAuthor() {
+			public User getAuthor() {
 				return null;
 			}
 
-			public String getCreator() {
+			public User getCreator() {
 				return null;
 			}
 
@@ -78,7 +78,7 @@ public class ReviewKeyComparatorTest extends TestCase {
 				return null;
 			}
 
-			public String getModerator() {
+			public User getModerator() {
 				return null;
 			}
 

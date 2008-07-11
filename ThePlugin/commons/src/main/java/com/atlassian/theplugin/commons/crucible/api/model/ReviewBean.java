@@ -18,10 +18,10 @@ package com.atlassian.theplugin.commons.crucible.api.model;
 
 public class ReviewBean implements Review {
 
-    private String author;
-    private String creator;
+    private User author;
+    private User creator;
     private String description;
-    private String moderator;
+    private User moderator;
     private String name;
     private PermId parentReview;
     private PermId permaId;
@@ -35,10 +35,10 @@ public class ReviewBean implements Review {
      *
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link User }
      *
      */
-    public String getAuthor() {
+    public User getAuthor() {
         return author;
     }
 
@@ -47,10 +47,10 @@ public class ReviewBean implements Review {
      *
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link User }
      *
      */
-    public void setAuthor(String value) {
+    public void setAuthor(User value) {
         this.author = value;
     }
 
@@ -59,10 +59,10 @@ public class ReviewBean implements Review {
      *
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link User }
      *
      */
-    public String getCreator() {
+    public User getCreator() {
         return creator;
     }
 
@@ -71,10 +71,10 @@ public class ReviewBean implements Review {
      *
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link User }
      *
      */
-    public void setCreator(String value) {
+    public void setCreator(User value) {
         this.creator = value;
     }
 
@@ -107,10 +107,10 @@ public class ReviewBean implements Review {
      *
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link User }
      *
      */
-    public String getModerator() {
+    public User getModerator() {
         return moderator;
     }
 
@@ -119,10 +119,10 @@ public class ReviewBean implements Review {
      *
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link User }
      *
      */
-    public void setModerator(String value) {
+    public void setModerator(User value) {
         this.moderator = value;
     }
 

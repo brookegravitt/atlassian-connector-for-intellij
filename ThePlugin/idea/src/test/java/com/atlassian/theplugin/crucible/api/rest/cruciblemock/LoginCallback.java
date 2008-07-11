@@ -22,21 +22,24 @@ import org.ddsteps.mock.httpserver.JettyMockServer;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.atlassian.theplugin.commons.crucible.api.model.User;
+import com.atlassian.theplugin.commons.crucible.api.model.UserBean;
+
 public class LoginCallback implements JettyMockServer.Callback {
 
-	private final String expectedUsername;
+	private final User expectedUser;
 	private final String expectedPassword;
 	private final boolean fail;
 
 	public static final boolean ALWAYS_FAIL = true;
 	public static final String AUTH_TOKEN = "authtokenstring";
 
-	public LoginCallback(String expectedUsername, String expectedPassword) {
-		this(expectedUsername, expectedPassword, false);
+	public LoginCallback(String expectedUserName, String expectedPassword) {
+		this(expectedUserName, expectedPassword, false);
 	}
 
-	public LoginCallback(String expectedUsername, String expectedPassword, boolean alwaysFail) {
-		this.expectedUsername = expectedUsername;
+	public LoginCallback(String expectedUserName, String expectedPassword, boolean alwaysFail) {
+		this.expectedUser = new UserBean(expectedUserName);
 		this.expectedPassword = expectedPassword;
 
 		fail = alwaysFail;
@@ -61,7 +64,7 @@ public class LoginCallback implements JettyMockServer.Callback {
 		assertNotNull(username);
 		assertNotNull(password);
 
-		assertEquals(expectedUsername, username);
+		assertEquals(expectedUser.getUserName(), username);
 		assertEquals(expectedPassword, password);
 
 		Util.copyResource(response.getOutputStream(), fail ? "loginFailedResponse.xml" : "loginSuccessResponse.xml");
