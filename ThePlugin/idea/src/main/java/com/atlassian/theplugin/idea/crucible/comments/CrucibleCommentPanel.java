@@ -2,13 +2,10 @@ package com.atlassian.theplugin.idea.crucible.comments;
 
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.uiDesigner.core.Spacer;
-import com.intellij.CommonBundle;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
@@ -24,8 +21,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import java.util.List;
-
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Created by IntelliJ IDEA.
@@ -56,17 +51,13 @@ public class CrucibleCommentPanel extends JPanel implements ListSelectionListene
 	private JPanel bottomButtonsPanel;
 	private JLabel commentTypeTopLabel;
 	private JLabel generalInfoTopLabel;
-	private JTextPane commentPanel;
 	private final ReviewDataInfoAdapter reviewAdapter;
-	private final Project project;
 	private final CrucibleServerFacade crucibleFacade = CrucibleServerFacadeImpl.getInstance();
 	private GeneralComment comment;
 	private final CommentType commentType;
-	private final CommentState commentState = CommentState.READ_ONLY;
 	private static final String RANK = "rank";
 	private static final String CLASSIFICATION = "classification";
 	private final DefaultListModel listModel;
-	private final DataContext dataContext;
 
 	public JPanel getRootPanel() {
 		return rootPanel;
@@ -78,7 +69,7 @@ public class CrucibleCommentPanel extends JPanel implements ListSelectionListene
 
 	public Component getListCellRendererComponent(JList jList, Object o, int i, boolean b, boolean b1) {
 
-		return new CrucibleCommentPanel(this.dataContext, this.reviewAdapter, ((GeneralComment) o));
+		return new CrucibleCommentPanel(this.reviewAdapter, ((GeneralComment) o));
 	}
 
 	/**
@@ -189,11 +180,9 @@ public class CrucibleCommentPanel extends JPanel implements ListSelectionListene
 	}
 
 
-	public CrucibleCommentPanel(DataContext dataContext, ReviewDataInfoAdapter reviewAdapter, GeneralComment comment) {
+	public CrucibleCommentPanel(ReviewDataInfoAdapter reviewAdapter, GeneralComment comment) {
 		$$$setupUI$$$();
 		commentType = determineCommentType(comment);
-		this.project = IdeaHelper.getCurrentProject(dataContext);
-		this.dataContext = dataContext;
 		listModel = new DefaultListModel();
 		replyList.setCellRenderer(this);
 		replyList.setModel(listModel);
