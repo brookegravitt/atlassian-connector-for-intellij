@@ -1,10 +1,15 @@
-package com.atlassian.theplugin.idea.ui.filetree;
+package com.atlassian.theplugin.idea.ui.tree.file;
 
-import javax.swing.tree.DefaultMutableTreeNode;
+import com.intellij.ui.ColoredTreeCellRenderer;
+import com.intellij.ui.SimpleTextAttributes;
+import com.intellij.util.Icons;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
+
+import javax.swing.*;
 import java.util.Map;
 import java.util.HashMap;
 
-class FileNode extends DefaultMutableTreeNode {
+public class FileNode extends AtlassianTreeNode {
 
 	private Map<String, FileNode> children;
 	private String name;
@@ -56,5 +61,27 @@ class FileNode extends DefaultMutableTreeNode {
 
 	public Map<String, FileNode> getChildren() {
 		return children;
+	}
+
+	public ColoredTreeCellRenderer getTreeCellRenderer() {
+		return FileNodeRenderer.getInstance();
+	}
+
+	private static class FileNodeRenderer extends ColoredTreeCellRenderer {
+		private static FileNodeRenderer instance;
+
+		public static FileNodeRenderer getInstance() {
+			if (instance == null) {
+				instance = new FileNodeRenderer();
+			}
+			return instance;
+		}
+
+		public void customizeCellRenderer(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+			FileNode node = (FileNode) value;
+			append(node.getName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
+
+			setIcon(expanded ? Icons.DIRECTORY_OPEN_ICON : Icons.DIRECTORY_CLOSED_ICON);
+		}
 	}
 }
