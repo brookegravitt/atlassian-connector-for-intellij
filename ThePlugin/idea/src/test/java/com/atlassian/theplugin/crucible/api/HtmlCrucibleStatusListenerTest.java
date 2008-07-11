@@ -156,10 +156,10 @@ public class HtmlCrucibleStatusListenerTest extends TestCase {
 
 	public static ReviewInfo generateReviewDataInfo(final String suffix) {
 		ReviewBean rd = new ReviewBean();
-		rd.setAuthor(DEFAULT_AUTHOR + suffix);
-		rd.setCreator(DEFAULT_CREATOR);
+		rd.setAuthor(new UserBean(DEFAULT_AUTHOR + suffix));
+		rd.setCreator(new UserBean(DEFAULT_CREATOR));
 		rd.setDescription(DEFAULT_DESCRIPTION);
-		rd.setModerator(DEFAULT_MODERATOR);
+		rd.setModerator(new UserBean(DEFAULT_MODERATOR));
 		rd.setName(DEFAULT_PROJECT_NAME);
 
 		PermIdBean permId = new PermIdBean();
@@ -176,6 +176,10 @@ public class HtmlCrucibleStatusListenerTest extends TestCase {
 
             public String getDisplayName() {
                 return "";
+            }
+
+            public int compareTo(User that) {
+                return 0; 
             }
 
             public boolean isCompleted() {

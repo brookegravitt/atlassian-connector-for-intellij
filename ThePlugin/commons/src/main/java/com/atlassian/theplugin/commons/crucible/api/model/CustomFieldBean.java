@@ -1,19 +1,8 @@
 package com.atlassian.theplugin.commons.crucible.api.model;
 
 public class CustomFieldBean implements CustomField {
-    private CustomFieldValueType type;
     private int configVersion;
-    private String fieldScope;
-    private Object value;
-    private String hrValue;
-
-    public CustomFieldValueType getType() {
-        return type;
-    }
-
-    public void setType(CustomFieldValueType type) {
-        this.type = type;
-    }
+    private String value;
 
     public int getConfigVersion() {
         return configVersion;
@@ -23,27 +12,11 @@ public class CustomFieldBean implements CustomField {
         this.configVersion = configVersion;
     }
 
-    public String getFieldScope() {
-        return fieldScope;
-    }
-
-    public void setFieldScope(String fieldScope) {
-        this.fieldScope = fieldScope;
-    }
-
-    public Object getValue() {
+    public String getValue() {
         return value;
     }
 
-    public void setValue(Object value) {
+    public void setValue(String value) {
         this.value = value;
-    }
-
-    public String getHrValue() {
-        return hrValue;
-    }
-
-    public void setHrValue(String hrValue) {
-        this.hrValue = hrValue;
     }
 }

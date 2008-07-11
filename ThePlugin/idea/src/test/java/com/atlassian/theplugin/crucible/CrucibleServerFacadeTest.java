@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.Map;
 
 public class CrucibleServerFacadeTest extends TestCase {
-	private static final String VALID_LOGIN = "validLogin";
+	private static final User VALID_LOGIN = new UserBean("validLogin");
 	private static final String VALID_PASSWORD = "validPassword";
 	private static final String VALID_URL = "http://localhost:9001";
 
@@ -61,7 +61,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 			Field f = CrucibleServerFacadeImpl.class.getDeclaredField("sessions");
 			f.setAccessible(true);
 
-			((Map<String, CrucibleSession>) f.get(facade)).put(VALID_URL + VALID_LOGIN + VALID_PASSWORD, crucibleSessionMock);
+			((Map<String, CrucibleSession>) f.get(facade)).put(VALID_URL + VALID_LOGIN.getUserName() + VALID_PASSWORD, crucibleSessionMock);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -74,10 +74,10 @@ public class CrucibleServerFacadeTest extends TestCase {
 
 		String mockBaseUrl = "http://localhost:" + server.getConnectors()[0].getLocalPort();
 		JettyMockServer mockServer = new JettyMockServer(server);
-		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(VALID_LOGIN, VALID_PASSWORD, LoginCallback.ALWAYS_FAIL));
+		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(VALID_LOGIN.getUserName(), VALID_PASSWORD, LoginCallback.ALWAYS_FAIL));
 
 		try {
-			facade.testServerConnection(mockBaseUrl, VALID_LOGIN, VALID_PASSWORD);
+			facade.testServerConnection(mockBaseUrl, VALID_LOGIN.getUserName(), VALID_PASSWORD);
 			fail("testServerConnection failed");
 		} catch (RemoteApiException e) {
 			//
@@ -94,10 +94,10 @@ public class CrucibleServerFacadeTest extends TestCase {
 
 		String mockBaseUrl = "http://localhost:" + server.getConnectors()[0].getLocalPort();
 		JettyMockServer mockServer = new JettyMockServer(server);
-		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(VALID_LOGIN, VALID_PASSWORD));
+		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(VALID_LOGIN.getUserName(), VALID_PASSWORD));
 
 		try {
-			facade.testServerConnection(mockBaseUrl, VALID_LOGIN, VALID_PASSWORD);
+			facade.testServerConnection(mockBaseUrl, VALID_LOGIN.getUserName(), VALID_PASSWORD);
 		} catch (RemoteApiException e) {
 			fail("testServerConnection failed");
 		}
@@ -108,13 +108,13 @@ public class CrucibleServerFacadeTest extends TestCase {
 	}
 
 	public void testChangedCredentials() throws Exception {
-		String validLogin2 = VALID_LOGIN + 2;
+		User validLogin2 = new UserBean(VALID_LOGIN.getUserName() + 2);
 		String validPassword2 = VALID_PASSWORD + 2;
 		try {
 			Field f = CrucibleServerFacadeImpl.class.getDeclaredField("sessions");
 			f.setAccessible(true);
 
-			((Map<String, CrucibleSession>) f.get(facade)).put(VALID_URL + validLogin2 + validPassword2, crucibleSessionMock);
+			((Map<String, CrucibleSession>) f.get(facade)).put(VALID_URL + validLogin2.getUserName() + validPassword2, crucibleSessionMock);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -122,7 +122,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 		crucibleSessionMock.isLoggedIn();
 		EasyMock.expectLastCall().andReturn(false);
 		try {
-			crucibleSessionMock.login(VALID_LOGIN, VALID_PASSWORD);
+			crucibleSessionMock.login(VALID_LOGIN.getUserName(), VALID_PASSWORD);
 		} catch (RemoteApiLoginException e) {
 			fail("recording mock failed for login");
 		}
@@ -146,7 +146,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 		crucibleSessionMock.isLoggedIn();
 		EasyMock.expectLastCall().andReturn(false);		
 		try {
-			crucibleSessionMock.login(validLogin2, validPassword2);
+			crucibleSessionMock.login(validLogin2.getUserName(), validPassword2);
 		} catch (RemoteApiLoginException e) {
 			fail("recording mock failed for login");
 		}
@@ -178,7 +178,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 		assertSame(State.DRAFT, ret.get(0).getState());
 		assertNull(ret.get(0).getParentReview());
 
-		server.setUserName(validLogin2);
+		server.setUserName(validLogin2.getUserName());
 		server.transientSetPasswordString(validPassword2, false);
 		ret = facade.getAllReviews(server);
 		assertEquals(1, ret.size());
@@ -204,7 +204,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 		crucibleSessionMock.isLoggedIn();
 		EasyMock.expectLastCall().andReturn(false);
 		try {
-			crucibleSessionMock.login(VALID_LOGIN, VALID_PASSWORD);
+			crucibleSessionMock.login(VALID_LOGIN.getUserName(), VALID_PASSWORD);
 		} catch (RemoteApiLoginException e) {
 			fail("recording mock failed for login");
 		}
@@ -232,7 +232,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 		crucibleSessionMock.isLoggedIn();
 		EasyMock.expectLastCall().andReturn(false);
 		try {
-			crucibleSessionMock.login(VALID_LOGIN, VALID_PASSWORD);
+			crucibleSessionMock.login(VALID_LOGIN.getUserName(), VALID_PASSWORD);
 		} catch (RemoteApiLoginException e) {
 			fail("recording mock failed for login");
 		}
@@ -262,7 +262,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 		crucibleSessionMock.isLoggedIn();
 		EasyMock.expectLastCall().andReturn(false);
 		try {
-			crucibleSessionMock.login(VALID_LOGIN, VALID_PASSWORD);
+			crucibleSessionMock.login(VALID_LOGIN.getUserName(), VALID_PASSWORD);
 		} catch (RemoteApiLoginException e) {
 			fail("recording mock failed for login");
 		}
@@ -289,7 +289,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 		crucibleSessionMock.isLoggedIn();
 		EasyMock.expectLastCall().andReturn(false);
 		try {
-			crucibleSessionMock.login(VALID_LOGIN, VALID_PASSWORD);
+			crucibleSessionMock.login(VALID_LOGIN.getUserName(), VALID_PASSWORD);
 		} catch (RemoteApiLoginException e) {
 			fail("recording mock failed for login");
 		}
@@ -318,7 +318,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 		crucibleSessionMock.isLoggedIn();
 		EasyMock.expectLastCall().andReturn(false);
 		try {
-			crucibleSessionMock.login(VALID_LOGIN, VALID_PASSWORD);
+			crucibleSessionMock.login(VALID_LOGIN.getUserName(), VALID_PASSWORD);
 		} catch (RemoteApiLoginException e) {
 			fail("recording mock failed for login");
 		}
@@ -367,7 +367,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 		crucibleSessionMock.isLoggedIn();
 		EasyMock.expectLastCall().andReturn(false);
 		try {
-			crucibleSessionMock.login(VALID_LOGIN, VALID_PASSWORD);
+			crucibleSessionMock.login(VALID_LOGIN.getUserName(), VALID_PASSWORD);
 		} catch (RemoteApiLoginException e) {
 			fail("recording mock failed for login");
 		}
@@ -408,7 +408,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 		assertEquals(3, ret.get(0).getReviewers().size());
 		assertEquals(permId.getId(), ret.get(0).getPermaId().getId());
 		assertEquals("name", ret.get(0).getName());
-		assertEquals(VALID_LOGIN, ret.get(0).getReviewers().get(0).getUserName());
+		assertEquals(VALID_LOGIN.getUserName(), ret.get(0).getReviewers().get(0).getUserName());
 
 		EasyMock.verify(crucibleSessionMock);
 	}
@@ -417,7 +417,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 		crucibleSessionMock.isLoggedIn();
 		EasyMock.expectLastCall().andReturn(false);
 		try {
-			crucibleSessionMock.login(VALID_LOGIN, VALID_PASSWORD);
+			crucibleSessionMock.login(VALID_LOGIN.getUserName(), VALID_PASSWORD);
 		} catch (RemoteApiLoginException e) {
 			fail("recording mock failed for login");
 		}
@@ -442,7 +442,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 		crucibleSessionMock.isLoggedIn();
 		EasyMock.expectLastCall().andReturn(false);
 		try {
-			crucibleSessionMock.login(VALID_LOGIN, VALID_PASSWORD);
+			crucibleSessionMock.login(VALID_LOGIN.getUserName(), VALID_PASSWORD);
 		} catch (RemoteApiLoginException e) {
 			fail("recording mock failed for login");
 		}
@@ -463,11 +463,11 @@ public class CrucibleServerFacadeTest extends TestCase {
 
 	private Review prepareReviewData(final String name, final State state) {
 		return new Review() {
-			public String getAuthor() {
+			public User getAuthor() {
 				return VALID_LOGIN;
 			}
 
-			public String getCreator() {
+			public User getCreator() {
 				return VALID_LOGIN;
 			}
 
@@ -475,7 +475,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 				return "Test description";
 			}
 
-			public String getModerator() {
+			public User getModerator() {
 				return VALID_LOGIN;
 			}
 
@@ -513,13 +513,13 @@ public class CrucibleServerFacadeTest extends TestCase {
         };
 	}
 
-	private Review prepareReviewData(final String user, final String name, final State state, final PermId permId) {
+	private Review prepareReviewData(final User user, final String name, final State state, final PermId permId) {
 		return new Review() {
-			public String getAuthor() {
+			public User getAuthor() {
 				return user;
 			}
 
-			public String getCreator() {
+			public User getCreator() {
 				return user;
 			}
 
@@ -527,7 +527,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 				return "Test description";
 			}
 
-			public String getModerator() {
+			public User getModerator() {
 				return user;
 			}
 
@@ -564,7 +564,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 	private ServerBean prepareServerBean() {
 		ServerBean server = new ServerBean();
 		server.setUrlString(VALID_URL);
-		server.setUserName(VALID_LOGIN);
+		server.setUserName(VALID_LOGIN.getUserName());
 		server.transientSetPasswordString(VALID_PASSWORD, false);
 		return server;
 	}

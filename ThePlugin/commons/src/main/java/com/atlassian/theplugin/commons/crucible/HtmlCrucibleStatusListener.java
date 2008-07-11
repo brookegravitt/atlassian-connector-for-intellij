@@ -58,7 +58,7 @@ public class HtmlCrucibleStatusListener implements StatusListener {
                 sb.append(review.getPermaId().getId());
                 sb.append("</a></font></b></td>");
                 sb.append("<td valign=\"top\">" + review.getName() + "</td>");
-                sb.append("<td valign=\"top\">" + review.getAuthor() + "</td>");
+                sb.append("<td valign=\"top\">" + review.getAuthor().getUserName() + "</td>");
                 sb.append("<td valign=\"top\">" + review.getState().value() + "</td>");
                 sb.append("<td valign=\"top\">");
                 for (Iterator<Reviewer> iterator = review.getReviewers().iterator(); iterator.hasNext();) {

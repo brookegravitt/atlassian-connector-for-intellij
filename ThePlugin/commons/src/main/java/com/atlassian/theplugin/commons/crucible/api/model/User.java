@@ -19,4 +19,6 @@ package com.atlassian.theplugin.commons.crucible.api.model;
 public interface User {
 	String getUserName();
 	String getDisplayName();
+
+    int compareTo(User that);
 }

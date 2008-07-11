@@ -51,20 +51,18 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
     private static final String USER_SERVICE = "/rest-service/users-v1";
 
     private static final String LOGIN = "/login";
-    private static final String GET_REVIEWS_IN_STATES = "?state=";
-    private static final String GET_FILTERED_REVIEWS = "/filter";
-    private static final String GET_ACTIONS = "/action";
-    private static final String GET_TRANSITIONS = "/transition";
-    private static final String GET_REVIEWERS = "/reviewers";
-    private static final String GET_REVIEW_ITEMS = "/reviewitems";
+    private static final String REVIEWS_IN_STATES = "?state=";
+    private static final String FILTERED_REVIEWS = "/filter";
+    private static final String ACTIONS = "/action";
+    private static final String TRANSITIONS = "/transition";
+    private static final String REVIEWERS = "/reviewers";
+    private static final String REVIEW_ITEMS = "/reviewitems";
+    private static final String METRICS = "/metrics";    
 
-    private static final String COMMENT = "/comment";
     private static final String COMMENTS = "/comments";
-    private static final String GENERAL_COMMENT = "/general/comment";
-    private static final String VERSIONED_COMMENT = "/versioned/comment";
-    private static final String GENERAL_COMMENTS = "/general/comments";
-    private static final String VERSIONED_COMMENTS = "/versioned/comments";
-    private static final String REPLY = "/reply";
+    private static final String GENERAL_COMMENTS = "/comments/general";
+    private static final String VERSIONED_COMMENTS = "/comments/versioned";
+    private static final String REPLIES = "/replies";
 
     private static final String APPROVE_ACTION = "action:approveReview";
     private static final String SUMMARIZE_ACTION = "action:summarizeReview";
@@ -81,7 +79,6 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 
     private static final String ADD_CHANGESET = "/addChangeset";
     private static final String ADD_PATCH = "/addPatch";
-    private static final String GET_METRICS = "/metrics";
 
     private String authToken = null;
 
@@ -161,7 +158,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         sb.append(baseUrl);
         sb.append(REVIEW_SERVICE);
         if (states != null && states.size() != 0) {
-            sb.append(GET_REVIEWS_IN_STATES);
+            sb.append(REVIEWS_IN_STATES);
             for (Iterator<State> stateIterator = states.iterator(); stateIterator.hasNext();) {
                 State state = stateIterator.next();
                 sb.append(state.value());
@@ -204,7 +201,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         try {
             Document doc = retrieveGetResponse(baseUrl
                     + REVIEW_SERVICE
-                    + GET_FILTERED_REVIEWS
+                    + FILTERED_REVIEWS
                     + "/" + filter.getFilterUrl());
 
             XPath xpath = XPath.newInstance("/reviews/reviewData");
@@ -232,7 +229,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         Document request = CrucibleRestXmlHelper.prepareCustomFilter(filter);
 
         try {
-            Document doc = retrievePostResponse(baseUrl + REVIEW_SERVICE + GET_FILTERED_REVIEWS, request);
+            Document doc = retrievePostResponse(baseUrl + REVIEW_SERVICE + FILTERED_REVIEWS, request);
             XPath xpath = XPath.newInstance("/reviews/reviewData");
             @SuppressWarnings("unchecked")
             List<Element> elements = xpath.selectNodes(doc);
@@ -265,7 +262,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             throw new IllegalStateException("Calling method without calling login() first");
         }
 
-        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + permId.getId() + GET_REVIEWERS;
+        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + permId.getId() + REVIEWERS;
         try {
             Document doc = retrieveGetResponse(requestUrl);
 
@@ -404,7 +401,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             throw new IllegalStateException("Calling method without calling login() first");
         }
 
-        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + GET_REVIEW_ITEMS;
+        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + REVIEW_ITEMS;
         try {
             Document doc = retrieveGetResponse(requestUrl);
 
@@ -498,7 +495,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             throw new IllegalStateException("Calling method without calling login() first");
         }
 
-        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + VERSIONED_COMMENTS + "/" + reviewItemId.getId();
+        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + REVIEW_ITEMS + "/" + reviewItemId.getId() + COMMENTS;
         try {
             Document doc = retrieveGetResponse(requestUrl);
 
@@ -525,7 +522,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             throw new IllegalStateException("Calling method without calling login() first");
         }
 
-        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + REPLY + "/" + commentId.getId();
+        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + COMMENTS + "/" + commentId.getId() + REPLIES;
         try {
             Document doc = retrieveGetResponse(requestUrl);
 
@@ -612,7 +609,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 
         Document request = CrucibleRestXmlHelper.prepareGeneralComment(comment);
 
-        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + GENERAL_COMMENT;
+        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + COMMENTS;
         try {
             Document doc = retrievePostResponse(requestUrl, request);
 
@@ -637,7 +634,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         if (!isLoggedIn()) {
             throw new IllegalStateException("Calling method without calling login() first");
         }
-        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + COMMENT + "/" + comment.getPermId().getId();
+        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + COMMENTS + "/" + comment.getPermId().getId();
         try {
             retrieveDeleteResponse(requestUrl, false);
         } catch (IOException e) {
@@ -653,8 +650,8 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         }
 
         Document request = CrucibleRestXmlHelper.prepareGeneralComment(comment);
-
-        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + COMMENT + "/" + comment.getPermId().getId();
+        printXml(request);
+        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + COMMENTS + "/" + comment.getPermId().getId();
 
         try {
             retrievePostResponse(requestUrl, request, false);
@@ -693,7 +690,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 
         Document request = CrucibleRestXmlHelper.prepareVersionedComment(comment);
 
-        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + VERSIONED_COMMENT;
+        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + REVIEW_ITEMS + "/" + comment.getReviewItemId().getId() + COMMENTS;
         try {
             Document doc = retrievePostResponse(requestUrl, request);
 
@@ -721,7 +718,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 
         Document request = CrucibleRestXmlHelper.prepareGeneralComment(comment);
 
-        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + REPLY + "/" + cId.getId();
+        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + COMMENTS + "/" + cId.getId() + REPLIES;
 
         try {
             Document doc = retrievePostResponse(requestUrl, request);
@@ -750,7 +747,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 
         Document request = CrucibleRestXmlHelper.prepareGeneralComment(comment);
 
-        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + REPLY + "/" + cId.getId() + "/" + rId.getId();
+        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + COMMENTS + "/" + cId.getId() + REPLIES + "/" + rId.getId();
 
         try {
             retrievePostResponse(requestUrl, request, false);
@@ -821,7 +818,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             throw new IllegalStateException("Calling method without calling login() first");
         }
 
-        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + permId.getId() + GET_ACTIONS;
+        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + permId.getId() + ACTIONS;
         try {
             Document doc = retrieveGetResponse(requestUrl);
 
@@ -848,7 +845,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             throw new IllegalStateException("Calling method without calling login() first");
         }
 
-        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + permId.getId() + GET_TRANSITIONS;
+        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + permId.getId() + TRANSITIONS;
         try {
             Document doc = retrieveGetResponse(requestUrl);
 
@@ -928,7 +925,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             throw new IllegalStateException("Calling method without calling login() first");
         }
 
-        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + permId.getId() + GET_REVIEWERS;
+        String requestUrl = baseUrl + REVIEW_SERVICE + "/" + permId.getId() + REVIEWERS;
         String reviewers = "";
         for (String user : users) {
             if (reviewers.length() > 0) {
@@ -1057,7 +1054,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             throw new IllegalStateException("Calling method without calling login() first");
         }
 
-        String requestUrl = baseUrl + REVIEW_SERVICE + GET_METRICS + "/" + Integer.toString(version);
+        String requestUrl = baseUrl + REVIEW_SERVICE + METRICS + "/" + Integer.toString(version);
         try {
             Document doc = retrieveGetResponse(requestUrl);
 
