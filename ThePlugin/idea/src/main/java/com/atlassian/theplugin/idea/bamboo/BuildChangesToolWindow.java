@@ -1,33 +1,32 @@
 package com.atlassian.theplugin.idea.bamboo;
 
-import com.intellij.openapi.wm.ToolWindowManager;
-import com.intellij.openapi.wm.ToolWindow;
-import com.intellij.openapi.wm.ToolWindowAnchor;
-import com.intellij.openapi.ui.Splitter;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.ui.content.Content;
-import com.intellij.peer.PeerFactory;
-import com.intellij.util.ui.ListTableModel;
 import com.atlassian.theplugin.commons.bamboo.Commit;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.TableColumnInfo;
-import com.atlassian.theplugin.idea.ui.filetree.FileTree;
-import com.atlassian.theplugin.idea.ui.filetree.FileTreeModel;
 import com.atlassian.theplugin.idea.ui.AtlassianTableView;
 import com.atlassian.theplugin.idea.ui.TableColumnProvider;
 import com.atlassian.theplugin.idea.ui.TableItemSelectedListener;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
+import com.atlassian.theplugin.idea.ui.tree.file.FileTreeModelBuilder;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.ui.Splitter;
+import com.intellij.openapi.wm.ToolWindow;
+import com.intellij.openapi.wm.ToolWindowAnchor;
+import com.intellij.openapi.wm.ToolWindowManager;
+import com.intellij.peer.PeerFactory;
+import com.intellij.ui.content.Content;
+import com.intellij.util.ui.ListTableModel;
 
 import javax.swing.*;
-import javax.swing.table.*;
-import java.util.*;
-import java.util.List;
+import javax.swing.table.TableCellRenderer;
 import java.awt.*;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseAdapter;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 public final class BuildChangesToolWindow {
 
@@ -97,7 +96,7 @@ public final class BuildChangesToolWindow {
 				add(new JLabel("No commits in " + name));
 				return;
 			}
-			
+
 			setLayout(new GridBagLayout());
 
 			ActionManager manager = ActionManager.getInstance();
@@ -265,7 +264,7 @@ public final class BuildChangesToolWindow {
 				public void itemSelected(Object item, int noClicks) {
 					Commit c = (Commit) item;
 					if (c.getFiles().size() > 0) {
-						fileTree = new FileTree(new FileTreeModel(c.getFiles()));
+						fileTree = new AtlassianTree(FileTreeModelBuilder.buildTreeModelFromFiles(c.getFiles()));
 						fileTree.setRootVisible(false);
 						fileScroll.setViewportView(fileTree);
 						expand();
