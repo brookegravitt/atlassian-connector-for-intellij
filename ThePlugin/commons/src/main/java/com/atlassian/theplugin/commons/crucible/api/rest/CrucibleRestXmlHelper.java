@@ -24,9 +24,9 @@ import org.jdom.Element;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.ArrayList;
 
 public final class CrucibleRestXmlHelper {
 
@@ -344,8 +344,8 @@ public final class CrucibleRestXmlHelper {
                 List<Element> entries = getChildElements(repliesNode, "generalCommentData");
                 for (Element replyNode : entries) {
                     GeneralCommentBean reply = parseGeneralCommentNode(replyNode);
-					reply.setReply(true);
-					rep.add(reply);
+                    reply.setReply(true);
+                    rep.add(reply);
                 }
             }
             commentBean.setReplies(rep);
@@ -361,7 +361,7 @@ public final class CrucibleRestXmlHelper {
                     for (Element value : values) {
                         CustomFieldBean field = new CustomFieldBean();
                         field.setConfigVersion(Integer.parseInt(getChildText(value, "configVersion")));
-                        field.setValue(getChildText(value, "value"));              
+                        field.setValue(getChildText(value, "value"));
                         commentBean.getCustomFields().put(key, field);
                         break;
                     }
@@ -500,6 +500,13 @@ public final class CrucibleRestXmlHelper {
             case STRING:
                 newValue.setValue(getChildText(element, "value"));
                 break;
+            case BOOLEAN:
+                newValue.setValue(Boolean.valueOf(getChildText(element, "value")));
+                break;
+            case DATE:
+                // date not set by default at this moment - not sure date representation
+            default:
+                newValue.setValue(null);
         }
         return newValue;
     }
