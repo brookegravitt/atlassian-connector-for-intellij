@@ -7,7 +7,7 @@
     <rowspec value="center:max(d;4px):noGrow"/>
     <colspec value="fill:d:grow"/>
     <constraints>
-      <xy x="20" y="33" width="637" height="178"/>
+      <xy x="20" y="33" width="637" height="219"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -106,8 +106,9 @@
       <grid id="a8776" binding="topButtonsPanel" layout-manager="FormLayout">
         <rowspec value="center:m:noGrow"/>
         <colspec value="fill:m:grow"/>
-        <colspec value="left:34dlu:noGrow"/>
-        <colspec value="fill:d:grow"/>
+        <colspec value="fill:94px:grow"/>
+        <colspec value="fill:72px:noGrow"/>
+        <colspec value="left:72px:noGrow"/>
         <colspec value="fill:m:noGrow"/>
         <colspec value="fill:max(m;4px):noGrow"/>
         <colspec value="fill:max(m;4px):noGrow"/>
@@ -116,12 +117,14 @@
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
           <forms/>
         </constraints>
-        <properties/>
+        <properties>
+          <background color="-1376257"/>
+        </properties>
         <border type="none"/>
         <children>
           <component id="8f372" class="javax.swing.JButton" binding="editTopButton">
             <constraints>
-              <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
               <forms defaultalign-horz="false"/>
             </constraints>
             <properties>
@@ -130,7 +133,7 @@
           </component>
           <component id="23ae7" class="javax.swing.JButton" binding="replyTopButton">
             <constraints>
-              <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
               <forms defaultalign-horz="false" defaultalign-vert="false"/>
             </constraints>
             <properties>
@@ -139,7 +142,7 @@
           </component>
           <component id="35e5c" class="javax.swing.JButton" binding="deleteTopButton">
             <constraints>
-              <grid row="0" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
               <forms defaultalign-horz="false"/>
             </constraints>
             <properties>
@@ -148,23 +151,24 @@
           </component>
           <component id="7ee01" class="javax.swing.JButton" binding="postTopButton">
             <constraints>
-              <grid row="0" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="7" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
               <forms defaultalign-horz="false"/>
             </constraints>
             <properties>
               <text value="Post"/>
             </properties>
           </component>
-          <component id="fbcdf" class="javax.swing.JLabel" binding="commentTypeTopLabel">
+          <component id="fbcdf" class="javax.swing.JLabel" binding="draftTopLabel">
             <constraints>
-              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-              <forms defaultalign-horz="false"/>
+              <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <forms top="0" left="10" bottom="0" right="0" defaultalign-horz="false"/>
             </constraints>
             <properties>
+              <foreground color="-39424"/>
               <text value="Label"/>
             </properties>
           </component>
-          <component id="63f59" class="javax.swing.JLabel" binding="generalInfoTopLabel">
+          <component id="63f59" class="javax.swing.JLabel" binding="authorTopLabel">
             <constraints>
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
               <forms defaultalign-horz="false"/>
@@ -173,16 +177,26 @@
               <text value="Label"/>
             </properties>
           </component>
-          <hspacer id="d184b">
+          <hspacer id="aa964">
             <constraints>
-              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
               <forms defaultalign-horz="false"/>
             </constraints>
           </hspacer>
+          <component id="bcae" class="javax.swing.JLabel" binding="defectTopLabel">
+            <constraints>
+              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <forms/>
+            </constraints>
+            <properties>
+              <foreground color="-3407872"/>
+              <text value="Label"/>
+            </properties>
+          </component>
         </children>
       </grid>
       <grid id="aa601" binding="replyPanel" layout-manager="FormLayout">
-        <rowspec value="center:m:grow"/>
+        <rowspec value="center:138px:grow"/>
         <colspec value="fill:d:grow"/>
         <constraints>
           <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
