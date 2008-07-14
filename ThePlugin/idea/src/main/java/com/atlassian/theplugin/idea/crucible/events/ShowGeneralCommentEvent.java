@@ -15,7 +15,8 @@ public class ShowGeneralCommentEvent extends CrucibleEvent {
 	private ReviewDataInfoAdapter reviewDataInfoAdapter;
 	private GeneralComment comment;
 
-	public ShowGeneralCommentEvent(CrucibleReviewActionListener caller, ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment generalComment) {
+	public ShowGeneralCommentEvent(CrucibleReviewActionListener caller,
+            ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment generalComment) {
 		super(caller);
 		this.reviewDataInfoAdapter = reviewDataInfoAdapter;
 		this.comment = generalComment;

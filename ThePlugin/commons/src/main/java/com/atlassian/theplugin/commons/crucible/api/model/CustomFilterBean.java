@@ -70,7 +70,7 @@ public class CustomFilterBean implements CustomFilter {
 		return result;
 	}
 
-	private transient long uid = System.currentTimeMillis() + (long) (Math.random() * ID_DISCRIMINATOR);;
+	private transient long uid = System.currentTimeMillis() + (long) (Math.random() * ID_DISCRIMINATOR);
 
 	public long getServerUid() {
 		return serverUid;

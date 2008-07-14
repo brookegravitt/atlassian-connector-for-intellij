@@ -39,9 +39,9 @@ import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.ui.popup.PopupChooserBuilder;
+import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
-import com.intellij.openapi.util.Key;
 import com.intellij.util.ui.UIUtil;
 
 import javax.swing.*;
@@ -51,7 +51,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.FutureTask;
 
 public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
     private static final int PAGE_SIZE = 50;
@@ -243,22 +242,23 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
 		if (actions != null) {
 			showActionsPopup(adapter, actions);
 		} else {
-			FutureTask task = new FutureTask(new Runnable() {
-				public void run() {
-					setStatusMessage("Getting available issue actions for issue " + issue.getKey() + "...");
-					try {
-						List<JIRAAction> actions =
-								jiraServerFacade.getAvailableActions(
-										IdeaHelper.getCurrentJIRAServer().getServer(), issue);
-						adapter.setCachedActions(actions);
-						setStatusMessage("Retrieved actions for issue " + issue.getKey());
-						showActionsPopup(adapter, actions);
-					} catch (JIRAException e) {
-						setStatusMessage("Unable to retrieve available issue actions: " + e.getMessage(), true);
-					}
-				}
-			}, null);
-			new Thread(task, "atlassian-idea-plugin show issue actions").start();
+			Thread thread = new Thread("atlassian-idea-plugin show issue actions") {
+                public void run() {
+                    setStatusMessage("Getting available issue actions for issue " + issue.getKey() + "...");
+                    try {
+                        List<JIRAAction> actions =
+                                jiraServerFacade.getAvailableActions(
+                                        IdeaHelper.getCurrentJIRAServer().getServer(), issue);
+                        adapter.setCachedActions(actions);
+                        setStatusMessage("Retrieved actions for issue " + issue.getKey());
+                        showActionsPopup(adapter, actions);
+                    } catch (JIRAException e) {
+                        setStatusMessage("Unable to retrieve available issue actions: " + e.getMessage(), true);
+                    }
+                }
+
+            };
+            thread.start();
 		}
     }
 
@@ -638,7 +638,11 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
     }
 
     public void assignIssueToMyself() {
-        final JIRAIssue issue = ((JiraIssueAdapter) table.getSelectedObject()).getIssue();
+        JiraIssueAdapter adapter = (JiraIssueAdapter) table.getSelectedObject();
+        if (adapter == null) {
+            return;
+        }
+        final JIRAIssue issue = adapter.getIssue();
         try {
             assignIssue(issue, IdeaHelper.getCurrentJIRAServer().getServer().getUserName());
         } catch (NullPointerException ex) {
@@ -649,21 +653,25 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
     public void assignIssueToSomebody() {
         final JIRAIssue issue = ((JiraIssueAdapter) table.getSelectedObject()).getIssue();
 
-        final GetUserName getUserName = new GetUserName(issue.getKey());
-        getUserName.show();
-        if (getUserName.isOK()) {
+        final GetUserNameDialog getUserNameDialog = new GetUserNameDialog(issue.getKey());
+        getUserNameDialog.show();
+        if (getUserNameDialog.isOK()) {
             try {
-                assignIssue(issue, getUserName.getName());
+                assignIssue(issue, getUserNameDialog.getName());
             } catch (NullPointerException ex) {
                 // whatever, means action was called when no issue was selected. Let's just swallow it
             }
         }
     }
 
-    public void createChangeListAction(Project project) {
-        final JIRAIssue issue = ((JiraIssueAdapter) table.getSelectedObject()).getIssue();
+    public void createChangeListAction(Project projectArg) {
+        JiraIssueAdapter adapter = (JiraIssueAdapter) table.getSelectedObject();
+        if (adapter == null) {
+            return;
+        }
+        final JIRAIssue issue = adapter.getIssue();
         String changeListName = issue.getKey() + " - " + issue.getSummary();
-        final ChangeListManager changeListManager = ChangeListManager.getInstance(project);
+        final ChangeListManager changeListManager = ChangeListManager.getInstance(projectArg);
 
         LocalChangeList changeList = changeListManager.findChangeList(changeListName);
         if (changeList == null) {
@@ -685,11 +693,15 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
     }
 
     public void addCommentToIssue() {
-        final JIRAIssue issue = ((JiraIssueAdapter) table.getSelectedObject()).getIssue();
+        JiraIssueAdapter adapter = (JiraIssueAdapter) table.getSelectedObject();
+        if (adapter == null) {
+            return;
+        }
+        final JIRAIssue issue = adapter.getIssue();
         final IssueComment issueComment = new IssueComment(issue.getKey());
         issueComment.show();
         if (issueComment.isOK()) {
-            FutureTask task = new FutureTask(new Runnable() {
+            Thread thread = new Thread("atlassian-idea-plugin comment issue") {
                 public void run() {
                     setStatusMessage("Commenting issue " + issue.getKey() + "...");
                     try {
@@ -700,26 +712,30 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
                         setStatusMessage("Issue not commented: " + e.getMessage(), true);
                     }
                 }
-            }, null);
-            new Thread(task, "atlassian-idea-plugin comment issue").start();
+
+            };
+            thread.start();
         }
     }
 
     public void logWorkForIssue() {
 		JiraIssueAdapter adapter = (JiraIssueAdapter) table.getSelectedObject();
-		final JIRAIssue issue = adapter.getIssue();
+        if (adapter == null) {
+            return;
+        }
+        final JIRAIssue issue = adapter.getIssue();
         final WorkLogCreate workLogCreate = new WorkLogCreate(jiraServerFacade, adapter);
         workLogCreate.show();
         if (workLogCreate.isOK()) {
-            FutureTask task = new FutureTask(new Runnable() {
+            Thread thread = new Thread("atlassian-idea-plugin work log") {
                 public void run() {
                     setStatusMessage("Logging work for issue " + issue.getKey() + "...");
                     try {
                         Calendar cal = Calendar.getInstance();
                         cal.setTime(workLogCreate.getStartDate());
 						Server server = IdeaHelper.getCurrentJIRAServer().getServer();
-						String newRemainingEstimate = workLogCreate.getUpdateRemainingManually() ?
-								workLogCreate.getRemainingEstimateString() : null;
+						String newRemainingEstimate = workLogCreate.getUpdateRemainingManually()
+                                ? workLogCreate.getRemainingEstimateString() : null;
 						jiraServerFacade.logWork(server, issue, workLogCreate.getTimeSpentString(),
                                 cal, workLogCreate.getComment(),
 								!workLogCreate.getLeaveRemainingUnchanged(), newRemainingEstimate);
@@ -735,13 +751,14 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
                         setStatusMessage("Work not logged: " + e.getMessage(), true);
                     }
                 }
-            }, null);
-            new Thread(task, "atlassian-idea-plugin work log").start();
+
+            };
+            thread.start();
         }
     }
 
     private void assignIssue(final JIRAIssue issue, final String assignee) {
-        FutureTask task = new FutureTask(new Runnable() {
+        Thread thread = new Thread("atlassian-idea-plugin assign issue issue") {
             public void run() {
                 setStatusMessage("Assigning issue " + issue.getKey() + " to " + assignee + "...");
                 try {
@@ -751,8 +768,9 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
                     setStatusMessage("Failed to assign issue: " + e.getMessage(), true);
                 }
             }
-        }, null);
-        new Thread(task, "atlassian-idea-plugin assign issue issue").start();
+
+        };
+        thread.start();
     }
 
     public void createIssue() {
@@ -763,7 +781,8 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
             issueCreate.initData();
             issueCreate.show();
             if (issueCreate.isOK()) {
-                FutureTask task = new FutureTask(new Runnable() {
+                Thread thread = new Thread("atlassian-idea-plugin create issue") {
+
                     public void run() {
                         setStatusMessage("Creating new issue...");
                         JIRAIssue newIssue;
@@ -784,8 +803,8 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
 
                         setStatusMessage(message, isError);
                     }
-                }, null);
-                new Thread(task, "atlassian-idea-plugin create issue").start();
+                };
+                thread.start();
             }
         }
     }

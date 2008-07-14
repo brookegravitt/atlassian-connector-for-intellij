@@ -37,7 +37,6 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.util.Key;
-import com.intellij.openapi.project.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.table.TableView;
 import com.intellij.util.ui.ListTableModel;
@@ -52,7 +51,8 @@ import java.util.List;
 public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStatusListener, TableItemSelectedListener,
 		CrucibleReviewActionListener {
 
-	private static final Key<CrucibleTableToolWindowPanel> WINDOW_PROJECT_KEY =  Key.create(CrucibleTableToolWindowPanel.class.getName());
+	private static final Key<CrucibleTableToolWindowPanel> WINDOW_PROJECT_KEY
+            = Key.create(CrucibleTableToolWindowPanel.class.getName());
 	private Project project;
 	private transient ActionToolbar filterEditToolbar;
     private static CrucibleTableToolWindowPanel instance;
@@ -60,7 +60,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
     private CrucibleCustomFilterPanel crucibleCustomFilterPanel;
 
-    private ProjectConfigurationBean projectConfiguration;
+    private ProjectConfigurationBean projectCfg;
     private JPanel toolBarPanel;
     private JPanel dataPanelsHolder;
     private ToolWindowBambooContent editorPane;
@@ -113,7 +113,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
             CustomFilterBean filter = crucibleCustomFilterPanel.getFilter();
 
             filters.getManualFilter().put(filter.getTitle(), filter);
-            projectConfiguration.
+            projectCfg.
                     getCrucibleConfiguration().getCrucibleFilters().getManualFilter().put(filter.getTitle(), filter);
             CrucibleStatusChecker checker = null;
             ThePluginProjectComponent projectComponent = IdeaHelper.getCurrentProjectComponent();
@@ -133,7 +133,8 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     public void clearAdvancedFilter() {
     }
 
-	public static CrucibleTableToolWindowPanel getInstance(com.intellij.openapi.project.Project project, ProjectConfigurationBean projectConfigurationBean) {
+	public static CrucibleTableToolWindowPanel getInstance(com.intellij.openapi.project.Project project,
+            ProjectConfigurationBean projectConfigurationBean) {
 
         CrucibleTableToolWindowPanel window = project.getUserData(WINDOW_PROJECT_KEY);
 
@@ -148,7 +149,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 	public CrucibleTableToolWindowPanel(Project project, ProjectConfigurationBean projectConfigurationBean) {
         super(new BorderLayout());
 		this.project = project;
-        this.projectConfiguration = projectConfigurationBean;
+        this.projectCfg = projectConfigurationBean;
 
         setBackground(UIUtil.getTreeTextBackground());
 
@@ -180,24 +181,27 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         //crucibleFacade = CrucibleServerFacadeImpl.getInstance();
         createFilterEditToolBar("atlassian.toolwindow.crucibleFilterEditToolBar", "ThePlugin.Crucible.FilterEditToolBar");
         this.crucibleCustomFilterPanel = new CrucibleCustomFilterPanel();
-        filters = projectConfiguration.getCrucibleConfiguration().getCrucibleFilters();
+        filters = projectCfg.getCrucibleConfiguration().getCrucibleFilters();
     }
 
     private void switchToCrucible16Filter() {
-        for (int i = 0; i < projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getPredefinedFilters().length; ++i)
-        {
+        for (int i = 0;
+             i < projectCfg.getCrucibleConfiguration().getCrucibleFilters().getPredefinedFilters().length; ++i) {
+
             if (crucible15Table != null) {
                 dataPanelsHolder.remove(crucible15Table);
                 crucible15Table = null;
             }
             showPredefinedFilter(
                     PredefinedFilter.values()[i],
-                    projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getPredefinedFilters()[i],
+                    projectCfg.getCrucibleConfiguration().getCrucibleFilters().getPredefinedFilters()[i],
                     null);
         }
 
-        for (String s : projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().keySet()) {
-            CustomFilterBean filter = projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().get(s);
+        for (String s : projectCfg.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().keySet()) {
+            CustomFilterBean filter = projectCfg.getCrucibleConfiguration()
+                    .getCrucibleFilters().getManualFilter().get(s);
+            
             if (filter.isEnabled()) {
                 this.showCustomFilter(true, null);
                 break;
@@ -215,14 +219,14 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         if (visible) {
             CollapsibleTable table = new CollapsibleTable(
                     tableColumnProvider,
-                    projectConfiguration.getCrucibleConfiguration().getTableConfiguration(),
+                    projectCfg.getCrucibleConfiguration().getTableConfiguration(),
                     filter.getFilterName(),
                     "atlassian.toolwindow.serverToolBar",
                     "ThePlugin.CrucibleReviewToolBar",
                     "Context menu",
                     getPopupActionGroup());
             table.addItemSelectedListener(this);
-            TableView.restore(projectConfiguration.getCrucibleConfiguration().getTableConfiguration(),
+            TableView.restore(projectCfg.getCrucibleConfiguration().getTableConfiguration(),
                     table.getTable());
 
             dataPanelsHolder.add(table);
@@ -242,14 +246,14 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     public void switchToCrucible15Filter() {
         crucible15Table = new CollapsibleTable(
                 tableColumnProvider,
-                projectConfiguration.getCrucibleConfiguration().getTableConfiguration(),
+                projectCfg.getCrucibleConfiguration().getTableConfiguration(),
                 TO_REVIEW_AS_ACTIVE_REVIEWER,
                 "atlassian.toolwindow.serverToolBar",
                 "ThePlugin.CrucibleReviewToolBar",
                 "Context menu",
                 getPopupActionGroup());
         crucible15Table.addItemSelectedListener(this);
-        TableView.restore(projectConfiguration.getCrucibleConfiguration().getTableConfiguration(),
+        TableView.restore(projectCfg.getCrucibleConfiguration().getTableConfiguration(),
                 crucible15Table.getTable());
 
         for (CollapsibleTable table : tables.values()) {
@@ -327,7 +331,9 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     /*
     Crucible 1.6
      */
-    public void updateReviews(Map<PredefinedFilter, List<ReviewInfo>> reviews, Map<String, List<ReviewInfo>> customFilterReviews) {
+    public void updateReviews(Map<PredefinedFilter, List<ReviewInfo>> reviews, Map<String,
+            List<ReviewInfo>> customFilterReviews) {
+
         this.crucibleVersion = CrucibleVersion.CRUCIBLE_16;
         if (tables.isEmpty()) {
             switchToCrucible16Filter();
@@ -448,9 +454,12 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     }
 
     public void showCrucibleCustomFilter() {
-        if (!projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().isEmpty()) {
-            for (String filterName : projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().keySet()) {
-                crucibleCustomFilterPanel.setFilter(projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().get(filterName));
+        if (!projectCfg.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().isEmpty()) {
+            for (String filterName : projectCfg.getCrucibleConfiguration()
+                    .getCrucibleFilters().getManualFilter().keySet()) {
+
+                crucibleCustomFilterPanel.setFilter(
+                        projectCfg.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().get(filterName));
                 break;
             }
             showCrucibleCustomFilterPanel();
@@ -460,7 +469,8 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     }
 
     public void addCustomFilter() {
-        String newName = FilterNameUtil.suggestNewName(projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter());
+        String newName = FilterNameUtil.suggestNewName(
+                projectCfg.getCrucibleConfiguration().getCrucibleFilters().getManualFilter());
         CustomFilterBean newFilter = new CustomFilterBean();
         newFilter.setTitle(newName);
         crucibleCustomFilterPanel.setFilter(newFilter);
@@ -484,21 +494,22 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
 
     public void showCustomFilter(boolean visible, CrucibleStatusChecker checker) {
-        if (!projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().isEmpty()) {
-            for (String filterName : projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().keySet()) {
-                CustomFilterBean filter = projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().get(filterName);
+        if (!projectCfg.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().isEmpty()) {
+            for (String filterName : projectCfg.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().keySet()) {
+                CustomFilterBean filter
+                        = projectCfg.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().get(filterName);
                 if (visible) {
                     if (!customTables.containsKey(filter.getTitle())) {
                         CollapsibleTable table = new CollapsibleTable(
                                 tableColumnProvider,
-                                projectConfiguration.getCrucibleConfiguration().getTableConfiguration(),
+                                projectCfg.getCrucibleConfiguration().getTableConfiguration(),
                                 filter.getTitle(),
                                 "atlassian.toolwindow.serverToolBar",
                                 "ThePlugin.CrucibleReviewToolBar",
                                 "Context menu",
                                 getPopupActionGroup());
                         table.addItemSelectedListener(this);
-                        TableView.restore(projectConfiguration.getCrucibleConfiguration().getTableConfiguration(),
+                        TableView.restore(projectCfg.getCrucibleConfiguration().getTableConfiguration(),
                                 table.getTable());
 
                         dataPanelsHolder.add(table);
@@ -542,191 +553,193 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         }
     }
 
-    public ProjectConfigurationBean getProjectConfiguration() {
-        return projectConfiguration;
+    public ProjectConfigurationBean getProjectCfg() {
+        return projectCfg;
     }
+
+/*
 
     public void getReviewComments() {
         if (selectedItem != null) {
-/*
-            try {
+    try {
 
-                List<CustomFieldDef> metrics = serverFacade.getMetrics(selectedItem.getServer(), selectedItem.getMetricsVersion());
-                for (CustomFieldDef metric : metrics) {
-                    System.out.println("metric.getName() = " + metric.getName());
-                }
+        List<CustomFieldDef> metrics = serverFacade.getMetrics(selectedItem.getServer(), selectedItem.getMetricsVersion());
+        for (CustomFieldDef metric : metrics) {
+            System.out.println("metric.getName() = " + metric.getName());
+        }
 
-                List<GeneralComment> comments = serverFacade.getComments(selectedItem.getServer(), selectedItem.getPermaId());
-                for (GeneralComment comment : comments) {
-                    System.out.println("comment.getMessage() = " + comment.getMessage() + ", defect: " + comment.isDefectRaised());
-                    for (String key : comment.getCustomFields().keySet()) {
-                        CustomField field = comment.getCustomFields().get(key);
-                        System.out.println("key: " + key + ", field.getHrValue() = " + field.getHrValue());
-                    }
-                }
-
-                GeneralCommentBean gc = new GeneralCommentBean();
-                gc.setUser("mwent");
-                gc.setCreateDate(new Date());
-                gc.setMessage("ala ma kota");
-                gc.setDefectRaised(false);
-                gc.setDraft(true);
-                CustomFieldBean v1 = new CustomFieldBean();
-                v1.setConfigVersion(3);
-                v1.setFieldScope("comment");
-                v1.setType(CustomFieldValueType.INTEGER);
-                v1.setValue(Integer.valueOf(1));
-                gc.getCustomFields().put("rank", v1);
-
-                CustomFieldBean v2 = new CustomFieldBean();
-                v2.setConfigVersion(3);
-                v2.setFieldScope("comment");
-                v2.setType(CustomFieldValueType.INTEGER);
-                v2.setValue(Integer.valueOf(3));
-                gc.getCustomFields().put("classification", v2);
-
-
-                GeneralComment gc1 = serverFacade.addGeneralComment(selectedItem.getServer(), selectedItem.getPermaId(), gc);
-                System.out.println("gc1.getPermId().getId() = " + gc1.getPermId().getId());
-
-                gc.getCustomFields().clear();
-                gc.setPermId(gc1.getPermId());
-                gc.setMessage("Ciekawe czy to bedzie widac");
-                CustomFieldBean v3 = new CustomFieldBean();
-                v3.setConfigVersion(3);
-                v3.setFieldScope("comment");
-                v3.setType(CustomFieldValueType.INTEGER);
-                v3.setValue(Integer.valueOf(0));
-                gc.getCustomFields().put("rank", v3);
-
-                CustomFieldBean v4 = new CustomFieldBean();
-                v4.setConfigVersion(3);
-                v4.setFieldScope("comment");
-                v4.setType(CustomFieldValueType.INTEGER);
-                v4.setValue(Integer.valueOf(8));
-                gc.getCustomFields().put("classification", v4);
-
-                serverFacade.updateGeneralComment(selectedItem.getServer(), selectedItem.getPermaId(), gc);
-
-                GeneralCommentBean reply = new GeneralCommentBean();
-                reply.setUser("mwent");
-                reply.setCreateDate(new Date());
-                reply.setMessage("Ola ma psa - to jest reply");
-                reply.setDraft(true);
-
-                GeneralComment rc = serverFacade.addReply(selectedItem.getServer(), selectedItem.getPermaId(), gc1.getPermId(), reply);
-
-                reply.setMessage("A ja nie mam zwiarzaka");
-                serverFacade.updateReply(selectedItem.getServer(), selectedItem.getPermaId(), gc1.getPermId(), rc.getPermId(), reply);
-
-
-
-                List<ReviewItem> items = serverFacade.getReviewItems(selectedItem.getServer(), selectedItem.getPermaId());
-                for (ReviewItem item : items) {
-
-                    VersionedCommentBean vc = new VersionedCommentBean();
-                    vc.setDraft(true);
-                    vc.setUser("mwent");
-                    vc.setCreateDate(new Date());
-                    vc.setMessage("ala ma kota");
-                    vc.setDefectRaised(false);
-                    CustomFieldBean v5 = new CustomFieldBean();
-                    v5.setConfigVersion(3);
-                    v5.setFieldScope("comment");
-                    v5.setType(CustomFieldValueType.INTEGER);
-                    v5.setValue(Integer.valueOf(1));
-                    vc.getCustomFields().put("rank", v5);
-
-                    CustomFieldBean v6 = new CustomFieldBean();
-                    v6.setConfigVersion(3);
-                    v6.setFieldScope("comment");
-                    v6.setType(CustomFieldValueType.INTEGER);
-                    v6.setValue(Integer.valueOf(4));
-                    vc.getCustomFields().put("classification", v6);
-
-                    ReviewItemIdBean id = new ReviewItemIdBean();
-                    id.setId(item.getPermId().getId());
-                    vc.setReviewItemId(id);
-
-                    serverFacade.addVersionedComment(selectedItem.getServer(), item.getPermId(), vc);
-
-                    vc.getCustomFields().clear();
-                    CustomFieldBean v7 = new CustomFieldBean();
-                    v7.setConfigVersion(3);
-                    v7.setFieldScope("comment");
-                    v7.setType(CustomFieldValueType.INTEGER);
-                    v7.setValue(Integer.valueOf(0));
-                    vc.getCustomFields().put("rank", v7);
-
-                    CustomFieldBean v8 = new CustomFieldBean();
-                    v8.setConfigVersion(3);
-                    v8.setFieldScope("comment");
-                    v8.setType(CustomFieldValueType.INTEGER);
-                    v8.setValue(Integer.valueOf(5));
-                    vc.getCustomFields().put("classification", v8);
-
-
-
-                    vc.setToStartLine(15);
-                    vc.setToEndLine(19);
-
-                    serverFacade.addVersionedComment(selectedItem.getServer(), item.getPermId(), vc);
-
-                    vc.getCustomFields().clear();
-                    CustomFieldBean v9 = new CustomFieldBean();
-                    v9.setConfigVersion(3);
-                    v9.setFieldScope("comment");
-                    v9.setType(CustomFieldValueType.INTEGER);
-                    v9.setValue(Integer.valueOf(1));
-                    vc.getCustomFields().put("rank", v9);
-
-                    CustomFieldBean v10 = new CustomFieldBean();
-                    v10.setConfigVersion(3);
-                    v10.setFieldScope("comment");
-                    v10.setType(CustomFieldValueType.INTEGER);
-                    v10.setValue(Integer.valueOf(6));
-                    vc.getCustomFields().put("classification", v10);
-
-
-                    vc.setFromStartLine(25);
-                    vc.setFromEndLine(29);
-
-                    vc.setToStartLine(31);
-                    vc.setToEndLine(36);
-
-                    serverFacade.addVersionedComment(selectedItem.getServer(), item.getPermId(), vc);
-
-                }
-                serverFacade.publishAllCommentsForReview(selectedItem.getServer(), selectedItem.getPermaId());
-
-                serverFacade.completeReview(selectedItem.getServer(), selectedItem.getPermaId(), true);
-
-                serverFacade.completeReview(selectedItem.getServer(), selectedItem.getPermaId(), false);
-
-                serverFacade.approveReview(selectedItem.getServer(), selectedItem.getPermaId());
-                serverFacade.summarizeReview(selectedItem.getServer(), selectedItem.getPermaId());
-                serverFacade.closeReview(selectedItem.getServer(), selectedItem.getPermaId(), "To jest summary");
-                serverFacade.reopenReview(selectedItem.getServer(), selectedItem.getPermaId());
-                serverFacade.abandonReview(selectedItem.getServer(), selectedItem.getPermaId());
-                serverFacade.recoverReview(selectedItem.getServer(), selectedItem.getPermaId());
-                                                                                                serverFacade.approveReview(selectedItem.getServer(), selectedItem.getPermaId());
-                serverFacade.summarizeReview(selectedItem.getServer(), selectedItem.getPermaId());
-                serverFacade.abandonReview(selectedItem.getServer(), selectedItem.getPermaId());
-
-                List<CrucibleAction> crucibleActions = serverFacade.getAvailableActions(selectedItem.getServer(), selectedItem.getPermaId());
-                for (CrucibleAction crucibleAction : crucibleActions) {
-                    System.out.println("crucibleAction = " + crucibleAction.getName());
-                }
-
-            } catch (RemoteApiException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            } catch (ServerPasswordNotProvidedException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        List<GeneralComment> comments = serverFacade.getComments(selectedItem.getServer(), selectedItem.getPermaId());
+        for (GeneralComment comment : comments) {
+            System.out.println("comment.getMessage() = " + comment.getMessage() + ", defect: " + comment.isDefectRaised());
+            for (String key : comment.getCustomFields().keySet()) {
+                CustomField field = comment.getCustomFields().get(key);
+                System.out.println("key: " + key + ", field.getHrValue() = " + field.getHrValue());
             }
+        }
+
+        GeneralCommentBean gc = new GeneralCommentBean();
+        gc.setUser("mwent");
+        gc.setCreateDate(new Date());
+        gc.setMessage("ala ma kota");
+        gc.setDefectRaised(false);
+        gc.setDraft(true);
+        CustomFieldBean v1 = new CustomFieldBean();
+        v1.setConfigVersion(3);
+        v1.setFieldScope("comment");
+        v1.setType(CustomFieldValueType.INTEGER);
+        v1.setValue(Integer.valueOf(1));
+        gc.getCustomFields().put("rank", v1);
+
+        CustomFieldBean v2 = new CustomFieldBean();
+        v2.setConfigVersion(3);
+        v2.setFieldScope("comment");
+        v2.setType(CustomFieldValueType.INTEGER);
+        v2.setValue(Integer.valueOf(3));
+        gc.getCustomFields().put("classification", v2);
+
+
+        GeneralComment gc1 = serverFacade.addGeneralComment(selectedItem.getServer(), selectedItem.getPermaId(), gc);
+        System.out.println("gc1.getPermId().getId() = " + gc1.getPermId().getId());
+
+        gc.getCustomFields().clear();
+        gc.setPermId(gc1.getPermId());
+        gc.setMessage("Ciekawe czy to bedzie widac");
+        CustomFieldBean v3 = new CustomFieldBean();
+        v3.setConfigVersion(3);
+        v3.setFieldScope("comment");
+        v3.setType(CustomFieldValueType.INTEGER);
+        v3.setValue(Integer.valueOf(0));
+        gc.getCustomFields().put("rank", v3);
+
+        CustomFieldBean v4 = new CustomFieldBean();
+        v4.setConfigVersion(3);
+        v4.setFieldScope("comment");
+        v4.setType(CustomFieldValueType.INTEGER);
+        v4.setValue(Integer.valueOf(8));
+        gc.getCustomFields().put("classification", v4);
+
+        serverFacade.updateGeneralComment(selectedItem.getServer(), selectedItem.getPermaId(), gc);
+
+        GeneralCommentBean reply = new GeneralCommentBean();
+        reply.setUser("mwent");
+        reply.setCreateDate(new Date());
+        reply.setMessage("Ola ma psa - to jest reply");
+        reply.setDraft(true);
+
+        GeneralComment rc = serverFacade.addReply(selectedItem.getServer(), selectedItem.getPermaId(), gc1.getPermId(), reply);
+
+        reply.setMessage("A ja nie mam zwiarzaka");
+        serverFacade.updateReply(selectedItem.getServer(), selectedItem.getPermaId(), gc1.getPermId(), rc.getPermId(), reply);
+
+
+
+        List<ReviewItem> items = serverFacade.getReviewItems(selectedItem.getServer(), selectedItem.getPermaId());
+        for (ReviewItem item : items) {
+
+            VersionedCommentBean vc = new VersionedCommentBean();
+            vc.setDraft(true);
+            vc.setUser("mwent");
+            vc.setCreateDate(new Date());
+            vc.setMessage("ala ma kota");
+            vc.setDefectRaised(false);
+            CustomFieldBean v5 = new CustomFieldBean();
+            v5.setConfigVersion(3);
+            v5.setFieldScope("comment");
+            v5.setType(CustomFieldValueType.INTEGER);
+            v5.setValue(Integer.valueOf(1));
+            vc.getCustomFields().put("rank", v5);
+
+            CustomFieldBean v6 = new CustomFieldBean();
+            v6.setConfigVersion(3);
+            v6.setFieldScope("comment");
+            v6.setType(CustomFieldValueType.INTEGER);
+            v6.setValue(Integer.valueOf(4));
+            vc.getCustomFields().put("classification", v6);
+
+            ReviewItemIdBean id = new ReviewItemIdBean();
+            id.setId(item.getPermId().getId());
+            vc.setReviewItemId(id);
+
+            serverFacade.addVersionedComment(selectedItem.getServer(), item.getPermId(), vc);
+
+            vc.getCustomFields().clear();
+            CustomFieldBean v7 = new CustomFieldBean();
+            v7.setConfigVersion(3);
+            v7.setFieldScope("comment");
+            v7.setType(CustomFieldValueType.INTEGER);
+            v7.setValue(Integer.valueOf(0));
+            vc.getCustomFields().put("rank", v7);
+
+            CustomFieldBean v8 = new CustomFieldBean();
+            v8.setConfigVersion(3);
+            v8.setFieldScope("comment");
+            v8.setType(CustomFieldValueType.INTEGER);
+            v8.setValue(Integer.valueOf(5));
+            vc.getCustomFields().put("classification", v8);
+
+
+
+            vc.setToStartLine(15);
+            vc.setToEndLine(19);
+
+            serverFacade.addVersionedComment(selectedItem.getServer(), item.getPermId(), vc);
+
+            vc.getCustomFields().clear();
+            CustomFieldBean v9 = new CustomFieldBean();
+            v9.setConfigVersion(3);
+            v9.setFieldScope("comment");
+            v9.setType(CustomFieldValueType.INTEGER);
+            v9.setValue(Integer.valueOf(1));
+            vc.getCustomFields().put("rank", v9);
+
+            CustomFieldBean v10 = new CustomFieldBean();
+            v10.setConfigVersion(3);
+            v10.setFieldScope("comment");
+            v10.setType(CustomFieldValueType.INTEGER);
+            v10.setValue(Integer.valueOf(6));
+            vc.getCustomFields().put("classification", v10);
+
+
+            vc.setFromStartLine(25);
+            vc.setFromEndLine(29);
+
+            vc.setToStartLine(31);
+            vc.setToEndLine(36);
+
+            serverFacade.addVersionedComment(selectedItem.getServer(), item.getPermId(), vc);
+
+        }
+        serverFacade.publishAllCommentsForReview(selectedItem.getServer(), selectedItem.getPermaId());
+
+        serverFacade.completeReview(selectedItem.getServer(), selectedItem.getPermaId(), true);
+
+        serverFacade.completeReview(selectedItem.getServer(), selectedItem.getPermaId(), false);
+
+        serverFacade.approveReview(selectedItem.getServer(), selectedItem.getPermaId());
+        serverFacade.summarizeReview(selectedItem.getServer(), selectedItem.getPermaId());
+        serverFacade.closeReview(selectedItem.getServer(), selectedItem.getPermaId(), "To jest summary");
+        serverFacade.reopenReview(selectedItem.getServer(), selectedItem.getPermaId());
+        serverFacade.abandonReview(selectedItem.getServer(), selectedItem.getPermaId());
+        serverFacade.recoverReview(selectedItem.getServer(), selectedItem.getPermaId());
+        serverFacade.approveReview(selectedItem.getServer(), selectedItem.getPermaId());
+        serverFacade.summarizeReview(selectedItem.getServer(), selectedItem.getPermaId());
+        serverFacade.abandonReview(selectedItem.getServer(), selectedItem.getPermaId());
+
+        List<CrucibleAction> crucibleActions
+                = serverFacade.getAvailableActions(selectedItem.getServer(), selectedItem.getPermaId());
+        for (CrucibleAction crucibleAction : crucibleActions) {
+            System.out.println("crucibleAction = " + crucibleAction.getName());
+        }
+
+    } catch (RemoteApiException e) {
+        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+    } catch (ServerPasswordNotProvidedException e) {
+        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+    }
             
- */
         }
     }
+ */
 
 	public void focusOnReview(ReviewDataInfoAdapter reviewDataInfoAdapter) {
 		//To change body of implemented methods use File | Settings | File Templates.
@@ -744,7 +757,8 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
-	public void focusOnVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem, Collection<VersionedComment> versionedComments, VersionedComment versionedComment) {
+	public void focusOnVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem,
+            Collection<VersionedComment> versionedComments, VersionedComment versionedComment) {
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
@@ -768,7 +782,8 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
-	public void showVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem, Collection<VersionedComment> versionedComments, VersionedComment versionedComment) {
+	public void showVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem,
+            Collection<VersionedComment> versionedComments, VersionedComment versionedComment) {
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 

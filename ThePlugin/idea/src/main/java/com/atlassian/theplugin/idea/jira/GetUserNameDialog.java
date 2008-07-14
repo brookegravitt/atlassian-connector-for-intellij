@@ -23,11 +23,11 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.DocumentEvent;
 import java.awt.*;
 
-public class GetUserName extends DialogWrapper {
+public class GetUserNameDialog extends DialogWrapper {
     private JTextField userName;
     private JPanel panel;
 
-    public GetUserName(String issueKey) {
+    public GetUserNameDialog(String issueKey) {
         super(false);
         init();
         setOKActionEnabled(false);

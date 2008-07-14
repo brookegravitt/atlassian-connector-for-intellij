@@ -93,7 +93,21 @@ public final class TestResultsToolWindow {
 		testDetailsToolWindow.show(null);
 	}
 
-	private class TestDetailsPanel extends JPanel implements TestTree {
+    private abstract class AbstractTreeNode extends DefaultMutableTreeNode {
+        public AbstractTreeNode(String s) {
+            super(s);
+        }
+
+        public abstract void selected();
+        public abstract boolean isFailed();
+        public String getTestStats() {
+            return "";
+        }
+
+        public abstract void navigate();
+    }
+
+    private class TestDetailsPanel extends JPanel implements TestTree {
 		private static final float SPLIT_RATIO = 0.3f;
 
 		private JTree tree;
@@ -104,18 +118,6 @@ public final class TestResultsToolWindow {
 
         private ConsoleView console;
 		private boolean passedTestsVisible;
-
-		private abstract class AbstractTreeNode extends DefaultMutableTreeNode {
-			public AbstractTreeNode(String s) {
-				super(s);
-			}
-
-			public abstract void selected();
-            public abstract boolean isFailed();
-			public String getTestStats() { return "";}
-
-			public abstract void navigate();
-		}
 
 		private abstract class NonLeafNode extends AbstractTreeNode {
 			protected int totalTests;
@@ -333,47 +335,7 @@ public final class TestResultsToolWindow {
 				}
 			});
 
-			DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer() {
-                public Component getTreeCellRendererComponent(JTree tree,
-                                   Object value,
-                                   boolean selected,
-                                   boolean expanded,
-                                   boolean leaf,
-                                   int row,
-                                   boolean hasFocus) {
-                    Component c = super.getTreeCellRendererComponent(
-                            tree, value, selected, expanded, leaf, row, hasFocus);
-
-					// this sort of is not right, as it assumes that getTreeCellRendererComponent() of the
-					// DefaultTreeCellRenderer will always return _this_ (JLabel). If the implementation changes
-					// someday, we are screwed :)
-					try {
-						AbstractTreeNode node = (AbstractTreeNode) value;
-						if (node.isFailed()) {
-                            setIcon(TEST_FAILED_ICON);
-                        } else {
-                            setIcon(TEST_PASSED_ICON);
-                        }
-						Color statsColor = selected
-								? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeSelectionBackground();
-						StringBuilder txt = new StringBuilder();
-						txt.append("<html><body>");
-						txt.append(getText());
-						txt.append(" <font color=");
-						txt.append(ColorToHtml.getHtmlFromColor(statsColor));
-						txt.append("><i>");
-						txt.append(node.getTestStats());
-						txt.append("</i></font>");
-						txt.append("</body></html>");
-						setText(txt.toString());
-                    } catch (ClassCastException e) {
-                        // should not happen, making compiler happy
-                        setIcon(null);
-                    }
-
-					return c;
-                }
-            };
+			DefaultTreeCellRenderer renderer = new MyDefaultTreeCellRenderer();
             testTree.setCellRenderer(renderer);
 
 			return testTree;
@@ -490,5 +452,46 @@ public final class TestResultsToolWindow {
 		public boolean isPassedTestsVisible() {
 			return passedTestsVisible;
 		}
-	}
+
+    }
+
+    private static class MyDefaultTreeCellRenderer extends DefaultTreeCellRenderer {
+        @Override
+            public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected,
+                boolean expanded, boolean leaf, int row, boolean hasFocus) {
+
+            Component c = super.getTreeCellRendererComponent(
+                    tree, value, selected, expanded, leaf, row, hasFocus);
+
+            // this sort of is not right, as it assumes that getTreeCellRendererComponent() of the
+            // DefaultTreeCellRenderer will always return _this_ (JLabel). If the implementation changes
+            // someday, we are screwed :)
+            try {
+                AbstractTreeNode node = (AbstractTreeNode) value;
+                if (node.isFailed()) {
+                    setIcon(TEST_FAILED_ICON);
+                } else {
+                    setIcon(TEST_PASSED_ICON);
+                }
+                Color statsColor = selected
+                        ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeSelectionBackground();
+                StringBuilder txt = new StringBuilder();
+                txt.append("<html><body>");
+                txt.append(getText());
+                txt.append(" <font color=");
+                txt.append(ColorToHtml.getHtmlFromColor(statsColor));
+                txt.append("><i>");
+                txt.append(node.getTestStats());
+                txt.append("</i></font>");
+                txt.append("</body></html>");
+                setText(txt.toString());
+            } catch (ClassCastException e) {
+                // should not happen, making compiler happy
+                setIcon(null);
+            }
+
+            return c;
+        }
+    }
+
 }

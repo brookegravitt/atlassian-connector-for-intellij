@@ -21,8 +21,9 @@ public abstract class AbstractCommentPanel extends JPanel implements CrucibleRev
 	private ListTableModel commentTableModel;
 	private JPanel dataPanelsHolder;
 	private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
+    private static final int MIN_ROW_HEIGHT = 20;
 
-	public AtlassianTableViewWithToolbar getCommentsTable() {
+    public AtlassianTableViewWithToolbar getCommentsTable() {
 		return commentsTable;
 	}
 
@@ -95,20 +96,17 @@ public abstract class AbstractCommentPanel extends JPanel implements CrucibleRev
 		return commentReplyTableModel;
 	}
 
-	protected AtlassianTableViewWithToolbar createCommentsTable(ListTableModel listTableModel, TableColumnProvider columnProvider,
-																String toolbarName, TableItemSelectedListener tableItemSelectedListener,
-																String toolbarPlace) {
-		AtlassianTableViewWithToolbar table = new AtlassianTableViewWithToolbar(columnProvider, listTableModel, null,
-				toolbarPlace,
-				toolbarName,
-				"Context menu",
-				"ThePlugin.Crucible.ReviewPopupMenu"
-		);
-		table.setBorder(BorderFactory.createEmptyBorder());
+	protected AtlassianTableViewWithToolbar createCommentsTable(ListTableModel listTableModel,
+            TableColumnProvider columnProvider, String toolbarName, TableItemSelectedListener tableItemSelectedListener,
+            String toolbarPlace) {
+
+        AtlassianTableViewWithToolbar table = new AtlassianTableViewWithToolbar(columnProvider, listTableModel, null,
+                toolbarPlace, toolbarName, "Context menu", "ThePlugin.Crucible.ReviewPopupMenu");
+        table.setBorder(BorderFactory.createEmptyBorder());
 		table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.getColumnModel().setColumnMargin(0);
 
-		table.setMinRowHeight(20);
+		table.setMinRowHeight(MIN_ROW_HEIGHT);
 		table.getTable().addItemSelectedListener(tableItemSelectedListener);
 		return table;
 	}

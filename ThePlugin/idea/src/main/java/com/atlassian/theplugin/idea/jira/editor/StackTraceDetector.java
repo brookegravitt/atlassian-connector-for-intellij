@@ -5,7 +5,7 @@ import java.util.regex.Matcher;
 
 public final class StackTraceDetector {
 
-	private final static String STACK_LINE_PATTERN = "\\(.+\\.java:\\d+\\)";
+	private static final String STACK_LINE_PATTERN = "\\(.+\\.java:\\d+\\)";
 
 	private StackTraceDetector() {
 	}

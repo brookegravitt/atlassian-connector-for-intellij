@@ -16,11 +16,11 @@ public class CrucibleTreeRootNode extends DefaultMutableTreeNode {
 
 	private ReviewDataInfoAdapter reviewDataInfoAdapter;
 
-	CrucibleTreeRootNode(ReviewDataInfoAdapter infoAdapater){
+	CrucibleTreeRootNode(ReviewDataInfoAdapter infoAdapater) {
 		reviewDataInfoAdapter = infoAdapater;
 	}
 
-	CrucibleTreeRootNode(){
+	CrucibleTreeRootNode() {
 		
 	}
 
