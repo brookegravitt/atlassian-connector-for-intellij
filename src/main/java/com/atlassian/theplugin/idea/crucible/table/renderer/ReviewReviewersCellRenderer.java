@@ -1,7 +1,6 @@
 package com.atlassian.theplugin.idea.crucible.table.renderer;
 
 import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
-import com.atlassian.theplugin.idea.crucible.table.column.ReviewReviewersColumn;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 
 import javax.swing.table.DefaultTableCellRenderer;
@@ -51,6 +50,8 @@ public class ReviewReviewersCellRenderer  extends DefaultTableCellRenderer {
 
 		String text = numCompleted + "/" + numReviews;
 
+		text = new ReviewStateDecorator(text, review.getState()).getText();
+
 		return text;
 
 	}
@@ -63,7 +64,7 @@ public class ReviewReviewersCellRenderer  extends DefaultTableCellRenderer {
 
 		for (Reviewer reviewer : review.getReviewers()) {
 			if (reviewer.isCompleted()) {
-				html.append("<span style=\"color: #999999; text-decoration: line-through;  \">");
+				html.append("<span style=\"color: #999999; text-decoration: line-through; \">");
 			} else {
 				html.append("<span>");
 			}
