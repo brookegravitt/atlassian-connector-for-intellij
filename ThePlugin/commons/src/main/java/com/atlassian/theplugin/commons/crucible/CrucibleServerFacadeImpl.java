@@ -18,7 +18,6 @@ package com.atlassian.theplugin.commons.crucible;
 
 import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.crucible.api.CrucibleException;
 import com.atlassian.theplugin.commons.crucible.api.CrucibleSession;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.crucible.api.rest.CrucibleSessionImpl;
@@ -297,7 +296,7 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
      *
      * @param server
      * @return
-     * @throws CrucibleException
+     * @throws RemoteApiException
      * @throws ServerPasswordNotProvidedException
      *
      */
@@ -312,7 +311,7 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
      *
      * @param server
      * @return
-     * @throws CrucibleException
+     * @throws RemoteApiException
      * @throws com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException
      *
      */
