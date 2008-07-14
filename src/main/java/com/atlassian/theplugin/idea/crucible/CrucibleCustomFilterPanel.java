@@ -467,7 +467,7 @@ public class CrucibleCustomFilterPanel extends JPanel {
     }
 
 
-    private class UserComboBoxItem extends Object {
+    private class UserComboBoxItem {
         private final User user;
 
         public UserComboBoxItem(User user) {

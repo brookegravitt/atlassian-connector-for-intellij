@@ -26,7 +26,7 @@ public class CrucibleRevisionAddWorker implements Runnable {
     private PermId permId;
     private ChangeList[] changes;
     private String revision;
-    final CrucibleHelperForm helperForm;
+    private final CrucibleHelperForm helperForm;
 
     public CrucibleRevisionAddWorker(CrucibleServerFacade crucibleServerFacade, PermId permId, ChangeList[] changes) {
 		this.crucibleServerFacade = crucibleServerFacade;

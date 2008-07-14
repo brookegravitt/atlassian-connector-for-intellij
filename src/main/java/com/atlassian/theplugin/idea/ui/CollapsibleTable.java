@@ -17,14 +17,7 @@
 package com.atlassian.theplugin.idea.ui;
 
 import com.atlassian.theplugin.configuration.ProjectToolWindowTableConfiguration;
-import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.intellij.util.ui.ListTableModel;
-import com.intellij.util.ui.UIUtil;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class CollapsibleTable extends CollapsiblePanel {
 

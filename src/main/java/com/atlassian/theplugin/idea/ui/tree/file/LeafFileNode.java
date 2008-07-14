@@ -36,7 +36,8 @@ public class LeafFileNode extends FileNode {
 			return instance;
 		}
 
-		public void customizeCellRenderer(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+		public void customizeCellRenderer(JTree tree, Object value, boolean selected, boolean expanded,
+                boolean leaf, int row, boolean hasFocus) {
 			LeafFileNode node = (LeafFileNode) value;
 			append(node.getName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
 

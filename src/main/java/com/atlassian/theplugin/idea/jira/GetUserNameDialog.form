@@ -17,7 +17,7 @@
 
 -->
 
-<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.atlassian.theplugin.idea.jira.GetUserName">
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.atlassian.theplugin.idea.jira.GetUserNameDialog">
   <grid id="27dc6" binding="panel" layout-manager="GridBagLayout">
     <constraints>
       <xy x="20" y="20" width="350" height="60"/>

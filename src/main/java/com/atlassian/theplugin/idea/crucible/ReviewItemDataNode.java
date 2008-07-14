@@ -29,7 +29,7 @@ public class ReviewItemDataNode extends DefaultMutableTreeNode {
 	}
 
 	public String toString() {
-		if (reviewItem.getFromPath().length() > 0 && reviewItem.getToPath().length() > 0){
+		if (reviewItem.getFromPath().length() > 0 && reviewItem.getToPath().length() > 0) {
 			return reviewItem.getFromPath() + " (mod)";
 
 		} else if (reviewItem.getFromPath().length() > 0) {

@@ -21,7 +21,6 @@ import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.configuration.ProjectToolWindowTableConfiguration;
 import com.atlassian.theplugin.idea.bamboo.*;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
-import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.util.ui.ListTableModel;
 import com.intellij.util.ui.UIUtil;

@@ -4,10 +4,7 @@ import com.intellij.openapi.util.IconLoader;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewItem;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.idea.crucible.tree.ReviewItemDataNode;
-import com.atlassian.theplugin.idea.crucible.tree.CrucibleTreeRootNode;
 import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
-import com.atlassian.theplugin.idea.crucible.tree.GeneralCommentNode;
 
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.*;
@@ -22,10 +19,10 @@ import java.awt.*;
  */
 public class CrucibleTreeRenderer extends DefaultTreeCellRenderer {
 
-	private final static String MODIFIED_FILE_STR = "(mod)";
-	private final static String NEW_FILE_STR = "(new)";
-	private final static String DELETED_FILE_STR = "(del)";
-	private final static String UNKNOWN_FILE_STR = "(???)";
+	private static final String MODIFIED_FILE_STR = "(mod)";
+	private static final String NEW_FILE_STR = "(new)";
+	private static final String DELETED_FILE_STR = "(del)";
+	private static final String UNKNOWN_FILE_STR = "(???)";
 
 
 	private static Icon crucibleServersIcon;
@@ -50,10 +47,10 @@ public class CrucibleTreeRenderer extends DefaultTreeCellRenderer {
             JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
 
 		JLabel label = (JLabel) super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
-		StringBuffer labelText = new StringBuffer() ;
+		StringBuffer labelText = new StringBuffer();
 
 		if (value instanceof ReviewItemDataNode) {
-			ReviewItem item =  ((ReviewItemDataNode)value).getReviewItem();
+			ReviewItem item =  ((ReviewItemDataNode) value).getReviewItem();
 			label.setText(item.toString());
 			label.setIcon(crucibleSelectNoneIcon);
 
@@ -67,14 +64,11 @@ public class CrucibleTreeRenderer extends DefaultTreeCellRenderer {
 			label.setIcon(crucibleServerEnabledIcon);
 		}
 
-		if (value instanceof GeneralCommentNode){
+		if (value instanceof GeneralCommentNode) {
 			GeneralComment generalComment = ((GeneralCommentNode) value).getGeneralComment();
 			if (generalComment != null) {
 				labelText.append("GC:");
-				labelText.append(generalComment.getMessage().substring(0, Math.min(generalComment.getMessage().length(),DEFAULT_COMMENT_MESSAGE_LENGTH)));
-				if (generalComment.getMessage().length() > DEFAULT_COMMENT_MESSAGE_LENGTH) {
-					labelText.append("...");
-				}
+				labelText.append(getAbbrevComment(generalComment));
 				labelText.append(" (").append(generalComment.getUser()).append(")");
 
 			}
@@ -83,14 +77,11 @@ public class CrucibleTreeRenderer extends DefaultTreeCellRenderer {
 		}
 
 
-		if (value instanceof VersionedCommentNode){
+		if (value instanceof VersionedCommentNode) {
 			VersionedComment versionedComment = ((VersionedCommentNode) value).getVersionedComment();
 			if (versionedComment != null) {
 				labelText.append("VC:");
-				labelText.append(versionedComment.getMessage().substring(0, Math.min(versionedComment.getMessage().length(),DEFAULT_COMMENT_MESSAGE_LENGTH)));
-				if (versionedComment.getMessage().length() > DEFAULT_COMMENT_MESSAGE_LENGTH) {
-					labelText.append("...");
-				}
+				labelText.append(getAbbrevComment(versionedComment));
 				labelText.append(" (").append(versionedComment.getUser()).append(")");
 
 			}
@@ -101,10 +92,19 @@ public class CrucibleTreeRenderer extends DefaultTreeCellRenderer {
 		return label;
 	}
 
-	private String getFileNameFromPath(String filePath){
+    private String getAbbrevComment(GeneralComment generalComment) {
+        String helper = generalComment.getMessage().substring(0,
+                        Math.min(generalComment.getMessage().length(), DEFAULT_COMMENT_MESSAGE_LENGTH));
+        if (generalComment.getMessage().length() > DEFAULT_COMMENT_MESSAGE_LENGTH) {
+            helper += "...";
+        }
+        return helper;
+    }
+
+    private String getFileNameFromPath(String filePath) {
 		
 		return filePath.substring(filePath.lastIndexOf("/") + 1);
-	};
+	}
 
 }
 

@@ -3,7 +3,6 @@ package com.atlassian.theplugin.idea.ui;
 import com.intellij.util.ui.ListTableModel;
 import com.intellij.util.ui.TableViewModel;
 import com.intellij.util.config.Storage;
-import com.atlassian.theplugin.idea.Constants;
 
 import javax.swing.*;
 import javax.swing.table.TableColumnModel;
@@ -37,21 +36,22 @@ public class AtlassianTableViewWithToolbar extends JPanel {
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollTable.setWheelScrollingEnabled(true);
 
-		GridBagConstraints gbc;
+        int gridy = 0;
+        GridBagConstraints gbc;
 		gbc = new GridBagConstraints();
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.insets = new Insets(0, 0, 0, 0);
         gbc.gridx = 0;
-        gbc.gridy = 0;
+        gbc.gridy = gridy++;
 		add(toolBarPanel, gbc);
 		gbc.weightx = 1;
 
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy = gridy++;
 		add(headerLabel, gbc);
 
         gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridy = gridy++;
 		gbc.weighty = 1;
 
 		add(scrollTable, gbc);
@@ -59,7 +59,7 @@ public class AtlassianTableViewWithToolbar extends JPanel {
 		gbc = new GridBagConstraints();
 		gbc.weighty = 0;
         gbc.gridx = 0;
-        gbc.gridy = 3;
+        gbc.gridy = gridy++;
 		add(statusLabel, gbc);
 
 	}
@@ -72,8 +72,7 @@ public class AtlassianTableViewWithToolbar extends JPanel {
 		table.prepareColumns(tableColumnProvider);
 	}
 
-	public ListTableModel getListTableModel()
-	{
+	public ListTableModel getListTableModel() {
 		return table.getListTableModel();
 	}
 

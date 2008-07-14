@@ -12,32 +12,38 @@ import javax.swing.tree.DefaultMutableTreeNode;
  * To change this template use File | Settings | File Templates.
  */
 public class VersionedCommentNode extends DefaultMutableTreeNode {
-	private VersionedComment versionedComment;
+    private VersionedComment versionedComment;
 
-	VersionedCommentNode(VersionedComment versionedComment){
-		this.versionedComment = versionedComment;
-	}
+    VersionedCommentNode(VersionedComment versionedComment) {
+        this.versionedComment = versionedComment;
+    }
 
-	public VersionedComment getVersionedComment() {
-		return versionedComment;
-	}
+    public VersionedComment getVersionedComment() {
+        return versionedComment;
+    }
 
-	public void setVersionedComment(VersionedComment versionedComment) {
-		this.versionedComment = versionedComment;
-	}
+    public void setVersionedComment(VersionedComment versionedComment) {
+        this.versionedComment = versionedComment;
+    }
 
-	public boolean equals(Object o) {
-	if (this == o) return true;
-	if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
-	VersionedCommentNode that = (VersionedCommentNode) o;
+        VersionedCommentNode that = (VersionedCommentNode) o;
 
-	if (!versionedComment.equals(that.versionedComment)) return false;
+        if (!versionedComment.equals(that.versionedComment)) {
+            return false;
+        }
 
-	return true;
-}
+        return true;
+    }
 
-	public int hashCode() {
-		return versionedComment.hashCode();
-	}
+    public int hashCode() {
+        return versionedComment.hashCode();
+    }
 }

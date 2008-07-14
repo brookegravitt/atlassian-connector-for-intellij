@@ -77,7 +77,8 @@ public class FileNode extends AtlassianTreeNode {
 			return instance;
 		}
 
-		public void customizeCellRenderer(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+		public void customizeCellRenderer(JTree tree, Object value, boolean selected, boolean expanded,
+                boolean leaf, int row, boolean hasFocus) {
 			FileNode node = (FileNode) value;
 			append(node.getName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
 

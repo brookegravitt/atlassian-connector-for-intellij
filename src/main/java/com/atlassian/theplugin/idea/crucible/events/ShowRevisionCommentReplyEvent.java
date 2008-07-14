@@ -15,7 +15,8 @@ public class ShowRevisionCommentReplyEvent extends CrucibleEvent {
 	private ReviewDataInfoAdapter reviewDataInfoAdapter;
 	private GeneralComment comment;
 
-	public ShowRevisionCommentReplyEvent(CrucibleReviewActionListener caller, ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
+	public ShowRevisionCommentReplyEvent(CrucibleReviewActionListener caller, ReviewDataInfoAdapter reviewDataInfoAdapter,
+            GeneralComment comment) {
 		super(caller);
 		this.reviewDataInfoAdapter = reviewDataInfoAdapter;
 		this.comment = comment;

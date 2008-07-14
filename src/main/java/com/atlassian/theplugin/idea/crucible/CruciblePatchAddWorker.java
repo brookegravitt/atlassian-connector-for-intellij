@@ -23,9 +23,10 @@ import com.intellij.openapi.project.Project;
 
 
 public class CruciblePatchAddWorker implements Runnable {
-    final CrucibleHelperForm helperForm;
+    private final CrucibleHelperForm helperForm;
 
-    public CruciblePatchAddWorker(CrucibleServerFacade crucibleServerFacade, PermId permId, Project project, ChangeList[] changes) {
+    public CruciblePatchAddWorker(CrucibleServerFacade crucibleServerFacade, PermId permId,
+            Project project, ChangeList[] changes) {
         PatchProducer patchProducer = new PatchProducer(project, changes[0].getChanges());
         String patch = patchProducer.generateUnifiedDiff();
         helperForm = new CrucibleHelperForm(crucibleServerFacade, permId, patch);

@@ -18,7 +18,6 @@ package com.atlassian.theplugin.idea.config;
 
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.GridConstraints;
-import com.intellij.uiDesigner.core.Spacer;
 import com.intellij.util.net.HTTPProxySettingsPanel;
 import com.intellij.openapi.ui.Messages;
 import com.jgoodies.forms.layout.FormLayout;
