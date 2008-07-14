@@ -25,7 +25,7 @@ public class ReviewStateDecorator {
 		}
 	}
 
-	public String getText() {
+	public String toString() {
 		return text;
 	}
 }
