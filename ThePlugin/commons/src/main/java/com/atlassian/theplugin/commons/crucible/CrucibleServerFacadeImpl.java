@@ -24,7 +24,6 @@ import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.crucible.api.rest.CrucibleSessionImpl;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginFailedException;
 
 import java.util.*;
 
@@ -345,7 +344,7 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
         List<Review> res = session.getAllReviews(true);
         List<ReviewInfo> result = new ArrayList<ReviewInfo>(res.size());
         for (Review review : res) {
-            result.add(new ReviewInfoImpl((DetailedReview)review, server));
+            result.add(new ReviewInfoImpl((DetailedReview) review, server));
         }
         return result;
     }
@@ -358,7 +357,7 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
         List<ReviewInfo> result = new ArrayList<ReviewInfo>(reviews.size());
 
         for (Review review : reviews) {
-			ReviewInfoImpl reviewInfo = new ReviewInfoImpl((DetailedReview)review, server);
+			ReviewInfoImpl reviewInfo = new ReviewInfoImpl((DetailedReview) review, server);
 			result.add(reviewInfo);
         }
 

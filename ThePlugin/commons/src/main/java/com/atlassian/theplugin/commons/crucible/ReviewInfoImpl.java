@@ -46,7 +46,7 @@ public class ReviewInfoImpl implements ReviewInfo {
 
 	public List<Reviewer> getReviewers() {
         if (review instanceof DetailedReview) {
-            return ((DetailedReview)review).getReviewers();
+            return ((DetailedReview) review).getReviewers();
         } else {
             return new ArrayList<Reviewer>();
         }
