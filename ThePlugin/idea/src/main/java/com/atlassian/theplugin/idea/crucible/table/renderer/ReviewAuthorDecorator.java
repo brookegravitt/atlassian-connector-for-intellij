@@ -18,7 +18,7 @@ public class ReviewAuthorDecorator {
 		String me = review.getServer().getUserName();
 
 		if (review.getAuthor().getUserName().equals(me) || review.getModerator().getUserName().equals(me)) {
-			text = "<html><body><span style=\"color: #ff0000; \">"
+			text = "<html><body><span style=\"color: #009900; \">"
 						+ text
 						+ "</span></body></html>";
 		}
