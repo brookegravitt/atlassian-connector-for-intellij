@@ -15,7 +15,8 @@ public class FocusOnRevisionCommentReplyEvent extends CrucibleEvent {
 	private ReviewDataInfoAdapter reviewDataInfoAdapter;
 	private GeneralComment selectedComment;
 
-	public FocusOnRevisionCommentReplyEvent(CrucibleReviewActionListener caller, ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment selectedComment) {
+	public FocusOnRevisionCommentReplyEvent(CrucibleReviewActionListener caller,
+            ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment selectedComment) {
 		super(caller);
 		this.reviewDataInfoAdapter = reviewDataInfoAdapter;
 		this.selectedComment = selectedComment;

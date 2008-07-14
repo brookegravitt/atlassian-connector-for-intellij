@@ -1,10 +1,6 @@
 package com.atlassian.theplugin.idea.crucible.comments;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.util.containers.WeakHashMap;
-import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
 import com.atlassian.theplugin.idea.crucible.events.CrucibleEvent;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewItem;
 import com.atlassian.theplugin.commons.util.Logger;
 import com.atlassian.theplugin.util.PluginUtil;
 
@@ -18,7 +14,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Time: 10:53:01 AM
  * To change this template use File | Settings | File Templates.
  */
-public class ReviewActionEventBroker {
+public final class ReviewActionEventBroker {
 	private static ReviewActionEventBroker broker;
 	private Set<CrucibleReviewActionListener> listeners =
 			new HashSet<CrucibleReviewActionListener>();
@@ -26,8 +22,7 @@ public class ReviewActionEventBroker {
 	public static final Logger LOGGER = PluginUtil.getLogger();
 
 	private ReviewActionEventBroker() {
-		super();
-		new Thread(new Runnable() {
+        new Thread(new Runnable() {
 			public void run() {
 				try {
 					while (true) {
@@ -42,8 +37,7 @@ public class ReviewActionEventBroker {
 		).start();
 	}
 
-	synchronized public static ReviewActionEventBroker getInstance() {
-
+	public static synchronized ReviewActionEventBroker getInstance() {
 		if (broker == null) {
 			broker = new ReviewActionEventBroker();
 

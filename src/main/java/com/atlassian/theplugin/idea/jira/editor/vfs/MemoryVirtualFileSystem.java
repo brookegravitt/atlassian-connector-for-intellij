@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.idea.jira.editor.vfs;
 
-import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.DeprecatedVirtualFileSystem;
@@ -26,8 +25,7 @@ import java.util.StringTokenizer;
  *
  * @author Steve Chaloner
  */
-public class MemoryVirtualFileSystem extends DeprecatedVirtualFileSystem //implements ApplicationComponent
-{
+public final class MemoryVirtualFileSystem extends DeprecatedVirtualFileSystem {
 	/**
 	 * The name of the component.
 	 */
@@ -129,9 +127,7 @@ public class MemoryVirtualFileSystem extends DeprecatedVirtualFileSystem //imple
 				}
 			}
 
-			if (currentFile != null &&
-					targetName != null &&
-					targetName.equals(currentFile.getName())) {
+			if (currentFile != null && targetName != null &&  targetName.equals(currentFile.getName())) {
 				file = currentFile;
 			}
 		}
@@ -251,8 +247,7 @@ public class MemoryVirtualFileSystem extends DeprecatedVirtualFileSystem //imple
 		while (st.hasMoreTokens()) {
 			names.add(st.nextToken());
 		}
-		return getFileForPackage(names,
-				files.get(Constants.JIRAISSUE_ROOT));
+		return getFileForPackage(names, files.get(Constants.JIRAISSUE_ROOT));
 	}
 
 	/**
@@ -271,19 +266,15 @@ public class MemoryVirtualFileSystem extends DeprecatedVirtualFileSystem //imple
 			child = parent.getChild(name);
 			if (child == null) {
 				try {
-					child = createChildDirectory(null,
-							parent,
-							name);
-				}
-				catch (IOException e) {
+					child = createChildDirectory(null, parent, name);
+				} catch (IOException e) {
 					Logger.getInstance(getClass().getName()).error(e);
 				}
 			}
 		}
 
 		if (child != null && !names.isEmpty()) {
-			child = getFileForPackage(names,
-					child);
+			child = getFileForPackage(names, child);
 		}
 		return child;
 	}
@@ -316,10 +307,7 @@ public class MemoryVirtualFileSystem extends DeprecatedVirtualFileSystem //imple
 	/**
 	 * {@inheritDoc}
 	 */
-	public VirtualFile copyFile(Object o,
-								VirtualFile virtualFile,
-								VirtualFile virtualFile1,
-								String s) throws IOException {
+	public VirtualFile copyFile(Object o, VirtualFile virtualFile, VirtualFile virtualFile1, String s) throws IOException {
 		return null;
 	}
 

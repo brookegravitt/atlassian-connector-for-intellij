@@ -1,12 +1,8 @@
 package com.atlassian.theplugin.idea.ui.tree.file;
 
 import com.atlassian.theplugin.commons.VersionedFileDescriptor;
-import com.atlassian.theplugin.idea.ui.tree.file.FileNode;
-import com.atlassian.theplugin.idea.ui.tree.file.LeafFileNode;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
 
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.DefaultTreeModel;
 import java.util.ArrayList;
 
 /**
@@ -16,9 +12,13 @@ import java.util.ArrayList;
 * Time: 2:45:53 AM
 * To change this template use File | Settings | File Templates.
 */
-public class FileTreeModelBuilder {
+public final class FileTreeModelBuilder {
 
-	public static AtlassianTreeModel buildTreeModelFromFiles(java.util.List<VersionedFileDescriptor> files) {
+    private FileTreeModelBuilder() {
+        // this is a utility class
+    }
+
+    public static AtlassianTreeModel buildTreeModelFromFiles(java.util.List<VersionedFileDescriptor> files) {
 		FileTreeModel model = new FileTreeModel(new FileNode("/"));
 		for (VersionedFileDescriptor f : files) {
 			model.addFile(f);

@@ -21,11 +21,9 @@ import com.atlassian.theplugin.commons.crucible.CrucibleStatusListener;
 import com.atlassian.theplugin.commons.crucible.ReviewInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.idea.GenericHyperlinkListener;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PluginToolWindow;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.WindowManager;
-import com.intellij.ide.DataManager;
 import thirdparty.javaworld.ClasspathHTMLEditorKit;
 
 import javax.swing.*;
@@ -115,7 +113,8 @@ public class CrucibleNewReviewNotifier implements CrucibleStatusListener {
     /*
         Works with Crucible 1.6
      */
-    public void updateReviews(Map<PredefinedFilter, List<ReviewInfo>> incomingReviews, Map<String, List<ReviewInfo>> customIncomingReviews) {
+    public void updateReviews(Map<PredefinedFilter, List<ReviewInfo>> incomingReviews,
+            Map<String, List<ReviewInfo>> customIncomingReviews) {
         if (!incomingReviews.isEmpty()) {
             StringBuilder sb = new StringBuilder("<table width=\"100%\">");            
 

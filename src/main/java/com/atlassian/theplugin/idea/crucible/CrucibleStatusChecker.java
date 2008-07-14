@@ -35,7 +35,6 @@ import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
-import com.intellij.openapi.project.Project;
 
 import java.awt.*;
 import java.util.*;
@@ -90,7 +89,7 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 				sb.append(server.getName()).append(":");
 				sb.append("last result time: ").append(dateFormat.format(lastActionRun));
 				sb.append(" current run time : ").append(dateFormat.format(newRun));
-				sb.append(" time difference: ").append(dateFormat.format((newRun.getTime()-lastActionRun.getTime())));
+				sb.append(" time difference: ").append(dateFormat.format((newRun.getTime() - lastActionRun.getTime())));
 				
 				crucibleServerFacade.getReviewsForFilter(server, PredefinedFilter.Open);
 

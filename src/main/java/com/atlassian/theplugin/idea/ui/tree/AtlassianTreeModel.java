@@ -1,8 +1,6 @@
 package com.atlassian.theplugin.idea.ui.tree;
 
-import javax.swing.tree.TreeModel;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
 
 /**
  * Created by IntelliJ IDEA.

@@ -14,8 +14,10 @@ import javax.swing.tree.DefaultMutableTreeNode;
  */
 public class CommentNode  extends DefaultMutableTreeNode {
 	private GeneralComment generalComment;
+    // TODO why its 10???                                    
+    private static final int BEGIN_INDEX = 10;
 
-	public CommentNode(GeneralComment aGeneralComment) {
+    public CommentNode(GeneralComment aGeneralComment) {
 		this.generalComment = aGeneralComment;
 	}
 
@@ -30,7 +32,7 @@ public class CommentNode  extends DefaultMutableTreeNode {
 	}
 
 	public String toString() {
-		return generalComment.getMessage().substring(10) + "(" + generalComment.getUser() + ")";
+		return generalComment.getMessage().substring(BEGIN_INDEX) + "(" + generalComment.getUser() + ")";
 	}
 
 	public boolean equals(Object o) {

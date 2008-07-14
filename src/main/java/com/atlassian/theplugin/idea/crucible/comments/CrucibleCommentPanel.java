@@ -459,7 +459,6 @@ public class CrucibleCommentPanel extends JPanel implements ListSelectionListene
 
 	}
 
-
 	private void setDefectCombosVisible(Boolean visible) {
 		if (visible) {
 			fillInDefectCombos();
@@ -543,7 +542,7 @@ public class CrucibleCommentPanel extends JPanel implements ListSelectionListene
 
 	}
 
-	private class CustomFieldValueComboBoxItem extends Object {
+	private class CustomFieldValueComboBoxItem {
 		private final CustomFieldValue value;
 
 		public CustomFieldValueComboBoxItem(CustomFieldValue value) {

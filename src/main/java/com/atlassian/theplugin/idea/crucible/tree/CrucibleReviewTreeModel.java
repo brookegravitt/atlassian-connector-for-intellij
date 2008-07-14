@@ -2,13 +2,9 @@ package com.atlassian.theplugin.idea.crucible.tree;
 
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewItem;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.idea.crucible.tree.CrucibleTreeRootNode;
-import com.atlassian.theplugin.idea.crucible.tree.ReviewItemDataNode;
-import com.atlassian.theplugin.idea.crucible.tree.GeneralCommentNode;
 
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeNode;
 
 /**
  * Created by IntelliJ IDEA.

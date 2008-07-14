@@ -14,7 +14,6 @@ import com.atlassian.theplugin.commons.crucible.api.model.ReviewItem;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.intellij.util.ui.ListTableModel;
-import com.intellij.util.ui.UIUtil;
 
 import javax.swing.table.TableCellRenderer;
 import java.util.Collection;
@@ -35,7 +34,8 @@ public class ReviewDetailsPanel extends AbstractCommentPanel {
 	private ReviewDataInfoAdapter reviewDataInfoAdapter;
 	private ReviewItem reviewItem;
 
-	public ReviewDetailsPanel(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem, Collection<VersionedComment> versionedComments) {
+	public ReviewDetailsPanel(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem,
+            Collection<VersionedComment> versionedComments) {
 		super();
 		this.reviewDataInfoAdapter = reviewDataInfoAdapter;
 		this.reviewItem = reviewItem;
@@ -60,10 +60,6 @@ public class ReviewDetailsPanel extends AbstractCommentPanel {
 
 	}
 
-	public static ReviewDetailsPanel getInstance(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem, Collection<VersionedComment> versionedComments) {
-		return new ReviewDetailsPanel(reviewDataInfoAdapter, reviewItem, versionedComments);
-	}
-
 	protected String getCommentToolbarPlace() {
 		return "atlassian.toolwindow.serverToolBar";
 	}
@@ -80,73 +76,12 @@ public class ReviewDetailsPanel extends AbstractCommentPanel {
 		return commentReplyTableColumnProvider;
 	}
 
-	protected TableItemSelectedListener getCommentReplySelectedListener() {
-		TableItemSelectedListener commentReplySelectedListener;
-		commentReplySelectedListener = new TableItemSelectedListener() {
-			public void itemSelected(Object item, int noClicks) {
-				GeneralComment selectedComment = (GeneralComment) item;
-				switch (noClicks) {
-					case 1:
-						IdeaHelper.getReviewActionEventBroker().trigger(
-								new FocusOnRevisionCommentReplyEvent(
-										I_WANT_THIS_MESSAGE_BACK,
-										(ReviewDataInfoAdapter) CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
-										selectedComment
-								)
-						);
-						break;
-					case 2:
-						IdeaHelper.getReviewActionEventBroker().trigger(
-								new ShowRevisionCommentReplyEvent(
-										I_WANT_THIS_MESSAGE_BACK,
-										(ReviewDataInfoAdapter) CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
-										selectedComment
-								)
-						);
-						break;
-					default:
-						//
-				}
-			}
-		};
-		return commentReplySelectedListener;
-	}
+    protected TableItemSelectedListener getCommentReplySelectedListener() {
+        return new MyTableItemSelectedListener();
+    }
 
-	protected TableItemSelectedListener getCommentSelectedListener() {
-		TableItemSelectedListener commentReplySelectedListener;
-		commentReplySelectedListener = new TableItemSelectedListener() {
-			public void itemSelected(Object item, int noClicks) {
-				VersionedComment selectedComment = (VersionedComment) item;
-				CrucibleConstants.CrucibleTableState.SELECTED_VERSIONED_COMMENT.setValue(context, selectedComment);
-				switch (noClicks) {
-					case 1:
-						IdeaHelper.getReviewActionEventBroker().trigger(
-								new FocusOnVersionedCommentEvent(
-										I_WANT_THIS_MESSAGE_BACK,
-										(ReviewDataInfoAdapter) CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
-										(ReviewItem) CrucibleConstants.CrucibleTableState.REVIEW_ITEM.getValue(context),
-										(Collection<VersionedComment>) CrucibleConstants.CrucibleTableState.VERSIONED_COMMENTS.getValue(context),
-										(VersionedComment) CrucibleConstants.CrucibleTableState.SELECTED_VERSIONED_COMMENT.getValue(context)
-								)
-						);
-						break;
-					case 2:
-						IdeaHelper.getReviewActionEventBroker().trigger(
-								new ShowVersionedCommentEvent(
-										I_WANT_THIS_MESSAGE_BACK,
-										(ReviewDataInfoAdapter) CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
-										(ReviewItem) CrucibleConstants.CrucibleTableState.REVIEW_ITEM.getValue(context),
-										(Collection<VersionedComment>) CrucibleConstants.CrucibleTableState.VERSIONED_COMMENTS.getValue(context),
-										(VersionedComment) CrucibleConstants.CrucibleTableState.SELECTED_VERSIONED_COMMENT.getValue(context)
-								)
-						);
-						break;
-					default:
-						//
-				}
-			}
-		};
-		return commentReplySelectedListener;
+    protected TableItemSelectedListener getCommentSelectedListener() {
+		return new CommentReplySelectedListener();
 	}
 
 	protected String getCommentToolbarActionGroup() {
@@ -169,7 +104,8 @@ public class ReviewDetailsPanel extends AbstractCommentPanel {
 	public void focusOnGeneralCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
 	}
 
-	public void focusOnVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, final ReviewItem reviewItem, Collection<VersionedComment> versionedComments, final VersionedComment versionedComment) {
+	public void focusOnVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, final ReviewItem reviewItem,
+            Collection<VersionedComment> versionedComments, final VersionedComment versionedComment) {
 //		EventQueue.invokeLater(new Runnable() {
 //			public void run() {
 //				CrucibleHelper.selectVersionedCommentLineInEditor(reviewItem, versionedComment);
@@ -200,7 +136,7 @@ public class ReviewDetailsPanel extends AbstractCommentPanel {
 	}
 
 	public void showVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, final ReviewItem reviewItem,
-									 Collection<VersionedComment> versionedComments, final VersionedComment versionedComment) {
+            Collection<VersionedComment> versionedComments, final VersionedComment versionedComment) {
 		EventQueue.invokeLater(new CommentSelectedListener(reviewDataInfoAdapter, versionedComment));
 	}
 
@@ -257,4 +193,65 @@ public class ReviewDetailsPanel extends AbstractCommentPanel {
 			switchToCommentReplies();
 		}
 	}
+
+    private class MyTableItemSelectedListener implements TableItemSelectedListener {
+        public void itemSelected(Object item, int noClicks) {
+            GeneralComment selectedComment = (GeneralComment) item;
+            switch (noClicks) {
+                case 1:
+                    IdeaHelper.getReviewActionEventBroker().trigger(
+                            new FocusOnRevisionCommentReplyEvent(
+                                    I_WANT_THIS_MESSAGE_BACK,
+                                    (ReviewDataInfoAdapter) CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
+                                    selectedComment
+                            )
+                    );
+                    break;
+                case 2:
+                    IdeaHelper.getReviewActionEventBroker().trigger(
+                            new ShowRevisionCommentReplyEvent(
+                                    I_WANT_THIS_MESSAGE_BACK,
+                                    (ReviewDataInfoAdapter) CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
+                                    selectedComment
+                            )
+                    );
+                    break;
+                default:
+                    //
+            }
+        }
+    }
+
+    private class CommentReplySelectedListener implements TableItemSelectedListener {
+        public void itemSelected(Object item, int noClicks) {
+            VersionedComment selectedComment = (VersionedComment) item;
+            CrucibleConstants.CrucibleTableState.SELECTED_VERSIONED_COMMENT.setValue(context, selectedComment);
+            switch (noClicks) {
+                case 1:
+                    IdeaHelper.getReviewActionEventBroker().trigger(
+                            new FocusOnVersionedCommentEvent(
+                                    I_WANT_THIS_MESSAGE_BACK,
+                                    (ReviewDataInfoAdapter) CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
+                                    (ReviewItem) CrucibleConstants.CrucibleTableState.REVIEW_ITEM.getValue(context),
+                                    (Collection<VersionedComment>) CrucibleConstants.CrucibleTableState.VERSIONED_COMMENTS.getValue(context),
+                                    (VersionedComment) CrucibleConstants.CrucibleTableState.SELECTED_VERSIONED_COMMENT.getValue(context)
+                            )
+                    );
+                    break;
+                case 2:
+                    IdeaHelper.getReviewActionEventBroker().trigger(
+                            new ShowVersionedCommentEvent(
+                                    I_WANT_THIS_MESSAGE_BACK,
+                                    (ReviewDataInfoAdapter) CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
+                                    (ReviewItem) CrucibleConstants.CrucibleTableState.REVIEW_ITEM.getValue(context),
+                                    (Collection<VersionedComment>) CrucibleConstants.CrucibleTableState.VERSIONED_COMMENTS.getValue(context),
+                                    (VersionedComment) CrucibleConstants.CrucibleTableState.SELECTED_VERSIONED_COMMENT.getValue(context)
+                            )
+                    );
+                    break;
+                default:
+                    //
+            }
+        }
+    }
 }

@@ -241,7 +241,9 @@ public final class BuildChangesToolWindow {
 		}
 
 		private class CommentColumn extends TableColumnInfo {
-			public String getColumnName() {
+            private static final int PREFERRED_WIDTH = 600;
+
+            public String getColumnName() {
 				return "Comment";
 			}
 
@@ -250,7 +252,7 @@ public final class BuildChangesToolWindow {
 			}
 
 			public int getPrefferedWidth() {
-				return 600;
+				return PREFERRED_WIDTH;
 			}
 
 			public Object valueOf(Object o) {
@@ -266,7 +268,7 @@ public final class BuildChangesToolWindow {
 			}
 		}
 
-		private AtlassianTableView createCommitsTable(final List<Commit> commits) {
+		private AtlassianTableView createCommitsTable(final List<Commit> commitList) {
 			TableColumnProvider prov = new TableColumnProvider() {
 				public TableColumnInfo[] makeColumnInfo() {
 					return new TableColumnInfo[] { new AuthorColumn(), new DateColumn(), new CommentColumn() };
@@ -277,7 +279,7 @@ public final class BuildChangesToolWindow {
 				}
 			};
 			final AtlassianTableView atv = new AtlassianTableView(prov,
-					new ListTableModel<Commit>(prov.makeColumnInfo(), commits, 0), null);
+					new ListTableModel<Commit>(prov.makeColumnInfo(), commitList, 0), null);
 			atv.addItemSelectedListener(new TableItemSelectedListener() {
 				public void itemSelected(Object item, int noClicks) {
 					Commit c = (Commit) item;
