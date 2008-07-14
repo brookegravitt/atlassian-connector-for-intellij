@@ -26,6 +26,7 @@ import com.atlassian.theplugin.commons.Server;
 import junit.framework.TestCase;
 
 import java.util.List;
+import java.util.Date;
 
 public class ReviewKeyComparatorTest extends TestCase {
 
@@ -113,6 +114,14 @@ public class ReviewKeyComparatorTest extends TestCase {
 
             public int getMetricsVersion() {
                 return 0;
+            }
+
+            public Date getCreateDate() {
+                return null;
+            }
+
+            public Date getCloseDate() {
+                return null;  
             }
         });
 	}
