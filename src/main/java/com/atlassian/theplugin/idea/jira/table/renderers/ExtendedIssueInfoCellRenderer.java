@@ -27,53 +27,53 @@ public class ExtendedIssueInfoCellRenderer extends DefaultTableCellRenderer {
 	public static final String BODY_WITH_STYLE =
 			"<body style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">";
 
-	private String buildTolltip(JiraIssueAdapter a) {
+	private String buildTolltip(JiraIssueAdapter jiraIssue) {
 		StringBuilder sb = new StringBuilder(
                 "<html>"
                 + BODY_WITH_STYLE);
 
 		sb.append("<table width=\"100%\">");
 		sb.append("<tr><td colspan=5><b><font color=blue>");
-        sb.append(a.getKey());
+        sb.append(jiraIssue.getKey());
         sb.append("</font></b>");
 
 		sb.append("<tr><td valign=\"top\"><b>Summary:</b></td><td valign=\"top\">");
-		sb.append(a.getSummary());
+		sb.append(jiraIssue.getSummary());
 		sb.append("");
 		sb.append("</td></tr>");
 
 		sb.append("<tr><td valign=\"top\"><b>Description:</b></td><td valign=\"top\">");
-		sb.append(a.getDescription());
+		sb.append(jiraIssue.getDescription());
 		sb.append("");
 		sb.append("</td></tr>");
 
         sb.append("<tr><td valign=\"top\"><b>Status:</b></td><td valign=\"top\">");
-        sb.append(a.getStatus());
+        sb.append(jiraIssue.getStatus());
         sb.append("");
         sb.append("</td></tr>");
 
         sb.append("<tr><td valign=\"top\"><b>Reporter:</b></td><td valign=\"top\">");
-		sb.append(a.getReporter());
+		sb.append(jiraIssue.getReporter());
 		sb.append("");
 		sb.append("</td></tr>");
 
 		sb.append("<tr><td valign=\"top\"><b>Assignee:</b></td><td valign=\"top\">");
-		sb.append(a.getAssignee());
+		sb.append(jiraIssue.getAssignee());
 		sb.append("");
 		sb.append("</td></tr>");
 
 		sb.append("<tr><td valign=\"top\"><b>Resolution:</b></td><td valign=\"top\">");
-		sb.append(a.getResolution());
+		sb.append(jiraIssue.getResolution());
 		sb.append("");
 		sb.append("</td></tr>");
 
 		sb.append("<tr><td valign=\"top\"><b>Created:</b></td><td valign=\"top\">");
-		sb.append(a.getCreated());
+		sb.append(jiraIssue.getCreated());
 		sb.append("");
 		sb.append("</td></tr>");
 
 		sb.append("<tr><td valign=\"top\"><b>Updated:</b></td><td valign=\"top\">");
-		sb.append(a.getUpdated());
+		sb.append(jiraIssue.getUpdated());
 		sb.append("");
 		sb.append("</td></tr>");
 
@@ -88,7 +88,6 @@ public class ExtendedIssueInfoCellRenderer extends DefaultTableCellRenderer {
 		Component c = super.getTableCellRendererComponent(jTable, o, isSelected, hasFocus, i, i1);
 		if (o instanceof JiraIssueAdapter) {
 			JiraIssueAdapter issueAdapter = (JiraIssueAdapter) o;
-			String tooltipText = "<html><b>Bold test</b></html>";
 			((JLabel) c).setToolTipText(buildTolltip(issueAdapter));
 			((JLabel) c).setText(issueAdapter.getSummary());
 			((JLabel) c).setIcon(null);
