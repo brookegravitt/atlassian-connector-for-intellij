@@ -25,10 +25,8 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.Logger;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
-import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
-import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
@@ -53,7 +51,7 @@ import java.util.List;
  * Time: 10:56:46 AM
  * To change this template use File | Settings | File Templates.
  */
-public class ReviewItemTreePanel extends JPanel
+public final class ReviewItemTreePanel extends JPanel
 		implements CrucibleReviewActionListener {
 
 	private JTree reviewFilesTree = null;
@@ -160,9 +158,7 @@ public class ReviewItemTreePanel extends JPanel
 	private void nodeClicked(int selRow, TreePath path) {
 		if (path != null) {
 			selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
-			if (selectedNode instanceof GeneralCommentNode) {
-				// GeneralComment server = ((GeneralCommentNode) selectedNode).getGeneralComment();
-			} else if (selectedNode instanceof ReviewItemDataNode) {
+			if (!(selectedNode instanceof GeneralCommentNode) && selectedNode instanceof ReviewItemDataNode) {
 				IdeaHelper.getReviewActionEventBroker().trigger(
 						new ShowReviewedFileItemEvent(
 								ReviewItemTreePanel.this,
@@ -226,7 +222,8 @@ public class ReviewItemTreePanel extends JPanel
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
-	public void focusOnVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem, Collection<VersionedComment> versionedComments, VersionedComment versionedComment) {
+	public void focusOnVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem,
+            Collection<VersionedComment> versionedComments, VersionedComment versionedComment) {
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
@@ -237,7 +234,8 @@ public class ReviewItemTreePanel extends JPanel
 	public void showReview(final ReviewDataInfoAdapter reviewItem) {
 		progressAnimation.startProgressAnimation();
 		try {
-			final List<ReviewItem> reviewFiles = crucibleServerFacade.getReviewItems(reviewItem.getServer(), reviewItem.getPermaId());
+			final List<ReviewItem> reviewFiles
+                    = crucibleServerFacade.getReviewItems(reviewItem.getServer(), reviewItem.getPermaId());
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					StringBuffer buffer = new StringBuffer();
@@ -295,7 +293,8 @@ public class ReviewItemTreePanel extends JPanel
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
-	public void showVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem, Collection<VersionedComment> versionedComments, VersionedComment versionedComment) {
+	public void showVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem,
+            Collection<VersionedComment> versionedComments, VersionedComment versionedComment) {
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 

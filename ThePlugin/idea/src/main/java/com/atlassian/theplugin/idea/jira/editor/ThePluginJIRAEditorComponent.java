@@ -310,23 +310,26 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 	private class CommentPanel extends JPanel {
 
 		private ShowHideButton btnShowHide;
+        private static final int GRID_WIDTH = 6;
 
-		public CommentPanel(final JIRAIssue issue, final JIRAComment comment, final JIRAServer server) {
+        public CommentPanel(final JIRAIssue issue, final JIRAComment comment, final JIRAServer server) {
 			setOpaque(true);
 			setBackground(UIUtil.getTableSelectionBackground());
 			
 			setLayout(new GridBagLayout());
 			GridBagConstraints gbc;
-			gbc = new GridBagConstraints();
+            int gridx = 1;
 
-			JEditorPane commentBody = new JEditorPane();
+            JEditorPane commentBody = new JEditorPane();
             btnShowHide = new ShowHideButton(commentBody, this);
-			gbc.gridx = 1;
+            gbc = new GridBagConstraints();
+			gbc.gridx = gridx++;
 			gbc.gridy = 0;
 			gbc.anchor = GridBagConstraints.WEST;
 			add(btnShowHide, gbc);
 
-			gbc.gridx = 2;
+            gbc = new GridBagConstraints();
+			gbc.gridx = gridx++;
 			gbc.gridy = 0;
 			gbc.anchor = GridBagConstraints.WEST;
 			gbc.insets = new Insets(0, Constants.DIALOG_MARGIN, 0, 0);
@@ -336,7 +339,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			final JLabel hyphen = new WhiteLabel();
             hyphen.setText("-");
 			gbc = new GridBagConstraints();
-			gbc.gridx = 3;
+			gbc.gridx = gridx++;
 			gbc.gridy = 0;
 			gbc.anchor = GridBagConstraints.WEST;
 			gbc.insets = new Insets(0, Constants.DIALOG_MARGIN, 0, Constants.DIALOG_MARGIN);
@@ -345,7 +348,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			final JLabel creationDate = new WhiteLabel();
 			creationDate.setText(comment.getCreationDate().getTime().toString());
 			gbc = new GridBagConstraints();
-			gbc.gridx = 4;
+			gbc.gridx = gridx++;
 			gbc.gridy = 0;
 			gbc.anchor = GridBagConstraints.WEST;
 			gbc.weightx = 1.0;
@@ -378,7 +381,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			gbc = new GridBagConstraints();
 			gbc.gridx = 0;
 			gbc.gridy = 1;
-			gbc.gridwidth = 6;
+			gbc.gridwidth = GRID_WIDTH;
 			gbc.weightx = 1.0;
 			gbc.weighty = 1.0;
             gbc.insets = new Insets(0, 0, 0, 0);
@@ -542,8 +545,9 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 	private class SummaryPanel extends JPanel {
 
 		private DetailsPanel details;
+        private static final int THICKNESS = 6;
 
-		public SummaryPanel(final JIRAIssue issue) {
+        public SummaryPanel(final JIRAIssue issue) {
 			setLayout(new GridBagLayout());
 			GridBagConstraints gbc = new GridBagConstraints();
 
@@ -579,7 +583,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
             summary.setOpaque(true);
 			JPanel p = new JPanel();
 			p.setLayout(new GridBagLayout());
-			p.setBorder(BorderFactory.createLineBorder(bg, 6));
+			p.setBorder(BorderFactory.createLineBorder(bg, THICKNESS));
 			GridBagConstraints gbcp = new GridBagConstraints();
 			gbcp.fill = GridBagConstraints.BOTH;
 			gbcp.weightx = 1.0;

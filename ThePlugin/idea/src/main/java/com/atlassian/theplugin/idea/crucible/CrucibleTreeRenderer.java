@@ -17,10 +17,10 @@ import java.awt.*;
  */
 public class CrucibleTreeRenderer extends DefaultTreeCellRenderer {
 
-	private final static String MODIFIED_FILE_STR = "(mod)";
-	private final static String NEW_FILE_STR = "(new)";
-	private final static String DELETED_FILE_STR = "(del)";
-	private final static String UNKNOWN_FILE_STR = "(???)";
+	private static final String MODIFIED_FILE_STR = "(mod)";
+	private static final String NEW_FILE_STR = "(new)";
+	private static final String DELETED_FILE_STR = "(del)";
+	private static final String UNKNOWN_FILE_STR = "(???)";
 
 
 	private static Icon crucibleServersIcon;
@@ -45,27 +45,28 @@ public class CrucibleTreeRenderer extends DefaultTreeCellRenderer {
             JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
 
 		JLabel label = (JLabel) super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
-		StringBuffer labelText = new StringBuffer() ;
+		StringBuffer labelText = new StringBuffer();
 
 		if (value instanceof ReviewItemDataNode) {
-			ReviewItem item =  ((ReviewItemDataNode)value).getReviewItem();
+			ReviewItem item =  ((ReviewItemDataNode) value).getReviewItem();
 
-			if (item.getFromPath().length() > 0 && item.getToPath().length() == 0){
+			if (item.getFromPath().length() > 0 && item.getToPath().length() == 0) {
 				//new file
 				labelText.append(getFileNameFromPath(item.getFromPath()));
 				labelText.append(NEW_FILE_STR);
 
-			} else if (item.getFromPath().length() > 0 && item.getToPath().length() > 0){
+			} else if (item.getFromPath().length() > 0 && item.getToPath().length() > 0) {
 
 				labelText.append(getFileNameFromPath(item.getToPath()));
 				labelText.append(" ").append(MODIFIED_FILE_STR);
 
-			} else if (item.getFromPath().length() == 0 && item.getToPath().length() > 0){
+			} else if (item.getFromPath().length() == 0 && item.getToPath().length() > 0) {
 				labelText.append(item.getToPath());
 				labelText.append(" ").append(DELETED_FILE_STR);
 
 			} else {
-				labelText.append((item.getFromPath().length() > 0 ? getFileNameFromPath(item.getFromPath()) : getFileNameFromPath(item.getToPath())));
+				labelText.append((item.getFromPath().length() > 0
+                        ? getFileNameFromPath(item.getFromPath()) : getFileNameFromPath(item.getToPath())));
 				labelText.append(" ").append(UNKNOWN_FILE_STR);
 			}
 
@@ -76,18 +77,17 @@ public class CrucibleTreeRenderer extends DefaultTreeCellRenderer {
 		if (value instanceof CrucibleTreeRootNode) {
 			ReviewDataInfoAdapter adapter = ((CrucibleTreeRootNode) value).getReviewDataInfoAdapter();
 			if (adapter != null) {
-
-
 				labelText.append(adapter.getName());
 			}
 			label.setText(labelText.toString());
 			label.setIcon(crucibleServerEnabledIcon);
 		}
 
-		if (value instanceof CommentNode){
+		if (value instanceof CommentNode) {
 			GeneralComment generalComment = ((CommentNode) value).getGeneralComment();
 			if (generalComment != null) {
-				labelText.append(generalComment.getMessage().substring(0, Math.min(generalComment.getMessage().length(),DEFAULT_COMMENT_MESSAGE_LENGTH)));
+				labelText.append(generalComment.getMessage().substring(0,
+                        Math.min(generalComment.getMessage().length(), DEFAULT_COMMENT_MESSAGE_LENGTH)));
 				if (generalComment.getMessage().length() > DEFAULT_COMMENT_MESSAGE_LENGTH) {
 					labelText.append("...");
 				}
@@ -100,10 +100,9 @@ public class CrucibleTreeRenderer extends DefaultTreeCellRenderer {
 		return label;
 	}
 
-	private String getFileNameFromPath(String filePath){
-		
+	private String getFileNameFromPath(String filePath) {
 		return filePath.substring(filePath.lastIndexOf("/") + 1);
-	};
+	}
 
 }
 

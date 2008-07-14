@@ -15,7 +15,8 @@ public class ShowReviewedFileItemEvent extends CrucibleEvent {
 	private ReviewDataInfoAdapter reviewInfo;
 	private ReviewItem reviewItem;
 
-	public ShowReviewedFileItemEvent(CrucibleReviewActionListener caller, ReviewDataInfoAdapter reviewInfo, ReviewItem reviewItem) {
+	public ShowReviewedFileItemEvent(CrucibleReviewActionListener caller, ReviewDataInfoAdapter reviewInfo,
+            ReviewItem reviewItem) {
 		super(caller);
 		this.reviewInfo = reviewInfo;
 		this.reviewItem = reviewItem;

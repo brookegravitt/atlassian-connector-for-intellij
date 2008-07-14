@@ -57,8 +57,6 @@ import javax.net.ssl.TrustManager;
 import java.io.IOException;
 import java.net.*;
 
-import com.atlassian.theplugin.commons.util.Logger;
-
 /**
  * <p>
  * EasySSLProtocolSocketFactory can be used to creats SSL {@link Socket}s

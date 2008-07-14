@@ -43,8 +43,6 @@ package com.atlassian.theplugin.commons.thirdparty.apache;
  */
 
 
-import com.atlassian.theplugin.commons.util.Logger;
-
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;

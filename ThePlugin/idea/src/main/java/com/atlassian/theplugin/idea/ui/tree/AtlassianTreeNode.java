@@ -1,11 +1,8 @@
 package com.atlassian.theplugin.idea.ui.tree;
 
-import com.intellij.util.ui.Tree;
 import com.intellij.ui.ColoredTreeCellRenderer;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.*;
-import java.awt.*;
 
 /**
  * Created by IntelliJ IDEA.

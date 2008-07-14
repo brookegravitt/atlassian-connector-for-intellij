@@ -14,17 +14,18 @@ public class CrucibleTreeRootNode extends DefaultMutableTreeNode {
 
 	private ReviewDataInfoAdapter reviewDataInfoAdapter;
 
-	CrucibleTreeRootNode(ReviewDataInfoAdapter infoAdapater){
+	CrucibleTreeRootNode(ReviewDataInfoAdapter infoAdapater) {
 		reviewDataInfoAdapter = infoAdapater;
 	}
 
-	CrucibleTreeRootNode(){
+	CrucibleTreeRootNode() {
 		
 	}
 
 	public String toString() {
 		if (reviewDataInfoAdapter != null) {
-			return reviewDataInfoAdapter.getProjectKey() + ", " + reviewDataInfoAdapter.getPermaId() + ", " + reviewDataInfoAdapter.getName();
+			return reviewDataInfoAdapter.getProjectKey() + ", " + reviewDataInfoAdapter.getPermaId()
+                    + ", " + reviewDataInfoAdapter.getName();
 		} else {
 			return "No Review is selected";
 		}

@@ -102,8 +102,9 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 					IdeaHelper.getReviewActionEventBroker().trigger(
 							new FocusOnGeneralCommentReplyEvent(
 									I_WANT_THIS_MESSAGE_BACK,
-									(ReviewDataInfoAdapter) CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
-									selectedComment
+									(ReviewDataInfoAdapter)
+                                            CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
+                                    selectedComment
 							)
 					);
 				}
@@ -117,7 +118,7 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 		commentSelectedListener = new TableItemSelectedListener() {
 			public void itemSelected(Object item, int noClicks) {
 				GeneralComment selectedComment = (GeneralComment) item;
-				if (noClicks ==1) {
+				if (noClicks == 1) {
 					// GeneralComment server = ((GeneralCommentNode) selectedNode).getGeneralComment();
 					DialogWrapper d = new DDialog(DataManager.getInstance().getDataContext(),
 						 (ReviewDataInfoAdapter) CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
@@ -129,7 +130,8 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 					IdeaHelper.getReviewActionEventBroker().trigger(
 							new ShowGeneralCommentEvent(
 									I_WANT_THIS_MESSAGE_BACK,
-									(ReviewDataInfoAdapter) CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
+									(ReviewDataInfoAdapter)
+                                            CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
 									selectedComment
 							)
 					);
@@ -155,7 +157,8 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
-	public void focusOnVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem, Collection<VersionedComment> versionedComments, VersionedComment versionedComment) {
+	public void focusOnVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem,
+            Collection<VersionedComment> versionedComments, VersionedComment versionedComment) {
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
@@ -166,8 +169,8 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 	public void showReview(ReviewDataInfoAdapter reviewDataInfoAdapter) {
 		try {
 			getProgressAnimation().startProgressAnimation();
-			final List<GeneralComment> generalComments = crucibleServerFacade.getGeneralComments(reviewDataInfoAdapter.getServer(),
-					reviewDataInfoAdapter.getPermaId());
+			final List<GeneralComment> generalComments = crucibleServerFacade.getGeneralComments(
+                    reviewDataInfoAdapter.getServer(), reviewDataInfoAdapter.getPermaId());
 			EventQueue.invokeLater(new CommentListChangedListener(reviewDataInfoAdapter, generalComments));
 		} catch (RemoteApiException e) {
 			LOGGER.warn("Error retrieving comments", e);
@@ -190,7 +193,7 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 	}
 
 	public void showVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, final ReviewItem reviewItem,
-										Collection<VersionedComment> versionedComments, final VersionedComment versionedComment) {
+            Collection<VersionedComment> versionedComments, final VersionedComment versionedComment) {
 	}
 
 	public void showVersionedCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
@@ -292,11 +295,11 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 	}
 
 
-		private class DDialog extends DialogWrapper {
-		CrucibleCommentPanel commentPanel;
+	private class DDialog extends DialogWrapper {
+	    private CrucibleCommentPanel commentPanel;
 
 
-		public DDialog(DataContext dataContext, ReviewDataInfoAdapter adapter, GeneralComment comment){
+		public DDialog(DataContext dataContext, ReviewDataInfoAdapter adapter, GeneralComment comment) {
 			super(true);			
 			this.commentPanel = new CrucibleCommentPanel(adapter, comment);
 			init();
@@ -304,7 +307,7 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 
 		@Nullable
 		protected JComponent createCenterPanel() {
-			return commentPanel.getRootPanel();  //To change body of implemented methods use File | Settings | File Templates.
+			return commentPanel.getRootPanel();
 		}
 	}
 

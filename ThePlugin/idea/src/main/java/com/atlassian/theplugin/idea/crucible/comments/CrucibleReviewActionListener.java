@@ -15,7 +15,7 @@ import java.util.Collection;
  * To change this template use File | Settings | File Templates.
  */
 public interface CrucibleReviewActionListener {
-	public static final CrucibleReviewActionListener I_WANT_THIS_MESSAGE_BACK = null;
+	CrucibleReviewActionListener I_WANT_THIS_MESSAGE_BACK = null;
 
 	void focusOnReview(ReviewDataInfoAdapter reviewDataInfoAdapter);
 

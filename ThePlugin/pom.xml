@@ -256,6 +256,7 @@
                         **/JIRAButtonPanel.java,
 			**/WorkLogCreate.java
                     </excludes>
+                    <includeTestSourceDirectory>false</includeTestSourceDirectory>
 <!--<failsOnError>true</failsOnError>-->
 <!--<linkXRef>false</linkXRef>-->
                 </configuration>

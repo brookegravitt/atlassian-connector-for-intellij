@@ -76,7 +76,7 @@ public class CustomFilterAction extends Crucible16ToggleAction {
         super.update(event);
         CrucibleTableToolWindowPanel panel = IdeaHelper.getCrucibleToolWindowPanel(event);
         if (panel != null) {
-            if (panel.getProjectConfiguration()
+            if (panel.getProjectCfg()
                     .getCrucibleConfiguration()
                     .getCrucibleFilters()
                     .getManualFilter()
