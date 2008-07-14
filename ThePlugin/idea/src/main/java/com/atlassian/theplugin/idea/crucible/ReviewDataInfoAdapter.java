@@ -57,6 +57,17 @@ public class ReviewDataInfoAdapter {
 		return review.getReviewers();
 	}
 
+	public int getNumOfCompletedReviewers() {
+		int numCompleted = 0;
+
+		for (Reviewer reviewer : getReviewers()) {
+			if (reviewer.isCompleted()) {
+				numCompleted++;
+			}
+		}
+		return numCompleted;
+	}
+
 	public String getName() {
 		return review.getName();
 	}
