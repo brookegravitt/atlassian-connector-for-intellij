@@ -144,9 +144,7 @@ public final class CrucibleRestXmlHelper {
         return reviewerBean;
     }
 
-    public static Review parseReviewNode(Element reviewNode) {
-        ReviewBean review = new ReviewBean();
-
+    private static void parseReview(Element reviewNode, ReviewBean review) {
         if (reviewNode.getChild("author") != null) {
             review.setAuthor(parseUserNode(reviewNode.getChild("author")));
         }
@@ -176,6 +174,58 @@ public final class CrucibleRestXmlHelper {
             review.setMetricsVersion(Integer.valueOf(getChildText(reviewNode, "metricsVersion")));
         } catch (NumberFormatException e) {
             review.setMetricsVersion(-1);
+        }
+    }
+
+    public static Review parseReviewNode(Element reviewNode) {
+        ReviewBean review = new ReviewBean();
+        parseReview(reviewNode, review);
+        return review;
+    }
+
+    public static DetailedReview parseDetailedReviewNode(Element reviewNode) {
+        DetailedReviewBean review = new DetailedReviewBean();
+        parseReview(reviewNode, review);
+
+        List<Element> reviewersNode = getChildElements(reviewNode, "reviewers");
+        for (Element reviewer : reviewersNode) {
+            List<Element> reviewerNode = getChildElements(reviewer, "reviewer");
+            for (Element element : reviewerNode) {
+                review.getReviewers().add(parseReviewerNode(element));
+            }
+        }
+
+        List<Element> reviewItemsNode = getChildElements(reviewNode, "reviewItems");
+        for (Element reviewItem : reviewItemsNode) {
+            List<Element> itemNode = getChildElements(reviewItem, "reviewItem");
+            for (Element element : itemNode) {
+                review.getReviewItems().add(parseReviewItemNode(element));
+            }
+        }
+
+        List<Element> generalCommentsNode = getChildElements(reviewNode, "generalComments");
+        for (Element generalComment : generalCommentsNode) {
+            List<Element> commentNode = getChildElements(generalComment, "generalCommentData");
+            for (Element element : commentNode) {
+                review.getGeneralComments().add(parseGeneralCommentNode(element));
+            }
+        }
+
+        List<Element> versionedComments = getChildElements(reviewNode, "versionedComments");
+        for (Element versionedComment : versionedComments) {
+            List<Element> commentNode = getChildElements(versionedComment, "versionedLineCommentData");
+            for (Element element : commentNode) {
+                review.getVersionedComments().add(parseVersionedCommentNode(element));
+            }
+
+        }
+
+        List<Element> transitions = getChildElements(reviewNode, "transitions");
+        for (Element transition : transitions) {
+            List<Element> trans = getChildElements(transition, "transitionData");
+            for (Element element : trans) {
+                review.getTransitions().add(parseTransitionNode(element));
+            }
         }
 
         return review;
@@ -566,12 +616,8 @@ public final class CrucibleRestXmlHelper {
 
     private static Date parseCommentTime(String date) {
         try {
-            int index = date.lastIndexOf(":");
-            String a = date.substring(0, index);
-            String b = date.substring(index + 1);
-            return commentTimeFormat.parse(a + b);
+            return commentTimeFormat.parse(date);
         } catch (ParseException e) {
-            System.out.println("e = " + e);
             return null;
         }
     }

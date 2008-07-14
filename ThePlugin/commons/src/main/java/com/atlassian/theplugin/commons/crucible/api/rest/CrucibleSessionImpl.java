@@ -53,6 +53,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
     private static final String LOGIN = "/login";
     private static final String REVIEWS_IN_STATES = "?state=";
     private static final String FILTERED_REVIEWS = "/filter";
+    private static final String DETAIL_REVIEW_INFO = "/details";
     private static final String ACTIONS = "/action";
     private static final String TRANSITIONS = "/transition";
     private static final String REVIEWERS = "/reviewers";
@@ -149,7 +150,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         }
     }
 
-    public List<Review> getReviewsInStates(List<State> states) throws RemoteApiException {
+    public List<Review> getReviewsInStates(List<State> states, boolean details) throws RemoteApiException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Calling method without calling login() first");
         }
@@ -157,6 +158,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         StringBuilder sb = new StringBuilder();
         sb.append(baseUrl);
         sb.append(REVIEW_SERVICE);
+        if (details) {
+            sb.append(DETAIL_REVIEW_INFO);
+        }
         if (states != null && states.size() != 0) {
             sb.append(REVIEWS_IN_STATES);
             for (Iterator<State> stateIterator = states.iterator(); stateIterator.hasNext();) {
@@ -171,14 +175,23 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         try {
             Document doc = retrieveGetResponse(sb.toString());
 
-            XPath xpath = XPath.newInstance("/reviews/reviewData");
+            XPath xpath;
+            if (details) {
+                xpath = XPath.newInstance("/detailedReviews/detailReviewData");
+            } else {
+                xpath = XPath.newInstance("/reviews/reviewData");
+            }
             @SuppressWarnings("unchecked")
             List<Element> elements = xpath.selectNodes(doc);
             List<Review> reviews = new ArrayList<Review>();
 
             if (elements != null && !elements.isEmpty()) {
                 for (Element element : elements) {
-                    reviews.add(CrucibleRestXmlHelper.parseReviewNode(element));
+                    if (details) {
+                        reviews.add(CrucibleRestXmlHelper.parseDetailedReviewNode(element));
+                    } else {
+                        reviews.add(CrucibleRestXmlHelper.parseReviewNode(element));
+                    }
                 }
             }
             return reviews;
@@ -189,29 +202,42 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         }
     }
 
-    public List<Review> getAllReviews() throws RemoteApiException {
-        return getReviewsInStates(null);
+    public List<Review> getAllReviews(boolean details) throws RemoteApiException {
+        return getReviewsInStates(null, details);
     }
 
-    public List<Review> getReviewsForFilter(PredefinedFilter filter) throws RemoteApiException {
+    public List<Review> getReviewsForFilter(PredefinedFilter filter, boolean details) throws RemoteApiException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Calling method without calling login() first");
         }
 
         try {
-            Document doc = retrieveGetResponse(baseUrl
+            String url = baseUrl
                     + REVIEW_SERVICE
                     + FILTERED_REVIEWS
-                    + "/" + filter.getFilterUrl());
+                    + "/" + filter.getFilterUrl();
+            if (details) {
+                url += DETAIL_REVIEW_INFO;   
+            }
+            Document doc = retrieveGetResponse(url);
 
-            XPath xpath = XPath.newInstance("/reviews/reviewData");
+            XPath xpath;
+            if (details) {
+                xpath = XPath.newInstance("/detailedReviews/detailReviewData");
+            } else {
+                xpath = XPath.newInstance("/reviews/reviewData");
+            }
             @SuppressWarnings("unchecked")
             List<Element> elements = xpath.selectNodes(doc);
             List<Review> reviews = new ArrayList<Review>();
 
             if (elements != null && !elements.isEmpty()) {
                 for (Element element : elements) {
-					reviews.add(CrucibleRestXmlHelper.parseReviewNode(element));
+                    if (details) {
+                        reviews.add(CrucibleRestXmlHelper.parseDetailedReviewNode(element));
+                    } else {
+                        reviews.add(CrucibleRestXmlHelper.parseReviewNode(element));
+                    }
                 }
             }
             return reviews;
@@ -222,22 +248,36 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         }
     }
 
-    public List<Review> getReviewsForCustomFilter(CustomFilter filter) throws RemoteApiException {
+    public List<Review> getReviewsForCustomFilter(CustomFilter filter, boolean details) throws RemoteApiException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Calling method without calling login() first");
         }
         Document request = CrucibleRestXmlHelper.prepareCustomFilter(filter);
 
         try {
-            Document doc = retrievePostResponse(baseUrl + REVIEW_SERVICE + FILTERED_REVIEWS, request);
-            XPath xpath = XPath.newInstance("/reviews/reviewData");
+            String url = baseUrl + REVIEW_SERVICE + FILTERED_REVIEWS;
+            if (details) {
+                url += DETAIL_REVIEW_INFO;
+            }
+            
+            Document doc = retrievePostResponse(url, request);
+            XPath xpath;
+            if (details) {
+                xpath = XPath.newInstance("/detailedReviews/detailReviewData");
+            } else {
+                xpath = XPath.newInstance("/reviews/reviewData");
+            }
             @SuppressWarnings("unchecked")
             List<Element> elements = xpath.selectNodes(doc);
             List<Review> reviews = new ArrayList<Review>();
 
             if (elements != null && !elements.isEmpty()) {
                 for (Element element : elements) {
-                    reviews.add(CrucibleRestXmlHelper.parseReviewNode(element));
+                    if (details) {
+                        reviews.add(CrucibleRestXmlHelper.parseDetailedReviewNode(element));
+                    } else {
+                        reviews.add(CrucibleRestXmlHelper.parseReviewNode(element));
+                    }  
                 }
             }
             return reviews;

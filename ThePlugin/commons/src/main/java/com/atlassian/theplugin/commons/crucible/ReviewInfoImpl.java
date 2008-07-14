@@ -20,20 +20,21 @@ import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 
 import java.util.List;
+import java.util.Date;
+import java.util.ArrayList;
 
 
 public class ReviewInfoImpl implements ReviewInfo {
-	private final Review review;
-	private final List<Reviewer> reviewers;
+    private final Review review;
 	private final Server server;
 
-	public ReviewInfoImpl(Review review, List<Reviewer> reviewers, Server server) {
-		this.review = review;
-		this.reviewers = reviewers;
-		this.server = server;
-	}
 
-	public String getReviewUrl() {
+    public ReviewInfoImpl(Review review, Server server) {
+        this.review = review;
+        this.server = server;
+    }
+
+    public String getReviewUrl() {
 		String baseUrl = server.getUrlString();
 		while (baseUrl.length() > 0 && baseUrl.charAt(baseUrl.length() - 1) == '/') {
 			// quite ineffective, I know ...
@@ -44,8 +45,12 @@ public class ReviewInfoImpl implements ReviewInfo {
 	}
 
 	public List<Reviewer> getReviewers() {
-		return reviewers;
-	}
+        if (review instanceof DetailedReview) {
+            return ((DetailedReview)review).getReviewers();
+        } else {
+            return new ArrayList<Reviewer>();
+        }
+    }
 
 	public Server getServer() {
 		return server;
@@ -94,6 +99,14 @@ public class ReviewInfoImpl implements ReviewInfo {
 
     public int getMetricsVersion() {
         return review.getMetricsVersion();
+    }
+
+    public Date getCreateDate() {
+        return review.getCreateDate();
+    }
+
+    public Date getCloseDate() {
+        return review.getCloseDate();
     }
 
     public boolean equals(Object o) {

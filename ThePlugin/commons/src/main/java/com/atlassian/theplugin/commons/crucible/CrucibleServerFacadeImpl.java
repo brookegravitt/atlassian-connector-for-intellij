@@ -342,62 +342,23 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
     public List<ReviewInfo> getAllReviews(Server server) throws RemoteApiException {
         CrucibleSession session = getSession(server);
 
-        List<Review> res = session.getAllReviews();
+        List<Review> res = session.getAllReviews(true);
         List<ReviewInfo> result = new ArrayList<ReviewInfo>(res.size());
         for (Review review : res) {
-            List<Reviewer> reviewers = session.getReviewers(review.getPermaId());
-            result.add(new ReviewInfoImpl(review, reviewers, server));
+            result.add(new ReviewInfoImpl((DetailedReview)review, server));
         }
         return result;
-    }
-
-    public List<ReviewInfo> getActiveReviewsForUser(Server server)
-            throws RemoteApiException, ServerPasswordNotProvidedException {
-        CrucibleSession session = null;
-
-        try {
-            session = getSession(server);
-            List<State> states = new ArrayList<State>();
-            states.add(State.REVIEW);
-
-            List<Review> reviews = session.getReviewsInStates(states);
-            List<ReviewInfo> result = new ArrayList<ReviewInfo>(reviews.size());
-
-            for (Review review : reviews) {
-                List<Reviewer> reviewers = session.getReviewers(review.getPermaId());
-
-                for (Reviewer reviewer : reviewers) {
-                    if (reviewer.getUserName().equals(server.getUserName())) {
-                        result.add(new ReviewInfoImpl(review, reviewers, server));
-                    }
-                }
-            }
-            return result;
-        } catch (RemoteApiLoginFailedException e) {
-            if (!server.getIsConfigInitialized()) {
-                throw new ServerPasswordNotProvidedException();
-            } /* else {
-// @todo do something with logger
-//				PluginUtil.getLogger().error("Crucible login exception: " + e.getMessage());
-			}
-			  */
-        } catch (RemoteApiException e) {
-// @todo do something with logger
-//            PluginUtil.getLogger().error("Crucible exception: " + e.getMessage());
-        }
-        return Collections.emptyList();
     }
 
     public List<ReviewInfo> getReviewsForFilter(Server server, PredefinedFilter filter)
             throws RemoteApiException, ServerPasswordNotProvidedException {
         CrucibleSession session = getSession(server);
 
-        List<Review> reviews = session.getReviewsForFilter(filter);
+        List<Review> reviews = session.getReviewsForFilter(filter, true);
         List<ReviewInfo> result = new ArrayList<ReviewInfo>(reviews.size());
 
         for (Review review : reviews) {
-			List<Reviewer> reviewers = session.getReviewers(review.getPermaId());
-			ReviewInfoImpl reviewInfo = new ReviewInfoImpl(review, reviewers, server);
+			ReviewInfoImpl reviewInfo = new ReviewInfoImpl((DetailedReview)review, server);
 			result.add(reviewInfo);
         }
 
@@ -408,11 +369,11 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
             throws RemoteApiException, ServerPasswordNotProvidedException {
         CrucibleSession session = getSession(server);
 
-        List<Review> reviews = session.getReviewsForCustomFilter(filter);
+        List<Review> reviews = session.getReviewsForCustomFilter(filter, true);
         List<ReviewInfo> result = new ArrayList<ReviewInfo>(reviews.size());
 
         for (Review review : reviews) {
-            result.add(new ReviewInfoImpl(review, null, server));
+            result.add(new ReviewInfoImpl((DetailedReview) review, server));
         }
         return result;        
     }
