@@ -18,6 +18,7 @@ package com.atlassian.theplugin.crucible;
 
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.commons.crucible.api.model.DetailedReview;
 import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.crucible.ReviewInfoImpl;
 import junit.framework.Test;
@@ -74,7 +75,7 @@ public class ReviewDataInfoImplTest extends TestCase {
 		EasyMock.replay(server);
 		EasyMock.replay(rd);
 
-		ReviewInfoImpl tested = new ReviewInfoImpl(rd, null, server);
+		ReviewInfoImpl tested = new ReviewInfoImpl(rd, server);
 		assertEquals("http://url/cru/ID", tested.getReviewUrl());
 		assertEquals("http://url/cru/ID", tested.getReviewUrl());
 		assertEquals("http://url/cru/ID", tested.getReviewUrl());
@@ -102,23 +103,23 @@ public class ReviewDataInfoImplTest extends TestCase {
 		EasyMock.replay(rd1);
 		EasyMock.replay(rd2);
 
-		ReviewInfoImpl r1 = new ReviewInfoImpl(rd1, null, server);
-		ReviewInfoImpl r2 = new ReviewInfoImpl(rd2, null, server);
+		ReviewInfoImpl r1 = new ReviewInfoImpl(rd1, server);
+		ReviewInfoImpl r2 = new ReviewInfoImpl(rd2, server);
 
 		assertEquals(r1, r1);
 
 		assertFalse(r1.equals(null));
 		assertFalse(r1.equals(r2));
 
-		r2 = new ReviewInfoImpl(rd1, null, null);
+		r2 = new ReviewInfoImpl(rd1, null);
 		assertFalse(r1.equals(r2));
 
-		r2 = new ReviewInfoImpl(rd1, null, server);
+		r2 = new ReviewInfoImpl(rd1, server);
 		assertEquals(r1, r2);
 		assertEquals(r1.hashCode(), r2.hashCode());
 
-		r1 = new ReviewInfoImpl(rd1, null, null);
-		r2 = new ReviewInfoImpl(rd1, null, null);
+		r1 = new ReviewInfoImpl(rd1, null);
+		r2 = new ReviewInfoImpl(rd1, null);
 
 		assertEquals(r1, r2);
 		assertEquals(r1.hashCode(), r2.hashCode());

@@ -155,7 +155,7 @@ public class HtmlCrucibleStatusListenerTest extends TestCase {
     }
 
 	public static ReviewInfo generateReviewDataInfo(final String suffix) {
-		ReviewBean rd = new ReviewBean();
+		DetailedReviewBean rd = new DetailedReviewBean();
 		rd.setAuthor(new UserBean(DEFAULT_AUTHOR + suffix));
 		rd.setCreator(new UserBean(DEFAULT_CREATOR));
 		rd.setDescription(DEFAULT_DESCRIPTION);
@@ -169,7 +169,7 @@ public class HtmlCrucibleStatusListenerTest extends TestCase {
 		rd.setState(DEFAULT_STATE);
 
 		ArrayList reviewers = new ArrayList<String>();
-		reviewers.add(new Reviewer() {
+        rd.getReviewers().add(new Reviewer() {
             public String getUserName() {
                 return DEFAULT_REVIEW_NAME + suffix;
             }
@@ -179,16 +179,16 @@ public class HtmlCrucibleStatusListenerTest extends TestCase {
             }
 
             public int compareTo(User that) {
-                return 0; 
+                return 0;
             }
 
             public boolean isCompleted() {
-                return false; 
+                return false;
             }
         });
 
 
-		ReviewInfoImpl rdi = new ReviewInfoImpl(rd, reviewers, server);
+        ReviewInfoImpl rdi = new ReviewInfoImpl(rd, server);
 		return rdi;
 	}
 

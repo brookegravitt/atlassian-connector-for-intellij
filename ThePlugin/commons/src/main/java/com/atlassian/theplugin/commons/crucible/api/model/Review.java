@@ -16,6 +16,8 @@
 
 package com.atlassian.theplugin.commons.crucible.api.model;
 
+import java.util.Date;
+
 public interface Review {
 	User getAuthor();
 
@@ -38,4 +40,8 @@ public interface Review {
 	State getState();
 
     int getMetricsVersion();
+
+    Date getCreateDate();
+
+    Date getCloseDate();
 }

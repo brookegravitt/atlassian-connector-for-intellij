@@ -61,13 +61,13 @@ public interface CrucibleSession {
 
     void completeReview(PermId permId, boolean complete) throws RemoteApiException;
 
-    List<Review> getReviewsInStates(List<State> arg1) throws RemoteApiException;
+    List<Review> getReviewsInStates(List<State> arg1, boolean details) throws RemoteApiException;
 
-	List<Review> getAllReviews() throws RemoteApiException;
+	List<Review> getAllReviews(boolean details) throws RemoteApiException;
 
-    List<Review> getReviewsForFilter(PredefinedFilter filter) throws RemoteApiException;
+    List<Review> getReviewsForFilter(PredefinedFilter filter, boolean details) throws RemoteApiException;
 
-    List<Review> getReviewsForCustomFilter(CustomFilter filter) throws RemoteApiException;
+    List<Review> getReviewsForCustomFilter(CustomFilter filter, boolean details) throws RemoteApiException;
 
     List<Reviewer> getReviewers(PermId arg1) throws RemoteApiException;
 
