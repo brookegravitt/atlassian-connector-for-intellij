@@ -40,17 +40,12 @@ public class ReviewReviewersCellRenderer  extends DefaultTableCellRenderer {
 	private String createStringContent(ReviewDataInfoAdapter review) {
 
 		int numReviews = review.getReviewers().size();
-		int numCompleted = 0;
 
-		for (Reviewer reviewer : review.getReviewers()) {
-			if (reviewer.isCompleted()) {
-				numCompleted++;
-			}
-		}
+		String text = review.getNumOfCompletedReviewers() + "/" + numReviews;
 
-		String text = numCompleted + "/" + numReviews;
-
-		text = new ReviewStateDecorator(text, review.getState()).getText();
+		text = new ReviewAuthorDecorator(
+				new ReviewStateDecorator(text, review.getState()).toString(),
+				review).toString();
 
 		return text;
 
