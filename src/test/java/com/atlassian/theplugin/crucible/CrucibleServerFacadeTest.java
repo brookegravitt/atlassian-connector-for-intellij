@@ -39,6 +39,7 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Date;
 
 public class CrucibleServerFacadeTest extends TestCase {
 	private static final User VALID_LOGIN = new UserBean("validLogin");
@@ -133,15 +134,10 @@ public class CrucibleServerFacadeTest extends TestCase {
 			}
 		};
 
-		ReviewInfoImpl review = new ReviewInfoImpl(prepareReviewData(VALID_LOGIN, "name", State.DRAFT, permId), null, null);
+		DetailedReview review = prepareReviewData(VALID_LOGIN, "name", State.DRAFT, permId);
 
-		crucibleSessionMock.getAllReviews();
+		crucibleSessionMock.getAllReviews(true);
 		EasyMock.expectLastCall().andReturn(Arrays.asList(review, review));
-
-		crucibleSessionMock.getReviewers(permId);
-		EasyMock.expectLastCall().andReturn(Arrays.asList("Alice", "Bob", "Charlie"));
-		crucibleSessionMock.getReviewers(permId);
-		EasyMock.expectLastCall().andReturn(Arrays.asList("Alice", "Bob", "Charlie"));
 
 		crucibleSessionMock.isLoggedIn();
 		EasyMock.expectLastCall().andReturn(false);		
@@ -151,19 +147,15 @@ public class CrucibleServerFacadeTest extends TestCase {
 			fail("recording mock failed for login");
 		}
 
-		ReviewInfoImpl review2 = new ReviewInfoImpl(prepareReviewData(validLogin2, "name", State.DRAFT, permId), null, null);
-		crucibleSessionMock.getAllReviews();
+		DetailedReview review2 = prepareReviewData(validLogin2, "name", State.DRAFT, permId);
+		crucibleSessionMock.getAllReviews(true);
 		EasyMock.expectLastCall().andReturn(Arrays.asList(review2));
-
-		crucibleSessionMock.getReviewers(permId);
-		EasyMock.expectLastCall().andReturn(Arrays.asList("Alice", "Bob", "Charlie"));
 
 		replay(crucibleSessionMock);
 
 		ServerBean server = prepareServerBean();
 		List<ReviewInfo> ret = facade.getAllReviews(server);
 		assertEquals(2, ret.size());
-		assertEquals(3, ret.get(0).getReviewers().size());
 		assertEquals(permId.getId(), ret.get(0).getPermaId().getId());
 		assertEquals("name", ret.get(0).getName());
 		assertEquals(VALID_LOGIN, ret.get(0).getAuthor());
@@ -172,7 +164,6 @@ public class CrucibleServerFacadeTest extends TestCase {
 		assertEquals(VALID_LOGIN, ret.get(0).getModerator());
 		assertEquals("TEST", ret.get(0).getProjectKey());
 		assertEquals(null, ret.get(0).getRepoName());
-		assertEquals(Arrays.asList("Alice", "Bob", "Charlie"), ret.get(0).getReviewers());
 		assertEquals(VALID_URL + "/cru/permId", ret.get(0).getReviewUrl());
 		assertSame(server, ret.get(0).getServer());
 		assertSame(State.DRAFT, ret.get(0).getState());
@@ -182,7 +173,6 @@ public class CrucibleServerFacadeTest extends TestCase {
 		server.transientSetPasswordString(validPassword2, false);
 		ret = facade.getAllReviews(server);
 		assertEquals(1, ret.size());
-		assertEquals(3, ret.get(0).getReviewers().size());
 		assertEquals(permId.getId(), ret.get(0).getPermaId().getId());
 		assertEquals("name", ret.get(0).getName());
 		assertEquals(validLogin2, ret.get(0).getAuthor());
@@ -191,7 +181,6 @@ public class CrucibleServerFacadeTest extends TestCase {
 		assertEquals(validLogin2, ret.get(0).getModerator());
 		assertEquals("TEST", ret.get(0).getProjectKey());
 		assertEquals(null, ret.get(0).getRepoName());
-		assertEquals(Arrays.asList("Alice", "Bob", "Charlie"), ret.get(0).getReviewers());
 		assertEquals(VALID_URL + "/cru/permId", ret.get(0).getReviewUrl());
 		assertSame(server, ret.get(0).getServer());
 		assertSame(State.DRAFT, ret.get(0).getState());
@@ -210,7 +199,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 		}
 
 		crucibleSessionMock.createReview(EasyMock.isA(Review.class));
-		Review response = new ReviewInfoImpl(null, null, null);
+		Review response = new ReviewInfoImpl(null, null);
 
 		EasyMock.expectLastCall().andReturn(response);
 
@@ -268,7 +257,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 		}
 
 		crucibleSessionMock.createReviewFromPatch(EasyMock.isA(Review.class), EasyMock.eq("some patch"));
-		Review response = new ReviewInfoImpl(null, null, null);
+		Review response = new ReviewInfoImpl(null, null);
 		EasyMock.expectLastCall().andReturn(response);
 
 		replay(crucibleSessionMock);
@@ -329,15 +318,10 @@ public class CrucibleServerFacadeTest extends TestCase {
 			}
 		};
 
-		ReviewInfoImpl review = new ReviewInfoImpl(prepareReviewData(VALID_LOGIN, "name", State.DRAFT, permId), null, null);
+		DetailedReview review = prepareReviewData(VALID_LOGIN, "name", State.DRAFT, permId);
 
-		crucibleSessionMock.getAllReviews();
+		crucibleSessionMock.getAllReviews(true);
 		EasyMock.expectLastCall().andReturn(Arrays.asList(review, review));
-
-		crucibleSessionMock.getReviewers(permId);
-		EasyMock.expectLastCall().andReturn(Arrays.asList("Alice", "Bob", "Charlie"));
-		crucibleSessionMock.getReviewers(permId);
-		EasyMock.expectLastCall().andReturn(Arrays.asList("Alice", "Bob", "Charlie"));
 
 		replay(crucibleSessionMock);
 
@@ -345,7 +329,6 @@ public class CrucibleServerFacadeTest extends TestCase {
 		// test call
 		List<ReviewInfo> ret = facade.getAllReviews(server);
 		assertEquals(2, ret.size());
-		assertEquals(3, ret.get(0).getReviewers().size());
 		assertEquals(permId.getId(), ret.get(0).getPermaId().getId());
 		assertEquals("name", ret.get(0).getName());
 		assertEquals(VALID_LOGIN, ret.get(0).getAuthor());
@@ -354,62 +337,11 @@ public class CrucibleServerFacadeTest extends TestCase {
 		assertEquals(VALID_LOGIN, ret.get(0).getModerator());
 		assertEquals("TEST", ret.get(0).getProjectKey());
 		assertEquals(null, ret.get(0).getRepoName());
-		assertEquals(Arrays.asList("Alice", "Bob", "Charlie"), ret.get(0).getReviewers());
 		assertEquals(VALID_URL + "/cru/permId", ret.get(0).getReviewUrl());
 		assertSame(server, ret.get(0).getServer());
 		assertSame(State.DRAFT, ret.get(0).getState());
 		assertNull(ret.get(0).getParentReview());
 		
-		EasyMock.verify(crucibleSessionMock);
-	}
-
-	public void testGetActiveReviewsForUser() throws ServerPasswordNotProvidedException, RemoteApiException {
-		crucibleSessionMock.isLoggedIn();
-		EasyMock.expectLastCall().andReturn(false);
-		try {
-			crucibleSessionMock.login(VALID_LOGIN.getUserName(), VALID_PASSWORD);
-		} catch (RemoteApiLoginException e) {
-			fail("recording mock failed for login");
-		}
-
-		PermId permId = new PermId() {
-			public String getId() {
-				return "permId";
-			}
-		};
-
-        ReviewerBean[] reviewers = new ReviewerBean[4];
-        reviewers[0] = new ReviewerBean();
-        reviewers[0].setUserName("Bob");
-        reviewers[1] = new ReviewerBean();
-        reviewers[1].setUserName("Alice");
-        reviewers[2] = new ReviewerBean();
-        reviewers[2].setUserName("Charlie");
-        reviewers[3] = new ReviewerBean();
-        reviewers[3].setUserName("validLogin");
-
-
-        crucibleSessionMock.getReviewsInStates(Arrays.asList(State.REVIEW));
-		EasyMock.expectLastCall().andReturn(Arrays.asList(
-				new ReviewInfoImpl(prepareReviewData(VALID_LOGIN, "name", State.REVIEW, permId), null, null),
-				new ReviewInfoImpl(prepareReviewData(VALID_LOGIN, "name", State.REVIEW, permId), null, null)));
-
-		crucibleSessionMock.getReviewers(permId);
-		EasyMock.expectLastCall().andReturn(Arrays.asList(new ReviewerBean[]{reviewers[3], reviewers[0], reviewers[2]}));
-		crucibleSessionMock.getReviewers(permId);
-        EasyMock.expectLastCall().andReturn(Arrays.asList(new ReviewerBean[]{reviewers[1], reviewers[0], reviewers[2]}));
-
-		replay(crucibleSessionMock);
-
-		ServerBean server = prepareServerBean();
-		// test call
-		List<ReviewInfo> ret = facade.getActiveReviewsForUser(server);
-		assertEquals(1, ret.size());
-		assertEquals(3, ret.get(0).getReviewers().size());
-		assertEquals(permId.getId(), ret.get(0).getPermaId().getId());
-		assertEquals("name", ret.get(0).getName());
-		assertEquals(VALID_LOGIN.getUserName(), ret.get(0).getReviewers().get(0).getUserName());
-
 		EasyMock.verify(crucibleSessionMock);
 	}
 
@@ -510,11 +442,19 @@ public class CrucibleServerFacadeTest extends TestCase {
             public int getMetricsVersion() {
                 return 0; 
             }
+
+            public Date getCreateDate() {
+                return null;
+            }
+
+            public Date getCloseDate() {
+                return null;
+            }
         };
 	}
 
-	private Review prepareReviewData(final User user, final String name, final State state, final PermId permId) {
-		return new Review() {
+	private DetailedReview prepareReviewData(final User user, final String name, final State state, final PermId permId) {
+		return new DetailedReview() {
 			public User getAuthor() {
 				return user;
 			}
@@ -557,6 +497,34 @@ public class CrucibleServerFacadeTest extends TestCase {
 
             public int getMetricsVersion() {
                 return 0; 
+            }
+
+            public Date getCreateDate() {
+                return null;
+            }
+
+            public Date getCloseDate() {
+                return null; 
+            }
+
+            public List<Reviewer> getReviewers() {
+                return null;
+            }
+
+            public List<ReviewItem> getReviewItems() {
+                return null;
+            }
+
+            public List<GeneralComment> getGeneralComments() {
+                return null;
+            }
+
+            public List<VersionedComment> getVersionedComments() {
+                return null;
+            }
+
+            public List<Transition> getTransitions() {
+                return null; 
             }
         };
 	}

@@ -323,13 +323,13 @@ public class CrucibleSessionTest extends TestCase {
 		CrucibleSession crucibleSession = new CrucibleSessionImpl(mockBaseUrl);
 		List<State> states = new ArrayList<State>();
 		try {
-			crucibleSession.getReviewsInStates(states);
+			crucibleSession.getReviewsInStates(states, false);
 			fail();
 		} catch (IllegalStateException e) {
 			//expected
 		}
 		try {
-			crucibleSession.getAllReviews();
+			crucibleSession.getAllReviews(false);
 			fail();
 		} catch (IllegalStateException e) {
 			//expected
@@ -363,7 +363,7 @@ public class CrucibleSessionTest extends TestCase {
 		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		List<Review> reviews = apiHandler.getAllReviews();
+		List<Review> reviews = apiHandler.getAllReviews(false);
 		assertEquals(states.size(), reviews.size());
 		int i = 0;
 		for (Review review : reviews) {
@@ -379,7 +379,7 @@ public class CrucibleSessionTest extends TestCase {
 		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		List<Review> reviews = apiHandler.getAllReviews();
+		List<Review> reviews = apiHandler.getAllReviews(false);
 		assertEquals(states.size(), reviews.size());
 		assertTrue(reviews.isEmpty());
 		mockServer.verify();
@@ -392,7 +392,7 @@ public class CrucibleSessionTest extends TestCase {
 		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		List<Review> reviews = apiHandler.getAllReviews();
+		List<Review> reviews = apiHandler.getAllReviews(false);
 		assertEquals(states.size(), reviews.size());
 		assertTrue(reviews.isEmpty());
 		mockServer.verify();
@@ -405,7 +405,7 @@ public class CrucibleSessionTest extends TestCase {
 		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		List<Review> reviews = apiHandler.getReviewsInStates(states);
+		List<Review> reviews = apiHandler.getReviewsInStates(states, false);
 		assertEquals(states.size(), reviews.size());
 		assertTrue(!reviews.isEmpty());
 		mockServer.verify();
@@ -419,7 +419,7 @@ public class CrucibleSessionTest extends TestCase {
 
 		apiHandler.login(USER_NAME, PASSWORD);
 		List<State> req = Arrays.asList(State.CLOSED);
-		List<Review> reviews = apiHandler.getReviewsInStates(req);
+		List<Review> reviews = apiHandler.getReviewsInStates(req, false);
 		assertTrue(reviews.isEmpty());
 		mockServer.verify();
 	}
@@ -432,7 +432,7 @@ public class CrucibleSessionTest extends TestCase {
 
 		apiHandler.login(USER_NAME, PASSWORD);
 		List<State> req = Arrays.asList();
-		List<Review> reviews = apiHandler.getReviewsInStates(req);
+		List<Review> reviews = apiHandler.getReviewsInStates(req, false);
 		assertEquals(states.size(), reviews.size());
 		assertTrue(!reviews.isEmpty());
 		mockServer.verify();
@@ -447,7 +447,7 @@ public class CrucibleSessionTest extends TestCase {
 		PermIdBean permId = new PermIdBean();
 		permId.setId("PR-1");
 		try {
-			apiHandler.getAllReviews();
+			apiHandler.getAllReviews(false);
 			fail();
 		} catch (RemoteApiException e) {
 			// expected
@@ -465,7 +465,7 @@ public class CrucibleSessionTest extends TestCase {
 		permId.setId("PR-1");
 		try {
 			List<State> states = Arrays.asList(State.REVIEW, State.DRAFT);
-			apiHandler.getReviewsInStates(states);
+			apiHandler.getReviewsInStates(states, false);
 			fail();
 		} catch (RemoteApiException e) {
 			// expected

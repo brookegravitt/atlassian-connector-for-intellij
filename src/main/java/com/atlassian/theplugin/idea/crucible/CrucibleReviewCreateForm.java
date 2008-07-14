@@ -519,6 +519,14 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
             return 0;            
         }
 
+        public Date getCreateDate() {
+            return null;
+        }
+
+        public Date getCloseDate() {
+            return null; 
+        }
+
     }
 
     protected void doOKAction() {

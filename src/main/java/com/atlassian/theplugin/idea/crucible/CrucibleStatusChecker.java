@@ -103,40 +103,6 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
         return CrucibleVersion.CRUCIBLE_16;
     }
 
-    private void doRunCrucible15() {
-        try {
-            // collect build info from each server
-            final Collection<ReviewInfo> reviews = new ArrayList<ReviewInfo>();
-            for (Server server : retrieveEnabledCrucibleServers()) {
-                try {
-                    PluginUtil.getLogger().debug("Crucible: updating status for server: "
-                            + server.getUrlString());
-                    reviews.addAll(
-                            crucibleServerFacade.getActiveReviewsForUser(server));
-                } catch (ServerPasswordNotProvidedException exception) {
-                    ApplicationManager.getApplication().invokeLater(
-                            new MissingPasswordHandler(crucibleServerFacade), ModalityState.defaultModalityState());
-                } catch (RemoteApiException e) {
-                    PluginUtil.getLogger().info("Error getting Crucible reviews for " + server.getName()
-                            + " server", e);
-                }
-            }
-
-            // dispatch to the listeners
-            EventQueue.invokeLater(new Runnable() {
-                public void run() {
-                    synchronized (listenerList) {
-                        for (CrucibleStatusListener listener : listenerList) {
-                            listener.updateReviews(reviews);
-                        }
-                    }
-                }
-            });
-        } catch (Throwable t) {
-            t.printStackTrace();
-        }
-    }
-
     private void doRunCrucible16() {
         try {
             // collect review info from each server and each required filter
@@ -241,7 +207,6 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
             }
             switch (crucibleVersion) {
                 case CRUCIBLE_15:
-                    doRunCrucible15();
                     break;
                 case CRUCIBLE_16:
                     doRunCrucible16();
