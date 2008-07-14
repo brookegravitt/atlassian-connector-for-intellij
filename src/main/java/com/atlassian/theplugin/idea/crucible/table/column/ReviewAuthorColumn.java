@@ -32,7 +32,7 @@ public class ReviewAuthorColumn extends TableColumnInfo {
 
 	public Object valueOf(Object o) {
 		ReviewDataInfoAdapter review = (ReviewDataInfoAdapter) o;
-		return new ReviewStateDecorator(review.getAuthor(), review.getState()).getText();
+		return new ReviewStateDecorator(review.getAuthor().getUserName(), review.getState()).getText();
 	}
 
 	public Class getColumnClass() {
@@ -42,7 +42,7 @@ public class ReviewAuthorColumn extends TableColumnInfo {
 	public Comparator getComparator() {
 		return new Comparator() {
 			public int compare(Object o, Object o1) {
-				return ((ReviewDataInfoAdapter) o).getAuthor().compareTo(((ReviewDataInfoAdapter) o1).getAuthor());
+				return ((ReviewDataInfoAdapter) o).getAuthor().getUserName().compareTo(((ReviewDataInfoAdapter) o1).getAuthor().getUserName());
 			}
 		};
 	}
