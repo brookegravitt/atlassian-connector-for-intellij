@@ -2,6 +2,8 @@ package com.atlassian.theplugin.idea.crucible.table.renderer;
 
 import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
+import com.intellij.openapi.util.IconLoader;
+import com.intellij.ui.RowIcon;
 
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.*;
@@ -22,19 +24,38 @@ public class ReviewReviewersCellRenderer  extends DefaultTableCellRenderer {
 
 		JLabel label = (JLabel) c;
 
-		label.setHorizontalAlignment(SwingConstants.CENTER);
+		//label.setHorizontalAlignment(SwingConstants.CENTER);
 
 		if (value instanceof ReviewDataInfoAdapter) {
 
 			ReviewDataInfoAdapter review = (ReviewDataInfoAdapter) value;
 
-
-			label.setText(createStringContent(review));
+			if (review.getReviewers().size() > 5) {
+				label.setText(createStringContent(review));
+			} else {
+				label.setText("");
+				label.setIcon(createIconContent(review));
+			}
 
 			label.setToolTipText(createHtmlTooltip(review));
-			label.setIcon(null);
 		}
 		return c;
+	}
+
+	private Icon createIconContent(ReviewDataInfoAdapter review) {
+		RowIcon rowIcon = new RowIcon(review.getReviewers().size());
+		int index = 0;
+
+		for (Reviewer reviewer : review.getReviewers()) {
+			if (reviewer.isCompleted()) {
+				rowIcon.setIcon(IconLoader.getIcon("/icons/review_finished.gif"), index);
+			} else {
+				rowIcon.setIcon(IconLoader.getIcon("/icons/review_active.gif"), index);
+			}
+			index++;
+		}
+
+		return rowIcon;
 	}
 
 	private String createStringContent(ReviewDataInfoAdapter review) {
@@ -63,7 +84,7 @@ public class ReviewReviewersCellRenderer  extends DefaultTableCellRenderer {
 			} else {
 				html.append("<span>");
 			}
-			html.append(reviewer.getUserName());
+			html.append(reviewer.getDisplayName());
 			html.append("</span>");
 			html.append("<br />");
 		}
