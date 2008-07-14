@@ -40,14 +40,27 @@ public class ReviewReviewersColumn extends TableColumnInfo {
     }
 
     public Comparator getComparator() {
-        return new Comparator() {
+//        return new Comparator() {
+//            public int compare(Object o, Object o1) {
+//                String r = getReviewersAsText(o);
+//                String r1 = getReviewersAsText(o1);
+//                return r.compareTo(r1);
+//            }
+//        };
+
+		 return new Comparator() {
             public int compare(Object o, Object o1) {
-                String r = getReviewersAsText(o);
-                String r1 = getReviewersAsText(o1);
-                return r.compareTo(r1);
+				ReviewDataInfoAdapter review1 = (ReviewDataInfoAdapter) o;
+				ReviewDataInfoAdapter review2 = (ReviewDataInfoAdapter) o1;
+
+				if (review1.getReviewers().size() == review2.getReviewers().size()) {
+					return review1.getNumOfCompletedReviewers() - review2.getNumOfCompletedReviewers();
+				} else {
+					return review1.getReviewers().size() - review2.getReviewers().size();
+				}
             }
         };
-    }
+	}
 
 	public static String getReviewersAsText(Object o) {
 		StringBuffer sb = new StringBuffer();
