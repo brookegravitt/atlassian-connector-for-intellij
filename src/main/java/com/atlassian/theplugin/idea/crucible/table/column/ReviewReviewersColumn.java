@@ -29,27 +29,11 @@ public class ReviewReviewersColumn extends TableColumnInfo {
     private static final int COL_WIDTH = 200;
 
     public String getColumnName() {
-        return "Reviewers";
+        return "Reviewers completed";
     }
 
     public Object valueOf(Object o) {
-        String reviewers = "<html>";
-        reviewers += getReviewersAsText(o);
-        reviewers += "</html>";
-        return reviewers;
-    }
-
-    private String getReviewersAsText(Object o) {
-        StringBuffer sb = new StringBuffer();
-        if (((ReviewDataInfoAdapter) o).getReviewers() != null) {
-            for (Iterator<Reviewer> iterator = ((ReviewDataInfoAdapter) o).getReviewers().iterator(); iterator.hasNext();) {
-                sb.append(iterator.next().getUserName());
-                if (iterator.hasNext()) {
-                    sb.append(", ");
-                }
-            }
-        }
-        return sb.toString();
+        return o;
     }
 
     public Class getColumnClass() {
@@ -66,7 +50,20 @@ public class ReviewReviewersColumn extends TableColumnInfo {
         };
     }
 
-    public int getPrefferedWidth() {
+	public static String getReviewersAsText(Object o) {
+		StringBuffer sb = new StringBuffer();
+		if (((ReviewDataInfoAdapter) o).getReviewers() != null) {
+			for (Iterator<Reviewer> iterator = ((ReviewDataInfoAdapter) o).getReviewers().iterator(); iterator.hasNext();) {
+				sb.append(iterator.next().getUserName());
+				if (iterator.hasNext()) {
+					sb.append(", ");
+				}
+			}
+		}
+		return sb.toString();
+	}
+
+	public int getPrefferedWidth() {
         return COL_WIDTH;
     }
 
