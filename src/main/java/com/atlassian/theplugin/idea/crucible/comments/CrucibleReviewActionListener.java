@@ -1,9 +1,9 @@
 package com.atlassian.theplugin.idea.crucible.comments;
 
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewItem;
+import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
+import com.atlassian.theplugin.crucible.CrucibleFileInfo;
 
 import java.util.Collection;
 
@@ -14,40 +14,56 @@ import java.util.Collection;
  * Time: 10:15:18 PM
  * To change this template use File | Settings | File Templates.
  */
-public interface CrucibleReviewActionListener {
-	CrucibleReviewActionListener I_WANT_THIS_MESSAGE_BACK = null;
+public class CrucibleReviewActionListener {
+	public static final CrucibleReviewActionListener I_WANT_THIS_MESSAGE_BACK = null;
+	public static final CrucibleReviewActionListener I_DONT_CARE = null;
 
-	void focusOnReview(ReviewDataInfoAdapter reviewDataInfoAdapter);
+	public void focusOnReview(CrucibleChangeSet crucibleChangeSet) {
+	}
 
-	void focusOnFile(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem);
+	public void focusOnFile(CrucibleChangeSet crucibleChangeSet, CrucibleFileInfo reviewItem) {
+	}
 
-	void focusOnGeneralComment(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment);
+	public void focusOnGeneralComment(CrucibleChangeSet crucibleChangeSet, GeneralComment comment) {
+	}
 
-	void focusOnGeneralCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment);
+	public void focusOnGeneralCommentReply(CrucibleChangeSet crucibleChangeSet, GeneralComment comment) {
+	}
 
-	void focusOnVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem,
-								 Collection<VersionedComment> versionedComments, VersionedComment versionedComment);
+	public void focusOnVersionedComment(CrucibleChangeSet crucibleChangeSet, CrucibleFileInfo reviewItem,
+								 Collection<VersionedComment> versionedComments, VersionedComment versionedComment) {
+	}
 
-	void focusOnVersionedCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment);
+	public void focusOnVersionedCommentReply(CrucibleChangeSet crucibleChangeSet, GeneralComment comment) {
+	}
+
 	/**
 	 * A method ivoked by a background thread when a new review needs to be shown
-	 * @param reviewDataInfoAdapter
+	 *
+	 * @param crucibleChangeSet
 	 */
-	void showReview(ReviewDataInfoAdapter reviewDataInfoAdapter);
+	public void showReview(CrucibleChangeSet crucibleChangeSet) {
+	}
 
 	/**
 	 * A method ivoked by a background thread when a new file within a review needs to be shown
-	 * @param reviewDataInfoAdapter
+	 *
+	 * @param crucibleChangeSet
 	 * @param reviewItem
 	 */
-	void showReviewedFileItem(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem);
+	public void showReviewedFileItem(CrucibleChangeSet crucibleChangeSet, CrucibleFileInfo reviewItem) {
+	}
 
-	void showGeneralComment(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment);
+	public void showGeneralComment(CrucibleChangeSet crucibleChangeSet, GeneralComment comment) {
+	}
 
-	void showGeneralCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment);
+	public void showGeneralCommentReply(CrucibleChangeSet crucibleChangeSet, GeneralComment comment) {
+	}
 
-	void showVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem,
-								 Collection<VersionedComment> versionedComments, VersionedComment versionedComment);
+	public void showVersionedComment(CrucibleChangeSet crucibleChangeSet, CrucibleFileInfo reviewItem,
+							  Collection<VersionedComment> versionedComments, VersionedComment versionedComment) {
+	}
 
-	void showVersionedCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment);
+	public void showVersionedCommentReply(CrucibleChangeSet crucibleChangeSet, GeneralComment comment) {
+	}
 }

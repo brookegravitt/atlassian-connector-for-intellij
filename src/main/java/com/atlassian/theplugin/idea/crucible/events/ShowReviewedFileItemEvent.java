@@ -1,8 +1,8 @@
 package com.atlassian.theplugin.idea.crucible.events;
 
-import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewItem;
+import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
+import com.atlassian.theplugin.crucible.CrucibleFileInfo;
 
 /**
  * Created by IntelliJ IDEA.
@@ -12,11 +12,11 @@ import com.atlassian.theplugin.commons.crucible.api.model.ReviewItem;
 * To change this template use File | Settings | File Templates.
 */
 public class ShowReviewedFileItemEvent extends CrucibleEvent {
-	private ReviewDataInfoAdapter reviewInfo;
-	private ReviewItem reviewItem;
+	private CrucibleChangeSet reviewInfo;
+	private CrucibleFileInfo reviewItem;
 
-	public ShowReviewedFileItemEvent(CrucibleReviewActionListener caller, ReviewDataInfoAdapter reviewInfo,
-            ReviewItem reviewItem) {
+	public ShowReviewedFileItemEvent(CrucibleReviewActionListener caller, CrucibleChangeSet reviewInfo,
+            CrucibleFileInfo reviewItem) {
 		super(caller);
 		this.reviewInfo = reviewInfo;
 		this.reviewItem = reviewItem;

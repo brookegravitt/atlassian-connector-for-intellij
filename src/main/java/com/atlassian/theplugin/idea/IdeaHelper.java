@@ -18,7 +18,6 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
-import com.atlassian.theplugin.idea.crucible.ReviewItemVirtualFile;
 import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.atlassian.theplugin.jira.JIRAServer;
@@ -66,11 +65,6 @@ public final class IdeaHelper {
 			return null;
 		}
 		return p.getComponent(ThePluginProjectComponent.class).getCurrentJiraServer();
-	}
-
-	public static List<ReviewItemVirtualFile> getScopeFiles() {
-		Project p = getCurrentProject(DataManager.getInstance().getDataContext());
-		return p.getComponent(ThePluginProjectComponent.class).getReviewScopeFiles();
 	}
 
 	public static ThePluginProjectComponent getCurrentProjectComponent() {

@@ -1,29 +1,58 @@
 package com.atlassian.theplugin.idea.ui.tree.file;
 
-import com.atlassian.theplugin.commons.VersionedFileDescriptor;
+import com.atlassian.theplugin.commons.BambooFileInfo;
+import com.atlassian.theplugin.commons.VersionedFileInfo;
+import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
+import com.atlassian.theplugin.commons.bamboo.BambooChangeSet;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
+import com.atlassian.theplugin.crucible.CrucibleFileInfo;
 
 import java.util.ArrayList;
 
 /**
  * Created by IntelliJ IDEA.
-* User: jgorycki
-* Date: Jul 11, 2008
-* Time: 2:45:53 AM
-* To change this template use File | Settings | File Templates.
-*/
+ * User: jgorycki
+ * Date: Jul 11, 2008
+ * Time: 2:45:53 AM
+ * To change this template use File | Settings | File Templates.
+ */
 public final class FileTreeModelBuilder {
 
-    private FileTreeModelBuilder() {
-        // this is a utility class
-    }
+	private FileTreeModelBuilder() {
+		// this is a utility class
+	}
 
-    public static AtlassianTreeModel buildTreeModelFromFiles(java.util.List<VersionedFileDescriptor> files) {
-		FileTreeModel model = new FileTreeModel(new FileNode("/"));
-		for (VersionedFileDescriptor f : files) {
-			model.addFile(f);
+	public static AtlassianTreeModel buildTreeModelFromCrucibleChangeSet(CrucibleChangeSet changeSet)
+			throws ValueNotYetInitialized {
+		StringBuilder sb = new StringBuilder();
+		sb.append(changeSet.getPermaId().getId());
+		sb.append(" ");
+		sb.append(changeSet.getName());
+		FileNode root = new CrucibleChangeSetTitleNode(sb.toString());
+		FileTreeModel model = new FileTreeModel(root);
+		for (CrucibleFileInfo f : changeSet.getFiles()) {
+			model.addFile(root, f);
 		}
 		model.compactModel(model.getRoot());
+		return model;
+	}
+
+	public static AtlassianTreeModel buildTreeModelFromBambooChangeSet(BambooChangeSet changeSet) {
+		FileNode root = new FileNode("/");
+		FileTreeModel model = new FileTreeModel(root);
+		for (BambooFileInfo f : changeSet.getFiles()) {
+			model.addFile(root, f);
+		}
+		model.compactModel(model.getRoot());
+		return model;
+	}
+
+	public static AtlassianTreeModel buildFlatTreeModelFromBambooChangeSet(BambooChangeSet changeSet) {
+		FileTreeModel model = new FileTreeModel(new FileNode("/"));
+		for (BambooFileInfo f : changeSet.getFiles()) {
+			model.getRoot().addChild(new BambooFileNode(f));
+		}
 		return model;
 	}
 
@@ -34,28 +63,41 @@ public final class FileTreeModelBuilder {
 
 		@Override
 		public FileNode getRoot() {
-			return (FileNode) super.getRoot();	
+			return (FileNode) super.getRoot();
 		}
 
-		public void addFile(VersionedFileDescriptor file) {
-			int idx = 1;
-			String fileName = file.getFileName();
-			FileNode node = (FileNode) getRoot();
+		public void addFile(FileNode root, BambooFileInfo file) {
+			FileNode node = createPlace(root, file);
+			node.addChild(new BambooFileNode(file));
+		}
+
+		public void addFile(FileNode root, CrucibleFileInfo file) {
+			FileNode node = createPlace(root, file);
+			node.addChild(new CrucibleFileNode(file));
+		}
+
+
+		private FileNode createPlace(FileNode root, VersionedFileInfo file) {
+			int idx = 0;
+			String fileName = file.getFileDescriptor().getUrl();
+			FileNode node = root;
 			do {
-				int newIdx = file.getFileName().indexOf('/', idx);
+				int newIdx = fileName.indexOf('/', idx);
 				if (newIdx != -1) {
 					String newNodeName = fileName.substring(idx, newIdx);
-					if (!node.hasNode(newNodeName)) {
-						FileNode newNode = new FileNode(newNodeName);
-						node.addChild(newNode);
-						node = newNode;
-					} else {
-						node = node.getNode(newNodeName);
+					if (newNodeName.length() > 0) {
+						if (!node.hasNode(newNodeName)) {
+							FileNode newNode = new FileNode(newNodeName);
+							node.addChild(newNode);
+							node = newNode;
+						} else {
+							node = node.getNode(newNodeName);
+						}
 					}
 				}
 				idx = newIdx + 1;
 			} while (idx > 0);
-			node.addChild(new LeafFileNode(file));
+			return node;
 		}
 
 		private void compactModel(FileNode node) {

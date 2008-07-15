@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewItem;
+
+import com.atlassian.theplugin.crucible.CrucibleFileInfo;
 
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -20,10 +21,10 @@ public class CrucibleReviewTreeModel extends DefaultTreeModel {
 		super(root);
 	}
 
-	public ReviewItemDataNode getReviewItemDataNode(ReviewItem reviewItem, boolean addIfMissing) {
+	public ReviewItemDataNode getReviewItemDataNode(CrucibleFileInfo reviewItem, boolean addIfMissing) {
 		for (int i = 0; i < root.getChildCount(); ++i) {
 			ReviewItemDataNode reviewItemDataNode = (ReviewItemDataNode) root.getChildAt(i);
-			if (reviewItemDataNode.getReviewItem() == reviewItem) {
+			if (reviewItemDataNode.getFile() == reviewItem) {
 				return reviewItemDataNode;
 			}
 		}
