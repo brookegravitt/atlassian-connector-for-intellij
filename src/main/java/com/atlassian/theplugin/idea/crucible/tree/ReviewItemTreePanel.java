@@ -204,7 +204,7 @@ public final class ReviewItemTreePanel extends JPanel {
 						buffer.append(">AUTH</font>");
 						buffer.append(" ");
 						if (!reviewItem.getCreator().equals(reviewItem.getModerator())) {
-							buffer.append(reviewItem.getModerator());
+							buffer.append(reviewItem.getModerator().getDisplayName());
 						}
 						buffer.append(" ");
 						buffer.append("<font size=-1 color=");
