@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.crucible.tree;
 
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.crucible.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.idea.crucible.ReviewItemDataNode;
 
 import javax.swing.tree.DefaultTreeModel;

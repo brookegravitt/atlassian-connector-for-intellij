@@ -24,6 +24,5 @@ import java.util.Map;
 import java.util.List;
 
 public interface CrucibleStatusListener extends StatusListener {
-    void updateReviews(Collection<CrucibleChangeSet> reviews);
     void updateReviews(Map<PredefinedFilter, List<CrucibleChangeSet>> reviews, Map<String, List<CrucibleChangeSet>> customFilterReviews);
 }

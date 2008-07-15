@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.crucible.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 

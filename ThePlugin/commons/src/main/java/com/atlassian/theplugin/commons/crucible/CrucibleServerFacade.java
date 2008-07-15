@@ -21,7 +21,7 @@ import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
-import com.atlassian.theplugin.crucible.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 
 import java.util.List;
 import java.util.Set;
