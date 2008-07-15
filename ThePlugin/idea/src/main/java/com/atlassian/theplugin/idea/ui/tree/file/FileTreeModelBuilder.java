@@ -25,11 +25,7 @@ public final class FileTreeModelBuilder {
 
 	public static AtlassianTreeModel buildTreeModelFromCrucibleChangeSet(CrucibleChangeSet changeSet)
 			throws ValueNotYetInitialized {
-		StringBuilder sb = new StringBuilder();
-		sb.append(changeSet.getPermaId().getId());
-		sb.append(" ");
-		sb.append(changeSet.getName());
-		FileNode root = new CrucibleChangeSetTitleNode(sb.toString());
+		FileNode root = new CrucibleChangeSetTitleNode(changeSet);
 		FileTreeModel model = new FileTreeModel(root);
 		for (CrucibleFileInfo f : changeSet.getFiles()) {
 			model.addFile(root, f);
