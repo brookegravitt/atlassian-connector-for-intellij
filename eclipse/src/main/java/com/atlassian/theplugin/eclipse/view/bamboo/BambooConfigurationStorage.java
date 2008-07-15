@@ -130,4 +130,13 @@ public class BambooConfigurationStorage {
 	public void saveConfiguration() throws Exception {
 		this.saveBambooServers();
 	}
+
+	public synchronized void removeBambooServer(IBambooServer server) {
+		List<IBambooServer> tmp = new ArrayList<IBambooServer>(Arrays.asList(this.bambooServers));
+		if (tmp.remove(server)) {
+			this.bambooServers = (IBambooServer [])tmp.toArray(new IBambooServer[tmp.size()]);
+		}
+	}
+
+
 }

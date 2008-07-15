@@ -27,16 +27,12 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.ILabelProvider;
-import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Tree;
@@ -47,7 +43,6 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.part.DrillDownAdapter;
 import org.eclipse.ui.part.ViewPart;
@@ -56,6 +51,7 @@ import com.atlassian.theplugin.eclipse.preferences.Activator;
 import com.atlassian.theplugin.eclipse.ui.action.AbstractAction;
 import com.atlassian.theplugin.eclipse.ui.action.bamboo.NewBambooServerAction;
 import com.atlassian.theplugin.eclipse.ui.action.bamboo.RefreshBambooServerAction;
+import com.atlassian.theplugin.eclipse.ui.utility.UIMonitorUtil;
 import com.atlassian.theplugin.eclipse.util.PluginUtil;
 
 public class BambooServersView extends ViewPart {
@@ -83,7 +79,7 @@ public class BambooServersView extends ViewPart {
         		sub.add(new Separator("mainGroup"));
         		sub.add(new Separator("managementGroup"));
         		sub.add(new Separator("repositoryGroup"));
-        		Action newRepositoryLocation = new Action(Activator.getDefault().getResource("RepositoriesView.RepositoryLocation")) {
+        		Action newRepositoryLocation = new Action(Activator.getDefault().getResource("BambooServers.BambooServer")) {
 					public void run() {
 						new NewBambooServerAction().run(this);
 					}
@@ -120,15 +116,15 @@ public class BambooServersView extends ViewPart {
         				}
         			}
         		}*/
-        		sub.add(new Separator("fixedGroup"));
-        		manager.add(sub);
+        		//sub.add(new Separator("fixedGroup"));
+        		//manager.add(sub);
                 
                 manager.add(new Separator("miscGroup"));
                 
-        		sub = new MenuManager(Activator.getDefault().getResource("RepositoriesView.Refactor"), "refactorMenu");
-        		sub.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-        		sub.add(new Separator("mainGroup"));
-        		manager.add(sub);
+        		//sub = new MenuManager(Activator.getDefault().getResource("RepositoriesView.Refactor"), "refactorMenu");
+        		//sub.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+        		//sub.add(new Separator("mainGroup"));
+        		//manager.add(sub);
         		
 				manager.add(new Separator("locationGroup"));
 				
@@ -165,7 +161,7 @@ public class BambooServersView extends ViewPart {
         IToolBarManager tbm = actionBars.getToolBarManager();
         this.ddAdapter.addNavigationActions(tbm);
         Action tAction = null;
-        tbm.add(tAction = new Action(Activator.getDefault().getResource("SVNView.Refresh.Label")) {
+        tbm.add(tAction = new Action(Activator.getDefault().getResource("BambooServers.Refresh.Label")) {
             public void run() {
                 if (BambooServersView.this.bambooTree.getSelection() instanceof IStructuredSelection) {
                     IStructuredSelection selection = (IStructuredSelection)BambooServersView.this.bambooTree.getSelection();
@@ -175,7 +171,7 @@ public class BambooServersView extends ViewPart {
         }); 
         tAction.setImageDescriptor(
         		ImageDescriptor.createFromImage(PluginUtil.getImageRegistry().get(PluginUtil.ICON_BAMBOO_REFRESH)));
-        tAction.setToolTipText(Activator.getDefault().getResource("SVNView.Refresh.ToolTip"));
+        tAction.setToolTipText(Activator.getDefault().getResource("BambooServers.Refresh.ToolTip"));
         
 		tbm.add(new Separator("collapseAllGroup"));
 		
@@ -285,10 +281,10 @@ public class BambooServersView extends ViewPart {
 	}
 	
 	public static void refresh(Object where, BambooTreeViewer.IRefreshVisitor visitor) {
-		/*BambooServersView instance = BambooServersView.instance();
+		BambooServersView instance = BambooServersView.instance();
 		if (instance != null) {
 			instance.bambooTree.refresh(where, visitor, false);
-		}*/
+		}
 	}
 	
 	public static void refreshRepositories(boolean deep) {
@@ -313,7 +309,7 @@ public class BambooServersView extends ViewPart {
 	
 	public static BambooServersView instance() {
 		final BambooServersView []view = new BambooServersView[1];
-		Display.getCurrent().syncExec(new Runnable() {
+		UIMonitorUtil.getDisplay().syncExec(new Runnable() {
 			public void run() {
 				IWorkbenchWindow window = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow();
 				if (window != null && window.getActivePage() != null) {
@@ -401,7 +397,7 @@ public class BambooServersView extends ViewPart {
 	}
 	
 	protected void handleDoubleClick(IStructuredSelection selection) {
-	    /*Action tmp = new Action() {};
+	   /* Action tmp = new Action() {};
 	    AbstractSVNTeamAction action = new OpenFileAction();
 	    action.selectionChanged(tmp, selection);
 	    action.setActivePart(tmp, RepositoriesView.this);
