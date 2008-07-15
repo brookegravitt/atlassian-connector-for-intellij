@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.idea.crucible.tree;
 
-import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -14,9 +14,9 @@ import javax.swing.tree.DefaultMutableTreeNode;
 public class CrucibleTreeRootNode extends DefaultMutableTreeNode {
 	static final long serialVersionUID = 0L;
 
-	private CrucibleChangeSet changeSet;
+	private ReviewData changeSet;
 
-	CrucibleTreeRootNode(CrucibleChangeSet infoAdapater) {
+	CrucibleTreeRootNode(ReviewData infoAdapater) {
 		changeSet = infoAdapater;
 	}
 
@@ -34,11 +34,11 @@ public class CrucibleTreeRootNode extends DefaultMutableTreeNode {
 
 
 
-	public CrucibleChangeSet getCrucibleChangeSet() {
+	public ReviewData getCrucibleChangeSet() {
 		return changeSet;
 	}
 
-	public void setCrucibleChangeSet(CrucibleChangeSet changeSet) {
+	public void setCrucibleChangeSet(ReviewData changeSet) {
 		this.changeSet = changeSet;
 	}
 }

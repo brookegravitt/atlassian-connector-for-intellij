@@ -31,7 +31,7 @@ public interface Review {
 
 	PermId getParentReview();
 
-	PermId getPermaId();
+	PermId getPermId();
 
 	String getProjectKey();
 

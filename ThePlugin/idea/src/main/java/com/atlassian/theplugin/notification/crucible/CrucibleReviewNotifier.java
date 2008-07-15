@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.notification.crucible;
 
-import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
 import com.atlassian.theplugin.commons.crucible.CrucibleStatusListener;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
@@ -42,13 +42,13 @@ import java.util.Map;
  * This one is supposed to be per project.
  */
 public class CrucibleReviewNotifier implements CrucibleStatusListener {
-    private Map<PredefinedFilter, List<CrucibleChangeSet>> reviews = new HashMap<PredefinedFilter, List<CrucibleChangeSet>>();
+    private Map<PredefinedFilter, List<ReviewData>> reviews = new HashMap<PredefinedFilter, List<ReviewData>>();
     private List<CrucibleNotification> notifications = new ArrayList<CrucibleNotification>();
 
     public CrucibleReviewNotifier() {
     }
 
-    private void checkNewReviewItems(CrucibleChangeSet oldReview, CrucibleChangeSet newReview) throws ValueNotYetInitialized {
+    private void checkNewReviewItems(ReviewData oldReview, ReviewData newReview) throws ValueNotYetInitialized {
         for (CrucibleFileInfo item : newReview.getFiles()) {
             boolean found = false;
             for (CrucibleFileInfo oldItem : oldReview.getFiles()) {
@@ -63,7 +63,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
         }
     }
 
-    private void checkReviewersStatus(CrucibleChangeSet oldReview, CrucibleChangeSet newReview) throws ValueNotYetInitialized {
+    private void checkReviewersStatus(ReviewData oldReview, ReviewData newReview) throws ValueNotYetInitialized {
         for (Reviewer reviewer : newReview.getReviewers()) {
             for (Reviewer oldReviewer : oldReview.getReviewers()) {
                 if (reviewer.getUserName().equals(oldReviewer.getUserName())) {
@@ -75,7 +75,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
         }
     }
 
-    private void checkReplies(CrucibleChangeSet review, GeneralComment oldComment, GeneralComment newComment) {
+    private void checkReplies(ReviewData review, GeneralComment oldComment, GeneralComment newComment) {
         for (GeneralComment reply : newComment.getReplies()) {
             GeneralComment existingReply = null;
             for (GeneralComment oldReply : oldComment.getReplies()) {
@@ -90,7 +90,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
         }
     }
 
-    private void checkComments(CrucibleChangeSet oldReview, CrucibleChangeSet newReview) throws ValueNotYetInitialized {
+    private void checkComments(ReviewData oldReview, ReviewData newReview) throws ValueNotYetInitialized {
         for (GeneralComment comment : newReview.getGeneralComments()) {
             GeneralComment existing = null;
             for (GeneralComment oldComment : oldReview.getGeneralComments()) {
@@ -122,23 +122,23 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
         }
     }
 
-    public void updateReviews(Map<PredefinedFilter, List<CrucibleChangeSet>> incomingReviews,
-                              Map<String, List<CrucibleChangeSet>> customIncomingReviews) {
+    public void updateReviews(Map<PredefinedFilter, List<ReviewData>> incomingReviews,
+                              Map<String, List<ReviewData>> customIncomingReviews) {
 
         notifications.clear();
 
         if (!incomingReviews.isEmpty()) {
             int newCounter = 0;
             for (PredefinedFilter predefinedFilter : incomingReviews.keySet()) {
-                List<CrucibleChangeSet> incomingCategory = incomingReviews.get(predefinedFilter);
-                List<CrucibleChangeSet> existingCategory = reviews.get(predefinedFilter);
-                List<CrucibleChangeSet> newForCategory = new ArrayList<CrucibleChangeSet>();
+                List<ReviewData> incomingCategory = incomingReviews.get(predefinedFilter);
+                List<ReviewData> existingCategory = reviews.get(predefinedFilter);
+                List<ReviewData> newForCategory = new ArrayList<ReviewData>();
 
-                for (CrucibleChangeSet reviewDataInfo : incomingCategory) {
+                for (ReviewData reviewDataInfo : incomingCategory) {
                     if (existingCategory != null) {
-                        CrucibleChangeSet existing = null;
-                        for (CrucibleChangeSet oldReviewDataInfo : existingCategory) {
-                            if (reviewDataInfo.getPermaId().getId().equals(oldReviewDataInfo.getPermaId().getId())) {
+                        ReviewData existing = null;
+                        for (ReviewData oldReviewDataInfo : existingCategory) {
+                            if (reviewDataInfo.getPermId().getId().equals(oldReviewDataInfo.getPermId().getId())) {
                                 existing = oldReviewDataInfo;
                                 break;
                             }
@@ -182,7 +182,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 
             reviews.clear();
             for (PredefinedFilter predefinedFilter : incomingReviews.keySet()) {
-                reviews.put(predefinedFilter, new ArrayList<CrucibleChangeSet>(incomingReviews.get(predefinedFilter)));
+                reviews.put(predefinedFilter, new ArrayList<ReviewData>(incomingReviews.get(predefinedFilter)));
             }
         }
 

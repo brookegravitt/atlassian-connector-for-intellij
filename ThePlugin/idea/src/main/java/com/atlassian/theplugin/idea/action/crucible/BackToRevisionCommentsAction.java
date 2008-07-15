@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.idea.action.crucible;
 
-import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
@@ -28,7 +28,7 @@ public class BackToRevisionCommentsAction extends TableSelectedAction {
 			IdeaHelper.getReviewActionEventBroker().trigger(
 					new ShowReviewedFileItemEvent(
 							CrucibleReviewActionListener.I_DONT_CARE,
-							(CrucibleChangeSet) CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
+							(ReviewData) CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
 							(CrucibleFileInfo) CrucibleConstants.CrucibleTableState.REVIEW_ITEM.getValue(context)));
 
 		}

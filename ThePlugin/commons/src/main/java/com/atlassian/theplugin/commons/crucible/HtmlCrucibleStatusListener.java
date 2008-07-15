@@ -18,6 +18,7 @@ package com.atlassian.theplugin.commons.crucible;
 
 import com.atlassian.theplugin.commons.StatusListener;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,7 +38,7 @@ public class HtmlCrucibleStatusListener implements StatusListener {
 		display = aDisplay;
 	}
 
-    public void updateReviews(Collection<CrucibleChangeSet> reviews) {
+    public void updateReviews(Collection<ReviewData> reviews) {
 		StringBuilder sb = new StringBuilder(
                 "<html>"
                 + BODY_WITH_STYLE);
@@ -51,11 +52,11 @@ public class HtmlCrucibleStatusListener implements StatusListener {
 						reviews.size()).append(
 							" open code reviews</b> for you.<br>&nbsp;</td></tr>");
 			sb.append("<tr><th>Key</th><th>Summary</th><th>Author</th><th>State</th><th>Reviewers</th></tr>");
-			for (CrucibleChangeSet review : reviews) {
+			for (ReviewData review : reviews) {
                 sb.append("<tr><td valign=\"top\"><b><font color=blue><a href='");
                 sb.append(review.getReviewUrl());
                 sb.append("'>");
-                sb.append(review.getPermaId().getId());
+                sb.append(review.getPermId().getId());
                 sb.append("</a></font></b></td>");
                 sb.append("<td valign=\"top\">" + review.getName() + "</td>");
                 sb.append("<td valign=\"top\">" + review.getAuthor().getUserName() + "</td>");
@@ -81,6 +82,6 @@ public class HtmlCrucibleStatusListener implements StatusListener {
 	}
 
 	public void resetState() {
-		updateReviews(new ArrayList<CrucibleChangeSet>());
+		updateReviews(new ArrayList<ReviewData>());
 	}
 }

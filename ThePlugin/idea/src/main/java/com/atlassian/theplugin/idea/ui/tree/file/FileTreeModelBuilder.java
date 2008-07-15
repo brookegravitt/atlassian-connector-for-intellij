@@ -2,7 +2,7 @@ package com.atlassian.theplugin.idea.ui.tree.file;
 
 import com.atlassian.theplugin.commons.BambooFileInfo;
 import com.atlassian.theplugin.commons.VersionedFileInfo;
-import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.bamboo.BambooChangeSet;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
@@ -23,7 +23,7 @@ public final class FileTreeModelBuilder {
 		// this is a utility class
 	}
 
-	public static AtlassianTreeModel buildTreeModelFromCrucibleChangeSet(CrucibleChangeSet changeSet)
+	public static AtlassianTreeModel buildTreeModelFromCrucibleChangeSet(ReviewData changeSet)
 			throws ValueNotYetInitialized {
 		FileNode root = new CrucibleChangeSetTitleNode(changeSet);
 		FileTreeModel model = new FileTreeModel(root);
