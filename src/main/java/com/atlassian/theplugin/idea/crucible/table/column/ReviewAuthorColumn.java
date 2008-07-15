@@ -33,7 +33,7 @@ public class ReviewAuthorColumn extends TableColumnInfo {
 	public Object valueOf(Object o) {
 		CrucibleChangeSet review = (CrucibleChangeSet) o;
 
-		return new ReviewDecoratorImpl(review.getAuthor().getUserName(), review).getString();
+		return new ReviewDecoratorImpl(review.getAuthor().getDisplayName(), review).getString();
 	}
 
 	public Class getColumnClass() {

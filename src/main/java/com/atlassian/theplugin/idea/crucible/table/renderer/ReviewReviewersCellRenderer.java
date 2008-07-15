@@ -100,7 +100,7 @@ public class ReviewReviewersCellRenderer  extends DefaultTableCellRenderer {
 				} else {
 					html.append("<span>");
 				}
-				html.append(reviewer.getUserName());
+				html.append(reviewer.getDisplayName());
 				html.append("</span>");
 				html.append("<br />");
 			}
