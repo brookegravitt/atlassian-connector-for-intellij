@@ -54,7 +54,7 @@ public class BambooToolWindowHtmlContent implements BambooStatusDisplay {
 	}
 
 	public void updateBambooStatus(BuildStatus arg0, BambooPopupInfo info) {
-		this.html = info.toHtml();
+		html = info.toHtml();
 		linkClicked = false;
 		htmlBrowser.setText(html);
 	}
