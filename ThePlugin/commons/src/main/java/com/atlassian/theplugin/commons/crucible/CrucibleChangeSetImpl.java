@@ -19,11 +19,10 @@ package com.atlassian.theplugin.commons.crucible;
 import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.VirtualFileSystem;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
-import com.atlassian.theplugin.crucible.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 
 import java.util.List;
 import java.util.Date;
-import java.util.ArrayList;
 
 
 public class CrucibleChangeSetImpl implements CrucibleChangeSet {

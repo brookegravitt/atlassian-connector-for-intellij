@@ -1,35 +1,20 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.crucible.*;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListenerNotUsed;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
-import com.atlassian.theplugin.commons.util.Logger;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.crucible.comments.ReviewCommentsPanel;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
-import com.atlassian.theplugin.idea.crucible.ReviewDetailsPanel;
-import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.config.ContentPanel;
-import com.atlassian.theplugin.util.PluginUtil;
-import com.atlassian.theplugin.crucible.CrucibleFileInfo;
 import com.intellij.util.ui.UIUtil;
 import com.intellij.openapi.ui.Splitter;
-import com.intellij.openapi.wm.ToolWindow;
-import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.project.Project;
-import com.intellij.ui.content.Content;
-import com.intellij.ui.content.ContentManager;
-import com.intellij.peer.PeerFactory;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Collection;
 
 /**
  * Copyright (C) 2008 Atlassian
