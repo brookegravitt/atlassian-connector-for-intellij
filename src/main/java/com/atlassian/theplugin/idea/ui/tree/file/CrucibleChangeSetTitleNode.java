@@ -5,8 +5,10 @@ import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.util.Icons;
+import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -16,13 +18,24 @@ import javax.swing.*;
  * To change this template use File | Settings | File Templates.
  */
 public class CrucibleChangeSetTitleNode extends FileNode {
-	public CrucibleChangeSetTitleNode(String fullName) {
-		super(fullName);
+	private CrucibleChangeSet changeSet;
+
+	public CrucibleChangeSetTitleNode(CrucibleChangeSet changeSet) {
+		super(changeSet.getName());
+		this.changeSet = changeSet;
 	}
 
 	@Override
 	public ColoredTreeCellRenderer getTreeCellRenderer() {
 		return CrucibleChangeSetTitleNodeRenderer.getInstance();
+	}
+
+	public CrucibleChangeSet getChangeSet() {
+		return changeSet;
+	}
+
+	public void setChangeSet(CrucibleChangeSet changeSet) {
+		this.changeSet = changeSet;
 	}
 
 	private static class CrucibleChangeSetTitleNodeRenderer extends ColoredTreeCellRenderer {
@@ -38,7 +51,10 @@ public class CrucibleChangeSetTitleNode extends FileNode {
 		public void customizeCellRenderer(JTree tree, Object value, boolean selected, boolean expanded,
                 boolean leaf, int row, boolean hasFocus) {
 			CrucibleChangeSetTitleNode node = (CrucibleChangeSetTitleNode) value;
-			append(node.getName(), SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
+			append(node.getChangeSet().getPermaId().getId(), new SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD,
+					Color.red));
+			append(" ", SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
+			append(node.getChangeSet().getName(), SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
 
 			setIcon(expanded ? Icons.DIRECTORY_OPEN_ICON : Icons.DIRECTORY_CLOSED_ICON);
 		}
