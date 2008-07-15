@@ -1,9 +1,9 @@
 package com.atlassian.theplugin.idea.crucible.events;
 
-import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
-import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
+import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewItem;
+import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
+import com.atlassian.theplugin.crucible.CrucibleFileInfo;
 
 import java.util.Collection;
 
@@ -15,24 +15,24 @@ import java.util.Collection;
  * To change this template use File | Settings | File Templates.
  */
 public class ShowVersionedCommentEvent extends CrucibleEvent {
-	private ReviewDataInfoAdapter reviewDataInfoAdapter;
-	private ReviewItem reviewItem;
+	private CrucibleChangeSet crucibleChangeSet;
+	private CrucibleFileInfo reviewItem;
 	private Collection<VersionedComment> versionedComments;
 	private VersionedComment selectedComment;
 
 	public ShowVersionedCommentEvent(CrucibleReviewActionListener caller,
-										ReviewDataInfoAdapter reviewDataInfoAdapter,
-										ReviewItem reviewItem,
+										CrucibleChangeSet crucibleChangeSet,
+										CrucibleFileInfo reviewItem,
 										Collection<VersionedComment> versionedComments,
 										VersionedComment selectedComment) {
 		super(caller);
-		this.reviewDataInfoAdapter = reviewDataInfoAdapter;
+		this.crucibleChangeSet = crucibleChangeSet;
 		this.reviewItem = reviewItem;
 		this.versionedComments = versionedComments;
 		this.selectedComment = selectedComment;
 	}
 
 	protected void notify(CrucibleReviewActionListener listener) {
-		listener.showVersionedComment(reviewDataInfoAdapter, reviewItem, versionedComments, selectedComment);
+		listener.showVersionedComment(crucibleChangeSet, reviewItem, versionedComments, selectedComment);
 	}
 }

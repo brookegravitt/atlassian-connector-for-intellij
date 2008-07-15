@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.idea.crucible.table.renderer;
 
-import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
+import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
 
 /**
  * Created by IntelliJ IDEA.
@@ -12,7 +12,7 @@ import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
 public class ReviewAuthorDecorator {
 	private String text;
 
-	public ReviewAuthorDecorator(String value, ReviewDataInfoAdapter review) {
+	public ReviewAuthorDecorator(String value, CrucibleChangeSet review) {
 		text = value;
 
 		String me = review.getServer().getUserName();

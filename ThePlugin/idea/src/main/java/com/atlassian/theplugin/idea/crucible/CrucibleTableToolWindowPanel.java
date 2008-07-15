@@ -32,6 +32,7 @@ import com.atlassian.theplugin.idea.ui.CollapsibleTable;
 import com.atlassian.theplugin.idea.ui.TableColumnProvider;
 import com.atlassian.theplugin.idea.ui.TableItemSelectedListener;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.atlassian.theplugin.crucible.CrucibleFileInfo;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionToolbar;
@@ -48,8 +49,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStatusListener, TableItemSelectedListener,
-		CrucibleReviewActionListener {
+public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStatusListener, TableItemSelectedListener {
 
 	private static final Key<CrucibleTableToolWindowPanel> WINDOW_PROJECT_KEY
             = Key.create(CrucibleTableToolWindowPanel.class.getName());
@@ -64,8 +64,9 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     private JPanel toolBarPanel;
     private JPanel dataPanelsHolder;
     private ToolWindowBambooContent editorPane;
+	private CrucibleReviewActionListener listener = new CrucibleReviewActionListener();
 
-    public CrucibleFiltersBean getFilters() {
+	public CrucibleFiltersBean getFilters() {
         return filters;
     }
 
@@ -78,7 +79,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
     protected TableColumnProvider tableColumnProvider = new CrucibleTableColumnProviderImpl();
 
-    private ReviewDataInfoAdapter selectedItem;
+    private CrucibleChangeSet selectedItem;
 
     private Map<PredefinedFilter, CollapsibleTable> tables = new HashMap<PredefinedFilter, CollapsibleTable>();
     private Map<String, CollapsibleTable> customTables = new HashMap<String, CollapsibleTable>();
@@ -303,22 +304,18 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     /*
     Crucible 1.5
      */
-    public void updateReviews(Collection<ReviewInfo> reviews) {
+    public void updateReviews(Collection<CrucibleChangeSet> reviews) {
         this.crucibleVersion = CrucibleVersion.CRUCIBLE_15;
         if (crucible15Table == null) {
             switchToCrucible15Filter();
         }
-        List<ReviewDataInfoAdapter> reviewDataInfoAdapters = new ArrayList<ReviewDataInfoAdapter>();
-        for (ReviewInfo review : reviews) {
-            reviewDataInfoAdapters.add(new ReviewDataInfoAdapter(review));
-        }
-
-        crucible15Table.getListTableModel().setItems(reviewDataInfoAdapters);
+        List<CrucibleChangeSet> crucibleChangeSets = new ArrayList<CrucibleChangeSet>(reviews);
+        crucible15Table.getListTableModel().setItems(crucibleChangeSets);
         crucible15Table.getListTableModel().fireTableDataChanged();
         crucible15Table.getTable().revalidate();
         crucible15Table.getTable().setEnabled(true);
         crucible15Table.getTable().setForeground(UIUtil.getActiveTextColor());
-        crucible15Table.setTitle(TO_REVIEW_AS_ACTIVE_REVIEWER + " (" + reviewDataInfoAdapters.size() + ")");
+        crucible15Table.setTitle(TO_REVIEW_AS_ACTIVE_REVIEWER + " (" + crucibleChangeSets.size() + ")");
         crucible15Table.expand();
 
         StringBuffer sb = new StringBuffer();
@@ -331,8 +328,8 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     /*
     Crucible 1.6
      */
-    public void updateReviews(Map<PredefinedFilter, List<ReviewInfo>> reviews, Map<String,
-            List<ReviewInfo>> customFilterReviews) {
+    public void updateReviews(Map<PredefinedFilter, List<CrucibleChangeSet>> reviews, Map<String,
+            List<CrucibleChangeSet>> customFilterReviews) {
 
         this.crucibleVersion = CrucibleVersion.CRUCIBLE_16;
         if (tables.isEmpty()) {
@@ -340,15 +337,11 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         }
         int reviewCount = 0;
         for (PredefinedFilter predefinedFilter : reviews.keySet()) {
-            List<ReviewInfo> reviewList = reviews.get(predefinedFilter);
+            List<CrucibleChangeSet> reviewList = reviews.get(predefinedFilter);
             if (reviewList != null) {
-                List<ReviewDataInfoAdapter> reviewDataInfoAdapters = new ArrayList<ReviewDataInfoAdapter>();
-                for (ReviewInfo review : reviewList) {
-                    reviewDataInfoAdapters.add(new ReviewDataInfoAdapter(review));
-                }
                 CollapsibleTable table = tables.get(predefinedFilter);
                 if (table != null) {
-                    table.getListTableModel().setItems(reviewDataInfoAdapters);
+                    table.getListTableModel().setItems(reviewList);
                     table.getListTableModel().fireTableDataChanged();
                     table.getTable().revalidate();
                     table.setEnabled(true);
@@ -360,15 +353,11 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         }
 
         for (String filterName : customFilterReviews.keySet()) {
-            List<ReviewInfo> reviewList = customFilterReviews.get(filterName);
+            List<CrucibleChangeSet> reviewList = customFilterReviews.get(filterName);
             if (reviewList != null) {
-                List<ReviewDataInfoAdapter> reviewDataInfoAdapters = new ArrayList<ReviewDataInfoAdapter>();
-                for (ReviewInfo review : reviewList) {
-                    reviewDataInfoAdapters.add(new ReviewDataInfoAdapter(review));
-                }
                 CollapsibleTable table = customTables.get(filterName);
                 if (table != null) {
-                    table.getListTableModel().setItems(reviewDataInfoAdapters);
+                    table.getListTableModel().setItems(reviewList);
                     table.getListTableModel().fireTableDataChanged();
                     table.getTable().revalidate();
                     table.setEnabled(true);
@@ -388,11 +377,12 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     }
 
     public void itemSelected(Object item, int noClicks) {
-        selectedItem = (ReviewDataInfoAdapter) item;
+        selectedItem = (CrucibleChangeSet) item;
         if (noClicks == 2) {
-			if (item != null && item instanceof ReviewDataInfoAdapter) {
-				ReviewDataInfoAdapter review = (ReviewDataInfoAdapter) item;
-				IdeaHelper.getReviewActionEventBroker().trigger(new ShowReviewEvent(this, review));
+			if (item != null && item instanceof CrucibleChangeSet) {
+				CrucibleChangeSet review = (CrucibleChangeSet) item;
+				IdeaHelper.getReviewActionEventBroker().trigger(new ShowReviewEvent(
+						listener, review));
 			}
 		}
     }
@@ -633,7 +623,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
 
 
-        List<ReviewItem> items = serverFacade.getReviewItems(selectedItem.getServer(), selectedItem.getPermaId());
+        List<ReviewItem> items = serverFacade.getFiles(selectedItem.getServer(), selectedItem.getPermaId());
         for (ReviewItem item : items) {
 
             VersionedCommentBean vc = new VersionedCommentBean();
@@ -741,57 +731,4 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     }
  */
 
-	public void focusOnReview(ReviewDataInfoAdapter reviewDataInfoAdapter) {
-		//To change body of implemented methods use File | Settings | File Templates.
-	}
-
-	public void focusOnFile(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem) {
-		//To change body of implemented methods use File | Settings | File Templates.
-	}
-
-	public void focusOnGeneralComment(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
-		//To change body of implemented methods use File | Settings | File Templates.
-	}
-
-	public void focusOnGeneralCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
-		//To change body of implemented methods use File | Settings | File Templates.
-	}
-
-	public void focusOnVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem,
-            Collection<VersionedComment> versionedComments, VersionedComment versionedComment) {
-		//To change body of implemented methods use File | Settings | File Templates.
-	}
-
-	public void focusOnVersionedCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
-		//To change body of implemented methods use File | Settings | File Templates.
-	}
-
-	public void showReview(ReviewDataInfoAdapter reviewItem) {
-		//To change body of implemented methods use File | Settings | File Templates.
-	}
-
-	public void showReviewedFileItem(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem) {
-		//To change body of implemented methods use File | Settings | File Templates.
-	}
-
-	public void showGeneralComment(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
-		//To change body of implemented methods use File | Settings | File Templates.
-	}
-
-	public void showGeneralCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
-		//To change body of implemented methods use File | Settings | File Templates.
-	}
-
-	public void showVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem,
-            Collection<VersionedComment> versionedComments, VersionedComment versionedComment) {
-		//To change body of implemented methods use File | Settings | File Templates.
-	}
-
-	public void focusOnVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, VersionedComment versionedComment) {
-		//To change body of implemented methods use File | Settings | File Templates.
-	}
-
-	public void showVersionedCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
-		//To change body of implemented methods use File | Settings | File Templates.
-	}
 }

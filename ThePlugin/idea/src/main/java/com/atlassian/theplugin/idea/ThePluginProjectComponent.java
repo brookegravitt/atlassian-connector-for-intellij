@@ -90,7 +90,6 @@ public class ThePluginProjectComponent implements
 
 	private PluginToolWindow toolWindow;
 
-    private List<ReviewItemVirtualFile> reviewScopeFiles;
     private String reviewId;
 	private ReviewActionEventBroker crucibleActionBroker; // DON'T YOU DARE TO REMOVE IT!!!
 														// (a strong reference that lives as long as the project itself)
@@ -140,7 +139,6 @@ public class ThePluginProjectComponent implements
             }
         });
 
-        reviewScopeFiles = new ArrayList<ReviewItemVirtualFile>();
     }
 
     public void initComponent() {
@@ -400,14 +398,6 @@ public class ThePluginProjectComponent implements
     @Nullable
     public Object getData(Collection<AbstractTreeNode> abstractTreeNodes, String s) {
         return null;
-    }
-
-    public List<ReviewItemVirtualFile> getReviewScopeFiles() {
-        return reviewScopeFiles;
-    }
-
-    public void setReviewScopeFiles(List<ReviewItemVirtualFile> reviewScopeFiles) {
-        this.reviewScopeFiles = reviewScopeFiles;
     }
 
     public String getReviewId() {

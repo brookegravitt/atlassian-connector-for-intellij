@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -51,6 +51,8 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.security.cert.CertificateExpiredException;
+import java.security.cert.CertificateNotYetValidException;
 
 /**
  * <p>
@@ -66,62 +68,70 @@ import java.security.cert.X509Certificate;
  *
  * @author <a href="mailto:adrian.sutton@ephox.com">Adrian Sutton</a>
  * @author <a href="mailto:oleg@ural.ru">Oleg Kalnichevski</a>
- *
- * <p>
- * DISCLAIMER: HttpClient developers DO NOT actively support this component.
- * The component is provided as a reference material, which may be inappropriate
- * for use without additional customization.
- * </p>
+ *         <p/>
+ *         <p>
+ *         DISCLAIMER: HttpClient developers DO NOT actively support this component.
+ *         The component is provided as a reference material, which may be inappropriate
+ *         for use without additional customization.
+ *         </p>
  */
 
-public class EasyX509TrustManager implements X509TrustManager
-{
-    private X509TrustManager standardTrustManager = null;
+public class EasyX509TrustManager implements X509TrustManager {
+	private X509TrustManager standardTrustManager = null;
 	//private Logger logger;
 
 	/**
-     * Constructor for EasyX509TrustManager.
-     */
-    public EasyX509TrustManager(KeyStore keystore) throws NoSuchAlgorithmException, KeyStoreException {
+	 * Constructor for EasyX509TrustManager.
+	 */
+	public EasyX509TrustManager(KeyStore keystore) throws NoSuchAlgorithmException, KeyStoreException {
 		super();
 		//this.logger = logger;
-        TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-        factory.init(keystore);
-        TrustManager[] trustmanagers = factory.getTrustManagers();
-        if (trustmanagers.length == 0) {
-            throw new NoSuchAlgorithmException("no trust manager found");
-        }
-        this.standardTrustManager = (X509TrustManager)trustmanagers[0];
-    }
+		TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+		factory.init(keystore);
+		TrustManager[] trustmanagers = factory.getTrustManagers();
+		if (trustmanagers.length == 0) {
+			throw new NoSuchAlgorithmException("no trust manager found");
+		}
+		this.standardTrustManager = (X509TrustManager) trustmanagers[0];
+	}
 
-    /**
-     * @see javax.net.ssl.X509TrustManager#checkClientTrusted(X509Certificate[],String authType)
-     */
-    public void checkClientTrusted(X509Certificate[] certificates,String authType) throws CertificateException {
-        standardTrustManager.checkClientTrusted(certificates,authType);
-    }
+	/**
+	 * @see javax.net.ssl.X509TrustManager#checkClientTrusted(X509Certificate[],String authType)
+	 */
+	public void checkClientTrusted(X509Certificate[] certificates, String authType) throws CertificateException {
+		standardTrustManager.checkClientTrusted(certificates, authType);
+	}
 
-    /**
-     * @see javax.net.ssl.X509TrustManager#checkServerTrusted(X509Certificate[],String authType)
-     */
-    public void checkServerTrusted(X509Certificate[] certificates,String authType) throws CertificateException {
+	/**
+	 * @see javax.net.ssl.X509TrustManager#checkServerTrusted(X509Certificate[],String authType)
+	 */
+	public void checkServerTrusted(X509Certificate[] certificates, String authType) throws CertificateException {
 //        if ((certificates != null) && logger.isDebugEnabled()) {
 //            logger.debug("Server certificate chain:");
 //            for (int i = 0; i < certificates.length; i++) {
 //                logger.debug("X509Certificate[" + i + "]=" + certificates[i]);
 //            }
 //        }
-        if ((certificates != null) && (certificates.length == 1)) {
-            certificates[0].checkValidity();
-        } else {
-            standardTrustManager.checkServerTrusted(certificates,authType);
-        }
-    }
+		try {
+			if ((certificates != null) && (certificates.length == 1)) {
+				certificates[0].checkValidity();
+			} else {
+				standardTrustManager.checkServerTrusted(certificates, authType);
+			}
+		} catch (CertificateExpiredException e) {
+			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+			throw e;
+		} catch (CertificateException e) {
+			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+			throw e;
+		}
+	}
 
-    /**
-     * @see javax.net.ssl.X509TrustManager#getAcceptedIssuers()
-     */
-    public X509Certificate[] getAcceptedIssuers() {
-        return this.standardTrustManager.getAcceptedIssuers();
-    }
+
+	/**
+	 * @see javax.net.ssl.X509TrustManager#getAcceptedIssuers()
+	 */
+	public X509Certificate[] getAcceptedIssuers() {
+		return this.standardTrustManager.getAcceptedIssuers();
+	}
 }

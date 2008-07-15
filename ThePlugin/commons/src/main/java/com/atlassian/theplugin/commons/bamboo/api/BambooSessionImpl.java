@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,7 +16,8 @@
 
 package com.atlassian.theplugin.commons.bamboo.api;
 
-import com.atlassian.theplugin.commons.VersionedFileDescriptor;
+import com.atlassian.theplugin.commons.BambooFileInfo;
+import com.atlassian.theplugin.commons.BambooFileInfoImpl;
 import com.atlassian.theplugin.commons.bamboo.*;
 import com.atlassian.theplugin.commons.remoteapi.*;
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
@@ -62,6 +63,7 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
 	 *
 	 * @param baseUrl base URL for Bamboo instance
 	 * @throws com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException
+	 *
 	 */
 	public BambooSessionImpl(String baseUrl) throws RemoteApiMalformedUrlException {
 		super(baseUrl);
@@ -80,11 +82,12 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
 	 *
 	 * @param name	  username defined on Bamboo server instance
 	 * @param aPassword for username
-	 * @throws com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException on connection or authentication errors
+	 * @throws com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException
+	 *          on connection or authentication errors
 	 */
 	public void login(String name, char[] aPassword) throws RemoteApiLoginException {
 		String loginUrl;
-		try {			
+		try {
 			if (name == null || aPassword == null) {
 				throw new RemoteApiLoginException("Corrupted configuration. Username or aPassword null");
 			}
@@ -358,7 +361,7 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
 			if (!elements.isEmpty()) {
 				int i = 1;
 				for (Element element : elements) {
-					CommitInfo cInfo = new CommitInfo();
+					BambooChangeSetImpl cInfo = new BambooChangeSetImpl();
 					cInfo.setAuthor(element.getAttributeValue("author"));
 					cInfo.setCommitDate(parseCommitTime(element.getAttributeValue("date")));
 					cInfo.setComment(getChildText(element, "comment"));
@@ -367,9 +370,10 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
 					XPath filesPath = XPath.newInstance(path);
 					List<Element> fileElements = filesPath.selectNodes(doc);
 					for (Element file : fileElements) {
-						VersionedFileDescriptor fileInfo = new VersionedFileDescriptor();
-						fileInfo.setFileName(file.getAttributeValue("name"));
-						fileInfo.setRevision(file.getAttributeValue("revision"));
+						BambooFileInfo fileInfo = new BambooFileInfoImpl(
+								cInfo.getVirtualFileSystem(),
+								file.getAttributeValue("name"),
+								file.getAttributeValue("revision"));
 						cInfo.addCommitFile(fileInfo);
 					}
 					build.addCommitInfo(cInfo);
@@ -499,7 +503,7 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
 			throw new RemoteApiException("Server returned malformed response", e);
 		} catch (IOException e) {
 			throw new RemoteApiException(e.getMessage(), e);
-		} 
+		}
 	}
 
 	BambooBuild constructBuildErrorInfo(String planId, String message, Date lastPollingTime) {
@@ -529,13 +533,13 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
 		buildInfo.setBuildTestSummary(getChildText(buildItemNode, "buildTestSummary"));
 		buildInfo.setBuildCommitComment(getChildText(buildItemNode, "buildCommitComment"));
 		buildInfo.setBuildRelativeBuildDate(getChildText(buildItemNode, "buildRelativeBuildDate"));
-        try {
-            buildInfo.setBuildTestsPassed(Integer.parseInt(getChildText(buildItemNode, "successfulTestCount")));
-        	buildInfo.setBuildTestsFailed(Integer.parseInt(getChildText(buildItemNode, "failedTestCount")));
+		try {
+			buildInfo.setBuildTestsPassed(Integer.parseInt(getChildText(buildItemNode, "successfulTestCount")));
+			buildInfo.setBuildTestsFailed(Integer.parseInt(getChildText(buildItemNode, "failedTestCount")));
 		} catch (NumberFormatException ex) {
 			throw new RemoteApiException("Invalid number", ex);
 		}
-        buildInfo.setBuildTime(parseBuildTime(getChildText(buildItemNode, "buildTime")));
+		buildInfo.setBuildTime(parseBuildTime(getChildText(buildItemNode, "buildTime")));
 		buildInfo.setPollingTime(lastPollingTime);
 
 		return buildInfo;

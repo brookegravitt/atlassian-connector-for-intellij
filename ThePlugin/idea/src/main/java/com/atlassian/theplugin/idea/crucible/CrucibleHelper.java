@@ -1,12 +1,13 @@
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewItem;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
+import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.atlassian.theplugin.crucible.CrucibleFileInfo;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.editor.markup.RangeHighlighter;
@@ -41,7 +42,7 @@ public final class CrucibleHelper {
     }
 
 
-	public static void showVirtualFileWithComments(final Project project, final ReviewItem reviewItem,
+	public static void showVirtualFileWithComments(final Project project, final CrucibleFileInfo reviewItem,
             final Collection<VersionedComment> fileComments) {
 
 		int line  = 1;
@@ -51,7 +52,8 @@ public final class CrucibleHelper {
 		}
 
 		Editor editor = showVirtualFileInEditor(project,
-                getOpenFileDescriptor(project, reviewItem.getToPath(), reviewItem.getToRevision(), line, 1));
+                getOpenFileDescriptor(project, reviewItem.getFileDescriptor().getUrl(),
+						reviewItem.getFileDescriptor().getRevision(), line, 1));
 		TextAttributes textAttributes = new TextAttributes();
 		textAttributes.setBackgroundColor(VERSIONED_COMMENT_BACKGROUND_COLOR);
 		highlightCommentsInEditor(project, editor, reviewItem, fileComments, textAttributes);
@@ -63,8 +65,8 @@ public final class CrucibleHelper {
      * 	Adds StripeMark on the right side of file window with set tool tip text that corresponde
      *   to VersionedComment.getMessage content
      */
-    public static void showVirtualFileWithComments(Project project, final ReviewDataInfoAdapter reviewAdapter,
-            final ReviewItem reviewItem) {
+    public static void showVirtualFileWithComments(Project project, final CrucibleChangeSet reviewAdapter,
+            final CrucibleFileInfo reviewItem) {
 		Collection<VersionedComment> fileComments = null;
 		try {
 
@@ -96,8 +98,9 @@ public final class CrucibleHelper {
 	  * If function showVirtualFileWithComments is not called before then no comment highlighting or
 	?  * StripMarkap
 	* */
-	public static void selectVersionedCommentLineInEditor(Project project, ReviewItem reviewItem, VersionedComment comment) {
-		OpenFileDescriptor ofd = getOpenFileDescriptor(project, reviewItem.getToPath(), reviewItem.getToRevision(),
+	public static void selectVersionedCommentLineInEditor(Project project, CrucibleFileInfo reviewItem, VersionedComment comment) {
+		OpenFileDescriptor ofd = getOpenFileDescriptor(project, reviewItem.getFileDescriptor().getUrl(),
+				reviewItem.getFileDescriptor().getRevision(), 
                 comment.getFromStartLine(), 1);
 
 		if (ofd != null) {
@@ -153,7 +156,7 @@ public final class CrucibleHelper {
 		return ofd;
 	}
 
-	private static void highlightCommentsInEditor(Project project, Editor editor, ReviewItem reviewItem,
+	private static void highlightCommentsInEditor(Project project, Editor editor, CrucibleFileInfo reviewItem,
             Collection<VersionedComment> fileVersionedComments, TextAttributes textAttribute) {
 		Collection<RangeHighlighter> ranges = new ArrayList<RangeHighlighter>();
 

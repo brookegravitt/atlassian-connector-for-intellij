@@ -1,7 +1,6 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.crucible.*;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewItem;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
@@ -13,11 +12,11 @@ import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.crucible.comments.ReviewCommentsPanel;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
-import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
 import com.atlassian.theplugin.idea.crucible.ReviewDetailsPanel;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.config.ContentPanel;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.atlassian.theplugin.crucible.CrucibleFileInfo;
 import com.intellij.util.ui.UIUtil;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.wm.ToolWindow;
@@ -57,7 +56,6 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
 	private ProjectConfigurationBean projectConfiguration;
 	protected static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
 	protected ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
-	private static CrucibleServerFacade serverFacade;
 	private CrucibleVersion crucibleVersion = CrucibleVersion.UNKNOWN;
 	private static ReviewItemTreePanel reviewItemTreePanel;
 	private ReviewCommentsPanel reviewComentsPanel;
@@ -95,7 +93,6 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
 		this.project = project;
 		this.projectConfiguration = projectConfigurationBean;
 
-		serverFacade = CrucibleServerFacadeImpl.getInstance();
 
 		setBackground(UIUtil.getTreeTextBackground());
 		reviewItemTreePanel = ReviewItemTreePanel.getInstance(projectConfigurationBean);
@@ -109,7 +106,6 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
 		reviewItemTreePanel.getProgressAnimation().configure(leftPanel, reviewItemTreePanel, BorderLayout.CENTER);
 		splitter.setFirstComponent(leftPanel);
 		splitter.setHonorComponentsMinimumSize(true);
-		tabManager = new ReviewTabManager(project);
 		reviewComentsPanel = ReviewCommentsPanel.getInstance();
 		splitter.setSecondComponent(reviewComentsPanel);
 		add(splitter, BorderLayout.CENTER);
@@ -174,123 +170,4 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
-	private static class ReviewTabManager implements CrucibleReviewActionListener {
-		private CrucibleServerFacade crucibleServerFacade;
-		private static final Logger LOGGER = PluginUtil.getLogger();
-		private Project project;
-
-		public ReviewTabManager(Project project) {
-			super();
-			this.project = project;
-			IdeaHelper.getReviewActionEventBroker().registerListener(this);
-			crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
-		}
-
-		public Content findOrCreatePanel(String panelName, JPanel panel, Boolean requestFocus) {
-			Content content = null;
-			PeerFactory peerFactory = PeerFactory.getInstance();
-			ToolWindow tw = IdeaHelper.getBottomIdeaToolWindow(project);
-			if (tw != null) {
-				ContentManager contentManager = tw.getContentManager();
-				content = contentManager.findContent(panelName);
-				if (content == null && panel != null) {
-					content = peerFactory.getContentFactory().createContent(
-							panel, panelName, false);
-					content.setIcon(IconLoader.getIcon("/icons/tab_jira.png"));
-					content.putUserData(ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
-					contentManager.addContent(content);
-				}
-				if (requestFocus) {
-					contentManager.setSelectedContent(content);
-				}
-			}
-			return content;
-		}
-
-
-		public void focusOnReview(ReviewDataInfoAdapter reviewDataInfoAdapter) {
-			//To change body of implemented methods use File | Settings | File Templates.
-		}
-
-		public void focusOnFile(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem) {
-			//To change body of implemented methods use File | Settings | File Templates.
-		}
-
-		public void focusOnGeneralComment(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
-			//To change body of implemented methods use File | Settings | File Templates.
-		}
-
-		public void focusOnGeneralCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
-			//To change body of implemented methods use File | Settings | File Templates.
-		}
-
-		public void focusOnVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem,
-                Collection<VersionedComment> versionedComments, VersionedComment versionedComment) {
-			//To change body of implemented methods use File | Settings | File Templates.
-		}
-
-		public void focusOnVersionedCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
-			//To change body of implemented methods use File | Settings | File Templates.
-		}
-
-		public void showReview(ReviewDataInfoAdapter reviewItem) {
-			EventQueue.invokeLater(new Runnable() {
-				public void run() {
-					ToolWindow tw = IdeaHelper.getBottomIdeaToolWindow(project);
-					if (tw != null) {
-						ContentManager contentManager = tw.getContentManager();
-						for (Content content : contentManager.getContents()) {
-							if (content.getComponent() instanceof ReviewDetailsPanel) {
-								contentManager.removeContent(content, true);
-							}
-						}
-					}
-				}
-			});
-		}
-
-		public void showReviewedFileItem(final ReviewDataInfoAdapter reviewDataInfoAdapter, final ReviewItem reviewItem) {
-			try {
-
-				final Collection<VersionedComment> versionedComments = crucibleServerFacade.getVersionedComments(
-						reviewDataInfoAdapter.getServer(), reviewDataInfoAdapter.getPermaId(), reviewItem.getPermId());
-				EventQueue.invokeLater(new Runnable() {
-					public void run() {
-						Project curProject = IdeaHelper.getCurrentProject();
-
-						Content content = findOrCreatePanel(reviewItem.toString(),
-								new ReviewDetailsPanel(reviewDataInfoAdapter, reviewItem, versionedComments), true);
-						CrucibleHelper.showVirtualFileWithComments(curProject, reviewItem, versionedComments);
-
-					}
-				});
-			} catch (RemoteApiException e) {
-				LOGGER.warn(e);
-			} catch (ServerPasswordNotProvidedException e) {
-				LOGGER.warn(e);
-			}
-		}
-
-		public void showGeneralComment(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
-			//To change body of implemented methods use File | Settings | File Templates.
-		}
-
-		public void showGeneralCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
-			//To change body of implemented methods use File | Settings | File Templates.
-		}
-
-		public void showVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem,
-                Collection<VersionedComment> versionedComments, VersionedComment versionedComment) {
-			//To change body of implemented methods use File | Settings | File Templates.
-		}
-
-		public void focusOnVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, VersionedComment versionedComment) {
-			//To change body of implemented methods use File | Settings | File Templates.
-		}
-
-		public void showVersionedCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
-			//To change body of implemented methods use File | Settings | File Templates.
-		}
-
-	}
 }

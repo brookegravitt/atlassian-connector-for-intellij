@@ -17,13 +17,13 @@ import java.awt.*;
  * Time: 7:31:59 AM
  * To change this template use File | Settings | File Templates.
  */
-public abstract class AbstractCommentPanel extends JPanel implements CrucibleReviewActionListener {
+public abstract class AbstractCommentPanel extends JPanel {
 	private ListTableModel commentTableModel;
 	private JPanel dataPanelsHolder;
 	private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
     private static final int MIN_ROW_HEIGHT = 20;
 
-    public AtlassianTableViewWithToolbar getCommentsTable() {
+	public AtlassianTableViewWithToolbar getCommentsTable() {
 		return commentsTable;
 	}
 

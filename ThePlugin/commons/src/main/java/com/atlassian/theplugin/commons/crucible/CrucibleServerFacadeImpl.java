@@ -18,19 +18,23 @@ package com.atlassian.theplugin.commons.crucible;
 
 import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.configuration.ServerBean;
 import com.atlassian.theplugin.commons.crucible.api.CrucibleSession;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.crucible.api.rest.CrucibleSessionImpl;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.crucible.CrucibleFileInfo;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
     private Map<String, CrucibleSession> sessions = new HashMap<String, CrucibleSession>();
     private static CrucibleServerFacadeImpl instance;
-
-    private CrucibleServerFacadeImpl() {
+	private CrucibleServerFacadeImpl() {
     }
 
     public static CrucibleServerFacade getInstance() {
@@ -45,10 +49,10 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
     }
 
     private synchronized CrucibleSession getSession(Server server) throws RemoteApiException {
-        String key = server.getUrlString() + server.getUserName() + server.transientGetPasswordString();
+		String key = server.getUrlString() + server.getUserName() + server.transientGetPasswordString();
         CrucibleSession session = sessions.get(key);
         if (session == null) {
-            session = new CrucibleSessionImpl(server.getUrlString());
+            session = new CrucibleSessionImpl(server);
             sessions.put(key, session);
         }
         if (!session.isLoggedIn()) {
@@ -67,7 +71,9 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
      */
     public void testServerConnection(String serverUrl, String userName, String password) throws RemoteApiException {
         CrucibleSession session = null;
-        session = new CrucibleSessionImpl(serverUrl);
+		ServerBean server = new ServerBean();
+		server.setUrlString(serverUrl);
+		session = new CrucibleSessionImpl(server);
         session.login(userName, password);
         session.logout();
     }
@@ -202,10 +208,10 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
         return session.createReviewFromPatch(review, patch);
     }
 
-    public List<ReviewItem> getReviewItems(Server server, PermId permId)
+    public List<CrucibleFileInfo> getFiles(Server server, PermId permId)
             throws RemoteApiException, ServerPasswordNotProvidedException {
         CrucibleSession session = getSession(server);
-        return session.getReviewItems(permId);
+        return session.getFiles(permId);
     }
 
     public List<GeneralComment> getComments(Server server, PermId permId)
@@ -337,43 +343,21 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
      * @param server server object with Url, Login and Password to connect to
      * @return List of reviews (empty list in case there is no review)
      */
-    public List<ReviewInfo> getAllReviews(Server server) throws RemoteApiException {
+    public List<CrucibleChangeSet> getAllReviews(Server server) throws RemoteApiException {
         CrucibleSession session = getSession(server);
-
-        List<Review> res = session.getAllReviews(true);
-        List<ReviewInfo> result = new ArrayList<ReviewInfo>(res.size());
-        for (Review review : res) {
-            result.add(new ReviewInfoImpl((DetailedReview) review, server));
-        }
-        return result;
+        return session.getAllReviews(true);
     }
 
-    public List<ReviewInfo> getReviewsForFilter(Server server, PredefinedFilter filter)
+    public List<CrucibleChangeSet> getReviewsForFilter(Server server, PredefinedFilter filter)
             throws RemoteApiException, ServerPasswordNotProvidedException {
         CrucibleSession session = getSession(server);
-
-        List<Review> reviews = session.getReviewsForFilter(filter, true);
-        List<ReviewInfo> result = new ArrayList<ReviewInfo>(reviews.size());
-
-        for (Review review : reviews) {
-			ReviewInfoImpl reviewInfo = new ReviewInfoImpl((DetailedReview) review, server);
-			result.add(reviewInfo);
-        }
-
-        return result;
+        return session.getReviewsForFilter(filter, true);
     }
 
-    public List<ReviewInfo> getReviewsForCustomFilter(Server server, CustomFilter filter)
+    public List<CrucibleChangeSet> getReviewsForCustomFilter(Server server, CustomFilter filter)
             throws RemoteApiException, ServerPasswordNotProvidedException {
         CrucibleSession session = getSession(server);
-
-        List<Review> reviews = session.getReviewsForCustomFilter(filter, true);
-        List<ReviewInfo> result = new ArrayList<ReviewInfo>(reviews.size());
-
-        for (Review review : reviews) {
-            result.add(new ReviewInfoImpl((DetailedReview) review, server));
-        }
-        return result;        
+        return session.getReviewsForCustomFilter(filter, true);
     }
 
 }

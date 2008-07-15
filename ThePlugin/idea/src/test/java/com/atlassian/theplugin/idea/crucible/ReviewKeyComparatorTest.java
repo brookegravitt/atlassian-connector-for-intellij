@@ -16,13 +16,13 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.crucible.ReviewInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.PermId;
-import com.atlassian.theplugin.commons.crucible.api.model.State;
-import com.atlassian.theplugin.commons.crucible.api.model.User;
-import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
+import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.crucible.table.column.ReviewKeyComparator;
 import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.VirtualFileSystem;
+import com.atlassian.theplugin.crucible.CrucibleFileInfo;
 import junit.framework.TestCase;
 
 import java.util.List;
@@ -52,8 +52,8 @@ public class ReviewKeyComparatorTest extends TestCase {
 		assertEquals(0, comparator.compare(getReviewAdapter("CR", "-1"), getReviewAdapter("CR", "-1")));		
 	}
 
-	private ReviewDataInfoAdapter getReviewAdapter(final String projectKey, final String key) {
-		return new ReviewDataInfoAdapter(new ReviewInfo() {
+	private CrucibleChangeSet getReviewAdapter(final String projectKey, final String key) {
+		return new CrucibleChangeSet() {
 
 			public String getReviewUrl() {
 				return null;
@@ -65,6 +65,22 @@ public class ReviewKeyComparatorTest extends TestCase {
 
 			public Server getServer() {
 				return null;
+			}
+
+			public List<GeneralComment> getGeneralComments() {
+				return null;
+			}
+
+			public List<CrucibleFileInfo> getFiles() throws ValueNotYetInitialized {
+				return null;
+			}
+
+			public List<Transition> getTransitions() throws ValueNotYetInitialized {
+				return null;
+			}
+
+			public VirtualFileSystem getVirtualFileSystem() {
+				return null;  
 			}
 
 			public User getAuthor() {
@@ -123,6 +139,6 @@ public class ReviewKeyComparatorTest extends TestCase {
             public Date getCloseDate() {
                 return null;  
             }
-        });
+        };
 	}
 }

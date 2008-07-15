@@ -3,7 +3,11 @@ package com.atlassian.theplugin.idea.crucible.comments;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.idea.TableColumnInfo;
 
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.*;
 import java.util.Comparator;
+import java.awt.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -17,6 +21,11 @@ public class VCommentSummaryColumn extends TableColumnInfo {
 
 	public String getColumnName() {
 		return "Comment";
+	}
+
+	@Override
+	public TableCellRenderer getCustomizedRenderer(Object o, TableCellRenderer tableCellRenderer) {
+		return new MultiLineRenderer();
 	}
 
 	public Object valueOf(Object o) {
@@ -37,5 +46,17 @@ public class VCommentSummaryColumn extends TableColumnInfo {
 
 	public int getPrefferedWidth() {
 		return COL_WIDTH;
+	}
+
+	private class MultiLineRenderer extends JTextArea implements TableCellRenderer {
+		public MultiLineRenderer() {
+			setLineWrap(true);
+			setWrapStyleWord(true);
+		}
+
+		public Component getTableCellRendererComponent(JTable jTable, Object value, boolean b, boolean b1, int i, int i1) {
+			setText((String) value);
+			return this;
+		}
 	}
 }
