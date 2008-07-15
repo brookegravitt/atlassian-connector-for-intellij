@@ -19,10 +19,7 @@ package com.atlassian.theplugin.eclipse.preferences;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Set;
-import java.util.Timer;
 import java.util.TimerTask;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -40,15 +37,11 @@ import org.osgi.framework.BundleContext;
 import com.atlassian.theplugin.commons.ConfigurationListener;
 import com.atlassian.theplugin.commons.SchedulableChecker;
 import com.atlassian.theplugin.commons.bamboo.BambooStatusChecker;
-import com.atlassian.theplugin.commons.bamboo.BambooStatusTooltipListener;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
-import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.eclipse.EclipseActionScheduler;
 import com.atlassian.theplugin.eclipse.EclipseLogger;
 import com.atlassian.theplugin.eclipse.MissingPasswordHandler;
 import com.atlassian.theplugin.eclipse.util.PluginUtil;
-import com.atlassian.theplugin.eclipse.view.bamboo.BambooStatusTooltip;
-import com.atlassian.theplugin.eclipse.view.bamboo.BambooToolWindowContent;
 
 
 /**
