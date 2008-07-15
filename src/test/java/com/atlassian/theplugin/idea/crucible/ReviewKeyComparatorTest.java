@@ -71,7 +71,11 @@ public class ReviewKeyComparatorTest extends TestCase {
 				return null;
 			}
 
-			public List<CrucibleFileInfo> getFiles() throws ValueNotYetInitialized {
+            public List<VersionedComment> getVersionedComments() throws ValueNotYetInitialized {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public List<CrucibleFileInfo> getFiles() throws ValueNotYetInitialized {
 				return null;
 			}
 

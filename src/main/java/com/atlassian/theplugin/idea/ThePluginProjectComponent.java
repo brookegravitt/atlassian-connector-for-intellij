@@ -33,6 +33,7 @@ import com.atlassian.theplugin.idea.crucible.*;
 import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.atlassian.theplugin.jira.JIRAServer;
+import com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier;
 import com.intellij.ide.util.treeView.AbstractTreeNode;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ProjectComponent;
@@ -49,9 +50,7 @@ import com.intellij.ui.table.TableView;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Per-project plugin component.
@@ -81,7 +80,7 @@ public class ThePluginProjectComponent implements
 
     private final ToolWindowManager toolWindowManager;
     private boolean created;
-    private CrucibleNewReviewNotifier crucibleNewReviewNotifier;
+    private CrucibleReviewNotifier crucibleNewReviewNotifier;
 
     private final PluginConfiguration pluginConfiguration;
 
@@ -235,7 +234,7 @@ public class ThePluginProjectComponent implements
             // create crucible status bar icon
             statusBarCrucibleIcon = new CrucibleStatusIcon(project);
 
-            crucibleNewReviewNotifier = new CrucibleNewReviewNotifier(statusBarCrucibleIcon, project);
+            crucibleNewReviewNotifier = new CrucibleReviewNotifier();
 			if (IdeaHelper.getPluginConfiguration().getCrucibleConfigurationData().getCrucibleTooltipOption()
 					!= CrucibleTooltipOption.NEVER) {
 				crucibleStatusChecker.registerListener(crucibleNewReviewNotifier);
@@ -387,7 +386,7 @@ public class ThePluginProjectComponent implements
 		return crucibleBottomToolWindowPanel;
 	}
 
-	public CrucibleNewReviewNotifier getCrucibleNewReviewNotifier() {
+	public CrucibleReviewNotifier getCrucibleNewReviewNotifier() {
 		return crucibleNewReviewNotifier;
 	}
 	
