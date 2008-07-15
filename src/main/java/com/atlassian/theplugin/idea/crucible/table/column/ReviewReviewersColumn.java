@@ -17,11 +17,14 @@
 package com.atlassian.theplugin.idea.crucible.table.column;
 
 import com.atlassian.theplugin.idea.TableColumnInfo;
-import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
+import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
+import com.atlassian.theplugin.util.ReviewInfoUtil;
 
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 
 
 public class ReviewReviewersColumn extends TableColumnInfo {
@@ -50,13 +53,28 @@ public class ReviewReviewersColumn extends TableColumnInfo {
 
 		 return new Comparator() {
             public int compare(Object o, Object o1) {
-				ReviewDataInfoAdapter review1 = (ReviewDataInfoAdapter) o;
-				ReviewDataInfoAdapter review2 = (ReviewDataInfoAdapter) o1;
+				CrucibleChangeSet review1 = (CrucibleChangeSet) o;
+				CrucibleChangeSet review2 = (CrucibleChangeSet) o1;
+				List<Reviewer> r1 = null;
+				List<Reviewer> r2 = null;
+				int r1s = 0;
+				int r2s = 0;
+				try {
+					r1 = review1.getReviewers();
+					r1s = r1.size();
+				} catch (ValueNotYetInitialized valueNotYetInitialized) {
+				}
+				try {
+					r2 = review2.getReviewers();
+					r2s = r2.size();
+				} catch (ValueNotYetInitialized valueNotYetInitialized) {
+				}
 
-				if (review1.getReviewers().size() == review2.getReviewers().size()) {
-					return review1.getNumOfCompletedReviewers() - review2.getNumOfCompletedReviewers();
+				if (r1s == r2s) {
+					return ReviewInfoUtil.getNumOfCompletedReviewers(review1) -
+							ReviewInfoUtil.getNumOfCompletedReviewers(review2);
 				} else {
-					return review1.getReviewers().size() - review2.getReviewers().size();
+					return r1s - r2s;
 				}
             }
         };
@@ -64,13 +82,17 @@ public class ReviewReviewersColumn extends TableColumnInfo {
 
 	public static String getReviewersAsText(Object o) {
 		StringBuffer sb = new StringBuffer();
-		if (((ReviewDataInfoAdapter) o).getReviewers() != null) {
-			for (Iterator<Reviewer> iterator = ((ReviewDataInfoAdapter) o).getReviewers().iterator(); iterator.hasNext();) {
-				sb.append(iterator.next().getUserName());
-				if (iterator.hasNext()) {
-					sb.append(", ");
+		try {
+			if (((CrucibleChangeSet) o).getReviewers() != null) {
+				for (Iterator<Reviewer> iterator = ((CrucibleChangeSet) o).getReviewers().iterator(); iterator.hasNext();) {
+					sb.append(iterator.next().getUserName());
+					if (iterator.hasNext()) {
+						sb.append(", ");
+					}
 				}
 			}
+		} catch (ValueNotYetInitialized valueNotYetInitialized) {
+			return "Error retrieving reviewers";
 		}
 		return sb.toString();
 	}

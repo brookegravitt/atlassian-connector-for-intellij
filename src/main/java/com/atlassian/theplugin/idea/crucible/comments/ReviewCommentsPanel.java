@@ -8,11 +8,10 @@ import com.intellij.ide.DataManager;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.atlassian.theplugin.idea.ui.*;
-import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
-import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
+import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
 import com.atlassian.theplugin.idea.crucible.events.ShowGeneralCommentEvent;
 import com.atlassian.theplugin.idea.crucible.events.FocusOnGeneralCommentReplyEvent;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewItem;
+import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
@@ -44,12 +43,13 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 	private CrucibleServerFacade crucibleServerFacade;
 	public static final Logger LOGGER = PluginUtil.getLogger();
 	private UserTableContext context;
+	private CrucibleReviewActionListener listener = new MyCrucibleReviewActionListener();
 
 
 	protected ReviewCommentsPanel() {
 		super();
 		context = new UserTableContext();
-		IdeaHelper.getReviewActionEventBroker().registerListener(this);
+		IdeaHelper.getReviewActionEventBroker().registerListener(listener);
 		crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		setCommentTableModel(new ListTableModel(getCommentTableColumnProvider().makeColumnInfo()));
 		setCommentReplyTableModel(new ListTableModel(getCommentReplyTableColumnProvider().makeColumnInfo()));
@@ -101,10 +101,10 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 				if (noClicks == 2) {
 					IdeaHelper.getReviewActionEventBroker().trigger(
 							new FocusOnGeneralCommentReplyEvent(
-									I_WANT_THIS_MESSAGE_BACK,
-									(ReviewDataInfoAdapter)
-                                            CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
-                                    selectedComment
+									CrucibleReviewActionListener.I_WANT_THIS_MESSAGE_BACK,
+									(CrucibleChangeSet)
+											CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
+									selectedComment
 							)
 					);
 				}
@@ -121,87 +121,25 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 				if (noClicks == 1) {
 					// GeneralComment server = ((GeneralCommentNode) selectedNode).getGeneralComment();
 					DialogWrapper d = new DDialog(DataManager.getInstance().getDataContext(),
-						 (ReviewDataInfoAdapter) CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
-						selectedComment);
+							(CrucibleChangeSet) CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
+							selectedComment);
 					d.show();
 					d.toFront();
 				}
 				if (noClicks == 2) {
 					IdeaHelper.getReviewActionEventBroker().trigger(
 							new ShowGeneralCommentEvent(
-									I_WANT_THIS_MESSAGE_BACK,
-									(ReviewDataInfoAdapter)
-                                            CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
+									CrucibleReviewActionListener.I_WANT_THIS_MESSAGE_BACK,
+									(CrucibleChangeSet)
+											CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
 									selectedComment
 							)
 					);
-                }
+				}
 			}
 		};
 		return commentSelectedListener;
 	}
-
-	public void focusOnReview(ReviewDataInfoAdapter reviewDataInfoAdapter) {
-		//To change body of implemented methods use File | Settings | File Templates.
-	}
-
-	public void focusOnFile(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem) {
-		//To change body of implemented methods use File | Settings | File Templates.
-	}
-
-	public void focusOnGeneralComment(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
-		//To change body of implemented methods use File | Settings | File Templates.
-	}
-
-	public void focusOnGeneralCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
-		//To change body of implemented methods use File | Settings | File Templates.
-	}
-
-	public void focusOnVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem,
-            Collection<VersionedComment> versionedComments, VersionedComment versionedComment) {
-		//To change body of implemented methods use File | Settings | File Templates.
-	}
-
-	public void focusOnVersionedCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
-		//To change body of implemented methods use File | Settings | File Templates.
-	}
-
-	public void showReview(ReviewDataInfoAdapter reviewDataInfoAdapter) {
-		try {
-			getProgressAnimation().startProgressAnimation();
-			final List<GeneralComment> generalComments = crucibleServerFacade.getGeneralComments(
-                    reviewDataInfoAdapter.getServer(), reviewDataInfoAdapter.getPermaId());
-			EventQueue.invokeLater(new CommentListChangedListener(reviewDataInfoAdapter, generalComments));
-		} catch (RemoteApiException e) {
-			LOGGER.warn("Error retrieving comments", e);
-		} catch (ServerPasswordNotProvidedException e) {
-			LOGGER.warn("Error retrieving comments", e);
-		} finally {
-			getProgressAnimation().stopProgressAnimation();
-		}
-	}
-
-	public void showReviewedFileItem(ReviewDataInfoAdapter reviewDataInfoAdapter, ReviewItem reviewItem) {
-	}
-
-	public void showGeneralComment(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
-		EventQueue.invokeLater(new CommentSelectedListener(reviewDataInfoAdapter, comment));
-	}
-
-	public void showGeneralCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
-		//To change body of implemented methods use File | Settings | File Templates.
-	}
-
-	public void showVersionedComment(ReviewDataInfoAdapter reviewDataInfoAdapter, final ReviewItem reviewItem,
-            Collection<VersionedComment> versionedComments, final VersionedComment versionedComment) {
-	}
-
-	public void showVersionedCommentReply(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
-		//To change body of implemented methods use File | Settings | File Templates.
-	}
-
-
-
 
 	public static class CommentColumnProvider implements TableColumnProvider {
 		public TableColumnInfo[] makeColumnInfo() {
@@ -247,30 +185,30 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 
 
 	private class CommentListChangedListener implements Runnable {
-		private ReviewDataInfoAdapter reviewDataInfoAdapter;
+		private CrucibleChangeSet crucibleChangeSet;
 		private final List<GeneralComment> generalComments;
 
-		public CommentListChangedListener(ReviewDataInfoAdapter reviewDataInfoAdapter, List<GeneralComment> generalComments) {
-			this.reviewDataInfoAdapter = reviewDataInfoAdapter;
+		public CommentListChangedListener(CrucibleChangeSet crucibleChangeSet, List<GeneralComment> generalComments) {
+			this.crucibleChangeSet = crucibleChangeSet;
 			this.generalComments = generalComments;
 		}
 
 		public void run() {
-			CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.setValue(context, reviewDataInfoAdapter);
+			CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.setValue(context, crucibleChangeSet);
 			getCommentTableModel().setItems(generalComments);
 			getCommentTableModel().fireTableDataChanged();
-			getCommentsTable().getHeaderLabel().setText("General comments to " + reviewDataInfoAdapter);
+			getCommentsTable().getHeaderLabel().setText("General comments to " + crucibleChangeSet);
 //			dataPanelsHolder.moveToFront(commentsTable);
 			switchToComments();
 		}
 	}
 
 	private class CommentSelectedListener implements Runnable {
-		private ReviewDataInfoAdapter reviewDataInfoAdapter;
+		private CrucibleChangeSet crucibleChangeSet;
 		private GeneralComment comment;
 
-		public CommentSelectedListener(ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment comment) {
-			this.reviewDataInfoAdapter = reviewDataInfoAdapter;
+		public CommentSelectedListener(CrucibleChangeSet crucibleChangeSet, GeneralComment comment) {
+			this.crucibleChangeSet = crucibleChangeSet;
 			this.comment = comment;
 		}
 
@@ -296,11 +234,11 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 
 
 	private class DDialog extends DialogWrapper {
-	    private CrucibleCommentPanel commentPanel;
+		private CrucibleCommentPanel commentPanel;
 
 
-		public DDialog(DataContext dataContext, ReviewDataInfoAdapter adapter, GeneralComment comment) {
-			super(true);			
+		public DDialog(DataContext dataContext, CrucibleChangeSet adapter, GeneralComment comment) {
+			super(true);
 			this.commentPanel = new CrucibleCommentPanel(adapter, comment);
 			init();
 		}
@@ -311,4 +249,25 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 		}
 	}
 
+	private class MyCrucibleReviewActionListener extends CrucibleReviewActionListener {
+		public void showReview(CrucibleChangeSet crucibleChangeSet) {
+			try {
+				getProgressAnimation().startProgressAnimation();
+				final List<GeneralComment> generalComments = crucibleServerFacade.getGeneralComments(
+						crucibleChangeSet.getServer(), crucibleChangeSet.getPermaId());
+				EventQueue.invokeLater(new CommentListChangedListener(crucibleChangeSet, generalComments));
+			} catch (RemoteApiException e) {
+				LOGGER.warn("Error retrieving comments", e);
+			} catch (ServerPasswordNotProvidedException e) {
+				LOGGER.warn("Error retrieving comments", e);
+			} finally {
+				getProgressAnimation().stopProgressAnimation();
+			}
+		}
+
+		public void showGeneralComment(CrucibleChangeSet crucibleChangeSet, GeneralComment comment) {
+			EventQueue.invokeLater(new CommentSelectedListener(crucibleChangeSet, comment));
+		}
+
+	}
 }

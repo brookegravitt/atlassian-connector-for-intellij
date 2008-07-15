@@ -316,10 +316,10 @@ public class BambooSessionTest extends TestCase {
 		assertNotNull(build.getCommitInfo().iterator().next().getCommitDate());
 		assertEquals("commit comment", build.getCommitInfo().iterator().next().getComment());
 		assertEquals(3, build.getCommitInfo().iterator().next().getFiles().size());
-		assertEquals("13928", build.getCommitInfo().iterator().next().getFiles().iterator().next().getRevision());
+		assertEquals("13928", build.getCommitInfo().iterator().next().getFiles().iterator().next().getFileDescriptor().getRevision());
 		assertEquals(
 				"/PL/trunk/ThePlugin/src/main/java/com/atlassian/theplugin/bamboo/HtmlBambooStatusListener.java",
-				build.getCommitInfo().iterator().next().getFiles().iterator().next().getFileName());
+				build.getCommitInfo().iterator().next().getFiles().iterator().next().getFileDescriptor().getName());
 
 		// failed tests
 		assertEquals(2, build.getFailedTestDetails().size());
@@ -366,10 +366,10 @@ public class BambooSessionTest extends TestCase {
 		assertNotNull(build.getCommitInfo().iterator().next().getCommitDate());
 		assertEquals("commit comment", build.getCommitInfo().iterator().next().getComment());
 		assertEquals(3, build.getCommitInfo().iterator().next().getFiles().size());
-		assertEquals("13928", build.getCommitInfo().iterator().next().getFiles().iterator().next().getRevision());
+		assertEquals("13928", build.getCommitInfo().iterator().next().getFiles().iterator().next().getFileDescriptor().getRevision());
 		assertEquals(
 				"/PL/trunk/ThePlugin/src/main/java/com/atlassian/theplugin/bamboo/HtmlBambooStatusListener.java",
-				build.getCommitInfo().iterator().next().getFiles().iterator().next().getFileName());
+				build.getCommitInfo().iterator().next().getFiles().iterator().next().getFileDescriptor().getName());
 
 		// failed tests
 		assertEquals(2, build.getFailedTestDetails().size());
@@ -407,10 +407,10 @@ public class BambooSessionTest extends TestCase {
 		assertNotNull(build.getCommitInfo().iterator().next().getCommitDate());
 		assertEquals("commit comment", build.getCommitInfo().iterator().next().getComment());
 		assertEquals(3, build.getCommitInfo().iterator().next().getFiles().size());
-		assertEquals("13928", build.getCommitInfo().iterator().next().getFiles().iterator().next().getRevision());
+		assertEquals("13928", build.getCommitInfo().iterator().next().getFiles().iterator().next().getFileDescriptor().getRevision());
 		assertEquals(
 				"/PL/trunk/ThePlugin/src/main/java/com/atlassian/theplugin/bamboo/HtmlBambooStatusListener.java",
-				build.getCommitInfo().iterator().next().getFiles().iterator().next().getFileName());
+				build.getCommitInfo().iterator().next().getFiles().iterator().next().getFileDescriptor().getName());
 
 		// failed tests
 		assertEquals(0, build.getFailedTestDetails().size());
@@ -448,10 +448,10 @@ public class BambooSessionTest extends TestCase {
 		assertNotNull(build.getCommitInfo().get(0).getCommitDate());
 		assertEquals("commit comment", build.getCommitInfo().get(0).getComment());
 		assertEquals(3, build.getCommitInfo().get(0).getFiles().size());
-		assertEquals("13928", build.getCommitInfo().get(0).getFiles().iterator().next().getRevision());
+		assertEquals("13928", build.getCommitInfo().get(0).getFiles().iterator().next().getFileDescriptor().getRevision());
 		assertEquals(
 				"/PL/trunk/ThePlugin/src/main/java/com/atlassian/theplugin/bamboo/HtmlBambooStatusListener.java",
-				build.getCommitInfo().get(0).getFiles().iterator().next().getFileName());
+				build.getCommitInfo().get(0).getFiles().iterator().next().getFileDescriptor().getName());
 		assertEquals(2, build.getCommitInfo().get(1).getFiles().size());
 		assertEquals(1, build.getCommitInfo().get(2).getFiles().size());		
 

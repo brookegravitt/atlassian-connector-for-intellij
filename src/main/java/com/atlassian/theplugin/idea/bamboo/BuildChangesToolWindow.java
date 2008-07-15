@@ -1,7 +1,6 @@
 package com.atlassian.theplugin.idea.bamboo;
 
-import com.atlassian.theplugin.commons.VersionedFileDescriptor;
-import com.atlassian.theplugin.commons.bamboo.Commit;
+import com.atlassian.theplugin.commons.bamboo.BambooChangeSet;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.TableColumnInfo;
@@ -10,12 +9,9 @@ import com.atlassian.theplugin.idea.ui.TableColumnProvider;
 import com.atlassian.theplugin.idea.ui.TableItemSelectedListener;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
 import com.atlassian.theplugin.idea.ui.tree.file.FileTreeModelBuilder;
-import com.atlassian.theplugin.util.ColorToHtml;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.fileTypes.FileType;
-import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
@@ -23,11 +19,9 @@ import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.peer.PeerFactory;
 import com.intellij.ui.content.Content;
 import com.intellij.util.ui.ListTableModel;
-import com.intellij.util.ui.UIUtil;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.tree.*;
 import java.awt.*;
 import java.util.Comparator;
 import java.util.Date;
@@ -62,7 +56,7 @@ public final class BuildChangesToolWindow {
 		return panelMap.get(name);
 	}
 
-	public void showBuildChanges(String buildKey, String buildNumber, List<Commit> commits) {
+	public void showBuildChanges(String buildKey, String buildNumber, List<BambooChangeSet> commits) {
 		CommitDetailsPanel detailsPanel;
 		String contentKey = buildKey + "-" + buildNumber;
 
@@ -98,10 +92,10 @@ public final class BuildChangesToolWindow {
 		private JScrollPane fileScroll;
 		private boolean isByDir = ChangesTree.GROUP_BY_DIRECTORY_DEFAULT;
 
-		private List<Commit> commits;
+		private List<BambooChangeSet> commits;
 		private AtlassianTableView commitsTable;
 
-		public CommitDetailsPanel(String name, final List<Commit> commits) {
+		public CommitDetailsPanel(String name, final List<BambooChangeSet> commits) {
 			super();
 
 			this.commits = commits;
@@ -200,13 +194,13 @@ public final class BuildChangesToolWindow {
 			}
 
 			public Object valueOf(Object o) {
-				return ((Commit) o).getAuthor();
+				return ((BambooChangeSet) o).getAuthor();
 			}
 
 			public Comparator getComparator() {
 				return new Comparator() {
 					public int compare(Object o, Object o1) {
-						return ((Commit) o).getAuthor().compareTo(((Commit) o1).getAuthor());
+						return ((BambooChangeSet) o).getAuthor().compareTo(((BambooChangeSet) o1).getAuthor());
 					}
 				};
 			}
@@ -228,13 +222,13 @@ public final class BuildChangesToolWindow {
 			}
 
 			public Object valueOf(Object o) {
-				return ((Commit) o).getCommitDate();
+				return ((BambooChangeSet) o).getCommitDate();
 			}
 
 			public Comparator getComparator() {
 				return new Comparator() {
 					public int compare(Object o, Object o1) {
-						return ((Commit) o).getCommitDate().compareTo(((Commit) o1).getCommitDate());
+						return ((BambooChangeSet) o).getCommitDate().compareTo(((BambooChangeSet) o1).getCommitDate());
 					}
 				};
 			}
@@ -256,19 +250,19 @@ public final class BuildChangesToolWindow {
 			}
 
 			public Object valueOf(Object o) {
-				return ((Commit) o).getComment();
+				return ((BambooChangeSet) o).getComment();
 			}
 
 			public Comparator getComparator() {
 				return new Comparator() {
 					public int compare(Object o, Object o1) {
-						return ((Commit) o).getComment().compareTo(((Commit) o1).getComment());
+						return ((BambooChangeSet) o).getComment().compareTo(((BambooChangeSet) o1).getComment());
 					}
 				};
 			}
 		}
 
-		private AtlassianTableView createCommitsTable(final List<Commit> commitList) {
+		private AtlassianTableView createCommitsTable(final List<BambooChangeSet> commits) {
 			TableColumnProvider prov = new TableColumnProvider() {
 				public TableColumnInfo[] makeColumnInfo() {
 					return new TableColumnInfo[] { new AuthorColumn(), new DateColumn(), new CommentColumn() };
@@ -279,10 +273,10 @@ public final class BuildChangesToolWindow {
 				}
 			};
 			final AtlassianTableView atv = new AtlassianTableView(prov,
-					new ListTableModel<Commit>(prov.makeColumnInfo(), commitList, 0), null);
+					new ListTableModel<BambooChangeSet>(prov.makeColumnInfo(), commits, 0), null);
 			atv.addItemSelectedListener(new TableItemSelectedListener() {
 				public void itemSelected(Object item, int noClicks) {
-					Commit c = (Commit) item;
+					BambooChangeSet c = (BambooChangeSet) item;
 					createTree(c);
 				}
 			});
@@ -307,87 +301,24 @@ public final class BuildChangesToolWindow {
 
 		public void setGroupByDirectory(boolean groupByDirectory) {
 			isByDir = groupByDirectory;
-			createTree((Commit) commitsTable.getSelectedObject());
+			createTree((BambooChangeSet) commitsTable.getSelectedObject());
 		}
 
-		private void createTree(Commit commit) {
-			if (commit.getFiles().size() > 0) {
+		private void createTree(BambooChangeSet changeSet) {
+			if (changeSet.getFiles().size() > 0) {
 				if (isByDir) {
-					fileTree = new AtlassianTree(FileTreeModelBuilder.buildTreeModelFromFiles(commit.getFiles()));
+					fileTree = new AtlassianTree(FileTreeModelBuilder.buildTreeModelFromBambooChangeSet(changeSet));
 					fileTree.setRootVisible(false);
 					fileScroll.setViewportView(fileTree);
 					expand();
 				} else {
-					fileTree = createFlatTree(commit.getFiles());
+					fileTree = new AtlassianTree(FileTreeModelBuilder.buildFlatTreeModelFromBambooChangeSet(changeSet));
 					fileTree.setRootVisible(false);
 					fileScroll.setViewportView(fileTree);
 				}
 			} else {
 				fileScroll.setViewportView(new JLabel("no commits", SwingConstants.CENTER));
 			}
-		}
-
-		private class FileNode extends DefaultMutableTreeNode {
-			private VersionedFileDescriptor file;
-
-			public FileNode(VersionedFileDescriptor f) {
-				super(f.getFileName().substring(f.getFileName().lastIndexOf('/') + 1));
-				file = f;
-			}
-
-			public String getRevision() {
-				return file.getRevision();
-			}
-
-			public String getDirectory() {
-				return file.getFileName().substring(0, file.getFileName().lastIndexOf('/'));
-			}
-
-			public String getName() {
-				return file.getFileName();
-			}
-		}
-
-		private JTree createFlatTree(List<VersionedFileDescriptor> files) {
-			DefaultMutableTreeNode root = new DefaultMutableTreeNode();
-			for (VersionedFileDescriptor f : files) {
-				root.add(new FileNode(f));
-			}
-			TreeModel model = new DefaultTreeModel(root);
-			JTree myTree = new JTree(model);
-			myTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-			myTree.setCellRenderer(new DefaultTreeCellRenderer() {
-                @Override
-                public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected,
-                        boolean expanded, boolean leaf, int row, boolean hasFocus) {
-
-					Component c = super.getTreeCellRendererComponent(
-							tree, value, selected, expanded, leaf, row, hasFocus);
-
-					FileNode node = (FileNode) value;
-					Color statsColor = selected	? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeSelectionBackground();
-					StringBuilder txt = new StringBuilder();
-					txt.append("<html><body>");
-					txt.append(getText());
-					txt.append(" <font color=");
-					txt.append(ColorToHtml.getHtmlFromColor(statsColor));
-					txt.append(">(");
-					txt.append(node.getDirectory());
-					txt.append(")</font>");
-					txt.append(" rev: ");
-					txt.append(node.getRevision());
-					txt.append("</body></html>");
-					setText(txt.toString());
-
-					FileTypeManager mgr = FileTypeManager.getInstance();
-					FileType type = mgr.getFileTypeByFileName(node.getName());
-					setIcon(type.getIcon());
-
-					return c;
-				}
-			});
-
-			return myTree;
 		}
 
 		public void expand() {

@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewItem;
+import com.atlassian.theplugin.crucible.CrucibleFileInfo;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -14,31 +14,22 @@ import javax.swing.tree.DefaultMutableTreeNode;
 public class ReviewItemDataNode extends DefaultMutableTreeNode {
 	static final long serialVersionUID = -1192703287399203290L;
 
-	private ReviewItem reviewItem;
+	private CrucibleFileInfo file;
 
-	public ReviewItemDataNode(ReviewItem aReviewItemData) {
-		this.reviewItem = aReviewItemData;
+	public ReviewItemDataNode(CrucibleFileInfo aReviewItemData) {
+		this.file = aReviewItemData;
 	}
 
-	public ReviewItem getReviewItem() {
-		return reviewItem;
+	public CrucibleFileInfo getFile() {
+		return file;
 	}
 
-	public void setReviewItem(ReviewItem reviewItem) {
-		this.reviewItem = reviewItem;
+	public void setFile(CrucibleFileInfo file) {
+		this.file = file;
 	}
 
 	public String toString() {
-		if (reviewItem.getFromPath().length() > 0 && reviewItem.getToPath().length() > 0) {
-			return reviewItem.getFromPath() + " (mod)";
-
-		} else if (reviewItem.getFromPath().length() > 0) {
-			return reviewItem.getFromPath() + " (new)";
-		} else if (reviewItem.getToPath().length() > 0) {
-			return reviewItem.getToPath() + " (del)";
-		} else {
-			return "unknown";
-		}		
+		return file.toString();
 	}
 
 	public boolean equals(Object o) {
@@ -51,7 +42,7 @@ public class ReviewItemDataNode extends DefaultMutableTreeNode {
 
 		ReviewItemDataNode that = (ReviewItemDataNode) o;
 
-		if (reviewItem.equals(that.reviewItem)) {
+		if (file.equals(that.file)) {
 			return false;
 		}
 
@@ -59,7 +50,7 @@ public class ReviewItemDataNode extends DefaultMutableTreeNode {
 	}
 
 	public int hashCode() {
-		return reviewItem.hashCode();
+		return file.hashCode();
 	}
 }
 

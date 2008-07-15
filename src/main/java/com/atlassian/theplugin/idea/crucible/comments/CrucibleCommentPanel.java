@@ -4,9 +4,9 @@ import com.intellij.uiDesigner.core.Spacer;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.CellConstraints;
-import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
+import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
@@ -51,7 +51,7 @@ public class CrucibleCommentPanel extends JPanel implements ListSelectionListene
 	private JLabel draftTopLabel;
 	private JLabel authorTopLabel;
 	private JLabel defectTopLabel;
-	private ReviewDataInfoAdapter reviewAdapter;
+	private CrucibleChangeSet crucibleChangeSet;
 	private final CrucibleServerFacade crucibleFacade = CrucibleServerFacadeImpl.getInstance();
 	private GeneralCommentBean comment;
 	private CommentType commentType;
@@ -72,7 +72,7 @@ public class CrucibleCommentPanel extends JPanel implements ListSelectionListene
 	}
 
 	public Component getListCellRendererComponent(JList jList, Object o, int i, boolean b, boolean b1) {
-		CrucibleCommentPanel panel = new CrucibleCommentPanel(this.reviewAdapter, ((GeneralComment) o));
+		CrucibleCommentPanel panel = new CrucibleCommentPanel(this.crucibleChangeSet, ((GeneralComment) o));
 		panel.setMinimumSize(panel.getPreferredSize());
 		return panel.getRootPanel();
 	}
@@ -203,26 +203,26 @@ public class CrucibleCommentPanel extends JPanel implements ListSelectionListene
 	}
 
 
-	public CrucibleCommentPanel(ReviewDataInfoAdapter reviewAdapter, GeneralComment comment, CommentState commentState) {
+	public CrucibleCommentPanel(CrucibleChangeSet crucibleChangeSet, GeneralComment comment, CommentState commentState) {
 		this.commentState = commentState;
-		init(reviewAdapter, comment);
+		init(crucibleChangeSet, comment);
 
 
 	}
 
-	public CrucibleCommentPanel(ReviewDataInfoAdapter reviewAdapter, GeneralComment comment) {
+	public CrucibleCommentPanel(CrucibleChangeSet crucibleChangeSet, GeneralComment comment) {
 		if (comment.getPermId() != null && comment.getPermId().getId().length() > 0) {
 			//no pernmID == new comment or reply
 			this.commentState = CommentState.READ_ONLY;
 		} else {
 			this.commentState = CommentState.NEW;
 		}
-		init(reviewAdapter, comment);
+		init(crucibleChangeSet, comment);
 
 	}
 
 
-	private void init(ReviewDataInfoAdapter reviewAdapter, GeneralComment comment) {
+	private void init(CrucibleChangeSet crucibleChangeSet, GeneralComment comment) {
 		$$$setupUI$$$();
 		commentType = determineCommentType(comment);
 		listModel = new DefaultListModel();
@@ -231,7 +231,7 @@ public class CrucibleCommentPanel extends JPanel implements ListSelectionListene
 		replyList.addListSelectionListener(this);
 
 		setComment(comment);
-		this.reviewAdapter = reviewAdapter;
+		this.crucibleChangeSet = crucibleChangeSet;
 
 		rootPanel.registerKeyboardAction(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -258,7 +258,7 @@ public class CrucibleCommentPanel extends JPanel implements ListSelectionListene
 	}
 
 	private void addReply(GeneralComment item) {
-		if (!item.isDraft()) {// && comment.getUser().equals(reviewAdapter.getServer().getUserName())) {
+		if (!item.isDraft()) {// && comment.getUser().equals(crucibleChangeSet.getServer().getUserName())) {
 			listModel.addElement(item);
 		}
 	}
@@ -343,7 +343,7 @@ public class CrucibleCommentPanel extends JPanel implements ListSelectionListene
 	}
 
 	private void fillInDefectCombos() {
-		List<CustomFieldDef> fieldsDef = getMetricsVersion(reviewAdapter.getServer(), reviewAdapter.getMetricsVersion());
+		List<CustomFieldDef> fieldsDef = getMetricsVersion(crucibleChangeSet.getServer(), crucibleChangeSet.getMetricsVersion());
 
 		for (CustomFieldDef item : fieldsDef) {
 			List<CustomFieldValue> values;
@@ -376,11 +376,11 @@ public class CrucibleCommentPanel extends JPanel implements ListSelectionListene
 
 
 		this.comment.setMessage(commentTextArea.getText());
-		this.comment.setPermId(reviewAdapter.getPermaId());
+		this.comment.setPermId(crucibleChangeSet.getPermaId());
 		this.comment.setDraft(saveAsDraft);
 
 		try {
-			crucibleFacade.updateGeneralComment(reviewAdapter.getServer(), reviewAdapter.getPermaId(), this.comment);
+			crucibleFacade.updateGeneralComment(crucibleChangeSet.getServer(), crucibleChangeSet.getPermaId(), this.comment);
 		} catch (RemoteApiException e) {
 			//@todo show message in window
 			PluginUtil.getLogger().error(e.getMessage());
@@ -413,7 +413,7 @@ public class CrucibleCommentPanel extends JPanel implements ListSelectionListene
 
 	private void onTopDelete() {
 		try {
-			crucibleFacade.removeGeneralComment(reviewAdapter.getServer(), this.comment.getPermId(), this.comment);
+			crucibleFacade.removeGeneralComment(crucibleChangeSet.getServer(), this.comment.getPermId(), this.comment);
 		} catch (RemoteApiException e) {
 			PluginUtil.getLogger().error(e.getMessage());
 		} catch (ServerPasswordNotProvidedException e) {
@@ -427,7 +427,7 @@ public class CrucibleCommentPanel extends JPanel implements ListSelectionListene
 			onPost(false);
 		} else {
 			try {
-				crucibleFacade.publishComment(reviewAdapter.getServer(), reviewAdapter.getPermaId(), comment.getPermId());
+				crucibleFacade.publishComment(crucibleChangeSet.getServer(), crucibleChangeSet.getPermaId(), comment.getPermId());
 			} catch (RemoteApiException e) {
 				PluginUtil.getLogger().error(e.getMessage());
 			} catch (ServerPasswordNotProvidedException e) {
@@ -500,7 +500,7 @@ public class CrucibleCommentPanel extends JPanel implements ListSelectionListene
 
 				break;
 			case READ_ONLY:
-				if (comment.getUser().equals(reviewAdapter.getServer().getUserName())) {
+				if (comment.getUser().equals(crucibleChangeSet.getServer().getUserName())) {
 					topButtonsPanel.setBackground(new Color(234, 255, 255));
 				} else {
 					topButtonsPanel.setBackground(new Color(255, 255, 215));
@@ -511,7 +511,7 @@ public class CrucibleCommentPanel extends JPanel implements ListSelectionListene
 				topButtonsPanel.setVisible(true);
 				bottomButtonsPanel.setVisible(false);
 
-				if (comment.getUser().equals(reviewAdapter.getServer().getUserName())) {
+				if (comment.getUser().equals(crucibleChangeSet.getServer().getUserName())) {
 					//top EDIT, REPLY visible, editable
 					editTopButton.setVisible(true);
 					deleteTopButton.setVisible(true);
@@ -522,7 +522,7 @@ public class CrucibleCommentPanel extends JPanel implements ListSelectionListene
 				}
 
 				//for drafts top POST button is visible
-				if (comment.isDraft() && comment.getUser().equals(reviewAdapter.getServer().getUserName())) {
+				if (comment.isDraft() && comment.getUser().equals(crucibleChangeSet.getServer().getUserName())) {
 					postTopButton.setVisible(true);
 				} else {
 					postTopButton.setVisible(false);

@@ -334,7 +334,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
 				try {
 					BuildDetails details = bambooFacade.getBuildDetails(
 							build.getServer(), build.getBuildKey(), build.getBuildNumber());
-					final List<Commit> commits = details.getCommitInfo();
+					final List<BambooChangeSet> commits = details.getCommitInfo();
                     SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
 							BuildChangesToolWindow.getInstance().showBuildChanges(

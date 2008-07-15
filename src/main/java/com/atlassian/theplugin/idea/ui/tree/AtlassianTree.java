@@ -1,6 +1,10 @@
 package com.atlassian.theplugin.idea.ui.tree;
 
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.util.Icons;
+import com.intellij.util.ui.UIUtil;
+import com.atlassian.theplugin.util.ColorToHtml;
+import com.atlassian.theplugin.idea.ui.tree.file.FileNode;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeCellRenderer;
@@ -8,6 +12,10 @@ import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 
 public class AtlassianTree extends JTree {
+
+	public AtlassianTree() {
+		this(new AtlassianTreeModel(new FileNode("/")));
+	}
 
 	public AtlassianTree(AtlassianTreeModel model) {
 		super(model);

@@ -46,7 +46,7 @@ public abstract class TableSelectedAction extends AnAction {
 			if (mComponent != null) {
 				table = ((AtlassianTableViewWithToolbar) mComponent).getTable();
 			}
-				
+
 		}
 		return table;
 	}

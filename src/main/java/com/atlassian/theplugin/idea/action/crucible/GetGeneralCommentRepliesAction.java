@@ -20,7 +20,7 @@ public class GetGeneralCommentRepliesAction extends TableSelectedAction {
 //			IdeaHelper.getCurrentReviewActionEventBroker().trigger(
 //					new FocusOnGeneralCommentReplyEvent(
 //							this,
-//							reviewDataInfoAdapter,
+//							crucibleChangeSet,
 //							selectedComment
 //					)
 //			);
