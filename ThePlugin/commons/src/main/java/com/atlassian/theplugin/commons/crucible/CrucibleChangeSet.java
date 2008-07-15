@@ -23,6 +23,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.Transition;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 
 import java.util.List;
 
@@ -35,7 +36,9 @@ public interface CrucibleChangeSet extends Review {
 
 	List<GeneralComment> getGeneralComments() throws ValueNotYetInitialized;
 
-	List<CrucibleFileInfo> getFiles() throws ValueNotYetInitialized;
+    List<VersionedComment> getVersionedComments() throws ValueNotYetInitialized;
+
+    List<CrucibleFileInfo> getFiles() throws ValueNotYetInitialized;
 
 	List<Transition> getTransitions() throws ValueNotYetInitialized;
 

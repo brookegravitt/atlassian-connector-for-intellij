@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This listener fires notification tooltip if bamboo build has changes status between SUCCEED and FAILED
+ * This listener fires crucible tooltip if bamboo build has changes status between SUCCEED and FAILED
  */
 public class BambooStatusTooltipListener implements BambooStatusListener, ConfigurationListener {
 

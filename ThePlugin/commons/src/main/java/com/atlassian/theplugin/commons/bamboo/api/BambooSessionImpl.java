@@ -38,6 +38,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/*
+@todo get logs based on url: BASE_URL/download/TP-TEST/build_logs/TP-TEST-341.log
+ */
+
 /**
  * Communication stub for Bamboo REST API.
  */
