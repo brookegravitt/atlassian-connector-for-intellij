@@ -3,7 +3,7 @@ package com.atlassian.theplugin.idea.crucible.comments;
 import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.crucible.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 
 import java.util.Collection;
 
