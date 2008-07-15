@@ -33,7 +33,7 @@
       <view allowMultiple="false"
             category="com.atlassian.theplugin.eclipse.viewcategory"
             class="com.atlassian.theplugin.eclipse.ui.bamboo.BambooServersView"
-            id="com.atlassian.theplugin.eclipse.view.bamboo.BambooServers"
+            id="com.atlassian.theplugin.eclipse.ui.bamboo.BambooServersView"
             name="Bamboo Servers">
       </view>
    </extension>
@@ -57,5 +57,32 @@
             class="com.atlassian.theplugin.eclipse.preferences.PreferenceInitializer">
       </initializer>
    </extension>
-</plugin>
+   
+   <extension
+         point="org.eclipse.ui.popupMenus">
+         
+         <!-- ******************* Repository Management Menu ******************** -->
+      <objectContribution
+            objectClass="com.atlassian.theplugin.eclipse.ui.bamboo.BambooServer"
+            id="com.atlassian.theplugin.eclipse.ui.bamboo.BambooServerContributions">
+            
+         <action
+               label="%EditBambooServerPropertiesAction.Label"
+               class="com.atlassian.theplugin.eclipse.ui.action.bamboo.EditBambooServerPropertiesAction"
+               tooltip="%EditBambooServerPropertiesAction.Tooltip"
+               menubarPath="bambooServerGroup"
+               id="com.atlassian.theplugin.eclipse.ui.action.bamboo.EditBambooServerPropertiesAction">
+         </action>
+         <action
+               label="%DeleteBambooServerAction.Label"
+               class="com.atlassian.theplugin.eclipse.ui.action.bamboo.DeleteBambooServerAction"
+               tooltip="%DeleteBambooServer.Tooltip"
+               menubarPath="bambooServerGroup"
+               id="com.atlassian.theplugin.eclipse.ui.action.bamboo.DeleteBambooServerAction">
+         </action>
 
+      </objectContribution>
+      
+	</extension>
+   
+</plugin>
