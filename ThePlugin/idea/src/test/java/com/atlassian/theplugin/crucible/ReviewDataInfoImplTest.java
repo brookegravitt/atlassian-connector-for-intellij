@@ -18,9 +18,8 @@ package com.atlassian.theplugin.crucible;
 
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
 import com.atlassian.theplugin.commons.Server;
-import com.atlassian.theplugin.commons.crucible.CrucibleChangeSetImpl;
-import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -64,8 +63,8 @@ public class ReviewDataInfoImplTest extends TestCase {
 				.andReturn("http://url//")
 				.andReturn("http://url/////");
 
-		CrucibleChangeSet rd = EasyMock.createMock(CrucibleChangeSet.class);
-		rd.getPermaId();
+		ReviewData rd = EasyMock.createMock(ReviewData.class);
+		rd.getPermId();
 		EasyMock.expectLastCall().andReturn(new PermId() {
 			public String getId() {
 				return "ID";
@@ -84,14 +83,14 @@ public class ReviewDataInfoImplTest extends TestCase {
 	public void testEqualsAndHashcode() throws Exception {
 		Server server = EasyMock.createMock(Server.class);
 		Review r1 = EasyMock.createMock(Review.class);
-		r1.getPermaId();
+		r1.getPermId();
 		EasyMock.expectLastCall().andReturn(new PermId() {
 			public String getId() {
 				return new String("ID");
 			}
 		}).anyTimes();
 		Review r2 = EasyMock.createMock(Review.class);
-		r2.getPermaId();
+		r2.getPermId();
 		EasyMock.expectLastCall().andReturn(new PermId() {
 			public String getId() {
 				return "ID-2";

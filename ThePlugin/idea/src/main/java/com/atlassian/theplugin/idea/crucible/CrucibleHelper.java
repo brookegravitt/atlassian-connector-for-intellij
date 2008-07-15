@@ -3,7 +3,7 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
@@ -65,13 +65,13 @@ public final class CrucibleHelper {
      * 	Adds StripeMark on the right side of file window with set tool tip text that corresponde
      *   to VersionedComment.getMessage content
      */
-    public static void showVirtualFileWithComments(Project project, final CrucibleChangeSet reviewAdapter,
+    public static void showVirtualFileWithComments(Project project, final ReviewData reviewAdapter,
             final CrucibleFileInfo reviewItem) {
 		Collection<VersionedComment> fileComments = null;
 		try {
 
 			fileComments = CrucibleServerFacadeImpl.getInstance().getVersionedComments(reviewAdapter.getServer(),
-                    reviewAdapter.getPermaId(), reviewItem.getPermId());
+                    reviewAdapter.getPermId(), reviewItem.getPermId());
 			showVirtualFileWithComments(project, reviewItem, fileComments);
 		} catch (RemoteApiException e) {
 			PluginUtil.getLogger().error(e.getMessage());

@@ -19,7 +19,7 @@ package com.atlassian.theplugin.commons.crucible.api;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
-import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 
 import java.util.List;
@@ -63,13 +63,13 @@ public interface CrucibleSession {
 
     void completeReview(PermId permId, boolean complete) throws RemoteApiException;
 
-    List<CrucibleChangeSet> getReviewsInStates(List<State> arg1, boolean details) throws RemoteApiException;
+    List<ReviewData> getReviewsInStates(List<State> arg1, boolean details) throws RemoteApiException;
 
-	List<CrucibleChangeSet> getAllReviews(boolean details) throws RemoteApiException;
+	List<ReviewData> getAllReviews(boolean details) throws RemoteApiException;
 
-    List<CrucibleChangeSet> getReviewsForFilter(PredefinedFilter filter, boolean details) throws RemoteApiException;
+    List<ReviewData> getReviewsForFilter(PredefinedFilter filter, boolean details) throws RemoteApiException;
 
-    List<CrucibleChangeSet> getReviewsForCustomFilter(CustomFilter filter, boolean details) throws RemoteApiException;
+    List<ReviewData> getReviewsForCustomFilter(CustomFilter filter, boolean details) throws RemoteApiException;
 
     List<Reviewer> getReviewers(PermId arg1) throws RemoteApiException;
 

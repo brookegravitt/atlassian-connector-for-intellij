@@ -15,6 +15,6 @@ public class ReviewStateChangedNotification implements CrucibleNotification {
     }
 
     public String getPresentationMessage() {
-        return "Review: " + review.getPermaId().getId() + " changed state to " + review.getState();
+        return "Review: " + review.getPermId().getId() + " changed state to " + review.getState();
     }
 }

@@ -18,8 +18,8 @@ package com.atlassian.theplugin.commons.crucible.api.rest;
 
 import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
-import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
-import com.atlassian.theplugin.commons.crucible.CrucibleChangeSetImpl;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewDataImpl;
 import com.atlassian.theplugin.commons.crucible.api.CrucibleSession;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.remoteapi.*;
@@ -162,7 +162,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         }
     }
 
-    public List<CrucibleChangeSet> getReviewsInStates(List<State> states, boolean details) throws RemoteApiException {
+    public List<ReviewData> getReviewsInStates(List<State> states, boolean details) throws RemoteApiException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Calling method without calling login() first");
         }
@@ -195,7 +195,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             }
             @SuppressWarnings("unchecked")
             List<Element> elements = xpath.selectNodes(doc);
-            List<CrucibleChangeSet> reviews = new ArrayList<CrucibleChangeSet>();
+            List<ReviewData> reviews = new ArrayList<ReviewData>();
 
             if (elements != null && !elements.isEmpty()) {
                 for (Element element : elements) {
@@ -214,11 +214,11 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         }
     }
 
-    public List<CrucibleChangeSet> getAllReviews(boolean details) throws RemoteApiException {
+    public List<ReviewData> getAllReviews(boolean details) throws RemoteApiException {
         return getReviewsInStates(null, details);
     }
 
-    public List<CrucibleChangeSet> getReviewsForFilter(PredefinedFilter filter, boolean details) throws RemoteApiException {
+    public List<ReviewData> getReviewsForFilter(PredefinedFilter filter, boolean details) throws RemoteApiException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Calling method without calling login() first");
         }
@@ -241,7 +241,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             }
             @SuppressWarnings("unchecked")
             List<Element> elements = xpath.selectNodes(doc);
-            List<CrucibleChangeSet> reviews = new ArrayList<CrucibleChangeSet>();
+            List<ReviewData> reviews = new ArrayList<ReviewData>();
 
             if (elements != null && !elements.isEmpty()) {
                 for (Element element : elements) {
@@ -260,7 +260,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         }
     }
 
-    public List<CrucibleChangeSet> getReviewsForCustomFilter(CustomFilter filter, boolean details) throws RemoteApiException {
+    public List<ReviewData> getReviewsForCustomFilter(CustomFilter filter, boolean details) throws RemoteApiException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Calling method without calling login() first");
         }
@@ -281,7 +281,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             }
             @SuppressWarnings("unchecked")
             List<Element> elements = xpath.selectNodes(doc);
-            List<CrucibleChangeSet> reviews = new ArrayList<CrucibleChangeSet>();
+            List<ReviewData> reviews = new ArrayList<ReviewData>();
 
             if (elements != null && !elements.isEmpty()) {
                 for (Element element : elements) {
@@ -462,7 +462,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             List<Element> elements = xpath.selectNodes(doc);
             List<CrucibleFileInfo> reviewItems = new ArrayList<CrucibleFileInfo>();
 
-			CrucibleChangeSet changeSet = new CrucibleChangeSetImpl(getServer());
+			ReviewData changeSet = new ReviewDataImpl(getServer());
 			if (elements != null && !elements.isEmpty()) {
                 for (Element element : elements) {
                     CrucibleFileInfo fileInfo = CrucibleRestXmlHelper.parseReviewItemNode(changeSet, element);

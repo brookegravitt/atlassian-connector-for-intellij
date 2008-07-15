@@ -343,18 +343,18 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
      * @param server server object with Url, Login and Password to connect to
      * @return List of reviews (empty list in case there is no review)
      */
-    public List<CrucibleChangeSet> getAllReviews(Server server) throws RemoteApiException {
+    public List<ReviewData> getAllReviews(Server server) throws RemoteApiException {
         CrucibleSession session = getSession(server);
         return session.getAllReviews(true);
     }
 
-    public List<CrucibleChangeSet> getReviewsForFilter(Server server, PredefinedFilter filter)
+    public List<ReviewData> getReviewsForFilter(Server server, PredefinedFilter filter)
             throws RemoteApiException, ServerPasswordNotProvidedException {
         CrucibleSession session = getSession(server);
         return session.getReviewsForFilter(filter, true);
     }
 
-    public List<CrucibleChangeSet> getReviewsForCustomFilter(Server server, CustomFilter filter)
+    public List<ReviewData> getReviewsForCustomFilter(Server server, CustomFilter filter)
             throws RemoteApiException, ServerPasswordNotProvidedException {
         CrucibleSession session = getSession(server);
         return session.getReviewsForCustomFilter(filter, true);

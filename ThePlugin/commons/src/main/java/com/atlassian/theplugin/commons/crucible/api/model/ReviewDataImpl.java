@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.commons.crucible;
+package com.atlassian.theplugin.commons.crucible.api.model;
 
 import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.VirtualFileSystem;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 
 import java.util.List;
 import java.util.Date;
 
 
-public class CrucibleChangeSetImpl implements CrucibleChangeSet {
+public class ReviewDataImpl implements ReviewData {
 	private final Server server;
 	private List<Reviewer> reviewers;
 	private List<CrucibleFileInfo> files;
@@ -38,7 +38,7 @@ public class CrucibleChangeSetImpl implements CrucibleChangeSet {
 	private User moderator;
 	private String name;
 	private PermId parentReview;
-	private PermId permaId;
+	private PermId permId;
 	private String projectKey;
 	private String repoName;
 	private State state;
@@ -63,7 +63,7 @@ public class CrucibleChangeSetImpl implements CrucibleChangeSet {
 		this.transitions = transitions;
 	}
 
-	public CrucibleChangeSetImpl(Server server) {
+	public ReviewDataImpl(Server server) {
 		super();
 		this.server = server;
 		this.virtualFileSystem = new VirtualFileSystem();
@@ -75,7 +75,7 @@ public class CrucibleChangeSetImpl implements CrucibleChangeSet {
 			// quite ineffective, I know ...
 			baseUrl = baseUrl.substring(0, baseUrl.length() - 1);
 		}
-		return baseUrl + "/cru/" + getPermaId().getId();
+		return baseUrl + "/cru/" + getPermId().getId();
 
 	}
 
@@ -127,9 +127,9 @@ public class CrucibleChangeSetImpl implements CrucibleChangeSet {
 			return false;
 		}
 
-		CrucibleChangeSetImpl that = (CrucibleChangeSetImpl) o;
+		ReviewDataImpl that = (ReviewDataImpl) o;
 
-		if (!getPermaId().getId().equals(that.getPermaId().getId())) {
+		if (!getPermId().getId().equals(that.getPermId().getId())) {
 			return false;
 		}
 		if (server != null ? !server.equals(that.server) : that.server != null) {
@@ -143,7 +143,7 @@ public class CrucibleChangeSetImpl implements CrucibleChangeSet {
 
 	public int hashCode() {
 		int result;
-		result = getPermaId().getId().hashCode();
+		result = getPermId().getId().hashCode();
 		result = ONE_EFF * result + (server != null ? server.hashCode() : 0);
 		return result;
 	}
@@ -270,23 +270,23 @@ public class CrucibleChangeSetImpl implements CrucibleChangeSet {
 	}
 
 	/**
-     * Gets the value of the permaId property.
+     * Gets the value of the permId property.
 	 *
 	 * @return possible object is
 	 *         {@link com.atlassian.theplugin.commons.crucible.api.model.PermId }
 	 */
-	public PermId getPermaId() {
-		return permaId;
+	public PermId getPermId() {
+		return permId;
 	}
 
 	/**
-     * Sets the value of the permaId property.
+     * Sets the value of the permId property.
 	 *
 	 * @param value allowed object is
 	 *              {@link com.atlassian.theplugin.commons.crucible.api.model.PermId }
 	 */
-	public void setPermaId(PermId value) {
-		this.permaId = value;
+	public void setPermId(PermId value) {
+		this.permId = value;
 	}
 
 	/**

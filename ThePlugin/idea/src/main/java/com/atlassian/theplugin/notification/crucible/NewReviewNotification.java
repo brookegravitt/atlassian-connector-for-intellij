@@ -14,6 +14,6 @@ public class NewReviewNotification implements CrucibleNotification {
     }
 
     public String getPresentationMessage() {
-        return "New review: " + review.getPermaId().getId();
+        return "New review: " + review.getPermId().getId();
     }
 }

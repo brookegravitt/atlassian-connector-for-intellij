@@ -1,16 +1,16 @@
 package com.atlassian.theplugin.idea.crucible.table.renderer;
 
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
-import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 
 import java.util.List;
 
 public class ReviewDecoratorImpl implements ReviewDecorator {
 	private String text;
-	private CrucibleChangeSet review;
+	private ReviewData review;
 
-	public ReviewDecoratorImpl(String value, CrucibleChangeSet review) {
+	public ReviewDecoratorImpl(String value, ReviewData review) {
 		this.text = value;
 		this.review = review;
 

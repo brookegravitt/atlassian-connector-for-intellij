@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.crucible.table.renderer;
 
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
-import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.util.ReviewInfoUtil;
 import com.intellij.ui.RowIcon;
@@ -28,9 +28,9 @@ public class ReviewReviewersCellRenderer  extends DefaultTableCellRenderer {
 
 		//label.setHorizontalAlignment(SwingConstants.CENTER);
 
-		if (value instanceof CrucibleChangeSet) {
+		if (value instanceof ReviewData) {
 
-			CrucibleChangeSet review = (CrucibleChangeSet) value;
+			ReviewData review = (ReviewData) value;
 
 			try {
 				if (review.getReviewers().size() > 5) {
@@ -49,7 +49,7 @@ public class ReviewReviewersCellRenderer  extends DefaultTableCellRenderer {
 		return c;
 	}
 
-	private Icon createIconContent(CrucibleChangeSet review) {
+	private Icon createIconContent(ReviewData review) {
 		int index = 0;
 		RowIcon rowIcon = null;
 
@@ -70,7 +70,7 @@ public class ReviewReviewersCellRenderer  extends DefaultTableCellRenderer {
 		return rowIcon;
 	}
 
-	private String createStringContent(CrucibleChangeSet review) {
+	private String createStringContent(ReviewData review) {
 
 		int numReviews = 0;
 		try {
@@ -87,7 +87,7 @@ public class ReviewReviewersCellRenderer  extends DefaultTableCellRenderer {
 
 	}
 
-	private String createHtmlTooltip(CrucibleChangeSet review) {
+	private String createHtmlTooltip(ReviewData review) {
 
 		StringBuffer html = new StringBuffer();
 

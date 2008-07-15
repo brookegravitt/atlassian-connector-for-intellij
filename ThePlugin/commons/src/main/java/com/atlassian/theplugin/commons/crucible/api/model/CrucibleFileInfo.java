@@ -4,9 +4,7 @@ import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.VersionedFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import org.w3c.dom.html.HTMLElement;
 
 import java.util.List;
 
