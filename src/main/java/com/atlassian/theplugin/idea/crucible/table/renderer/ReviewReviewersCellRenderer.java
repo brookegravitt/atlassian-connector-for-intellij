@@ -35,6 +35,7 @@ public class ReviewReviewersCellRenderer  extends DefaultTableCellRenderer {
 			try {
 				if (review.getReviewers().size() > 5) {
 					label.setText(createStringContent(review));
+					label.setIcon(null);
 				} else {
 					label.setText("");
 					label.setIcon(createIconContent(review));
@@ -80,9 +81,7 @@ public class ReviewReviewersCellRenderer  extends DefaultTableCellRenderer {
 
 		String text = ReviewInfoUtil.getNumOfCompletedReviewers(review) + "/" + numReviews;
 
-		text = new ReviewAuthorDecorator(
-				new ReviewStateDecorator(text, review.getState()).toString(),
-				review).toString();
+		text = new ReviewDecoratorImpl(text, review).getString();
 
 		return text;
 
