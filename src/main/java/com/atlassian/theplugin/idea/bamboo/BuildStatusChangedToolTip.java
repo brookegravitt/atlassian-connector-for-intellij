@@ -72,7 +72,7 @@ public class BuildStatusChangedToolTip extends JPanel implements BambooStatusDis
 				break;
 		}
 
-		// fire notification popup
+		// fire crucible popup
 		content.setCaretPosition(0);
 		JScrollPane scrollPane = new JScrollPane(content);
 		WindowManager.getInstance().getStatusBar(projectComponent).fireNotificationPopup(scrollPane, null);
