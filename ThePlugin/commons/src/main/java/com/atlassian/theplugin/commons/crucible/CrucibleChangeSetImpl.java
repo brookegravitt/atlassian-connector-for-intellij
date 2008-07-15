@@ -97,7 +97,7 @@ public class CrucibleChangeSetImpl implements CrucibleChangeSet {
 		return generalComments;
 	}
 
-	public List<CrucibleFileInfo> getFiles() throws ValueNotYetInitialized {
+    public List<CrucibleFileInfo> getFiles() throws ValueNotYetInitialized {
 		if (files == null) {
 			throw new ValueNotYetInitialized("Object trasferred only partially");
 		}
