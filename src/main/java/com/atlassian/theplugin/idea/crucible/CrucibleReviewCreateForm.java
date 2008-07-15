@@ -495,7 +495,7 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
             return null;
         }
 
-        public PermId getPermaId() {
+        public PermId getPermId() {
             return null;
         }
 
@@ -568,16 +568,16 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
                     }
                 }
                 if (!users.isEmpty()) {
-                    crucibleServerFacade.addReviewers(server, draftReview.getPermaId(), users);
+                    crucibleServerFacade.addReviewers(server, draftReview.getPermId(), users);
                 }
 
                 if (!leaveAsDraftCheckBox.isSelected()) {
-                    crucibleServerFacade.approveReview(server, draftReview.getPermaId());
+                    crucibleServerFacade.approveReview(server, draftReview.getPermId());
                 }
                 if (openBrowserToCompleteCheckBox.isSelected()) {
                     BrowserUtil.launchBrowser(server.getUrlString()
                             + "/cru/"
-                            + draftReview.getPermaId().getId());
+                            + draftReview.getPermId().getId());
                 }
 
                 super.doOKAction();

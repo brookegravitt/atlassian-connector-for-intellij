@@ -25,6 +25,7 @@ import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.crucible.*;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.DateUtil;
@@ -106,10 +107,10 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
     private void doRunCrucible16() {
         try {
             // collect review info from each server and each required filter
-            final Map<PredefinedFilter, List<CrucibleChangeSet>> reviews
-                    = new HashMap<PredefinedFilter, List<CrucibleChangeSet>>();
-            final Map<String, List<CrucibleChangeSet>> customFilterReviews
-                    = new HashMap<String, List<CrucibleChangeSet>>();
+            final Map<PredefinedFilter, List<ReviewData>> reviews
+                    = new HashMap<PredefinedFilter, List<ReviewData>>();
+            final Map<String, List<ReviewData>> customFilterReviews
+                    = new HashMap<String, List<ReviewData>>();
 
             ThePluginProjectComponent pcomp
                     = IdeaHelper.getCurrentProject().getComponent(ThePluginProjectComponent.class);
@@ -129,10 +130,10 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
                             PluginUtil.getLogger().debug("Crucible: updating status for server: "
                                     + server.getUrlString() + ", filter type: " + filter);
 
-                            List<CrucibleChangeSet> review = crucibleServerFacade.getReviewsForFilter(server, filter);
+                            List<ReviewData> review = crucibleServerFacade.getReviewsForFilter(server, filter);
 
                             if (!reviews.containsKey(filter)) {
-                                List<CrucibleChangeSet> list = new ArrayList<CrucibleChangeSet>();
+                                List<ReviewData> list = new ArrayList<ReviewData>();
                                 reviews.put(filter, list);
                             }
                             reviews.get(filter).addAll(review);
@@ -159,11 +160,11 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
                                 try {
                                     PluginUtil.getLogger().debug("Crucible: updating status for server: "
                                             + server.getUrlString() + ", custom filter");
-                                    List<CrucibleChangeSet> customFilter
+                                    List<ReviewData> customFilter
                                             = crucibleServerFacade.getReviewsForCustomFilter(server, filter);
 
                                     if (!customFilterReviews.containsKey(filter.getTitle())) {
-                                        List<CrucibleChangeSet> list = new ArrayList<CrucibleChangeSet>();
+                                        List<ReviewData> list = new ArrayList<ReviewData>();
                                         customFilterReviews.put(filter.getTitle(), list);
                                     }
                                     customFilterReviews.get(filter.getTitle()).addAll(customFilter);

@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.idea.crucible.comments;
 
-import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
@@ -18,52 +18,52 @@ public class CrucibleReviewActionListener {
 	public static final CrucibleReviewActionListener I_WANT_THIS_MESSAGE_BACK = null;
 	public static final CrucibleReviewActionListener I_DONT_CARE = null;
 
-	public void focusOnReview(CrucibleChangeSet crucibleChangeSet) {
+	public void focusOnReview(ReviewData reviewData) {
 	}
 
-	public void focusOnFile(CrucibleChangeSet crucibleChangeSet, CrucibleFileInfo reviewItem) {
+	public void focusOnFile(ReviewData reviewData, CrucibleFileInfo reviewItem) {
 	}
 
-	public void focusOnGeneralComment(CrucibleChangeSet crucibleChangeSet, GeneralComment comment) {
+	public void focusOnGeneralComment(ReviewData reviewData, GeneralComment comment) {
 	}
 
-	public void focusOnGeneralCommentReply(CrucibleChangeSet crucibleChangeSet, GeneralComment comment) {
+	public void focusOnGeneralCommentReply(ReviewData reviewData, GeneralComment comment) {
 	}
 
-	public void focusOnVersionedComment(CrucibleChangeSet crucibleChangeSet, CrucibleFileInfo reviewItem,
+	public void focusOnVersionedComment(ReviewData reviewData, CrucibleFileInfo reviewItem,
 								 Collection<VersionedComment> versionedComments, VersionedComment versionedComment) {
 	}
 
-	public void focusOnVersionedCommentReply(CrucibleChangeSet crucibleChangeSet, GeneralComment comment) {
+	public void focusOnVersionedCommentReply(ReviewData reviewData, GeneralComment comment) {
 	}
 
 	/**
 	 * A method ivoked by a background thread when a new review needs to be shown
 	 *
-	 * @param crucibleChangeSet
+	 * @param reviewData
 	 */
-	public void showReview(CrucibleChangeSet crucibleChangeSet) {
+	public void showReview(ReviewData reviewData) {
 	}
 
 	/**
 	 * A method ivoked by a background thread when a new file within a review needs to be shown
 	 *
-	 * @param crucibleChangeSet
+	 * @param reviewData
 	 * @param reviewItem
 	 */
-	public void showReviewedFileItem(CrucibleChangeSet crucibleChangeSet, CrucibleFileInfo reviewItem) {
+	public void showReviewedFileItem(ReviewData reviewData, CrucibleFileInfo reviewItem) {
 	}
 
-	public void showGeneralComment(CrucibleChangeSet crucibleChangeSet, GeneralComment comment) {
+	public void showGeneralComment(ReviewData reviewData, GeneralComment comment) {
 	}
 
-	public void showGeneralCommentReply(CrucibleChangeSet crucibleChangeSet, GeneralComment comment) {
+	public void showGeneralCommentReply(ReviewData reviewData, GeneralComment comment) {
 	}
 
-	public void showVersionedComment(CrucibleChangeSet crucibleChangeSet, CrucibleFileInfo reviewItem,
+	public void showVersionedComment(ReviewData reviewData, CrucibleFileInfo reviewItem,
 							  Collection<VersionedComment> versionedComments, VersionedComment versionedComment) {
 	}
 
-	public void showVersionedCommentReply(CrucibleChangeSet crucibleChangeSet, GeneralComment comment) {
+	public void showVersionedCommentReply(ReviewData reviewData, GeneralComment comment) {
 	}
 }

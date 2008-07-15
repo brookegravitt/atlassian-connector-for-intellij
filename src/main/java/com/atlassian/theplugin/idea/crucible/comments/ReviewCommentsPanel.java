@@ -8,12 +8,11 @@ import com.intellij.ide.DataManager;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.atlassian.theplugin.idea.ui.*;
-import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
 import com.atlassian.theplugin.idea.crucible.events.ShowGeneralCommentEvent;
 import com.atlassian.theplugin.idea.crucible.events.FocusOnGeneralCommentReplyEvent;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -25,7 +24,6 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
-import java.util.Collection;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -102,7 +100,7 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 					IdeaHelper.getReviewActionEventBroker().trigger(
 							new FocusOnGeneralCommentReplyEvent(
 									CrucibleReviewActionListener.I_WANT_THIS_MESSAGE_BACK,
-									(CrucibleChangeSet)
+									(ReviewData)
 											CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
 									selectedComment
 							)
@@ -121,7 +119,7 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 				if (noClicks == 1) {
 					// GeneralComment server = ((GeneralCommentNode) selectedNode).getGeneralComment();
 					DialogWrapper d = new DDialog(DataManager.getInstance().getDataContext(),
-							(CrucibleChangeSet) CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
+							(ReviewData) CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
 							selectedComment);
 					d.show();
 					d.toFront();
@@ -130,7 +128,7 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 					IdeaHelper.getReviewActionEventBroker().trigger(
 							new ShowGeneralCommentEvent(
 									CrucibleReviewActionListener.I_WANT_THIS_MESSAGE_BACK,
-									(CrucibleChangeSet)
+									(ReviewData)
 											CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
 									selectedComment
 							)
@@ -185,30 +183,30 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 
 
 	private class CommentListChangedListener implements Runnable {
-		private CrucibleChangeSet crucibleChangeSet;
+		private ReviewData reviewData;
 		private final List<GeneralComment> generalComments;
 
-		public CommentListChangedListener(CrucibleChangeSet crucibleChangeSet, List<GeneralComment> generalComments) {
-			this.crucibleChangeSet = crucibleChangeSet;
+		public CommentListChangedListener(ReviewData reviewData, List<GeneralComment> generalComments) {
+			this.reviewData = reviewData;
 			this.generalComments = generalComments;
 		}
 
 		public void run() {
-			CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.setValue(context, crucibleChangeSet);
+			CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.setValue(context, reviewData);
 			getCommentTableModel().setItems(generalComments);
 			getCommentTableModel().fireTableDataChanged();
-			getCommentsTable().getHeaderLabel().setText("General comments to " + crucibleChangeSet);
+			getCommentsTable().getHeaderLabel().setText("General comments to " + reviewData);
 //			dataPanelsHolder.moveToFront(commentsTable);
 			switchToComments();
 		}
 	}
 
 	private class CommentSelectedListener implements Runnable {
-		private CrucibleChangeSet crucibleChangeSet;
+		private ReviewData reviewData;
 		private GeneralComment comment;
 
-		public CommentSelectedListener(CrucibleChangeSet crucibleChangeSet, GeneralComment comment) {
-			this.crucibleChangeSet = crucibleChangeSet;
+		public CommentSelectedListener(ReviewData reviewData, GeneralComment comment) {
+			this.reviewData = reviewData;
 			this.comment = comment;
 		}
 
@@ -237,7 +235,7 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 		private CrucibleCommentPanel commentPanel;
 
 
-		public DDialog(DataContext dataContext, CrucibleChangeSet adapter, GeneralComment comment) {
+		public DDialog(DataContext dataContext, ReviewData adapter, GeneralComment comment) {
 			super(true);
 			this.commentPanel = new CrucibleCommentPanel(adapter, comment);
 			init();
@@ -250,12 +248,12 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 	}
 
 	private class MyCrucibleReviewActionListener extends CrucibleReviewActionListener {
-		public void showReview(CrucibleChangeSet crucibleChangeSet) {
+		public void showReview(ReviewData reviewData) {
 			try {
 				getProgressAnimation().startProgressAnimation();
 				final List<GeneralComment> generalComments = crucibleServerFacade.getGeneralComments(
-						crucibleChangeSet.getServer(), crucibleChangeSet.getPermaId());
-				EventQueue.invokeLater(new CommentListChangedListener(crucibleChangeSet, generalComments));
+						reviewData.getServer(), reviewData.getPermId());
+				EventQueue.invokeLater(new CommentListChangedListener(reviewData, generalComments));
 			} catch (RemoteApiException e) {
 				LOGGER.warn("Error retrieving comments", e);
 			} catch (ServerPasswordNotProvidedException e) {
@@ -265,8 +263,8 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 			}
 		}
 
-		public void showGeneralComment(CrucibleChangeSet crucibleChangeSet, GeneralComment comment) {
-			EventQueue.invokeLater(new CommentSelectedListener(crucibleChangeSet, comment));
+		public void showGeneralComment(ReviewData reviewData, GeneralComment comment) {
+			EventQueue.invokeLater(new CommentSelectedListener(reviewData, comment));
 		}
 
 	}

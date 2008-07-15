@@ -17,7 +17,7 @@
 package com.atlassian.theplugin.idea.action.crucible;
 
 import com.intellij.ide.BrowserUtil;
-import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
 
 /**
  * Created by IntelliJ IDEA.
@@ -30,6 +30,6 @@ import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
 public class ViewReviewAction extends TableSelectedAction {
 
 	protected void itemSelected(Object row) {
-		BrowserUtil.launchBrowser(((CrucibleChangeSet) row).getReviewUrl());
+		BrowserUtil.launchBrowser(((ReviewData) row).getReviewUrl());
 	}
 }

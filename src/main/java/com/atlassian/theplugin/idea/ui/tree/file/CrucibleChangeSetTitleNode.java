@@ -2,10 +2,8 @@ package com.atlassian.theplugin.idea.ui.tree.file;
 
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
-import com.intellij.openapi.fileTypes.FileTypeManager;
-import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.util.Icons;
-import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,9 +16,9 @@ import java.awt.*;
  * To change this template use File | Settings | File Templates.
  */
 public class CrucibleChangeSetTitleNode extends FileNode {
-	private CrucibleChangeSet changeSet;
+	private ReviewData changeSet;
 
-	public CrucibleChangeSetTitleNode(CrucibleChangeSet changeSet) {
+	public CrucibleChangeSetTitleNode(ReviewData changeSet) {
 		super(changeSet.getName());
 		this.changeSet = changeSet;
 	}
@@ -30,11 +28,11 @@ public class CrucibleChangeSetTitleNode extends FileNode {
 		return CrucibleChangeSetTitleNodeRenderer.getInstance();
 	}
 
-	public CrucibleChangeSet getChangeSet() {
+	public ReviewData getChangeSet() {
 		return changeSet;
 	}
 
-	public void setChangeSet(CrucibleChangeSet changeSet) {
+	public void setChangeSet(ReviewData changeSet) {
 		this.changeSet = changeSet;
 	}
 
@@ -51,7 +49,7 @@ public class CrucibleChangeSetTitleNode extends FileNode {
 		public void customizeCellRenderer(JTree tree, Object value, boolean selected, boolean expanded,
                 boolean leaf, int row, boolean hasFocus) {
 			CrucibleChangeSetTitleNode node = (CrucibleChangeSetTitleNode) value;
-			append(node.getChangeSet().getPermaId().getId(), new SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD,
+			append(node.getChangeSet().getPermId().getId(), new SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD,
 					Color.red));
 			append(" ", SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
 			append(node.getChangeSet().getName(), SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);

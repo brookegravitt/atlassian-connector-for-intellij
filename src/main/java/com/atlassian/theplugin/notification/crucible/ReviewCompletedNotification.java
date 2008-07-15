@@ -14,6 +14,6 @@ public class ReviewCompletedNotification implements CrucibleNotification {
     }
 
     public String getPresentationMessage() {
-        return "Review: " + review.getPermaId().getId() + " completed";
+        return "Review: " + review.getPermId().getId() + " completed";
     }
 }

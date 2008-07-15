@@ -17,6 +17,6 @@ public class ReviewerCompletedNotification implements CrucibleNotification {
     }
 
     public String getPresentationMessage() {
-        return "Reviewer " + reviewer.getDisplayName() + " " + (reviewer.isCompleted()? "completed" : " uncompleted") + " review " + review.getPermaId().getId();
+        return "Reviewer " + reviewer.getDisplayName() + " " + (reviewer.isCompleted()? "completed" : " uncompleted") + " review " + review.getPermId().getId();
     }
 }

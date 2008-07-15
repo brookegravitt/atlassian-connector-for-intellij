@@ -78,7 +78,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
     protected TableColumnProvider tableColumnProvider = new CrucibleTableColumnProviderImpl();
 
-    private CrucibleChangeSet selectedItem;
+    private ReviewData selectedItem;
 
     private Map<PredefinedFilter, CollapsibleTable> tables = new HashMap<PredefinedFilter, CollapsibleTable>();
     private Map<String, CollapsibleTable> customTables = new HashMap<String, CollapsibleTable>();
@@ -303,18 +303,18 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     /*
     Crucible 1.5
      */
-    public void updateReviews(Collection<CrucibleChangeSet> reviews) {
+    public void updateReviews(Collection<ReviewData> reviews) {
         this.crucibleVersion = CrucibleVersion.CRUCIBLE_15;
         if (crucible15Table == null) {
             switchToCrucible15Filter();
         }
-        List<CrucibleChangeSet> crucibleChangeSets = new ArrayList<CrucibleChangeSet>(reviews);
-        crucible15Table.getListTableModel().setItems(crucibleChangeSets);
+        List<ReviewData> reviewDatas = new ArrayList<ReviewData>(reviews);
+        crucible15Table.getListTableModel().setItems(reviewDatas);
         crucible15Table.getListTableModel().fireTableDataChanged();
         crucible15Table.getTable().revalidate();
         crucible15Table.getTable().setEnabled(true);
         crucible15Table.getTable().setForeground(UIUtil.getActiveTextColor());
-        crucible15Table.setTitle(TO_REVIEW_AS_ACTIVE_REVIEWER + " (" + crucibleChangeSets.size() + ")");
+        crucible15Table.setTitle(TO_REVIEW_AS_ACTIVE_REVIEWER + " (" + reviewDatas.size() + ")");
         crucible15Table.expand();
 
         StringBuffer sb = new StringBuffer();
@@ -327,8 +327,8 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     /*
     Crucible 1.6
      */
-    public void updateReviews(Map<PredefinedFilter, List<CrucibleChangeSet>> reviews, Map<String,
-            List<CrucibleChangeSet>> customFilterReviews) {
+    public void updateReviews(Map<PredefinedFilter, List<ReviewData>> reviews, Map<String,
+            List<ReviewData>> customFilterReviews) {
 
         this.crucibleVersion = CrucibleVersion.CRUCIBLE_16;
         if (tables.isEmpty()) {
@@ -336,7 +336,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         }
         int reviewCount = 0;
         for (PredefinedFilter predefinedFilter : reviews.keySet()) {
-            List<CrucibleChangeSet> reviewList = reviews.get(predefinedFilter);
+            List<ReviewData> reviewList = reviews.get(predefinedFilter);
             if (reviewList != null) {
                 CollapsibleTable table = tables.get(predefinedFilter);
                 if (table != null) {
@@ -352,7 +352,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         }
 
         for (String filterName : customFilterReviews.keySet()) {
-            List<CrucibleChangeSet> reviewList = customFilterReviews.get(filterName);
+            List<ReviewData> reviewList = customFilterReviews.get(filterName);
             if (reviewList != null) {
                 CollapsibleTable table = customTables.get(filterName);
                 if (table != null) {
@@ -376,10 +376,10 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     }
 
     public void itemSelected(Object item, int noClicks) {
-        selectedItem = (CrucibleChangeSet) item;
+        selectedItem = (ReviewData) item;
         if (noClicks == 2) {
-			if (item != null && item instanceof CrucibleChangeSet) {
-				CrucibleChangeSet review = (CrucibleChangeSet) item;
+			if (item != null && item instanceof ReviewData) {
+				ReviewData review = (ReviewData) item;
 				IdeaHelper.getReviewActionEventBroker().trigger(new ShowReviewEvent(
 						listener, review));
 			}
@@ -432,7 +432,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
     public PermId getSelectedReviewId() {
         if (selectedItem != null) {
-            return this.selectedItem.getPermaId();
+            return this.selectedItem.getPermId();
         }
         return null;
     }
@@ -557,7 +557,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
             System.out.println("metric.getName() = " + metric.getName());
         }
 
-        List<GeneralComment> comments = serverFacade.getComments(selectedItem.getServer(), selectedItem.getPermaId());
+        List<GeneralComment> comments = serverFacade.getComments(selectedItem.getServer(), selectedItem.getPermId());
         for (GeneralComment comment : comments) {
             System.out.println("comment.getMessage() = " + comment.getMessage() + ", defect: " + comment.isDefectRaised());
             for (String key : comment.getCustomFields().keySet()) {
@@ -587,7 +587,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         gc.getCustomFields().put("classification", v2);
 
 
-        GeneralComment gc1 = serverFacade.addGeneralComment(selectedItem.getServer(), selectedItem.getPermaId(), gc);
+        GeneralComment gc1 = serverFacade.addGeneralComment(selectedItem.getServer(), selectedItem.getPermId(), gc);
         System.out.println("gc1.getPermId().getId() = " + gc1.getPermId().getId());
 
         gc.getCustomFields().clear();
@@ -607,7 +607,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         v4.setValue(Integer.valueOf(8));
         gc.getCustomFields().put("classification", v4);
 
-        serverFacade.updateGeneralComment(selectedItem.getServer(), selectedItem.getPermaId(), gc);
+        serverFacade.updateGeneralComment(selectedItem.getServer(), selectedItem.getPermId(), gc);
 
         GeneralCommentBean reply = new GeneralCommentBean();
         reply.setUser("mwent");
@@ -615,14 +615,14 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         reply.setMessage("Ola ma psa - to jest reply");
         reply.setDraft(true);
 
-        GeneralComment rc = serverFacade.addReply(selectedItem.getServer(), selectedItem.getPermaId(), gc1.getPermId(), reply);
+        GeneralComment rc = serverFacade.addReply(selectedItem.getServer(), selectedItem.getPermId(), gc1.getPermId(), reply);
 
         reply.setMessage("A ja nie mam zwiarzaka");
-        serverFacade.updateReply(selectedItem.getServer(), selectedItem.getPermaId(), gc1.getPermId(), rc.getPermId(), reply);
+        serverFacade.updateReply(selectedItem.getServer(), selectedItem.getPermId(), gc1.getPermId(), rc.getPermId(), reply);
 
 
 
-        List<ReviewItem> items = serverFacade.getFiles(selectedItem.getServer(), selectedItem.getPermaId());
+        List<ReviewItem> items = serverFacade.getFiles(selectedItem.getServer(), selectedItem.getPermId());
         for (ReviewItem item : items) {
 
             VersionedCommentBean vc = new VersionedCommentBean();
@@ -698,24 +698,24 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
             serverFacade.addVersionedComment(selectedItem.getServer(), item.getPermId(), vc);
 
         }
-        serverFacade.publishAllCommentsForReview(selectedItem.getServer(), selectedItem.getPermaId());
+        serverFacade.publishAllCommentsForReview(selectedItem.getServer(), selectedItem.getPermId());
 
-        serverFacade.completeReview(selectedItem.getServer(), selectedItem.getPermaId(), true);
+        serverFacade.completeReview(selectedItem.getServer(), selectedItem.getPermId(), true);
 
-        serverFacade.completeReview(selectedItem.getServer(), selectedItem.getPermaId(), false);
+        serverFacade.completeReview(selectedItem.getServer(), selectedItem.getPermId(), false);
 
-        serverFacade.approveReview(selectedItem.getServer(), selectedItem.getPermaId());
-        serverFacade.summarizeReview(selectedItem.getServer(), selectedItem.getPermaId());
-        serverFacade.closeReview(selectedItem.getServer(), selectedItem.getPermaId(), "To jest summary");
-        serverFacade.reopenReview(selectedItem.getServer(), selectedItem.getPermaId());
-        serverFacade.abandonReview(selectedItem.getServer(), selectedItem.getPermaId());
-        serverFacade.recoverReview(selectedItem.getServer(), selectedItem.getPermaId());
-        serverFacade.approveReview(selectedItem.getServer(), selectedItem.getPermaId());
-        serverFacade.summarizeReview(selectedItem.getServer(), selectedItem.getPermaId());
-        serverFacade.abandonReview(selectedItem.getServer(), selectedItem.getPermaId());
+        serverFacade.approveReview(selectedItem.getServer(), selectedItem.getPermId());
+        serverFacade.summarizeReview(selectedItem.getServer(), selectedItem.getPermId());
+        serverFacade.closeReview(selectedItem.getServer(), selectedItem.getPermId(), "To jest summary");
+        serverFacade.reopenReview(selectedItem.getServer(), selectedItem.getPermId());
+        serverFacade.abandonReview(selectedItem.getServer(), selectedItem.getPermId());
+        serverFacade.recoverReview(selectedItem.getServer(), selectedItem.getPermId());
+        serverFacade.approveReview(selectedItem.getServer(), selectedItem.getPermId());
+        serverFacade.summarizeReview(selectedItem.getServer(), selectedItem.getPermId());
+        serverFacade.abandonReview(selectedItem.getServer(), selectedItem.getPermId());
 
         List<CrucibleAction> crucibleActions
-                = serverFacade.getAvailableActions(selectedItem.getServer(), selectedItem.getPermaId());
+                = serverFacade.getAvailableActions(selectedItem.getServer(), selectedItem.getPermId());
         for (CrucibleAction crucibleAction : crucibleActions) {
             System.out.println("crucibleAction = " + crucibleAction.getName());
         }

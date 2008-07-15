@@ -17,6 +17,8 @@ package com.atlassian.theplugin.idea.crucible.tree;
 
 import com.atlassian.theplugin.commons.crucible.*;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewDataImpl;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.Logger;
@@ -161,7 +163,7 @@ public final class ReviewItemTreePanel extends JPanel {
 
 //	private static class ReviewTreeBuiler extends FileTreeModelBuilder {
 //
-//		public static AtlassianTreeModel buildFromReview(CrucibleChangeSet reviewAdapter, Collection<ReviewItem> reviewFiles) {
+//		public static AtlassianTreeModel buildFromReview(ReviewData reviewAdapter, Collection<ReviewItem> reviewFiles) {
 //			List<VersionedFileInfo> files = new ArrayList<VersionedFileInfo>();
 //			for(ReviewItem file : reviewFiles) {
 //				VcsVirtualFile toFile = new VcsVirtualFile(file.getFromPath(), null,
@@ -173,7 +175,7 @@ public final class ReviewItemTreePanel extends JPanel {
 //				fileToAdd.setNumberOfDefects(2);
 //				files.add(fileToAdd);
 //			}
-//			CrucibleChangeSet changeSet;
+//			ReviewData changeSet;
 //			return FileTreeModelBuilder.buildTreeModelFromCrucibleItems(changeSet);
 //
 //		}
@@ -181,15 +183,15 @@ public final class ReviewItemTreePanel extends JPanel {
 
 	private class MyReviewActionListener extends CrucibleReviewActionListener {
 
-		public void showReview(final CrucibleChangeSet reviewItem) {
+		public void showReview(final ReviewData reviewItem) {
 			progressAnimation.startProgressAnimation();
 			try {
 				AtlassianTreeModel model = null;
 				try {
 					model = FileTreeModelBuilder.buildTreeModelFromCrucibleChangeSet(reviewItem);
 				} catch (ValueNotYetInitialized valueNotYetInitialized) {
-					((CrucibleChangeSetImpl) reviewItem).setFiles(
-							crucibleServerFacade.getFiles(reviewItem.getServer(), reviewItem.getPermaId()));
+					((ReviewDataImpl) reviewItem).setFiles(
+							crucibleServerFacade.getFiles(reviewItem.getServer(), reviewItem.getPermId()));
 				}
 				final AtlassianTreeModel model1 = model;
 				EventQueue.invokeLater(new Runnable() {

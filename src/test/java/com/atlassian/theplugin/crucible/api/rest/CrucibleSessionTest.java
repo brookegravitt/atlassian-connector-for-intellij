@@ -22,8 +22,8 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import com.atlassian.theplugin.commons.crucible.api.*;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.crucible.api.rest.CrucibleSessionImpl;
-import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
-import com.atlassian.theplugin.commons.crucible.CrucibleChangeSetImpl;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewDataImpl;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.ServerBean;
@@ -133,7 +133,9 @@ public class CrucibleSessionTest extends TestCase {
 
 	public void testNullParamsLogin() throws Exception {
 		try {
-			CrucibleSession apiHandler = new CrucibleSessionImpl(null);
+            com.atlassian.theplugin.commons.Server srv = new ServerBean();
+		    srv.setUrlString(mockBaseUrl);
+		    CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 			apiHandler.login(null, null);
 			fail();
 		} catch (RemoteApiException ex) {
@@ -296,7 +298,7 @@ public class CrucibleSessionTest extends TestCase {
 		apiHandler.logout();
 
 		com.atlassian.theplugin.commons.Server srv2 = new ServerBean();
-		srv.setUrlString(mockBaseUrl);
+		srv2.setUrlString(mockBaseUrl);
 		CrucibleSession apiHandler2 = new CrucibleSessionImpl(srv2);
 		apiHandler2.logout();
 
@@ -399,10 +401,10 @@ public class CrucibleSessionTest extends TestCase {
 		CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		List<CrucibleChangeSet> reviews = apiHandler.getAllReviews(false);
+		List<ReviewData> reviews = apiHandler.getAllReviews(false);
 		assertEquals(states.size(), reviews.size());
 		int i = 0;
-		for (CrucibleChangeSet review : reviews) {
+		for (ReviewData review : reviews) {
 			assertEquals(review.getState(), states.get(i++));
 		}
 		mockServer.verify();
@@ -417,7 +419,7 @@ public class CrucibleSessionTest extends TestCase {
 		CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		List<CrucibleChangeSet> reviews = apiHandler.getAllReviews(false);
+		List<ReviewData> reviews = apiHandler.getAllReviews(false);
 		assertEquals(states.size(), reviews.size());
 		assertTrue(reviews.isEmpty());
 		mockServer.verify();
@@ -432,7 +434,7 @@ public class CrucibleSessionTest extends TestCase {
 		CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		List<CrucibleChangeSet> reviews = apiHandler.getAllReviews(false);
+		List<ReviewData> reviews = apiHandler.getAllReviews(false);
 		assertEquals(states.size(), reviews.size());
 		assertTrue(reviews.isEmpty());
 		mockServer.verify();
@@ -447,7 +449,7 @@ public class CrucibleSessionTest extends TestCase {
 		CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		List<CrucibleChangeSet> reviews = apiHandler.getReviewsInStates(states, false);
+		List<ReviewData> reviews = apiHandler.getReviewsInStates(states, false);
 		assertEquals(states.size(), reviews.size());
 		assertTrue(!reviews.isEmpty());
 		mockServer.verify();
@@ -463,7 +465,7 @@ public class CrucibleSessionTest extends TestCase {
 
 		apiHandler.login(USER_NAME, PASSWORD);
 		List<State> req = Arrays.asList(State.CLOSED);
-		List<CrucibleChangeSet> reviews = apiHandler.getReviewsInStates(req, false);
+		List<ReviewData> reviews = apiHandler.getReviewsInStates(req, false);
 		assertTrue(reviews.isEmpty());
 		mockServer.verify();
 	}
@@ -478,7 +480,7 @@ public class CrucibleSessionTest extends TestCase {
 
 		apiHandler.login(USER_NAME, PASSWORD);
 		List<State> req = Arrays.asList();
-		List<CrucibleChangeSet> reviews = apiHandler.getReviewsInStates(req, false);
+		List<ReviewData> reviews = apiHandler.getReviewsInStates(req, false);
 		assertEquals(states.size(), reviews.size());
 		assertTrue(!reviews.isEmpty());
 		mockServer.verify();
@@ -605,7 +607,7 @@ public class CrucibleSessionTest extends TestCase {
 	}
 
 	public void testCreateReview() throws Exception {
-		CrucibleChangeSet review = createReviewRequest();
+		ReviewData review = createReviewRequest();
 
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
 		mockServer.expect("/rest-service/reviews-v1", new CreateReviewCallback());
@@ -623,13 +625,13 @@ public class CrucibleSessionTest extends TestCase {
 		assertEquals(review.getProjectKey(), response.getProjectKey());
 		assertEquals(CreateReviewCallback.REPO_NAME, response.getRepoName());
 		assertEquals(State.DRAFT, response.getState());
-		assertEquals(CreateReviewCallback.PERM_ID, response.getPermaId().getId());
+		assertEquals(CreateReviewCallback.PERM_ID, response.getPermId().getId());
 
 		mockServer.verify();
 	}
 
 	public void testCreateReviewMalformedResponse() throws Exception {
-		CrucibleChangeSet review = createReviewRequest();
+		ReviewData review = createReviewRequest();
 
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
 		mockServer.expect("/rest-service/reviews-v1", new MalformedResponseCallback());
@@ -648,7 +650,7 @@ public class CrucibleSessionTest extends TestCase {
 	}
 
 	public void testCreateReviewErrorResponse() throws Exception {
-		CrucibleChangeSet review = createReviewRequest();
+		ReviewData review = createReviewRequest();
 
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
 		mockServer.expect("/rest-service/reviews-v1", new ErrorResponse(500, ""));
@@ -676,7 +678,7 @@ public class CrucibleSessionTest extends TestCase {
 		CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		CrucibleChangeSet review = createReviewRequest();
+		ReviewData review = createReviewRequest();
 		Review response = apiHandler.createReviewFromPatch(review, "patch text");
 		assertEquals(review.getAuthor(), response.getAuthor());
 		assertEquals(review.getCreator(), response.getCreator());
@@ -686,7 +688,7 @@ public class CrucibleSessionTest extends TestCase {
 		assertEquals(review.getProjectKey(), response.getProjectKey());
 		assertEquals(CreateReviewCallback.REPO_NAME, response.getRepoName());
 		assertEquals(State.DRAFT, response.getState());
-		assertEquals(CreateReviewCallback.PERM_ID, response.getPermaId().getId());
+		assertEquals(CreateReviewCallback.PERM_ID, response.getPermId().getId());
 
 		mockServer.verify();
 	}
@@ -699,7 +701,7 @@ public class CrucibleSessionTest extends TestCase {
 		CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		CrucibleChangeSet review = createReviewRequest();
+		ReviewData review = createReviewRequest();
 		Review response = apiHandler.createReviewFromPatch(review, null);
 		assertEquals(review.getAuthor(), response.getAuthor());
 		assertEquals(review.getCreator(), response.getCreator());
@@ -709,7 +711,7 @@ public class CrucibleSessionTest extends TestCase {
 		assertEquals(review.getProjectKey(), response.getProjectKey());
 		assertEquals(CreateReviewCallback.REPO_NAME, response.getRepoName());
 		assertEquals(State.DRAFT, response.getState());
-		assertEquals(CreateReviewCallback.PERM_ID, response.getPermaId().getId());
+		assertEquals(CreateReviewCallback.PERM_ID, response.getPermId().getId());
 
 		mockServer.verify();
 	}
@@ -722,7 +724,7 @@ public class CrucibleSessionTest extends TestCase {
 		CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		CrucibleChangeSet review = createReviewRequest();
+		ReviewData review = createReviewRequest();
 		Review response = apiHandler.createReviewFromPatch(review, "");
 		assertEquals(review.getAuthor(), response.getAuthor());
 		assertEquals(review.getCreator(), response.getCreator());
@@ -732,7 +734,7 @@ public class CrucibleSessionTest extends TestCase {
 		assertEquals(review.getProjectKey(), response.getProjectKey());
 		assertEquals(CreateReviewCallback.REPO_NAME, response.getRepoName());
 		assertEquals(State.DRAFT, response.getState());
-		assertEquals(CreateReviewCallback.PERM_ID, response.getPermaId().getId());
+		assertEquals(CreateReviewCallback.PERM_ID, response.getPermId().getId());
 
 		mockServer.verify();
 	}
@@ -746,7 +748,7 @@ public class CrucibleSessionTest extends TestCase {
 
 		apiHandler.login(USER_NAME, PASSWORD);
 		try {
-			CrucibleChangeSet review = createReviewRequest();
+			ReviewData review = createReviewRequest();
 			apiHandler.createReviewFromPatch(review, "patch text");
 			fail();
 		} catch (RemoteApiException e) {
@@ -840,8 +842,8 @@ public class CrucibleSessionTest extends TestCase {
 		mockServer.verify();
 	}
 
-	private CrucibleChangeSet createReviewRequest() {
-		CrucibleChangeSetImpl review = new CrucibleChangeSetImpl(new ServerBean());
+	private ReviewData createReviewRequest() {
+		ReviewDataImpl review = new ReviewDataImpl(new ServerBean());
 		review.setAuthor(new UserBean("autor",""));
 		review.setCreator(new UserBean("creator",""));
 		review.setDescription("description");
