@@ -58,7 +58,7 @@ public class ReviewDecoratorImpl implements ReviewDecorator {
 							+ text
 							+ "</span>";
 			} else if (reviewer != null && ! reviewer.isCompleted()) {
-				text = "<span style=\"color: #000099; \">"
+				text = "<span style=\"color: #0000aa; \">"
 							+ text
 							+ "</span>";
 			}
