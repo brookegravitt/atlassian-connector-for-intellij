@@ -18,7 +18,7 @@ package com.atlassian.theplugin.idea.crucible.table.column;
 
 import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.atlassian.theplugin.idea.crucible.table.renderer.ReviewDecoratorImpl;
-import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
 
 import java.util.Comparator;
 
@@ -31,7 +31,7 @@ public class ReviewAuthorColumn extends TableColumnInfo {
 	}
 
 	public Object valueOf(Object o) {
-		CrucibleChangeSet review = (CrucibleChangeSet) o;
+		ReviewData review = (ReviewData) o;
 
 		return new ReviewDecoratorImpl(review.getAuthor().getDisplayName(), review).getString();
 	}
@@ -43,7 +43,7 @@ public class ReviewAuthorColumn extends TableColumnInfo {
 	public Comparator getComparator() {
 		return new Comparator() {
 			public int compare(Object o, Object o1) {
-				return ((CrucibleChangeSet) o).getAuthor().getUserName().compareTo(((CrucibleChangeSet) o1).getAuthor().getUserName());
+				return ((ReviewData) o).getAuthor().getUserName().compareTo(((ReviewData) o1).getAuthor().getUserName());
 			}
 		};
 	}

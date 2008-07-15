@@ -18,7 +18,7 @@ package com.atlassian.theplugin.idea.crucible.table.column;
 
 import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
-import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.util.ReviewInfoUtil;
 
@@ -53,8 +53,8 @@ public class ReviewReviewersColumn extends TableColumnInfo {
 
 		 return new Comparator() {
             public int compare(Object o, Object o1) {
-				CrucibleChangeSet review1 = (CrucibleChangeSet) o;
-				CrucibleChangeSet review2 = (CrucibleChangeSet) o1;
+				ReviewData review1 = (ReviewData) o;
+				ReviewData review2 = (ReviewData) o1;
 				List<Reviewer> r1 = null;
 				List<Reviewer> r2 = null;
 				int r1s = 0;
@@ -83,8 +83,8 @@ public class ReviewReviewersColumn extends TableColumnInfo {
 	public static String getReviewersAsText(Object o) {
 		StringBuffer sb = new StringBuffer();
 		try {
-			if (((CrucibleChangeSet) o).getReviewers() != null) {
-				for (Iterator<Reviewer> iterator = ((CrucibleChangeSet) o).getReviewers().iterator(); iterator.hasNext();) {
+			if (((ReviewData) o).getReviewers() != null) {
+				for (Iterator<Reviewer> iterator = ((ReviewData) o).getReviewers().iterator(); iterator.hasNext();) {
 					sb.append(iterator.next().getUserName());
 					if (iterator.hasNext()) {
 						sb.append(", ");

@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.crucible.table.column.ReviewKeyComparator;
@@ -52,8 +52,8 @@ public class ReviewKeyComparatorTest extends TestCase {
 		assertEquals(0, comparator.compare(getReviewAdapter("CR", "-1"), getReviewAdapter("CR", "-1")));		
 	}
 
-	private CrucibleChangeSet getReviewAdapter(final String projectKey, final String key) {
-		return new CrucibleChangeSet() {
+	private ReviewData getReviewAdapter(final String projectKey, final String key) {
+		return new ReviewData() {
 
 			public String getReviewUrl() {
 				return null;
@@ -111,7 +111,7 @@ public class ReviewKeyComparatorTest extends TestCase {
 				return null;
 			}
 
-			public PermId getPermaId() {
+			public PermId getPermId() {
 				return new PermId() {
 
 					public String getId() {

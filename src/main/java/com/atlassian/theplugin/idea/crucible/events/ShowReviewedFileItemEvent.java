@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.crucible.events;
 
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
-import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 
 /**
@@ -12,10 +12,10 @@ import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 * To change this template use File | Settings | File Templates.
 */
 public class ShowReviewedFileItemEvent extends CrucibleEvent {
-	private CrucibleChangeSet reviewInfo;
+	private ReviewData reviewInfo;
 	private CrucibleFileInfo reviewItem;
 
-	public ShowReviewedFileItemEvent(CrucibleReviewActionListener caller, CrucibleChangeSet reviewInfo,
+	public ShowReviewedFileItemEvent(CrucibleReviewActionListener caller, ReviewData reviewInfo,
             CrucibleFileInfo reviewItem) {
 		super(caller);
 		this.reviewInfo = reviewInfo;

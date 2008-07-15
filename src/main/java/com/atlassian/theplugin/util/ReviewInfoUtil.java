@@ -16,12 +16,9 @@
 
 package com.atlassian.theplugin.util;
 
-import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
-import com.atlassian.theplugin.commons.Server;
-
-import java.util.List;
 
 
 public class ReviewInfoUtil {
@@ -29,7 +26,7 @@ public class ReviewInfoUtil {
 	private ReviewInfoUtil() {
 	}
 
-	public static int getNumOfCompletedReviewers(CrucibleChangeSet review) {
+	public static int getNumOfCompletedReviewers(ReviewData review) {
 		int numCompleted = 0;
 
 		try {
@@ -44,7 +41,7 @@ public class ReviewInfoUtil {
 		return numCompleted;
 	}
 
-	public static String toString(CrucibleChangeSet review) {
-		return review.getPermaId().getId() + ": " + review.getName();
+	public static String toString(ReviewData review) {
+		return review.getPermId().getId() + ": " + review.getName();
 	}
 }

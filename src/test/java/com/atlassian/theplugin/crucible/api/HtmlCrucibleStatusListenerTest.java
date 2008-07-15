@@ -17,9 +17,9 @@
 package com.atlassian.theplugin.crucible.api;
 
 import com.atlassian.theplugin.commons.configuration.ServerBean;
-import com.atlassian.theplugin.commons.crucible.CrucibleChangeSetImpl;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewDataImpl;
 import com.atlassian.theplugin.commons.Server;
-import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
 import com.atlassian.theplugin.commons.crucible.*;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.gargoylesoftware.htmlunit.StringWebResponse;
@@ -84,7 +84,7 @@ public class HtmlCrucibleStatusListenerTest extends TestCase {
 	}
 
 	public void testEmptyStatusCollection() throws Exception {
-		testedListener.updateReviews(new ArrayList<CrucibleChangeSet>());
+		testedListener.updateReviews(new ArrayList<ReviewData>());
 		assertEquals(1, output.count);
         assertEquals(
                 "<html>" + HtmlCrucibleStatusListener.BODY_WITH_STYLE + "No reviews at this time.</body></html>",
@@ -92,7 +92,7 @@ public class HtmlCrucibleStatusListenerTest extends TestCase {
 	}
 
 	public void testSingleSuccessResult() throws Exception {
-		Collection<CrucibleChangeSet> reviewInfo = new ArrayList<CrucibleChangeSet>();
+		Collection<ReviewData> reviewInfo = new ArrayList<ReviewData>();
 
 		reviewInfo.add(generateReviewDataInfo("1"));
 		testedListener.updateReviews(reviewInfo);
@@ -154,9 +154,9 @@ public class HtmlCrucibleStatusListenerTest extends TestCase {
         return result.toString();
     }
 
-	public static CrucibleChangeSet generateReviewDataInfo(final String suffix) {
+	public static ReviewData generateReviewDataInfo(final String suffix) {
 
-		CrucibleChangeSetImpl rd = new CrucibleChangeSetImpl(server);
+		ReviewDataImpl rd = new ReviewDataImpl(server);
 		rd.setAuthor(new UserBean(DEFAULT_AUTHOR + suffix));
 		rd.setCreator(new UserBean(DEFAULT_CREATOR));
 		rd.setDescription(DEFAULT_DESCRIPTION);
@@ -165,7 +165,7 @@ public class HtmlCrucibleStatusListenerTest extends TestCase {
 
 		PermIdBean permId = new PermIdBean();
 		permId.setId(DEFAULT_PERM_ID + suffix);
-		rd.setPermaId(permId);
+		rd.setPermId(permId);
 		rd.setProjectKey(DEFAULT_PROJECT_KEY + suffix);
 		rd.setState(DEFAULT_STATE);
 
