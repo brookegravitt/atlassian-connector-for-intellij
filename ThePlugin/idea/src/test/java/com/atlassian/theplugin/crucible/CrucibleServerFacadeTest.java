@@ -28,6 +28,7 @@ import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
 import com.atlassian.theplugin.commons.crucible.*;
 import com.atlassian.theplugin.commons.crucible.api.*;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.VirtualFileSystem;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
