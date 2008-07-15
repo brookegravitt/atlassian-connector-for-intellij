@@ -14,25 +14,21 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.commons;
+package com.atlassian.theplugin.commons.bamboo;
 
-public class VersionedFileDescriptor {
-	private String fileName;
-	private String revision;
+import com.atlassian.theplugin.commons.BambooFileInfo;
 
-	public String getFileName() {
-		return fileName;
-	}
+import java.util.Date;
+import java.util.List;
 
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
-	}
+public interface BambooChangeSet {
+	String getAuthor();
 
-	public String getRevision() {
-		return revision;
-	}
+	String getComment();
 
-	public void setRevision(String revision) {
-		this.revision = revision;
-	}
+	Date getCommitDate();
+
+	List<BambooFileInfo> getFiles();
+
+	com.atlassian.theplugin.commons.VirtualFileSystem getVirtualFileSystem();
 }

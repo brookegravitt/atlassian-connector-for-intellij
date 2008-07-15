@@ -17,7 +17,14 @@
 package com.atlassian.theplugin.commons.crucible.api.rest;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
+import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
+import com.atlassian.theplugin.commons.crucible.CrucibleChangeSetImpl;
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.VersionedVirtualFile;
+import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.crucible.CrucibleFileInfo;
+import com.atlassian.theplugin.crucible.CrucibleFileInfoImpl;
 import org.jdom.CDATA;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -144,7 +151,7 @@ public final class CrucibleRestXmlHelper {
         return reviewerBean;
     }
 
-    private static void parseReview(Element reviewNode, ReviewBean review) {
+    private static void parseReview(Element reviewNode, CrucibleChangeSetImpl review) {
         if (reviewNode.getChild("author") != null) {
             review.setAuthor(parseUserNode(reviewNode.getChild("author")));
         }
@@ -177,58 +184,81 @@ public final class CrucibleRestXmlHelper {
         }
     }
 
-    public static Review parseReviewNode(Element reviewNode) {
-        ReviewBean review = new ReviewBean();
+    public static CrucibleChangeSet parseReviewNode(Server server, Element reviewNode) {
+        CrucibleChangeSetImpl review = new CrucibleChangeSetImpl(server);
         parseReview(reviewNode, review);
         return review;
     }
 
-    public static DetailedReview parseDetailedReviewNode(Element reviewNode) {
-        DetailedReviewBean review = new DetailedReviewBean();
+    public static CrucibleChangeSetImpl parseDetailedReviewNode(Server server, Element reviewNode) {
+        CrucibleChangeSetImpl review = new CrucibleChangeSetImpl(server);
         parseReview(reviewNode, review);
 
         List<Element> reviewersNode = getChildElements(reviewNode, "reviewers");
-        for (Element reviewer : reviewersNode) {
-            List<Element> reviewerNode = getChildElements(reviewer, "reviewer");
-            for (Element element : reviewerNode) {
-                review.getReviewers().add(parseReviewerNode(element));
-            }
-        }
+		List<Reviewer> reviewers = new ArrayList<Reviewer>();
+		for (Element reviewer : reviewersNode) {
+			List<Element> reviewerNode = getChildElements(reviewer, "reviewer");
+			for (Element element : reviewerNode) {
+				reviewers.add(parseReviewerNode(element));
+			}
+		}
+		review.setReviewers(reviewers);
 
-        List<Element> reviewItemsNode = getChildElements(reviewNode, "reviewItems");
+		List<Element> reviewItemsNode = getChildElements(reviewNode, "reviewItems");
         for (Element reviewItem : reviewItemsNode) {
             List<Element> itemNode = getChildElements(reviewItem, "reviewItem");
-            for (Element element : itemNode) {
-                review.getReviewItems().add(parseReviewItemNode(element));
-            }
-        }
+			List<CrucibleFileInfo> files = new ArrayList<CrucibleFileInfo>();
+			for (Element element : itemNode) {
+				files.add(parseReviewItemNode(review, element));
+			}
+			review.setFiles(files);
+		}
 
         List<Element> generalCommentsNode = getChildElements(reviewNode, "generalComments");
         for (Element generalComment : generalCommentsNode) {
             List<Element> commentNode = getChildElements(generalComment, "generalCommentData");
-            for (Element element : commentNode) {
-                review.getGeneralComments().add(parseGeneralCommentNode(element));
-            }
-        }
+			List<GeneralComment> generalComments = new ArrayList<GeneralComment>();
+			for (Element element : commentNode) {
+				generalComments.add(parseGeneralCommentNode(element));
+			}
+			review.setGeneralComments(generalComments);
+		}
 
         List<Element> versionedComments = getChildElements(reviewNode, "versionedComments");
         for (Element versionedComment : versionedComments) {
-            List<Element> commentNode = getChildElements(versionedComment, "versionedLineCommentData");
-            for (Element element : commentNode) {
-                review.getVersionedComments().add(parseVersionedCommentNode(element));
-            }
+			List<Element> commentNode = getChildElements(versionedComment, "versionedLineCommentData");
+			List<VersionedCommentBean> comments = new ArrayList<VersionedCommentBean>();
+			for (Element element : commentNode) {
+				comments.add(parseVersionedCommentNode(element));
+			}
 
-        }
 
-        List<Element> transitions = getChildElements(reviewNode, "transitions");
-        for (Element transition : transitions) {
-            List<Element> trans = getChildElements(transition, "transitionData");
-            for (Element element : trans) {
-                review.getTransitions().add(parseTransitionNode(element));
-            }
-        }
+			try {
+				for (CrucibleFileInfo item : review.getFiles()) {
+					List<VersionedComment> commentList = new ArrayList<VersionedComment>();
+					for (VersionedCommentBean comment : comments) {
+						if(item.getPermId().getId().equals(comment.getReviewItemId().getId())) {
+							commentList.add(comment);
+						}
+					}
+					((CrucibleFileInfoImpl)item).setVersionedComments(commentList);
+				}
+			} catch (ValueNotYetInitialized ex) {
+				// ignore, because it cannot happen as setFiles is invoked a few lines higher
+			}
 
-        return review;
+		}
+
+        List<Element> transitionsNode = getChildElements(reviewNode, "transitions");
+		List<Transition> transitions = new ArrayList<Transition>();
+		for (Element transition : transitionsNode) {
+			List<Element> trans = getChildElements(transition, "transitionData");
+			for (Element element : trans) {
+				transitions.add(parseTransitionNode(element));
+			}
+		}
+		review.setTransitions(transitions);
+		return review;
     }
 
     public static Element addTag(Element root, String tagName, String tagValue) {
@@ -356,14 +386,21 @@ public final class CrucibleRestXmlHelper {
         return reviewData;
     }
 
-    public static ReviewItemBean parseReviewItemNode(Element reviewItemNode) {
-        ReviewItemBean reviewItem = new ReviewItemBean();
-
-        reviewItem.setFromPath(getChildText(reviewItemNode, "fromPath"));
-        reviewItem.setFromRevision(getChildText(reviewItemNode, "fromRevision"));
-        reviewItem.setToPath(getChildText(reviewItemNode, "toPath"));
-        reviewItem.setToRevision(getChildText(reviewItemNode, "toRevision"));
-        reviewItem.setRepositoryName(getChildText(reviewItemNode, "repositoryName"));
+    public static CrucibleFileInfo parseReviewItemNode(CrucibleChangeSet review, Element reviewItemNode) {
+        CrucibleFileInfoImpl reviewItem = new CrucibleFileInfoImpl(
+				new VersionedVirtualFile(
+						getChildText(reviewItemNode, "toPath"),
+						getChildText(reviewItemNode, "toRevision"),
+						review.getVirtualFileSystem()
+						),
+				new VersionedVirtualFile(
+						getChildText(reviewItemNode, "fromPath"),
+						getChildText(reviewItemNode, "fromRevision"),
+						review.getVirtualFileSystem()
+				)
+		);
+		((CrucibleChangeSetImpl) review).setRepoName(getChildText(reviewItemNode, "repositoryName"));
+		// todo lguminski to ask Marek about XML sructure
         if (reviewItemNode.getChild("permId") != null) {
             PermIdBean permId = new PermIdBean();
             permId.setId(reviewItemNode.getChild("permId").getChild("id").getText());

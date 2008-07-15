@@ -22,8 +22,11 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import com.atlassian.theplugin.commons.crucible.api.*;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.crucible.api.rest.CrucibleSessionImpl;
+import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
+import com.atlassian.theplugin.commons.crucible.CrucibleChangeSetImpl;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.commons.configuration.ServerBean;
 import com.atlassian.theplugin.crucible.api.rest.cruciblemock.*;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
@@ -67,8 +70,9 @@ public class CrucibleSessionTest extends TestCase {
 	}
 
 	public void testSuccessCrucibleLogin() throws Exception {
-
-		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+		com.atlassian.theplugin.commons.Server srv = new ServerBean();
+		srv.setUrlString(mockBaseUrl);
+		CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 
 		String[] usernames = { "user", "+-=&;<>", "", "a;&username=other", "!@#$%^&*()_-+=T " };
 		String[] passwords = { "password", "+-=&;<>", "", "&password=other", ",./';[]\t\\ |}{\":><?" };
@@ -87,7 +91,9 @@ public class CrucibleSessionTest extends TestCase {
 
 	public void testLoginMalformedResponse() throws Exception {
 		mockServer.expect("/rest-service/auth-v1/login", new MalformedResponseCallback());
-		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+		com.atlassian.theplugin.commons.Server srv = new ServerBean();
+		srv.setUrlString(mockBaseUrl);
+		CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 
 		try {
 			apiHandler.login(USER_NAME, PASSWORD);
@@ -99,7 +105,9 @@ public class CrucibleSessionTest extends TestCase {
 
 	public void testLoginInternalErrorResponse() throws Exception {
 		mockServer.expect("/rest-service/auth-v1/login", new ErrorResponse(500, ""));
-		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+		com.atlassian.theplugin.commons.Server srv = new ServerBean();
+		srv.setUrlString(mockBaseUrl);
+		CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 
 		try {
 			apiHandler.login(USER_NAME, PASSWORD);
@@ -112,7 +120,9 @@ public class CrucibleSessionTest extends TestCase {
 	public void testSuccessBambooLoginURLWithSlash() throws Exception {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
 
-		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl + "/");
+		com.atlassian.theplugin.commons.Server srv = new ServerBean();
+		srv.setUrlString(mockBaseUrl + "/");
+		CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 		apiHandler.login(USER_NAME, PASSWORD);
 		assertTrue(apiHandler.isLoggedIn());
 		apiHandler.logout();
@@ -133,7 +143,9 @@ public class CrucibleSessionTest extends TestCase {
 
 	public void testNullLoginLogin() throws Exception {
 		try {
-			CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+			com.atlassian.theplugin.commons.Server srv = new ServerBean();
+			srv.setUrlString(mockBaseUrl);
+			CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 			apiHandler.login(null, null);
 			fail();
 		} catch (RemoteApiLoginException ex) {
@@ -147,7 +159,9 @@ public class CrucibleSessionTest extends TestCase {
 		RemoteApiLoginException exception = null;
 
 		try {
-			CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl + "/wrongurl");
+			com.atlassian.theplugin.commons.Server srv = new ServerBean();
+			srv.setUrlString(mockBaseUrl + "/wrongurl");
+			CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 			apiHandler.login(USER_NAME, PASSWORD);
 		} catch (RemoteApiLoginException ex) {
 			exception = ex;
@@ -164,7 +178,9 @@ public class CrucibleSessionTest extends TestCase {
 		RemoteApiLoginException exception = null;
 
 		try {
-			CrucibleSession apiHandler = new CrucibleSessionImpl("http://non.existing.server.utest");
+			com.atlassian.theplugin.commons.Server srv = new ServerBean();
+			srv.setUrlString("http://non.existing.server.utest");
+			CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 			apiHandler.login(USER_NAME, PASSWORD);
 		} catch (RemoteApiLoginException ex) {
 			exception = ex;
@@ -203,7 +219,9 @@ public class CrucibleSessionTest extends TestCase {
 	private void tryMalformedUrl(final String url) {
 		RemoteApiException exception = null;
 		try {
-			CrucibleSession apiHandler = new CrucibleSessionImpl(url);
+			com.atlassian.theplugin.commons.Server srv = new ServerBean();
+			srv.setUrlString(url);
+			CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 			apiHandler.login(USER_NAME, PASSWORD);
 		} catch (RemoteApiLoginException e) {
 			exception = e;
@@ -221,7 +239,9 @@ public class CrucibleSessionTest extends TestCase {
 		String url = "http://localhost:80808";
 		RemoteApiException exception = null;
 		try {
-			CrucibleSession apiHandler = new CrucibleSessionImpl(url);
+			com.atlassian.theplugin.commons.Server srv = new ServerBean();
+			srv.setUrlString(url);
+			CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 			apiHandler.login(USER_NAME, PASSWORD);
 		} catch (RemoteApiException e) {
 			exception = e;
@@ -237,7 +257,9 @@ public class CrucibleSessionTest extends TestCase {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
 
 		try {
-			CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+			com.atlassian.theplugin.commons.Server srv = new ServerBean();
+			srv.setUrlString(mockBaseUrl);
+			CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 			apiHandler.login(USER_NAME, PASSWORD); // mock will fail this
 			fail();
 		} catch (RemoteApiLoginException ex) {
@@ -250,7 +272,9 @@ public class CrucibleSessionTest extends TestCase {
 
 	public void testWrongParamsCrucibleLogin() throws Exception {
 		try {
-			CrucibleSession apiHandler = new CrucibleSessionImpl("");
+			com.atlassian.theplugin.commons.Server srv = new ServerBean();
+			srv.setUrlString("");
+			CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 			apiHandler.login("", "");
 			fail();
 		} catch (RemoteApiException ex) {
@@ -261,7 +285,9 @@ public class CrucibleSessionTest extends TestCase {
 	public void testSuccessCrucibleLogout() throws Exception {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
 
-		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+		com.atlassian.theplugin.commons.Server srv = new ServerBean();
+		srv.setUrlString(mockBaseUrl);
+		CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 
 		apiHandler.login(USER_NAME, PASSWORD);
 		assertTrue(apiHandler.isLoggedIn());
@@ -269,7 +295,9 @@ public class CrucibleSessionTest extends TestCase {
 		apiHandler.logout();
 		apiHandler.logout();
 
-		CrucibleSession apiHandler2 = new CrucibleSessionImpl(mockBaseUrl);
+		com.atlassian.theplugin.commons.Server srv2 = new ServerBean();
+		srv.setUrlString(mockBaseUrl);
+		CrucibleSession apiHandler2 = new CrucibleSessionImpl(srv2);
 		apiHandler2.logout();
 
 		mockServer.verify();
@@ -279,7 +307,9 @@ public class CrucibleSessionTest extends TestCase {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
 		CrucibleSession apiHandler = null;
 		try {
-			apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+			com.atlassian.theplugin.commons.Server srv = new ServerBean();
+			srv.setUrlString(mockBaseUrl);
+			apiHandler = new CrucibleSessionImpl(srv);
 		} catch (RemoteApiException e) {
 			fail();
 		}
@@ -311,7 +341,9 @@ public class CrucibleSessionTest extends TestCase {
 
 	public void testSuccessCrucibleDoubleLogin() throws Exception {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
-		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+		com.atlassian.theplugin.commons.Server srv = new ServerBean();
+		srv.setUrlString(mockBaseUrl);
+		CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 
 		apiHandler.login(USER_NAME, PASSWORD);
 		apiHandler.login(USER_NAME, PASSWORD);
@@ -320,7 +352,9 @@ public class CrucibleSessionTest extends TestCase {
 	}
 
 	public void testMethodCallWithoutLogin() throws Exception {
-		CrucibleSession crucibleSession = new CrucibleSessionImpl(mockBaseUrl);
+		com.atlassian.theplugin.commons.Server srv = new ServerBean();
+		srv.setUrlString(mockBaseUrl);
+		CrucibleSession crucibleSession = new CrucibleSessionImpl(srv);
 		List<State> states = new ArrayList<State>();
 		try {
 			crucibleSession.getReviewsInStates(states, false);
@@ -360,13 +394,15 @@ public class CrucibleSessionTest extends TestCase {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
 		List<State> states = Arrays.asList(State.values());
 		mockServer.expect("/rest-service/reviews-v1", new GetReviewsCallback(states));
-		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+		com.atlassian.theplugin.commons.Server srv = new ServerBean();
+		srv.setUrlString(mockBaseUrl);
+		CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		List<Review> reviews = apiHandler.getAllReviews(false);
+		List<CrucibleChangeSet> reviews = apiHandler.getAllReviews(false);
 		assertEquals(states.size(), reviews.size());
 		int i = 0;
-		for (Review review : reviews) {
+		for (CrucibleChangeSet review : reviews) {
 			assertEquals(review.getState(), states.get(i++));
 		}
 		mockServer.verify();
@@ -376,10 +412,12 @@ public class CrucibleSessionTest extends TestCase {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
 		List<State> states = new ArrayList<State>();
 		mockServer.expect("/rest-service/reviews-v1", new GetReviewsCallback(states));
-		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+		com.atlassian.theplugin.commons.Server srv = new ServerBean();
+		srv.setUrlString(mockBaseUrl);
+		CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		List<Review> reviews = apiHandler.getAllReviews(false);
+		List<CrucibleChangeSet> reviews = apiHandler.getAllReviews(false);
 		assertEquals(states.size(), reviews.size());
 		assertTrue(reviews.isEmpty());
 		mockServer.verify();
@@ -389,10 +427,12 @@ public class CrucibleSessionTest extends TestCase {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
 		List<State> states = new ArrayList<State>();
 		mockServer.expect("/rest-service/reviews-v1", new GetReviewsCallback(states));
-		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+		com.atlassian.theplugin.commons.Server srv = new ServerBean();
+		srv.setUrlString(mockBaseUrl);
+		CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		List<Review> reviews = apiHandler.getAllReviews(false);
+		List<CrucibleChangeSet> reviews = apiHandler.getAllReviews(false);
 		assertEquals(states.size(), reviews.size());
 		assertTrue(reviews.isEmpty());
 		mockServer.verify();
@@ -402,10 +442,12 @@ public class CrucibleSessionTest extends TestCase {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
 		List<State> states = Arrays.asList(State.REVIEW, State.DRAFT);
 		mockServer.expect("/rest-service/reviews-v1", new GetReviewsCallback(states));
-		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+		com.atlassian.theplugin.commons.Server srv = new ServerBean();
+		srv.setUrlString(mockBaseUrl);
+		CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		List<Review> reviews = apiHandler.getReviewsInStates(states, false);
+		List<CrucibleChangeSet> reviews = apiHandler.getReviewsInStates(states, false);
 		assertEquals(states.size(), reviews.size());
 		assertTrue(!reviews.isEmpty());
 		mockServer.verify();
@@ -415,11 +457,13 @@ public class CrucibleSessionTest extends TestCase {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
 		List<State> states = Arrays.asList(State.REVIEW, State.DRAFT);
 		mockServer.expect("/rest-service/reviews-v1", new GetReviewsCallback(states));
-		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+		com.atlassian.theplugin.commons.Server srv = new ServerBean();
+		srv.setUrlString(mockBaseUrl);
+		CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 
 		apiHandler.login(USER_NAME, PASSWORD);
 		List<State> req = Arrays.asList(State.CLOSED);
-		List<Review> reviews = apiHandler.getReviewsInStates(req, false);
+		List<CrucibleChangeSet> reviews = apiHandler.getReviewsInStates(req, false);
 		assertTrue(reviews.isEmpty());
 		mockServer.verify();
 	}
@@ -428,11 +472,13 @@ public class CrucibleSessionTest extends TestCase {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
 		List<State> states = Arrays.asList(State.REVIEW, State.DRAFT);
 		mockServer.expect("/rest-service/reviews-v1", new GetReviewsCallback(states));
-		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+		com.atlassian.theplugin.commons.Server srv = new ServerBean();
+		srv.setUrlString(mockBaseUrl);
+		CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 
 		apiHandler.login(USER_NAME, PASSWORD);
 		List<State> req = Arrays.asList();
-		List<Review> reviews = apiHandler.getReviewsInStates(req, false);
+		List<CrucibleChangeSet> reviews = apiHandler.getReviewsInStates(req, false);
 		assertEquals(states.size(), reviews.size());
 		assertTrue(!reviews.isEmpty());
 		mockServer.verify();
@@ -441,7 +487,9 @@ public class CrucibleSessionTest extends TestCase {
 	public void testGetAllReviewsMalformedResponse() throws Exception {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
 		mockServer.expect("/rest-service/reviews-v1", new MalformedResponseCallback());
-		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+		com.atlassian.theplugin.commons.Server srv = new ServerBean();
+		srv.setUrlString(mockBaseUrl);
+		CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 
 		apiHandler.login(USER_NAME, PASSWORD);
 		PermIdBean permId = new PermIdBean();
@@ -458,7 +506,9 @@ public class CrucibleSessionTest extends TestCase {
 	public void testGetReviewsInStatesMalformedResponse() throws Exception {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
 		mockServer.expect("/rest-service/reviews-v1", new MalformedResponseCallback());
-		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+		com.atlassian.theplugin.commons.Server srv = new ServerBean();
+		srv.setUrlString(mockBaseUrl);
+		CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 
 		apiHandler.login(USER_NAME, PASSWORD);
 		PermIdBean permId = new PermIdBean();
@@ -476,7 +526,9 @@ public class CrucibleSessionTest extends TestCase {
 	public void testGetEmptyReviewers() throws Exception {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
 		mockServer.expect("/rest-service/reviews-v1/PR-1/reviewers", new GetReviewersCallback(new User[]{ }));
-		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+		com.atlassian.theplugin.commons.Server srv = new ServerBean();
+		srv.setUrlString(mockBaseUrl);
+		CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 
 		apiHandler.login(USER_NAME, PASSWORD);
 		PermIdBean permId = new PermIdBean();
@@ -497,7 +549,9 @@ public class CrucibleSessionTest extends TestCase {
 
         mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
         mockServer.expect("/rest-service/reviews-v1/PR-1/reviewers", new GetReviewersCallback(reviewers));
-		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+		com.atlassian.theplugin.commons.Server srv = new ServerBean();
+		srv.setUrlString(mockBaseUrl);
+		CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 
 		apiHandler.login(USER_NAME, PASSWORD);
 		PermIdBean permId = new PermIdBean();
@@ -513,7 +567,9 @@ public class CrucibleSessionTest extends TestCase {
 	public void testGetReviewersInvalidId() throws Exception {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
 		mockServer.expect("/rest-service/reviews-v1/PR-2/reviewers", new ErrorResponse(500, ""));
-		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+		com.atlassian.theplugin.commons.Server srv = new ServerBean();
+		srv.setUrlString(mockBaseUrl);
+		CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 
 		apiHandler.login(USER_NAME, PASSWORD);
 		PermIdBean permId = new PermIdBean();
@@ -531,7 +587,9 @@ public class CrucibleSessionTest extends TestCase {
 	public void testGetReviewersMalformedResponse() throws Exception {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
 		mockServer.expect("/rest-service/reviews-v1/PR-1/reviewers", new MalformedResponseCallback());
-		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+		com.atlassian.theplugin.commons.Server srv = new ServerBean();
+		srv.setUrlString(mockBaseUrl);
+		CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 
 		apiHandler.login(USER_NAME, PASSWORD);
 		PermIdBean permId = new PermIdBean();
@@ -547,11 +605,13 @@ public class CrucibleSessionTest extends TestCase {
 	}
 
 	public void testCreateReview() throws Exception {
-		ReviewBean review = createReviewRequest();
+		CrucibleChangeSet review = createReviewRequest();
 
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
 		mockServer.expect("/rest-service/reviews-v1", new CreateReviewCallback());
-		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+		com.atlassian.theplugin.commons.Server srv = new ServerBean();
+		srv.setUrlString(mockBaseUrl);
+		CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 
 		apiHandler.login(USER_NAME, PASSWORD);
 		Review response = apiHandler.createReview(review);
@@ -569,11 +629,13 @@ public class CrucibleSessionTest extends TestCase {
 	}
 
 	public void testCreateReviewMalformedResponse() throws Exception {
-		ReviewBean review = createReviewRequest();
+		CrucibleChangeSet review = createReviewRequest();
 
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
 		mockServer.expect("/rest-service/reviews-v1", new MalformedResponseCallback());
-		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+		com.atlassian.theplugin.commons.Server srv = new ServerBean();
+		srv.setUrlString(mockBaseUrl);
+		CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 
 		apiHandler.login(USER_NAME, PASSWORD);
 		try {
@@ -586,11 +648,13 @@ public class CrucibleSessionTest extends TestCase {
 	}
 
 	public void testCreateReviewErrorResponse() throws Exception {
-		ReviewBean review = createReviewRequest();
+		CrucibleChangeSet review = createReviewRequest();
 
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
 		mockServer.expect("/rest-service/reviews-v1", new ErrorResponse(500, ""));
-		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+		com.atlassian.theplugin.commons.Server srv = new ServerBean();
+		srv.setUrlString(mockBaseUrl);
+		CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 
 		apiHandler.login(USER_NAME, PASSWORD);
 		try {
@@ -607,10 +671,12 @@ public class CrucibleSessionTest extends TestCase {
 	public void testCreateReviewFromPatch() throws Exception {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
 		mockServer.expect("/rest-service/reviews-v1", new CreateReviewCallback());
-		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+		com.atlassian.theplugin.commons.Server srv = new ServerBean();
+		srv.setUrlString(mockBaseUrl);
+		CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		ReviewBean review = createReviewRequest();
+		CrucibleChangeSet review = createReviewRequest();
 		Review response = apiHandler.createReviewFromPatch(review, "patch text");
 		assertEquals(review.getAuthor(), response.getAuthor());
 		assertEquals(review.getCreator(), response.getCreator());
@@ -628,10 +694,12 @@ public class CrucibleSessionTest extends TestCase {
 	public void testCreateReviewFromNullPatch() throws Exception {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
 		mockServer.expect("/rest-service/reviews-v1", new CreateReviewCallback());
-		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+		com.atlassian.theplugin.commons.Server srv = new ServerBean();
+		srv.setUrlString(mockBaseUrl);
+		CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		ReviewBean review = createReviewRequest();
+		CrucibleChangeSet review = createReviewRequest();
 		Review response = apiHandler.createReviewFromPatch(review, null);
 		assertEquals(review.getAuthor(), response.getAuthor());
 		assertEquals(review.getCreator(), response.getCreator());
@@ -649,10 +717,12 @@ public class CrucibleSessionTest extends TestCase {
 	public void testCreateReviewFromEmptyPatch() throws Exception {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
 		mockServer.expect("/rest-service/reviews-v1", new CreateReviewCallback());
-		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+		com.atlassian.theplugin.commons.Server srv = new ServerBean();
+		srv.setUrlString(mockBaseUrl);
+		CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		ReviewBean review = createReviewRequest();
+		CrucibleChangeSet review = createReviewRequest();
 		Review response = apiHandler.createReviewFromPatch(review, "");
 		assertEquals(review.getAuthor(), response.getAuthor());
 		assertEquals(review.getCreator(), response.getCreator());
@@ -670,11 +740,13 @@ public class CrucibleSessionTest extends TestCase {
 	public void testCreateReviewFromPatchMalformedResponse() throws Exception {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
 		mockServer.expect("/rest-service/reviews-v1", new MalformedResponseCallback());
-		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+		com.atlassian.theplugin.commons.Server srv = new ServerBean();
+		srv.setUrlString(mockBaseUrl);
+		CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 
 		apiHandler.login(USER_NAME, PASSWORD);
 		try {
-			ReviewBean review = createReviewRequest();
+			CrucibleChangeSet review = createReviewRequest();
 			apiHandler.createReviewFromPatch(review, "patch text");
 			fail();
 		} catch (RemoteApiException e) {
@@ -690,7 +762,9 @@ public class CrucibleSessionTest extends TestCase {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
 		List<State> states = Arrays.asList(State.REVIEW, State.DRAFT);
 		mockServer.expect("/rest-service/projects-v1", new GetProjectsCallback(size));
-		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+		com.atlassian.theplugin.commons.Server srv = new ServerBean();
+		srv.setUrlString(mockBaseUrl);
+		CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 
 		apiHandler.login(USER_NAME, PASSWORD);
 		List<Project> project = apiHandler.getProjects();
@@ -710,7 +784,9 @@ public class CrucibleSessionTest extends TestCase {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
 		List<State> states = Arrays.asList(State.REVIEW, State.DRAFT);
 		mockServer.expect("/rest-service/projects-v1", new GetProjectsCallback(size));
-		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+		com.atlassian.theplugin.commons.Server srv = new ServerBean();
+		srv.setUrlString(mockBaseUrl);
+		CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 
 		apiHandler.login(USER_NAME, PASSWORD);
 		List<Project> project = apiHandler.getProjects();
@@ -730,7 +806,9 @@ public class CrucibleSessionTest extends TestCase {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
 		List<State> states = Arrays.asList(State.REVIEW, State.DRAFT);
 		mockServer.expect("/rest-service/repositories-v1", new GetRepositoriesCallback(size));
-		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+		com.atlassian.theplugin.commons.Server srv = new ServerBean();
+		srv.setUrlString(mockBaseUrl);
+		CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 
 		apiHandler.login(USER_NAME, PASSWORD);
 		List<Repository> repositories = apiHandler.getRepositories();
@@ -748,7 +826,9 @@ public class CrucibleSessionTest extends TestCase {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
 		List<State> states = Arrays.asList(State.REVIEW, State.DRAFT);
 		mockServer.expect("/rest-service/repositories-v1", new GetRepositoriesCallback(size));
-		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
+		com.atlassian.theplugin.commons.Server srv = new ServerBean();
+		srv.setUrlString(mockBaseUrl);
+		CrucibleSession apiHandler = new CrucibleSessionImpl(srv);
 
 		apiHandler.login(USER_NAME, PASSWORD);
 		List<Repository> repositories = apiHandler.getRepositories();
@@ -760,8 +840,8 @@ public class CrucibleSessionTest extends TestCase {
 		mockServer.verify();
 	}
 
-	private ReviewBean createReviewRequest() {
-		ReviewBean review = new ReviewBean();
+	private CrucibleChangeSet createReviewRequest() {
+		CrucibleChangeSetImpl review = new CrucibleChangeSetImpl(new ServerBean());
 		review.setAuthor(new UserBean("autor",""));
 		review.setCreator(new UserBean("creator",""));
 		review.setDescription("description");

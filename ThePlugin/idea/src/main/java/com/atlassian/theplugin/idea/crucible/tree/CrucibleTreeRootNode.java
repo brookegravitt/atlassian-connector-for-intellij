@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.idea.crucible.tree;
 
-import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
+import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -14,10 +14,10 @@ import javax.swing.tree.DefaultMutableTreeNode;
 public class CrucibleTreeRootNode extends DefaultMutableTreeNode {
 	static final long serialVersionUID = 0L;
 
-	private ReviewDataInfoAdapter reviewDataInfoAdapter;
+	private CrucibleChangeSet changeSet;
 
-	CrucibleTreeRootNode(ReviewDataInfoAdapter infoAdapater) {
-		reviewDataInfoAdapter = infoAdapater;
+	CrucibleTreeRootNode(CrucibleChangeSet infoAdapater) {
+		changeSet = infoAdapater;
 	}
 
 	CrucibleTreeRootNode() {
@@ -25,8 +25,8 @@ public class CrucibleTreeRootNode extends DefaultMutableTreeNode {
 	}
 
 	public String toString() {
-		if (reviewDataInfoAdapter != null) {
-			return reviewDataInfoAdapter.toString();
+		if (changeSet != null) {
+			return changeSet.toString();
 		} else {
 			return "No Review is selected";
 		}
@@ -34,11 +34,11 @@ public class CrucibleTreeRootNode extends DefaultMutableTreeNode {
 
 
 
-	public ReviewDataInfoAdapter getReviewDataInfoAdapter() {
-		return reviewDataInfoAdapter;
+	public CrucibleChangeSet getCrucibleChangeSet() {
+		return changeSet;
 	}
 
-	public void setReviewDataInfoAdapter(ReviewDataInfoAdapter reviewDataInfoAdapter) {
-		this.reviewDataInfoAdapter = reviewDataInfoAdapter;
+	public void setCrucibleChangeSet(CrucibleChangeSet changeSet) {
+		this.changeSet = changeSet;
 	}
 }

@@ -313,7 +313,7 @@ public class AutoRenewBambooSessionTest extends TestCase {
 				return null;  
 			}
 
-			public List<Commit> getCommitInfo() {
+			public List<BambooChangeSet> getCommitInfo() {
 				return null;
 			}
 		});

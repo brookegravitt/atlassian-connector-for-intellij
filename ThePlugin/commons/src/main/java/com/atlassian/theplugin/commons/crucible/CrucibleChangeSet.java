@@ -17,15 +17,27 @@
 package com.atlassian.theplugin.commons.crucible;
 
 import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.VirtualFileSystem;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
+import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.api.model.Transition;
+import com.atlassian.theplugin.crucible.CrucibleFileInfo;
 
 import java.util.List;
 
-public interface ReviewInfo extends Review {
+public interface CrucibleChangeSet extends Review {
 	String getReviewUrl();
 
-	List<Reviewer> getReviewers();
+	List<Reviewer> getReviewers() throws ValueNotYetInitialized;
 
 	Server getServer();
+
+	List<GeneralComment> getGeneralComments() throws ValueNotYetInitialized;
+
+	List<CrucibleFileInfo> getFiles() throws ValueNotYetInitialized;
+
+	List<Transition> getTransitions() throws ValueNotYetInitialized;
+
+	VirtualFileSystem getVirtualFileSystem();
 }

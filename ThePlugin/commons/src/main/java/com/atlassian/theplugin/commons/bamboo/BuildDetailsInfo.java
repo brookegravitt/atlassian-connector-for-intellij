@@ -23,12 +23,12 @@ public class BuildDetailsInfo implements BuildDetails {
 	private String vcsRevisionKey;
 	private List<TestDetails> successfulTests;
 	private List<TestDetails> failedTests;
-	private List<Commit> commitInfo;
+	private List<BambooChangeSet> commitInfo;
 
 	public BuildDetailsInfo() {
 		successfulTests = new ArrayList<TestDetails>();
 		failedTests = new ArrayList<TestDetails>();
-		commitInfo = new ArrayList<Commit>();
+		commitInfo = new ArrayList<BambooChangeSet>();
 	}
 
 	public String getVcsRevisionKey() {
@@ -63,15 +63,15 @@ public class BuildDetailsInfo implements BuildDetails {
 		failedTests.add(test);
 	}
 
-	public List<Commit> getCommitInfo() {
+	public List<BambooChangeSet> getCommitInfo() {
 		return commitInfo;
 	}
 
-	public void setCommitInfo(List<Commit> commitInfo) {
+	public void setCommitInfo(List<BambooChangeSet> commitInfo) {
 		this.commitInfo = commitInfo;
 	}
 
-	public void addCommitInfo(CommitInfo commit) {
+	public void addCommitInfo(BambooChangeSetImpl commit) {
 		commitInfo.add(commit);
 	}
 }

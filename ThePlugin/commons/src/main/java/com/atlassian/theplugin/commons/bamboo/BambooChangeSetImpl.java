@@ -16,20 +16,22 @@
 
 package com.atlassian.theplugin.commons.bamboo;
 
-import com.atlassian.theplugin.commons.VersionedFileDescriptor;
+import com.atlassian.theplugin.commons.BambooFileInfo;
+import com.atlassian.theplugin.commons.VirtualFileSystem;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class CommitInfo implements Commit {
+public class BambooChangeSetImpl implements BambooChangeSet {
 	private String author;
 	private Date commitDate;
 	private String comment;
-	private List<VersionedFileDescriptor> files;
+	private List<BambooFileInfo> files;
+	private VirtualFileSystem virtualFileSystem;
 
-	public CommitInfo() {
-		files = new ArrayList<VersionedFileDescriptor>();
+	public BambooChangeSetImpl() {
+		files = new ArrayList<BambooFileInfo>();
 	}
 
 	public String getAuthor() {
@@ -56,15 +58,26 @@ public class CommitInfo implements Commit {
 		this.commitDate = new Date(commitDate.getTime());
 	}
 
-	public List<VersionedFileDescriptor> getFiles() {
+	public List<BambooFileInfo> getFiles() {
 		return files;
 	}
 
-	public void setFiles(List<VersionedFileDescriptor> files) {
+	public void setFiles(List<BambooFileInfo> files) {
 		this.files = files;
 	}
 
-	public void addCommitFile(VersionedFileDescriptor file) {
+	public void addCommitFile(BambooFileInfo file) {
 		files.add(file);
+	}
+
+	public VirtualFileSystem getVirtualFileSystem() {
+		if (virtualFileSystem == null) {
+			virtualFileSystem = new VirtualFileSystem();
+		}
+		return virtualFileSystem;
+	}
+
+	public void setVirtualFileSystem(VirtualFileSystem virtualFileSystem) {
+		this.virtualFileSystem = virtualFileSystem;
 	}
 }

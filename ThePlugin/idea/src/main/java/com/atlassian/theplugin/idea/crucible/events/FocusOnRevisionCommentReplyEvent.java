@@ -1,8 +1,8 @@
 package com.atlassian.theplugin.idea.crucible.events;
 
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
-import com.atlassian.theplugin.idea.crucible.ReviewDataInfoAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
 
 /**
  * Created by IntelliJ IDEA.
@@ -12,17 +12,17 @@ import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
  * To change this template use File | Settings | File Templates.
  */
 public class FocusOnRevisionCommentReplyEvent extends CrucibleEvent {
-	private ReviewDataInfoAdapter reviewDataInfoAdapter;
+	private CrucibleChangeSet crucibleChangeSet;
 	private GeneralComment selectedComment;
 
 	public FocusOnRevisionCommentReplyEvent(CrucibleReviewActionListener caller,
-            ReviewDataInfoAdapter reviewDataInfoAdapter, GeneralComment selectedComment) {
+            CrucibleChangeSet crucibleChangeSet, GeneralComment selectedComment) {
 		super(caller);
-		this.reviewDataInfoAdapter = reviewDataInfoAdapter;
+		this.crucibleChangeSet = crucibleChangeSet;
 		this.selectedComment = selectedComment;
 	}
 
 	protected void notify(CrucibleReviewActionListener listener) {
-		listener.focusOnVersionedCommentReply(reviewDataInfoAdapter, selectedComment);
+		listener.focusOnVersionedCommentReply(crucibleChangeSet, selectedComment);
 	}
 }

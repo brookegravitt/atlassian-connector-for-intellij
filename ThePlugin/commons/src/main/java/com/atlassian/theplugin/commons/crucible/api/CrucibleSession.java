@@ -19,6 +19,8 @@ package com.atlassian.theplugin.commons.crucible.api;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
+import com.atlassian.theplugin.crucible.CrucibleFileInfo;
 
 import java.util.List;
 import java.util.Set;
@@ -61,13 +63,13 @@ public interface CrucibleSession {
 
     void completeReview(PermId permId, boolean complete) throws RemoteApiException;
 
-    List<Review> getReviewsInStates(List<State> arg1, boolean details) throws RemoteApiException;
+    List<CrucibleChangeSet> getReviewsInStates(List<State> arg1, boolean details) throws RemoteApiException;
 
-	List<Review> getAllReviews(boolean details) throws RemoteApiException;
+	List<CrucibleChangeSet> getAllReviews(boolean details) throws RemoteApiException;
 
-    List<Review> getReviewsForFilter(PredefinedFilter filter, boolean details) throws RemoteApiException;
+    List<CrucibleChangeSet> getReviewsForFilter(PredefinedFilter filter, boolean details) throws RemoteApiException;
 
-    List<Review> getReviewsForCustomFilter(CustomFilter filter, boolean details) throws RemoteApiException;
+    List<CrucibleChangeSet> getReviewsForCustomFilter(CustomFilter filter, boolean details) throws RemoteApiException;
 
     List<Reviewer> getReviewers(PermId arg1) throws RemoteApiException;
 
@@ -79,7 +81,7 @@ public interface CrucibleSession {
 
 	SvnRepository getRepository(String repoName) throws RemoteApiException;
 
-	List<ReviewItem> getReviewItems(PermId id) throws RemoteApiException;
+	List<CrucibleFileInfo> getFiles(PermId id) throws RemoteApiException;
 
 	List<GeneralComment> getComments(PermId id) throws RemoteApiException;
 

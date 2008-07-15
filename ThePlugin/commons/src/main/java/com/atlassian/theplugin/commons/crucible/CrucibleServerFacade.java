@@ -21,6 +21,7 @@ import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.crucible.CrucibleFileInfo;
 
 import java.util.List;
 import java.util.Set;
@@ -71,23 +72,23 @@ public interface CrucibleServerFacade extends ProductServerFacade {
     void completeReview(Server server, PermId permId, boolean complete)
             throws RemoteApiException, ServerPasswordNotProvidedException;
 
-    List<ReviewInfo> getAllReviews(Server server)
+    List<CrucibleChangeSet> getAllReviews(Server server)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
 /*
     List<ReviewInfo> getActiveReviewsForUser(Server server)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 */
-    List<ReviewInfo> getReviewsForFilter(Server server, PredefinedFilter filter)
+    List<CrucibleChangeSet> getReviewsForFilter(Server server, PredefinedFilter filter)
             throws RemoteApiException, ServerPasswordNotProvidedException;
 
-    List<ReviewInfo> getReviewsForCustomFilter(Server server, CustomFilter filter)
+    List<CrucibleChangeSet> getReviewsForCustomFilter(Server server, CustomFilter filter)
             throws RemoteApiException, ServerPasswordNotProvidedException;    
 
     Review createReviewFromPatch(Server server, Review review, String patch)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	List<ReviewItem> getReviewItems(Server server, PermId permId)
+	List<CrucibleFileInfo> getFiles(Server server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
 	List<GeneralComment> getComments(Server server, PermId permId)

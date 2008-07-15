@@ -23,11 +23,12 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.crucible.api.rest.cruciblemock.LoginCallback;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
-import com.atlassian.theplugin.commons.crucible.ReviewInfoImpl;
-import com.atlassian.theplugin.commons.crucible.ReviewInfo;
+import com.atlassian.theplugin.commons.crucible.CrucibleChangeSetImpl;
+import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
 import com.atlassian.theplugin.commons.crucible.*;
 import com.atlassian.theplugin.commons.crucible.api.*;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.VirtualFileSystem;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 import org.easymock.EasyMock;
@@ -134,7 +135,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 			}
 		};
 
-		DetailedReview review = prepareReviewData(VALID_LOGIN, "name", State.DRAFT, permId);
+		CrucibleChangeSet review = prepareReviewData(VALID_LOGIN, "name", State.DRAFT, permId);
 
 		crucibleSessionMock.getAllReviews(true);
 		EasyMock.expectLastCall().andReturn(Arrays.asList(review, review));
@@ -147,14 +148,14 @@ public class CrucibleServerFacadeTest extends TestCase {
 			fail("recording mock failed for login");
 		}
 
-		DetailedReview review2 = prepareReviewData(validLogin2, "name", State.DRAFT, permId);
+		CrucibleChangeSet review2 = prepareReviewData(validLogin2, "name", State.DRAFT, permId);
 		crucibleSessionMock.getAllReviews(true);
 		EasyMock.expectLastCall().andReturn(Arrays.asList(review2));
 
 		replay(crucibleSessionMock);
 
 		ServerBean server = prepareServerBean();
-		List<ReviewInfo> ret = facade.getAllReviews(server);
+		List<CrucibleChangeSet> ret = facade.getAllReviews(server);
 		assertEquals(2, ret.size());
 		assertEquals(permId.getId(), ret.get(0).getPermaId().getId());
 		assertEquals("name", ret.get(0).getName());
@@ -199,7 +200,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 		}
 
 		crucibleSessionMock.createReview(EasyMock.isA(Review.class));
-		Review response = new ReviewInfoImpl(null, null);
+		Review response = new CrucibleChangeSetImpl(new ServerBean());
 
 		EasyMock.expectLastCall().andReturn(response);
 
@@ -257,7 +258,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 		}
 
 		crucibleSessionMock.createReviewFromPatch(EasyMock.isA(Review.class), EasyMock.eq("some patch"));
-		Review response = new ReviewInfoImpl(null, null);
+		Review response = new CrucibleChangeSetImpl(new ServerBean());
 		EasyMock.expectLastCall().andReturn(response);
 
 		replay(crucibleSessionMock);
@@ -318,7 +319,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 			}
 		};
 
-		DetailedReview review = prepareReviewData(VALID_LOGIN, "name", State.DRAFT, permId);
+		CrucibleChangeSet review = prepareReviewData(VALID_LOGIN, "name", State.DRAFT, permId);
 
 		crucibleSessionMock.getAllReviews(true);
 		EasyMock.expectLastCall().andReturn(Arrays.asList(review, review));
@@ -327,7 +328,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 
 		ServerBean server = prepareServerBean();
 		// test call
-		List<ReviewInfo> ret = facade.getAllReviews(server);
+		List<CrucibleChangeSet> ret = facade.getAllReviews(server);
 		assertEquals(2, ret.size());
 		assertEquals(permId.getId(), ret.get(0).getPermaId().getId());
 		assertEquals("name", ret.get(0).getName());
@@ -453,8 +454,8 @@ public class CrucibleServerFacadeTest extends TestCase {
         };
 	}
 
-	private DetailedReview prepareReviewData(final User user, final String name, final State state, final PermId permId) {
-		return new DetailedReview() {
+	private CrucibleChangeSet prepareReviewData(final User user, final String name, final State state, final PermId permId) {
+		return new CrucibleChangeSet() {
 			public User getAuthor() {
 				return user;
 			}
@@ -507,26 +508,34 @@ public class CrucibleServerFacadeTest extends TestCase {
                 return null; 
             }
 
-            public List<Reviewer> getReviewers() {
+			public String getReviewUrl() {
+				return null;  //To change body of implemented methods use File | Settings | File Templates.
+			}
+
+			public List<Reviewer> getReviewers() {
                 return null;
             }
 
-            public List<ReviewItem> getReviewItems() {
-                return null;
-            }
+			public com.atlassian.theplugin.commons.Server getServer() {
+				return null;  //To change body of implemented methods use File | Settings | File Templates.
+			}
 
             public List<GeneralComment> getGeneralComments() {
                 return null;
             }
 
-            public List<VersionedComment> getVersionedComments() {
-                return null;
-            }
+			public List<CrucibleFileInfo> getFiles() throws ValueNotYetInitialized {
+				return null;  //To change body of implemented methods use File | Settings | File Templates.
+			}
 
-            public List<Transition> getTransitions() {
+			public List<Transition> getTransitions() {
                 return null; 
             }
-        };
+
+			public VirtualFileSystem getVirtualFileSystem() {
+				return null;  //To change body of implemented methods use File | Settings | File Templates.
+			}
+		};
 	}
 
 	private ServerBean prepareServerBean() {
@@ -602,7 +611,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 		server.transientSetPasswordString("test", false);
 
 		try {
-			List<ReviewInfo> list = facade.getAllReviews(server);
+			List<CrucibleChangeSet> list = facade.getAllReviews(server);
 			assertNotNull(list);
 			assertTrue(list.size() > 0);
 		} catch (RemoteApiException e) {

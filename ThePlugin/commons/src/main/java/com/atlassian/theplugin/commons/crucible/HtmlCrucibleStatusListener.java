@@ -37,7 +37,7 @@ public class HtmlCrucibleStatusListener implements StatusListener {
 		display = aDisplay;
 	}
 
-    public void updateReviews(Collection<ReviewInfo> reviews) {
+    public void updateReviews(Collection<CrucibleChangeSet> reviews) {
 		StringBuilder sb = new StringBuilder(
                 "<html>"
                 + BODY_WITH_STYLE);
@@ -51,7 +51,7 @@ public class HtmlCrucibleStatusListener implements StatusListener {
 						reviews.size()).append(
 							" open code reviews</b> for you.<br>&nbsp;</td></tr>");
 			sb.append("<tr><th>Key</th><th>Summary</th><th>Author</th><th>State</th><th>Reviewers</th></tr>");
-			for (ReviewInfo review : reviews) {
+			for (CrucibleChangeSet review : reviews) {
                 sb.append("<tr><td valign=\"top\"><b><font color=blue><a href='");
                 sb.append(review.getReviewUrl());
                 sb.append("'>");
@@ -61,14 +61,18 @@ public class HtmlCrucibleStatusListener implements StatusListener {
                 sb.append("<td valign=\"top\">" + review.getAuthor().getUserName() + "</td>");
                 sb.append("<td valign=\"top\">" + review.getState().value() + "</td>");
                 sb.append("<td valign=\"top\">");
-                for (Iterator<Reviewer> iterator = review.getReviewers().iterator(); iterator.hasNext();) {
-                    Reviewer reviewer = iterator.next();
-                    sb.append(reviewer.getUserName());
-                    if (iterator.hasNext()) {
-                        sb.append("<br>");
-                    }
-                }
-                sb.append("</td></tr>");
+				try {
+					for (Iterator<Reviewer> iterator = review.getReviewers().iterator(); iterator.hasNext();) {
+						Reviewer reviewer = iterator.next();
+						sb.append(reviewer.getUserName());
+						if (iterator.hasNext()) {
+							sb.append("<br>");
+						}
+					}
+				} catch (ValueNotYetInitialized valueNotYetInitialized) {
+					sb.append("reviewers unknown");
+				}
+				sb.append("</td></tr>");
 			}
 			sb.append("</table>");
 		}
@@ -77,6 +81,6 @@ public class HtmlCrucibleStatusListener implements StatusListener {
 	}
 
 	public void resetState() {
-		updateReviews(new ArrayList<ReviewInfo>());
+		updateReviews(new ArrayList<CrucibleChangeSet>());
 	}
 }
