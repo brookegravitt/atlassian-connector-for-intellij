@@ -44,18 +44,25 @@ public class ReviewDecoratorImpl implements ReviewDecorator {
 
 
 	/**
-	 * Decorates text if current user is reviewer of the review and did review already
+	 * Decorates text if current user is reviewer of the review and did (or not) review already
 	 */
 	private void ReviewerFinishedDecorator() {
 
 		String me = review.getServer().getUserName();
 
 		try {
-			if (checkReviewerCompleted(review.getReviewers(), me)) {
+			Reviewer reviewer = findReviewer(review.getReviewers(), me);
+
+			if (reviewer != null && reviewer.isCompleted()) {
 				text = "<span style=\"color: #999999; \">"
 							+ text
 							+ "</span>";
+			} else if (reviewer != null && ! reviewer.isCompleted()) {
+				text = "<span style=\"color: #000099; \">"
+							+ text
+							+ "</span>";
 			}
+			
 		} catch (ValueNotYetInitialized valueNotYetInitialized) {
 			// blame Lukasz
 			valueNotYetInitialized.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
@@ -66,15 +73,15 @@ public class ReviewDecoratorImpl implements ReviewDecorator {
 	 *
 	 * @param reviewers list of reviewers
 	 * @param me current user userName
-	 * @return true if user me is one of reviewers and completed review
+	 * @return reviewer reference if user me is one of reviewers or null otherwise
 	 */
-	private boolean checkReviewerCompleted(List<Reviewer> reviewers, String me) {
+	private Reviewer findReviewer(List<Reviewer> reviewers, String me) {
 		for (Reviewer reviewer : reviewers) {
-			if (reviewer.getUserName().equals(me) && reviewer.isCompleted()) {
-				return true;
+			if (reviewer.getUserName().equals(me)) {
+				return reviewer;
 			}
 		}
-		return false;
+		return null;
 	}
 
 	/**
