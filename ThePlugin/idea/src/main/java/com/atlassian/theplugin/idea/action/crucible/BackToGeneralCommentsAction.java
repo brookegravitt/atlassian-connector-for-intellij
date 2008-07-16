@@ -15,9 +15,5 @@ import com.atlassian.theplugin.idea.crucible.comments.ReviewCommentsPanel;
  */
 public class BackToGeneralCommentsAction extends AnAction {
 	public void actionPerformed(AnActionEvent event) {
-		ThePluginProjectComponent pluginProjectComponent = IdeaHelper.getCurrentProject(event.getDataContext())
-				.getComponent(ThePluginProjectComponent.class);
-		ReviewCommentsPanel panel = pluginProjectComponent.getCrucibleBottomToolWindowPanel().getReviewComentsPanel();
-		panel.switchToComments();
 	}
 }
