@@ -24,7 +24,8 @@ public class CrucibleReviewActionListener {
 	public void focusOnFile(ReviewData reviewData, CrucibleFileInfo reviewItem) {
 	}
 
-	public void focusOnGeneralComment(ReviewData reviewData, GeneralComment comment) {
+    //@todo wtf general comment
+    public void focusOnGeneralComment(ReviewData reviewData) {
 	}
 
 	public void focusOnGeneralCommentReply(ReviewData reviewData, GeneralComment comment) {
