@@ -16,20 +16,20 @@
 
 package com.atlassian.theplugin.notification.crucible;
 
-import com.atlassian.theplugin.idea.crucible.CrucibleStatusListener;
-import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.idea.crucible.CrucibleStatusListener;
+import com.atlassian.theplugin.idea.crucible.ReviewData;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
 /**
  * This one is supposed to be per project.
@@ -57,6 +57,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
     }
 
     private void checkReviewersStatus(Review oldReview, Review newReview) throws ValueNotYetInitialized {
+        boolean allCompleted = true;
         for (Reviewer reviewer : newReview.getReviewers()) {
             for (Reviewer oldReviewer : oldReview.getReviewers()) {
                 if (reviewer.getUserName().equals(oldReviewer.getUserName())) {
@@ -65,6 +66,12 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
                     }
                 }
             }
+            if (!reviewer.isCompleted()) {
+                allCompleted = false;
+            }            
+        }
+        if (allCompleted) {
+            notifications.add(new ReviewCompletedNotification(newReview));
         }
     }
 
@@ -185,10 +192,10 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
     }
 
     public void resetState() {
-//To change body of implemented methods use File | Settings | File Templates.
+        reviews.clear();
     }
 
     public List<CrucibleNotification> getNotifications() {
         return notifications;
-    }    
+    }
 }
