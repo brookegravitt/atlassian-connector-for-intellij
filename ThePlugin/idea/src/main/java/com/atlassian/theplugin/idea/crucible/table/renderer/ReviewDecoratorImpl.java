@@ -91,6 +91,7 @@ public class ReviewDecoratorImpl implements ReviewDecorator {
 
 		switch (review.getState()) {
 			case CLOSED:
+			case DEAD:
 				text = "<span style=\"color: #999999; text-decoration: line-through;\">"
 						+ text
 						+ "</span>";
