@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.crucible.tree;
 
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
+
+import com.atlassian.theplugin.idea.crucible.ReviewData;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 

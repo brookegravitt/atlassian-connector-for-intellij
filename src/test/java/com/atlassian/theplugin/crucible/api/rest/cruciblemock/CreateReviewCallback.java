@@ -19,7 +19,7 @@ package com.atlassian.theplugin.crucible.api.rest.cruciblemock;
 import com.atlassian.theplugin.commons.crucible.api.model.PermIdBean;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.crucible.api.model.State;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewDataImpl;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewBean;
 import com.atlassian.theplugin.commons.crucible.api.rest.CrucibleRestXmlHelper;
 import com.atlassian.theplugin.commons.configuration.ServerBean;
 import static junit.framework.Assert.assertTrue;
@@ -54,12 +54,11 @@ public class CreateReviewCallback implements JettyMockServer.Callback {
         List<Element> elements = xpath.selectNodes(req);
 
 		ServerBean server = new ServerBean();
-		Review reqReview = CrucibleRestXmlHelper.parseReviewNode(server, elements.get(0));
+		Review reqReview = CrucibleRestXmlHelper.parseReviewNode(elements.get(0));
 
-        ReviewDataImpl reviewData = null;
+        ReviewBean reviewData = null;
         if (elements != null && !elements.isEmpty()) {
-            reviewData = (ReviewDataImpl) CrucibleRestXmlHelper.parseReviewNode(server,
-					elements.iterator().next());
+            reviewData = (ReviewBean) CrucibleRestXmlHelper.parseReviewNode(elements.iterator().next());
             reviewData.setState(State.DRAFT);
             PermIdBean permId = new PermIdBean();
             permId.setId(PERM_ID);

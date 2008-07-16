@@ -16,39 +16,32 @@
 
 package com.atlassian.theplugin.notification.crucible;
 
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
-import com.atlassian.theplugin.commons.crucible.CrucibleStatusListener;
+import com.atlassian.theplugin.idea.crucible.CrucibleStatusListener;
+import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.notification.crucible.CrucibleNotification;
-import com.atlassian.theplugin.notification.crucible.NewGeneralCommentNotification;
-import com.atlassian.theplugin.notification.crucible.NewReviewItemNotification;
-import com.atlassian.theplugin.notification.crucible.NewReviewNotification;
-import com.atlassian.theplugin.notification.crucible.ReviewStateChangedNotification;
-import com.atlassian.theplugin.notification.crucible.ReviewerCompletedNotification;
-import com.atlassian.theplugin.notification.crucible.NewReplyCommentNotification;
-import com.atlassian.theplugin.notification.crucible.NewVersionedCommentNotification;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 /**
  * This one is supposed to be per project.
  */
 public class CrucibleReviewNotifier implements CrucibleStatusListener {
-    private Map<PredefinedFilter, List<ReviewData>> reviews = new HashMap<PredefinedFilter, List<ReviewData>>();
+    private Map<PredefinedFilter, List<Review>> reviews = new HashMap<PredefinedFilter, List<Review>>();
     private List<CrucibleNotification> notifications = new ArrayList<CrucibleNotification>();
 
     public CrucibleReviewNotifier() {
     }
 
-    private void checkNewReviewItems(ReviewData oldReview, ReviewData newReview) throws ValueNotYetInitialized {
+    private void checkNewReviewItems(Review oldReview, Review newReview) throws ValueNotYetInitialized {
         for (CrucibleFileInfo item : newReview.getFiles()) {
             boolean found = false;
             for (CrucibleFileInfo oldItem : oldReview.getFiles()) {
@@ -63,7 +56,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
         }
     }
 
-    private void checkReviewersStatus(ReviewData oldReview, ReviewData newReview) throws ValueNotYetInitialized {
+    private void checkReviewersStatus(Review oldReview, Review newReview) throws ValueNotYetInitialized {
         for (Reviewer reviewer : newReview.getReviewers()) {
             for (Reviewer oldReviewer : oldReview.getReviewers()) {
                 if (reviewer.getUserName().equals(oldReviewer.getUserName())) {
@@ -75,7 +68,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
         }
     }
 
-    private void checkReplies(ReviewData review, GeneralComment oldComment, GeneralComment newComment) {
+    private void checkReplies(Review review, GeneralComment oldComment, GeneralComment newComment) {
         for (GeneralComment reply : newComment.getReplies()) {
             GeneralComment existingReply = null;
             for (GeneralComment oldReply : oldComment.getReplies()) {
@@ -90,7 +83,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
         }
     }
 
-    private void checkComments(ReviewData oldReview, ReviewData newReview) throws ValueNotYetInitialized {
+    private void checkComments(Review oldReview, Review newReview) throws ValueNotYetInitialized {
         for (GeneralComment comment : newReview.getGeneralComments()) {
             GeneralComment existing = null;
             for (GeneralComment oldComment : oldReview.getGeneralComments()) {
@@ -131,13 +124,13 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
             int newCounter = 0;
             for (PredefinedFilter predefinedFilter : incomingReviews.keySet()) {
                 List<ReviewData> incomingCategory = incomingReviews.get(predefinedFilter);
-                List<ReviewData> existingCategory = reviews.get(predefinedFilter);
-                List<ReviewData> newForCategory = new ArrayList<ReviewData>();
+                List<Review> existingCategory = reviews.get(predefinedFilter);
+                List<Review> newForCategory = new ArrayList<Review>();
 
-                for (ReviewData reviewDataInfo : incomingCategory) {
+                for (Review reviewDataInfo : incomingCategory) {
                     if (existingCategory != null) {
-                        ReviewData existing = null;
-                        for (ReviewData oldReviewDataInfo : existingCategory) {
+                        Review existing = null;
+                        for (Review oldReviewDataInfo : existingCategory) {
                             if (reviewDataInfo.getPermId().getId().equals(oldReviewDataInfo.getPermId().getId())) {
                                 existing = oldReviewDataInfo;
                                 break;
@@ -182,7 +175,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 
             reviews.clear();
             for (PredefinedFilter predefinedFilter : incomingReviews.keySet()) {
-                reviews.put(predefinedFilter, new ArrayList<ReviewData>(incomingReviews.get(predefinedFilter)));
+                reviews.put(predefinedFilter, new ArrayList<Review>(incomingReviews.get(predefinedFilter)));
             }
         }
 
@@ -194,4 +187,8 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
     public void resetState() {
 //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    public List<CrucibleNotification> getNotifications() {
+        return notifications;
+    }    
 }
