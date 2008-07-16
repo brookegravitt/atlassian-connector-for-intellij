@@ -1,10 +1,9 @@
 package com.atlassian.theplugin.idea.crucible.comments;
 
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
+import com.atlassian.theplugin.idea.crucible.ReviewData;
 
 import java.util.Collection;
 
@@ -66,8 +65,5 @@ public class CrucibleReviewActionListener {
 	}
 
 	public void showVersionedCommentReply(ReviewData reviewData, GeneralComment comment) {
-	}
-
-	public void focusOnGeneralComments(ReviewData changeSet) {
 	}
 }

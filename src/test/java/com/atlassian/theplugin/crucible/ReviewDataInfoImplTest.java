@@ -18,8 +18,8 @@ package com.atlassian.theplugin.crucible;
 
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
 import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.idea.crucible.ReviewData;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;

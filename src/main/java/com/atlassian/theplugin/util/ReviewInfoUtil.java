@@ -16,7 +16,6 @@
 
 package com.atlassian.theplugin.util;
 
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 
@@ -26,7 +25,7 @@ public class ReviewInfoUtil {
 	private ReviewInfoUtil() {
 	}
 
-	public static int getNumOfCompletedReviewers(ReviewData review) {
+	public static int getNumOfCompletedReviewers(Review review) {
 		int numCompleted = 0;
 
 		try {
@@ -41,7 +40,7 @@ public class ReviewInfoUtil {
 		return numCompleted;
 	}
 
-	public static String toString(ReviewData review) {
+	public static String toString(Review review) {
 		return review.getPermId().getId() + ": " + review.getName();
 	}
 }

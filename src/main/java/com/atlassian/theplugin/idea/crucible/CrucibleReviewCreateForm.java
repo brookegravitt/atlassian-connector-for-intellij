@@ -33,9 +33,11 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.VirtualFileSystem;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.configuration.ProductServerConfiguration;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -524,6 +526,30 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
         }
 
         public Date getCloseDate() {
+            return null; 
+        }
+
+        public List<Reviewer> getReviewers() throws ValueNotYetInitialized {
+            return null;
+        }
+
+        public List<GeneralComment> getGeneralComments() throws ValueNotYetInitialized {
+            return null;
+        }
+
+        public List<VersionedComment> getVersionedComments() throws ValueNotYetInitialized {
+            return null;
+        }
+
+        public List<CrucibleFileInfo> getFiles() throws ValueNotYetInitialized {
+            return null;
+        }
+
+        public List<Transition> getTransitions() throws ValueNotYetInitialized {
+            return null;
+        }
+
+        public VirtualFileSystem getVirtualFileSystem() {
             return null; 
         }
 

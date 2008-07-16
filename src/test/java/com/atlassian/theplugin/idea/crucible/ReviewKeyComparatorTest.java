@@ -16,7 +16,6 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.crucible.table.column.ReviewKeyComparator;
@@ -52,8 +51,8 @@ public class ReviewKeyComparatorTest extends TestCase {
 		assertEquals(0, comparator.compare(getReviewAdapter("CR", "-1"), getReviewAdapter("CR", "-1")));		
 	}
 
-	private ReviewData getReviewAdapter(final String projectKey, final String key) {
-		return new ReviewData() {
+	private Review getReviewAdapter(final String projectKey, final String key) {
+		return new Review() {
 
 			public String getReviewUrl() {
 				return null;
