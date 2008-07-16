@@ -102,7 +102,7 @@ public class ReviewReviewersCellRenderer  extends DefaultTableCellRenderer {
 				}
 				html.append(reviewer.getDisplayName());
 				html.append("</span>");
-				html.append("<br />");
+				html.append("<br>");
 			}
 		} catch (ValueNotYetInitialized valueNotYetInitialized) {
 			// ignore
