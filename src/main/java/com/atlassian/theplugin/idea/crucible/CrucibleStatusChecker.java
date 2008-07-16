@@ -139,7 +139,7 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 
                             List<ReviewData> reviewData = new ArrayList<ReviewData>(review.size());
                             for (Review r : review) {
-                                reviewData.add(new ReviewData(r, server));
+                                reviewData.add(new ReviewDataImpl(r, server));
                             }
 
                             reviews.get(filter).addAll(reviewData);
@@ -176,7 +176,7 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 
                                     List<ReviewData> reviewData = new ArrayList<ReviewData>(customFilter.size());
                                     for (Review r : customFilter) {
-                                        reviewData.add(new ReviewData(r, server));
+                                        reviewData.add(new ReviewDataImpl(r, server));
                                     }
 
                                     customFilterReviews.get(filter.getTitle()).addAll(reviewData);
