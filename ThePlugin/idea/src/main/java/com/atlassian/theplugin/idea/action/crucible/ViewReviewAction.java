@@ -17,7 +17,7 @@
 package com.atlassian.theplugin.idea.action.crucible;
 
 import com.intellij.ide.BrowserUtil;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
+import com.atlassian.theplugin.idea.crucible.ReviewData;
 
 /**
  * Created by IntelliJ IDEA.

@@ -6,7 +6,8 @@ import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.util.Icons;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.idea.crucible.ReviewData;
 
 import javax.swing.*;
 import java.awt.*;

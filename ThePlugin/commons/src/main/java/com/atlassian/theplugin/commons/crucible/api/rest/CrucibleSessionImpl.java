@@ -18,8 +18,8 @@ package com.atlassian.theplugin.commons.crucible.api.rest;
 
 import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewDataImpl;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewBean;
 import com.atlassian.theplugin.commons.crucible.api.CrucibleSession;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.remoteapi.*;
@@ -88,21 +88,15 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
     private static final String ADD_PATCH = "/addPatch";
 
     private String authToken = null;
-	private Server server;
 
 
 	/**
      * Public constructor for CrucibleSessionImpl.
      *
-     * @param server
+     * @param url base url
      */
-    public CrucibleSessionImpl(Server server) throws RemoteApiMalformedUrlException {
-        super(server.getUrlString());
-		this.server = server;
-	}
-
-	public Server getServer() {
-		return server;
+    public CrucibleSessionImpl(String url) throws RemoteApiMalformedUrlException {
+        super(url);
 	}
 
 	public void login(String username, String aPassword) throws RemoteApiLoginException {
@@ -162,7 +156,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         }
     }
 
-    public List<ReviewData> getReviewsInStates(List<State> states, boolean details) throws RemoteApiException {
+    public List<Review> getReviewsInStates(List<State> states, boolean details) throws RemoteApiException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Calling method without calling login() first");
         }
@@ -195,14 +189,14 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             }
             @SuppressWarnings("unchecked")
             List<Element> elements = xpath.selectNodes(doc);
-            List<ReviewData> reviews = new ArrayList<ReviewData>();
+            List<Review> reviews = new ArrayList<Review>();
 
             if (elements != null && !elements.isEmpty()) {
                 for (Element element : elements) {
                     if (details) {
-                        reviews.add(CrucibleRestXmlHelper.parseDetailedReviewNode(getServer(), element));
+                        reviews.add(CrucibleRestXmlHelper.parseDetailedReviewNode(element));
                     } else {
-                        reviews.add(CrucibleRestXmlHelper.parseReviewNode(getServer(), element));
+                        reviews.add(CrucibleRestXmlHelper.parseReviewNode(element));
                     }
                 }
             }
@@ -214,11 +208,11 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         }
     }
 
-    public List<ReviewData> getAllReviews(boolean details) throws RemoteApiException {
+    public List<Review> getAllReviews(boolean details) throws RemoteApiException {
         return getReviewsInStates(null, details);
     }
 
-    public List<ReviewData> getReviewsForFilter(PredefinedFilter filter, boolean details) throws RemoteApiException {
+    public List<Review> getReviewsForFilter(PredefinedFilter filter, boolean details) throws RemoteApiException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Calling method without calling login() first");
         }
@@ -241,14 +235,14 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             }
             @SuppressWarnings("unchecked")
             List<Element> elements = xpath.selectNodes(doc);
-            List<ReviewData> reviews = new ArrayList<ReviewData>();
+            List<Review> reviews = new ArrayList<Review>();
 
             if (elements != null && !elements.isEmpty()) {
                 for (Element element : elements) {
                     if (details) {
-                        reviews.add(CrucibleRestXmlHelper.parseDetailedReviewNode(getServer(), element));
+                        reviews.add(CrucibleRestXmlHelper.parseDetailedReviewNode(element));
                     } else {
-                        reviews.add(CrucibleRestXmlHelper.parseReviewNode(getServer(), element));
+                        reviews.add(CrucibleRestXmlHelper.parseReviewNode(element));
                     }
                 }
             }
@@ -260,7 +254,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         }
     }
 
-    public List<ReviewData> getReviewsForCustomFilter(CustomFilter filter, boolean details) throws RemoteApiException {
+    public List<Review> getReviewsForCustomFilter(CustomFilter filter, boolean details) throws RemoteApiException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Calling method without calling login() first");
         }
@@ -281,14 +275,14 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             }
             @SuppressWarnings("unchecked")
             List<Element> elements = xpath.selectNodes(doc);
-            List<ReviewData> reviews = new ArrayList<ReviewData>();
+            List<Review> reviews = new ArrayList<Review>();
 
             if (elements != null && !elements.isEmpty()) {
                 for (Element element : elements) {
                     if (details) {
-                        reviews.add(CrucibleRestXmlHelper.parseDetailedReviewNode(getServer(), element));
+                        reviews.add(CrucibleRestXmlHelper.parseDetailedReviewNode(element));
                     } else {
-                        reviews.add(CrucibleRestXmlHelper.parseReviewNode(getServer(), element));
+                        reviews.add(CrucibleRestXmlHelper.parseReviewNode(element));
                     }  
                 }
             }
@@ -462,7 +456,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             List<Element> elements = xpath.selectNodes(doc);
             List<CrucibleFileInfo> reviewItems = new ArrayList<CrucibleFileInfo>();
 
-			ReviewData changeSet = new ReviewDataImpl(getServer());
+			Review changeSet = new ReviewBean();
 			if (elements != null && !elements.isEmpty()) {
                 for (Element element : elements) {
                     CrucibleFileInfo fileInfo = CrucibleRestXmlHelper.parseReviewItemNode(changeSet, element);
@@ -844,7 +838,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             List<Element> elements = xpath.selectNodes(doc);
 
             if (elements != null && !elements.isEmpty()) {
-                return CrucibleRestXmlHelper.parseReviewNode(getServer(), elements.iterator().next());
+                return CrucibleRestXmlHelper.parseReviewNode(elements.iterator().next());
             }
             return null;
         } catch (IOException e) {
@@ -868,7 +862,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             List<Element> elements = xpath.selectNodes(doc);
 
             if (elements != null && !elements.isEmpty()) {
-                return CrucibleRestXmlHelper.parseReviewNode(getServer(), elements.iterator().next());
+                return CrucibleRestXmlHelper.parseReviewNode(elements.iterator().next());
             }
             return null;
         } catch (IOException e) {
@@ -949,7 +943,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             List<Element> elements = xpath.selectNodes(doc);
 
             if (elements != null && !elements.isEmpty()) {
-                return CrucibleRestXmlHelper.parseReviewNode(getServer(), elements.iterator().next());
+                return CrucibleRestXmlHelper.parseReviewNode(elements.iterator().next());
             }
             return null;
         } catch (IOException e) {
@@ -975,7 +969,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             List<Element> elements = xpath.selectNodes(doc);
 
             if (elements != null && !elements.isEmpty()) {
-                return CrucibleRestXmlHelper.parseReviewNode(getServer(), elements.iterator().next());
+                return CrucibleRestXmlHelper.parseReviewNode(elements.iterator().next());
             }
             return null;
         } catch (IOException e) {
@@ -1024,7 +1018,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 
             if (elements != null && !elements.isEmpty()) {
                 for (Element element : elements) {
-                    review = CrucibleRestXmlHelper.parseReviewNode(getServer(), element);
+                    review = CrucibleRestXmlHelper.parseReviewNode(element);
                 }
             }
             return review;
@@ -1103,7 +1097,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 
             if (elements != null && !elements.isEmpty()) {
                 for (Element element : elements) {
-                    review = CrucibleRestXmlHelper.parseReviewNode(getServer(), element);
+                    review = CrucibleRestXmlHelper.parseReviewNode(element);
                 }
             }
             return review;

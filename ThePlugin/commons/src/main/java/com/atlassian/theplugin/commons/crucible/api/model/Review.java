@@ -16,7 +16,12 @@
 
 package com.atlassian.theplugin.commons.crucible.api.model;
 
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
+import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.VirtualFileSystem;
+
 import java.util.Date;
+import java.util.List;
 
 public interface Review {
 	User getAuthor();
@@ -44,4 +49,16 @@ public interface Review {
     Date getCreateDate();
 
     Date getCloseDate();
+
+    List<Reviewer> getReviewers() throws ValueNotYetInitialized;
+
+    List<GeneralComment> getGeneralComments() throws ValueNotYetInitialized;
+
+    List<VersionedComment> getVersionedComments() throws ValueNotYetInitialized;
+
+    List<CrucibleFileInfo> getFiles() throws ValueNotYetInitialized;
+
+    List<Transition> getTransitions() throws ValueNotYetInitialized;
+
+    VirtualFileSystem getVirtualFileSystem();
 }

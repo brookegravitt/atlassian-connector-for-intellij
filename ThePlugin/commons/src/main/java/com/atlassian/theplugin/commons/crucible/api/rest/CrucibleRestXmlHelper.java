@@ -17,8 +17,7 @@
 package com.atlassian.theplugin.commons.crucible.api.rest;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewDataImpl;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewBean;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
@@ -151,7 +150,7 @@ public final class CrucibleRestXmlHelper {
         return reviewerBean;
     }
 
-    private static void parseReview(Element reviewNode, ReviewDataImpl review) {
+    private static void parseReview(Element reviewNode, ReviewBean review) {
         if (reviewNode.getChild("author") != null) {
             review.setAuthor(parseUserNode(reviewNode.getChild("author")));
         }
@@ -184,14 +183,14 @@ public final class CrucibleRestXmlHelper {
         }
     }
 
-    public static ReviewData parseReviewNode(Server server, Element reviewNode) {
-        ReviewDataImpl review = new ReviewDataImpl(server);
+    public static ReviewBean parseReviewNode(Element reviewNode) {
+        ReviewBean review = new ReviewBean();
         parseReview(reviewNode, review);
         return review;
     }
 
-    public static ReviewDataImpl parseDetailedReviewNode(Server server, Element reviewNode) {
-        ReviewDataImpl review = new ReviewDataImpl(server);
+    public static ReviewBean parseDetailedReviewNode(Element reviewNode) {
+        ReviewBean review = new ReviewBean();
         parseReview(reviewNode, review);
 
         List<Element> reviewersNode = getChildElements(reviewNode, "reviewers");
@@ -386,7 +385,7 @@ public final class CrucibleRestXmlHelper {
         return reviewData;
     }
 
-    public static CrucibleFileInfo parseReviewItemNode(ReviewData review, Element reviewItemNode) {
+    public static CrucibleFileInfo parseReviewItemNode(Review review, Element reviewItemNode) {
         CrucibleFileInfoImpl reviewItem = new CrucibleFileInfoImpl(
 				new VersionedVirtualFile(
 						getChildText(reviewItemNode, "toPath"),
@@ -399,7 +398,7 @@ public final class CrucibleRestXmlHelper {
 						review.getVirtualFileSystem()
 				)
 		);
-		((ReviewDataImpl) review).setRepoName(getChildText(reviewItemNode, "repositoryName"));
+		((ReviewBean) review).setRepoName(getChildText(reviewItemNode, "repositoryName"));
 		// todo lguminski to ask Marek about XML sructure
         if (reviewItemNode.getChild("permId") != null) {
             PermIdBean permId = new PermIdBean();

@@ -18,7 +18,8 @@ package com.atlassian.theplugin.idea.crucible.table.column;
 
 import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.atlassian.theplugin.idea.crucible.table.renderer.ReviewDecoratorImpl;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
+import com.atlassian.theplugin.idea.crucible.ReviewData;
+
 
 import java.util.Comparator;
 
