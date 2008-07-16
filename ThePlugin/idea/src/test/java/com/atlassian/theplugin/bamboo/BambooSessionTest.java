@@ -319,7 +319,7 @@ public class BambooSessionTest extends TestCase {
 		assertEquals("13928", build.getCommitInfo().iterator().next().getFiles().iterator().next().getFileDescriptor().getRevision());
 		assertEquals(
 				"/PL/trunk/ThePlugin/src/main/java/com/atlassian/theplugin/bamboo/HtmlBambooStatusListener.java",
-				build.getCommitInfo().iterator().next().getFiles().iterator().next().getFileDescriptor().getName());
+				build.getCommitInfo().iterator().next().getFiles().iterator().next().getFileDescriptor().getUrl());
 
 		// failed tests
 		assertEquals(2, build.getFailedTestDetails().size());
@@ -369,7 +369,7 @@ public class BambooSessionTest extends TestCase {
 		assertEquals("13928", build.getCommitInfo().iterator().next().getFiles().iterator().next().getFileDescriptor().getRevision());
 		assertEquals(
 				"/PL/trunk/ThePlugin/src/main/java/com/atlassian/theplugin/bamboo/HtmlBambooStatusListener.java",
-				build.getCommitInfo().iterator().next().getFiles().iterator().next().getFileDescriptor().getName());
+				build.getCommitInfo().iterator().next().getFiles().iterator().next().getFileDescriptor().getUrl());
 
 		// failed tests
 		assertEquals(2, build.getFailedTestDetails().size());
@@ -410,7 +410,7 @@ public class BambooSessionTest extends TestCase {
 		assertEquals("13928", build.getCommitInfo().iterator().next().getFiles().iterator().next().getFileDescriptor().getRevision());
 		assertEquals(
 				"/PL/trunk/ThePlugin/src/main/java/com/atlassian/theplugin/bamboo/HtmlBambooStatusListener.java",
-				build.getCommitInfo().iterator().next().getFiles().iterator().next().getFileDescriptor().getName());
+				build.getCommitInfo().iterator().next().getFiles().iterator().next().getFileDescriptor().getUrl());
 
 		// failed tests
 		assertEquals(0, build.getFailedTestDetails().size());
@@ -451,7 +451,7 @@ public class BambooSessionTest extends TestCase {
 		assertEquals("13928", build.getCommitInfo().get(0).getFiles().iterator().next().getFileDescriptor().getRevision());
 		assertEquals(
 				"/PL/trunk/ThePlugin/src/main/java/com/atlassian/theplugin/bamboo/HtmlBambooStatusListener.java",
-				build.getCommitInfo().get(0).getFiles().iterator().next().getFileDescriptor().getName());
+				build.getCommitInfo().get(0).getFiles().iterator().next().getFileDescriptor().getUrl());
 		assertEquals(2, build.getCommitInfo().get(1).getFiles().size());
 		assertEquals(1, build.getCommitInfo().get(2).getFiles().size());		
 
