@@ -1,8 +1,7 @@
 package com.atlassian.theplugin.idea.crucible.events;
 
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
-import com.atlassian.theplugin.commons.crucible.CrucibleChangeSet;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
+import com.atlassian.theplugin.idea.crucible.ReviewData;
 
 /**
  * Created by IntelliJ IDEA.
@@ -20,6 +19,7 @@ public class FocusOnGeneralCommentsEvent extends CrucibleEvent {
 	}
 
 	protected void notify(CrucibleReviewActionListener listener) {
-		listener.focusOnGeneralComments(changeSet);
+        //@todo ?? nie wiem co z tym zrobic - Lukasz?
+        //listener.focusOnGeneralComments(changeSet);
 	}
 }

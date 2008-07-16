@@ -2,9 +2,9 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleCommentPanel;
+import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
 import com.intellij.util.ui.UIUtil;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
@@ -48,10 +48,6 @@ public class CommentListPanel extends JPanel {
 	}
 
 	private class MyCrucibleReviewActionListener extends CrucibleReviewActionListener {
-		@Override
-		public void focusOnGeneralComments(ReviewData changeSet) {
-		}
-
 		@Override
 		public void showReview(ReviewData review) {
 			List<GeneralComment> generalComments = new ArrayList<GeneralComment>();
