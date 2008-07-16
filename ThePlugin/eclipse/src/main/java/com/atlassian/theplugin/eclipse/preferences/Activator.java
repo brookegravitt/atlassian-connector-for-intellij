@@ -43,13 +43,10 @@ import com.atlassian.theplugin.eclipse.EclipseLogger;
 import com.atlassian.theplugin.eclipse.MissingPasswordHandler;
 import com.atlassian.theplugin.eclipse.util.PluginUtil;
 
-
 /**
  * The activator class controls the plug-in life cycle
  */
 public class Activator extends AbstractUIPlugin {
-
-
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "com.atlassian.theplugin.eclipse";
@@ -61,7 +58,8 @@ public class Activator extends AbstractUIPlugin {
 
 	private BambooStatusChecker bambooChecker;
 
-	//private Collection<TimerTask> scheduledComponents = new ArrayList<TimerTask>();
+	// private Collection<TimerTask> scheduledComponents = new
+	// ArrayList<TimerTask>();
 	private Collection<Job> scheduledComponents = new ArrayList<Job>();
 
 	private Collection<SchedulableChecker> schedulableCheckers = new ArrayList<SchedulableChecker>();
@@ -70,7 +68,6 @@ public class Activator extends AbstractUIPlugin {
 
 	private ConfigListener configListener;
 
-	
 	/**
 	 * The constructor
 	 */
@@ -79,62 +76,76 @@ public class Activator extends AbstractUIPlugin {
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
+	 * 
+	 * @see
+	 * org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext
+	 * )
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
 
 		// create logger
-		PluginUtil.setLogger(new EclipseLogger(getLog()));	// now you can use PluginUtil.getLogger
+		PluginUtil.setLogger(new EclipseLogger(getLog())); // now you can use
+		// PluginUtil.getLogger
 		PluginUtil.getLogger().info(PluginUtil.getPluginName() + " started.");
-		
+
 		// create configuration
 		reloadConfiguration();
-		
+
 		// create bamboo checker
 		MissingPasswordHandler missingPasswordHandler = new MissingPasswordHandler();
-		bambooChecker = BambooStatusChecker.getInstance(
-				EclipseActionScheduler.getInstance(), pluginConfiguration, missingPasswordHandler, PluginUtil.getLogger());
+		bambooChecker = BambooStatusChecker.getInstance(EclipseActionScheduler
+				.getInstance(), pluginConfiguration, missingPasswordHandler,
+				PluginUtil.getLogger());
 		schedulableCheckers.add(bambooChecker);
 		registerConfigurationListener(bambooChecker);
-		
+
 		// create configuration changes listener
 		configListener = new ConfigListener();
 		getPluginPreferences().addPropertyChangeListener(configListener);
-		
+
 		// start timer/checkers
 		startTimer();
-		
+
 	}
-	
+
 	/*
 	 * (non-Javadoc)
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
+	 * 
+	 * @see
+	 * org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext
+	 * )
 	 */
 	public void stop(BundleContext context) throws Exception {
-		
+
 		getPluginPreferences().removePropertyChangeListener(configListener);
-		
-		getPluginPreferences().setValue(PreferenceConstants.BAMBOO_TAB_COLUMNS_ORDER, 
-				getPluginConfiguration().getBambooTabConfiguration().getColumnsOrderString());
-		getPluginPreferences().setValue(PreferenceConstants.BAMBOO_TAB_COLUMNS_WIDTH, 
-				getPluginConfiguration().getBambooTabConfiguration().getColumnsWidthString());
-		
+
+		getPluginPreferences().setValue(
+				PreferenceConstants.BAMBOO_TAB_COLUMNS_ORDER,
+				getPluginConfiguration().getBambooTabConfiguration()
+						.getColumnsOrderString());
+		getPluginPreferences().setValue(
+				PreferenceConstants.BAMBOO_TAB_COLUMNS_WIDTH,
+				getPluginConfiguration().getBambooTabConfiguration()
+						.getColumnsWidthString());
+
 		disableTimer();
-		
+
 		plugin = null;
 		super.stop(context);
 	}
-	
-	public void registerConfigurationListener(ConfigurationListener configListener) {
+
+	public void registerConfigurationListener(
+			ConfigurationListener configListener) {
 		this.configurationListeners.add(configListener);
 	}
 
-	public void unregisterConfigurationListener(ConfigurationListener configListener) {
+	public void unregisterConfigurationListener(
+			ConfigurationListener configListener) {
 		this.configurationListeners.remove(configListener);
 	}
-	
+
 	private void notifyConfigurationListeners() {
 		for (ConfigurationListener listener : configurationListeners) {
 			listener.updateConfiguration(pluginConfiguration);
@@ -142,14 +153,15 @@ public class Activator extends AbstractUIPlugin {
 	}
 
 	public void reloadConfiguration() {
-		ProjectConfigurationWrapper configurationWrapper = new ProjectConfigurationWrapper(getPluginPreferences());
+		ProjectConfigurationWrapper configurationWrapper = new ProjectConfigurationWrapper(
+				getPluginPreferences());
 		pluginConfiguration = configurationWrapper.getPluginConfiguration();
 		ConfigurationFactory.setConfiguration(pluginConfiguration);
 	}
 
 	/**
 	 * Returns the shared instance
-	 *
+	 * 
 	 * @return the shared instance
 	 */
 	public static Activator getDefault() {
@@ -157,19 +169,20 @@ public class Activator extends AbstractUIPlugin {
 	}
 
 	/**
-	 * Returns an image descriptor for the image file at the given
-	 * plug-in relative path
-	 *
-	 * @param path the path
+	 * Returns an image descriptor for the image file at the given plug-in
+	 * relative path
+	 * 
+	 * @param path
+	 *            the path
 	 * @return the image descriptor
 	 */
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
 
-//	public Timer getTimer() {
-//		return timer;
-//	}
+	// public Timer getTimer() {
+	// return timer;
+	// }
 
 	public EclipsePluginConfiguration getPluginConfiguration() {
 		return pluginConfiguration;
@@ -179,18 +192,17 @@ public class Activator extends AbstractUIPlugin {
 		return bambooChecker;
 	}
 
-	
 	private void disableTimer() {
 		Job.getJobManager().cancel(BackgroundTaskType.CHECKERS);
-		
-//		Iterator<Job> i = scheduledComponents.iterator();
-//		while (i.hasNext()) {
-//			Job job = i.next();
-//			i.remove();
-//			job.cancel();
-//		}
+
+		// Iterator<Job> i = scheduledComponents.iterator();
+		// while (i.hasNext()) {
+		// Job job = i.next();
+		// i.remove();
+		// job.cancel();
+		// }
 	}
-	
+
 	private void startTimer() {
 		for (final SchedulableChecker checker : schedulableCheckers) {
 			if (checker.canSchedule()) {
@@ -206,10 +218,10 @@ public class Activator extends AbstractUIPlugin {
 
 					@Override
 					public boolean belongsTo(Object family) {
-						if (! (family instanceof BackgroundTaskType)) {
+						if (!(family instanceof BackgroundTaskType)) {
 							return false;
 						}
-						
+
 						switch ((BackgroundTaskType) family) {
 						case ALL:
 							return true;
@@ -217,21 +229,23 @@ public class Activator extends AbstractUIPlugin {
 							return true;
 						default:
 							return false;
-						} 
+						}
 					}
 				};
-				newJob.schedule(0);		// start checker immediately 
-				
+				newJob.schedule(0); // start checker immediately
+
 				scheduledComponents.add(newJob);
-//				scheduledComponents.add(newTask);
-//				timer.schedule(newTask, 0, pluginConfiguration.getBambooConfigurationData().getPollTime() * MILLISECONDS_IN_MINUTE);
-//				timer.schedule(newTask, 0, checker.getInterval());
+				// scheduledComponents.add(newTask);
+				// timer.schedule(newTask, 0,
+				// pluginConfiguration.getBambooConfigurationData
+				// ().getPollTime() * MILLISECONDS_IN_MINUTE);
+				// timer.schedule(newTask, 0, checker.getInterval());
 			} else {
 				checker.resetListenersState();
 			}
 		}
 	}
-	
+
 	public void rescheduleStatusCheckers() {
 		disableTimer();
 		startTimer();
@@ -240,12 +254,11 @@ public class Activator extends AbstractUIPlugin {
 	public Device getDisplay() {
 		return this.getWorkbench().getDisplay();
 	}
-	
-	
+
 	public Shell getShell() {
 		return this.getWorkbench().getDisplay().getActiveShell();
 	}
-	
+
 	public class ConfigListener implements IPropertyChangeListener {
 		public void propertyChange(PropertyChangeEvent event) {
 			reloadConfiguration();
@@ -254,5 +267,5 @@ public class Activator extends AbstractUIPlugin {
 			rescheduleStatusCheckers();
 		}
 	}
-	
+
 }

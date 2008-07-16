@@ -22,10 +22,12 @@ package com.atlassian.theplugin.eclipse.view.bamboo;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.SubStatusLineManager;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 
 import com.atlassian.theplugin.commons.bamboo.BambooStatusTooltipListener;
+import com.atlassian.theplugin.commons.bamboo.StausIconBambooListener;
 import com.atlassian.theplugin.eclipse.actions.bamboo.CommentBuildAction;
 import com.atlassian.theplugin.eclipse.actions.bamboo.LabelBuildAction;
 import com.atlassian.theplugin.eclipse.actions.bamboo.RefreshBuildsListAction;
@@ -59,10 +61,10 @@ public class BambooToolWindow extends ViewPart {
 		
 		bambooToolWindowContent = new BambooToolWindowContent(parent, this);
 		
-		// register listener
+		// register view as a bamboo checker listener
 		Activator.getDefault().getBambooChecker().registerListener(bambooToolWindowContent);
 		
-		// create and register popup listener
+		// create and register popup as a bamboo checker listener
 		BambooStatusTooltip popup = new BambooStatusTooltip();
 		popupListener = new BambooStatusTooltipListener(popup, Activator.getDefault().getPluginConfiguration());
 		Activator.getDefault().getBambooChecker().registerListener(popupListener);
@@ -70,6 +72,7 @@ public class BambooToolWindow extends ViewPart {
 		
 		//getViewSite().registerContextMenu(menuManager, selectionProvider)
 		
+		// add toolbar buttons to the view
 		IToolBarManager toolBarManager = getViewSite().getActionBars().getToolBarManager();
 		
 		this.runBuildAction = new RunBuildAction(this); 
@@ -81,6 +84,13 @@ public class BambooToolWindow extends ViewPart {
 		toolBarManager.add(commentBuildAction);
 		toolBarManager.add(new Separator());
 		toolBarManager.add(new RefreshBuildsListAction());
+		
+		// create and add status bar as a bamboo checker listener
+		SubStatusLineManager slm = (SubStatusLineManager) getViewSite().getActionBars().getStatusLineManager();
+		BambooStatusBar bambooStatusLine = new BambooStatusBar();
+		slm.getParent().add(bambooStatusLine);
+		Activator.getDefault().getBambooChecker().registerListener(
+				new StausIconBambooListener(bambooStatusLine, Activator.getDefault().getPluginConfiguration()));
 		
 		//getViewSite().getActionBars().updateActionBars();
 		
