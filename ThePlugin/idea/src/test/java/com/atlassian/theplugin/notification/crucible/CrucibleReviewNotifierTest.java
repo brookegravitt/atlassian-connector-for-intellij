@@ -9,6 +9,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewerBean;
 import com.atlassian.theplugin.commons.crucible.api.model.State;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
 import junit.framework.TestCase;
 
 import java.util.ArrayList;
@@ -57,8 +58,8 @@ public class CrucibleReviewNotifierTest extends TestCase {
         ((ReviewBean)review2).setState(State.REVIEW);
         ((ReviewBean)review2).setReviewers(Arrays.asList(reviewer2, reviewer3));
 
-        reviews.add(new ReviewData(review1, null));
-        reviews.add(new ReviewData(review2, null));
+        reviews.add(new ReviewDataImpl(review1, null));
+        reviews.add(new ReviewDataImpl(review2, null));
 
         return reviews;
     }
@@ -92,7 +93,9 @@ public class CrucibleReviewNotifierTest extends TestCase {
         notifier.updateReviews(map, new HashMap<String, List<ReviewData>>());
         assertEquals(reviews.size(), notifier.getNotifications().size());
 
+        reviews = prepareReviewData();
         ((ReviewerBean)reviews.get(0).getReviewers().get(0)).setCompleted(true);
+        map.put(PredefinedFilter.ToReview, reviews);
         notifier.updateReviews(map, new HashMap<String, List<ReviewData>>());
         assertEquals(1, notifier.getNotifications().size());
         
