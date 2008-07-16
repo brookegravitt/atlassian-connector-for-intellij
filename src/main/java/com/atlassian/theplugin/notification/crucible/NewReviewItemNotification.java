@@ -17,6 +17,6 @@ public class NewReviewItemNotification implements CrucibleNotification {
     }
 
     public String getPresentationMessage() {
-        return "New review item: " + reviewItem.getFileDescriptor().getName();
+        return "New review item: " + ((reviewItem.getFileDescriptor() != null) ? reviewItem.getFileDescriptor().getName() : "");
     }
 }
