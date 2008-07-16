@@ -32,7 +32,6 @@ public class BambooStatusBar extends StatusLineContributionItem implements Bambo
 	}
 
 
-	@Override
 	public void updateBambooStatus(BuildStatus generalBuildStatus,
 			BambooPopupInfo info) {
 		switch(generalBuildStatus) {
