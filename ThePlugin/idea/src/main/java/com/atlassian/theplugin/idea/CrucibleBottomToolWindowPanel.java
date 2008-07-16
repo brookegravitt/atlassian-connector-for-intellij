@@ -43,7 +43,7 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
 	protected ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
 	private CrucibleVersion crucibleVersion = CrucibleVersion.UNKNOWN;
 	private static ReviewItemTreePanel reviewItemTreePanel;
-	private ReviewCommentsPanel reviewComentsPanel;
+	private CommentListPanel reviewComentsPanel;
 	private static CrucibleReviewActionListener tabManager;
 	private static final int LEFT_WIDTH = 150;
 	private static final int LEFT_HEIGHT = 250;
@@ -53,12 +53,6 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
 
 		return "Waiting for Crucible review info.";
 	}
-
-	public ReviewCommentsPanel getReviewComentsPanel() {
-		return reviewComentsPanel;
-	}
-
-
 
 	public static CrucibleBottomToolWindowPanel getInstance(Project project,
             ProjectConfigurationBean projectConfigurationBean) {
@@ -91,7 +85,7 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
 		reviewItemTreePanel.getProgressAnimation().configure(leftPanel, reviewItemTreePanel, BorderLayout.CENTER);
 		splitter.setFirstComponent(leftPanel);
 		splitter.setHonorComponentsMinimumSize(true);
-		reviewComentsPanel = ReviewCommentsPanel.getInstance();
+		reviewComentsPanel = new CommentListPanel();
 		splitter.setSecondComponent(reviewComentsPanel);
 		add(splitter, BorderLayout.CENTER);
 

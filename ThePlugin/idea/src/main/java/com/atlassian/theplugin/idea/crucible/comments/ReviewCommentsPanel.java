@@ -35,7 +35,6 @@ import org.jetbrains.annotations.Nullable;
  * To change this template use File | Settings | File Templates.
  */
 public class ReviewCommentsPanel extends AbstractCommentPanel {
-	private static ReviewCommentsPanel instance = null;
 	protected TableColumnProvider commentTableColumnProvider = new CommentColumnProvider();
 	protected TableColumnProvider commentReplyTableColumnProvider = new CommentReplyColumnProvider();
 	private CrucibleServerFacade crucibleServerFacade;
@@ -84,10 +83,7 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 	}
 
 	public static ReviewCommentsPanel getInstance() {
-		if (instance == null) {
-			instance = new ReviewCommentsPanel();
-		}
-		return instance;
+		return new ReviewCommentsPanel();
 	}
 
 	protected TableItemSelectedListener getCommentReplySelectedListener() {

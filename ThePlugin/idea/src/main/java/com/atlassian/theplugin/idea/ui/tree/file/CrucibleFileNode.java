@@ -9,6 +9,7 @@ import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.fileTypes.FileType;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -37,16 +38,21 @@ public class CrucibleFileNode extends FileNode {
 
 	private static class CrucibleFileNodeRenderer extends ColoredTreeCellRenderer {
 		private static CrucibleFileNodeRenderer instance;
+		private static final SimpleTextAttributes TEXT_ITALIC =
+				new SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC, null);
+		private static final SimpleTextAttributes RED_ITALIC =
+				new SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC, Color.red);
 
 		public static ColoredTreeCellRenderer getInstance() {
 			if (instance == null) {
+
 				instance = new CrucibleFileNodeRenderer();
 			}
 			return instance;
 		}
 
 		public void customizeCellRenderer(JTree tree, Object value, boolean selected, boolean expanded,
-                boolean leaf, int row, boolean hasFocus) {
+										  boolean leaf, int row, boolean hasFocus) {
 			CrucibleFileNode node = (CrucibleFileNode) value;
 			append(node.getName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
 
@@ -59,15 +65,32 @@ public class CrucibleFileNode extends FileNode {
 			append(txt.toString(), SimpleTextAttributes.GRAY_ITALIC_ATTRIBUTES);
 
 			try {
-				String noOfDefects = Integer.valueOf(node.getFileInfo().getNumberOfDefects()).toString();
-				String noOfComments = Integer.valueOf(node.getFileInfo().getNumberOfComments()).toString();
-				append(" (", SimpleTextAttributes.REGULAR_ATTRIBUTES);
-				append(noOfDefects,
-					SimpleTextAttributes.ERROR_ATTRIBUTES);
-				append("/", SimpleTextAttributes.REGULAR_ATTRIBUTES);
-				append(noOfComments,
-						SimpleTextAttributes.REGULAR_ATTRIBUTES);
-				append(")", SimpleTextAttributes.REGULAR_ATTRIBUTES);
+
+				int noOfComments = node.getFileInfo().getNumberOfComments();
+				if (noOfComments > 0) {
+					int noOfDefects = node.getFileInfo().getNumberOfDefects();
+					append(" ",
+							TEXT_ITALIC);
+					append(String.valueOf(noOfComments),
+							TEXT_ITALIC);
+					append(" comment", TEXT_ITALIC);
+					if (noOfComments != 1) {
+						append("s", TEXT_ITALIC);
+					}
+
+					if (noOfDefects > 0) {
+						append(" (", TEXT_ITALIC);
+						append(String.valueOf(noOfDefects),
+								RED_ITALIC);
+						append(" defect",
+								RED_ITALIC);
+						if (noOfDefects != 1) {
+							append("s",
+									RED_ITALIC);
+						}
+						append(")", TEXT_ITALIC);
+					}
+				}
 			} catch (ValueNotYetInitialized valueNotYetInitialized) {
 				valueNotYetInitialized.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
 			}
