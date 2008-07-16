@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.commons.crucible;
+package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.StatusListener;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
+
 
 import java.util.Map;
 import java.util.List;

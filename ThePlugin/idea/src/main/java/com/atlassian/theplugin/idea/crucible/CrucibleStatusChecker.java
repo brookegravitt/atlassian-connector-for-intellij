@@ -25,7 +25,7 @@ import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.crucible.*;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.DateUtil;
@@ -46,7 +46,7 @@ import java.text.SimpleDateFormat;
 /**
  * IDEA-specific class that uses
  * {@link com.atlassian.theplugin.commons.crucible.CrucibleServerFacade} to retrieve builds info and
- * passes raw data to configured {@link com.atlassian.theplugin.commons.crucible.CrucibleStatusListener}s.<p>
+ * passes raw data to configured {@link CrucibleStatusListener}s.<p>
  * <p/>
  * Intended to be triggered by a {@link java.util.Timer} through the {@link #newTimerTask()}.<p>
  * <p/>
@@ -130,13 +130,19 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
                             PluginUtil.getLogger().debug("Crucible: updating status for server: "
                                     + server.getUrlString() + ", filter type: " + filter);
 
-                            List<ReviewData> review = crucibleServerFacade.getReviewsForFilter(server, filter);
+                            List<Review> review = crucibleServerFacade.getReviewsForFilter(server, filter);
 
                             if (!reviews.containsKey(filter)) {
                                 List<ReviewData> list = new ArrayList<ReviewData>();
                                 reviews.put(filter, list);
                             }
-                            reviews.get(filter).addAll(review);
+
+                            List<ReviewData> reviewData = new ArrayList<ReviewData>(review.size());
+                            for (Review r : review) {
+                                reviewData.add(new ReviewData(r, server));
+                            }
+
+                            reviews.get(filter).addAll(reviewData);
                         } catch (ServerPasswordNotProvidedException exception) {
                             ApplicationManager.getApplication().invokeLater(
                                     new MissingPasswordHandler(crucibleServerFacade),
@@ -160,14 +166,20 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
                                 try {
                                     PluginUtil.getLogger().debug("Crucible: updating status for server: "
                                             + server.getUrlString() + ", custom filter");
-                                    List<ReviewData> customFilter
+                                    List<Review> customFilter
                                             = crucibleServerFacade.getReviewsForCustomFilter(server, filter);
 
                                     if (!customFilterReviews.containsKey(filter.getTitle())) {
                                         List<ReviewData> list = new ArrayList<ReviewData>();
                                         customFilterReviews.put(filter.getTitle(), list);
                                     }
-                                    customFilterReviews.get(filter.getTitle()).addAll(customFilter);
+
+                                    List<ReviewData> reviewData = new ArrayList<ReviewData>(customFilter.size());
+                                    for (Review r : customFilter) {
+                                        reviewData.add(new ReviewData(r, server));
+                                    }
+
+                                    customFilterReviews.get(filter.getTitle()).addAll(reviewData);
                                 } catch (ServerPasswordNotProvidedException exception) {
                                     ApplicationManager.getApplication().invokeLater(
                                             new MissingPasswordHandler(crucibleServerFacade),

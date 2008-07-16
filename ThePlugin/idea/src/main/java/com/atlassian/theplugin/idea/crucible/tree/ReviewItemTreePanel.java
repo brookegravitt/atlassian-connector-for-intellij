@@ -17,8 +17,7 @@ package com.atlassian.theplugin.idea.crucible.tree;
 
 import com.atlassian.theplugin.commons.crucible.*;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewDataImpl;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewBean;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.Logger;
@@ -26,22 +25,17 @@ import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
-import com.atlassian.theplugin.idea.crucible.ReviewItemDataNode;
-import com.atlassian.theplugin.idea.crucible.events.FocusOnGeneralCommentsEvent;
+import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
 import com.atlassian.theplugin.idea.ui.tree.file.FileTreeModelBuilder;
-import com.atlassian.theplugin.idea.ui.tree.file.FileNode;
-import com.atlassian.theplugin.idea.ui.tree.file.CrucibleChangeSetTitleNode;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.util.ui.UIUtil;
 
 import javax.swing.*;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseEvent;
 import java.util.List;
 
 /**
@@ -84,11 +78,7 @@ public final class ReviewItemTreePanel extends JPanel {
 	private void initLayout() {
 		setLayout(new BorderLayout());
 		setMinimumSize(new Dimension(WIDTH, HEIGHT));
-
-//		ActionManager manager = ActionManager.getInstance();
-//		ActionGroup group = (ActionGroup) manager.getAction("ThePlugin.Bamboo.CommitListToolBar");
-//		ActionToolbar toolbar = manager.createActionToolbar(name, group, true);
-//		add(toolbar.getComponent(), BorderLayout.NORTH);
+		add(new JLabel("File list"), BorderLayout.NORTH);
 		add(new JScrollPane(getReviewItemTree()), BorderLayout.CENTER);
 		statusLabel = new JLabel();
 		statusLabel.setBackground(UIUtil.getTreeTextBackground());
@@ -98,33 +88,6 @@ public final class ReviewItemTreePanel extends JPanel {
 	private JTree getReviewItemTree() {
 		if (reviewFilesTree == null) {
 			reviewFilesTree = new AtlassianTree();
-			reviewFilesTree.addMouseListener(new MouseListener() {
-				public void mouseClicked(MouseEvent e) {
-					//To change body of implemented methods use File | Settings | File Templates.
-				}
-
-				public void mousePressed(MouseEvent e) {
-					int selRow = reviewFilesTree.getRowForLocation(e.getX(), e.getY());
-					TreePath selPath = reviewFilesTree.getPathForLocation(e.getX(), e.getY());
-					if (selRow != -1) {
-						if (e.getClickCount() == 2) {
-							nodeClicked(selRow, selPath);
-						}
-					}
-				}
-
-				public void mouseReleased(MouseEvent e) {
-					//To change body of implemented methods use File | Settings | File Templates.
-				}
-
-				public void mouseEntered(MouseEvent e) {
-					//To change body of implemented methods use File | Settings | File Templates.
-				}
-
-				public void mouseExited(MouseEvent e) {
-					//To change body of implemented methods use File | Settings | File Templates.
-				}
-			});
 
 //
 //			CrucibleTreeRootNode root = new CrucibleTreeRootNode();
@@ -174,17 +137,16 @@ public final class ReviewItemTreePanel extends JPanel {
 	}
 
 	private void nodeClicked(int selRow, TreePath path) {
-		if (path != null) {
-			FileNode selectedNode = (FileNode) path.getLastPathComponent();
-			if (selectedNode instanceof CrucibleChangeSetTitleNode) {
-				IdeaHelper.getReviewActionEventBroker().trigger(
-						new FocusOnGeneralCommentsEvent(
-								listener,
-								((CrucibleChangeSetTitleNode) selectedNode).getChangeSet()
-								)
-						);
-			}
-		}
+//		if (path != null) {
+//			selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
+//			if (!(selectedNode instanceof GeneralCommentNode) && selectedNode instanceof ReviewItemDataNode) {
+//				IdeaHelper.getReviewActionEventBroker().trigger(
+//						new ShowReviewedFileItemEvent(
+//								ReviewItemTreePanel.this,
+//								((CrucibleTreeRootNode) model.getRoot()).getCrucibleChangeSet(),
+//								((ReviewItemDataNode) selectedNode).getFile()));
+//			}
+//		}
 	}
 
 	public void setEnabled(boolean b) {
@@ -196,6 +158,8 @@ public final class ReviewItemTreePanel extends JPanel {
 	public ProgressAnimationProvider getProgressAnimation() {
 		return progressAnimation;
 	}
+
+
 
 //	private static class ReviewTreeBuiler extends FileTreeModelBuilder {
 //
@@ -226,8 +190,8 @@ public final class ReviewItemTreePanel extends JPanel {
 				try {
 					model = FileTreeModelBuilder.buildTreeModelFromCrucibleChangeSet(reviewItem);
 				} catch (ValueNotYetInitialized valueNotYetInitialized) {
-					((ReviewDataImpl) reviewItem).setFiles(
-							crucibleServerFacade.getFiles(reviewItem.getServer(), reviewItem.getPermId()));
+//					((ReviewData) reviewItem).setFiles(
+//							crucibleServerFacade.getFiles(reviewItem.getServer(), reviewItem.getPermId()));
 				}
 				final AtlassianTreeModel model1 = model;
 				EventQueue.invokeLater(new Runnable() {
@@ -272,11 +236,7 @@ public final class ReviewItemTreePanel extends JPanel {
 						reviewFilesTree.setModel(model1);
 					}
 				});
-			} catch (RemoteApiException e) {
-				LOGGER.warn("Error retrieving the list of files attached to a review", e);
-			} catch (ServerPasswordNotProvidedException e) {
-				LOGGER.warn("Error retrieving the list of files attached to a review", e);
-			} finally {
+            } finally {
 				progressAnimation.stopProgressAnimation();
 			}
 		}

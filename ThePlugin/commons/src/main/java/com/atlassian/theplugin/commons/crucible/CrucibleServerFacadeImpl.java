@@ -52,7 +52,7 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 		String key = server.getUrlString() + server.getUserName() + server.transientGetPasswordString();
         CrucibleSession session = sessions.get(key);
         if (session == null) {
-            session = new CrucibleSessionImpl(server);
+            session = new CrucibleSessionImpl(server.getUrlString());
             sessions.put(key, session);
         }
         if (!session.isLoggedIn()) {
@@ -71,9 +71,7 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
      */
     public void testServerConnection(String serverUrl, String userName, String password) throws RemoteApiException {
         CrucibleSession session = null;
-		ServerBean server = new ServerBean();
-		server.setUrlString(serverUrl);
-		session = new CrucibleSessionImpl(server);
+		session = new CrucibleSessionImpl(serverUrl);
         session.login(userName, password);
         session.logout();
     }
@@ -343,18 +341,18 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
      * @param server server object with Url, Login and Password to connect to
      * @return List of reviews (empty list in case there is no review)
      */
-    public List<ReviewData> getAllReviews(Server server) throws RemoteApiException {
+    public List<Review> getAllReviews(Server server) throws RemoteApiException {
         CrucibleSession session = getSession(server);
         return session.getAllReviews(true);
     }
 
-    public List<ReviewData> getReviewsForFilter(Server server, PredefinedFilter filter)
+    public List<Review> getReviewsForFilter(Server server, PredefinedFilter filter)
             throws RemoteApiException, ServerPasswordNotProvidedException {
         CrucibleSession session = getSession(server);
         return session.getReviewsForFilter(filter, true);
     }
 
-    public List<ReviewData> getReviewsForCustomFilter(Server server, CustomFilter filter)
+    public List<Review> getReviewsForCustomFilter(Server server, CustomFilter filter)
             throws RemoteApiException, ServerPasswordNotProvidedException {
         CrucibleSession session = getSession(server);
         return session.getReviewsForCustomFilter(filter, true);

@@ -25,8 +25,7 @@ import java.util.List;
 import java.util.Date;
 
 
-public class ReviewDataImpl implements ReviewData {
-	private final Server server;
+public class ReviewBean implements Review {
 	private List<Reviewer> reviewers;
 	private List<CrucibleFileInfo> files;
 	private List<GeneralComment> generalComments;
@@ -63,13 +62,13 @@ public class ReviewDataImpl implements ReviewData {
 		this.transitions = transitions;
 	}
 
-	public ReviewDataImpl(Server server) {
+	public ReviewBean() {
 		super();
-		this.server = server;
 		this.virtualFileSystem = new VirtualFileSystem();
 	}
 
-	public String getReviewUrl() {
+/*
+    public String getReviewUrl() {
 		String baseUrl = server.getUrlString();
 		while (baseUrl.length() > 0 && baseUrl.charAt(baseUrl.length() - 1) == '/') {
 			// quite ineffective, I know ...
@@ -78,16 +77,13 @@ public class ReviewDataImpl implements ReviewData {
 		return baseUrl + "/cru/" + getPermId().getId();
 
 	}
+*/
 
 	public List<Reviewer> getReviewers() throws ValueNotYetInitialized {
 		if (reviewers == null) {
 			throw new ValueNotYetInitialized("Object trasferred only partially");
 		}
 		return reviewers;
-	}
-
-	public Server getServer() {
-		return server;
 	}
 
 	public List<GeneralComment> getGeneralComments() throws ValueNotYetInitialized {
@@ -127,12 +123,9 @@ public class ReviewDataImpl implements ReviewData {
 			return false;
 		}
 
-		ReviewDataImpl that = (ReviewDataImpl) o;
+		ReviewBean that = (ReviewBean) o;
 
-		if (!getPermId().getId().equals(that.getPermId().getId())) {
-			return false;
-		}
-		if (server != null ? !server.equals(that.server) : that.server != null) {
+		if (!getPermId().equals(that.getPermId())) {
 			return false;
 		}
 
@@ -143,8 +136,7 @@ public class ReviewDataImpl implements ReviewData {
 
 	public int hashCode() {
 		int result;
-		result = getPermId().getId().hashCode();
-		result = ONE_EFF * result + (server != null ? server.hashCode() : 0);
+		result = getPermId().hashCode();
 		return result;
 	}
 

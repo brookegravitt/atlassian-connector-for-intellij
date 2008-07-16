@@ -1,9 +1,9 @@
 package com.atlassian.theplugin.idea.crucible.table.renderer;
 
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.util.ReviewInfoUtil;
+import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.intellij.ui.RowIcon;
 import com.intellij.openapi.util.IconLoader;
 

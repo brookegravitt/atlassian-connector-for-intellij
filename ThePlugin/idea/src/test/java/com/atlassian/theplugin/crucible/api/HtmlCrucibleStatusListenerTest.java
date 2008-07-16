@@ -16,23 +16,33 @@
 
 package com.atlassian.theplugin.crucible.api;
 
-import com.atlassian.theplugin.commons.configuration.ServerBean;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewDataImpl;
 import com.atlassian.theplugin.commons.Server;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewData;
-import com.atlassian.theplugin.commons.crucible.*;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.configuration.ServerBean;
+import com.atlassian.theplugin.commons.crucible.CrucibleStatusDisplay;
+import com.atlassian.theplugin.commons.crucible.HtmlCrucibleStatusListener;
+import com.atlassian.theplugin.commons.crucible.api.model.PermIdBean;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewBean;
+import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
+import com.atlassian.theplugin.commons.crucible.api.model.State;
+import com.atlassian.theplugin.commons.crucible.api.model.User;
+import com.atlassian.theplugin.commons.crucible.api.model.UserBean;
 import com.gargoylesoftware.htmlunit.StringWebResponse;
 import com.gargoylesoftware.htmlunit.TopLevelWindow;
 import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.*;
+import com.gargoylesoftware.htmlunit.html.HTMLParser;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.html.HtmlTable;
 import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.StringTokenizer;
 
 public class HtmlCrucibleStatusListenerTest extends TestCase {
 
@@ -84,7 +94,7 @@ public class HtmlCrucibleStatusListenerTest extends TestCase {
 	}
 
 	public void testEmptyStatusCollection() throws Exception {
-		testedListener.updateReviews(new ArrayList<ReviewData>());
+		testedListener.updateReviews(new ArrayList<Review>());
 		assertEquals(1, output.count);
         assertEquals(
                 "<html>" + HtmlCrucibleStatusListener.BODY_WITH_STYLE + "No reviews at this time.</body></html>",
@@ -92,7 +102,7 @@ public class HtmlCrucibleStatusListenerTest extends TestCase {
 	}
 
 	public void testSingleSuccessResult() throws Exception {
-		Collection<ReviewData> reviewInfo = new ArrayList<ReviewData>();
+		Collection<Review> reviewInfo = new ArrayList<Review>();
 
 		reviewInfo.add(generateReviewDataInfo("1"));
 		testedListener.updateReviews(reviewInfo);
@@ -154,9 +164,9 @@ public class HtmlCrucibleStatusListenerTest extends TestCase {
         return result.toString();
     }
 
-	public static ReviewData generateReviewDataInfo(final String suffix) {
+	public static Review generateReviewDataInfo(final String suffix) {
 
-		ReviewDataImpl rd = new ReviewDataImpl(server);
+		ReviewBean rd = new ReviewBean();
 		rd.setAuthor(new UserBean(DEFAULT_AUTHOR + suffix));
 		rd.setCreator(new UserBean(DEFAULT_CREATOR));
 		rd.setDescription(DEFAULT_DESCRIPTION);
