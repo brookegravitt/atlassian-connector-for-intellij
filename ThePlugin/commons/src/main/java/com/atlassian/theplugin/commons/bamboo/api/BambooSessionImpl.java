@@ -333,6 +333,7 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
 
 	public BuildDetails getBuildResultDetails(String buildKey, String buildNumber) throws RemoteApiException {
 		String buildResultUrl;
+		
 		try {
 			buildResultUrl = baseUrl + GET_BUILD_DETAILS_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8")
 					+ "&buildKey=" + URLEncoder.encode(buildKey, "UTF-8")
