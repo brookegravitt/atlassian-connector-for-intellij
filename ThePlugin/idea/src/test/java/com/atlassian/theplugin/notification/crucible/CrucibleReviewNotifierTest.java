@@ -101,7 +101,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
         };
     }
 
-    private VersionedComment prepareVersionedComment(final PermId permId, final ReviewItemId itemId, final GeneralComment reply) {
+    private VersionedComment prepareVersionedComment(final PermId permId, final ReviewItemId itemId, final VersionedComment reply) {
         return new VersionedComment() {
 
             public PermId getPermId() {
@@ -172,8 +172,8 @@ public class CrucibleReviewNotifierTest extends TestCase {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
-            public List<GeneralComment> getReplies() {
-                List<GeneralComment> replies = new ArrayList<GeneralComment>();
+            public List<VersionedComment> getReplies() {
+                List<VersionedComment> replies = new ArrayList<VersionedComment>();
                 if (reply != null) {
                     replies.add(reply);
                 }
@@ -637,7 +637,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
-            public List<GeneralComment> getReplies() {
+            public List<VersionedComment> getReplies() {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
 

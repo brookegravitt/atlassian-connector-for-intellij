@@ -1,9 +1,6 @@
 package com.atlassian.theplugin.idea.ui.tree;
 
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.util.Icons;
-import com.intellij.util.ui.UIUtil;
-import com.atlassian.theplugin.util.ColorToHtml;
 import com.atlassian.theplugin.idea.ui.tree.file.FileNode;
 
 import javax.swing.*;
@@ -20,11 +17,23 @@ public class AtlassianTree extends JTree {
 	public AtlassianTree(AtlassianTreeModel model) {
 		super(model);
 		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-		setCellRenderer(new FileTreeCellRenderer());
+		setCellRenderer(new AtlassianTreeCellRenderer());
 		setRootVisible(true);
 	}
 
-	private static class FileTreeCellRenderer extends DefaultTreeCellRenderer {
+	public void expandAll() {
+		for (int i=0; i<getRowCount(); i++) {
+			expandRow(i);
+		}
+	}
+
+	public void collapseAll() {
+		for (int i=0; i<getRowCount(); i++) {
+			collapseRow(i);
+		}
+	}
+
+	private static class AtlassianTreeCellRenderer extends DefaultTreeCellRenderer {
 
 		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded,
                 boolean leaf, int row, boolean hasFocus) {

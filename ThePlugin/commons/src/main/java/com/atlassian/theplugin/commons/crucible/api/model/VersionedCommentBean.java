@@ -16,7 +16,10 @@
 
 package com.atlassian.theplugin.commons.crucible.api.model;
 
-public class VersionedCommentBean extends GeneralCommentBean implements VersionedComment {
+import java.util.List;
+import java.util.ArrayList;
+
+public class VersionedCommentBean extends CommentBean implements VersionedComment {
 	private PermId permId;
 	private ReviewItemId reviewItemId;
 	private int fromStartLine = 0;
@@ -25,6 +28,7 @@ public class VersionedCommentBean extends GeneralCommentBean implements Versione
 	private int toStartLine = 0;
 	private int toEndLine = 0;
 	private boolean toLineInfo = false;
+	private List<VersionedComment> replies = new ArrayList<VersionedComment>();
 
 	public VersionedCommentBean() {
 	}
@@ -55,6 +59,18 @@ public class VersionedCommentBean extends GeneralCommentBean implements Versione
 
 	public int getFromEndLine() {
 		return fromEndLine;
+	}
+
+	public List<VersionedComment> getReplies() {
+		return replies;
+	}
+
+	public void setReplies(List<VersionedComment> replies) {
+		this.replies = replies;
+	}
+
+	public void addReply(VersionedComment comment) {
+		replies.add(comment);
 	}
 
 	public void setFromEndLine(int endLine) {
