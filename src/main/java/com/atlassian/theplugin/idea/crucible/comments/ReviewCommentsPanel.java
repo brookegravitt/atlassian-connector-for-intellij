@@ -3,7 +3,6 @@ package com.atlassian.theplugin.idea.crucible.comments;
 import com.intellij.util.ui.UIUtil;
 import com.intellij.util.ui.ListTableModel;
 import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.ide.DataManager;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.TableColumnInfo;
@@ -21,11 +20,8 @@ import com.atlassian.theplugin.commons.util.Logger;
 import com.atlassian.theplugin.util.PluginUtil;
 
 import javax.swing.table.TableCellRenderer;
-import javax.swing.*;
 import java.awt.*;
 import java.util.List;
-
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Created by IntelliJ IDEA.
@@ -114,11 +110,11 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 				GeneralComment selectedComment = (GeneralComment) item;
 				if (noClicks == 1) {
 					// GeneralComment server = ((GeneralCommentNode) selectedNode).getGeneralComment();
-					DialogWrapper d = new DDialog(DataManager.getInstance().getDataContext(),
-							(ReviewData) CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
-							selectedComment);
-					d.show();
-					d.toFront();
+//					DialogWrapper d = new DDialog(DataManager.getInstance().getDataContext(),
+//							(ReviewData) CrucibleConstants.CrucibleTableState.REVIEW_ADAPTER.getValue(context),
+//							selectedComment);
+//					d.show();
+//					d.toFront();
 				}
 				if (noClicks == 2) {
 					IdeaHelper.getReviewActionEventBroker().trigger(
@@ -226,22 +222,6 @@ public class ReviewCommentsPanel extends AbstractCommentPanel {
 		}
 	}
 
-
-	private class DDialog extends DialogWrapper {
-		private CrucibleCommentPanel commentPanel;
-
-
-		public DDialog(DataContext dataContext, ReviewData adapter, GeneralComment comment) {
-			super(true);
-			this.commentPanel = new CrucibleCommentPanel(adapter, comment);
-			init();
-		}
-
-		@Nullable
-		protected JComponent createCenterPanel() {
-			return commentPanel.getRootPanel();
-		}
-	}
 
 	private class MyCrucibleReviewActionListener extends CrucibleReviewActionListener {
 		public void showReview(ReviewData reviewData) {

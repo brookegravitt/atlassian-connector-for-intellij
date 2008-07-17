@@ -5,12 +5,11 @@ import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.util.Icons;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 
 import javax.swing.*;
+import javax.swing.tree.TreeCellRenderer;
 import java.awt.*;
-import java.util.*;
 import java.util.List;
 
 /**
@@ -22,6 +21,7 @@ import java.util.List;
  */
 public class CrucibleChangeSetTitleNode extends FileNode {
 	private ReviewData changeSet;
+	private static final TreeCellRenderer MY_RENDERER = new CrucibleChangeSetTitleNodeRenderer();
 
 	public CrucibleChangeSetTitleNode(ReviewData changeSet) {
 		super(changeSet.getName());
@@ -29,8 +29,8 @@ public class CrucibleChangeSetTitleNode extends FileNode {
 	}
 
 	@Override
-	public ColoredTreeCellRenderer getTreeCellRenderer() {
-		return CrucibleChangeSetTitleNodeRenderer.getInstance();
+	public TreeCellRenderer getTreeCellRenderer() {
+		return MY_RENDERER;
 	}
 
 	public ReviewData getChangeSet() {
@@ -42,16 +42,8 @@ public class CrucibleChangeSetTitleNode extends FileNode {
 	}
 
 	private static class CrucibleChangeSetTitleNodeRenderer extends ColoredTreeCellRenderer {
-		private static CrucibleChangeSetTitleNodeRenderer instance;
 		private static final SimpleTextAttributes TEXT_ITALIC = new SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC, null);
 		private static final SimpleTextAttributes RED_ITALIC = new SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC, Color.red);
-
-		public static ColoredTreeCellRenderer getInstance() {
-			if (instance == null) {
-				instance = new CrucibleChangeSetTitleNodeRenderer();
-			}
-			return instance;
-		}
 
 		public void customizeCellRenderer(JTree tree, Object value, boolean selected, boolean expanded,
 										  boolean leaf, int row, boolean hasFocus) {
