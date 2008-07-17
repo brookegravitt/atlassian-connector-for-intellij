@@ -115,33 +115,10 @@ public class ReviewBean implements Review {
 		this.virtualFileSystem = virtualFileSystem;
 	}
 
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
-
-		ReviewBean that = (ReviewBean) o;
-
-		if (!getPermId().equals(that.getPermId())) {
-			return false;
-		}
-
-		return true;
-	}
-
-	private static final int ONE_EFF = 31;
-
-	public int hashCode() {
-		int result;
-		result = getPermId().hashCode();
-		return result;
-	}
+    private static final int ONE_EFF = 31;
 
 
-	/**
+    /**
      * Gets the value of the author property.
 	 *
 	 * @return possible object is
@@ -375,4 +352,21 @@ public class ReviewBean implements Review {
 		}
 		return versionedComments;
 	}
+
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ReviewBean that = (ReviewBean) o;
+
+        if (permId != null ? !permId.equals(that.permId) : that.permId != null) return false;
+
+        return true;
+    }
+
+    public int hashCode() {
+        int result;
+        result = (permId != null ? permId.hashCode() : 0);
+        return result;
+    }
 }

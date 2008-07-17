@@ -1,14 +1,13 @@
 package com.atlassian.theplugin.notification.crucible;
 
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.idea.crucible.ReviewData;
 
-public class NewVersionedCommentNotification implements CrucibleNotification {
-    private Review review;
+public class NewVersionedCommentNotification extends AbstractReviewNotification {
     private VersionedComment comment;
 
-    public NewVersionedCommentNotification(Review review, VersionedComment comment) {
-        this.review = review;
+    public NewVersionedCommentNotification(ReviewData review, VersionedComment comment) {
+        super(review);
         this.comment = comment;
     }
 
@@ -17,6 +16,6 @@ public class NewVersionedCommentNotification implements CrucibleNotification {
     }
 
     public String getPresentationMessage() {
-        return "New general comment: " + comment.getPermId().getId();
+        return "New comment added by " + comment.getDisplayUser();
     }
 }

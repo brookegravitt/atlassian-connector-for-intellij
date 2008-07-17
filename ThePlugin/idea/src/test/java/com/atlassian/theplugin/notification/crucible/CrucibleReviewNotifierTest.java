@@ -1,29 +1,31 @@
 package com.atlassian.theplugin.notification.crucible;
 
+import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomField;
+import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
+import com.atlassian.theplugin.commons.crucible.api.model.PermIdBean;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewBean;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewItemId;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewItemIdBean;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewerBean;
 import com.atlassian.theplugin.commons.crucible.api.model.State;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomField;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewItemId;
-import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
 import junit.framework.TestCase;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Date;
 
 public class CrucibleReviewNotifierTest extends TestCase {
 
@@ -220,6 +222,29 @@ public class CrucibleReviewNotifierTest extends TestCase {
     }
 
     private List<ReviewData> prepareReviewData(State state) throws ValueNotYetInitialized {
+        PermIdBean reviewId1 = new PermIdBean();
+        reviewId1.setId("CR-1");
+        PermIdBean newItem = new PermIdBean();
+        newItem.setId("CRF:11");
+        PermIdBean newCommentId = new PermIdBean();
+        newCommentId.setId("CMT:11");
+        PermIdBean newVCommentId = new PermIdBean();
+        newVCommentId.setId("CMT:12");
+        ReviewItemIdBean newId = new ReviewItemIdBean();
+        newId.setId("CRF:11");
+
+        PermIdBean reviewId2 = new PermIdBean();
+        reviewId1.setId("CR-2");
+        PermIdBean newItem1 = new PermIdBean();
+        newItem1.setId("CRF:21");
+        PermIdBean newCommentId1 = new PermIdBean();
+        newCommentId1.setId("CMT:21");
+        PermIdBean newVCommentId1 = new PermIdBean();
+        newVCommentId1.setId("CMT:22");
+        ReviewItemIdBean newId1 = new ReviewItemIdBean();
+        newId1.setId("CRF:21");
+
+
         List<ReviewData> reviews = new ArrayList<ReviewData>();
 
         Reviewer reviewer1 = prepareReviewer("bob", "Bob", false);
@@ -228,41 +253,13 @@ public class CrucibleReviewNotifierTest extends TestCase {
         Reviewer reviewer4 = prepareReviewer("alice", "Alice", false);
 
         Review review1 = prepareReview();
-        ((ReviewBean)review1).setFiles(new ArrayList<CrucibleFileInfo>());
-        ((ReviewBean)review1).setGeneralComments(new ArrayList<GeneralComment>());
-        ((ReviewBean)review1).setVersionedComments(new ArrayList<VersionedComment>());        
-        ((ReviewBean)review1).setPermId(new PermId(){
-            public String getId() {
-                return "CR-1";
-            }
-        });
-        ((ReviewBean)review1).setState(state);
-        ((ReviewBean)review1).setReviewers(Arrays.asList(reviewer1, reviewer2));
+        ((ReviewBean) review1).setFiles(new ArrayList<CrucibleFileInfo>());
+        ((ReviewBean) review1).setGeneralComments(new ArrayList<GeneralComment>());
+        ((ReviewBean) review1).setVersionedComments(new ArrayList<VersionedComment>());
+        ((ReviewBean) review1).setPermId(reviewId1);
+        ((ReviewBean) review1).setState(state);
+        ((ReviewBean) review1).setReviewers(Arrays.asList(reviewer1, reviewer2));
 
-        PermId newItem = new PermId() {
-
-            public String getId() {
-                return "CRF:11";
-            }
-        };
-        PermId newCommentId = new PermId() {
-
-            public String getId() {
-                return "CMT:11";
-            }
-        };
-        PermId newVCommentId = new PermId() {
-
-            public String getId() {
-                return "CMT:12";
-            }
-        };
-        ReviewItemId newId = new ReviewItemId() {
-
-            public String getId() {
-                return "CRF:11";
-            }
-        };
 
         review1.getGeneralComments().add(prepareGeneralComment(newCommentId, null));
         review1.getVersionedComments().add(prepareVersionedComment(newVCommentId, newId, null));
@@ -270,40 +267,12 @@ public class CrucibleReviewNotifierTest extends TestCase {
 
 
         Review review2 = prepareReview();
-        ((ReviewBean)review2).setFiles(new ArrayList<CrucibleFileInfo>());
-        ((ReviewBean)review2).setGeneralComments(new ArrayList<GeneralComment>());
-        ((ReviewBean)review2).setVersionedComments(new ArrayList<VersionedComment>());
-        ((ReviewBean)review2).setPermId(new PermId(){
-            public String getId() {
-                return "CR-2";
-            }
-        });
-        ((ReviewBean)review2).setState(state);
-        ((ReviewBean)review2).setReviewers(Arrays.asList(reviewer3, reviewer4));
-        final PermId newCommentId1 = new PermId() {
-
-            public String getId() {
-                return "CMT:21";
-            }
-        };
-        final PermId newVCommentId1 = new PermId() {
-
-            public String getId() {
-                return "CMT:22";
-            }
-        };
-        final ReviewItemId newId1 = new ReviewItemId() {
-
-            public String getId() {
-                return "CRF:21";
-            }
-        };
-        final PermId newItem1 = new PermId() {
-
-            public String getId() {
-                return "CRF:21";
-            }
-        };
+        ((ReviewBean) review2).setFiles(new ArrayList<CrucibleFileInfo>());
+        ((ReviewBean) review2).setGeneralComments(new ArrayList<GeneralComment>());
+        ((ReviewBean) review2).setVersionedComments(new ArrayList<VersionedComment>());
+        ((ReviewBean) review2).setPermId(reviewId2);
+        ((ReviewBean) review2).setState(state);
+        ((ReviewBean) review2).setReviewers(Arrays.asList(reviewer3, reviewer4));
 
         review2.getGeneralComments().add(prepareGeneralComment(newCommentId1, null));
         review2.getVersionedComments().add(prepareVersionedComment(newVCommentId1, newId1, null));
@@ -331,7 +300,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
         assertEquals(reviews.size(), notifier.getNotifications().size());
 
         notifier.updateReviews(map, new HashMap<String, List<ReviewData>>());
-        assertEquals(0, notifier.getNotifications().size());       
+        assertEquals(0, notifier.getNotifications().size());
     }
 
     public void testResetStateReviews() throws ValueNotYetInitialized {
@@ -377,7 +346,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
         notifier.updateReviews(map, new HashMap<String, List<ReviewData>>());
         assertEquals(2, notifier.getNotifications().size());
         assertTrue(notifier.getNotifications().get(0) instanceof ReviewStateChangedNotification);
-        assertTrue(notifier.getNotifications().get(1) instanceof ReviewStateChangedNotification);        
+        assertTrue(notifier.getNotifications().get(1) instanceof ReviewStateChangedNotification);
     }
 
     public void testReviewerStatus() throws ValueNotYetInitialized {
@@ -391,22 +360,22 @@ public class CrucibleReviewNotifierTest extends TestCase {
         assertEquals(reviews.size(), notifier.getNotifications().size());
 
         reviews = prepareReviewData(State.REVIEW);
-        ((ReviewerBean)reviews.get(0).getReviewers().get(0)).setCompleted(true);
-        map.put(PredefinedFilter.ToReview, reviews);
-        notifier.updateReviews(map, new HashMap<String, List<ReviewData>>());
-        assertEquals(1, notifier.getNotifications().size());
-        assertTrue(notifier.getNotifications().get(0) instanceof ReviewerCompletedNotification);                
-
-        reviews = prepareReviewData(State.REVIEW);
-        ((ReviewerBean)reviews.get(0).getReviewers().get(0)).setCompleted(false);
+        ((ReviewerBean) reviews.get(0).getReviewers().get(0)).setCompleted(true);
         map.put(PredefinedFilter.ToReview, reviews);
         notifier.updateReviews(map, new HashMap<String, List<ReviewData>>());
         assertEquals(1, notifier.getNotifications().size());
         assertTrue(notifier.getNotifications().get(0) instanceof ReviewerCompletedNotification);
 
         reviews = prepareReviewData(State.REVIEW);
-        ((ReviewerBean)reviews.get(0).getReviewers().get(0)).setCompleted(true);
-        ((ReviewerBean)reviews.get(0).getReviewers().get(1)).setCompleted(true);
+        ((ReviewerBean) reviews.get(0).getReviewers().get(0)).setCompleted(false);
+        map.put(PredefinedFilter.ToReview, reviews);
+        notifier.updateReviews(map, new HashMap<String, List<ReviewData>>());
+        assertEquals(1, notifier.getNotifications().size());
+        assertTrue(notifier.getNotifications().get(0) instanceof ReviewerCompletedNotification);
+
+        reviews = prepareReviewData(State.REVIEW);
+        ((ReviewerBean) reviews.get(0).getReviewers().get(0)).setCompleted(true);
+        ((ReviewerBean) reviews.get(0).getReviewers().get(1)).setCompleted(true);
         map.put(PredefinedFilter.ToReview, reviews);
         notifier.updateReviews(map, new HashMap<String, List<ReviewData>>());
         assertEquals(3, notifier.getNotifications().size());
@@ -462,7 +431,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
         map.put(PredefinedFilter.ToReview, reviews);
         notifier.updateReviews(map, new HashMap<String, List<ReviewData>>());
         assertEquals(1, notifier.getNotifications().size());
-        assertTrue(notifier.getNotifications().get(0) instanceof NewReviewItemNotification);                
+        assertTrue(notifier.getNotifications().get(0) instanceof NewReviewItemNotification);
     }
 
     public void testNewGeneralComment() throws ValueNotYetInitialized {
