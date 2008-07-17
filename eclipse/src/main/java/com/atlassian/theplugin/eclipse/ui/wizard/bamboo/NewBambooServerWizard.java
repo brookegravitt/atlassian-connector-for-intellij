@@ -38,7 +38,7 @@ public class NewBambooServerWizard extends AbstractSVNWizard implements INewWiza
 		this(null, true);
 	}
 	
-	public NewBambooServerWizard(BambooServer editable, boolean performAction) {
+	public NewBambooServerWizard(IBambooServer editable, boolean performAction) {
 		super();
 		this.performAction = performAction;
 		this.editable = editable;

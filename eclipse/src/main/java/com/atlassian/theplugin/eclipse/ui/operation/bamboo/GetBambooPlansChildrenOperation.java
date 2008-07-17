@@ -28,6 +28,7 @@ public class GetBambooPlansChildrenOperation extends
 		BambooServerFacade facade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
 		ServerBean serverConfiguration = new ServerBean();
 		serverConfiguration.setName(server.getLabel());
+		serverConfiguration.setUserName(server.getUsername());
 		serverConfiguration.setUrlString(server.getUrl());
 		serverConfiguration.transientSetPasswordString(server.getPassword(), false);
 		Collection<BambooPlan> plans = facade.getPlanList(serverConfiguration);
