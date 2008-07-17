@@ -1,12 +1,11 @@
 package com.atlassian.theplugin.notification.crucible;
 
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.idea.crucible.ReviewData;
 
-public class NewReviewNotification implements CrucibleNotification {
-    private Review review;
+public class NewReviewNotification extends AbstractReviewNotification {
 
-    public NewReviewNotification(Review review) {
-        this.review = review;
+    public NewReviewNotification(ReviewData review) {
+        super(review);
     }
 
     public CrucibleNotificationType getType() {
@@ -14,6 +13,6 @@ public class NewReviewNotification implements CrucibleNotification {
     }
 
     public String getPresentationMessage() {
-        return "New review: " + review.getPermId().getId();
+        return review.getName();
     }
 }

@@ -2,13 +2,14 @@ package com.atlassian.theplugin.notification.crucible;
 
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.api.model.PermId;
+import com.atlassian.theplugin.idea.crucible.ReviewData;
 
-public class NewGeneralCommentNotification implements CrucibleNotification {
-    private Review review;
+public class NewGeneralCommentNotification extends AbstractReviewNotification {
     private GeneralComment comment;
 
-    public NewGeneralCommentNotification(Review review, GeneralComment comment) {
-        this.review = review;
+    public NewGeneralCommentNotification(ReviewData review, GeneralComment comment) {
+        super(review);
         this.comment = comment;
     }
 
@@ -17,6 +18,6 @@ public class NewGeneralCommentNotification implements CrucibleNotification {
     }
 
     public String getPresentationMessage() {
-        return "New general comment: " + comment.getPermId().getId();
+        return "New general comment for review added by " + comment.getDisplayUser();
     }
 }

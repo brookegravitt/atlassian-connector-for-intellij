@@ -1,13 +1,11 @@
 package com.atlassian.theplugin.notification.crucible;
 
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.crucible.api.model.State;
+import com.atlassian.theplugin.idea.crucible.ReviewData;
 
-public class ReviewStateChangedNotification implements CrucibleNotification {
-    private Review review;
-
-    public ReviewStateChangedNotification(Review review, State oldState) {
-        this.review = review;
+public class ReviewStateChangedNotification extends AbstractReviewNotification {
+    public ReviewStateChangedNotification(ReviewData review, State oldState) {
+        super(review);
     }
 
     public CrucibleNotificationType getType() {
@@ -15,6 +13,6 @@ public class ReviewStateChangedNotification implements CrucibleNotification {
     }
 
     public String getPresentationMessage() {
-        return "Review: " + review.getPermId().getId() + " changed state to " + review.getState();
+        return "Review changed state to " + review.getState();
     }
 }

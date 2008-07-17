@@ -112,6 +112,24 @@ public class ReviewDataImpl implements ReviewData {
 			baseUrl = baseUrl.substring(0, baseUrl.length() - 1);
 		}
 		return baseUrl + "/cru/" + getPermId().getId();
-
 	}
+
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ReviewDataImpl that = (ReviewDataImpl) o;
+
+        if (review != null ? !review.equals(that.review) : that.review != null) return false;
+        if (server != null ? !server.equals(that.server) : that.server != null) return false;
+
+        return true;
+    }
+
+    public int hashCode() {
+        int result;
+        result = (review != null ? review.hashCode() : 0);
+        result = 31 * result + (server != null ? server.hashCode() : 0);
+        return result;
+    }
 }
