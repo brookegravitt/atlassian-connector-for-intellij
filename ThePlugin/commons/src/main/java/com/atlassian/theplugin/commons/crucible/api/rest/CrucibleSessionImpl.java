@@ -16,17 +16,16 @@
 
 package com.atlassian.theplugin.commons.crucible.api.rest;
 
-import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewBean;
 import com.atlassian.theplugin.commons.crucible.api.CrucibleSession;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
-import com.atlassian.theplugin.commons.remoteapi.*;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginFailedException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
 import com.atlassian.theplugin.commons.thirdparty.base64.Base64;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfoImpl;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpMethod;
 import org.jdom.Document;
@@ -64,7 +63,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
     private static final String TRANSITIONS = "/transition";
     private static final String REVIEWERS = "/reviewers";
     private static final String REVIEW_ITEMS = "/reviewitems";
-    private static final String METRICS = "/metrics";    
+    private static final String METRICS = "/metrics";
 
     private static final String COMMENTS = "/comments";
     private static final String GENERAL_COMMENTS = "/comments/general";
@@ -90,16 +89,16 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
     private String authToken = null;
 
 
-	/**
+    /**
      * Public constructor for CrucibleSessionImpl.
      *
      * @param url base url
      */
     public CrucibleSessionImpl(String url) throws RemoteApiMalformedUrlException {
         super(url);
-	}
+    }
 
-	public void login(String username, String aPassword) throws RemoteApiLoginException {
+    public void login(String username, String aPassword) throws RemoteApiLoginException {
         if (!isLoggedIn()) {
             String loginUrl;
             try {
@@ -223,7 +222,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
                     + FILTERED_REVIEWS
                     + "/" + filter.getFilterUrl();
             if (details) {
-                url += DETAIL_REVIEW_INFO;   
+                url += DETAIL_REVIEW_INFO;
             }
             Document doc = retrieveGetResponse(url);
 
@@ -265,7 +264,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             if (details) {
                 url += DETAIL_REVIEW_INFO;
             }
-            
+
             Document doc = retrievePostResponse(url, request);
             XPath xpath;
             if (details) {
@@ -283,7 +282,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
                         reviews.add(CrucibleRestXmlHelper.parseDetailedReviewNode(element));
                     } else {
                         reviews.add(CrucibleRestXmlHelper.parseReviewNode(element));
-                    }  
+                    }
                 }
             }
             return reviews;
@@ -456,8 +455,8 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             List<Element> elements = xpath.selectNodes(doc);
             List<CrucibleFileInfo> reviewItems = new ArrayList<CrucibleFileInfo>();
 
-			Review changeSet = new ReviewBean();
-			if (elements != null && !elements.isEmpty()) {
+            Review changeSet = new ReviewBean();
+            if (elements != null && !elements.isEmpty()) {
                 for (Element element : elements) {
                     CrucibleFileInfo fileInfo = CrucibleRestXmlHelper.parseReviewItemNode(changeSet, element);
                     String repoName = changeSet.getRepoName();
@@ -465,22 +464,22 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
                     SvnRepository repository = getRepository(repoNameTokens.length > 1 ? repoNameTokens[1] : repoNameTokens[0]);
                     if (repository != null) {
                         String repoPath = repository.getUrl() + "/" + repository.getPath() + "/";
-						VersionedVirtualFile oldDescriptor = fileInfo.getOldFileDescriptor();
-						if (!oldDescriptor.getUrl().equals("")) {
-							((CrucibleFileInfoImpl) fileInfo).setOldFileDescriptor(new VersionedVirtualFile(
-								repoPath + oldDescriptor.getUrl(),
-									oldDescriptor.getRevision(),
-									oldDescriptor.getFileSystem()
-							));
-						}
-						VersionedVirtualFile newDescriptor = fileInfo.getFileDescriptor();
-						if (!newDescriptor.getUrl().equals("")) {
-							((CrucibleFileInfoImpl) fileInfo).setFileDescriptor(new VersionedVirtualFile(
-								repoPath + newDescriptor.getUrl(),
-									newDescriptor.getRevision(),
-									newDescriptor.getFileSystem()
-							));
-						}
+                        VersionedVirtualFile oldDescriptor = fileInfo.getOldFileDescriptor();
+                        if (!oldDescriptor.getUrl().equals("")) {
+                            ((CrucibleFileInfoImpl) fileInfo).setOldFileDescriptor(new VersionedVirtualFile(
+                                    repoPath + oldDescriptor.getUrl(),
+                                    oldDescriptor.getRevision(),
+                                    oldDescriptor.getFileSystem()
+                            ));
+                        }
+                        VersionedVirtualFile newDescriptor = fileInfo.getFileDescriptor();
+                        if (!newDescriptor.getUrl().equals("")) {
+                            ((CrucibleFileInfoImpl) fileInfo).setFileDescriptor(new VersionedVirtualFile(
+                                    repoPath + newDescriptor.getUrl(),
+                                    newDescriptor.getRevision(),
+                                    newDescriptor.getFileSystem()
+                            ));
+                        }
                         reviewItems.add(fileInfo);
                     }
                 }

@@ -17,7 +17,6 @@
 package com.atlassian.theplugin.commons.crucible.api.model;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 public interface Comment {
