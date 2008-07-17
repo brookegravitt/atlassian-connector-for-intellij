@@ -21,7 +21,7 @@ import java.util.ArrayList;
 
 public class VersionedCommentBean extends CommentBean implements VersionedComment {
 	private PermId permId;
-	private ReviewItemId reviewItemId;
+	private PermId reviewItemId;
 	private int fromStartLine = 0;
 	private int fromEndLine = 0;
 	private boolean fromLineInfo = false;
@@ -41,11 +41,11 @@ public class VersionedCommentBean extends CommentBean implements VersionedCommen
 		this.permId = permId;
 	}
 
-	public ReviewItemId getReviewItemId() {
+	public PermId getReviewItemId() {
 		return reviewItemId;
 	}
 
-	public void setReviewItemId(ReviewItemId reviewItemId) {
+	public void setReviewItemId(PermId reviewItemId) {
 		this.reviewItemId = reviewItemId;
 	}
 
