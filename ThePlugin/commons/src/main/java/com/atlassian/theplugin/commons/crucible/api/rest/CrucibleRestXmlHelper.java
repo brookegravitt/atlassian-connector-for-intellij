@@ -562,7 +562,7 @@ public final class CrucibleRestXmlHelper {
         parseVersionedComment(comment, reviewCommentNode);
 
         if (reviewCommentNode.getChild("reviewItemId") != null) {
-            ReviewItemIdBean reviewItemId = new ReviewItemIdBean();
+            PermIdBean reviewItemId = new PermIdBean();
             reviewItemId.setId(reviewCommentNode.getChild("reviewItemId").getChild("id").getText());
             comment.setReviewItemId(reviewItemId);
         }

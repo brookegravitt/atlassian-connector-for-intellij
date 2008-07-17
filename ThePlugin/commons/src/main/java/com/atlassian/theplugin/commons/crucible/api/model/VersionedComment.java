@@ -21,7 +21,7 @@ import java.util.List;
 public interface VersionedComment extends Comment {
 	PermId getPermId();
 
-	ReviewItemId getReviewItemId();
+	PermId getReviewItemId();
 
 	boolean isToLineInfo();
 
