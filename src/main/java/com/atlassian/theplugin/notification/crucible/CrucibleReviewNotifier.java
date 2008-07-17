@@ -75,7 +75,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
         }
     }
 
-    private void checkReplies(Review review, GeneralComment oldComment, GeneralComment newComment) {
+    private void checkGeneralReplies(Review review, GeneralComment oldComment, GeneralComment newComment) {
         for (GeneralComment reply : newComment.getReplies()) {
             GeneralComment existingReply = null;
             for (GeneralComment oldReply : oldComment.getReplies()) {
@@ -90,7 +90,23 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
         }
     }
 
-    private void checkComments(Review oldReview, Review newReview) throws ValueNotYetInitialized {
+	private void checkVersionedReplies(Review review, VersionedComment oldComment, VersionedComment newComment) {
+		for (VersionedComment reply : newComment.getReplies()) {
+			VersionedComment existingReply = null;
+			for (VersionedComment oldReply : oldComment.getReplies()) {
+				if (reply.getPermId().getId().equals(oldReply.getPermId().getId())) {
+					existingReply = oldReply;
+					break;
+				}
+			}
+			if (existingReply == null) {
+				notifications.add(new NewReplyCommentNotification(review, newComment, reply));
+			}
+		}
+	}
+
+
+	private void checkComments(Review oldReview, Review newReview) throws ValueNotYetInitialized {
         for (GeneralComment comment : newReview.getGeneralComments()) {
             GeneralComment existing = null;
             for (GeneralComment oldComment : oldReview.getGeneralComments()) {
@@ -102,7 +118,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
             if (existing == null) {
                 notifications.add(new NewGeneralCommentNotification(newReview, comment));
             } else {
-                checkReplies(newReview, existing, comment);
+                checkGeneralReplies(newReview, existing, comment);
             }
         }
 
@@ -117,7 +133,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
             if (existing == null) {
                 notifications.add(new NewVersionedCommentNotification(newReview, comment));
             } else {
-                checkReplies(newReview, existing, comment);
+                checkVersionedReplies(newReview, existing, comment);
             }
         }
     }

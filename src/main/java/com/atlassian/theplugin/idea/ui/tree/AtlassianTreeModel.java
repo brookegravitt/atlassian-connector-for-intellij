@@ -14,4 +14,5 @@ public class AtlassianTreeModel extends DefaultTreeModel {
 	public AtlassianTreeModel(AtlassianTreeNode root) {
 		super(root);
 	}
+	
 }

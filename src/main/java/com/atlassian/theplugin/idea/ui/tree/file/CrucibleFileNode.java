@@ -9,6 +9,7 @@ import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.fileTypes.FileType;
 
 import javax.swing.*;
+import javax.swing.tree.TreeCellRenderer;
 import java.awt.*;
 
 /**
@@ -21,6 +22,7 @@ import java.awt.*;
 public class CrucibleFileNode extends FileNode {
 
 	private CrucibleFileInfo fileInfo;
+	private static final ColoredTreeCellRenderer MY_RENDERER = new CrucibleFileNodeRenderer();
 
 	public CrucibleFileNode(CrucibleFileInfo file) {
 		super(AbstractHttpSession.getLastComponentFromUrl(file.getFileDescriptor().getUrl()));
@@ -28,8 +30,8 @@ public class CrucibleFileNode extends FileNode {
 	}
 
 	@Override
-	public ColoredTreeCellRenderer getTreeCellRenderer() {
-		return CrucibleFileNodeRenderer.getInstance();
+	public TreeCellRenderer getTreeCellRenderer() {
+		return MY_RENDERER;
 	}
 
 	public CrucibleFileInfo getFileInfo() {
@@ -37,19 +39,10 @@ public class CrucibleFileNode extends FileNode {
 	}
 
 	private static class CrucibleFileNodeRenderer extends ColoredTreeCellRenderer {
-		private static CrucibleFileNodeRenderer instance;
 		private static final SimpleTextAttributes TEXT_ITALIC =
 				new SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC, null);
 		private static final SimpleTextAttributes RED_ITALIC =
 				new SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC, Color.red);
-
-		public static ColoredTreeCellRenderer getInstance() {
-			if (instance == null) {
-
-				instance = new CrucibleFileNodeRenderer();
-			}
-			return instance;
-		}
 
 		public void customizeCellRenderer(JTree tree, Object value, boolean selected, boolean expanded,
 										  boolean leaf, int row, boolean hasFocus) {

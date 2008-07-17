@@ -6,6 +6,7 @@ import com.intellij.util.Icons;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 
 import javax.swing.*;
+import javax.swing.tree.TreeCellRenderer;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -13,9 +14,10 @@ public class FileNode extends AtlassianTreeNode {
 
 	private Map<String, FileNode> children;
 	private String name;
+	private static final ColoredTreeCellRenderer MY_RENDERER = new FileNodeRenderer();
 
 	public FileNode(String fullName) {
-		super(fullName);
+		super();
 		name = fullName;
 		children = new HashMap<String, FileNode>();
 	}
@@ -63,20 +65,11 @@ public class FileNode extends AtlassianTreeNode {
 		return children;
 	}
 
-	public ColoredTreeCellRenderer getTreeCellRenderer() {
-		return FileNodeRenderer.getInstance();
+	public TreeCellRenderer getTreeCellRenderer() {
+		return MY_RENDERER;
 	}
 
 	private static class FileNodeRenderer extends ColoredTreeCellRenderer {
-		private static FileNodeRenderer instance;
-
-		public static FileNodeRenderer getInstance() {
-			if (instance == null) {
-				instance = new FileNodeRenderer();
-			}
-			return instance;
-		}
-
 		public void customizeCellRenderer(JTree tree, Object value, boolean selected, boolean expanded,
                 boolean leaf, int row, boolean hasFocus) {
 			FileNode node = (FileNode) value;

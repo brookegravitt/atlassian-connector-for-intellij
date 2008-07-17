@@ -8,10 +8,12 @@ import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 
 import javax.swing.*;
+import javax.swing.tree.TreeCellRenderer;
 
 public class BambooFileNode extends FileNode {
 
 	private BambooFileInfo file;
+	private static final TreeCellRenderer MY_RENDERER = new BambooFileNodeRenderer();
 
 	public BambooFileNode(BambooFileInfo file) {
 		super(AbstractHttpSession.getLastComponentFromUrl(file.getFileDescriptor().getUrl()));
@@ -23,20 +25,11 @@ public class BambooFileNode extends FileNode {
 	}
 
 	@Override
-	public ColoredTreeCellRenderer getTreeCellRenderer() {
-		return BambooFileNodeRenderer.getInstance();
+	public TreeCellRenderer getTreeCellRenderer() {
+		return MY_RENDERER;
 	}
 
 	private static class BambooFileNodeRenderer extends ColoredTreeCellRenderer {
-		private static BambooFileNodeRenderer instance;
-
-		public static ColoredTreeCellRenderer getInstance() {
-			if (instance == null) {
-				instance = new BambooFileNodeRenderer();
-			}
-			return instance;
-		}
-
 		public void customizeCellRenderer(JTree tree, Object value, boolean selected, boolean expanded,
                 boolean leaf, int row, boolean hasFocus) {
 			BambooFileNode node = (BambooFileNode) value;

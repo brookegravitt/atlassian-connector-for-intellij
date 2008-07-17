@@ -3,6 +3,8 @@ package com.atlassian.theplugin.idea.ui.tree;
 import com.intellij.ui.ColoredTreeCellRenderer;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeCellRenderer;
+import javax.swing.tree.MutableTreeNode;
 
 /**
  * Created by IntelliJ IDEA.
@@ -12,9 +14,13 @@ import javax.swing.tree.DefaultMutableTreeNode;
  * To change this template use File | Settings | File Templates.
  */
 public abstract class AtlassianTreeNode extends DefaultMutableTreeNode {
-	protected AtlassianTreeNode(Object root) {
-		super(root);
+	protected AtlassianTreeNode() {
+		super();
 	}
 
-	public abstract ColoredTreeCellRenderer getTreeCellRenderer();
+	public void addNode(AtlassianTreeNode newChild) {
+		super.add(newChild);	//To change body of overridden methods use File | Settings | File Templates.
+	}
+
+	public abstract TreeCellRenderer getTreeCellRenderer();
 }
