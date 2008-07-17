@@ -10,8 +10,6 @@ import com.atlassian.theplugin.commons.crucible.api.model.PermIdBean;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewBean;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewItemId;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewItemIdBean;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewerBean;
 import com.atlassian.theplugin.commons.crucible.api.model.State;
@@ -103,14 +101,14 @@ public class CrucibleReviewNotifierTest extends TestCase {
         };
     }
 
-    private VersionedComment prepareVersionedComment(final PermId permId, final ReviewItemId itemId, final VersionedComment reply) {
+    private VersionedComment prepareVersionedComment(final PermId permId, final PermId itemId, final VersionedComment reply) {
         return new VersionedComment() {
 
             public PermId getPermId() {
                 return permId;
             }
 
-            public ReviewItemId getReviewItemId() {
+            public PermId getReviewItemId() {
                 return itemId;
             }
 
@@ -230,8 +228,6 @@ public class CrucibleReviewNotifierTest extends TestCase {
         newCommentId.setId("CMT:11");
         PermIdBean newVCommentId = new PermIdBean();
         newVCommentId.setId("CMT:12");
-        ReviewItemIdBean newId = new ReviewItemIdBean();
-        newId.setId("CRF:11");
 
         PermIdBean reviewId2 = new PermIdBean();
         reviewId1.setId("CR-2");
@@ -241,8 +237,6 @@ public class CrucibleReviewNotifierTest extends TestCase {
         newCommentId1.setId("CMT:21");
         PermIdBean newVCommentId1 = new PermIdBean();
         newVCommentId1.setId("CMT:22");
-        ReviewItemIdBean newId1 = new ReviewItemIdBean();
-        newId1.setId("CRF:21");
 
 
         List<ReviewData> reviews = new ArrayList<ReviewData>();
@@ -262,7 +256,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 
 
         review1.getGeneralComments().add(prepareGeneralComment(newCommentId, null));
-        review1.getVersionedComments().add(prepareVersionedComment(newVCommentId, newId, null));
+        review1.getVersionedComments().add(prepareVersionedComment(newVCommentId, newItem, null));
         review1.getFiles().add(prepareReviewItem(newItem));
 
 
@@ -275,7 +269,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
         ((ReviewBean) review2).setReviewers(Arrays.asList(reviewer3, reviewer4));
 
         review2.getGeneralComments().add(prepareGeneralComment(newCommentId1, null));
-        review2.getVersionedComments().add(prepareVersionedComment(newVCommentId1, newId1, null));
+        review2.getVersionedComments().add(prepareVersionedComment(newVCommentId1, newItem1, null));
         review2.getFiles().add(prepareReviewItem(newItem1));
 
         reviews.add(new ReviewDataImpl(review1, null));
@@ -530,7 +524,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
                 return "CMT:3";
             }
         };
-        final ReviewItemId newId = new ReviewItemId() {
+        final PermId newId = new PermId() {
 
             public String getId() {
                 return "CRF:2";
@@ -542,7 +536,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
                 return newCommentId;
             }
 
-            public ReviewItemId getReviewItemId() {
+            public PermId getReviewItemId() {
                 return newId;
             }
 
