@@ -1,12 +1,11 @@
 package com.atlassian.theplugin.notification.crucible;
 
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.idea.crucible.ReviewData;
 
-public class ReviewCompletedNotification implements CrucibleNotification {
-    private Review review;
+public class ReviewCompletedNotification extends AbstractReviewNotification {
 
-    public ReviewCompletedNotification(Review review) {
-        this.review = review;
+    public ReviewCompletedNotification(ReviewData review) {
+        super(review);
     }
 
     public CrucibleNotificationType getType() {
@@ -14,6 +13,6 @@ public class ReviewCompletedNotification implements CrucibleNotification {
     }
 
     public String getPresentationMessage() {
-        return "Review: " + review.getPermId().getId() + " completed";
+        return "All reviewers completed review";
     }
 }

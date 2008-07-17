@@ -20,28 +20,42 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusListener;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This one is supposed to be per project.
  */
 public class CrucibleReviewNotifier implements CrucibleStatusListener {
-    private Map<PredefinedFilter, List<Review>> reviews = new HashMap<PredefinedFilter, List<Review>>();
+    private final List<CrucibleNotificationListener> listenerList = new ArrayList<CrucibleNotificationListener>();
+
+    private Set<ReviewData> reviews = new HashSet<ReviewData>();
     private List<CrucibleNotification> notifications = new ArrayList<CrucibleNotification>();
 
     public CrucibleReviewNotifier() {
     }
 
-    private void checkNewReviewItems(Review oldReview, Review newReview) throws ValueNotYetInitialized {
+    public void registerListener(CrucibleNotificationListener listener) {
+        synchronized (listenerList) {
+            listenerList.add(listener);
+        }
+    }
+
+    public void unregisterListener(CrucibleNotificationListener listener) {
+        synchronized (listenerList) {
+            listenerList.remove(listener);
+        }
+    }
+
+    private void checkNewReviewItems(ReviewData oldReview, ReviewData newReview) throws ValueNotYetInitialized {
         for (CrucibleFileInfo item : newReview.getFiles()) {
             boolean found = false;
             for (CrucibleFileInfo oldItem : oldReview.getFiles()) {
@@ -56,7 +70,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
         }
     }
 
-    private void checkReviewersStatus(Review oldReview, Review newReview) throws ValueNotYetInitialized {
+    private void checkReviewersStatus(ReviewData oldReview, ReviewData newReview) throws ValueNotYetInitialized {
         boolean allCompleted = true;
         for (Reviewer reviewer : newReview.getReviewers()) {
             for (Reviewer oldReviewer : oldReview.getReviewers()) {
@@ -68,14 +82,14 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
             }
             if (!reviewer.isCompleted()) {
                 allCompleted = false;
-            }            
+            }
         }
         if (allCompleted) {
             notifications.add(new ReviewCompletedNotification(newReview));
         }
     }
 
-    private void checkGeneralReplies(Review review, GeneralComment oldComment, GeneralComment newComment) {
+    private void checkGeneralReplies(ReviewData review, GeneralComment oldComment, GeneralComment newComment) {
         for (GeneralComment reply : newComment.getReplies()) {
             GeneralComment existingReply = null;
             for (GeneralComment oldReply : oldComment.getReplies()) {
@@ -90,23 +104,23 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
         }
     }
 
-	private void checkVersionedReplies(Review review, VersionedComment oldComment, VersionedComment newComment) {
-		for (VersionedComment reply : newComment.getReplies()) {
-			VersionedComment existingReply = null;
-			for (VersionedComment oldReply : oldComment.getReplies()) {
-				if (reply.getPermId().getId().equals(oldReply.getPermId().getId())) {
-					existingReply = oldReply;
-					break;
-				}
-			}
-			if (existingReply == null) {
-				notifications.add(new NewReplyCommentNotification(review, newComment, reply));
-			}
-		}
-	}
+    private void checkVersionedReplies(ReviewData review, VersionedComment oldComment, VersionedComment newComment) {
+        for (VersionedComment reply : newComment.getReplies()) {
+            VersionedComment existingReply = null;
+            for (VersionedComment oldReply : oldComment.getReplies()) {
+                if (reply.getPermId().getId().equals(oldReply.getPermId().getId())) {
+                    existingReply = oldReply;
+                    break;
+                }
+            }
+            if (existingReply == null) {
+                notifications.add(new NewReplyCommentNotification(review, newComment, reply));
+            }
+        }
+    }
 
 
-	private void checkComments(Review oldReview, Review newReview) throws ValueNotYetInitialized {
+    private void checkComments(ReviewData oldReview, ReviewData newReview) throws ValueNotYetInitialized {
         for (GeneralComment comment : newReview.getGeneralComments()) {
             GeneralComment existing = null;
             for (GeneralComment oldComment : oldReview.getGeneralComments()) {
@@ -142,73 +156,68 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
                               Map<String, List<ReviewData>> customIncomingReviews) {
 
         notifications.clear();
-
+        Set<ReviewData> processedReviews = new HashSet<ReviewData>();
         if (!incomingReviews.isEmpty()) {
-            int newCounter = 0;
             for (PredefinedFilter predefinedFilter : incomingReviews.keySet()) {
                 List<ReviewData> incomingCategory = incomingReviews.get(predefinedFilter);
-                List<Review> existingCategory = reviews.get(predefinedFilter);
-                List<Review> newForCategory = new ArrayList<Review>();
 
-                for (Review reviewDataInfo : incomingCategory) {
-                    if (existingCategory != null) {
-                        Review existing = null;
-                        for (Review oldReviewDataInfo : existingCategory) {
-                            if (reviewDataInfo.getPermId().getId().equals(oldReviewDataInfo.getPermId().getId())) {
-                                existing = oldReviewDataInfo;
-                                break;
+                for (ReviewData reviewDataInfo : incomingCategory) {
+                    if (processedReviews.contains(reviewDataInfo)) {
+                        continue;
+                    }
+                    if (reviews.contains(reviewDataInfo)) {
+                        ReviewData existing = null;
+                        for (ReviewData review : reviews) {
+                            if (review.equals(reviewDataInfo)) {
+                                existing = review;
                             }
                         }
 
-                        if (existing == null) {
-                            newForCategory.add(reviewDataInfo);
-                            notifications.add(new NewReviewNotification(reviewDataInfo));
-                        } else {
-                            // check state change
-                            if (!reviewDataInfo.getState().equals(existing.getState())) {
-                                notifications.add(new ReviewStateChangedNotification(reviewDataInfo, existing.getState()));
-                            }
-
-                            // check review items
-                            try {
-                                checkNewReviewItems(existing, reviewDataInfo);
-                            } catch (ValueNotYetInitialized valueNotYetInitialized) {
-                            }
-
-                            // check reviewers status
-                            try {
-                                checkReviewersStatus(existing, reviewDataInfo);
-                            } catch (ValueNotYetInitialized valueNotYetInitialized) {
-                            }
-
-                            // check comments status
-                            try {
-                                checkComments(existing, reviewDataInfo);
-                            } catch (ValueNotYetInitialized valueNotYetInitialized) {
-                            }
-
-
+                        // check state change
+                        if (!reviewDataInfo.getState().equals(existing.getState())) {
+                            notifications.add(new ReviewStateChangedNotification(reviewDataInfo, existing.getState()));
                         }
+
+                        // check review items
+                        try {
+                            checkNewReviewItems(existing, reviewDataInfo);
+                        } catch (ValueNotYetInitialized valueNotYetInitialized) {
+                        }
+
+                        // check reviewers status
+                        try {
+                            checkReviewersStatus(existing, reviewDataInfo);
+                        } catch (ValueNotYetInitialized valueNotYetInitialized) {
+                        }
+
+                        // check comments status
+                        try {
+                            checkComments(existing, reviewDataInfo);
+                        } catch (ValueNotYetInitialized valueNotYetInitialized) {
+                        }
+
+                        processedReviews.add(reviewDataInfo);
                     } else {
                         notifications.add(new NewReviewNotification(reviewDataInfo));
-                        newForCategory.add(reviewDataInfo);
+                        processedReviews.add(reviewDataInfo);
                     }
                 }
             }
 
             reviews.clear();
-            for (PredefinedFilter predefinedFilter : incomingReviews.keySet()) {
-                reviews.put(predefinedFilter, new ArrayList<Review>(incomingReviews.get(predefinedFilter)));
-            }
+            reviews.addAll(processedReviews);
         }
 
-        for (CrucibleNotification notification : notifications) {
-            System.out.println("crucible.getPresentationMessage() = " + notification.getPresentationMessage());
+        for (CrucibleNotificationListener listener : listenerList) {
+            listener.updateNotifications(notifications);
         }
     }
 
     public void resetState() {
         reviews.clear();
+        for (CrucibleNotificationListener listener : listenerList) {
+            listener.resetState();
+        }
     }
 
     public List<CrucibleNotification> getNotifications() {

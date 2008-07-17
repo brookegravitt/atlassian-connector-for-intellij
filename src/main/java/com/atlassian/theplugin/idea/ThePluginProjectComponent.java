@@ -34,6 +34,7 @@ import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier;
+import com.atlassian.theplugin.notification.crucible.CrucibleNotificationTooltip;
 import com.intellij.ide.util.treeView.AbstractTreeNode;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ProjectComponent;
@@ -80,7 +81,8 @@ public class ThePluginProjectComponent implements
 
     private final ToolWindowManager toolWindowManager;
     private boolean created;
-    private CrucibleReviewNotifier crucibleNewReviewNotifier;
+    private CrucibleReviewNotifier crucibleReviewNotifier;
+    private CrucibleNotificationTooltip crucibleNotificationTooltip;
 
     private final PluginConfiguration pluginConfiguration;
 
@@ -91,7 +93,7 @@ public class ThePluginProjectComponent implements
 
     private String reviewId;
 	private ReviewActionEventBroker crucibleActionBroker; // DON'T YOU DARE TO REMOVE IT!!!
-														// (a strong reference that lives as long as the project itself)
+    // (a strong reference that lives as long as the project itself)
 
 	public ThePluginProjectComponent(Project project,
                                      CrucibleStatusChecker crucibleStatusChecker,
@@ -234,13 +236,15 @@ public class ThePluginProjectComponent implements
             // create crucible status bar icon
             statusBarCrucibleIcon = new CrucibleStatusIcon(project);
 
-            crucibleNewReviewNotifier = new CrucibleReviewNotifier();
-			if (IdeaHelper.getPluginConfiguration().getCrucibleConfigurationData().getCrucibleTooltipOption()
+            crucibleReviewNotifier = new CrucibleReviewNotifier();
+			crucibleStatusChecker.registerListener(crucibleReviewNotifier);
+            if (IdeaHelper.getPluginConfiguration().getCrucibleConfigurationData().getCrucibleTooltipOption()
 					!= CrucibleTooltipOption.NEVER) {
-				crucibleStatusChecker.registerListener(crucibleNewReviewNotifier);
-			}
-
-			// add crucible icon to status bar
+                crucibleNotificationTooltip = new CrucibleNotificationTooltip(statusBarCrucibleIcon, project);
+                crucibleReviewNotifier.registerListener(crucibleNotificationTooltip);
+            }
+                                   
+            // add crucible icon to status bar
             //statusBar.addCustomIndicationComponent(statusBarCrucibleIcon);
             statusBarCrucibleIcon.showOrHideIcon();
 
@@ -330,7 +334,7 @@ public class ThePluginProjectComponent implements
             //bambooStatusChecker.unregisterListener(toolWindowBambooListener);
             bambooStatusChecker.unregisterListener(tooltipBambooStatusListener);
             crucibleStatusChecker.unregisterListener(crucibleToolWindowPanel);
-            crucibleStatusChecker.unregisterListener(crucibleNewReviewNotifier);
+            crucibleStatusChecker.unregisterListener(crucibleReviewNotifier);
 
             // remove tool window
             toolWindow.stopTabChangeListener();
@@ -386,8 +390,8 @@ public class ThePluginProjectComponent implements
 		return crucibleBottomToolWindowPanel;
 	}
 
-	public CrucibleReviewNotifier getCrucibleNewReviewNotifier() {
-		return crucibleNewReviewNotifier;
+	public CrucibleReviewNotifier getCrucibleReviewNotifier() {
+		return crucibleReviewNotifier;
 	}
 	
 	public BambooStatusChecker getBambooStatusChecker() {

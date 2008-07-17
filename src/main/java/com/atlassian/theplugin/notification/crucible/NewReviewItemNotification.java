@@ -1,14 +1,14 @@
 package com.atlassian.theplugin.notification.crucible;
 
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.PermId;
+import com.atlassian.theplugin.idea.crucible.ReviewData;
 
-public class NewReviewItemNotification implements CrucibleNotification {
-    private Review review;
+public class NewReviewItemNotification extends AbstractReviewNotification {
     private CrucibleFileInfo reviewItem;
 
-    public NewReviewItemNotification(Review review, CrucibleFileInfo reviewItem) {
-        this.review = review;
+    public NewReviewItemNotification(ReviewData review, CrucibleFileInfo reviewItem) {
+        super(review);
         this.reviewItem = reviewItem;
     }
 
@@ -17,6 +17,6 @@ public class NewReviewItemNotification implements CrucibleNotification {
     }
 
     public String getPresentationMessage() {
-        return "New review item: " + ((reviewItem.getFileDescriptor() != null) ? reviewItem.getFileDescriptor().getName() : "");
+        return "New review item added " + ((reviewItem.getFileDescriptor() != null) ? reviewItem.getFileDescriptor().getName() : "");
     }
 }
