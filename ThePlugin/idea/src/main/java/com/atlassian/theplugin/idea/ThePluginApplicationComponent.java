@@ -216,9 +216,9 @@ public class ThePluginApplicationComponent
 
 				if (configuration.getCrucibleConfigurationData().getCrucibleTooltipOption()
 						!= CrucibleTooltipOption.NEVER) {
-					crucibleStatusChecker.registerListener(projectComponent.getCrucibleNewReviewNotifier());
+					crucibleStatusChecker.registerListener(projectComponent.getCrucibleReviewNotifier());
 				} else {
-					crucibleStatusChecker.unregisterListener(projectComponent.getCrucibleNewReviewNotifier());
+					crucibleStatusChecker.unregisterListener(projectComponent.getCrucibleReviewNotifier());
 				}
 			}
 			rescheduleStatusCheckers(true);

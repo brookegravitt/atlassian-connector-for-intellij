@@ -38,8 +38,8 @@ public class CrucibleStatusIcon extends StatusBarPluginIcon {
 
 	private static final Icon ICON_NEW = IconLoader.getIcon("/icons/ico_crucible_green.png");
 	private static final Icon ICON_STANDARD = IconLoader.getIcon("/icons/ico_crucible_grey.png");
-	private static final String NO_NEW_REVIEWS = "No new reviews.";
-	private static final String NEW_REVIEWS = "New reviews are available. Click for details.";
+	private static final String NO_NEW_REVIEWS = "No new reviews and review changes.";
+	private static final String NEW_REVIEWS = "New Crucible events are available. Click for details.";
 
 	public CrucibleStatusIcon(final Project project) {
 		super(project);
