@@ -16,13 +16,11 @@
 
 package com.atlassian.theplugin.commons.crucible.api.model;
 
-import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.VirtualFileSystem;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 
-import java.util.List;
 import java.util.Date;
+import java.util.List;
 
 
 public class ReviewBean implements Review {
@@ -354,12 +352,18 @@ public class ReviewBean implements Review {
 	}
 
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         ReviewBean that = (ReviewBean) o;
 
-        if (permId != null ? !permId.equals(that.permId) : that.permId != null) return false;
+        if (permId != null ? !permId.equals(that.permId) : that.permId != null) {
+            return false;
+        }
 
         return true;
     }

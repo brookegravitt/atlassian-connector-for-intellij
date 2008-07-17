@@ -226,16 +226,16 @@ public abstract class AbstractHttpSession {
 
 	protected abstract void preprocessResult(Document doc) throws JDOMException, RemoteApiSessionExpiredException;
 
-	public static String getServerNameFromUrl(String url) {
-		int pos = url.indexOf("://");
+	public static String getServerNameFromUrl(String urlString) {
+		int pos = urlString.indexOf("://");
 		if (pos != -1) {
-			url = url.substring(pos + 1 + 2);
+			urlString = urlString.substring(pos + 1 + 2);
 		}
-		pos = url.indexOf("/");
+		pos = urlString.indexOf("/");
 		if (pos != -1) {
-			url = url.substring(0, pos);
+			urlString = urlString.substring(0, pos);
 		}
-		return url;
+		return urlString;
 	}
 
 	public static String getLastComponentFromUrl(String url) {

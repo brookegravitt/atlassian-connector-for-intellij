@@ -9,7 +9,7 @@ package com.atlassian.theplugin.commons;
  * To change this template use File | Settings | File Templates.
  */
 public class BambooFileInfoImpl implements BambooFileInfo {
-	VersionedVirtualFile fileDescriptor;
+	private VersionedVirtualFile fileDescriptor;
 
 	public BambooFileInfoImpl(VersionedVirtualFile fileDescriptor) {
 		this.fileDescriptor = fileDescriptor;
