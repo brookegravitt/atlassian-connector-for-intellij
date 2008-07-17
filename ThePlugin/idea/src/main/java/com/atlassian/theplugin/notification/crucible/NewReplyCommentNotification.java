@@ -2,13 +2,14 @@ package com.atlassian.theplugin.notification.crucible;
 
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 
 public class NewReplyCommentNotification implements CrucibleNotification {
     private Review review;
-    private GeneralComment comment;
-    private GeneralComment reply;
+    private Comment comment;
+    private Comment reply;
 
-    public NewReplyCommentNotification(Review review, GeneralComment comment, GeneralComment reply) {
+    public NewReplyCommentNotification(Review review, Comment comment, Comment reply) {
         this.review = review;
         this.comment = comment;
         this.reply = reply;

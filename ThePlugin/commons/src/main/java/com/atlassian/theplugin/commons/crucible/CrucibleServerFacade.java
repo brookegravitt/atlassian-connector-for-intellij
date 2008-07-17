@@ -91,7 +91,7 @@ public interface CrucibleServerFacade extends ProductServerFacade {
 	List<CrucibleFileInfo> getFiles(Server server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	List<GeneralComment> getComments(Server server, PermId permId)
+	List<Comment> getComments(Server server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
     List<GeneralComment> getGeneralComments(Server server, PermId permId)

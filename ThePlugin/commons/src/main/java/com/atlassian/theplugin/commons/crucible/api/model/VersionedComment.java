@@ -16,7 +16,9 @@
 
 package com.atlassian.theplugin.commons.crucible.api.model;
 
-public interface VersionedComment extends GeneralComment {
+import java.util.List;
+
+public interface VersionedComment extends Comment {
 	PermId getPermId();
 
 	ReviewItemId getReviewItemId();
@@ -31,5 +33,7 @@ public interface VersionedComment extends GeneralComment {
 
 	int getFromStartLine();
 
-	int getFromEndLine();	
+	int getFromEndLine();
+
+	List<VersionedComment> getReplies();
 }

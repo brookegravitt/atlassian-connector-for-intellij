@@ -601,7 +601,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         }
     }
 
-    public List<GeneralComment> getComments(PermId id) throws RemoteApiException {
+    public List<Comment> getComments(PermId id) throws RemoteApiException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Calling method without calling login() first");
         }
@@ -613,7 +613,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             XPath xpath = XPath.newInstance("comments/generalCommentData");
             @SuppressWarnings("unchecked")
             List<Element> elements = xpath.selectNodes(doc);
-            List<GeneralComment> comments = new ArrayList<GeneralComment>();
+            List<Comment> comments = new ArrayList<Comment>();
 
             if (elements != null && !elements.isEmpty()) {
                 int i = 1;
@@ -644,7 +644,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
                     List<Element> replies = repliesPath.selectNodes(doc);
                     if (replies != null && !replies.isEmpty()) {
                         for (Element reply : replies) {
-                            comment.addReply(CrucibleRestXmlHelper.parseGeneralCommentNode(reply));
+                            comment.addReply(CrucibleRestXmlHelper.parseVersionedCommentNode(reply));
                         }
                     }
                     comments.add(comment);
