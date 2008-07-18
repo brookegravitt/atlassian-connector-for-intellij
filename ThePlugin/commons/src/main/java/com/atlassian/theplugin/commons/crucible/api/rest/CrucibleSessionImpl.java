@@ -871,7 +871,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         }
     }
 
-    public List<CrucibleAction> getAvailableActions(PermId permId) throws RemoteApiException {
+    public List<Action> getAvailableActions(PermId permId) throws RemoteApiException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Calling method without calling login() first");
         }
@@ -883,14 +883,14 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             XPath xpath = XPath.newInstance("/actions/actionData");
             @SuppressWarnings("unchecked")
             List<Element> elements = xpath.selectNodes(doc);
-            List<CrucibleAction> crucibleActions = new ArrayList<CrucibleAction>();
+            List<Action> actions = new ArrayList<Action>();
 
             if (elements != null && !elements.isEmpty()) {
                 for (Element element : elements) {
-                    crucibleActions.add(CrucibleRestXmlHelper.parseActionNode(element));
+                    actions.add(CrucibleRestXmlHelper.parseActionNode(element));
                 }
             }
-            return crucibleActions;
+            return actions;
         } catch (IOException e) {
             throw new RemoteApiException(e.getMessage(), e);
         } catch (JDOMException e) {

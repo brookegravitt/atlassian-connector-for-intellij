@@ -101,12 +101,8 @@ public final class CrucibleRestXmlHelper {
         return userDataBean;
     }
 
-    public static CrucibleAction parseActionNode(Element element) {
-        CrucibleActionBean actionBean = new CrucibleActionBean();
-
-        actionBean.setName(getChildText(element, "name"));
-        actionBean.setDisplayName(getChildText(element, "displayName"));
-        return actionBean;
+    public static Action parseActionNode(Element element) {
+        return Action.fromValue(getChildText(element, "name"));
     }
 
     public static Transition parseTransitionNode(Element element) {
@@ -253,6 +249,17 @@ public final class CrucibleRestXmlHelper {
             }
         }
         review.setTransitions(transitions);
+
+        List<Element> actionsNode = getChildElements(reviewNode, "actions");
+        List<Action> actions = new ArrayList<Action>();
+        for (Element action : actionsNode) {
+            List<Element> act = getChildElements(action, "actionData");
+            for (Element element : act) {
+                actions.add(parseActionNode(element));
+            }
+        }
+        review.setActions(actions);
+
         return review;
     }
 

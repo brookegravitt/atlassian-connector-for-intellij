@@ -59,5 +59,7 @@ public interface Review {
 
     List<Transition> getTransitions() throws ValueNotYetInitialized;
 
+    List<Action> getActions() throws ValueNotYetInitialized;
+
     VirtualFileSystem getVirtualFileSystem();
 }
