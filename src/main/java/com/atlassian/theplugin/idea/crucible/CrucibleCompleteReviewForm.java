@@ -57,7 +57,7 @@ public class CrucibleCompleteReviewForm extends DialogWrapper {
         $$$setupUI$$$();
         init();
 
-        if (isComplete) {
+        if (!isComplete) {
             publishDraftCommentsCheckBox.setSelected(false);
             publishDraftCommentsCheckBox.setVisible(false);
             setTitle("Uncomplete review");
