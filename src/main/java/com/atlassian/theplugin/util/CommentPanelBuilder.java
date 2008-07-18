@@ -1,18 +1,16 @@
 package com.atlassian.theplugin.util;
 
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.ui.AtlassianToolbar;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.commons.crucible.api.model.Comment;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.CellConstraints;
 import com.intellij.ui.components.labels.BoldLabel;
-import com.intellij.openapi.roots.ui.componentsList.components.RoundBorder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 
 /**
