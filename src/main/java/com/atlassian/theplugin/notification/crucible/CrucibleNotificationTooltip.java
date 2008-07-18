@@ -54,7 +54,7 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
                 sb.append("<tr><td width=20><img src=\"/icons/crucible-blue-16.png\" height=16 width=16 border=0></td>")
                         .append("<td colspan=2><b>")
                         .append(changesCount)
-                        .append(" changes")
+                        .append(" change")
                         .append(changesCount != 1 ? "s" : "")
                         .append("</b></td></tr>");
 

@@ -429,6 +429,12 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         tablePane.setViewportView(component);
     }
 
+    public ReviewData getSelectedReview() {
+        if (selectedItem != null) {
+            return this.selectedItem;
+        }
+        return null;
+    }
 
     public PermId getSelectedReviewId() {
         if (selectedItem != null) {

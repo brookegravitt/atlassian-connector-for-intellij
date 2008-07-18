@@ -204,13 +204,13 @@
 			<keyboard-shortcut first-keystroke="shift control y" keymap="$default"/>
 		</action>
 		<action id="ThePlugin.Crucible.RefreshStatus" class="com.atlassian.theplugin.idea.action.crucible.RefreshCruciblePanelAction" text="Refresh" description="Refresh" icon="/actions/sync.png" />
-        <action id="ThePlugin.Crucible.ViewReview" class="com.atlassian.theplugin.idea.action.crucible.ViewReviewAction" text="View review in browser" icon="/icons/crucible-blue-16.png" />
+        <action id="ThePlugin.Crucible.ViewReview" class="com.atlassian.theplugin.idea.action.crucible.ViewReviewAction" text="View review in browser" icon="/general/web.png" />
 		<action id="ThePlugin.Crucible.BackToGeneralComments" class="com.atlassian.theplugin.idea.action.crucible.BackToGeneralCommentsAction" text="Go back" icon="/actions/rollback.png" />
 		<action id="ThePlugin.Crucible.BackToRevisionComments" class="com.atlassian.theplugin.idea.action.crucible.BackToRevisionCommentsAction" text="Go back" icon="/actions/rollback.png" />
         <action id="ThePlugin.Crucible.GetComments" class="com.atlassian.theplugin.idea.action.crucible.GetCommentsAction" text="Get Comments" icon="/icons/inspector/sortByCategory.png" />
 		<action id="ThePlugin.Crucible.GetGeneralCommentReplies" class="com.atlassian.theplugin.idea.action.crucible.GetGeneralCommentRepliesAction" text="View Replies" icon="/icons/inspector/sortByCategory.png" />
 
-        <action id="ThePlugin.Crucible.ToReviewAction" class="com.atlassian.theplugin.idea.action.crucible.ToReviewAction" text="To review" icon="/actions/find.png" />
+        <action id="ThePlugin.Crucible.ToReviewAction" class="com.atlassian.theplugin.idea.action.crucible.ToReviewAction" text="To review" />
         <action id="ThePlugin.Crucible.ToReviewComboAction" class="com.atlassian.theplugin.idea.action.crucible.ToReviewAction" text="To review" />
         <action id="ThePlugin.Crucible.RequireApprovalAction" class="com.atlassian.theplugin.idea.action.crucible.RequireApprovalAction" text="Require approval"  />
         <action id="ThePlugin.Crucible.ToSummarizeAction" class="com.atlassian.theplugin.idea.action.crucible.ToSummarizeAction" text="To summarize" />
@@ -240,6 +240,10 @@
         <action id="ThePlugin.Crucible.ViewFisheyeChangeset" class="com.atlassian.theplugin.idea.action.crucible.ViewFisheyeChangesetAction" text="View changeset" icon="/icons/fisheye-16.png" />
         <action id="ThePlugin.Crucible.PreCommitReview" class="com.atlassian.theplugin.idea.action.crucible.PreCommitReview" text="Pre-commit review" icon="/icons/crucible-blue-16.png" />
         <action id="ThePlugin.Crucible.AddPatchToReview" class="com.atlassian.theplugin.idea.action.crucible.AddPatchToReviewAction" text="Add patch to review" icon="/icons/fisheye-16-plus.png" />
+
+        <action id="ThePlugin.Crucible.CompleteReview" class="com.atlassian.theplugin.idea.action.crucible.CompleteReviewAction" text="Complete review" icon="/icons/crucible-blue-16.png" />
+        <action id="ThePlugin.Crucible.UncompleteReview" class="com.atlassian.theplugin.idea.action.crucible.UncompleteReviewAction" text="Uncomplete review" icon="/icons/crucible-blue-16.png" />
+        <action id="ThePlugin.Crucible.CloseReview" class="com.atlassian.theplugin.idea.action.crucible.CloseReviewAction" text="Close review" icon="/icons/crucible-blue-16.png" />        
 
         <group id="ThePlugin.Crucible.PostCommit" popup="false" text="">
             <reference id="ThePlugin.Crucible.PostCommitReview" />
@@ -297,6 +301,10 @@
             <reference id="ThePlugin.Crucible.ViewReview" />            
             <separator />
             <reference id="ThePlugin.Crucible.GetComments" />
+            <separator />
+            <reference id="ThePlugin.Crucible.CompleteReview" />
+            <reference id="ThePlugin.Crucible.UncompleteReview" />
+            <reference id="ThePlugin.Crucible.CloseReview" />            
         </group>
 
 		<group id="ThePlugin.CrucibleGeneralCommentToolBar" popup="false" text="">
@@ -322,7 +330,11 @@
 		<group id="ThePlugin.Crucible.ReviewPopupMenu" popup="true">
             <reference id="ThePlugin.Crucible.ViewReview" />
             <separator />
-            <reference id="ThePlugin.Crucible.GetComments" />            
+            <reference id="ThePlugin.Crucible.GetComments" />
+            <separator />
+            <reference id="ThePlugin.Crucible.CompleteReview" />
+            <reference id="ThePlugin.Crucible.UncompleteReview" />
+            <reference id="ThePlugin.Crucible.CloseReview" />                                    
         </group>
 
 		<group id="ThePlugin.Crucible.FilterEditToolBar" popup="false">
