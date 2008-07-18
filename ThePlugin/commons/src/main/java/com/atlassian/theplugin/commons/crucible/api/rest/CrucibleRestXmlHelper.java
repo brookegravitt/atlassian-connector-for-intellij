@@ -218,16 +218,16 @@ public final class CrucibleRestXmlHelper {
         List<Element> versionedComments = getChildElements(reviewNode, "versionedComments");
         for (Element versionedComment : versionedComments) {
             List<Element> commentNode = getChildElements(versionedComment, "versionedLineCommentData");
-            List<VersionedCommentBean> comments = new ArrayList<VersionedCommentBean>();
+            List<VersionedComment> comments = new ArrayList<VersionedComment>();
             for (Element element : commentNode) {
                 comments.add(parseVersionedCommentNode(element));
             }
-
+            review.setVersionedComments(comments);
 
             try {
                 for (CrucibleFileInfo item : review.getFiles()) {
                     List<VersionedComment> commentList = new ArrayList<VersionedComment>();
-                    for (VersionedCommentBean comment : comments) {
+                    for (VersionedComment comment : comments) {
                         if (item.getPermId().getId().equals(comment.getReviewItemId().getId())) {
                             commentList.add(comment);
                         }
@@ -237,7 +237,6 @@ public final class CrucibleRestXmlHelper {
             } catch (ValueNotYetInitialized ex) {
                 // ignore, because it cannot happen as setFiles is invoked a few lines higher
             }
-
         }
 
         List<Element> transitionsNode = getChildElements(reviewNode, "transitions");

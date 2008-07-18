@@ -293,6 +293,48 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         }
     }
 
+    public Review getReview(PermId permId, boolean details) throws RemoteApiException {
+        if (!isLoggedIn()) {
+            throw new IllegalStateException("Calling method without calling login() first");
+        }
+
+        try {
+            String url = baseUrl
+                    + REVIEW_SERVICE
+                    + "/"
+                    + permId.getId();
+            if (details) {
+                url += DETAIL_REVIEW_INFO;
+            }
+            Document doc = retrieveGetResponse(url);
+
+            XPath xpath;
+            if (details) {
+                xpath = XPath.newInstance("/detailedReviewData");
+            } else {
+                xpath = XPath.newInstance("reviewData");
+            }
+            @SuppressWarnings("unchecked")
+            List<Element> elements = xpath.selectNodes(doc);
+
+            if (elements != null && !elements.isEmpty()) {
+                for (Element element : elements) {
+                    if (details) {
+                        return CrucibleRestXmlHelper.parseDetailedReviewNode(element);
+                    } else {
+                        return CrucibleRestXmlHelper.parseReviewNode(element);
+                    }
+                }
+            }
+            return null;
+        } catch (IOException e) {
+            throw new RemoteApiException(e.getMessage(), e);
+        } catch (JDOMException e) {
+            throw new RemoteApiException("Server returned malformed response", e);
+        }
+    }
+
+
     private void printXml(Document request) {
         XMLOutputter o = new XMLOutputter(Format.getPrettyFormat());
         try {

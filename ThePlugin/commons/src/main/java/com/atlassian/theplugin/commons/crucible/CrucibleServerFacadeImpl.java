@@ -356,4 +356,9 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
         return session.getReviewsForCustomFilter(filter, true);
     }
 
+    public Review getReview(Server server, PermId permId) throws RemoteApiException, ServerPasswordNotProvidedException {
+        CrucibleSession session = getSession(server);
+        return session.getReview(permId, true);
+    }
+
 }
