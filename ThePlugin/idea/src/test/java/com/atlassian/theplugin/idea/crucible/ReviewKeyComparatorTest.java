@@ -71,7 +71,7 @@ public class ReviewKeyComparatorTest extends TestCase {
 			}
 
             public List<VersionedComment> getVersionedComments() throws ValueNotYetInitialized {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                return null;
             }
 
             public List<CrucibleFileInfo> getFiles() throws ValueNotYetInitialized {
@@ -82,7 +82,11 @@ public class ReviewKeyComparatorTest extends TestCase {
 				return null;
 			}
 
-			public VirtualFileSystem getVirtualFileSystem() {
+            public List<Action> getActions() throws ValueNotYetInitialized {
+                return null; 
+            }
+
+            public VirtualFileSystem getVirtualFileSystem() {
 				return null;  
 			}
 

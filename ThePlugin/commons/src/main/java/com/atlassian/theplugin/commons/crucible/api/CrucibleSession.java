@@ -37,7 +37,7 @@ public interface CrucibleSession {
 
     Review createReviewFromRevision(Review review, List<String> revisions) throws RemoteApiException;
 
-    List<CrucibleAction> getAvailableActions(PermId permId) throws RemoteApiException;
+    List<Action> getAvailableActions(PermId permId) throws RemoteApiException;
 
     List<Transition> getAvailableTransitions(PermId permId) throws RemoteApiException;    
 

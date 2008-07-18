@@ -13,6 +13,6 @@ public class ReviewStateChangedNotification extends AbstractReviewNotification {
     }
 
     public String getPresentationMessage() {
-        return "Review changed state to " + review.getState();
+        return "Review changed state to " + review.getState().value();
     }
 }

@@ -549,6 +549,10 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
             return null;
         }
 
+        public List<com.atlassian.theplugin.commons.crucible.api.model.Action> getActions() throws ValueNotYetInitialized {
+            return null; 
+        }
+
         public VirtualFileSystem getVirtualFileSystem() {
             return null; 
         }

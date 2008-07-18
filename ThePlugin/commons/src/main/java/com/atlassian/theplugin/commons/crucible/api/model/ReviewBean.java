@@ -28,7 +28,8 @@ public class ReviewBean implements Review {
 	private List<CrucibleFileInfo> files;
 	private List<GeneralComment> generalComments;
 	private List<Transition> transitions;
-	private VirtualFileSystem virtualFileSystem;
+	private List<Action> actions;
+    private VirtualFileSystem virtualFileSystem;
 	private User author;
 	private User creator;
 	private String description;
@@ -60,22 +61,14 @@ public class ReviewBean implements Review {
 		this.transitions = transitions;
 	}
 
-	public ReviewBean() {
+    public void setActions(List<Action> actions) {
+        this.actions = actions;
+    }
+
+    public ReviewBean() {
 		super();
 		this.virtualFileSystem = new VirtualFileSystem();
 	}
-
-/*
-    public String getReviewUrl() {
-		String baseUrl = server.getUrlString();
-		while (baseUrl.length() > 0 && baseUrl.charAt(baseUrl.length() - 1) == '/') {
-			// quite ineffective, I know ...
-			baseUrl = baseUrl.substring(0, baseUrl.length() - 1);
-		}
-		return baseUrl + "/cru/" + getPermId().getId();
-
-	}
-*/
 
 	public List<Reviewer> getReviewers() throws ValueNotYetInitialized {
 		if (reviewers == null) {
@@ -105,7 +98,14 @@ public class ReviewBean implements Review {
 		return transitions;
 	}
 
-	public VirtualFileSystem getVirtualFileSystem() {
+	public List<Action> getActions() throws ValueNotYetInitialized {
+		if (actions == null) {
+			throw new ValueNotYetInitialized("Object trasferred only partially");
+		}
+		return actions;
+	}
+
+    public VirtualFileSystem getVirtualFileSystem() {
 		return virtualFileSystem;
 	}
 
