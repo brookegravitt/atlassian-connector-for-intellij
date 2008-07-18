@@ -72,11 +72,13 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 
     private void checkReviewersStatus(ReviewData oldReview, ReviewData newReview) throws ValueNotYetInitialized {
         boolean allCompleted = true;
+        boolean atLeastOneChanged = false;
         for (Reviewer reviewer : newReview.getReviewers()) {
             for (Reviewer oldReviewer : oldReview.getReviewers()) {
                 if (reviewer.getUserName().equals(oldReviewer.getUserName())) {
                     if (reviewer.isCompleted() != oldReviewer.isCompleted()) {
                         notifications.add(new ReviewerCompletedNotification(newReview, reviewer));
+                        atLeastOneChanged = true;
                     }
                 }
             }
@@ -84,7 +86,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
                 allCompleted = false;
             }
         }
-        if (allCompleted) {
+        if (allCompleted && atLeastOneChanged) {
             notifications.add(new ReviewCompletedNotification(newReview));
         }
     }
