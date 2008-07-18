@@ -27,7 +27,7 @@ public class AtlassianTableViewWithToolbar extends JPanel {
 										 String toolbarPlace, String toolbarName,
 										 String popupMenuPlace, String popupMenuName) {
 		super(new GridBagLayout());
-		toolBarPanel = new AtlassianToolbar(toolbarPlace, toolbarName);
+		toolBarPanel = AtlassianToolbar.createToolbar(toolbarPlace, toolbarName);
 		table = new AtlassianTableView(tableColumnProvider, listTableModel, storage, popupMenuPlace, popupMenuName);
 		statusLabel = new JLabel();
 		headerLabel = new JLabel();

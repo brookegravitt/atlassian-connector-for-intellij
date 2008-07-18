@@ -56,7 +56,6 @@ public class CrucibleFileNode extends FileNode {
 			txt.append(node.getFileInfo().getFileDescriptor().getRevision());
 			txt.append(")");
 			append(txt.toString(), SimpleTextAttributes.GRAY_ITALIC_ATTRIBUTES);
-
 			try {
 
 				int noOfComments = node.getFileInfo().getNumberOfComments();

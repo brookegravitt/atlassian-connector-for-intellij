@@ -9,6 +9,7 @@ import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 
 public class AtlassianTree extends JTree {
+	protected static final AtlassianTreeCellRenderer DISPATCHING_RENDERER = new AtlassianTreeCellRenderer();
 
 	public AtlassianTree() {
 		this(new AtlassianTreeModel(new FileNode("/")));
@@ -17,7 +18,7 @@ public class AtlassianTree extends JTree {
 	public AtlassianTree(AtlassianTreeModel model) {
 		super(model);
 		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-		setCellRenderer(new AtlassianTreeCellRenderer());
+		setCellRenderer(DISPATCHING_RENDERER);
 		setRootVisible(true);
 	}
 
@@ -33,7 +34,7 @@ public class AtlassianTree extends JTree {
 		}
 	}
 
-	private static class AtlassianTreeCellRenderer extends DefaultTreeCellRenderer {
+	protected static class AtlassianTreeCellRenderer extends DefaultTreeCellRenderer {
 
 		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded,
                 boolean leaf, int row, boolean hasFocus) {
