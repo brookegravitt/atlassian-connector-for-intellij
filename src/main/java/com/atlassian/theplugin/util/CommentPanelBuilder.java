@@ -29,12 +29,12 @@ public class CommentPanelBuilder {
 		return new CommentPanel(review, comment) {
 			@Override
 			public Color getHeaderBackground() {
-				return Color.cyan;	//To change body of overridden methods use File | Settings | File Templates.
+				return new Color(239,224,255);
 			}
 
 			@Override
 			public Color getBodyBackground() {
-				return Color.white;	//To change body of overridden methods use File | Settings | File Templates.
+				return new Color(234,255,255);
 			}
 		};
 	}
@@ -47,17 +47,17 @@ public class CommentPanelBuilder {
 		 return new CommentPanel(review, comment) {
 			@Override
 			public Color getHeaderBackground() {
-				return Color.lightGray;	//To change body of overridden methods use File | Settings | File Templates.
+				return new Color(255,224,224);
 			}
 
 			@Override
 			public Color getBodyBackground() {
-				return Color.white;	//To change body of overridden methods use File | Settings | File Templates.
+				return new Color(234,255,255);
 			}
 		};
 	}
 
-	private static class CommentPanel extends JPanel {
+	private static abstract class CommentPanel extends JPanel {
 		private static final Component EMPTY_LABEL = new JLabel();
 		private ReviewData review;
 		private Comment comment;
@@ -126,13 +126,15 @@ public class CommentPanelBuilder {
 			return result;
 		}
 
-		public Color getHeaderBackground() {
-			return Color.yellow;
-		}
+		public abstract Color getHeaderBackground();
+//		{
+//			return Color.yellow;
+//		}
 
-		public Color getBodyBackground() {
-			return Color.darkGray;
-		}
+		public abstract Color getBodyBackground(); 
+//		{
+//			return Color.darkGray;
+//		}
 	}
 
 
