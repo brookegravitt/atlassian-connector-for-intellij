@@ -16,11 +16,9 @@
 
 package com.atlassian.theplugin.commons.crucible.api;
 
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 
 import java.util.List;
 import java.util.Set;
@@ -70,6 +68,8 @@ public interface CrucibleSession {
     List<Review> getReviewsForFilter(PredefinedFilter filter, boolean details) throws RemoteApiException;
 
     List<Review> getReviewsForCustomFilter(CustomFilter filter, boolean details) throws RemoteApiException;
+
+    Review getReview(PermId permId, boolean details) throws RemoteApiException;
 
     List<Reviewer> getReviewers(PermId arg1) throws RemoteApiException;
 
