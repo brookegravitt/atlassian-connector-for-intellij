@@ -87,11 +87,13 @@ public class CommentTreePanel extends JPanel {
 				addGeneralCommentTree(ROOT, review, comment);
 			}
 			for (CrucibleFileInfo file : review.getFiles()) {
-				AtlassianTreeNode fileNode=
-						new FileNameNode(file);
-				ROOT.addNode(fileNode);
-				for (VersionedComment comment : file.getVersionedComments()) {
-					addVersionedCommentTree(fileNode, review, file, comment);
+
+				if (file.getVersionedComments().size() > 0) {
+					AtlassianTreeNode fileNode = new FileNameNode(file);
+					ROOT.addNode(fileNode);
+					for (VersionedComment comment : file.getVersionedComments()) {
+						addVersionedCommentTree(fileNode, review, file, comment);
+					}
 				}
 			}
 		} catch (ValueNotYetInitialized valueNotYetInitialized) {
