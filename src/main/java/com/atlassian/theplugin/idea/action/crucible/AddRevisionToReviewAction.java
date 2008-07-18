@@ -4,6 +4,7 @@ import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CrucibleRevisionAddWorker;
+import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.application.ApplicationManager;
@@ -28,8 +29,11 @@ public class AddRevisionToReviewAction extends Crucible16RepositoryAction {
         super.update(event);
         if (IdeaHelper.getCrucibleToolWindowPanel(event) != null) {
             if (event.getPresentation().isEnabled()) {
-                if (IdeaHelper.getCrucibleToolWindowPanel(event).getSelectedReviewId() == null) {
+                if (IdeaHelper.getCrucibleToolWindowPanel(event).getSelectedReview() == null) {
                     event.getPresentation().setEnabled(false);
+                } else {
+                    ReviewData rd = IdeaHelper.getCrucibleToolWindowPanel(event).getSelectedReview();
+                    event.getPresentation().setEnabled(rd.getCreator().getUserName().equals(rd.getServer().getUserName()));                    
                 }
             }
         } else {
