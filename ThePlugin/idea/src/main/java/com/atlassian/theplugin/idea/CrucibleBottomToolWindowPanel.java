@@ -5,7 +5,6 @@ import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListenerNotUsed;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
-import com.atlassian.theplugin.idea.crucible.comments.ReviewCommentsPanel;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.config.ContentPanel;
 import com.intellij.util.ui.UIUtil;
@@ -43,7 +42,7 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
 	protected ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
 	private CrucibleVersion crucibleVersion = CrucibleVersion.UNKNOWN;
 	private static ReviewItemTreePanel reviewItemTreePanel;
-	private CommentListPanel reviewComentsPanel;
+	private CommentTreePanel reviewComentsPanel;
 	private static CrucibleReviewActionListener tabManager;
 	private static final int LEFT_WIDTH = 150;
 	private static final int LEFT_HEIGHT = 250;
@@ -85,7 +84,7 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
 		reviewItemTreePanel.getProgressAnimation().configure(leftPanel, reviewItemTreePanel, BorderLayout.CENTER);
 		splitter.setFirstComponent(leftPanel);
 		splitter.setHonorComponentsMinimumSize(true);
-		reviewComentsPanel = new CommentListPanel();
+		reviewComentsPanel = new CommentTreePanel();
 		splitter.setSecondComponent(reviewComentsPanel);
 		add(splitter, BorderLayout.CENTER);
 

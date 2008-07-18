@@ -48,7 +48,7 @@ public interface Comment {
 
         DRAFT("#FFD415"),
 		REVIEW("green"),
-		DEFECT_RAISED("#FFD415") {
+		DEFECT_RAISED("red") {
 			public String toString() {
 				return "DEFECT";
 			}
