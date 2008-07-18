@@ -31,7 +31,7 @@ public class ReviewReviewersColumn extends TableColumnInfo {
     private static final int COL_WIDTH = 200;
 
     public String getColumnName() {
-        return "Reviewers completed";
+        return "Reviewers";
     }
 
     public Object valueOf(Object o) {
