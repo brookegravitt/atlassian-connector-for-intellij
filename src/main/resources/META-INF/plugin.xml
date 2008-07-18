@@ -241,9 +241,13 @@
         <action id="ThePlugin.Crucible.PreCommitReview" class="com.atlassian.theplugin.idea.action.crucible.PreCommitReview" text="Pre-commit review" icon="/icons/crucible-blue-16.png" />
         <action id="ThePlugin.Crucible.AddPatchToReview" class="com.atlassian.theplugin.idea.action.crucible.AddPatchToReviewAction" text="Add patch to review" icon="/icons/fisheye-16-plus.png" />
 
-        <action id="ThePlugin.Crucible.CompleteReview" class="com.atlassian.theplugin.idea.action.crucible.CompleteReviewAction" text="Complete review" icon="/icons/crucible-blue-16.png" />
-        <action id="ThePlugin.Crucible.UncompleteReview" class="com.atlassian.theplugin.idea.action.crucible.UncompleteReviewAction" text="Uncomplete review" icon="/icons/crucible-blue-16.png" />
-        <action id="ThePlugin.Crucible.CloseReview" class="com.atlassian.theplugin.idea.action.crucible.CloseReviewAction" text="Close review" icon="/icons/crucible-blue-16.png" />        
+        <action id="ThePlugin.Crucible.CompleteReview" class="com.atlassian.theplugin.idea.action.crucible.CompleteReviewAction" text="Complete review" />
+        <action id="ThePlugin.Crucible.UncompleteReview" class="com.atlassian.theplugin.idea.action.crucible.UncompleteReviewAction" text="Uncomplete review" />
+        <action id="ThePlugin.Crucible.ApproveReview" class="com.atlassian.theplugin.idea.action.crucible.ApproveReviewAction" text="Approve review" />
+        <action id="ThePlugin.Crucible.CloseReview" class="com.atlassian.theplugin.idea.action.crucible.CloseReviewAction" text="Close review" />
+        <action id="ThePlugin.Crucible.ReopenReview" class="com.atlassian.theplugin.idea.action.crucible.ReopenReviewAction" text="Reopen review" />
+        <action id="ThePlugin.Crucible.SummarizeReview" class="com.atlassian.theplugin.idea.action.crucible.SummarizeReviewAction" text="Summarize review" />
+        <action id="ThePlugin.Crucible.AbandonReview" class="com.atlassian.theplugin.idea.action.crucible.AbandonReviewAction" text="Abandon review" />        
 
         <group id="ThePlugin.Crucible.PostCommit" popup="false" text="">
             <reference id="ThePlugin.Crucible.PostCommitReview" />
@@ -334,7 +338,12 @@
             <separator />
             <reference id="ThePlugin.Crucible.CompleteReview" />
             <reference id="ThePlugin.Crucible.UncompleteReview" />
-            <reference id="ThePlugin.Crucible.CloseReview" />                                    
+            <separator />
+            <reference id="ThePlugin.Crucible.ApproveReview" />
+            <reference id="ThePlugin.Crucible.CloseReview" />
+            <reference id="ThePlugin.Crucible.ReopenReview" />
+            <reference id="ThePlugin.Crucible.SummarizeReview" />
+            <reference id="ThePlugin.Crucible.AbandonReview" />
         </group>
 
 		<group id="ThePlugin.Crucible.FilterEditToolBar" popup="false">
