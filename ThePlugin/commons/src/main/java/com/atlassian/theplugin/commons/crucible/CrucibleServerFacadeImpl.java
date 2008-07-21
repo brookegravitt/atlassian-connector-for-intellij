@@ -74,6 +74,11 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
         session.logout();
     }
 
+    public CrucibleVersionInfo getServerVersion(Server server) throws RemoteApiException, ServerPasswordNotProvidedException {
+        CrucibleSession session = getSession(server);
+        return session.getServerVersion();
+    }
+
     /**
      * Creates new review in Crucible
      *
@@ -106,7 +111,7 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
         return session.getAvailableActions(permId);
     }
 
-    public List<Transition> getAvailableTransitions(Server server, PermId permId)
+    public List<Action> getAvailableTransitions(Server server, PermId permId)
             throws RemoteApiException, ServerPasswordNotProvidedException {
         CrucibleSession session = getSession(server);
         return session.getAvailableTransitions(permId);

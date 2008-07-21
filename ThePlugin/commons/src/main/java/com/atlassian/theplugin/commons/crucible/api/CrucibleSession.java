@@ -29,7 +29,9 @@ public interface CrucibleSession {
 
 	void logout();
 
-	Review createReview(Review review) throws RemoteApiException;
+    CrucibleVersionInfo getServerVersion() throws RemoteApiException;
+
+    Review createReview(Review review) throws RemoteApiException;
 
 	Review createReviewFromPatch(Review review, String patch) throws RemoteApiException;
 
@@ -37,7 +39,7 @@ public interface CrucibleSession {
 
     List<Action> getAvailableActions(PermId permId) throws RemoteApiException;
 
-    List<Transition> getAvailableTransitions(PermId permId) throws RemoteApiException;    
+    List<Action> getAvailableTransitions(PermId permId) throws RemoteApiException;
 
     Review addRevisionsToReview(PermId permId, String repository, List<String> revisions) throws RemoteApiException;
 

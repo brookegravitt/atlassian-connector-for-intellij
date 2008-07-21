@@ -27,8 +27,11 @@ import java.util.List;
 import java.util.Set;
 
 public interface CrucibleServerFacade extends ProductServerFacade {
-	Review createReview(Server server, Review review)
-			throws RemoteApiException, ServerPasswordNotProvidedException;
+    CrucibleVersionInfo getServerVersion(Server server)
+            throws RemoteApiException, ServerPasswordNotProvidedException;
+
+    Review createReview(Server server, Review review)
+	        throws RemoteApiException, ServerPasswordNotProvidedException;		
 
     Review createReviewFromRevision(Server server, Review review, List<String> revisions)
             throws RemoteApiException;
@@ -36,7 +39,7 @@ public interface CrucibleServerFacade extends ProductServerFacade {
     List<Action> getAvailableActions(Server server, PermId permId)
             throws RemoteApiException, ServerPasswordNotProvidedException;
 
-    List<Transition> getAvailableTransitions(Server server, PermId permId)
+    List<Action> getAvailableTransitions(Server server, PermId permId)
             throws RemoteApiException, ServerPasswordNotProvidedException;
 
     Review addRevisionsToReview(Server server, PermId permId, String repository, List<String> revisions)
