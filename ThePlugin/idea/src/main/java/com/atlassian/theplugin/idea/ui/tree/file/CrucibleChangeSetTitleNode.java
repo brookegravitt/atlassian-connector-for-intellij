@@ -6,6 +6,7 @@ import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.util.Icons;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 
 import javax.swing.*;
 import javax.swing.tree.TreeCellRenderer;
@@ -23,8 +24,8 @@ public class CrucibleChangeSetTitleNode extends FileNode {
 	private ReviewData changeSet;
 	private static final TreeCellRenderer MY_RENDERER = new CrucibleChangeSetTitleNodeRenderer();
 
-	public CrucibleChangeSetTitleNode(ReviewData changeSet) {
-		super(changeSet.getName());
+	public CrucibleChangeSetTitleNode(ReviewData changeSet, AtlassianClickAction action) {
+		super(changeSet.getName(), action);
 		this.changeSet = changeSet;
 	}
 

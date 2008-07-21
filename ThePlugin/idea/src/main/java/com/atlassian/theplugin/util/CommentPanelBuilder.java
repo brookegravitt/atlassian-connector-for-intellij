@@ -13,6 +13,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Map;
 
+//import thirdparty.publicobject.RoundedBorder;
+
 /**
  * Created by IntelliJ IDEA.
  * User: lguminski
@@ -83,6 +85,7 @@ public class CommentPanelBuilder {
 			header.add(getStateLabel(), STATE_POS);
 			header.add(AtlassianToolbar.createToolbar("a place", getToolbarName()), TOOLBAR_POS);
 			header.setBackground(getHeaderBackground());
+//			header.setBorder(new RoundedBorder(getHeaderBackground(), Color.black, getForeground(), 8, 1));
 
 
 			JPanel body = new JPanel(new FormLayout("4dlu, pref:grow, 4dlu",
