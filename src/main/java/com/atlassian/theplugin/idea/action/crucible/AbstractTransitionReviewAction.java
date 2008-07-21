@@ -2,7 +2,6 @@ package com.atlassian.theplugin.idea.action.crucible;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.Action;
-import com.atlassian.theplugin.commons.crucible.api.model.Transition;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -28,15 +27,15 @@ public abstract class AbstractTransitionReviewAction extends AnAction {
                         event.getPresentation().setEnabled(false);
                         event.getPresentation().setVisible(false);
                     } else {
-                        for (Transition transition : rd.getTransitions()) {
-                            if (Action.fromValue(transition.getActionName()).equals(getRequestedTransition())) {
+                        for (Action transition : rd.getTransitions()) {
+                            if (transition.equals(getRequestedTransition())) {
                                 event.getPresentation().setEnabled(true);
                                 event.getPresentation().setVisible(true);
+                                break;
                             } else {
                                 event.getPresentation().setEnabled(false);
                                 event.getPresentation().setVisible(false);
-                            }
-                            break;
+                            }                            
                         }
                     }
                 } catch (ValueNotYetInitialized valueNotYetInitialized) {
