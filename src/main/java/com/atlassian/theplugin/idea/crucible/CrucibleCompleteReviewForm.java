@@ -24,6 +24,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import static com.intellij.openapi.ui.Messages.showMessageDialog;
@@ -178,6 +179,7 @@ public class CrucibleCompleteReviewForm extends DialogWrapper {
                 crucibleServerFacade.publishAllCommentsForReview(review.getServer(), review.getPermId());
             }
             crucibleServerFacade.completeReview(review.getServer(), review.getPermId(), complete);
+            IdeaHelper.getAppComponent().rescheduleStatusCheckers(true);
         } catch (RemoteApiException e) {
             showMessageDialog(e.getMessage(),
                     "Error " + (complete ? "completing" : "uncompleting") + " review: " + review.getServer().getUrlString(), Messages.getErrorIcon());
