@@ -57,7 +57,7 @@ public interface Review {
 
     List<CrucibleFileInfo> getFiles() throws ValueNotYetInitialized;
 
-    List<Transition> getTransitions() throws ValueNotYetInitialized;
+    List<Action> getTransitions() throws ValueNotYetInitialized;
 
     List<Action> getActions() throws ValueNotYetInitialized;
 

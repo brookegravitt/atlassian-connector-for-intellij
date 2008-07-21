@@ -23,9 +23,9 @@ import com.atlassian.theplugin.commons.crucible.api.model.*;
 import org.jdom.CDATA;
 import org.jdom.Document;
 import org.jdom.Element;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormat;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -107,24 +107,6 @@ public final class CrucibleRestXmlHelper {
 	public static Action parseActionNode(Element element) {
 		return Action.fromValue(getChildText(element, "name"));
 	}
-
-	public static Transition parseTransitionNode(Element element) {
-		TransitionBean transitionBean = new TransitionBean();
-
-		transitionBean.setActionName(getChildText(element, "actionName"));
-		transitionBean.setDisplayName(getChildText(element, "displayName"));
-		String stateString = getChildText(element, "state");
-		if (!"".equals(stateString)) {
-			transitionBean.setState(State.fromValue(stateString));
-		}
-		stateString = getChildText(element, "nextState");
-		if (!"".equals(stateString)) {
-			transitionBean.setNextState(State.fromValue(stateString));
-		}
-
-		return transitionBean;
-	}
-
 
 	public static ReviewerBean parseReviewerNode(Element reviewerNode) {
 		ReviewerBean reviewerBean = new ReviewerBean();
@@ -243,11 +225,11 @@ public final class CrucibleRestXmlHelper {
 		}
 
 		List<Element> transitionsNode = getChildElements(reviewNode, "transitions");
-		List<Transition> transitions = new ArrayList<Transition>();
+		List<Action> transitions = new ArrayList<Action>();
 		for (Element transition : transitionsNode) {
 			List<Element> trans = getChildElements(transition, "transitionData");
 			for (Element element : trans) {
-				transitions.add(parseTransitionNode(element));
+				transitions.add(parseActionNode(element));
 			}
 		}
 		review.setTransitions(transitions);
@@ -497,7 +479,7 @@ public final class CrucibleRestXmlHelper {
 	}
 
 	private static void prepareComment(Comment comment, Element commentNode) {
-		String date = commentTimeFormat.format(comment.getCreateDate());
+        String date = commentTimeFormat.print(comment.getCreateDate().getTime());
 		String strangeDate = date.substring(0, date.length() - 2);
 		strangeDate += ":00";
 		addTag(commentNode, "createDate", strangeDate);
@@ -708,14 +690,10 @@ public final class CrucibleRestXmlHelper {
 		return filterData;
 	}
 
-	private static SimpleDateFormat commentTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+    private static DateTimeFormatter commentTimeFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
-	private static Date parseCommentTime(String date) {
-		try {
-			return commentTimeFormat.parse(date);
-		} catch (ParseException e) {
-			return null;
-		}
+	private static Date parseCommentTime(String date) {		
+			return commentTimeFormat.parseDateTime(date).toDate();
 	}
 
     public static CrucibleVersionInfo parseVersionNode(Element element) {
