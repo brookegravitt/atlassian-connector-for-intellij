@@ -30,6 +30,10 @@ public class CommentTree extends AtlassianTree {
 		setRowHeight(0);
 	}
 
+	public CommentTree() {
+		super();
+	}
+
 	public void initializeUI() {
 		registerUI();
 		addComponentListener(new ComponentAdapter() {
