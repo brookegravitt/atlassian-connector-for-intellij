@@ -27,13 +27,13 @@ import com.atlassian.theplugin.eclipse.view.bamboo.IParentTreeNode;
  * 
  * @author Alexander Gurov
  */
-public class BambooServer extends BambooFictiveNode implements IBambooTreeNode, IParentTreeNode, IDataTreeNode {
+public class BambooServerNode extends BambooFictiveNode implements IBambooTreeNode, IParentTreeNode, IDataTreeNode {
 	protected IBambooServer server;
 	protected Object []children;
 	protected BambooTreeViewer bambooServerTree;
 	//protected RepositoryFolder locationRoot;
 	
-	public BambooServer(IBambooServer server) {
+	public BambooServerNode(IBambooServer server) {
 		this.server = server;
 		this.refresh();
 	}
@@ -66,6 +66,7 @@ public class BambooServer extends BambooFictiveNode implements IBambooTreeNode, 
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Object []getChildren(Object o) {
 		if (this.children == null) {
 			ArrayList list = new ArrayList(/*Arrays.asList(this.locationRoot.getChildren(o))*/);
@@ -84,8 +85,8 @@ public class BambooServer extends BambooFictiveNode implements IBambooTreeNode, 
 	}
 
 	public boolean equals(Object obj) {
-		if (obj != null && obj instanceof BambooServer) {
-			return ((BambooServer)obj).server.equals(this.server);
+		if (obj != null && obj instanceof BambooServerNode) {
+			return ((BambooServerNode)obj).server.equals(this.server);
 		}
 		return super.equals(obj);
 	}
@@ -101,7 +102,7 @@ public class BambooServer extends BambooFictiveNode implements IBambooTreeNode, 
 		protected void runImpl(IProgressMonitor monitor) throws Exception {
 			// TODO rework this using cancellation manager in order to make it thread-safe...
 			if (this.viewer != null && !this.viewer.getControl().isDisposed()) {
-				this.viewer.refresh(BambooServer.this, null, true);
+				this.viewer.refresh(BambooServerNode.this, null, true);
 			}
 		}
 	}

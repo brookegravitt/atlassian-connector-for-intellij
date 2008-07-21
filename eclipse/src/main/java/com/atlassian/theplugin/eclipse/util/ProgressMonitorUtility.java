@@ -149,7 +149,7 @@ public final class ProgressMonitorUtility {
 
 	public static void setTaskInfo(IProgressMonitor monitor, IActionOperation op, String subTask) {
 		String message = Activator.getDefault().getResource("Progress.SubTask");
-		monitor.subTask(MessageFormat.format(message, new String[] {op.getOperationName(), subTask == null || subTask.length() == 0 ? Activator.getDefault().getResource("Progress.Running") : subTask}));
+		monitor.subTask(MessageFormat.format(message, new Object[] {op.getOperationName(), subTask == null || subTask.length() == 0 ? Activator.getDefault().getResource("Progress.Running") : subTask}));
 	}
 
 	private ProgressMonitorUtility() {

@@ -156,10 +156,8 @@ public class ReportingComposite extends Composite {
 		this.providersCombo = new Combo(composite, SWT.BORDER | SWT.READ_ONLY);
 		data = new GridData(GridData.FILL_HORIZONTAL);
 		this.providersCombo.setLayoutData(data);
-		Arrays.sort(this.providers, new Comparator() {
-			public int compare(Object arg0, Object arg1) {
-				IMailSettingsProvider first = (IMailSettingsProvider)arg0;
-				IMailSettingsProvider second = (IMailSettingsProvider)arg1;
+		Arrays.sort(this.providers, new Comparator<IMailSettingsProvider>() {
+			public int compare(IMailSettingsProvider first, IMailSettingsProvider second) {
 				return first.getPluginName().compareTo(second.getPluginName());
 			}
 		});
@@ -288,7 +286,7 @@ public class ReportingComposite extends Composite {
 							ReportingComposite.this.reportId, 
 							ReportingComposite.this.isError);
 					String msg = Activator.getDefault().getResource("ReportingComposite.Preview.Title");
-					panel = new PreviewReportPanel(MessageFormat.format(msg, new String[] {ReportingComposite.this.reportType}), report);
+					panel = new PreviewReportPanel(MessageFormat.format(msg, new Object[] {ReportingComposite.this.reportType}), report);
 				}
 				DefaultDialog dialog = new DefaultDialog(UIMonitorUtil.getDisplay().getActiveShell(), panel);
 				dialog.open();

@@ -16,7 +16,8 @@ import org.eclipse.jface.viewers.StructuredSelection;
 
 import com.atlassian.theplugin.eclipse.core.bamboo.IBambooServer;
 import com.atlassian.theplugin.eclipse.ui.action.AbstractAction;
-import com.atlassian.theplugin.eclipse.ui.bamboo.BambooServer;
+import com.atlassian.theplugin.eclipse.ui.bamboo.BambooServerNode;
+import com.atlassian.theplugin.eclipse.ui.bamboo.IBambooTreeNode;
 
 /**
  * Abstract UI repository action
@@ -42,12 +43,16 @@ public abstract class AbstractBambooServerAction extends AbstractAction {
 	}
 	
 	protected IBambooServer []getSelectedBambooServers() {
-		Object []locationWrappers = this.getSelectedResources(BambooServer.class);
+		Object []locationWrappers = this.getSelectedResources(BambooServerNode.class);
 		IBambooServer []locations = new IBambooServer[locationWrappers.length];
 		for (int i = 0; i < locations.length; i++) {
-			locations[i] = ((BambooServer)locationWrappers[i]).getBambooServer();
+			locations[i] = ((BambooServerNode)locationWrappers[i]).getBambooServer();
 		}
 		return locations;
+	}
+	
+	protected IBambooTreeNode []getSelectedBambooTreeNodes() {
+		return (IBambooTreeNode []) this.getSelectedResources(IBambooTreeNode.class);
 	}
 	
 	/*

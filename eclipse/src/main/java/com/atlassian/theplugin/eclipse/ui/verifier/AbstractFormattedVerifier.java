@@ -25,11 +25,11 @@ import org.eclipse.swt.widgets.Control;
  */
 public abstract class AbstractFormattedVerifier extends AbstractVerifier {
     public static final String FIELD_NAME = "$FIELD_NAME$";
-    protected Map placeHolders;
+    protected Map<String, String> placeHolders;
 
     public AbstractFormattedVerifier(String fieldName) {
         super();
-        this.placeHolders = new HashMap();
+        this.placeHolders = new HashMap<String, String>();
         this.setPlaceHolder(AbstractFormattedVerifier.FIELD_NAME, fieldName);
     }
 
@@ -54,8 +54,8 @@ public abstract class AbstractFormattedVerifier extends AbstractVerifier {
 
 	protected String getFormattedMessage(String message) {
 	    if (message != null) {
-			for (Iterator it = this.placeHolders.entrySet().iterator(); it.hasNext(); ) {
-				Map.Entry entry = (Map.Entry)it.next();
+			for (Iterator<Map.Entry<String, String>> it = this.placeHolders.entrySet().iterator(); it.hasNext(); ) {
+				Map.Entry<String, String> entry = (Map.Entry<String, String>)it.next();
 				String key = (String)entry.getKey();
 				String value = entry.getValue() == null ? "" : entry.getValue().toString();
 				int idx = message.indexOf(key);

@@ -43,7 +43,6 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.PlatformUI;
 
-import com.atlassian.theplugin.eclipse.preferences.Activator;
 import com.atlassian.theplugin.eclipse.ui.panel.IDialogManager;
 import com.atlassian.theplugin.eclipse.ui.panel.IDialogPanel;
 import com.atlassian.theplugin.eclipse.ui.utility.UIMonitorUtil;

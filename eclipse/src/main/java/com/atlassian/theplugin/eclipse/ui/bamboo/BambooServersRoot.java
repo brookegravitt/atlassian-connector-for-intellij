@@ -14,18 +14,13 @@ package com.atlassian.theplugin.eclipse.ui.bamboo;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Map;
 
-import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.graphics.RGB;
-import org.eclipse.ui.model.IWorkbenchAdapter;
-import org.eclipse.ui.model.IWorkbenchAdapter2;
 
 import com.atlassian.theplugin.eclipse.core.bamboo.IBambooServer;
-import com.atlassian.theplugin.eclipse.preferences.Activator;
 import com.atlassian.theplugin.eclipse.view.bamboo.BambooConfigurationStorage;
 import com.atlassian.theplugin.eclipse.view.bamboo.IDataTreeNode;
 import com.atlassian.theplugin.eclipse.view.bamboo.IParentTreeNode;
@@ -36,7 +31,7 @@ import com.atlassian.theplugin.eclipse.view.bamboo.IParentTreeNode;
  * @author Alexander Gurov
  */
 public class BambooServersRoot extends BambooFictiveNode implements ITreeContentProvider, IParentTreeNode, IDataTreeNode {
-	protected BambooServer []children;
+	protected BambooServerNode []children;
 	protected boolean softRefresh;
 
 	public Object getData() {
@@ -78,7 +73,7 @@ public class BambooServersRoot extends BambooFictiveNode implements ITreeContent
 	
 	public Object []getChildren(Object o) {
 		if (this.children == null || this.softRefresh) {
-			HashMap oldLocations = new HashMap();
+			Map<IBambooServer, BambooServerNode> oldLocations = new HashMap<IBambooServer, BambooServerNode>();
 			if (this.children != null) {
 				for (int i = 0; i < this.children.length; i++) {
 					oldLocations.put(this.children[i].getBambooServer(), this.children[i]);
@@ -91,11 +86,11 @@ public class BambooServersRoot extends BambooFictiveNode implements ITreeContent
 					return first.getLabel().compareTo(second.getLabel());
 				}
 			});
-			this.children = new BambooServer[servers.length];
+			this.children = new BambooServerNode[servers.length];
 			for (int i = 0; i < servers.length; i++) {
-				this.children[i] = (BambooServer)oldLocations.get(servers[i]);
+				this.children[i] = (BambooServerNode)oldLocations.get(servers[i]);
 				if (this.children[i] == null) {
-					this.children[i] = new BambooServer(servers[i]);
+					this.children[i] = new BambooServerNode(servers[i]);
 				}
 			}
 		}

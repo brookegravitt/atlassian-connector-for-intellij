@@ -11,14 +11,7 @@
  *******************************************************************************/
 package com.atlassian.theplugin.eclipse.ui.composite.bamboo;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-
 import org.eclipse.compare.internal.TabFolderLayout;
-import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -29,13 +22,10 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.dialogs.PreferencesUtil;
 
-import com.atlassian.theplugin.eclipse.core.bamboo.BambooServer;
 import com.atlassian.theplugin.eclipse.core.bamboo.IBambooServer;
 import com.atlassian.theplugin.eclipse.preferences.Activator;
 import com.atlassian.theplugin.eclipse.ui.dialog.DefaultDialog;
@@ -81,6 +71,7 @@ public class BambooServerPropertiesTabFolder extends Composite implements IPrope
 		}
 	}
 	
+	@SuppressWarnings("restriction")
 	public void initialize() {
 		GridLayout layout = new GridLayout();
 		layout.verticalSpacing = 7;
@@ -123,7 +114,7 @@ public class BambooServerPropertiesTabFolder extends Composite implements IPrope
 		label.setText(Activator.getDefault().getResource("BambooServerPropertiesTabFolder.ShowFor"));
 		
 		this.cachedRealms = new Combo(realmsComposite, SWT.BORDER | SWT.READ_ONLY);
-		final Button deleteRealm = new Button(realmsComposite, SWT.PUSH);
+		//final Button deleteRealm = new Button(realmsComposite, SWT.PUSH);
 		
 		/*
 		data = new GridData(GridData.FILL_HORIZONTAL);

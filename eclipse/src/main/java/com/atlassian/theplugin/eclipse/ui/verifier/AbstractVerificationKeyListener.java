@@ -43,7 +43,7 @@ public abstract class AbstractVerificationKeyListener extends KeyAdapter impleme
 	}
 	
 	public void addListeners() {
-		for (Iterator it = this.verifier.getComponents(); it.hasNext(); ) {
+		for (Iterator<Control> it = this.verifier.getComponents(); it.hasNext(); ) {
 			Control cmp = (Control)it.next();
 			if (cmp instanceof Text) {
 				((Text)cmp).addModifyListener(new ModifyListener() {
@@ -77,7 +77,7 @@ public abstract class AbstractVerificationKeyListener extends KeyAdapter impleme
 	}
 	
 	public void detachAll() {
-		for (Iterator it = this.verifier.getComponents(); it.hasNext(); ) {
+		for (Iterator<Control> it = this.verifier.getComponents(); it.hasNext(); ) {
 			Control ctrl = (Control)it.next();
 			if (!ctrl.isDisposed()) {
 				ctrl.removeKeyListener(this);

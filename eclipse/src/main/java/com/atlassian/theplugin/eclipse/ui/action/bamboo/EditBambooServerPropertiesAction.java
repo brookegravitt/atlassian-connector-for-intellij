@@ -16,8 +16,6 @@ import org.eclipse.jface.wizard.WizardDialog;
 
 import com.atlassian.theplugin.eclipse.core.bamboo.IBambooServer;
 import com.atlassian.theplugin.eclipse.core.operation.CompositeOperation;
-import com.atlassian.theplugin.eclipse.core.operation.IActionOperation;
-import com.atlassian.theplugin.eclipse.core.operation.bamboo.DeleteBambooServerOperation;
 import com.atlassian.theplugin.eclipse.core.operation.bamboo.RefreshBambooServersOperation;
 import com.atlassian.theplugin.eclipse.core.operation.bamboo.SaveBambooServersOperation;
 import com.atlassian.theplugin.eclipse.ui.wizard.bamboo.NewBambooServerWizard;
@@ -35,12 +33,12 @@ public class EditBambooServerPropertiesAction extends AbstractBambooServerAction
 	}
 	
 	public void runImpl(IAction action) {
-		final IBambooServer []locations = this.getSelectedBambooServers();
+		final IBambooServer []servers = this.getSelectedBambooServers();
 		
 		final IBambooServer backup = BambooConfigurationStorage.instance().newBambooServer();
-		BambooConfigurationStorage.instance().copyBambooServer(backup, locations[0]);
+		BambooConfigurationStorage.instance().copyBambooServer(backup, servers[0]);
 		
-		NewBambooServerWizard wizard = new NewBambooServerWizard(locations[0], false);
+		NewBambooServerWizard wizard = new NewBambooServerWizard(servers[0], false);
 		WizardDialog dialog = new WizardDialog(this.getShell(), wizard);
 		if (dialog.open() == 0) {
 			/*if (!locations[0].getUrl().startsWith(oldRootUrl)) {

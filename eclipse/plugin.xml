@@ -63,7 +63,7 @@
          
          <!-- ******************* Repository Management Menu ******************** -->
       <objectContribution
-            objectClass="com.atlassian.theplugin.eclipse.ui.bamboo.BambooServer"
+            objectClass="com.atlassian.theplugin.eclipse.ui.bamboo.BambooServerNode"
             id="com.atlassian.theplugin.eclipse.ui.bamboo.BambooServerContributions">
             
          <action

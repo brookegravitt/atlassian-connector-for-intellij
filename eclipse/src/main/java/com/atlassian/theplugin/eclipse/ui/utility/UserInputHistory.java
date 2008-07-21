@@ -31,7 +31,7 @@ public class UserInputHistory {
     
     protected String name;
     protected int depth;
-    protected List history;
+    protected List<String> history;
 
     public UserInputHistory(String name) {
         this(name, 5);
@@ -73,21 +73,23 @@ public class UserInputHistory {
         this.saveHistoryLines();
     }
 
-    protected void loadHistoryLines() {
-        this.history = new ArrayList();
+    @SuppressWarnings("restriction")
+	protected void loadHistoryLines() {
+        this.history = new ArrayList<String>();
         String historyData = Activator.getDefault().getPreferenceStore().getString(UserInputHistory.HISTORY_NAME_BASE + this.name);
         if (historyData != null && historyData.length() > 0) {
             String []historyArray = historyData.split(";");
             for (int i = 0; i < historyArray.length; i++) {
                 historyArray[i] = new String(Base64.decode(historyArray[i].getBytes()));
             }
-            this.history.addAll(Arrays.asList(historyArray));
+            this.history.addAll(Arrays.<String>asList(historyArray));
         }
     }
     
-    protected void saveHistoryLines() {
+    @SuppressWarnings("restriction")
+	protected void saveHistoryLines() {
         String result = "";
-        for (Iterator it = this.history.iterator(); it.hasNext(); ) {
+        for (Iterator<String> it = this.history.iterator(); it.hasNext(); ) {
             String str = (String)it.next();
             str = new String(Base64.encode(str.getBytes()));
             result += result.length() == 0 ? str : (";" + str);

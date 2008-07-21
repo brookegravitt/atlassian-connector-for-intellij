@@ -12,6 +12,7 @@ public abstract class BambooFictiveNode implements IWorkbenchAdapter, IWorkbench
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Object getAdapter(Class adapter) {
 		if (adapter.equals(IWorkbenchAdapter.class) || adapter.equals(IWorkbenchAdapter2.class)) {
 			return this;

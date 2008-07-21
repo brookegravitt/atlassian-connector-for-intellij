@@ -24,6 +24,7 @@ import com.atlassian.theplugin.eclipse.ui.wizard.bamboo.NewBambooServerWizard;
  * 
  * @author Alexander Gurov
  */
+@SuppressWarnings("restriction")
 public class NewBambooServerAction extends TeamAction {
 
 	public NewBambooServerAction() {

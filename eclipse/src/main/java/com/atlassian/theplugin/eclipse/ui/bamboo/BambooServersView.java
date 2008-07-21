@@ -23,7 +23,6 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -34,7 +33,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IPartListener2;
@@ -96,7 +94,7 @@ public class BambooServersView extends ViewPart {
         		sub = new MenuManager(Activator.getDefault().getResource("RepositoriesView.OpenWith"), "openWithMenu");
         		sub.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
         		sub.add(new Separator("dynamicGroup"));
-        		IStructuredSelection selection = (IStructuredSelection)provider.getSelection();
+        		//IStructuredSelection selection = (IStructuredSelection)provider.getSelection();
         		/*if (selection.size() == 1) {
         			Object item = selection.getFirstElement();
         			if (item instanceof RepositoryFile) {
@@ -301,7 +299,7 @@ public class BambooServersView extends ViewPart {
 	*/
 	
 	public void refreshButtonsState() {
-		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+		//IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 		//boolean isBrowserVisible = SVNTeamPreferences.getRepositoryBoolean(store, SVNTeamPreferences.REPOSITORY_SHOW_BROWSER_NAME);
 		//this.showBrowserAction.setChecked(isBrowserVisible);
 		this.showBrowserAction.setChecked(false);
@@ -349,6 +347,7 @@ public class BambooServersView extends ViewPart {
     	}
 	}
 
+	@SuppressWarnings("restriction")
 	protected void handleRefresh(IStructuredSelection selection) {
 	    Action tmp = new Action() {};
 	    AbstractAction action = null;

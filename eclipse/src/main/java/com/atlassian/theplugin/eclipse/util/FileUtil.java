@@ -103,15 +103,16 @@ public final class FileUtil {
 		IPath location = resource.getLocation();
 		if (location == null) {
 			String errMessage = Activator.getDefault().getResource("Error.InaccessibleResource");
-			throw new RuntimeException(MessageFormat.format(errMessage, new String[] {resource.getFullPath().toString()}));
+			throw new RuntimeException(MessageFormat.format(errMessage, new Object[] {resource.getFullPath().toString()}));
 		}
 		return location;
 	}
 	
-	public static Map getEnvironmentVariables() {
+	@SuppressWarnings("unchecked")
+	public static Map<String, String> getEnvironmentVariables() {
 		try {
-			Method getenv = System.class.getMethod("getenv", null);
-			return (Map)getenv.invoke(null, null);
+			Method getenv = System.class.getMethod("getenv", (Class[]) null);
+			return (Map<String, String>)getenv.invoke((Object[]) null, (Object[]) null);
 		}
 		catch (Exception ex) {
 			try {
@@ -120,7 +121,7 @@ public final class FileUtil {
 	            
 				BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
 	            String varLine;
-				HashMap retVal = new HashMap();
+				Map<String, String> retVal = new HashMap<String, String>();
 	            while ((varLine = br.readLine()) != null) {
 	                int idx = varLine.indexOf('=');
 	                if (idx != -1) {
@@ -252,6 +253,7 @@ public final class FileUtil {
 		return text;
 	}
 	
+	@SuppressWarnings("restriction")
 	public static String[] decodeStringToArray(String encodedString) {
         String []valuesArray = new String[] {};
         if (encodedString != null && encodedString.length() > 0) {
@@ -263,7 +265,8 @@ public final class FileUtil {
         return valuesArray;
     }
     
-    public static String encodeArrayToString(String []valuesArray) {
+    @SuppressWarnings("restriction")
+	public static String encodeArrayToString(String []valuesArray) {
         String result = "";
         for (int i = 0; i < valuesArray.length; i++) {
             String str = new String(Base64.encode(valuesArray[i].getBytes()));
@@ -472,7 +475,7 @@ public final class FileUtil {
 			}
 			if (!to.mkdirs() && ((options & FileUtil.COPY_IGNORE_EXISTING_FOLDERS) == 0)) {
 				String errMessage = Activator.getDefault().getResource("Error.CreateDirectory");
-				throw new Exception(MessageFormat.format(errMessage, new String[] {to.getAbsolutePath()}));
+				throw new Exception(MessageFormat.format(errMessage, new Object[] {to.getAbsolutePath()}));
 			}
 			File []files = what.listFiles(filter);
 			if (files != null) {
@@ -555,8 +558,8 @@ public final class FileUtil {
 	}
 	
 	public static IResource []getPathNodes(IResource []resources) {
-		List tmp = Arrays.asList(resources);
-		Set modifiedRoots = new HashSet();
+		List<IResource> tmp = Arrays.asList(resources);
+		Set<IResource> modifiedRoots = new HashSet<IResource>();
 		IWorkspaceRoot wRoot = ResourcesPlugin.getWorkspace().getRoot();
 		
 		for (int i = 0; i < resources.length; i++) {
@@ -575,18 +578,18 @@ public final class FileUtil {
 	}
 	
 	public static void reorder(IResource []resources, final boolean parent2Child) {
-		Arrays.sort(resources, new Comparator() {
-			public int compare(Object o1, Object o2) {
-				String first = ((IResource)o1).getFullPath().toString();
-				String second = ((IResource)o2).getFullPath().toString();
-				return parent2Child ? first.compareTo(second) : second.compareTo(first);
+		Arrays.sort(resources, new Comparator<IResource>() {
+			public int compare(IResource rf, IResource rs) {
+				String first = rf.getFullPath().toString();
+				String second = rs.getFullPath().toString();
+				return parent2Child ? first.compareTo(second): second.compareTo(first);
 			}
 		});
 	}
 	
 	public static void reorder(File []files, final boolean parent2Child) {
-		Arrays.sort(files, new Comparator() {
-			public int compare(Object o1, Object o2) {
+		Arrays.sort(files, new Comparator<File>() {
+			public int compare(File o1, File o2) {
 				String first = ((File)o1).getAbsolutePath();
 				String second = ((File)o2).getAbsolutePath();
 				return parent2Child ? first.compareTo(second) : second.compareTo(first);
@@ -595,7 +598,7 @@ public final class FileUtil {
 	}
 	
 	public static IResource []shrinkChildNodes(IResource []resources) {
-		HashSet tRoots = new HashSet(Arrays.asList(resources));
+		Set<IResource> tRoots = new HashSet<IResource>(Arrays.asList(resources));
 		for (int i = 0; i < resources.length; i++) {
 			if (FileUtil.hasRoots(tRoots, resources[i])) {
 				tRoots.remove(resources[i]);
@@ -605,7 +608,7 @@ public final class FileUtil {
 	}
 	
 	public static File []shrinkChildNodes(File []files, boolean skipFiles) {
-		HashSet tRoots = new HashSet(Arrays.asList(files));
+		Set<File> tRoots = new HashSet<File>(Arrays.asList(files));
 		for (int i = 0; i < files.length; i++) {
 			if (skipFiles && files[i].isFile()) {
 				continue;
@@ -669,7 +672,7 @@ public final class FileUtil {
 		return false;
 	}
 	
-	private static boolean hasRoots(Set roots, IResource node) {
+	private static boolean hasRoots(Set<IResource> roots, IResource node) {
 		while ((node = node.getParent()) != null) {
 			if (roots.contains(node)) {
 				return true;
@@ -678,7 +681,7 @@ public final class FileUtil {
 		return false;
 	}
 	
-	private static boolean hasRoots(Set roots, File node) {
+	private static boolean hasRoots(Set<File> roots, File node) {
 		while ((node = node.getParentFile()) != null) {
 			if (roots.contains(node)) {
 				return true;
@@ -687,6 +690,7 @@ public final class FileUtil {
 		return false;
 	}
 	
+	/*
 	private static void markSVNInternalsTree(IResource node, boolean isTeamPrivate) throws CoreException {
 		if (node instanceof IContainer) {
 			IResource []children = FileUtil.resourceMembers((IContainer)node, false);
@@ -695,7 +699,7 @@ public final class FileUtil {
 			}
 		}
 		node.setTeamPrivateMember(isTeamPrivate);
-	}
+	}*/
 	
 	/*
 	private static void addChildren(Set resources, IResource []roots, IStateFilter filter, int depth, IActionOperation calledFrom, IProgressMonitor monitor) {

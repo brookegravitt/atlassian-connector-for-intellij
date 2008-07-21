@@ -20,7 +20,6 @@ package com.atlassian.theplugin.eclipse.view.bamboo;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
