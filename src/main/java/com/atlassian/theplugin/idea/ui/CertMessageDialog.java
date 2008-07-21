@@ -248,7 +248,7 @@ public class CertMessageDialog extends DialogWrapper {
 //
 //				setCollapsed(!collapsed); // workaround
 //				setCollapsed(collapsed);
-				FormLayout layout = new FormLayout("right:max(100dlu;pref), 4dlu, pref:grow", "");
+				FormLayout layout = new FormLayout("right:pref, 4dlu, pref:grow", "");
 				builder = new DefaultFormBuilder(layout, this);
 				builder.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 			}

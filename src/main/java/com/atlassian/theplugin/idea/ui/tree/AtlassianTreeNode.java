@@ -14,8 +14,11 @@ import javax.swing.tree.MutableTreeNode;
  * To change this template use File | Settings | File Templates.
  */
 public abstract class AtlassianTreeNode extends DefaultMutableTreeNode {
-	protected AtlassianTreeNode() {
+	private AtlassianClickAction action;
+
+	protected AtlassianTreeNode(AtlassianClickAction action) {
 		super();
+		this.action = action;
 	}
 
 	public void addNode(AtlassianTreeNode newChild) {
@@ -23,4 +26,9 @@ public abstract class AtlassianTreeNode extends DefaultMutableTreeNode {
 	}
 
 	public abstract TreeCellRenderer getTreeCellRenderer();
+
+	public AtlassianClickAction getAtlassianClickAction() {
+		return action;
+	}
+
 }

@@ -4,6 +4,7 @@ import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.util.Icons;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 
 import javax.swing.*;
 import javax.swing.tree.TreeCellRenderer;
@@ -16,8 +17,8 @@ public class FileNode extends AtlassianTreeNode {
 	private String name;
 	private static final ColoredTreeCellRenderer MY_RENDERER = new FileNodeRenderer();
 
-	public FileNode(String fullName) {
-		super();
+	public FileNode(String fullName, AtlassianClickAction action) {
+		super(action);
 		name = fullName;
 		children = new HashMap<String, FileNode>();
 	}

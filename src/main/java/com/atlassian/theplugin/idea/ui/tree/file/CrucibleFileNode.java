@@ -3,6 +3,8 @@ package com.atlassian.theplugin.idea.ui.tree.file;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
+import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.openapi.fileTypes.FileTypeManager;
@@ -22,11 +24,13 @@ import java.awt.*;
 public class CrucibleFileNode extends FileNode {
 
 	private CrucibleFileInfo fileInfo;
+	private ReviewData review;
 	private static final ColoredTreeCellRenderer MY_RENDERER = new CrucibleFileNodeRenderer();
 
-	public CrucibleFileNode(CrucibleFileInfo file) {
-		super(AbstractHttpSession.getLastComponentFromUrl(file.getFileDescriptor().getUrl()));
+	public CrucibleFileNode(CrucibleFileInfo file, ReviewData review, AtlassianClickAction action) {
+		super(AbstractHttpSession.getLastComponentFromUrl(file.getFileDescriptor().getUrl()), action);
 		this.fileInfo = file;
+		this.review = review;
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.ui.tree.comment;
 
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.intellij.ui.SimpleColoredComponent;
@@ -21,8 +22,8 @@ public class SectionNode extends AtlassianTreeNode {
 	private String sectionName;
 	private static final TreeCellRenderer MY_RENDERER = new MyRenderer();
 
-	public SectionNode(String sectionName) {
-		super();
+	public SectionNode(String sectionName, AtlassianClickAction action) {
+		super(action);
 		this.sectionName = sectionName;
 	}
 

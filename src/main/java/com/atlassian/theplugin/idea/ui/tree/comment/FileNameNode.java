@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.ui.tree.comment;
 
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.util.CommentPanelBuilder;
 import com.intellij.ui.ColoredTreeCellRenderer;
@@ -24,8 +25,8 @@ public class FileNameNode extends AtlassianTreeNode {
 	private CrucibleFileInfo file;
 	private static final TreeCellRenderer MY_RENDERER = new MyRenderer();
 
-	public FileNameNode(CrucibleFileInfo file) {
-		super();
+	public FileNameNode(CrucibleFileInfo file, AtlassianClickAction action) {
+		super(action);
 		this.file = file;
 	}
 
