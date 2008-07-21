@@ -78,7 +78,7 @@ public class ReviewKeyComparatorTest extends TestCase {
 				return null;
 			}
 
-			public List<Transition> getTransitions() throws ValueNotYetInitialized {
+			public List<Action> getTransitions() throws ValueNotYetInitialized {
 				return null;
 			}
 

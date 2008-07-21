@@ -8,7 +8,6 @@ import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.Transition;
 import com.atlassian.theplugin.commons.crucible.api.model.Action;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.Server;
@@ -94,7 +93,7 @@ public class ReviewDataImpl implements ReviewData {
         return review.getFiles();
     }
 
-    public List<Transition> getTransitions() throws ValueNotYetInitialized {
+    public List<Action> getTransitions() throws ValueNotYetInitialized {
         return review.getTransitions();
     }
 

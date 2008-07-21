@@ -39,6 +39,7 @@ import com.atlassian.theplugin.commons.configuration.ProductServerConfiguration;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.Action;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.intellij.ide.BrowserUtil;
@@ -52,7 +53,6 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import javax.swing.Action;
 import java.awt.*;
 import java.awt.event.*;
 import static java.lang.System.arraycopy;
@@ -121,7 +121,7 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
         $$$setupUI$$$();
         init();
         titleText.setText(commitMessage);
-        getOKAction().putValue(Action.NAME, "Create review...");
+        getOKAction().putValue(javax.swing.Action.NAME, "Create review...");
         crucibleServersComboBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (crucibleServersComboBox.getItemCount() > 0 && crucibleServersComboBox.getSelectedItem() != null && crucibleServersComboBox.getSelectedItem() instanceof ServerComboBoxItem) {
@@ -545,7 +545,7 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
             return null;
         }
 
-        public List<Transition> getTransitions() throws ValueNotYetInitialized {
+        public List<Action> getTransitions() throws ValueNotYetInitialized {
             return null;
         }
 

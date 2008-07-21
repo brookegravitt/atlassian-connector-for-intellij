@@ -27,7 +27,7 @@ public class ReviewBean implements Review {
 	private List<Reviewer> reviewers;
 	private List<CrucibleFileInfo> files;
 	private List<GeneralComment> generalComments;
-	private List<Transition> transitions;
+	private List<Action> transitions;
 	private List<Action> actions;
     private VirtualFileSystem virtualFileSystem;
 	private User author;
@@ -57,7 +57,7 @@ public class ReviewBean implements Review {
 		this.generalComments = generalComments;
 	}
 
-	public void setTransitions(List<Transition> transitions) {
+	public void setTransitions(List<Action> transitions) {
 		this.transitions = transitions;
 	}
 
@@ -91,7 +91,7 @@ public class ReviewBean implements Review {
 		return files;
 	}
 
-	public List<Transition> getTransitions() throws ValueNotYetInitialized {
+	public List<Action> getTransitions() throws ValueNotYetInitialized {
 		if (transitions == null) {
 			throw new ValueNotYetInitialized("Object trasferred only partially");
 		}

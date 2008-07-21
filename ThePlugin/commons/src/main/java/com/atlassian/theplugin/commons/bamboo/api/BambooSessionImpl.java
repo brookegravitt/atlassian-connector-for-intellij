@@ -26,6 +26,8 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.xpath.XPath;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormat;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -550,24 +552,15 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
 		return buildInfo;
 	}
 
-	private SimpleDateFormat buildTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private static DateTimeFormatter buildDateFormat = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+    private static DateTimeFormatter commitDateFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ");
 
 	private Date parseBuildTime(String date) {
-		try {
-			return buildTimeFormat.parse(date);
-		} catch (ParseException e) {
-			return null;
-		}
+        return buildDateFormat.parseDateTime(date).toDate();
 	}
 
-	private SimpleDateFormat commitTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-
 	private Date parseCommitTime(String date) {
-		try {
-			return commitTimeFormat.parse(date);
-		} catch (ParseException e) {
-			return null;
-		}
+        return commitDateFormat.parseDateTime(date).toDate();
 	}
 
 	private String getChildText(Element node, String childName) {

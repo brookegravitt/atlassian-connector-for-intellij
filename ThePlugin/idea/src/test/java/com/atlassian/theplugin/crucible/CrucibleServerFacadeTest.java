@@ -462,7 +462,7 @@ public class CrucibleServerFacadeTest extends TestCase {
                 return null;
             }
 
-            public List<Transition> getTransitions() throws ValueNotYetInitialized {
+            public List<Action> getTransitions() throws ValueNotYetInitialized {
                 return null;
             }
 
@@ -554,7 +554,7 @@ public class CrucibleServerFacadeTest extends TestCase {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
-            public List<Transition> getTransitions() {
+            public List<Action> getTransitions() {
                 return null;
             }
 
