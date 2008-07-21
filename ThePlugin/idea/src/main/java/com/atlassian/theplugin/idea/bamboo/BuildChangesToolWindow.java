@@ -96,8 +96,6 @@ public final class BuildChangesToolWindow {
 		private AtlassianTableView commitsTable;
 
 		public CommitDetailsPanel(String name, final List<BambooChangeSet> commits) {
-			super();
-
 			this.commits = commits;
 
 			if (commits == null || commits.size() == 0) {

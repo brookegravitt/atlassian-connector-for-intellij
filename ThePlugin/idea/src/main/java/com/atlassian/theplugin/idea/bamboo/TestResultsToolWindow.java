@@ -138,7 +138,7 @@ public final class TestResultsToolWindow {
             }
 
 			public String getTestStats() {
-				return " (" + failedTests + "/" + totalTests + " failed)";
+				return " (" + failedTests + " out of " + totalTests + " failed)";
 			}
 
 			public void addFailedTest() {
@@ -203,7 +203,7 @@ public final class TestResultsToolWindow {
 					return;
 				}
 				PsiMethod[] methods = cls.findMethodsByName(details.getTestMethodName(), false);
-				if (methods == null || methods[0] == null) {
+				if (methods == null || methods.length == 0 && methods[0] == null) {
 					return;
 				}
 				methods[0].navigate(true);
@@ -474,7 +474,7 @@ public final class TestResultsToolWindow {
                     setIcon(TEST_PASSED_ICON);
                 }
                 Color statsColor = selected
-                        ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeSelectionBackground();
+                        ? UIUtil.getTreeSelectionForeground() : UIUtil.getInactiveTextColor();
                 StringBuilder txt = new StringBuilder();
                 txt.append("<html><body>");
                 txt.append(getText());
