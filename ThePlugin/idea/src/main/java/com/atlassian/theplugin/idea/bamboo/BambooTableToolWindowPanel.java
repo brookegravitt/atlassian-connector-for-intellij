@@ -365,7 +365,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
                 try {
                     final byte[] log = bambooFacade.getBuildLogs(
                             build.getServer(), build.getBuildKey(), build.getBuildNumber());
-                    final String title = "Bamboo build - " + build.getServer().getName() + " - " + build.getBuildKey() + "-" + build.getBuildNumber();
+                    final String title = "Bamboo build: " + build.getServer().getName() + ": " + build.getBuildKey() + "-" + build.getBuildNumber();
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
                             PlainTextMemoryVirtualFile vf = new PlainTextMemoryVirtualFile(title, new String(log));
