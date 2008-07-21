@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,11 +23,14 @@ import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.configuration.ProjectToolWindowTableConfiguration;
 import com.atlassian.theplugin.idea.ui.AbstractTableToolWindowPanel;
 import com.atlassian.theplugin.idea.ui.TableColumnProvider;
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.util.memoryvfs.PlainTextMemoryVirtualFile;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.util.ui.UIUtil;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 
 import javax.swing.*;
 import java.text.DateFormat;
@@ -96,7 +99,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
         BambooBuildAdapter build = (BambooBuildAdapter) selectedObject;
         if (build != null) {
             BrowserUtil.launchBrowser(build.getBuildResultUrl());
-        }        
+        }
     }
 
 
@@ -277,7 +280,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
 
     public void viewBuild() {
         BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) table.getSelectedObject();
-        BrowserUtil.launchBrowser(build.getBuildResultUrl());       
+        BrowserUtil.launchBrowser(build.getBuildResultUrl());
     }
 
 	public boolean canShowFailedTests() {
@@ -352,4 +355,32 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
 		}, null);
 		new Thread(task, "atlassian-idea-plugin get changes").start();
 	}
+
+    public void showBuildLog() {
+        final BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) table.getSelectedObject();
+
+        FutureTask task = new FutureTask(new Runnable() {
+            public void run() {
+                setStatusMessage("Getting build log: " + build.getBuildKey() + "...");
+                try {
+                    final byte[] log = bambooFacade.getBuildLogs(
+                            build.getServer(), build.getBuildKey(), build.getBuildNumber());
+                    final String title = "Bamboo build - " + build.getServer().getName() + " - " + build.getBuildKey() + "-" + build.getBuildNumber();
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            PlainTextMemoryVirtualFile vf = new PlainTextMemoryVirtualFile(title, new String(log));
+                            FileEditorManager.getInstance(IdeaHelper.getCurrentProject()).openFile(vf, true);
+                        }
+                    });
+                    setStatusMessage("Changes for build " + build.getBuildKey() + " received");
+                } catch (ServerPasswordNotProvidedException e) {
+                    setStatusMessage("Failed to get changes: Password not provided for server");
+                } catch (RemoteApiException e) {
+                    setStatusMessage("Failed to get changes: " + e.getMessage());
+                }
+
+            }
+        }, null);
+        new Thread(task, "atlassian-idea-plugin get changes").start();
+    }
 }
