@@ -48,7 +48,7 @@ public final class BambooServerFacadeImpl implements BambooServerFacade {
 
     private BambooServerFacadeImpl(Logger loger) {
         this.loger = loger;
-    }
+    }                                                                                            
 
     public static BambooServerFacade getInstance(Logger loger) {
         if (instance == null) {
