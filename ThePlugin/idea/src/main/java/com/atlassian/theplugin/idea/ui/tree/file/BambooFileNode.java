@@ -2,6 +2,7 @@ package com.atlassian.theplugin.idea.ui.tree.file;
 
 import com.atlassian.theplugin.commons.BambooFileInfo;
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.ui.ColoredTreeCellRenderer;
@@ -15,8 +16,8 @@ public class BambooFileNode extends FileNode {
 	private BambooFileInfo file;
 	private static final TreeCellRenderer MY_RENDERER = new BambooFileNodeRenderer();
 
-	public BambooFileNode(BambooFileInfo file) {
-		super(AbstractHttpSession.getLastComponentFromUrl(file.getFileDescriptor().getUrl()));
+	public BambooFileNode(BambooFileInfo file, AtlassianClickAction action) {
+		super(AbstractHttpSession.getLastComponentFromUrl(file.getFileDescriptor().getUrl()), action);
 		this.file = file;
 	}
 

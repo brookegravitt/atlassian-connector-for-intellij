@@ -5,7 +5,14 @@ import com.atlassian.theplugin.commons.VersionedFileInfo;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.bamboo.BambooChangeSet;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.idea.crucible.events.FocusOnGeneralComments;
+import com.atlassian.theplugin.idea.crucible.events.FocusOnFileComments;
+import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
+import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 
 import java.util.ArrayList;
@@ -23,19 +30,30 @@ public final class FileTreeModelBuilder {
 		// this is a utility class
 	}
 
-	public static AtlassianTreeModel buildTreeModelFromCrucibleChangeSet(ReviewData changeSet)
+	public static AtlassianTreeModel buildTreeModelFromCrucibleChangeSet(final ReviewData review)
 			throws ValueNotYetInitialized {
-		FileNode root = new CrucibleChangeSetTitleNode(changeSet);
+		FileNode root = new CrucibleChangeSetTitleNode(review, new AtlassianClickAction() {
+			public void execute(AtlassianTreeNode node, int noOfClicks) {
+				switch (noOfClicks) {
+					case 1:
+					case 2:
+						ReviewActionEventBroker broker = IdeaHelper.getReviewActionEventBroker();
+						broker.trigger(new FocusOnGeneralComments(CrucibleReviewActionListener.ANONYMOUS, review));
+						break;
+					default:
+				}
+			}
+		});
 		FileTreeModel model = new FileTreeModel(root);
-		for (CrucibleFileInfo f : changeSet.getFiles()) {
-			model.addFile(root, f);
+		for (CrucibleFileInfo f : review.getFiles()) {
+			model.addFile(root, f, review);
 		}
 		model.compactModel(model.getRoot());
 		return model;
 	}
 
 	public static AtlassianTreeModel buildTreeModelFromBambooChangeSet(BambooChangeSet changeSet) {
-		FileNode root = new FileNode("/");
+		FileNode root = new FileNode("/", null);
 		FileTreeModel model = new FileTreeModel(root);
 		for (BambooFileInfo f : changeSet.getFiles()) {
 			model.addFile(root, f);
@@ -45,9 +63,9 @@ public final class FileTreeModelBuilder {
 	}
 
 	public static AtlassianTreeModel buildFlatTreeModelFromBambooChangeSet(BambooChangeSet changeSet) {
-		FileTreeModel model = new FileTreeModel(new FileNode("/"));
+		FileTreeModel model = new FileTreeModel(new FileNode("/", null));
 		for (BambooFileInfo f : changeSet.getFiles()) {
-			model.getRoot().addChild(new BambooFileNode(f));
+			model.getRoot().addChild(new BambooFileNode(f, AtlassianClickAction.EMPTY_ACTION));
 		}
 		return model;
 	}
@@ -64,12 +82,22 @@ public final class FileTreeModelBuilder {
 
 		public void addFile(FileNode root, BambooFileInfo file) {
 			FileNode node = createPlace(root, file);
-			node.addChild(new BambooFileNode(file));
+			node.addChild(new BambooFileNode(file, AtlassianClickAction.EMPTY_ACTION));
 		}
 
-		public void addFile(FileNode root, CrucibleFileInfo file) {
+		public void addFile(FileNode root, final CrucibleFileInfo file, final ReviewData review) {
 			FileNode node = createPlace(root, file);
-			node.addChild(new CrucibleFileNode(file));
+			node.addChild(new CrucibleFileNode(file, review, new AtlassianClickAction() {
+				public void execute(AtlassianTreeNode node, int noOfClicks) {
+					switch (noOfClicks) {
+						case 1:
+						case 2:
+							ReviewActionEventBroker broker = IdeaHelper.getReviewActionEventBroker();
+							broker.trigger(new FocusOnFileComments(CrucibleReviewActionListener.ANONYMOUS, review, file));
+							break;
+					}
+				}
+			}));
 		}
 
 
@@ -83,7 +111,7 @@ public final class FileTreeModelBuilder {
 					String newNodeName = fileName.substring(idx, newIdx);
 					if (newNodeName.length() > 0) {
 						if (!node.hasNode(newNodeName)) {
-							FileNode newNode = new FileNode(newNodeName);
+							FileNode newNode = new FileNode(newNodeName, null);
 							node.addChild(newNode);
 							node = newNode;
 						} else {

@@ -2,6 +2,7 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 
 import javax.swing.plaf.TreeUI;
 import javax.swing.plaf.basic.BasicTreeUI;
@@ -52,6 +53,10 @@ public class CommentTree extends AtlassianTree {
 				CommentTree.this.setUI(new BasicWideNodeTreeUI());
 			}
 		});
+	}
+
+	public void focusOnNode(AtlassianTreeNode node) {
+		// todo lguminski to implement this
 	}
 
 	/**

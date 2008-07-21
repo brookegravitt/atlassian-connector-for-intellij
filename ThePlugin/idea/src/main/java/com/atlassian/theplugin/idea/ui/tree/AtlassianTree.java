@@ -12,7 +12,7 @@ public class AtlassianTree extends JTree {
 	protected static final AtlassianTreeCellRenderer DISPATCHING_RENDERER = new AtlassianTreeCellRenderer();
 
 	public AtlassianTree() {
-		this(new AtlassianTreeModel(new FileNode("/")));
+		this(new AtlassianTreeModel(new FileNode("/", null)));
 	}
 
 	public AtlassianTree(AtlassianTreeModel model) {

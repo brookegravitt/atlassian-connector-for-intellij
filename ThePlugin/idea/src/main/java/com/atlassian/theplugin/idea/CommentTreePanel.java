@@ -5,11 +5,12 @@ import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.idea.crucible.events.FocusOnGeneralComments;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
+import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.file.FileNode;
-import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.FileNameNode;
@@ -18,7 +19,6 @@ import com.intellij.util.ui.UIUtil;
 
 import javax.swing.*;
 import javax.swing.tree.TreeCellRenderer;
-import javax.swing.tree.TreeModel;
 import java.awt.*;
 import java.util.List;
 
@@ -30,12 +30,12 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class CommentTreePanel extends JPanel {
-	private CrucibleReviewActionListener listener = new MyCrucibleReviewActionListener();
+	private CrucibleReviewActionListener crucibleAgent = new MyCrucibleReviewActionListener();
 	private JScrollPane commentScroll;
 	private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
 	private CommentTree commentTree = new CommentTree();
 
-	private static final AtlassianTreeNode ROOT = new AtlassianTreeNode() {
+	private static final AtlassianTreeNode ROOT = new AtlassianTreeNode(AtlassianClickAction.EMPTY_ACTION) {
 		public TreeCellRenderer getTreeCellRenderer() {
 			return new TreeCellRenderer() {
 				public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected,
@@ -48,7 +48,7 @@ public class CommentTreePanel extends JPanel {
 
 	public CommentTreePanel() {
 		super();
-		IdeaHelper.getReviewActionEventBroker().registerListener(listener);
+		IdeaHelper.getReviewActionEventBroker().registerListener(crucibleAgent);
 		initialize();
 	}
 
@@ -61,7 +61,7 @@ public class CommentTreePanel extends JPanel {
 	}
 
 	private void addGeneralCommentTree(AtlassianTreeNode root, ReviewData review, GeneralComment generalComment) {
-		GeneralCommentTreeNode commentNode = new GeneralCommentTreeNode(review, generalComment);
+		GeneralCommentTreeNode commentNode = new GeneralCommentTreeNode(review, generalComment, AtlassianClickAction.EMPTY_ACTION);
 		root.addNode(commentNode);
 		for (GeneralComment comment : generalComment.getReplies()) {
 			addGeneralCommentTree(commentNode, review, comment);
@@ -69,33 +69,30 @@ public class CommentTreePanel extends JPanel {
 	}
 
 	private void addVersionedCommentTree(AtlassianTreeNode root, ReviewData review, CrucibleFileInfo file, VersionedComment versionedComment) {
-		VersionedCommentTreeNode commentNode = new VersionedCommentTreeNode(review, file, versionedComment);
+		VersionedCommentTreeNode commentNode = new VersionedCommentTreeNode(review, file, versionedComment, AtlassianClickAction.EMPTY_ACTION);
 		root.addNode(commentNode);
 		for (VersionedComment comment : versionedComment.getReplies()) {
 			addVersionedCommentTree(commentNode, review, file, comment);
 		}
 	}
 
-	private AtlassianTreeModel createTreeModel(ReviewData review) {
+	private AtlassianTreeModel createTreeModel(final ReviewData review) {
 		ROOT.removeAllChildren();
 		AtlassianTreeModel model = new AtlassianTreeModel(ROOT);
 
 		List<GeneralComment> generalComments;
 		try {
 			generalComments = review.getGeneralComments();
-			AtlassianTreeNode generalNode = new SectionNode("General comments");
+			AtlassianTreeNode generalNode = new SectionNode("General comments", AtlassianClickAction.EMPTY_ACTION);
 			ROOT.addNode(generalNode);
 			for (GeneralComment comment : generalComments) {
 				addGeneralCommentTree(generalNode, review, comment);
 			}
 			for (CrucibleFileInfo file : review.getFiles()) {
-
-				if (file.getVersionedComments().size() > 0) {
-					AtlassianTreeNode fileNode = new FileNameNode(file);
-					ROOT.addNode(fileNode);
-					for (VersionedComment comment : file.getVersionedComments()) {
-						addVersionedCommentTree(fileNode, review, file, comment);
-					}
+				AtlassianTreeNode fileNode = new FileNameNode(file, AtlassianClickAction.EMPTY_ACTION);
+				ROOT.addNode(fileNode);
+				for (VersionedComment comment : file.getVersionedComments()) {
+					addVersionedCommentTree(fileNode, review, file, comment);
 				}
 			}
 		} catch (ValueNotYetInitialized valueNotYetInitialized) {
@@ -116,6 +113,26 @@ public class CommentTreePanel extends JPanel {
 			commentTree.setVisible(true);
 			commentTree.revalidate();
 			commentTree.repaint();
+		}
+
+		@Override
+		public void focusOnGeneralComments(ReviewData review) {
+			AtlassianTreeNode node = locateGeneralTreeNode(review);
+			commentTree.focusOnNode(node);
+		}
+
+		private AtlassianTreeNode locateGeneralTreeNode(ReviewData review) {
+			return null;  //To change body of created methods use File | Settings | File Templates.
+		}
+
+		@Override
+		public void focusOnFileComments(ReviewData review, CrucibleFileInfo file) {
+			AtlassianTreeNode node = locateFileTreeNode(review);
+			commentTree.focusOnNode(node);
+		}
+
+		private AtlassianTreeNode locateFileTreeNode(ReviewData review) {
+			return null;  //To change body of created methods use File | Settings | File Templates.
 		}
 	}
 }
