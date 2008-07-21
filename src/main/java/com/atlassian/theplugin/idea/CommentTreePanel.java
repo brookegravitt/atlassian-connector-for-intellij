@@ -107,8 +107,8 @@ public class CommentTreePanel extends JPanel {
 		@Override
 		public void showReview(ReviewData review) {
 			commentTree = new CommentTree(createTreeModel(review));
-			commentScroll.setViewportView(commentTree);
 			commentTree.expandAll();
+			commentScroll.setViewportView(commentTree);
 			commentTree.initializeUI();
 			commentTree.revalidate();
 			commentTree.repaint();
