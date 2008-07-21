@@ -113,11 +113,16 @@ public class CommentPanelBuilder {
 		protected Component getStateLabel() {
 			Comment.STATE state = comment.getState();
 			StringBuilder sb = new StringBuilder();
-			sb.append("<html><body><span color=\"");
-			sb.append(state.getColorString());
-			sb.append("\">");
-			sb.append(state.toString());
-			sb.append("</span></body></html>");
+			switch (state) {
+				case REVIEW:
+					break;
+				default:
+					sb.append("<html><body><span color=\"");
+					sb.append(state.getColorString());
+					sb.append("\">");
+					sb.append(state.toString());
+					sb.append("</span></body></html>");
+			}
 			return new JLabel(sb.toString());
 		}
 
