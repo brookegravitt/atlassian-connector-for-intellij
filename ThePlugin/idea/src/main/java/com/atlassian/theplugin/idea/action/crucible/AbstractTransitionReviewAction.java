@@ -4,14 +4,26 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.Action;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.idea.crucible.CrucibleCompleteWorker;
+import com.atlassian.theplugin.idea.crucible.CrucibleChangeStateWorker;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
 
 public abstract class AbstractTransitionReviewAction extends AnAction {
     protected abstract Action getRequestedTransition();
+    private ReviewData rd;
 
     public void actionPerformed(AnActionEvent event) {
 
+        new Thread(new Runnable() {
+            public void run() {
+                        ApplicationManager.getApplication().invokeAndWait(
+                        new CrucibleChangeStateWorker(rd, getRequestedTransition()),
+                        ModalityState.defaultModalityState());
+            }
+        }).start();
     }
 
     public void update(AnActionEvent event) {
@@ -21,7 +33,7 @@ public abstract class AbstractTransitionReviewAction extends AnAction {
             if (IdeaHelper.getCrucibleToolWindowPanel(event).getSelectedReview() == null) {
                 event.getPresentation().setEnabled(false);
             } else {
-                ReviewData rd = IdeaHelper.getCrucibleToolWindowPanel(event).getSelectedReview();
+                rd = IdeaHelper.getCrucibleToolWindowPanel(event).getSelectedReview();
                 try {
                     if (rd.getTransitions().isEmpty()) {
                         event.getPresentation().setEnabled(false);
