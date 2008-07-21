@@ -50,6 +50,10 @@ public class CommentTree extends AtlassianTree {
 		});
 	}
 
+	/**
+	 * Author: Craig Wood
+	 * Piece of code from http://saloon.javaranch.com/cgi-bin/ubb/ultimatebb.cgi?ubb=get_topic&f=2&t=015891
+	 */
 	class BasicWideNodeTreeUI extends BasicTreeUI {
 		private int lastWidth;
 		private boolean leftToRight;
