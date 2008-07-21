@@ -131,8 +131,8 @@ public class CommentPanelBuilder {
 				component.append(elem.getKey(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
 				component.append(": ", SimpleTextAttributes.REGULAR_ATTRIBUTES);
 				component.append(elem.getValue().getValue(), SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
+				isFirst = false;
 			}
-			isFirst = false;
 			return component;
 		}
 
