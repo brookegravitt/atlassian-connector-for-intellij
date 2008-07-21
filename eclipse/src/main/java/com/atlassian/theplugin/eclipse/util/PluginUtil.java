@@ -71,7 +71,7 @@ public final class PluginUtil {
 			imageRegistry = new ImageRegistry();
 			
 			imageRegistry.put(ICON_BAMBOO, ImageDescriptor.createFromFile(RequestDataInfo.class, "/icons/bamboo-blue-16.png"));
-			imageRegistry.put(ICON_BAMBOO_LARGE, imageRegistry.get(ICON_BAMBOO));
+			imageRegistry.put(ICON_BAMBOO_LARGE, ImageDescriptor.createFromFile(RequestDataInfo.class, "/icons/atlassian_icon-70.png"));
 			imageRegistry.put(ICON_BAMBOO_NEW, imageRegistry.get(ICON_BAMBOO));
 			imageRegistry.put(ICON_BAMBOO_SUCCEEDED, ImageDescriptor.createFromFile(PluginUtil.class, "/icons/bamboo_plan_passed.gif"));
 			imageRegistry.put(ICON_BAMBOO_FAILED, ImageDescriptor.createFromFile(PluginUtil.class, "/icons/bamboo_plan_failed.gif"));
@@ -84,7 +84,7 @@ public final class PluginUtil {
 			
 			imageRegistry.put(ICON_CLOSE, ImageDescriptor.createFromFile(PluginUtil.class, "/icons/close.gif"));
 			
-			imageRegistry.put(ICON_COLLAPSE_ALL, ImageDescriptor.getMissingImageDescriptor());
+			imageRegistry.put(ICON_COLLAPSE_ALL, ImageDescriptor.createFromFile(RequestDataInfo.class, "/icons/common/collapseall.gif"));
 			
 			imageRegistry.put(ICON_PLUGIN, ImageDescriptor.createFromFile(RequestDataInfo.class, "/icons/ico_plugin.png"));
 		}
