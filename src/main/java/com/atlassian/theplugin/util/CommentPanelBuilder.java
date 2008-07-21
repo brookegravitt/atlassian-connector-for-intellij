@@ -1,17 +1,17 @@
 package com.atlassian.theplugin.util;
 
-import com.atlassian.theplugin.commons.crucible.api.model.Comment;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.ui.AtlassianToolbar;
 import com.intellij.ui.components.labels.BoldLabel;
+import com.intellij.ui.SimpleColoredComponent;
+import com.intellij.ui.SimpleTextAttributes;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -29,12 +29,12 @@ public class CommentPanelBuilder {
 		return new CommentPanel(review, comment) {
 			@Override
 			public Color getHeaderBackground() {
-				return new Color(239,224,255);
+				return new Color(239, 224, 255);
 			}
 
 			@Override
 			public Color getBodyBackground() {
-				return new Color(234,255,255);
+				return new Color(234, 255, 255);
 			}
 		};
 	}
@@ -44,15 +44,15 @@ public class CommentPanelBuilder {
 	}
 
 	public static JPanel createViewPanelOfVersionedComment(ReviewData review, CrucibleFileInfo file, VersionedComment comment) {
-		 return new CommentPanel(review, comment) {
+		return new CommentPanel(review, comment) {
 			@Override
 			public Color getHeaderBackground() {
-				return new Color(255,224,224);
+				return new Color(255, 224, 224);
 			}
 
 			@Override
 			public Color getBodyBackground() {
-				return new Color(234,255,255);
+				return new Color(234, 255, 255);
 			}
 		};
 	}
@@ -61,26 +61,32 @@ public class CommentPanelBuilder {
 		private static final Component EMPTY_LABEL = new JLabel();
 		private ReviewData review;
 		private Comment comment;
+		private static final CellConstraints AUTHOR_POS = new CellConstraints(2, 2);
+		private static final CellConstraints DATE_POS = new CellConstraints(4, 2);
+		private static final CellConstraints RANKING_POS = new CellConstraints(6, 2);
+		private static final CellConstraints STATE_POS = new CellConstraints(8, 2);
+		private static final CellConstraints TOOLBAR_POS = new CellConstraints(10, 2);
 
 		private CommentPanel(ReviewData review, Comment comment) {
 			super(new FormLayout("pref:grow",
 					"pref, pref:grow"));
+
 			this.review = review;
 			this.comment = comment;
 			setBackground(getBodyBackground());
 			CellConstraints cc = new CellConstraints();
 			JPanel header = new JPanel(new FormLayout("4dlu, left:pref, 10dlu, left:pref, 10dlu, pref:grow, 10dlu, right:pref, 10dlu, min, 4dlu",
-					"2dlu, pref, 2dlu"));
-			header.add(getAuthorLabel(), cc.xy(2, 2));
-			header.add(getDateLabel(), cc.xy(4, 2));
-			header.add(getRankingLabel(), cc.xy(6, 2));
-			header.add(getStateLabel(), cc.xy(8, 2));
-			header.add(AtlassianToolbar.createToolbar("a place", getToolbarName()), cc.xy(10, 2));
+					"2dlu, pref:grow, 2dlu"));
+			header.add(getAuthorLabel(), AUTHOR_POS);
+			header.add(getDateLabel(), DATE_POS);
+			header.add(getRankingLabel(), RANKING_POS);
+			header.add(getStateLabel(), STATE_POS);
+			header.add(AtlassianToolbar.createToolbar("a place", getToolbarName()), TOOLBAR_POS);
 			header.setBackground(getHeaderBackground());
 
 
 			JPanel body = new JPanel(new FormLayout("4dlu, pref:grow, 4dlu",
-					"2dlu, pref, 2dlu"));
+					"2dlu, pref:grow, 2dlu"));
 			body.add(getMessageBody(), cc.xy(2, 2));
 			body.setBackground(getBodyBackground());
 
@@ -116,12 +122,25 @@ public class CommentPanelBuilder {
 		}
 
 		protected Component getRankingLabel() {
-			return EMPTY_LABEL;
+			SimpleColoredComponent component = new SimpleColoredComponent();
+			boolean isFirst = true;
+			for(Map.Entry<String, CustomField> elem : comment.getCustomFields().entrySet()) {
+				if (!isFirst) {
+					component.append(" ", SimpleTextAttributes.REGULAR_ATTRIBUTES);
+				}
+				component.append(elem.getKey(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
+				component.append(": ", SimpleTextAttributes.REGULAR_ATTRIBUTES);
+				component.append(elem.getValue().getValue(), SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
+			}
+			isFirst = false;
+			return component;
 		}
 
 		protected Component getMessageBody() {
-			JTextPane result = new JTextPane();
+			JTextArea result = new JTextArea();
 			result.setText(comment.getMessage());
+			result.setLineWrap(true);
+			result.setWrapStyleWord(true);
 			result.setBackground(getBodyBackground());
 			return result;
 		}
@@ -131,7 +150,7 @@ public class CommentPanelBuilder {
 //			return Color.yellow;
 //		}
 
-		public abstract Color getBodyBackground(); 
+		public abstract Color getBodyBackground();
 //		{
 //			return Color.darkGray;
 //		}
