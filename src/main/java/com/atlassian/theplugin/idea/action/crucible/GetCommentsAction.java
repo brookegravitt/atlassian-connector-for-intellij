@@ -11,6 +11,6 @@ public class GetCommentsAction extends TableSelectedAction  {
 
 	protected void itemSelected(Object row) {
 		IdeaHelper.getReviewActionEventBroker().trigger(new ShowReviewEvent(
-				CrucibleReviewActionListener.I_DONT_CARE, (ReviewData) row));
+				CrucibleReviewActionListener.ANONYMOUS, (ReviewData) row));
 	}
 }

@@ -29,13 +29,18 @@ import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.file.FileTreeModelBuilder;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.util.ui.UIUtil;
 
 import javax.swing.*;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 /**
@@ -102,33 +107,31 @@ public final class ReviewItemTreePanel extends JPanel {
 //			reviewFilesTree.setShowsRootHandles(true);
 //
 //
-//			reviewFilesTree.addMouseListener(new MouseListener() {
-//				public void mouseClicked(MouseEvent event) {
-//					//To change body of implemented methods use File | Settings | File Templates.
-//				}
-//
-//				public void mousePressed(MouseEvent e) {
-//					int selRow = reviewFilesTree.getRowForLocation(e.getX(), e.getY());
-//					TreePath selPath = reviewFilesTree.getPathForLocation(e.getX(), e.getY());
-//					if (selRow != -1) {
-//						if (e.getClickCount() == 2) {
-//							nodeClicked(selRow, selPath);
-//						}
-//					}
-//				}
-//
-//				public void mouseReleased(MouseEvent event) {
-//					//To change body of implemented methods use File | Settings | File Templates.
-//				}
-//
-//				public void mouseEntered(MouseEvent event) {
-//					//To change body of implemented methods use File | Settings | File Templates.
-//				}
-//
-//				public void mouseExited(MouseEvent event) {
-//					//To change body of implemented methods use File | Settings | File Templates.
-//				}
-//			});
+			reviewFilesTree.addMouseListener(new MouseListener() {
+				public void mouseClicked(MouseEvent event) {
+					//To change body of implemented methods use File | Settings | File Templates.
+				}
+
+				public void mousePressed(MouseEvent e) {
+					int selRow = reviewFilesTree.getRowForLocation(e.getX(), e.getY());
+					TreePath selPath = reviewFilesTree.getPathForLocation(e.getX(), e.getY());
+					if (selRow != -1) {
+						nodeClicked(selRow, selPath, e.getClickCount());
+					}
+				}
+
+				public void mouseReleased(MouseEvent event) {
+					//To change body of implemented methods use File | Settings | File Templates.
+				}
+
+				public void mouseEntered(MouseEvent event) {
+					//To change body of implemented methods use File | Settings | File Templates.
+				}
+
+				public void mouseExited(MouseEvent event) {
+					//To change body of implemented methods use File | Settings | File Templates.
+				}
+			});
 //
 //			reviewFilesTree.setCellRenderer(new CrucibleTreeRenderer());
 		}
@@ -136,9 +139,11 @@ public final class ReviewItemTreePanel extends JPanel {
 		return reviewFilesTree;
 	}
 
-	private void nodeClicked(int selRow, TreePath path) {
-//		if (path != null) {
-//			selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
+	private void nodeClicked(int selRow, TreePath path, int clickCount) {
+		if (path != null) {
+			AtlassianTreeNode selectedNode = (AtlassianTreeNode) path.getLastPathComponent();
+			AtlassianClickAction action = selectedNode.getAtlassianClickAction();
+			action.execute(selectedNode, clickCount);
 //			if (!(selectedNode instanceof GeneralCommentNode) && selectedNode instanceof ReviewItemDataNode) {
 //				IdeaHelper.getReviewActionEventBroker().trigger(
 //						new ShowReviewedFileItemEvent(
@@ -146,7 +151,7 @@ public final class ReviewItemTreePanel extends JPanel {
 //								((CrucibleTreeRootNode) model.getRoot()).getCrucibleChangeSet(),
 //								((ReviewItemDataNode) selectedNode).getFile()));
 //			}
-//		}
+		}
 	}
 
 	public void setEnabled(boolean b) {

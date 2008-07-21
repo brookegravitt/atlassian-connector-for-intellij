@@ -16,7 +16,7 @@ import java.util.Collection;
  */
 public class CrucibleReviewActionListener {
 	public static final CrucibleReviewActionListener I_WANT_THIS_MESSAGE_BACK = null;
-	public static final CrucibleReviewActionListener I_DONT_CARE = null;
+	public static final CrucibleReviewActionListener ANONYMOUS = null;
 
 	/**
 	 * A method ivoked by a background thread when a new review needs to be shown
@@ -26,4 +26,9 @@ public class CrucibleReviewActionListener {
 	public void showReview(ReviewData reviewData) {
 	}
 
+	public void focusOnGeneralComments(ReviewData review) {
+	}
+
+	public void focusOnFileComments(ReviewData review, CrucibleFileInfo file) {
+	}
 }
