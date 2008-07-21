@@ -21,7 +21,6 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
 import com.atlassian.theplugin.commons.util.HttpClientFactory;
 import com.atlassian.theplugin.commons.util.UrlUtil;
-import com.intellij.history.core.storage.Stream;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
@@ -37,92 +36,91 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 
 /**
  * Communication stub for lightweight XML based APIs.
  */
 public abstract class AbstractHttpSession {
-	protected final String baseUrl;
-	protected String userName;
-	protected String password;
-	protected HttpClient client = null;
+    protected final String baseUrl;
+    protected String userName;
+    protected String password;
+    protected HttpClient client = null;
 
-	private final Object clientLock = new Object();
+    private final Object clientLock = new Object();
 
-	private static ThreadLocal<String> url = new ThreadLocal<String>();
+    private static ThreadLocal<String> url = new ThreadLocal<String>();
 
-	public static String getUrl() {
-		return url.get();
-	}
+    public static String getUrl() {
+        return url.get();
+    }
 
-	/**
-	 * Public constructor for AbstractHttpSession
-	 *
-	 * @param baseUrl base URL for server instance
-	 * @throws com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException
-	 *          for malformed url
-	 */
-	public AbstractHttpSession(String baseUrl) throws RemoteApiMalformedUrlException {
+    /**
+     * Public constructor for AbstractHttpSession
+     *
+     * @param baseUrl base URL for server instance
+     * @throws com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException
+     *          for malformed url
+     */
+    public AbstractHttpSession(String baseUrl) throws RemoteApiMalformedUrlException {
 
-		this.baseUrl = UrlUtil.removeUrlTrailingSlashes(baseUrl);
+        this.baseUrl = UrlUtil.removeUrlTrailingSlashes(baseUrl);
 
-		try {
-			UrlUtil.validateUrl(baseUrl);
-		} catch (MalformedURLException e) {
-			throw new RemoteApiMalformedUrlException("Malformed server URL: " + baseUrl, e);
-		}
-	}
+        try {
+            UrlUtil.validateUrl(baseUrl);
+        } catch (MalformedURLException e) {
+            throw new RemoteApiMalformedUrlException("Malformed server URL: " + baseUrl, e);
+        }
+    }
 
-	protected Document retrieveGetResponse(String urlString)
-			throws IOException, JDOMException, RemoteApiSessionExpiredException {
-		return retrieveGetResponse(urlString, true);
-	}
+    protected Document retrieveGetResponse(String urlString)
+            throws IOException, JDOMException, RemoteApiSessionExpiredException {
+        return retrieveGetResponse(urlString, true);
+    }
 
-	protected Document retrieveGetResponse(String urlString, boolean expectResponse)
-			throws IOException, JDOMException, RemoteApiSessionExpiredException {
-		UrlUtil.validateUrl(urlString);
-		url.set(urlString);
-		Document doc = null;
-		synchronized (clientLock) {
-			if (client == null) {
-				try {
-					client = HttpClientFactory.getClient();
-				} catch (HttpProxySettingsException e) {
-					throw (IOException) new IOException("Connection error. Please set up HTTP Proxy settings").initCause(e);
-				}
-			}
+    protected Document retrieveGetResponse(String urlString, boolean expectResponse)
+            throws IOException, JDOMException, RemoteApiSessionExpiredException {
+        UrlUtil.validateUrl(urlString);
+        url.set(urlString);
+        Document doc = null;
+        synchronized (clientLock) {
+            if (client == null) {
+                try {
+                    client = HttpClientFactory.getClient();
+                } catch (HttpProxySettingsException e) {
+                    throw (IOException) new IOException("Connection error. Please set up HTTP Proxy settings").initCause(e);
+                }
+            }
 
-			GetMethod method = new GetMethod(urlString);
+            GetMethod method = new GetMethod(urlString);
 
-			try {
-				method.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
-				method.getParams().setSoTimeout(client.getParams().getSoTimeout());
-				adjustHttpHeader(method);
+            try {
+                method.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
+                method.getParams().setSoTimeout(client.getParams().getSoTimeout());
+                adjustHttpHeader(method);
 
-				client.executeMethod(method);
+                client.executeMethod(method);
 
-				if (method.getStatusCode() != HttpStatus.SC_OK) {
-					throw new IOException(
-							"HTTP " + method.getStatusCode() + " (" + HttpStatus.getStatusText(method.getStatusCode())
-									+ ")\n" + method.getStatusText());
-				}
+                if (method.getStatusCode() != HttpStatus.SC_OK) {
+                    throw new IOException(
+                            "HTTP " + method.getStatusCode() + " (" + HttpStatus.getStatusText(method.getStatusCode())
+                                    + ")\n" + method.getStatusText());
+                }
 
-				if (expectResponse) {
-					SAXBuilder builder = new SAXBuilder();
-					doc = builder.build(method.getResponseBodyAsStream());
-					preprocessResult(doc);
-				}
-			} catch (NullPointerException e) {
-				throw (IOException) new IOException("Connection error").initCause(e);
-			} finally {
-				method.releaseConnection();
-			}
-		}
+                if (expectResponse) {
+                    SAXBuilder builder = new SAXBuilder();
+                    doc = builder.build(method.getResponseBodyAsStream());
+                    preprocessResult(doc);
+                }
+            } catch (NullPointerException e) {
+                throw (IOException) new IOException("Connection error").initCause(e);
+            } finally {
+                method.releaseConnection();
+            }
+        }
 
-		return doc;
-	}
+        return doc;
+    }
 
     protected byte[] retrieveGetResponseAsBytes(String urlString)
             throws IOException, JDOMException, RemoteApiSessionExpiredException {
@@ -162,127 +160,127 @@ public abstract class AbstractHttpSession {
     }
 
     protected Document retrievePostResponse(String urlString, Document request)
-			throws IOException, JDOMException, RemoteApiSessionExpiredException {
-		return retrievePostResponse(urlString, request, true);
-	}
+            throws IOException, JDOMException, RemoteApiSessionExpiredException {
+        return retrievePostResponse(urlString, request, true);
+    }
 
-	protected Document retrievePostResponse(String urlString, Document request, boolean expectResponse)
-			throws IOException, JDOMException, RemoteApiSessionExpiredException {
-		XMLOutputter serializer = new XMLOutputter(Format.getPrettyFormat());
-		String requestString = serializer.outputString(request);
-		return retrievePostResponse(urlString, requestString, expectResponse);
-	}
+    protected Document retrievePostResponse(String urlString, Document request, boolean expectResponse)
+            throws IOException, JDOMException, RemoteApiSessionExpiredException {
+        XMLOutputter serializer = new XMLOutputter(Format.getPrettyFormat());
+        String requestString = serializer.outputString(request);
+        return retrievePostResponse(urlString, requestString, expectResponse);
+    }
 
-	protected Document retrievePostResponse(String urlString, String request, boolean expectResponse)
-			throws IOException, JDOMException, RemoteApiSessionExpiredException {
-		UrlUtil.validateUrl(urlString);
-		url.set(urlString);
-		Document doc = null;
-		synchronized (clientLock) {
-			if (client == null) {
-				try {
-					client = HttpClientFactory.getClient();
-				} catch (HttpProxySettingsException e) {
-					throw (IOException) new IOException("Connection error. Please set up HTTP Proxy settings").initCause(e);
-				}
-			}
+    protected Document retrievePostResponse(String urlString, String request, boolean expectResponse)
+            throws IOException, JDOMException, RemoteApiSessionExpiredException {
+        UrlUtil.validateUrl(urlString);
+        url.set(urlString);
+        Document doc = null;
+        synchronized (clientLock) {
+            if (client == null) {
+                try {
+                    client = HttpClientFactory.getClient();
+                } catch (HttpProxySettingsException e) {
+                    throw (IOException) new IOException("Connection error. Please set up HTTP Proxy settings").initCause(e);
+                }
+            }
 
-			PostMethod method = new PostMethod(urlString);
+            PostMethod method = new PostMethod(urlString);
 
-			try {
-				method.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
-				method.getParams().setSoTimeout(client.getParams().getSoTimeout());
-				adjustHttpHeader(method);
+            try {
+                method.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
+                method.getParams().setSoTimeout(client.getParams().getSoTimeout());
+                adjustHttpHeader(method);
 
-				if (request != null && !"".equals(request)) {
-					method.setRequestEntity(
-							new StringRequestEntity(request, "application/xml", "UTF-8"));
-				}
+                if (request != null && !"".equals(request)) {
+                    method.setRequestEntity(
+                            new StringRequestEntity(request, "application/xml", "UTF-8"));
+                }
 
-				client.executeMethod(method);
+                client.executeMethod(method);
 
-				if (method.getStatusCode() != HttpStatus.SC_OK) {
-					throw new IOException("HTTP status code " + method.getStatusCode() + ": " + method.getStatusText());
-				}
+                if (method.getStatusCode() != HttpStatus.SC_OK) {
+                    throw new IOException("HTTP status code " + method.getStatusCode() + ": " + method.getStatusText());
+                }
 
-				if (expectResponse) {
-					SAXBuilder builder = new SAXBuilder();
-					doc = builder.build(method.getResponseBodyAsStream());
-					preprocessResult(doc);
-				}
-			} catch (NullPointerException e) {
-				throw (IOException) new IOException("Connection error").initCause(e);
-			} finally {
-				method.releaseConnection();
-			}
-		}
-		return doc;
-	}
+                if (expectResponse) {
+                    SAXBuilder builder = new SAXBuilder();
+                    doc = builder.build(method.getResponseBodyAsStream());
+                    preprocessResult(doc);
+                }
+            } catch (NullPointerException e) {
+                throw (IOException) new IOException("Connection error").initCause(e);
+            } finally {
+                method.releaseConnection();
+            }
+        }
+        return doc;
+    }
 
-	protected Document retrieveDeleteResponse(String urlString, boolean expectResponse)
-			throws IOException, JDOMException, RemoteApiSessionExpiredException {
-		UrlUtil.validateUrl(urlString);
+    protected Document retrieveDeleteResponse(String urlString, boolean expectResponse)
+            throws IOException, JDOMException, RemoteApiSessionExpiredException {
+        UrlUtil.validateUrl(urlString);
 
-		Document doc = null;
-		synchronized (clientLock) {
-			if (client == null) {
-				try {
-					client = HttpClientFactory.getClient();
-				} catch (HttpProxySettingsException e) {
-					throw (IOException) new IOException("Connection error. Please set up HTTP Proxy settings").initCause(e);
-				}
-			}
+        Document doc = null;
+        synchronized (clientLock) {
+            if (client == null) {
+                try {
+                    client = HttpClientFactory.getClient();
+                } catch (HttpProxySettingsException e) {
+                    throw (IOException) new IOException("Connection error. Please set up HTTP Proxy settings").initCause(e);
+                }
+            }
 
-			DeleteMethod method = new DeleteMethod(urlString);
+            DeleteMethod method = new DeleteMethod(urlString);
 
-			try {
-				method.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
-				method.getParams().setSoTimeout(client.getParams().getSoTimeout());
-				adjustHttpHeader(method);
+            try {
+                method.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
+                method.getParams().setSoTimeout(client.getParams().getSoTimeout());
+                adjustHttpHeader(method);
 
-				client.executeMethod(method);
+                client.executeMethod(method);
 
-				if (method.getStatusCode() != HttpStatus.SC_OK) {
-					throw new IOException("HTTP status code " + method.getStatusCode() + ": " + method.getStatusText());
-				}
+                if (method.getStatusCode() != HttpStatus.SC_OK) {
+                    throw new IOException("HTTP status code " + method.getStatusCode() + ": " + method.getStatusText());
+                }
 
-				if (expectResponse) {
-					SAXBuilder builder = new SAXBuilder();
-					doc = builder.build(method.getResponseBodyAsStream());
-					preprocessResult(doc);
-				}
-			} catch (NullPointerException e) {
-				throw (IOException) new IOException("Connection error").initCause(e);
-			} finally {
-				method.releaseConnection();
-			}
-		}
-		return doc;
-	}
+                if (expectResponse) {
+                    SAXBuilder builder = new SAXBuilder();
+                    doc = builder.build(method.getResponseBodyAsStream());
+                    preprocessResult(doc);
+                }
+            } catch (NullPointerException e) {
+                throw (IOException) new IOException("Connection error").initCause(e);
+            } finally {
+                method.releaseConnection();
+            }
+        }
+        return doc;
+    }
 
 
-	protected abstract void adjustHttpHeader(HttpMethod method);
+    protected abstract void adjustHttpHeader(HttpMethod method);
 
-	protected abstract void preprocessResult(Document doc) throws JDOMException, RemoteApiSessionExpiredException;
+    protected abstract void preprocessResult(Document doc) throws JDOMException, RemoteApiSessionExpiredException;
 
-	public static String getServerNameFromUrl(String urlString) {
-		int pos = urlString.indexOf("://");
-		if (pos != -1) {
-			urlString = urlString.substring(pos + 1 + 2);
-		}
-		pos = urlString.indexOf("/");
-		if (pos != -1) {
-			urlString = urlString.substring(0, pos);
-		}
-		return urlString;
-	}
+    public static String getServerNameFromUrl(String urlString) {
+        int pos = urlString.indexOf("://");
+        if (pos != -1) {
+            urlString = urlString.substring(pos + 1 + 2);
+        }
+        pos = urlString.indexOf("/");
+        if (pos != -1) {
+            urlString = urlString.substring(0, pos);
+        }
+        return urlString;
+    }
 
-	public static String getLastComponentFromUrl(String urlString) {
-		int lastIndex;
-		lastIndex = urlString.lastIndexOf("/");
-		if (lastIndex != -1) {
-			urlString = urlString.substring(lastIndex + 1);
-		}
-		return urlString;
-	}
+    public static String getLastComponentFromUrl(String urlString) {
+        int lastIndex;
+        lastIndex = urlString.lastIndexOf("/");
+        if (lastIndex != -1) {
+            urlString = urlString.substring(lastIndex + 1);
+        }
+        return urlString;
+    }
 }
