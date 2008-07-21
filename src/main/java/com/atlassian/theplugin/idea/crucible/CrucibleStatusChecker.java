@@ -120,10 +120,8 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 
                 for (int i = 0;
                      i < projectConfiguration.
-                             getCrucibleConfiguration().getCrucibleFilters().getPredefinedFilters().length;
-                     i++) {
-                    if (projectConfiguration.
-                            getCrucibleConfiguration().getCrucibleFilters().getPredefinedFilters()[i]) {
+                             getCrucibleConfiguration().getCrucibleFilters().getPredefinedFilters().length; i++) {
+                    if (projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getPredefinedFilters()[i]) {
                         PredefinedFilter filter = PredefinedFilter.values()[i];
 
                         try {
