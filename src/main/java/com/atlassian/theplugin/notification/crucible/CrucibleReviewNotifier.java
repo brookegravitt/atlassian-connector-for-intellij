@@ -40,6 +40,8 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
     private Set<ReviewData> reviews = new HashSet<ReviewData>();
     private List<CrucibleNotification> notifications = new ArrayList<CrucibleNotification>();
 
+    private boolean firstRun = true;
+
     public CrucibleReviewNotifier() {
     }
 
@@ -210,9 +212,12 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
             reviews.addAll(processedReviews);
         }
 
-        for (CrucibleNotificationListener listener : listenerList) {
-            listener.updateNotifications(notifications);
+        if (!firstRun) {
+            for (CrucibleNotificationListener listener : listenerList) {
+                listener.updateNotifications(notifications);
+            }
         }
+        firstRun = false;
     }
 
     public void resetState() {

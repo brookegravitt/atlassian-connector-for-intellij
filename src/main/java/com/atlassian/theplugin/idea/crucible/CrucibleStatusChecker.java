@@ -96,7 +96,7 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 
 				lastActionRun = newRun;
 			} catch (RemoteApiException e) {
-                return CrucibleVersion.CRUCIBLE_15;
+                continue;
             } catch (ServerPasswordNotProvidedException e) {
                 return CrucibleVersion.CRUCIBLE_16;
             }
