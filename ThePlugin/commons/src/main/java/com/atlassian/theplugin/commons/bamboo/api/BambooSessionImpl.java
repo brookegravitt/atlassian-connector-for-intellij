@@ -600,7 +600,28 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
 		return authToken != null;
 	}
 
-	protected void adjustHttpHeader(HttpMethod method) {
+    public byte[] getBuildLogs(String buildKey, String buildNumber) throws RemoteApiException {
+       String buildResultUrl;
+        try {
+            buildResultUrl = baseUrl + "/download/"
+                    + URLEncoder.encode(buildKey, "UTF-8")
+                    + "/build_logs/" + URLEncoder.encode(buildKey, "UTF-8")
+                    + "-" + URLEncoder.encode(buildNumber, "UTF-8")
+                    + ".log";
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("URLEncoding problem: ", e);
+        }
+
+        try {
+            return retrieveGetResponseAsBytes(buildResultUrl);
+        } catch (JDOMException e) {
+            throw new RemoteApiException("Server returned malformed response", e);
+        } catch (IOException e) {
+            throw new RemoteApiException(e.getMessage(), e);
+        }
+    }
+
+    protected void adjustHttpHeader(HttpMethod method) {
 		// Bamboo does not require custom headers
 	}
 
