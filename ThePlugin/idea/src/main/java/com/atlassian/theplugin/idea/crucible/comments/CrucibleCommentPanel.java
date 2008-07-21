@@ -244,7 +244,7 @@ public class CrucibleCommentPanel extends JPanel implements ListSelectionListene
 		draftTopLabel.setText("");
 		defectTopLabel.setText("");
 		if (comment.isDefectRaised()) {
-			defectTopLabel.setText("DEFECT");
+			defectTopLabel.setText(DEFECT);
 		}
 
 		if (comment.isDraft()) {

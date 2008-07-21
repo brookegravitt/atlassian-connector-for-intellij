@@ -17,8 +17,8 @@
 package com.atlassian.theplugin.commons.crucible.api.rest;
 
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
-import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
+import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import org.jdom.CDATA;
 import org.jdom.Document;
@@ -717,4 +717,11 @@ public final class CrucibleRestXmlHelper {
 			return null;
 		}
 	}
+
+    public static CrucibleVersionInfo parseVersionNode(Element element) {
+        CrucibleVersionInfoBean version = new CrucibleVersionInfoBean();
+        version.setBuildDate(getChildText(element, "buildDate"));
+        version.setReleaseNumber(getChildText(element, "releaseVersion"));
+        return version;
+    }
 }

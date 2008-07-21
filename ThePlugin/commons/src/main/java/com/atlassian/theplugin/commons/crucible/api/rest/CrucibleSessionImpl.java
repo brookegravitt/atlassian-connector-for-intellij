@@ -59,11 +59,12 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
     private static final String REVIEWS_IN_STATES = "?state=";
     private static final String FILTERED_REVIEWS = "/filter";
     private static final String DETAIL_REVIEW_INFO = "/details";
-    private static final String ACTIONS = "/action";
-    private static final String TRANSITIONS = "/transition";
+    private static final String ACTIONS = "/actions";
+    private static final String TRANSITIONS = "/transitions";
     private static final String REVIEWERS = "/reviewers";
     private static final String REVIEW_ITEMS = "/reviewitems";
     private static final String METRICS = "/metrics";
+    private static final String VERSION = "/versionInfo";
 
     private static final String COMMENTS = "/comments";
     private static final String GENERAL_COMMENTS = "/comments/general";
@@ -153,6 +154,32 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             userName = null;
             password = null;
         }
+    }
+
+    public CrucibleVersionInfo getServerVersion() throws RemoteApiException {
+        if (!isLoggedIn()) {
+            throw new IllegalStateException("Calling method without calling login() first");
+        }
+
+        String requestUrl = baseUrl + REVIEW_SERVICE + VERSION;
+        try {
+            Document doc = retrieveGetResponse(requestUrl);
+
+            XPath xpath = XPath.newInstance("versionInfo");
+            @SuppressWarnings("unchecked")
+            List<Element> elements = xpath.selectNodes(doc);
+
+            if (elements != null && !elements.isEmpty()) {
+                for (Element element : elements) {
+                    return CrucibleRestXmlHelper.parseVersionNode(element);
+                }
+            }
+        } catch (IOException e) {
+            throw new RemoteApiException(e.getMessage(), e);
+        } catch (JDOMException e) {
+            throw new RemoteApiException("Server returned malformed response", e);
+        }
+        return null;
     }
 
     public List<Review> getReviewsInStates(List<State> states, boolean details) throws RemoteApiException {
@@ -940,7 +967,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         }
     }
 
-    public List<Transition> getAvailableTransitions(PermId permId) throws RemoteApiException {
+    public List<Action> getAvailableTransitions(PermId permId) throws RemoteApiException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Calling method without calling login() first");
         }
@@ -949,14 +976,14 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         try {
             Document doc = retrieveGetResponse(requestUrl);
 
-            XPath xpath = XPath.newInstance("/transitions/transitionData");
+            XPath xpath = XPath.newInstance("/transitions/actionData");
             @SuppressWarnings("unchecked")
             List<Element> elements = xpath.selectNodes(doc);
-            List<Transition> transitions = new ArrayList<Transition>();
+            List<Action> transitions = new ArrayList<Action>();
 
             if (elements != null && !elements.isEmpty()) {
                 for (Element element : elements) {
-                    transitions.add(CrucibleRestXmlHelper.parseTransitionNode(element));
+                    transitions.add(CrucibleRestXmlHelper.parseActionNode(element));
                 }
             }
             return transitions;
