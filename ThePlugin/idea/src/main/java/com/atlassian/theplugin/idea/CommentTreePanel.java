@@ -13,6 +13,7 @@ import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.FileNameNode;
+import com.atlassian.theplugin.idea.ui.tree.comment.SectionNode;
 import com.intellij.util.ui.UIUtil;
 
 import javax.swing.*;
@@ -32,8 +33,7 @@ public class CommentTreePanel extends JPanel {
 	private CrucibleReviewActionListener listener = new MyCrucibleReviewActionListener();
 	private JScrollPane commentScroll;
 	private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
-	private CommentTree commentTree;
-	private AtlassianTreeModel model;
+	private CommentTree commentTree = new CommentTree();
 
 	private static final AtlassianTreeNode ROOT = new AtlassianTreeNode() {
 		public TreeCellRenderer getTreeCellRenderer() {
@@ -83,8 +83,10 @@ public class CommentTreePanel extends JPanel {
 		List<GeneralComment> generalComments;
 		try {
 			generalComments = review.getGeneralComments();
+			AtlassianTreeNode generalNode = new SectionNode("General comments");
+			ROOT.addNode(generalNode);
 			for (GeneralComment comment : generalComments) {
-				addGeneralCommentTree(ROOT, review, comment);
+				addGeneralCommentTree(generalNode, review, comment);
 			}
 			for (CrucibleFileInfo file : review.getFiles()) {
 
@@ -106,8 +108,8 @@ public class CommentTreePanel extends JPanel {
 
 		@Override
 		public void showReview(ReviewData review) {
-			commentTree = new CommentTree(createTreeModel(review));
 			commentTree.setVisible(false);
+			commentTree = new CommentTree(createTreeModel(review));
 			commentTree.expandAll();
 			commentScroll.setViewportView(commentTree);
 			commentTree.initializeUI();
