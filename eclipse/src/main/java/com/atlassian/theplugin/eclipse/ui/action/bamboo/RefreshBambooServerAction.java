@@ -28,7 +28,7 @@ public class RefreshBambooServerAction extends AbstractBambooServerAction {
 	
 	public void runImpl(IAction action) {
 		this.runBusy(this.getSelection().isEmpty() 
-				? new RefreshBambooServersOperation(true) : new RefreshBambooServersOperation(this.getSelectedBambooServers(), true));
+				? new RefreshBambooServersOperation(true) : new RefreshBambooServersOperation(this.getSelectedBambooTreeNodes(), true));
 	}
 
 	public boolean isEnabled() {

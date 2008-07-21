@@ -71,7 +71,7 @@ public class PreviewPanel extends AbstractDialogPanel {
 			styledText.setFont(this.font);
 		}
 		
-		List styledRanges = new ArrayList();
+		List<StyleRange> styledRanges = new ArrayList<StyleRange>();
 		styledRanges = this.getStyleRanges();
 		styledText.setText(this.report);
 		styledText.setStyleRanges((StyleRange[]) styledRanges.toArray(new StyleRange[styledRanges.size()]));		
@@ -92,11 +92,11 @@ public class PreviewPanel extends AbstractDialogPanel {
 	protected void cancelChanges() {	
 	}
 	
-	protected List getStyleRanges() {
-		List styledRanges = new ArrayList();
+	protected List<StyleRange> getStyleRanges() {
+		List<StyleRange> styledRanges = new ArrayList<StyleRange>();
 		
-		Stack boldEntries = new Stack();
-		Stack italicEntries = new Stack();
+		Stack<StyleRange> boldEntries = new Stack<StyleRange>();
+		Stack<StyleRange> italicEntries = new Stack<StyleRange>();
 		
 		for (int i = 0; i < this.report.length(); i++) {
 			if (this.report.charAt(i) == '<' && i < this.report.length() - 2) {

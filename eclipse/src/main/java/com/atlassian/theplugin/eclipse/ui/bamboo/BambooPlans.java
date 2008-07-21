@@ -18,11 +18,11 @@ import com.atlassian.theplugin.eclipse.view.bamboo.IDataTreeNode;
 import com.atlassian.theplugin.eclipse.view.bamboo.IParentTreeNode;
 
 public class BambooPlans extends BambooFictiveNode implements IBambooTreeNode, IDataTreeNode, IParentTreeNode  {
-	private BambooServer server;
+	private BambooServerNode server;
 	private GetBambooPlansChildrenOperation childrenOp;
 	private BambooTreeViewer bambooTree;
 	
-	public BambooPlans(BambooServer server) {
+	public BambooPlans(BambooServerNode server) {
 		this.server = server;
 	}
 	

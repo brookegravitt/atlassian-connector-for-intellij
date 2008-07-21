@@ -27,12 +27,12 @@ import com.atlassian.theplugin.eclipse.preferences.Activator;
  * @author Alexander Gurov
  */
 public abstract class AbstractVerifier {
-    protected List listeners;
+    protected List<IVerifierListener> listeners;
     protected boolean filledRight;
     protected boolean hasWarning;
 
     public AbstractVerifier() {
-        this.listeners = new ArrayList();
+        this.listeners = new ArrayList<IVerifierListener>();
         this.filledRight = false;
         this.hasWarning = false;
     }
@@ -84,7 +84,7 @@ public abstract class AbstractVerifier {
             return ((Combo)input).getText();
         }
         String message = Activator.getDefault().getResource("Verifier.Abstract");
-        throw new RuntimeException(MessageFormat.format(message, new String[] {this.getClass().getName()}));
+        throw new RuntimeException(MessageFormat.format(message, new Object[] {this.getClass().getName()}));
     }
     
 	protected void fireError(String errorReason) {

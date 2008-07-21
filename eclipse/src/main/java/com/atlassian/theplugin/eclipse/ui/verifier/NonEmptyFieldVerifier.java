@@ -28,7 +28,7 @@ public class NonEmptyFieldVerifier extends AbstractFormattedVerifier {
     public NonEmptyFieldVerifier(String fieldName) {
         super(fieldName);
         NonEmptyFieldVerifier.ERROR_MESSAGE = Activator.getDefault().getResource("Verifier.NonEmpty");
-        NonEmptyFieldVerifier.ERROR_MESSAGE = MessageFormat.format(NonEmptyFieldVerifier.ERROR_MESSAGE, new String[] {AbstractFormattedVerifier.FIELD_NAME});
+        NonEmptyFieldVerifier.ERROR_MESSAGE = MessageFormat.format(NonEmptyFieldVerifier.ERROR_MESSAGE, new Object[] {AbstractFormattedVerifier.FIELD_NAME});
     }
     
     protected String getErrorMessageImpl(Control input) {

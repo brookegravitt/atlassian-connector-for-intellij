@@ -39,6 +39,7 @@ import com.atlassian.theplugin.eclipse.util.ProgressMonitorUtility;
  * 
  * @author Alexander Gurov
  */
+@SuppressWarnings("restriction")
 public abstract class AbstractAction extends TeamAction {
 	// copy paste in order to fix problems with Eclipse 3.0.x->3.1.x->3.2 API changes
 	private IWorkbenchWindow window;
@@ -109,6 +110,7 @@ public abstract class AbstractAction extends TeamAction {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Object []getSelectedResources(Class c) {
 		// This method is created in order to provide fix for Eclipse 3.1.0 where identical method is removed from TeamAction 
 		return TeamAction.getSelectedAdaptables(this.getSelection(), c);

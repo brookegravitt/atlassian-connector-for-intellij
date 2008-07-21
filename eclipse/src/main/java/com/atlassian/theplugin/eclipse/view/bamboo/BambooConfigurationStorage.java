@@ -32,6 +32,7 @@ public class BambooConfigurationStorage {
 		this.bambooServers = new IBambooServer[0];
 	}
 	
+	@SuppressWarnings("restriction")
 	public IBambooServer newBambooServer() {
 		return new BambooServer(new UniversalUniqueIdentifier().toString());
 	}
@@ -82,7 +83,7 @@ public class BambooConfigurationStorage {
 	}
 	
 	protected void loadBambooServers() throws Exception {
-		List tmp = new ArrayList(Arrays.asList(this.bambooServers));
+		List<IBambooServer> tmp = new ArrayList<IBambooServer>(Arrays.asList(this.bambooServers));
 		ObjectInputStream stream = null;
 		try {
 			stream = new ObjectInputStream(new FileInputStream(this.stateInfoFile));
@@ -120,7 +121,7 @@ public class BambooConfigurationStorage {
 	}
 
 	public synchronized void addBambooServer(IBambooServer server) {
-		List tmp = new ArrayList(Arrays.asList(this.bambooServers));
+		List<IBambooServer> tmp = new ArrayList<IBambooServer>(Arrays.asList(this.bambooServers));
 		if (!tmp.contains(server)) {
 			tmp.add(server);
 			this.bambooServers = (IBambooServer []) tmp.toArray(new IBambooServer[tmp.size()]);

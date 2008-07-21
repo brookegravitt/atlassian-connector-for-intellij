@@ -202,7 +202,7 @@ public class UILoggedOperation extends LoggedOperation {
 							shell, 
 							Activator.PLUGIN_ID, 
 							Activator.getDefault().getResource("UILoggedOperation.SendReport.Error.Title"), 
-							new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.OK, MessageFormat.format(Activator.getDefault().getResource("UILoggedOperation.SendReport.Error.Message"), new String[] {email}), ex), 
+							new Status(IStatus.ERROR, Activator.PLUGIN_ID, IStatus.OK, MessageFormat.format(Activator.getDefault().getResource("UILoggedOperation.SendReport.Error.Message"), new Object[] {email}), ex), 
 							false, 
 							Activator.getDefault().getResource("UILoggedOperation.SendReport.Error.DontShow"),
 							originalReport);

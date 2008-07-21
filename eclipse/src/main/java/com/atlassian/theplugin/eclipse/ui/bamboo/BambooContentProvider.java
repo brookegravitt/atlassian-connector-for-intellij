@@ -47,6 +47,7 @@ public class BambooContentProvider extends WorkbenchContentProvider {
 		return false;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Object []getChildren(Object parentElement) {
 		IWorkbenchAdapter adapter = this.getAdapter(parentElement);
 		if (adapter instanceof IParentTreeNode) {

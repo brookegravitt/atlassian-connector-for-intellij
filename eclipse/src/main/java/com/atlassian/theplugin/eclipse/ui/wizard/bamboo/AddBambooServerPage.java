@@ -11,13 +11,9 @@
 
 package com.atlassian.theplugin.eclipse.ui.wizard.bamboo;
 
-import java.util.ArrayList;
-
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.wizard.IWizardPage;
@@ -26,7 +22,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-import com.atlassian.theplugin.eclipse.core.bamboo.BambooServer;
 import com.atlassian.theplugin.eclipse.core.bamboo.IBambooServer;
 import com.atlassian.theplugin.eclipse.core.operation.AbstractActionOperation;
 import com.atlassian.theplugin.eclipse.core.operation.AbstractNonLockingOperation;
@@ -37,9 +32,7 @@ import com.atlassian.theplugin.eclipse.core.operation.bamboo.RefreshBambooServer
 import com.atlassian.theplugin.eclipse.core.operation.bamboo.SaveBambooServersOperation;
 import com.atlassian.theplugin.eclipse.preferences.Activator;
 import com.atlassian.theplugin.eclipse.ui.composite.bamboo.BambooServerPropertiesTabFolder;
-import com.atlassian.theplugin.eclipse.ui.dialog.DefaultDialog;
 import com.atlassian.theplugin.eclipse.ui.panel.AbstractDialogPanel;
-import com.atlassian.theplugin.eclipse.ui.utility.UIMonitorUtil;
 import com.atlassian.theplugin.eclipse.ui.verifier.AbstractFormattedVerifier;
 import com.atlassian.theplugin.eclipse.ui.wizard.AbstractVerifiedWizardPage;
 import com.atlassian.theplugin.eclipse.util.PluginUtil;

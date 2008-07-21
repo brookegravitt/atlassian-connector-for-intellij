@@ -15,7 +15,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 
-import com.atlassian.theplugin.eclipse.core.bamboo.BambooServer;
 import com.atlassian.theplugin.eclipse.core.bamboo.IBambooServer;
 import com.atlassian.theplugin.eclipse.core.operation.IActionOperation;
 import com.atlassian.theplugin.eclipse.preferences.Activator;

@@ -185,7 +185,7 @@ public abstract class AbstractActionOperation implements IActionOperation {
 		String key = this.nameId + ".Id";
 		String prefix = this.getNationalizedString(key);
 		prefix = prefix.equals(key) ? "" : (prefix + ": ");
-		this.status.setMessage(MessageFormat.format(errMessage, new String[] {prefix + this.name}));
+		this.status.setMessage(MessageFormat.format(errMessage, new Object[] {prefix + this.name}));
 	}
 	
 	/**

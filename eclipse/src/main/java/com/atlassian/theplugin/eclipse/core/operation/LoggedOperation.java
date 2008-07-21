@@ -73,7 +73,7 @@ public class LoggedOperation implements IActionOperation {
 	
 	public static void reportError(String where, Throwable t) {
 		String errMessage = Activator.getDefault().getResource("Operation.Error.LogHeader");
-	    MultiStatus status = new MultiStatus(Activator.PLUGIN_ID, IStatus.OK, MessageFormat.format(errMessage, new String[] {where}), null);
+	    MultiStatus status = new MultiStatus(Activator.PLUGIN_ID, IStatus.OK, MessageFormat.format(errMessage, new Object[] {where}), null);
 		Status st = 
 			new Status(
 					IStatus.ERROR, 
@@ -95,7 +95,7 @@ public class LoggedOperation implements IActionOperation {
         }
 		
 		IStatus []children = errorStatus.getChildren();
-		ArrayList statusesWithoutCancel = new ArrayList(); 
+		ArrayList<IStatus> statusesWithoutCancel = new ArrayList<IStatus>(); 
         for (int i = 0; i < children.length; i++) {
             Throwable exception = children[i].getException();
         	if (!(exception instanceof ClientWrapperCancelException) && !(exception instanceof ActivityCancelledException)) {

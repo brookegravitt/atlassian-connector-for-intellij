@@ -24,14 +24,14 @@ import org.eclipse.swt.widgets.Control;
  * @author Alexander Gurov
  */
 public class CompositeVerifier extends AbstractVerifier implements IVerifierListener {
-    protected List verifiers;
+    protected List<AbstractVerifier> verifiers;
 
     public CompositeVerifier() {
         super();
-        this.verifiers = new ArrayList();
+        this.verifiers = new ArrayList<AbstractVerifier>();
     }
 
-	public List getVerifiers() {
+	public List<AbstractVerifier> getVerifiers() {
 		return this.verifiers;
 	}
 	
@@ -49,7 +49,7 @@ public class CompositeVerifier extends AbstractVerifier implements IVerifierList
 	}
 	
 	public void removeAll() {
-		for (Iterator it = this.verifiers.iterator(); it.hasNext(); ) {
+		for (Iterator<AbstractVerifier> it = this.verifiers.iterator(); it.hasNext(); ) {
 			((AbstractVerifier)it.next()).removeVerifierListener(this);
 		}
 		this.verifiers.clear();
@@ -57,7 +57,7 @@ public class CompositeVerifier extends AbstractVerifier implements IVerifierList
 
 	public boolean verify(Control input) {
 		this.hasWarning = false;
-		for (Iterator it = this.verifiers.iterator(); it.hasNext(); ) {
+		for (Iterator<AbstractVerifier> it = this.verifiers.iterator(); it.hasNext(); ) {
 			AbstractVerifier iVer = (AbstractVerifier)it.next();
 			if (!iVer.verify(input)) {
 				return false;

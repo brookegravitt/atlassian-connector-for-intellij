@@ -88,7 +88,7 @@ public class ErrorCancelPanel extends AbstractAdvancedDialogPanel {
     	}
     	else {
     		this.dialogDescription = Activator.getDefault().getResource(panelType == ErrorCancelPanel.ERROR_PANEL_TYPE ? "ErrorCancelPanel.Description.Failed" : "ErrorCancelPanel.Description.Cancelled");
-    		this.dialogDescription = MessageFormat.format(this.dialogDescription, new String[] {title});
+    		this.dialogDescription = MessageFormat.format(this.dialogDescription, new Object[] {title});
     	}
 		if (sendMail) {
 			this.defaultMessage = Activator.getDefault().getResource("ErrorCancelPanel.Message.Send");
@@ -100,7 +100,7 @@ public class ErrorCancelPanel extends AbstractAdvancedDialogPanel {
 				}
 				else {
 					this.defaultMessage = Activator.getDefault().getResource("ErrorCancelPanel.Message.DontSend.Multi");
-					this.defaultMessage = MessageFormat.format(this.defaultMessage, new String[] {String.valueOf(numberOfErrors)});
+					this.defaultMessage = MessageFormat.format(this.defaultMessage, new Object[] {String.valueOf(numberOfErrors)});
 				}
 			}
 			else {
