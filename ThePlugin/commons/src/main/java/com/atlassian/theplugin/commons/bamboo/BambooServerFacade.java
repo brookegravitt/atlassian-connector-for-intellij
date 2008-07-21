@@ -22,6 +22,7 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 
 import java.util.Collection;
+import java.util.List;
 
 public interface BambooServerFacade extends ProductServerFacade {
 	Collection<BambooProject> getProjectList(Server bambooServer) throws ServerPasswordNotProvidedException, RemoteApiException;
@@ -41,4 +42,6 @@ public interface BambooServerFacade extends ProductServerFacade {
 
 	void executeBuild(Server bambooServer, String buildKey)
 			throws ServerPasswordNotProvidedException, RemoteApiException;
+
+    byte[] getBuildLogs(Server server, String buildKey, String buildNumber) throws ServerPasswordNotProvidedException, RemoteApiException;
 }

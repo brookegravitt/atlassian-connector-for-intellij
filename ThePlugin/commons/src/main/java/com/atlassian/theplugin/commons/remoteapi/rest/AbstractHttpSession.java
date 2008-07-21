@@ -21,6 +21,7 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
 import com.atlassian.theplugin.commons.util.HttpClientFactory;
 import com.atlassian.theplugin.commons.util.UrlUtil;
+import com.intellij.history.core.storage.Stream;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
@@ -36,6 +37,7 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 
 /**
@@ -122,7 +124,44 @@ public abstract class AbstractHttpSession {
 		return doc;
 	}
 
-	protected Document retrievePostResponse(String urlString, Document request)
+    protected byte[] retrieveGetResponseAsBytes(String urlString)
+            throws IOException, JDOMException, RemoteApiSessionExpiredException {
+        UrlUtil.validateUrl(urlString);
+        url.set(urlString);
+        synchronized (clientLock) {
+            if (client == null) {
+                try {
+                    client = HttpClientFactory.getClient();
+                } catch (HttpProxySettingsException e) {
+                    throw (IOException) new IOException("Connection error. Please set up HTTP Proxy settings").initCause(e);
+                }
+            }
+
+            GetMethod method = new GetMethod(urlString);
+
+            try {
+                method.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
+                method.getParams().setSoTimeout(client.getParams().getSoTimeout());
+                adjustHttpHeader(method);
+
+                client.executeMethod(method);
+
+                if (method.getStatusCode() != HttpStatus.SC_OK) {
+                    throw new IOException(
+                            "HTTP " + method.getStatusCode() + " (" + HttpStatus.getStatusText(method.getStatusCode())
+                                    + ")\n" + method.getStatusText());
+                }
+
+                return method.getResponseBody();
+            } catch (NullPointerException e) {
+                throw (IOException) new IOException("Connection error").initCause(e);
+            } finally {
+                method.releaseConnection();
+            }
+        }
+    }
+
+    protected Document retrievePostResponse(String urlString, Document request)
 			throws IOException, JDOMException, RemoteApiSessionExpiredException {
 		return retrievePostResponse(urlString, request, true);
 	}

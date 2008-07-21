@@ -93,7 +93,16 @@ public class AutoRenewBambooSession implements BambooSession {
 		return delegate.isLoggedIn();
 	}
 
-	public List<BambooPlan> listPlanNames() throws RemoteApiException {
+    public byte[] getBuildLogs(String buildKey, String buildNumber) throws RemoteApiException {
+        try {
+            return delegate.getBuildLogs(buildKey, buildNumber);
+        } catch (RemoteApiSessionExpiredException e) {
+            delegate.login(userName, password);
+            return delegate.getBuildLogs(buildKey, buildNumber);
+        }
+    }
+
+    public List<BambooPlan> listPlanNames() throws RemoteApiException {
 		try {
 			return delegate.listPlanNames();
 		} catch (RemoteApiSessionExpiredException e) {

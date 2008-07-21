@@ -55,4 +55,6 @@ public interface BambooSession {
 	void executeBuild(String buildKey) throws RemoteApiException;
 
 	boolean isLoggedIn();
+
+    byte[] getBuildLogs(String buildKey, String buildNumber) throws RemoteApiException;
 }
