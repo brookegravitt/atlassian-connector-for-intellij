@@ -97,7 +97,8 @@ public final class CrucibleHelper {
 	  * If function showVirtualFileWithComments is not called before then no comment highlighting or
 	?  * StripMarkap
 	* */
-	public static void selectVersionedCommentLineInEditor(Project project, CrucibleFileInfo reviewItem, VersionedComment comment) {
+	public static void selectVersionedCommentLineInEditor(
+            Project project, CrucibleFileInfo reviewItem, VersionedComment comment) {
 		OpenFileDescriptor ofd = getOpenFileDescriptor(project, reviewItem.getFileDescriptor().getUrl(),
 				reviewItem.getFileDescriptor().getRevision(), 
                 comment.getFromStartLine(), 1);

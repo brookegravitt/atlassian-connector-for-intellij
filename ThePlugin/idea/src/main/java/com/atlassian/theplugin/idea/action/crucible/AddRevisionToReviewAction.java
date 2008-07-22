@@ -33,7 +33,8 @@ public class AddRevisionToReviewAction extends Crucible16RepositoryAction {
                     event.getPresentation().setEnabled(false);
                 } else {
                     ReviewData rd = IdeaHelper.getCrucibleToolWindowPanel(event).getSelectedReview();
-                    event.getPresentation().setEnabled(rd.getCreator().getUserName().equals(rd.getServer().getUserName()));                    
+                    event.getPresentation().setEnabled(
+                            rd.getCreator().getUserName().equals(rd.getServer().getUserName()));                    
                 }
             }
         } else {
