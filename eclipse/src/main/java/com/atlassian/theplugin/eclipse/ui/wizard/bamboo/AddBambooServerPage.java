@@ -32,7 +32,9 @@ import com.atlassian.theplugin.eclipse.core.operation.bamboo.RefreshBambooServer
 import com.atlassian.theplugin.eclipse.core.operation.bamboo.SaveBambooServersOperation;
 import com.atlassian.theplugin.eclipse.preferences.Activator;
 import com.atlassian.theplugin.eclipse.ui.composite.bamboo.BambooServerPropertiesTabFolder;
+import com.atlassian.theplugin.eclipse.ui.dialog.bamboo.NonValidBambooLocationErrorDialog;
 import com.atlassian.theplugin.eclipse.ui.panel.AbstractDialogPanel;
+import com.atlassian.theplugin.eclipse.ui.utility.UIMonitorUtil;
 import com.atlassian.theplugin.eclipse.ui.verifier.AbstractFormattedVerifier;
 import com.atlassian.theplugin.eclipse.ui.wizard.AbstractVerifiedWizardPage;
 import com.atlassian.theplugin.eclipse.util.PluginUtil;
@@ -223,23 +225,21 @@ public class AddBambooServerPage extends AbstractVerifiedWizardPage {
 			}
 		}*/
 		
-		/*
-		FIXME: this should be enabled
-		if (this.propertiesTabFolder.isValidateOnFinishRequested() && panel == null) {
+		if (this.propertiesTabFolder.isValidateOnFinishRequested() /* && panel == null */) {
 			final Exception []problem = new Exception[1];
-			UIMonitorUtil.doTaskNowDefault(this.getShell(), new AbstractNonLockingOperation("Operation.ValidateLocation") {
+			UIMonitorUtil.doTaskNowDefault(this.getShell(), new AbstractNonLockingOperation("Operation.ValidateBambooServer") {
 				protected void runImpl(IProgressMonitor monitor) throws Exception {
-					problem[0] = SVNUtility.validateRepositoryLocation(AddBambooServerPage.this.propertiesTabFolder.getRepositoryLocation());
+					//FIXME: problem[0] = SVNUtility.validateRepositoryLocation(AddBambooServerPage.this.propertiesTabFolder.getBambooServer());
 				}
 			}, false);
 			if (problem[0] != null) {
-				NonValidLocationErrorDialog dialog = new NonValidLocationErrorDialog(this.getShell(), problem[0].getMessage());
+				NonValidBambooLocationErrorDialog dialog = new NonValidBambooLocationErrorDialog(this.getShell(), problem[0].getMessage());
 				if (dialog.open() != 0)
 				{
 					return false;
 				}
 			}
-		}*/
+		}
 		
 		boolean shouldntBeAdded = this.editable == null 
 			? false : (BambooConfigurationStorage.instance().getBambooServer(this.editable.getId()) != null);

@@ -84,8 +84,8 @@ public class BambooServerPropertiesTabFolder extends Composite implements IPrope
 		tabItem.setText(Activator.getDefault().getResource("BambooServerPropertiesTabFolder.General"));
 		tabItem.setControl(this.createBambooServerPropertiesPanel(tabFolder));
 		
-		tabItem = new TabItem(tabFolder, SWT.NONE);
-		tabItem.setText(Activator.getDefault().getResource("BambooServerPropertiesTabFolder.Advanced"));
+		//tabItem = new TabItem(tabFolder, SWT.NONE);
+		//tabItem.setText(Activator.getDefault().getResource("BambooServerPropertiesTabFolder.Advanced"));
 		//tabItem.setControl(this.createRepositoryRootsComposite(tabFolder));
 		
 		GridData data = null;
