@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.atlassian.theplugin</groupId>
     <artifactId>atlassian-eclipse-plugin</artifactId>
-    <version>0.3.0-SNAPSHOT</version>
+    <version>1.7.0</version>
     <packaging>jar</packaging>
     <inceptionYear>2008</inceptionYear>
     <name>Atlassian  Eclipse  Plugin</name>
@@ -11,13 +11,13 @@
     <parent>
         <groupId>com.atlassian.theplugin</groupId>
         <artifactId>atlassian-plugin-pom</artifactId>
-        <version>1.7.0-SNAPSHOT</version>
+        <version>1.7.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <scm>
-        <connection>scm:svn:https://studio.atlassian.com/svn/PL/trunk/ThePlugin/</connection>
-        <developerConnection>scm:svn:https://studio.atlassian.com/svn/PL/trunk/ThePlugin/</developerConnection>
-        <url>https://studio.atlassian.com/svn/PL/trunk/ThePlugin/</url>
+        <connection>scm:svn:https://studio.atlassian.com/svn/PL/tags/atlassian-plugin-pom-1.7.0</connection>
+        <developerConnection>scm:svn:https://studio.atlassian.com/svn/PL/tags/atlassian-plugin-pom-1.7.0</developerConnection>
+        <url>https://studio.atlassian.com/svn/PL/tags/atlassian-plugin-pom-1.7.0</url>
     </scm>
     <repositories>
         <repository>
@@ -40,7 +40,7 @@
         <dependency>
             <groupId>com.atlassian.theplugin</groupId>
             <artifactId>atlassian-plugin-commons</artifactId>
-            <version>1.7.0-SNAPSHOT</version>
+            <version>1.7.0</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse</groupId>
@@ -267,35 +267,35 @@
                         </goals>
                         <configuration>
                             <tasks>
-                                <property name="output.dir" value="${project.reporting.outputDirectory}/${downloadDir}"/>
-                                <property name="tmp.dir" value="${project.build.directory}/updatesite"/>
+                                <property name="output.dir" value="${project.reporting.outputDirectory}/${downloadDir}" />
+                                <property name="tmp.dir" value="${project.build.directory}/updatesite" />
                                 <condition property="output.version" value="${project.version}" else="0.0.${buildNumber}">
-                                    <istrue value="${maven.release}"/>
+                                    <istrue value="${maven.release}" />
                                 </condition>
                                 <filterset id="maven.properties">
-                                    <filter token="project.version" value="${output.version}"/>
+                                    <filter token="project.version" value="${output.version}" />
                                 </filterset>
-                                <mkdir dir="${output.dir}"/>
-                                <mkdir dir="${output.dir}/features"/>
-                                <mkdir dir="${output.dir}/plugins"/>
-                                <mkdir dir="${tmp.dir}"/>
+                                <mkdir dir="${output.dir}" />
+                                <mkdir dir="${output.dir}/features" />
+                                <mkdir dir="${output.dir}/plugins" />
+                                <mkdir dir="${tmp.dir}" />
                                 <copy file="src/updatesite/site.xml" todir="${output.dir}" filtering="true" overwrite="true">
-                                    <filterset refid="maven.properties"/>
+                                    <filterset refid="maven.properties" />
                                 </copy>
 <!-- Create featurs file -->
-                                <mkdir dir="${tmp.dir}/feature"/>
+                                <mkdir dir="${tmp.dir}/feature" />
                                 <copy file="src/updatesite/features/feature.xml" todir="${tmp.dir}/feature" filtering="true" overwrite="true">
-                                    <filterset refid="maven.properties"/>
+                                    <filterset refid="maven.properties" />
                                 </copy>
-                                <jar destfile="${output.dir}/features/atlassian_eclipse_plugin_feature_${output.version}.jar" basedir="${tmp.dir}/feature"/>
+                                <jar destfile="${output.dir}/features/atlassian_eclipse_plugin_feature_${output.version}.jar" basedir="${tmp.dir}/feature" />
 <!-- Create plugin file -->
-                                <mkdir dir="${tmp.dir}/plugin"/>
+                                <mkdir dir="${tmp.dir}/plugin" />
                                 <jar destfile="${output.dir}/plugins/atlassian_eclipse_plugin_${output.version}.jar" manifest="META-INF/MANIFEST.MF">
                                     <fileset dir="${project.build.directory}/lib">
-                                        <include name="*"/>
+                                        <include name="*" />
                                     </fileset>
                                     <fileset dir="${project.build.outputDirectory}">
-                                        <include name="**/*"/>
+                                        <include name="**/*" />
                                     </fileset>
                                 </jar>
                             </tasks>
