@@ -351,7 +351,7 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
             scroll.setBorder(BorderFactory.createEmptyBorder());
             add(scroll, gbc);
 
-            Border b = BorderFactory.createTitledBorder("Details");
+            Border b = BorderFactory.createTitledBorder("Review");
             setBorder(b);
             Insets i = b.getBorderInsets(this);
             setMinimumSize(new Dimension(0, i.top + i.bottom));
@@ -442,18 +442,13 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
             gbc1.gridy++;
             gbc2.gridy++;
 
-            body.add(new BoldLabel("Total draft comments"), gbc1);
-            body.add(new JLabel(Integer.toString(allDrafts), SwingConstants.LEFT), gbc2);
+            body.add(new BoldLabel("All my comments"), gbc1);
+            body.add(new JLabel(Integer.toString(myGeneralComments + myVersionedComments), SwingConstants.LEFT), gbc2);
             gbc1.gridy++;
             gbc2.gridy++;
 
             body.add(new BoldLabel("Total comments"), gbc1);
             body.add(new JLabel(Integer.toString(generalComments + versionedComments), SwingConstants.LEFT), gbc2);
-            gbc1.gridy++;
-            gbc2.gridy++;
-
-            body.add(new BoldLabel("My comments"), gbc1);
-            body.add(new JLabel(Integer.toString(myGeneralComments + myVersionedComments), SwingConstants.LEFT), gbc2);
             gbc1.gridy++;
             gbc2.gridy++;
 
