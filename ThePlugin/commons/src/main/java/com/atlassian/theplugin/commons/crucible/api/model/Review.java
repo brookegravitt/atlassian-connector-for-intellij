@@ -49,6 +49,8 @@ public interface Review {
 
     Date getCloseDate();
 
+    String getSummary();
+
     List<Reviewer> getReviewers() throws ValueNotYetInitialized;
 
     List<GeneralComment> getGeneralComments() throws ValueNotYetInitialized;

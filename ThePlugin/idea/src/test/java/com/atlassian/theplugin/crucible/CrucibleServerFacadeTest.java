@@ -446,6 +446,10 @@ public class CrucibleServerFacadeTest extends TestCase {
                 return null;
             }
 
+            public String getSummary() {
+                return null;
+            }
+
             public List<Reviewer> getReviewers() throws ValueNotYetInitialized {
                 return null;
             }
@@ -527,6 +531,10 @@ public class CrucibleServerFacadeTest extends TestCase {
             }
 
             public Date getCloseDate() {
+                return null;
+            }
+
+            public String getSummary() {
                 return null;
             }
 
