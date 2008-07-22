@@ -16,6 +16,8 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
+import com.atlassian.theplugin.commons.crucible.api.model.Action;
+
 public class CrucibleCompleteWorker implements Runnable {
     private ReviewData reviewInfo;
     private boolean complete;
@@ -26,7 +28,7 @@ public class CrucibleCompleteWorker implements Runnable {
     }
 
     public void run() {
-        final CrucibleCompleteReviewForm reviewCompleteForm = new CrucibleCompleteReviewForm(reviewInfo, complete);
+        final CrucibleChangeReviewStateForm reviewCompleteForm = new CrucibleChangeReviewStateForm(reviewInfo, complete ? Action.COMPLETE : Action.UNCOMPLETE);
         reviewCompleteForm.show();
     }
 }

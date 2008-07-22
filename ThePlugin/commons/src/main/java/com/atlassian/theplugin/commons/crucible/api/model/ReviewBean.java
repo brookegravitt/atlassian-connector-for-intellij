@@ -44,8 +44,9 @@ public class ReviewBean implements Review {
 	private Date createDate;
 	private Date closeDate;
 	private List<VersionedComment> versionedComments;
+    private String summary;
 
-	public void setReviewers(List<Reviewer> reviewers) {
+    public void setReviewers(List<Reviewer> reviewers) {
 		this.reviewers = reviewers;
 	}
 
@@ -372,5 +373,13 @@ public class ReviewBean implements Review {
         int result;
         result = (permId != null ? permId.hashCode() : 0);
         return result;
+    }
+
+    public String getSummary() {
+        return this.summary;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
     }
 }
