@@ -476,14 +476,14 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
     }
 
-    public void removeItemSelectedListener(TableItemSelectedListener listener) {
+    public void removeItemSelectedListener(TableItemSelectedListener tableListener) {
         for (CollapsibleTable table : tables.values()) {
-            table.removeItemSelectedListener(listener);
+            table.removeItemSelectedListener(tableListener);
         }
 
 
         for (CollapsibleTable table : customTables.values()) {
-            table.removeItemSelectedListener(listener);
+            table.removeItemSelectedListener(tableListener);
         }
     }
 

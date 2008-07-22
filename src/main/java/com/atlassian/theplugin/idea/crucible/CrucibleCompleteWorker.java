@@ -28,7 +28,8 @@ public class CrucibleCompleteWorker implements Runnable {
     }
 
     public void run() {
-        final CrucibleChangeReviewStateForm reviewCompleteForm = new CrucibleChangeReviewStateForm(reviewInfo, complete ? Action.COMPLETE : Action.UNCOMPLETE);
+        final CrucibleChangeReviewStateForm reviewCompleteForm =
+                new CrucibleChangeReviewStateForm(reviewInfo, complete ? Action.COMPLETE : Action.UNCOMPLETE);
         reviewCompleteForm.show();
     }
 }

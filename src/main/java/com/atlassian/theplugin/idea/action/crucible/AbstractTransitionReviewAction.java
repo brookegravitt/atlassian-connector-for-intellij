@@ -3,9 +3,8 @@ package com.atlassian.theplugin.idea.action.crucible;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.Action;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.crucible.ReviewData;
-import com.atlassian.theplugin.idea.crucible.CrucibleCompleteWorker;
 import com.atlassian.theplugin.idea.crucible.CrucibleChangeStateWorker;
+import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
@@ -13,13 +12,14 @@ import com.intellij.openapi.application.ModalityState;
 
 public abstract class AbstractTransitionReviewAction extends AnAction {
     protected abstract Action getRequestedTransition();
+
     private ReviewData rd;
 
     public void actionPerformed(AnActionEvent event) {
 
         new Thread(new Runnable() {
             public void run() {
-                        ApplicationManager.getApplication().invokeAndWait(
+                ApplicationManager.getApplication().invokeAndWait(
                         new CrucibleChangeStateWorker(rd, getRequestedTransition()),
                         ModalityState.defaultModalityState());
             }
@@ -47,7 +47,7 @@ public abstract class AbstractTransitionReviewAction extends AnAction {
                             } else {
                                 event.getPresentation().setEnabled(false);
                                 event.getPresentation().setVisible(false);
-                            }                            
+                            }
                         }
                     }
                 } catch (ValueNotYetInitialized valueNotYetInitialized) {
