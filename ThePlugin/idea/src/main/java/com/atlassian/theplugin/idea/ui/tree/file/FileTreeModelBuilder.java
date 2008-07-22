@@ -87,6 +87,7 @@ public final class FileTreeModelBuilder {
 
 		public void addFile(FileNode root, final CrucibleFileInfo file, final ReviewData review) {
 			FileNode node = createPlace(root, file);
+			// todo lguminski to avoid creation of a new object for each node
 			node.addChild(new CrucibleFileNode(file, review, new AtlassianClickAction() {
 				public void execute(AtlassianTreeNode node, int noOfClicks) {
 					switch (noOfClicks) {

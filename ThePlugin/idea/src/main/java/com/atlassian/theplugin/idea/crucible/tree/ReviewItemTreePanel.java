@@ -17,9 +17,6 @@ package com.atlassian.theplugin.idea.crucible.tree;
 
 import com.atlassian.theplugin.commons.crucible.*;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewBean;
-import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.Logger;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -29,18 +26,12 @@ import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
-import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.file.FileTreeModelBuilder;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.util.ui.UIUtil;
 
 import javax.swing.*;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseEvent;
 import java.util.List;
 
 /**
@@ -93,65 +84,9 @@ public final class ReviewItemTreePanel extends JPanel {
 	private JTree getReviewItemTree() {
 		if (reviewFilesTree == null) {
 			reviewFilesTree = new AtlassianTree();
-
-//
-//			CrucibleTreeRootNode root = new CrucibleTreeRootNode();
-//
-//			model = new CrucibleReviewTreeModel(root);
-//			reviewFilesTree.setModel(model);
-//
-//			reviewFilesTree.setRootVisible(false);
-//			reviewFilesTree.expandRow(0);
-//			reviewFilesTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-//			reviewFilesTree.setVisibleRowCount(VISIBLE_ROW_COUNT);
-//			reviewFilesTree.setShowsRootHandles(true);
-//
-//
-			reviewFilesTree.addMouseListener(new MouseListener() {
-				public void mouseClicked(MouseEvent event) {
-					//To change body of implemented methods use File | Settings | File Templates.
-				}
-
-				public void mousePressed(MouseEvent e) {
-					int selRow = reviewFilesTree.getRowForLocation(e.getX(), e.getY());
-					TreePath selPath = reviewFilesTree.getPathForLocation(e.getX(), e.getY());
-					if (selRow != -1) {
-						nodeClicked(selRow, selPath, e.getClickCount());
-					}
-				}
-
-				public void mouseReleased(MouseEvent event) {
-					//To change body of implemented methods use File | Settings | File Templates.
-				}
-
-				public void mouseEntered(MouseEvent event) {
-					//To change body of implemented methods use File | Settings | File Templates.
-				}
-
-				public void mouseExited(MouseEvent event) {
-					//To change body of implemented methods use File | Settings | File Templates.
-				}
-			});
-//
-//			reviewFilesTree.setCellRenderer(new CrucibleTreeRenderer());
+			reviewFilesTree.setRootVisible(false);
 		}
-//
 		return reviewFilesTree;
-	}
-
-	private void nodeClicked(int selRow, TreePath path, int clickCount) {
-		if (path != null) {
-			AtlassianTreeNode selectedNode = (AtlassianTreeNode) path.getLastPathComponent();
-			AtlassianClickAction action = selectedNode.getAtlassianClickAction();
-			action.execute(selectedNode, clickCount);
-//			if (!(selectedNode instanceof GeneralCommentNode) && selectedNode instanceof ReviewItemDataNode) {
-//				IdeaHelper.getReviewActionEventBroker().trigger(
-//						new ShowReviewedFileItemEvent(
-//								ReviewItemTreePanel.this,
-//								((CrucibleTreeRootNode) model.getRoot()).getCrucibleChangeSet(),
-//								((ReviewItemDataNode) selectedNode).getFile()));
-//			}
-		}
 	}
 
 	public void setEnabled(boolean b) {
@@ -163,8 +98,6 @@ public final class ReviewItemTreePanel extends JPanel {
 	public ProgressAnimationProvider getProgressAnimation() {
 		return progressAnimation;
 	}
-
-
 
 //	private static class ReviewTreeBuiler extends FileTreeModelBuilder {
 //
@@ -239,9 +172,10 @@ public final class ReviewItemTreePanel extends JPanel {
 						statusLabel.setText(buffer.toString());
 
 						reviewFilesTree.setModel(model1);
+						reviewFilesTree.setRootVisible(true);
 					}
 				});
-            } finally {
+			} finally {
 				progressAnimation.stopProgressAnimation();
 			}
 		}
