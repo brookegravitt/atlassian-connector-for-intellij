@@ -529,6 +529,10 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
             return null; 
         }
 
+        public String getSummary() {
+            return null;  
+        }
+
         public List<Reviewer> getReviewers() throws ValueNotYetInitialized {
             return null;
         }

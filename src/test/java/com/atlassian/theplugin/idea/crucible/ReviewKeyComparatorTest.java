@@ -146,6 +146,10 @@ public class ReviewKeyComparatorTest extends TestCase {
             public Date getCloseDate() {
                 return null;  
             }
+
+            public String getSummary() {
+                return null; 
+            }
         };
 	}
 }

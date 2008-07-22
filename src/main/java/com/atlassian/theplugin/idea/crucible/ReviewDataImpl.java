@@ -77,6 +77,10 @@ public class ReviewDataImpl implements ReviewData {
         return review.getCloseDate();
     }
 
+    public String getSummary() {
+        return review.getSummary();
+    }
+
     public List<Reviewer> getReviewers() throws ValueNotYetInitialized {
         return review.getReviewers();
     }
