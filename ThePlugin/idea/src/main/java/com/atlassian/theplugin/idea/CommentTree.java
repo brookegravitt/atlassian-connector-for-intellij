@@ -56,7 +56,15 @@ public class CommentTree extends AtlassianTree {
 	}
 
 	public void focusOnNode(AtlassianTreeNode node) {
-		// todo lguminski to implement this
+		if (node == null) {
+			return;
+		}
+		for (int i = 0; i < getRowCount(); i++) {
+			if (((AtlassianTreeNode) getPathForRow(i).getLastPathComponent()).equals(node)) {
+				this.setSelectionRow(i);
+				this.scrollRowToVisible(i);
+			}
+		}
 	}
 
 	/**
