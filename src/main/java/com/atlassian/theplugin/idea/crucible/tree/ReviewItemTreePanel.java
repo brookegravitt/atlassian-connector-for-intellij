@@ -99,26 +99,6 @@ public final class ReviewItemTreePanel extends JPanel {
 		return progressAnimation;
 	}
 
-//	private static class ReviewTreeBuiler extends FileTreeModelBuilder {
-//
-//		public static AtlassianTreeModel buildFromReview(ReviewData reviewAdapter, Collection<ReviewItem> reviewFiles) {
-//			List<VersionedFileInfo> files = new ArrayList<VersionedFileInfo>();
-//			for(ReviewItem file : reviewFiles) {
-//				VcsVirtualFile toFile = new VcsVirtualFile(file.getFromPath(), null,
-//						file.getFromRevision(), reviewAdapter.getVcsFileSystem());
-//				VcsVirtualFile fromFile = new VcsVirtualFile(file.getToPath(), null,
-//						file.getToRevision(), reviewAdapter.getVcsFileSystem());
-//				ChangedFileInfo fileToAdd = new ChangedFileInfo(fromFile, toFile);
-//				fileToAdd.setNumberOfComments(3);
-//				fileToAdd.setNumberOfDefects(2);
-//				files.add(fileToAdd);
-//			}
-//			ReviewData changeSet;
-//			return FileTreeModelBuilder.buildTreeModelFromCrucibleItems(changeSet);
-//
-//		}
-//	}
-
 	private class MyReviewActionListener extends CrucibleReviewActionListener {
 
 		public void showReview(final ReviewData reviewItem) {
