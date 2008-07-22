@@ -6,7 +6,10 @@ import com.atlassian.theplugin.idea.ui.tree.file.FileNode;
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeSelectionModel;
+import javax.swing.tree.TreePath;
 import java.awt.*;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseEvent;
 
 public class AtlassianTree extends JTree {
 	protected static final AtlassianTreeCellRenderer DISPATCHING_RENDERER = new AtlassianTreeCellRenderer();
@@ -20,16 +23,47 @@ public class AtlassianTree extends JTree {
 		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		setCellRenderer(DISPATCHING_RENDERER);
 		setRootVisible(true);
+		addMouseListener(new MouseListener() {
+			public void mouseClicked(MouseEvent event) {
+				//To change body of implemented methods use File | Settings | File Templates.
+			}
+
+			public void mousePressed(MouseEvent e) {
+				int selRow = getRowForLocation(e.getX(), e.getY());
+				TreePath selPath = getPathForLocation(e.getX(), e.getY());
+				if (selRow != -1) {
+					if (selPath != null) {
+						AtlassianTreeNode selectedNode = (AtlassianTreeNode) selPath.getLastPathComponent();
+						AtlassianClickAction action = selectedNode.getAtlassianClickAction();
+						if (action != null) {
+							action.execute(selectedNode, e.getClickCount());
+						}
+					}
+				}
+			}
+
+			public void mouseReleased(MouseEvent event) {
+				//To change body of implemented methods use File | Settings | File Templates.
+			}
+
+			public void mouseEntered(MouseEvent event) {
+				//To change body of implemented methods use File | Settings | File Templates.
+			}
+
+			public void mouseExited(MouseEvent event) {
+				//To change body of implemented methods use File | Settings | File Templates.
+			}
+		});
 	}
 
 	public void expandAll() {
-		for (int i=0; i<getRowCount(); i++) {
+		for (int i = 0; i < getRowCount(); i++) {
 			expandRow(i);
 		}
 	}
 
 	public void collapseAll() {
-		for (int i=0; i<getRowCount(); i++) {
+		for (int i = 0; i < getRowCount(); i++) {
 			collapseRow(i);
 		}
 	}
@@ -37,11 +71,11 @@ public class AtlassianTree extends JTree {
 	protected static class AtlassianTreeCellRenderer extends DefaultTreeCellRenderer {
 
 		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded,
-                boolean leaf, int row, boolean hasFocus) {
+													  boolean leaf, int row, boolean hasFocus) {
 			try {
 				AtlassianTreeNode node = (AtlassianTreeNode) value;
 				return node.getTreeCellRenderer()
-                        .getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
+						.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
 			} catch (ClassCastException e) {
 				// well, wrong leaf type. I guess this is wrong - unless some genius
 				// decides to mis-use my tree :)
