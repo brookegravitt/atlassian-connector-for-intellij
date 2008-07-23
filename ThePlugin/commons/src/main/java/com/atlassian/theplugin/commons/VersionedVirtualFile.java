@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.commons;
 
-import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.IOException;
 
@@ -34,7 +34,6 @@ public class VersionedVirtualFile {
     private VirtualFileSystem fileSystem;
 
 	public VersionedVirtualFile(String path, String revision, VirtualFileSystem fileSystem) {
-		super();
 		this.revision = revision;
 		this.url = path;
         //this.repoUrl = repoUrl;
@@ -58,7 +57,7 @@ public class VersionedVirtualFile {
 	}
 
 	public String getName() {
-		return AbstractHttpSession.getLastComponentFromUrl(getUrl());
+        return FilenameUtils.getName(getUrl());
 	}
 
 	public String getUrl() {

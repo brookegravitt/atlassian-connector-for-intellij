@@ -62,10 +62,6 @@ public class BambooChangeSetImpl implements BambooChangeSet {
 		return files;
 	}
 
-	public void setFiles(List<BambooFileInfo> files) {
-		this.files = files;
-	}
-
 	public void addCommitFile(BambooFileInfo file) {
 		files.add(file);
 	}

@@ -274,13 +274,4 @@ public abstract class AbstractHttpSession {
         }
         return urlString;
     }
-
-    public static String getLastComponentFromUrl(String urlString) {
-        int lastIndex;
-        lastIndex = urlString.lastIndexOf("/");
-        if (lastIndex != -1) {
-            urlString = urlString.substring(lastIndex + 1);
-        }
-        return urlString;
-    }
 }
