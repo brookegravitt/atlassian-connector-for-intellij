@@ -67,7 +67,7 @@ public final class CrucibleHelper {
 		}
 
 		Editor editor = showVirtualFileInEditor(project,
-                getOpenFileDescriptor(project, reviewItem.getFileDescriptor().getUrl(),
+                getOpenFileDescriptor(project, reviewItem.getFileDescriptor().getAbsoluteUrl(),
 						reviewItem.getFileDescriptor().getRevision(), line, 1));
 		TextAttributes textAttributes = new TextAttributes();
 		textAttributes.setBackgroundColor(VERSIONED_COMMENT_BACKGROUND_COLOR);
