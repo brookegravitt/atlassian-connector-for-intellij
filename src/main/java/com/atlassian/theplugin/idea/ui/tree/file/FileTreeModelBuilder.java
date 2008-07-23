@@ -26,6 +26,7 @@ import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.events.FocusOnGeneralComments;
 import com.atlassian.theplugin.idea.crucible.events.FocusOnFileComments;
+import com.atlassian.theplugin.idea.crucible.events.ShowFile;
 import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -106,11 +107,13 @@ public final class FileTreeModelBuilder {
 			// todo lguminski to avoid creation of a new object for each node
 			node.addChild(new CrucibleFileNode(file, review, new AtlassianClickAction() {
 				public void execute(AtlassianTreeNode node, int noOfClicks) {
+					ReviewActionEventBroker broker = IdeaHelper.getReviewActionEventBroker();
 					switch (noOfClicks) {
 						case 1:
-						case 2:
-							ReviewActionEventBroker broker = IdeaHelper.getReviewActionEventBroker();
 							broker.trigger(new FocusOnFileComments(CrucibleReviewActionListener.ANONYMOUS, review, file));
+			                break;
+						case 2:
+							broker.trigger(new ShowFile(CrucibleReviewActionListener.ANONYMOUS, review, file));
 							break;
 					}
 				}

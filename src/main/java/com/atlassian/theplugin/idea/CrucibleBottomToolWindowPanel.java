@@ -17,11 +17,14 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.crucible.*;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListenerNotUsed;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
+import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.config.ContentPanel;
 import com.intellij.util.ui.UIUtil;
 import com.intellij.openapi.ui.Splitter;
@@ -30,6 +33,8 @@ import com.intellij.openapi.project.Project;
 
 import javax.swing.*;
 import java.awt.*;
+
+import sun.management.resources.agent;
 
 /**
  * Copyright (C) 2008 Atlassian
@@ -62,6 +67,7 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
 	private static CrucibleReviewActionListener tabManager;
 	private static final int LEFT_WIDTH = 150;
 	private static final int LEFT_HEIGHT = 250;
+	private CrucibleReviewActionListener reviewFileAgent = new MyAgent();
 
 
 	protected String getInitialMessage() {
@@ -103,6 +109,8 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
 		reviewComentsPanel = new CommentTreePanel();
 		splitter.setSecondComponent(reviewComentsPanel);
 		add(splitter, BorderLayout.CENTER);
+		IdeaHelper.getReviewActionEventBroker().registerListener(reviewFileAgent);
+
 
 		progressAnimation.configure(this, reviewItemTreePanel, BorderLayout.CENTER);
 
@@ -164,4 +172,14 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
+	private class MyAgent extends CrucibleReviewActionListener {
+		@Override
+		public void showFile(final ReviewData review, final CrucibleFileInfo file) {
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					CrucibleHelper.showVirtualFileWithComments(project, review, file);
+				}
+			});
+		}
+	}
 }
