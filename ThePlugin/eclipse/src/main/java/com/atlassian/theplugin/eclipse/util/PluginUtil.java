@@ -16,32 +16,13 @@
 
 package com.atlassian.theplugin.eclipse.util;
 
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.resource.ImageRegistry;
 
-import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.util.Logger;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 
 public final class PluginUtil {
 
 	private static final String PLUGIN_NAME = "Attlasian IDE Eclipse plug-in";
-	
-	public static final String ICON_BAMBOO_RUN = "Run_bamboo_build";
-	public static final String ICON_BAMBOO_LABEL = "Label_bamboo_build";
-	public static final String ICON_BAMBOO_COMMENT = "Comment_bamboo_build";
-	public static final String ICON_BAMBOO_REFRESH = "Refresh_bamboo_builds";
-	
-	public static final String ICON_BAMBOO_UNKNOWN = BuildStatus.UNKNOWN.toString();
-	public static final String ICON_BAMBOO_FAILED = BuildStatus.BUILD_FAILED.toString();
-	public static final String ICON_BAMBOO_SUCCEEDED = BuildStatus.BUILD_SUCCEED.toString();
-
-	public static final String ICON_CLOSE = "Close";
-
-	public static final String ICON_FAVOURITE_ON = "Favourite on";
-	public static final String ICON_FAVOURITE_OFF = "Favourite off";
-	
-	private static ImageRegistry imageRegistry;
 	
 	private static Logger logger = LoggerImpl.getInstance();	// default logger
 
@@ -58,29 +39,6 @@ public final class PluginUtil {
 	
 	public static void setLogger(Logger logger) {
 		PluginUtil.logger = logger;
-	}
-	
-	public static ImageRegistry getImageRegistry() {
-		if (imageRegistry == null) {
-			imageRegistry = new ImageRegistry();
-			
-			imageRegistry.put(ICON_BAMBOO_SUCCEEDED, ImageDescriptor.createFromFile(PluginUtil.class, "/icons/bamboo_plan_passed.gif"));
-			imageRegistry.put(ICON_BAMBOO_FAILED, ImageDescriptor.createFromFile(PluginUtil.class, "/icons/bamboo_plan_failed.gif"));
-			imageRegistry.put(ICON_BAMBOO_UNKNOWN, ImageDescriptor.createFromFile(PluginUtil.class, "/icons/bamboo_plan_unknown.gif"));
-
-			imageRegistry.put(ICON_BAMBOO_RUN, ImageDescriptor.createFromFile(PluginUtil.class, "/icons/run.gif"));
-			imageRegistry.put(ICON_BAMBOO_LABEL, ImageDescriptor.createFromFile(PluginUtil.class, "/icons/bamboo_label.gif"));
-			imageRegistry.put(ICON_BAMBOO_COMMENT, ImageDescriptor.createFromFile(PluginUtil.class, "/icons/bamboo_comment.png"));
-			imageRegistry.put(ICON_BAMBOO_REFRESH, ImageDescriptor.createFromFile(PluginUtil.class, "/icons/refresh.gif"));
-			
-			imageRegistry.put(ICON_CLOSE, ImageDescriptor.createFromFile(PluginUtil.class, "/icons/close.gif"));
-			
-			imageRegistry.put(ICON_FAVOURITE_ON, ImageDescriptor.createFromFile(PluginUtil.class, "/icons/favourite_on.gif"));
-			imageRegistry.put(ICON_FAVOURITE_OFF, ImageDescriptor.createFromFile(PluginUtil.class, "/icons/favourite_off.gif"));
-			
-		}
-		
-		return imageRegistry;
 	}
 	
 }

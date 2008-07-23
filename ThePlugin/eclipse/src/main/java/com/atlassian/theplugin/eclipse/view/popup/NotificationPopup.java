@@ -39,7 +39,7 @@ import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.commons.bamboo.BambooPopupInfo;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.eclipse.preferences.Activator;
-import com.atlassian.theplugin.eclipse.util.PluginUtil;
+import com.atlassian.theplugin.eclipse.util.PluginIcons;
 
 /**
  * @author Benjamin Pasero
@@ -74,7 +74,7 @@ public class NotificationPopup extends AbstractNotificationPopup {
 		closeButton.setText("Close");
 		closeButton.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
 		closeButton.setCursor(parent.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
-		closeButton.setImage(PluginUtil.getImageRegistry().get(PluginUtil.ICON_CLOSE));
+		closeButton.setImage(PluginIcons.getImageRegistry().get(PluginIcons.ICON_CLOSE));
 		closeButton.addMouseListener(new MouseAdapter() {
 			public void mouseUp(MouseEvent e) {
 				close();
@@ -108,17 +108,17 @@ public class NotificationPopup extends AbstractNotificationPopup {
 			
 			switch (build.getStatus()) {
 				case BUILD_SUCCEED:
-					icon = PluginUtil.ICON_BAMBOO_SUCCEEDED;
+					icon = PluginIcons.ICON_BAMBOO_SUCCEEDED;
 					st = "succeeded";
 					fontColor = Activator.getDefault().getDisplay().getSystemColor(SWT.COLOR_BLACK);
 					break;
 				case BUILD_FAILED:
-					icon = PluginUtil.ICON_BAMBOO_FAILED;
+					icon = PluginIcons.ICON_BAMBOO_FAILED;
 					st = "failed";
 					fontColor = Activator.getDefault().getDisplay().getSystemColor(SWT.COLOR_DARK_RED);
 					break;
 				default:
-					icon = PluginUtil.ICON_BAMBOO_UNKNOWN;
+					icon = PluginIcons.ICON_BAMBOO_UNKNOWN;
 					st = "unknown";
 					fontColor = Activator.getDefault().getDisplay().getSystemColor(SWT.COLOR_BLACK);
 					break;
@@ -130,7 +130,7 @@ public class NotificationPopup extends AbstractNotificationPopup {
 
 			Label image = new Label(notificationComposite, SWT.NO_FOCUS);
 			image.setText("example build");
-			image.setImage(PluginUtil.getImageRegistry().get(icon));
+			image.setImage(PluginIcons.getImageRegistry().get(icon));
 			image.setBackground(parent.getBackground());
 
 			Label l2 = new Label(notificationComposite, SWT.NO_FOCUS);

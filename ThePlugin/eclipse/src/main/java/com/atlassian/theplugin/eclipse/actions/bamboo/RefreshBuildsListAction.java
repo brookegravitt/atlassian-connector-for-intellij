@@ -20,7 +20,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 import com.atlassian.theplugin.eclipse.preferences.Activator;
-import com.atlassian.theplugin.eclipse.util.PluginUtil;
+import com.atlassian.theplugin.eclipse.util.PluginIcons;
 
 public class RefreshBuildsListAction extends Action {
 	
@@ -37,7 +37,7 @@ public class RefreshBuildsListAction extends Action {
 	@Override
 	public ImageDescriptor getImageDescriptor() {
 		// TODO use eclipse resource handling
-		return ImageDescriptor.createFromImage(PluginUtil.getImageRegistry().get(PluginUtil.ICON_BAMBOO_REFRESH));
+		return ImageDescriptor.createFromImage(PluginIcons.getImageRegistry().get(PluginIcons.ICON_BAMBOO_REFRESH));
 	}
 
 	@Override

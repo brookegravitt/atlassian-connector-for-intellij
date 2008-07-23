@@ -32,6 +32,7 @@ import com.atlassian.theplugin.eclipse.actions.bamboo.CommentBuildAction;
 import com.atlassian.theplugin.eclipse.actions.bamboo.LabelBuildAction;
 import com.atlassian.theplugin.eclipse.actions.bamboo.RefreshBuildsListAction;
 import com.atlassian.theplugin.eclipse.actions.bamboo.RunBuildAction;
+import com.atlassian.theplugin.eclipse.actions.bamboo.ShowBuildLogAction;
 import com.atlassian.theplugin.eclipse.preferences.Activator;
 
 /**
@@ -46,6 +47,7 @@ public class BambooToolWindow extends ViewPart {
 	private BambooToolWindowContent bambooToolWindowContent;
 	
 	private BambooStatusTooltipListener popupListener;
+	private ShowBuildLogAction showBuilLogAction;
 
 	/**
 	 * 
@@ -79,9 +81,13 @@ public class BambooToolWindow extends ViewPart {
 		this.labelBuildAction = new LabelBuildAction(this);
 		this.commentBuildAction = new CommentBuildAction(this);
 		
+		this.showBuilLogAction = new ShowBuildLogAction(this);
+		
 		toolBarManager.add(runBuildAction);
 		toolBarManager.add(labelBuildAction);
 		toolBarManager.add(commentBuildAction);
+		toolBarManager.add(new Separator());
+		toolBarManager.add(showBuilLogAction);
 		toolBarManager.add(new Separator());
 		toolBarManager.add(new RefreshBuildsListAction());
 		
@@ -124,6 +130,7 @@ public class BambooToolWindow extends ViewPart {
 	public void enableBamboo2BuildActions() {
 		labelBuildAction.setEnabled(true);
 		commentBuildAction.setEnabled(true);
+		showBuilLogAction.setEnabled(true);
 		getViewSite().getActionBars().getToolBarManager().update(true);
 	}
 	
@@ -131,6 +138,7 @@ public class BambooToolWindow extends ViewPart {
 		runBuildAction.setEnabled(false);
 		labelBuildAction.setEnabled(false);
 		commentBuildAction.setEnabled(false);
+		showBuilLogAction.setEnabled(false);
 		
 		getViewSite().getActionBars().getToolBarManager().update(true);
 	}

@@ -24,7 +24,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.eclipse.util.PluginUtil;
+import com.atlassian.theplugin.eclipse.util.PluginIcons;
 import com.atlassian.theplugin.eclipse.view.bamboo.BambooBuildAdapterEclipse;
 import com.atlassian.theplugin.eclipse.view.bamboo.BambooToolWindow;
 
@@ -69,7 +69,7 @@ public class RunBuildAction extends BambooAction {
 	@Override
 	public ImageDescriptor getImageDescriptor() {
 		// TODO use eclipse resource handling
-		return ImageDescriptor.createFromImage(PluginUtil.getImageRegistry().get(PluginUtil.ICON_BAMBOO_RUN));
+		return ImageDescriptor.createFromImage(PluginIcons.getImageRegistry().get(PluginIcons.ICON_BAMBOO_RUN));
 	}
 
 
