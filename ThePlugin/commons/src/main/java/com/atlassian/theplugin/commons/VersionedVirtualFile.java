@@ -30,13 +30,15 @@ import java.io.IOException;
 public class VersionedVirtualFile {
 	private String revision;
 	private String url;
-	private VirtualFileSystem fileSystem;
+    private String repoUrl;
+    private VirtualFileSystem fileSystem;
 
 	public VersionedVirtualFile(String path, String revision, VirtualFileSystem fileSystem) {
 		super();
 		this.revision = revision;
 		this.url = path;
-		this.fileSystem = fileSystem;
+        //this.repoUrl = repoUrl;
+        this.fileSystem = fileSystem;
 	}
 
 	public boolean isDirectory() {
@@ -67,11 +69,23 @@ public class VersionedVirtualFile {
 		this.url = url;
 	}
 
-	public void setFileSystem(VirtualFileSystem fileSystem) {
+    public String getRepoUrl() {
+        return repoUrl;
+    }
+
+    public void setRepoUrl(String repoUrl) {
+        this.repoUrl = repoUrl;
+    }    
+
+    public void setFileSystem(VirtualFileSystem fileSystem) {
 		this.fileSystem = fileSystem;
 	}
 
 	public VirtualFileSystem getFileSystem() {
 		return fileSystem;
 	}
+
+    public String getAbsoluteUrl() {
+        return (repoUrl != null ? repoUrl : "") + url;
+    }
 }

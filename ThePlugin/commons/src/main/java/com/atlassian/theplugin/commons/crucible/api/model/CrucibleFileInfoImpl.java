@@ -31,6 +31,7 @@ import java.util.List;
 public class CrucibleFileInfoImpl implements CrucibleFileInfo {
     private VersionedVirtualFile fileDescriptor;
     private VersionedVirtualFile oldFileDescriptor;
+    private String repositoryName;
 
     private int numberOfComments = 0;
 
@@ -46,7 +47,6 @@ public class CrucibleFileInfoImpl implements CrucibleFileInfo {
         this.fileDescriptor = fileDescriptor;
         this.oldFileDescriptor = oldFileDescriptor;
     }
-
 
     public VersionedVirtualFile getOldFileDescriptor() {
         return oldFileDescriptor;
@@ -122,4 +122,12 @@ public class CrucibleFileInfoImpl implements CrucibleFileInfo {
         }
         return versionedComments;
     }
+
+    public String getRepositoryName() {
+        return repositoryName;
+    }
+
+    public void setRepositoryName(String repositoryName) {
+        this.repositoryName = repositoryName;
+    }    
 }
