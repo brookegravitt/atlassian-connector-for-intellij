@@ -30,6 +30,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewerBean;
 import com.atlassian.theplugin.commons.crucible.api.model.State;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.User;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
 import junit.framework.TestCase;
@@ -87,11 +88,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
                 return false;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
-            public String getUser() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            public String getDisplayUser() {
+            public User getUser() {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
@@ -176,11 +173,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
                 return false;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
-            public String getUser() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            public String getDisplayUser() {
+            public User getUser() {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
@@ -227,6 +220,10 @@ public class CrucibleReviewNotifierTest extends TestCase {
 
             public List<VersionedComment> getVersionedComments() throws ValueNotYetInitialized {
                 return null;
+            }
+
+            public String getRepositoryName() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
             public VersionedVirtualFile getFileDescriptor() {
@@ -434,6 +431,10 @@ public class CrucibleReviewNotifierTest extends TestCase {
                 return null;
             }
 
+            public String getRepositoryName() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
             public VersionedVirtualFile getFileDescriptor() {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
@@ -492,11 +493,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
                 return false;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
-            public String getUser() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            public String getDisplayUser() {
+            public User getUser() {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
@@ -604,11 +601,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
                 return false;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
-            public String getUser() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            public String getDisplayUser() {
+            public User getUser() {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
 

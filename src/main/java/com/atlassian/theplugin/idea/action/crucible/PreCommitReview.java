@@ -33,7 +33,7 @@ public class PreCommitReview extends AnAction {
         new Thread(new Runnable() {
             public void run() {
                 new CruciblePatchSubmitCommitSession(project, CrucibleServerFacadeImpl.getInstance()).execute(
-                        changes[0].getChanges(), "Ala ma kota");
+                        changes[0].getChanges(), changes[0].getName());
             }
         }).start();
     }

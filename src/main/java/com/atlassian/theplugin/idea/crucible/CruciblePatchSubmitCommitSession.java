@@ -52,8 +52,7 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 		return changes.size() > 0;
 	}
 
-	public void execute(Collection<Change> changes, String commitMessage) {
-		System.out.println("Sending to the Crucible server: " + commitMessage);
+	public void execute(Collection<Change> changes, String commitMessage) {		
         PatchProducer patchProducer = new PatchProducer(project, changes);
         String patch = patchProducer.generateUnifiedDiff();
 
