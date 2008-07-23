@@ -100,7 +100,23 @@
             <classifier>7590</classifier>
             <scope>compile</scope>
         </dependency>
-        -->
+
+        <dependency>
+            <groupId>com.intellij.idea</groupId>
+            <artifactId>resources</artifactId>
+            <version>7.0</version>
+            <classifier>7590</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.intellij.idea</groupId>
+            <artifactId>icons</artifactId>
+            <version>7.0</version>
+            <classifier>7590</classifier>
+            <scope>test</scope>
+        </dependency>
+
+-->
         <dependency>
             <groupId>gnu.trove</groupId>
             <artifactId>trove4j</artifactId>
@@ -420,6 +436,17 @@
             </plugin>
             <plugin>
                 <artifactId>maven-pmd-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.4.2</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/*$*</exclude>
+                        <!-- idea test do not work outside IDEA runtime -->
+                        <exclude>**/*IdeaTest.java</exclude>
+                    </excludes>
+                </configuration>
             </plugin>
         </plugins>
     </build>

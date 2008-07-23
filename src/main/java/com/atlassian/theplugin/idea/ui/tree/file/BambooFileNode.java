@@ -17,27 +17,45 @@
 package com.atlassian.theplugin.idea.ui.tree.file;
 
 import com.atlassian.theplugin.commons.BambooFileInfo;
-import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.FileTypeManager;
+import com.intellij.openapi.vcs.AbstractVcs;
+import com.intellij.psi.PsiFile;
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
+import com.intellij.vcsUtil.VcsUtil;
+import org.apache.commons.io.FilenameUtils;
 
 import javax.swing.*;
 import javax.swing.tree.TreeCellRenderer;
+import java.awt.*;
 
 public class BambooFileNode extends FileNode {
 
 	private BambooFileInfo file;
 	private static final TreeCellRenderer MY_RENDERER = new BambooFileNodeRenderer();
+    /**
+     * null when there is not corresponding PsiFile in currently open project
+     */
+    private PsiFile psiFile;
 
-	public BambooFileNode(BambooFileInfo file, AtlassianClickAction action) {
-		super(AbstractHttpSession.getLastComponentFromUrl(file.getFileDescriptor().getUrl()), action);
+    public PsiFile getPsiFile() {
+        return psiFile;
+    }
+
+    public BambooFileNode(BambooFileInfo file, AtlassianClickAction action, PsiFile psiFile) {
+		super(FilenameUtils.getName(file.getFileDescriptor().getUrl()), action);
 		this.file = file;
-	}
+        this.psiFile = psiFile;
+    }
 
-	public String getRevision() {
+    public BambooFileInfo getBambooFileInfo() {
+        return file;
+    }
+
+    public String getRevision() {
 		return file.getFileDescriptor().getRevision();
 	}
 
@@ -47,7 +65,9 @@ public class BambooFileNode extends FileNode {
 	}
 
 	private static class BambooFileNodeRenderer extends ColoredTreeCellRenderer {
-		public void customizeCellRenderer(JTree tree, Object value, boolean selected, boolean expanded,
+        private static final SimpleTextAttributes GREEN_ATTRIBUTES = new SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC, new Color(0, 128, 0));
+
+        public void customizeCellRenderer(JTree tree, Object value, boolean selected, boolean expanded,
                 boolean leaf, int row, boolean hasFocus) {
 			BambooFileNode node = (BambooFileNode) value;
 			append(node.getName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
@@ -55,10 +75,25 @@ public class BambooFileNode extends FileNode {
 			StringBuilder txt = new StringBuilder();
 			txt.append(" (rev: ");
 			txt.append(node.getRevision());
-			txt.append(")");
+			txt.append(",");
 			append(txt.toString(), SimpleTextAttributes.GRAY_ITALIC_ATTRIBUTES);
+            if (node.getPsiFile() != null) {
+                try {
+                AbstractVcs vcs = VcsUtil.getVcsFor(IdeaHelper.getCurrentProject(), node.getPsiFile().getVirtualFile());
+                if (vcs == null) {
+                    throw new NullPointerException("no VCS info");
+                }
+                String revision = vcs.getDiffProvider().getCurrentRevision(node.getPsiFile().getVirtualFile()).asString();
+                append(" loc rev: " + revision, GREEN_ATTRIBUTES);
+                } catch (NullPointerException e) {
+                    append(e.getMessage(), SimpleTextAttributes.ERROR_ATTRIBUTES);
+                }
+            } else {
+                append(" no corresponding file in the project", SimpleTextAttributes.ERROR_ATTRIBUTES);
+            }
 
-			FileTypeManager mgr = FileTypeManager.getInstance();
+            append(")", SimpleTextAttributes.GRAY_ITALIC_ATTRIBUTES);
+            FileTypeManager mgr = FileTypeManager.getInstance();
 			FileType type = mgr.getFileTypeByFileName(node.getName());
 			setIcon(type.getIcon());
 		}

@@ -72,7 +72,7 @@
 			<li>0.4.0: many small improvements and bugfixes</li>
 			<li>0.3.1: now with basic JIRA support! And autoupdate</li>
 			<li>0.3.0: broken :(</li>
-			<li>0.2.0: Look&feel improvements, bug fixes and initial support for Crucible</li> 
+			<li>0.2.0: Look&feel improvements, bug fixes and initial support for Crucible</li>
 			<li>0.1.0: A much more stable version with a nicely working bamboo build status support,
 			but crappy visuals</li>
 			<li>0.0.1: Initial version with minimal functionality and many annoyng bugs</li>
@@ -184,9 +184,14 @@
                 icon="/runConfigurations/hidePassed.png"/>
 
 
+        <action id="ThePlugin.Bamboo.Changes.GoToSource" class="com.atlassian.theplugin.idea.action.bamboo.changes.GoToSourceAction" text="Jump to Source" icon="/actions/export.png">
+            <keyboard-shortcut first-keystroke="F4" keymap="$default"/>
+        </action>
         <action id="ThePlugin.Bamboo.Changes.ShowDiff"
                 class="com.atlassian.theplugin.idea.action.bamboo.changes.ShowDiffAction" text="Show Diff"
-                icon="/actions/diff.png"/>
+                icon="/actions/diff.png">
+            <keyboard-shortcut first-keystroke="ctrl D" keymap="$default"/>
+                </action>
         <action id="ThePlugin.Bamboo.Changes.DiffWithLocal"
                 class="com.atlassian.theplugin.idea.action.bamboo.changes.DiffWithLocalAction"
                 text="Show Diff With Local" icon="/actions/diffWithCurrent.png"/>
@@ -237,6 +242,7 @@
         </group>
 
         <group id="ThePlugin.Bamboo.CommitListToolBar" popup="false">
+            <reference id="ThePlugin.Bamboo.Changes.GoToSource"/>
             <reference id="ThePlugin.Bamboo.Changes.ShowDiff"/>
             <reference id="ThePlugin.Bamboo.Changes.DiffWithLocal"/>
             <reference id="ThePlugin.Bamboo.Changes.OpenRepoVersion"/>
