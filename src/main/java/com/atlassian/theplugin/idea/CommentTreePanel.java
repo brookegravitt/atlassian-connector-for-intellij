@@ -21,20 +21,17 @@ import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
-import com.atlassian.theplugin.idea.crucible.events.FocusOnGeneralComments;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
-import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
-import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.FileNameNode;
+import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.SectionNode;
+import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
 import com.intellij.util.ui.UIUtil;
 
 import javax.swing.*;
-import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.util.List;
@@ -52,16 +49,7 @@ public class CommentTreePanel extends JPanel {
 	private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
 	private CommentTree commentTree = new CommentTree();
 
-	private static final AtlassianTreeNode ROOT = new AtlassianTreeNode(AtlassianClickAction.EMPTY_ACTION) {
-		public TreeCellRenderer getTreeCellRenderer() {
-			return new TreeCellRenderer() {
-				public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected,
-															  boolean expanded, boolean leaf, int row, boolean hasFocus) {
-					return new JLabel("root");
-				}
-			};
-		}
-	};
+	private static final AtlassianTreeNode ROOT = new SectionNode("root", AtlassianClickAction.EMPTY_ACTION);
 	private static final String GENERAL_COMMENTS_SECTION = "General comments";
 
 	public CommentTreePanel() {

@@ -20,6 +20,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.atlassian.theplugin.idea.ui.tree.file.FileNode;
 
 import javax.swing.*;
+import javax.swing.plaf.TreeUI;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeSelectionModel;
 import javax.swing.tree.TreePath;
@@ -82,6 +83,32 @@ public class AtlassianTree extends JTree {
 		for (int i = 0; i < getRowCount(); i++) {
 			collapseRow(i);
 		}
+	}
+
+	public void focusOnNode(AtlassianTreeNode node) {
+		if (node == null) {
+			return;
+		}
+		for (int i = 0; i < getRowCount(); i++) {
+			if (((AtlassianTreeNode) getPathForRow(i).getLastPathComponent()).equals(node)) {
+				this.setSelectionRow(i);
+				this.scrollRowToVisible(i);
+			}
+		}
+	}
+
+	@Override
+	public Rectangle getPathBounds(TreePath path) {
+		Rectangle newRect = null;
+		Rectangle rect = super.getPathBounds(path);
+		Container parent = getParent();
+		if (parent != null && !(parent instanceof CellRendererPane)) {
+			newRect = new Rectangle(rect.getBounds().x,
+					rect.getBounds().y, rect.getBounds().width, parent.getHeight());
+        } else {
+			newRect = rect;
+		}
+		return newRect;
 	}
 
 	protected static class AtlassianTreeCellRenderer extends DefaultTreeCellRenderer {

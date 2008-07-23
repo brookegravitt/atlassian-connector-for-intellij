@@ -43,4 +43,7 @@ public class CrucibleReviewActionListener {
 
     public void focusOnFileComments(ReviewData review, CrucibleFileInfo file) {
     }
+
+	public void showFile(ReviewData review, CrucibleFileInfo file) {
+	}
 }
