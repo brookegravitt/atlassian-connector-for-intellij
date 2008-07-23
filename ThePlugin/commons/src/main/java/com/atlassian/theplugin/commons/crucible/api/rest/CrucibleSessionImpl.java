@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.commons.crucible.api.rest;
 
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.CrucibleSession;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -220,7 +221,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             if (elements != null && !elements.isEmpty()) {
                 for (Element element : elements) {
                     if (details) {
-                        reviews.add(CrucibleRestXmlHelper.parseDetailedReviewNode(element));
+                        reviews.add(prepareDetailReview(element));
                     } else {
                         reviews.add(CrucibleRestXmlHelper.parseReviewNode(element));
                     }
@@ -266,7 +267,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             if (elements != null && !elements.isEmpty()) {
                 for (Element element : elements) {
                     if (details) {
-                        reviews.add(CrucibleRestXmlHelper.parseDetailedReviewNode(element));
+                        reviews.add(prepareDetailReview(element));
                     } else {
                         reviews.add(CrucibleRestXmlHelper.parseReviewNode(element));
                     }
@@ -306,7 +307,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             if (elements != null && !elements.isEmpty()) {
                 for (Element element : elements) {
                     if (details) {
-                        reviews.add(CrucibleRestXmlHelper.parseDetailedReviewNode(element));
+                        reviews.add(prepareDetailReview(element));
                     } else {
                         reviews.add(CrucibleRestXmlHelper.parseReviewNode(element));
                     }
@@ -347,7 +348,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             if (elements != null && !elements.isEmpty()) {
                 for (Element element : elements) {
                     if (details) {
-                        return CrucibleRestXmlHelper.parseDetailedReviewNode(element);
+                        return prepareDetailReview(element);
                     } else {
                         return CrucibleRestXmlHelper.parseReviewNode(element);
                     }
@@ -359,6 +360,32 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         } catch (JDOMException e) {
             throw new RemoteApiException("Server returned malformed response", e);
         }
+    }
+
+    private Review prepareDetailReview(Element element) throws RemoteApiException {
+        ReviewBean review = CrucibleRestXmlHelper.parseDetailedReviewNode(element);
+
+        try {
+            for (CrucibleFileInfo fileInfo : review.getFiles()) {
+                String repoName = fileInfo.getRepositoryName();
+                String[] repoNameTokens = repoName.split(":");
+                SvnRepository repository = getRepository(repoNameTokens.length > 1 ? repoNameTokens[1] : repoNameTokens[0]);
+                if (repository != null) {
+                    String repoPath = repository.getUrl() + "/" + repository.getPath() + "/";
+                    VersionedVirtualFile oldDescriptor = fileInfo.getOldFileDescriptor();
+                    if (!oldDescriptor.getUrl().equals("")) {
+                        oldDescriptor.setRepoUrl(repoPath);
+                    }
+                    VersionedVirtualFile newDescriptor = fileInfo.getFileDescriptor();
+                    if (!newDescriptor.getUrl().equals("")) {
+                        newDescriptor.setRepoUrl(repoPath);
+                    }
+                }
+            }
+        } catch (ValueNotYetInitialized valueNotYetInitialized) {
+
+        }
+        return review;
     }
 
 
@@ -528,26 +555,18 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             if (elements != null && !elements.isEmpty()) {
                 for (Element element : elements) {
                     CrucibleFileInfo fileInfo = CrucibleRestXmlHelper.parseReviewItemNode(changeSet, element);
-                    String repoName = changeSet.getRepoName();
+                    String repoName = fileInfo.getRepositoryName();
                     String[] repoNameTokens = repoName.split(":");
                     SvnRepository repository = getRepository(repoNameTokens.length > 1 ? repoNameTokens[1] : repoNameTokens[0]);
                     if (repository != null) {
                         String repoPath = repository.getUrl() + "/" + repository.getPath() + "/";
                         VersionedVirtualFile oldDescriptor = fileInfo.getOldFileDescriptor();
                         if (!oldDescriptor.getUrl().equals("")) {
-                            ((CrucibleFileInfoImpl) fileInfo).setOldFileDescriptor(new VersionedVirtualFile(
-                                    repoPath + oldDescriptor.getUrl(),
-                                    oldDescriptor.getRevision(),
-                                    oldDescriptor.getFileSystem()
-                            ));
+                            oldDescriptor.setRepoUrl(repoPath);
                         }
                         VersionedVirtualFile newDescriptor = fileInfo.getFileDescriptor();
                         if (!newDescriptor.getUrl().equals("")) {
-                            ((CrucibleFileInfoImpl) fileInfo).setFileDescriptor(new VersionedVirtualFile(
-                                    repoPath + newDescriptor.getUrl(),
-                                    newDescriptor.getRevision(),
-                                    newDescriptor.getFileSystem()
-                            ));
+                            newDescriptor.setRepoUrl(repoPath);
                         }
                         reviewItems.add(fileInfo);
                     }

@@ -39,4 +39,6 @@ public interface CrucibleFileInfo extends VersionedFileInfo {
 	PermId getPermId();
 
 	List<VersionedComment> getVersionedComments() throws ValueNotYetInitialized;
+
+    String getRepositoryName();
 }

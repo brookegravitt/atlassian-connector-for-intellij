@@ -34,9 +34,7 @@ public interface Comment {
 
 	boolean isReply();
 
-	String getUser();
-
-	String getDisplayUser();
+	User getUser();
 
 	Date getCreateDate();
 

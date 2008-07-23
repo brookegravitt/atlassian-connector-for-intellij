@@ -32,8 +32,7 @@ public class CommentBean implements Comment {
 	private boolean deleted = false;
 	private boolean defectRaised = false;
 	private boolean defectApproved = false;
-	private String user = null;
-	private String displayUser = null;
+	private User user = null;
 	private Date createDate = new Date();
 
 
@@ -101,22 +100,13 @@ public class CommentBean implements Comment {
 		this.defectApproved = defectApproved;
 	}
 
-	public String getUser() {
+	public User getUser() {
 		return user;
 	}
 
-	public void setUser(String user) {
+	public void setUser(User user) {
 		this.user = user;
 	}
-
-	public String getDisplayUser() {
-		return displayUser;
-	}
-
-	public void setDisplayUser(String displayUser) {
-		this.displayUser = displayUser;
-	}
-
 
 	public Date getCreateDate() {
 		return new Date(createDate.getTime());

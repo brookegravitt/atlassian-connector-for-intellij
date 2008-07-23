@@ -388,7 +388,9 @@ public final class CrucibleRestXmlHelper {
                         review.getVirtualFileSystem()
                 )
         );
+        //@todo check why Lukasz move it to review
         ((ReviewBean) review).setRepoName(getChildText(reviewItemNode, "repositoryName"));
+        reviewItem.setRepositoryName(getChildText(reviewItemNode, "repositoryName"));
         // todo lguminski to ask Marek about XML sructure
         if (reviewItemNode.getChild("permId") != null) {
             PermIdBean permId = new PermIdBean();
@@ -443,8 +445,9 @@ public final class CrucibleRestXmlHelper {
 
     private static void parseComment(CommentBean commentBean, Element reviewCommentNode) {
 
-        commentBean.setUser(getChildText(reviewCommentNode, "user"));
-        commentBean.setDisplayUser(getChildText(reviewCommentNode, "userDisplayName"));
+        for (Element element : getChildElements(reviewCommentNode, "user")) {
+            commentBean.setUser(parseUserNode(element));
+        }
         commentBean.setMessage(getChildText(reviewCommentNode, "message"));
         commentBean.setDefectRaised(Boolean.parseBoolean(getChildText(reviewCommentNode, "defectRaised")));
         commentBean.setDefectApproved(Boolean.parseBoolean(getChildText(reviewCommentNode, "defectApproved")));
@@ -485,8 +488,10 @@ public final class CrucibleRestXmlHelper {
         String date = commentTimeFormat.print(comment.getCreateDate().getTime());
         String strangeDate = date.substring(0, date.length() - 2);
         strangeDate += ":00";
-        addTag(commentNode, "createDate", strangeDate);
-        addTag(commentNode, "user", comment.getUser());
+        addTag(commentNode, "createDate", strangeDate);        
+        Element userElement = new Element("user");
+        commentNode.getContent().add(userElement);
+        addTag(userElement, "userName", comment.getUser().getUserName());
         addTag(commentNode, "defectRaised", Boolean.toString(comment.isDefectRaised()));
         addTag(commentNode, "defectApproved", Boolean.toString(comment.isDefectApproved()));
         addTag(commentNode, "deleted", Boolean.toString(comment.isDeleted()));

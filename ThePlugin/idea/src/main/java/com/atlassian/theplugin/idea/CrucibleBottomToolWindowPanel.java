@@ -175,9 +175,9 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
 	private class MyAgent extends CrucibleReviewActionListener {
 		@Override
 		public void showFile(final ReviewData review, final CrucibleFileInfo file) {
-			EventQueue.invokeLater(new Runnable() {
+            EventQueue.invokeLater(new Runnable() {
 				public void run() {
-					CrucibleHelper.showVirtualFileWithComments(project, review, file);
+                    CrucibleHelper.showVirtualFileWithComments(project, review, file);
 				}
 			});
 		}
