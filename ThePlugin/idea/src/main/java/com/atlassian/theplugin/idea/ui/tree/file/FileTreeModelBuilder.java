@@ -18,19 +18,24 @@ package com.atlassian.theplugin.idea.ui.tree.file;
 
 import com.atlassian.theplugin.commons.BambooFileInfo;
 import com.atlassian.theplugin.commons.VersionedFileInfo;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.bamboo.BambooChangeSet;
-import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
-import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
-import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
-import com.atlassian.theplugin.idea.crucible.ReviewData;
-import com.atlassian.theplugin.idea.crucible.events.FocusOnGeneralComments;
-import com.atlassian.theplugin.idea.crucible.events.FocusOnFileComments;
-import com.atlassian.theplugin.idea.crucible.events.ShowFile;
-import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
-import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
-import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
+import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
+import com.atlassian.theplugin.idea.crucible.events.FocusOnFileComments;
+import com.atlassian.theplugin.idea.crucible.events.FocusOnGeneralComments;
+import com.atlassian.theplugin.idea.crucible.events.ShowFile;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
+import com.atlassian.theplugin.util.CodeNavigationUtil;
+import com.intellij.openapi.project.Project;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiManager;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
@@ -69,20 +74,28 @@ public final class FileTreeModelBuilder {
 		return model;
 	}
 
-	public static AtlassianTreeModel buildTreeModelFromBambooChangeSet(BambooChangeSet changeSet) {
+	public static AtlassianTreeModel buildTreeModelFromBambooChangeSet(Project project, BambooChangeSet changeSet) {
 		FileNode root = new FileNode("/", null);
 		FileTreeModel model = new FileTreeModel(root);
 		for (BambooFileInfo f : changeSet.getFiles()) {
-			model.addFile(root, f);
+			model.addFile(project, root, f);
 		}
 		model.compactModel(model.getRoot());
 		return model;
 	}
 
-	public static AtlassianTreeModel buildFlatTreeModelFromBambooChangeSet(BambooChangeSet changeSet) {
+    @Nullable
+    private static PsiFile guessCorrespondingPsiFile(final Project project, BambooFileInfo file) {
+        PsiFile[] psifiles = PsiManager.getInstance(project).getShortNamesCache().getFilesByName(file.getFileDescriptor().getName());
+        return CodeNavigationUtil.guessMatchingFile(file.getFileDescriptor().getUrl(), psifiles, project.getBaseDir());
+    }
+
+
+    public static AtlassianTreeModel buildFlatTreeModelFromBambooChangeSet(final Project project, BambooChangeSet changeSet) {
 		FileTreeModel model = new FileTreeModel(new FileNode("/", null));
 		for (BambooFileInfo f : changeSet.getFiles()) {
-			model.getRoot().addChild(new BambooFileNode(f, AtlassianClickAction.EMPTY_ACTION));
+            PsiFile psiFile = guessCorrespondingPsiFile(project, f);
+            model.getRoot().addChild(new BambooFileNode(f, AtlassianClickAction.EMPTY_ACTION, psiFile));
 		}
 		return model;
 	}
@@ -97,15 +110,16 @@ public final class FileTreeModelBuilder {
 			return (FileNode) super.getRoot();
 		}
 
-		public void addFile(FileNode root, BambooFileInfo file) {
-			FileNode node = createPlace(root, file);
-			node.addChild(new BambooFileNode(file, AtlassianClickAction.EMPTY_ACTION));
+		public void addFile(Project project, FileNode root, BambooFileInfo file) {
+            PsiFile psiFile = guessCorrespondingPsiFile(project, file);
+            FileNode node = createPlace(root, file);
+			node.addChild(new BambooFileNode(file, AtlassianClickAction.EMPTY_ACTION, psiFile));
 		}
 
 		public void addFile(FileNode root, final CrucibleFileInfo file, final ReviewData review) {
 			FileNode node = createPlace(root, file);
 			// todo lguminski to avoid creation of a new object for each node
-			node.addChild(new CrucibleFileNode(file, review, new AtlassianClickAction() {
+			node.addChild(new CrucibleFileNode(file, new AtlassianClickAction() {
 				public void execute(AtlassianTreeNode node, int noOfClicks) {
 					ReviewActionEventBroker broker = IdeaHelper.getReviewActionEventBroker();
 					switch (noOfClicks) {
