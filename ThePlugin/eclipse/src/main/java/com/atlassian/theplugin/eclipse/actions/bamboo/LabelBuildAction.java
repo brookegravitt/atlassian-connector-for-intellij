@@ -27,7 +27,7 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.eclipse.dialogs.bamboo.LabelBuildDialog;
 import com.atlassian.theplugin.eclipse.preferences.Activator;
-import com.atlassian.theplugin.eclipse.util.PluginUtil;
+import com.atlassian.theplugin.eclipse.util.PluginIcons;
 import com.atlassian.theplugin.eclipse.view.bamboo.BambooBuildAdapterEclipse;
 import com.atlassian.theplugin.eclipse.view.bamboo.BambooToolWindow;
 
@@ -43,7 +43,6 @@ public class LabelBuildAction extends BambooAction {
 	
 	@Override
 	public void run() {
-		super.run();
 		
 		final BambooBuildAdapterEclipse build = getBuild();
 		
@@ -82,7 +81,7 @@ public class LabelBuildAction extends BambooAction {
 	@Override
 	public ImageDescriptor getImageDescriptor() {
 		// TODO use eclipse resource handling
-		return ImageDescriptor.createFromImage(PluginUtil.getImageRegistry().get(PluginUtil.ICON_BAMBOO_LABEL));
+		return ImageDescriptor.createFromImage(PluginIcons.getImageRegistry().get(PluginIcons.ICON_BAMBOO_LABEL));
 	}
 
 	@Override

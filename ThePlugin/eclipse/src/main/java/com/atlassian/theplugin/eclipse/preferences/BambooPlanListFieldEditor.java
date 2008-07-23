@@ -53,6 +53,7 @@ import com.atlassian.theplugin.commons.configuration.SubscribedPlanBean;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.eclipse.EclipseActionScheduler;
+import com.atlassian.theplugin.eclipse.util.PluginIcons;
 import com.atlassian.theplugin.eclipse.util.PluginUtil;
 
 /**
@@ -321,9 +322,9 @@ public class BambooPlanListFieldEditor extends FieldEditor implements IPropertyC
 			}
 			
 			if (plan.isFavourite()) {
-				item.setImage(Column.FAVOURITE.ordinal(), PluginUtil.getImageRegistry().get(PluginUtil.ICON_FAVOURITE_ON));
+				item.setImage(Column.FAVOURITE.ordinal(), PluginIcons.getImageRegistry().get(PluginIcons.ICON_FAVOURITE_ON));
 			} else {
-				item.setImage(Column.FAVOURITE.ordinal(), PluginUtil.getImageRegistry().get(PluginUtil.ICON_FAVOURITE_OFF));
+				item.setImage(Column.FAVOURITE.ordinal(), PluginIcons.getImageRegistry().get(PluginIcons.ICON_FAVOURITE_OFF));
 			}
 			item.setText(Column.PLAN_KEY.ordinal(), plan.getPlanKey());
 		}
@@ -333,7 +334,7 @@ public class BambooPlanListFieldEditor extends FieldEditor implements IPropertyC
 			if (! serverPlans.contains(new BambooPlanData(plan.getPlanId()))) {
 				item = new TableItem(table, SWT.NONE);
 				item.setChecked(true);
-				item.setImage(Column.FAVOURITE.ordinal(), PluginUtil.getImageRegistry().get(PluginUtil.ICON_BAMBOO_UNKNOWN));
+				item.setImage(Column.FAVOURITE.ordinal(), PluginIcons.getImageRegistry().get(PluginIcons.ICON_BAMBOO_UNKNOWN));
 				item.setText(Column.PLAN_KEY.ordinal(), plan.getPlanId());
 			}
 		}

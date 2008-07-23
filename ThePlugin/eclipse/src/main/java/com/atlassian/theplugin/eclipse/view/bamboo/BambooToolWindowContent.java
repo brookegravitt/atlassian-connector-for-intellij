@@ -45,10 +45,15 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 
 import com.atlassian.theplugin.commons.bamboo.BambooBuild;
+import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
 import com.atlassian.theplugin.commons.bamboo.BambooStatusListener;
+import com.atlassian.theplugin.commons.bamboo.BuildDetails;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
+import com.atlassian.theplugin.commons.bamboo.TestDetails;
+import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.eclipse.preferences.Activator;
-import com.atlassian.theplugin.eclipse.util.PluginUtil;
+import com.atlassian.theplugin.eclipse.util.PluginIcons;
 
 public class BambooToolWindowContent implements BambooStatusListener {
 
@@ -104,7 +109,6 @@ public class BambooToolWindowContent implements BambooStatusListener {
 					e.printStackTrace();
 				}
 			}
-			
 		});
 		
 		table = tableViewer.getTable();
@@ -166,6 +170,30 @@ public class BambooToolWindowContent implements BambooStatusListener {
 		for (BambooBuild build : buildStatuses) {
 			this.buildStatuses.add(new BambooBuildAdapterEclipse(build));
 			pollingTime = build.getPollingTime();
+			
+//			if (build.getTestsFailed() < build.getTestsPassed()) {
+//				BuildDetails buildDetails;
+//				try {
+//					buildDetails = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()).
+//						getBuildDetails(build.getServer(), build.getBuildKey(), build.getBuildNumber());
+//					
+//					
+//					List<TestDetails> testDetails = buildDetails.getFailedTestDetails();
+//					
+//					System.out.println(build.getBuildKey());
+//					
+//					for (TestDetails test : testDetails) {
+//						System.out.println(test.getTestClassName() + " : " + test.getTestMethodName());
+//					}
+//					
+//				} catch (ServerPasswordNotProvidedException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				} catch (RemoteApiException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//			}
 		}
 		 
 		tableViewer.setInput(buildStatuses);
@@ -216,11 +244,11 @@ public class BambooToolWindowContent implements BambooStatusListener {
 			if (column == Column.BUILD_STATUS) {
 				switch (build.getStatus()) {
 					case BUILD_SUCCEED:
-						return PluginUtil.getImageRegistry().get(BuildStatus.BUILD_SUCCEED.toString());
+						return PluginIcons.getImageRegistry().get(BuildStatus.BUILD_SUCCEED.toString());
 					case BUILD_FAILED:
-						return PluginUtil.getImageRegistry().get(BuildStatus.BUILD_FAILED.toString());
+						return PluginIcons.getImageRegistry().get(BuildStatus.BUILD_FAILED.toString());
 					case UNKNOWN:
-						return PluginUtil.getImageRegistry().get(BuildStatus.UNKNOWN.toString());
+						return PluginIcons.getImageRegistry().get(BuildStatus.UNKNOWN.toString());
 					default:
 						return null;
 				}
@@ -269,7 +297,7 @@ public class BambooToolWindowContent implements BambooStatusListener {
 		BUILD_NUMBER ("Build Number", 100),
 		PROJECT_KEY ("Project", 100),
 		BUILD_DATE ("Build Date", 100),
-		PASSED_TESTS ("Passed Tests", 100),
+		PASSED_TESTS ("Tests", 100),
 		BUILD_REASON ("Reason", 100),
 		SERVER ("Server", 100),
 		MESSAGE ("Message", 300);
