@@ -45,6 +45,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Communication stub for Crucible REST API.
@@ -90,6 +92,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 
     private String authToken = null;
 
+    private Map<String, SvnRepository> repositories = new HashMap<String, SvnRepository>();
 
     /**
      * Public constructor for CrucibleSessionImpl.
@@ -369,7 +372,12 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             for (CrucibleFileInfo fileInfo : review.getFiles()) {
                 String repoName = fileInfo.getRepositoryName();
                 String[] repoNameTokens = repoName.split(":");
-                SvnRepository repository = getRepository(repoNameTokens.length > 1 ? repoNameTokens[1] : repoNameTokens[0]);
+
+                if (!repositories.containsKey(repoName)) {
+                    SvnRepository repository = getRepository(repoNameTokens.length > 1 ? repoNameTokens[1] : repoNameTokens[0]);
+                    repositories.put(repoName, repository);
+                }
+                SvnRepository repository = repositories.get(repoName);                
                 if (repository != null) {
                     String repoPath = repository.getUrl() + "/" + repository.getPath() + "/";
                     VersionedVirtualFile oldDescriptor = fileInfo.getOldFileDescriptor();
