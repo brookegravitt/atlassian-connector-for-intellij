@@ -17,13 +17,13 @@
 package com.atlassian.theplugin.crucible.api.rest;
 
 import com.atlassian.theplugin.bamboo.api.bamboomock.ErrorResponse;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
-import com.atlassian.theplugin.commons.crucible.api.*;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
-import com.atlassian.theplugin.commons.crucible.api.rest.CrucibleSessionImpl;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.commons.crucible.api.CrucibleSession;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.rest.CrucibleSessionImpl;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import com.atlassian.theplugin.crucible.api.rest.cruciblemock.*;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
@@ -431,7 +431,7 @@ public class CrucibleSessionTest extends TestCase {
 		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		List<State> req = Arrays.asList();
+		List<State> req = new ArrayList<State>();
 		List<Review> reviews = apiHandler.getReviewsInStates(req, false);
 		assertEquals(states.size(), reviews.size());
 		assertTrue(!reviews.isEmpty());

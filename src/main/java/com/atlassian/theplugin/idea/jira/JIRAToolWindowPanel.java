@@ -155,7 +155,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
             Map<String, String> filter = filterMapBean.getFilterEntry();
             String className = filter.get("filterTypeClass");
             try {
-                Class c = Class.forName(className);
+                Class<?> c = Class.forName(className);
                 advancedQuery.add((JIRAQueryFragment) c.getConstructor(Map.class).newInstance(filter));
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
@@ -536,7 +536,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
             JIRAServerFacade serverFacade = jiraServerFacade;
             try {
                 List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
-                final List result;
+                final List<JIRAIssue> result;
                 checkTableSort();
                 if (filters.getSavedFilterUsed()) {
                     if (savedQuery != null) {
@@ -626,7 +626,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
 
 
     public List<JiraIssueAdapter> getIssues() {
-        return (List<JiraIssueAdapter>) listTableModel.getItems();
+        return listTableModel.getItems();
     }
 
     public JIRAIssue getCurrentIssue() {
@@ -718,13 +718,13 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
         }
     }
 
-    public void logWorkForIssue() {
+    public void logWorkForIssue(Project project) {
 		JiraIssueAdapter adapter = (JiraIssueAdapter) table.getSelectedObject();
         if (adapter == null) {
             return;
         }
         final JIRAIssue issue = adapter.getIssue();
-        final WorkLogCreate workLogCreate = new WorkLogCreate(jiraServerFacade, adapter);
+        final WorkLogCreate workLogCreate = new WorkLogCreate(jiraServerFacade, adapter, project);
         workLogCreate.show();
         if (workLogCreate.isOK()) {
             Thread thread = new Thread("atlassian-idea-plugin work log") {

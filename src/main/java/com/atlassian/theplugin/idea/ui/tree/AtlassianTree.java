@@ -16,17 +16,16 @@
 
 package com.atlassian.theplugin.idea.ui.tree;
 
-import com.intellij.openapi.diagnostic.Logger;
 import com.atlassian.theplugin.idea.ui.tree.file.FileNode;
+import com.intellij.openapi.diagnostic.Logger;
 
 import javax.swing.*;
-import javax.swing.plaf.TreeUI;
 import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.TreeSelectionModel;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
-import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 public class AtlassianTree extends JTree {
 	protected static final AtlassianTreeCellRenderer DISPATCHING_RENDERER = new AtlassianTreeCellRenderer();
@@ -101,6 +100,7 @@ public class AtlassianTree extends JTree {
 	public Rectangle getPathBounds(TreePath path) {
 		Rectangle rect = super.getPathBounds(path);
 		Container parent = getParent();
+        Rectangle newRect;
 		if (parent != null && !(parent instanceof CellRendererPane)) {
 			// redefined to show as many childen as possible
 			rect = new Rectangle(rect.getBounds().x,

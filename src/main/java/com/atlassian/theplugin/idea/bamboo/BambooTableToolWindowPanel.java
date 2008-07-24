@@ -16,15 +16,7 @@
 
 package com.atlassian.theplugin.idea.bamboo;
 
-import com.atlassian.theplugin.commons.bamboo.BambooBuild;
-import com.atlassian.theplugin.commons.bamboo.BambooBuildAdapter;
-import com.atlassian.theplugin.commons.bamboo.BambooChangeSet;
-import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
-import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
-import com.atlassian.theplugin.commons.bamboo.BambooStatusListener;
-import com.atlassian.theplugin.commons.bamboo.BuildDetails;
-import com.atlassian.theplugin.commons.bamboo.BuildStatus;
-import com.atlassian.theplugin.commons.bamboo.TestDetails;
+import com.atlassian.theplugin.commons.bamboo.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
@@ -47,7 +39,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.FutureTask;
 
 public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel implements BambooStatusListener {
     private static final Key<BambooTableToolWindowPanel> WINDOW_PROJECT_KEY
@@ -132,7 +123,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
     }
 
     private void labelBuild(final BambooBuildAdapterIdea build, final String label) {
-        FutureTask task = new FutureTask(new Runnable() {
+        new Thread("atlassian-idea-plugin label build") {
             public void run() {
                 setStatusMessage("Applying label on build...");
                 try {
@@ -145,8 +136,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
                     setStatusMessage("Label not applied: " + e.getMessage());
                 }
             }
-        }, null);
-        new Thread(task, "atlassian-idea-plugin label build").start();
+        }.start();
     }
 
     public void addLabelToBuild() {
@@ -163,7 +153,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
     }
 
     private void commentBuild(final BambooBuildAdapterIdea build, final String commentText) {
-        FutureTask task = new FutureTask(new Runnable() {
+        new Thread("atlassian-idea-plugin comment build") {
             public void run() {
                 setStatusMessage("Adding comment label on build...");
                 try {
@@ -177,8 +167,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
                 }
 
             }
-        }, null);
-        new Thread(task, "atlassian-idea-plugin comment build").start();
+        }.start();
     }
 
     public void addCommentToBuild() {
@@ -187,7 +176,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
     }
 
     private void executeBuild(final BambooBuildAdapterIdea build) {
-        FutureTask task = new FutureTask(new Runnable() {
+        new Thread("atlassian-idea-plugin execute build") {
             public void run() {
                 setStatusMessage("Executing build on plan " + build.getBuildKey());
                 try {
@@ -200,8 +189,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
                 }
 
             }
-        }, null);
-        new Thread(task, "atlassian-idea-plugin execute build").start();
+        }.start();
     }
 
     public void runBuild() {
@@ -252,8 +240,9 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
         }
     }
 
+    @SuppressWarnings("unchecked")
     public List<BambooBuildAdapterIdea> getBuilds() {
-        return (List<BambooBuildAdapterIdea>) listTableModel.getItems();
+        return listTableModel.getItems();
     }
 
     public void updateBuildStatuses(Collection<BambooBuild> buildStatuses) {
@@ -302,7 +291,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
     public void showBuildStackTrace() {
         final BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) table.getSelectedObject();
 
-        FutureTask task = new FutureTask(new Runnable() {
+        new Thread("atlassian-idea-plugin get stack traces") {
             public void run() {
                 setStatusMessage("Getting test results for build " + build.getBuildKey() + "...");
                 try {
@@ -324,8 +313,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
                 }
 
             }
-        }, null);
-        new Thread(task, "atlassian-idea-plugin get stack traces").start();
+        }.start();
     }
 
     public boolean canShowChanges() {
@@ -339,7 +327,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
     public void showChanges() {
         final BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) table.getSelectedObject();
 
-        FutureTask task = new FutureTask(new Runnable() {
+        new Thread("atlassian-idea-plugin get changes") {
             public void run() {
                 setStatusMessage("Getting changes for build " + build.getBuildKey() + "...");
                 try {
@@ -360,14 +348,13 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
                 }
 
             }
-        }, null);
-        new Thread(task, "atlassian-idea-plugin get changes").start();
+        }.start();
     }
 
     public void showBuildLog() {
         final BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) table.getSelectedObject();
 
-        FutureTask task = new FutureTask(new Runnable() {
+        new Thread("atlassian-idea-plugin get changes") {
             public void run() {
                 setStatusMessage("Getting build log: " + build.getBuildKey() + "...");
                 try {
@@ -390,7 +377,6 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
                 }
 
             }
-        }, null);
-        new Thread(task, "atlassian-idea-plugin get changes").start();
+        }.start();
     }
 }

@@ -16,11 +16,11 @@
 
 package com.atlassian.theplugin.jira.api;
 
-import java.util.Map;
 import java.net.URL;
+import java.util.Map;
 
 public class JIRAPriorityBean extends AbstractJIRAConstantBean {
-    public JIRAPriorityBean(Map map) {
+    public JIRAPriorityBean(Map<String, String> map) {
         super(map);
     }
 

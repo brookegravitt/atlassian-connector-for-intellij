@@ -16,16 +16,16 @@
 
 package com.atlassian.theplugin.configuration;
 
-import com.intellij.util.xmlb.XmlSerializer;
 import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.SubscribedPlan;
 import com.atlassian.theplugin.commons.configuration.*;
+import com.intellij.util.xmlb.XmlSerializer;
 import junit.framework.TestCase;
 import org.jdom.Element;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Collection;
+import java.util.List;
 
 public class ConfigurationBeanTest extends TestCase {
     public void testBean() {
@@ -73,7 +73,7 @@ public class ConfigurationBeanTest extends TestCase {
         assertEquals(server, XmlSerializer.deserialize(e, ServerBean.class));
 
         // now add a plan to the server and try again
-        List plans = new ArrayList();
+        List<SubscribedPlan> plans = new ArrayList<SubscribedPlan>();
         SubscribedPlanBean plan = new SubscribedPlanBean("FOO-TESTS");
         plans.add(plan);
         server.transientSetSubscribedPlans(plans);

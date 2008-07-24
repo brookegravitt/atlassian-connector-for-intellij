@@ -45,6 +45,7 @@ public class GetProjectsCallback implements JettyMockServer.Callback {
 		outputter.output(doc, response.getOutputStream());
 	}
 
+    @SuppressWarnings("unchecked")
 	private Document getProjects() {
 		Element root = new Element("projects");
 		Document doc = new Document(root);
@@ -66,7 +67,8 @@ public class GetProjectsCallback implements JettyMockServer.Callback {
 		return projectData;
 	}
 
-	void addTag(Element root, String tagName, String tagValue) {
+    @SuppressWarnings("unchecked")
+    void addTag(Element root, String tagName, String tagValue) {
 		Element newElement = new Element(tagName);
 		newElement.addContent(tagValue);
         root.getContent().add(newElement);
