@@ -140,6 +140,11 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
         return review;
     }
 
+    public CrucibleFileInfo addItemToReview(Server server, Review review, NewReviewItem newItem) throws RemoteApiException, ServerPasswordNotProvidedException {
+        CrucibleSession session = getSession(server);
+        return session.addItemToReview(review, newItem);
+    }
+
 
     public void addReviewers(
             Server server,
@@ -364,6 +369,11 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
     public Review getReview(Server server, PermId permId) throws RemoteApiException, ServerPasswordNotProvidedException {
         CrucibleSession session = getSession(server);
         return session.getReview(permId, true);
+    }
+
+    public List<Review> getAllReviewsForFile(Server server, String repoName, String path) throws RemoteApiException, ServerPasswordNotProvidedException {
+        CrucibleSession session = getSession(server);
+        return session.getAllReviewsForFile(repoName, path, true);
     }
 
 }

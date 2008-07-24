@@ -42,11 +42,11 @@ import java.net.MalformedURLException;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.Map;
-import java.util.HashMap;
+import java.util.Set;
 
 /**
  * Communication stub for Crucible REST API.
@@ -61,6 +61,8 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
     private static final String LOGIN = "/login";
     private static final String REVIEWS_IN_STATES = "?state=";
     private static final String FILTERED_REVIEWS = "/filter";
+    private static final String SEARCH_REVIEWS = "/search";
+    private static final String SEARCH_REVIEWS_QUERY = "?path=";
     private static final String DETAIL_REVIEW_INFO = "/details";
     private static final String ACTIONS = "/actions";
     private static final String TRANSITIONS = "/transitions";
@@ -89,10 +91,12 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 
     private static final String ADD_CHANGESET = "/addChangeset";
     private static final String ADD_PATCH = "/addPatch";
+    private static final String ADD_ITEM = "/addItem";
 
     private String authToken = null;
 
     private Map<String, SvnRepository> repositories = new HashMap<String, SvnRepository>();
+
 
     /**
      * Public constructor for CrucibleSessionImpl.
@@ -324,6 +328,52 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         }
     }
 
+    public List<Review> getAllReviewsForFile(String repoName, String path, boolean details) throws RemoteApiException {
+        if (!isLoggedIn()) {
+            throw new IllegalStateException("Calling method without calling login() first");
+        }
+
+        try {
+            String url = baseUrl
+                    + REVIEW_SERVICE
+                    + SEARCH_REVIEWS
+                    + "/"
+                    + URLEncoder.encode(repoName, "UTF-8");
+            if (details) {
+                url += DETAIL_REVIEW_INFO;
+            }
+            url = url
+                    + SEARCH_REVIEWS_QUERY
+                    + URLEncoder.encode(path, "UTF-8");
+            Document doc = retrieveGetResponse(url);
+
+            XPath xpath;
+            if (details) {
+                xpath = XPath.newInstance("/detailedReviews/detailReviewData");
+            } else {
+                xpath = XPath.newInstance("/reviews/reviewData");
+            }
+            @SuppressWarnings("unchecked")
+            List<Element> elements = xpath.selectNodes(doc);
+            List<Review> reviews = new ArrayList<Review>();
+
+            if (elements != null && !elements.isEmpty()) {
+                for (Element element : elements) {
+                    if (details) {
+                        reviews.add(prepareDetailReview(element));
+                    } else {
+                        reviews.add(CrucibleRestXmlHelper.parseReviewNode(element));
+                    }
+                }
+            }
+            return reviews;
+        } catch (IOException e) {
+            throw new RemoteApiException(e.getMessage(), e);
+        } catch (JDOMException e) {
+            throw new RemoteApiException("Server returned malformed response", e);
+        }
+    }
+
     public Review getReview(PermId permId, boolean details) throws RemoteApiException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Calling method without calling login() first");
@@ -365,30 +415,34 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         }
     }
 
+    private void fillRepositoryData(CrucibleFileInfo fileInfo) throws RemoteApiException {
+        String repoName = fileInfo.getRepositoryName();
+        String[] repoNameTokens = repoName.split(":");
+
+        if (!repositories.containsKey(repoName)) {
+            SvnRepository repository = getRepository(repoNameTokens.length > 1 ? repoNameTokens[1] : repoNameTokens[0]);
+            repositories.put(repoName, repository);
+        }
+        SvnRepository repository = repositories.get(repoName);
+        if (repository != null) {
+            String repoPath = repository.getUrl() + "/" + repository.getPath() + "/";
+            VersionedVirtualFile oldDescriptor = fileInfo.getOldFileDescriptor();
+            if (!oldDescriptor.getUrl().equals("")) {
+                oldDescriptor.setRepoUrl(repoPath);
+            }
+            VersionedVirtualFile newDescriptor = fileInfo.getFileDescriptor();
+            if (!newDescriptor.getUrl().equals("")) {
+                newDescriptor.setRepoUrl(repoPath);
+            }
+        }
+    }
+
     private Review prepareDetailReview(Element element) throws RemoteApiException {
         ReviewBean review = CrucibleRestXmlHelper.parseDetailedReviewNode(element);
 
         try {
             for (CrucibleFileInfo fileInfo : review.getFiles()) {
-                String repoName = fileInfo.getRepositoryName();
-                String[] repoNameTokens = repoName.split(":");
-
-                if (!repositories.containsKey(repoName)) {
-                    SvnRepository repository = getRepository(repoNameTokens.length > 1 ? repoNameTokens[1] : repoNameTokens[0]);
-                    repositories.put(repoName, repository);
-                }
-                SvnRepository repository = repositories.get(repoName);                
-                if (repository != null) {
-                    String repoPath = repository.getUrl() + "/" + repository.getPath() + "/";
-                    VersionedVirtualFile oldDescriptor = fileInfo.getOldFileDescriptor();
-                    if (!oldDescriptor.getUrl().equals("")) {
-                        oldDescriptor.setRepoUrl(repoPath);
-                    }
-                    VersionedVirtualFile newDescriptor = fileInfo.getFileDescriptor();
-                    if (!newDescriptor.getUrl().equals("")) {
-                        newDescriptor.setRepoUrl(repoPath);
-                    }
-                }
+                fillRepositoryData(fileInfo);
             }
         } catch (ValueNotYetInitialized valueNotYetInitialized) {
 
@@ -563,24 +617,42 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             if (elements != null && !elements.isEmpty()) {
                 for (Element element : elements) {
                     CrucibleFileInfo fileInfo = CrucibleRestXmlHelper.parseReviewItemNode(changeSet, element);
-                    String repoName = fileInfo.getRepositoryName();
-                    String[] repoNameTokens = repoName.split(":");
-                    SvnRepository repository = getRepository(repoNameTokens.length > 1 ? repoNameTokens[1] : repoNameTokens[0]);
-                    if (repository != null) {
-                        String repoPath = repository.getUrl() + "/" + repository.getPath() + "/";
-                        VersionedVirtualFile oldDescriptor = fileInfo.getOldFileDescriptor();
-                        if (!oldDescriptor.getUrl().equals("")) {
-                            oldDescriptor.setRepoUrl(repoPath);
-                        }
-                        VersionedVirtualFile newDescriptor = fileInfo.getFileDescriptor();
-                        if (!newDescriptor.getUrl().equals("")) {
-                            newDescriptor.setRepoUrl(repoPath);
-                        }
-                        reviewItems.add(fileInfo);
-                    }
+                    fillRepositoryData(fileInfo);
+                    reviewItems.add(fileInfo);
                 }
             }
             return reviewItems;
+        } catch (IOException e) {
+            throw new RemoteApiException(e.getMessage(), e);
+        } catch (JDOMException e) {
+            throw new RemoteApiException("Server returned malformed response", e);
+        }
+    }
+
+    public CrucibleFileInfo addItemToReview(Review review, NewReviewItem item) throws RemoteApiException {
+        if (!isLoggedIn()) {
+            throw new IllegalStateException("Calling method without calling login() first");
+        }
+
+        Document request = CrucibleRestXmlHelper.prepareAddItemNode(item);
+        try {
+            String url = baseUrl + REVIEW_SERVICE + "/" + review.getPermId().getId() + REVIEW_ITEMS;
+            Document doc = retrievePostResponse(url, request);
+            XPath xpath = XPath.newInstance("/reviewItem");
+            @SuppressWarnings("unchecked")
+            List<Element> elements = xpath.selectNodes(doc);
+
+            if (elements != null && !elements.isEmpty()) {
+                CrucibleFileInfo fileInfo = CrucibleRestXmlHelper.parseReviewItemNode(review, elements.iterator().next());
+                fillRepositoryData(fileInfo);
+                try {
+                    review.getFiles().add(fileInfo);
+                } catch (ValueNotYetInitialized valueNotYetInitialized) {
+                    // cannot add to non existing list
+                }
+                return fileInfo;
+            }
+            return null;
         } catch (IOException e) {
             throw new RemoteApiException(e.getMessage(), e);
         } catch (JDOMException e) {

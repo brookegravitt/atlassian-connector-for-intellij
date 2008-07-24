@@ -71,6 +71,8 @@ public interface CrucibleSession {
 
     List<Review> getReviewsForCustomFilter(CustomFilter filter, boolean details) throws RemoteApiException;
 
+    List<Review> getAllReviewsForFile(String repoName, String path, boolean details) throws RemoteApiException;
+
     Review getReview(PermId permId, boolean details) throws RemoteApiException;
 
     List<Reviewer> getReviewers(PermId arg1) throws RemoteApiException;
@@ -112,4 +114,6 @@ public interface CrucibleSession {
     List<CustomFieldDef> getMetrics(int version) throws RemoteApiException;    
 
     boolean isLoggedIn();
+
+    CrucibleFileInfo addItemToReview(Review review, NewReviewItem item) throws RemoteApiException;
 }

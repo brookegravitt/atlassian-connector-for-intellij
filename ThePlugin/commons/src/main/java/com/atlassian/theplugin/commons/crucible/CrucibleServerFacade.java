@@ -48,6 +48,9 @@ public interface CrucibleServerFacade extends ProductServerFacade {
     Review addPatchToReview(Server server, PermId permId, String repository, String patch)
             throws RemoteApiException, ServerPasswordNotProvidedException;
 
+    CrucibleFileInfo addItemToReview(Server server, Review review, NewReviewItem newItem)
+            throws RemoteApiException, ServerPasswordNotProvidedException;
+
     void addReviewers(Server server, PermId permId, Set<String> userName)
 		    throws RemoteApiException, ServerPasswordNotProvidedException;    
 
@@ -86,6 +89,9 @@ public interface CrucibleServerFacade extends ProductServerFacade {
 
     Review getReview(Server server, PermId permId)
             throws RemoteApiException, ServerPasswordNotProvidedException;    
+
+    List<Review> getAllReviewsForFile(Server server, String repoName, String path)
+            throws RemoteApiException, ServerPasswordNotProvidedException;
 
     Review createReviewFromPatch(Server server, Review review, String patch)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
