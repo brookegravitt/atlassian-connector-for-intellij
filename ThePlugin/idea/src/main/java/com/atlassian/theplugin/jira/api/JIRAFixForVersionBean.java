@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class JIRAFixForVersionBean extends JIRAVersionBean {
 
-	public JIRAFixForVersionBean(Map map) {
+	public JIRAFixForVersionBean(Map<String, String> map) {
 		super(map);
 	}
 

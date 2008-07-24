@@ -18,23 +18,8 @@ package com.atlassian.theplugin.commons.bamboo.api;
 
 import com.atlassian.theplugin.commons.BambooFileInfo;
 import com.atlassian.theplugin.commons.BambooFileInfoImpl;
-import com.atlassian.theplugin.commons.bamboo.BambooBuild;
-import com.atlassian.theplugin.commons.bamboo.BambooBuildInfo;
-import com.atlassian.theplugin.commons.bamboo.BambooChangeSetImpl;
-import com.atlassian.theplugin.commons.bamboo.BambooPlan;
-import com.atlassian.theplugin.commons.bamboo.BambooPlanData;
-import com.atlassian.theplugin.commons.bamboo.BambooProject;
-import com.atlassian.theplugin.commons.bamboo.BambooProjectInfo;
-import com.atlassian.theplugin.commons.bamboo.BuildDetails;
-import com.atlassian.theplugin.commons.bamboo.BuildDetailsInfo;
-import com.atlassian.theplugin.commons.bamboo.BuildStatus;
-import com.atlassian.theplugin.commons.bamboo.TestDetailsInfo;
-import com.atlassian.theplugin.commons.bamboo.TestResult;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginFailedException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
+import com.atlassian.theplugin.commons.bamboo.*;
+import com.atlassian.theplugin.commons.remoteapi.*;
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
 import org.apache.commons.httpclient.HttpMethod;
 import org.jdom.Document;
@@ -365,63 +350,73 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
                 throw new RemoteApiException(exception);
             }
 
-            XPath xpath = XPath.newInstance("/response");
-            List<Element> elements = xpath.selectNodes(doc);
-            if (!elements.isEmpty()) {
-                for (Element element : elements) {
-                    String vcsRevisionKey = element.getAttributeValue("vcsRevisionKey");
-                    if (vcsRevisionKey != null) {
-                        build.setVcsRevisionKey(vcsRevisionKey);
+            {
+                XPath xpath = XPath.newInstance("/response");
+                @SuppressWarnings("unchecked")
+                final List<Element> elements = xpath.selectNodes(doc);
+                if (!elements.isEmpty()) {
+                    for (Element element : elements) {
+                        String vcsRevisionKey = element.getAttributeValue("vcsRevisionKey");
+                        if (vcsRevisionKey != null) {
+                            build.setVcsRevisionKey(vcsRevisionKey);
+                        }
+                    }
+                }
+            }
+            {
+                XPath xpath = XPath.newInstance("/response/commits/commit");
+                @SuppressWarnings("unchecked")
+                final List<Element> elements = xpath.selectNodes(doc);
+                if (!elements.isEmpty()) {
+                    int i = 1;
+                    for (Element element : elements) {
+                        BambooChangeSetImpl cInfo = new BambooChangeSetImpl();
+                        cInfo.setAuthor(element.getAttributeValue("author"));
+                        cInfo.setCommitDate(parseCommitTime(element.getAttributeValue("date")));
+                        cInfo.setComment(getChildText(element, "comment"));
+
+                        String path = "/response/commits/commit[" + i++ + "]/files/file";
+                        XPath filesPath = XPath.newInstance(path);
+                        @SuppressWarnings("unchecked")
+                        final List<Element> fileElements = filesPath.selectNodes(doc);
+                        for (Element file : fileElements) {
+                            BambooFileInfo fileInfo = new BambooFileInfoImpl(
+                                    cInfo.getVirtualFileSystem(),
+                                    file.getAttributeValue("name"),
+                                    file.getAttributeValue("revision"));
+                            cInfo.addCommitFile(fileInfo);
+                        }
+                        build.addCommitInfo(cInfo);
                     }
                 }
             }
 
-            xpath = XPath.newInstance("/response/commits/commit");
-            elements = xpath.selectNodes(doc);
-            if (!elements.isEmpty()) {
-                int i = 1;
-                for (Element element : elements) {
-                    BambooChangeSetImpl cInfo = new BambooChangeSetImpl();
-                    cInfo.setAuthor(element.getAttributeValue("author"));
-                    cInfo.setCommitDate(parseCommitTime(element.getAttributeValue("date")));
-                    cInfo.setComment(getChildText(element, "comment"));
-
-                    String path = "/response/commits/commit[" + i++ + "]/files/file";
-                    XPath filesPath = XPath.newInstance(path);
-                    List<Element> fileElements = filesPath.selectNodes(doc);
-                    for (Element file : fileElements) {
-                        BambooFileInfo fileInfo = new BambooFileInfoImpl(
-                                cInfo.getVirtualFileSystem(),
-                                file.getAttributeValue("name"),
-                                file.getAttributeValue("revision"));
-                        cInfo.addCommitFile(fileInfo);
+            {
+                XPath xpath = XPath.newInstance("/response/successfulTests/testResult");
+                @SuppressWarnings("unchecked")
+                final List<Element> elements = xpath.selectNodes(doc);
+                if (!elements.isEmpty()) {
+                    for (Element element : elements) {
+                        TestDetailsInfo tInfo = new TestDetailsInfo();
+                        tInfo.setTestClassName(element.getAttributeValue("testClass"));
+                        tInfo.setTestMethodName(element.getAttributeValue("testMethod"));
+                        double duration = 0;
+                        try {
+                            duration = Double.valueOf(element.getAttributeValue("duration"));
+                        } catch (NumberFormatException e) {
+                            // leave 0
+                            duration = 0;
+                        }
+                        tInfo.setTestDuration(duration);
+                        tInfo.setTestResult(TestResult.TEST_SUCCEED);
+                        build.addSuccessfulTest(tInfo);
                     }
-                    build.addCommitInfo(cInfo);
                 }
             }
 
-            xpath = XPath.newInstance("/response/successfulTests/testResult");
-            elements = xpath.selectNodes(doc);
-            if (!elements.isEmpty()) {
-                for (Element element : elements) {
-                    TestDetailsInfo tInfo = new TestDetailsInfo();
-                    tInfo.setTestClassName(element.getAttributeValue("testClass"));
-                    tInfo.setTestMethodName(element.getAttributeValue("testMethod"));
-                    double duration = 0;
-                    try {
-                        duration = Double.valueOf(element.getAttributeValue("duration"));
-                    } catch (NumberFormatException e) {
-                        // leave 0
-                        duration = 0;
-                    }
-                    tInfo.setTestDuration(duration);
-                    tInfo.setTestResult(TestResult.TEST_SUCCEED);
-                    build.addSuccessfulTest(tInfo);
-                }
-            }
-
-            xpath = XPath.newInstance("/response/failedTests/testResult");
-            elements = xpath.selectNodes(doc);
+            XPath xpath = XPath.newInstance("/response/failedTests/testResult");
+            @SuppressWarnings("unchecked")
+            final List<Element> elements = xpath.selectNodes(doc);
             if (!elements.isEmpty()) {
                 int i = 1;
                 for (Element element : elements) {
@@ -440,7 +435,8 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
 
                     String path = "/response/failedTests/testResult[" + i++ + "]/errors/error";
                     XPath errorPath = XPath.newInstance(path);
-                    List<Element> errorElements = errorPath.selectNodes(doc);
+                    @SuppressWarnings("unchecked")
+                    final List<Element> errorElements = errorPath.selectNodes(doc);
                     for (Element error : errorElements) {
                         tInfo.setTestErrors(error.getText());
                     }
@@ -636,8 +632,8 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
         if (error != null) {
             if (error.startsWith(AUTHENTICATION_ERROR_MESSAGE)) {
                 throw new RemoteApiSessionExpiredException("Session expired.");
-			}
-		}
-	}
+            }
+        }
+    }
 
 }

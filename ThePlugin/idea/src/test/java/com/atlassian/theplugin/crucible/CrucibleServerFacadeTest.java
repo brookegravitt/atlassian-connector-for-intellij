@@ -109,17 +109,25 @@ public class CrucibleServerFacadeTest extends TestCase {
         server.stop();
     }
 
+
+    @SuppressWarnings("unchecked")
+    Map<String, CrucibleSession> getSessionsFromFacade() {
+        Field f = null;
+        try {
+            f = CrucibleServerFacadeImpl.class.getDeclaredField("sessions");
+            f.setAccessible(true);
+            return (Map)f.get(facade);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void testChangedCredentials() throws Exception {
         User validLogin2 = new UserBean(VALID_LOGIN.getUserName() + 2);
         String validPassword2 = VALID_PASSWORD + 2;
-        try {
-            Field f = CrucibleServerFacadeImpl.class.getDeclaredField("sessions");
-            f.setAccessible(true);
-
-            ((Map<String, CrucibleSession>) f.get(facade)).put(VALID_URL + validLogin2.getUserName() + validPassword2, crucibleSessionMock);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        getSessionsFromFacade().put(VALID_URL + validLogin2.getUserName() + validPassword2, crucibleSessionMock);
 
         crucibleSessionMock.isLoggedIn();
         EasyMock.expectLastCall().andReturn(false);

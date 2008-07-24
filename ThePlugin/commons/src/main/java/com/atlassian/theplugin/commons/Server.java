@@ -40,7 +40,7 @@ public interface Server {
 
 	Collection<SubscribedPlan> transientGetSubscribedPlans();
 
-	void transientSetSubscribedPlans(Collection<? extends SubscribedPlan> subscribedPlans);
+	void transientSetSubscribedPlans(Collection<SubscribedPlan> subscribedPlans);
 
 	String transientGetPasswordString();
 

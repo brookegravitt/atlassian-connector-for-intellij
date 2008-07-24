@@ -20,11 +20,7 @@ import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.CrucibleSession;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginFailedException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
+import com.atlassian.theplugin.commons.remoteapi.*;
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
 import com.atlassian.theplugin.commons.thirdparty.base64.Base64;
 import org.apache.commons.httpclient.Header;
@@ -41,12 +37,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Communication stub for Crucible REST API.
@@ -788,7 +779,8 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
                     GeneralCommentBean comment = CrucibleRestXmlHelper.parseGeneralCommentNode(element);
                     XPath repliesPath = XPath.newInstance("comments/generalCommentData[" + (i++)
                             + "]/replies/generalCommentData");
-                    List<Element> replies = repliesPath.selectNodes(doc);
+                    @SuppressWarnings("unchecked")
+                    final List<Element> replies = repliesPath.selectNodes(doc);
                     if (replies != null && !replies.isEmpty()) {
                         for (Element reply : replies) {
                             comment.addReply(CrucibleRestXmlHelper.parseGeneralCommentNode(reply));
@@ -808,7 +800,8 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
                     VersionedCommentBean comment = CrucibleRestXmlHelper.parseVersionedCommentNode(element);
                     XPath repliesPath = XPath.newInstance("comments/versionedLineCommentData[" + (i++)
                             + "]/replies/generalCommentData");
-                    List<Element> replies = repliesPath.selectNodes(doc);
+                    @SuppressWarnings("unchecked")
+                    final List<Element> replies = repliesPath.selectNodes(doc);
                     if (replies != null && !replies.isEmpty()) {
                         for (Element reply : replies) {
                             comment.addReply(CrucibleRestXmlHelper.parseVersionedCommentNode(reply));

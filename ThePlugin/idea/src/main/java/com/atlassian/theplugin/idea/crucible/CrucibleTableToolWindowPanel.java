@@ -50,11 +50,8 @@ import thirdparty.javaworld.ClasspathHTMLEditorKit;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStatusListener, TableItemSelectedListener {
 
@@ -316,7 +313,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         if (crucible15Table == null) {
             switchToCrucible15Filter();
         }
-        List<ReviewData> reviewDatas = new ArrayList<ReviewData>(reviews);
+        List<?> reviewDatas = new ArrayList<ReviewData>(reviews);
         crucible15Table.getListTableModel().setItems(reviewDatas);
         crucible15Table.getListTableModel().fireTableDataChanged();
         crucible15Table.getTable().revalidate();
