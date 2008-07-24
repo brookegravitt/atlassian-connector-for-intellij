@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,6 +39,16 @@ import java.util.Map;
  * To change this template use File | Settings | File Templates.
  */
 public class CommentPanelBuilder {
+	private static final Color NOT_MINE_GENERAL_COMMENT_HEADER_COLOR = new Color(239, 224, 255);
+	private static final Color NOT_MINE_GENERAL_COMMENT_BODY_COLOR = new Color(234, 255, 255);
+	private static final Color NOT_MINE_FILE_COMMENT_HEADER_COLOR = new Color(255, 224, 224);
+	private static final Color NOT_MINE_FILE_COMMENT_BODY_COLOR = new Color(234, 255, 255);
+
+	private static final Color MINE_GENERAL_COMMENT_HEADER_COLOR = new Color(239, 224, 255);
+	private static final Color MINE_GENERAL_COMMENT_BODY_COLOR = new Color(234, 255, 255);
+	private static final Color MINE_FILE_COMMENT_HEADER_COLOR = new Color(255, 224, 224);
+	private static final Color MINE_FILE_COMMENT_BODY_COLOR = new Color(234, 255, 255);
+
 	public static JPanel createEditPanelOfGeneralComment(ReviewData review, GeneralComment comment) {
 		return createViewPanelOfGeneralComment(review, comment); // no editing temporarily
 	}
@@ -47,12 +57,29 @@ public class CommentPanelBuilder {
 		return new CommentPanel(review, comment) {
 			@Override
 			public Color getHeaderBackground() {
-				return new Color(239, 224, 255);
+				if (comment.getUser().equals(review.getServer().getUserName())) {
+					return MINE_GENERAL_COMMENT_HEADER_COLOR;
+				}
+				return NOT_MINE_GENERAL_COMMENT_HEADER_COLOR;
+
 			}
 
 			@Override
 			public Color getBodyBackground() {
-				return new Color(234, 255, 255);
+				if (comment.getUser().equals(review.getServer().getUserName())) {
+					return MINE_GENERAL_COMMENT_BODY_COLOR;
+				}
+				return NOT_MINE_GENERAL_COMMENT_BODY_COLOR;
+			}
+
+			@Override
+			public Component getToolBar() {
+				Component toolBar = AtlassianToolbar.createToolbar("a place", "ThePlugin.Crucible.Comment.GeneralMenu");
+		    	if (toolBar == null) {
+					return new JLabel();
+				}
+				toolBar.setBackground(getHeaderBackground());
+				return toolBar;
 			}
 		};
 	}
@@ -61,17 +88,35 @@ public class CommentPanelBuilder {
 		return createViewPanelOfVersionedComment(review, file, comment);
 	}
 
-	public static JPanel createViewPanelOfVersionedComment(ReviewData review, CrucibleFileInfo file, VersionedComment comment) {
+	public static JPanel createViewPanelOfVersionedComment(final ReviewData review, CrucibleFileInfo file, final VersionedComment comment) {
 		return new CommentPanel(review, comment) {
 			@Override
 			public Color getHeaderBackground() {
-				return new Color(255, 224, 224);
+				if (comment.getUser().equals(review.getServer().getUserName())) {
+					return MINE_FILE_COMMENT_HEADER_COLOR;
+				}
+				return NOT_MINE_FILE_COMMENT_HEADER_COLOR;
 			}
 
 			@Override
 			public Color getBodyBackground() {
-				return new Color(234, 255, 255);
+				if (comment.getUser().equals(review.getServer().getUserName())) {
+					return MINE_FILE_COMMENT_BODY_COLOR;
+				}
+				return NOT_MINE_FILE_COMMENT_BODY_COLOR;
 			}
+
+			@Override
+			public Component getToolBar() {
+				Component toolBar = AtlassianToolbar.createToolbar(
+						"a place", "ThePlugin.Crucible.Comment.FileMenu");
+				if (toolBar == null) {
+					return new JLabel();
+				}
+				toolBar.setBackground(getHeaderBackground());
+				return toolBar;
+			}
+
 		};
 	}
 
@@ -93,13 +138,13 @@ public class CommentPanelBuilder {
 			this.comment = comment;
 			setBackground(getBodyBackground());
 			CellConstraints cc = new CellConstraints();
-			JPanel header = new JPanel(new FormLayout("4dlu, left:pref, 10dlu, left:pref, 10dlu, pref:grow, 10dlu, right:pref, 10dlu, min, 4dlu",
+			JPanel header = new JPanel(new FormLayout("4dlu, left:pref, 10dlu, left:pref, 10dlu, pref:grow, 10dlu, right:pref, 10dlu, pref, 4dlu",
 					"2dlu, pref:grow, 2dlu"));
 			header.add(getAuthorLabel(), AUTHOR_POS);
 			header.add(getDateLabel(), DATE_POS);
 			header.add(getRankingLabel(), RANKING_POS);
 			header.add(getStateLabel(), STATE_POS);
-			header.add(AtlassianToolbar.createToolbar("a place", getToolbarName()), TOOLBAR_POS);
+			header.add(getToolBar(), TOOLBAR_POS);
 			header.setBackground(getHeaderBackground());
 //			header.setBorder(new RoundedBorder(getHeaderBackground(), Color.black, getForeground(), 8, 1));
 
@@ -119,10 +164,6 @@ public class CommentPanelBuilder {
 			sb.append(comment.getCreateDate().toString());
 			sb.append(" ]");
 			return new JLabel(sb.toString());
-		}
-
-		protected String getToolbarName() {
-			return "";
 		}
 
 		protected Component getAuthorLabel() {
@@ -148,7 +189,7 @@ public class CommentPanelBuilder {
 		protected Component getRankingLabel() {
 			SimpleColoredComponent component = new SimpleColoredComponent();
 			boolean isFirst = true;
-			for(Map.Entry<String, CustomField> elem : comment.getCustomFields().entrySet()) {
+			for (Map.Entry<String, CustomField> elem : comment.getCustomFields().entrySet()) {
 				if (!isFirst) {
 					component.append(" ", SimpleTextAttributes.REGULAR_ATTRIBUTES);
 				}
@@ -170,14 +211,10 @@ public class CommentPanelBuilder {
 		}
 
 		public abstract Color getHeaderBackground();
-//		{
-//			return Color.yellow;
-//		}
 
 		public abstract Color getBodyBackground();
-//		{
-//			return Color.darkGray;
-//		}
+
+		public abstract Component getToolBar();
 	}
 
 

@@ -30,7 +30,23 @@ public class VersionedCommentBean extends CommentBean implements VersionedCommen
 	private boolean toLineInfo = false;
 	private List<VersionedComment> replies = new ArrayList<VersionedComment>();
 
+	public VersionedCommentBean(VersionedComment bean) {
+		super(bean);
+		if (bean.isFromLineInfo()) {
+			setFromLineInfo(true);
+			setFromStartLine(bean.getFromStartLine());
+			setFromEndLine(bean.getFromEndLine());
+		}
+		if (bean.isToLineInfo()) {
+			setToLineInfo(true);
+			setToStartLine(bean.getToStartLine());
+			setToEndLine(bean.getToEndLine());
+		}
+		setReplies(bean.getReplies());
+	}
+
 	public VersionedCommentBean() {
+		super();
 	}
 
 	public PermId getPermId() {

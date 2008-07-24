@@ -41,7 +41,22 @@ public class CommentBean implements Comment {
 	private Map<String, CustomField> customFields;
 
 	public CommentBean() {
+		super();
 		customFields = new HashMap<String, CustomField>();
+	}
+
+	public CommentBean(Comment bean) {
+		super();
+		setPermId(bean.getPermId());
+		setMessage(bean.getMessage());
+		setDraft(bean.isDraft());
+		setCreateDate(bean.getCreateDate());
+		setDefectApproved(bean.isDefectApproved());
+		setDefectRaised(bean.isDefectRaised());
+		setDeleted(bean.isDeleted());
+		setUser(bean.getUser());
+		setUser(bean.getUser());
+		setReply(bean.isReply());
 	}
 
 	public PermId getPermId() {

@@ -33,7 +33,7 @@ import java.awt.*;
  */
 public class AtlassianTableViewWithToolbar extends JPanel {
 	private AtlassianTableView table;
-	private JPanel toolBarPanel;
+	private JComponent toolBarPanel;
 	private JLabel statusLabel;
 	private JLabel headerLabel;
 
