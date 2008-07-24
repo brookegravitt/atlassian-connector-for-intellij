@@ -18,16 +18,21 @@ package com.atlassian.theplugin.idea.crucible;
 
 
 import com.atlassian.theplugin.commons.bamboo.StausIconBambooListener;
-import com.atlassian.theplugin.commons.crucible.*;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.CrucibleFiltersBean;
+import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
+import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
+import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
+import com.atlassian.theplugin.commons.crucible.api.model.PermId;
+import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.commons.util.Logger;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.ThePluginProjectComponent;
-import com.atlassian.theplugin.idea.crucible.events.ShowReviewEvent;
-import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.bamboo.ToolWindowBambooContent;
+import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
+import com.atlassian.theplugin.idea.crucible.events.ShowReviewEvent;
 import com.atlassian.theplugin.idea.ui.CollapsibleTable;
 import com.atlassian.theplugin.idea.ui.TableColumnProvider;
 import com.atlassian.theplugin.idea.ui.TableItemSelectedListener;
@@ -35,9 +40,9 @@ import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.util.Key;
-import com.intellij.openapi.project.Project;
 import com.intellij.ui.table.TableView;
 import com.intellij.util.ui.ListTableModel;
 import com.intellij.util.ui.UIUtil;
@@ -45,15 +50,18 @@ import thirdparty.javaworld.ClasspathHTMLEditorKit;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStatusListener, TableItemSelectedListener {
 
-	private static final Key<CrucibleTableToolWindowPanel> WINDOW_PROJECT_KEY
+    private static final Key<CrucibleTableToolWindowPanel> WINDOW_PROJECT_KEY
             = Key.create(CrucibleTableToolWindowPanel.class.getName());
-	private Project project;
-	private transient ActionToolbar filterEditToolbar;
+    private Project project;
+    private transient ActionToolbar filterEditToolbar;
     private static CrucibleTableToolWindowPanel instance;
     private TableColumnProvider columnProvider;
 
@@ -63,9 +71,9 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     private JPanel toolBarPanel;
     private JPanel dataPanelsHolder;
     private ToolWindowBambooContent editorPane;
-	private CrucibleReviewActionListener listener = new CrucibleReviewActionListener();
+    private CrucibleReviewActionListener listener = new CrucibleReviewActionListener();
 
-	public CrucibleFiltersBean getFilters() {
+    public CrucibleFiltersBean getFilters() {
         return filters;
     }
 
@@ -133,22 +141,22 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     public void clearAdvancedFilter() {
     }
 
-	public static CrucibleTableToolWindowPanel getInstance(com.intellij.openapi.project.Project project,
-            ProjectConfigurationBean projectConfigurationBean) {
+    public static CrucibleTableToolWindowPanel getInstance(com.intellij.openapi.project.Project project,
+                                                           ProjectConfigurationBean projectConfigurationBean) {
 
         CrucibleTableToolWindowPanel window = project.getUserData(WINDOW_PROJECT_KEY);
 
         if (window == null) {
             window = new CrucibleTableToolWindowPanel(project, projectConfigurationBean);
             project.putUserData(WINDOW_PROJECT_KEY, window);
-			serverFacade = CrucibleServerFacadeImpl.getInstance();
-		}
+            serverFacade = CrucibleServerFacadeImpl.getInstance();
+        }
         return window;
     }
 
-	public CrucibleTableToolWindowPanel(Project project, ProjectConfigurationBean projectConfigurationBean) {
+    public CrucibleTableToolWindowPanel(Project project, ProjectConfigurationBean projectConfigurationBean) {
         super(new BorderLayout());
-		this.project = project;
+        this.project = project;
         this.projectCfg = projectConfigurationBean;
 
         setBackground(UIUtil.getTreeTextBackground());
@@ -201,7 +209,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         for (String s : projectCfg.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().keySet()) {
             CustomFilterBean filter = projectCfg.getCrucibleConfiguration()
                     .getCrucibleFilters().getManualFilter().get(s);
-            
+
             if (filter.isEnabled()) {
                 this.showCustomFilter(true, null);
                 break;
@@ -378,12 +386,12 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     public void itemSelected(Object item, int noClicks) {
         selectedItem = (ReviewData) item;
         if (noClicks == 2) {
-			if (item != null && item instanceof ReviewData) {
-				ReviewData review = (ReviewData) item;
-				IdeaHelper.getReviewActionEventBroker().trigger(new ShowReviewEvent(
-						listener, review));
-			}
-		}
+            if (item != null && item instanceof ReviewData) {
+                ReviewData review = (ReviewData) item;
+                IdeaHelper.getReviewActionEventBroker().trigger(new ShowReviewEvent(
+                        listener, review));
+            }
+        }
     }
 
     public void resetState() {
