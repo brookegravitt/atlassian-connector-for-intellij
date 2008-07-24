@@ -16,8 +16,8 @@
 
 package com.atlassian.theplugin.commons.configuration;
 
-import com.atlassian.theplugin.commons.SubscribedPlan;
 import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.SubscribedPlan;
 import com.atlassian.theplugin.commons.thirdparty.base64.Base64;
 
 import java.io.UnsupportedEncodingException;
@@ -42,7 +42,7 @@ public class ServerBean implements Server {
 	private Boolean useFavourite = false;
 	private boolean isBamboo2 = false;
 
-	private Collection<? extends SubscribedPlan> subscribedPlans = new ArrayList<SubscribedPlan>();
+	private Collection<SubscribedPlan> subscribedPlans = new ArrayList<SubscribedPlan>();
 
 	private transient Boolean isConfigInitialized = false;
 	private static final double ID_DISCRIMINATOR = 1000d;
@@ -64,7 +64,7 @@ public class ServerBean implements Server {
 
 		for (SubscribedPlan plan : cfg.transientGetSubscribedPlans()) {
 			SubscribedPlan newPlan = new SubscribedPlanBean(plan);
-			((Collection<SubscribedPlan>) subscribedPlans).add(newPlan);
+			subscribedPlans.add(newPlan);
 		}
 	}
 
@@ -197,11 +197,11 @@ public class ServerBean implements Server {
 
 	//@Transient
 	public synchronized Collection<SubscribedPlan> transientGetSubscribedPlans() {
-		return (Collection<SubscribedPlan>) subscribedPlans;
+		return subscribedPlans;
 	}
 
 	//@Transient
-	public synchronized void transientSetSubscribedPlans(Collection<? extends SubscribedPlan> plans) {
+	public synchronized void transientSetSubscribedPlans(Collection<SubscribedPlan> plans) {
 		this.subscribedPlans = plans;
 	}
 
@@ -214,7 +214,7 @@ public class ServerBean implements Server {
 		return beanList;
 	}
 
-	public synchronized void setSubscribedPlansData(List<SubscribedPlanBean> subscribedPlansData) {
+	public synchronized void setSubscribedPlansData(List<SubscribedPlan> subscribedPlansData) {
 		this.subscribedPlans = subscribedPlansData;
 	}
 

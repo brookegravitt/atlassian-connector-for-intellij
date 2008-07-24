@@ -16,35 +16,37 @@
 
 package com.atlassian.theplugin.idea.jira;
 
-import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.ui.HyperlinkLabel;
-import com.intellij.ide.BrowserUtil;
-import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.GridConstraints;
+import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.HelpUrl;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
-import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAAction;
 import com.atlassian.theplugin.jira.api.JIRAActionField;
-import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.jira.api.JIRAException;
+import com.intellij.ide.BrowserUtil;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.Messages;
+import com.intellij.ui.HyperlinkLabel;
+import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
+import net.sf.nachocalendar.components.CalendarPanel;
+import net.sf.nachocalendar.model.DateSelectionModel;
 
+import javax.management.timer.Timer;
 import javax.swing.*;
 import javax.swing.event.*;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-import java.text.DateFormat;
-import javax.management.timer.Timer;
-
-import net.sf.nachocalendar.components.CalendarPanel;
-import net.sf.nachocalendar.model.DateSelectionModel;
+import java.util.regex.Pattern;
 
 
 public class WorkLogCreate extends DialogWrapper {
@@ -267,7 +269,7 @@ public class WorkLogCreate extends DialogWrapper {
 
 	private class WdhmInputListener implements DocumentListener {
 
-		private final static String REGEX = "^\\s*(\\d+w)?\\s*(\\d+d)?\\s*(\\d+h)?\\s*(\\d+m)?\\s*$";
+		private static final String REGEX = "^\\s*(\\d+w)?\\s*(\\d+d)?\\s*(\\d+h)?\\s*(\\d+m)?\\s*$";
 
 		private JTextField field;
 		boolean matchFound;
@@ -376,7 +378,7 @@ public class WorkLogCreate extends DialogWrapper {
 		setOKActionEnabled(enable);
 	}
 
-	public WorkLogCreate(final JIRAServerFacade jiraFacade, final JiraIssueAdapter adapter) {
+	public WorkLogCreate(final JIRAServerFacade jiraFacade, final JiraIssueAdapter adapter, Project project) {
 		super(false);
 
 		this.facade = jiraFacade;
@@ -417,10 +419,16 @@ public class WorkLogCreate extends DialogWrapper {
 			}
 		});
 
-		new Thread(new Runnable() {
+        final JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer();
+        if (jiraServer == null) {
+            Messages.showErrorDialog(project, "There is no selected JIRA Server", "Error");
+            return;
+        }
+        final Server server = jiraServer.getServer();
+
+        new Thread(new Runnable() {
 			public void run() {
 				try {
-					Server server = IdeaHelper.getCurrentJIRAServer().getServer();
 					List<JIRAAction> actions = facade.getAvailableActions(server, adapter.getIssue());
 					for (JIRAAction a : actions) {
 						if (a.getId() == STOP_PROGRESS_ACTION_ID) {
@@ -511,10 +519,14 @@ public class WorkLogCreate extends DialogWrapper {
 			calendar = new CalendarPanel(1);
 			calendar.setSelectionMode(DateSelectionModel.SINGLE_SELECTION);
 
-			Date nowZeroZero = (Date) now.clone();
-			nowZeroZero.setHours(0);
-			nowZeroZero.setMinutes(0);
-			nowZeroZero.setSeconds(0);
+            Calendar nowcal = Calendar.getInstance();
+            nowcal.setTime(now);
+            nowcal.set(Calendar.HOUR_OF_DAY, 0);
+            nowcal.set(Calendar.MINUTE, 0);
+            nowcal.set(Calendar.SECOND, 0);
+            nowcal.set(Calendar.MILLISECOND, 0);
+
+            Date nowZeroZero = nowcal.getTime();
 
 			calendar.setDate(nowZeroZero);
 			calendar.setValue(nowZeroZero);

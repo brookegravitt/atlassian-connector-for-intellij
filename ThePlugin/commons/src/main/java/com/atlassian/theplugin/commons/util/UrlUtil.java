@@ -16,8 +16,10 @@
 
 package com.atlassian.theplugin.commons.util;
 
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 
 /**
  * Created by IntelliJ IDEA.
@@ -83,5 +85,13 @@ public abstract class UrlUtil {
 			throw new MalformedURLException("Malformed URL: " + e.getMessage());
 		}
 	}
+
+    public static String encodeUrl(String string) {
+        try {
+            return URLEncoder.encode(string, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new AssertionError("UTF-8 is not supported on this platform. In theory it should not happen, but ...");
+        }
+    }
 
 }

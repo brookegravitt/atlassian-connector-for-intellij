@@ -19,7 +19,7 @@ package com.atlassian.theplugin.jira.api;
 import java.util.Map;
 
 public class JIRAComponentBean extends AbstractJIRAConstantBean {
-    public JIRAComponentBean(Map map) {
+    public JIRAComponentBean(Map<String, String> map) {
         super(map);
     }
 	

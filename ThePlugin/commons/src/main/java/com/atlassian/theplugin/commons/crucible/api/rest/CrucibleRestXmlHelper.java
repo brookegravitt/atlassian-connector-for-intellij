@@ -48,9 +48,12 @@ public final class CrucibleRestXmlHelper {
         }
     }
 
+
     public static List<Element> getChildElements(Element node, String childName) {
         try {
-            return node.getChildren(childName);
+            @SuppressWarnings("unchecked")
+            final List<Element> res = node.getChildren(childName);
+            return res;
         } catch (Exception e) {
             System.out.println("e = " + e);
             return null;

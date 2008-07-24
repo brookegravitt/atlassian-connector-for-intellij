@@ -16,11 +16,11 @@
 
 package com.atlassian.theplugin.jira.api;
 
-import java.util.Map;
 import java.net.URL;
+import java.util.Map;
 
 public class JIRAStatusBean extends AbstractJIRAConstantBean {
-    public JIRAStatusBean(Map map) {
+    public JIRAStatusBean(Map<String, String> map) {
         super(map);
     }
 

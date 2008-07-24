@@ -18,32 +18,32 @@ package com.atlassian.theplugin.idea.jira.editor;
 
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.jira.editor.vfs.MemoryVirtualFile;
-import com.atlassian.theplugin.idea.jira.IssueComment;
 import com.atlassian.theplugin.idea.jira.CachedIconLoader;
+import com.atlassian.theplugin.idea.jira.IssueComment;
+import com.atlassian.theplugin.idea.jira.editor.vfs.MemoryVirtualFile;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.api.JIRAComment;
+import com.atlassian.theplugin.jira.api.JIRAConstant;
 import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.atlassian.theplugin.jira.api.JIRAConstant;
 import com.atlassian.theplugin.util.ColorToHtml;
 import com.intellij.codeHighlighting.BackgroundEditorHighlighter;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.ide.structureView.StructureViewBuilder;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.fileEditor.*;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.Splitter;
+import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.ui.HyperlinkLabel;
 import com.intellij.util.ui.UIUtil;
 import org.jdom.Element;
@@ -59,10 +59,9 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeListener;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.FutureTask;
+import java.util.List;
 
 public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileEditorProvider {
 
@@ -711,13 +710,6 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			refreshComments();
 		}
 
-		// the real reason I am introducing this task is for IDEA not to color all my bodies of future tasks yellow :P
-		private class FutureTaskNoResult extends FutureTask {
-			public FutureTaskNoResult(Runnable r) {
-				super(r, null);
-			}
-		}
-
 		private String[] getStringArray(List<JIRAConstant> l) {
 			List<String> sl = new ArrayList<String>(l.size());
 			for (JIRAConstant c : l) {
@@ -730,7 +722,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
             final IssueComment issueComment = new IssueComment(issue.getKey());
             issueComment.show();
             if (issueComment.isOK()) {
-				FutureTask task = new FutureTaskNoResult(new Runnable() {
+				Runnable runnable = new Runnable() {
 					public void run() {
                         try {
                             facade.addComment(server.getServer(), issue, issueComment.getComment());
@@ -746,8 +738,8 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
                             });
                         }
                     }
-                });
-                new Thread(task, "atlassian-idea-plugin comment issue from editor").start();
+                };
+                new Thread(runnable, "atlassian-idea-plugin comment issue from editor").start();
             }
         }
 
@@ -756,7 +748,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 					|| (issue.getFixVersions() == null)
 					|| (issue.getComponents() == null)) {
 
-				FutureTask task = new FutureTaskNoResult(new Runnable() {
+				Runnable runnable = new Runnable() {
 					private String[] errorString = null;
 
 					public void run() {
@@ -783,8 +775,8 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 							}
 						});
 					}
-				});
-				new Thread(task, "atlassian-idea-plugin get issue details").start();
+				};
+				new Thread(runnable, "atlassian-idea-plugin get issue details").start();
 			} else {
 				summaryPanel.setAffectsVersions(getStringArray(issue.getAffectsVersions()));
 				summaryPanel.setFixVersions(getStringArray(issue.getFixVersions()));
@@ -795,7 +787,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 		public void refreshComments() {
             commentsPanel.clearComments();
             commentsPanel.setTitle("Fetching comments...");
-            FutureTask task = new FutureTaskNoResult(new Runnable() {
+            final Runnable runnable = new Runnable() {
                 public void run() {
                     try {
                         final List<JIRAComment> comments = facade.getComments(server.getServer(), issue);
@@ -818,8 +810,8 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
                         commentsPanel.setTitle("Cannot fetch comments: " + e.getMessage());
                     }
                 }
-            });
-            new Thread(task, "atlassian-idea-plugin refresh comments").start();
+            };
+            new Thread(runnable, "atlassian-idea-plugin refresh comments").start();
         }
 
 		public JIRAIssue getIssue() {

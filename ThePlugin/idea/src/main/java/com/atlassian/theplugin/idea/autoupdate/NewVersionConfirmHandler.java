@@ -18,10 +18,10 @@ package com.atlassian.theplugin.idea.autoupdate;
 
 import com.atlassian.theplugin.commons.configuration.GeneralConfigurationBean;
 import com.atlassian.theplugin.commons.exception.ThePluginException;
+import com.atlassian.theplugin.commons.util.Version;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.atlassian.theplugin.commons.util.Version;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -57,10 +57,6 @@ public class NewVersionConfirmHandler implements UpdateActionHandler {
 		//		message, title, JOptionPane.YES_NO_OPTION);
 		//if (answer == JOptionPane.OK_OPTION) {
 		if (answer == DialogWrapper.OK_EXIT_CODE) {
-			// fire downloading and updating plugin in the new thread
-			//Thread downloader = new Thread(new PluginDownloader(versionInfo, pluginConfiguration));
-			//downloader.start();
-			
 			Task.Backgroundable downloader = new Task.Backgroundable(IdeaHelper.getCurrentProject(), DOWNLOAD_TITLE, false) {
 				public void run(ProgressIndicator indicator) {
 					new PluginDownloader(versionInfo, updateConfiguration).run();

@@ -16,6 +16,7 @@
 
 package com.atlassian.theplugin.idea.action.jira;
 
+import com.atlassian.theplugin.commons.util.UrlUtil;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PluginToolWindow;
 import com.atlassian.theplugin.jira.JIRAServer;
@@ -25,8 +26,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.IconLoader;
-
-import java.net.URLEncoder;
 
 public class QuickSearchAction extends AnAction {
     public void actionPerformed(AnActionEvent e) {
@@ -38,7 +37,7 @@ public class QuickSearchAction extends AnAction {
                     "Search", IconLoader.getIcon("/actions/find.png"));
             if (query != null) {
                 BrowserUtil.launchBrowser(jiraServer.getServer().getUrlString()
-                        + "/secure/QuickSearch.jspa?searchString=" + URLEncoder.encode(query));
+                        + "/secure/QuickSearch.jspa?searchString=" + UrlUtil.encodeUrl(query));
             }
         } else {
             PluginToolWindow.focusPanel(e, PluginToolWindow.ToolWindowPanels.JIRA);
