@@ -38,6 +38,7 @@ public class BuildLogEditorInput implements IEditorInput {
 		return "Log for build " + getName();
 	}
 
+	@SuppressWarnings("unchecked")
 	public Object getAdapter(Class adapter) {
 		return null;
 	}
