@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.crucible.comments;
 
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 
 /**
@@ -45,5 +45,23 @@ public class CrucibleReviewActionListener {
     }
 
 	public void showFile(ReviewData review, CrucibleFileInfo file) {
+	}
+
+	public void aboutToAddVersionedCommentReply(ReviewData review, CrucibleFileInfo file, VersionedComment parentComment, VersionedCommentBean newComment) {
+	}
+
+	public void createdVersionedCommentReply(ReviewData review, CrucibleFileInfo file, VersionedComment parentComment, VersionedComment comment) {
+	}
+
+	public void aboutToAddGeneralCommentReply(ReviewData review, GeneralComment parentComment, GeneralCommentBean newComment) {
+	}
+
+	public void createdGeneralCommentReply(ReviewData review, GeneralComment parentComment, GeneralComment comment) {
+	}
+
+	public void aboutToAddGeneralComment(ReviewData review, GeneralCommentBean newComment) {
+	}
+
+	public void createdGeneralComment(ReviewData review, GeneralComment comment) {
 	}
 }
