@@ -339,6 +339,19 @@ public final class CrucibleRestXmlHelper {
         return doc;
     }
 
+    public static Document prepareAddItemNode(NewReviewItem item) {
+        Element root = new Element("reviewItem");
+        Document doc = new Document(root);
+
+        addTag(root, "repositoryName", item.getRepositoryName());
+        addTag(root, "fromPath", item.getFromPath());
+        addTag(root, "fromRevision", item.getFromRevision());
+        addTag(root, "toPath", item.getToPath());
+        addTag(root, "toRevision", item.getToRevision());                
+
+        return doc;
+    }
+
     public static Document prepareReviewNode(Review review) {
         Element reviewData = prepareReviewNodeElement(review);
         return new Document(reviewData);
@@ -388,8 +401,6 @@ public final class CrucibleRestXmlHelper {
                         review.getVirtualFileSystem()
                 )
         );
-        //@todo check why Lukasz move it to review
-        ((ReviewBean) review).setRepoName(getChildText(reviewItemNode, "repositoryName"));
         reviewItem.setRepositoryName(getChildText(reviewItemNode, "repositoryName"));
         // todo lguminski to ask Marek about XML sructure
         if (reviewItemNode.getChild("permId") != null) {
