@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,24 +17,29 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.crucible.*;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListenerNotUsed;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
+import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
+import com.atlassian.theplugin.idea.crucible.events.VersionedCommentReplyAdded;
+import com.atlassian.theplugin.idea.crucible.events.GeneralCommentReplyAdded;
+import com.atlassian.theplugin.idea.crucible.events.GeneralCommentAdded;
 import com.atlassian.theplugin.idea.config.ContentPanel;
 import com.intellij.util.ui.UIUtil;
 import com.intellij.openapi.ui.Splitter;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.project.Project;
 
 import javax.swing.*;
 import java.awt.*;
-
-import sun.management.resources.agent;
 
 /**
  * Copyright (C) 2008 Atlassian
@@ -55,7 +60,7 @@ import sun.management.resources.agent;
 
 public final class CrucibleBottomToolWindowPanel extends JPanel implements ContentPanel {
 	private static final Key<CrucibleBottomToolWindowPanel> WINDOW_PROJECT_KEY
-            = Key.create(CrucibleBottomToolWindowPanel.class.getName());
+			= Key.create(CrucibleBottomToolWindowPanel.class.getName());
 	private Project project;
 	private static final float SPLIT_RATIO = 0.3f;
 	private ProjectConfigurationBean projectConfiguration;
@@ -76,16 +81,16 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
 	}
 
 	public static CrucibleBottomToolWindowPanel getInstance(Project project,
-            ProjectConfigurationBean projectConfigurationBean) {
+															ProjectConfigurationBean projectConfigurationBean) {
 
-        CrucibleBottomToolWindowPanel window = project.getUserData(WINDOW_PROJECT_KEY);
+		CrucibleBottomToolWindowPanel window = project.getUserData(WINDOW_PROJECT_KEY);
 
-        if (window == null) {
-            window = new CrucibleBottomToolWindowPanel(project, projectConfigurationBean);
-            project.putUserData(WINDOW_PROJECT_KEY, window);
-        }
-        return window;
-    }
+		if (window == null) {
+			window = new CrucibleBottomToolWindowPanel(project, projectConfigurationBean);
+			project.putUserData(WINDOW_PROJECT_KEY, window);
+		}
+		return window;
+	}
 
 	private CrucibleBottomToolWindowPanel(Project project, ProjectConfigurationBean projectConfigurationBean) {
 		super(new BorderLayout());
@@ -106,10 +111,9 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
 		reviewItemTreePanel.getProgressAnimation().configure(leftPanel, reviewItemTreePanel, BorderLayout.CENTER);
 		splitter.setFirstComponent(leftPanel);
 		splitter.setHonorComponentsMinimumSize(true);
-		reviewComentsPanel = new CommentTreePanel();
+		reviewComentsPanel = new CommentTreePanel(project);
 		splitter.setSecondComponent(reviewComentsPanel);
 		add(splitter, BorderLayout.CENTER);
-		IdeaHelper.getReviewActionEventBroker().registerListener(reviewFileAgent);
 
 
 		progressAnimation.configure(this, reviewItemTreePanel, BorderLayout.CENTER);
@@ -173,6 +177,14 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
 	}
 
 	private class MyAgent extends CrucibleReviewActionListener {
+		CrucibleServerFacade facade = CrucibleServerFacadeImpl.getInstance();
+		ReviewActionEventBroker eventBroker = IdeaHelper.getReviewActionEventBroker();
+
+		private MyAgent() {
+			super();
+			eventBroker.registerListener(this);
+		}
+
 		@Override
 		public void showFile(final ReviewData review, final CrucibleFileInfo file) {
             EventQueue.invokeLater(new Runnable() {
@@ -180,6 +192,47 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
                     CrucibleHelper.showVirtualFileWithComments(project, review, file);
 				}
 			});
+		}
+
+		@Override
+		public void aboutToAddGeneralComment(ReviewData review, GeneralCommentBean newComment) {
+//			try {
+				GeneralComment comment = null;
+//				comment = facade.addGeneralComment(review.getServer(), newComment);
+				eventBroker.trigger(new GeneralCommentAdded(this, review, comment));
+//			} catch (RemoteApiException e) {
+//				Messages.showErrorDialog("Problem creating a new comment: " + e.getMessage(), "Error creating comment");
+//			} catch (ServerPasswordNotProvidedException e) {
+//				// todo lguminski ask for password
+//				Messages.showErrorDialog("Problem creating a new comment: " + e.getMessage(), "Error creating comment");
+//			}
+		}
+
+		@Override
+		public void aboutToAddGeneralCommentReply(ReviewData review, GeneralComment parentComment, GeneralCommentBean newComment) {
+			try {
+				GeneralComment comment = facade.addGeneralComment(review.getServer(), parentComment.getPermId(), newComment);
+				eventBroker.trigger(new GeneralCommentReplyAdded(this, review, parentComment, comment));
+			} catch (RemoteApiException e) {
+				Messages.showErrorDialog("Problem creating a new comment: " + e.getMessage(), "Error creating comment");
+			} catch (ServerPasswordNotProvidedException e) {
+//				// todo lguminski ask for password
+				Messages.showErrorDialog("Problem creating a new comment: " + e.getMessage(), "Error creating comment");
+			}
+		}
+
+		@Override
+		public void aboutToAddVersionedCommentReply(ReviewData review, CrucibleFileInfo file, VersionedComment parentComment, VersionedCommentBean newComment) {
+//			try {
+			VersionedComment comment = newComment;
+			// VersionedComment comment = facade.addVersionedComment(review.getServer(), parentComment.getPermId(), newComment);
+			eventBroker.trigger(new VersionedCommentReplyAdded(this, review, file, parentComment, comment));
+//			} catch (RemoteApiException e) {
+//				Messages.showErrorDialog("Problem creating a new comment: " + e.getMessage(), "Error creating comment");
+//			} catch (ServerPasswordNotProvidedException e) {
+//				// todo lguminski ask for password
+//				Messages.showErrorDialog("Problem creating a new comment: " + e.getMessage(), "Error creating comment");
+//			}
 		}
 	}
 }

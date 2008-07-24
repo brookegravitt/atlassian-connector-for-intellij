@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -99,16 +99,14 @@ public class AtlassianTree extends JTree {
 
 	@Override
 	public Rectangle getPathBounds(TreePath path) {
-		Rectangle newRect = null;
 		Rectangle rect = super.getPathBounds(path);
 		Container parent = getParent();
 		if (parent != null && !(parent instanceof CellRendererPane)) {
-			newRect = new Rectangle(rect.getBounds().x,
+			// redefined to show as many childen as possible
+			rect = new Rectangle(rect.getBounds().x,
 					rect.getBounds().y, rect.getBounds().width, parent.getHeight());
-        } else {
-			newRect = rect;
 		}
-		return newRect;
+		return rect;
 	}
 
 	protected static class AtlassianTreeCellRenderer extends DefaultTreeCellRenderer {
