@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class JIRAResolutionBean extends AbstractJIRAConstantBean {
 
-    public JIRAResolutionBean(Map map) {
+    public JIRAResolutionBean(Map<String, String> map) {
 		super(map);
     }
 

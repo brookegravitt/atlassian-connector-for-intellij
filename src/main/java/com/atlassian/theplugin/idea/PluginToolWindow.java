@@ -17,22 +17,22 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.exception.ThePluginException;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.commons.exception.ThePluginException;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.util.Util;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
-import com.intellij.openapi.util.IconLoader;
+import com.intellij.peer.PeerFactory;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
 import com.intellij.ui.content.ContentManagerAdapter;
 import com.intellij.ui.content.ContentManagerEvent;
 import com.intellij.util.containers.HashSet;
-import com.intellij.peer.PeerFactory;
 
 import javax.swing.*;
 import java.util.Set;
@@ -274,7 +274,8 @@ public class PluginToolWindow extends ContentManagerAdapter {
 					case CRUCIBLE_BOTTOM:
 						content = project.getComponent(ThePluginProjectComponent.class).createCrucibleBottomContent();
 						contentManager.addContent(content);
-					default:
+                        break;
+                    default:
 						break;
 				}
 			}

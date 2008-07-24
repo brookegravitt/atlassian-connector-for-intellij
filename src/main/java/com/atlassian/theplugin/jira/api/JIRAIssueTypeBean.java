@@ -16,14 +16,14 @@
 
 package com.atlassian.theplugin.jira.api;
 
-import java.util.Map;
 import java.net.URL;
+import java.util.Map;
 
 public class JIRAIssueTypeBean extends AbstractJIRAConstantBean {
     private boolean subTask = false;
-    public JIRAIssueTypeBean(Map map) {
+    public JIRAIssueTypeBean(Map<String, String> map) {
         super(map);
-        subTask = Boolean.valueOf((String) map.get("subTask"));
+        subTask = Boolean.valueOf(map.get("subTask"));
     }
 
 	public JIRAIssueTypeBean(long id, String name, URL iconUrl) {

@@ -35,13 +35,13 @@ public abstract class AbstractJIRAConstantBean implements JIRAConstant {
 		this.iconUrl = iconUrl;
 	}
 
-	public AbstractJIRAConstantBean(Map map) {
-        name = (String) map.get("name");
-        id = Long.valueOf((String) map.get("id"));
+	public AbstractJIRAConstantBean(Map<String, String> map) {
+        name = map.get("name");
+        id = Long.valueOf(map.get("id"));
 
         if (map.containsKey("icon")) {
             try {
-                iconUrl = new URL((String) map.get("icon"));
+                iconUrl = new URL(map.get("icon"));
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }

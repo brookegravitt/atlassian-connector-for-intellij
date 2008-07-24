@@ -27,7 +27,7 @@ public class JIRAReporterBean extends JIRAUserBean {
 		super(id, name, value);
 	}
 
-	public JIRAReporterBean(Map map) {
+	public JIRAReporterBean(Map<String, String> map) {
 		super(map);
 	}
 

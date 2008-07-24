@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,12 +30,11 @@ import org.apache.commons.io.FilenameUtils;
 
 import javax.swing.*;
 import javax.swing.tree.TreeCellRenderer;
-import java.awt.*;
 
 public class BambooFileNode extends FileNode {
 
-	private BambooFileInfo file;
-	private static final TreeCellRenderer MY_RENDERER = new BambooFileNodeRenderer();
+    private BambooFileInfo file;
+    private static final TreeCellRenderer MY_RENDERER = new BambooFileNodeRenderer();
     /**
      * null when there is not corresponding PsiFile in currently open project
      */
@@ -46,8 +45,8 @@ public class BambooFileNode extends FileNode {
     }
 
     public BambooFileNode(BambooFileInfo file, AtlassianClickAction action, PsiFile psiFile) {
-		super(FilenameUtils.getName(file.getFileDescriptor().getUrl()), action);
-		this.file = file;
+        super(FilenameUtils.getName(file.getFileDescriptor().getUrl()), action);
+        this.file = file;
         this.psiFile = psiFile;
     }
 
@@ -56,35 +55,35 @@ public class BambooFileNode extends FileNode {
     }
 
     public String getRevision() {
-		return file.getFileDescriptor().getRevision();
-	}
+        return file.getFileDescriptor().getRevision();
+    }
 
-	@Override
-	public TreeCellRenderer getTreeCellRenderer() {
-		return MY_RENDERER;
-	}
+    @Override
+    public TreeCellRenderer getTreeCellRenderer() {
+        return MY_RENDERER;
+    }
 
-	private static class BambooFileNodeRenderer extends ColoredTreeCellRenderer {
-        private static final SimpleTextAttributes GREEN_ATTRIBUTES = new SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC, new Color(0, 128, 0));
+    private static class BambooFileNodeRenderer extends ColoredTreeCellRenderer {
+//        private static final SimpleTextAttributes GREEN_ATTRIBUTES = new SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC, new Color(0, 128, 0));
 
         public void customizeCellRenderer(JTree tree, Object value, boolean selected, boolean expanded,
                 boolean leaf, int row, boolean hasFocus) {
-			BambooFileNode node = (BambooFileNode) value;
-			append(node.getName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
+            BambooFileNode node = (BambooFileNode) value;
+            append(node.getName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
 
-			StringBuilder txt = new StringBuilder();
-			txt.append(" (rev: ");
-			txt.append(node.getRevision());
-			txt.append(",");
-			append(txt.toString(), SimpleTextAttributes.GRAY_ITALIC_ATTRIBUTES);
+            StringBuilder txt = new StringBuilder();
+            txt.append(" (rev: ");
+            txt.append(node.getRevision());
+            txt.append(",");
+            append(txt.toString(), SimpleTextAttributes.GRAY_ITALIC_ATTRIBUTES);
             if (node.getPsiFile() != null) {
                 try {
-                AbstractVcs vcs = VcsUtil.getVcsFor(IdeaHelper.getCurrentProject(), node.getPsiFile().getVirtualFile());
-                if (vcs == null) {
-                    throw new NullPointerException("no VCS info");
-                }
-                String revision = vcs.getDiffProvider().getCurrentRevision(node.getPsiFile().getVirtualFile()).asString();
-                append(" loc rev: " + revision, GREEN_ATTRIBUTES);
+                    AbstractVcs vcs = VcsUtil.getVcsFor(IdeaHelper.getCurrentProject(), node.getPsiFile().getVirtualFile());
+                    if (vcs == null) {
+                        throw new NullPointerException("no VCS info");
+                    }
+                    String revision = vcs.getDiffProvider().getCurrentRevision(node.getPsiFile().getVirtualFile()).asString();
+                    append(" loc rev: " + revision, SimpleTextAttributes.GRAY_ITALIC_ATTRIBUTES);
                 } catch (NullPointerException e) {
                     append(e.getMessage(), SimpleTextAttributes.ERROR_ATTRIBUTES);
                 }
@@ -94,8 +93,8 @@ public class BambooFileNode extends FileNode {
 
             append(")", SimpleTextAttributes.GRAY_ITALIC_ATTRIBUTES);
             FileTypeManager mgr = FileTypeManager.getInstance();
-			FileType type = mgr.getFileTypeByFileName(node.getName());
-			setIcon(type.getIcon());
-		}
-	}
+            FileType type = mgr.getFileTypeByFileName(node.getName());
+            setIcon(type.getIcon());
+        }
+    }
 }

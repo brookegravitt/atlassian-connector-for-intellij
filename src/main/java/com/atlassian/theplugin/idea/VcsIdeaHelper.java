@@ -17,9 +17,13 @@
 package com.atlassian.theplugin.idea;
 
 import com.intellij.openapi.diff.DiffContent;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.*;
+import com.intellij.openapi.vcs.changes.ContentRevision;
 import com.intellij.openapi.vcs.history.VcsFileRevision;
 import com.intellij.openapi.vcs.history.VcsRevisionNumber;
+import com.intellij.openapi.vcs.vfs.AbstractVcsVirtualFile;
+import com.intellij.openapi.vcs.vfs.ContentRevisionVirtualFile;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.vcsUtil.VcsUtil;
 
@@ -67,27 +71,27 @@ public final class VcsIdeaHelper {
 		}
 	}
 
-	public static VcsFileRevision getFileRevision(VirtualFile vFile, String revision) {
-		try {
-			List<VcsFileRevision> revisions = getFileHistory(vFile);
-			for (VcsFileRevision vcsFileRevision : revisions) {
-				if (vcsFileRevision.getRevisionNumber().asString().equals((revision))) {
-					return vcsFileRevision;
-				}
-			}
-		} catch (VcsException e) {
-			// nothing to do
-		}
-		return null;
-	}
-
-
+//	public static VcsFileRevision getFileRevision(VirtualFile vFile, String revision) {
+//		try {
+//			List<VcsFileRevision> revisions = getFileHistory(vFile);
+//			for (VcsFileRevision vcsFileRevision : revisions) {
+//				if (vcsFileRevision.getRevisionNumber().asString().equals((revision))) {
+//					return vcsFileRevision;
+//				}
+//			}
+//		} catch (VcsException e) {
+//			// nothing to do
+//		}
+//		return null;
+//	}
+//
+//
 	public static List<VcsFileRevision> getFileRevisions(VirtualFile vFile, List<String> revisions) {
 		List<VcsFileRevision> allRevisions;
 		try {
 			allRevisions = getFileHistory(vFile);
 		} catch (VcsException e) {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
 		List<VcsFileRevision> returnRevision = new ArrayList<VcsFileRevision>(revisions.size());
 		for (VcsFileRevision allRevision : allRevisions) {
@@ -114,4 +118,27 @@ public final class VcsIdeaHelper {
 		}
 		return null;
 	}
+
+    public static AbstractVcsVirtualFile getVcsVirtualFile(Project project, VirtualFile virtualFile, String revision, boolean loadLazily) throws VcsException {
+        AbstractVcs vcs = VcsUtil.getVcsFor(project, virtualFile);
+        VcsRevisionNumber vcsRevisionNumber = vcs.parseRevisionNumber(revision);
+        AbstractVcsVirtualFile vcvf = getVcsVirtualFileImpl(virtualFile, vcs, vcsRevisionNumber, loadLazily);
+        return vcvf;
+    }
+
+    private static AbstractVcsVirtualFile getVcsVirtualFileImpl(VirtualFile virtualFile, AbstractVcs vcs, VcsRevisionNumber vcsRevisionNumber, boolean loadLazily) throws VcsException {
+        ContentRevision contentRevision = vcs.getDiffProvider().createFileContent(vcsRevisionNumber, virtualFile);
+        if (loadLazily == false) {
+            // this operation is typically quite costly
+            contentRevision.getContent();
+        }
+        AbstractVcsVirtualFile vcvf = ContentRevisionVirtualFile.create(contentRevision);
+        return vcvf;
+    }
+
+    public static AbstractVcsVirtualFile getVcsVirtualFile(Project project, VirtualFile virtualFile, VcsRevisionNumber vcsRevisionNumber, boolean loadLazily) throws VcsException {
+        AbstractVcs vcs = VcsUtil.getVcsFor(project, virtualFile);
+        AbstractVcsVirtualFile vcvf = getVcsVirtualFileImpl(virtualFile, vcs, vcsRevisionNumber, loadLazily);
+        return vcvf;
+    }
 }

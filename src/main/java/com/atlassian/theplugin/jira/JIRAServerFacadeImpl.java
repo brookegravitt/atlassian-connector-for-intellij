@@ -25,10 +25,10 @@ import com.atlassian.theplugin.jira.api.soap.JIRASessionImpl;
 
 import javax.xml.rpc.ServiceException;
 import java.net.MalformedURLException;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
-import java.util.Calendar;
 
 public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 	private JIRAServerFacadeImpl() {
@@ -110,7 +110,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		return rss.getIssues(query, sort, sortOrder, start, size);
     }
 
-	public List getSavedFilterIssues(Server server,
+	public List<JIRAIssue> getSavedFilterIssues(Server server,
 									 List<JIRAQueryFragment> query,
 									 String sort,
 									 String sortOrder,

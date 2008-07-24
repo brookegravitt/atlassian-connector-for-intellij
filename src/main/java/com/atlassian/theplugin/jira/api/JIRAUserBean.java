@@ -30,9 +30,9 @@ public abstract class JIRAUserBean extends AbstractJIRAConstantBean {
 		this.value = value;
 	}
 
-	public JIRAUserBean(Map map) {
+	public JIRAUserBean(Map<String, String> map) {
 		super(map);
-		value = (String) map.get("value");
+		value = map.get("value");
     }
 
 	public Map<String, String> getMap() {

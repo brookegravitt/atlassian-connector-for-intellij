@@ -99,7 +99,7 @@ public class JIRAServer {
                 projects.addAll(retrieved);
             } catch (JIRAException e) {
                 PluginUtil.getLogger().error(e.getMessage());
-                projects = Collections.EMPTY_LIST;
+                projects = Collections.emptyList();
             }
         }
         return projects;
@@ -117,7 +117,7 @@ public class JIRAServer {
                 }
             } catch (JIRAException e) {
                 PluginUtil.getLogger().error(e.getMessage());
-                statuses = Collections.EMPTY_LIST;
+                statuses = Collections.emptyList();
             }
         }
 
@@ -154,7 +154,7 @@ public class JIRAServer {
                         issueTypesCache.put(currentProject.getKey(), issueTypes);
                     }
                 } else {
-                    issueTypes = Collections.EMPTY_LIST;
+                    issueTypes = Collections.emptyList();
                 }
             }
         }
@@ -167,7 +167,7 @@ public class JIRAServer {
                 savedFilters = jiraServerFacade.getSavedFilters(server);
             } catch (JIRAException e) {
                 PluginUtil.getLogger().error(e.getMessage());
-                savedFilters = Collections.EMPTY_LIST;
+                savedFilters = Collections.emptyList();
             }
         }
         return savedFilters;
@@ -177,7 +177,7 @@ public class JIRAServer {
         if (priorieties == null) {
             try {
                 List<JIRAConstant> retrieved = jiraServerFacade.getPriorities(server);
-                priorieties = new ArrayList(retrieved.size() + 1);
+                priorieties = new ArrayList<JIRAConstant>(retrieved.size() + 1);
                 priorieties.add(new JIRAPriorityBean(ANY_ID, "Any", null));
                 priorieties.addAll(retrieved);
                 for (JIRAConstant priority : priorieties) {
@@ -185,7 +185,7 @@ public class JIRAServer {
                 }
             } catch (JIRAException e) {
                 PluginUtil.getLogger().error(e.getMessage());
-                priorieties = Collections.EMPTY_LIST;
+                priorieties = Collections.emptyList();
             }
         }
         return priorieties;
@@ -201,7 +201,7 @@ public class JIRAServer {
                 resolutions.addAll(retrieved);
             } catch (JIRAException e) {
                 PluginUtil.getLogger().error(e.getMessage());
-                resolutions = Collections.EMPTY_LIST;
+                resolutions = Collections.emptyList();
             }
         }
         return resolutions;
@@ -214,12 +214,12 @@ public class JIRAServer {
                     serverVersions = jiraServerFacade.getVersions(server, currentProject.getKey());
                     serverVersionsCache.put(currentProject.getKey(), serverVersions);
                 } else {
-                    serverVersions = Collections.EMPTY_LIST;
+                    serverVersions = Collections.emptyList();
                 }
 
             } catch (JIRAException e) {
                 PluginUtil.getLogger().error(e.getMessage());
-                serverVersions = Collections.EMPTY_LIST;
+                serverVersions = Collections.emptyList();
             }
         }
         return serverVersions;
@@ -247,10 +247,10 @@ public class JIRAServer {
                         }
                     }
                 } else {
-                    versions = Collections.EMPTY_LIST;
+                    versions = Collections.emptyList();
                 }
             } else {
-                versions = Collections.EMPTY_LIST;
+                versions = Collections.emptyList();
             }
         }
 
@@ -278,10 +278,10 @@ public class JIRAServer {
                         }
                     }
                 } else {
-                    fixForVersions = Collections.EMPTY_LIST;
+                    fixForVersions = Collections.emptyList();
                 }
             } else {
-                fixForVersions = Collections.EMPTY_LIST;
+                fixForVersions = Collections.emptyList();
             }
         }
         return fixForVersions;
@@ -300,11 +300,11 @@ public class JIRAServer {
 
                     componentsCache.put(currentProject.getKey(), components);
                 } else {
-                    components = Collections.EMPTY_LIST;
+                    components = Collections.emptyList();
                 }
             } catch (JIRAException e) {
                 PluginUtil.getLogger().error(e.getMessage());
-                components = Collections.EMPTY_LIST;
+                components = Collections.emptyList();
             }
         }
 

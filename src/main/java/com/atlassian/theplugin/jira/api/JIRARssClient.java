@@ -25,6 +25,7 @@ package com.atlassian.theplugin.jira.api;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
+import static com.atlassian.theplugin.commons.util.UrlUtil.encodeUrl;
 import com.intellij.openapi.diagnostic.Logger;
 import org.apache.commons.httpclient.HttpMethod;
 import org.jdom.Document;
@@ -32,7 +33,6 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -57,7 +57,7 @@ public class JIRARssClient extends AbstractHttpSession {
         this.password = password;
     }
 
-    public List getIssues(List<JIRAQueryFragment> fragments,
+    public List<JIRAIssue> getIssues(List<JIRAQueryFragment> fragments,
 						  String sortBy,
 						  String sortOrder, int start, int max) throws JIRAException {
 
@@ -82,7 +82,7 @@ public class JIRARssClient extends AbstractHttpSession {
             if (channel != null && !channel.getChildren("item").isEmpty()) {
                 return makeIssues(channel.getChildren("item"));
             }
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         } catch (IOException e) {
             throw new JIRAException(e.getMessage(), e);
         } catch (JDOMException e) {
@@ -93,9 +93,9 @@ public class JIRARssClient extends AbstractHttpSession {
 
 	}
 
-    public List getAssignedIssues(String assignee) throws JIRAException {
+    public List<JIRAIssue> getAssignedIssues(String assignee) throws JIRAException {
         String url = baseUrl + "/sr/jira.issueviews:searchrequest-xml"
-                + "/temp/SearchRequest.xml?resolution=-1&assignee=" + URLEncoder.encode(assignee)
+                + "/temp/SearchRequest.xml?resolution=-1&assignee=" + encodeUrl(assignee)
                 + "&sorter/field=updated&sorter/order=DESC&tempMax=100" + appendAuthentication();
 
         try {
@@ -105,8 +105,9 @@ public class JIRARssClient extends AbstractHttpSession {
             if (channel != null && !channel.getChildren("item").isEmpty()) {
                 return makeIssues(channel.getChildren("item"));
             }
+            
 
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         } catch (IOException e) {
             throw new JIRAException(e.getMessage(), e);
         } catch (JDOMException e) {
@@ -116,7 +117,7 @@ public class JIRARssClient extends AbstractHttpSession {
 		}
 	}
 
-	public List getSavedFilterIssues(JIRAQueryFragment fragment,
+	public List<JIRAIssue> getSavedFilterIssues(JIRAQueryFragment fragment,
 									 String sortBy,
 									 String sortOrder,
 									 int start, 
@@ -145,7 +146,7 @@ public class JIRARssClient extends AbstractHttpSession {
 			if (channel != null && !channel.getChildren("item").isEmpty()) {
 				return makeIssues(channel.getChildren("item"));
 			}
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		} catch (IOException e) {
 			throw new JIRAException(e.getMessage(), e);
 		} catch (JDOMException e) {
@@ -156,7 +157,7 @@ public class JIRARssClient extends AbstractHttpSession {
 
 	}
 
-	private List makeIssues(List issueElements) {
+	private List<JIRAIssue> makeIssues(List issueElements) {
         List<JIRAIssue> result = new ArrayList<JIRAIssue>(issueElements.size());
         for (Iterator iterator = issueElements.iterator(); iterator.hasNext();) {
             result.add(new JIRAIssueBean(baseUrl, (Element) iterator.next()));
@@ -166,8 +167,8 @@ public class JIRARssClient extends AbstractHttpSession {
 
     private String appendAuthentication() {
         if (userName != null) {
-            return "&os_username=" + URLEncoder.encode(userName)
-                    + "&os_password=" + URLEncoder.encode(password);
+            return "&os_username=" + encodeUrl(userName)
+                    + "&os_password=" + encodeUrl(password);
         }
         return "";
     }
