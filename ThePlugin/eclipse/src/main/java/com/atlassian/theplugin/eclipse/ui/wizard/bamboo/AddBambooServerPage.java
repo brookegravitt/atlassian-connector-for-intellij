@@ -22,6 +22,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
+import com.atlassian.theplugin.eclipse.core.bamboo.BambooUtility;
 import com.atlassian.theplugin.eclipse.core.bamboo.IBambooServer;
 import com.atlassian.theplugin.eclipse.core.operation.AbstractActionOperation;
 import com.atlassian.theplugin.eclipse.core.operation.AbstractNonLockingOperation;
@@ -229,7 +230,7 @@ public class AddBambooServerPage extends AbstractVerifiedWizardPage {
 			final Exception []problem = new Exception[1];
 			UIMonitorUtil.doTaskNowDefault(this.getShell(), new AbstractNonLockingOperation("Operation.ValidateBambooServer") {
 				protected void runImpl(IProgressMonitor monitor) throws Exception {
-					//FIXME: problem[0] = SVNUtility.validateRepositoryLocation(AddBambooServerPage.this.propertiesTabFolder.getBambooServer());
+					problem[0] = BambooUtility.validateBambooLocation(AddBambooServerPage.this.propertiesTabFolder.getBambooServer());
 				}
 			}, false);
 			if (problem[0] != null) {
