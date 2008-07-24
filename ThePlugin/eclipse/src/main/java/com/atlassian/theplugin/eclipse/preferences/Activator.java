@@ -16,14 +16,18 @@
 
 package com.atlassian.theplugin.eclipse.preferences;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TimerTask;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.Preferences.IPropertyChangeListener;
 import org.eclipse.core.runtime.Preferences.PropertyChangeEvent;
@@ -41,7 +45,11 @@ import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.eclipse.EclipseActionScheduler;
 import com.atlassian.theplugin.eclipse.EclipseLogger;
 import com.atlassian.theplugin.eclipse.MissingPasswordHandler;
+import com.atlassian.theplugin.eclipse.core.operation.IConsoleStream;
+import com.atlassian.theplugin.eclipse.util.FileUtil;
 import com.atlassian.theplugin.eclipse.util.PluginUtil;
+import com.atlassian.theplugin.eclipse.view.bamboo.BambooConfigurationStorage;
+
 
 /**
  * The activator class controls the plug-in life cycle
@@ -157,6 +165,28 @@ public class Activator extends AbstractUIPlugin {
 				getPluginPreferences());
 		pluginConfiguration = configurationWrapper.getPluginConfiguration();
 		ConfigurationFactory.setConfiguration(pluginConfiguration);
+		
+		try {
+			IPath stateLocation = this.getStateLocation();
+			
+			BambooConfigurationStorage storage = BambooConfigurationStorage.instance();
+			storage.initialize(stateLocation);
+			
+			// check for previous plugin versions repository info storage
+			if (storage.getBambooServers().length == 0) {
+				String coreFolderName = stateLocation.lastSegment();
+				IPath uiLocation = stateLocation.removeLastSegments(1).append(coreFolderName.substring(0, coreFolderName.length() - 4) + "ui");
+				File previousState = new File(uiLocation + File.pathSeparator + BambooConfigurationStorage.STATE_INFO_FILE_NAME);
+				if (previousState.exists()) {
+					FileUtil.copyFile(new File(stateLocation.toString() + File.pathSeparator + BambooConfigurationStorage.STATE_INFO_FILE_NAME), 
+							previousState, new NullProgressMonitor());
+					previousState.delete();
+					storage.initialize(stateLocation);
+				}
+			}
+		} catch (Exception e) {
+			// FIXME: Probably we should do something about this
+		}
 	}
 
 	/**
@@ -165,6 +195,9 @@ public class Activator extends AbstractUIPlugin {
 	 * @return the shared instance
 	 */
 	public static Activator getDefault() {
+		while (Activator.plugin == null) {
+    		try {Thread.sleep(100);} catch (InterruptedException ex) {break;}
+    	}
 		return plugin;
 	}
 
@@ -192,6 +225,11 @@ public class Activator extends AbstractUIPlugin {
 		return bambooChecker;
 	}
 
+
+    public String getResource(String key) {
+        return FileUtil.getResource(Platform.getResourceBundle(this.getBundle()), key);
+    }
+    
 	private void disableTimer() {
 		Job.getJobManager().cancel(BackgroundTaskType.CHECKERS);
 
@@ -268,4 +306,9 @@ public class Activator extends AbstractUIPlugin {
 		}
 	}
 
+	public IConsoleStream getConsoleStream() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 }

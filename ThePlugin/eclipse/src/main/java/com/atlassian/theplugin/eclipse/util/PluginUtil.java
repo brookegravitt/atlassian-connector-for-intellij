@@ -40,5 +40,5 @@ public final class PluginUtil {
 	public static void setLogger(Logger logger) {
 		PluginUtil.logger = logger;
 	}
-	
+
 }

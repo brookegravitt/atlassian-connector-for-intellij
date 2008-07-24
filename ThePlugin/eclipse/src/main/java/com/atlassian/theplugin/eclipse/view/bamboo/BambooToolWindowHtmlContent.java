@@ -36,7 +36,7 @@ import com.atlassian.theplugin.eclipse.preferences.Activator;
 
 public class BambooToolWindowHtmlContent implements BambooStatusDisplay {
 
-	private Composite parent;
+	//private Composite parent;
 
 	private Browser htmlBrowser;
 
@@ -45,7 +45,7 @@ public class BambooToolWindowHtmlContent implements BambooStatusDisplay {
 	private static String html;
 
 	public BambooToolWindowHtmlContent(Composite parent) {
-		this.parent = parent;
+		//this.parent = parent;
 		htmlBrowser = new Browser(parent, SWT.NONE);
 
 		htmlBrowser.addMouseListener(new MouseClickListener());
@@ -54,7 +54,7 @@ public class BambooToolWindowHtmlContent implements BambooStatusDisplay {
 	}
 
 	public void updateBambooStatus(BuildStatus arg0, BambooPopupInfo info) {
-		html = info.toHtml();
+		BambooToolWindowHtmlContent.html = info.toHtml();
 		linkClicked = false;
 		htmlBrowser.setText(html);
 	}

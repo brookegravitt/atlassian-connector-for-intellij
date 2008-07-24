@@ -23,8 +23,18 @@
       <view allowMultiple="false"
             category="com.atlassian.theplugin.eclipse.viewcategory"
             class="com.atlassian.theplugin.eclipse.view.bamboo.BambooToolWindow"
-            id="com.atlassian.theplugin.eclipse.viewmain"
-            name="Bamboo">
+            id="com.atlassian.theplugin.eclipse.view.bamboo.BambooToolWindow"
+            name="Bamboo Watched Plans">
+      </view>
+   </extension>
+   <extension point="org.eclipse.ui.views">
+      <category id="com.atlassian.theplugin.eclipse.viewcategory" name="Atlassian Plugin">
+      </category>
+      <view allowMultiple="false"
+            category="com.atlassian.theplugin.eclipse.viewcategory"
+            class="com.atlassian.theplugin.eclipse.ui.bamboo.BambooServersView"
+            id="com.atlassian.theplugin.eclipse.ui.bamboo.BambooServersView"
+            name="Bamboo Servers">
       </view>
    </extension>
    <extension
@@ -48,6 +58,33 @@
       </initializer>
    </extension>
    <extension
+         point="org.eclipse.ui.popupMenus">
+         
+         <!-- ******************* Repository Management Menu ******************** -->
+      <objectContribution
+            objectClass="com.atlassian.theplugin.eclipse.ui.bamboo.BambooServerNode"
+            id="com.atlassian.theplugin.eclipse.ui.bamboo.BambooServerContributions">
+            
+         <action
+               label="%EditBambooServerPropertiesAction.Label"
+               class="com.atlassian.theplugin.eclipse.ui.action.bamboo.EditBambooServerPropertiesAction"
+               tooltip="%EditBambooServerPropertiesAction.Tooltip"
+               menubarPath="bambooServerGroup"
+               id="com.atlassian.theplugin.eclipse.ui.action.bamboo.EditBambooServerPropertiesAction">
+         </action>
+         <action
+               label="%DeleteBambooServerAction.Label"
+               class="com.atlassian.theplugin.eclipse.ui.action.bamboo.DeleteBambooServerAction"
+               tooltip="%DeleteBambooServer.Tooltip"
+               menubarPath="bambooServerGroup"
+               id="com.atlassian.theplugin.eclipse.ui.action.bamboo.DeleteBambooServerAction">
+         </action>
+
+      </objectContribution>
+      
+	</extension>
+   
+   <extension
          point="org.eclipse.ui.editors">
       <editor
             class="com.atlassian.theplugin.eclipse.editors.bamboo.BuildLogEditor"
@@ -57,4 +94,3 @@
       </editor>
    </extension>
 </plugin>
-
