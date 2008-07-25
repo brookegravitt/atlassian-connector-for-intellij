@@ -335,13 +335,15 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     public void updateReviews(Map<PredefinedFilter, List<ReviewData>> reviews, Map<String,
             List<ReviewData>> customFilterReviews) {
 
+        Set<ReviewData> uniqueReviews = new HashSet<ReviewData>();
+
         this.crucibleVersion = CrucibleVersion.CRUCIBLE_16;
         if (tables.isEmpty()) {
             switchToCrucible16Filter();
         }
-        int reviewCount = 0;
         for (PredefinedFilter predefinedFilter : reviews.keySet()) {
             List<ReviewData> reviewList = reviews.get(predefinedFilter);
+            uniqueReviews.addAll(reviewList);
             if (reviewList != null) {
                 CollapsibleTable table = tables.get(predefinedFilter);
                 if (table != null) {
@@ -352,12 +354,12 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
                     table.setForeground(UIUtil.getActiveTextColor());
                     table.setTitle(predefinedFilter.getFilterName() + " (" + reviewList.size() + ")");
                 }
-                reviewCount += reviewList.size();
             }
         }
 
         for (String filterName : customFilterReviews.keySet()) {
             List<ReviewData> reviewList = customFilterReviews.get(filterName);
+            uniqueReviews.addAll(reviewList);
             if (reviewList != null) {
                 CollapsibleTable table = customTables.get(filterName);
                 if (table != null) {
@@ -368,16 +370,17 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
                     table.setForeground(UIUtil.getActiveTextColor());
                     table.setTitle(filterName + " (" + reviewList.size() + ")");
                 }
-                reviewCount += reviewList.size();
             }
         }
 
 
         StringBuffer sb = new StringBuffer();
         sb.append("Loaded <b>");
-        sb.append(reviewCount);
+        sb.append(uniqueReviews.size());
         sb.append(" code reviews</b> for defined filters.");
         setStatusMessage(sb.toString());
+
+        uniqueReviews.clear();
     }
 
     public void itemSelected(Object item, int noClicks) {

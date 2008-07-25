@@ -81,6 +81,10 @@ public class ReviewDataImpl implements ReviewData {
         return review.getState();
     }
 
+    public boolean isAllowReviewerToJoin() {
+        return review.isAllowReviewerToJoin();
+    }
+
     public int getMetricsVersion() {
         return review.getMetricsVersion();
     }

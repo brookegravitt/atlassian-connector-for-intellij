@@ -211,7 +211,7 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
 		@Override
 		public void aboutToAddGeneralCommentReply(ReviewData review, GeneralComment parentComment, GeneralCommentBean newComment) {
 			try {
-				GeneralComment comment = facade.addGeneralComment(review.getServer(), parentComment.getPermId(), newComment);
+				GeneralComment comment = facade.addReply(review.getServer(), review.getPermId(), parentComment.getPermId(), newComment);
 				eventBroker.trigger(new GeneralCommentReplyAdded(this, review, parentComment, comment));
 			} catch (RemoteApiException e) {
 				Messages.showErrorDialog("Problem creating a new comment: " + e.getMessage(), "Error creating comment");
