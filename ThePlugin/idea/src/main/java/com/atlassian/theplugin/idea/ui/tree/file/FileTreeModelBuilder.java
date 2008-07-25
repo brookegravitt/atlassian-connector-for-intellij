@@ -120,7 +120,7 @@ public final class FileTreeModelBuilder {
 			FileNode node = createPlace(root, file);
 			// todo lguminski to avoid creation of a new object for each node
 			node.addChild(new CrucibleFileNode(file, new AtlassianClickAction() {
-				public void execute(AtlassianTreeNode node, int noOfClicks) {
+				public void execute(com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode node, int noOfClicks) {
 					ReviewActionEventBroker broker = IdeaHelper.getReviewActionEventBroker();
 					switch (noOfClicks) {
 						case 1:
