@@ -1,4 +1,4 @@
-package com.atlassian.theplugin.idea.action.crucible.comment.file;
+package com.atlassian.theplugin.idea.action.crucible.comment;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -7,7 +7,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  * Created by IntelliJ IDEA.
  * User: lguminski
  * Date: Jul 23, 2008
- * Time: 3:58:05 PM
+ * Time: 3:49:48 PM
  * To change this template use File | Settings | File Templates.
  */
 public class ReplyAction extends AnAction {
