@@ -17,7 +17,7 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CommentBean;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralCommentBean;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -30,6 +30,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 
 public class CommentEditForm extends DialogWrapper {
@@ -45,10 +46,11 @@ public class CommentEditForm extends DialogWrapper {
 
     private Review review;
     private CommentBean comment;
+    private List<CustomFieldDef> metrics;
 
     private boolean saveAsDraft = false;
 
-    public CommentEditForm(Project project, Review review, CommentBean comment) {
+    public CommentEditForm(Project project, Review review, CommentBean comment, List<CustomFieldDef> metrics) {
         super(project, false);
 
         this.review = review;
@@ -89,7 +91,6 @@ public class CommentEditForm extends DialogWrapper {
         }
 
         getOKAction().putValue(Action.NAME, "Post");
-
 
 //        fillInCrucibleServers();
     }
