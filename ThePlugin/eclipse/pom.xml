@@ -48,6 +48,12 @@
             <version>3.3.2</version>
             <classifier>M20080207-0800</classifier>
         </dependency>
+		<dependency>
+            <groupId>org.eclipse</groupId>
+            <artifactId>compare</artifactId>
+            <version>3.4.0</version>
+            <classifier>I20080604</classifier>
+        </dependency>
         <dependency>
             <groupId>org.eclipse</groupId>
             <artifactId>ui</artifactId>
@@ -60,6 +66,12 @@
             <version>3.3.2</version>
             <classifier>M20080207-0800</classifier>
         </dependency>
+		<dependency>
+            <groupId>org.eclipse.ui</groupId>
+            <artifactId>ide</artifactId>
+            <version>3.4.0</version>
+            <classifier>I20080606-1300</classifier>
+        </dependency>
         <dependency>
             <groupId>org.eclipse</groupId>
             <artifactId>osgi</artifactId>
@@ -71,6 +83,12 @@
             <artifactId>runtime</artifactId>
             <version>3.3.1</version>
             <classifier>v20070530</classifier>
+        </dependency>
+		<dependency>
+            <groupId>org.eclipse.core</groupId>
+            <artifactId>resources</artifactId>
+            <version>3.4.0</version>
+            <classifier>v20080604-1400</classifier>
         </dependency>
         <dependency>
             <groupId>org.eclipse.equinox</groupId>
@@ -101,6 +119,18 @@
             <artifactId>registry</artifactId>
             <version>3.3.1</version>
             <classifier>R33x_v20070802</classifier>
+        </dependency>
+		<dependency>
+            <groupId>org.eclipse.team</groupId>
+            <artifactId>core</artifactId>
+            <version>3.4.0</version>
+            <classifier>I20080605</classifier>
+        </dependency>
+		<dependency>
+            <groupId>org.eclipse.team</groupId>
+            <artifactId>ui</artifactId>
+            <version>3.4.0</version>
+            <classifier>I20080604</classifier>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>

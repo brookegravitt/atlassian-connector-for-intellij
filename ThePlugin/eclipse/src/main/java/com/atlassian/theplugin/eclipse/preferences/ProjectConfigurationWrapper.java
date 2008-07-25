@@ -26,6 +26,7 @@ import java.util.List;
 import org.eclipse.core.runtime.Preferences;
 
 import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.SubscribedPlan;
 import com.atlassian.theplugin.commons.configuration.BambooConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.BambooTooltipOption;
 import com.atlassian.theplugin.commons.configuration.ServerBean;
@@ -46,7 +47,7 @@ public class ProjectConfigurationWrapper {
 
 	public EclipsePluginConfiguration getPluginConfiguration() {
 		
-		List<SubscribedPlanBean> subscribedPlans = new ArrayList<SubscribedPlanBean>();
+		List<SubscribedPlan> subscribedPlans = new ArrayList<SubscribedPlan>();
 		
 		String[] plans = preferences.getString(PreferenceConstants.BAMBOO_BUILDS).split(" ");
 		
