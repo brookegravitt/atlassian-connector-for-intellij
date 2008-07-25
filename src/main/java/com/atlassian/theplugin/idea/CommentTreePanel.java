@@ -30,9 +30,11 @@ import com.atlassian.theplugin.idea.ui.tree.comment.FileNameNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.SectionNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
+import com.atlassian.theplugin.idea.ui.AtlassianToolbar;
 import com.intellij.util.ui.UIUtil;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.project.Project;
+import com.intellij.ui.CheckboxTree;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.builder.ButtonBarBuilder;
@@ -76,6 +78,7 @@ public class CommentTreePanel extends JPanel {
 		setBackground(UIUtil.getTreeTextBackground());
 		progressAnimation.configure(this, commentScroll, BorderLayout.CENTER);
 		commentScroll = new JScrollPane();
+		add(AtlassianToolbar.createToolbar("comment", "ThePlugin.Crucible.Comment.ToolBar"), BorderLayout.NORTH); 
 		add(commentScroll, BorderLayout.CENTER);
 	}
 

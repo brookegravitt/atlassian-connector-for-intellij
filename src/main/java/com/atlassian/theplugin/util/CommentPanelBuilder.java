@@ -72,15 +72,6 @@ public class CommentPanelBuilder {
 				return NOT_MINE_GENERAL_COMMENT_BODY_COLOR;
 			}
 
-			@Override
-			public Component getToolBar() {
-				Component toolBar = AtlassianToolbar.createToolbar("a place", "ThePlugin.Crucible.Comment.GeneralMenu");
-		    	if (toolBar == null) {
-					return new JLabel();
-				}
-				toolBar.setBackground(getHeaderBackground());
-				return toolBar;
-			}
 		};
 	}
 
@@ -105,18 +96,6 @@ public class CommentPanelBuilder {
 				}
 				return NOT_MINE_FILE_COMMENT_BODY_COLOR;
 			}
-
-			@Override
-			public Component getToolBar() {
-				Component toolBar = AtlassianToolbar.createToolbar(
-						"a place", "ThePlugin.Crucible.Comment.FileMenu");
-				if (toolBar == null) {
-					return new JLabel();
-				}
-				toolBar.setBackground(getHeaderBackground());
-				return toolBar;
-			}
-
 		};
 	}
 
@@ -214,7 +193,9 @@ public class CommentPanelBuilder {
 
 		public abstract Color getBodyBackground();
 
-		public abstract Component getToolBar();
+		public Component getToolBar() {
+			return new JLabel();
+		}
 	}
 
 
