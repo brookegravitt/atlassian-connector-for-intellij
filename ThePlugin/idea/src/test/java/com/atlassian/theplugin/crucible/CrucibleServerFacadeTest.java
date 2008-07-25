@@ -442,6 +442,10 @@ public class CrucibleServerFacadeTest extends TestCase {
                 return state;
             }
 
+            public boolean isAllowReviewerToJoin() {
+                return false;
+            }
+
             public int getMetricsVersion() {
                 return 0;
             }
@@ -528,6 +532,10 @@ public class CrucibleServerFacadeTest extends TestCase {
 
             public State getState() {
                 return state;
+            }
+
+            public boolean isAllowReviewerToJoin() {
+                return false;  
             }
 
             public int getMetricsVersion() {

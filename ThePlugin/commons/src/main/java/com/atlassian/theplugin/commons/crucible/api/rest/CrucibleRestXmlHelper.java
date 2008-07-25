@@ -59,7 +59,6 @@ public final class CrucibleRestXmlHelper {
             System.out.println("e = " + e);
             return null;
         }
-
     }
 
     public static ProjectBean parseProjectNode(Element projectNode) {
@@ -152,6 +151,8 @@ public final class CrucibleRestXmlHelper {
         if (!"".equals(stateString)) {
             review.setState(State.fromValue(stateString));
         }
+
+        review.setAllowReviewerToJoin(Boolean.parseBoolean(getChildText(reviewNode, "allowReviewerToJoin")));
 
         if (reviewNode.getChild("permaId") != null) {
             PermIdBean permId = new PermIdBean();
@@ -383,6 +384,7 @@ public final class CrucibleRestXmlHelper {
         if (review.getState() != null) {
             addTag(reviewData, "state", review.getState().value());
         }
+        addTag(reviewData, "allowReviewerToJoin", Boolean.toString(review.isAllowReviewerToJoin()));
         if (review.getPermId() != null) {
             Element permIdElement = new Element("permaId");
             getContent(reviewData).add(permIdElement);

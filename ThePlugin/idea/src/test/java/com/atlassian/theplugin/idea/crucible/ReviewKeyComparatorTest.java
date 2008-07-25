@@ -135,6 +135,10 @@ public class ReviewKeyComparatorTest extends TestCase {
 				return null;
 			}
 
+            public boolean isAllowReviewerToJoin() {
+                return false;  
+            }
+
             public int getMetricsVersion() {
                 return 0;
             }

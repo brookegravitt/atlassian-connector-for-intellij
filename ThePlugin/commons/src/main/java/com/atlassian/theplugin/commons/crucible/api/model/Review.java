@@ -43,6 +43,8 @@ public interface Review {
 
 	State getState();
 
+    boolean isAllowReviewerToJoin();
+
     int getMetricsVersion();
 
     Date getCreateDate();
