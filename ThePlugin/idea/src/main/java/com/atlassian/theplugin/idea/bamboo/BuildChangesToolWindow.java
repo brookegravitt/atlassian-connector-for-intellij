@@ -304,8 +304,8 @@ public final class BuildChangesToolWindow {
             final AtlassianTableView atv = new AtlassianTableView(prov,
                     new ListTableModel<BambooChangeSet>(prov.makeColumnInfo(), commits, 0), null);
             atv.addItemSelectedListener(new TableItemSelectedListener() {
-                public void itemSelected(Object item, int noClicks) {
-                    BambooChangeSet c = (BambooChangeSet) item;
+                public void itemSelected(AtlassianTableView table, int noClicks) {
+                    BambooChangeSet c = (BambooChangeSet) table.getSelectedObject();
                     createTree(project, c);
                 }
             });

@@ -53,7 +53,7 @@ public class ShowPopupMouseAdapter extends MouseAdapter {
 		if (e.isPopupTrigger() && tableView.isEnabled()) {
 
 			for (TableItemSelectedListener tableItemSelectedListener : tableView.getListenerList()) {
-				tableItemSelectedListener.itemSelected(tableView.getSelectedObject(), 1);
+				tableItemSelectedListener.itemSelected(tableView, 1);
 			}
 
 			final DefaultActionGroup actionGroup = new DefaultActionGroup();

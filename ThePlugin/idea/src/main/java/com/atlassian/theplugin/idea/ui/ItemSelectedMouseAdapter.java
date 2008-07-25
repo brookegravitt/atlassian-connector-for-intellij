@@ -28,7 +28,7 @@ public class ItemSelectedMouseAdapter extends MouseAdapter {
 
 	public void mouseClicked(MouseEvent e) {
 		for (TableItemSelectedListener tableItemSelectedListener : tableView.getListenerList()) {
-			tableItemSelectedListener.itemSelected(tableView.getSelectedObject(), e.getClickCount());
+			tableItemSelectedListener.itemSelected(tableView, e.getClickCount());
 		}
 	}
 

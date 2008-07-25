@@ -62,7 +62,7 @@ public class AtlassianTableView extends TableView {
 				int key = e.getKeyCode();
 				if (key == KeyEvent.VK_DOWN || key == KeyEvent.VK_UP) {
 					for (TableItemSelectedListener tableItemSelectedListener : getListenerList()) {
-						tableItemSelectedListener.itemSelected(getSelectedObject(), 1);
+						tableItemSelectedListener.itemSelected(AtlassianTableView.this, 1);
 					}
 				}
 			}
