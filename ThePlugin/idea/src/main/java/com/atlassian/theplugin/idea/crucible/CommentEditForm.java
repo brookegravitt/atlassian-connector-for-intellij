@@ -17,7 +17,9 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CommentBean;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldBean;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldValue;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -62,6 +64,19 @@ public class CommentEditForm extends DialogWrapper {
         rankComboBox.addItem("select rank");
         classificationComboBox.addItem("select classification");
 
+        for (CustomFieldDef metric : metrics) {
+            if ("rank".equals(metric.getName())) {
+                for (CustomFieldValue value : metric.getValues()) {
+                    rankComboBox.addItem(value.getName());
+                }
+            }
+            if ("classification".equals(metric.getName())) {
+                for (CustomFieldValue value : metric.getValues()) {
+                    classificationComboBox.addItem(value.getName());
+                }
+            }
+        }
+
         postButton.setAction(getOKAction());
         postButton.setMnemonic('P');
         saveAsDraftButton.setAction(getDraftAction());
@@ -74,7 +89,8 @@ public class CommentEditForm extends DialogWrapper {
                 rankComboBox.setVisible(defectCheckBox.isSelected());
                 classificationComboBox.setVisible(defectCheckBox.isSelected());
             }
-        });
+        });               
+            
         defectCheckBox.setSelected(false);
         rankComboBox.setVisible(false);
         classificationComboBox.setVisible(false);
@@ -91,8 +107,6 @@ public class CommentEditForm extends DialogWrapper {
         }
 
         getOKAction().putValue(Action.NAME, "Post");
-
-//        fillInCrucibleServers();
     }
 
     public JComponent getPreferredFocusedComponent() {
@@ -129,64 +143,6 @@ public class CommentEditForm extends DialogWrapper {
     public JComponent $$$getRootComponent$$$() {
         return rootComponent;
     }
-/*
-    private void fillInCrucibleServers() {
-        ProductServerConfiguration crucibleConfiguration =
-                ConfigurationFactory.getConfiguration().getProductServers(ServerType.CRUCIBLE_SERVER);
-
-        Collection<Server> enabledServers = crucibleConfiguration.transientgetEnabledServers();
-        if (enabledServers.isEmpty()) {
-            crucibleServersComboBox.setEnabled(false);
-            crucibleServersComboBox.addItem("Enable a Crucible server first!");
-            getOKAction().setEnabled(false);
-        } else {
-            for (Server server : enabledServers) {
-                crucibleServersComboBox.addItem(new ServerComboBoxItem(server));
-            }
-        }
-    }
-
-    private void fillServerRelatedCombos(final Server server) {
-        repoComboBox.removeAllItems();
-        getOKAction().setEnabled(false);
-
-        new Thread(new Runnable() {
-            public void run() {
-                List<Project> projects = new ArrayList<Project>();
-                List<Repository> repositories = new ArrayList<Repository>();
-                List<User> users = new ArrayList<User>();
-
-                try {
-                    projects = crucibleServerFacade.getProjects(server);
-                    repositories = crucibleServerFacade.getRepositories(server);
-                    users = crucibleServerFacade.getUsers(server);
-                } catch (RemoteApiException e) {
-                    // nothing can be done here
-                } catch (ServerPasswordNotProvidedException e) {
-                    // nothing can be done here
-                }
-                final List<Repository> finalRepositories = repositories;
-                EventQueue.invokeLater(new Runnable() {
-                    public void run() {
-                        updateServerRelatedCombos(server, finalRepositories);
-                    }
-                });
-            }
-        }, "atlassian-idea-plugin crucible patch upload combos refresh").start();
-    }
-
-    private void updateServerRelatedCombos(
-            Server server,
-            List<Repository> repositories) {
-        repoComboBox.addItem("");
-        if (!repositories.isEmpty()) {
-            for (Repository repo : repositories) {
-                repoComboBox.addItem(new RepositoryComboBoxItem(repo));
-            }
-            getOKAction().setEnabled(true);
-        }
-    }
-*/
 
     public JComponent getRootComponent() {
         return rootComponent;
@@ -201,6 +157,20 @@ public class CommentEditForm extends DialogWrapper {
     protected void doOKAction() {
         comment.setDraft(saveAsDraft);
         comment.setDefectRaised(defectCheckBox.isSelected());
+        if (comment.isDefectRaised()) {
+            if (rankComboBox.getSelectedIndex() > 0) {
+                CustomFieldBean cf = new CustomFieldBean();
+                cf.setConfigVersion(review.getMetricsVersion());
+                cf.setValue((String) rankComboBox.getSelectedItem());
+                comment.getCustomFields().put("rank", cf);
+            }
+            if (classificationComboBox.getSelectedIndex() > 0) {
+                CustomFieldBean cf = new CustomFieldBean();
+                cf.setConfigVersion(review.getMetricsVersion());
+                cf.setValue((String) classificationComboBox.getSelectedItem());
+                comment.getCustomFields().put("classification", cf);
+            }
+        }
         comment.setMessage(commentText.getText());
         super.doOKAction();
     }
