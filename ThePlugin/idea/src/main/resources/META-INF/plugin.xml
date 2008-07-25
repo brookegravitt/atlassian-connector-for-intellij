@@ -359,26 +359,15 @@
                 class="com.atlassian.theplugin.idea.action.crucible.RecoverReviewAction"
                 text="Recover abandoned review"/>
 
-		<action id="ThePlugin.Crucible.Comment.General.Reply"
-				class="com.atlassian.theplugin.idea.action.crucible.comment.general.ReplyAction"
+		<action id="ThePlugin.Crucible.Comment.Reply"
+				class="com.atlassian.theplugin.idea.action.crucible.comment.ReplyAction"
 				text="Reply" icon="/general/add.png"/>
-		<action id="ThePlugin.Crucible.Comment.General.Edit"
-				class="com.atlassian.theplugin.idea.action.crucible.comment.general.EditAction"
+		<action id="ThePlugin.Crucible.Comment.Edit"
+				class="com.atlassian.theplugin.idea.action.crucible.comment.EditAction"
 				text="Reply" icon="/actions/editSource.png"/>
-		<action id="ThePlugin.Crucible.Comment.General.Remove"
-				class="com.atlassian.theplugin.idea.action.crucible.comment.general.RemoveAction"
+		<action id="ThePlugin.Crucible.Comment.Remove"
+				class="com.atlassian.theplugin.idea.action.crucible.comment.RemoveAction"
 				text="Remove" icon="/general/remove.png"/>
-
-		<action id="ThePlugin.Crucible.Comment.File.Reply"
-				class="com.atlassian.theplugin.idea.action.crucible.comment.file.ReplyAction"
-				text="Reply" icon="/general/add.png"/>
-		<action id="ThePlugin.Crucible.Comment.File.Edit"
-				class="com.atlassian.theplugin.idea.action.crucible.comment.file.EditAction"
-				text="Reply" icon="/actions/editSource.png"/>
-		<action id="ThePlugin.Crucible.Comment.File.Remove"
-				class="com.atlassian.theplugin.idea.action.crucible.comment.file.RemoveAction"
-				text="Remove" icon="/general/remove.png"/>
-
 
 		<group id="ThePlugin.Crucible.PostCommit" popup="false" text="">
             <reference id="ThePlugin.Crucible.PostCommitReview"/>
@@ -468,16 +457,10 @@
             <reference id="ThePlugin.Crucible.RecoverReview"/>
         </group>
 
-		<group id="ThePlugin.Crucible.Comment.GeneralMenu" popup="true">
-			<reference id="ThePlugin.Crucible.Comment.General.Reply"/>
-			<reference id="ThePlugin.Crucible.Comment.General.Edit"/>
-			<reference id="ThePlugin.Crucible.Comment.General.Remove"/>
-		</group>
-
-		<group id="ThePlugin.Crucible.Comment.FileMenu" popup="true">
-			<reference id="ThePlugin.Crucible.Comment.File.Reply"/>
-			<reference id="ThePlugin.Crucible.Comment.File.Edit"/>
-			<reference id="ThePlugin.Crucible.Comment.File.Remove"/>
+		<group id="ThePlugin.Crucible.Comment.ToolBar" popup="true">
+			<reference id="ThePlugin.Crucible.Comment.Reply"/>
+			<reference id="ThePlugin.Crucible.Comment.Edit"/>
+			<reference id="ThePlugin.Crucible.Comment.Remove"/>
 		</group>
 
 		<group id="ThePlugin.Crucible.FilterEditToolBar" popup="false">
