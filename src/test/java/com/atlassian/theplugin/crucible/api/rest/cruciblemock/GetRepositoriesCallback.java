@@ -16,6 +16,7 @@
 
 package com.atlassian.theplugin.crucible.api.rest.cruciblemock;
 
+import static com.atlassian.theplugin.commons.crucible.api.JDomHelper.getContent;
 import static junit.framework.Assert.assertTrue;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 import org.jdom.Document;
@@ -49,7 +50,7 @@ public class GetRepositoriesCallback implements JettyMockServer.Callback {
 		Element root = new Element("repositories");
 		Document doc = new Document(root);
 		for (int i = 0; i < size; i++) {
-            root.getContent().add(getRepositories(i));
+            getContent(root).add(getRepositories(i));
 		}
 		return doc;
 	}
@@ -63,6 +64,6 @@ public class GetRepositoriesCallback implements JettyMockServer.Callback {
 	void addTag(Element root, String tagName, String tagValue) {
 		Element newElement = new Element(tagName);
 		newElement.addContent(tagValue);
-		root.getContent().add(newElement);
+		getContent(root).add(newElement);
 	}
 }

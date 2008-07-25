@@ -16,6 +16,8 @@
 
 package com.atlassian.theplugin.crucible.api.rest.cruciblemock;
 
+import static com.atlassian.theplugin.commons.crucible.api.JDomHelper.getContent;
+import com.atlassian.theplugin.commons.crucible.api.model.User;
 import static junit.framework.Assert.assertTrue;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 import org.jdom.Document;
@@ -25,8 +27,6 @@ import org.jdom.output.XMLOutputter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.atlassian.theplugin.commons.crucible.api.model.User;
 
 public class GetReviewersCallback implements JettyMockServer.Callback {
 	private User[] reviewers;
@@ -50,7 +50,7 @@ public class GetReviewersCallback implements JettyMockServer.Callback {
 		Element root = new Element("reviewers");
 		Document doc = new Document(root);
 		for (int i = 0; i < reviewers.length; i++) {
-            root.getContent().add(getUsers(i));
+            getContent(root).add(getUsers(i));
 		}
 		return doc;
 	}
@@ -65,6 +65,6 @@ public class GetReviewersCallback implements JettyMockServer.Callback {
 	private static void addTag(Element root, String tagName, String tagValue) {
 		Element newElement = new Element(tagName);
 		newElement.addContent(tagValue);
-		root.getContent().add(newElement);
+		getContent(root).add(newElement);
 	}
 }
