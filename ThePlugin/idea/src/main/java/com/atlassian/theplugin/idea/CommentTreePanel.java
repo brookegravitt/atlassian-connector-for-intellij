@@ -19,6 +19,7 @@ package com.atlassian.theplugin.idea;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.idea.crucible.CommentEditForm;
 import com.atlassian.theplugin.idea.crucible.events.VersionedCommentReplyAboutToAdd;
 import com.atlassian.theplugin.idea.crucible.events.GeneralCommentReplyAboutToAdd;
 import com.atlassian.theplugin.idea.crucible.events.GeneralCommentAboutToAdd;
@@ -90,20 +91,16 @@ public class CommentTreePanel extends JPanel {
 					GeneralCommentTreeNode vnode = (GeneralCommentTreeNode) node;
 					switch (noOfClicks) {
 						case 2:
-							EditCommentDialog dialog = new EditCommentDialog();
+                            GeneralComment parentComment = vnode.getComment();
+                            GeneralCommentBean newComment = new GeneralCommentBean();
+                            newComment.setReply(true);
+                            CommentEditForm dialog = new CommentEditForm(project, review, newComment);
 							dialog.pack();
 							dialog.setModal(true);
 							dialog.show();
 							if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
-								GeneralComment parentComment = vnode.getComment();
-								GeneralCommentBean newComment = new GeneralCommentBean();
-								newComment.setCreateDate(new Date());
-								newComment.setDefectRaised(dialog.isDraft());
-								newComment.setMessage(dialog.getMessage());
+    							newComment.setCreateDate(new Date());
 								newComment.setUser(new UserBean(review.getServer().getUserName()));
-								newComment.setReply(true);
-								newComment.setDefectApproved(false);
-								newComment.setDeleted(false);
 								IdeaHelper.getReviewActionEventBroker().trigger(
 										new GeneralCommentReplyAboutToAdd(crucibleAgent,
 												review, parentComment, newComment));
@@ -135,13 +132,14 @@ public class CommentTreePanel extends JPanel {
 					VersionedCommentTreeNode vnode = (VersionedCommentTreeNode) node;
 					switch (noOfClicks) {
 						case 2:
-							EditCommentDialog dialog = new EditCommentDialog();
+						    VersionedCommentBean newComment = new VersionedCommentBean();
+                            CommentEditForm dialog = new CommentEditForm(project, review, (CommentBean) newComment);
 							dialog.pack();
 							dialog.setModal(true);
 							dialog.show();
 							if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
 								VersionedComment parentComment = vnode.getComment();
-								VersionedCommentBean newComment = new VersionedCommentBean();
+
 								newComment.setFromLineInfo(parentComment.isFromLineInfo());
 								newComment.setFromStartLine(parentComment.getFromStartLine());
 								newComment.setFromEndLine(parentComment.getFromEndLine());
@@ -150,12 +148,7 @@ public class CommentTreePanel extends JPanel {
 								newComment.setToEndLine(parentComment.getToEndLine());
 								newComment.setCreateDate(new Date());
 								newComment.setReviewItemId(review.getPermId());
-								newComment.setDefectRaised(dialog.isDraft());
-								newComment.setMessage(dialog.getMessage());
 								newComment.setUser(new UserBean(review.getServer().getUserName()));
-								newComment.setReply(true);
-								newComment.setDefectApproved(false);
-								newComment.setDeleted(false);
 								IdeaHelper.getReviewActionEventBroker().trigger(
 										new VersionedCommentReplyAboutToAdd(crucibleAgent,
 												review, file, parentComment, newComment));
@@ -208,19 +201,14 @@ public class CommentTreePanel extends JPanel {
 				public void execute(AtlassianTreeNode node, int noOfClicks) {
 					switch (noOfClicks) {
 						case 2:
-							EditCommentDialog dialog = new EditCommentDialog();
+							GeneralCommentBean newComment = new GeneralCommentBean();
+                            CommentEditForm dialog = new CommentEditForm(project, review, newComment);
 							dialog.pack();
 							dialog.setModal(true);
 							dialog.show();
 							if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
-								GeneralCommentBean newComment = new GeneralCommentBean();
 								newComment.setCreateDate(new Date());
-								newComment.setDefectRaised(dialog.isDraft());
-								newComment.setMessage(dialog.getMessage());
 								newComment.setUser(new UserBean(review.getServer().getUserName()));
-								newComment.setReply(true);
-								newComment.setDefectApproved(false);
-								newComment.setDeleted(false);
 								IdeaHelper.getReviewActionEventBroker().trigger(
 										new GeneralCommentAboutToAdd(crucibleAgent,
 												review, newComment));
@@ -330,110 +318,6 @@ public class CommentTreePanel extends JPanel {
 				}
 			}
 			return null;  //To change body of created methods use File | Settings | File Templates.
-		}
-	}
-
-	private class EditCommentDialog extends DialogWrapper {
-		private final JTextArea area = new JTextArea(10, 40);
-		private Action draftAction = new AbstractAction() {
-			{
-			  putValue(Action.NAME, "Save as Draft");
-			}
-			public void actionPerformed(ActionEvent e) {
-			  if (myPerformAction) return;
-			  try {
-				myPerformAction = true;
-				doOKAction();
-			  }
-			  finally {
-				myPerformAction = false;
-			  }
-			}
-		};
-		private Action myOkAction = new AbstractAction() {
-			{
-			  putValue(Action.NAME, "Post");
-			}
-
-
-			public void actionPerformed(ActionEvent e) {
-				getOKAction().actionPerformed(e);
-			}
-
-		};
-
-		Checkbox defect = new Checkbox("Defect");
-		private boolean isDraft = false;
-
-		public EditCommentDialog() {
-			super(CommentTreePanel.this.project, false);
-			init();
-		}
-
-		@Nullable
-		protected JComponent createCenterPanel() {
-			JPanel panel = new JPanel(new BorderLayout());
-			panel.add(new JLabel("Your reply:"), BorderLayout.NORTH);
-			panel.add(area, BorderLayout.CENTER);
-			return panel;
-//			JPanel panel = new JPanel(new FormLayout(
-//					"4dlu, left:pref, 4dlu, pref, 4dlu, pref:grow, 4dlu",
-//					"4dlu, pref:grow, 4dlu, pref, 4dlu"));
-//			CellConstraints cc = new CellConstraints();
-//			area.setPreferredSize(new Dimension(400, 200));
-//			panel.add(area, cc.xyw(2, 1, 5));
-//			panel.add(defect, cc.xy(2, 2));
-//			panel.add(builder.getPanel(), cc.xy(4, 2));
-//			return panel;
-		}
-
-		
-
-		@Override
-		@Nullable
-		protected JComponent createSouthPanel() {
-			JPanel panel = new JPanel(new FormLayout(
-					"4dlu, left:pref, 4dlu, pref, 4dlu, pref:grow, 4dlu",
-					"4dlu, pref:grow, 4dlu"));
-			ButtonBarBuilder builder = new ButtonBarBuilder();
-
-			JButton cancel = new JButton("Cancel");
-			cancel.setAction(getCancelAction());
-			JButton post = new JButton("Post");
-			post.setAction(myOkAction);
-			JButton draft = new JButton("Save as Draft");
-			draft.setAction(getDraftAction());
-			builder.addGriddedButtons(new JButton[]{cancel, draft, post});
-
-			CellConstraints cc = new CellConstraints();
-			panel.add(defect, cc.xy(2, 2));
-			panel.add(builder.getPanel(), cc.xy(4, 2));
-			return panel;
-		}
-
-		@Override
-		protected Action[] createActions() {
-			return new Action[0];
-		}
-
-		public Action getDraftAction() {
-			return draftAction;
-		}
-
-		public boolean getIsDefect() {
-			return defect.getState();
-		}
-
-		public String getMessage() {
-			return area.getText();
-		}
-
-		public void setIsDraft(boolean draft) {
-			isDraft = draft;
-		}
-
-		public boolean isDraft() {
-			return isDraft;
 		}
 	}
 }
