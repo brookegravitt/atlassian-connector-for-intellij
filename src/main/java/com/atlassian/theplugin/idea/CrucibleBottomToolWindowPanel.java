@@ -16,27 +16,29 @@
 
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.commons.crucible.*;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
-import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListenerNotUsed;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
+import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
+import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
+import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
-import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
+import com.atlassian.theplugin.idea.config.ContentPanel;
+import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
+import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
-import com.atlassian.theplugin.idea.crucible.ReviewData;
-import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
-import com.atlassian.theplugin.idea.crucible.events.VersionedCommentReplyAdded;
-import com.atlassian.theplugin.idea.crucible.events.GeneralCommentReplyAdded;
 import com.atlassian.theplugin.idea.crucible.events.GeneralCommentAdded;
-import com.atlassian.theplugin.idea.config.ContentPanel;
-import com.intellij.util.ui.UIUtil;
-import com.intellij.openapi.ui.Splitter;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.util.Key;
+import com.atlassian.theplugin.idea.crucible.events.GeneralCommentReplyAdded;
+import com.atlassian.theplugin.idea.crucible.events.VersionedCommentReplyAdded;
+import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.ui.Splitter;
+import com.intellij.openapi.util.Key;
+import com.intellij.util.ui.UIUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -187,14 +189,10 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
 
 		@Override
 		public void showFile(final ReviewData review, final CrucibleFileInfo file) {
-            EventQueue.invokeLater(new Runnable() {
-				public void run() {
                     CrucibleHelper.showVirtualFileWithComments(project, review, file);
-				}
-			});
 		}
 
-		@Override
+        @Override
 		public void aboutToAddGeneralComment(ReviewData review, GeneralCommentBean newComment) {
 //			try {
 				GeneralComment comment = null;
