@@ -20,7 +20,11 @@ import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.CrucibleSession;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
-import com.atlassian.theplugin.commons.remoteapi.*;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginFailedException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
 import com.atlassian.theplugin.commons.thirdparty.base64.Base64;
 import org.apache.commons.httpclient.Header;
@@ -37,7 +41,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Communication stub for Crucible REST API.
@@ -87,6 +96,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
     private String authToken = null;
 
     private Map<String, SvnRepository> repositories = new HashMap<String, SvnRepository>();
+    private Map<String, List<CustomFieldDef>> metricsDefinitions = new HashMap<String, List<CustomFieldDef>>();
 
 
     /**
@@ -1273,26 +1283,30 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             throw new IllegalStateException("Calling method without calling login() first");
         }
 
-        String requestUrl = baseUrl + REVIEW_SERVICE + METRICS + "/" + Integer.toString(version);
-        try {
-            Document doc = retrieveGetResponse(requestUrl);
+        String key = Integer.toString(version);
+        if (!metricsDefinitions.containsKey(key)) {
+            String requestUrl = baseUrl + REVIEW_SERVICE + METRICS + "/" + Integer.toString(version);
+            try {
+                Document doc = retrieveGetResponse(requestUrl);
 
-            XPath xpath = XPath.newInstance("metrics/metricsData");
-            @SuppressWarnings("unchecked")
-            List<Element> elements = xpath.selectNodes(doc);
-            List<CustomFieldDef> metrics = new ArrayList<CustomFieldDef>();
+                XPath xpath = XPath.newInstance("metrics/metricsData");
+                @SuppressWarnings("unchecked")
+                List<Element> elements = xpath.selectNodes(doc);
+                List<CustomFieldDef> metrics = new ArrayList<CustomFieldDef>();
 
-            if (elements != null && !elements.isEmpty()) {
-                for (Element element : elements) {
-                    metrics.add(CrucibleRestXmlHelper.parseMetricsNode(element));
+                if (elements != null && !elements.isEmpty()) {
+                    for (Element element : elements) {
+                        metrics.add(CrucibleRestXmlHelper.parseMetricsNode(element));
+                    }
                 }
+                metricsDefinitions.put(key, metrics);
+            } catch (IOException e) {
+                throw new RemoteApiException(e.getMessage(), e);
+            } catch (JDOMException e) {
+                throw new RemoteApiException("Server returned malformed response", e);
             }
-            return metrics;
-        } catch (IOException e) {
-            throw new RemoteApiException(e.getMessage(), e);
-        } catch (JDOMException e) {
-            throw new RemoteApiException("Server returned malformed response", e);
         }
+        return metricsDefinitions.get(key);
     }
 
     protected void adjustHttpHeader(HttpMethod method) {
