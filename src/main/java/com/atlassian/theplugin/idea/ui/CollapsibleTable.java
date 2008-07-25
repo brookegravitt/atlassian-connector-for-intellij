@@ -52,6 +52,10 @@ public class CollapsibleTable extends CollapsiblePanel {
         return table.getSelectedObject();
     }
 
+    public void clearSelection() {
+        table.clearSelection();
+    }
+
     public void addItemSelectedListener(TableItemSelectedListener listener) {
         table.addItemSelectedListener(listener);
     }
@@ -59,8 +63,6 @@ public class CollapsibleTable extends CollapsiblePanel {
     public void removeItemSelectedListener(TableItemSelectedListener listener) {
         table.removeItemSelectedListener(listener);
     }
-
-
 }
 
 
