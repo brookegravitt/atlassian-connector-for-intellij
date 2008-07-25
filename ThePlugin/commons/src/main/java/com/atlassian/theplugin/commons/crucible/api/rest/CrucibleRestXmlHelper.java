@@ -19,6 +19,7 @@ package com.atlassian.theplugin.commons.crucible.api.rest;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
+import static com.atlassian.theplugin.commons.crucible.api.JDomHelper.getContent;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import org.jdom.CDATA;
 import org.jdom.Document;
@@ -256,7 +257,7 @@ public final class CrucibleRestXmlHelper {
     public static Element addTag(Element root, String tagName, String tagValue) {
         Element newElement = new Element(tagName);
         newElement.addContent(tagValue);
-        root.getContent().add(newElement);
+        getContent(root).add(newElement);
         return newElement;
     }
 
@@ -264,11 +265,11 @@ public final class CrucibleRestXmlHelper {
         Element root = new Element("createReview");
         Document doc = new Document(root);
 
-        root.getContent().add(prepareReviewNodeElement(review));
+        getContent(root).add(prepareReviewNodeElement(review));
 
         if (patch != null) {
             Element patchData = new Element("patch");
-            root.getContent().add(patchData);
+            getContent(root).add(patchData);
 
             CDATA patchT = new CDATA(patch);
             patchData.setContent(patchT);
@@ -282,7 +283,7 @@ public final class CrucibleRestXmlHelper {
 
         if (message != null) {
             Element messageData = new Element("summary");
-            root.getContent().add(messageData);
+            getContent(root).add(messageData);
 
             CDATA patchT = new CDATA(message);
             messageData.setContent(patchT);
@@ -294,14 +295,14 @@ public final class CrucibleRestXmlHelper {
         Element root = new Element("createReview");
         Document doc = new Document(root);
 
-        root.getContent().add(prepareReviewNodeElement(review));
+        getContent(root).add(prepareReviewNodeElement(review));
 
         if (!revisions.isEmpty()) {
             Element changes = new Element("changesets");
-            root.getContent().add(changes);
+            getContent(root).add(changes);
             for (String revision : revisions) {
                 Element rev = new Element("changesetData");
-                changes.getContent().add(rev);
+                getContent(changes).add(rev);
                 addTag(rev, "id", revision);
             }
         }
@@ -316,10 +317,10 @@ public final class CrucibleRestXmlHelper {
 
         if (!revisions.isEmpty()) {
             Element changes = new Element("changesets");
-            root.getContent().add(changes);
+            getContent(root).add(changes);
             for (String revision : revisions) {
                 Element rev = new Element("changesetData");
-                changes.getContent().add(rev);
+                getContent(changes).add(rev);
                 addTag(rev, "id", revision);
             }
         }
@@ -334,7 +335,7 @@ public final class CrucibleRestXmlHelper {
 
         if (patch != null) {
             Element patchData = new Element("patch");
-            root.getContent().add(patchData);
+            getContent(root).add(patchData);
 
             CDATA patchT = new CDATA(patch);
             patchData.setContent(patchT);
@@ -364,15 +365,15 @@ public final class CrucibleRestXmlHelper {
         Element reviewData = new Element("reviewData");
 
         Element authorElement = new Element("author");
-        reviewData.getContent().add(authorElement);
+        getContent(reviewData).add(authorElement);
         addTag(authorElement, "userName", review.getAuthor().getUserName());
 
         Element creatorElement = new Element("creator");
-        reviewData.getContent().add(creatorElement);
+        getContent(reviewData).add(creatorElement);
         addTag(creatorElement, "userName", review.getCreator().getUserName());
 
         Element moderatorElement = new Element("moderator");
-        reviewData.getContent().add(moderatorElement);
+        getContent(reviewData).add(moderatorElement);
         addTag(moderatorElement, "userName", review.getModerator().getUserName());
 
         addTag(reviewData, "description", review.getDescription());
@@ -384,7 +385,7 @@ public final class CrucibleRestXmlHelper {
         }
         if (review.getPermId() != null) {
             Element permIdElement = new Element("permaId");
-            reviewData.getContent().add(permIdElement);
+            getContent(reviewData).add(permIdElement);
             addTag(permIdElement, "id", review.getPermId().getId());
         }
 
@@ -504,7 +505,7 @@ public final class CrucibleRestXmlHelper {
         strangeDate += ":00";
         addTag(commentNode, "createDate", strangeDate);        
         Element userElement = new Element("user");
-        commentNode.getContent().add(userElement);
+        getContent(commentNode).add(userElement);
         addTag(userElement, "userName", comment.getUser().getUserName());
         addTag(commentNode, "defectRaised", Boolean.toString(comment.isDefectRaised()));
         addTag(commentNode, "defectApproved", Boolean.toString(comment.isDefectApproved()));
@@ -512,18 +513,18 @@ public final class CrucibleRestXmlHelper {
         addTag(commentNode, "draft", Boolean.toString(comment.isDraft()));
         addTag(commentNode, "message", comment.getMessage());
         Element metrics = new Element("metrics");
-        commentNode.getContent().add(metrics);
+        getContent(commentNode).add(metrics);
 
         for (String key : comment.getCustomFields().keySet()) {
             Element entry = new Element("entry");
-            metrics.getContent().add(entry);
+            getContent(metrics).add(entry);
             addTag(entry, "key", key);
             CustomField field = comment.getCustomFields().get(key);
-            entry.getContent().add(prepareCustomFieldValue(field));
+            getContent(entry).add(prepareCustomFieldValue(field));
         }
 
         Element replies = new Element("replies");
-        commentNode.getContent().add(replies);
+        getContent(commentNode).add(replies);
     }
 
     public static GeneralCommentBean parseGeneralCommentNode(Element reviewCommentNode) {
@@ -539,12 +540,13 @@ public final class CrucibleRestXmlHelper {
         return doc;
     }
 
+
     public static Document prepareVersionedComment(VersionedComment comment) {
         Element commentNode = new Element("versionedLineCommentData");
         Document doc = new Document(commentNode);
         prepareComment(comment, commentNode);
         Element reviewItemId = new Element("reviewItemId");
-        commentNode.getContent().add(reviewItemId);
+        getContent(commentNode).add(reviewItemId);
         addTag(reviewItemId, "id", comment.getReviewItemId().getId());
         if (comment.getFromStartLine() > 0 && comment.getFromEndLine() > 0) {
             addTag(commentNode, "fromLineRange", comment.getFromStartLine() + "-" + comment.getFromEndLine());
@@ -712,7 +714,7 @@ public final class CrucibleRestXmlHelper {
         return filterData;
     }
 
-    private static DateTimeFormatter commentTimeFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+    private static final DateTimeFormatter commentTimeFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
     private static Date parseCommentTime(String date) {
         if (date != null && !date.equals("")) {

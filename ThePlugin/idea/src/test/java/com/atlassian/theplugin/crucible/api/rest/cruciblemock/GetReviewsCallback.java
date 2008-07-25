@@ -16,6 +16,7 @@
 
 package com.atlassian.theplugin.crucible.api.rest.cruciblemock;
 
+import static com.atlassian.theplugin.commons.crucible.api.JDomHelper.getContent;
 import com.atlassian.theplugin.commons.crucible.api.model.State;
 import static junit.framework.Assert.assertTrue;
 import org.ddsteps.mock.httpserver.JettyMockServer;
@@ -66,7 +67,7 @@ public class GetReviewsCallback implements JettyMockServer.Callback {
 		Element root = new Element("reviews");
 		Document doc = new Document(root);
 		for (State state : states) {
-			root.getContent().add(getReviewInState(state));
+			getContent(root).add(getReviewInState(state));
 		}
 		return doc;
 	}
@@ -86,8 +87,8 @@ public class GetReviewsCallback implements JettyMockServer.Callback {
 		Element newPermaId = new Element("permaId");
 		Element newId = new Element("id");
 		newId.addContent("PR-1");
-		newPermaId.getContent().add(newId);
-		reviewData.getContent().add(newPermaId);
+		getContent(newPermaId).add(newId);
+		getContent(reviewData).add(newPermaId);
 
 		return reviewData;
 	}
@@ -95,6 +96,6 @@ public class GetReviewsCallback implements JettyMockServer.Callback {
 	void addTag(Element root, String tagName, String tagValue) {
 		Element newElement = new Element(tagName);
 		newElement.addContent(tagValue);
-        root.getContent().add(newElement);
+        getContent(root).add(newElement);
 	}
 }
