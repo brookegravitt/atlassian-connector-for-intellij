@@ -95,7 +95,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		return ServerType.JIRA_SERVER;
 	}
 
-	public List getIssues(Server server,
+	public List<JIRAIssue> getIssues(Server server,
 						  List<JIRAQueryFragment> query,
 						  String sort,
 						  String sortOrder,

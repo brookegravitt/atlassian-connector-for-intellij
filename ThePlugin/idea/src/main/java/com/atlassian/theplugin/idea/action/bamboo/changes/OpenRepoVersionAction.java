@@ -20,13 +20,7 @@ import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.atlassian.theplugin.idea.ui.tree.file.BambooFileNode;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
-import com.intellij.openapi.fileEditor.OpenFileDescriptor;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.vcs.VcsException;
-import com.intellij.openapi.vcs.vfs.AbstractVcsVirtualFile;
 import com.intellij.openapi.vfs.VirtualFile;
 
 public class OpenRepoVersionAction extends AbstractBambooFileActions {
@@ -43,43 +37,11 @@ public class OpenRepoVersionAction extends AbstractBambooFileActions {
         if (bfn != null && project != null && bfn.getPsiFile() != null) {
             final VirtualFile virtualFile = bfn.getPsiFile().getVirtualFile();
             final String url = VcsIdeaHelper.getRepositoryUrlForFile(virtualFile);
-            if (url == null) {
+            if (url == null || virtualFile == null) {
                 return;
             }
 
-
-            final String niceFileMessage = virtualFile.getName() + " (rev: " + bfn.getRevision() + ") from VCS";
-            new Task.Backgroundable(project, "Fetching file " + niceFileMessage, false) {
-
-                private OpenFileDescriptor ofd;
-
-                private VcsException exception;
-
-                @Override
-                public void run(ProgressIndicator indicator) {
-                    final AbstractVcsVirtualFile vcvf;
-                    try {
-                        vcvf = VcsIdeaHelper.getVcsVirtualFile(project, virtualFile, bfn.getRevision(), false);
-                    } catch (VcsException e) {
-                        exception = e;
-                        return;
-                    }
-                    ofd = new OpenFileDescriptor(project, vcvf, 0, 1);
-                }
-
-                @Override
-                public void onSuccess() {
-                    if (exception != null) {
-                        Messages.showErrorDialog(project, "The following error has occured while fetching "
-                                + niceFileMessage + ":\n" + exception.getMessage(), "Error fetching file");
-                        return;
-                    }
-                    if (ofd != null) {
-                        ofd.navigate(true);
-                    }
-
-                }
-            }.queue();
+            VcsIdeaHelper.openFile(project, virtualFile, bfn.getRevision(), 0, 1, null);
         }
 
     }

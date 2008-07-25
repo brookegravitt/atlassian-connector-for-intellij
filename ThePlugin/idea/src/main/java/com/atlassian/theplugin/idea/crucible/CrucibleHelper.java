@@ -30,12 +30,6 @@ import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.vcs.VcsException;
-import com.intellij.openapi.vcs.vfs.VcsVirtualFile;
-import com.intellij.openapi.vfs.VfsUtil;
-import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -67,42 +61,51 @@ public final class CrucibleHelper {
             line = fileComments.iterator().next().getFromStartLine();
         }
 
-        Editor editor = openFileInEditor(project, reviewItem, line);
-        if (editor == null) {
-            return;
-        }
-        TextAttributes textAttributes = new TextAttributes();
-        textAttributes.setBackgroundColor(VERSIONED_COMMENT_BACKGROUND_COLOR);
-        highlightCommentsInEditor(project, editor, reviewItem, fileComments, textAttributes);
+        VcsIdeaHelper.openFile(project, reviewItem.getFileDescriptor().getAbsoluteUrl(),
+                reviewItem.getFileDescriptor().getRevision(), line, 1, new VcsIdeaHelper.OpenFileDescriptorAction() {
+
+            public void run(OpenFileDescriptor ofd) {
+                FileEditorManager fem = FileEditorManager.getInstance(project);
+                Editor editor = fem.openTextEditor(ofd, true);
+                if (editor == null) {
+                    return;
+                }
+                TextAttributes textAttributes = new TextAttributes();
+                textAttributes.setBackgroundColor(VERSIONED_COMMENT_BACKGROUND_COLOR);
+                highlightCommentsInEditor(project, editor, reviewItem, fileComments, textAttributes);
+            }
+        });
     }
 
-    @Nullable
-    private static Editor openFileInEditor(Project project, CrucibleFileInfo reviewItem, int line) {
-        try {
-            OpenFileDescriptor ofd = getOpenFileDescriptor(project, reviewItem.getFileDescriptor().getAbsoluteUrl(),
-                    reviewItem.getFileDescriptor().getRevision(), line, 1);
-            if (ofd == null) {
-                return null;
-            }
-            FileEditorManager fem = FileEditorManager.getInstance(project);
-            return fem.openTextEditor(ofd, true);
-            
-        } catch (VcsException e) {
-            Messages.showErrorDialog(project, "The following error has occured while trying to open "
-                    + reviewItem.getFileDescriptor().getName() + " (rev: " + reviewItem.getFileDescriptor().getRevision()
-                    + "):\n" + e.getMessage(), "Error");
-            return null;
-        }
-    }
+//    @Nullable
+//    private static Editor openFileInEditor(Project project, CrucibleFileInfo reviewItem, int line,
+//            VcsIdeaHelper.OpenFileDescriptorAction action) {
+//        try {
+//            OpenFileDescriptor ofd = openFile(project, reviewItem.getFileDescriptor().getAbsoluteUrl(),
+//                    reviewItem.getFileDescriptor().getRevision(), line, 1, action);
+//            if (ofd == null) {
+//                return null;
+//            }
+//            FileEditorManager fem = FileEditorManager.getInstance(project);
+//            return fem.openTextEditor(ofd, true);
+//
+//        } catch (VcsException e) {
+//            Messages.showErrorDialog(project, "The following error has occured while trying to open "
+//                    + reviewItem.getFileDescriptor().getName() + " (rev: " + reviewItem.getFileDescriptor().getRevision()
+//                    + "):\n" + e.getMessage(), "Error");
+//            return null;
+//        }
+//    }
 
     /**
      * Shows virtual file taken from repository in Idea Editor.
      * Higlights all versioned comments for given file
      * Adds StripeMark on the right side of file window with set tool tip text that corresponde
      * to VersionedComment.getMessage content
-     * @param project project
+     *
+     * @param project       project
      * @param reviewAdapter adapter
-     * @param reviewItem review item
+     * @param reviewItem    review item
      */
     public static void showVirtualFileWithComments(Project project, final ReviewData reviewAdapter,
             final CrucibleFileInfo reviewItem) {
@@ -118,62 +121,6 @@ public final class CrucibleHelper {
         }
     }
 
-    /**
-     * Shows file taken from VCS ineditor asnd sets curson in specified by "comment" line.
-     * If function showVirtualFileWithComments is not called before then no comment highlighting or
-     * StripMarkap
-     *
-     * @param project project
-     * @param reviewItem review definition
-     * @param comment comment
-     */
-    public static void selectVersionedCommentLineInEditor(Project project, CrucibleFileInfo reviewItem,
-            VersionedComment comment) {
-        openFileInEditor(project, reviewItem, comment.getFromStartLine());
-    }
-
-    @Nullable
-    public static OpenFileDescriptor getOpenFileDescriptor(Project project, String filePath, String fileRevision,
-            int line, int col) throws VcsException {
-
-        VirtualFile baseDir = project.getBaseDir();
-        String baseUrl = VcsIdeaHelper.getRepositoryUrlForFile(baseDir);
-        OpenFileDescriptor ofd = null;
-
-        if (baseUrl != null && filePath.startsWith(baseUrl)) {
-
-            String relUrl = filePath.substring(baseUrl.length());
-
-//			VirtualFile vfl = null;
-//			try {
-//				vfl = (VcsVirtualFile)VfsUtil.findFileByURL(new URL(filePath), VirtualFileManager.getInstance());
-//			} catch (MalformedURLException e) {
-//				e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//			}
-
-            VirtualFile vfl = VfsUtil.findRelativeFile(relUrl, baseDir);
-
-            VirtualFile[] openFiles = FileEditorManager.getInstance(project).getOpenFiles();
-            VirtualFile newFile = null;
-            for (VirtualFile file : openFiles) {
-                if (file.getPath().equals(filePath)
-                        && file instanceof VcsVirtualFile && ((VcsVirtualFile) file).getRevision().equals(fileRevision)) {
-                    newFile = file;
-                }
-            }
-            if (newFile == null) {
-                newFile = VcsIdeaHelper.getVcsVirtualFile(project, vfl, fileRevision, false);
-            }
-
-
-            ofd = new OpenFileDescriptor(project, newFile, line, col);
-
-        }
-
-
-        return ofd;
-    }
-
     private static void highlightCommentsInEditor(Project project, Editor editor, CrucibleFileInfo reviewItem,
             Collection<VersionedComment> fileVersionedComments, TextAttributes textAttribute) {
         Collection<RangeHighlighter> ranges = new ArrayList<RangeHighlighter>();
@@ -186,7 +133,7 @@ public final class CrucibleHelper {
                 rh.setErrorStripeTooltip(reviewItem.getPermId().getId() + ":" + comment.getMessage());
                 rh.setErrorStripeMarkColor(VERSIONED_COMMENT_STRIP_MARK_COLOR);
 
-                //}
+//}
             }
         }
     }
