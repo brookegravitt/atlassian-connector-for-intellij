@@ -227,6 +227,7 @@
                 <directory>.</directory>
                 <includes>
                     <include>plugin.xml</include>
+					<include>plugin.properties</include>
                     <include>icons/**/*.*</include>
                     <include>META-INF/*.*</include>
                 </includes>
