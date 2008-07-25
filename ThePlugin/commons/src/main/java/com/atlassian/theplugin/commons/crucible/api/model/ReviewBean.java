@@ -40,7 +40,8 @@ public class ReviewBean implements Review {
 	private String projectKey;
 	private String repoName;
 	private State state;
-	private int metricsVersion;
+    private boolean allowReviewerToJoin;
+    private int metricsVersion;
 	private Date createDate;
 	private Date closeDate;
 	private List<VersionedComment> versionedComments;
@@ -113,9 +114,6 @@ public class ReviewBean implements Review {
 	public void setVirtualFileSystem(VirtualFileSystem virtualFileSystem) {
 		this.virtualFileSystem = virtualFileSystem;
 	}
-
-    private static final int ONE_EFF = 31;
-
 
     /**
      * Gets the value of the author property.
@@ -317,7 +315,15 @@ public class ReviewBean implements Review {
 		this.state = value;
 	}
 
-	public int getMetricsVersion() {
+    public boolean isAllowReviewerToJoin() {
+        return allowReviewerToJoin;
+    }
+
+    public void setAllowReviewerToJoin(boolean allowReviewerToJoin) {
+        this.allowReviewerToJoin = allowReviewerToJoin;
+    }    
+
+    public int getMetricsVersion() {
 		return metricsVersion;
 	}
 
