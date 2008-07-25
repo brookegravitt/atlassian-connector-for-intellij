@@ -360,14 +360,14 @@
                 text="Recover abandoned review"/>
 
 		<action id="ThePlugin.Crucible.Comment.Reply"
-				class="com.atlassian.theplugin.idea.action.crucible.comment.ReplyAction"
-				text="Reply" icon="/general/add.png"/>
+				class="com.atlassian.theplugin.idea.action.crucible.comment.AddAction"
+				text="Add comment" icon="/general/add.png"/>
 		<action id="ThePlugin.Crucible.Comment.Edit"
 				class="com.atlassian.theplugin.idea.action.crucible.comment.EditAction"
-				text="Reply" icon="/actions/editSource.png"/>
+				text="Edit comment" icon="/actions/editSource.png"/>
 		<action id="ThePlugin.Crucible.Comment.Remove"
 				class="com.atlassian.theplugin.idea.action.crucible.comment.RemoveAction"
-				text="Remove" icon="/general/remove.png"/>
+				text="Remove comment" icon="/general/remove.png"/>
 
 		<group id="ThePlugin.Crucible.PostCommit" popup="false" text="">
             <reference id="ThePlugin.Crucible.PostCommitReview"/>
