@@ -517,6 +517,10 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
             return null;
         }
 
+        public boolean isAllowReviewerToJoin() {
+            return allowCheckBox.isSelected();
+        }
+
         public int getMetricsVersion() {
             return 0;            
         }
