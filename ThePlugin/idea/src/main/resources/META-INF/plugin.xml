@@ -418,17 +418,15 @@
             <reference id="ThePlugin.Crucible.All"/>
             <separator/>
             <reference id="ThePlugin.Crucible.CustomFilter"/>
-            <add-to-group anchor="last" group-id="ThePlugin.CrucibleToolWindowToolBar"/>
+            <add-to-group anchor="last" group-id="ThePlugin.CrucibleToolWindowToolBar"/>            
         </group>
 
         <group id="ThePlugin.CrucibleReviewToolBar" popup="false" text="">
+            <separator />
             <reference id="ThePlugin.Crucible.ViewReview"/>
-            <separator/>
             <reference id="ThePlugin.Crucible.GetComments"/>
             <separator/>
-            <reference id="ThePlugin.Crucible.CompleteReview"/>
-            <reference id="ThePlugin.Crucible.UncompleteReview"/>
-            <reference id="ThePlugin.Crucible.CloseReview"/>
+            <add-to-group anchor="last" group-id="ThePlugin.CrucibleToolWindowToolBar" />
         </group>
 
         <group id="ThePlugin.CrucibleGeneralCommentToolBar" popup="false" text="">
