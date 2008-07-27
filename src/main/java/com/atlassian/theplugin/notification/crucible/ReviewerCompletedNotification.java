@@ -32,6 +32,7 @@ public class ReviewerCompletedNotification extends AbstractReviewNotification {
     }
 
     public String getPresentationMessage() {
-        return "Reviewer " + reviewer.getDisplayName() + " " + (reviewer.isCompleted()? "completed" : " uncompleted") + " review";
+        return "Reviewer " + reviewer.getDisplayName() + " " + (reviewer.isCompleted() ? "completed" : " uncompleted")
+                + " review";
     }
 }

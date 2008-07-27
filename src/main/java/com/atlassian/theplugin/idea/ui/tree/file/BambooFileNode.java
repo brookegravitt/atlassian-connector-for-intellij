@@ -64,8 +64,8 @@ public class BambooFileNode extends FileNode {
     }
 
     private static class BambooFileNodeRenderer extends ColoredTreeCellRenderer {
-//        private static final SimpleTextAttributes GREEN_ATTRIBUTES = new SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC, new Color(0, 128, 0));
 
+        @Override
         public void customizeCellRenderer(JTree tree, Object value, boolean selected, boolean expanded,
                 boolean leaf, int row, boolean hasFocus) {
             BambooFileNode node = (BambooFileNode) value;

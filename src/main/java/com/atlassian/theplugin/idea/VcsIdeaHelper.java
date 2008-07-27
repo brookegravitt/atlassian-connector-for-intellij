@@ -113,7 +113,9 @@ public final class VcsIdeaHelper {
         return null;
     }
 
-    @Nullable public static AbstractVcsVirtualFile getVcsVirtualFile(Project project, VirtualFile virtualFile, String revision, boolean loadLazily) throws VcsException {
+    @Nullable public static AbstractVcsVirtualFile getVcsVirtualFile(Project project, VirtualFile virtualFile,
+            String revision, boolean loadLazily) throws VcsException {
+        
         AbstractVcs vcs = VcsUtil.getVcsFor(project, virtualFile);
         if (vcs == null) {
             return null;
@@ -124,7 +126,9 @@ public final class VcsIdeaHelper {
     }
 
     @Nullable
-    private static AbstractVcsVirtualFile getVcsVirtualFileImpl(VirtualFile virtualFile, AbstractVcs vcs, VcsRevisionNumber vcsRevisionNumber, boolean loadLazily) throws VcsException {
+    private static AbstractVcsVirtualFile getVcsVirtualFileImpl(VirtualFile virtualFile, AbstractVcs vcs,
+            VcsRevisionNumber vcsRevisionNumber, boolean loadLazily) throws VcsException {
+        
         ContentRevision contentRevision = vcs.getDiffProvider().createFileContent(vcsRevisionNumber, virtualFile);
         if (contentRevision == null) {
             return null;
@@ -155,7 +159,9 @@ public final class VcsIdeaHelper {
     }
 
 
-    public static AbstractVcsVirtualFile getVcsVirtualFile(Project project, VirtualFile virtualFile, VcsRevisionNumber vcsRevisionNumber, boolean loadLazily) throws VcsException {
+    public static AbstractVcsVirtualFile getVcsVirtualFile(Project project, VirtualFile virtualFile,
+            VcsRevisionNumber vcsRevisionNumber, boolean loadLazily) throws VcsException {
+
         AbstractVcs vcs = VcsUtil.getVcsFor(project, virtualFile);
         AbstractVcsVirtualFile vcvf = getVcsVirtualFileImpl(virtualFile, vcs, vcsRevisionNumber, loadLazily);
         return vcvf;
@@ -276,8 +282,9 @@ public final class VcsIdeaHelper {
     }
 
 
-    public static void openFile(final Project project, @NotNull final VirtualFile virtualFile, @NotNull final String fileRevision,
-            final int line, final int col, @Nullable final OpenFileDescriptorAction action) {
+    public static void openFile(final Project project, @NotNull final VirtualFile virtualFile,
+            @NotNull final String fileRevision, final int line, final int col,
+            @Nullable final OpenFileDescriptorAction action) {
 
         // do we have the same file revision opened in our project?
         final VirtualFile theFile = findOpenFile(project, virtualFile, fileRevision);

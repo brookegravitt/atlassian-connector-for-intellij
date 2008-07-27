@@ -19,12 +19,9 @@ package com.atlassian.theplugin.idea.action.jira;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DataKeys;
-import com.intellij.openapi.project.Project;
 
 public class LogWorkAction extends AnAction {
     public void actionPerformed(AnActionEvent anActionEvent) {
-        Project project = anActionEvent.getData(DataKeys.PROJECT);
-        IdeaHelper.getJIRAToolWindowPanel(anActionEvent).logWorkForIssue(project);
+        IdeaHelper.getJIRAToolWindowPanel(anActionEvent).logWorkForIssue();
     }
 }

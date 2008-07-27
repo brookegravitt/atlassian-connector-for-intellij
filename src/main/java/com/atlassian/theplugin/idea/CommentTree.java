@@ -18,14 +18,11 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
-import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 
-import javax.swing.plaf.TreeUI;
-import javax.swing.plaf.basic.BasicTreeUI;
 import javax.swing.*;
-import javax.swing.tree.TreeCellRenderer;
+import javax.swing.plaf.basic.BasicTreeUI;
 import javax.swing.tree.AbstractLayoutCache;
-import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.TreeCellRenderer;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -79,8 +76,7 @@ public class CommentTree extends AtlassianTree {
 		@Override
 		public void installUI(JComponent c) {
 			if (c == null) {
-				throw new NullPointerException("null component passed to " +
-						"BasicTreeUI.installUI()");
+				throw new NullPointerException("null component passed to BasicTreeUI.installUI()");
 			}
 			tree = (JTree) c;
 			super.installUI(c);
@@ -116,9 +112,10 @@ public class CommentTree extends AtlassianTree {
 					Dimension prefSize = editingComponent.getPreferredSize();
 					int rh = getRowHeight();
 
-					if (rh > 0 && rh != prefSize.height)
+					if (rh > 0 && rh != prefSize.height) {
 						prefSize.height = rh;
-					if (size != null) {
+                    }
+                    if (size != null) {
 						size.x = getRowX(row, depth);
 						size.width = prefSize.width;
 						size.height = prefSize.height;
@@ -136,11 +133,9 @@ public class CommentTree extends AtlassianTree {
 				if (currentCellRenderer != null) {
 					Component aComponent;
 
-					aComponent = currentCellRenderer.getTreeCellRendererComponent
-							(tree, value, tree.isRowSelected(row),
-									expanded, treeModel.isLeaf(value), row,
-									false);
-					if (tree != null) {
+					aComponent = currentCellRenderer.getTreeCellRendererComponent(tree, value, tree.isRowSelected(row),
+							expanded, treeModel.isLeaf(value), row, false);
+                    if (tree != null) {
 						// Only ever removed when UI changes, this is OK!
 						rendererPane.add(aComponent);
 						aComponent.validate();

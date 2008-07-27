@@ -107,12 +107,12 @@ public final class CrucibleHelper {
      * @param reviewAdapter adapter
      * @param reviewItem    review item
      */
-    public static void showVirtualFileWithComments(Project project, final ReviewData reviewAdapter,
+    public static void showVirtualFileWithComments(final Project project, final ReviewData reviewAdapter,
             final CrucibleFileInfo reviewItem) {
 
         try {
-            Collection<VersionedComment> fileComments = CrucibleServerFacadeImpl.getInstance().getVersionedComments(reviewAdapter.getServer(),
-                    reviewAdapter.getPermId(), reviewItem.getPermId());
+            Collection<VersionedComment> fileComments = CrucibleServerFacadeImpl.getInstance()
+                    .getVersionedComments(reviewAdapter.getServer(), reviewAdapter.getPermId(), reviewItem.getPermId());
             showVirtualFileWithComments(project, reviewItem, fileComments);
         } catch (RemoteApiException e) {
             PluginUtil.getLogger().error(e.getMessage());

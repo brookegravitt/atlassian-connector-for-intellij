@@ -26,6 +26,7 @@ import com.atlassian.theplugin.idea.ui.TableItemSelectedListener;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
 import com.atlassian.theplugin.idea.ui.tree.file.BambooFileNode;
 import com.atlassian.theplugin.idea.ui.tree.file.FileTreeModelBuilder;
+import static com.atlassian.theplugin.idea.ui.tree.file.FileTreeModelBuilder.buildFlatTreeModelFromBambooChangeSet;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionToolbar;
@@ -173,7 +174,7 @@ public final class BuildChangesToolWindow {
             gbc1.weighty = 1.0;
             gbc1.fill = GridBagConstraints.BOTH;
 
-            commitsTable = createCommitsTable(this.project, commits);
+            commitsTable = createCommitsTable(commits);
             tablePanel.add(new JScrollPane(commitsTable), gbc1);
 
             split.setFirstComponent(tablePanel);
@@ -210,22 +211,27 @@ public final class BuildChangesToolWindow {
         private class AuthorColumn extends TableColumnInfo {
             private static final int PREFERRED_WIDTH = 100;
 
+            @Override
             public String getColumnName() {
                 return "Author";
             }
 
+            @Override
             public Class getColumnClass() {
                 return String.class;
             }
 
+            @Override
             public int getPrefferedWidth() {
                 return PREFERRED_WIDTH;
             }
 
+            @Override
             public Object valueOf(Object o) {
                 return ((BambooChangeSet) o).getAuthor();
             }
 
+            @Override
             public Comparator getComparator() {
                 return new Comparator() {
                     public int compare(Object o, Object o1) {
@@ -238,22 +244,27 @@ public final class BuildChangesToolWindow {
         private class DateColumn extends TableColumnInfo {
             private static final int PREFERRED_WIDTH = 100;
 
+            @Override
             public String getColumnName() {
                 return "Date";
             }
 
+            @Override
             public Class getColumnClass() {
                 return Date.class;
             }
 
+            @Override
             public int getPrefferedWidth() {
                 return PREFERRED_WIDTH;
             }
 
+            @Override
             public Object valueOf(Object o) {
                 return ((BambooChangeSet) o).getCommitDate();
             }
 
+            @Override
             public Comparator getComparator() {
                 return new Comparator() {
                     public int compare(Object o, Object o1) {
@@ -266,22 +277,27 @@ public final class BuildChangesToolWindow {
         private class CommentColumn extends TableColumnInfo {
             private static final int PREFERRED_WIDTH = 600;
 
+            @Override
             public String getColumnName() {
                 return "Comment";
             }
 
+            @Override
             public Class getColumnClass() {
                 return String.class;
             }
 
+            @Override
             public int getPrefferedWidth() {
                 return PREFERRED_WIDTH;
             }
 
+            @Override
             public Object valueOf(Object o) {
                 return ((BambooChangeSet) o).getComment();
             }
 
+            @Override
             public Comparator getComparator() {
                 return new Comparator() {
                     public int compare(Object o, Object o1) {
@@ -291,7 +307,7 @@ public final class BuildChangesToolWindow {
             }
         }
 
-        private AtlassianTableView createCommitsTable(final Project project, final List<BambooChangeSet> commits) {
+        private AtlassianTableView createCommitsTable(final List<BambooChangeSet> commits) {
             TableColumnProvider prov = new TableColumnProvider() {
                 public TableColumnInfo[] makeColumnInfo() {
                     return new TableColumnInfo[]{new AuthorColumn(), new DateColumn(), new CommentColumn()};
@@ -306,7 +322,7 @@ public final class BuildChangesToolWindow {
             atv.addItemSelectedListener(new TableItemSelectedListener() {
                 public void itemSelected(AtlassianTableView table, int noClicks) {
                     BambooChangeSet c = (BambooChangeSet) table.getSelectedObject();
-                    createTree(project, c);
+                    createTree(c);
                 }
             });
             return atv;
@@ -330,10 +346,10 @@ public final class BuildChangesToolWindow {
 
         public void setGroupByDirectory(boolean groupByDirectory) {
             isByDir = groupByDirectory;
-            createTree(project, (BambooChangeSet) commitsTable.getSelectedObject());
+            createTree((BambooChangeSet) commitsTable.getSelectedObject());
         }
 
-        private void createTree(Project project, BambooChangeSet changeSet) {
+        private void createTree(BambooChangeSet changeSet) {
             if (changeSet != null && changeSet.getFiles().size() > 0) {
                 if (isByDir) {
                     fileTree = new AtlassianTree(FileTreeModelBuilder.buildTreeModelFromBambooChangeSet(project, changeSet));
@@ -341,7 +357,7 @@ public final class BuildChangesToolWindow {
                     fileScroll.setViewportView(fileTree);
                     expand();
                 } else {
-                    fileTree = new AtlassianTree(FileTreeModelBuilder.buildFlatTreeModelFromBambooChangeSet(project, changeSet));
+                    fileTree = new AtlassianTree(buildFlatTreeModelFromBambooChangeSet(project, changeSet));
                     fileTree.setRootVisible(false);
                     fileScroll.setViewportView(fileTree);
                 }
@@ -369,7 +385,7 @@ public final class BuildChangesToolWindow {
             }
         }
 
-        private static class NavigateToCodeHandler extends MouseAdapter {
+        private static final class NavigateToCodeHandler extends MouseAdapter {
 
             private String place;
 
@@ -416,6 +432,7 @@ public final class BuildChangesToolWindow {
             }
 
 
+            @Override
             public void mousePressed(MouseEvent e) {
                 processPopup(e);
             }
