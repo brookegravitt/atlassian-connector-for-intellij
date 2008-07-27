@@ -543,7 +543,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         try {
             Document doc = retrieveGetResponse(requestUrl);
 
-            XPath xpath = XPath.newInstance("/myRepositories/repoData");
+            XPath xpath = XPath.newInstance("/repositories/repoData");
             @SuppressWarnings("unchecked")
             List<Element> elements = xpath.selectNodes(doc);
             List<Repository> myRepositories = new ArrayList<Repository>();
