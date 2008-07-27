@@ -624,7 +624,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
                 setFiltersBean(IdeaHelper.getCurrentJIRAServer().getServer().getUid(), filters);
     }
 
-
+    @SuppressWarnings("unchecked")
     public List<JiraIssueAdapter> getIssues() {
         return listTableModel.getItems();
     }

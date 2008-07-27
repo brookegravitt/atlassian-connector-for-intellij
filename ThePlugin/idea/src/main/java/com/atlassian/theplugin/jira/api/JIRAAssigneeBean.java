@@ -26,7 +26,7 @@ public class JIRAAssigneeBean extends JIRAUserBean {
 		super(id, name, value);
 	}
 
-	public JIRAAssigneeBean(Map map) {
+	public JIRAAssigneeBean(Map<String, String> map) {
 		super(map);
 	}
 
