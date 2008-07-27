@@ -35,11 +35,6 @@
         <name>Atlassian Pty Ltd</name>
         <url>http://atlassian.com/</url>
     </organization>
-    <modules>
-        <module>commons</module>
-        <module>idea</module>
-        <module>eclipse</module>
-    </modules>
     <scm>
         <connection>scm:svn:https://studio.atlassian.com/svn/PL/trunk/ThePlugin/</connection>
         <developerConnection>scm:svn:https://studio.atlassian.com/svn/PL/trunk/ThePlugin/</developerConnection>
@@ -116,6 +111,17 @@
     </dependencies>
     <build>
         <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <dependencies>
+          <dependency>
+            <groupId>com.atlassian.theplugin</groupId>
+            <artifactId>build-tools</artifactId>
+            <version>${project.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
             <plugin>
                 <groupId>com.atlassian.maven.plugins</groupId>
                 <artifactId>maven-clover2-plugin</artifactId>
@@ -217,6 +223,7 @@
             <plugin>
                 <artifactId>maven-jxr-plugin</artifactId>
             </plugin>
+<!--
             <plugin>
                 <artifactId>maven-pmd-plugin</artifactId>
                 <configuration>
@@ -224,6 +231,7 @@
                     <targetJdk>${jdkLevel}</targetJdk>
                 </configuration>
             </plugin>
+-->
             <plugin>
                 <groupId>com.atlassian.maven.plugins</groupId>
                 <artifactId>maven-clover-plugin</artifactId>
@@ -240,7 +248,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <configuration>
-                    <configLocation>build-tools/checkstyle-config.xml</configLocation>
+                    <configLocation>atlassian-plugin/checkstyle-config.xml</configLocation>
                     <excludes>
                         **/idea/**/*Form.java,
                         **/idea/**/*Dialog.java,
@@ -309,6 +317,17 @@
     </pluginRepositories>
     <profiles>
         <profile>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+                <module>build-tools</module>
+                <module>commons</module>
+                <module>idea</module>
+                <module>eclipse</module>
+            </modules>
+        </profile>
+        <profile>
             <id>eclipse</id>
             <build>
                 <defaultGoal>eclipse:eclipse</defaultGoal>
@@ -328,5 +347,18 @@
                 <module>idea</module>
             </modules>
         </profile>
+        <profile>
+            <id>commons-only</id>
+            <modules>
+                <module>commons</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>idea-only</id>
+            <modules>
+                <module>idea</module>
+            </modules>
+        </profile>
+
     </profiles>
 </project>
