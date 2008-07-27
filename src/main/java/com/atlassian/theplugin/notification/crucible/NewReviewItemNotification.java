@@ -17,7 +17,6 @@
 package com.atlassian.theplugin.notification.crucible;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 
 public class NewReviewItemNotification extends AbstractReviewNotification {
@@ -33,6 +32,7 @@ public class NewReviewItemNotification extends AbstractReviewNotification {
     }
 
     public String getPresentationMessage() {
-        return "New review item added " + ((reviewItem.getFileDescriptor() != null) ? reviewItem.getFileDescriptor().getName() : "");
+        return "New review item added "
+                + ((reviewItem.getFileDescriptor() != null) ? reviewItem.getFileDescriptor().getName() : "");
     }
 }

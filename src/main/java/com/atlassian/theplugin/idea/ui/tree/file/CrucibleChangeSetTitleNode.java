@@ -18,11 +18,12 @@ package com.atlassian.theplugin.idea.ui.tree.file;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.intellij.ui.ColoredTreeCellRenderer;
-import com.intellij.ui.SimpleTextAttributes;
-import com.intellij.util.Icons;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
+import com.intellij.ui.ColoredTreeCellRenderer;
+import com.intellij.ui.SimpleTextAttributes;
+import static com.intellij.ui.SimpleTextAttributes.STYLE_ITALIC;
+import com.intellij.util.Icons;
 
 import javax.swing.*;
 import javax.swing.tree.TreeCellRenderer;
@@ -59,8 +60,8 @@ public class CrucibleChangeSetTitleNode extends FileNode {
 	}
 
 	private static class CrucibleChangeSetTitleNodeRenderer extends ColoredTreeCellRenderer {
-		private static final SimpleTextAttributes TEXT_ITALIC = new SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC, null);
-		private static final SimpleTextAttributes RED_ITALIC = new SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC, Color.red);
+		private static final SimpleTextAttributes TEXT_ITALIC = new SimpleTextAttributes(STYLE_ITALIC, null);
+		private static final SimpleTextAttributes RED_ITALIC = new SimpleTextAttributes(STYLE_ITALIC, Color.red);
 
 		public void customizeCellRenderer(JTree tree, Object value, boolean selected, boolean expanded,
 										  boolean leaf, int row, boolean hasFocus) {

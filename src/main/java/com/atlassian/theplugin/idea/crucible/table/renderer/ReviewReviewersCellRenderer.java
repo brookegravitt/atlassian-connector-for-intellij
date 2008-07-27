@@ -16,15 +16,15 @@
 
 package com.atlassian.theplugin.idea.crucible.table.renderer;
 
-import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.util.ReviewInfoUtil;
+import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
-import com.intellij.ui.RowIcon;
+import com.atlassian.theplugin.util.ReviewInfoUtil;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.ui.RowIcon;
 
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 
 /**
@@ -35,8 +35,10 @@ import java.awt.*;
  * To change this template use File | Settings | File Templates.
  */
 public class ReviewReviewersCellRenderer  extends DefaultTableCellRenderer {
+    private static final int NUM_REV_ICON = 5;
 
-	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+            boolean hasFocus, int row, int column) {
 
 		Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
@@ -49,7 +51,7 @@ public class ReviewReviewersCellRenderer  extends DefaultTableCellRenderer {
 			ReviewData review = (ReviewData) value;
 
 			try {
-				if (review.getReviewers().size() > 5) {
+				if (review.getReviewers().size() > NUM_REV_ICON) {
 					label.setText(createStringContent(review));
 					label.setIcon(null);
 				} else {
@@ -65,7 +67,9 @@ public class ReviewReviewersCellRenderer  extends DefaultTableCellRenderer {
 		return c;
 	}
 
-	private Icon createIconContent(ReviewData review) {
+
+
+    private Icon createIconContent(ReviewData review) {
 		int index = 0;
 		RowIcon rowIcon = null;
 

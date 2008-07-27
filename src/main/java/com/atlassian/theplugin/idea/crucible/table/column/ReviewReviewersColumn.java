@@ -16,11 +16,11 @@
 
 package com.atlassian.theplugin.idea.crucible.table.column;
 
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
+import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
-import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.util.ReviewInfoUtil;
+import static com.atlassian.theplugin.util.ReviewInfoUtil.getNumOfCompletedReviewers;
 
 import java.util.Comparator;
 import java.util.Iterator;
@@ -63,16 +63,17 @@ public class ReviewReviewersColumn extends TableColumnInfo {
 					r1 = review1.getReviewers();
 					r1s = r1.size();
 				} catch (ValueNotYetInitialized valueNotYetInitialized) {
-				}
+                    // TODO lguminsk check what to do or comment here
+                }
 				try {
 					r2 = review2.getReviewers();
 					r2s = r2.size();
 				} catch (ValueNotYetInitialized valueNotYetInitialized) {
+                    // TODO lguminsk check what to do or comment here
 				}
 
 				if (r1s == r2s) {
-					return ReviewInfoUtil.getNumOfCompletedReviewers(review1) -
-							ReviewInfoUtil.getNumOfCompletedReviewers(review2);
+					return getNumOfCompletedReviewers(review1) - getNumOfCompletedReviewers(review2);
 				} else {
 					return r1s - r2s;
 				}

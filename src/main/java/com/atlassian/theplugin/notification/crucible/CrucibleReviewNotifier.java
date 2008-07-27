@@ -17,19 +17,11 @@
 package com.atlassian.theplugin.notification.crucible;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
-import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusListener;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This one is supposed to be per project.
@@ -186,18 +178,21 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
                         try {
                             checkNewReviewItems(existing, reviewDataInfo);
                         } catch (ValueNotYetInitialized valueNotYetInitialized) {
+                            // TODO all is it correct
                         }
 
                         // check reviewers status
                         try {
                             checkReviewersStatus(existing, reviewDataInfo);
                         } catch (ValueNotYetInitialized valueNotYetInitialized) {
+                            // TODO all is it correct
                         }
 
                         // check comments status
                         try {
                             checkComments(existing, reviewDataInfo);
                         } catch (ValueNotYetInitialized valueNotYetInitialized) {
+                            // TODO all is it correct
                         }
 
                         processedReviews.add(reviewDataInfo);

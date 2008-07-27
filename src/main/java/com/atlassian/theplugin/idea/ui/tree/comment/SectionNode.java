@@ -16,15 +16,15 @@
 
 package com.atlassian.theplugin.idea.ui.tree.comment;
 
-import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.CellConstraints;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.intellij.ui.SimpleColoredComponent;
 import com.intellij.ui.SimpleTextAttributes;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
-import javax.swing.tree.TreeCellRenderer;
 import javax.swing.*;
+import javax.swing.tree.TreeCellRenderer;
 import java.awt.*;
 
 /**
@@ -43,7 +43,8 @@ public class SectionNode extends AtlassianTreeNode {
 		this.sectionName = sectionName;
 	}
 
-	public TreeCellRenderer getTreeCellRenderer() {
+	@Override
+    public TreeCellRenderer getTreeCellRenderer() {
 		return MY_RENDERER;
 	}
 
@@ -52,7 +53,8 @@ public class SectionNode extends AtlassianTreeNode {
 	}
 
 	private static class MyRenderer implements TreeCellRenderer {
-		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean isSelected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean isSelected, boolean expanded,
+                boolean leaf, int row, boolean hasFocus) {
 			SectionNode node = (SectionNode) value;
 			JPanel panel = new JPanel(new FormLayout("4dlu, left:pref:grow, 4dlu", "4dlu, pref:grow, 4dlu"));
 			SimpleColoredComponent component = new SimpleColoredComponent();

@@ -7,7 +7,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 
-public class CodeNavigationUtil {
+public final class CodeNavigationUtil {
+
+    private CodeNavigationUtil() {
+        // this is utility class
+    }
+
     @Nullable
     public static PsiFile guessMatchingFile(String pathname, PsiFile[] psifiles, VirtualFile baseDir) {
         for (PsiFile psiFile : psifiles) {

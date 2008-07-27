@@ -39,13 +39,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
-/**
- * Created by IntelliJ IDEA.
- * User: jgorycki
- * Date: Jul 11, 2008
- * Time: 2:45:53 AM
- * To change this template use File | Settings | File Templates.
- */
 public final class FileTreeModelBuilder {
 
 	private FileTreeModelBuilder() {
@@ -86,7 +79,8 @@ public final class FileTreeModelBuilder {
 
     @Nullable
     private static PsiFile guessCorrespondingPsiFile(final Project project, BambooFileInfo file) {
-        PsiFile[] psifiles = PsiManager.getInstance(project).getShortNamesCache().getFilesByName(file.getFileDescriptor().getName());
+        final PsiFile[] psifiles = PsiManager.getInstance(project).getShortNamesCache().getFilesByName(
+                file.getFileDescriptor().getName());
         return CodeNavigationUtil.guessMatchingFile(file.getFileDescriptor().getUrl(), psifiles, project.getBaseDir());
     }
 
@@ -129,7 +123,9 @@ public final class FileTreeModelBuilder {
 						case 2:
 							broker.trigger(new ShowFile(CrucibleReviewActionListener.ANONYMOUS, review, file));
 							break;
-					}
+                        default:
+                            break;
+                    }
 				}
 			}));
 		}

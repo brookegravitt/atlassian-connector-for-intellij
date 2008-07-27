@@ -100,7 +100,8 @@ public class CrucibleFileNode extends FileNode {
 					}
 				}
 			} catch (ValueNotYetInitialized valueNotYetInitialized) {
-				valueNotYetInitialized.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                // TODO lguminsk do something reasonable with this 
+                valueNotYetInitialized.printStackTrace();
 			}
 
 			FileTypeManager mgr = FileTypeManager.getInstance();

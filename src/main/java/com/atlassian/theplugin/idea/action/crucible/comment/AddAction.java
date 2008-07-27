@@ -1,31 +1,32 @@
 package com.atlassian.theplugin.idea.action.crucible.comment;
 
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DataKeys;
-import com.intellij.openapi.actionSystem.DataContext;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
-import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
-import com.atlassian.theplugin.idea.crucible.CommentEditForm;
-import com.atlassian.theplugin.idea.crucible.ReviewData;
-import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
-import com.atlassian.theplugin.idea.crucible.events.GeneralCommentReplyAboutToAdd;
-import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralCommentBean;
 import com.atlassian.theplugin.commons.crucible.api.model.UserBean;
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.crucible.CommentEditForm;
+import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
+import com.atlassian.theplugin.idea.crucible.events.GeneralCommentReplyAboutToAdd;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.openapi.actionSystem.DataKeys;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.DialogWrapper;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.tree.TreePath;
 import javax.swing.*;
+import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by IntelliJ IDEA.
@@ -59,8 +60,10 @@ public class AddAction extends AnAction {
 			try {
 				metrics = CrucibleServerFacadeImpl.getInstance().getMetrics(review.getServer(), review.getMetricsVersion());
 			} catch (RemoteApiException e) {
-			} catch (ServerPasswordNotProvidedException e) {
-			}
+                IdeaHelper.handleRemoteApiException(project, e);
+            } catch (ServerPasswordNotProvidedException e) {
+                IdeaHelper.handleMissingPassword(e);
+            }
 			GeneralComment parentComment = node.getComment();
 			GeneralCommentBean newComment = new GeneralCommentBean();
 			newComment.setReply(true);

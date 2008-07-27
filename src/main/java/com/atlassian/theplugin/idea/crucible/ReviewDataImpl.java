@@ -16,18 +16,10 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
-import com.atlassian.theplugin.commons.crucible.api.model.User;
-import com.atlassian.theplugin.commons.crucible.api.model.PermId;
-import com.atlassian.theplugin.commons.crucible.api.model.State;
-import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.Action;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.VirtualFileSystem;
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 
 import java.util.Date;
 import java.util.List;
@@ -35,6 +27,7 @@ import java.util.List;
 public class ReviewDataImpl implements ReviewData {
     private Review review;
     private Server server;
+    private static final int HASHCODE_MAGIC = 31;
 
     public ReviewDataImpl(Review review, Server server) {
         this.review = review;
@@ -142,22 +135,32 @@ public class ReviewDataImpl implements ReviewData {
 		return baseUrl + "/cru/" + getPermId().getId();
 	}
 
+    @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         ReviewDataImpl that = (ReviewDataImpl) o;
 
-        if (review != null ? !review.equals(that.review) : that.review != null) return false;
-        if (server != null ? !server.equals(that.server) : that.server != null) return false;
+        if (review != null ? !review.equals(that.review) : that.review != null) {
+            return false;
+        }
+        if (server != null ? !server.equals(that.server) : that.server != null) {
+            return false;
+        }
 
         return true;
     }
 
+    @Override
     public int hashCode() {
         int result;
         result = (review != null ? review.hashCode() : 0);
-        result = 31 * result + (server != null ? server.hashCode() : 0);
+        result = HASHCODE_MAGIC * result + (server != null ? server.hashCode() : 0);
         return result;
     }
 }

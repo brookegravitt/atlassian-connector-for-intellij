@@ -17,10 +17,11 @@
 package com.atlassian.theplugin.util;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 
 
-public class ReviewInfoUtil {
+public final class ReviewInfoUtil {
 
 	private ReviewInfoUtil() {
 	}

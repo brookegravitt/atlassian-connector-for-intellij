@@ -47,10 +47,12 @@ public class CrucibleReviewActionListener {
 	public void showFile(ReviewData review, CrucibleFileInfo file) {
 	}
 
-	public void aboutToAddVersionedCommentReply(ReviewData review, CrucibleFileInfo file, VersionedComment parentComment, VersionedCommentBean newComment) {
+	public void aboutToAddVersionedCommentReply(ReviewData review, CrucibleFileInfo file,
+            VersionedComment parentComment, VersionedCommentBean newComment) {
 	}
 
-	public void createdVersionedCommentReply(ReviewData review, CrucibleFileInfo file, VersionedComment parentComment, VersionedComment comment) {
+	public void createdVersionedCommentReply(ReviewData review, CrucibleFileInfo file,
+            VersionedComment parentComment, VersionedComment comment) {
 	}
 
 	public void aboutToAddGeneralCommentReply(ReviewData review, GeneralComment parentComment, GeneralCommentBean newComment) {
