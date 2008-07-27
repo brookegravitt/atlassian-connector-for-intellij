@@ -18,14 +18,7 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.CommentBean;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralCommentBean;
-import com.atlassian.theplugin.commons.crucible.api.model.UserBean;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedCommentBean;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
@@ -86,7 +79,8 @@ public class CommentTreePanel extends JPanel {
         add(commentScroll, BorderLayout.CENTER);
     }
 
-    private void addGeneralCommentTree(AtlassianTreeNode root, final ReviewData review, GeneralComment generalComment, int depth) {
+    private void addGeneralCommentTree(AtlassianTreeNode root, final ReviewData review,
+            GeneralComment generalComment, int depth) {
         AtlassianClickAction clickAction;
         if (depth == 0) {
             clickAction = new AtlassianClickAction() {
@@ -96,9 +90,12 @@ public class CommentTreePanel extends JPanel {
                         case 2:
                             List<CustomFieldDef> metrics = new ArrayList<CustomFieldDef>();
                             try {
-                                metrics = CrucibleServerFacadeImpl.getInstance().getMetrics(review.getServer(), review.getMetricsVersion());
+                                metrics = CrucibleServerFacadeImpl.getInstance().getMetrics(
+                                        review.getServer(), review.getMetricsVersion());
                             } catch (RemoteApiException e) {
+                                IdeaHelper.handleRemoteApiException(project, e);
                             } catch (ServerPasswordNotProvidedException e) {
+                                IdeaHelper.handleMissingPassword(e);
                             }
                             GeneralComment parentComment = vnode.getComment();
                             GeneralCommentBean newComment = new GeneralCommentBean();
@@ -262,7 +259,9 @@ public class CommentTreePanel extends JPanel {
         }
 
         @Override
-        public void createdVersionedCommentReply(final ReviewData review, final CrucibleFileInfo file, final VersionedComment parentComment, final VersionedComment comment) {
+        public void createdVersionedCommentReply(final ReviewData review, final CrucibleFileInfo file,
+                final VersionedComment parentComment, final VersionedComment comment) {
+
             EventQueue.invokeLater(new Runnable() {
                 public void run() {
                     AtlassianTreeNode node = locateVersionedCommentNode(review, file, parentComment);
@@ -275,7 +274,8 @@ public class CommentTreePanel extends JPanel {
             });
         }
 
-        private AtlassianTreeNode locateVersionedCommentNode(ReviewData review, CrucibleFileInfo file, VersionedComment comment) {
+        private AtlassianTreeNode locateVersionedCommentNode(ReviewData review,
+                CrucibleFileInfo file, VersionedComment comment) {
             for (int i = 0; i < commentTree.getRowCount(); i++) {
                 TreePath path = commentTree.getPathForRow(i);
 
@@ -287,7 +287,7 @@ public class CommentTreePanel extends JPanel {
                     }
                 }
             }
-            return null;  //To change body of created methods use File | Settings | File Templates.
+            return null;
 
         }
 

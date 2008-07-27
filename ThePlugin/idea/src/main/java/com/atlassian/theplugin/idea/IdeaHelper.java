@@ -16,24 +16,25 @@
 
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.atlassian.theplugin.jira.JIRAServer;
-import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.Content;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 /**
  * Simple helper methods for the IDEA plugin
@@ -67,12 +68,15 @@ public final class IdeaHelper {
 		return p.getComponent(ThePluginProjectComponent.class).getCurrentJiraServer();
 	}
 
-	public static ThePluginProjectComponent getCurrentProjectComponent() {
+	@Nullable
+    public static ThePluginProjectComponent getCurrentProjectComponent() {
 		Project p = getCurrentProject(DataManager.getInstance().getDataContext());
-		return p.getComponent(ThePluginProjectComponent.class);
+        if (p == null) {
+            return null;
+        }
+        return p.getComponent(ThePluginProjectComponent.class);
 	}
 
-	@Nullable
 	public static void setCurrentJIRAServer(JIRAServer jiraServer) {
 		Project p = getCurrentProject(DataManager.getInstance().getDataContext());
 		if (p == null) {
@@ -163,4 +167,20 @@ public final class IdeaHelper {
 	public static ReviewActionEventBroker getReviewActionEventBroker() {
 		return ReviewActionEventBroker.getInstance();
 	}
+
+    public static void handleRemoteApiException(Project project, RemoteApiException e) {
+        Messages.showErrorDialog(project, "The following error has occurred while using remote service:\n"
+                + e.getMessage(), "Error while using remote service");
+    }
+
+    /**
+     * Placeholder for handling missing password. Dummy at the moment
+     * s 
+     * @param e exception to handle
+     * @return true if called should retry the action which caused this excepction, false if it does not make sense
+     *              for example, the user has not provided a new password
+     */
+    public static boolean handleMissingPassword(ServerPasswordNotProvidedException e) {
+        return false;
+    }
 }

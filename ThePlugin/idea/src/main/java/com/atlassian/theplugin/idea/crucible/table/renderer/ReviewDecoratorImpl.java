@@ -16,8 +16,8 @@
 
 package com.atlassian.theplugin.idea.crucible.table.renderer;
 
-import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
+import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 
 import java.util.List;
@@ -31,12 +31,12 @@ public class ReviewDecoratorImpl implements ReviewDecorator {
 		this.review = review;
 
 		// first decorator is most important (takes precedence)
-		StateDecorator();
-		ReviewerFinishedDecorator();
-		AuthorModeratorDecorator();
+		stateDecorator();
+		reviewerFinishedDecorator();
+		authorModeratorDecorator();
 
 		// this should be the last decorator
-		HtmlDecorator();
+		htmlDecorator();
 	}
 
 
@@ -47,7 +47,7 @@ public class ReviewDecoratorImpl implements ReviewDecorator {
 	/**
 	 * Decorates text if current user is author or moderator of the review
 	 */
-	private void AuthorModeratorDecorator() {
+	private void authorModeratorDecorator() {
 
 		String me = review.getServer().getUserName();
 
@@ -62,7 +62,7 @@ public class ReviewDecoratorImpl implements ReviewDecorator {
 	/**
 	 * Decorates text if current user is reviewer of the review and did (or not) review already
 	 */
-	private void ReviewerFinishedDecorator() {
+	private void reviewerFinishedDecorator() {
 
 		String me = review.getServer().getUserName();
 
@@ -73,7 +73,7 @@ public class ReviewDecoratorImpl implements ReviewDecorator {
 				text = "<span style=\"color: #999999; \">"
 							+ text
 							+ "</span>";
-			} else if (reviewer != null && ! reviewer.isCompleted()) {
+			} else if (reviewer != null && !reviewer.isCompleted()) {
 				text = "<span style=\"color: #0000aa; \">"
 							+ text
 							+ "</span>";
@@ -103,7 +103,7 @@ public class ReviewDecoratorImpl implements ReviewDecorator {
 	/**
 	 * Decorates text if review has been closed
 	 */
-	private void StateDecorator() {
+	private void stateDecorator() {
 
 		switch (review.getState()) {
 			case CLOSED:
@@ -120,7 +120,7 @@ public class ReviewDecoratorImpl implements ReviewDecorator {
 	/**
 	 * Decorates text with <html><body>...</body></html> tags
 	 */
-	private void HtmlDecorator() {
+	private void htmlDecorator() {
 		text = "<html><body>" + text + "</body></html>";
 	}
 

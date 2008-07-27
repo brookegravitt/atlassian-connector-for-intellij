@@ -178,12 +178,11 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
-	private class MyAgent extends CrucibleReviewActionListener {
-		CrucibleServerFacade facade = CrucibleServerFacadeImpl.getInstance();
-		ReviewActionEventBroker eventBroker = IdeaHelper.getReviewActionEventBroker();
+	private final class MyAgent extends CrucibleReviewActionListener {
+		private final CrucibleServerFacade facade = CrucibleServerFacadeImpl.getInstance();
+		private final ReviewActionEventBroker eventBroker = IdeaHelper.getReviewActionEventBroker();
 
 		private MyAgent() {
-			super();
 			eventBroker.registerListener(this);
 		}
 
@@ -207,9 +206,11 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
 		}
 
 		@Override
-		public void aboutToAddGeneralCommentReply(ReviewData review, GeneralComment parentComment, GeneralCommentBean newComment) {
-			try {
-				GeneralComment comment = facade.addReply(review.getServer(), review.getPermId(), parentComment.getPermId(), newComment);
+		public void aboutToAddGeneralCommentReply(ReviewData review, GeneralComment parentComment,
+                GeneralCommentBean newComment) {
+            try {
+				GeneralComment comment = facade.addReply(review.getServer(), review.getPermId(),
+                        parentComment.getPermId(), newComment);
 				eventBroker.trigger(new GeneralCommentReplyAdded(this, review, parentComment, comment));
 			} catch (RemoteApiException e) {
 				Messages.showErrorDialog("Problem creating a new comment: " + e.getMessage(), "Error creating comment");
@@ -220,7 +221,9 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
 		}
 
 		@Override
-		public void aboutToAddVersionedCommentReply(ReviewData review, CrucibleFileInfo file, VersionedComment parentComment, VersionedCommentBean newComment) {
+		public void aboutToAddVersionedCommentReply(ReviewData review, CrucibleFileInfo file,
+                VersionedComment parentComment, VersionedCommentBean newComment) {
+            
 //			try {
 			VersionedComment comment = newComment;
 			// VersionedComment comment = facade.addVersionedComment(review.getServer(), parentComment.getPermId(), newComment);

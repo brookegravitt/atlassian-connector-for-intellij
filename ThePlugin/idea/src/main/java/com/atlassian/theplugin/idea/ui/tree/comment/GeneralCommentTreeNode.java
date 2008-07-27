@@ -17,24 +17,14 @@
 package com.atlassian.theplugin.idea.ui.tree.comment;
 
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.util.CommentPanelBuilder;
 
-import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreeCellRenderer;
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
+import javax.swing.tree.TreeCellRenderer;
 import java.awt.*;
 
-/**
- * Created by IntelliJ IDEA.
- * User: lguminski
- * Date: Jul 16, 2008
- * Time: 11:01:14 PM
- * To change this template use File | Settings | File Templates.
- */
 public class GeneralCommentTreeNode extends CommentTreeNode {
 	private ReviewData review;
 	private GeneralComment comment;
@@ -59,7 +49,8 @@ public class GeneralCommentTreeNode extends CommentTreeNode {
 	}
 
 	private static class MyRenderer implements TreeCellRenderer {
-		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean isSelected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean isSelected, boolean expanded,
+                boolean leaf, int row, boolean hasFocus) {
 			GeneralCommentTreeNode node = (GeneralCommentTreeNode) value;
 			JPanel panel;
 			if (node.isEditable()) {
@@ -69,9 +60,9 @@ public class GeneralCommentTreeNode extends CommentTreeNode {
 				panel = CommentPanelBuilder.createViewPanelOfGeneralComment(
 						node.getReview(), node.getComment());
 			}
-			panel.setBorder(isSelected ? UIManager.getBorder("List.focusCellHighlightBorder")
-					: BorderFactory.createEmptyBorder(1,1,1,1));
-			return panel;
+            panel.setBorder(isSelected ? UIManager.getBorder("List.focusCellHighlightBorder")
+                    : BorderFactory.createEmptyBorder(1, 1, 1, 1));
+            return panel;
 
 		}
 	}

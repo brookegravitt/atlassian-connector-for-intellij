@@ -20,11 +20,7 @@ import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.CrucibleSession;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginFailedException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
+import com.atlassian.theplugin.commons.remoteapi.*;
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
 import com.atlassian.theplugin.commons.thirdparty.base64.Base64;
 import org.apache.commons.httpclient.Header;
@@ -41,12 +37,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Communication stub for Crucible REST API.
@@ -103,6 +94,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
      * Public constructor for CrucibleSessionImpl.
      *
      * @param url base url
+     * @throws com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException
      */
     public CrucibleSessionImpl(String url) throws RemoteApiMalformedUrlException {
         super(url);
@@ -130,7 +122,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
                     throw new RemoteApiLoginFailedException(exception);
                 }
                 XPath xpath = XPath.newInstance("/loginResult/token");
-                List elements = xpath.selectNodes(doc);
+                List<?> elements = xpath.selectNodes(doc);
                 if (elements == null) {
                     throw new RemoteApiLoginException("Server did not return any authentication token");
                 }
@@ -446,7 +438,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
                 fillRepositoryData(fileInfo);
             }
         } catch (ValueNotYetInitialized valueNotYetInitialized) {
-
+            // TODO all what to do here?
         }
         return review;
     }
@@ -551,17 +543,17 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         try {
             Document doc = retrieveGetResponse(requestUrl);
 
-            XPath xpath = XPath.newInstance("/repositories/repoData");
+            XPath xpath = XPath.newInstance("/myRepositories/repoData");
             @SuppressWarnings("unchecked")
             List<Element> elements = xpath.selectNodes(doc);
-            List<Repository> repositories = new ArrayList<Repository>();
+            List<Repository> myRepositories = new ArrayList<Repository>();
 
             if (elements != null && !elements.isEmpty()) {
                 for (Element element : elements) {
-                    repositories.add(CrucibleRestXmlHelper.parseRepositoryNode(element));
+                    myRepositories.add(CrucibleRestXmlHelper.parseRepositoryNode(element));
                 }
             }
-            return repositories;
+            return myRepositories;
         } catch (IOException e) {
             throw new RemoteApiException(e.getMessage(), e);
         } catch (JDOMException e) {
@@ -574,8 +566,8 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             throw new IllegalStateException("Calling method without calling login() first");
         }
 
-        List<Repository> repositories = getRepositories();
-        for (Repository repository : repositories) {
+        List<Repository> myRepositories = getRepositories();
+        for (Repository repository : myRepositories) {
             if (repository.getName().equals(repoName)) {
                 if (repository.getType().equals("svn")) {
                     String requestUrl = baseUrl + REPOSITORIES_SERVICE + "/" + repoName + "/svn";
@@ -1309,10 +1301,12 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         return metricsDefinitions.get(key);
     }
 
+    @Override
     protected void adjustHttpHeader(HttpMethod method) {
         method.addRequestHeader(new Header("Authorization", getAuthHeaderValue()));
     }
 
+    @Override
     protected void preprocessResult(Document doc) throws JDOMException, RemoteApiSessionExpiredException {
 
     }

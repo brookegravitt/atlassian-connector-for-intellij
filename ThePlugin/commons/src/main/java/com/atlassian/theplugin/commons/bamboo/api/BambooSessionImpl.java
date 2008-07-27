@@ -109,15 +109,16 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
             if (null != exception) {
                 throw new RemoteApiLoginFailedException(exception);
             }
-            XPath xpath = XPath.newInstance("/response/auth");
-            List elements = xpath.selectNodes(doc);
+
+            @SuppressWarnings("unchecked")
+            final List<Element> elements = XPath.newInstance("/response/auth").selectNodes(doc);
             if (elements == null) {
                 throw new RemoteApiLoginException("Server did not return any authentication token");
             }
             if (elements.size() != 1) {
                 throw new RemoteApiLoginException("Server did returned excess authentication tokens (" + elements.size() + ")");
             }
-            this.authToken = ((Element) elements.get(0)).getText();
+            this.authToken = elements.get(0).getText();
         } catch (MalformedURLException e) {
             throw new RemoteApiLoginException("Malformed server URL: " + baseUrl, e);
         } catch (UnknownHostException e) {
@@ -280,8 +281,8 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
                 return constructBuildErrorInfo(planKey, exception, new Date());
             }
 
-            XPath xpath = XPath.newInstance("/response");
-            List elements = xpath.selectNodes(doc);
+            @SuppressWarnings("unchecked")
+            final List elements = XPath.newInstance("/response").selectNodes(doc);
             if (elements != null && !elements.isEmpty()) {
                 Element e = (Element) elements.iterator().next();
                 return constructBuildItem(e, new Date());
@@ -313,12 +314,12 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
                 return builds;
             }
 
-            XPath xpath = XPath.newInstance("/response/build");
-            List elements = xpath.selectNodes(doc);
+            final XPath xpath = XPath.newInstance("/response/build");
+            @SuppressWarnings("unchecked")
+            final List<Element> elements = xpath.selectNodes(doc);
             if (elements != null) {
-                for (Object element : elements) {
-                    Element e = (Element) element;
-                    builds.add(e.getChildText("key"));
+                for (Element element : elements) {
+                    builds.add(element.getChildText("key"));
                 }
                 return builds;
             } else {
@@ -350,26 +351,20 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
                 throw new RemoteApiException(exception);
             }
 
-            {
-                XPath xpath = XPath.newInstance("/response");
-                @SuppressWarnings("unchecked")
-                final List<Element> elements = xpath.selectNodes(doc);
-                if (!elements.isEmpty()) {
-                    for (Element element : elements) {
-                        String vcsRevisionKey = element.getAttributeValue("vcsRevisionKey");
-                        if (vcsRevisionKey != null) {
-                            build.setVcsRevisionKey(vcsRevisionKey);
-                        }
-                    }
+            @SuppressWarnings("unchecked")
+            final List<Element> responseElements = XPath.newInstance("/response").selectNodes(doc);
+            for (Element element : responseElements) {
+                String vcsRevisionKey = element.getAttributeValue("vcsRevisionKey");
+                if (vcsRevisionKey != null) {
+                    build.setVcsRevisionKey(vcsRevisionKey);
                 }
             }
-            {
-                XPath xpath = XPath.newInstance("/response/commits/commit");
-                @SuppressWarnings("unchecked")
-                final List<Element> elements = xpath.selectNodes(doc);
-                if (!elements.isEmpty()) {
+
+            @SuppressWarnings("unchecked")
+                final List<Element> commitElements = XPath.newInstance("/response/commits/commit").selectNodes(doc);
+                if (!commitElements.isEmpty()) {
                     int i = 1;
-                    for (Element element : elements) {
+                    for (Element element : commitElements) {
                         BambooChangeSetImpl cInfo = new BambooChangeSetImpl();
                         cInfo.setAuthor(element.getAttributeValue("author"));
                         cInfo.setCommitDate(parseCommitTime(element.getAttributeValue("date")));
@@ -389,41 +384,35 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
                         build.addCommitInfo(cInfo);
                     }
                 }
-            }
 
-            {
-                XPath xpath = XPath.newInstance("/response/successfulTests/testResult");
-                @SuppressWarnings("unchecked")
-                final List<Element> elements = xpath.selectNodes(doc);
-                if (!elements.isEmpty()) {
-                    for (Element element : elements) {
-                        TestDetailsInfo tInfo = new TestDetailsInfo();
-                        tInfo.setTestClassName(element.getAttributeValue("testClass"));
-                        tInfo.setTestMethodName(element.getAttributeValue("testMethod"));
-                        double duration = 0;
-                        try {
-                            duration = Double.valueOf(element.getAttributeValue("duration"));
-                        } catch (NumberFormatException e) {
-                            // leave 0
-                            duration = 0;
-                        }
-                        tInfo.setTestDuration(duration);
-                        tInfo.setTestResult(TestResult.TEST_SUCCEED);
-                        build.addSuccessfulTest(tInfo);
-                    }
-                }
-            }
-
-            XPath xpath = XPath.newInstance("/response/failedTests/testResult");
             @SuppressWarnings("unchecked")
-            final List<Element> elements = xpath.selectNodes(doc);
-            if (!elements.isEmpty()) {
+            final List<Element> sucTestResElements
+                    = XPath.newInstance("/response/successfulTests/testResult").selectNodes(doc);
+            for (Element element : sucTestResElements) {
+                TestDetailsInfo tInfo = new TestDetailsInfo();
+                tInfo.setTestClassName(element.getAttributeValue("testClass"));
+                tInfo.setTestMethodName(element.getAttributeValue("testMethod"));
+                double duration;
+                try {
+                    duration = Double.valueOf(element.getAttributeValue("duration"));
+                } catch (NumberFormatException e) {
+                    // leave 0
+                    duration = 0;
+                }
+                tInfo.setTestDuration(duration);
+                tInfo.setTestResult(TestResult.TEST_SUCCEED);
+                build.addSuccessfulTest(tInfo);
+            }
+
+            @SuppressWarnings("unchecked")
+            final List<Element> failedTestResElements = XPath.newInstance("/response/failedTests/testResult").selectNodes(doc);
+            if (!failedTestResElements.isEmpty()) {
                 int i = 1;
-                for (Element element : elements) {
+                for (Element element : failedTestResElements) {
                     TestDetailsInfo tInfo = new TestDetailsInfo();
                     tInfo.setTestClassName(element.getAttributeValue("testClass"));
                     tInfo.setTestMethodName(element.getAttributeValue("testMethod"));
-                    double duration = 0;
+                    double duration;
                     try {
                         duration = Double.valueOf(element.getAttributeValue("duration"));
                     } catch (NumberFormatException e) {
@@ -623,10 +612,12 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
         }
     }
 
+    @Override
     protected void adjustHttpHeader(HttpMethod method) {
         // Bamboo does not require custom headers
     }
 
+    @Override
     protected void preprocessResult(Document doc) throws JDOMException, RemoteApiSessionExpiredException {
         String error = getExceptionMessages(doc);
         if (error != null) {

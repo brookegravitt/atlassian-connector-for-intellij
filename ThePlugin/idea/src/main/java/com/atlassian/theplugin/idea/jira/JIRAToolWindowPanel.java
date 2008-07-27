@@ -718,7 +718,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
         }
     }
 
-    public void logWorkForIssue(Project project) {
+    public void logWorkForIssue() {
 		JiraIssueAdapter adapter = (JiraIssueAdapter) table.getSelectedObject();
         if (adapter == null) {
             return;

@@ -57,9 +57,7 @@ public abstract class AbstractBambooFileActions extends AnAction {
         PsiFile[] psifiles = PsiManager.getInstance(project).getShortNamesCache().getFilesByName(bfn.getName());
 
         PsiFile matchingFile = CodeNavigationUtil.guessMatchingFile(pathname, psifiles, project.getBaseDir());
-        if (matchingFile == null) {
-            // TODO add file selection windo
-        } else {
+        if (matchingFile != null) {
             matchingFile.navigate(true);
         }
     }
