@@ -16,21 +16,13 @@
 
 package com.atlassian.theplugin.idea.ui;
 
-import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 
 import javax.swing.*;
-import java.awt.*;
 
-/**
- * Created by IntelliJ IDEA.
- * User: lguminski
- * Date: Jun 18, 2008
- * Time: 7:35:45 PM
- * To change this template use File | Settings | File Templates.
- */
-public class AtlassianToolbar extends JPanel {
+public final class AtlassianToolbar extends JPanel {
 	private AtlassianToolbar() {
 	}
 

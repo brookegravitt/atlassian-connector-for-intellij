@@ -16,9 +16,7 @@
 
 package com.atlassian.theplugin.notification.crucible;
 
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 
 public class NewGeneralCommentNotification extends AbstractReviewNotification {

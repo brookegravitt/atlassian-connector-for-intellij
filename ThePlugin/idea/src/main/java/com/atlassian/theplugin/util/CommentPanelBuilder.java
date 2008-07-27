@@ -18,10 +18,9 @@ package com.atlassian.theplugin.util;
 
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
-import com.atlassian.theplugin.idea.ui.AtlassianToolbar;
-import com.intellij.ui.components.labels.BoldLabel;
 import com.intellij.ui.SimpleColoredComponent;
 import com.intellij.ui.SimpleTextAttributes;
+import com.intellij.ui.components.labels.BoldLabel;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
@@ -31,14 +30,7 @@ import java.util.Map;
 
 //import thirdparty.publicobject.RoundedBorder;
 
-/**
- * Created by IntelliJ IDEA.
- * User: lguminski
- * Date: Jul 16, 2008
- * Time: 3:33:40 PM
- * To change this template use File | Settings | File Templates.
- */
-public class CommentPanelBuilder {
+public final class CommentPanelBuilder {
 	private static final Color NOT_MINE_GENERAL_COMMENT_HEADER_COLOR = new Color(239, 224, 255);
 	private static final Color NOT_MINE_GENERAL_COMMENT_BODY_COLOR = new Color(234, 255, 255);
 	private static final Color NOT_MINE_FILE_COMMENT_HEADER_COLOR = new Color(255, 224, 224);
@@ -49,7 +41,11 @@ public class CommentPanelBuilder {
 	private static final Color MINE_FILE_COMMENT_HEADER_COLOR = new Color(255, 224, 224);
 	private static final Color MINE_FILE_COMMENT_BODY_COLOR = new Color(234, 255, 255);
 
-	public static JPanel createEditPanelOfGeneralComment(ReviewData review, GeneralComment comment) {
+    private CommentPanelBuilder() {
+        // this is utility class
+    }
+
+    public static JPanel createEditPanelOfGeneralComment(ReviewData review, GeneralComment comment) {
 		return createViewPanelOfGeneralComment(review, comment); // no editing temporarily
 	}
 
@@ -79,7 +75,8 @@ public class CommentPanelBuilder {
 		return createViewPanelOfVersionedComment(review, file, comment);
 	}
 
-	public static JPanel createViewPanelOfVersionedComment(final ReviewData review, CrucibleFileInfo file, final VersionedComment comment) {
+	public static JPanel createViewPanelOfVersionedComment(final ReviewData review, CrucibleFileInfo file,
+            final VersionedComment comment) {
 		return new CommentPanel(review, comment) {
 			@Override
 			public Color getHeaderBackground() {
@@ -99,7 +96,7 @@ public class CommentPanelBuilder {
 		};
 	}
 
-	private static abstract class CommentPanel extends JPanel {
+	private abstract static class CommentPanel extends JPanel {
 		private static final Component EMPTY_LABEL = new JLabel();
 		private ReviewData review;
 		private Comment comment;
@@ -117,9 +114,10 @@ public class CommentPanelBuilder {
 			this.comment = comment;
 			setBackground(getBodyBackground());
 			CellConstraints cc = new CellConstraints();
-			JPanel header = new JPanel(new FormLayout("4dlu, left:pref, 10dlu, left:pref, 10dlu, pref:grow, 10dlu, right:pref, 10dlu, pref, 4dlu",
-					"2dlu, pref:grow, 2dlu"));
-			header.add(getAuthorLabel(), AUTHOR_POS);
+            JPanel header = new JPanel(
+                    new FormLayout("4dlu, left:pref, 10dlu, left:pref, 10dlu, pref:grow, 10dlu, right:pref, 10dlu, pref, 4dlu",
+                            "2dlu, pref:grow, 2dlu"));
+            header.add(getAuthorLabel(), AUTHOR_POS);
 			header.add(getDateLabel(), DATE_POS);
 			header.add(getRankingLabel(), RANKING_POS);
 			header.add(getStateLabel(), STATE_POS);
@@ -128,8 +126,7 @@ public class CommentPanelBuilder {
 //			header.setBorder(new RoundedBorder(getHeaderBackground(), Color.black, getForeground(), 8, 1));
 
 
-			JPanel body = new JPanel(new FormLayout("4dlu, pref:grow, 4dlu",
-					"2dlu, pref:grow, 2dlu"));
+			JPanel body = new JPanel(new FormLayout("4dlu, pref:grow, 4dlu", "2dlu, pref:grow, 2dlu"));
 			body.add(getMessageBody(), cc.xy(2, 2));
 			body.setBackground(getBodyBackground());
 

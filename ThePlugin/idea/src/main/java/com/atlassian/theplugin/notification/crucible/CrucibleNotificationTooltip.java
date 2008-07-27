@@ -52,7 +52,8 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
                     String id = notification.getId().getId();
                     nsb.append("<tr><td colspan=2 width=\"1%\" nowrap valign=top><a href=\"")
                             .append(notification.getItemUrl()).append("\">")
-                            .append(id).append("</a></td><td>").append(notification.getPresentationMessage()).append("</td></tr>");
+                            .append(id).append("</a></td><td>").append(notification.getPresentationMessage())
+                            .append("</td></tr>");
                 }
             }
 
@@ -79,7 +80,8 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
                         String id = notification.getId().getId();
                         sb.append("<tr><td colspan=2 width=\"1%\" nowrap valign=top><a href=\"")
                                 .append(notification.getItemUrl()).append("\">")
-                                .append(id).append("</a></td><td>").append(notification.getPresentationMessage()).append("</td></tr>");
+                                .append(id).append("</a></td><td>")
+                                .append(notification.getPresentationMessage()).append("</td></tr>");
                     }
                 }
             }

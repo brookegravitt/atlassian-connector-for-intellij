@@ -15,7 +15,7 @@ package com.atlassian.theplugin.idea.crucible.tree;
  * limitations under the License.
  */
 
-import com.atlassian.theplugin.commons.crucible.*;
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 import com.atlassian.theplugin.commons.util.Logger;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
@@ -34,13 +34,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-/**
- * Created by IntelliJ IDEA.
- * User: pmaruszak
- * Date: Jun 11, 2008
- * Time: 10:56:46 AM
- * To change this template use File | Settings | File Templates.
- */
 public final class ReviewItemTreePanel extends JPanel {
 
 
@@ -50,7 +43,6 @@ public final class ReviewItemTreePanel extends JPanel {
 	private static final int WIDTH = 150;
 	private static final int HEIGHT = 250;
 	private static ReviewItemTreePanel instance;
-	private static CrucibleServerFacade crucibleServerFacade;
 
 	public static final Logger LOGGER = PluginUtil.getLogger();
 
@@ -60,7 +52,6 @@ public final class ReviewItemTreePanel extends JPanel {
 	private ReviewItemTreePanel(ProjectConfigurationBean projectConfigurationBean) {
 		initLayout();
 		IdeaHelper.getReviewActionEventBroker().registerListener(listener);
-		crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 	}
 
 
@@ -112,45 +103,44 @@ public final class ReviewItemTreePanel extends JPanel {
 //							crucibleServerFacade.getFiles(reviewItem.getServer(), reviewItem.getPermId()));
 				}
 				final AtlassianTreeModel model1 = model;
+                final StringBuilder buffer = new StringBuilder();
+                buffer.append("<html>");
+                buffer.append("<body>");
+                buffer.append(reviewItem.getCreator().getDisplayName());
+                buffer.append(" ");
+                buffer.append("<font size=-1 color=");
+                buffer.append(CrucibleConstants.CRUCIBLE_AUTH_COLOR);
+                buffer.append(">AUTH</font>");
+                buffer.append(" ");
+                if (!reviewItem.getCreator().equals(reviewItem.getModerator())) {
+                    buffer.append(reviewItem.getModerator().getDisplayName());
+                }
+                buffer.append(" ");
+                buffer.append("<font size=-1 color=");
+                buffer.append(CrucibleConstants.CRUCIBLE_MOD_COLOR);
+                buffer.append(">MOD</font>");
+                int i = 0;
+                List<Reviewer> reviewers = null;
+                try {
+                    reviewers = reviewItem.getReviewers();
+                    if (reviewers != null) {
+                        buffer.append("<br>");
+                        for (Reviewer reviewer : reviewers) {
+                            if (i > 0) {
+                                buffer.append(", ");
+                            }
+                            buffer.append(reviewer.getDisplayName());
+                            i++;
+                        }
+                    }
+                } catch (ValueNotYetInitialized valueNotYetInitialized) {
+                    //ignore
+                }
+                buffer.append("</body>");
+                buffer.append("</html>");
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
-						StringBuffer buffer = new StringBuffer();
-						buffer.append("<html>");
-						buffer.append("<body>");
-						buffer.append(reviewItem.getCreator().getDisplayName());
-						buffer.append(" ");
-						buffer.append("<font size=-1 color=");
-						buffer.append(CrucibleConstants.CRUCIBLE_AUTH_COLOR);
-						buffer.append(">AUTH</font>");
-						buffer.append(" ");
-						if (!reviewItem.getCreator().equals(reviewItem.getModerator())) {
-							buffer.append(reviewItem.getModerator().getDisplayName());
-						}
-						buffer.append(" ");
-						buffer.append("<font size=-1 color=");
-						buffer.append(CrucibleConstants.CRUCIBLE_MOD_COLOR);
-						buffer.append(">MOD</font>");
-						int i = 0;
-						List<Reviewer> reviewers = null;
-						try {
-							reviewers = reviewItem.getReviewers();
-							if (reviewers != null) {
-								buffer.append("<br>");
-								for (Reviewer reviewer : reviewers) {
-									if (i > 0) {
-										buffer.append(", ");
-									}
-									buffer.append(reviewer.getDisplayName());
-									i++;
-								}
-							}
-						} catch (ValueNotYetInitialized valueNotYetInitialized) {
-							//ignore
-						}
-						buffer.append("</body>");
-						buffer.append("</html>");
 						statusLabel.setText(buffer.toString());
-
 						reviewFilesTree.setModel(model1);
 						reviewFilesTree.setRootVisible(true);
 					}

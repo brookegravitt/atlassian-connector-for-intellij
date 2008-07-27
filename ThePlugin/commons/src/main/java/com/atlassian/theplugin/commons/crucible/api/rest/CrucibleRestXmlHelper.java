@@ -50,15 +50,9 @@ public final class CrucibleRestXmlHelper {
     }
 
 
+    @SuppressWarnings("unchecked")
     public static List<Element> getChildElements(Element node, String childName) {
-        try {
-            @SuppressWarnings("unchecked")
-            final List<Element> res = node.getChildren(childName);
-            return res;
-        } catch (Exception e) {
-            System.out.println("e = " + e);
-            return null;
-        }
+        return node.getChildren(childName);
     }
 
     public static ProjectBean parseProjectNode(Element projectNode) {
@@ -352,7 +346,7 @@ public final class CrucibleRestXmlHelper {
         addTag(root, "fromPath", item.getFromPath());
         addTag(root, "fromRevision", item.getFromRevision());
         addTag(root, "toPath", item.getToPath());
-        addTag(root, "toRevision", item.getToRevision());                
+        addTag(root, "toRevision", item.getToRevision());
 
         return doc;
     }
@@ -502,10 +496,10 @@ public final class CrucibleRestXmlHelper {
     }
 
     private static void prepareComment(Comment comment, Element commentNode) {
-        String date = commentTimeFormat.print(comment.getCreateDate().getTime());
+        String date = COMMENT_TIME_FORMAT.print(comment.getCreateDate().getTime());
         String strangeDate = date.substring(0, date.length() - 2);
         strangeDate += ":00";
-        addTag(commentNode, "createDate", strangeDate);        
+        addTag(commentNode, "createDate", strangeDate);
         Element userElement = new Element("user");
         getContent(commentNode).add(userElement);
         addTag(userElement, "userName", comment.getUser().getUserName());
@@ -560,12 +554,12 @@ public final class CrucibleRestXmlHelper {
     }
 
     public static VersionedCommentBean parseVersionedCommentNodeWithHints(Element reviewCommentNode,
-                                                                          boolean fromLineInfo,
-                                                                          int fromStartLine,
-                                                                          int toStartLine,
-                                                                          boolean toLineInfo,
-                                                                          int fromEndLine,
-                                                                          int toEndLine) {
+            boolean fromLineInfo,
+            int fromStartLine,
+            int toStartLine,
+            boolean toLineInfo,
+            int fromEndLine,
+            int toEndLine) {
         VersionedCommentBean result = parseVersionedCommentNode(reviewCommentNode);
         if (result.isFromLineInfo() == false && fromLineInfo == true) {
             result.setFromLineInfo(true);
@@ -716,11 +710,11 @@ public final class CrucibleRestXmlHelper {
         return filterData;
     }
 
-    private static final DateTimeFormatter commentTimeFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+    private static final DateTimeFormatter COMMENT_TIME_FORMAT = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
     private static Date parseCommentTime(String date) {
         if (date != null && !date.equals("")) {
-            return commentTimeFormat.parseDateTime(date).toDate();
+            return COMMENT_TIME_FORMAT.parseDateTime(date).toDate();
         } else {
             return null;
         }
