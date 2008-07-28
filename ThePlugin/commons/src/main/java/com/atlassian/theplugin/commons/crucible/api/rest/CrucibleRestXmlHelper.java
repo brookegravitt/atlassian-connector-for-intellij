@@ -529,21 +529,20 @@ public final class CrucibleRestXmlHelper {
         return reviewCommentBean;
     }
 
-    public static Document prepareGeneralComment(GeneralComment comment) {
+    public static Document prepareGeneralComment(Comment comment) {
         Element commentNode = new Element("generalCommentData");
         Document doc = new Document(commentNode);
         prepareComment(comment, commentNode);
         return doc;
     }
 
-
-    public static Document prepareVersionedComment(VersionedComment comment) {
+    public static Document prepareVersionedComment(PermId riId, VersionedComment comment) {
         Element commentNode = new Element("versionedLineCommentData");
         Document doc = new Document(commentNode);
         prepareComment(comment, commentNode);
         Element reviewItemId = new Element("reviewItemId");
         getContent(commentNode).add(reviewItemId);
-        addTag(reviewItemId, "id", comment.getReviewItemId().getId());
+        addTag(reviewItemId, "id", riId.getId());
         if (comment.getFromStartLine() > 0 && comment.getFromEndLine() > 0) {
             addTag(commentNode, "fromLineRange", comment.getFromStartLine() + "-" + comment.getFromEndLine());
         }

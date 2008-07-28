@@ -907,13 +907,11 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
             throw new IllegalStateException("Calling method without calling login() first");
         }
 
-        Document request = CrucibleRestXmlHelper.prepareVersionedComment(comment);
-
+        Document request = CrucibleRestXmlHelper.prepareVersionedComment(riId, comment);
         String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + REVIEW_ITEMS + "/"
-                + riId.getId() + COMMENTS;
+                + riId.getId() + COMMENTS;       
         try {
             Document doc = retrievePostResponse(requestUrl, request);
-
             XPath xpath = XPath.newInstance("versionedLineCommentData");
             @SuppressWarnings("unchecked")
             List<Element> elements = xpath.selectNodes(doc);
@@ -966,7 +964,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
 
-		Document request = CrucibleRestXmlHelper.prepareVersionedComment(comment);
+		Document request = CrucibleRestXmlHelper.prepareGeneralComment((CommentBean)comment);
 
 		String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + COMMENTS + "/" + cId.getId() + REPLIES;
 
