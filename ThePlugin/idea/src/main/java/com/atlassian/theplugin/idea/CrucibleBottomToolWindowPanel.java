@@ -32,8 +32,8 @@ import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListen
 import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.atlassian.theplugin.idea.crucible.events.GeneralCommentAdded;
 import com.atlassian.theplugin.idea.crucible.events.GeneralCommentReplyAdded;
-import com.atlassian.theplugin.idea.crucible.events.VersionedCommentAdded;
 import com.atlassian.theplugin.idea.crucible.events.VersionedCommentReplyAdded;
+import com.atlassian.theplugin.idea.crucible.events.VersionedCommentAdded;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Splitter;
@@ -223,7 +223,7 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
 		public void aboutToAddVersionedComment(ReviewData review, CrucibleFileInfo file, VersionedCommentBean comment) {
 			try {
 				VersionedComment newComment = facade.addVersionedComment(review.getServer(), review.getPermId(),
-						comment);
+						file.getPermId(), comment);
 				eventBroker.trigger(new VersionedCommentAdded(this, review, file, newComment));
 			} catch (RemoteApiException e) {
 				IdeaHelper.handleRemoteApiException(project, e);
@@ -237,8 +237,8 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
 													VersionedComment parentComment, VersionedCommentBean comment) {
 
 			try {
-				VersionedComment newComment = facade.addVersionedCommentReply(review.getServer(),
-                        review.getPermId(), parentComment.getPermId(), comment);
+				VersionedComment newComment = facade.addVersionedCommentReply(review.getServer(), review.getPermId(), parentComment.getPermId(),
+						comment);
 				eventBroker.trigger(new VersionedCommentReplyAdded(this, review, file, parentComment, newComment));
 			} catch (RemoteApiException e) {
 				IdeaHelper.handleRemoteApiException(project, e);
