@@ -237,8 +237,8 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
 													VersionedComment parentComment, VersionedCommentBean comment) {
 
 			try {
-				VersionedComment newComment = facade.addVersionedCommentReply(review.getServer(), review.getPermId(), parentComment.getPermId(),
-						comment);
+				VersionedComment newComment = facade.addVersionedCommentReply(review.getServer(), review.getPermId(),
+						parentComment.getPermId(), comment);
 				eventBroker.trigger(new VersionedCommentReplyAdded(this, review, file, parentComment, newComment));
 			} catch (RemoteApiException e) {
 				IdeaHelper.handleRemoteApiException(project, e);
