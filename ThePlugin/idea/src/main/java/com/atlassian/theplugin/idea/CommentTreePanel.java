@@ -139,7 +139,13 @@ public class CommentTreePanel extends JPanel {
 		public void focusOnGeneralComments(final ReviewData review) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
-					AtlassianTreeNode node = locateGeneralSectionNode();
+					TreeModel model = commentTree.getModel();
+					AtlassianTreeNode root = (AtlassianTreeNode) model.getRoot();
+					AtlassianTreeNode node = locateNode(root, new NodeSearchAlgorithm() {
+						public boolean check(AtlassianTreeNode node1) {
+							return node1 instanceof GeneralSectionNode;
+						}
+					});
 					commentTree.focusOnNode(node);
 				}
 			});
@@ -149,12 +155,12 @@ public class CommentTreePanel extends JPanel {
 		public void createdGeneralComment(final ReviewData review, final GeneralComment comment) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
-					AtlassianTreeNode parentNode = locateGeneralSectionNode();
-					if (parentNode != null) {
-						AtlassianTreeModel model = (AtlassianTreeModel) commentTree.getModel();
-						AtlassianTreeNode newNode = new GeneralCommentTreeNode(review, comment, AtlassianClickAction.EMPTY_ACTION);
-						model.insertNodeInto(newNode, parentNode, parentNode.getChildCount());
-					}
+					AtlassianTreeNode newCommentNode = new GeneralCommentTreeNode(review, comment, AtlassianClickAction.EMPTY_ACTION);
+					addNewNode(new NodeSearchAlgorithm() {
+						public boolean check(AtlassianTreeNode node) {
+							return node instanceof GeneralSectionNode;
+						}
+					}, newCommentNode);
 				}
 			}
 			);
@@ -164,33 +170,77 @@ public class CommentTreePanel extends JPanel {
 		public void createdGeneralCommentReply(final ReviewData review, final GeneralComment parentComment, final GeneralComment comment) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
-					AtlassianTreeNode parentNode = locateGeneralCommentNode(review, parentComment);
-					if (parentNode != null) {
-						AtlassianTreeModel model = (AtlassianTreeModel) commentTree.getModel();
-						AtlassianTreeNode newNode = new GeneralCommentTreeNode(review, comment, AtlassianClickAction.EMPTY_ACTION);
-						model.insertNodeInto(newNode, parentNode, parentNode.getChildCount());
-						commentTree.expandPath(new TreePath(parentNode.getPath()));
-					}
+					addNewNode(new NodeSearchAlgorithm() {
+						public boolean check(AtlassianTreeNode node) {
+							if (node instanceof GeneralCommentTreeNode) {
+								GeneralCommentTreeNode vnode = (GeneralCommentTreeNode) node;
+								if (vnode.getReview().equals(review) && vnode.getComment().equals(parentComment)) {
+									return true;
+								}
+							}
+							return false;
+						}
+					}, new GeneralCommentTreeNode(review, comment, AtlassianClickAction.EMPTY_ACTION));
 				}
 			}
 			);
 		}
 
-		private AtlassianTreeNode locateGeneralCommentNode(final ReviewData review, final GeneralComment comment) {
-			TreeModel model = commentTree.getModel();
-			AtlassianTreeNode root = (AtlassianTreeNode) model.getRoot();
-			return locateNode(root, new NodeSearchAlgorithm() {
-				public boolean check(AtlassianTreeNode node) {
-					if (node instanceof GeneralCommentTreeNode) {
-						GeneralCommentTreeNode vnode = (GeneralCommentTreeNode) node;
-						if (vnode.getReview().equals(review) && vnode.getComment().equals(comment)) {
-							return true;
+		@Override
+		public void createdVersionedComment(final ReviewData review, final CrucibleFileInfo file, final VersionedComment comment) {
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					addNewNode(new NodeSearchAlgorithm() {
+						public boolean check(AtlassianTreeNode node) {
+							if (node instanceof FileNameNode) {
+								FileNameNode vnode = (FileNameNode) node;
+								if (vnode.getReview().equals(review)
+										&& vnode.getFile().equals(file)) {
+									return true;
+								}
+							}
+							return false;
 						}
-					}
-					return false;
+					}, new VersionedCommentTreeNode(review, file, comment, AtlassianClickAction.EMPTY_ACTION));
 				}
 			});
 		}
+
+		@Override
+		public void createdVersionedCommentReply(final ReviewData review, final CrucibleFileInfo file,
+												 final VersionedComment parentComment, final VersionedComment comment) {
+
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					addNewNode(new NodeSearchAlgorithm() {
+						public boolean check(AtlassianTreeNode node) {
+							if (node instanceof VersionedCommentTreeNode) {
+								VersionedCommentTreeNode vnode = (VersionedCommentTreeNode) node;
+								if (vnode.getReview().equals(review)
+										&& vnode.getFile().equals(file)
+										&& vnode.getComment().equals(parentComment)) {
+									return true;
+								}
+							}
+							return false;
+						}
+					}, new VersionedCommentTreeNode(review, file, comment, AtlassianClickAction.EMPTY_ACTION));
+				}
+			});
+		}
+
+		private void addNewNode(NodeSearchAlgorithm parentLocator, AtlassianTreeNode newCommentNode) {
+			TreeModel model1 = commentTree.getModel();
+			AtlassianTreeNode root = (AtlassianTreeNode) model1.getRoot();
+			AtlassianTreeNode parentNode = locateNode(root, parentLocator);
+			if (parentNode != null) {
+				AtlassianTreeModel model = (AtlassianTreeModel) commentTree.getModel();
+				model.insertNodeInto(newCommentNode, parentNode, parentNode.getChildCount());
+				commentTree.expandPath(new TreePath(parentNode.getPath()));
+				commentTree.focusOnNode(newCommentNode);
+			}
+		}
+
 
 		private AtlassianTreeNode locateNode(AtlassianTreeNode startingNode, NodeSearchAlgorithm alg) {
 			if (alg.check(startingNode)) {
@@ -203,52 +253,6 @@ public class CommentTreePanel extends JPanel {
 				}
 			}
 			return null;
-		}
-
-
-		private AtlassianTreeNode locateGeneralSectionNode() {
-			TreeModel model = commentTree.getModel();
-			AtlassianTreeNode root = (AtlassianTreeNode) model.getRoot();
-			return locateNode(root, new NodeSearchAlgorithm() {
-				public boolean check(AtlassianTreeNode node) {
-					return node instanceof GeneralSectionNode;
-				}
-			});
-		}
-
-		@Override
-		public void createdVersionedCommentReply(final ReviewData review, final CrucibleFileInfo file,
-												 final VersionedComment parentComment, final VersionedComment comment) {
-
-			EventQueue.invokeLater(new Runnable() {
-				public void run() {
-					AtlassianTreeNode parentNode = locateVersionedCommentNode(review, file, parentComment);
-					if (parentNode != null) {
-						AtlassianTreeModel model = (AtlassianTreeModel) commentTree.getModel();
-						AtlassianTreeNode newNode = new VersionedCommentTreeNode(review, file, comment, AtlassianClickAction.EMPTY_ACTION);
-						model.insertNodeInto(newNode, parentNode, parentNode.getChildCount());
-					}
-				}
-			});
-		}
-
-		private AtlassianTreeNode locateVersionedCommentNode(final ReviewData review, final CrucibleFileInfo file,
-															 final VersionedComment comment) {
-			TreeModel model = commentTree.getModel();
-			AtlassianTreeNode root = (AtlassianTreeNode) model.getRoot();
-			return locateNode(root, new NodeSearchAlgorithm() {
-				public boolean check(AtlassianTreeNode node) {
-					if (node instanceof VersionedCommentTreeNode) {
-						VersionedCommentTreeNode vnode = (VersionedCommentTreeNode) node;
-						if (vnode.getReview().equals(review)
-								&& vnode.getFile().equals(file)
-								&& vnode.getComment().equals(comment)) {
-							return true;
-						}
-					}
-					return false;
-				}
-			});
 		}
 
 

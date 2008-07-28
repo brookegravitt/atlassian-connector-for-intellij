@@ -931,7 +931,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         }
     }
 
-    public GeneralComment addReply(PermId id, PermId cId, GeneralComment comment) throws RemoteApiException {
+    public GeneralComment addGeneralCommentReply(PermId id, PermId cId, GeneralComment comment) throws RemoteApiException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Calling method without calling login() first");
         }
@@ -960,7 +960,37 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         }
     }
 
-    public void updateReply(PermId id, PermId cId, PermId rId, GeneralComment comment) throws RemoteApiException {
+	public VersionedComment addVersionedCommentReply(PermId id, PermId cId, VersionedComment comment) throws RemoteApiException {
+		if (!isLoggedIn()) {
+			throw new IllegalStateException("Calling method without calling login() first");
+		}
+
+		Document request = CrucibleRestXmlHelper.prepareVersionedComment(comment);
+
+		String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + COMMENTS + "/" + cId.getId() + REPLIES;
+
+		try {
+			Document doc = retrievePostResponse(requestUrl, request);
+
+			XPath xpath = XPath.newInstance("generalCommentData");  // todo lguminski we should change it to reflect model
+			@SuppressWarnings("unchecked")
+			List<Element> elements = xpath.selectNodes(doc);
+
+			if (elements != null && !elements.isEmpty()) {
+				for (Element element : elements) {
+					return CrucibleRestXmlHelper.parseVersionedCommentNode(element);
+				}
+			}
+			return null;
+		} catch (IOException e) {
+			throw new RemoteApiException(e.getMessage(), e);
+		} catch (JDOMException e) {
+			throw new RemoteApiException("Server returned malformed response", e);
+		}
+
+	}
+
+	public void updateReply(PermId id, PermId cId, PermId rId, GeneralComment comment) throws RemoteApiException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Calling method without calling login() first");
         }

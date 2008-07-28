@@ -107,9 +107,11 @@ public interface CrucibleSession {
 
     void publishComment(PermId reviewId, PermId commentId) throws RemoteApiException;    
 
-    GeneralComment addReply(PermId id, PermId cId,  GeneralComment comment) throws RemoteApiException;
+    GeneralComment addGeneralCommentReply(PermId id, PermId cId, GeneralComment comment) throws RemoteApiException;
 
-    void updateReply(PermId id, PermId cId,  PermId rId, GeneralComment comment) throws RemoteApiException;    
+	VersionedComment addVersionedCommentReply(PermId id, PermId cId, VersionedComment comment) throws RemoteApiException;
+
+	void updateReply(PermId id, PermId cId,  PermId rId, GeneralComment comment) throws RemoteApiException;
 
     List<CustomFieldDef> getMetrics(int version) throws RemoteApiException;    
 
