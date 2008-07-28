@@ -16,13 +16,13 @@
 
 package com.atlassian.theplugin.remoteapi;
 
+import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PasswordDialog;
 import com.atlassian.theplugin.idea.ThePluginApplicationComponent;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.atlassian.theplugin.commons.Server;
-import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.intellij.openapi.ui.Messages;
 
 import javax.swing.*;
@@ -55,7 +55,6 @@ public class MissingPasswordHandler implements Runnable {
 					continue;
 				}
 				PasswordDialog dialog = new PasswordDialog(server, serverFacade);
-				dialog.setUserName(server.getUserName());
 				dialog.pack();
 				JPanel panel = dialog.getPasswordPanel();
 

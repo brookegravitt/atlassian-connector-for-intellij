@@ -8,16 +8,15 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
-import com.atlassian.theplugin.idea.crucible.events.GeneralCommentReplyAboutToAdd;
 import com.atlassian.theplugin.idea.crucible.events.GeneralCommentAboutToAdd;
-import com.atlassian.theplugin.idea.crucible.events.VersionedCommentReplyAboutToAdd;
+import com.atlassian.theplugin.idea.crucible.events.GeneralCommentReplyAboutToAdd;
 import com.atlassian.theplugin.idea.crucible.events.VersionedCommentAboutToAdd;
+import com.atlassian.theplugin.idea.crucible.events.VersionedCommentReplyAboutToAdd;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.file.FileNode;
+import com.atlassian.theplugin.idea.ui.tree.comment.FileNameNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralSectionNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.comment.FileNameNode;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
@@ -29,16 +28,10 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-/**
- * Created by IntelliJ IDEA.
- * User: lguminski
- * Date: Jul 25, 2008
- * Time: 5:27:42 PM
- * To change this template use File | Settings | File Templates.
- */
 public class AddAction extends AnAction {
 	@Override
 	public void update(AnActionEvent e) {
@@ -94,7 +87,8 @@ public class AddAction extends AnAction {
 
 	}
 
-	private void addReplyToVersionedComment(Project project, ReviewData review, CrucibleFileInfo file, VersionedComment comment) {
+	private void addReplyToVersionedComment(Project project, ReviewData review,
+            CrucibleFileInfo file, VersionedComment comment) {
 		List<CustomFieldDef> metrics = new ArrayList<CustomFieldDef>();
 		VersionedCommentBean newComment = new VersionedCommentBean();
 		newComment.setReply(true);

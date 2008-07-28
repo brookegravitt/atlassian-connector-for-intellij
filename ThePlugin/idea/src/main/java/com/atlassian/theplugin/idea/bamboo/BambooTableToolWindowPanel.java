@@ -31,10 +31,10 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import com.intellij.util.ui.UIUtil;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import javax.swing.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -44,23 +44,26 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
     private static final Key<BambooTableToolWindowPanel> WINDOW_PROJECT_KEY
             = Key.create(BambooTableToolWindowPanel.class.getName());
     private final transient BambooServerFacade bambooFacade;
-    private static final DateFormat TIME_DF = new SimpleDateFormat("hh:mm a");
-    private static BambooTableToolWindowPanel instance;
+    private static final DateTimeFormatter TIME_DF = DateTimeFormat.forPattern("hh:mm a");
     private TableColumnProvider columnProvider;
     private Project project;
 
+    @Override
     protected String getInitialMessage() {
         return "Waiting for Bamboo statuses.";
     }
 
+    @Override
     protected String getToolbarActionGroup() {
         return "ThePlugin.BambooToolWindowToolBar";
     }
 
+    @Override
     protected String getPopupActionGroup() {
         return "ThePlugin.Bamboo.BuildPopupMenu";
     }
 
+    @Override
     protected TableColumnProvider getTableColumnProvider() {
         if (columnProvider == null) {
             columnProvider = new BambooTableColumnProviderImpl();
@@ -68,20 +71,21 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
         return columnProvider;
     }
 
+    @Override
     protected ProjectToolWindowTableConfiguration getTableConfiguration() {
-        return this.projectConfiguration.getBambooConfiguration().getTableConfiguration();
+        return projectConfiguration.getBambooConfiguration().getTableConfiguration();
     }
 
+    @Override
     public void applyAdvancedFilter() {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public void cancelAdvancedFilter() {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public void clearAdvancedFilter() {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public BambooTableToolWindowPanel(Project project, ProjectConfigurationBean projectConfigurationBean) {
@@ -91,9 +95,11 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
     }
 
 
+    @Override
     protected void handlePopupClick(Object selectedObject) {
     }
 
+    @Override
     protected void handleDoubleClick(Object selectedObject) {
         BambooBuildAdapter build = (BambooBuildAdapter) selectedObject;
         if (build != null) {
@@ -123,7 +129,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
     }
 
     private void labelBuild(final BambooBuildAdapterIdea build, final String label) {
-        new Thread("atlassian-idea-plugin label build") {
+        new Thread(new Runnable() {
             public void run() {
                 setStatusMessage("Applying label on build...");
                 try {
@@ -136,7 +142,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
                     setStatusMessage("Label not applied: " + e.getMessage());
                 }
             }
-        }.start();
+        }, "atlassian-idea-plugin label build").start();
     }
 
     public void addLabelToBuild() {
@@ -153,7 +159,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
     }
 
     private void commentBuild(final BambooBuildAdapterIdea build, final String commentText) {
-        new Thread("atlassian-idea-plugin comment build") {
+        new Thread(new Runnable() {
             public void run() {
                 setStatusMessage("Adding comment label on build...");
                 try {
@@ -167,7 +173,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
                 }
 
             }
-        }.start();
+        }, "atlassian-idea-plugin comment build").start();
     }
 
     public void addCommentToBuild() {
@@ -176,7 +182,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
     }
 
     private void executeBuild(final BambooBuildAdapterIdea build) {
-        new Thread("atlassian-idea-plugin execute build") {
+        new Thread(new Runnable() {
             public void run() {
                 setStatusMessage("Executing build on plan " + build.getBuildKey());
                 try {
@@ -189,7 +195,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
                 }
 
             }
-        }.start();
+        }, "atlassian-idea-plugin execute build").start();
     }
 
     public void runBuild() {
@@ -232,7 +238,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
             sb.append("</b> builds");
             if (lastPollingTime != null) {
                 sb.append(" at  <b>");
-                sb.append(TIME_DF.format(lastPollingTime));
+                sb.append(TIME_DF.print(lastPollingTime.getTime()));
                 sb.append("</b>");
             }
             sb.append(".");
@@ -277,7 +283,9 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
 
     public void viewBuild() {
         BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) table.getSelectedObject();
-        BrowserUtil.launchBrowser(build.getBuildResultUrl());
+        if (build != null) {
+            BrowserUtil.launchBrowser(build.getBuildResultUrl());
+        }
     }
 
     public boolean canShowFailedTests() {
@@ -291,7 +299,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
     public void showBuildStackTrace() {
         final BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) table.getSelectedObject();
 
-        new Thread("atlassian-idea-plugin get stack traces") {
+        new Thread(new Runnable() {
             public void run() {
                 setStatusMessage("Getting test results for build " + build.getBuildKey() + "...");
                 try {
@@ -313,7 +321,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
                 }
 
             }
-        }.start();
+        }, "atlassian-idea-plugin get stack traces").start();
     }
 
     public boolean canShowChanges() {
@@ -327,7 +335,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
     public void showChanges() {
         final BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) table.getSelectedObject();
 
-        new Thread("atlassian-idea-plugin get changes") {
+        new Thread(new Runnable() {
             public void run() {
                 setStatusMessage("Getting changes for build " + build.getBuildKey() + "...");
                 try {
@@ -348,13 +356,13 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
                 }
 
             }
-        }.start();
+        }, "atlassian-idea-plugin get changes").start();
     }
 
     public void showBuildLog() {
         final BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) table.getSelectedObject();
 
-        new Thread("atlassian-idea-plugin get changes") {
+        new Thread(new Runnable() {
             public void run() {
                 setStatusMessage("Getting build log: " + build.getBuildKey() + "...");
                 try {
@@ -377,6 +385,6 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
                 }
 
             }
-        }.start();
+        }, "atlassian-idea-plugin get changes").start();
     }
 }
