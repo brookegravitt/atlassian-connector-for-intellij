@@ -16,12 +16,12 @@
 
 package com.atlassian.theplugin.remoteapi;
 
+import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.idea.PasswordDialog;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.atlassian.theplugin.commons.Server;
-import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.intellij.openapi.ui.Messages;
 
 import javax.swing.*;
@@ -59,7 +59,6 @@ public class MissingPasswordHandlerJIRA implements Runnable {
 //				return; //????
 //			}
 			PasswordDialog dialog = new PasswordDialog(jiraServer, serverFacade);
-			dialog.setUserName(jiraServer.getUserName());
 			dialog.pack();
 			JPanel panel = dialog.getPasswordPanel();
 

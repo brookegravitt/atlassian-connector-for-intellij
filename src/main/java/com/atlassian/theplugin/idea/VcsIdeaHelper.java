@@ -57,7 +57,7 @@ public final class VcsIdeaHelper {
         if (vcs == null) {
             return null;
         }
-        CommittedChangesProvider provider = vcs.getCommittedChangesProvider();
+        CommittedChangesProvider<?, ?> provider = vcs.getCommittedChangesProvider();
         if (provider == null) {
             return null;
         }
@@ -167,11 +167,6 @@ public final class VcsIdeaHelper {
         return vcvf;
     }
 
-    public static void fetchAndOpenFile(final Project project, final String revision, final VirtualFile virtualFile,
-            final int line, final int column) {
-        fetchAndOpenFile(project, revision, virtualFile, line, column, null);
-    }
-
     /**
      * Must be run from UI thread!
      *
@@ -182,10 +177,10 @@ public final class VcsIdeaHelper {
      * @param column      column to go to
      * @param action
      */
-    public static void fetchAndOpenFile(final Project project, final String revision, final VirtualFile virtualFile,
+    public static void fetchAndOpenFile(final Project project, final String revision, @NotNull final VirtualFile virtualFile,
             final int line, final int column, @Nullable final OpenFileDescriptorAction action) {
 
-		final String niceFileMessage = virtualFile != null?virtualFile.getName():"" + " (rev: " + revision + ") from VCS";
+        final String niceFileMessage = virtualFile.getName() + " (rev: " + revision + ") from VCS";
         new Task.Backgroundable(project, "Fetching file " + niceFileMessage, false) {
 
             private OpenFileDescriptor ofd;
