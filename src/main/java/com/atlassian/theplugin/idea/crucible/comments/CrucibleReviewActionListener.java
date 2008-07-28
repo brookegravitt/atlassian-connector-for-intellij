@@ -69,4 +69,7 @@ public class CrucibleReviewActionListener {
 
 	public void aboutToAddVersionedComment(ReviewData review, CrucibleFileInfo file, VersionedCommentBean comment) {
 	}
+
+	public void createdVersionedComment(ReviewData review, CrucibleFileInfo file, VersionedComment comment) {
+	}
 }
