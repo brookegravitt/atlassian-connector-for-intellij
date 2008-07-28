@@ -16,7 +16,6 @@
 
 package com.atlassian.theplugin.idea.ui.tree.comment;
 
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
@@ -29,54 +28,46 @@ import javax.swing.*;
 import javax.swing.tree.TreeCellRenderer;
 import java.awt.*;
 
-public class FileNameNode extends AtlassianTreeNode {
-	private ReviewData review;
-	private CrucibleFileInfo file;
-	private static final TreeCellRenderer MY_RENDERER = new MyRenderer();
+/**
+ * Created by IntelliJ IDEA.
+ * User: lguminski
+ * Date: Jul 21, 2008
+ * Time: 3:57:40 PM
+ * To change this template use File | Settings | File Templates.
+ */
+public class GeneralSectionNode extends AtlassianTreeNode {
+	private static final String GENERAL_COMMENTS_SECTION = "General comments";
 
-	public FileNameNode(ReviewData review, CrucibleFileInfo file, AtlassianClickAction action) {
+	private static final TreeCellRenderer MY_RENDERER = new MyRenderer();
+	private ReviewData review;
+
+	public GeneralSectionNode(ReviewData review, AtlassianClickAction action) {
 		super(action);
 		this.review = review;
-		this.file = file;
 	}
 
-	public CrucibleFileInfo getFile() {
-		return file;
+	@Override
+    public TreeCellRenderer getTreeCellRenderer() {
+		return MY_RENDERER;
 	}
 
 	public ReviewData getReview() {
 		return review;
 	}
 
-	public TreeCellRenderer getTreeCellRenderer() {
-		return MY_RENDERER;
-	}
-
 	private static class MyRenderer implements TreeCellRenderer {
-
 		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean isSelected, boolean expanded,
                 boolean leaf, int row, boolean hasFocus) {
+			GeneralSectionNode node = (GeneralSectionNode) value;
 			JPanel panel = new JPanel(new FormLayout("4dlu, left:pref:grow, 4dlu", "4dlu, pref:grow, 4dlu"));
 			SimpleColoredComponent component = new SimpleColoredComponent();
-//			component.setFont(component.getFont().deriveFont(component.getFont().getSize() + 1));
-			FileNameNode node = (FileNameNode) value;
-			CrucibleFileInfo file = node.getFile();
-			component.append(file.getFileDescriptor().getUrl(), SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
-
-			StringBuilder txt = new StringBuilder();
-			txt.append(" (rev: ");
-			txt.append(file.getOldFileDescriptor().getRevision());
-			txt.append("-");
-			txt.append(file.getFileDescriptor().getRevision());
-			txt.append(")");
-			component.append(txt.toString(), SimpleTextAttributes.GRAY_ITALIC_ATTRIBUTES);
+			component.append(GENERAL_COMMENTS_SECTION, SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
 			panel.add(component, new CellConstraints(2, 2));
-			
 
 			panel.setBorder(isSelected ? UIManager.getBorder("List.focusCellHighlightBorder")
 					: BorderFactory.createEmptyBorder(1, 1, 1, 1));
-			return panel;
 
+			return panel;
 		}
 	}
 }
