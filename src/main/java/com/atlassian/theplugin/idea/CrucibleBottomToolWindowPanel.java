@@ -194,7 +194,7 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
         @Override
 		public void aboutToAddGeneralComment(ReviewData review, GeneralCommentBean newComment) {
 //			try {
-				GeneralComment comment = null;
+				GeneralComment comment = newComment;
 //				comment = facade.addGeneralComment(review.getServer(), newComment);
 				eventBroker.trigger(new GeneralCommentAdded(this, review, comment));
 //			} catch (RemoteApiException e) {
