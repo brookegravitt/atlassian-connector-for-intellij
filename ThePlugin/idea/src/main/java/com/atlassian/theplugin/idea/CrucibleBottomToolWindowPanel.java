@@ -33,6 +33,7 @@ import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.atlassian.theplugin.idea.crucible.events.GeneralCommentAdded;
 import com.atlassian.theplugin.idea.crucible.events.GeneralCommentReplyAdded;
 import com.atlassian.theplugin.idea.crucible.events.VersionedCommentReplyAdded;
+import com.atlassian.theplugin.idea.crucible.events.VersionedCommentAdded;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
@@ -188,52 +189,63 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
 
 		@Override
 		public void showFile(final ReviewData review, final CrucibleFileInfo file) {
-                    CrucibleHelper.showVirtualFileWithComments(project, review, file);
+			CrucibleHelper.showVirtualFileWithComments(project, review, file);
 		}
 
-        @Override
+
+		@Override
 		public void aboutToAddGeneralComment(ReviewData review, GeneralCommentBean newComment) {
-//			try {
-				GeneralComment comment = newComment;
-//				comment = facade.addGeneralComment(review.getServer(), newComment);
+			try {
+				GeneralComment comment = facade.addGeneralComment(review.getServer(), review.getPermId(),
+						newComment);
 				eventBroker.trigger(new GeneralCommentAdded(this, review, comment));
-//			} catch (RemoteApiException e) {
-//				Messages.showErrorDialog("Problem creating a new comment: " + e.getMessage(), "Error creating comment");
-//			} catch (ServerPasswordNotProvidedException e) {
-//				// todo lguminski ask for password
-//				Messages.showErrorDialog("Problem creating a new comment: " + e.getMessage(), "Error creating comment");
-//			}
+			} catch (RemoteApiException e) {
+				IdeaHelper.handleRemoteApiException(project, e);
+			} catch (ServerPasswordNotProvidedException e) {
+				IdeaHelper.handleMissingPassword(e);
+			}
 		}
 
 		@Override
 		public void aboutToAddGeneralCommentReply(ReviewData review, GeneralComment parentComment,
-                GeneralCommentBean newComment) {
-            try {
-				GeneralComment comment = facade.addReply(review.getServer(), review.getPermId(),
-                        parentComment.getPermId(), newComment);
+												  GeneralCommentBean newComment) {
+			try {
+				GeneralComment comment = facade.addGeneralCommentReply(review.getServer(), review.getPermId(),
+						parentComment.getPermId(), newComment);
 				eventBroker.trigger(new GeneralCommentReplyAdded(this, review, parentComment, comment));
 			} catch (RemoteApiException e) {
-				Messages.showErrorDialog("Problem creating a new comment: " + e.getMessage(), "Error creating comment");
+				IdeaHelper.handleRemoteApiException(project, e);
 			} catch (ServerPasswordNotProvidedException e) {
-//				// todo lguminski ask for password
-				Messages.showErrorDialog("Problem creating a new comment: " + e.getMessage(), "Error creating comment");
+				IdeaHelper.handleMissingPassword(e);
+			}
+		}
+
+		@Override
+		public void aboutToAddVersionedComment(ReviewData review, CrucibleFileInfo file, VersionedCommentBean comment) {
+			try {
+				VersionedComment newComment = facade.addVersionedComment(review.getServer(), review.getPermId(),
+						comment);
+				eventBroker.trigger(new VersionedCommentAdded(this, review, file, newComment));
+			} catch (RemoteApiException e) {
+				IdeaHelper.handleRemoteApiException(project, e);
+			} catch (ServerPasswordNotProvidedException e) {
+				IdeaHelper.handleMissingPassword(e);
 			}
 		}
 
 		@Override
 		public void aboutToAddVersionedCommentReply(ReviewData review, CrucibleFileInfo file,
-                VersionedComment parentComment, VersionedCommentBean newComment) {
-            
-//			try {
-			VersionedComment comment = newComment;
-			// VersionedComment comment = facade.addVersionedComment(review.getServer(), parentComment.getPermId(), newComment);
-			eventBroker.trigger(new VersionedCommentReplyAdded(this, review, file, parentComment, comment));
-//			} catch (RemoteApiException e) {
-//				Messages.showErrorDialog("Problem creating a new comment: " + e.getMessage(), "Error creating comment");
-//			} catch (ServerPasswordNotProvidedException e) {
-//				// todo lguminski ask for password
-//				Messages.showErrorDialog("Problem creating a new comment: " + e.getMessage(), "Error creating comment");
-//			}
+													VersionedComment parentComment, VersionedCommentBean comment) {
+
+			try {
+				VersionedComment newComment = facade.addVersionedCommentReply(review.getServer(), review.getPermId(), parentComment.getPermId(),
+						comment);
+				eventBroker.trigger(new VersionedCommentReplyAdded(this, review, file, parentComment, newComment));
+			} catch (RemoteApiException e) {
+				IdeaHelper.handleRemoteApiException(project, e);
+			} catch (ServerPasswordNotProvidedException e) {
+				IdeaHelper.handleMissingPassword(e);
+			}
 		}
 	}
 }

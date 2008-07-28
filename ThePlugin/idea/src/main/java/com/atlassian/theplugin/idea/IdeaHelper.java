@@ -168,9 +168,13 @@ public final class IdeaHelper {
 		return ReviewActionEventBroker.getInstance();
 	}
 
-    public static void handleRemoteApiException(Project project, RemoteApiException e) {
-        Messages.showErrorDialog(project, "The following error has occurred while using remote service:\n"
-                + e.getMessage(), "Error while using remote service");
+    public static void handleRemoteApiException(final Project project, final RemoteApiException e) {
+		ApplicationManager.getApplication().invokeLater(new Runnable() {
+			public void run() {
+				Messages.showErrorDialog(project, "The following error has occurred while using remote service:\n"
+						+ e.getMessage(), "Error while using remote service");
+			}
+		});
     }
 
     /**
