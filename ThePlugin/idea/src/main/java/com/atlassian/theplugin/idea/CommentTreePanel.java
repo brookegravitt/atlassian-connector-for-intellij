@@ -238,12 +238,34 @@ public class CommentTreePanel extends JPanel {
 			});
 		}
 
+		@Override
+		public void focusOnFileComments(final ReviewData review, final CrucibleFileInfo file) {
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					AtlassianTreeModel model = (AtlassianTreeModel) commentTree.getModel();
+					AtlassianTreeNode node = locateNode((AtlassianTreeNode) model.getRoot(), new NodeSearchAlgorithm() {
+						public boolean check(AtlassianTreeNode node) {
+							if (node instanceof FileNameNode) {
+								FileNameNode vnode = (FileNameNode) node;
+								if (vnode.getReview().equals(review)
+										&& vnode.getFile().equals(file)) {
+									return true;
+								}
+							}
+							return false;
+						}
+					});
+					commentTree.focusOnNode(node);
+				}
+			});
+		}
+
+
 		private void addNewNode(NodeSearchAlgorithm parentLocator, AtlassianTreeNode newCommentNode) {
-			TreeModel model1 = commentTree.getModel();
-			AtlassianTreeNode root = (AtlassianTreeNode) model1.getRoot();
+			AtlassianTreeModel model = (AtlassianTreeModel) commentTree.getModel();
+			AtlassianTreeNode root = (AtlassianTreeNode) model.getRoot();
 			AtlassianTreeNode parentNode = locateNode(root, parentLocator);
 			if (parentNode != null) {
-				AtlassianTreeModel model = (AtlassianTreeModel) commentTree.getModel();
 				model.insertNodeInto(newCommentNode, parentNode, parentNode.getChildCount());
 				commentTree.expandPath(new TreePath(parentNode.getPath()));
 				commentTree.focusOnNode(newCommentNode);
@@ -262,32 +284,6 @@ public class CommentTreePanel extends JPanel {
 				}
 			}
 			return null;
-		}
-
-
-		@Override
-		public void focusOnFileComments(final ReviewData review, final CrucibleFileInfo file) {
-			EventQueue.invokeLater(new Runnable() {
-				public void run() {
-					AtlassianTreeNode node = locateFileTreeNode(review, file);
-					commentTree.focusOnNode(node);
-				}
-			});
-		}
-
-		private AtlassianTreeNode locateFileTreeNode(ReviewData review, CrucibleFileInfo file) {
-			for (int i = 0; i < commentTree.getRowCount(); i++) {
-				TreePath path = commentTree.getPathForRow(i);
-
-				AtlassianTreeNode elem = (AtlassianTreeNode) path.getLastPathComponent();
-				if (elem instanceof FileNameNode) {
-					FileNameNode node = (FileNameNode) elem;
-					if (node.getFile().equals(file)) {
-						return node;
-					}
-				}
-			}
-			return null;  //To change body of created methods use File | Settings | File Templates.
 		}
 
 		private abstract class NodeSearchAlgorithm {
