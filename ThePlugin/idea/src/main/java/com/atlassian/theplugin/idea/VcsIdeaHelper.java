@@ -184,7 +184,8 @@ public final class VcsIdeaHelper {
      */
     public static void fetchAndOpenFile(final Project project, final String revision, final VirtualFile virtualFile,
             final int line, final int column, @Nullable final OpenFileDescriptorAction action) {
-        final String niceFileMessage = virtualFile.getName() + " (rev: " + revision + ") from VCS";
+
+		final String niceFileMessage = virtualFile != null?virtualFile.getName():"" + " (rev: " + revision + ") from VCS";
         new Task.Backgroundable(project, "Fetching file " + niceFileMessage, false) {
 
             private OpenFileDescriptor ofd;
