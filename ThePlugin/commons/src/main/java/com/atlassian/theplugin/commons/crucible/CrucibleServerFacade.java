@@ -117,7 +117,7 @@ public interface CrucibleServerFacade extends ProductServerFacade {
     GeneralComment addGeneralComment(Server server, PermId permId, GeneralComment comment) 
             throws RemoteApiException, ServerPasswordNotProvidedException;
 
-    VersionedComment addVersionedComment(Server server, PermId permId, VersionedComment comment)
+    VersionedComment addVersionedComment(Server server, PermId permId, PermId riId, VersionedComment comment)
             throws RemoteApiException, ServerPasswordNotProvidedException;
     
     void updateGeneralComment(Server server, PermId id, GeneralComment comment)
