@@ -66,4 +66,7 @@ public class CrucibleReviewActionListener {
 
 	public void createdGeneralComment(ReviewData review, GeneralComment comment) {
 	}
+
+	public void aboutToAddVersionedComment(ReviewData review, CrucibleFileInfo file, VersionedCommentBean comment) {
+	}
 }
