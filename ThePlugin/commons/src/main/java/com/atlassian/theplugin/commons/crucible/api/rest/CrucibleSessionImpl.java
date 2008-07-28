@@ -902,7 +902,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         }
     }
 
-    public VersionedComment addVersionedComment(PermId id, VersionedComment comment) throws RemoteApiException {
+    public VersionedComment addVersionedComment(PermId id, PermId riId, VersionedComment comment) throws RemoteApiException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Calling method without calling login() first");
         }
@@ -910,7 +910,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         Document request = CrucibleRestXmlHelper.prepareVersionedComment(comment);
 
         String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + REVIEW_ITEMS + "/"
-                + comment.getReviewItemId().getId() + COMMENTS;
+                + riId.getId() + COMMENTS;
         try {
             Document doc = retrievePostResponse(requestUrl, request);
 
