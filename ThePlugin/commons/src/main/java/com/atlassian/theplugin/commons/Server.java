@@ -21,9 +21,7 @@ import java.util.Collection;
 
 /**
  * Bamboo server configuration.
- * User: sginter
- * Date: Jan 10, 2008
- * Time: 12:04:40 PM
+ * @author sginter
  */
 public interface Server {
 	long getUid();

@@ -960,7 +960,8 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         }
     }
 
-	public VersionedComment addVersionedCommentReply(PermId id, PermId cId, VersionedComment comment) throws RemoteApiException {
+	public VersionedComment addVersionedCommentReply(PermId id, PermId cId, VersionedComment comment)
+            throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
 		}

@@ -46,11 +46,13 @@ public class PasswordDialog extends JDialog implements LoginDataProvided {
 // call onCancel() when cross is clicked
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
+			@Override
+            public void windowClosing(WindowEvent e) {
 				onCancel();
 			}
 		});
 		lblCommand.setText("<html><p>Please provide password to connect \"" + this.server.getName() + "\" server:</p> <p><i>" + this.server.getUrlString() + "</i></p></html>");
+        userName.setText(server.getUserName());
 // call onCancel() on ESCAPE
 		passwordPanel.registerKeyboardAction(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -60,7 +62,8 @@ public class PasswordDialog extends JDialog implements LoginDataProvided {
 
 		testConnectionButton.addActionListener(new TestConnectionListener(new Connector() {
 
-			public void connect() throws ThePluginException {
+			@Override
+            public void connect() throws ThePluginException {
 				this.validate();
 				try {
 					serverFacade.testServerConnection(
@@ -89,10 +92,6 @@ public class PasswordDialog extends JDialog implements LoginDataProvided {
 
 	public Boolean getShouldPasswordBeStored() {
 		return chkRememberPassword.isSelected();
-	}
-
-	public void setUserName(String anUsername) {
-		this.userName.setText(anUsername);
 	}
 
 	public String getUserName() {
