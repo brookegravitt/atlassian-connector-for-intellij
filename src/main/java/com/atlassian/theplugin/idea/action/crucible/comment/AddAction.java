@@ -39,6 +39,8 @@ public class AddAction extends AnAction {
 		boolean enabled = node != null;
 		if (node instanceof VersionedCommentTreeNode) {
 			enabled = !((VersionedCommentTreeNode) node).getComment().isReply();
+		} else if (node instanceof GeneralCommentTreeNode) {
+			enabled = !((GeneralCommentTreeNode) node).getComment().isReply();
 		}
 		e.getPresentation().setEnabled(enabled);
 	}
