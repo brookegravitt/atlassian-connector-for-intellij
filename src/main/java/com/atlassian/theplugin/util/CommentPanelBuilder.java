@@ -36,10 +36,10 @@ public final class CommentPanelBuilder {
 	private static final Color NOT_MINE_FILE_COMMENT_HEADER_COLOR = new Color(255, 224, 224);
 	private static final Color NOT_MINE_FILE_COMMENT_BODY_COLOR = new Color(234, 255, 255);
 
-	private static final Color MINE_GENERAL_COMMENT_HEADER_COLOR = new Color(239, 224, 255);
-	private static final Color MINE_GENERAL_COMMENT_BODY_COLOR = new Color(234, 255, 255);
-	private static final Color MINE_FILE_COMMENT_HEADER_COLOR = new Color(255, 224, 224);
-	private static final Color MINE_FILE_COMMENT_BODY_COLOR = new Color(234, 255, 255);
+	private static final Color MINE_GENERAL_COMMENT_HEADER_COLOR = new Color(0x99, 0x99, 0x99);
+	private static final Color MINE_GENERAL_COMMENT_BODY_COLOR = new Color(0xDD, 0xDD, 0xDD);
+	private static final Color MINE_FILE_COMMENT_HEADER_COLOR = new Color(0x99, 0x99, 0x99);
+	private static final Color MINE_FILE_COMMENT_BODY_COLOR = new Color(0xDD, 0xDD, 0xDD);
 
     private CommentPanelBuilder() {
         // this is utility class
