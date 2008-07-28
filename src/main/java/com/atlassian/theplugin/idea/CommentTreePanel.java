@@ -17,24 +17,26 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.ui.AtlassianToolbar;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.file.FileNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.FileNameNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralSectionNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.file.FileNode;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.ui.UIUtil;
 
 import javax.swing.*;
-import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.util.List;
 
@@ -55,7 +57,6 @@ public class CommentTreePanel extends JPanel {
 	private Project project;
 
 	public CommentTreePanel(Project project) {
-		super();
 		this.project = project;
 		IdeaHelper.getReviewActionEventBroker().registerListener(crucibleAgent);
 		initialize();
@@ -72,7 +73,8 @@ public class CommentTreePanel extends JPanel {
 
 	private void addGeneralCommentTree(AtlassianTreeNode root, final ReviewData review,
 									   GeneralComment generalComment, int depth) {
-		GeneralCommentTreeNode commentNode = new GeneralCommentTreeNode(review, generalComment, AtlassianClickAction.EMPTY_ACTION);
+		GeneralCommentTreeNode commentNode
+                = new GeneralCommentTreeNode(review, generalComment, AtlassianClickAction.EMPTY_ACTION);
 		root.addNode(commentNode);
 		for (GeneralComment comment : generalComment.getReplies()) {
 			addGeneralCommentTree(commentNode, review, comment, depth + 1);
@@ -80,8 +82,7 @@ public class CommentTreePanel extends JPanel {
 	}
 
 	private void addVersionedCommentTree(AtlassianTreeNode root, final ReviewData review,
-										 final CrucibleFileInfo file, VersionedComment versionedComment,
-										 int depth) {
+            final CrucibleFileInfo file, VersionedComment versionedComment, int depth) {
 		VersionedCommentTreeNode commentNode = new VersionedCommentTreeNode(review, file, versionedComment,
 				AtlassianClickAction.EMPTY_ACTION);
 		root.addNode(commentNode);
@@ -142,7 +143,8 @@ public class CommentTreePanel extends JPanel {
 					TreeModel model = commentTree.getModel();
 					AtlassianTreeNode root = (AtlassianTreeNode) model.getRoot();
 					AtlassianTreeNode node = locateNode(root, new NodeSearchAlgorithm() {
-						public boolean check(AtlassianTreeNode node1) {
+						@Override
+                        public boolean check(AtlassianTreeNode node1) {
 							return node1 instanceof GeneralSectionNode;
 						}
 					});
@@ -155,9 +157,11 @@ public class CommentTreePanel extends JPanel {
 		public void createdGeneralComment(final ReviewData review, final GeneralComment comment) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
-					AtlassianTreeNode newCommentNode = new GeneralCommentTreeNode(review, comment, AtlassianClickAction.EMPTY_ACTION);
+					AtlassianTreeNode newCommentNode
+                            = new GeneralCommentTreeNode(review, comment, AtlassianClickAction.EMPTY_ACTION);
 					addNewNode(new NodeSearchAlgorithm() {
-						public boolean check(AtlassianTreeNode node) {
+						@Override
+                        public boolean check(AtlassianTreeNode node) {
 							return node instanceof GeneralSectionNode;
 						}
 					}, newCommentNode);
@@ -167,11 +171,13 @@ public class CommentTreePanel extends JPanel {
 		}
 
 		@Override
-		public void createdGeneralCommentReply(final ReviewData review, final GeneralComment parentComment, final GeneralComment comment) {
+		public void createdGeneralCommentReply(final ReviewData review, final GeneralComment parentComment,
+                final GeneralComment comment) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					addNewNode(new NodeSearchAlgorithm() {
-						public boolean check(AtlassianTreeNode node) {
+						@Override
+                        public boolean check(AtlassianTreeNode node) {
 							if (node instanceof GeneralCommentTreeNode) {
 								GeneralCommentTreeNode vnode = (GeneralCommentTreeNode) node;
 								if (vnode.getReview().equals(review) && vnode.getComment().equals(parentComment)) {
@@ -187,11 +193,13 @@ public class CommentTreePanel extends JPanel {
 		}
 
 		@Override
-		public void createdVersionedComment(final ReviewData review, final CrucibleFileInfo file, final VersionedComment comment) {
+		public void createdVersionedComment(final ReviewData review, final CrucibleFileInfo file,
+                final VersionedComment comment) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					addNewNode(new NodeSearchAlgorithm() {
-						public boolean check(AtlassianTreeNode node) {
+						@Override
+                        public boolean check(AtlassianTreeNode node) {
 							if (node instanceof FileNameNode) {
 								FileNameNode vnode = (FileNameNode) node;
 								if (vnode.getReview().equals(review)
@@ -213,7 +221,8 @@ public class CommentTreePanel extends JPanel {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					addNewNode(new NodeSearchAlgorithm() {
-						public boolean check(AtlassianTreeNode node) {
+						@Override
+                        public boolean check(AtlassianTreeNode node) {
 							if (node instanceof VersionedCommentTreeNode) {
 								VersionedCommentTreeNode vnode = (VersionedCommentTreeNode) node;
 								if (vnode.getReview().equals(review)
