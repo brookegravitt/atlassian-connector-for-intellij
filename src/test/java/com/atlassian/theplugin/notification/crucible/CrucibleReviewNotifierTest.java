@@ -88,7 +88,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
                 return false;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
-            public User getUser() {
+            public User getAuthor() {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
@@ -173,7 +173,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
                 return false;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
-            public User getUser() {
+            public User getAuthor() {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
@@ -493,7 +493,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
                 return false;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
-            public User getUser() {
+            public User getAuthor() {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
@@ -601,7 +601,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
                 return false;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
-            public User getUser() {
+            public User getAuthor() {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
