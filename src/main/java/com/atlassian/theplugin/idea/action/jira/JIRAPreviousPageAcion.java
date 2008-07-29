@@ -24,7 +24,7 @@ import com.intellij.openapi.util.IconLoader;
 public class JIRAPreviousPageAcion extends AnAction {
 	private static final String DEFAULT_ICON = "/actions/back.png";
 
-	public JIRAPreviousPageAcion(){
+	public JIRAPreviousPageAcion() {
 		getTemplatePresentation().setIcon(IconLoader.getIcon(DEFAULT_ICON));
 		getTemplatePresentation().setText("Previous results page");
 	}

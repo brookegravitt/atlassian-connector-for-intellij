@@ -85,10 +85,6 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
         selectedIssue = ((JiraIssueAdapter) selectedObject).getIssue();
     }
 
-	public static JIRAToolWindowPanel findInstance(Project project){
-		return project.getUserData(WINDOW_PROJECT_KEY);
-	}
-
 	public static JIRAToolWindowPanel getInstance(Project project, ProjectConfigurationBean projectConfigurationBean) {
 
         JIRAToolWindowPanel window = project.getUserData(WINDOW_PROJECT_KEY);

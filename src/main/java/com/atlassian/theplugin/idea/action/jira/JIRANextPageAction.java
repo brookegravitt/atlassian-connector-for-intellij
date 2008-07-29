@@ -31,7 +31,7 @@ import com.intellij.openapi.util.IconLoader;
 public class JIRANextPageAction extends AnAction {
 	private static final String DEFAULT_ICON = "/actions/forward.png";
 
-	public JIRANextPageAction(){
+	public JIRANextPageAction() {
 		getTemplatePresentation().setIcon(IconLoader.getIcon(DEFAULT_ICON));
 		getTemplatePresentation().setText("Next results page");
 	}
