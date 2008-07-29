@@ -1,9 +1,8 @@
 package com.atlassian.theplugin.idea.crucible.events;
 
+import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
-import com.atlassian.theplugin.idea.CrucibleBottomToolWindowPanel;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 
 /**
  * Created by IntelliJ IDEA.
