@@ -19,8 +19,15 @@ package com.atlassian.theplugin.idea.action.jira;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.util.IconLoader;
 
 public class JIRAPreviousPageAcion extends AnAction {
+	private static final String DEFAULT_ICON = "/actions/back.png";
+
+	public JIRAPreviousPageAcion(){
+		getTemplatePresentation().setIcon(IconLoader.getIcon(DEFAULT_ICON));
+		getTemplatePresentation().setText("Previous results page");
+	}
 	public void actionPerformed(AnActionEvent event) {
 		IdeaHelper.getJIRAToolWindowPanel(event).prevPage();
 	}
