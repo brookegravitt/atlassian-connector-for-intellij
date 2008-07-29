@@ -19,7 +19,6 @@ package com.atlassian.theplugin.idea;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
 
-import javax.swing.plaf.TreeUI;
 import javax.swing.tree.TreeCellRenderer;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
