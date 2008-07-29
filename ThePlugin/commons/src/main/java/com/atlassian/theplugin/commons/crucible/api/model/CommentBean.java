@@ -54,8 +54,8 @@ public class CommentBean implements Comment {
 		setDefectApproved(bean.isDefectApproved());
 		setDefectRaised(bean.isDefectRaised());
 		setDeleted(bean.isDeleted());
-		setUser(bean.getUser());
-		setUser(bean.getUser());
+		setAuthor(bean.getAuthor());
+		setAuthor(bean.getAuthor());
 		setReply(bean.isReply());
 	}
 
@@ -115,11 +115,11 @@ public class CommentBean implements Comment {
 		this.defectApproved = defectApproved;
 	}
 
-	public User getUser() {
+	public User getAuthor() {
 		return user;
 	}
 
-	public void setUser(User user) {
+	public void setAuthor(User user) {
 		this.user = user;
 	}
 

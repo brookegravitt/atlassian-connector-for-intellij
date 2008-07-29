@@ -34,6 +34,6 @@ public class NewReplyCommentNotification extends AbstractReviewNotification {
     }
 
     public String getPresentationMessage() {
-        return "New reply added by " + reply.getUser().getDisplayName();
+        return "New reply added by " + reply.getAuthor().getDisplayName();
     }
 }

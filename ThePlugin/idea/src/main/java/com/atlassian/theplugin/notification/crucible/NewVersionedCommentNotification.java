@@ -32,6 +32,6 @@ public class NewVersionedCommentNotification extends AbstractReviewNotification 
     }
 
     public String getPresentationMessage() {
-        return "New comment added by " + comment.getUser().getDisplayName();
+        return "New comment added by " + comment.getAuthor().getDisplayName();
     }
 }
