@@ -105,6 +105,7 @@ public final class IdeaHelper {
 		if (p == null) {
 			return null;
 		}
+
 		com.intellij.openapi.wm.ToolWindow tw = getToolWindow(p);
 		Content content = tw.getContentManager().findContent(PluginToolWindow.ToolWindowPanels.JIRA.toString());
         if (content == null) {
@@ -123,6 +124,7 @@ public final class IdeaHelper {
             return null;
         }
         return (JIRAToolWindowPanel) content.getComponent();
+
 	}
 
 

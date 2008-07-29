@@ -23,7 +23,7 @@ import com.atlassian.theplugin.configuration.JiraFiltersBean;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.configuration.ProjectToolWindowTableConfiguration;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.action.jira.RunJIRAActionAction;
+import com.atlassian.theplugin.idea.action.jira.*;
 import com.atlassian.theplugin.idea.jira.table.JIRATableColumnProviderImpl;
 import com.atlassian.theplugin.idea.jira.table.columns.*;
 import com.atlassian.theplugin.idea.ui.AbstractTableToolWindowPanel;
@@ -85,8 +85,11 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
         selectedIssue = ((JiraIssueAdapter) selectedObject).getIssue();
     }
 
+	public static JIRAToolWindowPanel findInstance(Project project){
+		return project.getUserData(WINDOW_PROJECT_KEY);
+	}
 
-    public static JIRAToolWindowPanel getInstance(Project project, ProjectConfigurationBean projectConfigurationBean) {
+	public static JIRAToolWindowPanel getInstance(Project project, ProjectConfigurationBean projectConfigurationBean) {
 
         JIRAToolWindowPanel window = project.getUserData(WINDOW_PROJECT_KEY);
 
@@ -456,10 +459,19 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
 
     private void createFilterToolBar() {
         ActionManager actionManager = ActionManager.getInstance();
-        ActionGroup filterToolBar = (ActionGroup) actionManager.getAction("ThePlugin.JIRA.FilterToolBar");
-        filterToolbar = actionManager.createActionToolbar("atlassian.toolwindow.filterToolBar",
+		DefaultActionGroup filterToolBar = new DefaultActionGroup("ThePlugin.JIRA.FilterToolBar" + project.getName(), false);
+
+		filterToolBar.add(new FilterTypeAction());
+		filterToolBar.add(new SavedFilterComboAction());
+		filterToolBar.add(new JIRAShowIssuesFilterAction());
+		filterToolBar.addSeparator();
+		filterToolBar.add(new JIRAPreviousPageAcion());
+		filterToolBar.add(new JIRANextPageAction());
+
+		filterToolbar = actionManager.createActionToolbar("atlassian.toolwindow.filterToolBar" + project.getName(),
                 filterToolBar, true);
-        toolBarPanel.add(filterToolbar.getComponent(), BorderLayout.CENTER);
+
+		toolBarPanel.add(filterToolbar.getComponent(), BorderLayout.CENTER);
         filterToolbarSetVisible(false);
     }
 

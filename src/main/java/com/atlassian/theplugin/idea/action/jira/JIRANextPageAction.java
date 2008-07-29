@@ -19,6 +19,7 @@ package com.atlassian.theplugin.idea.action.jira;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.util.IconLoader;
 
 /**
  * Created by IntelliJ IDEA.
@@ -28,6 +29,13 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  * To change this template use File | Settings | File Templates.
  */
 public class JIRANextPageAction extends AnAction {
+	private static final String DEFAULT_ICON = "/actions/forward.png";
+
+	public JIRANextPageAction(){
+		getTemplatePresentation().setIcon(IconLoader.getIcon(DEFAULT_ICON));
+		getTemplatePresentation().setText("Next results page");
+	}
+	
 	public void actionPerformed(AnActionEvent event) {
 		IdeaHelper.getJIRAToolWindowPanel(event).nextPage();
 	}

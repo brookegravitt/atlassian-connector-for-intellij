@@ -98,13 +98,8 @@ public class ThePluginProjectComponent implements
 	public ThePluginProjectComponent(Project project,
                                      CrucibleStatusChecker crucibleStatusChecker,
                                      ToolWindowManager toolWindowManager,
-                                     /*BambooStatusChecker bambooStatusChecker,*/
                                      PluginConfiguration pluginConfiguration,
-                                     /*BambooTableToolWindowPanel bambooToolWindowPanel,*/
-                                     /*CrucibleTableToolWindowPanel crucibleToolWindowPanel,*/
-                                     /*JIRAToolWindowPanel jiraToolWindowPanel,*/
-                                     ProjectConfigurationBean projectConfigurationBean
-                                     /*CrucibleServerFacade crucibleServerFacade*/) {
+                                     ProjectConfigurationBean projectConfigurationBean) {
 		this.project = project;
 		this.crucibleActionBroker = ReviewActionEventBroker.getInstance();
 		this.crucibleStatusChecker = crucibleStatusChecker;
@@ -185,21 +180,20 @@ public class ThePluginProjectComponent implements
             toolWindow.getIdeaToolWindow().setIcon(toolWindowIcon);
 
             // create tool window content
-            //Content bambooToolWindow = createBambooContent();
+
             toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.BAMBOO);
             toolWindow.showHidePanels();
             TableView.restore(projectConfigurationBean.getBambooConfiguration().getTableConfiguration(),
                     bambooToolWindowPanel.getTable());
 
-            //Content crucibleToolWindow = createCrucibleContent();
+
             toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.CRUCIBLE);
             toolWindow.showHidePanels();
 
-            //Content jiraToolWindow = createJiraContent();
+
             toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.JIRA);
             toolWindow.showHidePanels();
-            //PluginToolWindow.focusPanel(project, PluginToolWindow.ToolWindowPanels.JIRA);
-            //toolWindow.getIdeaToolWindow().getContentManager().setSelectedContent(jiraToolWindow);
+
 
 			toolWindow.registerBottomPanel(PluginToolWindow.ToolWindowPanels.CRUCIBLE_BOTTOM);
 			toolWindow.showHidePanels();
@@ -208,7 +202,6 @@ public class ThePluginProjectComponent implements
                     jiraToolWindowPanel.getTable());
 
             // add tool window bamboo content listener to bamboo checker thread
-            //toolWindowBambooListener = new StausIconBambooListener(bambooToolWindowPanel.getBambooContent());
             bambooStatusChecker.registerListener(bambooToolWindowPanel);
 
             // create Bamboo status bar icon
@@ -225,9 +218,7 @@ public class ThePluginProjectComponent implements
             tooltipBambooStatusListener = new BambooStatusTooltipListener(buildFailedToolTip, pluginConfiguration);
             bambooStatusChecker.registerListener(tooltipBambooStatusListener);
 
-            // add bamboo icon to status bar
-            //statusBar = WindowManager.getInstance().getStatusBar(project);
-            //statusBar.addCustomIndicationComponent(statusBarBambooIcon);
+            // add bamboo icon to status bar            
             statusBarBambooIcon.showOrHideIcon();
 
             // setup Crucible status checker and listeners
