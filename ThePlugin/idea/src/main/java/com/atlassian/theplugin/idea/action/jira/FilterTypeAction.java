@@ -24,7 +24,7 @@ import com.intellij.openapi.actionSystem.ex.CheckboxAction;
 public class FilterTypeAction extends CheckboxAction {
 	private boolean state;
 
-	public FilterTypeAction(){
+	public FilterTypeAction() {
 		getTemplatePresentation().setText("Use server filters");
 	}
 

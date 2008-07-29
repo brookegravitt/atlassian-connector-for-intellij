@@ -25,7 +25,7 @@ import com.intellij.openapi.util.IconLoader;
 public class JIRAShowIssuesFilterAction extends AnAction {
 	private static final String DEFAULT_ICON = "/ant/filter.png";
 
-	public JIRAShowIssuesFilterAction(){
+	public JIRAShowIssuesFilterAction() {
 		getTemplatePresentation().setIcon(IconLoader.getIcon(DEFAULT_ICON));
 		getTemplatePresentation().setText("Show JIRA filter dialog");
 	}
