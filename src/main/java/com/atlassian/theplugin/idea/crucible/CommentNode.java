@@ -48,7 +48,7 @@ public class CommentNode  extends DefaultMutableTreeNode {
 	}
 
 	public String toString() {
-		return generalComment.getMessage().substring(BEGIN_INDEX) + "(" + generalComment.getUser() + ")";
+		return generalComment.getMessage().substring(BEGIN_INDEX) + "(" + generalComment.getAuthor() + ")";
 	}
 
 	public boolean equals(Object o) {

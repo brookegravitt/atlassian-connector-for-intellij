@@ -82,8 +82,9 @@ public class CommentEditForm extends DialogWrapper {
 		saveAsDraftButton.setAction(getDraftAction());
 		saveAsDraftButton.setMnemonic('D');
 		cancelButton.setAction(getCancelAction());
+        commentText.setText(comment.getMessage());
 
-		defectCheckBox.addActionListener(new ActionListener() {
+        defectCheckBox.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent event) {
 				rankComboBox.setVisible(defectCheckBox.isSelected());
@@ -95,16 +96,20 @@ public class CommentEditForm extends DialogWrapper {
 		rankComboBox.setVisible(false);
 		classificationComboBox.setVisible(false);
 
-		if (comment.isReply()) {
-			defectCheckBox.setVisible(false);
-			setTitle("Reply to comment");
-		} else {
-			if (comment.getPermId() != null) {
-				setTitle("Edit comment");
-			} else {
-				setTitle("Add comment");
-			}
-		}
+        if (comment.isReply()) {
+            defectCheckBox.setVisible(false);
+            if (comment.getPermId() != null) {
+                setTitle("Edit Reply");
+            } else {
+                setTitle("Add Reply");
+            }
+        } else {
+            if (comment.getPermId() != null) {
+                setTitle("Edit Comment");
+            } else {
+                setTitle("Add Comment");
+            }
+        }
 
 		getOKAction().putValue(Action.NAME, "Post");
 	}

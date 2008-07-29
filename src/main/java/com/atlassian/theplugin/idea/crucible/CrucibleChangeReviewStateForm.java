@@ -404,7 +404,7 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 				generalComments = review.getGeneralComments().size();
 				versionedComments = review.getVersionedComments().size();
 				for (GeneralComment generalComment : review.getGeneralComments()) {
-					if (generalComment.getUser().equals(userName)) {
+					if (generalComment.getAuthor().equals(userName)) {
 						myGeneralComments++;
 						if (generalComment.isDraft()) {
 							myDrafts++;
@@ -425,7 +425,7 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 
 				}
 				for (VersionedComment comment : review.getVersionedComments()) {
-					if (comment.getUser().equals(userName)) {
+					if (comment.getAuthor().equals(userName)) {
 						myVersionedComments++;
 						if (comment.isDraft()) {
 							myDrafts++;
