@@ -30,13 +30,11 @@ public class JiraConfigurationBean extends AbstractServerConfigurationBean {
         super();
     }
 
-    public JiraConfigurationBean(ProductServerConfiguration cfg) {
+    public JiraConfigurationBean(JiraConfigurationBean cfg) {
 		super(cfg);
-		if (cfg instanceof JiraConfigurationBean) {
-			this.pollTime = ((JiraConfigurationBean) cfg).getPollTime();
-			this.displayIconDescription = ((JiraConfigurationBean) cfg).isDisplayIconDescription();
-		}
-	}
+        this.pollTime = ((JiraConfigurationBean) cfg).getPollTime();
+        this.displayIconDescription = ((JiraConfigurationBean) cfg).isDisplayIconDescription();
+    }
 
 	public int getPollTime() {
 		return pollTime;

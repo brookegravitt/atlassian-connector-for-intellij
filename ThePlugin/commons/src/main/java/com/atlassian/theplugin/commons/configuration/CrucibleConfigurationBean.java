@@ -24,12 +24,10 @@ public class CrucibleConfigurationBean extends AbstractServerConfigurationBean {
 		super();
     }
 
-	public CrucibleConfigurationBean(ProductServerConfiguration cfg) {
-		super(cfg);
-        if (cfg instanceof CrucibleConfigurationBean) {
-			this.crucibleTooltipOption = ((CrucibleConfigurationBean) cfg).getCrucibleTooltipOption();
-			this.pollTime = ((CrucibleConfigurationBean) cfg).getPollTime();
-        }
+	public CrucibleConfigurationBean(CrucibleConfigurationBean cfg) {
+        super(cfg);
+        crucibleTooltipOption = ((CrucibleConfigurationBean) cfg).getCrucibleTooltipOption();
+		pollTime = ((CrucibleConfigurationBean) cfg).getPollTime();
     }
 
 	public int getPollTime() {

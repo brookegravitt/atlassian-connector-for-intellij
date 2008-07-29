@@ -34,13 +34,11 @@ public class BambooConfigurationBean extends AbstractServerConfigurationBean {
         super();
     }
 
-	public BambooConfigurationBean(ProductServerConfiguration cfg) {
-		super(cfg);
-		if (cfg instanceof BambooConfigurationBean) {
-			this.bambooTooltipOption = ((BambooConfigurationBean) cfg).getBambooTooltipOption();
-			this.pollTime = ((BambooConfigurationBean) cfg).getPollTime();
-		}
-	}
+	public BambooConfigurationBean(BambooConfigurationBean cfg) {
+        super(cfg);
+        this.bambooTooltipOption = ((BambooConfigurationBean) cfg).getBambooTooltipOption();
+        this.pollTime = ((BambooConfigurationBean) cfg).getPollTime();
+    }
 
 	@Override
 	//@Transient
