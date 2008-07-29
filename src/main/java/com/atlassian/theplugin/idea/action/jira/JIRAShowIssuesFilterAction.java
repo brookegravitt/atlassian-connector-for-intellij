@@ -20,8 +20,15 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.util.IconLoader;
 
 public class JIRAShowIssuesFilterAction extends AnAction {
+	private static final String DEFAULT_ICON = "/ant/filter.png";
+
+	public JIRAShowIssuesFilterAction(){
+		getTemplatePresentation().setIcon(IconLoader.getIcon(DEFAULT_ICON));
+		getTemplatePresentation().setText("Show JIRA filter dialog");
+	}
 
 	public void actionPerformed(AnActionEvent e) {
 		

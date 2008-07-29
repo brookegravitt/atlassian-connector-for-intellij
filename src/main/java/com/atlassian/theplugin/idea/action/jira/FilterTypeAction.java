@@ -24,6 +24,10 @@ import com.intellij.openapi.actionSystem.ex.CheckboxAction;
 public class FilterTypeAction extends CheckboxAction {
 	private boolean state;
 
+	public FilterTypeAction(){
+		getTemplatePresentation().setText("Use server filters");
+	}
+
 	public boolean isSelected(AnActionEvent event) {
 		JIRAToolWindowPanel toolWindowPanel = IdeaHelper.getJIRAToolWindowPanel(event);
 		if (toolWindowPanel != null) {
@@ -45,6 +49,5 @@ public class FilterTypeAction extends CheckboxAction {
 			toolWindowPanel.refreshIssues();			
 		}
 	}
-
 
 }
