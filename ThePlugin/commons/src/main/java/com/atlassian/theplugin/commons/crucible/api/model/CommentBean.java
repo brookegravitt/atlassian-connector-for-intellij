@@ -32,7 +32,7 @@ public class CommentBean implements Comment {
 	private boolean deleted = false;
 	private boolean defectRaised = false;
 	private boolean defectApproved = false;
-	private User user = null;
+	private User author = null;
 	private Date createDate = new Date();
 
 
@@ -116,11 +116,11 @@ public class CommentBean implements Comment {
 	}
 
 	public User getAuthor() {
-		return user;
+		return author;
 	}
 
-	public void setAuthor(User user) {
-		this.user = user;
+	public void setAuthor(User author) {
+		this.author = author;
 	}
 
 	public Date getCreateDate() {
