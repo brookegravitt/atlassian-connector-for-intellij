@@ -16,8 +16,8 @@
 
 package com.atlassian.theplugin.commons.configuration;
 
-import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.util.HttpConfigurableAdapter;
 
 
@@ -60,9 +60,12 @@ public class PluginConfigurationBean implements PluginConfiguration {
 
 		this.setGeneralConfigurationData(new GeneralConfigurationBean(cfg.getGeneralConfigurationData()));
 
-		this.setBambooConfigurationData(new BambooConfigurationBean(cfg.getProductServers(ServerType.BAMBOO_SERVER)));
-        this.setCrucibleConfigurationData(new CrucibleConfigurationBean(cfg.getProductServers(ServerType.CRUCIBLE_SERVER)));
-        this.setJIRAConfigurationData(new JiraConfigurationBean(cfg.getProductServers(ServerType.JIRA_SERVER)));
+		this.setBambooConfigurationData(
+                new BambooConfigurationBean((BambooConfigurationBean) cfg.getProductServers(ServerType.BAMBOO_SERVER)));
+        this.setCrucibleConfigurationData(
+                new CrucibleConfigurationBean((CrucibleConfigurationBean) cfg.getProductServers(ServerType.CRUCIBLE_SERVER)));
+        this.setJIRAConfigurationData(
+                new JiraConfigurationBean((JiraConfigurationBean) cfg.getProductServers(ServerType.JIRA_SERVER)));
 		this.transientSetHttpConfigurable(cfg.transientGetHttpConfigurable());
 	}
 
