@@ -72,4 +72,23 @@ public class CrucibleReviewActionListener {
 
 	public void createdVersionedComment(ReviewData review, CrucibleFileInfo file, VersionedComment comment) {
 	}
+
+    public void aboutToUpdateVersionedComment(final ReviewData review, final CrucibleFileInfo file,
+            final VersionedComment comment) {
+    }
+
+    public void aboutToUpdateGeneralComment(final ReviewData review, final GeneralComment comment) {
+    }
+
+    public void updatedVersionedComment(final ReviewData review, final CrucibleFileInfo file, final VersionedComment comment) {
+    }
+
+    public void updatedGeneralComment(final ReviewData review, final GeneralComment comment) {
+    }
+
+    public void aboutToRemoveComment(final ReviewData review, final Comment comment) {
+    }
+
+    public void removedComment(final ReviewData review, final Comment comment) {
+    }
 }
