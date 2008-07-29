@@ -32,8 +32,8 @@ import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListen
 import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.atlassian.theplugin.idea.crucible.events.GeneralCommentAdded;
 import com.atlassian.theplugin.idea.crucible.events.GeneralCommentReplyAdded;
-import com.atlassian.theplugin.idea.crucible.events.VersionedCommentReplyAdded;
 import com.atlassian.theplugin.idea.crucible.events.VersionedCommentAdded;
+import com.atlassian.theplugin.idea.crucible.events.VersionedCommentReplyAdded;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Splitter;
@@ -42,23 +42,6 @@ import com.intellij.util.ui.UIUtil;
 
 import javax.swing.*;
 import java.awt.*;
-
-/**
- * Copyright (C) 2008 Atlassian
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 
 public final class CrucibleBottomToolWindowPanel extends JPanel implements ContentPanel {
 	private static final Key<CrucibleBottomToolWindowPanel> WINDOW_PROJECT_KEY
