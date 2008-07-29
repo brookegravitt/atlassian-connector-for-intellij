@@ -36,10 +36,10 @@ public final class CommentPanelBuilder {
 	private static final Color NOT_MINE_FILE_COMMENT_HEADER_COLOR = new Color(255, 224, 224);
 	private static final Color NOT_MINE_FILE_COMMENT_BODY_COLOR = new Color(234, 255, 255);
 
-	private static final Color MINE_GENERAL_COMMENT_HEADER_COLOR = new Color(0x99, 0x99, 0x99);
-	private static final Color MINE_GENERAL_COMMENT_BODY_COLOR = new Color(0xDD, 0xDD, 0xDD);
-	private static final Color MINE_FILE_COMMENT_HEADER_COLOR = new Color(0x99, 0x99, 0x99);
-	private static final Color MINE_FILE_COMMENT_BODY_COLOR = new Color(0xDD, 0xDD, 0xDD);
+	private static final Color MINE_GENERAL_COMMENT_HEADER_COLOR = new Color(0xE0, 0xFE, 0xFF);
+	private static final Color MINE_GENERAL_COMMENT_BODY_COLOR = new Color(0xEA, 0xFF, 0xFF);
+	private static final Color MINE_FILE_COMMENT_HEADER_COLOR = new Color(0xE0, 0xFE, 0xFF);
+	private static final Color MINE_FILE_COMMENT_BODY_COLOR = new Color(0xEA, 0xFF, 0xFF);
 
     private CommentPanelBuilder() {
         // this is utility class
@@ -53,7 +53,7 @@ public final class CommentPanelBuilder {
 		return new CommentPanel(review, comment) {
 			@Override
 			public Color getHeaderBackground() {
-				if (comment.getUser().equals(review.getServer().getUserName())) {
+				if (comment.getAuthor().getUserName().equals(review.getServer().getUserName())) {
 					return MINE_GENERAL_COMMENT_HEADER_COLOR;
 				}
 				return NOT_MINE_GENERAL_COMMENT_HEADER_COLOR;
@@ -62,7 +62,7 @@ public final class CommentPanelBuilder {
 
 			@Override
 			public Color getBodyBackground() {
-				if (comment.getUser().equals(review.getServer().getUserName())) {
+				if (comment.getAuthor().getUserName().equals(review.getServer().getUserName())) {
 					return MINE_GENERAL_COMMENT_BODY_COLOR;
 				}
 				return NOT_MINE_GENERAL_COMMENT_BODY_COLOR;
@@ -80,7 +80,7 @@ public final class CommentPanelBuilder {
 		return new CommentPanel(review, comment) {
 			@Override
 			public Color getHeaderBackground() {
-				if (comment.getUser().equals(review.getServer().getUserName())) {
+				if (comment.getAuthor().getUserName().equals(review.getServer().getUserName())) {
 					return MINE_FILE_COMMENT_HEADER_COLOR;
 				}
 				return NOT_MINE_FILE_COMMENT_HEADER_COLOR;
@@ -88,7 +88,7 @@ public final class CommentPanelBuilder {
 
 			@Override
 			public Color getBodyBackground() {
-				if (comment.getUser().equals(review.getServer().getUserName())) {
+				if (comment.getAuthor().getUserName().equals(review.getServer().getUserName())) {
 					return MINE_FILE_COMMENT_BODY_COLOR;
 				}
 				return NOT_MINE_FILE_COMMENT_BODY_COLOR;
@@ -97,7 +97,6 @@ public final class CommentPanelBuilder {
 	}
 
 	private abstract static class CommentPanel extends JPanel {
-		private static final Component EMPTY_LABEL = new JLabel();
 		private ReviewData review;
 		private Comment comment;
 		private static final CellConstraints AUTHOR_POS = new CellConstraints(2, 2);
@@ -105,6 +104,7 @@ public final class CommentPanelBuilder {
 		private static final CellConstraints RANKING_POS = new CellConstraints(6, 2);
 		private static final CellConstraints STATE_POS = new CellConstraints(8, 2);
 		private static final CellConstraints TOOLBAR_POS = new CellConstraints(10, 2);
+		private static final Color BORDER_COLOR = new Color(0xCC, 0xCC, 0xCC);
 
 		private CommentPanel(ReviewData review, Comment comment) {
 			super(new FormLayout("pref:grow",
@@ -122,6 +122,7 @@ public final class CommentPanelBuilder {
 			header.add(getRankingLabel(), RANKING_POS);
 			header.add(getStateLabel(), STATE_POS);
 			header.add(getToolBar(), TOOLBAR_POS);
+			header.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 1));
 			header.setBackground(getHeaderBackground());
 //			header.setBorder(new RoundedBorder(getHeaderBackground(), Color.black, getForeground(), 8, 1));
 
@@ -129,7 +130,6 @@ public final class CommentPanelBuilder {
 			JPanel body = new JPanel(new FormLayout("4dlu, pref:grow, 4dlu", "2dlu, pref:grow, 2dlu"));
 			body.add(getMessageBody(), cc.xy(2, 2));
 			body.setBackground(getBodyBackground());
-
 			add(header, cc.xy(1, 1));
 			add(body, cc.xy(1, 2));
 		}

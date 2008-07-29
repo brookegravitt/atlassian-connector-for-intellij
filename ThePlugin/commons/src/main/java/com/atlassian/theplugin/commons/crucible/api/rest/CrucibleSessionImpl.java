@@ -849,7 +849,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         }
     }
 
-    public void removeGeneralComment(PermId id, GeneralComment comment) throws RemoteApiException {
+    public void removeComment(PermId id, Comment comment) throws RemoteApiException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Calling method without calling login() first");
         }
@@ -863,7 +863,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         }
     }
 
-    public void updateGeneralComment(PermId id, GeneralComment comment) throws RemoteApiException {
+    public void updateComment(PermId id, Comment comment) throws RemoteApiException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Calling method without calling login() first");
         }

@@ -30,10 +30,7 @@ import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
-import com.atlassian.theplugin.idea.crucible.events.GeneralCommentAdded;
-import com.atlassian.theplugin.idea.crucible.events.GeneralCommentReplyAdded;
-import com.atlassian.theplugin.idea.crucible.events.VersionedCommentAdded;
-import com.atlassian.theplugin.idea.crucible.events.VersionedCommentReplyAdded;
+import com.atlassian.theplugin.idea.crucible.events.*;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Splitter;
@@ -44,190 +41,227 @@ import javax.swing.*;
 import java.awt.*;
 
 public final class CrucibleBottomToolWindowPanel extends JPanel implements ContentPanel {
-	private static final Key<CrucibleBottomToolWindowPanel> WINDOW_PROJECT_KEY
-			= Key.create(CrucibleBottomToolWindowPanel.class.getName());
-	private Project project;
-	private static final float SPLIT_RATIO = 0.3f;
-	private ProjectConfigurationBean projectConfiguration;
-	protected static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
-	protected ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
-	private CrucibleVersion crucibleVersion = CrucibleVersion.UNKNOWN;
-	private static ReviewItemTreePanel reviewItemTreePanel;
-	private CommentTreePanel reviewComentsPanel;
-	private static CrucibleReviewActionListener tabManager;
-	private static final int LEFT_WIDTH = 150;
-	private static final int LEFT_HEIGHT = 250;
-	private CrucibleReviewActionListener reviewFileAgent = new MyAgent();
+    private static final Key<CrucibleBottomToolWindowPanel> WINDOW_PROJECT_KEY
+            = Key.create(CrucibleBottomToolWindowPanel.class.getName());
+    private Project project;
+    private static final float SPLIT_RATIO = 0.3f;
+    private ProjectConfigurationBean projectConfiguration;
+    protected static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
+    protected ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
+    private CrucibleVersion crucibleVersion = CrucibleVersion.UNKNOWN;
+    private static ReviewItemTreePanel reviewItemTreePanel;
+    private CommentTreePanel reviewComentsPanel;
+    private static CrucibleReviewActionListener tabManager;
+    private static final int LEFT_WIDTH = 150;
+    private static final int LEFT_HEIGHT = 250;
+    private CrucibleReviewActionListener reviewFileAgent = new MyAgent();
 
 
-	protected String getInitialMessage() {
+    protected String getInitialMessage() {
 
-		return "Waiting for Crucible review info.";
-	}
+        return "Waiting for Crucible review info.";
+    }
 
-	public static CrucibleBottomToolWindowPanel getInstance(Project project,
-															ProjectConfigurationBean projectConfigurationBean) {
+    public static CrucibleBottomToolWindowPanel getInstance(Project project,
+            ProjectConfigurationBean projectConfigurationBean) {
 
-		CrucibleBottomToolWindowPanel window = project.getUserData(WINDOW_PROJECT_KEY);
+        CrucibleBottomToolWindowPanel window = project.getUserData(WINDOW_PROJECT_KEY);
 
-		if (window == null) {
-			window = new CrucibleBottomToolWindowPanel(project, projectConfigurationBean);
-			project.putUserData(WINDOW_PROJECT_KEY, window);
-		}
-		return window;
-	}
+        if (window == null) {
+            window = new CrucibleBottomToolWindowPanel(project, projectConfigurationBean);
+            project.putUserData(WINDOW_PROJECT_KEY, window);
+        }
+        return window;
+    }
 
-	private CrucibleBottomToolWindowPanel(Project project, ProjectConfigurationBean projectConfigurationBean) {
-		super(new BorderLayout());
+    private CrucibleBottomToolWindowPanel(Project project, ProjectConfigurationBean projectConfigurationBean) {
+        super(new BorderLayout());
 
-		this.project = project;
-		this.projectConfiguration = projectConfigurationBean;
-
-
-		setBackground(UIUtil.getTreeTextBackground());
-		reviewItemTreePanel = ReviewItemTreePanel.getInstance(projectConfigurationBean);
-		Splitter splitter = new Splitter(false, SPLIT_RATIO);
-		splitter.setShowDividerControls(true);
-		JPanel leftPanel = new JPanel();
-		leftPanel.setBackground(UIUtil.getTreeTextBackground());
-		leftPanel.setLayout(new BorderLayout());
-		leftPanel.setMinimumSize(new Dimension(LEFT_WIDTH, LEFT_HEIGHT));
-		leftPanel.add(reviewItemTreePanel);
-		reviewItemTreePanel.getProgressAnimation().configure(leftPanel, reviewItemTreePanel, BorderLayout.CENTER);
-		splitter.setFirstComponent(leftPanel);
-		splitter.setHonorComponentsMinimumSize(true);
-		reviewComentsPanel = new CommentTreePanel(project);
-		splitter.setSecondComponent(reviewComentsPanel);
-		add(splitter, BorderLayout.CENTER);
+        this.project = project;
+        this.projectConfiguration = projectConfigurationBean;
 
 
-		progressAnimation.configure(this, reviewItemTreePanel, BorderLayout.CENTER);
-
-	}
-
-
-	protected JScrollPane setupPane(JEditorPane pane, String initialText) {
-		pane.setText(initialText);
-		JScrollPane scrollPane = new JScrollPane(pane,
-				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		scrollPane.setWheelScrollingEnabled(true);
-		return scrollPane;
-	}
-
-	protected String wrapBody(String s) {
-		return "<html>" + HtmlBambooStatusListenerNotUsed.BODY_WITH_STYLE + s + "</body></html>";
-
-	}
-
-	protected void setStatusMessage(String msg) {
-		setStatusMessage(msg, false);
-	}
-
-	protected void setStatusMessage(String msg, boolean isError) {
-		//editorPane.setBackground(isError ? Color.RED : Color.WHITE);
-		//editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">" + msg + "</td></tr></table>"));
-	}
+        setBackground(UIUtil.getTreeTextBackground());
+        reviewItemTreePanel = ReviewItemTreePanel.getInstance(projectConfigurationBean);
+        Splitter splitter = new Splitter(false, SPLIT_RATIO);
+        splitter.setShowDividerControls(true);
+        JPanel leftPanel = new JPanel();
+        leftPanel.setBackground(UIUtil.getTreeTextBackground());
+        leftPanel.setLayout(new BorderLayout());
+        leftPanel.setMinimumSize(new Dimension(LEFT_WIDTH, LEFT_HEIGHT));
+        leftPanel.add(reviewItemTreePanel);
+        reviewItemTreePanel.getProgressAnimation().configure(leftPanel, reviewItemTreePanel, BorderLayout.CENTER);
+        splitter.setFirstComponent(leftPanel);
+        splitter.setHonorComponentsMinimumSize(true);
+        reviewComentsPanel = new CommentTreePanel(project);
+        splitter.setSecondComponent(reviewComentsPanel);
+        add(splitter, BorderLayout.CENTER);
 
 
-	public ProgressAnimationProvider getProgressAnimation() {
-		return progressAnimation;
-	}
+        progressAnimation.configure(this, reviewItemTreePanel, BorderLayout.CENTER);
 
-	public CrucibleVersion getCrucibleVersion() {
-		return crucibleVersion;
-	}
+    }
 
 
-	public void resetState() {
-	}
+    protected JScrollPane setupPane(JEditorPane pane, String initialText) {
+        pane.setText(initialText);
+        JScrollPane scrollPane = new JScrollPane(pane,
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setWheelScrollingEnabled(true);
+        return scrollPane;
+    }
 
-	public ProjectConfigurationBean getProjectConfiguration() {
-		return projectConfiguration;
-	}
+    protected String wrapBody(String s) {
+        return "<html>" + HtmlBambooStatusListenerNotUsed.BODY_WITH_STYLE + s + "</body></html>";
 
-	public boolean isModified() {
-		return false;  //To change body of implemented methods use File | Settings | File Templates.
-	}
+    }
 
-	public String getTitle() {
-		return null;  //To change body of implemented methods use File | Settings | File Templates.
-	}
+    protected void setStatusMessage(String msg) {
+        setStatusMessage(msg, false);
+    }
 
-	public void getData() {
-		//To change body of implemented methods use File | Settings | File Templates.
-	}
-
-	public void setData(PluginConfiguration config) {
-		//To change body of implemented methods use File | Settings | File Templates.
-	}
-
-	private final class MyAgent extends CrucibleReviewActionListener {
-		private final CrucibleServerFacade facade = CrucibleServerFacadeImpl.getInstance();
-		private final ReviewActionEventBroker eventBroker = IdeaHelper.getReviewActionEventBroker();
-
-		private MyAgent() {
-			eventBroker.registerListener(this);
-		}
-
-		@Override
-		public void showFile(final ReviewData review, final CrucibleFileInfo file) {
-			CrucibleHelper.showVirtualFileWithComments(project, review, file);
-		}
+    protected void setStatusMessage(String msg, boolean isError) {
+        //editorPane.setBackground(isError ? Color.RED : Color.WHITE);
+        //editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">" + msg + "</td></tr></table>"));
+    }
 
 
-		@Override
-		public void aboutToAddGeneralComment(ReviewData review, GeneralCommentBean newComment) {
-			try {
-				GeneralComment comment = facade.addGeneralComment(review.getServer(), review.getPermId(),
-						newComment);
-				eventBroker.trigger(new GeneralCommentAdded(this, review, comment));
-			} catch (RemoteApiException e) {
-				IdeaHelper.handleRemoteApiException(project, e);
-			} catch (ServerPasswordNotProvidedException e) {
-				IdeaHelper.handleMissingPassword(e);
-			}
-		}
+    public ProgressAnimationProvider getProgressAnimation() {
+        return progressAnimation;
+    }
 
-		@Override
-		public void aboutToAddGeneralCommentReply(ReviewData review, GeneralComment parentComment,
-												  GeneralCommentBean newComment) {
-			try {
-				GeneralComment comment = facade.addGeneralCommentReply(review.getServer(), review.getPermId(),
-						parentComment.getPermId(), newComment);
-				eventBroker.trigger(new GeneralCommentReplyAdded(this, review, parentComment, comment));
-			} catch (RemoteApiException e) {
-				IdeaHelper.handleRemoteApiException(project, e);
-			} catch (ServerPasswordNotProvidedException e) {
-				IdeaHelper.handleMissingPassword(e);
-			}
-		}
+    public CrucibleVersion getCrucibleVersion() {
+        return crucibleVersion;
+    }
 
-		@Override
-		public void aboutToAddVersionedComment(ReviewData review, CrucibleFileInfo file, VersionedCommentBean comment) {
-			try {
-				VersionedComment newComment = facade.addVersionedComment(review.getServer(), review.getPermId(),
-						file.getPermId(), comment);
-				eventBroker.trigger(new VersionedCommentAdded(this, review, file, newComment));
-			} catch (RemoteApiException e) {
-				IdeaHelper.handleRemoteApiException(project, e);
-			} catch (ServerPasswordNotProvidedException e) {
-				IdeaHelper.handleMissingPassword(e);
-			}
-		}
 
-		@Override
-		public void aboutToAddVersionedCommentReply(ReviewData review, CrucibleFileInfo file,
-													VersionedComment parentComment, VersionedCommentBean comment) {
+    public void resetState() {
+    }
 
-			try {
-				VersionedComment newComment = facade.addVersionedCommentReply(review.getServer(), review.getPermId(),
-						parentComment.getPermId(), comment);
-				eventBroker.trigger(new VersionedCommentReplyAdded(this, review, file, parentComment, newComment));
-			} catch (RemoteApiException e) {
-				IdeaHelper.handleRemoteApiException(project, e);
-			} catch (ServerPasswordNotProvidedException e) {
-				IdeaHelper.handleMissingPassword(e);
-			}
-		}
-	}
+    public ProjectConfigurationBean getProjectConfiguration() {
+        return projectConfiguration;
+    }
+
+    public boolean isModified() {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public String getTitle() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void getData() {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void setData(PluginConfiguration config) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    private final class MyAgent extends CrucibleReviewActionListener {
+        private final CrucibleServerFacade facade = CrucibleServerFacadeImpl.getInstance();
+        private final ReviewActionEventBroker eventBroker = IdeaHelper.getReviewActionEventBroker();
+
+        private MyAgent() {
+            eventBroker.registerListener(this);
+        }
+
+        @Override
+        public void showFile(final ReviewData review, final CrucibleFileInfo file) {
+            CrucibleHelper.showVirtualFileWithComments(project, review, file);
+        }
+
+
+        @Override
+        public void aboutToAddGeneralComment(ReviewData review, GeneralCommentBean newComment) {
+            try {
+                GeneralComment comment = facade.addGeneralComment(review.getServer(), review.getPermId(),
+                        newComment);
+                eventBroker.trigger(new GeneralCommentAdded(this, review, comment));
+            } catch (RemoteApiException e) {
+                IdeaHelper.handleRemoteApiException(project, e);
+            } catch (ServerPasswordNotProvidedException e) {
+                IdeaHelper.handleMissingPassword(e);
+            }
+        }
+
+        @Override
+        public void aboutToAddGeneralCommentReply(ReviewData review, GeneralComment parentComment,
+                GeneralCommentBean newComment) {
+            try {
+                GeneralComment comment = facade.addGeneralCommentReply(review.getServer(), review.getPermId(),
+                        parentComment.getPermId(), newComment);
+                eventBroker.trigger(new GeneralCommentReplyAdded(this, review, parentComment, comment));
+            } catch (RemoteApiException e) {
+                IdeaHelper.handleRemoteApiException(project, e);
+            } catch (ServerPasswordNotProvidedException e) {
+                IdeaHelper.handleMissingPassword(e);
+            }
+        }
+
+        @Override
+        public void aboutToAddVersionedComment(ReviewData review, CrucibleFileInfo file, VersionedCommentBean comment) {
+            try {
+                VersionedComment newComment = facade.addVersionedComment(review.getServer(), review.getPermId(),
+                        file.getPermId(), comment);
+                eventBroker.trigger(new VersionedCommentAdded(this, review, file, newComment));
+            } catch (RemoteApiException e) {
+                IdeaHelper.handleRemoteApiException(project, e);
+            } catch (ServerPasswordNotProvidedException e) {
+                IdeaHelper.handleMissingPassword(e);
+            }
+        }
+
+        @Override
+        public void aboutToAddVersionedCommentReply(ReviewData review, CrucibleFileInfo file,
+                VersionedComment parentComment, VersionedCommentBean comment) {
+
+            try {
+                VersionedComment newComment = facade.addVersionedCommentReply(review.getServer(), review.getPermId(),
+                        parentComment.getPermId(), comment);
+                eventBroker.trigger(new VersionedCommentReplyAdded(this, review, file, parentComment, newComment));
+            } catch (RemoteApiException e) {
+                IdeaHelper.handleRemoteApiException(project, e);
+            } catch (ServerPasswordNotProvidedException e) {
+                IdeaHelper.handleMissingPassword(e);
+            }
+        }
+
+        @Override
+        public void aboutToUpdateVersionedComment(final ReviewData review, final CrucibleFileInfo file,
+                final VersionedComment comment) {
+            try {
+                facade.updateComment(review.getServer(), review.getPermId(), comment);
+                eventBroker.trigger(new VersionedCommentUpdated(this, review, file, comment));
+            } catch (RemoteApiException e) {
+                IdeaHelper.handleRemoteApiException(project, e);
+            } catch (ServerPasswordNotProvidedException e) {
+                IdeaHelper.handleMissingPassword(e);
+            }
+        }
+
+        @Override
+        public void aboutToUpdateGeneralComment(final ReviewData review, final GeneralComment comment) {
+            try {
+                facade.updateComment(review.getServer(), review.getPermId(), comment);
+                eventBroker.trigger(new GeneralCommentUpdated(this, review, comment));
+            } catch (RemoteApiException e) {
+                IdeaHelper.handleRemoteApiException(project, e);
+            } catch (ServerPasswordNotProvidedException e) {
+                IdeaHelper.handleMissingPassword(e);
+            }
+        }
+
+        @Override
+        public void aboutToRemoveComment(final ReviewData review, final Comment comment) {
+            try {
+                facade.removeComment(review.getServer(), review.getPermId(), comment);
+                eventBroker.trigger(new CommentRemoved(this, review, comment));
+            } catch (RemoteApiException e) {
+                IdeaHelper.handleRemoteApiException(project, e);
+            } catch (ServerPasswordNotProvidedException e) {
+                IdeaHelper.handleMissingPassword(e);
+            }
+        }
+    }
 }

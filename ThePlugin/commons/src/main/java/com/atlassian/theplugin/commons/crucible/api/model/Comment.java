@@ -34,7 +34,7 @@ public interface Comment {
 
 	boolean isReply();
 
-	User getUser();
+	User getAuthor();
 
 	Date getCreateDate();
 

@@ -457,7 +457,7 @@ public final class CrucibleRestXmlHelper {
     private static void parseComment(CommentBean commentBean, Element reviewCommentNode) {
 
         for (Element element : getChildElements(reviewCommentNode, "user")) {
-            commentBean.setUser(parseUserNode(element));
+            commentBean.setAuthor(parseUserNode(element));
         }
         commentBean.setMessage(getChildText(reviewCommentNode, "message"));
         commentBean.setDefectRaised(Boolean.parseBoolean(getChildText(reviewCommentNode, "defectRaised")));
@@ -502,7 +502,7 @@ public final class CrucibleRestXmlHelper {
         addTag(commentNode, "createDate", strangeDate);
         Element userElement = new Element("user");
         getContent(commentNode).add(userElement);
-        addTag(userElement, "userName", comment.getUser().getUserName());
+        addTag(userElement, "userName", comment.getAuthor().getUserName());
         addTag(commentNode, "defectRaised", Boolean.toString(comment.isDefectRaised()));
         addTag(commentNode, "defectApproved", Boolean.toString(comment.isDefectApproved()));
         addTag(commentNode, "deleted", Boolean.toString(comment.isDeleted()));

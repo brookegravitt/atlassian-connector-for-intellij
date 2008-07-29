@@ -5,6 +5,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.CommentTreePanel;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
@@ -17,32 +18,43 @@ import com.atlassian.theplugin.idea.ui.tree.comment.FileNameNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralSectionNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
-import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
-import javax.swing.tree.TreePath;
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class AddAction extends AnAction {
+public class AddAction extends AbstractCommentAction {
+	private static final String REPLY_TEXT = "Reply";
+	private static final String COMMENT_TEXT = "Comment";
+
 	@Override
 	public void update(AnActionEvent e) {
-		com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode node = getSelectedNode(e);
+		AtlassianTreeNode node = getSelectedNode(e);
+		String text = COMMENT_TEXT;
 		boolean enabled = node != null;
 		if (node instanceof VersionedCommentTreeNode) {
-			enabled = !((VersionedCommentTreeNode) node).getComment().isReply();
+			if (((VersionedCommentTreeNode) node).getComment().isReply()) {
+				enabled = false;
+			} else {
+				text = REPLY_TEXT;
+			}
+
 		} else if (node instanceof GeneralCommentTreeNode) {
-			enabled = !((GeneralCommentTreeNode) node).getComment().isReply();
+			if (((GeneralCommentTreeNode) node).getComment().isReply()) {
+				enabled = false;
+			} else {
+				text = REPLY_TEXT;
+			}
 		}
 		e.getPresentation().setEnabled(enabled);
+        if (e.getPlace().equals(CommentTreePanel.MENU_PLACE)) {
+            e.getPresentation().setVisible(enabled);
+        }
+        e.getPresentation().setText(text);
 	}
 
 	@Override
@@ -81,7 +93,7 @@ public class AddAction extends AnAction {
 		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
 			newComment.setCreateDate(new Date());
 			newComment.setReviewItemId(review.getPermId());
-			newComment.setUser(new UserBean(review.getServer().getUserName()));
+			newComment.setAuthor(new UserBean(review.getServer().getUserName()));
 			IdeaHelper.getReviewActionEventBroker().trigger(
 					new VersionedCommentAboutToAdd(CrucibleReviewActionListener.ANONYMOUS,
 							review, file, newComment));
@@ -90,7 +102,7 @@ public class AddAction extends AnAction {
 	}
 
 	private void addReplyToVersionedComment(Project project, ReviewData review,
-            CrucibleFileInfo file, VersionedComment comment) {
+											CrucibleFileInfo file, VersionedComment comment) {
 		List<CustomFieldDef> metrics = new ArrayList<CustomFieldDef>();
 		VersionedCommentBean newComment = new VersionedCommentBean();
 		newComment.setReply(true);
@@ -108,7 +120,7 @@ public class AddAction extends AnAction {
 			newComment.setToEndLine(parentComment.getToEndLine());
 			newComment.setCreateDate(new Date());
 			newComment.setReviewItemId(review.getPermId());
-			newComment.setUser(new UserBean(review.getServer().getUserName()));
+			newComment.setAuthor(new UserBean(review.getServer().getUserName()));
 			IdeaHelper.getReviewActionEventBroker().trigger(
 					new VersionedCommentReplyAboutToAdd(CrucibleReviewActionListener.ANONYMOUS,
 							review, file, parentComment, newComment));
@@ -124,7 +136,7 @@ public class AddAction extends AnAction {
 		dialog.show();
 		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
 			newComment.setCreateDate(new Date());
-			newComment.setUser(new UserBean(review.getServer().getUserName()));
+			newComment.setAuthor(new UserBean(review.getServer().getUserName()));
 			IdeaHelper.getReviewActionEventBroker().trigger(
 					new GeneralCommentAboutToAdd(CrucibleReviewActionListener.ANONYMOUS,
 							review, newComment));
@@ -149,39 +161,11 @@ public class AddAction extends AnAction {
 		dialog.show();
 		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
 			newComment.setCreateDate(new Date());
-			newComment.setUser(new UserBean(review.getServer().getUserName()));
+			newComment.setAuthor(new UserBean(review.getServer().getUserName()));
 			IdeaHelper.getReviewActionEventBroker().trigger(
 					new GeneralCommentReplyAboutToAdd(CrucibleReviewActionListener.ANONYMOUS,
 							review, parentComment, newComment));
 		}
-	}
-
-	@Nullable
-	private TreePath getSelectedTreePath(AnActionEvent e) {
-		DataContext dataContext = e.getDataContext();
-		Component component = DataKeys.CONTEXT_COMPONENT.getData(dataContext);
-		if (!(component instanceof JTree)) {
-			return null;
-		}
-		final JTree theTree = (JTree) component;
-		return theTree.getSelectionPath();
-	}
-
-	@Nullable
-	protected AtlassianTreeNode getSelectedNode(AnActionEvent e) {
-		TreePath treepath = getSelectedTreePath(e);
-		if (treepath == null) {
-			return null;
-		}
-		return getSelectedNode(treepath);
-	}
-
-	private AtlassianTreeNode getSelectedNode(TreePath path) {
-		Object o = path.getLastPathComponent();
-		if (o instanceof AtlassianTreeNode) {
-			return (AtlassianTreeNode) o;
-		}
-		return null;
 	}
 
 
