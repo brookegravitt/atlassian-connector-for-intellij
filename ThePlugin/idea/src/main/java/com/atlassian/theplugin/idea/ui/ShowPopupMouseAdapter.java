@@ -35,11 +35,13 @@ import java.awt.event.MouseEvent;
 public class ShowPopupMouseAdapter extends MouseAdapter {
 	private final String popupMenuName;
 	private AtlassianTableView tableView;
+    private final String place;
 
-	public ShowPopupMouseAdapter(AtlassianTableView tableView, String popupMenuName) {
+    public ShowPopupMouseAdapter(AtlassianTableView tableView, String popupMenuName, String place) {
 		this.tableView = tableView;
 		this.popupMenuName = popupMenuName;
-	}
+        this.place = place;
+    }
 
 	public void mousePressed(MouseEvent e) {
 		maybeShowPopup(e);
@@ -63,7 +65,7 @@ public class ShowPopupMouseAdapter extends MouseAdapter {
 			actionGroup.addAll(configActionGroup);
 
 			final ActionPopupMenu popup =
-					ActionManager.getInstance().createActionPopupMenu("Context menu", actionGroup);
+					ActionManager.getInstance().createActionPopupMenu(place, actionGroup);
 
 			final JPopupMenu jPopupMenu = popup.getComponent();
 			jPopupMenu.show(e.getComponent(), e.getX(), e.getY());

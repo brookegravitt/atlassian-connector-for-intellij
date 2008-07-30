@@ -73,7 +73,7 @@ public class AtlassianTableView extends TableView {
 							  final String popupMenuPlace, final String popupMenuName) {
 		this(columnProvider, listTableModel, storage);
 		if (popupMenuPlace != null && popupMenuName != null && popupMenuName.length() > 0) {
-			addMouseListener(new ShowPopupMouseAdapter(this, popupMenuName));
+			addMouseListener(new ShowPopupMouseAdapter(this, popupMenuName, popupMenuPlace));
 		}
 		addMouseListener(new ItemSelectedMouseAdapter(this));
 	}
