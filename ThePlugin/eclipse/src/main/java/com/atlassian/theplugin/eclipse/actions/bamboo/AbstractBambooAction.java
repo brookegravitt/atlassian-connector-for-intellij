@@ -27,11 +27,11 @@ import com.atlassian.theplugin.eclipse.util.PluginUtil;
 import com.atlassian.theplugin.eclipse.view.bamboo.BambooBuildAdapterEclipse;
 import com.atlassian.theplugin.eclipse.view.bamboo.BambooToolWindow;
 
-public abstract class BambooAction extends Action {
+public abstract class AbstractBambooAction extends Action {
 	protected BambooServerFacade bambooFacade;
 	protected BambooToolWindow bambooToolWindow;
 	
-	public BambooAction(BambooToolWindow bambooToolWindowTable) {
+	public AbstractBambooAction(BambooToolWindow bambooToolWindowTable) {
 		
 		this.bambooToolWindow = bambooToolWindowTable;
 		

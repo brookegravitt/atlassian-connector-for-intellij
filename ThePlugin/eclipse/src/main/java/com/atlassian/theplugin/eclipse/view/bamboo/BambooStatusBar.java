@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.eclipse.view.bamboo;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.texteditor.StatusLineContributionItem;
 
@@ -38,8 +39,12 @@ public class BambooStatusBar extends StatusLineContributionItem implements Bambo
 		setActionHandler(new Action() {
 			public void run() {
 				try {
-					Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage().
-						showView(Activator.PLUGIN_ID + ".viewmain");
+					IWorkbenchPage page = 
+						Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
+					
+					//if (page.isPartVisible(n))
+					
+					page.showView(Activator.PLUGIN_ID + ".view.bamboo.BambooToolWindow");
 				} catch (PartInitException e) {
 					e.printStackTrace();
 				} 

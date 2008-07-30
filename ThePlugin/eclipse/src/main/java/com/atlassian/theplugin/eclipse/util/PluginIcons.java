@@ -50,7 +50,7 @@ public class PluginIcons {
 			imageRegistry.put(ICON_BAMBOO_REFRESH, ImageDescriptor.createFromFile(PluginUtil.class, "/icons/refresh.gif"));
 			
 			// TODO change get_full_log icon
-			imageRegistry.put(ICON_BAMBOO_GET_FULL_LOG, ImageDescriptor.createFromFile(PluginUtil.class, "/icons/bamboo_comment.png"));
+			imageRegistry.put(ICON_BAMBOO_GET_FULL_LOG, ImageDescriptor.createFromFile(PluginUtil.class, "/icons/bamboo_log.gif"));
 			
 			imageRegistry.put(ICON_BAMBOO_REFRESH, ImageDescriptor.createFromFile(PluginUtil.class, "/icons/refresh.gif"));
 			

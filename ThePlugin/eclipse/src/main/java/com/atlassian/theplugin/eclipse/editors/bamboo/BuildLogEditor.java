@@ -9,6 +9,8 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 
+import com.atlassian.theplugin.eclipse.preferences.Activator;
+
 public class BuildLogEditor extends EditorPart {
 
 	private Text text;
@@ -21,7 +23,7 @@ public class BuildLogEditor extends EditorPart {
 	@Override
 	public void createPartControl(Composite parent) {
 		text = new Text(parent, SWT.MULTI | SWT.READ_ONLY | SWT.V_SCROLL | SWT.H_SCROLL);
-		//text.setBackground(new Color());
+		text.setBackground(Activator.getDefault().getDisplay().getSystemColor(SWT.COLOR_WHITE));
 		
 		if (getEditorInput() != null) {
 			BuildLogEditorInput editorInput = (BuildLogEditorInput) getEditorInput();
