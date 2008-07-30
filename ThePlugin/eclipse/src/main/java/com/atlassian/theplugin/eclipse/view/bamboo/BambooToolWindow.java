@@ -48,6 +48,8 @@ public class BambooToolWindow extends ViewPart {
 	
 	private BambooStatusTooltipListener popupListener;
 	private ShowBuildLogAction showBuilLogAction;
+	private SubStatusLineManager statusLineManager;
+	private BambooStatusBar bambooStatusLine;
 
 	/**
 	 * 
@@ -91,12 +93,13 @@ public class BambooToolWindow extends ViewPart {
 		toolBarManager.add(new Separator());
 		toolBarManager.add(new RefreshBuildsListAction());
 		
-		// create and add status bar as a bamboo checker listener
-		SubStatusLineManager slm = (SubStatusLineManager) getViewSite().getActionBars().getStatusLineManager();
-		BambooStatusBar bambooStatusLine = new BambooStatusBar();
-		slm.getParent().add(bambooStatusLine);
+		statusLineManager = (SubStatusLineManager) getViewSite().getActionBars().getStatusLineManager();
+		bambooStatusLine = new BambooStatusBar();
+		statusLineManager.getParent().add(bambooStatusLine);
 		Activator.getDefault().getBambooChecker().registerListener(
 				new StausIconBambooListener(bambooStatusLine, Activator.getDefault().getPluginConfiguration()));
+		
+		Activator.getDefault().rescheduleStatusCheckers();
 		
 		//getViewSite().getActionBars().updateActionBars();
 		
@@ -151,6 +154,9 @@ public class BambooToolWindow extends ViewPart {
 		if (bambooToolWindowContent != null) {
 			Activator.getDefault().getBambooChecker().unregisterListener(bambooToolWindowContent);
 		}
+		
+		statusLineManager.getParent().remove(bambooStatusLine);
+		statusLineManager.getParent().update(true);
 		
 	}
 
