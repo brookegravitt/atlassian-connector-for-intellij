@@ -150,9 +150,10 @@ public class PluginToolWindow extends ContentManagerAdapter {
 				
 			for (ToolWindowPanels entry : bottomPanels) {
 			try {
-                if (bottomIdeaToolWindow != null){
+                if (bottomIdeaToolWindow != null) {
                 ServerType serverType = Util.toolWindowPanelsToServerType(entry);
-                    if (ConfigurationFactory.getConfiguration().getProductServers(serverType).transientGetServers().size() > 0) {
+                    if (ConfigurationFactory.getConfiguration().
+                            getProductServers(serverType).transientGetServers().size() > 0) {
                         if (bottomIdeaToolWindow.getContentManager().findContent(entry.toString()) == null) {
 
                             // show tab
@@ -160,7 +161,8 @@ public class PluginToolWindow extends ContentManagerAdapter {
 
                             switch (entry) {
                                 case CRUCIBLE_BOTTOM:
-                                    content = project.getComponent(ThePluginProjectComponent.class).createCrucibleBottomContent();
+                                    content = project.getComponent(ThePluginProjectComponent.class).
+                                                                                        createCrucibleBottomContent();
                                     break;
 
                                 default:
