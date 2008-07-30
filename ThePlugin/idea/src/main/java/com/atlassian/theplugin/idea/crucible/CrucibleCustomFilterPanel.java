@@ -97,7 +97,8 @@ public class CrucibleCustomFilterPanel extends JPanel {
             this.filter = filter;
             server = new ServerBean();
             server.setUid(filter.getServerUid());
-            server = (ServerBean) ConfigurationFactory.getConfiguration().getProductServers(ServerType.CRUCIBLE_SERVER).transientGetServer(server);
+            server = (ServerBean) ConfigurationFactory.getConfiguration().getProductServers(ServerType.CRUCIBLE_SERVER)
+                    .transientGetServer(server);
             filterTitle.setText((filter.getTitle()));
         }
 
@@ -106,8 +107,8 @@ public class CrucibleCustomFilterPanel extends JPanel {
             serverComboBox.setSelectedIndex(0);
         }
 
-		 fillServerRelatedCombos(getSelectedServer());		
-	}
+        fillServerRelatedCombos(getSelectedServer());
+    }
 
     private Server getSelectedServer() {
         Server server = null;
@@ -124,7 +125,7 @@ public class CrucibleCustomFilterPanel extends JPanel {
     public CustomFilterBean getFilter() {
         Server s = ((ServerComboBoxItem) this.serverComboBox.getSelectedItem()).getServer();
         filter.setServerUid(s.getUid());
-        
+
         filter.setTitle(filterTitle.getText());
         if (!((ProjectComboBoxItem) projectComboBox.getSelectedItem()).getProject().getName().equals(anyProject.getName())) {
             filter.setProjectKey(((ProjectComboBoxItem) projectComboBox.getSelectedItem()).getProject().getKey());
@@ -135,10 +136,12 @@ public class CrucibleCustomFilterPanel extends JPanel {
         if (!((UserComboBoxItem) creatorComboBox.getSelectedItem()).getUserData().getUserName().equals(anyUser.getUserName())) {
             filter.setCreator(((UserComboBoxItem) creatorComboBox.getSelectedItem()).getUserData().getUserName());
         }
-        if (!((UserComboBoxItem) moderatorComboBox.getSelectedItem()).getUserData().getUserName().equals(anyUser.getUserName())) {
+        if (!((UserComboBoxItem) moderatorComboBox.getSelectedItem()).getUserData().getUserName()
+                .equals(anyUser.getUserName())) {
             filter.setModerator(((UserComboBoxItem) moderatorComboBox.getSelectedItem()).getUserData().getUserName());
         }
-        if (!((UserComboBoxItem) reviewerComboBox.getSelectedItem()).getUserData().getUserName().equals(anyUser.getUserName())) {
+        if (!((UserComboBoxItem) reviewerComboBox.getSelectedItem()).getUserData().getUserName()
+                .equals(anyUser.getUserName())) {
             filter.setReviewer(((UserComboBoxItem) reviewerComboBox.getSelectedItem()).getUserData().getUserName());
         }
 
@@ -340,7 +343,8 @@ public class CrucibleCustomFilterPanel extends JPanel {
      */
     private void $$$setupUI$$$() {
         rootPanel = new JPanel();
-        rootPanel.setLayout(new FormLayout("fill:p:grow,fill:max(d;4px):noGrow", "top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:19px:noGrow,center:max(d;4px):noGrow,center:max(d;4px):noGrow,center:33px:noGrow,center:18px:noGrow,center:31px:noGrow,center:19px:noGrow,center:30px:noGrow,center:19px:noGrow,center:30px:noGrow,center:17px:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,top:4dlu:noGrow,center:24px:noGrow,center:23px:noGrow,center:25px:noGrow,center:max(d;4px):noGrow,center:25px:noGrow,center:24px:noGrow,center:24px:noGrow,center:max(d;4px):noGrow"));
+        rootPanel.setLayout(new FormLayout("fill:p:grow,fill:max(d;4px):noGrow",
+                "top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:19px:noGrow,center:max(d;4px):noGrow,center:max(d;4px):noGrow,center:33px:noGrow,center:18px:noGrow,center:31px:noGrow,center:19px:noGrow,center:30px:noGrow,center:19px:noGrow,center:30px:noGrow,center:17px:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,top:4dlu:noGrow,center:24px:noGrow,center:23px:noGrow,center:25px:noGrow,center:max(d;4px):noGrow,center:25px:noGrow,center:24px:noGrow,center:24px:noGrow,center:max(d;4px):noGrow"));
         filterTitle = new JTextField();
         CellConstraints cc = new CellConstraints();
         rootPanel.add(filterTitle, cc.xyw(1, 7, 2, CellConstraints.FILL, CellConstraints.DEFAULT));

@@ -23,14 +23,8 @@ import com.atlassian.theplugin.idea.crucible.events.ShowReviewEvent;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
-import com.atlassian.theplugin.jira.api.JIRAAction;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.ui.popup.PopupChooserBuilder;
-import com.intellij.openapi.ui.popup.JBPopupFactory;
-
-import javax.swing.*;
-
 
 public class GetCommentsAction extends TableSelectedAction  {    
     public GetCommentsAction(){
@@ -44,9 +38,9 @@ public class GetCommentsAction extends TableSelectedAction  {
 
 	public void update(AnActionEvent e) {
 		super.update(e);
-        if (e != null && e.getPlace() != null && IdeaHelper.getCurrentProject(e) != null &&
-                e.getPlace().equals(CrucibleTableToolWindowPanel.PLACE_PREFIX + IdeaHelper.getCurrentProject(e).getName())) {
-            if (!VcsIdeaHelper.isUnderVcsControl(e)){
+        if (e != null && e.getPlace() != null && IdeaHelper.getCurrentProject(e) != null
+                && e.getPlace().equals(CrucibleTableToolWindowPanel.PLACE_PREFIX + IdeaHelper.getCurrentProject(e).getName())) {
+            if (!VcsIdeaHelper.isUnderVcsControl(e)) {
                 getTemplatePresentation().setEnabled(false);
                 e.getPresentation().setEnabled(false);
             } else {

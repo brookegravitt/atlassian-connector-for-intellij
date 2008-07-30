@@ -49,15 +49,15 @@ public final class VcsIdeaHelper {
     private VcsIdeaHelper() {
     }
 
-    public static boolean isUnderVcsControl(DataContext context){
+    public static boolean isUnderVcsControl(DataContext context) {
         return isUnderVcsControl(IdeaHelper.getCurrentProject(context));
     }
     
-    public static boolean isUnderVcsControl(AnActionEvent action){
+    public static boolean isUnderVcsControl(AnActionEvent action) {
 		return isUnderVcsControl(action.getDataContext());
 	}
 
-    public static boolean isUnderVcsControl(Project project){
+    public static boolean isUnderVcsControl(Project project) {
          ProjectLevelVcsManager plm = ProjectLevelVcsManager.getInstance(project);
 
              if (plm != null && plm.getAllActiveVcss().length > 0) {
