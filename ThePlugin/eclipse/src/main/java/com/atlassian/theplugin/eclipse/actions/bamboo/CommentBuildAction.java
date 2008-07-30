@@ -31,7 +31,7 @@ import com.atlassian.theplugin.eclipse.util.PluginIcons;
 import com.atlassian.theplugin.eclipse.view.bamboo.BambooBuildAdapterEclipse;
 import com.atlassian.theplugin.eclipse.view.bamboo.BambooToolWindow;
 
-public class CommentBuildAction extends BambooAction {
+public class CommentBuildAction extends AbstractBambooAction {
 	
 	private static final String COMMENT_BUILD = "Comment Build";
 

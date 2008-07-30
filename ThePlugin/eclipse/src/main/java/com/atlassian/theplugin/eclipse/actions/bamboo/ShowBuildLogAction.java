@@ -19,7 +19,7 @@ import com.atlassian.theplugin.eclipse.util.PluginIcons;
 import com.atlassian.theplugin.eclipse.view.bamboo.BambooBuildAdapterEclipse;
 import com.atlassian.theplugin.eclipse.view.bamboo.BambooToolWindow;
 
-public class ShowBuildLogAction extends BambooAction {
+public class ShowBuildLogAction extends AbstractBambooAction {
 
 	private static final String SHOW_BUILD_LOG = "Show Build Log";
 

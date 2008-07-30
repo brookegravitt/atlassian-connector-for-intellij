@@ -28,7 +28,7 @@ import com.atlassian.theplugin.eclipse.util.PluginIcons;
 import com.atlassian.theplugin.eclipse.view.bamboo.BambooBuildAdapterEclipse;
 import com.atlassian.theplugin.eclipse.view.bamboo.BambooToolWindow;
 
-public class RunBuildAction extends BambooAction {
+public class RunBuildAction extends AbstractBambooAction {
 	
 	private static final String RUN_BUILD = "Run Build";
 	

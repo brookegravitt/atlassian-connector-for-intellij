@@ -31,7 +31,7 @@ import com.atlassian.theplugin.eclipse.util.PluginIcons;
 import com.atlassian.theplugin.eclipse.view.bamboo.BambooBuildAdapterEclipse;
 import com.atlassian.theplugin.eclipse.view.bamboo.BambooToolWindow;
 
-public class LabelBuildAction extends BambooAction {
+public class LabelBuildAction extends AbstractBambooAction {
 	
 	private static final String LABEL_BUILD = "Label Build";
 
