@@ -134,9 +134,10 @@ public final class VcsIdeaHelper {
         return null;
     }
 
-    @Nullable public static AbstractVcsVirtualFile getVcsVirtualFile(Project project, VirtualFile virtualFile,
+    @Nullable
+    public static AbstractVcsVirtualFile getVcsVirtualFile(Project project, VirtualFile virtualFile,
             String revision, boolean loadLazily) throws VcsException {
-        
+
         AbstractVcs vcs = VcsUtil.getVcsFor(project, virtualFile);
         if (vcs == null) {
             return null;
@@ -149,7 +150,7 @@ public final class VcsIdeaHelper {
     @Nullable
     private static AbstractVcsVirtualFile getVcsVirtualFileImpl(VirtualFile virtualFile, AbstractVcs vcs,
             VcsRevisionNumber vcsRevisionNumber, boolean loadLazily) throws VcsException {
-        
+
         ContentRevision contentRevision = vcs.getDiffProvider().createFileContent(vcsRevisionNumber, virtualFile);
         if (contentRevision == null) {
             return null;
@@ -239,6 +240,61 @@ public final class VcsIdeaHelper {
     }
 
     /**
+     * Must be run from UI thread!
+     * {
+     *
+     * @param project      project
+     * @param fromRevision start VCS revision of the file
+     * @param toRevision   to VCS revision of the file
+     * @param virtualFile  file to fetch from VCS
+     * @param line         line to go to
+     * @param column       column to go to
+     * @param action
+     */
+    public static void fetchAndOpenFileWithDiffs(final Project project, final String fromRevision, final String toRevision,
+            @NotNull final VirtualFile virtualFile,
+            final int line, final int column, @Nullable final OpenDiffAction action) {
+
+        final String niceFileMessage = virtualFile.getName() + " (rev: " + fromRevision + ", " + toRevision + ") from VCS";
+        new Task.Backgroundable(project, "Fetching files " + niceFileMessage, false) {
+            private OpenFileDescriptor displayDescriptor;
+            private AbstractVcsVirtualFile referenceVirtualFile;
+
+            private VcsException exception;
+
+            @Override
+            public void run(ProgressIndicator indicator) {
+
+                final AbstractVcsVirtualFile displayVirtualFile;
+                try {
+                    referenceVirtualFile = getVcsVirtualFile(project, virtualFile, fromRevision, false);
+                    displayVirtualFile = getVcsVirtualFile(project, virtualFile, toRevision, false);
+                } catch (VcsException e) {
+                    exception = e;
+                    return;
+                }
+                displayDescriptor = new OpenFileDescriptor(project, displayVirtualFile, line, column);
+            }
+
+            @Override
+            public void onSuccess() {
+                if (exception != null) {
+                    Messages.showErrorDialog(project, "The following error has occured while fetching "
+                            + niceFileMessage + ":\n" + exception.getMessage(), "Error fetching file");
+                    return;
+                }
+                if (displayDescriptor != null) {
+                    if (action != null) {
+                        action.run(displayDescriptor, referenceVirtualFile);
+                    }
+                    displayDescriptor.navigate(true);
+                }
+
+            }
+        }.queue();
+    }
+
+    /**
      * Is file is currently open it does not try to refetch it
      *
      * @param project
@@ -298,6 +354,70 @@ public final class VcsIdeaHelper {
 
     }
 
+    /**
+     * Is file is currently open it does not try to refetch it
+     *
+     * @param project
+     * @param filePath
+     * @param fileRevision
+     * @param line
+     * @param col
+     * @param action
+     */
+    public static void openFileWithDiffs(final Project project, String filePath, @NotNull final String fileRevision,
+            final String toRevision,
+            final int line, final int col, @Nullable final OpenDiffAction action) {
+
+        VirtualFile baseDir = project.getBaseDir();
+        String baseUrl = getRepositoryUrlForFile(baseDir);
+
+        if (baseUrl != null && filePath.startsWith(baseUrl)) {
+
+            String relUrl = filePath.substring(baseUrl.length());
+
+//			VirtualFile vfl = null;
+//			try {
+//				vfl = (VcsVirtualFile)VfsUtil.findFileByURL(new URL(filePath), VirtualFileManager.getInstance());
+//			} catch (MalformedURLException e) {
+//				e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//			}
+
+            final VirtualFile vfl = VfsUtil.findRelativeFile(relUrl, baseDir);
+
+//            // we do have the same file revision opened in our project
+//            if (fileRevision.equals(currentRevision.asString())) {
+//                ApplicationManager.getApplication().invokeLater(new Runnable() {
+//                    public void run() {
+//                            if (action != null) {
+//                                action.run(new OpenFileDescriptor(project, vfl, line, col));
+//                            }
+//                    }
+//                });
+//                return;
+//            }
+
+            // we do have the same file revision opened in our project
+
+            final VirtualFile theFile = findOpenFile(project, vfl, toRevision);
+            ApplicationManager.getApplication().invokeLater(new Runnable() {
+                public void run() {
+                    if (theFile == null) {
+                        fetchAndOpenFileWithDiffs(project, fileRevision, toRevision, vfl, line, col, action);
+//                newFile = VcsIdeaHelper.getVcsVirtualFile(project, vfl, fileRevision, false);
+                    }
+
+                    /*
+                    else {
+                        if (action != null) {
+                            action.run(new OpenFileDescriptor(project, theFile, line, col));
+                        }
+                    }
+                    */
+                }
+            });
+        }
+
+    }
 
     public static void openFile(final Project project, @NotNull final VirtualFile virtualFile,
             @NotNull final String fileRevision, final int line, final int col,
@@ -342,9 +462,13 @@ public final class VcsIdeaHelper {
         /**
          * Will be always invoked in UI thread
          *
-         * @param ofd description which will be passed to this action 
+         * @param ofd description which will be passed to this action
          */
         void run(OpenFileDescriptor ofd);
+    }
+
+    public interface OpenDiffAction {
+        void run(OpenFileDescriptor displayFile, VirtualFile referenceDocument);
     }
 
 }

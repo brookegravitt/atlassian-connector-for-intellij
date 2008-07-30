@@ -17,23 +17,22 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.markup.HighlighterLayer;
-import com.intellij.openapi.editor.markup.RangeHighlighter;
-import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.diff.FileContent;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * Created by IntelliJ IDEA.
@@ -51,52 +50,6 @@ public final class CrucibleHelper {
     private CrucibleHelper() {
     }
 
-
-    public static void showVirtualFileWithComments(final Project project, final CrucibleFileInfo reviewItem,
-            final Collection<VersionedComment> fileComments) {
-
-        int line = 1;
-
-        if (!fileComments.isEmpty()) {
-            line = fileComments.iterator().next().getFromStartLine();
-        }
-
-        VcsIdeaHelper.openFile(project, reviewItem.getFileDescriptor().getAbsoluteUrl(),
-                reviewItem.getFileDescriptor().getRevision(), line, 1, new VcsIdeaHelper.OpenFileDescriptorAction() {
-
-            public void run(OpenFileDescriptor ofd) {
-                FileEditorManager fem = FileEditorManager.getInstance(project);
-                Editor editor = fem.openTextEditor(ofd, true);
-                if (editor == null) {
-                    return;
-                }
-                TextAttributes textAttributes = new TextAttributes();
-                textAttributes.setBackgroundColor(VERSIONED_COMMENT_BACKGROUND_COLOR);
-                highlightCommentsInEditor(project, editor, reviewItem, fileComments, textAttributes);
-            }
-        });
-    }
-
-//    @Nullable
-//    private static Editor openFileInEditor(Project project, CrucibleFileInfo reviewItem, int line,
-//            VcsIdeaHelper.OpenFileDescriptorAction action) {
-//        try {
-//            OpenFileDescriptor ofd = openFile(project, reviewItem.getFileDescriptor().getAbsoluteUrl(),
-//                    reviewItem.getFileDescriptor().getRevision(), line, 1, action);
-//            if (ofd == null) {
-//                return null;
-//            }
-//            FileEditorManager fem = FileEditorManager.getInstance(project);
-//            return fem.openTextEditor(ofd, true);
-//
-//        } catch (VcsException e) {
-//            Messages.showErrorDialog(project, "The following error has occured while trying to open "
-//                    + reviewItem.getFileDescriptor().getName() + " (rev: " + reviewItem.getFileDescriptor().getRevision()
-//                    + "):\n" + e.getMessage(), "Error");
-//            return null;
-//        }
-//    }
-
     /**
      * Shows virtual file taken from repository in Idea Editor.
      * Higlights all versioned comments for given file
@@ -109,32 +62,52 @@ public final class CrucibleHelper {
      */
     public static void showVirtualFileWithComments(final Project project, final ReviewData reviewAdapter,
             final CrucibleFileInfo reviewItem) {
-
+        java.util.List<VersionedComment> fileComments;
         try {
-            Collection<VersionedComment> fileComments = CrucibleServerFacadeImpl.getInstance()
-                    .getVersionedComments(reviewAdapter.getServer(), reviewAdapter.getPermId(), reviewItem.getPermId());
-            showVirtualFileWithComments(project, reviewItem, fileComments);
-        } catch (RemoteApiException e) {
-            PluginUtil.getLogger().error(e.getMessage());
-        } catch (ServerPasswordNotProvidedException e) {
-            PluginUtil.getLogger().error(e.getMessage());
-        }
-    }
-
-    private static void highlightCommentsInEditor(Project project, Editor editor, CrucibleFileInfo reviewItem,
-            Collection<VersionedComment> fileVersionedComments, TextAttributes textAttribute) {
-        Collection<RangeHighlighter> ranges = new ArrayList<RangeHighlighter>();
-
-        if (editor != null) {
-            for (VersionedComment comment : fileVersionedComments) {
-                //for (int i = comment.getFromStartLine(); i <= comment.getFromEndLine(); i++){
-                RangeHighlighter rh = editor.getDocument().getMarkupModel(project).addLineHighlighter(
-                        comment.getFromStartLine(), HighlighterLayer.SELECTION, textAttribute);
-                rh.setErrorStripeTooltip(reviewItem.getPermId().getId() + ":" + comment.getMessage());
-                rh.setErrorStripeMarkColor(VERSIONED_COMMENT_STRIP_MARK_COLOR);
-
-//}
+            fileComments = reviewItem.getVersionedComments();
+        } catch (ValueNotYetInitialized valueNotYetInitialized) {
+            try {
+                fileComments = CrucibleServerFacadeImpl.getInstance()
+                        .getVersionedComments(reviewAdapter.getServer(), reviewAdapter.getPermId(), reviewItem.getPermId());
+            } catch (RemoteApiException e) {
+                PluginUtil.getLogger().error(e.getMessage());
+                return;
+            } catch (ServerPasswordNotProvidedException e) {
+                PluginUtil.getLogger().error(e.getMessage());
+                return;
             }
         }
+        showVirtualFileWithComments(project, reviewItem, fileComments);
+    }
+
+    public static void showVirtualFileWithComments(final Project project, final CrucibleFileInfo reviewItem,
+            final java.util.List<VersionedComment> fileComments) {
+
+        int line = 1;
+
+        if (!fileComments.isEmpty()) {
+            line = fileComments.iterator().next().getFromStartLine();
+        }
+
+        VcsIdeaHelper.openFileWithDiffs(project
+                , reviewItem.getFileDescriptor().getAbsoluteUrl()
+                , reviewItem.getOldFileDescriptor().getRevision()
+                , reviewItem.getFileDescriptor().getRevision()
+                , line
+                , 1
+                , new VcsIdeaHelper.OpenDiffAction() {
+
+            public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile) {
+                FileEditorManager fem = FileEditorManager.getInstance(project);
+                Editor editor = fem.openTextEditor(displayFile, true);
+                if (editor == null) {
+                    return;
+                }
+                Document displayDocument = new FileContent(project, displayFile.getFile()).getDocument();
+                Document referenceDocument = new FileContent(project, referenceFile).getDocument();
+                new ChangeViewer(project, editor, referenceDocument, displayDocument).highlightChangesInEditor();
+                CommentHighlighter.highlightCommentsInEditor(project, editor, fileComments);
+            }
+        });
     }
 }
