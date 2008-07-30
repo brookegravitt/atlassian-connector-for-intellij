@@ -27,7 +27,7 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 public class GetCommentsAction extends TableSelectedAction  {    
-    public GetCommentsAction(){
+    public GetCommentsAction() {
 		ActionManager actionManager = ActionManager.getInstance();
 	}
 
