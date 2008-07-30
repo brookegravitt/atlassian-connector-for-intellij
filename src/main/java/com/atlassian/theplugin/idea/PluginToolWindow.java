@@ -91,8 +91,11 @@ public class PluginToolWindow extends ContentManagerAdapter {
 		this.ideaToolWindow = toolWindowManager.registerToolWindow(
 				TOOL_WINDOW_NAME, true, ToolWindowAnchor.RIGHT);
 		this.project = project;
-		this.bottomIdeaToolWindow = toolWindowManager.registerToolWindow(BOTTOM_WINDOW_NAME, true, ToolWindowAnchor.BOTTOM);
-		this.bottomIdeaToolWindow.setIcon(ICON_CRUCIBLE);
+		if (VcsIdeaHelper.isUnderVcsControl(project)) {
+            this.bottomIdeaToolWindow = toolWindowManager.registerToolWindow(BOTTOM_WINDOW_NAME, true, ToolWindowAnchor.BOTTOM);
+            this.bottomIdeaToolWindow.setIcon(ICON_CRUCIBLE);
+        }
+
 	}
 
 	/**
@@ -101,7 +104,9 @@ public class PluginToolWindow extends ContentManagerAdapter {
 	 */
 	public void startTabChangeListener() {
 		this.ideaToolWindow.getContentManager().addContentManagerListener(this);
-		this.bottomIdeaToolWindow.getContentManager().addContentManagerListener(this);
+		if (this.bottomIdeaToolWindow != null) {
+            this.bottomIdeaToolWindow.getContentManager().addContentManagerListener(this);
+        }
 	}
 
 	/**
@@ -109,7 +114,9 @@ public class PluginToolWindow extends ContentManagerAdapter {
 	 */
 	public void stopTabChangeListener() {
 		this.ideaToolWindow.getContentManager().removeContentManagerListener(this);
-		this.bottomIdeaToolWindow.getContentManager().removeContentManagerListener(this);
+		if (this.bottomIdeaToolWindow != null) {
+            this.bottomIdeaToolWindow.getContentManager().removeContentManagerListener(this);
+        }
 	}
 
 	/**
@@ -143,34 +150,36 @@ public class PluginToolWindow extends ContentManagerAdapter {
 				
 			for (ToolWindowPanels entry : bottomPanels) {
 			try {
-				ServerType serverType = Util.toolWindowPanelsToServerType(entry);
-				if (ConfigurationFactory.getConfiguration().getProductServers(serverType).transientGetServers().size() > 0) {
-					if (bottomIdeaToolWindow.getContentManager().findContent(entry.toString()) == null) {
+                if (bottomIdeaToolWindow != null){
+                ServerType serverType = Util.toolWindowPanelsToServerType(entry);
+                    if (ConfigurationFactory.getConfiguration().getProductServers(serverType).transientGetServers().size() > 0) {
+                        if (bottomIdeaToolWindow.getContentManager().findContent(entry.toString()) == null) {
 
-						// show tab
-						Content content = null;
+                            // show tab
+                            Content content = null;
 
-						switch (entry) {
-							case CRUCIBLE_BOTTOM:
-								content = project.getComponent(ThePluginProjectComponent.class).createCrucibleBottomContent();
-								break;
+                            switch (entry) {
+                                case CRUCIBLE_BOTTOM:
+                                    content = project.getComponent(ThePluginProjectComponent.class).createCrucibleBottomContent();
+                                    break;
 
-							default:
-								break;
-						}
+                                default:
+                                    break;
+                            }
 
-						bottomIdeaToolWindow.getContentManager().addContent(content);
-					}
+                            bottomIdeaToolWindow.getContentManager().addContent(content);
+                        }
 
-				} else {
-					// tab is visible
-					Content content = bottomIdeaToolWindow.getContentManager().findContent(entry.toString());
-					if (content != null) {
-						// hide tab
-						bottomIdeaToolWindow.getContentManager().removeContent(content, true);
-					}
-				}
-			} catch (ThePluginException e) {
+                    } else {
+                        // tab is visible
+                        Content content = bottomIdeaToolWindow.getContentManager().findContent(entry.toString());
+                        if (content != null) {
+                            // hide tab
+                            bottomIdeaToolWindow.getContentManager().removeContent(content, true);
+                        }
+                    }
+                }
+            } catch (ThePluginException e) {
 				PluginUtil.getLogger().error(e.getMessage(), e);
 			}
 

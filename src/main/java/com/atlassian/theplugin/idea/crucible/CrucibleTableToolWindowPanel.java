@@ -28,6 +28,7 @@ import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.ThePluginProjectComponent;
+import com.atlassian.theplugin.idea.action.jira.SavedFilterComboAction;
 import com.atlassian.theplugin.idea.bamboo.ToolWindowBambooContent;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.events.ShowReviewEvent;
@@ -39,6 +40,7 @@ import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.util.Key;
@@ -53,7 +55,7 @@ import java.util.*;
 import java.util.List;
 
 public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStatusListener, TableItemSelectedListener {
-
+    public static String PLACE_PREFIX = CrucibleTableToolWindowPanel.class.getSimpleName();
     private static final Key<CrucibleTableToolWindowPanel> WINDOW_PROJECT_KEY
             = Key.create(CrucibleTableToolWindowPanel.class.getName());
     private Project project;
@@ -90,12 +92,13 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     private CrucibleVersion crucibleVersion = CrucibleVersion.UNKNOWN;
     private static final String TO_REVIEW_AS_ACTIVE_REVIEWER = "To review as active reviewer";
 
+
     protected String getInitialMessage() {
 
         return "Waiting for Crucible review info.";
     }
 
-    protected String getToolbarActionGroup() {
+    protected String getToolbarActionGroup() {     
         return "ThePlugin.CrucibleToolWindowToolBar";
     }
 
@@ -176,7 +179,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
         progressAnimation.configure(this, tablePane, BorderLayout.CENTER);
 
-        createFilterEditToolBar("atlassian.toolwindow.crucibleFilterEditToolBar", "ThePlugin.Crucible.FilterEditToolBar");
+        createFilterEditToolBar(getPlaceName(), "ThePlugin.Crucible.FilterEditToolBar");
         this.crucibleCustomFilterPanel = new CrucibleCustomFilterPanel();
         filters = projectCfg.getCrucibleConfiguration().getCrucibleFilters();
     }
@@ -185,7 +188,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         ActionManager actionManager = ActionManager.getInstance();
         ActionGroup toolbar = (ActionGroup) actionManager.getAction(getToolbarActionGroup());
         ActionToolbar actionToolbar = actionManager.createActionToolbar(
-                "atlassian.toolwindow.serverToolBar", toolbar, true);
+                getPlaceName(), toolbar, true);
         toolBarPanel.add(actionToolbar.getComponent(), BorderLayout.NORTH);
     }
 
@@ -220,6 +223,10 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         }
     }
 
+
+    private String getPlaceName(){
+        return PLACE_PREFIX + this.project.getName();
+    };
     /**
      * Method adds or removes CollapsibleTable for given filter type
      *
@@ -234,11 +241,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
                     filter.getFilterName(),
                     null,
                     null,
-                    /*
-                    "atlassian.toolwindow.serverToolBar",
-                    "ThePlugin.CrucibleReviewToolBar",
-                    */
-                    "Context menu",
+                    getPlaceName(),
                     getPopupActionGroup());
             table.addItemSelectedListener(this);
             TableView.restore(projectCfg.getCrucibleConfiguration().getTableConfiguration(),
@@ -470,11 +473,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
                                 filter.getTitle(),
                                 null,
                                 null,
-                                /*
-                                "atlassian.toolwindow.serverToolBar",
-                                "ThePlugin.CrucibleReviewToolBar",
-                                */
-                                "Context menu",
+                                getPlaceName(),
                                 getPopupActionGroup());
                         table.addItemSelectedListener(this);
                         TableView.restore(projectCfg.getCrucibleConfiguration().getTableConfiguration(),
