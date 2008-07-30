@@ -92,7 +92,7 @@
             <classifier>7590</classifier>
             <scope>compile</scope>
         </dependency>
-<!--
+
         <dependency>
             <groupId>com.intellij.idea</groupId>
             <artifactId>idea</artifactId>
@@ -100,7 +100,7 @@
             <classifier>7590</classifier>
             <scope>compile</scope>
         </dependency>
-
+<!--
         <dependency>
             <groupId>com.intellij.idea</groupId>
             <artifactId>resources</artifactId>
