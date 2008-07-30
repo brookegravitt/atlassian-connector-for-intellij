@@ -33,6 +33,8 @@ import com.intellij.openapi.vcs.vfs.ContentRevisionVirtualFile;
 import com.intellij.openapi.vcs.vfs.VcsVirtualFile;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.vcsUtil.VcsUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -46,6 +48,25 @@ public final class VcsIdeaHelper {
 
     private VcsIdeaHelper() {
     }
+
+    public static boolean isUnderVcsControl(DataContext context){
+        return isUnderVcsControl(IdeaHelper.getCurrentProject(context));
+    }
+    
+    public static boolean isUnderVcsControl(AnActionEvent action){
+		return isUnderVcsControl(action.getDataContext());
+	}
+
+    public static boolean isUnderVcsControl(Project project){
+         ProjectLevelVcsManager plm = ProjectLevelVcsManager.getInstance(project);
+
+             if (plm != null && plm.getAllActiveVcss().length > 0) {
+                 return true;
+             }
+
+             return false;
+     }
+
 
     @Nullable
     public static String getRepositoryUrlForFile(VirtualFile vFile) {
