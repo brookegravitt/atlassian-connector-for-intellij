@@ -168,7 +168,8 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
 
         @Override
         public void showFile(final ReviewData review, final CrucibleFileInfo file) {
-            CrucibleHelper.showVirtualFileWithComments(project, review, file);
+			CrucibleHelper.showRevisionDiff(project, review, file);
+			//CrucibleHelper.showVirtualFileWithComments(project, review, file);
         }
 
 
