@@ -210,9 +210,10 @@
         <action id="ThePlugin.Tree.File.CollapseFiles"
                 class="com.atlassian.theplugin.idea.action.tree.file.CollapseFilesAction" text="Collapse All"
                 icon="/actions/collapseall.png"/>
+		<action id="ThePlugin.Crucible.ShowReviewItemDiffAction" class="com.atlassian.theplugin.idea.action.crucible.DiffRevisionsAction" text="Show diff" icon="/actions/diff.png" />
 
 
-        <group id="ThePlugin.BambooToolWindowToolBar" popup="false" text="">
+		<group id="ThePlugin.BambooToolWindowToolBar" popup="false" text="">
             <reference id="ThePlugin.ShowSettings"/>
             <reference id="ThePlugin.HelpBamboo"/>
             <reference id="ThePlugin.Bamboo.RefreshStatus"/>
@@ -254,12 +255,12 @@
         </group>
 
         <group id="ThePlugin.Crucible.ReviewFileListToolBar" popup="false">
-        </group>
+			<reference id="ThePlugin.Crucible.ShowReviewItemDiffAction" />
+		</group>
 
         <group id="ThePlugin.TreeOperations" popup="false" text="">
             <add-to-group anchor="last" group-id="ThePlugin.Bamboo.CommitListToolBar"/>
             <add-to-group anchor="last" group-id="ThePlugin.Crucible.ReviewFileListToolBar"/>
-
             <reference id="ThePlugin.Tree.File.GroupByDir"/>
             <reference id="ThePlugin.Tree.File.ExpandFiles"/>
             <reference id="ThePlugin.Tree.File.CollapseFiles"/>
