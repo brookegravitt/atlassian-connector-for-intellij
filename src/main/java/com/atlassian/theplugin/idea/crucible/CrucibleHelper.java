@@ -24,90 +24,121 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.intellij.openapi.diff.*;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vcs.VcsBundle;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.diff.FileContent;
 
-import java.awt.*;
-
-/**
- * Created by IntelliJ IDEA.
- * User: pmaruszak
- * Date: Jun 18, 2008
- * Time: 6:06:47 PM
- * To change this template use File | Settings | File Templates.
- */
 public final class CrucibleHelper {
-    //private static Set<OpenFileDescriptor> openDescriptors = new Set<OpenFileDescriptor>();
+	//private static Set<OpenFileDescriptor> openDescriptors = new Set<OpenFileDescriptor>();
 
-    private static final Color VERSIONED_COMMENT_BACKGROUND_COLOR = Color.LIGHT_GRAY;
-    private static final Color VERSIONED_COMMENT_STRIP_MARK_COLOR = Color.BLUE;
+	private CrucibleHelper() {
+	}
 
-    private CrucibleHelper() {
-    }
+	/**
+	 * Shows virtual file taken from repository in Idea Editor.
+	 * Higlights all versioned comments for given file
+	 * Adds StripeMark on the right side of file window with set tool tip text that corresponde
+	 * to VersionedComment.getMessage content
+	 *
+	 * @param project	   project
+	 * @param reviewAdapter adapter
+	 * @param reviewItem	review item
+	 */
+	public static void showVirtualFileWithComments(final Project project, final ReviewData reviewAdapter,
+			final CrucibleFileInfo reviewItem) {
+		java.util.List<VersionedComment> fileComments;
+		try {
+			fileComments = reviewItem.getVersionedComments();
+		} catch (ValueNotYetInitialized valueNotYetInitialized) {
+			try {
+				fileComments = CrucibleServerFacadeImpl.getInstance()
+						.getVersionedComments(reviewAdapter.getServer(), reviewAdapter.getPermId(), reviewItem.getPermId());
+			} catch (RemoteApiException e) {
+				PluginUtil.getLogger().error(e.getMessage());
+				return;
+			} catch (ServerPasswordNotProvidedException e) {
+				PluginUtil.getLogger().error(e.getMessage());
+				return;
+			}
+		}
+		showVirtualFileWithComments(project, reviewItem, fileComments);
+	}
 
-    /**
-     * Shows virtual file taken from repository in Idea Editor.
-     * Higlights all versioned comments for given file
-     * Adds StripeMark on the right side of file window with set tool tip text that corresponde
-     * to VersionedComment.getMessage content
-     *
-     * @param project       project
-     * @param reviewAdapter adapter
-     * @param reviewItem    review item
-     */
-    public static void showVirtualFileWithComments(final Project project, final ReviewData reviewAdapter,
-            final CrucibleFileInfo reviewItem) {
-        java.util.List<VersionedComment> fileComments;
-        try {
-            fileComments = reviewItem.getVersionedComments();
-        } catch (ValueNotYetInitialized valueNotYetInitialized) {
-            try {
-                fileComments = CrucibleServerFacadeImpl.getInstance()
-                        .getVersionedComments(reviewAdapter.getServer(), reviewAdapter.getPermId(), reviewItem.getPermId());
-            } catch (RemoteApiException e) {
-                PluginUtil.getLogger().error(e.getMessage());
-                return;
-            } catch (ServerPasswordNotProvidedException e) {
-                PluginUtil.getLogger().error(e.getMessage());
-                return;
-            }
-        }
-        showVirtualFileWithComments(project, reviewItem, fileComments);
-    }
+	public static void showVirtualFileWithComments(final Project project, final CrucibleFileInfo reviewItem,
+			final java.util.List<VersionedComment> fileComments) {
 
-    public static void showVirtualFileWithComments(final Project project, final CrucibleFileInfo reviewItem,
-            final java.util.List<VersionedComment> fileComments) {
+		int line = 1;
 
-        int line = 1;
+		if (!fileComments.isEmpty()) {
+			line = fileComments.iterator().next().getFromStartLine();
+		}
 
-        if (!fileComments.isEmpty()) {
-            line = fileComments.iterator().next().getFromStartLine();
-        }
+		VcsIdeaHelper.openFileWithDiffs(project
+				, reviewItem.getFileDescriptor().getAbsoluteUrl()
+				, reviewItem.getOldFileDescriptor().getRevision()
+				, reviewItem.getFileDescriptor().getRevision()
+				, line
+				, 1
+				, new VcsIdeaHelper.OpenDiffAction() {
 
-        VcsIdeaHelper.openFileWithDiffs(project
-                , reviewItem.getFileDescriptor().getAbsoluteUrl()
-                , reviewItem.getOldFileDescriptor().getRevision()
-                , reviewItem.getFileDescriptor().getRevision()
-                , line
-                , 1
-                , new VcsIdeaHelper.OpenDiffAction() {
+			public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile) {
+				FileEditorManager fem = FileEditorManager.getInstance(project);
+				Editor editor = fem.openTextEditor(displayFile, true);
+				if (editor == null) {
+					return;
+				}
+				Document displayDocument = new FileContent(project, displayFile.getFile()).getDocument();
+				Document referenceDocument = new FileContent(project, referenceFile).getDocument();
+				new ChangeViewer(project, editor, referenceDocument, displayDocument).highlightChangesInEditor();
+				CommentHighlighter.highlightCommentsInEditor(project, editor, fileComments);
+			}
+		});
+	}
 
-            public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile) {
-                FileEditorManager fem = FileEditorManager.getInstance(project);
-                Editor editor = fem.openTextEditor(displayFile, true);
-                if (editor == null) {
-                    return;
-                }
-                Document displayDocument = new FileContent(project, displayFile.getFile()).getDocument();
-                Document referenceDocument = new FileContent(project, referenceFile).getDocument();
-                new ChangeViewer(project, editor, referenceDocument, displayDocument).highlightChangesInEditor();
-                CommentHighlighter.highlightCommentsInEditor(project, editor, fileComments);
-            }
-        });
-    }
+	public static void showRevisionDiff(final Project project, final ReviewData reviewAdapter,
+			final CrucibleFileInfo reviewItem) {
+
+		VcsIdeaHelper.openFileWithDiffs(project
+				, reviewItem.getFileDescriptor().getAbsoluteUrl()
+				, reviewItem.getOldFileDescriptor().getRevision()
+				, reviewItem.getFileDescriptor().getRevision()
+				, 1
+				, 1
+				, new VcsIdeaHelper.OpenDiffAction() {
+
+			public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile) {
+
+				final Document displayDocument = new FileContent(project, displayFile.getFile()).getDocument();
+				final Document referenceDocument = new FileContent(project, referenceFile).getDocument();
+
+				DiffRequest request = new DiffRequest(project) {
+
+					public DiffContent[] getContents() {
+						return (new DiffContent[]{
+								new DocumentContent(project, referenceDocument),
+								new DocumentContent(project, displayDocument),
+						});
+					}
+
+					public String[] getContentTitles() {
+						return (new String[]{
+								VcsBundle.message("diff.content.title.up.to.date", new Object[0]),
+								VcsBundle.message("diff.content.title.current.range", new Object[0])
+						});
+					}
+
+					public String getWindowTitle() {
+						return VcsBundle.message("dialog.title.diff.for.range", new Object[0]);
+					}
+				};
+				DiffManager.getInstance().getDiffTool().show(request);
+			}
+		});
+
+	}
 }
