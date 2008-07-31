@@ -4,8 +4,8 @@ import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.CommentTreePanel;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
@@ -29,7 +29,7 @@ import java.util.List;
 
 public class AddAction extends AbstractCommentAction {
 	private static final String REPLY_TEXT = "Reply";
-	private static final String COMMENT_TEXT = "Comment";
+	private static final String COMMENT_TEXT = "Add Comment";
 
 	@Override
 	public void update(AnActionEvent e) {
