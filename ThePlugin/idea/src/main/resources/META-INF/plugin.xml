@@ -200,15 +200,17 @@
         <action id="ThePlugin.Bamboo.Changes.OpenRepoVersion"
                 class="com.atlassian.theplugin.idea.action.bamboo.changes.OpenRepoVersionAction"
                 text="Open Repository Version" icon="/objectBrowser/showEditorHighlighting.png"/>
-        <action id="ThePlugin.Bamboo.Changes.GroupByDir"
-                class="com.atlassian.theplugin.idea.action.bamboo.changes.GroupByDirectoryAction"
+
+        <action id="ThePlugin.Tree.File.GroupByDir"
+                class="com.atlassian.theplugin.idea.action.tree.file.ToggleViewAction"
                 text="Group By Directory" icon="/nodes/folder.png"/>
-        <action id="ThePlugin.Bamboo.Changes.ExpandFiles"
-                class="com.atlassian.theplugin.idea.action.bamboo.changes.ExpandFilesAction" text="Expand All"
+        <action id="ThePlugin.Tree.File.ExpandFiles"
+                class="com.atlassian.theplugin.idea.action.tree.file.ExpandFilesAction" text="Expand All"
                 icon="/actions/expandall.png"/>
-        <action id="ThePlugin.Bamboo.Changes.CollapseFiles"
-                class="com.atlassian.theplugin.idea.action.bamboo.changes.CollapseFilesAction" text="Collapse All"
+        <action id="ThePlugin.Tree.File.CollapseFiles"
+                class="com.atlassian.theplugin.idea.action.tree.file.CollapseFilesAction" text="Collapse All"
                 icon="/actions/collapseall.png"/>
+
 
         <group id="ThePlugin.BambooToolWindowToolBar" popup="false" text="">
             <reference id="ThePlugin.ShowSettings"/>
@@ -242,18 +244,26 @@
             <reference id="ThePlugin.Bamboo.ExpandTests"/>
             <reference id="ThePlugin.Bamboo.CollapseTests"/>
         </group>
-
+        
         <group id="ThePlugin.Bamboo.CommitListToolBar" popup="false">
             <reference id="ThePlugin.Bamboo.Changes.GoToSource"/>
             <reference id="ThePlugin.Bamboo.Changes.ShowDiff"/>
             <reference id="ThePlugin.Bamboo.Changes.DiffWithLocal"/>
             <reference id="ThePlugin.Bamboo.Changes.OpenRepoVersion"/>
             <separator/>
-            <reference id="ThePlugin.Bamboo.Changes.GroupByDir"/>
-            <reference id="ThePlugin.Bamboo.Changes.ExpandFiles"/>
-            <reference id="ThePlugin.Bamboo.Changes.CollapseFiles"/>
         </group>
 
+        <group id="ThePlugin.Crucible.ReviewFileListToolBar" popup="false">
+        </group>
+
+        <group id="ThePlugin.TreeOperations" popup="false" text="">
+            <add-to-group anchor="last" group-id="ThePlugin.Bamboo.CommitListToolBar"/>
+            <add-to-group anchor="last" group-id="ThePlugin.Crucible.ReviewFileListToolBar"/>
+
+            <reference id="ThePlugin.Tree.File.GroupByDir"/>
+            <reference id="ThePlugin.Tree.File.ExpandFiles"/>
+            <reference id="ThePlugin.Tree.File.CollapseFiles"/>
+        </group>
 
         <!-- Crucible tool window panel related actions -->
         <action id="ThePlugin.Crucible.ShowHideCrucibleTab"

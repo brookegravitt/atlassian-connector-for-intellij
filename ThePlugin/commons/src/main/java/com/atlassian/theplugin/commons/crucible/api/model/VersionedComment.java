@@ -35,5 +35,5 @@ public interface VersionedComment extends Comment {
 
 	int getFromEndLine();
 
-	List<VersionedComment> getReplies();
+    List<VersionedComment> getReplies();
 }

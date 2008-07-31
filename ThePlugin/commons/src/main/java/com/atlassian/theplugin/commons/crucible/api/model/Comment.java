@@ -40,7 +40,7 @@ public interface Comment {
 
 	Map<String, CustomField> getCustomFields();
 
-	STATE getState();
+    STATE getState();
 
 	public enum STATE {
 
