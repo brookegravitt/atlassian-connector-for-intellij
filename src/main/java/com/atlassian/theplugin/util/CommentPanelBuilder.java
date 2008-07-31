@@ -143,7 +143,7 @@ public final class CommentPanelBuilder {
 		}
 
 		protected Component getAuthorLabel() {
-			return new BoldLabel(review.getAuthor().getDisplayName());
+			return new BoldLabel(comment.getAuthor().getDisplayName());
 		}
 
 		protected Component getStateLabel() {
