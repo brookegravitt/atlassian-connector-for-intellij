@@ -68,10 +68,10 @@ public class AtlassianTreeWithToolbar extends JPanel {
     }
 
     public enum STATE {
-        FLAT {STATE getNextState() {
+        FLAT { STATE getNextState() {
             return DIRED;
         }},
-        DIRED {STATE getNextState() {
+        DIRED { STATE getNextState() {
             return FLAT;
         }};
 
