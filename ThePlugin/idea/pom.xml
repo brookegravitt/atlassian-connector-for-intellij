@@ -456,5 +456,9 @@
             <name>Spring rich client repository</name>
             <url>http://spring-rich-c.sourceforge.net/maven2repository</url>
         </repository>
+        <repository>
+            <id>atlassian-restricted</id>
+            <url>https://maven.atlassian.com/restricted</url>
+        </repository>
     </repositories>
 </project>
