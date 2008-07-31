@@ -40,6 +40,10 @@ public class BambooFileNode extends FileNode {
      */
     private PsiFile psiFile;
 
+    public BambooFileNode(final BambooFileInfo f, final PsiFile psiFile) {
+        this(f, AtlassianClickAction.EMPTY_ACTION, psiFile);
+    }
+
     public PsiFile getPsiFile() {
         return psiFile;
     }

@@ -16,7 +16,9 @@
 
 package com.atlassian.theplugin.commons.crucible.api.model;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -25,7 +27,7 @@ import java.util.*;
  * Time: 11:42:30 PM
  * To change this template use File | Settings | File Templates.
  */
-public class CommentBean implements Comment {
+public abstract class CommentBean implements Comment {
 	private PermId permId;
 	private String message = null;
 	private boolean draft = false;
@@ -137,7 +139,7 @@ public class CommentBean implements Comment {
 		return customFields;
 	}
 
-	public STATE getState() {
+    public STATE getState() {
 		if (isDraft()) {
 			return STATE.DRAFT;
 		} else if (isDefectApproved()) {
@@ -150,7 +152,7 @@ public class CommentBean implements Comment {
 		return STATE.REVIEW;
 	}
 
-	@Override
+    @Override
 	public String toString() {
 		return getMessage();
 	}

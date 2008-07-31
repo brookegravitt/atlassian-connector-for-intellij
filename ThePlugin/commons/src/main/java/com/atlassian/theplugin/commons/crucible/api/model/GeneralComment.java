@@ -26,5 +26,6 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public interface GeneralComment extends Comment {
-	List<GeneralComment> getReplies();
+
+    List<GeneralComment> getReplies();
 }

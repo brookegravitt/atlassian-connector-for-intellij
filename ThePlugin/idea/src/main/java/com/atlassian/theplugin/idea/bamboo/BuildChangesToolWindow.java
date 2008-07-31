@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,16 +20,16 @@ import com.atlassian.theplugin.commons.bamboo.BambooChangeSet;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.TableColumnInfo;
+import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
+import com.atlassian.theplugin.idea.crucible.tree.ModelProvider;
 import com.atlassian.theplugin.idea.ui.AtlassianTableView;
 import com.atlassian.theplugin.idea.ui.TableColumnProvider;
 import com.atlassian.theplugin.idea.ui.TableItemSelectedListener;
-import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
 import com.atlassian.theplugin.idea.ui.tree.file.BambooFileNode;
 import com.atlassian.theplugin.idea.ui.tree.file.FileTreeModelBuilder;
-import static com.atlassian.theplugin.idea.ui.tree.file.FileTreeModelBuilder.buildFlatTreeModelFromBambooChangeSet;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.wm.ToolWindow;
@@ -54,7 +54,7 @@ import java.util.List;
 
 public final class BuildChangesToolWindow {
 
-    public interface ChangesTree extends Expandable {
+    public interface ChangesTree {
         boolean GROUP_BY_DIRECTORY_DEFAULT = true;
 
         void showDiff();
@@ -62,10 +62,6 @@ public final class BuildChangesToolWindow {
         void showDiffWithLocal();
 
         void showRepositoryVersion();
-
-        boolean isGroupByDirectory();
-
-        void setGroupByDirectory(boolean groupByDirectory);
     }
 
     private static final String TOOL_WINDOW_TITLE = "Bamboo Build Changes";
@@ -118,13 +114,14 @@ public final class BuildChangesToolWindow {
 
     private static class CommitDetailsPanel extends JPanel implements ChangesTree {
         private static final float SPLIT_RATIO = 0.6f;
-        private JTree fileTree;
+        private AtlassianTreeWithToolbar fileTree;
         private JScrollPane fileScroll;
         private boolean isByDir = ChangesTree.GROUP_BY_DIRECTORY_DEFAULT;
         private final Project project;
 
         private AtlassianTableView commitsTable;
         private String name;
+        private static final String TOOLBAR_NAME = "ThePlugin.Bamboo.CommitListToolBar";
 
         public CommitDetailsPanel(Project project, String name, final List<BambooChangeSet> commits) {
             this.project = project;
@@ -137,74 +134,31 @@ public final class BuildChangesToolWindow {
 
             setLayout(new GridBagLayout());
 
-            ActionManager manager = ActionManager.getInstance();
-            ActionGroup group = (ActionGroup) manager.getAction("ThePlugin.Bamboo.CommitListToolBar");
-            ActionToolbar toolbar = manager.createActionToolbar(name, group, true);
-
             Splitter split = new Splitter(false, SPLIT_RATIO);
             split.setShowDividerControls(true);
 
-            setLayout(new GridBagLayout());
-            GridBagConstraints gbc = new GridBagConstraints();
 
-            gbc.gridx = 0;
-            gbc.gridy = 0;
-            gbc.weightx = 1.0;
-            gbc.weighty = 1.0;
-            gbc.fill = GridBagConstraints.BOTH;
 
             JPanel tablePanel = new JPanel();
-            tablePanel.setLayout(new GridBagLayout());
-            GridBagConstraints gbc1 = new GridBagConstraints();
-
-            gbc1.gridx = 0;
-            gbc1.gridy = 0;
-            gbc1.weightx = 1.0;
-            gbc1.weighty = 0.0;
-            gbc1.fill = GridBagConstraints.HORIZONTAL;
-
-            JLabel l = new JLabel("Commit List");
-            Dimension d = l.getMinimumSize();
-            d.height = toolbar.getMaxButtonHeight();
-            l.setMinimumSize(d);
-
-            tablePanel.add(l, gbc1);
-
-            gbc1.gridy = 1;
-            gbc1.weighty = 1.0;
-            gbc1.fill = GridBagConstraints.BOTH;
-
+            tablePanel.setLayout(new BorderLayout());
             commitsTable = createCommitsTable(commits);
-            tablePanel.add(new JScrollPane(commitsTable), gbc1);
+            tablePanel.add(new JScrollPane(commitsTable), BorderLayout.CENTER);
 
             split.setFirstComponent(tablePanel);
 
             JPanel fileTreePanel = new JPanel();
-            fileTreePanel.setLayout(new GridBagLayout());
+            fileTreePanel.setLayout(new BorderLayout());
 
-            gbc1.gridy = 0;
-            gbc1.weighty = 0.0;
-            gbc1.weightx = 1.0;
-            gbc1.fill = GridBagConstraints.HORIZONTAL;
-            gbc1.anchor = GridBagConstraints.LINE_START;
-
-            JComponent comp = toolbar.getComponent();
-            fileTreePanel.add(comp, gbc1);
-
-            gbc1.gridy = 1;
             JLabel label = new JLabel("Changed Files");
-            fileTreePanel.add(label, gbc1);
-
-            gbc1.gridy = 2;
-            gbc1.weighty = 1.0;
-            gbc1.fill = GridBagConstraints.BOTH;
+            fileTreePanel.add(label, BorderLayout.NORTH);
 
             fileScroll = new JScrollPane();
-            fileTreePanel.add(fileScroll, gbc1);
+            fileTreePanel.add(fileScroll, BorderLayout.CENTER);
 
             split.setSecondComponent(fileTreePanel);
 
-            add(split, gbc);
+            setLayout(new BorderLayout());
+            add(split, BorderLayout.CENTER);
         }
 
 
@@ -340,48 +294,31 @@ public final class BuildChangesToolWindow {
             // todo
         }
 
-        public boolean isGroupByDirectory() {
-            return isByDir;
-        }
-
-        public void setGroupByDirectory(boolean groupByDirectory) {
-            isByDir = groupByDirectory;
-            createTree((BambooChangeSet) commitsTable.getSelectedObject());
-        }
-
-        private void createTree(BambooChangeSet changeSet) {
+        private void createTree(final BambooChangeSet changeSet) {
             if (changeSet != null && changeSet.getFiles().size() > 0) {
-                if (isByDir) {
-                    fileTree = new AtlassianTree(FileTreeModelBuilder.buildTreeModelFromBambooChangeSet(project, changeSet));
-                    fileTree.setRootVisible(false);
-                    fileScroll.setViewportView(fileTree);
-                    expand();
-                } else {
-                    fileTree = new AtlassianTree(buildFlatTreeModelFromBambooChangeSet(project, changeSet));
-                    fileTree.setRootVisible(false);
-                    fileScroll.setViewportView(fileTree);
-                }
+                fileTree = new AtlassianTreeWithToolbar(TOOLBAR_NAME, new ModelProvider() {
+                    public AtlassianTreeModel diredModel =
+                            FileTreeModelBuilder.buildTreeModelFromBambooChangeSet(project, changeSet);
+                    public AtlassianTreeModel flatModel =
+                            FileTreeModelBuilder.buildFlatTreeModelFromBambooChangeSet(project, changeSet);
+
+                    public AtlassianTreeModel getModel(final AtlassianTreeWithToolbar.STATE state) {
+                        switch (state) {
+                            case DIRED:
+                                return diredModel;
+                            case FLAT:
+                                return flatModel;
+                            default:
+                                throw new IllegalStateException("Unknown model requested");
+                        }
+                    }
+                });
+                fileTree.setRootVisible(false);
+                fileScroll.setViewportView(fileTree);
+                fileTree.expandAll();
                 fileTree.addMouseListener(new NavigateToCodeHandler(name));
             } else {
                 fileScroll.setViewportView(new JLabel("no commits", SwingConstants.CENTER));
-            }
-        }
-
-        public void expand() {
-            if (fileTree == null) {
-                return;
-            }
-            for (int row = 0; row < fileTree.getRowCount(); ++row) {
-                fileTree.expandRow(row);
-            }
-        }
-
-        public void collapse() {
-            if (fileTree == null) {
-                return;
-            }
-            for (int row = fileTree.getRowCount(); row >= 0; --row) {
-                fileTree.collapseRow(row);
             }
         }
 
@@ -462,9 +399,8 @@ public final class BuildChangesToolWindow {
                 }
 
 
-
                 ActionManager aManager = ActionManager.getInstance();
-                ActionGroup menu = (ActionGroup) aManager.getAction("ThePlugin.Bamboo.CommitListToolBar");
+                ActionGroup menu = (ActionGroup) aManager.getAction(TOOLBAR_NAME);
                 if (menu == null) {
                     return;
                 }
