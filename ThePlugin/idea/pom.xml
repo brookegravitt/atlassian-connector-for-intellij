@@ -97,7 +97,7 @@
             <groupId>com.intellij.idea</groupId>
             <artifactId>idea</artifactId>
             <version>7.0</version>
-            <classifier>7590</classifier>
+            <classifier>jdk15</classifier>
             <scope>compile</scope>
         </dependency>
 <!--
