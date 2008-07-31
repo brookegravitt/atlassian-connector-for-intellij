@@ -45,7 +45,11 @@ public class CrucibleFileNode extends FileNode {
 		this.fileInfo = file;
     }
 
-	@Override
+    public CrucibleFileNode(final CrucibleFileInfo file) {
+        this(file, AtlassianClickAction.EMPTY_ACTION);
+    }
+
+    @Override
 	public TreeCellRenderer getTreeCellRenderer() {
 		return MY_RENDERER;
 	}

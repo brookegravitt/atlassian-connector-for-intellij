@@ -47,14 +47,14 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
     private static final float SPLIT_RATIO = 0.3f;
     private ProjectConfigurationBean projectConfiguration;
     protected static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
-    protected ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
+    protected ProgressAnimationProvider progressAReviewActionEventBrokernimation = new ProgressAnimationProvider();
     private CrucibleVersion crucibleVersion = CrucibleVersion.UNKNOWN;
     private static ReviewItemTreePanel reviewItemTreePanel;
     private CommentTreePanel reviewComentsPanel;
-    private static CrucibleReviewActionListener tabManager;
+    private ReviewActionEventBroker eventBroker;
     private static final int LEFT_WIDTH = 150;
     private static final int LEFT_HEIGHT = 250;
-    private CrucibleReviewActionListener reviewFileAgent = new MyAgent();
+    private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
 
 
     protected String getInitialMessage() {
@@ -82,7 +82,7 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
 
 
         setBackground(UIUtil.getTreeTextBackground());
-        reviewItemTreePanel = ReviewItemTreePanel.getInstance(projectConfigurationBean);
+        reviewItemTreePanel = new ReviewItemTreePanel(project, projectConfigurationBean);
         Splitter splitter = new Splitter(false, SPLIT_RATIO);
         splitter.setShowDividerControls(true);
         JPanel leftPanel = new JPanel();
@@ -97,6 +97,9 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
         splitter.setSecondComponent(reviewComentsPanel);
         add(splitter, BorderLayout.CENTER);
 
+
+        eventBroker = IdeaHelper.getReviewActionEventBroker();
+        eventBroker.registerListener(new MyAgent());
 
         progressAnimation.configure(this, reviewItemTreePanel, BorderLayout.CENTER);
 
@@ -162,9 +165,6 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
         private final CrucibleServerFacade facade = CrucibleServerFacadeImpl.getInstance();
         private final ReviewActionEventBroker eventBroker = IdeaHelper.getReviewActionEventBroker();
 
-        private MyAgent() {
-            eventBroker.registerListener(this);
-        }
 
         @Override
         public void showFile(final ReviewData review, final CrucibleFileInfo file) {
