@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <code_scheme name="pazu-idea-code-style">
+  <option name="JAVA_INDENT_OPTIONS">
+    <value>
+      <option name="INDENT_SIZE" value="4" />
+      <option name="CONTINUATION_INDENT_SIZE" value="8" />
+      <option name="TAB_SIZE" value="4" />
+      <option name="USE_TAB_CHARACTER" value="true" />
+      <option name="SMART_TABS" value="false" />
+      <option name="LABEL_INDENT_SIZE" value="0" />
+      <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+    </value>
+  </option>
   <option name="ALIGN_MULTILINE_PARAMETERS" value="false" />
   <option name="GENERATE_FINAL_LOCALS" value="true" />
   <option name="GENERATE_FINAL_PARAMETERS" value="true" />
