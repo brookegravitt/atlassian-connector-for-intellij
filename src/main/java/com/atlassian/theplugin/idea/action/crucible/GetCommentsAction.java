@@ -23,26 +23,32 @@ import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.events.ShowReviewEvent;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
-public class GetCommentsAction extends TableSelectedAction  {
+import javax.swing.*;
+import static javax.swing.JOptionPane.OK_CANCEL_OPTION;
+import static javax.swing.JOptionPane.PLAIN_MESSAGE;
 
-	protected void itemSelected(Object row) {
-        IdeaHelper.getReviewActionEventBroker().trigger(new ShowReviewEvent(
-				CrucibleReviewActionListener.ANONYMOUS, (ReviewData) row));
-	}
+public class GetCommentsAction extends TableSelectedAction {	
 
-	public void update(AnActionEvent e) {
-		super.update(e);
-        if (e != null && e.getPlace() != null && IdeaHelper.getCurrentProject(e) != null
+	public void actionPerformed(final AnActionEvent e) {
+		 if (e != null && e.getPlace() != null && IdeaHelper.getCurrentProject(e) != null
                 && e.getPlace().equals(CrucibleTableToolWindowPanel.PLACE_PREFIX + IdeaHelper.getCurrentProject(e).getName())) {
             if (!VcsIdeaHelper.isUnderVcsControl(e)) {
-                getTemplatePresentation().setEnabled(false);
-                e.getPresentation().setEnabled(false);
-            } else {
-                getTemplatePresentation().setEnabled(true);
-                e.getPresentation().setEnabled(true);
-            }
+				JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(), "You can use this action if VCS is enabled",
+						"Action not available", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
+			} else {
+        		super.actionPerformed(e);
+			}
         }
-    }
+
+	}
+
+	protected void itemSelected(Object row) {
+
+		IdeaHelper.getReviewActionEventBroker().trigger(new ShowReviewEvent(
+				CrucibleReviewActionListener.ANONYMOUS, (ReviewData) row));
+
+	}	
 }
