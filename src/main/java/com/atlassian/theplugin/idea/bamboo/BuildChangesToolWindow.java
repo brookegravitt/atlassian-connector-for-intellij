@@ -297,9 +297,9 @@ public final class BuildChangesToolWindow {
         private void createTree(final BambooChangeSet changeSet) {
             if (changeSet != null && changeSet.getFiles().size() > 0) {
                 fileTree = new AtlassianTreeWithToolbar(TOOLBAR_NAME, new ModelProvider() {
-                    public AtlassianTreeModel diredModel =
+                    private AtlassianTreeModel diredModel =
                             FileTreeModelBuilder.buildTreeModelFromBambooChangeSet(project, changeSet);
-                    public AtlassianTreeModel flatModel =
+                    private AtlassianTreeModel flatModel =
                             FileTreeModelBuilder.buildFlatTreeModelFromBambooChangeSet(project, changeSet);
 
                     public AtlassianTreeModel getModel(final AtlassianTreeWithToolbar.STATE state) {

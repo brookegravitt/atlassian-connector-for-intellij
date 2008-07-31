@@ -23,12 +23,10 @@ import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.events.ShowReviewEvent;
-import com.atlassian.theplugin.util.PluginUtil;
+
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 import javax.swing.*;
-import static javax.swing.JOptionPane.OK_CANCEL_OPTION;
-import static javax.swing.JOptionPane.PLAIN_MESSAGE;
 
 public class GetCommentsAction extends TableSelectedAction {	
 
