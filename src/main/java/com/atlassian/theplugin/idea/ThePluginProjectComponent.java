@@ -228,7 +228,8 @@ public class ThePluginProjectComponent implements
             statusBarCrucibleIcon = new CrucibleStatusIcon(project);
 
             crucibleReviewNotifier = new CrucibleReviewNotifier();
-			crucibleStatusChecker.registerListener(crucibleReviewNotifier);
+            crucibleReviewNotifier.setProject(project);
+            crucibleStatusChecker.registerListener(crucibleReviewNotifier);
             if (IdeaHelper.getPluginConfiguration().getCrucibleConfigurationData().getCrucibleTooltipOption()
 					!= CrucibleTooltipOption.NEVER) {
                 crucibleNotificationTooltip = new CrucibleNotificationTooltip(statusBarCrucibleIcon, project);

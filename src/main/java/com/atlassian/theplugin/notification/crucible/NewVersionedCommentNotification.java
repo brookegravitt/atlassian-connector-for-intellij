@@ -36,21 +36,4 @@ public class NewVersionedCommentNotification extends AbstractReviewNotification 
 	public String getPresentationMessage() {
 		return "New comment added by " + comment.getAuthor().getDisplayName();
 	}
-
-	public ReviewData getReview() {
-		return review;
-	}
-
-	public CrucibleFileInfo getReviewItem() {
-		try {
-			for (CrucibleFileInfo file : review.getFiles()) {
-				if (comment.getReviewItemId().equals(file.getPermId())) {
-					return file;
-				}
-			}
-		} catch (ValueNotYetInitialized valueNotYetInitialized) {
-			valueNotYetInitialized.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-		}
-		return null;
-	}
 }
