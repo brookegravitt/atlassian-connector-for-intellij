@@ -133,7 +133,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
         }
 
         for (VersionedComment comment : newReview.getVersionedComments()) {
-            VersionedComment existing = null;
+			VersionedComment existing = null;
             for (VersionedComment oldComment : oldReview.getVersionedComments()) {
                 if (comment.getPermId().getId().equals(oldComment.getPermId().getId())) {
                     existing = oldComment;
