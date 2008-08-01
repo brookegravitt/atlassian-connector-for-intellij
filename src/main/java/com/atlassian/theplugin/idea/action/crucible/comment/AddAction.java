@@ -94,9 +94,10 @@ public class AddAction extends AbstractCommentAction {
 			newComment.setCreateDate(new Date());
 			newComment.setReviewItemId(review.getPermId());
 			newComment.setAuthor(new UserBean(review.getServer().getUserName()));
+			// @todo
 			IdeaHelper.getReviewActionEventBroker().trigger(
 					new VersionedCommentAboutToAdd(CrucibleReviewActionListener.ANONYMOUS,
-							review, file, newComment));
+							review, file, newComment, null));
 		}
 
 	}

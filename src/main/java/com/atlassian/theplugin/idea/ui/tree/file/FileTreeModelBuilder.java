@@ -26,7 +26,7 @@ import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListen
 import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.atlassian.theplugin.idea.crucible.events.FocusOnFileComments;
 import com.atlassian.theplugin.idea.crucible.events.FocusOnGeneralComments;
-import com.atlassian.theplugin.idea.crucible.events.ShowFile;
+import com.atlassian.theplugin.idea.crucible.events.ShowFileEvent;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
@@ -95,7 +95,7 @@ public final class FileTreeModelBuilder {
                             broker.trigger(new FocusOnFileComments(CrucibleReviewActionListener.ANONYMOUS, review, file));
                             break;
                         case 2:
-                            broker.trigger(new ShowFile(CrucibleReviewActionListener.ANONYMOUS, review, file));
+                            broker.trigger(new ShowFileEvent(CrucibleReviewActionListener.ANONYMOUS, review, file));
                             break;
                         default:
                             break;
@@ -155,7 +155,7 @@ public final class FileTreeModelBuilder {
                             broker.trigger(new FocusOnFileComments(CrucibleReviewActionListener.ANONYMOUS, review, file));
                             break;
                         case 2:
-                            broker.trigger(new ShowFile(CrucibleReviewActionListener.ANONYMOUS, review, file));
+                            broker.trigger(new ShowFileEvent(CrucibleReviewActionListener.ANONYMOUS, review, file));
                             break;
                         default:
                             break;
