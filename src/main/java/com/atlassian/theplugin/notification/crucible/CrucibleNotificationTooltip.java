@@ -84,10 +84,6 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
                                 .append(notification.getItemUrl()).append("\">")
                                 .append(id).append("</a></td><td>")
                                 .append(notification.getPresentationMessage()).append("</td></tr>");
-						if (notification instanceof NewVersionedCommentNotification) {
-							NewVersionedCommentNotification n = (NewVersionedCommentNotification) notification;
-							CommentHighlighter.updateCommentsInEditors(project, n.getReview(), n.getReviewItem());
-						}
 					}
                 }
             }
