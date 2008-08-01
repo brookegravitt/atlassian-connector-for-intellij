@@ -20,6 +20,8 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusListener;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.idea.crucible.CommentHighlighter;
+import com.intellij.openapi.project.Project;
 
 import java.util.*;
 
@@ -33,8 +35,17 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
     private List<CrucibleNotification> notifications = new ArrayList<CrucibleNotification>();
 
     private boolean firstRun = true;
+    private Project project;
 
     public CrucibleReviewNotifier() {
+    }
+
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
     }
 
     public void registerListener(CrucibleNotificationListener listener) {
@@ -133,7 +144,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
         }
 
         for (VersionedComment comment : newReview.getVersionedComments()) {
-			VersionedComment existing = null;
+            VersionedComment existing = null;
             for (VersionedComment oldComment : oldReview.getVersionedComments()) {
                 if (comment.getPermId().getId().equals(oldComment.getPermId().getId())) {
                     existing = oldComment;
@@ -142,6 +153,17 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
             }
             if (existing == null) {
                 notifications.add(new NewVersionedCommentNotification(newReview, comment));
+                try {
+                    for (CrucibleFileInfo file : newReview.getFiles()) {
+                        if (comment.getReviewItemId().equals(file.getPermId())) {
+                            if (project != null) {
+                                CommentHighlighter.updateCommentsInEditors(project, newReview, file);
+                            }
+                        }
+                    }
+                } catch (ValueNotYetInitialized valueNotYetInitialized) {
+                    valueNotYetInitialized.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
             } else {
                 checkVersionedReplies(newReview, existing, comment);
             }

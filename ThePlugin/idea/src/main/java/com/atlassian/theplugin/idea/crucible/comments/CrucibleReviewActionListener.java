@@ -17,8 +17,14 @@
 package com.atlassian.theplugin.idea.crucible.comments;
 
 import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.editor.Editor;
+
+import java.util.ArrayList;
 
 /**
  * Created by IntelliJ IDEA.
@@ -98,4 +104,5 @@ public class CrucibleReviewActionListener {
 
     public void removedComment(final ReviewData review, final Comment comment) {
     }
+
 }
