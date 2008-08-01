@@ -5,6 +5,7 @@ import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedCommentBean;
+import com.intellij.openapi.editor.Editor;
 
 /**
  * Created by IntelliJ IDEA.

@@ -3,32 +3,32 @@ package com.atlassian.theplugin.idea.crucible.events;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedCommentBean;
 import com.intellij.openapi.editor.Editor;
 
 /**
  * Created by IntelliJ IDEA.
  * User: lguminski
- * Date: Jul 28, 2008
- * Time: 7:33:40 AM
+ * Date: Jul 23, 2008
+ * Time: 11:48:39 AM
  * To change this template use File | Settings | File Templates.
  */
-public class VersionedCommentAboutToAdd extends CrucibleEvent {
+public class AddLineComment extends CrucibleEvent {
 	private ReviewData review;
 	private CrucibleFileInfo file;
-	private VersionedCommentBean newComment;
+	private int start;
+	private int end;
 	private Editor editor;
 
-	public VersionedCommentAboutToAdd(CrucibleReviewActionListener caller, ReviewData review,
-									  CrucibleFileInfo file, VersionedCommentBean newComment, Editor editor) {
+	public AddLineComment(CrucibleReviewActionListener caller, ReviewData review, CrucibleFileInfo file, Editor editor, int start, int end) {
 		super(caller);
 		this.review = review;
 		this.file = file;
-		this.newComment = newComment;
 		this.editor = editor;
+		this.start = start;
+		this.end = end;
 	}
 
 	protected void notify(CrucibleReviewActionListener listener) {
-		listener.aboutToAddVersionedComment(review, file, newComment, editor);
+		listener.aboutToAddLineComment(review, file, editor, start, end);
 	}
 }
