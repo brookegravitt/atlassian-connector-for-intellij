@@ -204,12 +204,9 @@
         <action id="ThePlugin.Tree.File.GroupByDir"
                 class="com.atlassian.theplugin.idea.action.tree.file.ToggleViewAction"
                 text="Group By Directory" icon="/nodes/folder.png"/>
-        <action id="ThePlugin.Tree.File.ExpandFiles"
-                class="com.atlassian.theplugin.idea.action.tree.file.ExpandFilesAction" text="Expand All"
+        <action id="ThePlugin.Tree.File.ExpandCollapseFiles"
+                class="com.atlassian.theplugin.idea.action.tree.file.ExpandCollapseFilesAction" text="Expand All"
                 icon="/actions/expandall.png"/>
-        <action id="ThePlugin.Tree.File.CollapseFiles"
-                class="com.atlassian.theplugin.idea.action.tree.file.CollapseFilesAction" text="Collapse All"
-                icon="/actions/collapseall.png"/>
 		<action id="ThePlugin.Crucible.ShowReviewItemDiffAction" class="com.atlassian.theplugin.idea.action.crucible.DiffRevisionsAction" text="Show diff" icon="/actions/diff.png" />
 
 
@@ -262,8 +259,7 @@
             <add-to-group anchor="last" group-id="ThePlugin.Bamboo.CommitListToolBar"/>
             <add-to-group anchor="last" group-id="ThePlugin.Crucible.ReviewFileListToolBar"/>
             <reference id="ThePlugin.Tree.File.GroupByDir"/>
-            <reference id="ThePlugin.Tree.File.ExpandFiles"/>
-            <reference id="ThePlugin.Tree.File.CollapseFiles"/>
+            <reference id="ThePlugin.Tree.File.ExpandCollapseFiles"/>
         </group>
 
         <!-- Crucible tool window panel related actions -->

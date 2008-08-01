@@ -1,9 +1,11 @@
 package com.atlassian.theplugin.idea.action.tree.file;
 
+import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
+import com.intellij.openapi.actionSystem.DataProvider;
 
 import java.awt.*;
 
@@ -15,7 +17,55 @@ import java.awt.*;
  * To change this template use File | Settings | File Templates.
  */
 public abstract class TreeAction extends AnAction {
+
+    @Override
+    public void update(final AnActionEvent e) {
+        AtlassianTreeWithToolbar tree = identifyTreeWithAllPossibleMeans(e);
+        if (tree != null) {
+            updateTreeAction(e, tree);
+        }
+    }
+
     public void actionPerformed(final AnActionEvent e) {
+        AtlassianTreeWithToolbar tree = identifyTreeWithAllPossibleMeans(e);
+        if (tree != null) {
+            executeTreeAction(tree);
+        }
+    }
+
+    private AtlassianTreeWithToolbar identifyTreeWithAllPossibleMeans(final AnActionEvent e) {
+        AtlassianTreeWithToolbar tree = findTreeM1(e);
+        if (tree == null) {
+            tree = findTreeM2(e);
+        }
+        if (tree == null) {
+            tree = findTreeM3(e);
+        }
+        return tree;
+    }
+
+    private AtlassianTreeWithToolbar findTreeM1(final AnActionEvent e) {
+        return (AtlassianTreeWithToolbar) e.getDataContext().getData(Constants.FILE_TREE);
+    }
+
+    private AtlassianTreeWithToolbar findTreeM2(final AnActionEvent e) {
+        AtlassianTreeWithToolbar tree = null;
+        Component component = DataKeys.CONTEXT_COMPONENT.getData(e.getDataContext());
+        Container parent = component.getParent();
+        while (parent != null) {
+            if (parent instanceof DataProvider) {
+                DataProvider o = (DataProvider) parent;
+                tree = (AtlassianTreeWithToolbar) o.getData(Constants.FILE_TREE);
+                if (tree != null){
+                    break;
+                }
+            }
+            parent = parent.getParent();
+        }
+        return tree;
+    }
+
+    private AtlassianTreeWithToolbar findTreeM3(final AnActionEvent e) {
         Component component = DataKeys.CONTEXT_COMPONENT.getData(e.getDataContext());
         Container parent = component.getParent();
         while (parent != null) {
@@ -25,11 +75,12 @@ public abstract class TreeAction extends AnAction {
             parent = parent.getParent();
         }
         if (parent == null) {
-            return;
+            return null;
         }
-        AtlassianTreeWithToolbar tree = (AtlassianTreeWithToolbar) parent;
-        executeTreeAction(tree);
+        return (AtlassianTreeWithToolbar) parent;
     }
 
     protected abstract void executeTreeAction(AtlassianTreeWithToolbar tree);
+    protected abstract void updateTreeAction(final AnActionEvent e, final AtlassianTreeWithToolbar tree);
+
 }
