@@ -209,6 +209,11 @@
                 icon="/actions/expandall.png"/>
 		<action id="ThePlugin.Crucible.ShowReviewItemDiffAction" class="com.atlassian.theplugin.idea.action.crucible.DiffRevisionsAction" text="Show diff" icon="/actions/diff.png" />
 
+        <action id="ArcRunSelection" class="com.atlassian.theplugin.idea.action.CommentAction" text="Add Crucible comment"
+                description="Review lines of code with Crucible" icon="/icons/crucible-blue-16.png">
+            <keyboard-shortcut keymap="$default" first-keystroke="alt C"/>
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+        </action>
 
 		<group id="ThePlugin.BambooToolWindowToolBar" popup="false" text="">
             <reference id="ThePlugin.ShowSettings"/>
