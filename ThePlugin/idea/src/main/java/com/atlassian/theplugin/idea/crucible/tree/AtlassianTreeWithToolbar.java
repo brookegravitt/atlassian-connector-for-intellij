@@ -8,6 +8,7 @@ import com.intellij.util.Icons;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import javax.swing.tree.TreePath;
 import java.awt.*;
 
 /**
@@ -95,10 +96,12 @@ public class AtlassianTreeWithToolbar extends ComponentWithToolbar {
 
 	public AtlassianTreeNode getSelectedTreeNode() {
 		if (tree != null) {
-			return (AtlassianTreeNode) tree.getSelectionPath().getLastPathComponent();
-		} else {
-			return null;
+			TreePath path = tree.getSelectionPath();
+			if (path != null) {
+				return (AtlassianTreeNode) path.getLastPathComponent();
+			}
 		}
+		return null;
 	}
 
 	public enum STATE {
