@@ -17,12 +17,12 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.commons.crucible.api.model.Comment;
-import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.CommentHighlighter;
+import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.ui.AtlassianToolbar;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
@@ -35,8 +35,8 @@ import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.file.FileNode;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.project.Project;
 import com.intellij.util.ui.UIUtil;
 
 import javax.swing.*;
@@ -46,7 +46,6 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  * Created by IntelliJ IDEA.

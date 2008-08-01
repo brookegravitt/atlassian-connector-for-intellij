@@ -17,11 +17,9 @@
 package com.atlassian.theplugin.notification.crucible;
 
 import com.atlassian.theplugin.commons.bamboo.StausIconBambooListener;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.idea.GenericHyperlinkListener;
 import com.atlassian.theplugin.idea.PluginToolWindow;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusIcon;
-import com.atlassian.theplugin.idea.crucible.CommentHighlighter;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.WindowManager;
 import thirdparty.javaworld.ClasspathHTMLEditorKit;

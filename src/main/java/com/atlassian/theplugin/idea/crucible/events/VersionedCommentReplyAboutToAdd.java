@@ -1,11 +1,10 @@
 package com.atlassian.theplugin.idea.crucible.events;
 
-import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
-import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedCommentBean;
-import com.intellij.openapi.editor.Editor;
+import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 
 /**
  * Created by IntelliJ IDEA.
@@ -15,21 +14,21 @@ import com.intellij.openapi.editor.Editor;
  * To change this template use File | Settings | File Templates.
  */
 public class VersionedCommentReplyAboutToAdd extends CrucibleEvent {
-	private ReviewData review;
-	private CrucibleFileInfo file;
-	private VersionedComment parentComment;
-	private VersionedCommentBean newComment;
+    private ReviewData review;
+    private CrucibleFileInfo file;
+    private VersionedComment parentComment;
+    private VersionedCommentBean newComment;
 
-	public VersionedCommentReplyAboutToAdd(CrucibleReviewActionListener caller, ReviewData review, CrucibleFileInfo file,
-									  VersionedComment parentComment, VersionedCommentBean newComment) {
-		super(caller);
-		this.review = review;
-		this.file = file;
-		this.parentComment = parentComment;
-		this.newComment = newComment;
-	}
+    public VersionedCommentReplyAboutToAdd(CrucibleReviewActionListener caller, ReviewData review, CrucibleFileInfo file,
+                                           VersionedComment parentComment, VersionedCommentBean newComment) {
+        super(caller);
+        this.review = review;
+        this.file = file;
+        this.parentComment = parentComment;
+        this.newComment = newComment;
+    }
 
-	protected void notify(CrucibleReviewActionListener listener) {
-		listener.aboutToAddVersionedCommentReply(review, file, parentComment, newComment);
-	}
+    protected void notify(CrucibleReviewActionListener listener) {
+        listener.aboutToAddVersionedCommentReply(review, file, parentComment, newComment);
+    }
 }

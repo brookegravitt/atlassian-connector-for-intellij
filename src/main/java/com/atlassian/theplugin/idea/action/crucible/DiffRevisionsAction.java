@@ -4,7 +4,6 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.events.ShowDiffEvent;
 import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
-import com.intellij.openapi.actionSystem.AnActionEvent;
 
 public class DiffRevisionsAction extends ReviewTreeAction {
 
