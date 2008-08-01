@@ -45,29 +45,7 @@ public final class FileTreeModelBuilder {
         // this is a utility class
     }
 
-    public static AtlassianTreeModel buildTreeModelFromCrucibleChangeSet(final ReviewData review,
-            final List<CrucibleFileInfo> files) {
-        FileNode root = new CrucibleChangeSetTitleNode(review, new AtlassianClickAction() {
-            public void execute(AtlassianTreeNode node, int noOfClicks) {
-                switch (noOfClicks) {
-                    case 1:
-                    case 2:
-                        ReviewActionEventBroker broker = IdeaHelper.getReviewActionEventBroker();
-                        broker.trigger(new FocusOnGeneralComments(CrucibleReviewActionListener.ANONYMOUS, review));
-                        break;
-                    default:
-                }
-            }
-        });
-        FileTreeModel model = new FileTreeModel(root);
-        for (CrucibleFileInfo f : files) {
-            model.addFile(root, f, review);
-        }
-        model.compactModel(model.getRoot());
-        return model;
-    }
-
-    public static AtlassianTreeModel buildTreeModelFromBambooChangeSet(Project project, BambooChangeSet changeSet) {
+	public static AtlassianTreeModel buildTreeModelFromBambooChangeSet(Project project, BambooChangeSet changeSet) {
         FileNode root = new FileNode("/", null);
         FileTreeModel model = new FileTreeModel(root);
         for (BambooFileInfo f : changeSet.getFiles()) {
@@ -77,15 +55,14 @@ public final class FileTreeModelBuilder {
         return model;
     }
 
-    @Nullable
+	@Nullable
     private static PsiFile guessCorrespondingPsiFile(final Project project, BambooFileInfo file) {
         final PsiFile[] psifiles = PsiManager.getInstance(project).getShortNamesCache().getFilesByName(
                 file.getFileDescriptor().getName());
         return CodeNavigationUtil.guessMatchingFile(file.getFileDescriptor().getUrl(), psifiles, project.getBaseDir());
     }
 
-
-    public static AtlassianTreeModel buildFlatTreeModelFromBambooChangeSet(final Project project, BambooChangeSet changeSet) {
+	public static AtlassianTreeModel buildFlatTreeModelFromBambooChangeSet(final Project project, BambooChangeSet changeSet) {
         FileTreeModel model = new FileTreeModel(new FileNode("/", null));
         for (BambooFileInfo f : changeSet.getFiles()) {
             PsiFile psiFile = guessCorrespondingPsiFile(project, f);
@@ -94,7 +71,8 @@ public final class FileTreeModelBuilder {
         return model;
     }
 
-    public static AtlassianTreeModel buildFlatModelFromCrucibleChangeSet(final ReviewData review,
+
+	public static AtlassianTreeModel buildFlatModelFromCrucibleChangeSet(final ReviewData review,
             List<CrucibleFileInfo> files) {
         FileTreeModel model = new FileTreeModel(new CrucibleChangeSetTitleNode(review, new AtlassianClickAction() {
             public void execute(AtlassianTreeNode node, int noOfClicks) {
@@ -108,13 +86,49 @@ public final class FileTreeModelBuilder {
                 }
             }
         }));
-        for (CrucibleFileInfo file : files) {
-            model.getRoot().addChild(new CrucibleFileNode(file));
+        for (final CrucibleFileInfo file : files) {
+            model.getRoot().addChild(new CrucibleFileNode(file, new AtlassianClickAction() {
+                public void execute(com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode node, int noOfClicks) {
+                    ReviewActionEventBroker broker = IdeaHelper.getReviewActionEventBroker();
+                    switch (noOfClicks) {
+                        case 1:
+                            broker.trigger(new FocusOnFileComments(CrucibleReviewActionListener.ANONYMOUS, review, file));
+                            break;
+                        case 2:
+                            broker.trigger(new ShowFile(CrucibleReviewActionListener.ANONYMOUS, review, file));
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }));
         }
         return model;
     }
 
-    private static class FileTreeModel extends AtlassianTreeModel {
+	public static AtlassianTreeModel buildTreeModelFromCrucibleChangeSet(final ReviewData review,
+			final List<CrucibleFileInfo> files) {
+		FileNode root = new CrucibleChangeSetTitleNode(review, new AtlassianClickAction() {
+			public void execute(AtlassianTreeNode node, int noOfClicks) {
+				switch (noOfClicks) {
+					case 1:
+					case 2:
+						ReviewActionEventBroker broker = IdeaHelper.getReviewActionEventBroker();
+						broker.trigger(new FocusOnGeneralComments(CrucibleReviewActionListener.ANONYMOUS, review));
+						break;
+					default:
+				}
+			}
+		});
+		FileTreeModel model = new FileTreeModel(root);
+		for (CrucibleFileInfo f : files) {
+			model.addFile(root, f, review);
+		}
+		model.compactModel(model.getRoot());
+		return model;
+	}
+
+	private static class FileTreeModel extends AtlassianTreeModel {
         public FileTreeModel(FileNode root) {
             super(root);
         }
