@@ -19,7 +19,12 @@ public class AddLineComment extends CrucibleEvent {
 	private int end;
 	private Editor editor;
 
-	public AddLineComment(CrucibleReviewActionListener caller, ReviewData review, CrucibleFileInfo file, Editor editor, int start, int end) {
+	public AddLineComment(CrucibleReviewActionListener caller,
+                          ReviewData review,
+                          CrucibleFileInfo file,
+                          Editor editor,
+                          int start,
+                          int end) {
 		super(caller);
 		this.review = review;
 		this.file = file;

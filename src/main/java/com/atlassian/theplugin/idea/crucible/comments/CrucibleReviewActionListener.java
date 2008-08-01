@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,14 +17,8 @@
 package com.atlassian.theplugin.idea.crucible.comments;
 
 import com.atlassian.theplugin.commons.crucible.api.model.*;
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.editor.Editor;
-
-import java.util.ArrayList;
 
 /**
  * Created by IntelliJ IDEA.
@@ -51,49 +45,59 @@ public class CrucibleReviewActionListener {
     public void focusOnFileComments(ReviewData review, CrucibleFileInfo file) {
     }
 
-	public void showFile(ReviewData review, CrucibleFileInfo file) {
-	}
+    public void showFile(ReviewData review, CrucibleFileInfo file) {
+    }
 
-	public void showDiff(CrucibleFileInfo file) {
-	}
+    public void showDiff(CrucibleFileInfo file) {
+    }
 
-	public void aboutToAddLineComment(ReviewData review, CrucibleFileInfo file, Editor editor, int start, int end) {		
-	}
+    public void aboutToAddLineComment(ReviewData review, CrucibleFileInfo file, Editor editor, int start, int end) {
+    }
 
-	public void aboutToAddVersionedCommentReply(ReviewData review, CrucibleFileInfo file,
-            VersionedComment parentComment, VersionedCommentBean newComment) {
-	}
+    public void aboutToAddVersionedCommentReply(ReviewData review, CrucibleFileInfo file,
+                                                VersionedComment parentComment, VersionedCommentBean newComment) {
+    }
 
-	public void createdVersionedCommentReply(ReviewData review, CrucibleFileInfo file,
-            VersionedComment parentComment, VersionedComment comment) {
-	}
+    public void createdVersionedCommentReply(ReviewData review, CrucibleFileInfo file,
+                                             VersionedComment parentComment, VersionedComment comment) {
+    }
 
-	public void aboutToAddGeneralCommentReply(ReviewData review, GeneralComment parentComment, GeneralCommentBean newComment) {
-	}
+    public void aboutToAddGeneralCommentReply(ReviewData review,
+                                              GeneralComment parentComment,
+                                              GeneralCommentBean newComment) {
+    }
 
-	public void createdGeneralCommentReply(ReviewData review, GeneralComment parentComment, GeneralComment comment) {
-	}
+    public void createdGeneralCommentReply(ReviewData review, GeneralComment parentComment, GeneralComment comment) {
+    }
 
-	public void aboutToAddGeneralComment(ReviewData review, GeneralCommentBean newComment) {
-	}
+    public void aboutToAddGeneralComment(ReviewData review, GeneralCommentBean newComment) {
+    }
 
-	public void createdGeneralComment(ReviewData review, GeneralComment comment) {
-	}
+    public void createdGeneralComment(ReviewData review, GeneralComment comment) {
+    }
 
-	public void aboutToAddVersionedComment(ReviewData review, CrucibleFileInfo file, VersionedCommentBean comment, Editor editor) {
-	}
+    public void aboutToAddVersionedComment(ReviewData review,
+                                           CrucibleFileInfo file,
+                                           VersionedCommentBean comment,
+                                           Editor editor) {
+    }
 
-	public void createdVersionedComment(ReviewData review, CrucibleFileInfo file, VersionedComment comment, Editor editor) {
-	}
+    public void createdVersionedComment(ReviewData review,
+                                        CrucibleFileInfo file,
+                                        VersionedComment comment,
+                                        Editor editor) {
+    }
 
     public void aboutToUpdateVersionedComment(final ReviewData review, final CrucibleFileInfo file,
-            final VersionedComment comment) {
+                                              final VersionedComment comment) {
     }
 
     public void aboutToUpdateGeneralComment(final ReviewData review, final GeneralComment comment) {
     }
 
-    public void updatedVersionedComment(final ReviewData review, final CrucibleFileInfo file, final VersionedComment comment) {
+    public void updatedVersionedComment(final ReviewData review,
+                                        final CrucibleFileInfo file,
+                                        final VersionedComment comment) {
     }
 
     public void updatedGeneralComment(final ReviewData review, final GeneralComment comment) {

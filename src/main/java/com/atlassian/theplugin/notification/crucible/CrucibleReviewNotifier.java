@@ -162,7 +162,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
                         }
                     }
                 } catch (ValueNotYetInitialized valueNotYetInitialized) {
-                    valueNotYetInitialized.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    valueNotYetInitialized.printStackTrace();
                 }
             } else {
                 checkVersionedReplies(newReview, existing, comment);
