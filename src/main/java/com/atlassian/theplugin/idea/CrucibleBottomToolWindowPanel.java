@@ -191,7 +191,7 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
             try {
                 GeneralComment comment = facade.addGeneralComment(review.getServer(), review.getPermId(),
                         newComment);
-                eventBroker.trigger(new GeneralCommentAdded(this, review, comment));
+				eventBroker.trigger(new GeneralCommentAdded(this, review, comment));
             } catch (RemoteApiException e) {
                 IdeaHelper.handleRemoteApiException(project, e);
             } catch (ServerPasswordNotProvidedException e) {
@@ -218,13 +218,15 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
             try {
                 VersionedComment newComment = facade.addVersionedComment(review.getServer(), review.getPermId(),
                         file.getPermId(), comment);
-                eventBroker.trigger(new VersionedCommentAdded(this, review, file, newComment));
+				CrucibleFileInfoImpl afile = (CrucibleFileInfoImpl) file;
+				afile.addVersionedComment(newComment);
+				eventBroker.trigger(new VersionedCommentAdded(this, review, file, newComment));
             } catch (RemoteApiException e) {
                 IdeaHelper.handleRemoteApiException(project, e);
             } catch (ServerPasswordNotProvidedException e) {
                 IdeaHelper.handleMissingPassword(e);
-            }
-        }
+			}
+		}
 
         @Override
         public void aboutToAddVersionedCommentReply(ReviewData review, CrucibleFileInfo file,
