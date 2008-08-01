@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -42,101 +42,101 @@ import java.awt.event.ActionListener;
  * To change this template use File | Settings | File Templates.
  */
 public class NewVersionButtonListener implements ActionListener {
-	private ConnectionWrapper checkerThread;
-	private static final long CHECK_CANCEL_INTERVAL = 500; //milis
-	private GeneralConfigForm generalConfigForm;
-	private InfoServer.VersionInfo newVersion;
-	private GeneralConfigurationBean updateConfig = new GeneralConfigurationBean();
+    private ConnectionWrapper checkerThread;
+    private static final long CHECK_CANCEL_INTERVAL = 500; //milis
+    private GeneralConfigForm generalConfigForm;
+    private InfoServer.VersionInfo newVersion;
+    private GeneralConfigurationBean updateConfig = new GeneralConfigurationBean();
 
-	public NewVersionButtonListener(GeneralConfigForm generalConfigForm) {
-		this.generalConfigForm = generalConfigForm;
-	}
-	
-	public void actionPerformed(ActionEvent event) {
-		updateConfig.setAnonymousFeedbackEnabled(generalConfigForm.getIsAnonymousFeedbackEnabled());
-		updateConfig.setAutoUpdateEnabled(true);	// check now button always checks for new version
-		updateConfig.setCheckUnstableVersionsEnabled(generalConfigForm.getCheckNewVersionAll().isSelected());
-		updateConfig.setUid(IdeaHelper.getAppComponent().getState().getGeneralConfigurationData().getUid());
+    public NewVersionButtonListener(GeneralConfigForm generalConfigForm) {
+        this.generalConfigForm = generalConfigForm;
+    }
 
-		ProgressManager.getInstance().run(new UpdateModalTask());
-	}
+    public void actionPerformed(ActionEvent event) {
+        updateConfig.setAnonymousFeedbackEnabled(generalConfigForm.getIsAnonymousFeedbackEnabled());
+        updateConfig.setAutoUpdateEnabled(true);    // check now button always checks for new version
+        updateConfig.setCheckUnstableVersionsEnabled(generalConfigForm.getCheckNewVersionAll().isSelected());
+        updateConfig.setUid(IdeaHelper.getAppComponent().getState().getGeneralConfigurationData().getUid());
 
-	private class UpdateServerConnection extends Connector {
-		public void connect() throws ThePluginException {
-			NewVersionChecker.getInstance(IdeaHelper.getPluginConfiguration()).doRun(new UpdateActionHandler() {
-				public void doAction(InfoServer.VersionInfo versionInfo, boolean showConfigPath) throws ThePluginException {
-					newVersion = versionInfo;
-				}
-			}, false, updateConfig);
-		}
-	}
+        ProgressManager.getInstance().run(new UpdateModalTask());
+    }
 
-	private class UpdateModalTask extends Task.Modal {
-		public UpdateModalTask() {
-			super(IdeaHelper.getCurrentProject(), "Checking available updates", true);
-		}
+    private class UpdateServerConnection extends Connector {
+        public void connect() throws ThePluginException {
+            NewVersionChecker.getInstance(IdeaHelper.getPluginConfiguration()).doRun(new UpdateActionHandler() {
+                public void doAction(InfoServer.VersionInfo versionInfo, boolean showConfigPath) throws ThePluginException {
+                    newVersion = versionInfo;
+                }
+            }, false, updateConfig);
+        }
+    }
 
-		public void run(ProgressIndicator indicator) {
-			newVersion = null;
-			setCancelText("Stop");
-			indicator.setText("Connecting...");
-			indicator.setFraction(0);
-			indicator.setIndeterminate(true);
-			checkerThread = new ConnectionWrapper(new UpdateServerConnection(), "atlassian-idea-plugin New version checker");
-			checkerThread.start();
-			while (checkerThread.getConnectionState() == ConnectionWrapper.ConnectionState.NOT_FINISHED) {
-				try {
-					if (indicator.isCanceled()) {
-						checkerThread.setInterrupted();
-						//t.interrupt();
-						break;
-					} else {
-						Thread.sleep(CHECK_CANCEL_INTERVAL);
-					}
-				} catch (InterruptedException e) {
-					PluginUtil.getLogger().info(e.getMessage());
-				}
-			}
+    private class UpdateModalTask extends Task.Modal {
+        public UpdateModalTask() {
+            super(IdeaHelper.getCurrentProject(), "Checking available updates", true);
+        }
 
-			switch (checkerThread.getConnectionState()) {
-				case FAILED:
-					EventQueue.invokeLater(new Runnable() {
-						public void run() {
-							showMessageDialog(checkerThread.getErrorMessage(),
-									"Error occured when contacting update server", Messages.getErrorIcon());
-						}
-					});
-					break;
-				case INTERUPTED:
-					PluginUtil.getLogger().debug("Cancel was pressed during the upgrade process");
-					break;
-				case NOT_FINISHED:
-					break;
-				case SUCCEEDED:
-					if (newVersion != null) {
-						EventQueue.invokeLater(new Runnable() {
-							public void run() {
-								try {
-									new NewVersionConfirmHandler(updateConfig).doAction(newVersion, false);
-								} catch (ThePluginException e) {
-									showMessageDialog(e.getMessage(),
-											"Error retrieving new version", Messages.getErrorIcon());
-								}
-							}
-						});
-					} else {
-						EventQueue.invokeLater(new Runnable() {
-							public void run() {
-								showMessageDialog("You have the latest version (" + PluginUtil.getInstance().getVersion() + ")",
-										"Version checked", Messages.getInformationIcon());
-							}
-						});
-					}
-					break;
-				default:
-					PluginUtil.getLogger().info("Unexpected thread state: "
-							+ checkerThread.getConnectionState().toString());
-			}
-		}
-	}
+        public void run(ProgressIndicator indicator) {
+            newVersion = null;
+            setCancelText("Stop");
+            indicator.setText("Connecting...");
+            indicator.setFraction(0);
+            indicator.setIndeterminate(true);
+            checkerThread = new ConnectionWrapper(new UpdateServerConnection(), "atlassian-idea-plugin New version checker");
+            checkerThread.start();
+            while (checkerThread.getConnectionState() == ConnectionWrapper.ConnectionState.NOT_FINISHED) {
+                try {
+                    if (indicator.isCanceled()) {
+                        checkerThread.setInterrupted();
+                        //t.interrupt();
+                        break;
+                    } else {
+                        Thread.sleep(CHECK_CANCEL_INTERVAL);
+                    }
+                } catch (InterruptedException e) {
+                    PluginUtil.getLogger().info(e.getMessage());
+                }
+            }
+
+            switch (checkerThread.getConnectionState()) {
+                case FAILED:
+                    EventQueue.invokeLater(new Runnable() {
+                        public void run() {
+                            showMessageDialog(checkerThread.getErrorMessage(),
+                                    "Error occured when contacting update server", Messages.getErrorIcon());
+                        }
+                    });
+                    break;
+                case INTERUPTED:
+                    PluginUtil.getLogger().debug("Cancel was pressed during the upgrade process");
+                    break;
+                case NOT_FINISHED:
+                    break;
+                case SUCCEEDED:
+                    if (newVersion != null) {
+                        EventQueue.invokeLater(new Runnable() {
+                            public void run() {
+                                try {
+                                    new NewVersionConfirmHandler(updateConfig).doAction(newVersion, false);
+                                } catch (ThePluginException e) {
+                                    showMessageDialog(e.getMessage(),
+                                            "Error retrieving new version", Messages.getErrorIcon());
+                                }
+                            }
+                        });
+                    } else {
+                        EventQueue.invokeLater(new Runnable() {
+                            public void run() {
+                                showMessageDialog("You have the latest version (" + PluginUtil.getInstance().getVersion() + ")",
+                                        "Version checked", Messages.getInformationIcon());
+                            }
+                        });
+                    }
+                    break;
+                default:
+                    PluginUtil.getLogger().info("Unexpected thread state: "
+                            + checkerThread.getConnectionState().toString());
+            }
+        }
+    }
 }
