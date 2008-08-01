@@ -50,7 +50,7 @@ public abstract class ComponentWithToolbar extends JPanel implements DataProvide
     @Nullable
     public Object getData(@NonNls final String dataId) {
         if (dataId.equals(Constants.FILE_TREE)) {
-            return getTreeComponent();
+            return this;
         }
         return null;
     }
