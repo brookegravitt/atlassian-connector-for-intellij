@@ -207,6 +207,7 @@
         <action id="ThePlugin.Tree.File.ExpandCollapseFiles"
                 class="com.atlassian.theplugin.idea.action.tree.file.ExpandCollapseFilesAction" text="Expand All"
                 icon="/actions/expandall.png"/>
+		<action id="ThePlugin.Crucible.ShowFileAction" class="com.atlassian.theplugin.idea.action.crucible.ShowFileAction" text="Show file" icon="/actions/menu-open.png" />
 		<action id="ThePlugin.Crucible.ShowReviewItemDiffAction" class="com.atlassian.theplugin.idea.action.crucible.DiffRevisionsAction" text="Show diff" icon="/actions/diff.png" />
 
         <action id="ArcRunSelection" class="com.atlassian.theplugin.idea.action.CommentAction" text="Add Crucible comment"
@@ -257,6 +258,7 @@
         </group>
 
         <group id="ThePlugin.Crucible.ReviewFileListToolBar" popup="false">
+			<reference id="ThePlugin.Crucible.ShowFileAction" />			
 			<reference id="ThePlugin.Crucible.ShowReviewItemDiffAction" />
 		</group>
 

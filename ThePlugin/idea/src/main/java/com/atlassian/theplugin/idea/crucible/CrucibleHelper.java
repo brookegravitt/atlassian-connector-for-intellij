@@ -45,19 +45,23 @@ public final class CrucibleHelper {
 	 * Adds StripeMark on the right side of file window with set tool tip text that corresponde
 	 * to VersionedComment.getMessage content
 	 *
-	 * @param project	   project
-	 * @param reviewAdapter adapter
+	 * @param project	   	project
+	 * @param review		review data
 	 * @param reviewItem	review item
 	 */
-	public static void showVirtualFileWithComments(final Project project, final ReviewData reviewAdapter,
+	public static void showVirtualFileWithComments(final Project project,
+			final ReviewData review,
 			final CrucibleFileInfo reviewItem) {
+
+		int line = 1;
+
 		java.util.List<VersionedComment> fileComments;
 		try {
 			fileComments = reviewItem.getVersionedComments();
 		} catch (ValueNotYetInitialized valueNotYetInitialized) {
 			try {
 				fileComments = CrucibleServerFacadeImpl.getInstance()
-						.getVersionedComments(reviewAdapter.getServer(), reviewAdapter.getPermId(), reviewItem.getPermId());
+						.getVersionedComments(review.getServer(), review.getPermId(), reviewItem.getPermId());
 			} catch (RemoteApiException e) {
 				PluginUtil.getLogger().error(e.getMessage());
 				return;
@@ -66,13 +70,6 @@ public final class CrucibleHelper {
 				return;
 			}
 		}
-		showVirtualFileWithComments(project, reviewItem, fileComments);
-	}
-
-	public static void showVirtualFileWithComments(final Project project, final CrucibleFileInfo reviewItem,
-			final java.util.List<VersionedComment> fileComments) {
-
-		int line = 1;
 
 		if (!fileComments.isEmpty()) {
 			line = fileComments.iterator().next().getFromStartLine();
@@ -95,13 +92,12 @@ public final class CrucibleHelper {
 				Document displayDocument = new FileContent(project, displayFile.getFile()).getDocument();
 				Document referenceDocument = new FileContent(project, referenceFile).getDocument();
 				new ChangeViewer(project, editor, referenceDocument, displayDocument).highlightChangesInEditor();
-				CommentHighlighter.highlightCommentsInEditor(project, editor, fileComments);
+				CommentHighlighter.highlightCommentsInEditor(project, editor, review, reviewItem);
 			}
 		});
 	}
 
-	public static void showRevisionDiff(final Project project, final ReviewData reviewAdapter,
-			final CrucibleFileInfo reviewItem) {
+	public static void showRevisionDiff(final Project project, final CrucibleFileInfo reviewItem) {
 
 		VcsIdeaHelper.openFileWithDiffs(project
 				, reviewItem.getFileDescriptor().getAbsoluteUrl()
