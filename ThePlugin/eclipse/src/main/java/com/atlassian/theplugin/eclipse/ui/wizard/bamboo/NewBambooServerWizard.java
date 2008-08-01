@@ -27,41 +27,46 @@ import com.atlassian.theplugin.eclipse.view.bamboo.BambooConfigurationStorage;
  * 
  * @author Alexander Gurov
  */
-public class NewBambooServerWizard extends AbstractSVNWizard implements INewWizard {
+public class NewBambooServerWizard extends AbstractSVNWizard implements
+		INewWizard {
 	protected AddBambooServerPage serverPage;
 	protected IBambooServer editable;
 	protected boolean performAction;
 	protected IBambooServer backup;
-	
+
 	public NewBambooServerWizard() {
 		this(null, true);
 	}
-	
+
 	public NewBambooServerWizard(IBambooServer editable, boolean performAction) {
 		super();
 		this.performAction = performAction;
 		this.editable = editable;
 		if (this.editable != null) {
-			this.setWindowTitle(Activator.getDefault().getResource("NewBambooServerWizard.Title.Edit"));
-			this.backup = BambooConfigurationStorage.instance().newBambooServer();
-			BambooConfigurationStorage.instance().copyBambooServer(this.backup, this.editable);
-		}
-		else {
-			this.setWindowTitle(Activator.getDefault().getResource("NewBambooServerWizard.Title.New"));
+			this.setWindowTitle(Activator.getDefault().getResource(
+					"NewBambooServerWizard.Title.Edit"));
+			this.backup = BambooConfigurationStorage.instance()
+					.newBambooServer();
+			BambooConfigurationStorage.instance().copyBambooServer(this.backup,
+					this.editable);
+		} else {
+			this.setWindowTitle(Activator.getDefault().getResource(
+					"NewBambooServerWizard.Title.New"));
 		}
 	}
-	
+
 	public void addPages() {
 		this.addPage(this.serverPage = new AddBambooServerPage(this.editable));
 	}
-	
+
 	public IActionOperation getOperationToPerform() {
 		return this.serverPage.getOperationToPeform();
 	}
-	
+
 	public boolean performCancel() {
 		if (this.editable != null) {
-			BambooConfigurationStorage.instance().copyBambooServer(this.editable, this.backup);
+			BambooConfigurationStorage.instance().copyBambooServer(
+					this.editable, this.backup);
 		}
 		return super.performCancel();
 	}
@@ -74,15 +79,15 @@ public class NewBambooServerWizard extends AbstractSVNWizard implements INewWiza
 					UIMonitorUtil.doTaskBusyDefault(op);
 				}
 			}
-			
+
 			return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		
+
 	}
 
 }

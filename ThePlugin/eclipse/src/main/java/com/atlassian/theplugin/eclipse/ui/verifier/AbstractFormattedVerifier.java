@@ -17,54 +17,58 @@ import java.util.Map;
 
 import org.eclipse.swt.widgets.Control;
 
-
 /**
  * Abstract verifier implementation, that provides formatted message support
  * 
  * @author Alexander Gurov
  */
 public abstract class AbstractFormattedVerifier extends AbstractVerifier {
-    public static final String FIELD_NAME = "$FIELD_NAME$";
-    protected Map<String, String> placeHolders;
+	public static final String FIELD_NAME = "$FIELD_NAME$";
+	protected Map<String, String> placeHolders;
 
-    public AbstractFormattedVerifier(String fieldName) {
-        super();
-        this.placeHolders = new HashMap<String, String>();
-        this.setPlaceHolder(AbstractFormattedVerifier.FIELD_NAME, fieldName);
-    }
+	public AbstractFormattedVerifier(String fieldName) {
+		super();
+		this.placeHolders = new HashMap<String, String>();
+		this.setPlaceHolder(AbstractFormattedVerifier.FIELD_NAME, fieldName);
+	}
 
 	public void setPlaceHolder(String placeHolder, String value) {
 		this.placeHolders.put(placeHolder, value);
 	}
-	
+
 	public String getPlaceHolder(String placeHolder) {
-		return (String)this.placeHolders.get(placeHolder);
+		return (String) this.placeHolders.get(placeHolder);
 	}
-	
-    protected String getErrorMessage(Control input) {
-        return this.getFormattedMessage(this.getErrorMessageImpl(input));
-    }
 
-    protected String getWarningMessage(Control input) {
-        return this.getFormattedMessage(this.getWarningMessageImpl(input));
-    }
+	protected String getErrorMessage(Control input) {
+		return this.getFormattedMessage(this.getErrorMessageImpl(input));
+	}
 
-    protected abstract String getErrorMessageImpl(Control input);
-    protected abstract String getWarningMessageImpl(Control input);
+	protected String getWarningMessage(Control input) {
+		return this.getFormattedMessage(this.getWarningMessageImpl(input));
+	}
+
+	protected abstract String getErrorMessageImpl(Control input);
+
+	protected abstract String getWarningMessageImpl(Control input);
 
 	protected String getFormattedMessage(String message) {
-	    if (message != null) {
-			for (Iterator<Map.Entry<String, String>> it = this.placeHolders.entrySet().iterator(); it.hasNext(); ) {
-				Map.Entry<String, String> entry = (Map.Entry<String, String>)it.next();
-				String key = (String)entry.getKey();
-				String value = entry.getValue() == null ? "" : entry.getValue().toString();
+		if (message != null) {
+			for (Iterator<Map.Entry<String, String>> it = this.placeHolders
+					.entrySet().iterator(); it.hasNext();) {
+				Map.Entry<String, String> entry = (Map.Entry<String, String>) it
+						.next();
+				String key = (String) entry.getKey();
+				String value = entry.getValue() == null ? "" : entry.getValue()
+						.toString();
 				int idx = message.indexOf(key);
 				if (idx != -1) {
-				    message = message.substring(0, idx) + value + message.substring(idx + key.length());
+					message = message.substring(0, idx) + value
+							+ message.substring(idx + key.length());
 				}
 			}
-	    }
+		}
 		return message;
 	}
-	
+
 }

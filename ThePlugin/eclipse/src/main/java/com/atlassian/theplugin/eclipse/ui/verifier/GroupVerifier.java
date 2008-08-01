@@ -17,25 +17,26 @@ import java.util.Map;
 
 import org.eclipse.swt.widgets.Control;
 
-
 /**
- * Group verifier allows us to verify dedicated group of controls placed on the panel
+ * Group verifier allows us to verify dedicated group of controls placed on the
+ * panel
  * 
  * @author Alexander Gurov
  */
 public class GroupVerifier extends CompositeVerifier {
-    protected Map<AbstractVerifier, Control> componentsMap;
-    
-    public GroupVerifier() {
-        super();
-        this.componentsMap = new HashMap<AbstractVerifier, Control>();
-    }
+	protected Map<AbstractVerifier, Control> componentsMap;
+
+	public GroupVerifier() {
+		super();
+		this.componentsMap = new HashMap<AbstractVerifier, Control>();
+	}
 
 	public boolean verify() {
 		this.hasWarning = false;
-		for (Iterator<AbstractVerifier> it = this.verifiers.iterator(); it.hasNext(); ) {
-			AbstractVerifier iVer = (AbstractVerifier)it.next();
-			if (!iVer.verify((Control)this.componentsMap.get(iVer))) {
+		for (Iterator<AbstractVerifier> it = this.verifiers.iterator(); it
+				.hasNext();) {
+			AbstractVerifier iVer = (AbstractVerifier) it.next();
+			if (!iVer.verify((Control) this.componentsMap.get(iVer))) {
 				return false;
 			}
 		}
@@ -49,26 +50,28 @@ public class GroupVerifier extends CompositeVerifier {
 		super.add(verifier);
 		this.componentsMap.put(verifier, cmp);
 	}
-    
+
 	public void remove(Control cmp) {
-	    for (Iterator<Map.Entry<AbstractVerifier, Control>> it = this.componentsMap.entrySet().iterator(); it.hasNext(); ) {
-	        Map.Entry<AbstractVerifier, Control> entry = (Map.Entry<AbstractVerifier, Control>)it.next();
-	        if (cmp == entry.getValue()) {
-	            AbstractVerifier verifier = (AbstractVerifier)entry.getKey();
+		for (Iterator<Map.Entry<AbstractVerifier, Control>> it = this.componentsMap
+				.entrySet().iterator(); it.hasNext();) {
+			Map.Entry<AbstractVerifier, Control> entry = (Map.Entry<AbstractVerifier, Control>) it
+					.next();
+			if (cmp == entry.getValue()) {
+				AbstractVerifier verifier = (AbstractVerifier) entry.getKey();
 				super.remove(verifier);
 				it.remove();
 				break;
-	        }
-	    }
+			}
+		}
 	}
-    
+
 	public void removeAll() {
 		super.removeAll();
 		this.componentsMap.clear();
 	}
-        
+
 	public Iterator<Control> getComponents() {
 		return this.componentsMap.values().iterator();
 	}
-	
+
 }

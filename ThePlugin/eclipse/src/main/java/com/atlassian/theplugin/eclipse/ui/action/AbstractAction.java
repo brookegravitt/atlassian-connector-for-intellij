@@ -41,13 +41,15 @@ import com.atlassian.theplugin.eclipse.util.ProgressMonitorUtility;
  */
 @SuppressWarnings("restriction")
 public abstract class AbstractAction extends TeamAction {
-	// copy paste in order to fix problems with Eclipse 3.0.x->3.1.x->3.2 API changes
+	// copy paste in order to fix problems with Eclipse 3.0.x->3.1.x->3.2 API
+	// changes
 	private IWorkbenchWindow window;
 	private Shell shell;
 	private ISelectionListener selectionListener = new ISelectionListener() {
 		public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 			if (selection instanceof IStructuredSelection) {
-				AbstractAction.this.checkSelection((IStructuredSelection)selection);
+				AbstractAction.this
+						.checkSelection((IStructuredSelection) selection);
 			}
 		}
 	};
@@ -57,7 +59,8 @@ public abstract class AbstractAction extends TeamAction {
 	}
 
 	public final void run(final IAction action) {
-		ProgressMonitorUtility.doTaskExternal(new AbstractNonLockingOperation("Operation.CallMenuAction") {
+		ProgressMonitorUtility.doTaskExternal(new AbstractNonLockingOperation(
+				"Operation.CallMenuAction") {
 			protected void runImpl(IProgressMonitor monitor) throws Exception {
 				if (AbstractAction.this.isEnabled()) {
 					AbstractAction.this.runImpl(action);
@@ -65,79 +68,92 @@ public abstract class AbstractAction extends TeamAction {
 			}
 		}, new NullProgressMonitor(), null);
 	}
-	
+
 	public abstract boolean isEnabled();
+
 	public abstract void runImpl(IAction action);
-	
-	protected void execute(IAction action) throws InvocationTargetException, InterruptedException {
+
+	protected void execute(IAction action) throws InvocationTargetException,
+			InterruptedException {
 		// compatibility with 3.3
 	}
-	
+
 	protected ICancellableOperationWrapper runBusy(IActionOperation operation) {
-		return UIMonitorUtil.doTaskBusy(operation, this.getOperationWrapperFactory());
+		return UIMonitorUtil.doTaskBusy(operation, this
+				.getOperationWrapperFactory());
 	}
-	
-	protected ICancellableOperationWrapper runNow(IActionOperation operation, boolean cancellable) {
-		return UIMonitorUtil.doTaskNow(this.getShell(), operation, cancellable, this.getOperationWrapperFactory());
+
+	protected ICancellableOperationWrapper runNow(IActionOperation operation,
+			boolean cancellable) {
+		return UIMonitorUtil.doTaskNow(this.getShell(), operation, cancellable,
+				this.getOperationWrapperFactory());
 	}
-	
-	protected ICancellableOperationWrapper runScheduled(IActionOperation operation) {
-		return UIMonitorUtil.doTaskScheduled(this.getTargetPart(), operation, this.getOperationWrapperFactory());
+
+	protected ICancellableOperationWrapper runScheduled(
+			IActionOperation operation) {
+		return UIMonitorUtil.doTaskScheduled(this.getTargetPart(), operation,
+				this.getOperationWrapperFactory());
 	}
-	
+
 	protected IOperationWrapperFactory getOperationWrapperFactory() {
 		return new DefaultOperationWrapperFactory();
 	}
 
 	protected void handleException(Exception ex) {
-		this.handle(ex, Activator.getDefault().getResource("Error.ActionFailed"), 
-				Activator.getDefault().getResource("Error.ActionFailed.Message"));
+		this.handle(ex, Activator.getDefault()
+				.getResource("Error.ActionFailed"), Activator.getDefault()
+				.getResource("Error.ActionFailed.Message"));
 	}
-	
+
 	public void selectionChanged(IAction action, ISelection selection) {
 		try {
-			if (selection == null || selection.isEmpty() || !(selection instanceof IStructuredSelection)) {
+			if (selection == null || selection.isEmpty()
+					|| !(selection instanceof IStructuredSelection)) {
 				action.setEnabled(false);
 				return;
 			}
-			
-			this.checkSelection((IStructuredSelection)selection);
-			
+
+			this.checkSelection((IStructuredSelection) selection);
+
 			super.selectionChanged(action, selection);
-		}
-		catch (Throwable ex) {
-			LoggedOperation.reportError(Activator.getDefault().getResource("Error.MenuEnablement"), ex);
+		} catch (Throwable ex) {
+			LoggedOperation.reportError(Activator.getDefault().getResource(
+					"Error.MenuEnablement"), ex);
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public Object []getSelectedResources(Class c) {
-		// This method is created in order to provide fix for Eclipse 3.1.0 where identical method is removed from TeamAction 
+	public Object[] getSelectedResources(Class c) {
+		// This method is created in order to provide fix for Eclipse 3.1.0
+		// where identical method is removed from TeamAction
 		return TeamAction.getSelectedAdaptables(this.getSelection(), c);
 	}
-	
+
 	protected Shell getShell() {
 		return this.shell != null ? this.shell : super.getShell();
 	}
-	
+
 	public IWorkbenchWindow getWindow() {
 		return this.window;
 	}
-	
+
 	public void init(IWorkbenchWindow window) {
 		this.window = window;
-		this.shell = this.window.getShell();	
-		this.window.getSelectionService().addPostSelectionListener(this.selectionListener);
+		this.shell = this.window.getShell();
+		this.window.getSelectionService().addPostSelectionListener(
+				this.selectionListener);
 	}
-	
+
 	public void dispose() {
 		if (this.window != null) {
-			this.window.getSelectionService().removePostSelectionListener(this.selectionListener);
+			this.window.getSelectionService().removePostSelectionListener(
+					this.selectionListener);
 		}
 		super.dispose();
 	}
-	
+
 	protected abstract void checkSelection(IStructuredSelection selection);
+
 	protected abstract IStructuredSelection getSelection();
-	
+
 }

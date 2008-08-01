@@ -61,7 +61,7 @@ public class MyStringFieldEditor extends FieldEditor {
      * Text limit constant (value <code>-1</code>) indicating unlimited
      * text limit and width.
      */
-    public static int UNLIMITED = -1;
+    private static final int UNLIMITED = -1;
 
     /**
      * Cached valid state.
@@ -76,7 +76,7 @@ public class MyStringFieldEditor extends FieldEditor {
     /**
      * The text field, or <code>null</code> if none.
      */
-    Text textField;
+    private Text textField;
 
     /**
      * Width of text field in characters; initially unlimited.
@@ -132,7 +132,7 @@ public class MyStringFieldEditor extends FieldEditor {
         setValidateStrategy(strategy);
         isValid = false;
         errorMessage = JFaceResources
-                .getString("StringFieldEditor.errorMessage");//$NON-NLS-1$
+                .getString("StringFieldEditor.errorMessage"); //$NON-NLS-1$
         createControl(parent);
     }
 
@@ -239,7 +239,7 @@ public class MyStringFieldEditor extends FieldEditor {
         if (widthInChars != UNLIMITED) {
             GC gc = new GC(textField);
             try {
-                Point extent = gc.textExtent("X");//$NON-NLS-1$
+                Point extent = gc.textExtent("X"); //$NON-NLS-1$
                 gd.widthHint = widthInChars * extent.x;
             } finally {
                 gc.dispose();
@@ -365,14 +365,14 @@ public class MyStringFieldEditor extends FieldEditor {
                 });
                 break;
             default:
-                Assert.isTrue(false, "Unknown validate strategy");//$NON-NLS-1$
+                Assert.isTrue(false, "Unknown validate strategy"); //$NON-NLS-1$
             }
             textField.addDisposeListener(new DisposeListener() {
                 public void widgetDisposed(DisposeEvent event) {
                     textField = null;
                 }
             });
-            if (textLimit > 0) {//Only set limits above 0 - see SWT spec
+            if (textLimit > 0) { //Only set limits above 0 - see SWT spec
                 textField.setTextLimit(textLimit);
             }
         } else {
@@ -443,7 +443,7 @@ public class MyStringFieldEditor extends FieldEditor {
     public void setStringValue(String value) {
         if (textField != null) {
             if (value == null) {
-				value = "";//$NON-NLS-1$
+				value = ""; //$NON-NLS-1$
 			}
             oldValue = textField.getText();
             if (!oldValue.equals(value)) {

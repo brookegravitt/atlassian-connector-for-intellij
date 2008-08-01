@@ -55,236 +55,261 @@ import com.atlassian.theplugin.eclipse.util.PluginIcons;
 public class BambooServersView extends ViewPart {
 
 	public static final String VIEW_ID = BambooServersView.class.getName();
-	
+
 	protected BambooTreeViewer bambooTree;
-	//protected RepositoriesRoot root;
+	// protected RepositoriesRoot root;
 	protected DrillDownAdapter ddAdapter;
 	protected Action showBrowserAction;
 	protected IPartListener2 partListener;
 
 	private BambooServersRoot root;
-	
+
 	public BambooServersView() {
 		super();
 	}
-	
+
 	public static MenuManager newMenuInstance(final ISelectionProvider provider) {
 		MenuManager menuMgr = new MenuManager();
-        menuMgr.addMenuListener(new IMenuListener() {
-            public void menuAboutToShow(IMenuManager manager) {
-        		MenuManager sub = new MenuManager(Activator.getDefault().getResource("BambooServers.New"), "addMenu");
-        		sub.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-        		sub.add(new Separator("mainGroup"));
-        		sub.add(new Separator("managementGroup"));
-        		sub.add(new Separator("repositoryGroup"));
-        		Action newRepositoryLocation = new Action(Activator.getDefault().getResource("BambooServers.BambooServer")) {
+		menuMgr.addMenuListener(new IMenuListener() {
+			public void menuAboutToShow(IMenuManager manager) {
+				MenuManager sub = new MenuManager(Activator.getDefault()
+						.getResource("BambooServers.New"), "addMenu");
+				sub.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+				sub.add(new Separator("mainGroup"));
+				sub.add(new Separator("managementGroup"));
+				sub.add(new Separator("repositoryGroup"));
+				Action newRepositoryLocation = new Action(Activator
+						.getDefault().getResource("BambooServers.BambooServer")) {
 					public void run() {
 						new NewBambooServerAction().run(this);
 					}
-        		};
-        		newRepositoryLocation.setImageDescriptor(
-        				ImageDescriptor.createFromImage(PluginIcons.getImageRegistry().get(PluginIcons.ICON_BAMBOO)));
-        		sub.add(newRepositoryLocation);
-        		manager.add(sub);
-        		
-				manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+				};
+				newRepositoryLocation.setImageDescriptor(ImageDescriptor
+						.createFromImage(PluginIcons.getImageRegistry().get(
+								PluginIcons.ICON_BAMBOO)));
+				sub.add(newRepositoryLocation);
+				manager.add(sub);
+
+				manager.add(new Separator(
+						IWorkbenchActionConstants.MB_ADDITIONS));
 
 				manager.add(new Separator("checkoutGroup"));
-                
-        		sub = new MenuManager(Activator.getDefault().getResource("RepositoriesView.OpenWith"), "openWithMenu");
-        		sub.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-        		sub.add(new Separator("dynamicGroup"));
-        		//IStructuredSelection selection = (IStructuredSelection)provider.getSelection();
-        		/*if (selection.size() == 1) {
-        			Object item = selection.getFirstElement();
-        			if (item instanceof RepositoryFile) {
-        				String name = ((RepositoryFile)item).getRepositoryResource().getName();
-        				IEditorDescriptor []editors = Activator.getDefault().getWorkbench().getEditorRegistry().getEditors(name);
-        				for (int i = 0; i < editors.length; i++) {
-        					if (!editors[i].getId().equals(EditorsUI.DEFAULT_TEXT_EDITOR_ID)) {
-        						final OpenFileWithAction openAction = new OpenFileWithAction(editors[i].getId(), false);
-        		        		Action wrapper = new Action(editors[i].getLabel()) {
-        							public void run() {
-        								openAction.run(this);
-        							}
-        		        		};
-        						openAction.selectionChanged(wrapper, selection);
-        						sub.add(wrapper);
-        					}
-        				}
-        			}
-        		}*/
-        		//sub.add(new Separator("fixedGroup"));
-        		//manager.add(sub);
-                
-                manager.add(new Separator("miscGroup"));
-                
-        		//sub = new MenuManager(Activator.getDefault().getResource("RepositoriesView.Refactor"), "refactorMenu");
-        		//sub.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-        		//sub.add(new Separator("mainGroup"));
-        		//manager.add(sub);
-        		
+
+				sub = new MenuManager(Activator.getDefault().getResource(
+						"RepositoriesView.OpenWith"), "openWithMenu");
+				sub.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+				sub.add(new Separator("dynamicGroup"));
+				// IStructuredSelection selection =
+				// (IStructuredSelection)provider.getSelection();
+				/*
+				 * if (selection.size() == 1) { Object item =
+				 * selection.getFirstElement(); if (item instanceof
+				 * RepositoryFile) { String name =
+				 * ((RepositoryFile)item).getRepositoryResource().getName();
+				 * IEditorDescriptor []editors =
+				 * Activator.getDefault().getWorkbench
+				 * ().getEditorRegistry().getEditors(name); for (int i = 0; i <
+				 * editors.length; i++) { if
+				 * (!editors[i].getId().equals(EditorsUI
+				 * .DEFAULT_TEXT_EDITOR_ID)) { final OpenFileWithAction
+				 * openAction = new OpenFileWithAction(editors[i].getId(),
+				 * false); Action wrapper = new Action(editors[i].getLabel()) {
+				 * public void run() { openAction.run(this); } };
+				 * openAction.selectionChanged(wrapper, selection);
+				 * sub.add(wrapper); } } } }
+				 */
+				// sub.add(new Separator("fixedGroup"));
+				// manager.add(sub);
+				manager.add(new Separator("miscGroup"));
+
+				// sub = new MenuManager(Activator.getDefault().getResource(
+				// "RepositoriesView.Refactor"), "refactorMenu");
+				// sub.add(new
+				// Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+				// sub.add(new Separator("mainGroup"));
+				// manager.add(sub);
+
 				manager.add(new Separator("locationGroup"));
-				
-                manager.add(new Separator("propertiesGroup"));
-                
-                manager.add(new Separator("refreshGroup"));
 
-                manager.add(new Separator("importExportGroup"));
-            }
+				manager.add(new Separator("propertiesGroup"));
 
-        });
-        menuMgr.setRemoveAllWhenShown(true);
-        return menuMgr;
+				manager.add(new Separator("refreshGroup"));
+
+				manager.add(new Separator("importExportGroup"));
+			}
+
+		});
+		menuMgr.setRemoveAllWhenShown(true);
+		return menuMgr;
 	}
 
 	public void createPartControl(Composite parent) {
-		this.bambooTree = new BambooTreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		this.bambooTree.setContentProvider(new BambooContentProvider(this.bambooTree));
+		this.bambooTree = new BambooTreeViewer(parent, SWT.MULTI | SWT.H_SCROLL
+				| SWT.V_SCROLL);
+		this.bambooTree.setContentProvider(new BambooContentProvider(
+				this.bambooTree));
 		this.bambooTree.setLabelProvider(new WorkbenchLabelProvider());
 		this.getSite().setSelectionProvider(this.bambooTree);
 		this.bambooTree.setInput(this.root = new BambooServersRoot());
-		//this.repositoryTree.setSorter(new ViewSorter())
-		
+		// this.repositoryTree.setSorter(new ViewSorter())
+
 		this.ddAdapter = new DrillDownAdapter(this.bambooTree);
-		
+
 		// popup menu
-        Tree tree = this.bambooTree.getTree(); 
-        MenuManager menuMgr = BambooServersView.newMenuInstance(this.bambooTree);
-        tree.setMenu(menuMgr.createContextMenu(tree));
-        this.getSite().registerContextMenu(menuMgr, this.bambooTree);
-        
-        // toolbar
-        IActionBars actionBars = getViewSite().getActionBars();
-        IToolBarManager tbm = actionBars.getToolBarManager();
-        this.ddAdapter.addNavigationActions(tbm);
-        Action tAction = null;
-        tbm.add(tAction = new Action(Activator.getDefault().getResource("BambooServers.Refresh.Label")) {
-            public void run() {
-                if (BambooServersView.this.bambooTree.getSelection() instanceof IStructuredSelection) {
-                    IStructuredSelection selection = (IStructuredSelection)BambooServersView.this.bambooTree.getSelection();
-                    BambooServersView.this.handleRefresh(selection);
-                }
-            }
-        }); 
-        tAction.setImageDescriptor(
-        		ImageDescriptor.createFromImage(PluginIcons.getImageRegistry().get(PluginIcons.ICON_BAMBOO_REFRESH)));
-        tAction.setToolTipText(Activator.getDefault().getResource("BambooServers.Refresh.ToolTip"));
-        
-		tbm.add(new Separator("collapseAllGroup"));
-		
-        tbm.add(tAction = new Action(Activator.getDefault().getResource("BambooServers.CollapseAll.Label")) {
+		Tree tree = this.bambooTree.getTree();
+		MenuManager menuMgr = BambooServersView
+				.newMenuInstance(this.bambooTree);
+		tree.setMenu(menuMgr.createContextMenu(tree));
+		this.getSite().registerContextMenu(menuMgr, this.bambooTree);
+
+		// toolbar
+		IActionBars actionBars = getViewSite().getActionBars();
+		IToolBarManager tbm = actionBars.getToolBarManager();
+		this.ddAdapter.addNavigationActions(tbm);
+		Action tAction = null;
+		tbm.add(tAction = new Action(Activator.getDefault().getResource(
+				"BambooServers.Refresh.Label")) {
 			public void run() {
-			    BambooServersView.this.bambooTree.collapseAll();				
+				if (BambooServersView.this.bambooTree.getSelection() instanceof IStructuredSelection) {
+					IStructuredSelection selection = (IStructuredSelection) BambooServersView.this.bambooTree
+							.getSelection();
+					BambooServersView.this.handleRefresh(selection);
+				}
 			}
-        }); 
-        tAction.setImageDescriptor(
-        		ImageDescriptor.createFromImage(PluginIcons.getImageRegistry().get(PluginIcons.ICON_COLLAPSE_ALL)));
-        tAction.setToolTipText(Activator.getDefault().getResource("BambooServers.CollapseAll.ToolTip"));
-        
+		});
+		tAction.setImageDescriptor(ImageDescriptor.createFromImage(PluginIcons
+				.getImageRegistry().get(PluginIcons.ICON_BAMBOO_REFRESH)));
+		tAction.setToolTipText(Activator.getDefault().getResource(
+				"BambooServers.Refresh.ToolTip"));
+
+		tbm.add(new Separator("collapseAllGroup"));
+
+		tbm.add(tAction = new Action(Activator.getDefault().getResource(
+				"BambooServers.CollapseAll.Label")) {
+			public void run() {
+				BambooServersView.this.bambooTree.collapseAll();
+			}
+		});
+		tAction.setImageDescriptor(ImageDescriptor.createFromImage(PluginIcons
+				.getImageRegistry().get(PluginIcons.ICON_COLLAPSE_ALL)));
+		tAction.setToolTipText(Activator.getDefault().getResource(
+				"BambooServers.CollapseAll.ToolTip"));
+
 		tbm.add(new Separator("repositoryGroup"));
-        
-        tbm.add(tAction = new Action(Activator.getDefault().getResource("BambooServers.NewServer.Label")) {
+
+		tbm.add(tAction = new Action(Activator.getDefault().getResource(
+				"BambooServers.NewServer.Label")) {
 			public void run() {
 				new NewBambooServerAction().run(this);
 			}
-        }); 
-        tAction.setImageDescriptor(
-        		ImageDescriptor.createFromImage(PluginIcons.getImageRegistry().get(PluginIcons.ICON_BAMBOO_NEW)));
-        tAction.setToolTipText(Activator.getDefault().getResource("BambooServers.NewServer.ToolTip"));
-        
-        /*
-        tbm.add(this.showBrowserAction = new Action(Activator.getDefault().getResource("RepositoriesView.ShowBrowser.Label"), Action.AS_CHECK_BOX) {
-			public void run() {
-				if (this.isChecked()) {
-					BambooServers.this.showRepositoryBrowser(true);
+		});
+		tAction.setImageDescriptor(ImageDescriptor.createFromImage(PluginIcons
+				.getImageRegistry().get(PluginIcons.ICON_BAMBOO_NEW)));
+		tAction.setToolTipText(Activator.getDefault().getResource(
+				"BambooServers.NewServer.ToolTip"));
+
+		/*
+		 * tbm.add(this.showBrowserAction = new
+		 * Action(Activator.getDefault().getResource
+		 * ("RepositoriesView.ShowBrowser.Label"), Action.AS_CHECK_BOX) { public
+		 * void run() { if (this.isChecked()) {
+		 * BambooServers.this.showRepositoryBrowser(true); } else {
+		 * BambooServers.this.hideRepositoryBrowser(); } } });
+		 * this.showBrowserAction
+		 * .setImageDescriptor(Activator.getDefault().getImageDescriptor
+		 * ("icons/views/repositories/browser.gif"));
+		 * this.showBrowserAction.setToolTipText
+		 * (Activator.getDefault().getResource
+		 * ("RepositoriesView.ShowBrowser.ToolTip"));
+		 */
+
+		this.bambooTree.getControl().addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent event) {
+				if (BambooServersView.this.bambooTree.getSelection() instanceof IStructuredSelection) {
+					IStructuredSelection selection = (IStructuredSelection) BambooServersView.this.bambooTree
+							.getSelection();
+					if (event.keyCode == SWT.F5) {
+						BambooServersView.this.handleRefresh(selection);
+					} else if (event.keyCode == SWT.DEL) {
+						BambooServersView.this.handleDeleteKey(selection);
+					}
 				}
-				else {
-					BambooServers.this.hideRepositoryBrowser();
-				}
-			}			
-        });        
-        this.showBrowserAction.setImageDescriptor(Activator.getDefault().getImageDescriptor("icons/views/repositories/browser.gif"));
-        this.showBrowserAction.setToolTipText(Activator.getDefault().getResource("RepositoriesView.ShowBrowser.ToolTip"));
-        */
-        
-        this.bambooTree.getControl().addKeyListener(new KeyAdapter() {
-        	public void keyPressed(KeyEvent event) {
-    			if (BambooServersView.this.bambooTree.getSelection() instanceof IStructuredSelection) {
-        			IStructuredSelection selection = (IStructuredSelection)BambooServersView.this.bambooTree.getSelection();
-	        		if (event.keyCode == SWT.F5) {
-	    				BambooServersView.this.handleRefresh(selection);
-	        		}
-	        		else if (event.keyCode == SWT.DEL) {
-	        		    BambooServersView.this.handleDeleteKey(selection);
-	        		}
-    			}
-        	}
-        });
-        
+			}
+		});
+
 		this.bambooTree.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent e) {
 				ISelection selection = e.getSelection();
 				if (selection instanceof IStructuredSelection) {
-					IStructuredSelection structured = (IStructuredSelection)selection;
+					IStructuredSelection structured = (IStructuredSelection) selection;
 					if (structured.size() == 1) {
 						BambooServersView.this.handleDoubleClick(structured);
 					}
 				}
 			}
 		});
-		
+
 		this.partListener = new IPartListener2() {
 			public void partVisible(IWorkbenchPartReference partRef) {
 				if (partRef.getId().equals(BambooServersView.VIEW_ID)) {
 					BambooServersView.this.refreshRepositoriesImpl(false);
-				}				
-			}
-			public void partHidden(IWorkbenchPartReference partRef) {
-			}
-			public void partInputChanged(IWorkbenchPartReference partRef) {
-			}
-			public void partOpened(IWorkbenchPartReference partRef) {
-			}
-			public void partDeactivated(IWorkbenchPartReference partRef) {
-			}
-			public void partClosed(IWorkbenchPartReference partRef) {
-				if (partRef.getId().equals(BambooServersView.VIEW_ID)) {
-					BambooServersView.this.getViewSite().getPage().removePartListener(this);
 				}
 			}
+
+			public void partHidden(IWorkbenchPartReference partRef) {
+			}
+
+			public void partInputChanged(IWorkbenchPartReference partRef) {
+			}
+
+			public void partOpened(IWorkbenchPartReference partRef) {
+			}
+
+			public void partDeactivated(IWorkbenchPartReference partRef) {
+			}
+
+			public void partClosed(IWorkbenchPartReference partRef) {
+				if (partRef.getId().equals(BambooServersView.VIEW_ID)) {
+					BambooServersView.this.getViewSite().getPage()
+							.removePartListener(this);
+				}
+			}
+
 			public void partBroughtToTop(IWorkbenchPartReference partRef) {
 			}
+
 			public void partActivated(IWorkbenchPartReference partRef) {
 			}
 		};
-		
+
 		this.getViewSite().getPage().addPartListener(this.partListener);
-		
-		//Setting context help
-	    //FIXME: PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, "org.eclipse.team.svn.help.repositoryViewContext");
+
+		// Setting context help
+		// FIXME: PlatformUI.getWorkbench().getHelpSystem().setHelp(parent,
+		// "org.eclipse.team.svn.help.repositoryViewContext");
 	}
-	
+
 	public void dispose() {
 		super.dispose();
-		this.getViewSite().getPage().removePartListener(this.partListener);		
+		this.getViewSite().getPage().removePartListener(this.partListener);
 	}
-	
+
 	public void setFocus() {
 		this.bambooTree.getControl().setFocus();
 	}
-	
+
 	public static void refresh(Object where) {
 		BambooServersView.refresh(where, null);
 	}
-	
-	public static void refresh(Object where, BambooTreeViewer.IRefreshVisitor visitor) {
+
+	public static void refresh(Object where,
+			BambooTreeViewer.IRefreshVisitor visitor) {
 		BambooServersView instance = BambooServersView.instance();
 		if (instance != null) {
 			instance.bambooTree.refresh(where, visitor, false);
 		}
 	}
-	
+
 	public static void refreshRepositories(boolean deep) {
 		BambooServersView instance = BambooServersView.instance();
 		if (instance != null) {
@@ -293,125 +318,116 @@ public class BambooServersView extends ViewPart {
 	}
 
 	/*
-	public BambooTreeViewer getRepositoryTree() {
-		return this.bambooTree;
-	}
-	*/
-	
+	 * public BambooTreeViewer getRepositoryTree() { return this.bambooTree; }
+	 */
+
 	public void refreshButtonsState() {
-		//IPreferenceStore store = Activator.getDefault().getPreferenceStore();
-		//boolean isBrowserVisible = SVNTeamPreferences.getRepositoryBoolean(store, SVNTeamPreferences.REPOSITORY_SHOW_BROWSER_NAME);
-		//this.showBrowserAction.setChecked(isBrowserVisible);
+		// IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+		// boolean isBrowserVisible =
+		// SVNTeamPreferences.getRepositoryBoolean(store,
+		// SVNTeamPreferences.REPOSITORY_SHOW_BROWSER_NAME);
+		// this.showBrowserAction.setChecked(isBrowserVisible);
 		this.showBrowserAction.setChecked(false);
 	}
-	
+
 	public static BambooServersView instance() {
-		final BambooServersView []view = new BambooServersView[1];
+		final BambooServersView[] view = new BambooServersView[1];
 		UIMonitorUtil.getDisplay().syncExec(new Runnable() {
 			public void run() {
-				IWorkbenchWindow window = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow();
+				IWorkbenchWindow window = Activator.getDefault().getWorkbench()
+						.getActiveWorkbenchWindow();
 				if (window != null && window.getActivePage() != null) {
-					view[0] = (BambooServersView)window.getActivePage().findView(BambooServersView.VIEW_ID);
+					view[0] = (BambooServersView) window.getActivePage()
+							.findView(BambooServersView.VIEW_ID);
 				}
 			}
 		});
 		return view[0];
 	}
-	
+
 	protected void refreshRepositoriesImpl(boolean deep) {
 		if (deep) {
 			this.root.refresh();
-		}
-		else {
+		} else {
 			this.root.softRefresh();
 		}
 		this.bambooTree.refresh();
 	}
 
 	protected void showRepositoryBrowser(final boolean force) {
-		/*final IWorkbenchPage page = this.getSite().getPage();
-		UIMonitorUtility.doTaskBusyDefault(new AbstractNonLockingOperation("Operation.ShowBrowser") {
-            protected void runImpl(IProgressMonitor monitor) throws Exception {
-        		RepositoryBrowser browser = (RepositoryBrowser)page.showView(RepositoryBrowser.VIEW_ID);
-    			ISelection selection = RepositoriesView.this.bambooTree.getSelection();
-    			browser.selectionChanged(new SelectionChangedEvent(RepositoriesView.this.bambooTree, selection));
-            }
-        });*/
+		/*
+		 * final IWorkbenchPage page = this.getSite().getPage();
+		 * UIMonitorUtility.doTaskBusyDefault(new
+		 * AbstractNonLockingOperation("Operation.ShowBrowser") { protected void
+		 * runImpl(IProgressMonitor monitor) throws Exception {
+		 * RepositoryBrowser browser =
+		 * (RepositoryBrowser)page.showView(RepositoryBrowser.VIEW_ID);
+		 * ISelection selection =
+		 * RepositoriesView.this.bambooTree.getSelection();
+		 * browser.selectionChanged(new
+		 * SelectionChangedEvent(RepositoriesView.this.bambooTree, selection));
+		 * } });
+		 */
 	}
-	
+
 	protected void hideRepositoryBrowser() {
-    	IWorkbenchPage page = this.getSite().getPage();
-    	IViewPart part = page.findView(BambooServersView.VIEW_ID);
-    	if (part != null) {
-        	page.hideView(part);
-    	}
+		IWorkbenchPage page = this.getSite().getPage();
+		IViewPart part = page.findView(BambooServersView.VIEW_ID);
+		if (part != null) {
+			page.hideView(part);
+		}
 	}
 
 	@SuppressWarnings("restriction")
 	protected void handleRefresh(IStructuredSelection selection) {
-	    Action tmp = new Action() {};
-	    AbstractAction action = null;
-	    
-	    /*
-	    action = new RefreshAction();
-	    action.selectionChanged(tmp, selection);
-	    action.setActivePart(tmp, BambooServersView.this);
-	    if (tmp.isEnabled()) {
-		    action.run(tmp);
-	    }
-	    */
-	    
-    	action = new RefreshBambooServerAction();
-	    action.selectionChanged(tmp, selection);
-	    action.setActivePart(tmp, BambooServersView.this);
-	    if (tmp.isEnabled()) {
-		    action.run(tmp);
-	    }
+		Action tmp = new Action() {
+		};
+		AbstractAction action = null;
+
+		/*
+		 * action = new RefreshAction(); action.selectionChanged(tmp,
+		 * selection); action.setActivePart(tmp, BambooServersView.this); if
+		 * (tmp.isEnabled()) { action.run(tmp); }
+		 */
+
+		action = new RefreshBambooServerAction();
+		action.selectionChanged(tmp, selection);
+		action.setActivePart(tmp, BambooServersView.this);
+		if (tmp.isEnabled()) {
+			action.run(tmp);
+		}
 	}
 
 	protected void handleDeleteKey(IStructuredSelection selection) {
-	    /*Action tmp = new Action() {}; 
-	    AbstractSVNTeamAction action = new DeleteAction();
-	    action.selectionChanged(tmp, selection);
-	    action.setActivePart(tmp, RepositoriesView.this);
-	    if (tmp.isEnabled()) {
-		    action.run(tmp);
-	    }
-	    else {
-		    action = new DiscardRevisionLinksAction();
-		    action.selectionChanged(tmp, selection);
-		    action.setActivePart(tmp, RepositoriesView.this);
-		    if (tmp.isEnabled()) {
-			    action.run(tmp);
-		    }
-		    else {
-			    action = new DiscardRepositoryLocationAction();
-			    action.selectionChanged(tmp, selection);
-			    action.setActivePart(tmp, RepositoriesView.this);
-			    if (tmp.isEnabled()) {
-				    action.run(tmp);
-			    }
-		    }
-	    }*/
+		/*
+		 * Action tmp = new Action() {}; AbstractSVNTeamAction action = new
+		 * DeleteAction(); action.selectionChanged(tmp, selection);
+		 * action.setActivePart(tmp, RepositoriesView.this); if
+		 * (tmp.isEnabled()) { action.run(tmp); } else { action = new
+		 * DiscardRevisionLinksAction(); action.selectionChanged(tmp,
+		 * selection); action.setActivePart(tmp, RepositoriesView.this); if
+		 * (tmp.isEnabled()) { action.run(tmp); } else { action = new
+		 * DiscardRepositoryLocationAction(); action.selectionChanged(tmp,
+		 * selection); action.setActivePart(tmp, RepositoriesView.this); if
+		 * (tmp.isEnabled()) { action.run(tmp); } } }
+		 */
 	}
-	
+
 	protected void handleDoubleClick(IStructuredSelection selection) {
-	   /* Action tmp = new Action() {};
-	    AbstractSVNTeamAction action = new OpenFileAction();
-	    action.selectionChanged(tmp, selection);
-	    action.setActivePart(tmp, RepositoriesView.this);
-	    if (tmp.isEnabled()) {
-		    action.run(tmp);
-	    }*/
+		/*
+		 * Action tmp = new Action() {}; AbstractSVNTeamAction action = new
+		 * OpenFileAction(); action.selectionChanged(tmp, selection);
+		 * action.setActivePart(tmp, RepositoriesView.this); if
+		 * (tmp.isEnabled()) { action.run(tmp); }
+		 */
 	}
-	
+
 	public boolean canGoBack() {
 		return this.ddAdapter.canGoBack();
 	}
-	
+
 	public void goBack() {
 		this.ddAdapter.goBack();
 	}
 
 }
-

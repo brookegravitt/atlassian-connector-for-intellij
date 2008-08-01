@@ -26,7 +26,7 @@ public class ShowBuildLogAction extends AbstractBambooAction {
 	public ShowBuildLogAction(BambooToolWindow bambooToolWindowTable) {
 		super(bambooToolWindowTable);
 	}
-	
+
 	@Override
 	public void run() {
 
@@ -39,23 +39,32 @@ public class ShowBuildLogAction extends AbstractBambooAction {
 
 				try {
 					setUIMessage("Retrieving build log");
-					final byte[] log = bambooFacade.getBuildLogs(
-							build.getServer(), build.getBuildKey(), build.getBuildNumber());
-					
-					EclipseActionScheduler.getInstance().invokeLater(new Runnable() {
-						public void run() {
-							IEditorInput editorInput = new BuildLogEditorInput(new String(log), 
-									build.getBuildKey() + "-" + build.getBuildNumber());
-							IWorkbenchWindow window=PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-							IWorkbenchPage page = window.getActivePage();
-							try {
-								page.openEditor(editorInput, 
-										"com.atlassian.theplugin.eclipse.editors.bamboo.LogEditor");
-							} catch (PartInitException e) {
-								e.printStackTrace();
-							}
-						}
-					});
+					final byte[] log = bambooFacade.getBuildLogs(build
+							.getServer(), build.getBuildKey(), build
+							.getBuildNumber());
+
+					EclipseActionScheduler.getInstance().invokeLater(
+							new Runnable() {
+								public void run() {
+									IEditorInput editorInput = new BuildLogEditorInput(
+											new String(log), build
+													.getBuildKey()
+													+ "-"
+													+ build.getBuildNumber());
+									IWorkbenchWindow window = PlatformUI
+											.getWorkbench()
+											.getActiveWorkbenchWindow();
+									IWorkbenchPage page = window
+											.getActivePage();
+									try {
+										page
+												.openEditor(editorInput,
+														"com.atlassian.theplugin.eclipse.editors.bamboo.LogEditor");
+									} catch (PartInitException e) {
+										e.printStackTrace();
+									}
+								}
+							});
 					setUIMessage("");
 				} catch (ServerPasswordNotProvidedException e) {
 					setUIMessage("Error getting build log. Password not provided for server");
@@ -68,14 +77,13 @@ public class ShowBuildLogAction extends AbstractBambooAction {
 
 		labelBuild.setPriority(Job.SHORT);
 		labelBuild.schedule();
-		
+
 	};
-	
 
 	@Override
 	public ImageDescriptor getImageDescriptor() {
-		return ImageDescriptor.createFromImage(
-				PluginIcons.getImageRegistry().get(PluginIcons.ICON_BAMBOO_GET_FULL_LOG));
+		return ImageDescriptor.createFromImage(PluginIcons.getImageRegistry()
+				.get(PluginIcons.ICON_BAMBOO_GET_FULL_LOG));
 	}
 
 	@Override

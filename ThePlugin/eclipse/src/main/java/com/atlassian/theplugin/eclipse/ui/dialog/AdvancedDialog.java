@@ -52,8 +52,7 @@ public class AdvancedDialog extends DefaultDialog implements IDialogManagerEx {
 	protected void buttonPressed(int buttonId) {
 	    if (buttonId < this.basePanelButtonsCount) {
 	    	this.baseButtonPressed(buttonId);
-	    }
-	    else {
+	    } else {
 	    	this.extendedButtonPressed(buttonId - this.basePanelButtonsCount);
 	    }
 	}
@@ -63,7 +62,7 @@ public class AdvancedDialog extends DefaultDialog implements IDialogManagerEx {
 	}
 		
 	protected void extendedButtonPressed(int buttonId) {
-		((AbstractAdvancedDialogPanel)this.panel).extendedButtonPressed(buttonId);
+		((AbstractAdvancedDialogPanel) this.panel).extendedButtonPressed(buttonId);
 	}
 
 	protected Control createButtonPanel(Composite parent) {
@@ -88,7 +87,7 @@ public class AdvancedDialog extends DefaultDialog implements IDialogManagerEx {
 		for (int i = 0; i < this.getButtonLabels().length; i++) {
 			allButtons.add(this.getButton(i));
 		}
-		this.setButtons((Button[])allButtons.toArray(new Button[allButtons.size()]));
+		this.setButtons((Button[]) allButtons.toArray(new Button[allButtons.size()]));
 		if (this.focusButtonIdx != 0) {
 			this.getShell().setDefaultButton(this.getButton(this.focusButtonIdx));
 		}

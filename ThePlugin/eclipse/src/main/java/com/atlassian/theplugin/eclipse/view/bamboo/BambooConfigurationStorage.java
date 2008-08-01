@@ -18,25 +18,25 @@ import com.atlassian.theplugin.eclipse.core.bamboo.IBambooServer;
 import com.atlassian.theplugin.eclipse.core.operation.LoggedOperation;
 import com.atlassian.theplugin.eclipse.preferences.Activator;
 
-public class BambooConfigurationStorage {	
-	
+public class BambooConfigurationStorage {
+
 	public static final String STATE_INFO_FILE_NAME = ".bambooServers";
-	
+
 	private static BambooConfigurationStorage instance = new BambooConfigurationStorage();
 
 	private File stateInfoFile;
 
 	private IBambooServer[] bambooServers;
-	
+
 	protected BambooConfigurationStorage() {
 		this.bambooServers = new IBambooServer[0];
 	}
-	
+
 	@SuppressWarnings("restriction")
 	public IBambooServer newBambooServer() {
 		return new BambooServer(new UniversalUniqueIdentifier().toString());
 	}
-	
+
 	public void copyBambooServer(IBambooServer to, IBambooServer from) {
 		to.setLabel(from.getLabel());
 		to.setUsername(from.getUsername());
@@ -48,46 +48,53 @@ public class BambooConfigurationStorage {
 	public static BambooConfigurationStorage instance() {
 		return BambooConfigurationStorage.instance;
 	}
-	
+
 	public void initialize(IPath stateInfoLocation) throws Exception {
 		this.initializeImpl(stateInfoLocation, STATE_INFO_FILE_NAME);
 	}
-	
-	protected void initializeImpl(IPath stateInfoLocation, String fileName) throws Exception {
+
+	protected void initializeImpl(IPath stateInfoLocation, String fileName)
+			throws Exception {
 		this.stateInfoFile = stateInfoLocation.append(fileName).toFile();
 		if (this.stateInfoFile.createNewFile()) {
 			this.saveBambooServers();
 		}
-		
+
 		try {
 			this.loadBambooServers();
-		} catch(Exception e) {
-			LoggedOperation.reportError(Activator.getDefault().getResource("Error.LoadBambooServers"), e);
+		} catch (Exception e) {
+			LoggedOperation.reportError(Activator.getDefault().getResource(
+					"Error.LoadBambooServers"), e);
 			this.saveBambooServers();
 		}
 	}
-	
+
 	protected void saveBambooServers() throws Exception {
 		ObjectOutputStream stream = null;
 		try {
-			stream = new ObjectOutputStream(new FileOutputStream(this.stateInfoFile));
+			stream = new ObjectOutputStream(new FileOutputStream(
+					this.stateInfoFile));
 			for (int i = 0; i < this.bambooServers.length; i++) {
 				stream.writeObject(this.bambooServers[i]);
 			}
-		}
-		finally {
+		} finally {
 			if (stream != null) {
-				try {stream.close();} catch (Exception ex) {}
+				try {
+					stream.close();
+				} catch (Exception ex) {
+				}
 			}
 		}
 	}
-	
+
 	protected void loadBambooServers() throws Exception {
-		List<IBambooServer> tmp = new ArrayList<IBambooServer>(Arrays.asList(this.bambooServers));
+		List<IBambooServer> tmp = new ArrayList<IBambooServer>(Arrays
+				.asList(this.bambooServers));
 		ObjectInputStream stream = null;
 		try {
-			stream = new ObjectInputStream(new FileInputStream(this.stateInfoFile));
-			
+			stream = new ObjectInputStream(new FileInputStream(
+					this.stateInfoFile));
+
 			// why stream.available() does not work ???
 			while (true) {
 				IBambooServer obj = (IBambooServer) stream.readObject();
@@ -95,22 +102,24 @@ public class BambooConfigurationStorage {
 					tmp.add(obj);
 				}
 			}
-		}
-		catch (EOFException ex) {
+		} catch (EOFException ex) {
 			// EOF, do nothing
-		}
-		finally {
+		} finally {
 			if (stream != null) {
-				try {stream.close();} catch (Exception ex) {}
+				try {
+					stream.close();
+				} catch (Exception ex) {
+				}
 			}
 		}
-		this.bambooServers = (IBambooServer []) tmp.toArray(new IBambooServer[tmp.size()]);
+		this.bambooServers = (IBambooServer[]) tmp
+				.toArray(new IBambooServer[tmp.size()]);
 	}
-	
+
 	public IBambooServer[] getBambooServers() {
 		return this.bambooServers;
 	}
-	
+
 	public IBambooServer getBambooServer(String id) {
 		for (int i = 0; i < this.bambooServers.length; i++) {
 			if (this.bambooServers[i].getId().equals(id)) {
@@ -121,10 +130,12 @@ public class BambooConfigurationStorage {
 	}
 
 	public synchronized void addBambooServer(IBambooServer server) {
-		List<IBambooServer> tmp = new ArrayList<IBambooServer>(Arrays.asList(this.bambooServers));
+		List<IBambooServer> tmp = new ArrayList<IBambooServer>(Arrays
+				.asList(this.bambooServers));
 		if (!tmp.contains(server)) {
 			tmp.add(server);
-			this.bambooServers = (IBambooServer []) tmp.toArray(new IBambooServer[tmp.size()]);
+			this.bambooServers = (IBambooServer[]) tmp
+					.toArray(new IBambooServer[tmp.size()]);
 		}
 	}
 
@@ -133,11 +144,12 @@ public class BambooConfigurationStorage {
 	}
 
 	public synchronized void removeBambooServer(IBambooServer server) {
-		List<IBambooServer> tmp = new ArrayList<IBambooServer>(Arrays.asList(this.bambooServers));
+		List<IBambooServer> tmp = new ArrayList<IBambooServer>(Arrays
+				.asList(this.bambooServers));
 		if (tmp.remove(server)) {
-			this.bambooServers = (IBambooServer [])tmp.toArray(new IBambooServer[tmp.size()]);
+			this.bambooServers = (IBambooServer[]) tmp
+					.toArray(new IBambooServer[tmp.size()]);
 		}
 	}
-
 
 }
