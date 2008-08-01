@@ -15,7 +15,7 @@ public abstract class ModelProvider {
     public abstract AtlassianTreeModel getModel(final AtlassianTreeWithToolbar.STATE state);
 
     public static final ModelProvider EMPTY_MODEL_PROVIDER = new ModelProvider() {
-        public AtlassianTreeModel model = new AtlassianTreeModel(new FileNode("/", AtlassianClickAction.EMPTY_ACTION));
+        private AtlassianTreeModel model = new AtlassianTreeModel(new FileNode("/", AtlassianClickAction.EMPTY_ACTION));
 
         public AtlassianTreeModel getModel(final AtlassianTreeWithToolbar.STATE state) {
             return model;
