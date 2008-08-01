@@ -56,7 +56,7 @@ public abstract class TreeAction extends AnAction {
             if (parent instanceof DataProvider) {
                 DataProvider o = (DataProvider) parent;
                 tree = (AtlassianTreeWithToolbar) o.getData(Constants.FILE_TREE);
-                if (tree != null){
+                if (tree != null) {
                     break;
                 }
             }
@@ -81,6 +81,7 @@ public abstract class TreeAction extends AnAction {
     }
 
     protected abstract void executeTreeAction(AtlassianTreeWithToolbar tree);
+
     protected abstract void updateTreeAction(final AnActionEvent e, final AtlassianTreeWithToolbar tree);
 
 }
