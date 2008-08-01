@@ -27,32 +27,34 @@ import com.atlassian.theplugin.eclipse.util.ProgressMonitorUtility;
  * 
  * @author Alexander Gurov
  */
-public class CompositeOperation extends AbstractActionOperation implements IConsoleStream {
+public class CompositeOperation extends AbstractActionOperation implements
+		IConsoleStream {
 	protected List<Pair> operations;
 	protected boolean checkWarnings;
 
 	public CompositeOperation(String operationName) {
 		this(operationName, false);
 	}
-	
+
 	public CompositeOperation(String operationName, boolean checkWarnings) {
 		super(operationName);
 		this.operations = new ArrayList<Pair>();
 		this.checkWarnings = checkWarnings;
 	}
-	
+
 	public void add(IActionOperation operation) {
 		this.add(operation, null);
 	}
-	
-	public void add(IActionOperation operation, IActionOperation []dependsOnOperation) {
+
+	public void add(IActionOperation operation,
+			IActionOperation[] dependsOnOperation) {
 		operation.setConsoleStream(this);
 		this.operations.add(new Pair(operation, dependsOnOperation));
 	}
-			
+
 	public void remove(IActionOperation operation) {
 		for (Iterator<Pair> it = this.operations.iterator(); it.hasNext();) {
-			Pair pair = (Pair)it.next();
+			Pair pair = (Pair) it.next();
 			if (pair.operation == operation) {
 				if (operation.getConsoleStream() == this) {
 					operation.setConsoleStream(null);
@@ -62,45 +64,52 @@ public class CompositeOperation extends AbstractActionOperation implements ICons
 			}
 		}
 	}
-	
+
 	public ISchedulingRule getSchedulingRule() {
 		ISchedulingRule retVal = null;
-		for (Iterator<Pair> it = this.operations.iterator(); it.hasNext(); ) {
-			Pair pair = (Pair)it.next();
-			retVal = MultiRule.combine(retVal, pair.operation.getSchedulingRule());
+		for (Iterator<Pair> it = this.operations.iterator(); it.hasNext();) {
+			Pair pair = (Pair) it.next();
+			retVal = MultiRule.combine(retVal, pair.operation
+					.getSchedulingRule());
 		}
 		return retVal;
 	}
-	
+
 	protected void runImpl(IProgressMonitor monitor) throws Exception {
 		int j = 0;
-		for (Iterator<Pair> it = this.operations.iterator(); it.hasNext() && !monitor.isCanceled(); ) {
-			Pair pair = (Pair)it.next();
-			
+		for (Iterator<Pair> it = this.operations.iterator(); it.hasNext()
+				&& !monitor.isCanceled();) {
+			Pair pair = (Pair) it.next();
+
 			boolean errorFound = false;
 			if (pair.dependsOnOperation != null) {
 				for (int i = 0; i < pair.dependsOnOperation.length; i++) {
-					if (pair.dependsOnOperation[i].getStatus().getSeverity() == IStatus.ERROR ||
-						this.checkWarnings && pair.dependsOnOperation[i].getStatus().getSeverity() == IStatus.WARNING || 
-						pair.dependsOnOperation[i].getExecutionState() == IActionOperation.NOTEXECUTED) {
+					if (pair.dependsOnOperation[i].getStatus().getSeverity() == IStatus.ERROR
+							|| this.checkWarnings
+							&& pair.dependsOnOperation[i].getStatus()
+									.getSeverity() == IStatus.WARNING
+							|| pair.dependsOnOperation[i].getExecutionState() == IActionOperation.NOTEXECUTED) {
 						errorFound = true;
 						break;
 					}
 				}
 			}
 			if (!errorFound) {
-				ProgressMonitorUtility.doTask(pair.operation, monitor, this.operations.size());
+				ProgressMonitorUtility.doTask(pair.operation, monitor,
+						this.operations.size());
 				this.reportStatus(pair.operation.getStatus());
-				ProgressMonitorUtility.progress(monitor, j++, this.operations.size());
+				ProgressMonitorUtility.progress(monitor, j++, this.operations
+						.size());
 			}
 		}
 	}
 
 	protected class Pair {
 		public IActionOperation operation;
-		public IActionOperation []dependsOnOperation;
-		
-		public Pair(IActionOperation operation, IActionOperation []dependsOnOperation) {
+		public IActionOperation[] dependsOnOperation;
+
+		public Pair(IActionOperation operation,
+				IActionOperation[] dependsOnOperation) {
 			this.operation = operation;
 			this.dependsOnOperation = dependsOnOperation;
 		}
@@ -121,7 +130,7 @@ public class CompositeOperation extends AbstractActionOperation implements ICons
 	public void doComplexWrite(Runnable runnable) {
 		this.complexWriteToConsole(runnable);
 	}
-	
+
 	public void markCancelled() {
 		this.writeCancelledToConsole();
 	}

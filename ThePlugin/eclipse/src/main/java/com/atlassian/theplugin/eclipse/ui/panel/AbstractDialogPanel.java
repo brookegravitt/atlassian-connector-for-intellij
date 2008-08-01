@@ -26,83 +26,84 @@ import com.atlassian.theplugin.eclipse.ui.verifier.IValidationManager;
  * 
  * @author Alexander Gurov
  */
-public abstract class AbstractDialogPanel implements IDialogPanel, IValidationManager {
-    private AbstractVerificationKeyListener changeListener;
-    
-    protected IDialogManager manager;
-    
-    protected String dialogTitle;
-    protected String dialogDescription;
-    protected String defaultMessage;
-    protected String imagePath;
-    protected String []buttonNames;
+public abstract class AbstractDialogPanel implements IDialogPanel,
+		IValidationManager {
+	private AbstractVerificationKeyListener changeListener;
 
-    public AbstractDialogPanel() {
-        this(new String[] {IDialogConstants.OK_LABEL, IDialogConstants.CANCEL_LABEL});
-    }
+	protected IDialogManager manager;
 
-    public AbstractDialogPanel(String []buttonNames) {
-        this.buttonNames = buttonNames;
-        this.changeListener = new VerificationKeyListener();
-    }
+	protected String dialogTitle;
+	protected String dialogDescription;
+	protected String defaultMessage;
+	protected String imagePath;
+	protected String[] buttonNames;
 
-    public void initPanel(IDialogManager manager) {
-        this.manager = manager;
-    }
+	public AbstractDialogPanel() {
+		this(new String[] { IDialogConstants.OK_LABEL,
+				IDialogConstants.CANCEL_LABEL });
+	}
 
-    public void postInit() {
+	public AbstractDialogPanel(String[] buttonNames) {
+		this.buttonNames = buttonNames;
+		this.changeListener = new VerificationKeyListener();
+	}
+
+	public void initPanel(IDialogManager manager) {
+		this.manager = manager;
+	}
+
+	public void postInit() {
 		this.validateContent();
 		this.setMessage(IDialogManager.LEVEL_OK, null);
-    }
-    
-    public void addListeners() {
-    	this.changeListener.addListeners();
-    }
+	}
 
-    public void dispose() {
-        this.detachAll();
-    }
+	public void addListeners() {
+		this.changeListener.addListeners();
+	}
 
-    public String getDialogTitle() {
-        return this.dialogTitle;
-    }
+	public void dispose() {
+		this.detachAll();
+	}
 
-    public String getDialogDescription() {
-        return this.dialogDescription;
-    }
+	public String getDialogTitle() {
+		return this.dialogTitle;
+	}
 
-    public String getDefaultMessage() {
-        return this.defaultMessage;
-    }
-    
-    public String getImagePath() {
-        return this.imagePath;
-    }
+	public String getDialogDescription() {
+		return this.dialogDescription;
+	}
 
-    public Point getPrefferedSize() {
-        return new Point(470, SWT.DEFAULT);
-    }
-    
-    public String []getButtonNames() {
-        return this.buttonNames;
-    }
-    
-    public String getHelpId() {
-    	return null;
-    }
-    
-    public void createControls(Composite parent) {
+	public String getDefaultMessage() {
+		return this.defaultMessage;
+	}
 
-    }
+	public String getImagePath() {
+		return this.imagePath;
+	}
 
-    public void buttonPressed(int idx) {
-        if (idx == 0) {
-            this.saveChanges();
-        }
-        else {
-            this.cancelChanges();
-        }
-    }
+	public Point getPrefferedSize() {
+		return new Point(470, SWT.DEFAULT);
+	}
+
+	public String[] getButtonNames() {
+		return this.buttonNames;
+	}
+
+	public String getHelpId() {
+		return null;
+	}
+
+	public void createControls(Composite parent) {
+
+	}
+
+	public void buttonPressed(int idx) {
+		if (idx == 0) {
+			this.saveChanges();
+		} else {
+			this.cancelChanges();
+		}
+	}
 
 	public boolean isFilledRight() {
 		return this.changeListener.isFilledRight();
@@ -111,63 +112,67 @@ public abstract class AbstractDialogPanel implements IDialogPanel, IValidationMa
 	public void attachTo(Control cmp, AbstractVerifier verifier) {
 		this.changeListener.attachTo(cmp, verifier);
 	}
-		
+
 	public void detachFrom(Control cmp) {
 		this.changeListener.detachFrom(cmp);
 	}
-		
+
 	public void detachAll() {
 		this.changeListener.detachAll();
 	}
-	
+
 	public void validateContent() {
 		this.changeListener.validateContent();
 	}
-	
+
 	protected void setMessage(int level, String message) {
-		this.manager.setMessage(level, message);		
+		this.manager.setMessage(level, message);
 	}
-	
+
 	protected void setButtonsEnabled(boolean enabled) {
-	    
+
 	}
-	
-    protected abstract void saveChanges();
-    protected abstract void cancelChanges();
-    
-    /*
-     * return false if dialog should not be closed
-     * override if needed
-     */
-    public boolean canClose() {
-    	return true;
-    };
 
-    protected class VerificationKeyListener extends AbstractVerificationKeyListener {
-        public VerificationKeyListener() {
-            super();
-        }
-        
-        public void hasError(String errorReason) {
-			AbstractDialogPanel.this.setMessage(IDialogManager.LEVEL_ERROR, errorReason);
+	protected abstract void saveChanges();
+
+	protected abstract void cancelChanges();
+
+	/*
+	 * return false if dialog should not be closed override if needed
+	 */
+	public boolean canClose() {
+		return true;
+	};
+
+	protected class VerificationKeyListener extends
+			AbstractVerificationKeyListener {
+		public VerificationKeyListener() {
+			super();
+		}
+
+		public void hasError(String errorReason) {
+			AbstractDialogPanel.this.setMessage(IDialogManager.LEVEL_ERROR,
+					errorReason);
 			this.handleButtons();
-        }
+		}
 
-        public void hasWarning(String warningReason) {
-			AbstractDialogPanel.this.setMessage(IDialogManager.LEVEL_WARNING, warningReason);
+		public void hasWarning(String warningReason) {
+			AbstractDialogPanel.this.setMessage(IDialogManager.LEVEL_WARNING,
+					warningReason);
 			this.handleButtons();
-        }
+		}
 
-        public void hasNoError() {
+		public void hasNoError() {
 			AbstractDialogPanel.this.setMessage(IDialogManager.LEVEL_OK, null);
 			this.handleButtons();
-        }
+		}
 
-        protected void handleButtons() {
-            AbstractDialogPanel.this.manager.setButtonEnabled(0, this.isFilledRight());
-            AbstractDialogPanel.this.setButtonsEnabled(this.isFilledRight());
-        }
-        
-    }
-    
+		protected void handleButtons() {
+			AbstractDialogPanel.this.manager.setButtonEnabled(0, this
+					.isFilledRight());
+			AbstractDialogPanel.this.setButtonsEnabled(this.isFilledRight());
+		}
+
+	}
+
 }

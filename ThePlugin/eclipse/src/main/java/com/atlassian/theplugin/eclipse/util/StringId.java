@@ -13,11 +13,15 @@ package com.atlassian.theplugin.eclipse.util;
 
 import java.util.Random;
 
-public class StringId {
+public final class StringId {
+	
+	private StringId() {
+		
+	}
    
    public static final char ID_SEPARATOR = '-';
    
-   private final static char[] FIRST_CHAR = 
+   private static final char[] FIRST_CHAR = 
    {
        'A', 'B', 'C', 'D', 'E', 'F', 'G',
        'H', 'I', 'J', 'K', 'L', 'M', 'N',
@@ -25,7 +29,7 @@ public class StringId {
        'V', 'W', 'X', 'Y', 'Z'
    };
 
-   private final static char[] LETTERS_DIGITS = 
+   private static final char[] LETTERS_DIGITS = 
    {
        'A', 'B', 'C', 'D', 'E', 'F', 'G',
        'H', 'I', 'J', 'K', 'L', 'M', 'N',
@@ -34,16 +38,16 @@ public class StringId {
        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' 
    };
 
-   public static String generateRandom(String prefix,int length){
-       if(prefix==null){
+   public static String generateRandom(String prefix, int length) {
+       if (prefix == null) {
            return generateRandom(length);
-       }else{
+       } else {
            return prefix + ID_SEPARATOR + generateRandom(length);
        }
    }
 
-   public static String generateRandom(int length){
-       if(length==0){
+   public static String generateRandom(int length) {
+       if (length == 0) {
            return new String();
        }
        
@@ -58,14 +62,14 @@ public class StringId {
        return str.toString();
    }
    
-   public static boolean isStringId(String strId){
+   public static boolean isStringId(String strId) {
        int pos = strId.lastIndexOf(ID_SEPARATOR);
-       if(pos != -1) {
-           strId = strId.substring(pos+1);
+       if (pos != -1) {
+           strId = strId.substring(pos + 1);
        }
        for (int i = 0; i < strId.length(); i++) {
            char ch = strId.charAt(i);
-           if(!Character.isDigit(ch) && !Character.isUpperCase(ch)){
+           if (!Character.isDigit(ch) && !Character.isUpperCase(ch)) {
                return false;
            }
        }

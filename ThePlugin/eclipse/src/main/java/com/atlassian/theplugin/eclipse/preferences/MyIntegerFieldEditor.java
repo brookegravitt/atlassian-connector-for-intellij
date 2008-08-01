@@ -64,7 +64,7 @@ public class MyIntegerFieldEditor extends MyStringFieldEditor {
         setWidthInChars(textLimit);
         setEmptyStringAllowed(false);
         setErrorMessage(JFaceResources
-                .getString("IntegerFieldEditor.errorMessage"));//$NON-NLS-1$
+                .getString("IntegerFieldEditor.errorMessage")); //$NON-NLS-1$
         createControl(parent);
     }
 
@@ -119,7 +119,7 @@ public class MyIntegerFieldEditor extends MyStringFieldEditor {
         Text text = getTextControl();
         if (text != null) {
             int value = getPreferenceStore().getInt(getPreferenceName());
-            text.setText("" + value);//$NON-NLS-1$
+            text.setText("" + value); //$NON-NLS-1$
         }
 
     }
@@ -131,7 +131,7 @@ public class MyIntegerFieldEditor extends MyStringFieldEditor {
         Text text = getTextControl();
         if (text != null) {
             int value = getPreferenceStore().getDefaultInt(getPreferenceName());
-            text.setText("" + value);//$NON-NLS-1$
+            text.setText("" + value); //$NON-NLS-1$
         }
         valueChanged();
     }

@@ -47,7 +47,8 @@ public class LabelBuildDialog {
 		shell.setText("Label Build");
 		
 		// place the window in the center of parent
-		shell.setLocation(parent.getLocation().x + parent.getSize().x/2, parent.getLocation().y + parent.getSize().y/2);
+		shell.setLocation(parent.getLocation().x + parent.getSize().x / 2, 
+				parent.getLocation().y + parent.getSize().y / 2);
 		
 		this.buildPlan = build.getBuildKey() + " " + build.getBuildNumber();
 		
@@ -59,7 +60,7 @@ public class LabelBuildDialog {
 		gridLayout.numColumns = 1;
 		shell.setLayout(gridLayout);
 		
-		shell.setSize(260,140);
+		shell.setSize(260, 140);
 		createRowUpper();
 		createRowBottom();
 		createButtons();
@@ -138,7 +139,9 @@ public class LabelBuildDialog {
 		shell.open();
 		Display display = shell.getParent().getDisplay();
 		while (!shell.isDisposed()) {
-			if (!display.readAndDispatch()) display.sleep();
+			if (!display.readAndDispatch()) { 
+				display.sleep();
+			}
 		}
 	}
 

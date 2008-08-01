@@ -17,53 +17,63 @@ import com.atlassian.theplugin.eclipse.util.PluginIcons;
 import com.atlassian.theplugin.eclipse.view.bamboo.IDataTreeNode;
 import com.atlassian.theplugin.eclipse.view.bamboo.IParentTreeNode;
 
-public class BambooPlans extends BambooFictiveNode implements IBambooTreeNode, IDataTreeNode, IParentTreeNode  {
+public class BambooPlans extends BambooFictiveNode implements IBambooTreeNode,
+		IDataTreeNode, IParentTreeNode {
 	private BambooServerNode server;
 	private GetBambooPlansChildrenOperation childrenOp;
 	private BambooTreeViewer bambooTree;
-	
+
 	public BambooPlans(BambooServerNode server) {
 		this.server = server;
 	}
-	
-	public Object[] getChildren(Object o) {
-		//final IRepositoryContainer container = (IRepositoryContainer)this.resource;
-		
-		if (this.childrenOp != null) {
-			Object []retVal = wrapChildren(this.childrenOp.getChildren());
-			return retVal == null 
-				? new Object[] {
-					this.childrenOp.getExecutionState() != IActionOperation.ERROR 
-						? (Object)new RefreshPending(this) : new BambooErrorNode(this.childrenOp.getStatus())
-				} : retVal;
-		}
-		else {
-			this.childrenOp = new GetBambooPlansChildrenOperation(server.getBambooServer());
-			/*if (!((IRepositoryContainer)this.resource).isChildrenCached()) {*/
-				CompositeOperation op = new CompositeOperation(this.childrenOp.getId());
-				op.add(this.childrenOp);
-				op.add(server.getRefreshOperation(this.bambooTree));
 
-				UIMonitorUtil.doTaskScheduled(op, new DefaultOperationWrapperFactory() {
-	                public IActionOperation getLogged(IActionOperation operation) {
-	            		return new LoggedOperation(operation);
-	                }
-	            });
-				return new Object[] {new RefreshPending(this)};
-			/*}
-			
-			UIMonitorUtil.doTaskBusyDefault(this.childrenOp);
-			
-			return RepositoryFolder.wrapChildren(this, this.childrenOp.getChildren(), this.childrenOp);*/
+	public Object[] getChildren(Object o) {
+		// final IRepositoryContainer container =
+		// (IRepositoryContainer)this.resource;
+
+		if (this.childrenOp != null) {
+			Object[] retVal = wrapChildren(this.childrenOp.getChildren());
+			return retVal == null ? new Object[] { this.childrenOp
+					.getExecutionState() != IActionOperation.ERROR ? (Object) new RefreshPending(
+					this)
+					: new BambooErrorNode(this.childrenOp.getStatus()) }
+					: retVal;
+		} else {
+			this.childrenOp = new GetBambooPlansChildrenOperation(server
+					.getBambooServer());
+			/* if (!((IRepositoryContainer)this.resource).isChildrenCached()) { */
+			CompositeOperation op = new CompositeOperation(this.childrenOp
+					.getId());
+			op.add(this.childrenOp);
+			op.add(server.getRefreshOperation(this.bambooTree));
+
+			UIMonitorUtil.doTaskScheduled(op,
+					new DefaultOperationWrapperFactory() {
+						public IActionOperation getLogged(
+								IActionOperation operation) {
+							return new LoggedOperation(operation);
+						}
+					});
+			return new Object[] { new RefreshPending(this) };
+			/*
+			 * }
+			 * 
+			 * UIMonitorUtil.doTaskBusyDefault(this.childrenOp);
+			 * 
+			 * return RepositoryFolder.wrapChildren(this,
+			 * this.childrenOp.getChildren(), this.childrenOp);
+			 */
 		}
 	}
 
 	public ImageDescriptor getImageDescriptor(Object object) {
-		return ImageDescriptor.createFromImage(PluginIcons.getImageRegistry().get(PluginIcons.ICON_BAMBOO));
+		return ImageDescriptor.createFromImage(PluginIcons.getImageRegistry()
+				.get(PluginIcons.ICON_BAMBOO));
 	}
 
 	public String getLabel(Object o) {
-		return Activator.getDefault().getResource("BambooServerView.Model.Plans");
+		return Activator.getDefault().getResource(
+				"BambooServerView.Model.Plans");
 	}
 
 	public void refresh() {
@@ -80,10 +90,12 @@ public class BambooPlans extends BambooFictiveNode implements IBambooTreeNode, I
 	}
 
 	protected BambooPlanNode[] wrapChildren(BambooPlan[] plans) {
-		if (plans == null) return null;
-		ArrayList<BambooPlanNode> children = new ArrayList<BambooPlanNode>(plans.length);
-		if (plans != null) { 
-			for(BambooPlan plan : plans) {
+		if (plans == null)
+			return null;
+		ArrayList<BambooPlanNode> children = new ArrayList<BambooPlanNode>(
+				plans.length);
+		if (plans != null) {
+			for (BambooPlan plan : plans) {
 				children.add(new BambooPlanNode(plan));
 			}
 		}

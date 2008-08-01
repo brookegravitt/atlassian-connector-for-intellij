@@ -75,7 +75,7 @@ public class LabelBuildAction extends AbstractBambooAction {
 			
 			labelBuild.setPriority(Job.SHORT);
 			labelBuild.schedule();
-		};
+		}
 	}
 
 	@Override

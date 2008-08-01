@@ -18,7 +18,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 
-
 /**
  * Scheduled
  * 
@@ -28,7 +27,8 @@ public class ScheduledOperationWrapper extends Job {
 
 	protected ICancellableOperationWrapper operationWrapper;
 
-	public ScheduledOperationWrapper(ICancellableOperationWrapper operationWrapper) {
+	public ScheduledOperationWrapper(
+			ICancellableOperationWrapper operationWrapper) {
 		super(operationWrapper.getOperationName());
 		this.operationWrapper = operationWrapper;
 	}
@@ -36,14 +36,13 @@ public class ScheduledOperationWrapper extends Job {
 	protected IStatus run(IProgressMonitor monitor) {
 		try {
 			this.operationWrapper.run(monitor);
-		} 
-		catch (InterruptedException e) {
+		} catch (InterruptedException e) {
 			this.operationWrapper.setCancelled(true);
-		} 
-		catch (InvocationTargetException e) {
+		} catch (InvocationTargetException e) {
 			throw new RuntimeException(e);
 		}
-		return Status.OK_STATUS;//this.operationWrapper.getOperation().getStatus()
+		return Status.OK_STATUS; //this.operationWrapper.getOperation().getStatus
+								// ()
 	}
 
 }

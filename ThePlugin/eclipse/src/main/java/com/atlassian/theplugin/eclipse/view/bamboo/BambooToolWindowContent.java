@@ -62,8 +62,8 @@ public class BambooToolWindowContent implements BambooStatusListener {
 		
 		this.viewPart = viewPart;
 		
-		int style = SWT.SINGLE | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | 
-		SWT.FULL_SELECTION | SWT.HIDE_SELECTION;
+		int style = SWT.SINGLE | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL 
+		| SWT.FULL_SELECTION | SWT.HIDE_SELECTION;
 		
 		tableViewer = new TableViewer(parent, style);
 		tableViewer.setContentProvider(new BambooContentProvider());
@@ -116,7 +116,7 @@ public class BambooToolWindowContent implements BambooStatusListener {
 		List<Integer> configColumnsWidth = 
 			Activator.getDefault().getPluginConfiguration().getBambooTabConfiguration().getColumnsWidth();
 		
-		for (int i = 0 ; i < Column.values().length ; ++i) {
+		for (int i = 0; i < Column.values().length; ++i) {
 			Column column = Column.values()[i];
 			tableColumn = new TableColumn(table, SWT.LEFT);
 			tableColumn.setText(column.columnName());
@@ -129,7 +129,7 @@ public class BambooToolWindowContent implements BambooStatusListener {
 		
 		// set columns width according to the config values
 		if (configColumnsWidth.size() == Column.values().length) {
-			for (int i = 0 ; i < configColumnsWidth.size() ; ++i) {
+			for (int i = 0; i < configColumnsWidth.size(); ++i) {
 				table.getColumn(i).setWidth(configColumnsWidth.get(i));
 			}
 		}
@@ -154,7 +154,7 @@ public class BambooToolWindowContent implements BambooStatusListener {
 		
 	}
 	
-	public void updateBuildStatuses(Collection<BambooBuild> buildStatuses) {
+	public void updateBuildStatuses(Collection<BambooBuild> aBuildStatuses) {
 		
 		Date pollingTime = new Date();
 		
@@ -162,7 +162,7 @@ public class BambooToolWindowContent implements BambooStatusListener {
 		
 		//PluginUtil.getLogger().debug(buildStatuses.toString());
 		
-		for (BambooBuild build : buildStatuses) {
+		for (BambooBuild build : aBuildStatuses) {
 			this.buildStatuses.add(new BambooBuildAdapterEclipse(build));
 			pollingTime = build.getPollingTime();
 			
@@ -191,7 +191,7 @@ public class BambooToolWindowContent implements BambooStatusListener {
 //			}
 		}
 		 
-		tableViewer.setInput(buildStatuses);
+		tableViewer.setInput(aBuildStatuses);
 		viewPart.setHeaderText("Last polling time: " + pollingTime.toString());
 		
 	}

@@ -29,7 +29,10 @@ import org.eclipse.swt.widgets.Shell;
  * @author Mik Kersten
  * @author Steffen Pingel
  */
-public class SwtUtil {
+public final class SwtUtil {
+	
+	private SwtUtil() {
+	}
 
 	public static final long FADE_RESCHEDULE_DELAY = 80;
 
@@ -116,6 +119,8 @@ public class SwtUtil {
 
 	public static class FadeJob extends Job {
 
+		private static final int FADE_CONSTANT = 255;
+
 		private final Shell shell;
 
 		private final int increment;
@@ -130,7 +135,7 @@ public class SwtUtil {
 
 		public FadeJob(Shell shell, int increment, long delay, IFadeListener fadeListener) {
 			super("Fading");
-			if (increment < -255 || increment == 0 || increment > 255) {
+			if (increment < -FADE_CONSTANT || increment == 0 || increment > FADE_CONSTANT) {
 				throw new IllegalArgumentException("-255 <= increment <= 255 && increment != 0");
 			}
 			if (delay < 1) {
@@ -225,7 +230,7 @@ public class SwtUtil {
 
 	public static interface IFadeListener {
 		
-		public void faded(Shell shell, int alpha);
+		void faded(Shell shell, int alpha);
 		
 	}
 	

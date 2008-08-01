@@ -72,11 +72,11 @@ public class BambooTreeViewer extends TreeViewer {
 	*/
 
 	public static interface IRefreshVisitor {
-		public void visit(Object data);
+		void visit(Object data);
 	}
 	
 	public static interface IRefreshListener {
-		public void refreshed(Object element);
+		void refreshed(Object element);
 	}
 	
 	protected List<IRefreshListener> refreshListeners = new ArrayList<IRefreshListener>();
@@ -113,8 +113,7 @@ public class BambooTreeViewer extends TreeViewer {
                 createChildren(items[0]);
             }
     		this.setExpanded(items[0], expanded);
-		}
-		else {
+		} else {
 			TreeItem []nodes = this.getIdenticalNodes(element, false);
 			if (nodes != null && nodes.length > 0) {
 				super.setExpandedState(nodes[0].getData(), expanded);
@@ -124,7 +123,7 @@ public class BambooTreeViewer extends TreeViewer {
 	
 	public void setSelection(ISelection selection) {
 		if (selection instanceof IStructuredSelection && !selection.isEmpty()) {
-			IStructuredSelection tmp = (IStructuredSelection)selection;
+			IStructuredSelection tmp = (IStructuredSelection) selection;
 			TreeItem []nodes = this.getIdenticalNodes(tmp.getFirstElement(), false);
 			if (nodes != null && nodes.length > 0) {
 				selection = new StructuredSelection(nodes[0].getData());
@@ -146,11 +145,10 @@ public class BambooTreeViewer extends TreeViewer {
 						BambooTreeViewer.this.internalRefresh(nodes[i], data, true, true);
 						BambooTreeViewer.this.fireRefresh(data);
 					}
-				}
-				else {
+				} else {
 					Object input = BambooTreeViewer.this.getInput();
 					if (input instanceof IDataTreeNode) {
-						Object data = ((IDataTreeNode)input).getData();
+						Object data = ((IDataTreeNode) input).getData();
 						if (data != null && data.equals(element) && visitor != null) {
 							visitor.visit(input);
 						}
@@ -198,11 +196,11 @@ public class BambooTreeViewer extends TreeViewer {
 //		this.updateChildren(widget, element, null);
 		try {
 			//updateChildren(Widget widget, Object parent, Object[] elementChildren, boolean updateLabels)
-			Method m = AbstractTreeViewer.class.getDeclaredMethod("updateChildren", new Class[] {Widget.class, Object.class, Object [].class, boolean.class});
+			Method m = AbstractTreeViewer.class.getDeclaredMethod(
+					"updateChildren", new Class[] {Widget.class, Object.class, Object [].class, boolean.class});
 			m.setAccessible(true);
 			m.invoke(this, new Object[] {widget, element, null, Boolean.valueOf(updateLabels)});
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 		Item[] children = getChildren(widget);
@@ -235,13 +233,13 @@ public class BambooTreeViewer extends TreeViewer {
 	protected synchronized void fireRefresh(Object data) {
 		Object[] listeners = this.refreshListeners.toArray();
 		for (int i = 0; i < listeners.length; i++) {
-			((IRefreshListener)listeners[i]).refreshed(data);
+			((IRefreshListener) listeners[i]).refreshed(data);
 		}
 	}
 	
 	protected TreeItem []findUnfreshNodes(TreeItem []items, Object obj, boolean exact) {
 		List<TreeItem> retVal = this.findUnfreshNodesImpl(items, obj, exact);
-		return retVal == null ? null : (TreeItem [])retVal.toArray(new TreeItem[retVal.size()]);
+		return retVal == null ? null : (TreeItem []) retVal.toArray(new TreeItem[retVal.size()]);
 	}
 	
 	protected List<TreeItem> findUnfreshNodes(TreeItem item, Object obj, boolean exact) {
@@ -250,7 +248,7 @@ public class BambooTreeViewer extends TreeViewer {
 			return Arrays.asList(new TreeItem[] {item});
 		}
 		if (data instanceof IDataTreeNode) {
-			IDataTreeNode dataNode = (IDataTreeNode)data;
+			IDataTreeNode dataNode = (IDataTreeNode) data;
 			if (obj == dataNode.getData() || !exact && obj.equals(dataNode.getData())) {
 				return Arrays.asList(new TreeItem[] {item});
 			}
@@ -291,7 +289,7 @@ public class BambooTreeViewer extends TreeViewer {
 			public void doubleClick(DoubleClickEvent e) {
 				ISelection selection = e.getSelection();
 				if (selection instanceof IStructuredSelection) {
-					IStructuredSelection structured = (IStructuredSelection)selection;
+					IStructuredSelection structured = (IStructuredSelection) selection;
 					if (structured.size() == 1) {
 						BambooTreeViewer.this.handleDoubleClick(structured);
 					}
@@ -308,7 +306,8 @@ public class BambooTreeViewer extends TreeViewer {
 				if (item != null) {
 					Object data = item.getData();
 					if (data != null && data instanceof IToolTipProvider) {
-						tooltipText = ((IToolTipProvider)data).getToolTipMessage((String)BambooTreeViewer.class2Format.get(data.getClass()));
+						tooltipText = ((IToolTipProvider)data).getToolTipMessage(
+							(String)BambooTreeViewer.class2Format.get(data.getClass()));
 					}
 				}
 				tree.setToolTipText(tooltipText);

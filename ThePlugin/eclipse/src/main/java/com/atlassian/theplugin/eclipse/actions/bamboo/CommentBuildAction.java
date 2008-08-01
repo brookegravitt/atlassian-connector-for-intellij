@@ -32,58 +32,66 @@ import com.atlassian.theplugin.eclipse.view.bamboo.BambooBuildAdapterEclipse;
 import com.atlassian.theplugin.eclipse.view.bamboo.BambooToolWindow;
 
 public class CommentBuildAction extends AbstractBambooAction {
-	
+
 	private static final String COMMENT_BUILD = "Comment Build";
 
 	public CommentBuildAction(BambooToolWindow bambooToolWindow) {
 		super(bambooToolWindow);
-		
+
 		setEnabled(false); // action is disabled by default
 	}
-	
-	
+
 	@Override
 	public void run() {
 		super.run();
-		
+
 		final BambooBuildAdapterEclipse build = getBuild();
-		
-		CommentBuildDialog dialog = new CommentBuildDialog(Activator.getDefault().getShell(), build);
+
+		CommentBuildDialog dialog = new CommentBuildDialog(Activator
+				.getDefault().getShell(), build);
 		dialog.open();
 
-		if (dialog.getReturnCode() == SWT.OK && dialog.getComment().length() > 0) {
+		if (dialog.getReturnCode() == SWT.OK
+				&& dialog.getComment().length() > 0) {
 
 			final String comment = dialog.getComment();
-			final String buildDesc = build.getBuildKey() + " " + build.getBuildNumber();
+			final String buildDesc = build.getBuildKey() + " "
+					+ build.getBuildNumber();
 
 			Job labelBuild = new Job("Commenting build " + buildDesc) {
-	
+
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
-					
+
 					try {
 						setUIMessage("Commenting build " + buildDesc);
-						bambooFacade.addCommentToBuild(
-								build.getServer(), build.getBuildKey(), build.getBuildNumber(), comment);
+						bambooFacade
+								.addCommentToBuild(build.getServer(), build
+										.getBuildKey(), build.getBuildNumber(),
+										comment);
 						setUIMessage("Build " + buildDesc + " commented");
 					} catch (ServerPasswordNotProvidedException e) {
-						setUIMessage("Build " + buildDesc + "  not commented. Password not provided for server");
+						setUIMessage("Build "
+								+ buildDesc
+								+ "  not commented. Password not provided for server");
 					} catch (RemoteApiException e) {
-						setUIMessage("Build  " + buildDesc + " not commented. " + e.getMessage());
+						setUIMessage("Build  " + buildDesc + " not commented. "
+								+ e.getMessage());
 					}
 					return Status.OK_STATUS;
 				}
 			};
-			
+
 			labelBuild.setPriority(Job.SHORT);
 			labelBuild.schedule();
-		};
+		}
 	}
 
 	@Override
 	public ImageDescriptor getImageDescriptor() {
 		// TODO use eclipse resource handling
-		return ImageDescriptor.createFromImage(PluginIcons.getImageRegistry().get(PluginIcons.ICON_BAMBOO_COMMENT));
+		return ImageDescriptor.createFromImage(PluginIcons.getImageRegistry()
+				.get(PluginIcons.ICON_BAMBOO_COMMENT));
 	}
 
 	@Override

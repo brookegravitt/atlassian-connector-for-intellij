@@ -47,8 +47,8 @@ public class CommentBuildDialog {
 		shell.setText("Comment Build");
 		// place the window in the center of parent
 		shell.setLocation(
-				parent.getLocation().x + parent.getSize().x/2, 
-				parent.getLocation().y + parent.getSize().y/2);
+				parent.getLocation().x + parent.getSize().x / 2, 
+				parent.getLocation().y + parent.getSize().y / 2);
 		
 		this.buildPlan = build.getBuildKey() + " " + build.getBuildNumber();
 		
@@ -60,7 +60,7 @@ public class CommentBuildDialog {
 		gridLayout.numColumns = 1;
 		shell.setLayout(gridLayout);
 		
-		shell.setSize(320,230);
+		shell.setSize(320, 230);
 		createRowUpper();
 		createRowBottom();
 		createButtons();

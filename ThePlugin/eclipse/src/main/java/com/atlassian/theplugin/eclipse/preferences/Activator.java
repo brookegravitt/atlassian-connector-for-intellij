@@ -175,10 +175,16 @@ public class Activator extends AbstractUIPlugin {
 			// check for previous plugin versions repository info storage
 			if (storage.getBambooServers().length == 0) {
 				String coreFolderName = stateLocation.lastSegment();
-				IPath uiLocation = stateLocation.removeLastSegments(1).append(coreFolderName.substring(0, coreFolderName.length() - 4) + "ui");
-				File previousState = new File(uiLocation + File.pathSeparator + BambooConfigurationStorage.STATE_INFO_FILE_NAME);
+				IPath uiLocation = stateLocation.removeLastSegments(1).append(
+						coreFolderName.substring(0, coreFolderName.length() - 4) + "ui");
+				File previousState = new File(
+						uiLocation + File.pathSeparator + BambooConfigurationStorage.STATE_INFO_FILE_NAME);
+				
 				if (previousState.exists()) {
-					FileUtil.copyFile(new File(stateLocation.toString() + File.pathSeparator + BambooConfigurationStorage.STATE_INFO_FILE_NAME), 
+					FileUtil.copyFile(
+							new File(stateLocation.toString() 
+									+ File.pathSeparator 
+									+ BambooConfigurationStorage.STATE_INFO_FILE_NAME), 
 							previousState, new NullProgressMonitor());
 					previousState.delete();
 					storage.initialize(stateLocation);
@@ -196,7 +202,11 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public static Activator getDefault() {
 		while (Activator.plugin == null) {
-    		try {Thread.sleep(100);} catch (InterruptedException ex) {break;}
+    		try {
+    			Thread.sleep(100);
+    		} catch (InterruptedException ex) {
+    			break;
+    		}
     	}
 		return plugin;
 	}
