@@ -1,8 +1,9 @@
 package com.atlassian.theplugin.idea.crucible.tree;
 
-import com.atlassian.theplugin.idea.ui.AtlassianToolbar;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
+import com.intellij.openapi.util.IconLoader;
+import com.intellij.util.Icons;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -15,20 +16,26 @@ import java.awt.*;
  * Time: 10:35:24 PM
  * To change this template use File | Settings | File Templates.
  */
-public class AtlassianTreeWithToolbar extends JPanel {
-    private AtlassianTree tree = new AtlassianTree();
+public class AtlassianTreeWithToolbar extends ComponentWithToolbar {
+    private AtlassianTree tree;
     private ModelProvider modelProvider = ModelProvider.EMPTY_MODEL_PROVIDER;
     private STATE state = STATE.DIRED;
+    private VIEW_STATE viewState = VIEW_STATE.EXPANDED;
 
     public AtlassianTreeWithToolbar(String toolbar, final ModelProvider modelProvider) {
         this(toolbar);
         setModelProvider(modelProvider);
     }
 
-    public AtlassianTreeWithToolbar(final String toolbar) {
-        super(new BorderLayout());
-        add(AtlassianToolbar.createToolbar("tree", toolbar), BorderLayout.NORTH);
-        add(tree, BorderLayout.CENTER);
+    public AtlassianTreeWithToolbar(final String toolbarName) {
+        super(toolbarName);
+    }
+
+    protected Component getTreeComponent() {
+        if (tree == null) {
+            tree = new AtlassianTree();
+        }
+        return tree;
     }
 
     public void setRootVisible(final boolean isVisible) {
@@ -37,7 +44,7 @@ public class AtlassianTreeWithToolbar extends JPanel {
 
     public void setModel(final AtlassianTreeModel model) {
         tree.setModel(model);
-        tree.expandAll();
+        setViewState(getViewState());
     }
 
     public void expandAll() {
@@ -63,19 +70,91 @@ public class AtlassianTreeWithToolbar extends JPanel {
         setState(getState().getNextState());
     }
 
+    public VIEW_STATE getViewState() {
+        return viewState;
+    }
+
+    public void setViewState(final VIEW_STATE viewState) {
+        this.viewState = viewState;
+        switch (viewState) {
+            case COLLAPSED:
+                collapseAll();
+                break;
+            case EXPANDED:
+                expandAll();
+                break;
+            default:
+                throw new IllegalStateException("Unknown state of tree: " + viewState.toString());
+        }
+    }
+
     public void collapseAll() {
         tree.collapseAll();
     }
 
     public enum STATE {
-        FLAT { STATE getNextState() {
-            return DIRED;
-        }},
-        DIRED { STATE getNextState() {
-            return FLAT;
+        FLAT(Icons.DIRECTORY_CLOSED_ICON, "Show flat") {
+            @Override
+            public STATE getNextState() {
+                return DIRED;
+            }},
+        DIRED(Icons.DIRECTORY_OPEN_ICON, "Show dired") {
+            public STATE getNextState() {
+                return FLAT;
         }};
 
-        abstract STATE getNextState();
+        private Icon icon;
+        private String string;
+
+        STATE(final Icon icon, final String string) {
+            this.icon = icon;
+            this.string = string;
+        }
+
+        public abstract STATE getNextState();
+
+        public Icon getIcon() {
+            return icon;
+        }
+
+        @Override
+        public String toString() {
+            return string;
+        }
+    }
+
+    public enum VIEW_STATE {
+        COLLAPSED(IconLoader.getIcon("/actions/collapseall.png"), "Collapse all") {
+
+            public VIEW_STATE getNextState() {
+                return EXPANDED;
+            }
+            },
+        EXPANDED(IconLoader.getIcon("/actions/expandall.png"), "Expand all") {
+
+            public VIEW_STATE getNextState() {
+                return COLLAPSED;
+            }
+            };
+
+        private Icon icon;
+        private String string;
+
+        VIEW_STATE(final Icon icon, final String string) {
+            this.icon = icon;
+            this.string = string;
+        }
+
+        public abstract VIEW_STATE getNextState();
+
+        public Icon getIcon() {
+            return icon;
+        }
+
+        @Override
+        public String toString() {
+            return string;
+        }
     }
 }
 
