@@ -32,15 +32,18 @@ import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListen
 import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.atlassian.theplugin.idea.crucible.events.*;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
+import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.util.Key;
 import com.intellij.util.ui.UIUtil;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
 
-public final class CrucibleBottomToolWindowPanel extends JPanel implements ContentPanel {
+public final class CrucibleBottomToolWindowPanel extends JPanel implements ContentPanel, DataProvider {
     private static final Key<CrucibleBottomToolWindowPanel> WINDOW_PROJECT_KEY
             = Key.create(CrucibleBottomToolWindowPanel.class.getName());
     private Project project;
@@ -159,6 +162,16 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
 
     public void setData(PluginConfiguration config) {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Nullable
+    public Object getData(@NonNls final String dataId) {
+        if (dataId.equals(Constants.FILE_TREE)) {
+            return reviewItemTreePanel.getReviewItemTree();
+        } else if (dataId.equals(Constants.CRUCIBLE_BOTTOM_WINDOW)) {
+            return this;
+        }
+        return null;
     }
 
     private final class MyAgent extends CrucibleReviewActionListener {

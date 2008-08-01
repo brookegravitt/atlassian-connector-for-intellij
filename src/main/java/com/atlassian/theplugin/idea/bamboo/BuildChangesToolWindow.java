@@ -30,6 +30,7 @@ import com.atlassian.theplugin.idea.ui.tree.file.BambooFileNode;
 import com.atlassian.theplugin.idea.ui.tree.file.FileTreeModelBuilder;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.wm.ToolWindow;
@@ -39,6 +40,7 @@ import com.intellij.peer.PeerFactory;
 import com.intellij.psi.PsiFile;
 import com.intellij.ui.content.Content;
 import com.intellij.util.ui.ListTableModel;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -112,7 +114,7 @@ public final class BuildChangesToolWindow {
         commitDetailsToolWindow.show(null);
     }
 
-    private static class CommitDetailsPanel extends JPanel implements ChangesTree {
+    private static class CommitDetailsPanel extends JPanel implements ChangesTree, DataProvider {
         private static final float SPLIT_RATIO = 0.6f;
         private AtlassianTreeWithToolbar fileTree;
         private JScrollPane fileScroll;
@@ -138,7 +140,6 @@ public final class BuildChangesToolWindow {
             split.setShowDividerControls(true);
 
 
-
             JPanel tablePanel = new JPanel();
             tablePanel.setLayout(new BorderLayout());
             commitsTable = createCommitsTable(commits);
@@ -159,6 +160,16 @@ public final class BuildChangesToolWindow {
 
             setLayout(new BorderLayout());
             add(split, BorderLayout.CENTER);
+        }
+
+        @Nullable
+        public Object getData(@NonNls final String dataId) {
+            if (dataId.equals(Constants.FILE_TREE)) {
+                return fileTree;
+            } else if (dataId.equals(Constants.BUILD_CHANGES_WINDOW)) {
+                return this;
+            }
+            return null;
         }
 
 

@@ -46,7 +46,6 @@ public final class ReviewItemTreePanel extends JPanel {
     private CrucibleReviewActionListener listener;
     private static final int WIDTH = 150;
     private static final int HEIGHT = 250;
-    private static ReviewItemTreePanel instance;
 
     public static final Logger LOGGER = PluginUtil.getLogger();
 
@@ -68,7 +67,7 @@ public final class ReviewItemTreePanel extends JPanel {
         add(statusLabel, BorderLayout.SOUTH);
     }
 
-    private JPanel getReviewItemTree() {
+    public JPanel getReviewItemTree() {
         if (reviewFilesTree == null) {
             reviewFilesTree = new AtlassianTreeWithToolbar("ThePlugin.Crucible.ReviewFileListToolBar");
             reviewFilesTree.setRootVisible(false);

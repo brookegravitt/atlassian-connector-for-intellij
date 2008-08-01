@@ -21,7 +21,11 @@ import com.intellij.openapi.util.IconLoader;
 import javax.swing.*;
 
 public final class Constants {
-	private Constants() { }
+    public static final String FILE_TREE = "theplugin.tree";
+    public static final String BUILD_CHANGES_WINDOW = "theplugin.build_changes_window";
+    public static final String CRUCIBLE_BOTTOM_WINDOW = "theplugin.crucible_bottom_window";
+
+    private Constants() { }
 
 	public static final int DIALOG_MARGIN = 12;
 
