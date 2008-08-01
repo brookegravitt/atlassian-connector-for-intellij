@@ -15,7 +15,7 @@ import com.intellij.openapi.util.Key;
 
 import java.awt.*;
 
-public class CommentHighlighter {
+public final class CommentHighlighter {
 	private static final Color VERSIONED_COMMENT_BACKGROUND_COLOR = Color.LIGHT_GRAY;
 	private static final Color VERSIONED_COMMENT_STRIP_MARK_COLOR = Color.ORANGE;
 
