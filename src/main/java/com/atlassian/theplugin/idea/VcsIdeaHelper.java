@@ -28,6 +28,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vcs.*;
 import com.intellij.openapi.vcs.changes.ContentRevision;
+import com.intellij.openapi.vcs.diff.DiffProvider;
 import com.intellij.openapi.vcs.history.VcsFileRevision;
 import com.intellij.openapi.vcs.history.VcsRevisionNumber;
 import com.intellij.openapi.vcs.vfs.AbstractVcsVirtualFile;
@@ -172,7 +173,11 @@ public final class VcsIdeaHelper {
 	private static VcsVirtualFile getVcsVirtualFileImpl2(VirtualFile virtualFile, AbstractVcs vcs,
 			VcsRevisionNumber vcsRevisionNumber, boolean loadLazily) throws VcsException {
 
-		ContentRevision contentRevision = vcs.getDiffProvider().createFileContent(vcsRevisionNumber, virtualFile);
+		DiffProvider diffProvider = vcs.getDiffProvider();
+		if (diffProvider == null) {
+			return null;
+		}
+		ContentRevision contentRevision = diffProvider.createFileContent(vcsRevisionNumber, virtualFile);
 		if (contentRevision == null) {
 			return null;
 		}
