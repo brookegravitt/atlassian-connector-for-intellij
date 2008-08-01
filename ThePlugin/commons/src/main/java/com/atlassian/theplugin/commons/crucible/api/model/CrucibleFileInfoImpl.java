@@ -116,7 +116,12 @@ public class CrucibleFileInfoImpl implements CrucibleFileInfo {
         versionedComments = commentList;
     }
 
-    public List<VersionedComment> getVersionedComments() throws ValueNotYetInitialized {
+	public void addVersionedComment(VersionedComment comment) {
+		versionedComments.add(comment);
+	}
+
+
+	public List<VersionedComment> getVersionedComments() throws ValueNotYetInitialized {
         if (versionedComments == null) {
             throw new ValueNotYetInitialized("Object trasferred only partially");
         }
