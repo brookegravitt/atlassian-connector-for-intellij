@@ -85,7 +85,7 @@ public final class ReviewItemTreePanel extends JPanel {
         return progressAnimation;
     }
 
-    private class MyReviewActionListener extends CrucibleReviewActionListener {
+    private final class MyReviewActionListener extends CrucibleReviewActionListener {
         private Project project;
 
         private MyReviewActionListener(Project project) {
@@ -111,48 +111,11 @@ public final class ReviewItemTreePanel extends JPanel {
             EventQueue.invokeLater(new Runnable() {
                 public void run() {
 
-                    final StringBuilder buffer = new StringBuilder();
-                    buffer.append("<html>");
-                    buffer.append("<body>");
-                    buffer.append(reviewItem.getCreator().getDisplayName());
-                    buffer.append(" ");
-                    buffer.append("<font size=-1 color=");
-                    buffer.append(CrucibleConstants.CRUCIBLE_AUTH_COLOR);
-                    buffer.append(">AUTH</font>");
-                    buffer.append(" ");
-                    if (!reviewItem.getCreator().equals(reviewItem.getModerator())) {
-                        buffer.append(reviewItem.getModerator().getDisplayName());
-                    }
-                    buffer.append(" ");
-                    buffer.append("<font size=-1 color=");
-                    buffer.append(CrucibleConstants.CRUCIBLE_MOD_COLOR);
-                    buffer.append(">MOD</font>");
-                    int i = 0;
-                    List<Reviewer> reviewers = null;
-                    try {
-                        reviewers = reviewItem.getReviewers();
-                        if (reviewers != null) {
-                            buffer.append("<br>");
-                            for (Reviewer reviewer : reviewers) {
-                                if (i > 0) {
-                                    buffer.append(", ");
-                                }
-                                buffer.append(reviewer.getDisplayName());
-                                i++;
-                            }
-                        }
-                    } catch (ValueNotYetInitialized valueNotYetInitialized) {
-                        //ignore
-                    }
-                    buffer.append("</body>");
-                    buffer.append("</html>");
-
-
-                    statusLabel.setText(buffer.toString());
+                    statusLabel.setText(createGeneralInfoText(reviewItem));
                     reviewFilesTree.setModelProvider(new ModelProvider() {
-                        public AtlassianTreeModel diredModel =
+                        private AtlassianTreeModel diredModel =
                                 FileTreeModelBuilder.buildTreeModelFromCrucibleChangeSet(reviewItem, files1);
-                        public AtlassianTreeModel flatModel =
+                        private AtlassianTreeModel flatModel =
                                 FileTreeModelBuilder.buildFlatModelFromCrucibleChangeSet(reviewItem, files1);
 
                         public AtlassianTreeModel getModel(final AtlassianTreeWithToolbar.STATE state) {
@@ -169,6 +132,46 @@ public final class ReviewItemTreePanel extends JPanel {
                     reviewFilesTree.setRootVisible(true);
                 }
             });
+        }
+
+        private String createGeneralInfoText(final ReviewData reviewItem) {
+            final StringBuilder buffer = new StringBuilder();
+            buffer.append("<html>");
+            buffer.append("<body>");
+            buffer.append(reviewItem.getCreator().getDisplayName());
+            buffer.append(" ");
+            buffer.append("<font size=-1 color=");
+            buffer.append(CrucibleConstants.CRUCIBLE_AUTH_COLOR);
+            buffer.append(">AUTH</font>");
+            buffer.append(" ");
+            if (!reviewItem.getCreator().equals(reviewItem.getModerator())) {
+                buffer.append(reviewItem.getModerator().getDisplayName());
+            }
+            buffer.append(" ");
+            buffer.append("<font size=-1 color=");
+            buffer.append(CrucibleConstants.CRUCIBLE_MOD_COLOR);
+            buffer.append(">MOD</font>");
+            int i = 0;
+            List<Reviewer> reviewers = null;
+            try {
+                reviewers = reviewItem.getReviewers();
+                if (reviewers != null) {
+                    buffer.append("<br>");
+                    for (Reviewer reviewer : reviewers) {
+                        if (i > 0) {
+                            buffer.append(", ");
+                        }
+                        buffer.append(reviewer.getDisplayName());
+                        i++;
+                    }
+                }
+            } catch (ValueNotYetInitialized valueNotYetInitialized) {
+                //ignore
+            }
+            buffer.append("</body>");
+            buffer.append("</html>");
+
+            return buffer.toString();
         }
 
     }
