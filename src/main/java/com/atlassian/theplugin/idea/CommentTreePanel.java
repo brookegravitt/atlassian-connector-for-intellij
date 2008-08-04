@@ -83,7 +83,7 @@ public class CommentTreePanel extends JPanel {
 
     private void addGeneralCommentTree(AtlassianTreeNode root, final ReviewData review,
             GeneralComment generalComment, int depth) {
-        if (generalComment.getState() == Comment.STATE.DELETED) {
+        if (generalComment.isDeleted()) {
             return;
         }
         GeneralCommentTreeNode commentNode
@@ -96,7 +96,7 @@ public class CommentTreePanel extends JPanel {
 
     private void addVersionedCommentTree(AtlassianTreeNode root, final ReviewData review,
             final CrucibleFileInfo file, VersionedComment versionedComment, int depth) {
-        if (versionedComment.getState() == Comment.STATE.DELETED) {
+        if (versionedComment.isDeleted()) {
             return;
         }
         VersionedCommentTreeNode commentNode = new VersionedCommentTreeNode(review, file, versionedComment,
