@@ -241,9 +241,8 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
 										  final int start, final int end) {
             ApplicationManager.getApplication().invokeLater(new Runnable() {
                 public void run() {
-                    java.util.List<CustomFieldDef> metrics = getMetrics(review);
                     VersionedCommentBean newComment = new VersionedCommentBean();
-                    CommentEditForm dialog = new CommentEditForm(project, review, newComment, metrics);
+                    CommentEditForm dialog = new CommentEditForm(project, review, newComment, CrucibleHelper.getMetricsForReview(project, review));
                     dialog.pack();
                     dialog.setModal(true);
                     dialog.show();
