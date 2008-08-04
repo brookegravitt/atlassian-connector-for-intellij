@@ -234,7 +234,9 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
 						ReviewData mr = editor.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
 						CrucibleFileInfo mf = editor.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
 						if (mr != null && mf != null) {
-							// todo lguminski focus on selected lines
+							if (review.equals(mr) && file.equals(mf)) {
+								// focus on comment
+							}
 						}
 
 					}
