@@ -20,6 +20,7 @@ import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.atlassian.theplugin.idea.ui.TableColumnProvider;
 import com.atlassian.theplugin.idea.crucible.table.column.*;
 import com.atlassian.theplugin.idea.crucible.table.renderer.ReviewReviewersCellRenderer;
+import com.atlassian.theplugin.idea.crucible.table.renderer.ReviewInfoCellRenderer;
 
 import javax.swing.table.TableCellRenderer;
 
@@ -40,7 +41,7 @@ public final class CrucibleTableColumnProviderImpl implements TableColumnProvide
 	public TableCellRenderer[] makeRendererInfo() {
 		return new TableCellRenderer[]{
 				null,
-				null,
+				new ReviewInfoCellRenderer(),
 				new ReviewReviewersCellRenderer(),
 				null,
 				null				
