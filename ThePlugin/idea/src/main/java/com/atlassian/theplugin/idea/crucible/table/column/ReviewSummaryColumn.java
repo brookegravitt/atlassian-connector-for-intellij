@@ -32,9 +32,7 @@ public class ReviewSummaryColumn extends TableColumnInfo {
 	}
 
 	public Object valueOf(Object o) {
-		ReviewData review = (ReviewData) o;
-		
-		return new ReviewDecoratorImpl(review.getName(), review).getString();
+		return o;
 	}
 
 	public Class getColumnClass() {
