@@ -20,11 +20,12 @@ import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.atlassian.theplugin.idea.crucible.table.renderer.ReviewDecoratorImpl;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 
+import javax.swing.*;
 import java.util.Comparator;
 
 
 public class ReviewKeyColumn extends TableColumnInfo {
-	private static final int COL_WIDTH = 120;
+	private static final int COL_WIDTH = (int) new JLabel("XX-XX-XXXXX").getPreferredSize().width;
 
 	public String getColumnName() {
 		return "Key";

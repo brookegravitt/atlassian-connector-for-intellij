@@ -48,7 +48,6 @@ public class CommentEditForm extends DialogWrapper {
 
 	private Review review;
 	private CommentBean comment;
-	private List<CustomFieldDef> metrics;
 
 	private boolean saveAsDraft = false;
 
