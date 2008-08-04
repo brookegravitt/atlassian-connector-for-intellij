@@ -21,6 +21,7 @@ import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -34,12 +35,12 @@ import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.atlassian.theplugin.idea.crucible.events.*;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.intellij.openapi.actionSystem.DataProvider;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.util.Key;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.editor.Editor;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.Nullable;
@@ -48,6 +49,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public final class CrucibleBottomToolWindowPanel extends JPanel implements ContentPanel, DataProvider {
     private static final Key<CrucibleBottomToolWindowPanel> WINDOW_PROJECT_KEY
@@ -212,7 +214,7 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
         public void aboutToAddLineComment(final ReviewData review, final CrucibleFileInfo file, final Editor editor, final int start, final int end) {
             ApplicationManager.getApplication().invokeLater(new Runnable() {
                 public void run() {
-                    java.util.List<CustomFieldDef> metrics = getMetrics(review);
+                    List<CustomFieldDef> metrics = getMetrics(review);
                     VersionedCommentBean newComment = new VersionedCommentBean();
                     CommentEditForm dialog = new CommentEditForm(project, review, newComment, metrics);
                     dialog.pack();
@@ -230,11 +232,22 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
         }
 
         @Override
-        public void aboutToAddGeneralComment(ReviewData review, GeneralCommentBean newComment) {
+        public void aboutToAddGeneralComment(ReviewData review, GeneralComment newComment) {
             try {
                 GeneralComment comment = facade.addGeneralComment(review.getServer(), review.getPermId(),
                         newComment);
-                eventBroker.trigger(new GeneralCommentAdded(this, review, comment));
+
+
+				List<GeneralComment> comments;
+				try {
+					comments = review.getGeneralComments();
+				} catch (ValueNotYetInitialized valueNotYetInitialized) {
+					comments = facade.getGeneralComments(review.getServer(), review.getPermId());
+					((ReviewBean) review.getInnerReviewObject()).setGeneralComments(comments);
+				}
+				comments.add(comment);
+
+				eventBroker.trigger(new GeneralCommentAdded(this, review, comment));
             } catch (RemoteApiException e) {
                 IdeaHelper.handleRemoteApiException(project, e);
             } catch (ServerPasswordNotProvidedException e) {
@@ -244,11 +257,15 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
 
         @Override
         public void aboutToAddGeneralCommentReply(ReviewData review, GeneralComment parentComment,
-                                                  GeneralCommentBean newComment) {
+                                                  GeneralComment newComment) {
             try {
                 GeneralComment comment = facade.addGeneralCommentReply(review.getServer(), review.getPermId(),
                         parentComment.getPermId(), newComment);
-                eventBroker.trigger(new GeneralCommentReplyAdded(this, review, parentComment, comment));
+
+				// todo lguminski to make getReplies unmodifiable
+				parentComment.getReplies().add(comment);
+
+				eventBroker.trigger(new GeneralCommentReplyAdded(this, review, parentComment, comment));
             } catch (RemoteApiException e) {
                 IdeaHelper.handleRemoteApiException(project, e);
             } catch (ServerPasswordNotProvidedException e) {
@@ -257,11 +274,21 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
         }
 
         @Override
-        public void aboutToAddVersionedComment(ReviewData review, CrucibleFileInfo file, VersionedCommentBean comment, Editor editor) {
+        public void aboutToAddVersionedComment(ReviewData review, CrucibleFileInfo file, VersionedComment comment, Editor editor) {
             try {
                 VersionedComment newComment = facade.addVersionedComment(review.getServer(), review.getPermId(),
                         file.getPermId(), comment);
-                eventBroker.trigger(new VersionedCommentAdded(this, review, file, newComment, editor));
+
+				List<VersionedComment> comments;
+				try {
+					comments = file.getVersionedComments();
+				} catch (ValueNotYetInitialized valueNotYetInitialized) {
+					comments = facade.getVersionedComments(review.getServer(), review.getPermId(),
+							file.getPermId());
+					((CrucibleFileInfoImpl) file).setVersionedComments(comments);
+				}
+				comments.add(newComment);
+				eventBroker.trigger(new VersionedCommentAdded(this, review, file, newComment, editor));
             } catch (RemoteApiException e) {
                 IdeaHelper.handleRemoteApiException(project, e);
             } catch (ServerPasswordNotProvidedException e) {
@@ -271,12 +298,15 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
 
         @Override
         public void aboutToAddVersionedCommentReply(ReviewData review, CrucibleFileInfo file,
-                                                    VersionedComment parentComment, VersionedCommentBean comment) {
+                                                    VersionedComment parentComment, VersionedComment comment) {
 
             try {
                 VersionedComment newComment = facade.addVersionedCommentReply(review.getServer(), review.getPermId(),
                         parentComment.getPermId(), comment);
-                eventBroker.trigger(new VersionedCommentReplyAdded(this, review, file, parentComment, newComment));
+
+				parentComment.getReplies().add(newComment);
+
+				eventBroker.trigger(new VersionedCommentReplyAdded(this, review, file, parentComment, newComment));
             } catch (RemoteApiException e) {
                 IdeaHelper.handleRemoteApiException(project, e);
             } catch (ServerPasswordNotProvidedException e) {
@@ -289,7 +319,8 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
                                                   final VersionedComment comment) {
             try {
                 facade.updateComment(review.getServer(), review.getPermId(), comment);
-                eventBroker.trigger(new VersionedCommentUpdated(this, review, file, comment));
+				// todo lguminski to modify data model
+				eventBroker.trigger(new VersionedCommentUpdated(this, review, file, comment));
             } catch (RemoteApiException e) {
                 IdeaHelper.handleRemoteApiException(project, e);
             } catch (ServerPasswordNotProvidedException e) {
@@ -301,6 +332,7 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
         public void aboutToUpdateGeneralComment(final ReviewData review, final GeneralComment comment) {
             try {
                 facade.updateComment(review.getServer(), review.getPermId(), comment);
+				// todo lguminski to modify data model
                 eventBroker.trigger(new GeneralCommentUpdated(this, review, comment));
             } catch (RemoteApiException e) {
                 IdeaHelper.handleRemoteApiException(project, e);
@@ -313,6 +345,7 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
         public void aboutToRemoveComment(final ReviewData review, final Comment comment) {
             try {
                 facade.removeComment(review.getServer(), review.getPermId(), comment);
+				// todo lguminski to modify data model
                 eventBroker.trigger(new CommentRemoved(this, review, comment));
             } catch (RemoteApiException e) {
                 IdeaHelper.handleRemoteApiException(project, e);
