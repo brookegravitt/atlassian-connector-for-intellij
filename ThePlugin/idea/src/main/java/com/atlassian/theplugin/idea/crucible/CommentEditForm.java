@@ -82,36 +82,55 @@ public class CommentEditForm extends DialogWrapper {
 		saveAsDraftButton.setAction(getDraftAction());
 		saveAsDraftButton.setMnemonic('D');
 		cancelButton.setAction(getCancelAction());
-        commentText.setText(comment.getMessage());
+		commentText.setText(comment.getMessage());
 
-        defectCheckBox.addActionListener(new ActionListener() {
+		defectCheckBox.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent event) {
-				rankComboBox.setVisible(defectCheckBox.isSelected());
-				classificationComboBox.setVisible(defectCheckBox.isSelected());
+				showMetricCombo(defectCheckBox.isSelected());
+				pack();
 			}
 		});
 
-		defectCheckBox.setSelected(false);
-		rankComboBox.setVisible(false);
-		classificationComboBox.setVisible(false);
+		if (comment.isDefectRaised()) {
+			defectCheckBox.setSelected(true);
+			showMetricCombo(true);
+		} else {
+			defectCheckBox.setSelected(false);
+			showMetricCombo(false);
+		}
 
-        if (comment.isReply()) {
-            defectCheckBox.setVisible(false);
-            if (comment.getPermId() != null) {
-                setTitle("Edit Reply");
-            } else {
-                setTitle("Add Reply");
-            }
-        } else {
-            if (comment.getPermId() != null) {
-                setTitle("Edit Comment");
-            } else {
-                setTitle("Add Comment");
-            }
-        }
+		if (comment.isReply()) {
+			defectCheckBox.setVisible(false);
+			if (comment.getPermId() != null) {
+				setTitle("Edit Reply");
+			} else {
+				setTitle("Add Reply");
+			}
+		} else {
+			if (comment.getPermId() != null) {
+				setTitle("Edit Comment");
+			} else {
+				setTitle("Add Comment");
+			}
+		}
+
+		if (comment.getPermId() != null) {
+			if (comment.isDraft()) {
+				saveAsDraftButton.setVisible(true);
+			} else {
+				saveAsDraftButton.setVisible(false);
+			}
+		} else {
+			saveAsDraftButton.setVisible(true);
+		}
 
 		getOKAction().putValue(Action.NAME, "Post");
+	}
+
+	private void showMetricCombo(boolean visible) {
+		rankComboBox.setVisible(visible);
+		classificationComboBox.setVisible(visible);
 	}
 
 	public JComponent getPreferredFocusedComponent() {
@@ -192,7 +211,9 @@ public class CommentEditForm extends DialogWrapper {
 		rootComponent.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
 		rootComponent.setMinimumSize(new Dimension(650, 300));
 		commentPane = new JScrollPane();
-		rootComponent.add(commentPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+		rootComponent.add(commentPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 		commentText = new JTextArea();
 		commentText.setLineWrap(false);
 		commentText.setText("");
@@ -200,25 +221,39 @@ public class CommentEditForm extends DialogWrapper {
 		commentPane.setViewportView(commentText);
 		final JPanel panel1 = new JPanel();
 		panel1.setLayout(new GridLayoutManager(1, 7, new Insets(0, 0, 0, 0), -1, -1));
-		rootComponent.add(panel1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+		rootComponent.add(panel1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
 		defectCheckBox = new JCheckBox();
 		defectCheckBox.setText("Defect");
-		panel1.add(defectCheckBox, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		panel1.add(defectCheckBox, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
+				null, null, null, 0, false));
 		rankComboBox = new JComboBox();
-		panel1.add(rankComboBox, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		panel1.add(rankComboBox, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+				GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		classificationComboBox = new JComboBox();
-		panel1.add(classificationComboBox, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		panel1.add(classificationComboBox, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST,
+				GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null,
+				null, null, 0, false));
 		postButton = new JButton();
 		postButton.setText("Post");
-		panel1.add(postButton, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		panel1.add(postButton, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
+				null, null, null, 0, false));
 		saveAsDraftButton = new JButton();
 		saveAsDraftButton.setText("Save as draft");
-		panel1.add(saveAsDraftButton, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		panel1.add(saveAsDraftButton, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_CENTER,
+				GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+				GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		cancelButton = new JButton();
 		cancelButton.setText("Cancel");
-		panel1.add(cancelButton, new GridConstraints(0, 6, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		panel1.add(cancelButton, new GridConstraints(0, 6, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
+				null, null, null, 0, false));
 		final Spacer spacer1 = new Spacer();
-		panel1.add(spacer1, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+		panel1.add(spacer1, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+				GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
 	}
 
 	/**
