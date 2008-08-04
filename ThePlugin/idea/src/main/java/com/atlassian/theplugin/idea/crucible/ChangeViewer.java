@@ -128,9 +128,9 @@ public class ChangeViewer {
 
                     case 1:
                         return DiffColors.DIFF_MODIFIED;
-                }
-
-                return null;
+					default:
+						return null;
+				}
             }
 
             public void paint(Editor editor, Graphics g, Rectangle r) {
@@ -362,8 +362,8 @@ public class ChangeViewer {
         });
 
         HintManager.getInstance()
-                .showEditorHint(lightweightHint, editor, point, HintManager.HIDE_BY_ANY_KEY | HintManager.HIDE_BY_TEXT_CHANGE |
-                        HintManager.HIDE_BY_OTHER_HINT | HintManager.HIDE_BY_SCROLLING,
+                .showEditorHint(lightweightHint, editor, point, HintManager.HIDE_BY_ANY_KEY | HintManager.HIDE_BY_TEXT_CHANGE
+						| HintManager.HIDE_BY_OTHER_HINT | HintManager.HIDE_BY_SCROLLING,
                         -1, false);
     }
 
@@ -445,8 +445,10 @@ public class ChangeViewer {
 
                 public DiffContent[] getContents() {
                     return (new DiffContent[]{
-                            getDiffContent(myHighlighter.getReferenceDocument(), myHighlighter.getReferenceTextRange(myRange), myHighlighter.getReferenceVirtualFile()),
-                            getDiffContent(myHighlighter.getDisplayDocument(), myHighlighter.getDisplayTextRange(myRange), myHighlighter.getDisplayVirtualFile())
+                            getDiffContent(myHighlighter.getReferenceDocument(), myHighlighter.getReferenceTextRange(myRange),
+									myHighlighter.getReferenceVirtualFile()),
+                            getDiffContent(myHighlighter.getDisplayDocument(), myHighlighter.getDisplayTextRange(myRange),
+									myHighlighter.getDisplayVirtualFile())
                     });
                 }
 
