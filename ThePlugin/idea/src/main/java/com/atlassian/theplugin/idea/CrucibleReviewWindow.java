@@ -27,6 +27,7 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.config.ContentPanel;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
+import com.atlassian.theplugin.idea.crucible.CommentHighlighter;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
@@ -36,6 +37,8 @@ import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.fileEditor.FileEditor;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Splitter;
@@ -51,7 +54,6 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -134,7 +136,7 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
 
 
 		eventBroker = IdeaHelper.getReviewActionEventBroker();
-		eventBroker.registerListener(new MyAgent());
+		eventBroker.registerListener(new MyAgent(project));
 
 
 		progressAnimation.configure(this, reviewItemTreePanel, BorderLayout.CENTER);
@@ -206,6 +208,12 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
 	private final class MyAgent extends CrucibleReviewActionListener {
 		private final CrucibleServerFacade facade = CrucibleServerFacadeImpl.getInstance();
 		private final ReviewActionEventBroker eventBroker = IdeaHelper.getReviewActionEventBroker();
+		private Project project;
+
+		public MyAgent(final Project project) {
+			super();
+			this.project = project;
+		}
 
 		@Override
 		public void showReview(final ReviewData reviewData) {
@@ -213,12 +221,26 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
 				public void run() {
 					showCrucibleReviewWindow();
 				}
-
-				;
 			});
 		}
 
-		;
+		@Override
+		public void focusOnLineCommentEvent(final ReviewData review, final CrucibleFileInfo file,
+				final VersionedComment comment) {
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					FileEditor[] editors = FileEditorManager.getInstance(project).getAllEditors();
+					for (FileEditor editor : editors) {
+						ReviewData mr = editor.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
+						CrucibleFileInfo mf = editor.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
+						if (mr != null && mf != null) {
+							// todo lguminski focus on selected lines
+						}
+
+					}
+				}
+			});
+		}
 
 		@Override
 		public void showDiff(final CrucibleFileInfo file) {
@@ -228,19 +250,6 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
 		@Override
 		public void showFile(final ReviewData review, final CrucibleFileInfo file) {
 			CrucibleHelper.showVirtualFileWithComments(project, review, file);
-		}
-
-		private java.util.List<CustomFieldDef> getMetrics(ReviewData review) {
-			java.util.List<CustomFieldDef> metrics = new ArrayList<CustomFieldDef>();
-			try {
-				metrics = CrucibleServerFacadeImpl.getInstance()
-						.getMetrics(review.getServer(), review.getMetricsVersion());
-			} catch (RemoteApiException e) {
-				IdeaHelper.handleRemoteApiException(project, e);
-			} catch (ServerPasswordNotProvidedException e) {
-				IdeaHelper.handleMissingPassword(e);
-			}
-			return metrics;
 		}
 
 		@Override

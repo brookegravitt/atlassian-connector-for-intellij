@@ -24,8 +24,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.idea.crucible.CommentHighlighter;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
-import com.atlassian.theplugin.idea.crucible.events.FocusOnFileEvent;
-import com.atlassian.theplugin.idea.crucible.events.FocusOnReviewEvent;
+import com.atlassian.theplugin.idea.crucible.events.*;
 import com.atlassian.theplugin.idea.ui.AtlassianToolbar;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
@@ -83,31 +82,31 @@ public class CommentTreePanel extends JPanel {
 		add(commentScroll, BorderLayout.CENTER);
 	}
 
-    private void addGeneralCommentTree(AtlassianTreeNode root, final ReviewData review,
-            GeneralComment generalComment, int depth) {
-        if (generalComment.isDeleted()) {
-            return;
-        }
-        GeneralCommentTreeNode commentNode
-                = new GeneralCommentTreeNode(review, generalComment,  new AtlassianClickAction() {
-					public void execute(final AtlassianTreeNode node, final int noOfClicks) {
-						switch (noOfClicks) {
-							case 1:
-								GeneralCommentTreeNode anode = (GeneralCommentTreeNode) node;
-								IdeaHelper.getReviewActionEventBroker().trigger(
-										new FocusOnReviewEvent(crucibleAgent, anode.getReview()));
-								break;
-							default:
-								// do nothing
-						}
+	private void addGeneralCommentTree(AtlassianTreeNode root, final ReviewData review,
+			GeneralComment generalComment, int depth) {
+		if (generalComment.isDeleted()) {
+			return;
+		}
+		GeneralCommentTreeNode commentNode
+				= new GeneralCommentTreeNode(review, generalComment, new AtlassianClickAction() {
+			public void execute(final AtlassianTreeNode node, final int noOfClicks) {
+				switch (noOfClicks) {
+					case 1:
+						GeneralCommentTreeNode anode = (GeneralCommentTreeNode) node;
+						IdeaHelper.getReviewActionEventBroker().trigger(
+								new FocusOnReviewEvent(crucibleAgent, anode.getReview()));
+						break;
+					default:
+						// do nothing
+				}
 
-					}
-				});
-        root.addNode(commentNode);
-        for (GeneralComment comment : generalComment.getReplies()) {
-            addGeneralCommentTree(commentNode, review, comment, depth + 1);
-        }
-    }
+			}
+		});
+		root.addNode(commentNode);
+		for (GeneralComment comment : generalComment.getReplies()) {
+			addGeneralCommentTree(commentNode, review, comment, depth + 1);
+		}
+	}
 
 	private void addVersionedCommentTree(AtlassianTreeNode root, final ReviewData review,
 			final CrucibleFileInfo file, VersionedComment versionedComment, int depth) {
@@ -120,8 +119,19 @@ public class CommentTreePanel extends JPanel {
 						switch (noOfClicks) {
 							case 1:
 								VersionedCommentTreeNode anode = (VersionedCommentTreeNode) node;
+								CrucibleEvent event;
+								if (anode.getComment().isFromLineInfo() ||
+										anode.getComment().isToLineInfo()) {
+									event = new FocusOnLineCommentEvent(crucibleAgent,
+											anode.getReview(),
+											anode.getFile(), anode.getComment());
+								} else {
+									event = new FocusOnVersionedCommentEvent(crucibleAgent,
+											anode.getReview(),
+											anode.getFile(), anode.getComment());
+								}
 								IdeaHelper.getReviewActionEventBroker().trigger(
-										new FocusOnFileEvent(crucibleAgent, anode.getReview(), anode.getFile()));
+										event);
 								break;
 							default:
 								// do nothing
@@ -143,19 +153,19 @@ public class CommentTreePanel extends JPanel {
 		try {
 			generalComments = review.getGeneralComments();
 			AtlassianTreeNode generalNode = new GeneralSectionNode(review, new AtlassianClickAction() {
-					public void execute(final AtlassianTreeNode node, final int noOfClicks) {
-						switch (noOfClicks) {
-							case 1:
-								GeneralSectionNode anode = (GeneralSectionNode) node;
-								IdeaHelper.getReviewActionEventBroker().trigger(
-										new FocusOnReviewEvent(crucibleAgent, anode.getReview()));
-								break;
-							default:
-								// do nothing
-						}
-
+				public void execute(final AtlassianTreeNode node, final int noOfClicks) {
+					switch (noOfClicks) {
+						case 1:
+							GeneralSectionNode anode = (GeneralSectionNode) node;
+							IdeaHelper.getReviewActionEventBroker().trigger(
+									new FocusOnReviewEvent(crucibleAgent, anode.getReview()));
+							break;
+						default:
+							// do nothing
 					}
-				});
+
+				}
+			});
 			ROOT.addNode(generalNode);
 			for (GeneralComment comment : generalComments) {
 				addGeneralCommentTree(generalNode, review, comment, 0);

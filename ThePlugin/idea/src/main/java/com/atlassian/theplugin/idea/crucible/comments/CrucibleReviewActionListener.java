@@ -117,4 +117,11 @@ public class CrucibleReviewActionListener {
 
 	public void focusOnReview(final ReviewData review) {
 	}
+
+	public void focusOnVersionedCommentEvent(final ReviewData review, final CrucibleFileInfo file,
+			final VersionedComment comment) {
+	}
+
+	public void focusOnLineCommentEvent(final ReviewData review, final CrucibleFileInfo file, final VersionedComment comment) {
+	}
 }
