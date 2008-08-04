@@ -52,7 +52,7 @@ public final class ReviewItemTreePanel extends JPanel {
     private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
     private JLabel statusLabel;
 
-    public ReviewItemTreePanel(final Project project, ProjectConfigurationBean projectConfigurationBean) {
+    public ReviewItemTreePanel(final Project project) {
         initLayout();
         listener = new MyReviewActionListener(project);
         IdeaHelper.getReviewActionEventBroker().registerListener(listener);

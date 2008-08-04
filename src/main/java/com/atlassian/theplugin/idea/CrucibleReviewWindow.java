@@ -21,11 +21,9 @@ import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.config.ContentPanel;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
@@ -35,159 +33,187 @@ import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.atlassian.theplugin.idea.crucible.events.*;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.intellij.openapi.actionSystem.DataProvider;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.util.Key;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.wm.ToolWindowManager;
+import com.intellij.openapi.wm.ToolWindow;
+import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.util.ui.UIUtil;
+import com.intellij.ui.content.Content;
+import com.intellij.peer.PeerFactory;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
-public final class CrucibleBottomToolWindowPanel extends JPanel implements ContentPanel, DataProvider {
-    private static final Key<CrucibleBottomToolWindowPanel> WINDOW_PROJECT_KEY
-            = Key.create(CrucibleBottomToolWindowPanel.class.getName());
-    private Project project;
-    private static final float SPLIT_RATIO = 0.3f;
-    private ProjectConfigurationBean projectConfiguration;
-    protected static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
-    protected ProgressAnimationProvider progressAReviewActionEventBrokernimation = new ProgressAnimationProvider();
-    private CrucibleVersion crucibleVersion = CrucibleVersion.UNKNOWN;
-    private static ReviewItemTreePanel reviewItemTreePanel;
-    private CommentTreePanel reviewComentsPanel;
-    private ReviewActionEventBroker eventBroker;
-    private static final int LEFT_WIDTH = 150;
-    private static final int LEFT_HEIGHT = 250;
-    private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
+public final class CrucibleReviewWindow extends JPanel implements ContentPanel, DataProvider {
+	public final static String TOOL_WINDOW_TITLE = "Crucible Review";
+	private static final Key<CrucibleReviewWindow> WINDOW_PROJECT_KEY
+			= Key.create(CrucibleReviewWindow.class.getName());
+	private Project project;
+	private static final float SPLIT_RATIO = 0.3f;
+	protected static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
+	protected ProgressAnimationProvider progressAReviewActionEventBrokernimation = new ProgressAnimationProvider();
+	private CrucibleVersion crucibleVersion = CrucibleVersion.UNKNOWN;
+	private static ReviewItemTreePanel reviewItemTreePanel;
+	private CommentTreePanel reviewComentsPanel;
+	private ReviewActionEventBroker eventBroker;
+	private static final int LEFT_WIDTH = 150;
+	private static final int LEFT_HEIGHT = 250;
+	private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
 
 
-    protected String getInitialMessage() {
+	protected String getInitialMessage() {
 
-        return "Waiting for Crucible review info.";
-    }
+		return "Waiting for Crucible review info.";
+	}
 
-    public static CrucibleBottomToolWindowPanel getInstance(Project project,
-                                                            ProjectConfigurationBean projectConfigurationBean) {
+	public static CrucibleReviewWindow getInstance(Project project) {
 
-        CrucibleBottomToolWindowPanel window = project.getUserData(WINDOW_PROJECT_KEY);
+		CrucibleReviewWindow window = project.getUserData(WINDOW_PROJECT_KEY);
 
-        if (window == null) {
-            window = new CrucibleBottomToolWindowPanel(project, projectConfigurationBean);
-            project.putUserData(WINDOW_PROJECT_KEY, window);
-        }
-        return window;
-    }
+		if (window == null) {
+			window = new CrucibleReviewWindow(project);
+			project.putUserData(WINDOW_PROJECT_KEY, window);
+		}
+		return window;
+	}
 
-    private CrucibleBottomToolWindowPanel(Project project, ProjectConfigurationBean projectConfigurationBean) {
-        super(new BorderLayout());
+	public void showCrucibleReviewWindow() {
 
-        this.project = project;
-        this.projectConfiguration = projectConfigurationBean;
+		ToolWindowManager twm = ToolWindowManager.getInstance(this.project);
+		ToolWindow toolWindow = twm.getToolWindow(TOOL_WINDOW_TITLE);
+		if (toolWindow == null) {
+			toolWindow = twm.registerToolWindow(TOOL_WINDOW_TITLE, true, ToolWindowAnchor.BOTTOM);
+			toolWindow.setIcon(PluginToolWindow.ICON_CRUCIBLE);
+		}
 
+		Content content = toolWindow.getContentManager().findContent(WINDOW_PROJECT_KEY.toString());
 
-        setBackground(UIUtil.getTreeTextBackground());
-        reviewItemTreePanel = new ReviewItemTreePanel(project, projectConfigurationBean);
-        Splitter splitter = new Splitter(false, SPLIT_RATIO);
-        splitter.setShowDividerControls(true);
-        JPanel leftPanel = new JPanel();
-        leftPanel.setBackground(UIUtil.getTreeTextBackground());
-        leftPanel.setLayout(new BorderLayout());
-        leftPanel.setMinimumSize(new Dimension(LEFT_WIDTH, LEFT_HEIGHT));
-        leftPanel.add(reviewItemTreePanel);
-        reviewItemTreePanel.getProgressAnimation().configure(leftPanel, reviewItemTreePanel, BorderLayout.CENTER);
-        splitter.setFirstComponent(leftPanel);
-        splitter.setHonorComponentsMinimumSize(true);
-        reviewComentsPanel = new CommentTreePanel(project);
-        splitter.setSecondComponent(reviewComentsPanel);
-        add(splitter, BorderLayout.CENTER);
+		if (content == null) {
 
+			PeerFactory peerFactory = PeerFactory.getInstance();
+			content = peerFactory.getContentFactory().createContent(this, WINDOW_PROJECT_KEY.toString(), false);
+			content.setIcon(PluginToolWindow.ICON_CRUCIBLE);
+			content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
+			toolWindow.getContentManager().addContent(content);
+		}
 
-        eventBroker = IdeaHelper.getReviewActionEventBroker();
-        eventBroker.registerListener(new MyAgent());
+		toolWindow.getContentManager().setSelectedContent(content);
+		toolWindow.show(null);
+	}
 
-        progressAnimation.configure(this, reviewItemTreePanel, BorderLayout.CENTER);
+	private CrucibleReviewWindow(Project project) {
+		super(new BorderLayout());
 
-    }
-
-
-    protected JScrollPane setupPane(JEditorPane pane, String initialText) {
-        pane.setText(initialText);
-        JScrollPane scrollPane = new JScrollPane(pane,
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setWheelScrollingEnabled(true);
-        return scrollPane;
-    }
-
-    protected String wrapBody(String s) {
-        return "<html>" + HtmlBambooStatusListenerNotUsed.BODY_WITH_STYLE + s + "</body></html>";
-
-    }
-
-    protected void setStatusMessage(String msg) {
-        setStatusMessage(msg, false);
-    }
-
-    protected void setStatusMessage(String msg, boolean isError) {
-        //editorPane.setBackground(isError ? Color.RED : Color.WHITE);
-        //editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">" + msg + "</td></tr></table>"));
-    }
+		this.project = project;
+		setBackground(UIUtil.getTreeTextBackground());
+		reviewItemTreePanel = new ReviewItemTreePanel(project);
+		Splitter splitter = new Splitter(false, SPLIT_RATIO);
+		splitter.setShowDividerControls(true);
+		JPanel leftPanel = new JPanel();
+		leftPanel.setBackground(UIUtil.getTreeTextBackground());
+		leftPanel.setLayout(new BorderLayout());
+		leftPanel.setMinimumSize(new Dimension(LEFT_WIDTH, LEFT_HEIGHT));
+		leftPanel.add(reviewItemTreePanel);
+		reviewItemTreePanel.getProgressAnimation().configure(leftPanel, reviewItemTreePanel, BorderLayout.CENTER);
+		splitter.setFirstComponent(leftPanel);
+		splitter.setHonorComponentsMinimumSize(true);
+		reviewComentsPanel = new CommentTreePanel(project);
+		splitter.setSecondComponent(reviewComentsPanel);
+		add(splitter, BorderLayout.CENTER);
 
 
-    public ProgressAnimationProvider getProgressAnimation() {
-        return progressAnimation;
-    }
-
-    public CrucibleVersion getCrucibleVersion() {
-        return crucibleVersion;
-    }
+		eventBroker = IdeaHelper.getReviewActionEventBroker();
+		eventBroker.registerListener(new MyAgent());
 
 
-    public void resetState() {
-    }
+		progressAnimation.configure(this, reviewItemTreePanel, BorderLayout.CENTER);
 
-    public ProjectConfigurationBean getProjectConfiguration() {
-        return projectConfiguration;
-    }
-
-    public boolean isModified() {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public String getTitle() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void getData() {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void setData(PluginConfiguration config) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Nullable
-    public Object getData(@NonNls final String dataId) {
-        if (dataId.equals(Constants.FILE_TREE)) {
-            return reviewItemTreePanel.getReviewItemTree();
-        } else if (dataId.equals(Constants.CRUCIBLE_BOTTOM_WINDOW)) {
-            return this;
-        }
-        return null;
-    }
-
-    private final class MyAgent extends CrucibleReviewActionListener {
-        private final CrucibleServerFacade facade = CrucibleServerFacadeImpl.getInstance();
-        private final ReviewActionEventBroker eventBroker = IdeaHelper.getReviewActionEventBroker();
+	}
 
 
-        @Override
+	protected JScrollPane setupPane(JEditorPane pane, String initialText) {
+		pane.setText(initialText);
+		JScrollPane scrollPane = new JScrollPane(pane,
+				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.setWheelScrollingEnabled(true);
+		return scrollPane;
+	}
+
+	protected String wrapBody(String s) {
+		return "<html>" + HtmlBambooStatusListenerNotUsed.BODY_WITH_STYLE + s + "</body></html>";
+
+	}
+
+	protected void setStatusMessage(String msg) {
+		setStatusMessage(msg, false);
+	}
+
+	protected void setStatusMessage(String msg, boolean isError) {
+		//editorPane.setBackground(isError ? Color.RED : Color.WHITE);
+		//editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">" + msg + "</td></tr></table>"));
+	}
+
+
+	public ProgressAnimationProvider getProgressAnimation() {
+		return progressAnimation;
+	}
+
+	public CrucibleVersion getCrucibleVersion() {
+		return crucibleVersion;
+	}
+
+
+	public void resetState() {
+	}
+
+	public boolean isModified() {
+		return false;  //To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	public String getTitle() {
+		return null;  //To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	public void getData() {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	public void setData(PluginConfiguration config) {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	@Nullable
+	public Object getData(@NonNls final String dataId) {
+		if (dataId.equals(Constants.FILE_TREE)) {
+			return reviewItemTreePanel.getReviewItemTree();
+		} else if (dataId.equals(Constants.CRUCIBLE_BOTTOM_WINDOW)) {
+			return this;
+		}
+		return null;
+	}
+
+	private final class MyAgent extends CrucibleReviewActionListener {
+		private final CrucibleServerFacade facade = CrucibleServerFacadeImpl.getInstance();
+		private final ReviewActionEventBroker eventBroker = IdeaHelper.getReviewActionEventBroker();
+
+		@Override
+		public void showReview(final ReviewData reviewData) {
+			EventQueue.invokeLater(new Runnable() {
+					public void run() {
+						showCrucibleReviewWindow();
+					};
+				});
+		};
+
+		@Override
         public void showDiff(final CrucibleFileInfo file) {
             CrucibleHelper.showRevisionDiff(project, file);
         }
@@ -214,7 +240,7 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
         public void aboutToAddLineComment(final ReviewData review, final CrucibleFileInfo file, final Editor editor, final int start, final int end) {
             ApplicationManager.getApplication().invokeLater(new Runnable() {
                 public void run() {
-                    List<CustomFieldDef> metrics = getMetrics(review);
+                    java.util.List<CustomFieldDef> metrics = getMetrics(review);
                     VersionedCommentBean newComment = new VersionedCommentBean();
                     CommentEditForm dialog = new CommentEditForm(project, review, newComment, metrics);
                     dialog.pack();
@@ -231,23 +257,13 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
             });
         }
 
-        @Override
-        public void aboutToAddGeneralComment(ReviewData review, GeneralComment newComment) {
+
+		@Override
+		public void aboutToAddGeneralComment(final ReviewData review, final GeneralComment newComment) {
             try {
                 GeneralComment comment = facade.addGeneralComment(review.getServer(), review.getPermId(),
                         newComment);
-
-
-				List<GeneralComment> comments;
-				try {
-					comments = review.getGeneralComments();
-				} catch (ValueNotYetInitialized valueNotYetInitialized) {
-					comments = facade.getGeneralComments(review.getServer(), review.getPermId());
-					((ReviewBean) review.getInnerReviewObject()).setGeneralComments(comments);
-				}
-				comments.add(comment);
-
-				eventBroker.trigger(new GeneralCommentAdded(this, review, comment));
+                eventBroker.trigger(new GeneralCommentAdded(this, review, comment));
             } catch (RemoteApiException e) {
                 IdeaHelper.handleRemoteApiException(project, e);
             } catch (ServerPasswordNotProvidedException e) {
@@ -261,11 +277,7 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
             try {
                 GeneralComment comment = facade.addGeneralCommentReply(review.getServer(), review.getPermId(),
                         parentComment.getPermId(), newComment);
-
-				// todo lguminski to make getReplies unmodifiable
-				parentComment.getReplies().add(comment);
-
-				eventBroker.trigger(new GeneralCommentReplyAdded(this, review, parentComment, comment));
+                eventBroker.trigger(new GeneralCommentReplyAdded(this, review, parentComment, comment));
             } catch (RemoteApiException e) {
                 IdeaHelper.handleRemoteApiException(project, e);
             } catch (ServerPasswordNotProvidedException e) {
@@ -278,17 +290,7 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
             try {
                 VersionedComment newComment = facade.addVersionedComment(review.getServer(), review.getPermId(),
                         file.getPermId(), comment);
-
-				List<VersionedComment> comments;
-				try {
-					comments = file.getVersionedComments();
-				} catch (ValueNotYetInitialized valueNotYetInitialized) {
-					comments = facade.getVersionedComments(review.getServer(), review.getPermId(),
-							file.getPermId());
-					((CrucibleFileInfoImpl) file).setVersionedComments(comments);
-				}
-				comments.add(newComment);
-				eventBroker.trigger(new VersionedCommentAdded(this, review, file, newComment, editor));
+                eventBroker.trigger(new VersionedCommentAdded(this, review, file, newComment, editor));
             } catch (RemoteApiException e) {
                 IdeaHelper.handleRemoteApiException(project, e);
             } catch (ServerPasswordNotProvidedException e) {
@@ -303,10 +305,7 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
             try {
                 VersionedComment newComment = facade.addVersionedCommentReply(review.getServer(), review.getPermId(),
                         parentComment.getPermId(), comment);
-
-				parentComment.getReplies().add(newComment);
-
-				eventBroker.trigger(new VersionedCommentReplyAdded(this, review, file, parentComment, newComment));
+                eventBroker.trigger(new VersionedCommentReplyAdded(this, review, file, parentComment, newComment));
             } catch (RemoteApiException e) {
                 IdeaHelper.handleRemoteApiException(project, e);
             } catch (ServerPasswordNotProvidedException e) {
@@ -319,8 +318,7 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
                                                   final VersionedComment comment) {
             try {
                 facade.updateComment(review.getServer(), review.getPermId(), comment);
-				// todo lguminski to modify data model
-				eventBroker.trigger(new VersionedCommentUpdated(this, review, file, comment));
+                eventBroker.trigger(new VersionedCommentUpdated(this, review, file, comment));
             } catch (RemoteApiException e) {
                 IdeaHelper.handleRemoteApiException(project, e);
             } catch (ServerPasswordNotProvidedException e) {
@@ -332,7 +330,6 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
         public void aboutToUpdateGeneralComment(final ReviewData review, final GeneralComment comment) {
             try {
                 facade.updateComment(review.getServer(), review.getPermId(), comment);
-				// todo lguminski to modify data model
                 eventBroker.trigger(new GeneralCommentUpdated(this, review, comment));
             } catch (RemoteApiException e) {
                 IdeaHelper.handleRemoteApiException(project, e);
@@ -345,7 +342,6 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
         public void aboutToRemoveComment(final ReviewData review, final Comment comment) {
             try {
                 facade.removeComment(review.getServer(), review.getPermId(), comment);
-				// todo lguminski to modify data model
                 eventBroker.trigger(new CommentRemoved(this, review, comment));
             } catch (RemoteApiException e) {
                 IdeaHelper.handleRemoteApiException(project, e);
@@ -353,5 +349,5 @@ public final class CrucibleBottomToolWindowPanel extends JPanel implements Conte
                 IdeaHelper.handleMissingPassword(e);
             }
         }
-    }
-}
+	}
+	}

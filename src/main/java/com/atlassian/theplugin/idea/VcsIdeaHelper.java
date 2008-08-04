@@ -61,11 +61,7 @@ public final class VcsIdeaHelper {
 	public static boolean isUnderVcsControl(Project project) {
 		ProjectLevelVcsManager plm = ProjectLevelVcsManager.getInstance(project);
 
-		if (plm != null && plm.getAllActiveVcss().length > 0) {
-			return true;
-		}
-
-		return false;
+		return (plm != null && plm.getAllActiveVcss().length > 0);			
 	}
 
 
