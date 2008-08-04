@@ -25,8 +25,9 @@ import java.util.HashMap;
 public class CrucibleFiltersBean {
     private Boolean[] predefinedFilters = new Boolean[PredefinedFilter.values().length];
     private HashMap<String, CustomFilterBean> manualFilter = new HashMap<String, CustomFilterBean>();
+	private Boolean readStored;
 
-    public CrucibleFiltersBean() {
+	public CrucibleFiltersBean() {
         Arrays.fill(predefinedFilters, false);
     }
 
@@ -45,4 +46,12 @@ public class CrucibleFiltersBean {
     public void setPredefinedFilters(Boolean[] predefinedFilters) {
         this.predefinedFilters = predefinedFilters;
     }
+
+	public Boolean getReadStored() {
+		return readStored;
+	}
+
+	public void setReadStored(final Boolean readStored) {
+		this.readStored = readStored;
+	}
 }
