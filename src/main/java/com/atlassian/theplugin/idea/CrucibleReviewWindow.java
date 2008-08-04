@@ -53,7 +53,7 @@ import java.awt.*;
 import java.util.*;
 
 public final class CrucibleReviewWindow extends JPanel implements ContentPanel, DataProvider {
-	public final static String TOOL_WINDOW_TITLE = "Crucible Review";
+	public static final String TOOL_WINDOW_TITLE = "Crucible Review";
 	private static final Key<CrucibleReviewWindow> WINDOW_PROJECT_KEY
 			= Key.create(CrucibleReviewWindow.class.getName());
 	private Project project;
@@ -237,7 +237,8 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
         }
 
         @Override
-        public void aboutToAddLineComment(final ReviewData review, final CrucibleFileInfo file, final Editor editor, final int start, final int end) {
+        public void aboutToAddLineComment(final ReviewData review, final CrucibleFileInfo file, final Editor editor,
+										  final int start, final int end) {
             ApplicationManager.getApplication().invokeLater(new Runnable() {
                 public void run() {
                     java.util.List<CustomFieldDef> metrics = getMetrics(review);
@@ -251,7 +252,8 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
                         newComment.setAuthor(new UserBean(review.getServer().getUserName()));
                         newComment.setToStartLine(start);
                         newComment.setToEndLine(end);
-                        eventBroker.trigger(new VersionedCommentAboutToAdd(CrucibleReviewActionListener.ANONYMOUS, review, file, newComment, editor));
+                        eventBroker.trigger(new VersionedCommentAboutToAdd(CrucibleReviewActionListener.ANONYMOUS, review,
+								file, newComment, editor));
                     }
                 }
             });
@@ -286,7 +288,8 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
         }
 
         @Override
-        public void aboutToAddVersionedComment(ReviewData review, CrucibleFileInfo file, VersionedComment comment, Editor editor) {
+        public void aboutToAddVersionedComment(ReviewData review, CrucibleFileInfo file,
+				VersionedComment comment, Editor editor) {
             try {
                 VersionedComment newComment = facade.addVersionedComment(review.getServer(), review.getPermId(),
                         file.getPermId(), comment);
