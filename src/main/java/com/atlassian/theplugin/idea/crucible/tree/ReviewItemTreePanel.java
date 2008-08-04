@@ -19,6 +19,7 @@ import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.Logger;
@@ -115,6 +116,17 @@ public final class ReviewItemTreePanel extends JPanel {
 				}
 			});
 
+		}
+
+		@Override
+		public void focusOnVersionedCommentEvent(final ReviewData review, final CrucibleFileInfo file,
+				final VersionedComment comment) {
+			focusOnFile(review, file);
+		}
+
+		@Override
+		public void focusOnLineCommentEvent(final ReviewData review, final CrucibleFileInfo file, final VersionedComment comment) {
+			focusOnFile(review, file);
 		}
 
 		@Override
