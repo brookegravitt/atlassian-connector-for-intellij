@@ -11,12 +11,13 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  * To change this template use File | Settings | File Templates.
  */
 public class ExpandCollapseFilesAction extends TreeAction {
-    protected void executeTreeAction(final AtlassianTreeWithToolbar tree) {
-        tree.setViewState(tree.getViewState().getNextState());
-    }
+	protected void executeTreeAction(final AtlassianTreeWithToolbar tree) {
+		tree.setViewState(tree.getViewState().getNextState());
+	}
 
-    protected void updateTreeAction(final AnActionEvent e, final AtlassianTreeWithToolbar tree) {
-        e.getPresentation().setIcon(tree.getViewState().getNextState().getIcon());
-        e.getPresentation().setText(tree.getViewState().getNextState().toString());
-    }
+	protected void updateTreeAction(final AnActionEvent e, final AtlassianTreeWithToolbar tree) {
+		e.getPresentation().setIcon(tree.getViewState().getNextState().getIcon());
+		e.getPresentation().setText(tree.getViewState().getNextState().toString());
+		e.getPresentation().setEnabled(!tree.isEmpty());
+	}
 }
