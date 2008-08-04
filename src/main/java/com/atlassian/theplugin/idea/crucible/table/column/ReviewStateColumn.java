@@ -20,11 +20,12 @@ import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.atlassian.theplugin.idea.crucible.table.renderer.ReviewDecoratorImpl;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 
+import javax.swing.*;
 import java.util.Comparator;
 
 
 public class ReviewStateColumn extends TableColumnInfo {
-	private static final int COL_WIDTH = 200;
+	private static final int COL_WIDTH = new JLabel("Summarize").getPreferredSize().width;
 
 	public String getColumnName() {
 		return "State";

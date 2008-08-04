@@ -31,9 +31,9 @@ public final class CrucibleTableColumnProviderImpl implements TableColumnProvide
 		return new TableColumnInfo[]{
 				new ReviewKeyColumn(),
 				new ReviewSummaryColumn(),
+				new ReviewReviewersColumn(),
 				new ReviewAuthorColumn(),
-				new ReviewStateColumn(),
-				new ReviewReviewersColumn()
+				new ReviewStateColumn()
 		};
 	}
 
@@ -41,9 +41,9 @@ public final class CrucibleTableColumnProviderImpl implements TableColumnProvide
 		return new TableCellRenderer[]{
 				null,
 				null,
+				new ReviewReviewersCellRenderer(),
 				null,
-				null,
-				new ReviewReviewersCellRenderer()
+				null				
 		};
 	}
 }

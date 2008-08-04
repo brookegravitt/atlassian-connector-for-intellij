@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea.action.crucible;
 
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
+import com.atlassian.theplugin.commons.crucible.CrucibleFiltersBean;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ThePluginProjectComponent;
@@ -31,21 +32,24 @@ public class PredefinedFilterAction extends Crucible16ToggleAction {
         this.filter = filter;
     }
 
-    private Boolean[] getPredefinedFilters(AnActionEvent event) {
+    private CrucibleFiltersBean getCrucibleFilters(AnActionEvent event) {
         Project project = IdeaHelper.getCurrentProject(event);
         if (project != null) {
             ThePluginProjectComponent projectComponent
                     = IdeaHelper.getCurrentProject(event).getComponent(ThePluginProjectComponent.class);
             ProjectConfigurationBean projectConfiguration = projectComponent.getProjectConfigurationBean();
-            return projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getPredefinedFilters();
+            return projectConfiguration.getCrucibleConfiguration().getCrucibleFilters();
         }
         return null;
     }
 
-    public boolean isSelected(AnActionEvent event) {
-        Boolean[] filters = getPredefinedFilters(event);
-        if (filters != null) {
-            if (filters[filter.ordinal()] == null) {
+
+
+	public boolean isSelected(AnActionEvent event) {
+        CrucibleFiltersBean config = getCrucibleFilters(event);
+        if (config != null) {
+			Boolean[] filters = config.getPredefinedFilters();
+			if (filters[filter.ordinal()] == null) {
                 filters[filter.ordinal()] = false;
             }
             return filters[filter.ordinal()];
@@ -55,17 +59,19 @@ public class PredefinedFilterAction extends Crucible16ToggleAction {
     }
 
     public void setSelected(AnActionEvent event, boolean b) {
-        Boolean[] filters = getPredefinedFilters(event);
-        if (filters != null) {
-            filters[filter.ordinal()] = b;
-            CrucibleStatusChecker checker = null;
+		CrucibleFiltersBean config = getCrucibleFilters(event);
+        if (config != null) {
+			Boolean[] filters = config.getPredefinedFilters();
+			filters[filter.ordinal()] = b;
+
+			CrucibleStatusChecker checker = null;
             if (b) {
                 ThePluginProjectComponent projectComponent = IdeaHelper.getCurrentProjectComponent(event);
                 if (projectComponent != null) {
                     checker = projectComponent.getCrucibleStatusChecker();
                 }
             }
-            IdeaHelper.getCrucibleToolWindowPanel(event).showPredefinedFilter(filter, b, checker);
+			IdeaHelper.getCrucibleToolWindowPanel(event).showPredefinedFilter(filter, b, checker);
         }
     }
 }

@@ -46,7 +46,8 @@ public class CrucibleProjectConfiguration {
 
 	public void copyConfiguration(CrucibleProjectConfiguration crucibleConfiguration) {
 		tableConfiguration.copyConfiguration(crucibleConfiguration.getTableConfiguration());
-        crucibleFilters.setManualFilter(crucibleConfiguration.getCrucibleFilters().getManualFilter());
+		crucibleFilters.setReadStored(crucibleConfiguration.getCrucibleFilters().getReadStored());
+		crucibleFilters.setManualFilter(crucibleConfiguration.getCrucibleFilters().getManualFilter());
         crucibleFilters.setPredefinedFilters(crucibleConfiguration.getCrucibleFilters().getPredefinedFilters());
     }
 }

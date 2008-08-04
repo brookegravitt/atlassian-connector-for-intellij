@@ -22,13 +22,14 @@ import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import static com.atlassian.theplugin.util.ReviewInfoUtil.getNumOfCompletedReviewers;
 
+import javax.swing.*;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
 
 public class ReviewReviewersColumn extends TableColumnInfo {
-    private static final int COL_WIDTH = 200;
+    private static final int COL_WIDTH = new JLabel("Reviewers").getPreferredSize().width;
 
     public String getColumnName() {
         return "Reviewers";
