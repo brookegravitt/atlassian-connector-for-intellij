@@ -39,33 +39,4 @@ public interface Comment {
 	Date getCreateDate();
 
 	Map<String, CustomField> getCustomFields();
-
-    STATE getState();
-
-	public enum STATE {
-
-        DRAFT("#FFD415"),
-		REVIEW("green"),
-		DEFECT_RAISED("red") {
-			public String toString() {
-				return "DEFECT";
-			}
-		},
-		DEFECT_APPROVED(DEFECT_RAISED.getColorString()) {
-			public String toString() {
-				return "DEFECT APROVED";
-			}
-		},
-		DELETED("black");
-
-        STATE(String colorString) {
-            this.colorString = colorString;
-        }
-
-        private String colorString;
-
-        public String getColorString() {
-            return colorString;
-        }
-	}
 }
