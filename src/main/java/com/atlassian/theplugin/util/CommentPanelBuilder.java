@@ -27,6 +27,8 @@ import com.jgoodies.forms.layout.FormLayout;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 //import thirdparty.publicobject.RoundedBorder;
 
@@ -41,11 +43,11 @@ public final class CommentPanelBuilder {
 	private static final Color MINE_FILE_COMMENT_HEADER_COLOR = new Color(0xE0, 0xFE, 0xFF);
 	private static final Color MINE_FILE_COMMENT_BODY_COLOR = new Color(0xEA, 0xFF, 0xFF);
 
-    private CommentPanelBuilder() {
-        // this is utility class
-    }
+	private CommentPanelBuilder() {
+		// this is utility class
+	}
 
-    public static JPanel createEditPanelOfGeneralComment(ReviewData review, GeneralComment comment) {
+	public static JPanel createEditPanelOfGeneralComment(ReviewData review, GeneralComment comment) {
 		return createViewPanelOfGeneralComment(review, comment); // no editing temporarily
 	}
 
@@ -76,7 +78,7 @@ public final class CommentPanelBuilder {
 	}
 
 	public static JPanel createViewPanelOfVersionedComment(final ReviewData review, CrucibleFileInfo file,
-            final VersionedComment comment) {
+			final VersionedComment comment) {
 		return new CommentPanel(review, comment) {
 			@Override
 			public Color getHeaderBackground() {
@@ -114,12 +116,14 @@ public final class CommentPanelBuilder {
 			this.comment = comment;
 			setBackground(getBodyBackground());
 			CellConstraints cc = new CellConstraints();
-            JPanel header = new JPanel(
-                    new FormLayout("4dlu, left:pref, 10dlu, left:pref, 10dlu, pref:grow, 10dlu, right:pref, 10dlu, pref, 4dlu",
-                            "2dlu, pref:grow, 2dlu"));
-            header.add(getAuthorLabel(), AUTHOR_POS);
+			JPanel header = new JPanel(
+					new FormLayout("4dlu, left:pref, 10dlu, left:pref, 10dlu, pref:grow, 10dlu, right:pref, 10dlu, pref, 4dlu",
+							"2dlu, pref:grow, 2dlu"));
+			header.add(getAuthorLabel(), AUTHOR_POS);
 			header.add(getDateLabel(), DATE_POS);
-			header.add(getRankingLabel(), RANKING_POS);
+			if (comment.isDefectRaised()) {
+				header.add(getRankingLabel(), RANKING_POS);
+			}
 			header.add(getStateLabel(), STATE_POS);
 			header.add(getToolBar(), TOOLBAR_POS);
 			header.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 1));
@@ -174,12 +178,24 @@ public final class CommentPanelBuilder {
 				if (!isFirst) {
 					component.append(" ", SimpleTextAttributes.REGULAR_ATTRIBUTES);
 				}
-				component.append(elem.getKey(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
+				component.append(firstLetterUpperCase(elem.getKey()), SimpleTextAttributes.REGULAR_ATTRIBUTES);
 				component.append(": ", SimpleTextAttributes.REGULAR_ATTRIBUTES);
 				component.append(elem.getValue().getValue(), SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
 				isFirst = false;
 			}
 			return component;
+		}
+
+		private static final Pattern FIRST_LETTER = Pattern.compile("([a-z])");
+
+		protected String firstLetterUpperCase(String key) {
+			StringBuffer sb = new StringBuffer();
+			Matcher matcher = FIRST_LETTER.matcher(key);
+			if (matcher.find(0)) {
+				matcher.appendReplacement(sb, matcher.group(1).toUpperCase());
+			}
+			key = matcher.appendTail(sb).toString();
+			return key;
 		}
 
 		protected Component getMessageBody() {

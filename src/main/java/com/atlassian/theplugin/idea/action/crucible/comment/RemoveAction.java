@@ -13,6 +13,7 @@ import com.atlassian.theplugin.idea.CommentTreePanel;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
+import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.events.GeneralCommentAboutToUpdate;
 import com.atlassian.theplugin.idea.crucible.events.VersionedCommentAboutToUpdate;
@@ -79,33 +80,6 @@ public class RemoveAction extends AbstractCommentAction {
             IdeaHelper.getReviewActionEventBroker().trigger(
                     new CommentAboutToRemove(CrucibleReviewActionListener.ANONYMOUS,
                             review, comment));
-        }
-    }
-
-    private void editGeneralComment(final Project project, final ReviewData review, final GeneralComment comment) {
-        List<CustomFieldDef> metrics = new ArrayList<CustomFieldDef>();
-        CommentEditForm dialog = new CommentEditForm(project, review, (CommentBean) comment, metrics);
-        dialog.pack();
-        dialog.setModal(true);
-        dialog.show();
-        if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
-            IdeaHelper.getReviewActionEventBroker().trigger(
-                    new GeneralCommentAboutToUpdate(CrucibleReviewActionListener.ANONYMOUS,
-                            review, comment));
-        }
-    }
-
-
-    private void editVersionedComment(Project project, ReviewData review, CrucibleFileInfo file, VersionedComment comment) {
-        List<CustomFieldDef> metrics = new ArrayList<CustomFieldDef>();
-        CommentEditForm dialog = new CommentEditForm(project, review, (CommentBean) comment, metrics);
-        dialog.pack();
-        dialog.setModal(true);
-        dialog.show();
-        if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
-            IdeaHelper.getReviewActionEventBroker().trigger(
-                    new VersionedCommentAboutToUpdate(CrucibleReviewActionListener.ANONYMOUS,
-                            review, file, comment));
         }
     }
 }
