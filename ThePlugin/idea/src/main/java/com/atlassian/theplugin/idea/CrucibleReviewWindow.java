@@ -21,6 +21,7 @@ import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -33,24 +34,26 @@ import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.atlassian.theplugin.idea.crucible.events.*;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.intellij.openapi.actionSystem.DataProvider;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.util.Key;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
-import com.intellij.util.ui.UIUtil;
-import com.intellij.ui.content.Content;
+import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.peer.PeerFactory;
+import com.intellij.ui.content.Content;
+import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public final class CrucibleReviewWindow extends JPanel implements ContentPanel, DataProvider {
 	public static final String TOOL_WINDOW_TITLE = "Crucible Review";
@@ -207,149 +210,163 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
 		@Override
 		public void showReview(final ReviewData reviewData) {
 			EventQueue.invokeLater(new Runnable() {
-					public void run() {
-						showCrucibleReviewWindow();
-					};
-				});
-		};
+				public void run() {
+					showCrucibleReviewWindow();
+				}
+
+				;
+			});
+		}
+
+		;
 
 		@Override
-        public void showDiff(final CrucibleFileInfo file) {
-            CrucibleHelper.showRevisionDiff(project, file);
-        }
+		public void showDiff(final CrucibleFileInfo file) {
+			CrucibleHelper.showRevisionDiff(project, file);
+		}
 
-        @Override
-        public void showFile(final ReviewData review, final CrucibleFileInfo file) {
-            CrucibleHelper.showVirtualFileWithComments(project, review, file);
-        }
+		@Override
+		public void showFile(final ReviewData review, final CrucibleFileInfo file) {
+			CrucibleHelper.showVirtualFileWithComments(project, review, file);
+		}
 
-        private java.util.List<CustomFieldDef> getMetrics(ReviewData review) {
-            java.util.List<CustomFieldDef> metrics = new ArrayList<CustomFieldDef>();
-            try {
-                metrics = CrucibleServerFacadeImpl.getInstance()
-                        .getMetrics(review.getServer(), review.getMetricsVersion());
-            } catch (RemoteApiException e) {
-                IdeaHelper.handleRemoteApiException(project, e);
-            } catch (ServerPasswordNotProvidedException e) {
-                IdeaHelper.handleMissingPassword(e);
-            }
-            return metrics;
-        }
+		private java.util.List<CustomFieldDef> getMetrics(ReviewData review) {
+			java.util.List<CustomFieldDef> metrics = new ArrayList<CustomFieldDef>();
+			try {
+				metrics = CrucibleServerFacadeImpl.getInstance()
+						.getMetrics(review.getServer(), review.getMetricsVersion());
+			} catch (RemoteApiException e) {
+				IdeaHelper.handleRemoteApiException(project, e);
+			} catch (ServerPasswordNotProvidedException e) {
+				IdeaHelper.handleMissingPassword(e);
+			}
+			return metrics;
+		}
 
-        @Override
-        public void aboutToAddLineComment(final ReviewData review, final CrucibleFileInfo file, final Editor editor,
-										  final int start, final int end) {
-            ApplicationManager.getApplication().invokeLater(new Runnable() {
-                public void run() {
-                    VersionedCommentBean newComment = new VersionedCommentBean();
-                    CommentEditForm dialog = new CommentEditForm(project, review, newComment, CrucibleHelper.getMetricsForReview(project, review));
-                    dialog.pack();
-                    dialog.setModal(true);
-                    dialog.show();
-                    if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
-                        newComment.setCreateDate(new Date());
-                        newComment.setAuthor(new UserBean(review.getServer().getUserName()));
-                        newComment.setToStartLine(start);
-                        newComment.setToEndLine(end);
-                        eventBroker.trigger(new VersionedCommentAboutToAdd(CrucibleReviewActionListener.ANONYMOUS, review,
+		@Override
+		public void aboutToAddLineComment(final ReviewData review, final CrucibleFileInfo file, final Editor editor,
+				final int start, final int end) {
+			ApplicationManager.getApplication().invokeLater(new Runnable() {
+				public void run() {
+					VersionedCommentBean newComment = new VersionedCommentBean();
+					CommentEditForm dialog = new CommentEditForm(project, review, newComment,
+							CrucibleHelper.getMetricsForReview(project, review));
+					dialog.pack();
+					dialog.setModal(true);
+					dialog.show();
+					if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
+						newComment.setCreateDate(new Date());
+						newComment.setAuthor(new UserBean(review.getServer().getUserName()));
+						newComment.setToStartLine(start);
+						newComment.setToEndLine(end);
+						eventBroker.trigger(new VersionedCommentAboutToAdd(CrucibleReviewActionListener.ANONYMOUS, review,
 								file, newComment, editor));
-                    }
-                }
-            });
-        }
+					}
+				}
+			});
+		}
 
 
 		@Override
 		public void aboutToAddGeneralComment(final ReviewData review, final GeneralComment newComment) {
-            try {
-                GeneralComment comment = facade.addGeneralComment(review.getServer(), review.getPermId(),
-                        newComment);
-                eventBroker.trigger(new GeneralCommentAdded(this, review, comment));
-            } catch (RemoteApiException e) {
-                IdeaHelper.handleRemoteApiException(project, e);
-            } catch (ServerPasswordNotProvidedException e) {
-                IdeaHelper.handleMissingPassword(e);
-            }
-        }
+			try {
+				GeneralComment comment = facade.addGeneralComment(review.getServer(), review.getPermId(),
+						newComment);
+				eventBroker.trigger(new GeneralCommentAdded(this, review, comment));
+			} catch (RemoteApiException e) {
+				IdeaHelper.handleRemoteApiException(project, e);
+			} catch (ServerPasswordNotProvidedException e) {
+				IdeaHelper.handleMissingPassword(e);
+			}
+		}
 
-        @Override
-        public void aboutToAddGeneralCommentReply(ReviewData review, GeneralComment parentComment,
-                                                  GeneralComment newComment) {
-            try {
-                GeneralComment comment = facade.addGeneralCommentReply(review.getServer(), review.getPermId(),
-                        parentComment.getPermId(), newComment);
-                eventBroker.trigger(new GeneralCommentReplyAdded(this, review, parentComment, comment));
-            } catch (RemoteApiException e) {
-                IdeaHelper.handleRemoteApiException(project, e);
-            } catch (ServerPasswordNotProvidedException e) {
-                IdeaHelper.handleMissingPassword(e);
-            }
-        }
+		@Override
+		public void aboutToAddGeneralCommentReply(ReviewData review, GeneralComment parentComment,
+				GeneralComment newComment) {
+			try {
+				GeneralComment comment = facade.addGeneralCommentReply(review.getServer(), review.getPermId(),
+						parentComment.getPermId(), newComment);
+				eventBroker.trigger(new GeneralCommentReplyAdded(this, review, parentComment, comment));
+			} catch (RemoteApiException e) {
+				IdeaHelper.handleRemoteApiException(project, e);
+			} catch (ServerPasswordNotProvidedException e) {
+				IdeaHelper.handleMissingPassword(e);
+			}
+		}
 
-        @Override
-        public void aboutToAddVersionedComment(ReviewData review, CrucibleFileInfo file,
+		@Override
+		public void aboutToAddVersionedComment(ReviewData review, CrucibleFileInfo file,
 				VersionedComment comment, Editor editor) {
-            try {
-                VersionedComment newComment = facade.addVersionedComment(review.getServer(), review.getPermId(),
-                        file.getPermId(), comment);
-                eventBroker.trigger(new VersionedCommentAdded(this, review, file, newComment, editor));
-            } catch (RemoteApiException e) {
-                IdeaHelper.handleRemoteApiException(project, e);
-            } catch (ServerPasswordNotProvidedException e) {
-                IdeaHelper.handleMissingPassword(e);
-            }
-        }
+			try {
+				VersionedComment newComment = facade.addVersionedComment(review.getServer(), review.getPermId(),
+						file.getPermId(), comment);
+				List<VersionedComment> comments;
+				try {
+					comments = file.getVersionedComments();
+				} catch (ValueNotYetInitialized valueNotYetInitialized) {
+					comments = facade.getVersionedComments(review.getServer(), review.getPermId(),
+							file.getPermId());
+					((CrucibleFileInfoImpl) file).setVersionedComments(comments);
+				}
+				comments.add(newComment);
+				eventBroker.trigger(new VersionedCommentAdded(this, review, file, newComment, editor));
+			} catch (RemoteApiException e) {
+				IdeaHelper.handleRemoteApiException(project, e);
+			} catch (ServerPasswordNotProvidedException e) {
+				IdeaHelper.handleMissingPassword(e);
+			}
+		}
 
-        @Override
-        public void aboutToAddVersionedCommentReply(ReviewData review, CrucibleFileInfo file,
-                                                    VersionedComment parentComment, VersionedComment comment) {
+		@Override
+		public void aboutToAddVersionedCommentReply(ReviewData review, CrucibleFileInfo file,
+				VersionedComment parentComment, VersionedComment comment) {
 
-            try {
-                VersionedComment newComment = facade.addVersionedCommentReply(review.getServer(), review.getPermId(),
-                        parentComment.getPermId(), comment);
-                eventBroker.trigger(new VersionedCommentReplyAdded(this, review, file, parentComment, newComment));
-            } catch (RemoteApiException e) {
-                IdeaHelper.handleRemoteApiException(project, e);
-            } catch (ServerPasswordNotProvidedException e) {
-                IdeaHelper.handleMissingPassword(e);
-            }
-        }
+			try {
+				VersionedComment newComment = facade.addVersionedCommentReply(review.getServer(), review.getPermId(),
+						parentComment.getPermId(), comment);
+				eventBroker.trigger(new VersionedCommentReplyAdded(this, review, file, parentComment, newComment));
+			} catch (RemoteApiException e) {
+				IdeaHelper.handleRemoteApiException(project, e);
+			} catch (ServerPasswordNotProvidedException e) {
+				IdeaHelper.handleMissingPassword(e);
+			}
+		}
 
-        @Override
-        public void aboutToUpdateVersionedComment(final ReviewData review, final CrucibleFileInfo file,
-                                                  final VersionedComment comment) {
-            try {
-                facade.updateComment(review.getServer(), review.getPermId(), comment);
-                eventBroker.trigger(new VersionedCommentUpdated(this, review, file, comment));
-            } catch (RemoteApiException e) {
-                IdeaHelper.handleRemoteApiException(project, e);
-            } catch (ServerPasswordNotProvidedException e) {
-                IdeaHelper.handleMissingPassword(e);
-            }
-        }
+		@Override
+		public void aboutToUpdateVersionedComment(final ReviewData review, final CrucibleFileInfo file,
+				final VersionedComment comment) {
+			try {
+				facade.updateComment(review.getServer(), review.getPermId(), comment);
+				eventBroker.trigger(new VersionedCommentUpdated(this, review, file, comment));
+			} catch (RemoteApiException e) {
+				IdeaHelper.handleRemoteApiException(project, e);
+			} catch (ServerPasswordNotProvidedException e) {
+				IdeaHelper.handleMissingPassword(e);
+			}
+		}
 
-        @Override
-        public void aboutToUpdateGeneralComment(final ReviewData review, final GeneralComment comment) {
-            try {
-                facade.updateComment(review.getServer(), review.getPermId(), comment);
-                eventBroker.trigger(new GeneralCommentUpdated(this, review, comment));
-            } catch (RemoteApiException e) {
-                IdeaHelper.handleRemoteApiException(project, e);
-            } catch (ServerPasswordNotProvidedException e) {
-                IdeaHelper.handleMissingPassword(e);
-            }
-        }
+		@Override
+		public void aboutToUpdateGeneralComment(final ReviewData review, final GeneralComment comment) {
+			try {
+				facade.updateComment(review.getServer(), review.getPermId(), comment);
+				eventBroker.trigger(new GeneralCommentUpdated(this, review, comment));
+			} catch (RemoteApiException e) {
+				IdeaHelper.handleRemoteApiException(project, e);
+			} catch (ServerPasswordNotProvidedException e) {
+				IdeaHelper.handleMissingPassword(e);
+			}
+		}
 
-        @Override
-        public void aboutToRemoveComment(final ReviewData review, final Comment comment) {
-            try {
-                facade.removeComment(review.getServer(), review.getPermId(), comment);
-                eventBroker.trigger(new CommentRemoved(this, review, comment));
-            } catch (RemoteApiException e) {
-                IdeaHelper.handleRemoteApiException(project, e);
-            } catch (ServerPasswordNotProvidedException e) {
-                IdeaHelper.handleMissingPassword(e);
-            }
-        }
+		@Override
+		public void aboutToRemoveComment(final ReviewData review, final Comment comment) {
+			try {
+				facade.removeComment(review.getServer(), review.getPermId(), comment);
+				eventBroker.trigger(new CommentRemoved(this, review, comment));
+			} catch (RemoteApiException e) {
+				IdeaHelper.handleRemoteApiException(project, e);
+			} catch (ServerPasswordNotProvidedException e) {
+				IdeaHelper.handleMissingPassword(e);
+			}
+		}
 	}
-	}
+}
