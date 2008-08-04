@@ -17,6 +17,7 @@
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.FileTypeManager;
@@ -37,25 +38,32 @@ import java.awt.*;
  */
 public class CrucibleFileNode extends FileNode {
 
-	private CrucibleFileInfo fileInfo;
+	private CrucibleFileInfo file;
     private static final ColoredTreeCellRenderer MY_RENDERER = new CrucibleFileNodeRenderer();
+	private ReviewData review;
 
-	public CrucibleFileNode(CrucibleFileInfo file, AtlassianClickAction action) {
+    public CrucibleFileNode(final ReviewData review, final CrucibleFileInfo file) {
+        this(review, file, AtlassianClickAction.EMPTY_ACTION);
+    }
+
+	public CrucibleFileNode(final ReviewData review, final CrucibleFileInfo file,
+			final AtlassianClickAction action) {
 		super(FilenameUtils.getName(file.getFileDescriptor().getUrl()), action);
-		this.fileInfo = file;
-    }
+		this.review = review;
+		this.file = file;
+	}
 
-    public CrucibleFileNode(final CrucibleFileInfo file) {
-        this(file, AtlassianClickAction.EMPTY_ACTION);
-    }
-
-    @Override
+	@Override
 	public TreeCellRenderer getTreeCellRenderer() {
 		return MY_RENDERER;
 	}
 
-	public CrucibleFileInfo getFileInfo() {
-		return fileInfo;
+	public CrucibleFileInfo getFile() {
+		return file;
+	}
+
+	public ReviewData getReview() {
+		return review;
 	}
 
 	private static class CrucibleFileNodeRenderer extends ColoredTreeCellRenderer {
@@ -71,16 +79,16 @@ public class CrucibleFileNode extends FileNode {
 
 			StringBuilder txt = new StringBuilder();
 			txt.append(" (rev: ");
-			txt.append(node.getFileInfo().getOldFileDescriptor().getRevision());
+			txt.append(node.getFile().getOldFileDescriptor().getRevision());
 			txt.append("-");
-			txt.append(node.getFileInfo().getFileDescriptor().getRevision());
+			txt.append(node.getFile().getFileDescriptor().getRevision());
 			txt.append(")");
 			append(txt.toString(), SimpleTextAttributes.GRAY_ITALIC_ATTRIBUTES);
 			try {
 
-				int noOfComments = node.getFileInfo().getNumberOfComments();
+				int noOfComments = node.getFile().getNumberOfComments();
 				if (noOfComments > 0) {
-					int noOfDefects = node.getFileInfo().getNumberOfDefects();
+					int noOfDefects = node.getFile().getNumberOfDefects();
 					append(" ",
 							TEXT_ITALIC);
 					append(String.valueOf(noOfComments),

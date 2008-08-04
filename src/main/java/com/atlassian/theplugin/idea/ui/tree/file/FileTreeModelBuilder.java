@@ -87,7 +87,7 @@ public final class FileTreeModelBuilder {
             }
         }));
         for (final CrucibleFileInfo file : files) {
-            model.getRoot().addChild(new CrucibleFileNode(file, new AtlassianClickAction() {
+            model.getRoot().addChild(new CrucibleFileNode(review, file, new AtlassianClickAction() {
                 public void execute(com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode node, int noOfClicks) {
                     ReviewActionEventBroker broker = IdeaHelper.getReviewActionEventBroker();
                     switch (noOfClicks) {
@@ -147,7 +147,7 @@ public final class FileTreeModelBuilder {
         public void addFile(FileNode root, final CrucibleFileInfo file, final ReviewData review) {
             FileNode node = createPlace(root, file);
             // todo lguminski to avoid creation of a new object for each node
-            node.addChild(new CrucibleFileNode(file, new AtlassianClickAction() {
+            node.addChild(new CrucibleFileNode(review, file, new AtlassianClickAction() {
                 public void execute(com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode node, int noOfClicks) {
                     ReviewActionEventBroker broker = IdeaHelper.getReviewActionEventBroker();
                     switch (noOfClicks) {

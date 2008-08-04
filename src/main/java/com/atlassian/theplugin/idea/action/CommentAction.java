@@ -23,16 +23,21 @@ public class CommentAction extends AnAction {
 
 	@Override
 	public void update(final AnActionEvent e) {
-		boolean enabled = true;
+		boolean visible = true;
 		Editor ed = e.getData(DataKeys.EDITOR);
 		if (ed == null) {
-			enabled = false;
+			visible = false;
 		}
 		String text = ed.getSelectionModel().getSelectedText();
 		if (StringUtil.isEmptyOrSpaces(text)) {
-			enabled = false;
+			visible = false;
 		}
-		e.getPresentation().setEnabled(enabled);
+		ReviewData review = ed.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
+		CrucibleFileInfo reviewItem = ed.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
+		if (review == null || reviewItem == null) {
+			visible = false;
+		}
+		e.getPresentation().setVisible(visible);
 	}
 
 	public void actionPerformed(final AnActionEvent e) {

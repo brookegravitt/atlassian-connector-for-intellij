@@ -21,9 +21,13 @@ public abstract class TreeAction extends AnAction {
 	@Override
 	public void update(final AnActionEvent e) {
 		AtlassianTreeWithToolbar tree = identifyTreeWithAllPossibleMeans(e);
+		boolean enabled = true;
 		if (tree != null) {
 			updateTreeAction(e, tree);
+		} else {
+			enabled = false;
 		}
+		e.getPresentation().setEnabled(enabled);
 	}
 
 	public void actionPerformed(final AnActionEvent e) {
