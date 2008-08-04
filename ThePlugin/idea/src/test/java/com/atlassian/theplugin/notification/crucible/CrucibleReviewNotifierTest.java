@@ -108,9 +108,6 @@ public class CrucibleReviewNotifierTest extends TestCase {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
-            public STATE getState() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
         };
     }
 
@@ -190,10 +187,6 @@ public class CrucibleReviewNotifierTest extends TestCase {
             }
 
             public Map<String, CustomField> getCustomFields() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            public STATE getState() {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
         };
@@ -508,10 +501,6 @@ public class CrucibleReviewNotifierTest extends TestCase {
             public Map<String, CustomField> getCustomFields() {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
-
-            public STATE getState() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
         });
         map.put(PredefinedFilter.ToReview, reviews);
         notifier.updateReviews(map, new HashMap<String, List<ReviewData>>());
@@ -614,10 +603,6 @@ public class CrucibleReviewNotifierTest extends TestCase {
             }
 
             public Map<String, CustomField> getCustomFields() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            public STATE getState() {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
         });

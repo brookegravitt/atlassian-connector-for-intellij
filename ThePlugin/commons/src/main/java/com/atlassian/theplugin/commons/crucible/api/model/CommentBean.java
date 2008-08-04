@@ -139,19 +139,6 @@ public abstract class CommentBean implements Comment {
 		return customFields;
 	}
 
-    public STATE getState() {
-		if (isDraft()) {
-			return STATE.DRAFT;
-		} else if (isDefectApproved()) {
-			return STATE.DEFECT_APPROVED;
-		} else if (isDefectRaised()) {
-			return STATE.DEFECT_RAISED;
-		} else if (isDeleted()) {
-			return STATE.DELETED;
-		}
-		return STATE.REVIEW;
-	}
-
     @Override
 	public String toString() {
 		return getMessage();

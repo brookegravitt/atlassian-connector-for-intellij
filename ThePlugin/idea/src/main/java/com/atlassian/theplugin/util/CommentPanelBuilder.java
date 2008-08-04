@@ -147,18 +147,23 @@ public final class CommentPanelBuilder {
 		}
 
 		protected Component getStateLabel() {
-			Comment.STATE state = comment.getState();
 			StringBuilder sb = new StringBuilder();
-			switch (state) {
-				case REVIEW:
-					break;
-				default:
-					sb.append("<html><body><span color=\"");
-					sb.append(state.getColorString());
-					sb.append("\">");
-					sb.append(state.toString());
-					sb.append("</span></body></html>");
+			sb.append("<html><body>");
+			if (comment.isDraft()) {
+				sb.append("<span color=\"#FFD415\">");
+				sb.append("<b>");
+				sb.append("DRAFT");
+				sb.append("</b>");
+				sb.append("</span>");
 			}
+			if (comment.isDefectRaised()) {
+				sb.append("&nbsp;<span color=\"red\">");
+				sb.append("<b>");
+				sb.append("DEFECT");
+				sb.append("</b>");
+				sb.append("</span>");
+			}
+			sb.append("</body></html>");
 			return new JLabel(sb.toString());
 		}
 
@@ -194,6 +199,4 @@ public final class CommentPanelBuilder {
 			return new JLabel();
 		}
 	}
-
-
 }
