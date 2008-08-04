@@ -112,4 +112,9 @@ public class CrucibleReviewActionListener {
     public void removedComment(final ReviewData review, final Comment comment) {
     }
 
+	public void focusOnFile(final ReviewData review, final CrucibleFileInfo file) {
+	}
+
+	public void focusOnReview(final ReviewData review) {
+	}
 }

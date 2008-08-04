@@ -30,5 +30,23 @@ public class AtlassianTreeModel extends DefaultTreeModel {
 	public AtlassianTreeModel(AtlassianTreeNode root) {
         super(root);
 	}
-	
+
+	public AtlassianTreeNode locateNode(NodeSearchAlgorithm alg) {
+		return AtlassianTreeModel.locateNode((AtlassianTreeNode) getRoot(), alg);
+	}
+
+	private static AtlassianTreeNode locateNode(AtlassianTreeNode startingNode, NodeSearchAlgorithm alg) {
+		if (alg.check(startingNode)) {
+			return startingNode;
+		}
+		for (int i = 0; i < startingNode.getChildCount(); i++) {
+			AtlassianTreeNode result = locateNode((AtlassianTreeNode) startingNode.getChildAt(i), alg);
+			if (result != null) {
+				return result;
+			}
+		}
+		return null;
+	}
+
+
 }

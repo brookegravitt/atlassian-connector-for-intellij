@@ -32,14 +32,14 @@ public abstract class ReviewTreeAction extends TreeAction {
 			AtlassianTreeNode node = tree.getSelectedTreeNode();
 			if (node != null) {
 				if (node instanceof CrucibleFileNode) {
-					file = ((CrucibleFileNode) node).getFileInfo();
+					file = ((CrucibleFileNode) node).getFile();
 				} else {
 					file = null;
 				}
 				ReviewData rd = null;
 				for (TreeNode n : node.getPath()) {
 					if (n instanceof CrucibleChangeSetTitleNode) {
-						rd = ((CrucibleChangeSetTitleNode) n).getChangeSet();
+						rd = ((CrucibleChangeSetTitleNode) n).getReview();
 						break;
 					}
 				}

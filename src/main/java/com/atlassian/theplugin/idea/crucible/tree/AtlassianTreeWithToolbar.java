@@ -104,6 +104,19 @@ public class AtlassianTreeWithToolbar extends ComponentWithToolbar {
 		return null;
 	}
 
+	@NotNull
+	public AtlassianTreeModel getModel() {
+		return (AtlassianTreeModel) tree.getModel();
+	}
+
+	public void focusOnNode(final AtlassianTreeNode node) {
+		tree.focusOnNode(node);
+	}
+
+	public boolean isEmpty() {
+		return !tree.isRootVisible() && (tree.getModel().getChildCount(tree.getModel().getRoot()) == 0);
+	}
+
 	public enum STATE {
 		FLAT(Icons.DIRECTORY_CLOSED_ICON, "Show flat") {
 			@Override

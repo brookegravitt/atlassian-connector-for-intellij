@@ -38,12 +38,12 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class CrucibleChangeSetTitleNode extends FileNode {
-	private ReviewData changeSet;
+	private ReviewData review;
 	private static final TreeCellRenderer MY_RENDERER = new CrucibleChangeSetTitleNodeRenderer();
 
-	public CrucibleChangeSetTitleNode(ReviewData changeSet, AtlassianClickAction action) {
-		super(changeSet.getName(), action);
-		this.changeSet = changeSet;
+	public CrucibleChangeSetTitleNode(ReviewData review, AtlassianClickAction action) {
+		super(review.getName(), action);
+		this.review = review;
 	}
 
 	@Override
@@ -51,12 +51,8 @@ public class CrucibleChangeSetTitleNode extends FileNode {
 		return MY_RENDERER;
 	}
 
-	public ReviewData getChangeSet() {
-		return changeSet;
-	}
-
-	public void setChangeSet(ReviewData changeSet) {
-		this.changeSet = changeSet;
+	public ReviewData getReview() {
+		return review;
 	}
 
 	private static class CrucibleChangeSetTitleNodeRenderer extends ColoredTreeCellRenderer {
@@ -67,12 +63,12 @@ public class CrucibleChangeSetTitleNode extends FileNode {
 										  boolean leaf, int row, boolean hasFocus) {
 			StringBuilder sb = new StringBuilder();
 			CrucibleChangeSetTitleNode node = (CrucibleChangeSetTitleNode) value;
-			append(node.getChangeSet().getPermId().getId(), new SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD,
+			append(node.getReview().getPermId().getId(), new SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD,
 					Color.red));
 			append(" ", SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
-			append(node.getChangeSet().getName(), SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
+			append(node.getReview().getName(), SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
 			try {
-				List<GeneralComment> generalComments = node.getChangeSet().getGeneralComments();
+				List<GeneralComment> generalComments = node.getReview().getGeneralComments();
 				if (generalComments.size() > 0) {
 					int noOfDefects = 0;
 					for (GeneralComment comment : generalComments) {
