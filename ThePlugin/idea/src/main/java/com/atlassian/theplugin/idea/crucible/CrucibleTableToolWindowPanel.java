@@ -28,6 +28,7 @@ import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.ThePluginProjectComponent;
+import com.atlassian.theplugin.idea.CrucibleReviewWindow;
 import com.atlassian.theplugin.idea.bamboo.ToolWindowBambooContent;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.events.ShowReviewEvent;
@@ -142,7 +143,8 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         if (window == null) {
             window = new CrucibleTableToolWindowPanel(project, projectConfigurationBean);
             project.putUserData(WINDOW_PROJECT_KEY, window);
-        }
+			CrucibleReviewWindow.getInstance(project);
+		}
         return window;
     }
 
@@ -262,8 +264,8 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         dataPanelsHolder.validate();
         tablePane.repaint();
     }
-
-    protected JScrollPane setupPane(JEditorPane pane, String initialText) {
+	
+	protected JScrollPane setupPane(JEditorPane pane, String initialText) {
         pane.setText(initialText);
         JScrollPane scrollPane = new JScrollPane(pane,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -497,8 +499,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
             tablePane.repaint();
         }
     }
-
-    public void refreshReviews(final CrucibleStatusChecker checker) {
+	public void refreshReviews(final CrucibleStatusChecker checker) {
         if (checker != null) {
             if (checker.canSchedule()) {
                 final ProgressAnimationProvider animator = getProgressAnimation();

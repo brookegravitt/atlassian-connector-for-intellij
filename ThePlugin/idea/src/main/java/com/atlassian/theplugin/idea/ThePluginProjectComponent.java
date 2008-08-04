@@ -72,7 +72,6 @@ public class ThePluginProjectComponent implements
     private final BambooStatusChecker bambooStatusChecker;
     private StausIconBambooListener iconBambooStatusListener;
     private BambooStatusTooltipListener tooltipBambooStatusListener;
-	private CrucibleBottomToolWindowPanel crucibleBottomToolWindowPanel;
 	private BambooTableToolWindowPanel bambooToolWindowPanel;
     private CrucibleTableToolWindowPanel crucibleToolWindowPanel;
 
@@ -171,7 +170,6 @@ public class ThePluginProjectComponent implements
             // DependencyValidationManager.getHolder(project, "", )
 			this.bambooToolWindowPanel = BambooTableToolWindowPanel.getInstance(project, projectConfigurationBean);
 			this.crucibleToolWindowPanel = CrucibleTableToolWindowPanel.getInstance(project, projectConfigurationBean);
-			this.crucibleBottomToolWindowPanel = CrucibleBottomToolWindowPanel.getInstance(project, projectConfigurationBean);
 			this.jiraToolWindowPanel = JIRAToolWindowPanel.getInstance(project, projectConfigurationBean);
 
 			// create tool window on the right
@@ -195,8 +193,6 @@ public class ThePluginProjectComponent implements
             toolWindow.showHidePanels();
 
 
-			toolWindow.registerBottomPanel(PluginToolWindow.ToolWindowPanels.CRUCIBLE_BOTTOM);
-			toolWindow.showHidePanels();
 
 			TableView.restore(projectConfigurationBean.getJiraConfiguration().getTableConfiguration(),
                     jiraToolWindowPanel.getTable());
@@ -247,7 +243,6 @@ public class ThePluginProjectComponent implements
             toolWindow.showHidePanels();
             // focus last active panel only if it exists (do not create panel)
             PluginToolWindow.focusPanelIfExists(project, projectConfigurationBean.getActiveToolWindowTab());
-            toolWindow.startTabChangeListener();
 
             IdeaHelper.getAppComponent().rescheduleStatusCheckers(false);
             if (!pluginConfiguration.getProductServers(ServerType.JIRA_SERVER).transientGetServers().isEmpty()) {
@@ -277,16 +272,6 @@ public class ThePluginProjectComponent implements
         return content;
     }
 
-	public Content createCrucibleBottomContent() {
-		   PeerFactory peerFactory = PeerFactory.getInstance();
-
-		   Content content = peerFactory.getContentFactory().createContent(
-				   crucibleBottomToolWindowPanel, PluginToolWindow.ToolWindowPanels.CRUCIBLE_BOTTOM.toString(), false);
-		   content.setIcon(IconLoader.getIcon("/icons/tab_crucible.png"));
-		   content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
-
-		   return content;
-	   }
 
 	public Content createCrucibleContent() {
         PeerFactory peerFactory = PeerFactory.getInstance();
@@ -329,7 +314,6 @@ public class ThePluginProjectComponent implements
             crucibleStatusChecker.unregisterListener(crucibleReviewNotifier);
 
             // remove tool window
-            toolWindow.stopTabChangeListener();
             toolWindowManager.unregisterToolWindow(PluginToolWindow.TOOL_WINDOW_NAME);
 
             created = false;
@@ -378,9 +362,6 @@ public class ThePluginProjectComponent implements
         return crucibleStatusChecker;
     }
 
-	public CrucibleBottomToolWindowPanel getCrucibleBottomToolWindowPanel() {
-		return crucibleBottomToolWindowPanel;
-	}
 
 	public CrucibleReviewNotifier getCrucibleReviewNotifier() {
 		return crucibleReviewNotifier;

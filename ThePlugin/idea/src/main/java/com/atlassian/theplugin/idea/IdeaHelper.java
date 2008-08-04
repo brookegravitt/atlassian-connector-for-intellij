@@ -89,14 +89,6 @@ public final class IdeaHelper {
 		return ToolWindowManager.getInstance(p).getToolWindow(PluginToolWindow.TOOL_WINDOW_NAME);
 	}
 
-	public static com.intellij.openapi.wm.ToolWindow getBottomIdeaToolWindow(Project p) {
-		return ToolWindowManager.getInstance(p).getToolWindow(PluginToolWindow.BOTTOM_WINDOW_NAME);
-	}
-
-    public static com.intellij.openapi.wm.ToolWindow getBottomIdeaToolWindow(AnActionEvent action) {
-		return ToolWindowManager.getInstance(getCurrentProject(action)).getToolWindow(PluginToolWindow.BOTTOM_WINDOW_NAME);
-	}
-
     public static ThePluginApplicationComponent getAppComponent() {
 		return ApplicationManager.getApplication().getComponent(ThePluginApplicationComponent.class);
 	}
