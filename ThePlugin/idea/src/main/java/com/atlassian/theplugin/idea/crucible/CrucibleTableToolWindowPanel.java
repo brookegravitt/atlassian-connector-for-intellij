@@ -88,8 +88,6 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     private Map<String, CollapsibleTable> customTables = new HashMap<String, CollapsibleTable>();
 
     private CrucibleVersion crucibleVersion = CrucibleVersion.UNKNOWN;
-    private static final String TO_REVIEW_AS_ACTIVE_REVIEWER = "To review as active reviewer";
-
 
     protected String getInitialMessage() {
 
@@ -180,7 +178,12 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
         createFilterEditToolBar(getPlaceName(), "ThePlugin.Crucible.FilterEditToolBar");
         this.crucibleCustomFilterPanel = new CrucibleCustomFilterPanel();
         filters = projectCfg.getCrucibleConfiguration().getCrucibleFilters();
-    }
+		if (filters.getReadStored() == null) {
+			filters.getPredefinedFilters()[PredefinedFilter.ToReview.ordinal()] = true;
+			filters.getPredefinedFilters()[PredefinedFilter.OutForReview.ordinal()] = true;
+			filters.setReadStored(true);
+		}
+	}
 
     private void createFilterToolBar() {
         ActionManager actionManager = ActionManager.getInstance();
@@ -225,7 +228,8 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
     private String getPlaceName() {
         return PLACE_PREFIX + this.project.getName();
     };
-    /**
+
+	/**
      * Method adds or removes CollapsibleTable for given filter type
      *
      * @param filter  predefined filter type
