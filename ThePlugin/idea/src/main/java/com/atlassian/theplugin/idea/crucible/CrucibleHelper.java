@@ -18,11 +18,14 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
+import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.diff.*;
 import com.intellij.openapi.editor.Document;
@@ -32,6 +35,9 @@ import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.VcsBundle;
 import com.intellij.openapi.vfs.VirtualFile;
+
+import java.util.List;
+import java.util.ArrayList;
 
 public final class CrucibleHelper {
 	//private static Set<OpenFileDescriptor> openDescriptors = new Set<OpenFileDescriptor>();
@@ -135,6 +141,18 @@ public final class CrucibleHelper {
 				DiffManager.getInstance().getDiffTool().show(request);
 			}
 		});
+	}
 
+	public static List<CustomFieldDef> getMetricsForReview(final Project project, final ReviewData review) {
+		java.util.List<CustomFieldDef> metrics = new ArrayList<CustomFieldDef>();
+		try {
+			metrics = CrucibleServerFacadeImpl.getInstance()
+					.getMetrics(review.getServer(), review.getMetricsVersion());
+		} catch (RemoteApiException e) {
+			IdeaHelper.handleRemoteApiException(project, e);
+		} catch (ServerPasswordNotProvidedException e) {
+			IdeaHelper.handleMissingPassword(e);
+		}
+		return metrics;
 	}
 }

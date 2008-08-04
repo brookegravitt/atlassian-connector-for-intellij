@@ -8,6 +8,7 @@ import com.atlassian.theplugin.idea.CommentTreePanel;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.events.GeneralCommentAboutToAdd;
 import com.atlassian.theplugin.idea.crucible.events.GeneralCommentReplyAboutToAdd;
@@ -67,19 +68,6 @@ public class AddAction extends AbstractCommentAction {
 
     }
 
-    private java.util.List<CustomFieldDef> getMetrics(Project project, ReviewData review) {
-        java.util.List<CustomFieldDef> metrics = new ArrayList<CustomFieldDef>();
-        try {
-            metrics = CrucibleServerFacadeImpl.getInstance()
-                    .getMetrics(review.getServer(), review.getMetricsVersion());
-        } catch (RemoteApiException e) {
-            IdeaHelper.handleRemoteApiException(project, e);
-        } catch (ServerPasswordNotProvidedException e) {
-            IdeaHelper.handleMissingPassword(e);
-        }
-        return metrics;
-    }
-
     private void addComment(Project project, AtlassianTreeNode treeNode) {
         if (treeNode instanceof GeneralCommentTreeNode) {
             GeneralCommentTreeNode node = (GeneralCommentTreeNode) treeNode;
@@ -97,9 +85,8 @@ public class AddAction extends AbstractCommentAction {
     }
 
     private void addCommentToFile(Project project, ReviewData review, CrucibleFileInfo file) {
-        java.util.List<CustomFieldDef> metrics = getMetrics(project, review);
         VersionedCommentBean newComment = new VersionedCommentBean();
-        CommentEditForm dialog = new CommentEditForm(project, review, (CommentBean) newComment, metrics);
+        CommentEditForm dialog = new CommentEditForm(project, review, (CommentBean) newComment, CrucibleHelper.getMetricsForReview(project, review));
         dialog.pack();
         dialog.setModal(true);
         dialog.show();
@@ -117,10 +104,9 @@ public class AddAction extends AbstractCommentAction {
 
     private void addReplyToVersionedComment(Project project, ReviewData review,
                                             CrucibleFileInfo file, VersionedComment comment) {
-        java.util.List<CustomFieldDef> metrics = getMetrics(project, review);
         VersionedCommentBean newComment = new VersionedCommentBean();
         newComment.setReply(true);
-        CommentEditForm dialog = new CommentEditForm(project, review, (CommentBean) newComment, metrics);
+        CommentEditForm dialog = new CommentEditForm(project, review, (CommentBean) newComment, CrucibleHelper.getMetricsForReview(project, review));
         dialog.pack();
         dialog.setModal(true);
         dialog.show();
@@ -142,9 +128,8 @@ public class AddAction extends AbstractCommentAction {
     }
 
     private void addGeneralComment(Project project, ReviewData review) {
-        java.util.List<CustomFieldDef> metrics = getMetrics(project, review);
         GeneralCommentBean newComment = new GeneralCommentBean();
-        CommentEditForm dialog = new CommentEditForm(project, review, newComment, metrics);
+        CommentEditForm dialog = new CommentEditForm(project, review, newComment, CrucibleHelper.getMetricsForReview(project, review));
         dialog.pack();
         dialog.setModal(true);
         dialog.show();
@@ -158,18 +143,10 @@ public class AddAction extends AbstractCommentAction {
     }
 
     private void addReplyToGeneralComment(Project project, ReviewData review, GeneralComment comment) {
-        java.util.List<CustomFieldDef> metrics = getMetrics(project, review);
-        try {
-            metrics = CrucibleServerFacadeImpl.getInstance().getMetrics(review.getServer(), review.getMetricsVersion());
-        } catch (RemoteApiException e) {
-            IdeaHelper.handleRemoteApiException(project, e);
-        } catch (ServerPasswordNotProvidedException e) {
-            IdeaHelper.handleMissingPassword(e);
-        }
         GeneralComment parentComment = comment;
         GeneralCommentBean newComment = new GeneralCommentBean();
         newComment.setReply(true);
-        CommentEditForm dialog = new CommentEditForm(project, review, newComment, metrics);
+        CommentEditForm dialog = new CommentEditForm(project, review, newComment, CrucibleHelper.getMetricsForReview(project, review));
         dialog.pack();
         dialog.setModal(true);
         dialog.show();
