@@ -52,13 +52,11 @@ public class PluginToolWindow extends ContentManagerAdapter {
 	private ToolWindow ideaToolWindow;
 	private Project project;
 	//private String selectedContent = null;
-	public static final String TOOL_WINDOW_NAME = "Atlassian";
-	public static final String BOTTOM_WINDOW_NAME = "Crucible Review";
+	public static final String TOOL_WINDOW_NAME = "Atlassian";	
 	private static final int INITIAL_NUMBER_OF_TABS = 3;
 	private static final int INITIAL_NUMBER_OF_BOTTOM_TABS = 1;
 	private static final String CONFIGURE_TAB_NAME = "Configure";
-	private ToolWindow bottomIdeaToolWindow;
-	private static final Icon ICON_CRUCIBLE = IconLoader.getIcon("/icons/crucible-16.png");
+	public static final Icon ICON_CRUCIBLE = IconLoader.getIcon("/icons/crucible-16.png");
 
 
 	public static void showHidePluginWindow(AnActionEvent event) {
@@ -91,33 +89,10 @@ public class PluginToolWindow extends ContentManagerAdapter {
 		this.ideaToolWindow = toolWindowManager.registerToolWindow(
 				TOOL_WINDOW_NAME, true, ToolWindowAnchor.RIGHT);
 		this.project = project;
-		if (VcsIdeaHelper.isUnderVcsControl(project)) {
-            this.bottomIdeaToolWindow = toolWindowManager.registerToolWindow(BOTTOM_WINDOW_NAME, true, ToolWindowAnchor.BOTTOM);
-            this.bottomIdeaToolWindow.setIcon(ICON_CRUCIBLE);
-        }
 
 	}
 
-	/**
-	 * Starts listening to the tab selection changes.
-	 * It will fire {@link #selectionChanged} which store new selection in project configuration
-	 */
-	public void startTabChangeListener() {
-		this.ideaToolWindow.getContentManager().addContentManagerListener(this);
-		if (this.bottomIdeaToolWindow != null) {
-            this.bottomIdeaToolWindow.getContentManager().addContentManagerListener(this);
-        }
-	}
 
-	/**
-	 * Stops listening to the tab selection changes.
-	 */
-	public void stopTabChangeListener() {
-		this.ideaToolWindow.getContentManager().removeContentManagerListener(this);
-		if (this.bottomIdeaToolWindow != null) {
-            this.bottomIdeaToolWindow.getContentManager().removeContentManagerListener(this);
-        }
-	}
 
 	/**
 	 * @return {@link ToolWindow} objects wraped up by this class
@@ -126,9 +101,6 @@ public class PluginToolWindow extends ContentManagerAdapter {
 		return ideaToolWindow;
 	}
 
-	public ToolWindow getBottomIdeaToolWindow() {
-		return bottomIdeaToolWindow;
-	}
 
 	/**
 	 * Register type of panel. Register panel can be then shown/hidden using {@link #showHidePanels}
@@ -142,55 +114,8 @@ public class PluginToolWindow extends ContentManagerAdapter {
 		bottomPanels.add(toolWindowPanel);
 	}
 
-	/**
-	 * Show registered panels if servers are defined for the type of panel.
-	 * Hides registered panels if servers are not define for the type of panel.
-	 */
-	public void showHideBottomPanels() {
-				
-			for (ToolWindowPanels entry : bottomPanels) {
-			try {
-                if (bottomIdeaToolWindow != null) {
-                ServerType serverType = Util.toolWindowPanelsToServerType(entry);
-                    if (ConfigurationFactory.getConfiguration().
-                            getProductServers(serverType).transientGetServers().size() > 0) {
-                        if (bottomIdeaToolWindow.getContentManager().findContent(entry.toString()) == null) {
 
-                            // show tab
-                            Content content = null;
-
-                            switch (entry) {
-                                case CRUCIBLE_BOTTOM:
-                                    content = project.getComponent(ThePluginProjectComponent.class).
-                                                                                        createCrucibleBottomContent();
-                                    break;
-
-                                default:
-                                    break;
-                            }
-
-                            bottomIdeaToolWindow.getContentManager().addContent(content);
-                        }
-
-                    } else {
-                        // tab is visible
-                        Content content = bottomIdeaToolWindow.getContentManager().findContent(entry.toString());
-                        if (content != null) {
-                            // hide tab
-                            bottomIdeaToolWindow.getContentManager().removeContent(content, true);
-                        }
-                    }
-                }
-            } catch (ThePluginException e) {
-				PluginUtil.getLogger().error(e.getMessage(), e);
-			}
-
-		}
-
-	}
 	public void showHidePanels() {
-
-		showHideBottomPanels();
 		//stopTabChangeListener();
 
 		if (!ConfigurationFactory.getConfiguration().isAnyServerDefined()) {
@@ -282,10 +207,6 @@ public class PluginToolWindow extends ContentManagerAdapter {
 						content = project.getComponent(ThePluginProjectComponent.class).createJiraContent();
 						contentManager.addContent(content);
 						break;
-					case CRUCIBLE_BOTTOM:
-						content = project.getComponent(ThePluginProjectComponent.class).createCrucibleBottomContent();
-						contentManager.addContent(content);
-                        break;
                     default:
 						break;
 				}
@@ -433,14 +354,6 @@ public class PluginToolWindow extends ContentManagerAdapter {
 		super.contentRemoved(event);	//To change body of overridden methods use File | Settings | File Templates.
 	}
 
-	@Override
-	public void contentRemoveQuery(ContentManagerEvent event) {
-		Content content = event.getContent();
-		if (content.getTabName().equals(ToolWindowPanels.CRUCIBLE_BOTTOM.toString())) {
-			event.consume();
-		}
-		super.contentRemoveQuery(event);
-	}
 
 	public void selectionChanged(ContentManagerEvent event) {
 		//this.selectedContent = event.getContent().getDisplayName();
@@ -456,8 +369,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 	public enum ToolWindowPanels {
         BAMBOO("Bamboo"),
 		CRUCIBLE("Crucible"),
-		JIRA("JIRA"),
-		CRUCIBLE_BOTTOM("Review Details");
+		JIRA("JIRA");
 
         private final String title;
 
