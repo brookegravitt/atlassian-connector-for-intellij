@@ -23,4 +23,6 @@ public interface ReviewData extends Review {
     Server getServer();
 
     String getReviewUrl();
+
+	Review getInnerReviewObject();
 }

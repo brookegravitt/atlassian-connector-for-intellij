@@ -135,7 +135,11 @@ public class ReviewDataImpl implements ReviewData {
 		return baseUrl + "/cru/" + getPermId().getId();
 	}
 
-    @Override
+	public Review getInnerReviewObject() {
+		return review;
+	}
+
+	@Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;

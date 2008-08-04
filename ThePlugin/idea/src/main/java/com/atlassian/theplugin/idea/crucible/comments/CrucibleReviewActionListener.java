@@ -16,7 +16,10 @@
 
 package com.atlassian.theplugin.idea.crucible.comments;
 
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.intellij.openapi.editor.Editor;
 
@@ -55,7 +58,7 @@ public class CrucibleReviewActionListener {
     }
 
     public void aboutToAddVersionedCommentReply(ReviewData review, CrucibleFileInfo file,
-                                                VersionedComment parentComment, VersionedCommentBean newComment) {
+                                                VersionedComment parentComment, VersionedComment newComment) {
     }
 
     public void createdVersionedCommentReply(ReviewData review, CrucibleFileInfo file,
@@ -64,13 +67,13 @@ public class CrucibleReviewActionListener {
 
     public void aboutToAddGeneralCommentReply(ReviewData review,
                                               GeneralComment parentComment,
-                                              GeneralCommentBean newComment) {
+                                              GeneralComment newComment) {
     }
 
     public void createdGeneralCommentReply(ReviewData review, GeneralComment parentComment, GeneralComment comment) {
     }
 
-    public void aboutToAddGeneralComment(ReviewData review, GeneralCommentBean newComment) {
+    public void aboutToAddGeneralComment(ReviewData review, GeneralComment newComment) {
     }
 
     public void createdGeneralComment(ReviewData review, GeneralComment comment) {
@@ -78,7 +81,7 @@ public class CrucibleReviewActionListener {
 
     public void aboutToAddVersionedComment(ReviewData review,
                                            CrucibleFileInfo file,
-                                           VersionedCommentBean comment,
+                                           VersionedComment comment,
                                            Editor editor) {
     }
 
