@@ -117,7 +117,6 @@ public final class BuildChangesToolWindow {
     private static class CommitDetailsPanel extends JPanel implements ChangesTree, DataProvider {
         private static final float SPLIT_RATIO = 0.6f;
         private AtlassianTreeWithToolbar fileTree;
-        private JScrollPane fileScroll;
         private boolean isByDir = ChangesTree.GROUP_BY_DIRECTORY_DEFAULT;
         private final Project project;
 
@@ -153,8 +152,7 @@ public final class BuildChangesToolWindow {
             JLabel label = new JLabel("Changed Files");
             fileTreePanel.add(label, BorderLayout.NORTH);
 
-            fileScroll = new JScrollPane();
-            fileTreePanel.add(fileScroll, BorderLayout.CENTER);
+            fileTreePanel.add(fileTree, BorderLayout.CENTER);
 
             split.setSecondComponent(fileTreePanel);
 
@@ -325,11 +323,8 @@ public final class BuildChangesToolWindow {
                     }
                 });
                 fileTree.setRootVisible(false);
-                fileScroll.setViewportView(fileTree);
                 fileTree.expandAll();
                 fileTree.addMouseListener(new NavigateToCodeHandler(name));
-            } else {
-                fileScroll.setViewportView(new JLabel("no commits", SwingConstants.CENTER));
             }
         }
 

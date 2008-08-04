@@ -61,7 +61,7 @@ public final class ReviewItemTreePanel extends JPanel {
     private void initLayout() {
         setLayout(new BorderLayout());
         setMinimumSize(new Dimension(WIDTH, HEIGHT));
-        add(new JScrollPane(getReviewItemTree()), BorderLayout.CENTER);
+        add(getReviewItemTree(), BorderLayout.CENTER);
         statusLabel = new JLabel();
         statusLabel.setBackground(UIUtil.getTreeTextBackground());
         add(statusLabel, BorderLayout.SOUTH);
