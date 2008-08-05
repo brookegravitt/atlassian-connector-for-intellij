@@ -890,7 +890,6 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
         }
 
         Document request = CrucibleRestXmlHelper.prepareGeneralComment(comment);
-        printXml(request);
         String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + COMMENTS + "/" + comment.getPermId().getId();
 
         try {

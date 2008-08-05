@@ -353,8 +353,8 @@ public class CommentTreePanel extends JPanel {
 					replaceNode(new NodeSearchAlgorithm() {
 						@Override
 						public boolean check(AtlassianTreeNode node) {
-							if (node instanceof VersionedCommentTreeNode) {
-								VersionedCommentTreeNode vnode = (VersionedCommentTreeNode) node;
+							if (node instanceof GeneralCommentTreeNode) {
+								GeneralCommentTreeNode vnode = (GeneralCommentTreeNode) node;
 								if (vnode.getReview().equals(review)
 										&& vnode.getComment().equals(comment)) {
 									return true;
@@ -394,6 +394,54 @@ public class CommentTreePanel extends JPanel {
 			}
 			);
 
+		}
+
+		@Override
+		public void publishedGeneralComment(final ReviewData review, final GeneralComment comment) {
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+
+						replaceNode(new NodeSearchAlgorithm() {
+							@Override
+							public boolean check(AtlassianTreeNode node) {
+								if (node instanceof GeneralCommentTreeNode) {
+									GeneralCommentTreeNode vnode = (GeneralCommentTreeNode) node;
+									if (vnode.getReview().equals(review)
+											&& vnode.getComment().equals(comment)) {
+										return true;
+									}
+								}
+								return false;
+							}
+						}, new GeneralCommentTreeNode(review, comment, AtlassianClickAction.EMPTY_ACTION));
+				}
+			}
+			);
+		}
+
+		@Override
+		public void publishedVersionedComment(final ReviewData review, final CrucibleFileInfo file, final VersionedComment comment) {
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+
+							replaceNode(new NodeSearchAlgorithm() {
+								@Override
+								public boolean check(AtlassianTreeNode node) {
+									if (node instanceof VersionedCommentTreeNode) {
+										VersionedCommentTreeNode vnode = (VersionedCommentTreeNode) node;
+										if (vnode.getReview().equals(review)
+												&& vnode.getComment().equals(comment)) {
+											return true;
+										}
+									}
+									return false;
+								}
+							}, new VersionedCommentTreeNode(review, file, comment,
+									AtlassianClickAction.EMPTY_ACTION));
+						}
+
+				   			}
+			);
 		}
 
 		@Override
