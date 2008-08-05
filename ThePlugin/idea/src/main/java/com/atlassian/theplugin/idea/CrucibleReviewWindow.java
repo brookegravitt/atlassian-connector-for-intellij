@@ -272,6 +272,34 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
 			});
 		}
 
+		@Override
+		public void aboutToPublishGeneralComment(final ReviewData review, final GeneralComment comment) {
+			try {
+				facade.publishComment(review.getServer(), review.getPermId(), comment.getPermId());
+				// @todo - dirty hack - probably remote api should return new comment info
+				((GeneralCommentBean) comment).setDraft(false);
+				eventBroker.trigger(new GeneralCommentPublished(this, review, comment));
+			} catch (RemoteApiException e) {
+				IdeaHelper.handleRemoteApiException(project, e);
+			} catch (ServerPasswordNotProvidedException e) {
+				IdeaHelper.handleMissingPassword(e);
+			}
+		}
+
+		@Override
+		public void aboutToPublishVersionedComment(final ReviewData review, final CrucibleFileInfo file, final VersionedComment comment) {
+			try {
+				facade.publishComment(review.getServer(), review.getPermId(), comment.getPermId());
+				// @todo - dirty hack - probably remote api should return new comment info
+				((VersionedCommentBean) comment).setDraft(false);				
+				eventBroker.trigger(new VersionedCommentPublished(this, review, file, comment));
+			} catch (RemoteApiException e) {
+				IdeaHelper.handleRemoteApiException(project, e);
+			} catch (ServerPasswordNotProvidedException e) {
+				IdeaHelper.handleMissingPassword(e);
+			}
+		}
+
 
 		@Override
 		public void aboutToAddGeneralComment(final ReviewData review, final GeneralComment newComment) {

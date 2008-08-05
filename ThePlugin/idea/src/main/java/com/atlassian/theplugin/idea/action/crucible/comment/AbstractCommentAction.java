@@ -71,7 +71,29 @@ public abstract class AbstractCommentAction extends AnAction {
         return result;
     }
 
-    private boolean isUserAnAuthor(Comment comment, ReviewData review) {
+    protected boolean checkIfDraftAndAuthor(final AtlassianTreeNode node) {
+        if (node == null) {
+            return false;
+        }
+        boolean result = false;
+        if (node instanceof VersionedCommentTreeNode) {
+            VersionedCommentTreeNode anode = (VersionedCommentTreeNode) node;
+            if (isUserAnAuthor(anode.getComment(), anode.getReview())
+					&& anode.getComment().isDraft()) {
+                result = true;
+            }
+        }
+        if (node instanceof GeneralCommentTreeNode) {
+            GeneralCommentTreeNode anode = (GeneralCommentTreeNode) node;
+            if (isUserAnAuthor(anode.getComment(), anode.getReview())
+					&& anode.getComment().isDraft()) {
+                result = true;
+            }
+        }
+        return result;
+    }
+
+	private boolean isUserAnAuthor(Comment comment, ReviewData review) {
         return review.getServer().getUserName().equals(comment.getAuthor().getUserName());
     }
 }

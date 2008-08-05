@@ -46,10 +46,6 @@ public class EditAction extends AbstractCommentAction {
 		e.getPresentation().setText(text);
 	}
 
-	private boolean isUserAnAuthor(Comment comment, ReviewData review) {
-		return review.getServer().getUserName().equals(comment.getAuthor().getUserName());
-	}
-
 	public void actionPerformed(AnActionEvent e) {
 		Project currentProject = e.getData(DataKeys.PROJECT);
 		AtlassianTreeNode node = getSelectedNode(e);
