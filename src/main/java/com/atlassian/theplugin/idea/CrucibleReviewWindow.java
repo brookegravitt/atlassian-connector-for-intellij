@@ -122,13 +122,8 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
 		reviewItemTreePanel = new ReviewItemTreePanel(project);
 		Splitter splitter = new Splitter(false, SPLIT_RATIO);
 		splitter.setShowDividerControls(true);
-		JPanel leftPanel = new JPanel();
-		leftPanel.setBackground(UIUtil.getTreeTextBackground());
-		leftPanel.setLayout(new BorderLayout());
-		leftPanel.setMinimumSize(new Dimension(LEFT_WIDTH, LEFT_HEIGHT));
-		leftPanel.add(reviewItemTreePanel);
-		reviewItemTreePanel.getProgressAnimation().configure(leftPanel, reviewItemTreePanel, BorderLayout.CENTER);
-		splitter.setFirstComponent(leftPanel);
+		reviewItemTreePanel.getProgressAnimation().configure(reviewItemTreePanel, reviewItemTreePanel, BorderLayout.CENTER);
+		splitter.setFirstComponent(reviewItemTreePanel);
 		splitter.setHonorComponentsMinimumSize(true);
 		reviewComentsPanel = new CommentTreePanel(project);
 		splitter.setSecondComponent(reviewComentsPanel);
