@@ -44,6 +44,7 @@ public class CommentEditForm extends DialogWrapper {
 	private JButton saveAsDraftButton;
 	private JButton cancelButton;
 	private JPanel comboPanel;
+	private JPanel toolPanel;
 
 	private final Review review;
 	private final CommentBean comment;
@@ -64,7 +65,9 @@ public class CommentEditForm extends DialogWrapper {
 		init();
 
 		comboPanel.setLayout(new FlowLayout());
+
 		for (CustomFieldDef metric : metrics) {
+			final JLabel label = new JLabel(metric.getLabel());
 			final JComboBox combo = new JComboBox();
 			final String metricName = metric.getName();
 			combo.addItem("Select " + metricName);
@@ -77,9 +80,9 @@ public class CommentEditForm extends DialogWrapper {
 				}
 			});
 			combos.put(metricName, combo);
+			comboPanel.add(label);
 			comboPanel.add(combo);
 		}
-
 
 		postButton.setAction(getOKAction());
 		postButton.setMnemonic('P');
@@ -228,36 +231,36 @@ public class CommentEditForm extends DialogWrapper {
 		commentText.setText("");
 		commentText.setWrapStyleWord(false);
 		commentPane.setViewportView(commentText);
-		final JPanel panel1 = new JPanel();
-		panel1.setLayout(new GridLayoutManager(1, 7, new Insets(0, 0, 0, 0), -1, -1));
-		rootComponent.add(panel1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+		toolPanel = new JPanel();
+		toolPanel.setLayout(new GridLayoutManager(1, 7, new Insets(0, 0, 0, 0), -1, -1));
+		rootComponent.add(toolPanel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
 		defectCheckBox = new JCheckBox();
 		defectCheckBox.setText("Defect");
-		panel1.add(defectCheckBox, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+		toolPanel.add(defectCheckBox, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
 				null, null, null, 0, false));
 		comboPanel = new JPanel();
-		panel1.add(comboPanel, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+		toolPanel.add(comboPanel, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
 				GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		postButton = new JButton();
 		postButton.setText("Post");
-		panel1.add(postButton, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+		toolPanel.add(postButton, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
 				null, null, null, 0, false));
 		saveAsDraftButton = new JButton();
 		saveAsDraftButton.setText("Save as draft");
-		panel1.add(saveAsDraftButton, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_CENTER,
+		toolPanel.add(saveAsDraftButton, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_CENTER,
 				GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
 				GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		cancelButton = new JButton();
 		cancelButton.setText("Cancel");
-		panel1.add(cancelButton, new GridConstraints(0, 6, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+		toolPanel.add(cancelButton, new GridConstraints(0, 6, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
 				null, null, null, 0, false));
 		final Spacer spacer1 = new Spacer();
-		panel1.add(spacer1, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+		toolPanel.add(spacer1, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
 				GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
 	}
 
