@@ -382,6 +382,10 @@
 		<action id="ThePlugin.Crucible.Comment.Remove"
 				class="com.atlassian.theplugin.idea.action.crucible.comment.RemoveAction"
 				text="Remove comment" icon="/general/remove.png"/>
+		<action id="ThePlugin.Crucible.Comment.Publish"
+				class="com.atlassian.theplugin.idea.action.crucible.comment.PublishAction"
+				text="Publish comment" icon="/actions/menu-saveall.png"/>
+
 
 		<group id="ThePlugin.Crucible.PostCommit" popup="false" text="">
             <reference id="ThePlugin.Crucible.PostCommitReview"/>
@@ -473,6 +477,7 @@
 			<reference id="ThePlugin.Crucible.Comment.Reply"/>
 			<reference id="ThePlugin.Crucible.Comment.Edit"/>
 			<reference id="ThePlugin.Crucible.Comment.Remove"/>
+			<reference id="ThePlugin.Crucible.Comment.Publish"/>
 		</group>
 
 		<group id="ThePlugin.Crucible.FilterEditToolBar" popup="false">
