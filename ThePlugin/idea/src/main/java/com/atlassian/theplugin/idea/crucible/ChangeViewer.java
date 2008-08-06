@@ -288,7 +288,7 @@ public class ChangeViewer {
     }
 
 
-    public void showActiveHint(Range range, final Editor editor, Point point) {
+    public void showActiveHint(Range range, final Editor anEditor, Point point) {
 
         DefaultActionGroup group = new DefaultActionGroup();
 
@@ -296,11 +296,11 @@ public class ChangeViewer {
         final AnAction globalShowPrevAction = ActionManager.getInstance().getAction("VcsShowPrevChangeMarker");
 
         final ShowPrevChangeMarkerAction localShowPrevAction = new ShowPrevChangeMarkerAction(getPrevRange(range), this,
-                editor);
+                anEditor);
         final ShowNextChangeMarkerAction localShowNextAction = new ShowNextChangeMarkerAction(getNextRange(range), this,
-                editor);
+                anEditor);
 
-        JComponent editorComponent = editor.getComponent();
+        JComponent editorComponent = anEditor.getComponent();
 
         localShowNextAction.registerCustomShortcutSet(localShowNextAction.getShortcutSet(), editorComponent);
         localShowPrevAction.registerCustomShortcutSet(localShowPrevAction.getShortcutSet(), editorComponent);
@@ -321,8 +321,8 @@ public class ChangeViewer {
         JComponent toolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.FILEHISTORY_VIEW_TOOLBAR, group, true)
                 .getComponent();
 
-        final Color background = ((EditorEx) editor).getBackroundColor();
-        final Color foreground = editor.getColorsScheme().getColor(EditorColors.CARET_COLOR);
+        final Color background = ((EditorEx) anEditor).getBackroundColor();
+        final Color foreground = anEditor.getColorsScheme().getColor(EditorColors.CARET_COLOR);
         toolbar.setBackground(background);
 
         toolbar.setBorder(
@@ -361,7 +361,7 @@ public class ChangeViewer {
         });
 
         HintManager.getInstance()
-                .showEditorHint(lightweightHint, editor, point, HintManager.HIDE_BY_ANY_KEY | HintManager.HIDE_BY_TEXT_CHANGE
+                .showEditorHint(lightweightHint, anEditor, point, HintManager.HIDE_BY_ANY_KEY | HintManager.HIDE_BY_TEXT_CHANGE
 						| HintManager.HIDE_BY_OTHER_HINT | HintManager.HIDE_BY_SCROLLING,
                         -1, false);
     }

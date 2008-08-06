@@ -57,11 +57,11 @@ public final class ReviewItemTreePanel extends JPanel {
 	private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
 	private JLabel statusLabel;
 
-    public ReviewItemTreePanel(final Project project) {
-        initLayout();
-        listener = new MyReviewActionListener(project);
-        IdeaHelper.getReviewActionEventBroker().registerListener(listener);
-    }
+	public ReviewItemTreePanel(final Project project) {
+		initLayout();
+		listener = new MyReviewActionListener(project);
+		IdeaHelper.getReviewActionEventBroker().registerListener(listener);
+	}
 
 	private void initLayout() {
 		setLayout(new BorderLayout());
@@ -125,7 +125,8 @@ public final class ReviewItemTreePanel extends JPanel {
 		}
 
 		@Override
-		public void focusOnLineCommentEvent(final ReviewData review, final CrucibleFileInfo file, final VersionedComment comment) {
+		public void focusOnLineCommentEvent(final ReviewData review, final CrucibleFileInfo file,
+				final VersionedComment comment) {
 			focusOnFile(review, file);
 		}
 
