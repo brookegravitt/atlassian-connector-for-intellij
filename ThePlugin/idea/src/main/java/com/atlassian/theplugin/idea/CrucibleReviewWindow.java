@@ -39,6 +39,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.fileEditor.FileEditorLocation;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Splitter;
@@ -231,6 +232,7 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
 						if (mr != null && mf != null) {
 							if (review.equals(mr) && file.equals(mf)) {
 								// focus on comment
+								FileEditorLocation location = editor.getCurrentLocation();
 							}
 						}
 
