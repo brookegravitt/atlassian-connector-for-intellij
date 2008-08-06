@@ -277,7 +277,9 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
 			try {
 				facade.publishComment(review.getServer(), review.getPermId(), comment.getPermId());
 				// @todo - dirty hack - probably remote api should return new comment info
-				((GeneralCommentBean) comment).setDraft(false);
+				if (comment instanceof GeneralCommentBean) {
+					((GeneralCommentBean) comment).setDraft(false);
+				}
 				eventBroker.trigger(new GeneralCommentPublished(this, review, comment));
 			} catch (RemoteApiException e) {
 				IdeaHelper.handleRemoteApiException(project, e);
@@ -291,7 +293,9 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
 			try {
 				facade.publishComment(review.getServer(), review.getPermId(), comment.getPermId());
 				// @todo - dirty hack - probably remote api should return new comment info
-				((VersionedCommentBean) comment).setDraft(false);				
+				if (comment instanceof VersionedCommentBean) {
+					((VersionedCommentBean) comment).setDraft(false);
+				}
 				eventBroker.trigger(new VersionedCommentPublished(this, review, file, comment));
 			} catch (RemoteApiException e) {
 				IdeaHelper.handleRemoteApiException(project, e);

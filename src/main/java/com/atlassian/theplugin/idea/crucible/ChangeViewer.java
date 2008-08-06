@@ -141,7 +141,6 @@ public class ChangeViewer {
             private void paintGutterFragment(Editor editor, Graphics g, Rectangle r, TextAttributesKey diffAttributeKey) {
 
                 EditorGutterComponentEx gutter = ((EditorEx) editor).getGutterComponentEx();
-                //EditorGutter gutter = editor.getGutter();
                 g.setColor(editor.getColorsScheme().getAttributes(diffAttributeKey).getBackgroundColor());
                 int endX = gutter.getWhitespaceSeparatorOffset();
                 int x = r.x + r.width - 2;
