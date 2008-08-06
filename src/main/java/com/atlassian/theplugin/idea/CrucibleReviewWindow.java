@@ -26,24 +26,24 @@ import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.config.ContentPanel;
-import com.atlassian.theplugin.idea.crucible.CommentEditForm;
-import com.atlassian.theplugin.idea.crucible.CommentHighlighter;
-import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
-import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.idea.crucible.*;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.atlassian.theplugin.idea.crucible.events.*;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.diff.FileContent;
+import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.fileEditor.FileEditor;
+import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.fileEditor.FileEditorManager;
-import com.intellij.openapi.fileEditor.FileEditorLocation;
+import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.util.Key;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
@@ -222,21 +222,48 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
 
 		@Override
 		public void focusOnLineCommentEvent(final ReviewData review, final CrucibleFileInfo file,
-				final VersionedComment comment) {
+				final VersionedComment comment, final boolean openIfClosed) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
-					FileEditor[] editors = FileEditorManager.getInstance(project).getAllEditors();
-					for (FileEditor editor : editors) {
-						ReviewData mr = editor.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
-						CrucibleFileInfo mf = editor.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
+					Editor[] editors = EditorFactory.getInstance().getAllEditors();
+					for (Editor editor : editors) {
+						final ReviewData mr = editor.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
+						final CrucibleFileInfo mf = editor.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
 						if (mr != null && mf != null) {
-							if (review.equals(mr) && file.equals(mf)) {
-								// focus on comment
-								FileEditorLocation location = editor.getCurrentLocation();
+							if (review.getPermId().equals(mr.getPermId()) && file.getPermId().equals(mf.getPermId())) {
+								openAndPositionFile(review, file, comment);
+								return;
 							}
 						}
-
 					}
+					if (openIfClosed) {
+						openAndPositionFile(review, file, comment);
+					}
+				}
+			});
+		}
+
+		private void openAndPositionFile(final ReviewData review, final CrucibleFileInfo file, final VersionedComment comment) {
+			VcsIdeaHelper.openFileWithDiffs(project
+					, file.getFileDescriptor().getAbsoluteUrl()
+					, file.getOldFileDescriptor().getRevision()
+					, file.getFileDescriptor().getRevision()
+					, comment.getToStartLine() - 1
+					, 0
+					, new VcsIdeaHelper.OpenDiffAction() {
+
+				public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile) {
+					FileEditorManager fem = FileEditorManager.getInstance(project);
+					Editor editor = fem.openTextEditor(displayFile, false);
+					if (editor == null) {
+						return;
+					}
+					Document displayDocument = new FileContent(project, displayFile.getFile())
+							.getDocument();
+					Document referenceDocument = new FileContent(project, referenceFile).getDocument();
+					new ChangeViewer(project, editor, referenceDocument, displayDocument)
+							.highlightChangesInEditor();
+					CommentHighlighter.highlightCommentsInEditor(project, editor, review, file);
 				}
 			});
 		}
