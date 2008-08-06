@@ -339,7 +339,7 @@ public final class VcsIdeaHelper {
 	public static void openFileWithDiffs(final Project project, String filePath, @NotNull final String fileRevision,
 			final String toRevision,
 			final int line, final int col, @Nullable final OpenDiffAction action) {
-
+		                             ?
 		VirtualFile baseDir = project.getBaseDir();
 		String baseUrl = getRepositoryUrlForFile(baseDir);
 
@@ -355,7 +355,8 @@ public final class VcsIdeaHelper {
 			} else {
 				ApplicationManager.getApplication().invokeLater(new Runnable() {
 					public void run() {
-						Messages.showErrorDialog(project, "Your project does not contain requested file. Please update before review",
+						Messages.showErrorDialog(project,
+								"Your project does not contain requested file. Please update before review",
 								"Project out of date");
 					}
 				});
