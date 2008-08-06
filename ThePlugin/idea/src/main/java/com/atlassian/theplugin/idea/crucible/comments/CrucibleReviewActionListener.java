@@ -122,7 +122,8 @@ public class CrucibleReviewActionListener {
 			final VersionedComment comment) {
 	}
 
-	public void focusOnLineCommentEvent(final ReviewData review, final CrucibleFileInfo file, final VersionedComment comment) {
+	public void focusOnLineCommentEvent(final ReviewData review, final CrucibleFileInfo file, final VersionedComment comment,
+			final boolean openIfClosed) {
 	}
 
 	public void aboutToPublishGeneralComment(final ReviewData review, final GeneralComment comment) {

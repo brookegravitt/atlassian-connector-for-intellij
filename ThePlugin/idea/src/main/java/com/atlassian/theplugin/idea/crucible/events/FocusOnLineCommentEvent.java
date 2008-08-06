@@ -16,16 +16,18 @@ public class FocusOnLineCommentEvent extends CrucibleEvent {
 	private ReviewData review;
 	private CrucibleFileInfo file;
 	private VersionedComment comment;
+	private boolean openIfClosed;
 
 	public FocusOnLineCommentEvent(final CrucibleReviewActionListener caller, final ReviewData review,
-			final CrucibleFileInfo file, final VersionedComment comment) {
+			final CrucibleFileInfo file, final VersionedComment comment, boolean openIfClosed) {
 		super(caller);
 		this.review = review;
 		this.file = file;
 		this.comment = comment;
+		this.openIfClosed = openIfClosed;
 	}
 
 	protected void notify(final CrucibleReviewActionListener listener) {
-		listener.focusOnLineCommentEvent(review, file, comment);
+		listener.focusOnLineCommentEvent(review, file, comment, openIfClosed);
 	}
 }

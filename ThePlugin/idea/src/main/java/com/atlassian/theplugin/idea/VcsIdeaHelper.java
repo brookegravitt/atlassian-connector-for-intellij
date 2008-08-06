@@ -19,8 +19,6 @@ package com.atlassian.theplugin.idea;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.diff.DiffContent;
-import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
@@ -32,7 +30,6 @@ import com.intellij.openapi.vcs.diff.DiffProvider;
 import com.intellij.openapi.vcs.history.VcsFileRevision;
 import com.intellij.openapi.vcs.history.VcsRevisionNumber;
 import com.intellij.openapi.vcs.vfs.AbstractVcsVirtualFile;
-import com.intellij.openapi.vcs.vfs.ContentRevisionVirtualFile;
 import com.intellij.openapi.vcs.vfs.VcsVirtualFile;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -40,8 +37,9 @@ import com.intellij.vcsUtil.VcsUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.UnsupportedEncodingException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public final class VcsIdeaHelper {
 
@@ -98,71 +96,40 @@ public final class VcsIdeaHelper {
 		}
 	}
 
-	public static List<VcsFileRevision> getFileRevisions(VirtualFile vFile, List<String> revisions) {
-		List<VcsFileRevision> allRevisions;
-		try {
-			allRevisions = getFileHistory(vFile);
-		} catch (VcsException e) {
-			return Collections.emptyList();
-		}
-		List<VcsFileRevision> returnRevision = new ArrayList<VcsFileRevision>(revisions.size());
-		for (VcsFileRevision allRevision : allRevisions) {
-			String rev = allRevision.getRevisionNumber().asString();
-			for (String revision : revisions) {
-				if (revision.equals(rev)) {
-					returnRevision.add(allRevision);
-				}
-			}
-		}
-		return returnRevision;
+	private static String getFileCacheKey(VirtualFile file, String revision) {
+		return revision + ":" + file.getPath();
 	}
 
-	public static DiffContent getFileRevisionContent(VirtualFile vFile, VcsFileRevision revNumber) {
-		AbstractVcs vcs = ProjectLevelVcsManager.getInstance(IdeaHelper.getCurrentProject()).getVcsFor(vFile);
-		VcsRevisionNumber rev = revNumber.getRevisionNumber();
-		try {
-			return com.intellij.openapi.diff.SimpleContent.fromBytes(vcs.getDiffProvider()
-					.createFileContent(rev, vFile).getContent().getBytes(), vFile.getCharset().name(), vFile.getFileType());
-		} catch (UnsupportedEncodingException e) {
-			// nothing to do
-		} catch (VcsException e) {
-			// nothing to do
-		}
-		return null;
-	}
-
-	@Nullable
-	public static AbstractVcsVirtualFile getVcsVirtualFile(Project project, VirtualFile virtualFile,
-			String revision, boolean loadLazily) throws VcsException {
-		findOpenFile(project, virtualFile, revision);
+	private static AbstractVcsVirtualFile getFileFromCache(VirtualFile virtualFile, String revision) {
 		String key = getFileCacheKey(virtualFile, revision);
 		if (fetchedFiles.containsKey(key)) {
 			return fetchedFiles.get(key);
+		} else {
+			return null;
+		}
+	}
+
+	private static void putFileInfoCache(AbstractVcsVirtualFile file, VirtualFile virtualFile, String revision) {
+		String key = getFileCacheKey(virtualFile, revision);
+		fetchedFiles.put(key, file);
+	}
+
+	@Nullable
+	private static AbstractVcsVirtualFile getVcsVirtualFile(Project project, VirtualFile virtualFile,
+			String revision, boolean loadLazily) throws VcsException {
+		AbstractVcsVirtualFile vcvf = getFileFromCache(virtualFile, revision);
+		if (vcvf != null) {
+			return vcvf;
 		} else {
 			AbstractVcs vcs = VcsUtil.getVcsFor(project, virtualFile);
 			if (vcs == null) {
 				return null;
 			}
 			VcsRevisionNumber vcsRevisionNumber = vcs.parseRevisionNumber(revision);
-			AbstractVcsVirtualFile vcvf = getVcsVirtualFileImpl2(virtualFile, vcs, vcsRevisionNumber, loadLazily);
-			fetchedFiles.put(key, vcvf);
+			vcvf = getVcsVirtualFileImpl2(virtualFile, vcs, vcsRevisionNumber, loadLazily);
+			putFileInfoCache(vcvf, virtualFile, revision);
 			return vcvf;
 		}
-	}
-
-	@Nullable
-	private static AbstractVcsVirtualFile getVcsVirtualFileImpl(VirtualFile virtualFile, AbstractVcs vcs,
-			VcsRevisionNumber vcsRevisionNumber, boolean loadLazily) throws VcsException {
-
-		ContentRevision contentRevision = vcs.getDiffProvider().createFileContent(vcsRevisionNumber, virtualFile);
-		if (contentRevision == null) {
-			return null;
-		}
-		if (loadLazily == false) {
-			// this operation is typically quite costly
-			contentRevision.getContent();
-		}
-		return ContentRevisionVirtualFile.create(contentRevision);
 	}
 
 	@Nullable
@@ -181,17 +148,8 @@ public final class VcsIdeaHelper {
 			// this operation is typically quite costly
 			contentRevision.getContent();
 		}
-		//ContentRevisionVirtualFile vcvf = ContentRevisionVirtualFile.create(contentRevision);
 		return new VcsVirtualFile(contentRevision.getFile().getPath(), contentRevision.getContent().getBytes(),
 				vcsRevisionNumber.asString(), virtualFile.getFileSystem());
-	}
-
-
-	public static AbstractVcsVirtualFile getVcsVirtualFile(Project project, VirtualFile virtualFile,
-			VcsRevisionNumber vcsRevisionNumber, boolean loadLazily) throws VcsException {
-
-		AbstractVcs vcs = VcsUtil.getVcsFor(project, virtualFile);
-		return getVcsVirtualFileImpl(virtualFile, vcs, vcsRevisionNumber, loadLazily);
 	}
 
 	/**
@@ -204,8 +162,14 @@ public final class VcsIdeaHelper {
 	 * @param column	  column to go to
 	 * @param action
 	 */
-	public static void fetchAndOpenFile(final Project project, final String revision, @NotNull final VirtualFile virtualFile,
+	private static void fetchAndOpenFile(final Project project, final String revision, @NotNull final VirtualFile virtualFile,
 			final int line, final int column, @Nullable final OpenFileDescriptorAction action) {
+		AbstractVcsVirtualFile file = getFileFromCache(virtualFile, revision);
+		if (file != null) {
+			OpenFileDescriptor fileDescriptor = new OpenFileDescriptor(project, file, line, column);
+			action.run(fileDescriptor);
+			return;
+		}
 
 		final String niceFileMessage = virtualFile.getName() + " (rev: " + revision + ") from VCS";
 		new Task.Backgroundable(project, "Fetching file " + niceFileMessage, false) {
@@ -256,9 +220,18 @@ public final class VcsIdeaHelper {
 	 * @param column	   column to go to
 	 * @param action
 	 */
-	public static void fetchAndOpenFileWithDiffs(final Project project, final String fromRevision, final String toRevision,
+	private static void fetchAndOpenFileWithDiffs(final Project project, final String fromRevision, final String toRevision,
 			@NotNull final VirtualFile virtualFile,
 			final int line, final int column, @Nullable final OpenDiffAction action) {
+		AbstractVcsVirtualFile referenceVirtualFile = getFileFromCache(virtualFile, fromRevision);
+		AbstractVcsVirtualFile displayVirtualFile = getFileFromCache(virtualFile, toRevision);
+
+		if (referenceVirtualFile != null
+				&& displayVirtualFile != null) {
+			OpenFileDescriptor displayDescriptor = new OpenFileDescriptor(project, displayVirtualFile, line, column);
+			action.run(displayDescriptor, referenceVirtualFile);
+			return;
+		}
 
 		final String niceFileMessage = virtualFile.getName() + " (rev: " + fromRevision + ", " + toRevision + ") from VCS";
 		new Task.Backgroundable(project, "Fetching files " + niceFileMessage, false) {
@@ -346,6 +319,7 @@ public final class VcsIdeaHelper {
 			String relUrl = filePath.substring(baseUrl.length());
 			final VirtualFile vfl = VfsUtil.findRelativeFile(relUrl, baseDir);
 			if (vfl != null) {
+
 				ApplicationManager.getApplication().invokeLater(new Runnable() {
 					public void run() {
 						fetchAndOpenFileWithDiffs(project, fileRevision, toRevision, vfl, line, col, action);
@@ -374,29 +348,6 @@ public final class VcsIdeaHelper {
 				fetchAndOpenFile(project, fileRevision, virtualFile, line, col, action);
 			}
 		});
-	}
-
-	private static String getFileCacheKey(VirtualFile file, String revision) {
-		return revision + ":" + file.getPath();
-	}
-
-	@Nullable
-	private static VirtualFile findOpenFile(Project project, VirtualFile virtualFile, String fileRevision) {
-		final VirtualFile[] openFiles = FileEditorManager.getInstance(project).getOpenFiles();
-		if (virtualFile != null) {
-			for (VirtualFile file : openFiles) {
-				if (virtualFile.getPath().equals(file.getPath())) {
-					if (file instanceof VcsVirtualFile) {
-						VcsVirtualFile vcsVirtualFile = (VcsVirtualFile) file;
-						if (fileRevision.equals(vcsVirtualFile.getRevision())) {
-							fetchedFiles.put(getFileCacheKey(vcsVirtualFile, fileRevision), vcsVirtualFile);
-							return file;
-						}
-					}
-				}
-			}
-		}
-		return null;
 	}
 
 	public interface OpenFileDescriptorAction {

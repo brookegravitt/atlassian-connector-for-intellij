@@ -116,15 +116,29 @@ public class CommentTreePanel extends JPanel {
 		VersionedCommentTreeNode commentNode = new VersionedCommentTreeNode(review, file, versionedComment,
 				new AtlassianClickAction() {
 					public void execute(final AtlassianTreeNode node, final int noOfClicks) {
+						VersionedCommentTreeNode anode = (VersionedCommentTreeNode) node;
+						CrucibleEvent event;
 						switch (noOfClicks) {
 							case 1:
-								VersionedCommentTreeNode anode = (VersionedCommentTreeNode) node;
-								CrucibleEvent event;
 								if (anode.getComment().isFromLineInfo()
 										|| anode.getComment().isToLineInfo()) {
 									event = new FocusOnLineCommentEvent(crucibleAgent,
 											anode.getReview(),
+											anode.getFile(), anode.getComment(), false);
+								} else {
+									event = new FocusOnVersionedCommentEvent(crucibleAgent,
+											anode.getReview(),
 											anode.getFile(), anode.getComment());
+								}
+								IdeaHelper.getReviewActionEventBroker().trigger(
+										event);
+								break;
+							case 2:
+								if (anode.getComment().isFromLineInfo()
+										|| anode.getComment().isToLineInfo()) {
+									event = new FocusOnLineCommentEvent(crucibleAgent,
+											anode.getReview(),
+											anode.getFile(), anode.getComment(), true);
 								} else {
 									event = new FocusOnVersionedCommentEvent(crucibleAgent,
 											anode.getReview(),

@@ -126,7 +126,7 @@ public final class ReviewItemTreePanel extends JPanel {
 
 		@Override
 		public void focusOnLineCommentEvent(final ReviewData review, final CrucibleFileInfo file,
-				final VersionedComment comment) {
+				final VersionedComment comment, final boolean openIfClosed) {
 			focusOnFile(review, file);
 		}
 
