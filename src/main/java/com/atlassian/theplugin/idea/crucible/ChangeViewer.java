@@ -48,382 +48,386 @@ import java.util.ListIterator;
  * To change this template use File | Settings | File Templates.
  */
 public class ChangeViewer {
-    private static final Color VERSIONED_COMMENT_BACKGROUND_COLOR = Color.LIGHT_GRAY;
-    private static final Color VERSIONED_COMMENT_STRIP_MARK_COLOR = Color.ORANGE;
+	private static final Color VERSIONED_COMMENT_BACKGROUND_COLOR = Color.LIGHT_GRAY;
+	private static final Color VERSIONED_COMMENT_STRIP_MARK_COLOR = Color.ORANGE;
 
-    private Project project;
-    private Editor editor;
-    private Document referenceDoc;
-    private Document displayDoc;
-    private List<Range> ranges;
-    private int highlighterCount = 0;
-	private static final int TWO_PIXEL = 2;
+	private Project project;
+	private Editor editor;
+	private Document referenceDoc;
+	private Document displayDoc;
+	private List<Range> ranges;
+	private int highlighterCount = 0;
+	private static final int REFERENCE_TEXT_RANGE = 2;
+	private static final int TWO_PIXEL = REFERENCE_TEXT_RANGE;
 	private static final int THREE_PIXEL = 3;
 	private static final int FOUR_PIXEL = 4;
-	private static final int INSERTED_RANGE = 2;
+	private static final int INSERTED_RANGE = REFERENCE_TEXT_RANGE;
 	private static final int DELETED_RANGE = 3;
 	private static final int MODIFIED_RANGE = 1;
+	private static final int DISPLAY_TEXT_RANGE = 3;
 
 
 	public ChangeViewer(Project project, Editor editor, Document referenceDoc, Document displayDoc) {
-        this.project = project;
-        this.editor = editor;
-        this.referenceDoc = referenceDoc;
-        this.displayDoc = displayDoc;
-    }
+		this.project = project;
+		this.editor = editor;
+		this.referenceDoc = referenceDoc;
+		this.displayDoc = displayDoc;
+	}
 
-    public Project getProject() {
-        return project;
-    }
+	public Project getProject() {
+		return project;
+	}
 
-    private List<Range> getRanges() {
-        return this.ranges;
-    }
+	private List<Range> getRanges() {
+		return this.ranges;
+	}
 
-    public void highlightChangesInEditor() {
-        if (editor != null) {
-            ranges = new RangesBuilder(displayDoc, referenceDoc).getRanges();
-            for (Range range : ranges) {
-                if (!range.hasHighlighter()) {
-                    range.setHighlighter(getRangeHighligter(range));
-                }
-            }
-        }
-    }
+	public void highlightChangesInEditor() {
+		if (editor != null) {
+			ranges = new RangesBuilder(displayDoc, referenceDoc).getRanges();
+			for (Range range : ranges) {
+				if (!range.hasHighlighter()) {
+					range.setHighlighter(getRangeHighligter(range));
+				}
+			}
+		}
+	}
 
-    public void highlightCommentsInEditor(List<VersionedComment> fileVersionedComments) {
-        if (editor != null) {
-            TextAttributes textAttributes = new TextAttributes();
-            textAttributes.setBackgroundColor(VERSIONED_COMMENT_BACKGROUND_COLOR);
-            for (VersionedComment comment : fileVersionedComments) {
-                for (int i = comment.getToStartLine() - 1; i < comment.getToEndLine(); i++) {
-                    RangeHighlighter rh = editor.getDocument().getMarkupModel(project).addLineHighlighter(
-                            i, HighlighterLayer.SELECTION, textAttributes);
+	public void highlightCommentsInEditor(List<VersionedComment> fileVersionedComments) {
+		if (editor != null) {
+			TextAttributes textAttributes = new TextAttributes();
+			textAttributes.setBackgroundColor(VERSIONED_COMMENT_BACKGROUND_COLOR);
+			for (VersionedComment comment : fileVersionedComments) {
+				for (int i = comment.getToStartLine() - 1; i < comment.getToEndLine(); i++) {
+					RangeHighlighter rh = editor.getDocument().getMarkupModel(project).addLineHighlighter(
+							i, HighlighterLayer.SELECTION, textAttributes);
 
-                    rh.setErrorStripeTooltip(comment.getAuthor().getDisplayName() + ":" + comment.getMessage());
-                    rh.setErrorStripeMarkColor(VERSIONED_COMMENT_STRIP_MARK_COLOR);
-                }
-            }
-        }
-    }
+					rh.setErrorStripeTooltip(comment.getAuthor().getDisplayName() + ":" + comment.getMessage());
+					rh.setErrorStripeMarkColor(VERSIONED_COMMENT_STRIP_MARK_COLOR);
+				}
+			}
+		}
+	}
 
-    private synchronized RangeHighlighter getRangeHighligter(Range range) {
-        int j = range.getOffset1() < displayDoc.getLineCount() ? displayDoc.getLineStartOffset(range.getOffset1()) : displayDoc
-                .getTextLength();
-        int k = range.getOffset2() < displayDoc.getLineCount() ? displayDoc.getLineStartOffset(range.getOffset2()) : displayDoc
-                .getTextLength();
+	private synchronized RangeHighlighter getRangeHighligter(Range range) {
+		int j = range.getOffset1() < displayDoc.getLineCount() ? displayDoc.getLineStartOffset(range.getOffset1()) : displayDoc
+				.getTextLength();
+		int k = range.getOffset2() < displayDoc.getLineCount() ? displayDoc.getLineStartOffset(range.getOffset2()) : displayDoc
+				.getTextLength();
 
-        RangeHighlighter rangehighlighter = displayDoc.getMarkupModel(project)
-                .addRangeHighlighter(j, k, HighlighterLayer.FIRST - 1, null, HighlighterTargetArea.LINES_IN_RANGE);
-        highlighterCount++;
-        rangehighlighter.setLineMarkerRenderer(createRenderer(range));
-        rangehighlighter.setEditorFilter(MarkupEditorFilterFactory.createIsNotDiffFilter());
-        return rangehighlighter;
-    }
+		RangeHighlighter rangehighlighter = displayDoc.getMarkupModel(project)
+				.addRangeHighlighter(j, k, HighlighterLayer.FIRST - 1, null, HighlighterTargetArea.LINES_IN_RANGE);
+		highlighterCount++;
+		rangehighlighter.setLineMarkerRenderer(createRenderer(range));
+		rangehighlighter.setEditorFilter(MarkupEditorFilterFactory.createIsNotDiffFilter());
+		return rangehighlighter;
+	}
 
-    private LineMarkerRenderer createRenderer(final Range range) {
-        return new MyActiveGutterRenderer(range);
-    }
+	private LineMarkerRenderer createRenderer(final Range range) {
+		return new MyActiveGutterRenderer(range);
+	}
 
-    private Range getNextRange(Range range) {
-        int j = ranges.indexOf(range);
-        if (j == ranges.size() - 1) {
-            return null;
-        } else {
-            return ranges.get(j + 1);
-        }
-    }
+	private Range getNextRange(Range range) {
+		int j = ranges.indexOf(range);
+		if (j == ranges.size() - 1) {
+			return null;
+		} else {
+			return ranges.get(j + 1);
+		}
+	}
 
-    private Range getPrevRange(Range range) {
-        int j = ranges.indexOf(range);
-        if (j == 0) {
-            return null;
-        } else {
-            return ranges.get(j - 1);
-        }
-    }
+	private Range getPrevRange(Range range) {
+		int j = ranges.indexOf(range);
+		if (j == 0) {
+			return null;
+		} else {
+			return ranges.get(j - 1);
+		}
+	}
 
-    public Range getNextRange(int j) {
-        for (Iterator iterator = getRanges().iterator(); iterator.hasNext();) {
-            Range range = (Range) iterator.next();
-            if (range.getOffset2() >= j) {
-                return range;
-            }
-        }
+	public Range getNextRange(int j) {
+		for (Iterator iterator = getRanges().iterator(); iterator.hasNext();) {
+			Range range = (Range) iterator.next();
+			if (range.getOffset2() >= j) {
+				return range;
+			}
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    public Range getPrevRange(int j) {
-        for (ListIterator listiterator = getRanges().listIterator(getRanges().size()); listiterator.hasPrevious();) {
-            Range range = (Range) listiterator.previous();
-            if (range.getOffset1() <= j) {
-                return range;
-            }
-        }
+	public Range getPrevRange(int j) {
+		for (ListIterator listiterator = getRanges().listIterator(getRanges().size()); listiterator.hasPrevious();) {
+			Range range = (Range) listiterator.previous();
+			if (range.getOffset1() <= j) {
+				return range;
+			}
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    public void moveToRange(final Range range, final Editor anEditor) {
-        final int firstOffset = getDisplayDocument()
-                .getLineStartOffset(Math.min(range.getOffset1(), getDisplayDocument().getLineCount() - 1));
-        anEditor.getCaretModel().moveToOffset(firstOffset);
-        anEditor.getScrollingModel().scrollToCaret(ScrollType.CENTER);
-        anEditor.getScrollingModel().runActionOnScrollingFinished(new Runnable() {
+	public void moveToRange(final Range range, final Editor anEditor) {
+		final int firstOffset = getDisplayDocument()
+				.getLineStartOffset(Math.min(range.getOffset1(), getDisplayDocument().getLineCount() - 1));
+		anEditor.getCaretModel().moveToOffset(firstOffset);
+		anEditor.getScrollingModel().scrollToCaret(ScrollType.CENTER);
+		anEditor.getScrollingModel().runActionOnScrollingFinished(new Runnable() {
 
-            public void run() {
-                java.awt.Point point = anEditor.visualPositionToXY(anEditor.offsetToVisualPosition(firstOffset));
-                JComponent jcomponent = anEditor.getContentComponent();
-                javax.swing.JLayeredPane jlayeredpane = jcomponent.getRootPane().getLayeredPane();
-                point = SwingUtilities.convertPoint(jcomponent, 0, point.y, jlayeredpane);
-                showActiveHint(range, anEditor, point);
-            }
-        });
-    }
-
-
-    private String getReferenceVirtualFileName() {
-        VirtualFile virtualfile = getReferenceVirtualFile();
-        if (virtualfile == null) {
-            return "";
-        } else {
-            return virtualfile.getName();
-        }
-    }
-
-    public Document getDisplayDocument() {
-        return displayDoc;
-    }
-
-    public Document getReferenceDocument() {
-        return referenceDoc;
-    }
-
-    public VirtualFile getReferenceVirtualFile() {
-        return FileDocumentManager.getInstance().getFile(getReferenceDocument());
-    }
-
-    public VirtualFile getDisplayVirtualFile() {
-        return FileDocumentManager.getInstance().getFile(getDisplayDocument());
-    }
-
-    private TextRange getDisplayTextRange(Range range) {
-        return getTextRange(range.getType(), range.getOffset1(), range.getOffset2(), (byte) 3, getDisplayDocument());
-    }
-
-    private TextRange getReferenceTextRange(Range range) {
-        return getTextRange(range.getType(), range.getUOffset1(), range.getUOffset2(), (byte) 2, getReferenceDocument());
-    }
+			public void run() {
+				java.awt.Point point = anEditor.visualPositionToXY(anEditor.offsetToVisualPosition(firstOffset));
+				JComponent jcomponent = anEditor.getContentComponent();
+				javax.swing.JLayeredPane jlayeredpane = jcomponent.getRootPane().getLayeredPane();
+				point = SwingUtilities.convertPoint(jcomponent, 0, point.y, jlayeredpane);
+				showActiveHint(range, anEditor, point);
+			}
+		});
+	}
 
 
-    private TextRange getTextRange(byte byte0, int j, int k, byte byte1, Document document) {
-        if (byte0 == byte1) {
-            int l;
-            if (j == 0) {
-                l = 0;
-            } else {
-                l = document.getLineEndOffset(j - 1);
-            }
-            return new TextRange(l, l);
-        }
-        int i1 = document.getLineStartOffset(j);
-        int j1 = document.getLineEndOffset(k - 1);
-        if (i1 > 0) {
-            i1--;
-            j1--;
-        }
-        return new TextRange(i1, j1);
-    }
+	private String getReferenceVirtualFileName() {
+		VirtualFile virtualfile = getReferenceVirtualFile();
+		if (virtualfile == null) {
+			return "";
+		} else {
+			return virtualfile.getName();
+		}
+	}
+
+	public Document getDisplayDocument() {
+		return displayDoc;
+	}
+
+	public Document getReferenceDocument() {
+		return referenceDoc;
+	}
+
+	public VirtualFile getReferenceVirtualFile() {
+		return FileDocumentManager.getInstance().getFile(getReferenceDocument());
+	}
+
+	public VirtualFile getDisplayVirtualFile() {
+		return FileDocumentManager.getInstance().getFile(getDisplayDocument());
+	}
+
+	private TextRange getDisplayTextRange(Range range) {
+		return getTextRange(range.getType(), range.getOffset1(), range.getOffset2(), (byte) DISPLAY_TEXT_RANGE,
+				getDisplayDocument());
+	}
+
+	private TextRange getReferenceTextRange(Range range) {
+		return getTextRange(range.getType(), range.getUOffset1(), range.getUOffset2(), (byte) REFERENCE_TEXT_RANGE,
+				getReferenceDocument());
+	}
 
 
-    public void showActiveHint(Range range, final Editor anEditor, Point point) {
+	private TextRange getTextRange(byte byte0, int j, int k, byte byte1, Document document) {
+		if (byte0 == byte1) {
+			int l;
+			if (j == 0) {
+				l = 0;
+			} else {
+				l = document.getLineEndOffset(j - 1);
+			}
+			return new TextRange(l, l);
+		}
+		int i1 = document.getLineStartOffset(j);
+		int j1 = document.getLineEndOffset(k - 1);
+		if (i1 > 0) {
+			i1--;
+			j1--;
+		}
+		return new TextRange(i1, j1);
+	}
 
-        DefaultActionGroup group = new DefaultActionGroup();
 
-        final AnAction globalShowNextAction = ActionManager.getInstance().getAction("VcsShowNextChangeMarker");
-        final AnAction globalShowPrevAction = ActionManager.getInstance().getAction("VcsShowPrevChangeMarker");
+	public void showActiveHint(Range range, final Editor anEditor, Point point) {
 
-        final ShowPrevChangeMarkerAction localShowPrevAction = new ShowPrevChangeMarkerAction(getPrevRange(range), this,
-                anEditor);
-        final ShowNextChangeMarkerAction localShowNextAction = new ShowNextChangeMarkerAction(getNextRange(range), this,
-                anEditor);
+		DefaultActionGroup group = new DefaultActionGroup();
 
-        JComponent editorComponent = anEditor.getComponent();
+		final AnAction globalShowNextAction = ActionManager.getInstance().getAction("VcsShowNextChangeMarker");
+		final AnAction globalShowPrevAction = ActionManager.getInstance().getAction("VcsShowPrevChangeMarker");
 
-        localShowNextAction.registerCustomShortcutSet(localShowNextAction.getShortcutSet(), editorComponent);
-        localShowPrevAction.registerCustomShortcutSet(localShowPrevAction.getShortcutSet(), editorComponent);
+		final ShowPrevChangeMarkerAction localShowPrevAction = new ShowPrevChangeMarkerAction(getPrevRange(range), this,
+				anEditor);
+		final ShowNextChangeMarkerAction localShowNextAction = new ShowNextChangeMarkerAction(getNextRange(range), this,
+				anEditor);
 
-        group.add(localShowPrevAction);
-        group.add(localShowNextAction);
+		JComponent editorComponent = anEditor.getComponent();
 
-        localShowNextAction.copyFrom(globalShowNextAction);
-        localShowPrevAction.copyFrom(globalShowPrevAction);
+		localShowNextAction.registerCustomShortcutSet(localShowNextAction.getShortcutSet(), editorComponent);
+		localShowPrevAction.registerCustomShortcutSet(localShowPrevAction.getShortcutSet(), editorComponent);
 
-        group.add(new ShowDiffAction(this, range));
+		group.add(localShowPrevAction);
+		group.add(localShowNextAction);
 
-        final List<AnAction> actionList = (List<AnAction>) editorComponent.getClientProperty(AnAction.ourClientProperty);
+		localShowNextAction.copyFrom(globalShowNextAction);
+		localShowPrevAction.copyFrom(globalShowPrevAction);
 
-        actionList.remove(globalShowPrevAction);
-        actionList.remove(globalShowNextAction);
+		group.add(new ShowDiffAction(this, range));
 
-        JComponent toolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.FILEHISTORY_VIEW_TOOLBAR, group, true)
-                .getComponent();
+		final List<AnAction> actionList = (List<AnAction>) editorComponent.getClientProperty(AnAction.ourClientProperty);
 
-        final Color background = ((EditorEx) anEditor).getBackroundColor();
-        final Color foreground = anEditor.getColorsScheme().getColor(EditorColors.CARET_COLOR);
-        toolbar.setBackground(background);
+		actionList.remove(globalShowPrevAction);
+		actionList.remove(globalShowNextAction);
 
-        toolbar.setBorder(
-                new SideBorder2(foreground, foreground, range.getType() != Range.INSERTED ? null : foreground, foreground, 1));
+		JComponent toolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.FILEHISTORY_VIEW_TOOLBAR, group, true)
+				.getComponent();
 
-        JPanel component = new JPanel(new BorderLayout());
-        component.setOpaque(false);
+		final Color background = ((EditorEx) anEditor).getBackroundColor();
+		final Color foreground = anEditor.getColorsScheme().getColor(EditorColors.CARET_COLOR);
+		toolbar.setBackground(background);
 
-        JPanel toolbarPanel = new JPanel(new BorderLayout());
-        toolbarPanel.setOpaque(false);
-        toolbarPanel.add(toolbar, BorderLayout.WEST);
-        component.add(toolbarPanel, BorderLayout.NORTH);
+		toolbar.setBorder(
+				new SideBorder2(foreground, foreground, range.getType() != Range.INSERTED ? null : foreground, foreground, 1));
 
-        if (range.getType() != Range.INSERTED) {
-            DocumentEx doc = (DocumentEx) referenceDoc;
-            EditorImpl uEditor = new EditorImpl(doc, true, project);
-            EditorHighlighter highlighter = HighlighterFactory
-                    .createHighlighter(project, getReferenceVirtualFileName());
-            uEditor.setHighlighter(highlighter);
+		JPanel component = new JPanel(new BorderLayout());
+		component.setOpaque(false);
 
-            EditorFragmentComponent editorFragmentComponent =
-                    EditorFragmentComponent
-                            .createEditorFragmentComponent(uEditor, range.getUOffset1(), range.getUOffset2(), false, false);
+		JPanel toolbarPanel = new JPanel(new BorderLayout());
+		toolbarPanel.setOpaque(false);
+		toolbarPanel.add(toolbar, BorderLayout.WEST);
+		component.add(toolbarPanel, BorderLayout.NORTH);
 
-            component.add(editorFragmentComponent, BorderLayout.CENTER);
-        }
+		if (range.getType() != Range.INSERTED) {
+			DocumentEx doc = (DocumentEx) referenceDoc;
+			EditorImpl uEditor = new EditorImpl(doc, true, project);
+			EditorHighlighter highlighter = HighlighterFactory
+					.createHighlighter(project, getReferenceVirtualFileName());
+			uEditor.setHighlighter(highlighter);
 
-        LightweightHint lightweightHint = new LightweightHint(component);
-        lightweightHint.addHintListener(new HintListener() {
-            public void hintHidden(EventObject event) {
-                actionList.remove(localShowPrevAction);
-                actionList.remove(localShowNextAction);
-                actionList.add(globalShowPrevAction);
-                actionList.add(globalShowNextAction);
-            }
-        });
+			EditorFragmentComponent editorFragmentComponent =
+					EditorFragmentComponent
+							.createEditorFragmentComponent(uEditor, range.getUOffset1(), range.getUOffset2(), false, false);
 
-        HintManager.getInstance()
-                .showEditorHint(lightweightHint, anEditor, point, HintManager.HIDE_BY_ANY_KEY | HintManager.HIDE_BY_TEXT_CHANGE
+			component.add(editorFragmentComponent, BorderLayout.CENTER);
+		}
+
+		LightweightHint lightweightHint = new LightweightHint(component);
+		lightweightHint.addHintListener(new HintListener() {
+			public void hintHidden(EventObject event) {
+				actionList.remove(localShowPrevAction);
+				actionList.remove(localShowNextAction);
+				actionList.add(globalShowPrevAction);
+				actionList.add(globalShowNextAction);
+			}
+		});
+
+		HintManager.getInstance()
+				.showEditorHint(lightweightHint, anEditor, point, HintManager.HIDE_BY_ANY_KEY | HintManager.HIDE_BY_TEXT_CHANGE
 						| HintManager.HIDE_BY_OTHER_HINT | HintManager.HIDE_BY_SCROLLING,
-                        -1, false);
-    }
+						-1, false);
+	}
 
-    private abstract class ShowChangeMarkerAction extends AbstractVcsAction {
-        protected Range range;
-        protected ChangeViewer highlighter;
-        protected Editor editor;
+	private abstract class ShowChangeMarkerAction extends AbstractVcsAction {
+		protected Range range;
+		protected ChangeViewer highlighter;
+		protected Editor editor;
 
-        protected abstract Range extractRange(ChangeViewer aHighlighter, int i, Editor anEditor);
+		protected abstract Range extractRange(ChangeViewer aHighlighter, int i, Editor anEditor);
 
-        public ShowChangeMarkerAction(final Range range, final ChangeViewer aHighlighter, final Editor anEditor) {
-            this.range = range;
-            this.highlighter = aHighlighter;
-            this.editor = anEditor;
-        }
+		public ShowChangeMarkerAction(final Range range, final ChangeViewer aHighlighter, final Editor anEditor) {
+			this.range = range;
+			this.highlighter = aHighlighter;
+			this.editor = anEditor;
+		}
 
-        protected boolean forceSyncUpdate(AnActionEvent anactionevent) {
-            return true;
-        }
+		protected boolean forceSyncUpdate(AnActionEvent anactionevent) {
+			return true;
+		}
 
-        private boolean checkPosition(VcsContext vcscontext) {
-            return range != null;
-        }
+		private boolean checkPosition(VcsContext vcscontext) {
+			return range != null;
+		}
 
-        protected void update(VcsContext vcscontext, Presentation presentation) {
-            presentation.setEnabled(checkPosition(vcscontext));
-        }
+		protected void update(VcsContext vcscontext, Presentation presentation) {
+			presentation.setEnabled(checkPosition(vcscontext));
+		}
 
-        protected void actionPerformed(VcsContext vcscontext) {
-            highlighter.moveToRange(range, editor);
-        }
-    }
+		protected void actionPerformed(VcsContext vcscontext) {
+			highlighter.moveToRange(range, editor);
+		}
+	}
 
-    private class ShowPrevChangeMarkerAction extends ShowChangeMarkerAction {
+	private class ShowPrevChangeMarkerAction extends ShowChangeMarkerAction {
 
-        public ShowPrevChangeMarkerAction(Range range, ChangeViewer aHighlighter, Editor anEditor) {
-            super(range, aHighlighter, anEditor);
-        }
+		public ShowPrevChangeMarkerAction(Range range, ChangeViewer aHighlighter, Editor anEditor) {
+			super(range, aHighlighter, anEditor);
+		}
 
-        protected Range extractRange(ChangeViewer aHighlighter, int i, Editor anEditor) {
-            return aHighlighter.getPrevRange(i);
-        }
-    }
+		protected Range extractRange(ChangeViewer aHighlighter, int i, Editor anEditor) {
+			return aHighlighter.getPrevRange(i);
+		}
+	}
 
-    private class ShowNextChangeMarkerAction extends ShowChangeMarkerAction {
+	private class ShowNextChangeMarkerAction extends ShowChangeMarkerAction {
 
-        public ShowNextChangeMarkerAction(Range range, ChangeViewer highlighter, Editor editor) {
-            super(range, highlighter, editor);
-        }
+		public ShowNextChangeMarkerAction(Range range, ChangeViewer highlighter, Editor editor) {
+			super(range, highlighter, editor);
+		}
 
-        protected Range extractRange(ChangeViewer aHighlighter, int i, Editor anEditor) {
-            return aHighlighter.getNextRange(i);
-        }
-    }
+		protected Range extractRange(ChangeViewer aHighlighter, int i, Editor anEditor) {
+			return aHighlighter.getNextRange(i);
+		}
+	}
 
-    private class ShowDiffAction extends AnAction {
-        protected final ChangeViewer myHighlighter;
-        protected final Range myRange;
+	private class ShowDiffAction extends AnAction {
+		protected final ChangeViewer myHighlighter;
+		protected final Range myRange;
 
-        public void update(final AnActionEvent e) {
-            e.getPresentation().setEnabled(checkModified() || checkDeleted());
+		public void update(final AnActionEvent e) {
+			e.getPresentation().setEnabled(checkModified() || checkDeleted());
 
-        }
+		}
 
-        private boolean checkDeleted() {
-            return myRange.getType() == DELETED_RANGE;
-        }
+		private boolean checkDeleted() {
+			return myRange.getType() == DELETED_RANGE;
+		}
 
-        private boolean checkModified() {
-            return myRange.getType() == MODIFIED_RANGE;
-        }
+		private boolean checkModified() {
+			return myRange.getType() == MODIFIED_RANGE;
+		}
 
-        public void actionPerformed(AnActionEvent anactionevent) {
-            DiffManager.getInstance().getDiffTool().show(prepareDiffRequest());
-        }
+		public void actionPerformed(AnActionEvent anactionevent) {
+			DiffManager.getInstance().getDiffTool().show(prepareDiffRequest());
+		}
 
-        private DiffRequest prepareDiffRequest() {
-            return new DiffRequest(myHighlighter.getProject()) {
+		private DiffRequest prepareDiffRequest() {
+			return new DiffRequest(myHighlighter.getProject()) {
 
-                public DiffContent[] getContents() {
-                    return (new DiffContent[]{
-                            getDiffContent(myHighlighter.getReferenceDocument(), myHighlighter.getReferenceTextRange(myRange),
+				public DiffContent[] getContents() {
+					return (new DiffContent[]{
+							getDiffContent(myHighlighter.getReferenceDocument(), myHighlighter.getReferenceTextRange(myRange),
 									myHighlighter.getReferenceVirtualFile()),
-                            getDiffContent(myHighlighter.getDisplayDocument(), myHighlighter.getDisplayTextRange(myRange),
+							getDiffContent(myHighlighter.getDisplayDocument(), myHighlighter.getDisplayTextRange(myRange),
 									myHighlighter.getDisplayVirtualFile())
-                    });
-                }
+					});
+				}
 
-                public String[] getContentTitles() {
-                    return (new String[]{
-                            VcsBundle.message("diff.content.title.up.to.date", new Object[0]),
-                            VcsBundle.message("diff.content.title.current.range", new Object[0])
-                    });
-                }
+				public String[] getContentTitles() {
+					return (new String[]{
+							VcsBundle.message("diff.content.title.up.to.date", new Object[0]),
+							VcsBundle.message("diff.content.title.current.range", new Object[0])
+					});
+				}
 
-                public String getWindowTitle() {
-                    return VcsBundle.message("dialog.title.diff.for.range", new Object[0]);
-                }
-            };
-        }
+				public String getWindowTitle() {
+					return VcsBundle.message("dialog.title.diff.for.range", new Object[0]);
+				}
+			};
+		}
 
-        private DiffContent getDiffContent(Document document, TextRange textrange, VirtualFile virtualfile) {
-            DocumentContent documentcontent = new DocumentContent(project, document);
-            return new FragmentContent(documentcontent, textrange, myHighlighter.getProject(), virtualfile);
-        }
+		private DiffContent getDiffContent(Document document, TextRange textrange, VirtualFile virtualfile) {
+			DocumentContent documentcontent = new DocumentContent(project, document);
+			return new FragmentContent(documentcontent, textrange, myHighlighter.getProject(), virtualfile);
+		}
 
-        public ShowDiffAction(ChangeViewer highlighter, Range range) {
-            super(VcsBundle.message("action.name.show.difference"), null, IconLoader.getIcon("/actions/diff.png"));
-            myHighlighter = highlighter;
-            myRange = range;
-        }
-    }
+		public ShowDiffAction(ChangeViewer highlighter, Range range) {
+			super(VcsBundle.message("action.name.show.difference"), null, IconLoader.getIcon("/actions/diff.png"));
+			myHighlighter = highlighter;
+			myRange = range;
+		}
+	}
 
 	private class MyActiveGutterRenderer implements ActiveGutterRenderer {
 		private final Range range;
