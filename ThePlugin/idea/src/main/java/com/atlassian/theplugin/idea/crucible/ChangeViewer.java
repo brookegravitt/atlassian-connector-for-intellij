@@ -122,64 +122,7 @@ public class ChangeViewer {
     }
 
     private LineMarkerRenderer createRenderer(final Range range) {
-        return new ActiveGutterRenderer() {
-
-            private TextAttributesKey getDiffColor(Range range) {
-                switch (range.getType()) {
-                    case INSERTED_RANGE:
-                        return DiffColors.DIFF_INSERTED;
-
-                    case DELETED_RANGE:
-                        return DiffColors.DIFF_DELETED;
-
-                    case MODIFIED_RANGE:
-                        return DiffColors.DIFF_MODIFIED;
-					default:
-						return null;
-				}
-            }
-
-            public void paint(Editor editor, Graphics g, Rectangle r) {
-                paintGutterFragment(editor, g, r, getDiffColor(range));
-
-            }
-
-            private void paintGutterFragment(Editor editor, Graphics g, Rectangle r, TextAttributesKey diffAttributeKey) {
-
-                EditorGutterComponentEx gutter = ((EditorEx) editor).getGutterComponentEx();
-                g.setColor(editor.getColorsScheme().getAttributes(diffAttributeKey).getBackgroundColor());
-                int endX = gutter.getWhitespaceSeparatorOffset();
-                int x = r.x + r.width - TWO_PIXEL;
-                int width = endX - x;
-                if (r.height > 0) {
-                    g.fillRect(x, r.y + TWO_PIXEL, width, r.height - FOUR_PIXEL);
-                    g.setColor(gutter.getFoldingColor(false));
-                    UIUtil.drawLine(g, x, r.y + TWO_PIXEL, x + width, r.y + TWO_PIXEL);
-                    UIUtil.drawLine(g, x, r.y + TWO_PIXEL, x, r.y + r.height - THREE_PIXEL);
-                    UIUtil.drawLine(g, x, r.y + r.height - THREE_PIXEL, x + width, r.y + r.height - THREE_PIXEL);
-                } else {
-                    int[] xPoints = new int[]{x,
-                            x,
-                            x + width - 1};
-                    int[] yPoints = new int[]{r.y - FOUR_PIXEL,
-                            r.y + FOUR_PIXEL,
-                            r.y};
-                    g.fillPolygon(xPoints, yPoints, THREE_PIXEL);
-
-                    g.setColor(gutter.getFoldingColor(false));
-                    g.drawPolygon(xPoints, yPoints, THREE_PIXEL);
-                }
-            }
-
-            public void doAction(Editor editor, MouseEvent e) {
-                e.consume();
-                JComponent comp = (JComponent) e.getComponent(); // shall be EditorGutterComponent, cast is safe.
-                JLayeredPane layeredPane = comp.getRootPane().getLayeredPane();
-                Point point = SwingUtilities
-                        .convertPoint(comp, ((EditorEx) editor).getGutterComponentEx().getWidth(), e.getY(), layeredPane);
-                showActiveHint(range, editor, point);
-            }
-        };
+        return new MyActiveGutterRenderer(range);
     }
 
     private Range getNextRange(Range range) {
@@ -481,4 +424,68 @@ public class ChangeViewer {
             myRange = range;
         }
     }
+
+	private class MyActiveGutterRenderer implements ActiveGutterRenderer {
+		private final Range range;
+
+		public MyActiveGutterRenderer(final Range range) {
+			this.range = range;
+		}
+
+		private TextAttributesKey getDiffColor(Range range) {
+			switch (range.getType()) {
+				case INSERTED_RANGE:
+					return DiffColors.DIFF_INSERTED;
+
+				case DELETED_RANGE:
+					return DiffColors.DIFF_DELETED;
+
+				case MODIFIED_RANGE:
+					return DiffColors.DIFF_MODIFIED;
+				default:
+					return null;
+			}
+		}
+
+		public void paint(Editor editor, Graphics g, Rectangle r) {
+			paintGutterFragment(editor, g, r, getDiffColor(range));
+
+		}
+
+		private void paintGutterFragment(Editor editor, Graphics g, Rectangle r, TextAttributesKey diffAttributeKey) {
+
+			EditorGutterComponentEx gutter = ((EditorEx) editor).getGutterComponentEx();
+			g.setColor(editor.getColorsScheme().getAttributes(diffAttributeKey).getBackgroundColor());
+			int endX = gutter.getWhitespaceSeparatorOffset();
+			int x = r.x + r.width - TWO_PIXEL;
+			int width = endX - x;
+			if (r.height > 0) {
+				g.fillRect(x, r.y + TWO_PIXEL, width, r.height - FOUR_PIXEL);
+				g.setColor(gutter.getFoldingColor(false));
+				UIUtil.drawLine(g, x, r.y + TWO_PIXEL, x + width, r.y + TWO_PIXEL);
+				UIUtil.drawLine(g, x, r.y + TWO_PIXEL, x, r.y + r.height - THREE_PIXEL);
+				UIUtil.drawLine(g, x, r.y + r.height - THREE_PIXEL, x + width, r.y + r.height - THREE_PIXEL);
+			} else {
+				int[] xPoints = new int[]{x,
+						x,
+						x + width - 1};
+				int[] yPoints = new int[]{r.y - FOUR_PIXEL,
+						r.y + FOUR_PIXEL,
+						r.y};
+				g.fillPolygon(xPoints, yPoints, THREE_PIXEL);
+
+				g.setColor(gutter.getFoldingColor(false));
+				g.drawPolygon(xPoints, yPoints, THREE_PIXEL);
+			}
+		}
+
+		public void doAction(Editor editor, MouseEvent e) {
+			e.consume();
+			JComponent comp = (JComponent) e.getComponent(); // shall be EditorGutterComponent, cast is safe.
+			JLayeredPane layeredPane = comp.getRootPane().getLayeredPane();
+			Point point = SwingUtilities
+					.convertPoint(comp, ((EditorEx) editor).getGutterComponentEx().getWidth(), e.getY(), layeredPane);
+			showActiveHint(range, editor, point);
+		}
+	}
 }
