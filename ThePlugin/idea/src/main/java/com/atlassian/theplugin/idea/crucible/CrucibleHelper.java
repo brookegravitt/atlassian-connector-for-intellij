@@ -169,4 +169,30 @@ public final class CrucibleHelper {
 		}
 		return null;
 	}
+
+	public static void openFileOnComment(final Project project, final ReviewData review, final CrucibleFileInfo file,
+			final VersionedComment comment) {
+		VcsIdeaHelper.openFileWithDiffs(project
+				, file.getFileDescriptor().getAbsoluteUrl()
+				, file.getOldFileDescriptor().getRevision()
+				, file.getFileDescriptor().getRevision()
+				, comment.getToStartLine() - 1
+				, 0
+				, new VcsIdeaHelper.OpenDiffAction() {
+
+			public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile) {
+				FileEditorManager fem = FileEditorManager.getInstance(project);
+				Editor editor = fem.openTextEditor(displayFile, false);
+				if (editor == null) {
+					return;
+				}
+				Document displayDocument = new FileContent(project, displayFile.getFile())
+						.getDocument();
+				Document referenceDocument = new FileContent(project, referenceFile).getDocument();
+				new ChangeViewer(project, editor, referenceDocument, displayDocument)
+						.highlightChangesInEditor();
+				CommentHighlighter.highlightCommentsInEditor(project, editor, review, file);
+			}
+		});
+	}
 }

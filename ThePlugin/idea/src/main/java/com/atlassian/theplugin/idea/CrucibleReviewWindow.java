@@ -26,23 +26,20 @@ import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.config.ContentPanel;
-import com.atlassian.theplugin.idea.crucible.*;
+import com.atlassian.theplugin.idea.crucible.CommentEditForm;
+import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
+import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.atlassian.theplugin.idea.crucible.events.*;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.diff.FileContent;
-import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.fileEditor.FileEditorManager;
-import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.util.Key;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
@@ -226,37 +223,12 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
 				public void run() {
 					Editor editor = CrucibleHelper.getEditorForCrucibleFile(review, file);
 					if (editor != null) {
-						openFileOnComment(review, file, comment);
+						CrucibleHelper.openFileOnComment(project, review, file, comment);
 						return;
 					}
 					if (openIfClosed) {
-						openFileOnComment(review, file, comment);
+						CrucibleHelper.openFileOnComment(project, review, file, comment);
 					}
-				}
-			});
-		}
-
-		private void openFileOnComment(final ReviewData review, final CrucibleFileInfo file, final VersionedComment comment) {
-			VcsIdeaHelper.openFileWithDiffs(project
-					, file.getFileDescriptor().getAbsoluteUrl()
-					, file.getOldFileDescriptor().getRevision()
-					, file.getFileDescriptor().getRevision()
-					, comment.getToStartLine() - 1
-					, 0
-					, new VcsIdeaHelper.OpenDiffAction() {
-
-				public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile) {
-					FileEditorManager fem = FileEditorManager.getInstance(project);
-					Editor editor = fem.openTextEditor(displayFile, false);
-					if (editor == null) {
-						return;
-					}
-					Document displayDocument = new FileContent(project, displayFile.getFile())
-							.getDocument();
-					Document referenceDocument = new FileContent(project, referenceFile).getDocument();
-					new ChangeViewer(project, editor, referenceDocument, displayDocument)
-							.highlightChangesInEditor();
-					CommentHighlighter.highlightCommentsInEditor(project, editor, review, file);
 				}
 			});
 		}
