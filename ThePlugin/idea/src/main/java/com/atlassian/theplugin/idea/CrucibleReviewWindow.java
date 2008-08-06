@@ -36,7 +36,6 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diff.FileContent;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
@@ -225,25 +224,19 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
 				final VersionedComment comment, final boolean openIfClosed) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
-					Editor[] editors = EditorFactory.getInstance().getAllEditors();
-					for (Editor editor : editors) {
-						final ReviewData mr = editor.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
-						final CrucibleFileInfo mf = editor.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
-						if (mr != null && mf != null) {
-							if (review.getPermId().equals(mr.getPermId()) && file.getPermId().equals(mf.getPermId())) {
-								openAndPositionFile(review, file, comment);
-								return;
-							}
-						}
+					Editor editor = CrucibleHelper.getEditorForCrucibleFile(review, file);
+					if (editor != null) {
+						openFileOnComment(review, file, comment);
+						return;
 					}
 					if (openIfClosed) {
-						openAndPositionFile(review, file, comment);
+						openFileOnComment(review, file, comment);
 					}
 				}
 			});
 		}
 
-		private void openAndPositionFile(final ReviewData review, final CrucibleFileInfo file, final VersionedComment comment) {
+		private void openFileOnComment(final ReviewData review, final CrucibleFileInfo file, final VersionedComment comment) {
 			VcsIdeaHelper.openFileWithDiffs(project
 					, file.getFileDescriptor().getAbsoluteUrl()
 					, file.getOldFileDescriptor().getRevision()
@@ -295,7 +288,7 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
 						newComment.setToStartLine(start);
 						newComment.setToEndLine(end);
 						eventBroker.trigger(new VersionedCommentAboutToAdd(CrucibleReviewActionListener.ANONYMOUS, review,
-								file, newComment, editor));
+								file, newComment));
 					}
 				}
 			});
@@ -364,7 +357,7 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
 
 		@Override
 		public void aboutToAddVersionedComment(ReviewData review, CrucibleFileInfo file,
-				VersionedComment comment, Editor editor) {
+				VersionedComment comment) {
 			try {
 				VersionedComment newComment = facade.addVersionedComment(review.getServer(), review.getPermId(),
 						file.getPermId(), comment);
@@ -377,7 +370,7 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
 					((CrucibleFileInfoImpl) file).setVersionedComments(comments);
 				}
 				comments.add(newComment);
-				eventBroker.trigger(new VersionedCommentAdded(this, review, file, newComment, editor));
+				eventBroker.trigger(new VersionedCommentAdded(this, review, file, newComment));
 			} catch (RemoteApiException e) {
 				IdeaHelper.handleRemoteApiException(project, e);
 			} catch (ServerPasswordNotProvidedException e) {

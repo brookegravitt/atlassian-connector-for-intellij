@@ -93,7 +93,7 @@ public class AddAction extends AbstractCommentAction {
 			// @todo
 			IdeaHelper.getReviewActionEventBroker().trigger(
 					new VersionedCommentAboutToAdd(CrucibleReviewActionListener.ANONYMOUS,
-							review, file, newComment, null));
+							review, file, newComment));
 		}
 
 	}

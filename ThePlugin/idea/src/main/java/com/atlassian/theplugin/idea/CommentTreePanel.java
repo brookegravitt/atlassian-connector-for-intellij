@@ -22,6 +22,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.idea.crucible.CommentHighlighter;
+import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.events.*;
@@ -37,6 +38,7 @@ import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.file.FileNode;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.ui.UIUtil;
@@ -88,20 +90,7 @@ public class CommentTreePanel extends JPanel {
 			return;
 		}
 		GeneralCommentTreeNode commentNode
-				= new GeneralCommentTreeNode(review, generalComment, new AtlassianClickAction() {
-			public void execute(final AtlassianTreeNode node, final int noOfClicks) {
-				switch (noOfClicks) {
-					case 1:
-						GeneralCommentTreeNode anode = (GeneralCommentTreeNode) node;
-						IdeaHelper.getReviewActionEventBroker().trigger(
-								new FocusOnReviewEvent(crucibleAgent, anode.getReview()));
-						break;
-					default:
-						// do nothing
-				}
-
-			}
-		});
+				= new GeneralCommentTreeNode(review, generalComment, new GeneralCommentClickAction());
 		root.addNode(commentNode);
 		for (GeneralComment comment : generalComment.getReplies()) {
 			addGeneralCommentTree(commentNode, review, comment, depth + 1);
@@ -114,45 +103,7 @@ public class CommentTreePanel extends JPanel {
 			return;
 		}
 		VersionedCommentTreeNode commentNode = new VersionedCommentTreeNode(review, file, versionedComment,
-				new AtlassianClickAction() {
-					public void execute(final AtlassianTreeNode node, final int noOfClicks) {
-						VersionedCommentTreeNode anode = (VersionedCommentTreeNode) node;
-						CrucibleEvent event;
-						switch (noOfClicks) {
-							case 1:
-								if (anode.getComment().isFromLineInfo()
-										|| anode.getComment().isToLineInfo()) {
-									event = new FocusOnLineCommentEvent(crucibleAgent,
-											anode.getReview(),
-											anode.getFile(), anode.getComment(), false);
-								} else {
-									event = new FocusOnVersionedCommentEvent(crucibleAgent,
-											anode.getReview(),
-											anode.getFile(), anode.getComment());
-								}
-								IdeaHelper.getReviewActionEventBroker().trigger(
-										event);
-								break;
-							case 2:
-								if (anode.getComment().isFromLineInfo()
-										|| anode.getComment().isToLineInfo()) {
-									event = new FocusOnLineCommentEvent(crucibleAgent,
-											anode.getReview(),
-											anode.getFile(), anode.getComment(), true);
-								} else {
-									event = new FocusOnVersionedCommentEvent(crucibleAgent,
-											anode.getReview(),
-											anode.getFile(), anode.getComment());
-								}
-								IdeaHelper.getReviewActionEventBroker().trigger(
-										event);
-								break;
-							default:
-								// do nothing
-						}
-
-					}
-				});
+				new VersionedCommentClickAction());
 		root.addNode(commentNode);
 		for (VersionedComment comment : versionedComment.getReplies()) {
 			addVersionedCommentTree(commentNode, review, file, comment, depth + 1);
@@ -253,7 +204,7 @@ public class CommentTreePanel extends JPanel {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					AtlassianTreeNode newCommentNode
-							= new GeneralCommentTreeNode(review, comment, AtlassianClickAction.EMPTY_ACTION);
+							= new GeneralCommentTreeNode(review, comment, new GeneralCommentClickAction());
 					addNewNode(new NodeSearchAlgorithm() {
 						@Override
 						public boolean check(AtlassianTreeNode node) {
@@ -289,7 +240,7 @@ public class CommentTreePanel extends JPanel {
 
 		@Override
 		public void createdVersionedComment(final ReviewData review, final CrucibleFileInfo file,
-				final VersionedComment comment, final Editor editor) {
+				final VersionedComment comment) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					addNewNode(new NodeSearchAlgorithm() {
@@ -297,16 +248,17 @@ public class CommentTreePanel extends JPanel {
 						public boolean check(AtlassianTreeNode node) {
 							if (node instanceof FileNameNode) {
 								FileNameNode vnode = (FileNameNode) node;
-								if (vnode.getReview().equals(review)
-										&& vnode.getFile().equals(file)) {
+								if (vnode.getReview().getPermId().equals(review.getPermId())
+										&& vnode.getFile().getPermId().equals(file.getPermId())) {
 									return true;
 								}
 							}
 							return false;
 						}
-					}, new VersionedCommentTreeNode(review, file, comment, AtlassianClickAction.EMPTY_ACTION));
+					}, new VersionedCommentTreeNode(review, file, comment, new VersionedCommentClickAction()));
+
+					Editor editor = CrucibleHelper.getEditorForCrucibleFile(review, file);
 					if (editor != null) {
-						//@todo!!!
 						CommentHighlighter.highlightCommentsInEditor(project, editor, review, file);
 					}
 				}
@@ -459,6 +411,13 @@ public class CommentTreePanel extends JPanel {
 			);
 		}
 
+		public void commentsChanged(final ReviewData review, final CrucibleFileInfo file) {
+			ApplicationManager.getApplication().invokeLater(new Runnable() {
+				public void run() {
+				}
+			});
+		}
+
 		@Override
 		public void focusOnFileComments(final ReviewData review, final CrucibleFileInfo file) {
 			EventQueue.invokeLater(new Runnable() {
@@ -547,6 +506,61 @@ public class CommentTreePanel extends JPanel {
 				return;
 			}
 			aManager.createActionPopupMenu(MENU_PLACE, menu).getComponent().show(e.getComponent(), e.getX(), e.getY());
+		}
+	}
+
+	private class VersionedCommentClickAction implements AtlassianClickAction {
+		public void execute(final AtlassianTreeNode node, final int noOfClicks) {
+			VersionedCommentTreeNode anode = (VersionedCommentTreeNode) node;
+			CrucibleEvent event;
+			switch (noOfClicks) {
+				case 1:
+					if (anode.getComment().isFromLineInfo()
+							|| anode.getComment().isToLineInfo()) {
+						event = new FocusOnLineCommentEvent(crucibleAgent,
+								anode.getReview(),
+								anode.getFile(), anode.getComment(), false);
+					} else {
+						event = new FocusOnVersionedCommentEvent(crucibleAgent,
+								anode.getReview(),
+								anode.getFile(), anode.getComment());
+					}
+					IdeaHelper.getReviewActionEventBroker().trigger(
+							event);
+					break;
+				case 2:
+					if (anode.getComment().isFromLineInfo()
+							|| anode.getComment().isToLineInfo()) {
+						event = new FocusOnLineCommentEvent(crucibleAgent,
+								anode.getReview(),
+								anode.getFile(), anode.getComment(), true);
+					} else {
+						event = new FocusOnVersionedCommentEvent(crucibleAgent,
+								anode.getReview(),
+								anode.getFile(), anode.getComment());
+					}
+					IdeaHelper.getReviewActionEventBroker().trigger(
+							event);
+					break;
+				default:
+					// do nothing
+			}
+
+		}
+	}
+
+	private class GeneralCommentClickAction implements AtlassianClickAction {
+		public void execute(final AtlassianTreeNode node, final int noOfClicks) {
+			switch (noOfClicks) {
+				case 1:
+					GeneralCommentTreeNode anode = (GeneralCommentTreeNode) node;
+					IdeaHelper.getReviewActionEventBroker().trigger(
+							new FocusOnReviewEvent(crucibleAgent, anode.getReview()));
+					break;
+				default:
+					// do nothing
+			}
+
 		}
 	}
 }

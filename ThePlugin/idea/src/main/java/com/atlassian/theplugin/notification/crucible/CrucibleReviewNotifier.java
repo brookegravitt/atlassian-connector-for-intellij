@@ -18,9 +18,12 @@ package com.atlassian.theplugin.notification.crucible;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusListener;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
-import com.atlassian.theplugin.idea.crucible.CommentHighlighter;
+import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
+import com.atlassian.theplugin.idea.crucible.events.GeneralCommentAdded;
+import com.atlassian.theplugin.idea.crucible.events.VersionedCommentAdded;
 import com.intellij.openapi.project.Project;
 
 import java.util.*;
@@ -29,222 +32,228 @@ import java.util.*;
  * This one is supposed to be per project.
  */
 public class CrucibleReviewNotifier implements CrucibleStatusListener {
-    private final List<CrucibleNotificationListener> listenerList = new ArrayList<CrucibleNotificationListener>();
+	private final List<CrucibleNotificationListener> listenerList = new ArrayList<CrucibleNotificationListener>();
 
-    private Set<ReviewData> reviews = new HashSet<ReviewData>();
-    private List<CrucibleNotification> notifications = new ArrayList<CrucibleNotification>();
+	private Set<ReviewData> reviews = new HashSet<ReviewData>();
+	private List<CrucibleNotification> notifications = new ArrayList<CrucibleNotification>();
 
-    private boolean firstRun = true;
-    private Project project;
+	private boolean firstRun = true;
+	private Project project;
 
-    public CrucibleReviewNotifier() {
-    }
+	public CrucibleReviewNotifier() {
+	}
 
-    public Project getProject() {
-        return project;
-    }
+	public Project getProject() {
+		return project;
+	}
 
-    public void setProject(Project project) {
-        this.project = project;
-    }
+	public void setProject(Project project) {
+		this.project = project;
+	}
 
-    public void registerListener(CrucibleNotificationListener listener) {
-        synchronized (listenerList) {
-            listenerList.add(listener);
-        }
-    }
+	public void registerListener(CrucibleNotificationListener listener) {
+		synchronized (listenerList) {
+			listenerList.add(listener);
+		}
+	}
 
-    public void unregisterListener(CrucibleNotificationListener listener) {
-        synchronized (listenerList) {
-            listenerList.remove(listener);
-        }
-    }
+	public void unregisterListener(CrucibleNotificationListener listener) {
+		synchronized (listenerList) {
+			listenerList.remove(listener);
+		}
+	}
 
-    private void checkNewReviewItems(ReviewData oldReview, ReviewData newReview) throws ValueNotYetInitialized {
-        for (CrucibleFileInfo item : newReview.getFiles()) {
-            boolean found = false;
-            for (CrucibleFileInfo oldItem : oldReview.getFiles()) {
-                if (item.getPermId().getId().equals(oldItem.getPermId().getId())) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                notifications.add(new NewReviewItemNotification(newReview, item));
-            }
-        }
-    }
+	private void checkNewReviewItems(ReviewData oldReview, ReviewData newReview) throws ValueNotYetInitialized {
+		for (CrucibleFileInfo item : newReview.getFiles()) {
+			boolean found = false;
+			for (CrucibleFileInfo oldItem : oldReview.getFiles()) {
+				if (item.getPermId().getId().equals(oldItem.getPermId().getId())) {
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				notifications.add(new NewReviewItemNotification(newReview, item));
+			}
+		}
+	}
 
-    private void checkReviewersStatus(ReviewData oldReview, ReviewData newReview) throws ValueNotYetInitialized {
-        boolean allCompleted = true;
-        boolean atLeastOneChanged = false;
-        for (Reviewer reviewer : newReview.getReviewers()) {
-            for (Reviewer oldReviewer : oldReview.getReviewers()) {
-                if (reviewer.getUserName().equals(oldReviewer.getUserName())) {
-                    if (reviewer.isCompleted() != oldReviewer.isCompleted()) {
-                        notifications.add(new ReviewerCompletedNotification(newReview, reviewer));
-                        atLeastOneChanged = true;
-                    }
-                }
-            }
-            if (!reviewer.isCompleted()) {
-                allCompleted = false;
-            }
-        }
-        if (allCompleted && atLeastOneChanged) {
-            notifications.add(new ReviewCompletedNotification(newReview));
-        }
-    }
+	private void checkReviewersStatus(ReviewData oldReview, ReviewData newReview) throws ValueNotYetInitialized {
+		boolean allCompleted = true;
+		boolean atLeastOneChanged = false;
+		for (Reviewer reviewer : newReview.getReviewers()) {
+			for (Reviewer oldReviewer : oldReview.getReviewers()) {
+				if (reviewer.getUserName().equals(oldReviewer.getUserName())) {
+					if (reviewer.isCompleted() != oldReviewer.isCompleted()) {
+						notifications.add(new ReviewerCompletedNotification(newReview, reviewer));
+						atLeastOneChanged = true;
+					}
+				}
+			}
+			if (!reviewer.isCompleted()) {
+				allCompleted = false;
+			}
+		}
+		if (allCompleted && atLeastOneChanged) {
+			notifications.add(new ReviewCompletedNotification(newReview));
+		}
+	}
 
-    private void checkGeneralReplies(ReviewData review, GeneralComment oldComment, GeneralComment newComment) {
-        for (GeneralComment reply : newComment.getReplies()) {
-            GeneralComment existingReply = null;
-            for (GeneralComment oldReply : oldComment.getReplies()) {
-                if (reply.getPermId().getId().equals(oldReply.getPermId().getId())) {
-                    existingReply = oldReply;
-                    break;
-                }
-            }
-            if (existingReply == null) {
-                notifications.add(new NewReplyCommentNotification(review, newComment, reply));
-            }
-        }
-    }
+	private void checkGeneralReplies(ReviewData review, GeneralComment oldComment, GeneralComment newComment) {
+		for (GeneralComment reply : newComment.getReplies()) {
+			GeneralComment existingReply = null;
+			for (GeneralComment oldReply : oldComment.getReplies()) {
+				if (reply.getPermId().getId().equals(oldReply.getPermId().getId())) {
+					existingReply = oldReply;
+					break;
+				}
+			}
+			if (existingReply == null) {
+				notifications.add(new NewReplyCommentNotification(review, newComment, reply));
+			}
+		}
+	}
 
-    private void checkVersionedReplies(ReviewData review, VersionedComment oldComment, VersionedComment newComment) {
-        for (VersionedComment reply : newComment.getReplies()) {
-            VersionedComment existingReply = null;
-            for (VersionedComment oldReply : oldComment.getReplies()) {
-                if (reply.getPermId().getId().equals(oldReply.getPermId().getId())) {
-                    existingReply = oldReply;
-                    break;
-                }
-            }
-            if (existingReply == null) {
-                notifications.add(new NewReplyCommentNotification(review, newComment, reply));
-            }
-        }
-    }
+	private void checkVersionedReplies(ReviewData review, VersionedComment oldComment, VersionedComment newComment) {
+		for (VersionedComment reply : newComment.getReplies()) {
+			VersionedComment existingReply = null;
+			for (VersionedComment oldReply : oldComment.getReplies()) {
+				if (reply.getPermId().getId().equals(oldReply.getPermId().getId())) {
+					existingReply = oldReply;
+					break;
+				}
+			}
+			if (existingReply == null) {
+				notifications.add(new NewReplyCommentNotification(review, newComment, reply));
+			}
+		}
+	}
 
 
-    private void checkComments(ReviewData oldReview, ReviewData newReview) throws ValueNotYetInitialized {
-        for (GeneralComment comment : newReview.getGeneralComments()) {
-            GeneralComment existing = null;
-            for (GeneralComment oldComment : oldReview.getGeneralComments()) {
-                if (comment.getPermId().getId().equals(oldComment.getPermId().getId())) {
-                    existing = oldComment;
-                    break;
-                }
-            }
-            if (existing == null) {
-                notifications.add(new NewGeneralCommentNotification(newReview, comment));
-            } else {
-                checkGeneralReplies(newReview, existing, comment);
-            }
-        }
+	private void checkComments(ReviewData oldReview, ReviewData newReview) throws ValueNotYetInitialized {
+		for (GeneralComment comment : newReview.getGeneralComments()) {
+			GeneralComment existing = null;
+			for (GeneralComment oldComment : oldReview.getGeneralComments()) {
+				if (comment.getPermId().getId().equals(oldComment.getPermId().getId())) {
+					existing = oldComment;
+					break;
+				}
+			}
+			if (existing == null) {
+				notifications.add(new NewGeneralCommentNotification(newReview, comment));
+				GeneralCommentAdded event = new GeneralCommentAdded(CrucibleReviewActionListener.ANONYMOUS, newReview, comment);
+				IdeaHelper.getReviewActionEventBroker().trigger(event);
+			} else {
+				checkGeneralReplies(newReview, existing, comment);
+			}
+		}
 
-        for (VersionedComment comment : newReview.getVersionedComments()) {
-            VersionedComment existing = null;
-            for (VersionedComment oldComment : oldReview.getVersionedComments()) {
-                if (comment.getPermId().getId().equals(oldComment.getPermId().getId())) {
-                    existing = oldComment;
-                    break;
-                }
-            }
-            if (existing == null) {
-                notifications.add(new NewVersionedCommentNotification(newReview, comment));
-                try {
-                    for (CrucibleFileInfo file : newReview.getFiles()) {
-                        if (comment.getReviewItemId().equals(file.getPermId())) {
-                            if (project != null) {
-                                CommentHighlighter.updateCommentsInEditors(project, newReview, file);
-                            }
-                        }
-                    }
-                } catch (ValueNotYetInitialized valueNotYetInitialized) {
-                    valueNotYetInitialized.printStackTrace();
-                }
-            } else {
-                checkVersionedReplies(newReview, existing, comment);
-            }
-        }
-    }
+		for (VersionedComment comment : newReview.getVersionedComments()) {
+			VersionedComment existing = null;
+			for (VersionedComment oldComment : oldReview.getVersionedComments()) {
+				if (comment.getPermId().getId().equals(oldComment.getPermId().getId())) {
+					existing = oldComment;
+					break;
+				}
+			}
+			if (existing == null) {
+				notifications.add(new NewVersionedCommentNotification(newReview, comment));
 
-    public void updateReviews(Map<PredefinedFilter, List<ReviewData>> incomingReviews,
-                              Map<String, List<ReviewData>> customIncomingReviews) {
+				try {
+					for (CrucibleFileInfo file : newReview.getFiles()) {
+						if (comment.getReviewItemId().equals(file.getPermId())) {
+							if (project != null) {
+								VersionedCommentAdded event = new VersionedCommentAdded(CrucibleReviewActionListener.ANONYMOUS,
+										newReview, file, comment);
+								IdeaHelper.getReviewActionEventBroker().trigger(event);
+							}
+						}
+					}
+				} catch (ValueNotYetInitialized valueNotYetInitialized) {
+					valueNotYetInitialized.printStackTrace();
+				}
 
-        notifications.clear();
-        Set<ReviewData> processedReviews = new HashSet<ReviewData>();
-        if (!incomingReviews.isEmpty()) {
-            for (PredefinedFilter predefinedFilter : incomingReviews.keySet()) {
-                List<ReviewData> incomingCategory = incomingReviews.get(predefinedFilter);
+			} else {
+				checkVersionedReplies(newReview, existing, comment);
+			}
+		}
+	}
 
-                for (ReviewData reviewDataInfo : incomingCategory) {
-                    if (processedReviews.contains(reviewDataInfo)) {
-                        continue;
-                    }
-                    if (reviews.contains(reviewDataInfo)) {
-                        ReviewData existing = null;
-                        for (ReviewData review : reviews) {
-                            if (review.equals(reviewDataInfo)) {
-                                existing = review;
-                            }
-                        }
+	public void updateReviews(Map<PredefinedFilter, List<ReviewData>> incomingReviews,
+			Map<String, List<ReviewData>> customIncomingReviews) {
 
-                        // check state change
-                        if (!reviewDataInfo.getState().equals(existing.getState())) {
-                            notifications.add(new ReviewStateChangedNotification(reviewDataInfo, existing.getState()));
-                        }
+		notifications.clear();
+		Set<ReviewData> processedReviews = new HashSet<ReviewData>();
+		if (!incomingReviews.isEmpty()) {
+			for (PredefinedFilter predefinedFilter : incomingReviews.keySet()) {
+				List<ReviewData> incomingCategory = incomingReviews.get(predefinedFilter);
 
-                        // check review items
-                        try {
-                            checkNewReviewItems(existing, reviewDataInfo);
-                        } catch (ValueNotYetInitialized valueNotYetInitialized) {
-                            // TODO all is it correct
-                        }
+				for (ReviewData reviewDataInfo : incomingCategory) {
+					if (processedReviews.contains(reviewDataInfo)) {
+						continue;
+					}
+					if (reviews.contains(reviewDataInfo)) {
+						ReviewData existing = null;
+						for (ReviewData review : reviews) {
+							if (review.equals(reviewDataInfo)) {
+								existing = review;
+							}
+						}
 
-                        // check reviewers status
-                        try {
-                            checkReviewersStatus(existing, reviewDataInfo);
-                        } catch (ValueNotYetInitialized valueNotYetInitialized) {
-                            // TODO all is it correct
-                        }
+						// check state change
+						if (!reviewDataInfo.getState().equals(existing.getState())) {
+							notifications.add(new ReviewStateChangedNotification(reviewDataInfo, existing.getState()));
+						}
 
-                        // check comments status
-                        try {
-                            checkComments(existing, reviewDataInfo);
-                        } catch (ValueNotYetInitialized valueNotYetInitialized) {
-                            // TODO all is it correct
-                        }
+						// check review items
+						try {
+							checkNewReviewItems(existing, reviewDataInfo);
+						} catch (ValueNotYetInitialized valueNotYetInitialized) {
+							// TODO all is it correct
+						}
 
-                        processedReviews.add(reviewDataInfo);
-                    } else {
-                        notifications.add(new NewReviewNotification(reviewDataInfo));
-                        processedReviews.add(reviewDataInfo);
-                    }
-                }
-            }
+						// check reviewers status
+						try {
+							checkReviewersStatus(existing, reviewDataInfo);
+						} catch (ValueNotYetInitialized valueNotYetInitialized) {
+							// TODO all is it correct
+						}
 
-            reviews.clear();
-            reviews.addAll(processedReviews);
-        }
+						// check comments status
+						try {
+							checkComments(existing, reviewDataInfo);
+						} catch (ValueNotYetInitialized valueNotYetInitialized) {
+							// TODO all is it correct
+						}
 
-        if (!firstRun) {
-            for (CrucibleNotificationListener listener : listenerList) {
-                listener.updateNotifications(notifications);
-            }
-        }
-        firstRun = false;
-    }
+						processedReviews.add(reviewDataInfo);
+					} else {
+						notifications.add(new NewReviewNotification(reviewDataInfo));
+						processedReviews.add(reviewDataInfo);
+					}
+				}
+			}
 
-    public void resetState() {
-        reviews.clear();
-        for (CrucibleNotificationListener listener : listenerList) {
-            listener.resetState();
-        }
-    }
+			reviews.clear();
+			reviews.addAll(processedReviews);
+		}
 
-    public List<CrucibleNotification> getNotifications() {
-        return notifications;
-    }
+		if (!firstRun) {
+			for (CrucibleNotificationListener listener : listenerList) {
+				listener.updateNotifications(notifications);
+			}
+		}
+		firstRun = false;
+	}
+
+	public void resetState() {
+		reviews.clear();
+		for (CrucibleNotificationListener listener : listenerList) {
+			listener.resetState();
+		}
+	}
+
+	public List<CrucibleNotification> getNotifications() {
+		return notifications;
+	}
 }
