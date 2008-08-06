@@ -289,7 +289,8 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
 		}
 
 		@Override
-		public void aboutToPublishVersionedComment(final ReviewData review, final CrucibleFileInfo file, final VersionedComment comment) {
+		public void aboutToPublishVersionedComment(final ReviewData review, final CrucibleFileInfo file,
+				final VersionedComment comment) {
 			try {
 				facade.publishComment(review.getServer(), review.getPermId(), comment.getPermId());
 				// @todo - dirty hack - probably remote api should return new comment info

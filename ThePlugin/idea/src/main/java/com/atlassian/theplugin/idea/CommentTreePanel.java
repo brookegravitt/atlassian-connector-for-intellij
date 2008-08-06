@@ -120,8 +120,8 @@ public class CommentTreePanel extends JPanel {
 							case 1:
 								VersionedCommentTreeNode anode = (VersionedCommentTreeNode) node;
 								CrucibleEvent event;
-								if (anode.getComment().isFromLineInfo() ||
-										anode.getComment().isToLineInfo()) {
+								if (anode.getComment().isFromLineInfo()
+										|| anode.getComment().isToLineInfo()) {
 									event = new FocusOnLineCommentEvent(crucibleAgent,
 											anode.getReview(),
 											anode.getFile(), anode.getComment());
@@ -401,46 +401,47 @@ public class CommentTreePanel extends JPanel {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 
-						replaceNode(new NodeSearchAlgorithm() {
-							@Override
-							public boolean check(AtlassianTreeNode node) {
-								if (node instanceof GeneralCommentTreeNode) {
-									GeneralCommentTreeNode vnode = (GeneralCommentTreeNode) node;
-									if (vnode.getReview().equals(review)
-											&& vnode.getComment().equals(comment)) {
-										return true;
-									}
+					replaceNode(new NodeSearchAlgorithm() {
+						@Override
+						public boolean check(AtlassianTreeNode node) {
+							if (node instanceof GeneralCommentTreeNode) {
+								GeneralCommentTreeNode vnode = (GeneralCommentTreeNode) node;
+								if (vnode.getReview().equals(review)
+										&& vnode.getComment().equals(comment)) {
+									return true;
 								}
-								return false;
 							}
-						}, new GeneralCommentTreeNode(review, comment, AtlassianClickAction.EMPTY_ACTION));
+							return false;
+						}
+					}, new GeneralCommentTreeNode(review, comment, AtlassianClickAction.EMPTY_ACTION));
 				}
 			}
 			);
 		}
 
 		@Override
-		public void publishedVersionedComment(final ReviewData review, final CrucibleFileInfo file, final VersionedComment comment) {
+		public void publishedVersionedComment(final ReviewData review, final CrucibleFileInfo file,
+				final VersionedComment comment) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 
-							replaceNode(new NodeSearchAlgorithm() {
-								@Override
-								public boolean check(AtlassianTreeNode node) {
-									if (node instanceof VersionedCommentTreeNode) {
-										VersionedCommentTreeNode vnode = (VersionedCommentTreeNode) node;
-										if (vnode.getReview().equals(review)
-												&& vnode.getComment().equals(comment)) {
-											return true;
-										}
-									}
-									return false;
+					replaceNode(new NodeSearchAlgorithm() {
+						@Override
+						public boolean check(AtlassianTreeNode node) {
+							if (node instanceof VersionedCommentTreeNode) {
+								VersionedCommentTreeNode vnode = (VersionedCommentTreeNode) node;
+								if (vnode.getReview().equals(review)
+										&& vnode.getComment().equals(comment)) {
+									return true;
 								}
-							}, new VersionedCommentTreeNode(review, file, comment,
-									AtlassianClickAction.EMPTY_ACTION));
+							}
+							return false;
 						}
+					}, new VersionedCommentTreeNode(review, file, comment,
+							AtlassianClickAction.EMPTY_ACTION));
+				}
 
-				   			}
+			}
 			);
 		}
 
