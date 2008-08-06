@@ -149,7 +149,14 @@
 			<property name="max" value="40"/>
 		</module>
 		<module name="StringLiteralEquality"/>
+		<module name="FileContentsHolder"/>
 	</module>
+	<module name="SuppressionCommentFilter">
+		<property name="offCommentFormat" value="CHECKSTYLE\:MAGIC\:OFF"/>
+	    <property name="onCommentFormat" value="CHECKSTYLE\:MAGIC\:ON"/>
+		<property name="checkFormat" value="MagicNumber"/>
+	</module>
+	<module name="SuppressionCommentFilter"/>
 	<module name="PackageHtml">
 		<property name="severity" value="ignore"/>
 	</module>
