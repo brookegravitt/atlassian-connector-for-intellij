@@ -147,7 +147,8 @@ public final class CommentPanelBuilder {
 		}
 
 		protected Component getAuthorLabel() {
-			return new BoldLabel(comment.getAuthor().getDisplayName());
+			return new BoldLabel("".equals(comment.getAuthor().getDisplayName()) ? comment.getAuthor().getUserName() : comment
+					.getAuthor().getDisplayName());
 		}
 
 		protected Component getStateLabel() {

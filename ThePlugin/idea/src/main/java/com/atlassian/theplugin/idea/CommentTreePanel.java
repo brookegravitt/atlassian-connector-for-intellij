@@ -21,7 +21,6 @@ import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.idea.crucible.CommentHighlighter;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
@@ -205,12 +204,25 @@ public class CommentTreePanel extends JPanel {
 				public void run() {
 					AtlassianTreeNode newCommentNode
 							= new GeneralCommentTreeNode(review, comment, new GeneralCommentClickAction());
-					addNewNode(new NodeSearchAlgorithm() {
-						@Override
-						public boolean check(AtlassianTreeNode node) {
-							return node instanceof GeneralSectionNode;
+
+					if (!replaceNode(new NodeSearchAlgorithm() {
+						public boolean check(final AtlassianTreeNode node) {
+							if (node instanceof GeneralCommentTreeNode) {
+								GeneralCommentTreeNode anode = (GeneralCommentTreeNode) node;
+								if (anode.getComment().getPermId().equals(comment.getPermId())) {
+									return true;
+								}
+							}
+							return false;
 						}
-					}, newCommentNode);
+					}, newCommentNode)) {
+						addNewNode(new NodeSearchAlgorithm() {
+							@Override
+							public boolean check(AtlassianTreeNode node) {
+								return node instanceof GeneralSectionNode;
+							}
+						}, newCommentNode);
+					}
 				}
 			}
 			);
@@ -243,23 +255,39 @@ public class CommentTreePanel extends JPanel {
 				final VersionedComment comment) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
-					addNewNode(new NodeSearchAlgorithm() {
-						@Override
-						public boolean check(AtlassianTreeNode node) {
-							if (node instanceof FileNameNode) {
-								FileNameNode vnode = (FileNameNode) node;
-								if (vnode.getReview().getPermId().equals(review.getPermId())
-										&& vnode.getFile().getPermId().equals(file.getPermId())) {
+
+					AtlassianTreeNode newCommentNode
+							= new VersionedCommentTreeNode(review, file, comment, new VersionedCommentClickAction());
+
+					if (!replaceNode(new NodeSearchAlgorithm() {
+						public boolean check(final AtlassianTreeNode node) {
+							if (node instanceof VersionedCommentTreeNode) {
+								VersionedCommentTreeNode anode = (VersionedCommentTreeNode) node;
+								if (anode.getComment().getPermId().equals(comment.getPermId())) {
 									return true;
 								}
 							}
 							return false;
 						}
-					}, new VersionedCommentTreeNode(review, file, comment, new VersionedCommentClickAction()));
+					}, newCommentNode)) {
+						addNewNode(new NodeSearchAlgorithm() {
+							@Override
+							public boolean check(AtlassianTreeNode node) {
+								if (node instanceof FileNameNode) {
+									FileNameNode vnode = (FileNameNode) node;
+									if (vnode.getReview().getPermId().equals(review.getPermId())
+											&& vnode.getFile().getPermId().equals(file.getPermId())) {
+										return true;
+									}
+								}
+								return false;
+							}
+						}, newCommentNode);
+					}
 
 					Editor editor = CrucibleHelper.getEditorForCrucibleFile(review, file);
 					if (editor != null) {
-						CommentHighlighter.highlightCommentsInEditor(project, editor, review, file);
+						CrucibleHelper.openFileOnComment(project, review, file, comment);
 					}
 				}
 			});
@@ -448,8 +476,9 @@ public class CommentTreePanel extends JPanel {
 			}
 		}
 
-		private void replaceNode(final NodeSearchAlgorithm nodeLocator,
+		private boolean replaceNode(final NodeSearchAlgorithm nodeLocator,
 				final AtlassianTreeNode newNode) {
+			boolean replaced = false;
 			AtlassianTreeModel model = (AtlassianTreeModel) commentTree.getModel();
 			AtlassianTreeNode node = model.locateNode(nodeLocator);
 			if (node != null) {
@@ -459,7 +488,9 @@ public class CommentTreePanel extends JPanel {
 				model.insertNodeInto(newNode, parent, index);
 				commentTree.expandPath(new TreePath(newNode.getPath()));
 				commentTree.focusOnNode(newNode);
+				replaced = true;
 			}
+			return replaced;
 		}
 
 		private void addNewNode(NodeSearchAlgorithm parentLocator, AtlassianTreeNode newCommentNode) {
