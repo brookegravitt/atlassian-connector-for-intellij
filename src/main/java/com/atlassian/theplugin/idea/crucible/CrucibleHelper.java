@@ -29,6 +29,7 @@ import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.diff.*;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
@@ -153,5 +154,19 @@ public final class CrucibleHelper {
 			IdeaHelper.handleMissingPassword(e);
 		}
 		return metrics;
+	}
+
+	public static Editor getEditorForCrucibleFile(ReviewData review, CrucibleFileInfo file) {
+		Editor[] editors = EditorFactory.getInstance().getAllEditors();
+		for (Editor editor : editors) {
+			final ReviewData mr = editor.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
+			final CrucibleFileInfo mf = editor.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
+			if (mr != null && mf != null) {
+				if (review.getPermId().equals(mr.getPermId()) && file.getPermId().equals(mf.getPermId())) {
+					return editor;
+				}
+			}
+		}
+		return null;
 	}
 }
