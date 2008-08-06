@@ -320,7 +320,7 @@ public class ChangeViewer {
         protected ChangeViewer highlighter;
         protected Editor editor;
 
-        protected abstract Range extractRange(ChangeViewer aHighlighter, int i, Editor editor);
+        protected abstract Range extractRange(ChangeViewer aHighlighter, int i, Editor anEditor);
 
         public ShowChangeMarkerAction(final Range range, final ChangeViewer aHighlighter, final Editor anEditor) {
             this.range = range;
@@ -351,8 +351,8 @@ public class ChangeViewer {
             super(range, aHighlighter, anEditor);
         }
 
-        protected Range extractRange(ChangeViewer highlighter, int i, Editor editor) {
-            return highlighter.getPrevRange(i);
+        protected Range extractRange(ChangeViewer aHighlighter, int i, Editor anEditor) {
+            return aHighlighter.getPrevRange(i);
         }
     }
 
@@ -362,8 +362,8 @@ public class ChangeViewer {
             super(range, highlighter, editor);
         }
 
-        protected Range extractRange(ChangeViewer highlighter, int i, Editor editor) {
-            return highlighter.getNextRange(i);
+        protected Range extractRange(ChangeViewer aHighlighter, int i, Editor anEditor) {
+            return aHighlighter.getNextRange(i);
         }
     }
 
@@ -432,8 +432,8 @@ public class ChangeViewer {
 			this.range = range;
 		}
 
-		private TextAttributesKey getDiffColor(Range range) {
-			switch (range.getType()) {
+		private TextAttributesKey getDiffColor(Range aRange) {
+			switch (aRange.getType()) {
 				case INSERTED_RANGE:
 					return DiffColors.DIFF_INSERTED;
 
@@ -447,15 +447,15 @@ public class ChangeViewer {
 			}
 		}
 
-		public void paint(Editor editor, Graphics g, Rectangle r) {
-			paintGutterFragment(editor, g, r, getDiffColor(range));
+		public void paint(Editor anEditor, Graphics g, Rectangle r) {
+			paintGutterFragment(anEditor, g, r, getDiffColor(range));
 
 		}
 
-		private void paintGutterFragment(Editor editor, Graphics g, Rectangle r, TextAttributesKey diffAttributeKey) {
+		private void paintGutterFragment(Editor anEditor, Graphics g, Rectangle r, TextAttributesKey diffAttributeKey) {
 
-			EditorGutterComponentEx gutter = ((EditorEx) editor).getGutterComponentEx();
-			g.setColor(editor.getColorsScheme().getAttributes(diffAttributeKey).getBackgroundColor());
+			EditorGutterComponentEx gutter = ((EditorEx) anEditor).getGutterComponentEx();
+			g.setColor(anEditor.getColorsScheme().getAttributes(diffAttributeKey).getBackgroundColor());
 			int endX = gutter.getWhitespaceSeparatorOffset();
 			int x = r.x + r.width - TWO_PIXEL;
 			int width = endX - x;
@@ -479,13 +479,13 @@ public class ChangeViewer {
 			}
 		}
 
-		public void doAction(Editor editor, MouseEvent e) {
+		public void doAction(Editor anEditor, MouseEvent e) {
 			e.consume();
 			JComponent comp = (JComponent) e.getComponent(); // shall be EditorGutterComponent, cast is safe.
 			JLayeredPane layeredPane = comp.getRootPane().getLayeredPane();
 			Point point = SwingUtilities
-					.convertPoint(comp, ((EditorEx) editor).getGutterComponentEx().getWidth(), e.getY(), layeredPane);
-			showActiveHint(range, editor, point);
+					.convertPoint(comp, ((EditorEx) anEditor).getGutterComponentEx().getWidth(), e.getY(), layeredPane);
+			showActiveHint(range, anEditor, point);
 		}
 	}
 }
