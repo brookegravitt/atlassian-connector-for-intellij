@@ -57,9 +57,15 @@ public class ChangeViewer {
     private Document displayDoc;
     private List<Range> ranges;
     private int highlighterCount = 0;
+	private static final int TWO_PIXEL = 2;
+	private static final int THREE_PIXEL = 3;
+	private static final int FOUR_PIXEL = 4;
+	private static final int INSERTED_RANGE = 2;
+	private static final int DELETED_RANGE = 3;
+	private static final int MODIFIED_RANGE = 1;
 
 
-    public ChangeViewer(Project project, Editor editor, Document referenceDoc, Document displayDoc) {
+	public ChangeViewer(Project project, Editor editor, Document referenceDoc, Document displayDoc) {
         this.project = project;
         this.editor = editor;
         this.referenceDoc = referenceDoc;
@@ -120,13 +126,13 @@ public class ChangeViewer {
 
             private TextAttributesKey getDiffColor(Range range) {
                 switch (range.getType()) {
-                    case 2:
+                    case INSERTED_RANGE:
                         return DiffColors.DIFF_INSERTED;
 
-                    case 3:
+                    case DELETED_RANGE:
                         return DiffColors.DIFF_DELETED;
 
-                    case 1:
+                    case MODIFIED_RANGE:
                         return DiffColors.DIFF_MODIFIED;
 					default:
 						return null;
@@ -143,25 +149,25 @@ public class ChangeViewer {
                 EditorGutterComponentEx gutter = ((EditorEx) editor).getGutterComponentEx();
                 g.setColor(editor.getColorsScheme().getAttributes(diffAttributeKey).getBackgroundColor());
                 int endX = gutter.getWhitespaceSeparatorOffset();
-                int x = r.x + r.width - 2;
+                int x = r.x + r.width - TWO_PIXEL;
                 int width = endX - x;
                 if (r.height > 0) {
-                    g.fillRect(x, r.y + 2, width, r.height - 4);
+                    g.fillRect(x, r.y + TWO_PIXEL, width, r.height - FOUR_PIXEL);
                     g.setColor(gutter.getFoldingColor(false));
-                    UIUtil.drawLine(g, x, r.y + 2, x + width, r.y + 2);
-                    UIUtil.drawLine(g, x, r.y + 2, x, r.y + r.height - 3);
-                    UIUtil.drawLine(g, x, r.y + r.height - 3, x + width, r.y + r.height - 3);
+                    UIUtil.drawLine(g, x, r.y + TWO_PIXEL, x + width, r.y + TWO_PIXEL);
+                    UIUtil.drawLine(g, x, r.y + TWO_PIXEL, x, r.y + r.height - THREE_PIXEL);
+                    UIUtil.drawLine(g, x, r.y + r.height - THREE_PIXEL, x + width, r.y + r.height - THREE_PIXEL);
                 } else {
                     int[] xPoints = new int[]{x,
                             x,
                             x + width - 1};
-                    int[] yPoints = new int[]{r.y - 4,
-                            r.y + 4,
+                    int[] yPoints = new int[]{r.y - FOUR_PIXEL,
+                            r.y + FOUR_PIXEL,
                             r.y};
-                    g.fillPolygon(xPoints, yPoints, 3);
+                    g.fillPolygon(xPoints, yPoints, THREE_PIXEL);
 
                     g.setColor(gutter.getFoldingColor(false));
-                    g.drawPolygon(xPoints, yPoints, 3);
+                    g.drawPolygon(xPoints, yPoints, THREE_PIXEL);
                 }
             }
 
@@ -428,11 +434,11 @@ public class ChangeViewer {
         }
 
         private boolean checkDeleted() {
-            return myRange.getType() == 3;
+            return myRange.getType() == DELETED_RANGE;
         }
 
         private boolean checkModified() {
-            return myRange.getType() == 1;
+            return myRange.getType() == MODIFIED_RANGE;
         }
 
         public void actionPerformed(AnActionEvent anactionevent) {
