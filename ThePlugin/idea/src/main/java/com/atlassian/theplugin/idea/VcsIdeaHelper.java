@@ -61,7 +61,7 @@ public final class VcsIdeaHelper {
 	public static boolean isUnderVcsControl(Project project) {
 		ProjectLevelVcsManager plm = ProjectLevelVcsManager.getInstance(project);
 
-		return (plm != null && plm.getAllActiveVcss().length > 0);			
+		return (plm != null && plm.getAllActiveVcss().length > 0);
 	}
 
 
@@ -346,11 +346,21 @@ public final class VcsIdeaHelper {
 		if (baseUrl != null && filePath.startsWith(baseUrl)) {
 			String relUrl = filePath.substring(baseUrl.length());
 			final VirtualFile vfl = VfsUtil.findRelativeFile(relUrl, baseDir);
-			ApplicationManager.getApplication().invokeLater(new Runnable() {
-				public void run() {
-					fetchAndOpenFileWithDiffs(project, fileRevision, toRevision, vfl, line, col, action);
-				}
-			});
+			if (vfl != null) {
+				ApplicationManager.getApplication().invokeLater(new Runnable() {
+					public void run() {
+						fetchAndOpenFileWithDiffs(project, fileRevision, toRevision, vfl, line, col, action);
+					}
+				});
+			} else {
+				ApplicationManager.getApplication().invokeLater(new Runnable() {
+					public void run() {
+						Messages.showErrorDialog(project, "Your project does not contain requested file. Please update before review",
+								"Project out of date");
+					}
+				});
+
+			}
 		}
 
 	}
