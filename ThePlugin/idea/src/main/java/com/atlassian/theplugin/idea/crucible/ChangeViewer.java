@@ -165,19 +165,19 @@ public class ChangeViewer {
         return null;
     }
 
-    public void moveToRange(final Range range, final Editor editor) {
+    public void moveToRange(final Range range, final Editor anEditor) {
         final int firstOffset = getDisplayDocument()
                 .getLineStartOffset(Math.min(range.getOffset1(), getDisplayDocument().getLineCount() - 1));
-        editor.getCaretModel().moveToOffset(firstOffset);
-        editor.getScrollingModel().scrollToCaret(ScrollType.CENTER);
-        editor.getScrollingModel().runActionOnScrollingFinished(new Runnable() {
+        anEditor.getCaretModel().moveToOffset(firstOffset);
+        anEditor.getScrollingModel().scrollToCaret(ScrollType.CENTER);
+        anEditor.getScrollingModel().runActionOnScrollingFinished(new Runnable() {
 
             public void run() {
-                java.awt.Point point = editor.visualPositionToXY(editor.offsetToVisualPosition(firstOffset));
-                JComponent jcomponent = editor.getContentComponent();
+                java.awt.Point point = anEditor.visualPositionToXY(anEditor.offsetToVisualPosition(firstOffset));
+                JComponent jcomponent = anEditor.getContentComponent();
                 javax.swing.JLayeredPane jlayeredpane = jcomponent.getRootPane().getLayeredPane();
                 point = SwingUtilities.convertPoint(jcomponent, 0, point.y, jlayeredpane);
-                showActiveHint(range, editor, point);
+                showActiveHint(range, anEditor, point);
             }
         });
     }
@@ -320,12 +320,12 @@ public class ChangeViewer {
         protected ChangeViewer highlighter;
         protected Editor editor;
 
-        protected abstract Range extractRange(ChangeViewer highlighter, int i, Editor editor);
+        protected abstract Range extractRange(ChangeViewer aHighlighter, int i, Editor editor);
 
-        public ShowChangeMarkerAction(final Range range, final ChangeViewer highlighter, final Editor editor) {
+        public ShowChangeMarkerAction(final Range range, final ChangeViewer aHighlighter, final Editor anEditor) {
             this.range = range;
-            this.highlighter = highlighter;
-            this.editor = editor;
+            this.highlighter = aHighlighter;
+            this.editor = anEditor;
         }
 
         protected boolean forceSyncUpdate(AnActionEvent anactionevent) {
@@ -347,8 +347,8 @@ public class ChangeViewer {
 
     private class ShowPrevChangeMarkerAction extends ShowChangeMarkerAction {
 
-        public ShowPrevChangeMarkerAction(Range range, ChangeViewer highlighter, Editor editor) {
-            super(range, highlighter, editor);
+        public ShowPrevChangeMarkerAction(Range range, ChangeViewer aHighlighter, Editor anEditor) {
+            super(range, aHighlighter, anEditor);
         }
 
         protected Range extractRange(ChangeViewer highlighter, int i, Editor editor) {
