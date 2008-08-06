@@ -339,7 +339,6 @@ public final class VcsIdeaHelper {
 	public static void openFileWithDiffs(final Project project, String filePath, @NotNull final String fileRevision,
 			final String toRevision,
 			final int line, final int col, @Nullable final OpenDiffAction action) {
-		                             ?
 		VirtualFile baseDir = project.getBaseDir();
 		String baseUrl = getRepositoryUrlForFile(baseDir);
 
@@ -363,7 +362,6 @@ public final class VcsIdeaHelper {
 
 			}
 		}
-
 	}
 
 	public static void openFile(final Project project, @NotNull final VirtualFile virtualFile,
