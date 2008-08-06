@@ -57,13 +57,13 @@ public class ChangeViewer {
 	private Document displayDoc;
 	private List<Range> ranges;
 	private int highlighterCount = 0;
-	private static final int REFERENCE_TEXT_RANGE = 2;
-	private static final int TWO_PIXEL = REFERENCE_TEXT_RANGE;
+	private static final int TWO_PIXEL = 2;
 	private static final int THREE_PIXEL = 3;
 	private static final int FOUR_PIXEL = 4;
-	private static final int INSERTED_RANGE = REFERENCE_TEXT_RANGE;
+	private static final int INSERTED_RANGE = 2;
 	private static final int DELETED_RANGE = 3;
 	private static final int MODIFIED_RANGE = 1;
+	private static final int REFERENCE_TEXT_RANGE = 2;
 	private static final int DISPLAY_TEXT_RANGE = 3;
 
 
