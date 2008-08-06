@@ -1,10 +1,9 @@
 package com.atlassian.theplugin.idea.crucible.events;
 
-import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
-import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedCommentBean;
-import com.intellij.openapi.editor.Editor;
+import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 
 /**
  * Created by IntelliJ IDEA.
@@ -17,18 +16,16 @@ public class VersionedCommentAboutToAdd extends CrucibleEvent {
 	private ReviewData review;
 	private CrucibleFileInfo file;
 	private VersionedCommentBean newComment;
-	private Editor editor;
 
 	public VersionedCommentAboutToAdd(CrucibleReviewActionListener caller, ReviewData review,
-									  CrucibleFileInfo file, VersionedCommentBean newComment, Editor editor) {
+			CrucibleFileInfo file, VersionedCommentBean newComment) {
 		super(caller);
 		this.review = review;
 		this.file = file;
 		this.newComment = newComment;
-		this.editor = editor;
 	}
 
 	protected void notify(CrucibleReviewActionListener listener) {
-		listener.aboutToAddVersionedComment(review, file, newComment, editor);
+		listener.aboutToAddVersionedComment(review, file, newComment);
 	}
 }

@@ -81,14 +81,12 @@ public class CrucibleReviewActionListener {
 
 	public void aboutToAddVersionedComment(ReviewData review,
 			CrucibleFileInfo file,
-			VersionedComment comment,
-			Editor editor) {
+			VersionedComment comment) {
 	}
 
 	public void createdVersionedComment(ReviewData review,
 			CrucibleFileInfo file,
-			VersionedComment comment,
-			Editor editor) {
+			VersionedComment comment) {
 	}
 
 	public void aboutToUpdateVersionedComment(final ReviewData review, final CrucibleFileInfo file,
@@ -138,5 +136,8 @@ public class CrucibleReviewActionListener {
 
 	public void publishedVersionedComment(final ReviewData review, final CrucibleFileInfo file,
 			final VersionedComment comment) {
+	}
+
+	public void commentsChanged(final ReviewData review, final CrucibleFileInfo file) {
 	}
 }
