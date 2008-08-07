@@ -23,18 +23,18 @@ import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.events.*;
 import com.atlassian.theplugin.idea.ui.AtlassianToolbar;
-import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
-import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
-import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.NodeSearchAlgorithm;
+import com.atlassian.theplugin.idea.ui.tree.*;
 import com.atlassian.theplugin.idea.ui.tree.comment.FileNameNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralSectionNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.file.FileNode;
+import com.atlassian.theplugin.idea.ui.tree.file.FolderNode;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.application.ApplicationManager;
@@ -62,7 +62,9 @@ public class CommentTreePanel extends JPanel {
 	private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
 	private CommentTree commentTree = new CommentTree();
 
-	private static final AtlassianTreeNode ROOT = new FileNode("/", AtlassianClickAction.EMPTY_ACTION);
+	private AtlassianTreeModel fullModel;
+
+	private static final AtlassianTreeNode ROOT = new FolderNode("/", AtlassianClickAction.EMPTY_ACTION);
 	private Project project;
 	private static final String TOOLBAR_ID = "ThePlugin.Crucible.Comment.ToolBar";
 	public static final String MENU_PLACE = "menu comments";
@@ -109,6 +111,7 @@ public class CommentTreePanel extends JPanel {
 		}
 	}
 
+
 	private AtlassianTreeModel createTreeModel(final ReviewData review) {
 		ROOT.removeAllChildren();
 		AtlassianTreeModel model = new AtlassianTreeModel(ROOT);
@@ -135,31 +138,52 @@ public class CommentTreePanel extends JPanel {
 				addGeneralCommentTree(generalNode, review, comment, 0);
 			}
 			for (CrucibleFileInfo file : review.getFiles()) {
-				AtlassianTreeNode fileNode = new FileNameNode(review, file, new AtlassianClickAction() {
-					public void execute(final AtlassianTreeNode node, final int noOfClicks) {
-						switch (noOfClicks) {
-							case 1:
-								FileNameNode anode = (FileNameNode) node;
-								IdeaHelper.getReviewActionEventBroker().trigger(
-										new FocusOnFileEvent(crucibleAgent, anode.getReview(), anode.getFile()));
-								break;
-							default:
-								// do nothing
-						}
+					AtlassianTreeNode fileNode = new FileNameNode(review, file, new AtlassianClickAction() {
+						public void execute(final AtlassianTreeNode node, final int noOfClicks) {
+							switch (noOfClicks) {
+								case 1:
+									FileNameNode anode = (FileNameNode) node;
+									IdeaHelper.getReviewActionEventBroker().trigger(
+											new FocusOnFileEvent(crucibleAgent, anode.getReview(), anode.getFile()));
+									break;
+								default:
+									// do nothing
+							}
 
+						}
+					});
+					ROOT.addNode(fileNode);
+					for (VersionedComment comment : file.getVersionedComments()) {
+						addVersionedCommentTree(fileNode, review, file, comment, 0);
 					}
-				});
-				ROOT.addNode(fileNode);
-				for (VersionedComment comment : file.getVersionedComments()) {
-					addVersionedCommentTree(fileNode, review, file, comment, 0);
-				}
+
 			}
 		} catch (ValueNotYetInitialized valueNotYetInitialized) {
-			// ignore
+			PluginUtil.getLogger().error(valueNotYetInitialized.getMessage());
 		}
 		return model;
 	}
 
+	public CommentTree getCommentTree() {
+		return commentTree;
+	}
+
+	public void filterTreeNodes(Filter filter) {
+			commentTree.setModel(fullModel.getFilteredModel(filter));
+			refreshTree();
+	}
+
+	private void refreshTree() {
+		commentTree.setRootVisible(false);
+		commentTree.expandAll();
+		commentScroll.setViewportView(commentTree);
+		commentTree.initializeUI();
+		commentTree.setVisible(true);
+		commentTree.setEnabled(true);
+		commentTree.revalidate();
+		commentTree.repaint();
+		commentTree.addMouseListener(new PopupMouseAdapter());
+	}
 
 	private class MyCrucibleReviewActionListener extends CrucibleReviewActionListener {
 
@@ -168,15 +192,9 @@ public class CommentTreePanel extends JPanel {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					commentTree.setVisible(false);
-					commentTree = new CommentTree(createTreeModel(review));
-					commentTree.expandAll();
-					commentScroll.setViewportView(commentTree);
-					commentTree.initializeUI();
-					commentTree.setVisible(true);
-					commentTree.setEnabled(true);
-					commentTree.revalidate();
-					commentTree.repaint();
-					commentTree.addMouseListener(new PopupMouseAdapter());
+					fullModel = createTreeModel(review);
+					commentTree = new CommentTree(fullModel);
+					refreshTree();
 				}
 			});
 		}
@@ -186,7 +204,6 @@ public class CommentTreePanel extends JPanel {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					AtlassianTreeModel model = (AtlassianTreeModel) commentTree.getModel();
-					AtlassianTreeNode root = (AtlassianTreeNode) model.getRoot();
 					AtlassianTreeNode node = model.locateNode(new NodeSearchAlgorithm() {
 						@Override
 						public boolean check(AtlassianTreeNode node1) {
@@ -502,9 +519,11 @@ public class CommentTreePanel extends JPanel {
 				commentTree.focusOnNode(newCommentNode);
 			}
 		}
+
 	}
 
 	private class PopupMouseAdapter extends MouseAdapter {
+
 		@Override
 		public void mousePressed(MouseEvent e) {
 			processPopup(e);

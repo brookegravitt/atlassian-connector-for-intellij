@@ -201,7 +201,11 @@
                 class="com.atlassian.theplugin.idea.action.bamboo.changes.OpenRepoVersionAction"
                 text="Open Repository Version" icon="/objectBrowser/showEditorHighlighting.png"/>
 
-        <action id="ThePlugin.Tree.File.GroupByDir"
+		<action id="ThePlugin.Tree.File.Filter"
+                class="com.atlassian.theplugin.idea.action.tree.file.ToggleFilterFilesAction"
+                text="Show Files with comments only" icon="/actions/unselectall.png"/>
+
+		<action id="ThePlugin.Tree.File.GroupByDir"
                 class="com.atlassian.theplugin.idea.action.tree.file.ToggleViewAction"
                 text="Group By Directory" icon="/nodes/folder.png"/>
         <action id="ThePlugin.Tree.File.ExpandCollapseFiles"
@@ -260,14 +264,15 @@
         <group id="ThePlugin.Crucible.ReviewFileListToolBar" popup="false">
 			<reference id="ThePlugin.Crucible.ShowFileAction" />			
 			<reference id="ThePlugin.Crucible.ShowReviewItemDiffAction" />
+			<reference id="ThePlugin.Tree.File.Filter"/>
 		</group>
 
         <group id="ThePlugin.TreeOperations" popup="false" text="">
             <add-to-group anchor="last" group-id="ThePlugin.Bamboo.CommitListToolBar"/>
             <add-to-group anchor="last" group-id="ThePlugin.Crucible.ReviewFileListToolBar"/>
-            <reference id="ThePlugin.Tree.File.GroupByDir"/>
-            <reference id="ThePlugin.Tree.File.ExpandCollapseFiles"/>
-        </group>
+            <reference id="ThePlugin.Tree.File.GroupByDir"/>			
+			<reference id="ThePlugin.Tree.File.ExpandCollapseFiles"/>
+		</group>
 
         <!-- Crucible tool window panel related actions -->
         <action id="ThePlugin.Crucible.ShowHideCrucibleTab"

@@ -19,6 +19,7 @@ package com.atlassian.theplugin.idea.ui.tree.file;
 import com.atlassian.theplugin.commons.BambooFileInfo;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.vcs.AbstractVcs;
@@ -44,7 +45,11 @@ public class BambooFileNode extends FileNode {
         this(f, AtlassianClickAction.EMPTY_ACTION, psiFile);
     }
 
-    public PsiFile getPsiFile() {
+	public BambooFileNode(final BambooFileNode node) {
+		this(node.file, node.psiFile);
+	}
+
+	public PsiFile getPsiFile() {
         return psiFile;
     }
 
@@ -67,9 +72,13 @@ public class BambooFileNode extends FileNode {
         return MY_RENDERER;
     }
 
-    private static class BambooFileNodeRenderer extends ColoredTreeCellRenderer {
+	public AtlassianTreeNode getClone() {
+		return new BambooFileNode(this);
+	}
 
-        @Override
+	private static class BambooFileNodeRenderer extends ColoredTreeCellRenderer {
+
+		@Override
         public void customizeCellRenderer(JTree tree, Object value, boolean selected, boolean expanded,
                 boolean leaf, int row, boolean hasFocus) {
             BambooFileNode node = (BambooFileNode) value;
@@ -100,5 +109,6 @@ public class BambooFileNode extends FileNode {
             FileType type = mgr.getFileTypeByFileName(node.getName());
             setIcon(type.getIcon());
         }
-    }
+
+	}
 }

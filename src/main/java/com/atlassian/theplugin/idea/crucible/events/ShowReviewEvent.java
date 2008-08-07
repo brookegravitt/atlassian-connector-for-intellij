@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.crucible.events;
 
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
 
 /**
  * Created by IntelliJ IDEA.
@@ -29,9 +30,10 @@ import com.atlassian.theplugin.idea.crucible.ReviewData;
 public class ShowReviewEvent extends CrucibleEvent {
 	private ReviewData reviewInfo;
 
+
 	public ShowReviewEvent(CrucibleReviewActionListener caller, ReviewData reviewInfo) {
 		super(caller);
-		this.reviewInfo = reviewInfo;
+		this.reviewInfo = reviewInfo;		
 	}
 
 	protected void notify(CrucibleReviewActionListener listener) {
