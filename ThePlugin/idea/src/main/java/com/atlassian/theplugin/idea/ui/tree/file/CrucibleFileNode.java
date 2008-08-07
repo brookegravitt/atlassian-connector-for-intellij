@@ -19,6 +19,7 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.ui.ColoredTreeCellRenderer;
@@ -51,6 +52,10 @@ public class CrucibleFileNode extends FileNode {
 		super(FilenameUtils.getName(file.getFileDescriptor().getUrl()), action);
 		this.review = review;
 		this.file = file;
+	}
+
+	public CrucibleFileNode(final CrucibleFileNode node) {
+		this(node.getReview(), node.getFile(), node.getAtlassianClickAction());		
 	}
 
 	@Override
@@ -122,4 +127,7 @@ public class CrucibleFileNode extends FileNode {
 		}
 	}
 
+	public AtlassianTreeNode getClone() {
+		return new CrucibleFileNode(this);
+	}
 }

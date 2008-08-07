@@ -33,6 +33,9 @@ import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListen
 import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.atlassian.theplugin.idea.crucible.events.*;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
+import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
+import com.atlassian.theplugin.idea.ui.tree.Filter;
+import com.atlassian.theplugin.idea.ui.tree.CrucibleFilterProvider;
 import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
@@ -63,12 +66,13 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
 	protected static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
 	protected ProgressAnimationProvider progressAReviewActionEventBrokernimation = new ProgressAnimationProvider();
 	private CrucibleVersion crucibleVersion = CrucibleVersion.UNKNOWN;
-	private static ReviewItemTreePanel reviewItemTreePanel;
+	private ReviewItemTreePanel reviewItemTreePanel;
 	private CommentTreePanel reviewComentsPanel;
 	private ReviewActionEventBroker eventBroker;
 	private static final int LEFT_WIDTH = 150;
 	private static final int LEFT_HEIGHT = 250;
 	private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
+	private CrucibleFilterProvider filterProvider;
 
 
 	protected String getInitialMessage() {
@@ -85,6 +89,14 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
 			project.putUserData(WINDOW_PROJECT_KEY, window);
 		}
 		return window;
+	}
+
+	public ReviewItemTreePanel getReviewItemTreePanel() {
+		return reviewItemTreePanel;
+	}
+
+	public CommentTreePanel getReviewComentsPanel() {
+		return reviewComentsPanel;
 	}
 
 	public void showCrucibleReviewWindow() {
@@ -132,6 +144,7 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
 
 
 		progressAnimation.configure(this, reviewItemTreePanel, BorderLayout.CENTER);
+		filterProvider = new CrucibleFilterProvider();
 
 	}
 
@@ -195,6 +208,12 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
 			return this;
 		}
 		return null;
+	}
+
+	public void switchFilter() {
+		Filter filter = filterProvider.switchFilter();
+		getReviewComentsPanel().filterTreeNodes(filter);
+		getReviewItemTreePanel().filterTreeNodes(filter);
 	}
 
 	private final class MyAgent extends CrucibleReviewActionListener {

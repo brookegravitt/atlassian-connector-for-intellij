@@ -19,6 +19,7 @@ package com.atlassian.theplugin.idea.ui.tree.comment;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.util.CommentPanelBuilder;
 
 import javax.swing.*;
@@ -36,6 +37,12 @@ public class GeneralCommentTreeNode extends CommentTreeNode {
 		this.comment = comment;
 	}
 
+	public GeneralCommentTreeNode(final GeneralCommentTreeNode node) {
+		super(node.getAtlassianClickAction());
+		this.review = node.review;
+		this.comment = node.comment;
+	}
+
 	public ReviewData getReview() {
 		return review;
 	}
@@ -46,6 +53,10 @@ public class GeneralCommentTreeNode extends CommentTreeNode {
 
 	public TreeCellRenderer getTreeCellRenderer() {
 		return MY_RENDERER;
+	}
+
+	public AtlassianTreeNode getClone() {
+		return new GeneralCommentTreeNode(this);
 	}
 
 	private static class MyRenderer implements TreeCellRenderer {
