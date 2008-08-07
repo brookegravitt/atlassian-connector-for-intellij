@@ -21,6 +21,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusListener;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.events.GeneralCommentAdded;
 import com.atlassian.theplugin.idea.crucible.events.VersionedCommentAdded;
@@ -179,63 +180,74 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 		}
 	}
 
-	public void updateReviews(Map<PredefinedFilter, List<ReviewData>> incomingReviews,
-			Map<String, List<ReviewData>> customIncomingReviews) {
+	public void updateReviews(Map<PredefinedFilter, ReviewNotificationBean> incomingReviews,
+			Map<String, ReviewNotificationBean> customIncomingReviews) {
 
 		notifications.clear();
+		boolean exceptionFound = false;
+
 		Set<ReviewData> processedReviews = new HashSet<ReviewData>();
 		if (!incomingReviews.isEmpty()) {
 			for (PredefinedFilter predefinedFilter : incomingReviews.keySet()) {
-				List<ReviewData> incomingCategory = incomingReviews.get(predefinedFilter);
+				if (incomingReviews.get(predefinedFilter).getException() == null) {
+					List<ReviewData> incomingCategory = incomingReviews.get(predefinedFilter).getReviews();
 
-				for (ReviewData reviewDataInfo : incomingCategory) {
-					if (processedReviews.contains(reviewDataInfo)) {
-						continue;
-					}
-					if (reviews.contains(reviewDataInfo)) {
-						ReviewData existing = null;
-						for (ReviewData review : reviews) {
-							if (review.equals(reviewDataInfo)) {
-								existing = review;
+					for (ReviewData reviewDataInfo : incomingCategory) {
+						if (processedReviews.contains(reviewDataInfo)) {
+							continue;
+						}
+						if (reviews.contains(reviewDataInfo)) {
+							ReviewData existing = null;
+							for (ReviewData review : reviews) {
+								if (review.equals(reviewDataInfo)) {
+									existing = review;
+								}
 							}
-						}
 
-						// check state change
-						if (!reviewDataInfo.getState().equals(existing.getState())) {
-							notifications.add(new ReviewStateChangedNotification(reviewDataInfo, existing.getState()));
-						}
+							// check state change
+							if (!reviewDataInfo.getState().equals(existing.getState())) {
+								notifications.add(new ReviewStateChangedNotification(reviewDataInfo, existing.getState()));
+							}
 
-						// check review items
-						try {
-							checkNewReviewItems(existing, reviewDataInfo);
-						} catch (ValueNotYetInitialized valueNotYetInitialized) {
-							// TODO all is it correct
-						}
+							// check review items
+							try {
+								checkNewReviewItems(existing, reviewDataInfo);
+							} catch (ValueNotYetInitialized valueNotYetInitialized) {
+								// TODO all is it correct
+							}
 
-						// check reviewers status
-						try {
-							checkReviewersStatus(existing, reviewDataInfo);
-						} catch (ValueNotYetInitialized valueNotYetInitialized) {
-							// TODO all is it correct
-						}
+							// check reviewers status
+							try {
+								checkReviewersStatus(existing, reviewDataInfo);
+							} catch (ValueNotYetInitialized valueNotYetInitialized) {
+								// TODO all is it correct
+							}
 
-						// check comments status
-						try {
-							checkComments(existing, reviewDataInfo);
-						} catch (ValueNotYetInitialized valueNotYetInitialized) {
-							// TODO all is it correct
-						}
+							// check comments status
+							try {
+								checkComments(existing, reviewDataInfo);
+							} catch (ValueNotYetInitialized valueNotYetInitialized) {
+								// TODO all is it correct
+							}
 
-						processedReviews.add(reviewDataInfo);
-					} else {
-						notifications.add(new NewReviewNotification(reviewDataInfo));
-						processedReviews.add(reviewDataInfo);
+							processedReviews.add(reviewDataInfo);
+						} else {
+							notifications.add(new NewReviewNotification(reviewDataInfo));
+							processedReviews.add(reviewDataInfo);
+						}
 					}
+				} else {
+					// do not analyze events when exception was raised.
+					// maybe next time wil be better
+					notifications.add(new NewExceptionNotification(incomingReviews.get(predefinedFilter).getException()));
+					exceptionFound = true;
 				}
-			}
 
-			reviews.clear();
-			reviews.addAll(processedReviews);
+			}
+			if (!exceptionFound) {
+				reviews.clear();
+				reviews.addAll(processedReviews);
+			}
 		}
 
 		if (!firstRun) {
