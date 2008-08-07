@@ -21,6 +21,7 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
+import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import junit.framework.TestCase;
 
 import java.util.*;
@@ -286,45 +287,51 @@ public class CrucibleReviewNotifierTest extends TestCase {
 	public void testNewReviews() throws ValueNotYetInitialized {
 		List<ReviewData> emptyReviews = new ArrayList<ReviewData>();
 		List<ReviewData> reviews = prepareReviewData(State.REVIEW);
+		ReviewNotificationBean bean = new ReviewNotificationBean();
 
-		Map<PredefinedFilter, List<ReviewData>> map = new HashMap<PredefinedFilter, List<ReviewData>>();
-		map.put(PredefinedFilter.ToReview, emptyReviews);
+		Map<PredefinedFilter, ReviewNotificationBean> map = new HashMap<PredefinedFilter, ReviewNotificationBean>();
+		bean.setReviews(emptyReviews);
+		map.put(PredefinedFilter.ToReview, bean);
 
 		CrucibleReviewNotifier notifier = new CrucibleReviewNotifier();
-		notifier.updateReviews(map, new HashMap<String, List<ReviewData>>());
+		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
 		assertEquals(0, notifier.getNotifications().size());
 
-		map.put(PredefinedFilter.ToReview, reviews);
-		notifier.updateReviews(map, new HashMap<String, List<ReviewData>>());
+		bean.setReviews(reviews);
+		map.put(PredefinedFilter.ToReview, bean);
+		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
 		assertEquals(reviews.size(), notifier.getNotifications().size());
 
-		notifier.updateReviews(map, new HashMap<String, List<ReviewData>>());
+		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
 		assertEquals(0, notifier.getNotifications().size());
 	}
 
 	public void testResetStateReviews() throws ValueNotYetInitialized {
 		List<ReviewData> emptyReviews = new ArrayList<ReviewData>();
 		List<ReviewData> reviews = prepareReviewData(State.REVIEW);
+		ReviewNotificationBean bean = new ReviewNotificationBean();
 
-		Map<PredefinedFilter, List<ReviewData>> map = new HashMap<PredefinedFilter, List<ReviewData>>();
-		map.put(PredefinedFilter.ToReview, emptyReviews);
+		Map<PredefinedFilter, ReviewNotificationBean> map = new HashMap<PredefinedFilter, ReviewNotificationBean>();
+		bean.setReviews(emptyReviews);
+		map.put(PredefinedFilter.ToReview, bean);
 
 		CrucibleReviewNotifier notifier = new CrucibleReviewNotifier();
-		notifier.updateReviews(map, new HashMap<String, List<ReviewData>>());
+		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
 		assertEquals(0, notifier.getNotifications().size());
 
-		map.put(PredefinedFilter.ToReview, reviews);
-		notifier.updateReviews(map, new HashMap<String, List<ReviewData>>());
+		bean.setReviews(reviews);
+		map.put(PredefinedFilter.ToReview, bean);
+		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
 		assertEquals(2, notifier.getNotifications().size());
 		assertTrue(notifier.getNotifications().get(0) instanceof NewReviewNotification);
 		assertTrue(notifier.getNotifications().get(1) instanceof NewReviewNotification);
 
-		notifier.updateReviews(map, new HashMap<String, List<ReviewData>>());
+		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
 		assertEquals(0, notifier.getNotifications().size());
 
 		notifier.resetState();
 
-		notifier.updateReviews(map, new HashMap<String, List<ReviewData>>());
+		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
 		assertEquals(2, notifier.getNotifications().size());
 		assertTrue(notifier.getNotifications().get(0) instanceof NewReviewNotification);
 		assertTrue(notifier.getNotifications().get(1) instanceof NewReviewNotification);
@@ -333,16 +340,19 @@ public class CrucibleReviewNotifierTest extends TestCase {
 	public void testStatusChange() throws ValueNotYetInitialized {
 		List<ReviewData> reviews = prepareReviewData(State.REVIEW);
 
-		Map<PredefinedFilter, List<ReviewData>> map = new HashMap<PredefinedFilter, List<ReviewData>>();
+		Map<PredefinedFilter, ReviewNotificationBean> map = new HashMap<PredefinedFilter, ReviewNotificationBean>();
 		CrucibleReviewNotifier notifier = new CrucibleReviewNotifier();
+		ReviewNotificationBean bean = new ReviewNotificationBean();
 
-		map.put(PredefinedFilter.ToReview, reviews);
-		notifier.updateReviews(map, new HashMap<String, List<ReviewData>>());
+		bean.setReviews(reviews);
+		map.put(PredefinedFilter.ToReview, bean);
+		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
 		assertEquals(reviews.size(), notifier.getNotifications().size());
 
 		reviews = prepareReviewData(State.CLOSED);
-		map.put(PredefinedFilter.ToReview, reviews);
-		notifier.updateReviews(map, new HashMap<String, List<ReviewData>>());
+		bean.setReviews(reviews);
+		map.put(PredefinedFilter.ToReview, bean);
+		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
 		assertEquals(2, notifier.getNotifications().size());
 		assertTrue(notifier.getNotifications().get(0) instanceof ReviewStateChangedNotification);
 		assertTrue(notifier.getNotifications().get(1) instanceof ReviewStateChangedNotification);
@@ -350,33 +360,38 @@ public class CrucibleReviewNotifierTest extends TestCase {
 
 	public void testReviewerStatus() throws ValueNotYetInitialized {
 		List<ReviewData> reviews = prepareReviewData(State.REVIEW);
+		ReviewNotificationBean bean = new ReviewNotificationBean();
 
-		Map<PredefinedFilter, List<ReviewData>> map = new HashMap<PredefinedFilter, List<ReviewData>>();
+		Map<PredefinedFilter, ReviewNotificationBean> map = new HashMap<PredefinedFilter, ReviewNotificationBean>();
 		CrucibleReviewNotifier notifier = new CrucibleReviewNotifier();
 
-		map.put(PredefinedFilter.ToReview, reviews);
-		notifier.updateReviews(map, new HashMap<String, List<ReviewData>>());
+		bean.setReviews(reviews);
+		map.put(PredefinedFilter.ToReview, bean);
+		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
 		assertEquals(reviews.size(), notifier.getNotifications().size());
 
 		reviews = prepareReviewData(State.REVIEW);
 		((ReviewerBean) reviews.get(0).getReviewers().get(0)).setCompleted(true);
-		map.put(PredefinedFilter.ToReview, reviews);
-		notifier.updateReviews(map, new HashMap<String, List<ReviewData>>());
+		bean.setReviews(reviews);
+		map.put(PredefinedFilter.ToReview, bean);
+		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
 		assertEquals(1, notifier.getNotifications().size());
 		assertTrue(notifier.getNotifications().get(0) instanceof ReviewerCompletedNotification);
 
 		reviews = prepareReviewData(State.REVIEW);
 		((ReviewerBean) reviews.get(0).getReviewers().get(0)).setCompleted(false);
-		map.put(PredefinedFilter.ToReview, reviews);
-		notifier.updateReviews(map, new HashMap<String, List<ReviewData>>());
+		bean.setReviews(reviews);
+		map.put(PredefinedFilter.ToReview, bean);
+		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
 		assertEquals(1, notifier.getNotifications().size());
 		assertTrue(notifier.getNotifications().get(0) instanceof ReviewerCompletedNotification);
 
 		reviews = prepareReviewData(State.REVIEW);
 		((ReviewerBean) reviews.get(0).getReviewers().get(0)).setCompleted(true);
 		((ReviewerBean) reviews.get(0).getReviewers().get(1)).setCompleted(true);
-		map.put(PredefinedFilter.ToReview, reviews);
-		notifier.updateReviews(map, new HashMap<String, List<ReviewData>>());
+		bean.setReviews(reviews);
+		map.put(PredefinedFilter.ToReview, bean);
+		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
 		assertEquals(3, notifier.getNotifications().size());
 		assertTrue(notifier.getNotifications().get(0) instanceof ReviewerCompletedNotification);
 		assertTrue(notifier.getNotifications().get(1) instanceof ReviewerCompletedNotification);
@@ -385,12 +400,14 @@ public class CrucibleReviewNotifierTest extends TestCase {
 
 	public void testNewItem() throws ValueNotYetInitialized {
 		List<ReviewData> reviews = prepareReviewData(State.REVIEW);
+		ReviewNotificationBean bean = new ReviewNotificationBean();
 
-		Map<PredefinedFilter, List<ReviewData>> map = new HashMap<PredefinedFilter, List<ReviewData>>();
+		Map<PredefinedFilter, ReviewNotificationBean> map = new HashMap<PredefinedFilter, ReviewNotificationBean>();
 		CrucibleReviewNotifier notifier = new CrucibleReviewNotifier();
 
-		map.put(PredefinedFilter.ToReview, reviews);
-		notifier.updateReviews(map, new HashMap<String, List<ReviewData>>());
+		bean.setReviews(reviews);
+		map.put(PredefinedFilter.ToReview, bean);
+		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
 		assertEquals(reviews.size(), notifier.getNotifications().size());
 
 		reviews = prepareReviewData(State.REVIEW);
@@ -447,20 +464,23 @@ public class CrucibleReviewNotifierTest extends TestCase {
 				return null;  //To change body of implemented methods use File | Settings | File Templates.
 			}
 		});
-		map.put(PredefinedFilter.ToReview, reviews);
-		notifier.updateReviews(map, new HashMap<String, List<ReviewData>>());
+		bean.setReviews(reviews);
+		map.put(PredefinedFilter.ToReview, bean);
+		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
 		assertEquals(1, notifier.getNotifications().size());
 		assertTrue(notifier.getNotifications().get(0) instanceof NewReviewItemNotification);
 	}
 
 	public void testNewGeneralComment() throws ValueNotYetInitialized {
 		List<ReviewData> reviews = prepareReviewData(State.REVIEW);
+		ReviewNotificationBean bean = new ReviewNotificationBean();
 
-		Map<PredefinedFilter, List<ReviewData>> map = new HashMap<PredefinedFilter, List<ReviewData>>();
+		Map<PredefinedFilter, ReviewNotificationBean> map = new HashMap<PredefinedFilter, ReviewNotificationBean>();
 		CrucibleReviewNotifier notifier = new CrucibleReviewNotifier();
 
-		map.put(PredefinedFilter.ToReview, reviews);
-		notifier.updateReviews(map, new HashMap<String, List<ReviewData>>());
+		bean.setReviews(reviews);
+		map.put(PredefinedFilter.ToReview, bean);
+		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
 		assertEquals(reviews.size(), notifier.getNotifications().size());
 
 		reviews = prepareReviewData(State.REVIEW);
@@ -517,20 +537,23 @@ public class CrucibleReviewNotifierTest extends TestCase {
 				return null;  //To change body of implemented methods use File | Settings | File Templates.
 			}
 		});
-		map.put(PredefinedFilter.ToReview, reviews);
-		notifier.updateReviews(map, new HashMap<String, List<ReviewData>>());
+		bean.setReviews(reviews);
+		map.put(PredefinedFilter.ToReview, bean);
+		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
 		assertEquals(1, notifier.getNotifications().size());
 		assertTrue(notifier.getNotifications().get(0) instanceof NewGeneralCommentNotification);
 	}
 
 	public void testNewVersionedComment() throws ValueNotYetInitialized {
 		List<ReviewData> reviews = prepareReviewData(State.REVIEW);
+		ReviewNotificationBean bean = new ReviewNotificationBean();
 
-		Map<PredefinedFilter, List<ReviewData>> map = new HashMap<PredefinedFilter, List<ReviewData>>();
+		Map<PredefinedFilter, ReviewNotificationBean> map = new HashMap<PredefinedFilter, ReviewNotificationBean>();
 		CrucibleReviewNotifier notifier = new CrucibleReviewNotifier();
 
-		map.put(PredefinedFilter.ToReview, reviews);
-		notifier.updateReviews(map, new HashMap<String, List<ReviewData>>());
+		bean.setReviews(reviews);
+		map.put(PredefinedFilter.ToReview, bean);
+		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
 		assertEquals(reviews.size(), notifier.getNotifications().size());
 
 		reviews = prepareReviewData(State.REVIEW);
@@ -621,8 +644,9 @@ public class CrucibleReviewNotifierTest extends TestCase {
 				return null;  //To change body of implemented methods use File | Settings | File Templates.
 			}
 		});
-		map.put(PredefinedFilter.ToReview, reviews);
-		notifier.updateReviews(map, new HashMap<String, List<ReviewData>>());
+		bean.setReviews(reviews);
+		map.put(PredefinedFilter.ToReview, bean);
+		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
 		assertEquals(1, notifier.getNotifications().size());
 		assertTrue(notifier.getNotifications().get(0) instanceof NewVersionedCommentNotification);
 	}
