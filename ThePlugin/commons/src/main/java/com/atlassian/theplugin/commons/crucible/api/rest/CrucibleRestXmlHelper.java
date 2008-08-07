@@ -132,8 +132,8 @@ public final class CrucibleRestXmlHelper {
 		if (reviewNode.getChild("moderator") != null) {
 			review.setModerator(parseUserNode(reviewNode.getChild("moderator")));
 		}
-		review.setCreateDate(parseCommentTime(getChildText(reviewNode, "createDate")));
-		review.setCloseDate(parseCommentTime(getChildText(reviewNode, "closeDate")));
+		review.setCreateDate(parseDateTime(getChildText(reviewNode, "createDate")));
+		review.setCloseDate(parseDateTime(getChildText(reviewNode, "closeDate")));
 		review.setDescription(getChildText(reviewNode, "description"));
 		review.setName(getChildText(reviewNode, "name"));
 		review.setProjectKey(getChildText(reviewNode, "projectKey"));
@@ -144,7 +144,12 @@ public final class CrucibleRestXmlHelper {
 			review.setState(State.fromValue(stateString));
 		}
 
-		review.setAllowReviewerToJoin(Boolean.parseBoolean(getChildText(reviewNode, "allowReviewerToJoin")));
+		String a = getChildText(reviewNode, "allowReviewerToJoin");
+		if (a != null && !"".equalsIgnoreCase(a)) {
+			review.setAllowReviewerToJoin(Boolean.parseBoolean(a));
+		} else {
+			review.setAllowReviewerToJoin(Boolean.parseBoolean(getChildText(reviewNode, "allowReviewersToJoin")));
+		}
 
 		if (reviewNode.getChild("permaId") != null) {
 			PermIdBean permId = new PermIdBean();
@@ -376,7 +381,9 @@ public final class CrucibleRestXmlHelper {
 		if (review.getState() != null) {
 			addTag(reviewData, "state", review.getState().value());
 		}
+		// @todo update when CR M5 will be released
 		addTag(reviewData, "allowReviewerToJoin", Boolean.toString(review.isAllowReviewerToJoin()));
+		addTag(reviewData, "allowReviewersToJoin", Boolean.toString(review.isAllowReviewerToJoin()));
 		if (review.getPermId() != null) {
 			Element permIdElement = new Element("permaId");
 			getContent(reviewData).add(permIdElement);
@@ -400,7 +407,16 @@ public final class CrucibleRestXmlHelper {
 				)
 		);
 		reviewItem.setRepositoryName(getChildText(reviewItemNode, "repositoryName"));
-		// todo lguminski to ask Marek about XML sructure
+		reviewItem.setAuthorName(getChildText(reviewItemNode, "authorName"));
+		reviewItem.setCommitDate(parseDateTime(getChildText(reviewItemNode, "commitDate")));
+		String fileType = getChildText(reviewItemNode, "fileType");
+		if (fileType != null && !"".equals(fileType)) {
+			try {
+				reviewItem.setFileType(FileType.valueOf(fileType));
+			} catch (IllegalArgumentException ex) {
+				reviewItem.setFileType(FileType.Unknown);
+			}
+		}
 		if (reviewItemNode.getChild("permId") != null) {
 			PermIdBean permId = new PermIdBean();
 			permId.setId(reviewItemNode.getChild("permId").getChild("id").getText());
@@ -462,7 +478,7 @@ public final class CrucibleRestXmlHelper {
 		commentBean.setDefectApproved(Boolean.parseBoolean(getChildText(reviewCommentNode, "defectApproved")));
 		commentBean.setDraft(Boolean.parseBoolean(getChildText(reviewCommentNode, "draft")));
 		commentBean.setDeleted(Boolean.parseBoolean(getChildText(reviewCommentNode, "deleted")));
-		commentBean.setCreateDate(parseCommentTime(getChildText(reviewCommentNode, "createDate")));
+		commentBean.setCreateDate(parseDateTime(getChildText(reviewCommentNode, "createDate")));
 		PermIdBean permId = new PermIdBean();
 		permId.setId(getChildText(reviewCommentNode, "permaIdAsString"));
 		commentBean.setPermId(permId);
@@ -474,14 +490,6 @@ public final class CrucibleRestXmlHelper {
 				List<Element> entries = getChildElements(metric, "entry");
 				for (Element entry : entries) {
 					String key = getChildText(entry, "key");
-/*					
-					StringBuffer sb = new StringBuffer();
-					Matcher matcher = FIRST_LETTER.matcher(key);
-                    if (matcher.find(0)) {
-                        matcher.appendReplacement(sb, matcher.group(1).toUpperCase());
-                    }
-                    key = matcher.appendTail(sb).toString();
-*/
 					List<Element> values = getChildElements(entry, "value");
 					for (Element value : values) {
 						CustomFieldBean field = new CustomFieldBean();
@@ -711,7 +719,7 @@ public final class CrucibleRestXmlHelper {
 
 	private static final DateTimeFormatter COMMENT_TIME_FORMAT = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
-	private static Date parseCommentTime(String date) {
+	private static Date parseDateTime(String date) {
 		if (date != null && !date.equals("")) {
 			return COMMENT_TIME_FORMAT.parseDateTime(date).toDate();
 		} else {
