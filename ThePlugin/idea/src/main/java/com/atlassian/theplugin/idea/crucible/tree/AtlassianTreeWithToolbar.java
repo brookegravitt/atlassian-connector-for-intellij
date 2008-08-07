@@ -22,6 +22,8 @@ public class AtlassianTreeWithToolbar extends ComponentWithToolbar {
 	private AtlassianTree tree;
 	private ModelProvider modelProvider = ModelProvider.EMPTY_MODEL_PROVIDER;
 	private STATE state = STATE.DIRED;
+
+
 	private VIEW_STATE viewState = VIEW_STATE.EXPANDED;
 
 	public AtlassianTreeWithToolbar(String toolbar, final ModelProvider modelProvider) {
@@ -40,6 +42,7 @@ public class AtlassianTreeWithToolbar extends ComponentWithToolbar {
 		return tree;
 	}
 
+
 	public void setRootVisible(final boolean isVisible) {
 		tree.setRootVisible(isVisible);
 	}
@@ -57,6 +60,10 @@ public class AtlassianTreeWithToolbar extends ComponentWithToolbar {
 	public void setModelProvider(final ModelProvider modelProvider) {
 		this.modelProvider = modelProvider;
 		setState(state);
+	}
+
+	public ModelProvider getModelProvider() {
+		return modelProvider;
 	}
 
 	public STATE getState() {

@@ -20,6 +20,7 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import static com.intellij.ui.SimpleTextAttributes.STYLE_ITALIC;
@@ -44,6 +45,11 @@ public class CrucibleChangeSetTitleNode extends FileNode {
 	public CrucibleChangeSetTitleNode(ReviewData review, AtlassianClickAction action) {
 		super(review.getName(), action);
 		this.review = review;
+	}
+
+	public CrucibleChangeSetTitleNode(final CrucibleChangeSetTitleNode node) {
+		super(node.getReview().getName(), node.getAtlassianClickAction());
+		this.review = node.review;
 	}
 
 	@Override
@@ -102,4 +108,7 @@ public class CrucibleChangeSetTitleNode extends FileNode {
 		}
 	}
 
+	public AtlassianTreeNode getClone() {
+		return new CrucibleChangeSetTitleNode(this);
+	}
 }

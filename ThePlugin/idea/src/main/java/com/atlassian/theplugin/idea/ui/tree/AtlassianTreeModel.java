@@ -16,7 +16,10 @@
 
 package com.atlassian.theplugin.idea.ui.tree;
 
+import com.atlassian.theplugin.idea.ui.tree.file.FileNode;
+
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 
 /**
  * Created by IntelliJ IDEA.
@@ -34,6 +37,21 @@ public class AtlassianTreeModel extends DefaultTreeModel {
 	public AtlassianTreeNode locateNode(NodeSearchAlgorithm alg) {
 		return AtlassianTreeModel.locateNode((AtlassianTreeNode) getRoot(), alg);
 	}
+
+	public AtlassianTreeModel getFilteredModel(Filter filter) {
+		AtlassianTreeNode root = getRoot();
+		AtlassianTreeNode newRoot = root.filter(filter);
+		if (newRoot == null) {
+			newRoot = AtlassianTreeNode.EMPTY_NODE;
+		}
+		AtlassianTreeModel result = new AtlassianTreeModel(newRoot);
+		return result;
+	}
+
+	public AtlassianTreeNode getRoot() {
+		return (AtlassianTreeNode) super.getRoot();
+	}
+
 
 	private static AtlassianTreeNode locateNode(AtlassianTreeNode startingNode, NodeSearchAlgorithm alg) {
 		if (alg.check(startingNode)) {
