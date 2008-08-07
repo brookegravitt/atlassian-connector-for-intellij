@@ -406,6 +406,28 @@ public final class CrucibleRestXmlHelper {
 						review.getVirtualFileSystem()
 				)
 		);
+
+		String c = getChildText(reviewItemNode, "commitType");
+		if (!"".equals(c)) {
+			reviewItem.setCommitType(CommitType.valueOf(c));
+		} else {
+			if (!"".equals(reviewItem.getOldFileDescriptor().getRevision())
+					&& !"".equals(reviewItem.getFileDescriptor().getRevision())) {
+				reviewItem.setCommitType(CommitType.Modified);
+			} else {
+				if ("".equals(reviewItem.getOldFileDescriptor().getRevision())
+						&& !"".equals(reviewItem.getFileDescriptor().getRevision())) {
+					reviewItem.setCommitType(CommitType.Added);
+				} else {
+					if ("".equals(reviewItem.getOldFileDescriptor().getRevision())
+							&& !"".equals(reviewItem.getFileDescriptor().getRevision())) {
+						reviewItem.setCommitType(CommitType.Deleted);
+					} else {
+						reviewItem.setCommitType(CommitType.Unknown);
+					}
+				}
+			}
+		}
 		reviewItem.setRepositoryName(getChildText(reviewItemNode, "repositoryName"));
 		reviewItem.setAuthorName(getChildText(reviewItemNode, "authorName"));
 		reviewItem.setCommitDate(parseDateTime(getChildText(reviewItemNode, "commitDate")));

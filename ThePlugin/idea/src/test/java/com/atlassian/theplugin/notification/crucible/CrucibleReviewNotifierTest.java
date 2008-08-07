@@ -214,6 +214,10 @@ public class CrucibleReviewNotifierTest extends TestCase {
 				return null;
 			}
 
+			public CommitType getCommitType() {
+				return null;  //To change body of implemented methods use File | Settings | File Templates.
+			}
+
 			public VersionedVirtualFile getFileDescriptor() {
 				return null;
 			}
@@ -432,6 +436,10 @@ public class CrucibleReviewNotifierTest extends TestCase {
 			}
 
 			public Date getCommitDate() {
+				return null;  //To change body of implemented methods use File | Settings | File Templates.
+			}
+
+			public CommitType getCommitType() {
 				return null;  //To change body of implemented methods use File | Settings | File Templates.
 			}
 

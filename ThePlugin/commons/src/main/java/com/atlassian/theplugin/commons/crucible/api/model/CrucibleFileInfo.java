@@ -41,4 +41,6 @@ public interface CrucibleFileInfo extends VersionedFileInfo {
 	String getAuthorName();
 
 	Date getCommitDate();
+
+	CommitType getCommitType();
 }

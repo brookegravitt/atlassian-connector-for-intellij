@@ -46,8 +46,8 @@ public class CommentAction extends AnAction {
 			return;
 		}
 
-		int start = ed.getDocument().getLineNumber(ed.getSelectionModel().getSelectionStart());
-		int end = ed.getDocument().getLineNumber(ed.getSelectionModel().getSelectionEnd());
+		int start = ed.getDocument().getLineNumber(ed.getSelectionModel().getSelectionStart()) + 1;
+		int end = ed.getDocument().getLineNumber(ed.getSelectionModel().getSelectionEnd()) + 1;
 
 		ReviewData review = ed.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
 		CrucibleFileInfo reviewItem = ed.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);

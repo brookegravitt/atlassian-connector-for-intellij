@@ -29,6 +29,7 @@ public class CrucibleFileInfoImpl implements CrucibleFileInfo {
 	private FileType fileType;
 	private String authorName;
 	private Date commitDate;
+	private CommitType commitType;
 	private int numberOfComments = 0;
 
 	/**
@@ -154,5 +155,13 @@ public class CrucibleFileInfoImpl implements CrucibleFileInfo {
 
 	public void setCommitDate(final Date commitDate) {
 		this.commitDate = commitDate;
+	}
+
+	public CommitType getCommitType() {
+		return commitType;
+	}
+
+	public void setCommitType(final CommitType commitType) {
+		this.commitType = commitType;
 	}
 }
