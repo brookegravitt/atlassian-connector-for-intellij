@@ -18,6 +18,11 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
+import com.atlassian.theplugin.idea.ui.tree.Filter;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.comment.FileNameNode;
+import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 
 import javax.swing.tree.TreeCellRenderer;
 import java.awt.event.ComponentAdapter;
@@ -66,4 +71,6 @@ public class CommentTree extends AtlassianTree {
 			return DISPATCHING_RENDERER;
 		}
 	}
+
+
 }

@@ -31,6 +31,7 @@ import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListen
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.NodeSearchAlgorithm;
+import com.atlassian.theplugin.idea.ui.tree.Filter;
 import com.atlassian.theplugin.idea.ui.tree.file.CrucibleChangeSetTitleNode;
 import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
 import com.atlassian.theplugin.idea.ui.tree.file.FileTreeModelBuilder;
@@ -45,9 +46,8 @@ import java.util.List;
 
 public final class ReviewItemTreePanel extends JPanel {
 
-
 	//	ProjectView.
-	private AtlassianTreeWithToolbar reviewFilesTree = null;
+	private FilterableTreeWithToolbar reviewFilesTree = null;
 	private CrucibleReviewActionListener listener;
 	private static final int WIDTH = 150;
 	private static final int HEIGHT = 250;
@@ -74,7 +74,7 @@ public final class ReviewItemTreePanel extends JPanel {
 
 	public JPanel getReviewItemTree() {
 		if (reviewFilesTree == null) {
-			reviewFilesTree = new AtlassianTreeWithToolbar("ThePlugin.Crucible.ReviewFileListToolBar");
+			reviewFilesTree = new FilterableTreeWithToolbar("ThePlugin.Crucible.ReviewFileListToolBar");
 			reviewFilesTree.setRootVisible(false);
 		}
 		return reviewFilesTree;
@@ -88,6 +88,12 @@ public final class ReviewItemTreePanel extends JPanel {
 
 	public ProgressAnimationProvider getProgressAnimation() {
 		return progressAnimation;
+	}
+
+	public void filterTreeNodes(Filter filter) {
+		reviewFilesTree.setFilter(filter);
+		reviewFilesTree.revalidate();
+		reviewFilesTree.repaint();
 	}
 
 	private final class MyReviewActionListener extends CrucibleReviewActionListener {
@@ -150,7 +156,7 @@ public final class ReviewItemTreePanel extends JPanel {
 			});
 		}
 
-
+		@Override
 		public void showReview(final ReviewData reviewItem) {
 			List<CrucibleFileInfo> files;
 			try {
@@ -172,17 +178,14 @@ public final class ReviewItemTreePanel extends JPanel {
 
 					statusLabel.setText(createGeneralInfoText(reviewItem));
 					reviewFilesTree.setModelProvider(new ModelProvider() {
-						private AtlassianTreeModel diredModel =
-								FileTreeModelBuilder.buildTreeModelFromCrucibleChangeSet(reviewItem, files1);
-						private AtlassianTreeModel flatModel =
-								FileTreeModelBuilder.buildFlatModelFromCrucibleChangeSet(reviewItem, files1);
 
+						@Override
 						public AtlassianTreeModel getModel(final AtlassianTreeWithToolbar.STATE state) {
 							switch (state) {
 								case DIRED:
-									return diredModel;
+									return FileTreeModelBuilder.buildTreeModelFromCrucibleChangeSet(reviewItem, files1, getFilter());
 								case FLAT:
-									return flatModel;
+									return FileTreeModelBuilder.buildFlatModelFromCrucibleChangeSet(reviewItem, files1, getFilter());
 								default:
 									throw new IllegalStateException("Unknown model requested");
 							}
@@ -192,6 +195,8 @@ public final class ReviewItemTreePanel extends JPanel {
 				}
 			});
 		}
+
+
 
 		private String createGeneralInfoText(final ReviewData reviewItem) {
 			final StringBuilder buffer = new StringBuilder();

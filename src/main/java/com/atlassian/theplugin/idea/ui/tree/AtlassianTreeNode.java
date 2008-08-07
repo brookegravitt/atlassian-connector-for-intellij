@@ -18,6 +18,9 @@ package com.atlassian.theplugin.idea.ui.tree;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
+import javax.swing.tree.TreeNode;
+import javax.swing.*;
+import java.awt.*;
 
 public abstract class AtlassianTreeNode extends DefaultMutableTreeNode {
 	private AtlassianClickAction action;
@@ -30,10 +33,44 @@ public abstract class AtlassianTreeNode extends DefaultMutableTreeNode {
 		super.add(newChild);
 	}
 
+	public AtlassianTreeNode getChildAt(final int i) {
+		return (AtlassianTreeNode) super.getChildAt(i);
+	}
+
 	public abstract TreeCellRenderer getTreeCellRenderer();
 
 	public AtlassianClickAction getAtlassianClickAction() {
 		return action;
 	}
 
+	public abstract AtlassianTreeNode getClone();
+
+	public AtlassianTreeNode filter(final Filter filter) {
+		AtlassianTreeNode result = null;
+		if (filter.isValid(this)) {
+			result = getClone();
+			for (int i = 0; i < getChildCount(); i++) {
+				AtlassianTreeNode child = getChildAt(i).filter(filter);
+				if (child != null) {
+					result.addNode(child);
+				}
+			}
+		}
+		return result;
+	}
+
+	public static final AtlassianTreeNode EMPTY_NODE = new AtlassianTreeNode(AtlassianClickAction.EMPTY_ACTION){
+		public TreeCellRenderer getTreeCellRenderer() {
+			return new TreeCellRenderer(){
+				public Component getTreeCellRendererComponent(final JTree jTree, final Object o, final boolean b,
+						final boolean b1, final boolean b2, final int i, final boolean b3) {
+					return new JLabel("<Empty>");
+				}
+			};
+		}
+
+		public AtlassianTreeNode getClone() {
+			return AtlassianTreeNode.EMPTY_NODE;  
+		}
+	};
 }

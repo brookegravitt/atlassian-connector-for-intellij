@@ -46,6 +46,11 @@ public class GeneralSectionNode extends AtlassianTreeNode {
 		this.review = review;
 	}
 
+	public GeneralSectionNode(GeneralSectionNode node){
+		super(node.getAtlassianClickAction());
+		this.review = node.review;
+	}
+
 	@Override
     public TreeCellRenderer getTreeCellRenderer() {
 		return MY_RENDERER;
@@ -53,6 +58,10 @@ public class GeneralSectionNode extends AtlassianTreeNode {
 
 	public ReviewData getReview() {
 		return review;
+	}
+
+	public AtlassianTreeNode getClone() {
+		return new GeneralSectionNode(this);
 	}
 
 	private static class MyRenderer implements TreeCellRenderer {

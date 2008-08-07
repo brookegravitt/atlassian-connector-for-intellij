@@ -20,6 +20,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.util.CommentPanelBuilder;
 
 import javax.swing.*;
@@ -40,6 +41,13 @@ public class VersionedCommentTreeNode extends CommentTreeNode {
 		this.comment = comment;
 	}
 
+	public VersionedCommentTreeNode(final VersionedCommentTreeNode node) {
+		super(node.getAtlassianClickAction());
+		this.review = node.review;
+		this.file = node.file;
+		this.comment = node.comment;
+	}
+
 	@Override
     public TreeCellRenderer getTreeCellRenderer() {
 		return MY_RENDERER;
@@ -55,6 +63,10 @@ public class VersionedCommentTreeNode extends CommentTreeNode {
 
 	public VersionedComment getComment() {
 		return comment;
+	}
+
+	public AtlassianTreeNode getClone() {
+		return new VersionedCommentTreeNode(this);
 	}
 
 	private static class MyTreeRenderer implements TreeCellRenderer {

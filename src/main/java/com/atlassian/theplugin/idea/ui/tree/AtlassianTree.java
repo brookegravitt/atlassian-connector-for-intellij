@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea.ui.tree;
 
 import com.atlassian.theplugin.idea.ui.tree.file.FileNode;
+import com.atlassian.theplugin.idea.ui.tree.file.FolderNode;
 import com.intellij.openapi.diagnostic.Logger;
 
 import javax.swing.*;
@@ -31,7 +32,7 @@ public class AtlassianTree extends JTree {
 	protected static final AtlassianTreeCellRenderer DISPATCHING_RENDERER = new AtlassianTreeCellRenderer();
 
 	public AtlassianTree() {
-		this(new AtlassianTreeModel(new FileNode("/", null)));
+		this(new AtlassianTreeModel(new FolderNode("/")));
 	}
 
 	public AtlassianTree(AtlassianTreeModel model) {
