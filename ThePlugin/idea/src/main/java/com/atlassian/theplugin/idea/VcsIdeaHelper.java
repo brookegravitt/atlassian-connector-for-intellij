@@ -16,6 +16,7 @@
 
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.application.ApplicationManager;
@@ -221,7 +222,7 @@ public final class VcsIdeaHelper {
 	 * @param action
 	 */
 	private static void fetchAndOpenFileWithDiffs(final Project project, final String fromRevision, final String toRevision,
-			@NotNull final VirtualFile virtualFile,
+			@NotNull final CommitType commitType, @NotNull final VirtualFile virtualFile,
 			final int line, final int column, @Nullable final OpenDiffAction action) {
 		AbstractVcsVirtualFile referenceVirtualFile = getFileFromCache(virtualFile, fromRevision);
 		AbstractVcsVirtualFile displayVirtualFile = getFileFromCache(virtualFile, toRevision);
@@ -229,14 +230,32 @@ public final class VcsIdeaHelper {
 		if (referenceVirtualFile != null
 				&& displayVirtualFile != null) {
 			OpenFileDescriptor displayDescriptor = new OpenFileDescriptor(project, displayVirtualFile, line, column);
-			action.run(displayDescriptor, referenceVirtualFile);
+			action.run(displayDescriptor, referenceVirtualFile, commitType);
 			return;
 		}
 
-		final String niceFileMessage = virtualFile.getName() + " (rev: " + fromRevision + ", " + toRevision + ") from VCS";
-		new Task.Backgroundable(project, "Fetching files " + niceFileMessage, false) {
-			private OpenFileDescriptor displayDescriptor;
-			private AbstractVcsVirtualFile referenceVirtualFile;
+		final String niceFileMessage;
+		switch (commitType) {
+			case Added:
+				niceFileMessage = " " + virtualFile.getName() + " (rev: " + toRevision + ") from VCS";
+				break;
+			case Deleted:
+				niceFileMessage = " " + virtualFile.getName() + " (rev: " + fromRevision + ") from VCS";
+				break;
+			case Modified:
+			case Moved:
+				niceFileMessage = "s" + virtualFile.getName() + " (rev: " + fromRevision + ", " + toRevision + ") from VCS";
+				break;
+			case Unknown:
+				niceFileMessage = "s" + virtualFile.getName() + " (rev: " + fromRevision + ", " + toRevision + ") from VCS";
+				break;
+			default:
+				niceFileMessage = "s" + virtualFile.getName() + " (rev: " + fromRevision + ", " + toRevision + ") from VCS";
+		}
+
+		new Task.Backgroundable(project, "Fetching file" + niceFileMessage, false) {
+			private OpenFileDescriptor displayDescriptor = null;
+			private AbstractVcsVirtualFile referenceVirtualFile = null;
 
 			private VcsException exception;
 
@@ -244,13 +263,26 @@ public final class VcsIdeaHelper {
 			public void run(ProgressIndicator indicator) {
 				final AbstractVcsVirtualFile displayVirtualFile;
 				try {
-					referenceVirtualFile = getVcsVirtualFile(project, virtualFile, fromRevision, false);
-					displayVirtualFile = getVcsVirtualFile(project, virtualFile, toRevision, false);
+					switch (commitType) {
+						case Modified:
+						case Moved:
+							referenceVirtualFile = getVcsVirtualFile(project, virtualFile, fromRevision, false);
+							displayVirtualFile = getVcsVirtualFile(project, virtualFile, toRevision, false);
+							displayDescriptor = new OpenFileDescriptor(project, displayVirtualFile, line, column);
+							break;
+						case Added:
+							displayVirtualFile = getVcsVirtualFile(project, virtualFile, toRevision, false);
+							displayDescriptor = new OpenFileDescriptor(project, displayVirtualFile, line, column);
+							break;
+						case Deleted:
+							referenceVirtualFile = getVcsVirtualFile(project, virtualFile, fromRevision, false);
+						default:
+							break;
+					}
 				} catch (VcsException e) {
 					exception = e;
 					return;
 				}
-				displayDescriptor = new OpenFileDescriptor(project, displayVirtualFile, line, column);
 			}
 
 			@Override
@@ -262,7 +294,7 @@ public final class VcsIdeaHelper {
 				}
 				if (displayDescriptor != null) {
 					if (action != null) {
-						action.run(displayDescriptor, referenceVirtualFile);
+						action.run(displayDescriptor, referenceVirtualFile, commitType);
 					}
 					displayDescriptor.navigate(true);
 				}
@@ -310,7 +342,7 @@ public final class VcsIdeaHelper {
 	 * @param action
 	 */
 	public static void openFileWithDiffs(final Project project, String filePath, @NotNull final String fileRevision,
-			final String toRevision,
+			final String toRevision, @NotNull final CommitType commitType,
 			final int line, final int col, @Nullable final OpenDiffAction action) {
 		VirtualFile baseDir = project.getBaseDir();
 		String baseUrl = getRepositoryUrlForFile(baseDir);
@@ -322,15 +354,32 @@ public final class VcsIdeaHelper {
 
 				ApplicationManager.getApplication().invokeLater(new Runnable() {
 					public void run() {
-						fetchAndOpenFileWithDiffs(project, fileRevision, toRevision, vfl, line, col, action);
+						fetchAndOpenFileWithDiffs(project, fileRevision, toRevision, commitType, vfl, line, col, action);
 					}
 				});
 			} else {
 				ApplicationManager.getApplication().invokeLater(new Runnable() {
 					public void run() {
-						Messages.showErrorDialog(project,
-								"Your project does not contain requested file. Please update before review",
-								"Project out of date");
+						switch (commitType) {
+							case Deleted:
+								Messages.showErrorDialog(project,
+										"Your project does not contain requested file. Please update to revision " +
+												fileRevision + " before review",
+										"File removed form repository");
+
+								break;
+							case Added:
+								Messages.showErrorDialog(project,
+										"Your project does not contain requested file. Please update to revision " +
+												toRevision + " before review",
+										"Project out of date");
+								break;
+							default:
+								Messages.showErrorDialog(project,
+										"Your project does not contain requested file. Please update before review",
+										"Project out of date");
+								break;
+						}
 					}
 				});
 
@@ -367,7 +416,7 @@ public final class VcsIdeaHelper {
 		 * @param displayFile
 		 * @param referenceDocument
 		 */
-		void run(OpenFileDescriptor displayFile, VirtualFile referenceDocument);
+		void run(OpenFileDescriptor displayFile, VirtualFile referenceDocument, CommitType commitType);
 	}
 
 }

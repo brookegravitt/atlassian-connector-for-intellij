@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
+import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
@@ -85,19 +86,73 @@ public final class CrucibleHelper {
 				, reviewItem.getFileDescriptor().getAbsoluteUrl()
 				, reviewItem.getOldFileDescriptor().getRevision()
 				, reviewItem.getFileDescriptor().getRevision()
+				, reviewItem.getCommitType()
 				, line
 				, 1
 				, new VcsIdeaHelper.OpenDiffAction() {
 
-			public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile) {
+			public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile, CommitType commitType) {
 				FileEditorManager fem = FileEditorManager.getInstance(project);
 				Editor editor = fem.openTextEditor(displayFile, true);
 				if (editor == null) {
 					return;
 				}
-				Document displayDocument = new FileContent(project, displayFile.getFile()).getDocument();
-				Document referenceDocument = new FileContent(project, referenceFile).getDocument();
-				new ChangeViewer(project, editor, referenceDocument, displayDocument).highlightChangesInEditor();
+/*
+				VirtualFile emptyFile = ContentRevisionVirtualFile.create(new ContentRevision() {
+					public String getContent() throws VcsException {
+						return "";
+					}
+
+					@NotNull
+					public FilePath getFile() {
+						return new FilePathImpl(IdeaHelper.getCurrentProject().getBaseDir());
+					}
+
+					@NotNull
+					public VcsRevisionNumber getRevisionNumber() {
+						return VcsRevisionNumber.NULL;
+					}
+				});
+
+					switch (commitType) {
+						case Moved:
+						case Modified:
+							displayDocument = new FileContent(project, displayFile.getFile())
+									.getDocument();
+							referenceDocument = new FileContent(project, referenceFile).getDocument();
+							break;
+						case Added:
+							displayDocument = new FileContent(project, displayFile.getFile())
+									.getDocument();
+							referenceDocument = new FileContent(project, emptyFile).getDocument();
+							break;
+						case Deleted:
+							displayDocument = new FileContent(project, emptyFile).getDocument();
+							referenceDocument = new FileContent(project, referenceFile).getDocument();
+							break;
+						default:
+							break;
+					}
+
+*/
+
+				Document displayDocument = null;
+				Document referenceDocument = null;
+				switch (commitType) {
+					case Moved:
+					case Modified:
+						displayDocument = new FileContent(project, displayFile.getFile())
+								.getDocument();
+						referenceDocument = new FileContent(project, referenceFile).getDocument();
+						new ChangeViewer(project, editor, referenceDocument, displayDocument).highlightChangesInEditor();
+						break;
+					case Added:
+						break;
+					case Deleted:
+						break;
+					default:
+						break;
+				}
 				CommentHighlighter.highlightCommentsInEditor(project, editor, review, reviewItem);
 			}
 		});
@@ -109,11 +164,12 @@ public final class CrucibleHelper {
 				, reviewItem.getFileDescriptor().getAbsoluteUrl()
 				, reviewItem.getOldFileDescriptor().getRevision()
 				, reviewItem.getFileDescriptor().getRevision()
+				, reviewItem.getCommitType()
 				, 1
 				, 1
 				, new VcsIdeaHelper.OpenDiffAction() {
 
-			public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile) {
+			public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile, CommitType commitType) {
 
 				final Document displayDocument = new FileContent(project, displayFile.getFile()).getDocument();
 				final Document referenceDocument = new FileContent(project, referenceFile).getDocument();
@@ -176,21 +232,17 @@ public final class CrucibleHelper {
 				, file.getFileDescriptor().getAbsoluteUrl()
 				, file.getOldFileDescriptor().getRevision()
 				, file.getFileDescriptor().getRevision()
+				, file.getCommitType()
 				, comment.getToStartLine() - 1
 				, 0
 				, new VcsIdeaHelper.OpenDiffAction() {
 
-			public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile) {
+			public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile, CommitType commitType) {
 				FileEditorManager fem = FileEditorManager.getInstance(project);
 				Editor editor = fem.openTextEditor(displayFile, false);
 				if (editor == null) {
 					return;
 				}
-				Document displayDocument = new FileContent(project, displayFile.getFile())
-						.getDocument();
-				Document referenceDocument = new FileContent(project, referenceFile).getDocument();
-				new ChangeViewer(project, editor, referenceDocument, displayDocument)
-						.highlightChangesInEditor();
 				CommentHighlighter.highlightCommentsInEditor(project, editor, review, file);
 			}
 		});
