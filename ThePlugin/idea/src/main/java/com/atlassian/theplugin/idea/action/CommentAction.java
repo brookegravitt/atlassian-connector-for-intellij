@@ -29,22 +29,25 @@ public class CommentAction extends AnAction {
 		Editor ed = e.getData(DataKeys.EDITOR);
 		if (ed == null) {
 			visible = false;
-		}
-		String text = ed.getSelectionModel().getSelectedText();
-		if (StringUtil.isEmptyOrSpaces(text)) {
-			visible = false;
-		}
-		ReviewData review = ed.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
-		CrucibleFileInfo reviewItem = ed.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
-		if (review == null || reviewItem == null) {
-			visible = false;
-		}
-		try {
-			if (!review.getActions().contains(Action.COMMENT)) {
+		} else {
+			String text = ed.getSelectionModel().getSelectedText();
+			if (StringUtil.isEmptyOrSpaces(text)) {
 				visible = false;
+			} else {
+				ReviewData review = ed.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
+				CrucibleFileInfo reviewItem = ed.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
+				if (review == null || reviewItem == null) {
+					visible = false;
+				} else {
+					try {
+						if (!review.getActions().contains(Action.COMMENT)) {
+							visible = false;
+						}
+					} catch (ValueNotYetInitialized valueNotYetInitialized) {
+						visible = false;
+					}
+				}
 			}
-		} catch (ValueNotYetInitialized valueNotYetInitialized) {
-			visible = false;
 		}
 		e.getPresentation().setVisible(visible);
 	}
