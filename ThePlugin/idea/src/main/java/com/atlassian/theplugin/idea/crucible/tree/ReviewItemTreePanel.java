@@ -30,8 +30,8 @@ import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.NodeSearchAlgorithm;
 import com.atlassian.theplugin.idea.ui.tree.Filter;
+import com.atlassian.theplugin.idea.ui.tree.NodeSearchAlgorithm;
 import com.atlassian.theplugin.idea.ui.tree.file.CrucibleChangeSetTitleNode;
 import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
 import com.atlassian.theplugin.idea.ui.tree.file.FileTreeModelBuilder;
@@ -183,9 +183,11 @@ public final class ReviewItemTreePanel extends JPanel {
 						public AtlassianTreeModel getModel(final AtlassianTreeWithToolbar.STATE state) {
 							switch (state) {
 								case DIRED:
-									return FileTreeModelBuilder.buildTreeModelFromCrucibleChangeSet(reviewItem, files1, getFilter());
+									return FileTreeModelBuilder.buildTreeModelFromCrucibleChangeSet(reviewItem, files1,
+											getFilter());
 								case FLAT:
-									return FileTreeModelBuilder.buildFlatModelFromCrucibleChangeSet(reviewItem, files1, getFilter());
+									return FileTreeModelBuilder.buildFlatModelFromCrucibleChangeSet(reviewItem, files1, 
+											getFilter());
 								default:
 									throw new IllegalStateException("Unknown model requested");
 							}

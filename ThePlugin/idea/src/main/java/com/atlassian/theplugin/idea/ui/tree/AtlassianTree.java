@@ -16,7 +16,6 @@
 
 package com.atlassian.theplugin.idea.ui.tree;
 
-import com.atlassian.theplugin.idea.ui.tree.file.FileNode;
 import com.atlassian.theplugin.idea.ui.tree.file.FolderNode;
 import com.intellij.openapi.diagnostic.Logger;
 
