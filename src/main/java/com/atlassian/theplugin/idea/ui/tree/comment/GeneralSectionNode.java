@@ -46,7 +46,7 @@ public class GeneralSectionNode extends AtlassianTreeNode {
 		this.review = review;
 	}
 
-	public GeneralSectionNode(GeneralSectionNode node){
+	public GeneralSectionNode(GeneralSectionNode node) {
 		super(node.getAtlassianClickAction());
 		this.review = node.review;
 	}

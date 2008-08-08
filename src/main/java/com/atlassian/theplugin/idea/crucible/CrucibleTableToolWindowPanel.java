@@ -231,8 +231,6 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 		return PLACE_PREFIX + this.project.getName();
 	}
 
-	;
-
 	/**
 	 * Method adds or removes CollapsibleTable for given filter type
 	 *

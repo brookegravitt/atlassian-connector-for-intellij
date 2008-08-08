@@ -22,30 +22,30 @@ public class FilterableTreeWithToolbar extends AtlassianTreeWithToolbar {
 		super(toolbar);
 	}
 
-	public void changeFilter(){
+	public void changeFilter() {
 		setFilter(getModelProvider().getNextState(getModelProvider().getFilter()));
 
 	}
 
-	public void setFilter(final Filter filter){
+	public void setFilter(final Filter filter) {
 		getModelProvider().setFilter(filter);
 		setModel(getModelProvider().getModel(getState()));
 	}
 
 	public enum FILTER {
-		FILES_WITH_COMMENTS_ONLY(Icons.ABSTRACT_CLASS_ICON, "Files with comments only"){
+		FILES_WITH_COMMENTS_ONLY(Icons.ABSTRACT_CLASS_ICON, "Files with comments only") {
 			@Override
 			public FILTER getNextState() {
 				return FILES_ALL;
 			}},
 
-		FILES_ALL(Icons.ANONYMOUS_CLASS_ICON, "All files from review"){
+		FILES_ALL(Icons.ANONYMOUS_CLASS_ICON, "All files from review") {
 			@Override
 			public FILTER getNextState() {
 				return FILES_WITH_COMMENTS_ONLY;
 			}},
 
-		LAST_KNOWN(Icons.ANONYMOUS_CLASS_ICON, "Last known filter"){
+		LAST_KNOWN(Icons.ANONYMOUS_CLASS_ICON, "Last known filter") {
 			@Override
 			public FILTER getNextState() {
 				return LAST_KNOWN;
@@ -54,7 +54,7 @@ public class FilterableTreeWithToolbar extends AtlassianTreeWithToolbar {
 		private Icon icon;
 		private String string;
 
-		FILTER(final Icon icon, final String string){
+		FILTER(final Icon icon, final String string) {
 			this.icon = icon;
 			this.string = string;
 		}
