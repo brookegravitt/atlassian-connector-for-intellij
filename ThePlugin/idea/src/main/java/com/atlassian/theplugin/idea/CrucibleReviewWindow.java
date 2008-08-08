@@ -196,9 +196,10 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
-	public void setData(PluginConfiguration config) {
+	public void setData(final PluginConfiguration config) {
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
+
 
 	@Nullable
 	public Object getData(@NonNls final String dataId) {
@@ -206,6 +207,8 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
 			return reviewItemTreePanel.getReviewItemTree();
 		} else if (dataId.equals(Constants.CRUCIBLE_BOTTOM_WINDOW)) {
 			return this;
+		} else if (dataId.equals(Constants.CRUCIBLE_COMMENT_TREE)) {
+			return reviewComentsPanel.getCommentTree();
 		}
 		return null;
 	}
