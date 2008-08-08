@@ -391,6 +391,14 @@
 				class="com.atlassian.theplugin.idea.action.crucible.comment.PublishAction"
 				text="Publish comment" icon="/actions/menu-saveall.png"/>
 
+		<action id="ThePlugin.Crucible.Comment.NextComment"
+				class="com.atlassian.theplugin.idea.action.crucible.comment.NextCommentAction"
+				text="Next comment" icon="/actions/forward.png"/>
+		<action id="ThePlugin.Crucible.Comment.PrevComment"
+						class="com.atlassian.theplugin.idea.action.crucible.comment.PrevCommentAction"
+						text="Previous comment" icon="/actions/back.png"/>
+
+
 
 		<group id="ThePlugin.Crucible.PostCommit" popup="false" text="">
             <reference id="ThePlugin.Crucible.PostCommitReview"/>
@@ -483,6 +491,9 @@
 			<reference id="ThePlugin.Crucible.Comment.Edit"/>
 			<reference id="ThePlugin.Crucible.Comment.Remove"/>
 			<reference id="ThePlugin.Crucible.Comment.Publish"/>
+			<reference id="ThePlugin.Crucible.Comment.PrevComment"/>
+			<reference id="ThePlugin.Crucible.Comment.NextComment"/>
+			
 		</group>
 
 		<group id="ThePlugin.Crucible.FilterEditToolBar" popup="false">
