@@ -276,6 +276,8 @@ public final class VcsIdeaHelper {
 							break;
 						case Deleted:
 							referenceVirtualFile = getVcsVirtualFile(project, virtualFile, fromRevision, false);
+							displayVirtualFile = getVcsVirtualFile(project, virtualFile, toRevision, false);
+							displayDescriptor = new OpenFileDescriptor(project, displayVirtualFile, line, column);
 						default:
 							break;
 					}
