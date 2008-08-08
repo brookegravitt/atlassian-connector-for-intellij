@@ -111,7 +111,7 @@
     </dependencies>
     <build>
         <plugins>
-      <!--plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
         <dependencies>
@@ -121,7 +121,7 @@
             <version>${project.version}</version>
           </dependency>
         </dependencies>
-      </plugin-->
+      </plugin>
             <plugin>
                 <groupId>com.atlassian.maven.plugins</groupId>
                 <artifactId>maven-clover2-plugin</artifactId>
