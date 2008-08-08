@@ -110,7 +110,7 @@
         </dependency>
     </dependencies>
     <build>
-        <plugins>
+        <!--plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
@@ -121,7 +121,7 @@
             <version>${project.version}</version>
           </dependency>
         </dependencies>
-      </plugin>
+      </plugin-->
             <plugin>
                 <groupId>com.atlassian.maven.plugins</groupId>
                 <artifactId>maven-clover2-plugin</artifactId>
@@ -244,7 +244,7 @@
                     <generateXml>true</generateXml>
                 </configuration>
             </plugin>
-            <plugin>
+            <!--plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <configuration>
@@ -265,10 +265,8 @@
 			**/WorkLogCreate.java
                     </excludes>
                     <includeTestSourceDirectory>false</includeTestSourceDirectory>
-<!--<failsOnError>true</failsOnError>-->
-<!--<linkXRef>false</linkXRef>-->
                 </configuration>
-            </plugin>
+            </plugin-->
         </plugins>
     </reporting>
     <distributionManagement>
