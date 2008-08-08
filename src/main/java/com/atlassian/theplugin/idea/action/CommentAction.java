@@ -1,5 +1,7 @@
 package com.atlassian.theplugin.idea.action;
 
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
+import com.atlassian.theplugin.commons.crucible.api.model.Action;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CommentHighlighter;
@@ -35,6 +37,13 @@ public class CommentAction extends AnAction {
 		ReviewData review = ed.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
 		CrucibleFileInfo reviewItem = ed.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
 		if (review == null || reviewItem == null) {
+			visible = false;
+		}
+		try {
+			if (!review.getActions().contains(Action.COMMENT)) {
+				visible = false;
+			}
+		} catch (ValueNotYetInitialized valueNotYetInitialized) {
 			visible = false;
 		}
 		e.getPresentation().setVisible(visible);
