@@ -240,9 +240,18 @@ public class CommentTreePanel extends JPanel {
 							}
 						}, newCommentNode);
 					}
+					addReplyNodes(review, newCommentNode, comment);
 				}
 			}
 			);
+		}
+
+		private void addReplyNodes(final ReviewData review, final AtlassianTreeNode parentNode, final GeneralComment comment) {
+			for (GeneralComment reply : comment.getReplies()) {
+				GeneralCommentTreeNode childNode = new GeneralCommentTreeNode(review, reply, AtlassianClickAction.EMPTY_ACTION);
+				addNewNode(parentNode, childNode);
+				addReplyNodes(review, childNode, reply);
+			}
 		}
 
 		@Override
@@ -250,18 +259,33 @@ public class CommentTreePanel extends JPanel {
 				final GeneralComment comment) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
-					addNewNode(new NodeSearchAlgorithm() {
-						@Override
-						public boolean check(AtlassianTreeNode node) {
+					GeneralCommentTreeNode newCommentNode = new GeneralCommentTreeNode(review, comment,
+							AtlassianClickAction.EMPTY_ACTION);
+					if (!replaceNode(new NodeSearchAlgorithm() {
+						public boolean check(final AtlassianTreeNode node) {
 							if (node instanceof GeneralCommentTreeNode) {
-								GeneralCommentTreeNode vnode = (GeneralCommentTreeNode) node;
-								if (vnode.getReview().equals(review) && vnode.getComment().equals(parentComment)) {
+								GeneralCommentTreeNode anode = (GeneralCommentTreeNode) node;
+								if (anode.getComment().getPermId().equals(comment.getPermId())) {
 									return true;
 								}
 							}
 							return false;
 						}
-					}, new GeneralCommentTreeNode(review, comment, AtlassianClickAction.EMPTY_ACTION));
+					}, newCommentNode)) {
+						addNewNode(new NodeSearchAlgorithm() {
+							@Override
+							public boolean check(AtlassianTreeNode node) {
+								if (node instanceof GeneralCommentTreeNode) {
+									GeneralCommentTreeNode vnode = (GeneralCommentTreeNode) node;
+									if (vnode.getReview().equals(review) && vnode.getComment().equals(parentComment)) {
+										return true;
+									}
+								}
+								return false;
+							}
+						}, newCommentNode);
+					}
+					addReplyNodes(review, newCommentNode, comment);
 				}
 			}
 			);
@@ -301,6 +325,7 @@ public class CommentTreePanel extends JPanel {
 							}
 						}, newCommentNode);
 					}
+					addReplyNodes(review, file, newCommentNode, comment);
 
 					Editor editor = CrucibleHelper.getEditorForCrucibleFile(review, file);
 					if (editor != null) {
@@ -310,26 +335,52 @@ public class CommentTreePanel extends JPanel {
 			});
 		}
 
+		private void addReplyNodes(final ReviewData review, final CrucibleFileInfo file, final AtlassianTreeNode parentNode,
+				final VersionedComment comment) {
+			for (VersionedComment reply : comment.getReplies()) {
+				VersionedCommentTreeNode childNode = new VersionedCommentTreeNode(review, file, reply,
+						AtlassianClickAction.EMPTY_ACTION);
+				addNewNode(parentNode, childNode);
+				addReplyNodes(review, file, childNode, reply);
+			}
+
+		}
+
 		@Override
 		public void createdVersionedCommentReply(final ReviewData review, final CrucibleFileInfo file,
 				final VersionedComment parentComment, final VersionedComment comment) {
 
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
-					addNewNode(new NodeSearchAlgorithm() {
-						@Override
-						public boolean check(AtlassianTreeNode node) {
+					VersionedCommentTreeNode newCommentNode = new VersionedCommentTreeNode(review, file, comment,
+							AtlassianClickAction.EMPTY_ACTION);
+					if (!replaceNode(new NodeSearchAlgorithm() {
+						public boolean check(final AtlassianTreeNode node) {
 							if (node instanceof VersionedCommentTreeNode) {
-								VersionedCommentTreeNode vnode = (VersionedCommentTreeNode) node;
-								if (vnode.getReview().equals(review)
-										&& vnode.getFile().equals(file)
-										&& vnode.getComment().equals(parentComment)) {
+								VersionedCommentTreeNode anode = (VersionedCommentTreeNode) node;
+								if (anode.getComment().getPermId().equals(comment.getPermId())) {
 									return true;
 								}
 							}
 							return false;
 						}
-					}, new VersionedCommentTreeNode(review, file, comment, AtlassianClickAction.EMPTY_ACTION));
+					}, newCommentNode)) {
+						addNewNode(new NodeSearchAlgorithm() {
+							@Override
+							public boolean check(AtlassianTreeNode node) {
+								if (node instanceof VersionedCommentTreeNode) {
+									VersionedCommentTreeNode vnode = (VersionedCommentTreeNode) node;
+									if (vnode.getReview().equals(review)
+											&& vnode.getFile().equals(file)
+											&& vnode.getComment().equals(parentComment)) {
+										return true;
+									}
+								}
+								return false;
+							}
+						}, newCommentNode);
+					}
+					addReplyNodes(review, file, newCommentNode, comment);
 				}
 			});
 		}
@@ -515,6 +566,18 @@ public class CommentTreePanel extends JPanel {
 			AtlassianTreeNode parentNode = model.locateNode(parentLocator);
 			if (parentNode != null) {
 				model.insertNodeInto(newCommentNode, parentNode, parentNode.getChildCount());
+				commentTree.expandPath(new TreePath(newCommentNode.getPath()));
+				commentTree.expandPath(new TreePath(parentNode.getPath()));
+				commentTree.focusOnNode(newCommentNode);
+			}
+		}
+
+
+		private void addNewNode(AtlassianTreeNode parentNode, AtlassianTreeNode newCommentNode) {
+			AtlassianTreeModel model = (AtlassianTreeModel) commentTree.getModel();
+			if (parentNode != null) {
+				model.insertNodeInto(newCommentNode, parentNode, parentNode.getChildCount());
+				commentTree.expandPath(new TreePath(newCommentNode.getPath()));
 				commentTree.expandPath(new TreePath(parentNode.getPath()));
 				commentTree.focusOnNode(newCommentNode);
 			}

@@ -20,6 +20,7 @@ import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
 
 import javax.swing.tree.TreeCellRenderer;
+import javax.swing.tree.TreePath;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
@@ -42,6 +43,13 @@ public class CommentTree extends AtlassianTree {
 
 	public CommentTree() {
 		super();
+	}
+
+	@Override
+	protected void setExpandedState(final TreePath path, final boolean state) {
+		if (state) {
+			super.setExpandedState(path, state);
+		}
 	}
 
 	public void initializeUI() {
