@@ -24,7 +24,9 @@ import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.events.GeneralCommentAdded;
+import com.atlassian.theplugin.idea.crucible.events.GeneralCommentReplyAdded;
 import com.atlassian.theplugin.idea.crucible.events.VersionedCommentAdded;
+import com.atlassian.theplugin.idea.crucible.events.VersionedCommentReplyAdded;
 import com.intellij.openapi.project.Project;
 
 import java.util.*;
@@ -111,11 +113,15 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 			}
 			if (existingReply == null) {
 				notifications.add(new NewReplyCommentNotification(review, newComment, reply));
+				GeneralCommentReplyAdded event = new GeneralCommentReplyAdded(CrucibleReviewActionListener.ANONYMOUS,
+						review, newComment, reply);
+				IdeaHelper.getReviewActionEventBroker().trigger(event);
 			}
 		}
 	}
 
-	private void checkVersionedReplies(ReviewData review, VersionedComment oldComment, VersionedComment newComment) {
+	private void checkVersionedReplies(ReviewData review, final CrucibleFileInfo file, VersionedComment oldComment,
+			VersionedComment newComment) {
 		for (VersionedComment reply : newComment.getReplies()) {
 			VersionedComment existingReply = null;
 			for (VersionedComment oldReply : oldComment.getReplies()) {
@@ -126,6 +132,9 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 			}
 			if (existingReply == null) {
 				notifications.add(new NewReplyCommentNotification(review, newComment, reply));
+				VersionedCommentReplyAdded event = new VersionedCommentReplyAdded(CrucibleReviewActionListener.ANONYMOUS,
+						review, file, newComment, reply);
+				IdeaHelper.getReviewActionEventBroker().trigger(event);
 			}
 		}
 	}
@@ -149,33 +158,25 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 			}
 		}
 
-		for (VersionedComment comment : newReview.getVersionedComments()) {
-			VersionedComment existing = null;
-			for (VersionedComment oldComment : oldReview.getVersionedComments()) {
-				if (comment.getPermId().getId().equals(oldComment.getPermId().getId())) {
-					existing = oldComment;
-					break;
-				}
-			}
-			if (existing == null) {
-				notifications.add(new NewVersionedCommentNotification(newReview, comment));
-
-				try {
-					for (CrucibleFileInfo file : newReview.getFiles()) {
-						if (comment.getReviewItemId().equals(file.getPermId())) {
-							if (project != null) {
-								VersionedCommentAdded event = new VersionedCommentAdded(CrucibleReviewActionListener.ANONYMOUS,
-										newReview, file, comment);
-								IdeaHelper.getReviewActionEventBroker().trigger(event);
-							}
-						}
+		for (CrucibleFileInfo file : newReview.getFiles()) {
+			for (VersionedComment comment : file.getVersionedComments()) {
+				VersionedComment existing = null;
+				for (VersionedComment oldComment : oldReview.getVersionedComments()) {
+					if (comment.getPermId().getId().equals(oldComment.getPermId().getId())) {
+						existing = oldComment;
+						break;
 					}
-				} catch (ValueNotYetInitialized valueNotYetInitialized) {
-					valueNotYetInitialized.printStackTrace();
 				}
-
-			} else {
-				checkVersionedReplies(newReview, existing, comment);
+				if (existing == null) {
+					notifications.add(new NewVersionedCommentNotification(newReview, comment));
+					if (project != null) {
+						VersionedCommentAdded event = new VersionedCommentAdded(CrucibleReviewActionListener.ANONYMOUS,
+								newReview, file, comment);
+						IdeaHelper.getReviewActionEventBroker().trigger(event);
+					}
+				} else {
+					checkVersionedReplies(newReview, file, existing, comment);
+				}
 			}
 		}
 	}
