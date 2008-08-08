@@ -26,7 +26,7 @@
     </parent>
     <groupId>com.atlassian.theplugin</groupId>
     <artifactId>atlassian-plugin-pom</artifactId>
-    <version>1.9.0-SNAPSHOT</version>
+    <version>1.8.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <inceptionYear>2008</inceptionYear>
     <name>Atlassian Plugin POM</name>
@@ -111,7 +111,7 @@
     </dependencies>
     <build>
         <plugins>
-      <plugin>
+      <!--plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
         <dependencies>
@@ -121,7 +121,7 @@
             <version>${project.version}</version>
           </dependency>
         </dependencies>
-      </plugin>
+      </plugin-->
             <plugin>
                 <groupId>com.atlassian.maven.plugins</groupId>
                 <artifactId>maven-clover2-plugin</artifactId>
@@ -244,7 +244,7 @@
                     <generateXml>true</generateXml>
                 </configuration>
             </plugin>
-            <plugin>
+            <!--plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <configuration>
@@ -265,10 +265,8 @@
 			**/WorkLogCreate.java
                     </excludes>
                     <includeTestSourceDirectory>false</includeTestSourceDirectory>
-<!--<failsOnError>true</failsOnError>-->
-<!--<linkXRef>false</linkXRef>-->
                 </configuration>
-            </plugin>
+            </plugin-->
         </plugins>
     </reporting>
     <distributionManagement>
