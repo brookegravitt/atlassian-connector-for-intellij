@@ -16,6 +16,4 @@ public abstract class Filter {
 			return true;
 		}
 	};
-
-//	public boolean acceptCrucibleNode(CrucibleFileNode crucibleFileNode);
 }
