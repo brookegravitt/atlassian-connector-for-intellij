@@ -1,19 +1,19 @@
 package com.atlassian.theplugin.idea.action.crucible.comment;
 
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
+import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
-import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
-import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
-import com.atlassian.theplugin.idea.crucible.ReviewData;
-import com.atlassian.theplugin.idea.Constants;
-import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.tree.TreePath;
 import javax.swing.*;
+import javax.swing.tree.TreePath;
 import java.awt.*;
 
 /**
@@ -30,7 +30,7 @@ public abstract class AbstractCommentAction extends AnAction {
 
 		DataContext dataContext = e.getDataContext();
 		Component component = (AtlassianTree) dataContext.getData(Constants.CRUCIBLE_COMMENT_TREE);
-		if ( component == null) {
+		if (component == null) {
 			return null;
 		}
 
