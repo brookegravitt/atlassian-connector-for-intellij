@@ -363,15 +363,15 @@ public final class VcsIdeaHelper {
 						switch (commitType) {
 							case Deleted:
 								Messages.showErrorDialog(project,
-										"Your project does not contain requested file. Please update to revision " +
-												fileRevision + " before review",
+										"Your project does not contain requested file. Please update to revision "
+												+ fileRevision + " before review",
 										"File removed form repository");
 
 								break;
 							case Added:
 								Messages.showErrorDialog(project,
-										"Your project does not contain requested file. Please update to revision " +
-												toRevision + " before review",
+										"Your project does not contain requested file. Please update to revision "
+												+ toRevision + " before review",
 										"Project out of date");
 								break;
 							default:

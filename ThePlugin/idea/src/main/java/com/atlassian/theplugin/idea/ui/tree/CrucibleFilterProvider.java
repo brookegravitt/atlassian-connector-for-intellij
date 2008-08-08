@@ -12,9 +12,9 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
  * To change this template use File | Settings | File Templates.
  */
 public class CrucibleFilterProvider {
-	Filter filter = Filter.ALL;
+	private Filter filter = Filter.ALL;
 
-	public Filter switchFilter(){
+	public Filter switchFilter() {
 		if (filter.equals(Filter.ALL)) {
 			filter = FILES_WITH_COMMENTS_ONLY;
 			return filter;

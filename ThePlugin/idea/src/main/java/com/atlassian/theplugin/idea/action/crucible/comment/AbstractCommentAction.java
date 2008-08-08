@@ -3,7 +3,6 @@ package com.atlassian.theplugin.idea.action.crucible.comment;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
-import com.intellij.openapi.actionSystem.DataKeys;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
@@ -27,7 +26,7 @@ import java.awt.*;
 public abstract class AbstractCommentAction extends AnAction {
 
 	@Nullable
-	protected JTree getTree(AnActionEvent e){
+	protected JTree getTree(AnActionEvent e) {
 
 		DataContext dataContext = e.getDataContext();
 		Component component = (AtlassianTree) dataContext.getData(Constants.CRUCIBLE_COMMENT_TREE);
