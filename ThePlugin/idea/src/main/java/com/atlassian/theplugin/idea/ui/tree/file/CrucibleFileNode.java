@@ -99,6 +99,7 @@ public class CrucibleFileNode extends FileNode {
 					txt.append(node.getFile().getFileDescriptor().getRevision());
 					break;
 				case Unknown:
+				default:
 					txt.append(node.getFile().getOldFileDescriptor().getRevision());
 					txt.append("-");
 					txt.append(node.getFile().getFileDescriptor().getRevision());
@@ -153,6 +154,7 @@ public class CrucibleFileNode extends FileNode {
 					setForeground(FileStatus.COLOR_MODIFIED);
 					break;
 				case Unknown:
+				default:
 					setForeground(FileStatus.COLOR_UNKNOWN);
 					break;
 			}

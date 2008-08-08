@@ -18,7 +18,6 @@ package com.atlassian.theplugin.idea.ui.tree;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
-import javax.swing.tree.TreeNode;
 import javax.swing.*;
 import java.awt.*;
 
@@ -59,9 +58,9 @@ public abstract class AtlassianTreeNode extends DefaultMutableTreeNode {
 		return result;
 	}
 
-	public static final AtlassianTreeNode EMPTY_NODE = new AtlassianTreeNode(AtlassianClickAction.EMPTY_ACTION){
+	public static final AtlassianTreeNode EMPTY_NODE = new AtlassianTreeNode(AtlassianClickAction.EMPTY_ACTION) {
 		public TreeCellRenderer getTreeCellRenderer() {
-			return new TreeCellRenderer(){
+			return new TreeCellRenderer() {
 				public Component getTreeCellRendererComponent(final JTree jTree, final Object o, final boolean b,
 						final boolean b1, final boolean b2, final int i, final boolean b3) {
 					return new JLabel("<Empty>");

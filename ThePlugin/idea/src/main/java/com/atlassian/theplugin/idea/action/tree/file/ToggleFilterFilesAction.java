@@ -2,7 +2,6 @@ package com.atlassian.theplugin.idea.action.tree.file;
 
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.CrucibleReviewWindow;
-import com.atlassian.theplugin.idea.ui.tree.Filter;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.Presentation;
@@ -23,17 +22,14 @@ public class ToggleFilterFilesAction extends AnAction {
 	static final String TEXT_FILTER_ON = "Show Files with comments only";
 	static final String TEXT_FILTER_OFF = "Show all files";
 
-	public ToggleFilterFilesAction(){
+	public ToggleFilterFilesAction() {
 		getTemplatePresentation().setIcon(FILTER_ON_ICON);
 		getTemplatePresentation().setText(TEXT_FILTER_ON);
-
-		
-
 	}
 
 	public void actionPerformed(final AnActionEvent e) {
 		CrucibleReviewWindow window = (CrucibleReviewWindow) e.getDataContext().getData(Constants.CRUCIBLE_BOTTOM_WINDOW);
-		if (window != null){
+		if (window != null) {
 			window.switchFilter();			
 			switchIcons(e.getPresentation());
 		}
@@ -52,11 +48,9 @@ public class ToggleFilterFilesAction extends AnAction {
 	public void update(final AnActionEvent e) {
 		boolean enabled = true;
 		CrucibleReviewWindow window = (CrucibleReviewWindow) e.getDataContext().getData(Constants.CRUCIBLE_BOTTOM_WINDOW);
-		if (window == null){
+		if (window == null) {
 			enabled = false;
 		}
 		e.getPresentation().setEnabled(enabled);
 	}
-
-
 }
