@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.idea.action.crucible.comment;
 
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.CommentTreePanel;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -12,10 +13,7 @@ import com.atlassian.theplugin.idea.crucible.events.GeneralCommentReplyAboutToAd
 import com.atlassian.theplugin.idea.crucible.events.VersionedCommentAboutToAdd;
 import com.atlassian.theplugin.idea.crucible.events.VersionedCommentReplyAboutToAdd;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.comment.FileNameNode;
-import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.comment.GeneralSectionNode;
-import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.comment.*;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.project.Project;
@@ -31,19 +29,22 @@ public class AddAction extends AbstractCommentAction {
 	public void update(AnActionEvent e) {
 		AtlassianTreeNode node = getSelectedNode(e);
 		String text = COMMENT_TEXT;
-		boolean enabled = node != null;
-		if (node instanceof VersionedCommentTreeNode) {
-			if (((VersionedCommentTreeNode) node).getComment().isReply()) {
-				enabled = false;
-			} else {
-				text = REPLY_TEXT;
-			}
-
-		} else if (node instanceof GeneralCommentTreeNode) {
-			if (((GeneralCommentTreeNode) node).getComment().isReply()) {
-				enabled = false;
-			} else {
-				text = REPLY_TEXT;
+		boolean enabled = node != null && checkIfAuthorized(getReview(node));
+		if (enabled) {
+			if (node instanceof VersionedCommentTreeNode) {
+				final VersionedCommentTreeNode vcNode = (VersionedCommentTreeNode) node;
+				if (vcNode.getComment().isReply()) {
+					enabled = false;
+				} else {
+					text = REPLY_TEXT;
+				}
+			} else if (node instanceof GeneralCommentTreeNode) {
+				final GeneralCommentTreeNode gcNode = (GeneralCommentTreeNode) node;
+				if (gcNode.getComment().isReply()) {
+					enabled = false;
+				} else {
+					text = REPLY_TEXT;
+				}
 			}
 		}
 		e.getPresentation().setEnabled(enabled);
@@ -51,6 +52,33 @@ public class AddAction extends AbstractCommentAction {
 			e.getPresentation().setVisible(enabled);
 		}
 		e.getPresentation().setText(text);
+	}
+
+	private boolean checkIfAuthorized(final ReviewData review) {
+		if (review == null) {
+			return false;
+		}
+		try {
+			if (!review.getActions().contains(Action.COMMENT)) {
+				return false;
+			}
+		} catch (ValueNotYetInitialized valueNotYetInitialized) {
+			return false;
+		}
+		return true;
+
+	}
+
+	private ReviewData getReview(final AtlassianTreeNode node) {
+		if (node instanceof CommentTreeNode) {
+			final CommentTreeNode cNode = (CommentTreeNode) node;
+			return cNode.getReview();
+		} else if (node instanceof GeneralSectionNode) {
+			return ((GeneralSectionNode) node).getReview();
+		} else if (node instanceof FileNameNode) {
+			return ((FileNameNode) node).getReview();
+		}
+		return null;
 	}
 
 	@Override
