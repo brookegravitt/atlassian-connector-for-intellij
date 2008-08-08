@@ -16,15 +16,9 @@
 
 package com.atlassian.theplugin.idea.ui.tree.file;
 
-import com.intellij.ui.ColoredTreeCellRenderer;
-import com.intellij.ui.SimpleTextAttributes;
-import com.intellij.util.Icons;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
-import com.atlassian.theplugin.idea.ui.tree.Filter;
 
-import javax.swing.*;
-import javax.swing.tree.TreeCellRenderer;
 import java.util.Map;
 import java.util.HashMap;
 

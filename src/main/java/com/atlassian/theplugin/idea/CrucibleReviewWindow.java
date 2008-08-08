@@ -33,7 +33,6 @@ import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListen
 import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.atlassian.theplugin.idea.crucible.events.*;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
-import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
 import com.atlassian.theplugin.idea.ui.tree.Filter;
 import com.atlassian.theplugin.idea.ui.tree.CrucibleFilterProvider;
 import com.intellij.openapi.actionSystem.DataProvider;

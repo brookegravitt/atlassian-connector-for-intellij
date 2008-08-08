@@ -21,8 +21,6 @@ import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
-import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
-import com.atlassian.theplugin.idea.ui.tree.Filter;
 import com.intellij.openapi.editor.Editor;
 
 /**

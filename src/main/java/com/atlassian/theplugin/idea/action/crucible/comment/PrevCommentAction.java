@@ -1,11 +1,9 @@
 package com.atlassian.theplugin.idea.action.crucible.comment;
 
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
 import com.atlassian.theplugin.idea.CommentTreePanel;
-
 import javax.swing.tree.TreePath;
 
 /**
@@ -18,12 +16,12 @@ import javax.swing.tree.TreePath;
 public class PrevCommentAction extends AbstractCommentAction {
 	public void actionPerformed(final AnActionEvent e) {
 		AtlassianTree tree = (AtlassianTree) getTree(e);
-		AtlassianTreeNode prevNode = ((AtlassianTreeNode)getSelectedNode(e).getPreviousNode());
-		if (prevNode != null){
+		AtlassianTreeNode prevNode = ((AtlassianTreeNode) getSelectedNode(e).getPreviousNode());
+		if (prevNode != null) {
 			TreePath path = new TreePath(prevNode.getPath());
 			tree.scrollPathToVisible(path);
 			tree.setSelectionPath(path);
-			prevNode.getAtlassianClickAction().execute(prevNode,1);
+			prevNode.getAtlassianClickAction().execute(prevNode, 1);
 		}
 	}
 
