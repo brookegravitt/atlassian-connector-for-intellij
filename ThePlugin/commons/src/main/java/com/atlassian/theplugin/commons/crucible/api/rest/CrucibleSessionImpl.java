@@ -967,7 +967,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 
 			if (elements != null && !elements.isEmpty()) {
 				for (Element element : elements) {
-					return CrucibleRestXmlHelper.parseGeneralCommentNode(element);
+					GeneralCommentBean reply = CrucibleRestXmlHelper.parseGeneralCommentNode(element);
+				    reply.setReply(true);
+					return reply;
 				}
 			}
 			return null;
@@ -997,7 +999,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 
 			if (elements != null && !elements.isEmpty()) {
 				for (Element element : elements) {
-					return CrucibleRestXmlHelper.parseVersionedCommentNode(element);
+					VersionedCommentBean reply = CrucibleRestXmlHelper.parseVersionedCommentNode(element);
+					reply.setReply(true);
+					return reply;
 				}
 			}
 			return null;
