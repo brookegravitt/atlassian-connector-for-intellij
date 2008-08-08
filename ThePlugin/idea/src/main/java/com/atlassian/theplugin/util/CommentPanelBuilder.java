@@ -73,7 +73,8 @@ public final class CommentPanelBuilder {
 		};
 	}
 
-	public static JPanel createEditPanelOfVersionedComment(ReviewData review, CrucibleFileInfo file, VersionedComment comment) {
+	public static JPanel createEditPanelOfVersionedComment(ReviewData review, CrucibleFileInfo file,
+			VersionedComment comment) {
 		return createViewPanelOfVersionedComment(review, file, comment);
 	}
 
@@ -162,7 +163,8 @@ public final class CommentPanelBuilder {
 			return font.deriveFont(font.getStyle(), (newFontSize > 0 ? newFontSize : MINIMUM_FONT_SIZE));
 		}
 		protected Component getAuthorLabel() {
-			BoldLabel label =  new BoldLabel("".equals(comment.getAuthor().getDisplayName()) ? comment.getAuthor().getUserName() : comment
+			BoldLabel label =
+					new BoldLabel("".equals(comment.getAuthor().getDisplayName()) ? comment.getAuthor().getUserName() : comment
 					.getAuthor().getDisplayName());
 			label.setFont(getSmallerFont(label.getFont(), AUTHOR_FONT_DIFFERENCE));
 			return label;
