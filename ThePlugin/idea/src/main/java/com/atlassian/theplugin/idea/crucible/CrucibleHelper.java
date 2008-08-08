@@ -202,6 +202,7 @@ public final class CrucibleHelper {
 
 			public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile, CommitType commitType) {
 				FileEditorManager fem = FileEditorManager.getInstance(project);
+				// @todo temporary - should be handled when opening file
 				if (displayFile != null) {
 					Editor editor = fem.openTextEditor(displayFile, false);
 					if (editor == null) {
