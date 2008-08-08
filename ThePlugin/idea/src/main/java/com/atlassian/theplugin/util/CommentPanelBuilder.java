@@ -157,7 +157,7 @@ public final class CommentPanelBuilder {
 			sb.append("[ ");
 			sb.append(comment.getCreateDate().toString());
 			sb.append(" ]");
-			label = new JLabel(sb.toString());			
+			label = new JLabel(sb.toString());
 			label.setFont(getSmallerFont(label.getFont(), DATE_FONT_DIFFERENCE));
 			return label;
 		}
@@ -173,18 +173,18 @@ public final class CommentPanelBuilder {
 		protected Component getAuthorLabel() {
 			BoldLabel label =
 					new BoldLabel("".equals(comment.getAuthor().getDisplayName()) ? comment.getAuthor().getUserName() : comment
-					.getAuthor().getDisplayName());
+							.getAuthor().getDisplayName());
 			label.setFont(getSmallerFont(label.getFont(), AUTHOR_FONT_DIFFERENCE));
 			return label;
 		}
 
 		protected Component getLineInfoLabel() {
-			JLabel label = null;
 			if (comment instanceof VersionedComment) {
 				VersionedComment vc = (VersionedComment) comment;
 				if (vc.getToStartLine() > 0 && vc.getToEndLine() > 0) {
-					label =  new JLabel("Lines: [" + vc.getToStartLine() + " - " + vc.getToEndLine() + "]");
+					JLabel label = new JLabel("Lines: [" + vc.getToStartLine() + " - " + vc.getToEndLine() + "]");
 					label.setFont(getSmallerFont(label.getFont(), LINE_NUMBER_FONT_DIFFERENCE));
+					return label;
 				}
 			}
 			return new JLabel("");
