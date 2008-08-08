@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,8 +16,9 @@
 
 package com.atlassian.theplugin.idea.ui.tree.comment;
 
-import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
+import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 
 /**
  * Created by IntelliJ IDEA.
@@ -28,6 +29,7 @@ import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
  */
 public abstract class CommentTreeNode extends AtlassianTreeNode {
 	private boolean editable = false;
+	protected ReviewData review;
 
 	protected CommentTreeNode(AtlassianClickAction action) {
 		super(action);
@@ -39,5 +41,9 @@ public abstract class CommentTreeNode extends AtlassianTreeNode {
 
 	public boolean isEditable() {
 		return editable;
+	}
+
+	public ReviewData getReview() {
+		return review;
 	}
 }

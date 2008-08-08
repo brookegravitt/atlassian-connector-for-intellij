@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,7 +27,6 @@ import javax.swing.tree.TreeCellRenderer;
 import java.awt.*;
 
 public class GeneralCommentTreeNode extends CommentTreeNode {
-	private ReviewData review;
 	private GeneralComment comment;
 	private static final TreeCellRenderer MY_RENDERER = new MyRenderer();
 
@@ -41,10 +40,6 @@ public class GeneralCommentTreeNode extends CommentTreeNode {
 		super(node.getAtlassianClickAction());
 		this.review = node.review;
 		this.comment = node.comment;
-	}
-
-	public ReviewData getReview() {
-		return review;
 	}
 
 	public GeneralComment getComment() {
@@ -61,7 +56,7 @@ public class GeneralCommentTreeNode extends CommentTreeNode {
 
 	private static class MyRenderer implements TreeCellRenderer {
 		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean isSelected, boolean expanded,
-                boolean leaf, int row, boolean hasFocus) {
+				boolean leaf, int row, boolean hasFocus) {
 			GeneralCommentTreeNode node = (GeneralCommentTreeNode) value;
 			JPanel panel;
 			if (node.isEditable()) {
@@ -71,9 +66,9 @@ public class GeneralCommentTreeNode extends CommentTreeNode {
 				panel = CommentPanelBuilder.createViewPanelOfGeneralComment(
 						node.getReview(), node.getComment());
 			}
-            panel.setBorder(isSelected ? UIManager.getBorder("List.focusCellHighlightBorder")
-                    : BorderFactory.createEmptyBorder(1, 1, 1, 1));
-            return panel;
+			panel.setBorder(isSelected ? UIManager.getBorder("List.focusCellHighlightBorder")
+					: BorderFactory.createEmptyBorder(1, 1, 1, 1));
+			return panel;
 
 		}
 	}

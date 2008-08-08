@@ -36,6 +36,7 @@ import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.VcsBundle;
 import com.intellij.openapi.vfs.VirtualFile;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -97,44 +98,6 @@ public final class CrucibleHelper {
 				if (editor == null) {
 					return;
 				}
-/*
-				VirtualFile emptyFile = ContentRevisionVirtualFile.create(new ContentRevision() {
-					public String getContent() throws VcsException {
-						return "";
-					}
-
-					@NotNull
-					public FilePath getFile() {
-						return new FilePathImpl(IdeaHelper.getCurrentProject().getBaseDir());
-					}
-
-					@NotNull
-					public VcsRevisionNumber getRevisionNumber() {
-						return VcsRevisionNumber.NULL;
-					}
-				});
-
-					switch (commitType) {
-						case Moved:
-						case Modified:
-							displayDocument = new FileContent(project, displayFile.getFile())
-									.getDocument();
-							referenceDocument = new FileContent(project, referenceFile).getDocument();
-							break;
-						case Added:
-							displayDocument = new FileContent(project, displayFile.getFile())
-									.getDocument();
-							referenceDocument = new FileContent(project, emptyFile).getDocument();
-							break;
-						case Deleted:
-							displayDocument = new FileContent(project, emptyFile).getDocument();
-							referenceDocument = new FileContent(project, referenceFile).getDocument();
-							break;
-						default:
-							break;
-					}
-
-*/
 
 				Document displayDocument = null;
 				Document referenceDocument = null;
@@ -199,7 +162,7 @@ public final class CrucibleHelper {
 		});
 	}
 
-	public static List<CustomFieldDef> getMetricsForReview(final Project project, final ReviewData review) {
+	public static List<CustomFieldDef> getMetricsForReview(@NotNull final Project project, @NotNull final ReviewData review) {
 		java.util.List<CustomFieldDef> metrics = new ArrayList<CustomFieldDef>();
 		try {
 			metrics = CrucibleServerFacadeImpl.getInstance()
