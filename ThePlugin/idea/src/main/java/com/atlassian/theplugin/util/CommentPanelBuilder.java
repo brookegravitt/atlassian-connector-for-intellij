@@ -109,6 +109,11 @@ public final class CommentPanelBuilder {
 		private static final CellConstraints TOOLBAR_POS = new CellConstraints(12, 2);
 		private static final Color BORDER_COLOR = new Color(0xCC, 0xCC, 0xCC);
 
+		private static final float MINIMUM_FONT_SIZE = 3;
+		private static final float DATE_FONT_DIFFERENCE = -3;
+		private static final float AUTHOR_FONT_DIFFERENCE = -3;
+		private static final float LINE_NUMBER_FONT_DIFFERENCE = -3;
+
 		private CommentPanel(ReviewData review, Comment comment) {
 			super(new FormLayout("pref:grow",
 					"pref, pref:grow"));
@@ -143,22 +148,33 @@ public final class CommentPanelBuilder {
 
 		private Component getDateLabel() {
 			StringBuilder sb = new StringBuilder();
+			JLabel label;
 			sb.append("[ ");
 			sb.append(comment.getCreateDate().toString());
 			sb.append(" ]");
-			return new JLabel(sb.toString());
+			label = new JLabel(sb.toString());			
+			label.setFont(getSmallerFont(label.getFont(), DATE_FONT_DIFFERENCE));
+			return label;
 		}
 
+		private Font getSmallerFont(final Font font, final float dateFontSizeDifference) {
+			float newFontSize = font.getSize() + dateFontSizeDifference;
+			return font.deriveFont(font.getStyle(), (newFontSize > 0 ? newFontSize : MINIMUM_FONT_SIZE));
+		}
 		protected Component getAuthorLabel() {
-			return new BoldLabel("".equals(comment.getAuthor().getDisplayName()) ? comment.getAuthor().getUserName() : comment
+			BoldLabel label =  new BoldLabel("".equals(comment.getAuthor().getDisplayName()) ? comment.getAuthor().getUserName() : comment
 					.getAuthor().getDisplayName());
+			label.setFont(getSmallerFont(label.getFont(), AUTHOR_FONT_DIFFERENCE));
+			return label;
 		}
 
 		protected Component getLineInfoLabel() {
+			JLabel label = null;
 			if (comment instanceof VersionedComment) {
 				VersionedComment vc = (VersionedComment) comment;
 				if (vc.getToStartLine() > 0 && vc.getToEndLine() > 0) {
-					return new JLabel("Lines: [" + vc.getToStartLine() + " - " + vc.getToEndLine() + "]");
+					label =  new JLabel("Lines: [" + vc.getToStartLine() + " - " + vc.getToEndLine() + "]");
+					label.setFont(getSmallerFont(label.getFont(), LINE_NUMBER_FONT_DIFFERENCE));
 				}
 			}
 			return new JLabel("");

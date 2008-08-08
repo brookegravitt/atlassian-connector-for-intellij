@@ -22,6 +22,7 @@ import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.intellij.ui.SimpleColoredComponent;
 import com.intellij.ui.SimpleTextAttributes;
+import com.intellij.util.ui.UIUtil;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
@@ -66,8 +67,9 @@ public class FileNameNode extends AtlassianTreeNode {
 
 		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean isSelected, boolean expanded,
                 boolean leaf, int row, boolean hasFocus) {
-			JPanel panel = new JPanel(new FormLayout("4dlu, left:pref:grow, 4dlu", "4dlu, pref:grow, 4dlu"));
+			JPanel panel = new JPanel(new FormLayout("2dlu, left:pref:grow, 2dlu", "2dlu, pref:grow, 2dlu"));
 			SimpleColoredComponent component = new SimpleColoredComponent();
+			panel.setBackground(UIUtil.getWindowColor());
 			FileNameNode node = (FileNameNode) value;
 			CrucibleFileInfo file = node.getFile();
 			component.append(file.getFileDescriptor().getUrl(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
