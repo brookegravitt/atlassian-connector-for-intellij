@@ -5,9 +5,11 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,15 +25,26 @@ import java.awt.*;
  * To change this template use File | Settings | File Templates.
  */
 public abstract class AbstractCommentAction extends AnAction {
+
 	@Nullable
-	private TreePath getSelectedTreePath(AnActionEvent e) {
+	protected JTree getTree(AnActionEvent e){
+
 		DataContext dataContext = e.getDataContext();
-		Component component = DataKeys.CONTEXT_COMPONENT.getData(dataContext);
-		if (!(component instanceof JTree)) {
+		Component component = (AtlassianTree) dataContext.getData(Constants.CRUCIBLE_COMMENT_TREE);
+		if ( component == null) {
 			return null;
 		}
-		final JTree theTree = (JTree) component;
-		return theTree.getSelectionPath();
+
+		return (JTree) component;
+	}
+
+	@Nullable
+	private TreePath getSelectedTreePath(AnActionEvent e) {		
+		JTree tree = getTree(e);
+		if (tree != null) {
+			return tree.getSelectionPath();
+		}
+		return null;
 	}
 
 	@Nullable

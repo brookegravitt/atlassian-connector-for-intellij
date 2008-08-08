@@ -64,7 +64,7 @@ public class CommentTreePanel extends JPanel {
 
 	private AtlassianTreeModel fullModel;
 
-	private static final AtlassianTreeNode ROOT = new FolderNode("/", AtlassianClickAction.EMPTY_ACTION);
+	public static final AtlassianTreeNode ROOT = new FolderNode("/", AtlassianClickAction.EMPTY_ACTION);
 	private Project project;
 	private static final String TOOLBAR_ID = "ThePlugin.Crucible.Comment.ToolBar";
 	public static final String MENU_PLACE = "menu comments";
@@ -96,6 +96,8 @@ public class CommentTreePanel extends JPanel {
 		for (GeneralComment comment : generalComment.getReplies()) {
 			addGeneralCommentTree(commentNode, review, comment, depth + 1);
 		}
+
+		
 	}
 
 	private void addVersionedCommentTree(AtlassianTreeNode root, final ReviewData review,
