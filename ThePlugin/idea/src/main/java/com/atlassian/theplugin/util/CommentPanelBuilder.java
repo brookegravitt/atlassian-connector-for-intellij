@@ -106,14 +106,17 @@ public final class CommentPanelBuilder {
 		private static final CellConstraints DATE_POS = new CellConstraints(4, 2);
 		private static final CellConstraints LINE_POS = new CellConstraints(6, 2);
 		private static final CellConstraints RANKING_POS = new CellConstraints(8, 2);
-		private static final CellConstraints STATE_POS = new CellConstraints(10, 2);
-		private static final CellConstraints TOOLBAR_POS = new CellConstraints(12, 2);
+		private static final CellConstraints DRAF_STATE_POS = new CellConstraints(10, 2);
+		private static final CellConstraints DEFECT_STATE_POS = new CellConstraints(12, 2);
+		private static final CellConstraints TOOLBAR_POS = new CellConstraints(14, 2);
 		private static final Color BORDER_COLOR = new Color(0xCC, 0xCC, 0xCC);
 
 		private static final float MINIMUM_FONT_SIZE = 3;
 		private static final float DATE_FONT_DIFFERENCE = -3;
 		private static final float AUTHOR_FONT_DIFFERENCE = -3;
 		private static final float LINE_NUMBER_FONT_DIFFERENCE = -3;
+		private static final float RANKING_FONT_DIFFERENCE = -3;
+		private static final float STATE_FONT_DIFFERENCE = -3;
 
 		private CommentPanel(ReviewData review, Comment comment) {
 			super(new FormLayout("pref:grow",
@@ -125,7 +128,7 @@ public final class CommentPanelBuilder {
 			CellConstraints cc = new CellConstraints();
 			JPanel header = new JPanel(
 					new FormLayout(
-							"4dlu, left:pref, 10dlu, left:pref, 10dlu, left:pref, 10dlu, pref:grow, 10dlu, right:pref, 10dlu, pref, 4dlu",
+							"4dlu, left:pref, 10dlu, left:pref, 10dlu, left:pref, 10dlu, pref:grow, 10dlu, right:pref, 10dlu, right:pref, 10dlu, pref, 4dlu",
 							"2dlu, pref:grow, 2dlu"));
 			header.add(getAuthorLabel(), AUTHOR_POS);
 			header.add(getDateLabel(), DATE_POS);
@@ -133,7 +136,8 @@ public final class CommentPanelBuilder {
 			if (comment.isDefectRaised()) {
 				header.add(getRankingLabel(), RANKING_POS);
 			}
-			header.add(getStateLabel(), STATE_POS);
+			header.add(getStateLabel("DRAFT", comment.isDraft(), new Color(0xFF, 0xD4, 0x15)), DRAF_STATE_POS);
+			header.add(getStateLabel("DEFECT", comment.isDefectRaised(), Color.RED), DEFECT_STATE_POS);
 			header.add(getToolBar(), TOOLBAR_POS);
 			header.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 1));
 			header.setBackground(getHeaderBackground());
@@ -159,9 +163,13 @@ public final class CommentPanelBuilder {
 		}
 
 		private Font getSmallerFont(final Font font, final float dateFontSizeDifference) {
-			float newFontSize = font.getSize() + dateFontSizeDifference;
-			return font.deriveFont(font.getStyle(), (newFontSize > 0 ? newFontSize : MINIMUM_FONT_SIZE));
+			if (font != null) {
+				float newFontSize = font.getSize() + dateFontSizeDifference;
+				return font.deriveFont(font.getStyle(), (newFontSize > 0 ? newFontSize : MINIMUM_FONT_SIZE));
+			}
+			return null;
 		}
+
 		protected Component getAuthorLabel() {
 			BoldLabel label =
 					new BoldLabel("".equals(comment.getAuthor().getDisplayName()) ? comment.getAuthor().getUserName() : comment
@@ -183,26 +191,18 @@ public final class CommentPanelBuilder {
 		}
 
 
-		protected Component getStateLabel() {
-			StringBuilder sb = new StringBuilder();
-			sb.append("<html><body>");
-			if (comment.isDraft()) {
-				sb.append("<span color=\"#FFD415\">");
-				sb.append("<b>");
-				sb.append("DRAFT");
-				sb.append("</b>");
-				sb.append("</span>");
+		protected Component getStateLabel(String text, boolean isInState, Color color) {
+			JLabel label = new JLabel("");
+
+			if (isInState) {
+				label.setText(text);
+				label.setFont(getSmallerFont(label.getFont(), STATE_FONT_DIFFERENCE));
+				label.setFont(label.getFont().deriveFont(Font.BOLD));
+				label.setForeground(color);
 			}
-			if (comment.isDefectRaised()) {
-				sb.append("&nbsp;<span color=\"red\">");
-				sb.append("<b>");
-				sb.append("DEFECT");
-				sb.append("</b>");
-				sb.append("</span>");
-			}
-			sb.append("</body></html>");
-			return new JLabel(sb.toString());
+			return label;
 		}
+
 
 		protected Component getRankingLabel() {
 			SimpleColoredComponent component = new SimpleColoredComponent();
@@ -214,8 +214,10 @@ public final class CommentPanelBuilder {
 				component.append(firstLetterUpperCase(elem.getKey()), SimpleTextAttributes.REGULAR_ATTRIBUTES);
 				component.append(": ", SimpleTextAttributes.REGULAR_ATTRIBUTES);
 				component.append(elem.getValue().getValue(), SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
+				component.setFont(getSmallerFont(component.getFont(), RANKING_FONT_DIFFERENCE));
 				isFirst = false;
 			}
+
 			return component;
 		}
 
