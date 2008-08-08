@@ -103,9 +103,10 @@ public final class CommentPanelBuilder {
 		private Comment comment;
 		private static final CellConstraints AUTHOR_POS = new CellConstraints(2, 2);
 		private static final CellConstraints DATE_POS = new CellConstraints(4, 2);
-		private static final CellConstraints RANKING_POS = new CellConstraints(6, 2);
-		private static final CellConstraints STATE_POS = new CellConstraints(8, 2);
-		private static final CellConstraints TOOLBAR_POS = new CellConstraints(10, 2);
+		private static final CellConstraints LINE_POS = new CellConstraints(6, 2);
+		private static final CellConstraints RANKING_POS = new CellConstraints(8, 2);
+		private static final CellConstraints STATE_POS = new CellConstraints(10, 2);
+		private static final CellConstraints TOOLBAR_POS = new CellConstraints(12, 2);
 		private static final Color BORDER_COLOR = new Color(0xCC, 0xCC, 0xCC);
 
 		private CommentPanel(ReviewData review, Comment comment) {
@@ -117,10 +118,12 @@ public final class CommentPanelBuilder {
 			setBackground(getBodyBackground());
 			CellConstraints cc = new CellConstraints();
 			JPanel header = new JPanel(
-					new FormLayout("4dlu, left:pref, 10dlu, left:pref, 10dlu, pref:grow, 10dlu, right:pref, 10dlu, pref, 4dlu",
+					new FormLayout(
+							"4dlu, left:pref, 10dlu, left:pref, 10dlu, left:pref, 10dlu, pref:grow, 10dlu, right:pref, 10dlu, pref, 4dlu",
 							"2dlu, pref:grow, 2dlu"));
 			header.add(getAuthorLabel(), AUTHOR_POS);
 			header.add(getDateLabel(), DATE_POS);
+			header.add(getLineInfoLabel(), LINE_POS);
 			if (comment.isDefectRaised()) {
 				header.add(getRankingLabel(), RANKING_POS);
 			}
@@ -150,6 +153,17 @@ public final class CommentPanelBuilder {
 			return new BoldLabel("".equals(comment.getAuthor().getDisplayName()) ? comment.getAuthor().getUserName() : comment
 					.getAuthor().getDisplayName());
 		}
+
+		protected Component getLineInfoLabel() {
+			if (comment instanceof VersionedComment) {
+				VersionedComment vc = (VersionedComment) comment;
+				if (vc.getToStartLine() > 0 && vc.getToEndLine() > 0) {
+					return new JLabel("Lines: [" + vc.getToStartLine() + " - " + vc.getToEndLine() + "]");
+				}
+			}
+			return new JLabel("");
+		}
+
 
 		protected Component getStateLabel() {
 			StringBuilder sb = new StringBuilder();
