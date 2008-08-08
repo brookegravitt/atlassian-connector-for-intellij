@@ -202,11 +202,13 @@ public final class CrucibleHelper {
 
 			public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile, CommitType commitType) {
 				FileEditorManager fem = FileEditorManager.getInstance(project);
-				Editor editor = fem.openTextEditor(displayFile, false);
-				if (editor == null) {
-					return;
+				if (displayFile != null) {
+					Editor editor = fem.openTextEditor(displayFile, false);
+					if (editor == null) {
+						return;
+					}
+					CommentHighlighter.highlightCommentsInEditor(project, editor, review, file);
 				}
-				CommentHighlighter.highlightCommentsInEditor(project, editor, review, file);
 			}
 		});
 	}
