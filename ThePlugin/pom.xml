@@ -111,17 +111,17 @@
     </dependencies>
     <build>
         <plugins>
-      <!--plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <dependencies>
-          <dependency>
-            <groupId>com.atlassian.theplugin</groupId>
-            <artifactId>build-tools</artifactId>
-            <version>${project.version}</version>
-          </dependency>
-        </dependencies>
-      </plugin-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.atlassian.theplugin</groupId>
+                        <artifactId>build-tools</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
             <plugin>
                 <groupId>com.atlassian.maven.plugins</groupId>
                 <artifactId>maven-clover2-plugin</artifactId>
@@ -244,7 +244,7 @@
                     <generateXml>true</generateXml>
                 </configuration>
             </plugin>
-            <!--plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <configuration>
@@ -266,7 +266,7 @@
                     </excludes>
                     <includeTestSourceDirectory>false</includeTestSourceDirectory>
                 </configuration>
-            </plugin-->
+            </plugin>
         </plugins>
     </reporting>
     <distributionManagement>
@@ -357,6 +357,5 @@
                 <module>idea</module>
             </modules>
         </profile>
-
     </profiles>
 </project>
