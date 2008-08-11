@@ -190,6 +190,7 @@
                         <exclude>**/*keystore</exclude>
                         <exclude>**/*apt.vm</exclude>
 			<exclude>**/thirdparty/**</exclude>
+			<exclude>**/eclipse/**</exclude>
                     </excludes>
                     <useDefaultExcludes>true</useDefaultExcludes>
                     <mapping>
