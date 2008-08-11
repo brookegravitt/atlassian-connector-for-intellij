@@ -200,12 +200,12 @@ public final class ReviewItemTreePanel extends JPanel {
 						private final Filter COMMENT_FILTER = new Filter() {
 							public boolean isValid(final AtlassianTreeNode node) {
 								if (node instanceof CrucibleFileNode) {
-										CrucibleFileNode anode = (CrucibleFileNode) node;
-										try {
-												return anode.getFile().getNumberOfComments() > 0;
-										} catch (ValueNotYetInitialized valueNotYetInitialized) {
-												return false;
-										}
+									CrucibleFileNode anode = (CrucibleFileNode) node;
+									try {
+										return anode.getFile().getNumberOfComments() > 0;
+									} catch (ValueNotYetInitialized valueNotYetInitialized) {
+										return false;
+									}
 								}
 								return true;
 							}
@@ -228,12 +228,11 @@ public final class ReviewItemTreePanel extends JPanel {
 		}
 
 
-
 		private String createGeneralInfoText(final ReviewData reviewItem) {
 			final StringBuilder buffer = new StringBuilder();
 			buffer.append("<html>");
 			buffer.append("<body>");
-			buffer.append(reviewItem.getCreator().getDisplayName());
+			buffer.append(reviewItem.getAuthor().getDisplayName());
 			buffer.append(" ");
 			buffer.append("<font size=-1 color=");
 			buffer.append(CrucibleConstants.CRUCIBLE_AUTH_COLOR);
