@@ -18,23 +18,26 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.bamboo.*;
-import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.configuration.CrucibleTooltipOption;
-import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
+import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
+import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
+import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.autoupdate.ConfirmPluginUpdateHandler;
 import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
 import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;
-import com.atlassian.theplugin.idea.crucible.*;
+import com.atlassian.theplugin.idea.crucible.CruciblePatchSubmitExecutor;
+import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
+import com.atlassian.theplugin.idea.crucible.CrucibleStatusIcon;
+import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.atlassian.theplugin.jira.JIRAServer;
-import com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier;
 import com.atlassian.theplugin.notification.crucible.CrucibleNotificationTooltip;
+import com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier;
 import com.intellij.ide.util.treeView.AbstractTreeNode;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ProjectComponent;
@@ -56,7 +59,7 @@ import java.util.Collection;
 /**
  * Per-project plugin component.
  */
-@State(name = "ThePluginSettings", storages = {@Storage(id = "thePlugin", file = "$PROJECT_FILE$") })
+@State(name = "ThePluginSettings", storages = {@Storage(id = "thePlugin", file = "$WORKSPACE_FILE$") })
 public class ThePluginProjectComponent implements
         ProjectComponent,
         PersistentStateComponent<ProjectConfigurationBean> {
