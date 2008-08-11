@@ -18,8 +18,6 @@ package com.atlassian.theplugin.util;
 
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
-import com.intellij.ui.SimpleColoredComponent;
-import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.ui.components.labels.BoldLabel;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -134,7 +132,7 @@ public final class CommentPanelBuilder {
 			header.add(getDateLabel(), DATE_POS);
 			header.add(getLineInfoLabel(), LINE_POS);
 			if (comment.isDefectRaised()) {
-				header.add(getRankingLabel(), RANKING_POS);
+				header.add(getRankingLabel(getHeaderBackground()), RANKING_POS);
 			}
 			header.add(getStateLabel("DRAFT", comment.isDraft(), new Color(0xFF, 0xD4, 0x15)), DRAF_STATE_POS);
 			header.add(getStateLabel("DEFECT", comment.isDefectRaised(), Color.RED), DEFECT_STATE_POS);
@@ -159,6 +157,7 @@ public final class CommentPanelBuilder {
 			sb.append(" ]");
 			label = new JLabel(sb.toString());
 			label.setFont(getSmallerFont(label.getFont(), DATE_FONT_DIFFERENCE));
+			label.setForeground(Color.GRAY);
 			return label;
 		}
 
@@ -184,6 +183,7 @@ public final class CommentPanelBuilder {
 				if (vc.getToStartLine() > 0 && vc.getToEndLine() > 0) {
 					JLabel label = new JLabel("Lines: [" + vc.getToStartLine() + " - " + vc.getToEndLine() + "]");
 					label.setFont(getSmallerFont(label.getFont(), LINE_NUMBER_FONT_DIFFERENCE));
+					label.setForeground(Color.GRAY);
 					return label;
 				}
 			}
@@ -204,21 +204,32 @@ public final class CommentPanelBuilder {
 		}
 
 
-		protected Component getRankingLabel() {
-			SimpleColoredComponent component = new SimpleColoredComponent();
-			boolean isFirst = true;
+		protected Component getRankingLabel(Color backgroundColor) {
+			JPanel panel = new JPanel(new FlowLayout());
+			panel.setBackground(backgroundColor);
+
+
 			for (Map.Entry<String, CustomField> elem : comment.getCustomFields().entrySet()) {
-				if (!isFirst) {
-					component.append(" ", SimpleTextAttributes.REGULAR_ATTRIBUTES);
-				}
-				component.append(firstLetterUpperCase(elem.getKey()), SimpleTextAttributes.REGULAR_ATTRIBUTES);
-				component.append(": ", SimpleTextAttributes.REGULAR_ATTRIBUTES);
-				component.append(elem.getValue().getValue(), SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
-				component.setFont(getSmallerFont(component.getFont(), RANKING_FONT_DIFFERENCE));
-				isFirst = false;
+
+
+				JLabel keyLabel = new JLabel(" " + firstLetterUpperCase(elem.getKey()) + ": ");
+				keyLabel.setFont(getSmallerFont(keyLabel.getFont(), RANKING_FONT_DIFFERENCE));
+				keyLabel.setForeground(Color.GRAY);
+				keyLabel.setBackground(backgroundColor);
+								
+				JLabel valueLabel = new JLabel(elem.getValue().getValue());
+				valueLabel.setFont(getSmallerFont(valueLabel.getFont(), RANKING_FONT_DIFFERENCE));
+				valueLabel.setFont(valueLabel.getFont().deriveFont(Font.BOLD));
+				valueLabel.setForeground(Color.GRAY);
+				valueLabel.setBackground(backgroundColor);
+
+				panel.add(keyLabel);
+				panel.add(valueLabel);
+
+
 			}
 
-			return component;
+			return panel;
 		}
 
 		private static final Pattern FIRST_LETTER = Pattern.compile("([a-z])");
