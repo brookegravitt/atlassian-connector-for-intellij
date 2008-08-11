@@ -115,6 +115,7 @@ public final class CommentPanelBuilder {
 		private static final float LINE_NUMBER_FONT_DIFFERENCE = -3;
 		private static final float RANKING_FONT_DIFFERENCE = -3;
 		private static final float STATE_FONT_DIFFERENCE = -3;
+		private static final Color STATE_DRAFT_LABEL_COLOR = new Color(0xFF, 0xD4, 0x15);
 
 		private CommentPanel(ReviewData review, Comment comment) {
 			super(new FormLayout("pref:grow",
@@ -126,7 +127,8 @@ public final class CommentPanelBuilder {
 			CellConstraints cc = new CellConstraints();
 			JPanel header = new JPanel(
 					new FormLayout(
-							"4dlu, left:pref, 10dlu, left:pref, 10dlu, left:pref, 10dlu, pref:grow, 10dlu, right:pref, 10dlu, right:pref, 10dlu, pref, 4dlu",
+							"4dlu, left:pref, 10dlu, left:pref, 10dlu, left:pref, 10dlu, pref:grow, 10dlu, right:pref, "
+							 + "10dlu, right:pref, 10dlu, pref, 4dlu",
 							"2dlu, pref:grow, 2dlu"));
 			header.add(getAuthorLabel(), AUTHOR_POS);
 			header.add(getDateLabel(), DATE_POS);
@@ -134,7 +136,7 @@ public final class CommentPanelBuilder {
 			if (comment.isDefectRaised()) {
 				header.add(getRankingLabel(getHeaderBackground()), RANKING_POS);
 			}
-			header.add(getStateLabel("DRAFT", comment.isDraft(), new Color(0xFF, 0xD4, 0x15)), DRAF_STATE_POS);
+			header.add(getStateLabel("DRAFT", comment.isDraft(), STATE_DRAFT_LABEL_COLOR), DRAF_STATE_POS);
 			header.add(getStateLabel("DEFECT", comment.isDefectRaised(), Color.RED), DEFECT_STATE_POS);
 			header.add(getToolBar(), TOOLBAR_POS);
 			header.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 1));
