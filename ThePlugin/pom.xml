@@ -189,6 +189,7 @@
                         <exclude>**/*new</exclude>
                         <exclude>**/*keystore</exclude>
                         <exclude>**/*apt.vm</exclude>
+			<exclude>**/thirdparty/**</exclude>
                     </excludes>
                     <useDefaultExcludes>true</useDefaultExcludes>
                     <mapping>
