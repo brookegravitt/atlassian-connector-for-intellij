@@ -21,6 +21,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.idea.crucible.CrucibleFilteredModelProvider;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
@@ -67,9 +68,11 @@ public class CommentTreePanel extends JPanel {
 	private static final String TOOLBAR_ID = "ThePlugin.Crucible.Comment.ToolBar";
 	public static final String MENU_PLACE = "menu comments";
 	private static final String TOOLBAR_PLACE = "toolbar comments";
+	private CrucibleFilteredModelProvider.FILTER filter;
 
-	public CommentTreePanel(Project project) {
+	public CommentTreePanel(Project project, CrucibleFilteredModelProvider.FILTER filter) {
 		this.project = project;
+		this.filter = filter;
 		IdeaHelper.getReviewActionEventBroker().registerListener(crucibleAgent);
 		initialize();
 	}
@@ -168,9 +171,33 @@ public class CommentTreePanel extends JPanel {
 		return commentTree;
 	}
 
-	public void filterTreeNodes(Filter filter) {
-			commentTree.setModel(fullModel.getFilteredModel(filter));
-			refreshTree();
+	public void filterTreeNodes(CrucibleFilteredModelProvider.FILTER filter) {
+		this.filter = filter;
+		commentTree.setModel(fullModel.getFilteredModel(getFilter(filter)));
+		refreshTree();
+	}
+
+	private Filter getFilter(final CrucibleFilteredModelProvider.FILTER filter) {
+		switch (filter) {
+			case FILES_ALL:
+				return Filter.ALL;
+			case FILES_WITH_COMMENTS_ONLY:
+				return new Filter() {
+					public boolean isValid(final AtlassianTreeNode node) {
+						if (node instanceof FileNameNode) {
+							FileNameNode anode = (FileNameNode) node;
+							try {
+								return anode.getFile().getNumberOfComments() > 0;
+							} catch (ValueNotYetInitialized valueNotYetInitialized) {
+								return false;
+							}
+						}
+						return true;
+					}
+				};
+			default:
+				throw new IllegalStateException("Unknow filtering requested (" + filter.toString() + ")");
+		}		
 	}
 
 	private void refreshTree() {
@@ -193,7 +220,7 @@ public class CommentTreePanel extends JPanel {
 				public void run() {
 					commentTree.setVisible(false);
 					fullModel = createTreeModel(review);
-					commentTree = new CommentTree(fullModel);
+					commentTree = new CommentTree(fullModel.getFilteredModel(getFilter(filter)));
 					refreshTree();
 				}
 			});
