@@ -35,8 +35,8 @@ public class CommentTree extends AtlassianTree {
 
 	public CommentTree(AtlassianTreeModel model) {
 		super(model);
-//		putClientProperty("JTree.lineStyle", "None");
-//		setShowsRootHandles(false);
+		putClientProperty("JTree.lineStyle", "None");
+		setShowsRootHandles(false);
 		setRootVisible(false);
 		setRowHeight(0);
 	}
