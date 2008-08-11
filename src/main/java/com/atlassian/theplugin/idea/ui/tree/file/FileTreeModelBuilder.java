@@ -30,7 +30,6 @@ import com.atlassian.theplugin.idea.crucible.events.ShowFileEvent;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.Filter;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
@@ -74,7 +73,7 @@ public final class FileTreeModelBuilder {
 
 
 	public static AtlassianTreeModel buildFlatModelFromCrucibleChangeSet(final ReviewData review,
-			List<CrucibleFileInfo> files, Filter filter) {
+			List<CrucibleFileInfo> files) {
 		AtlassianTreeModel model = new FileTreeModel(new CrucibleChangeSetTitleNode(review, new AtlassianClickAction() {
 			public void execute(AtlassianTreeNode node, int noOfClicks) {
 				switch (noOfClicks) {
@@ -109,12 +108,11 @@ public final class FileTreeModelBuilder {
 			model.getRoot().addNode(childNode);
 
 		}
-		return model.getFilteredModel(filter);
-		//return model;
+		return model;
 	}
 
 	public static AtlassianTreeModel buildTreeModelFromCrucibleChangeSet(final ReviewData review,
-			final List<CrucibleFileInfo> files, Filter filter) {
+			final List<CrucibleFileInfo> files) {
 		FileNode root = new CrucibleChangeSetTitleNode(review, new AtlassianClickAction() {
 			public void execute(AtlassianTreeNode node, int noOfClicks) {
 				switch (noOfClicks) {
@@ -152,7 +150,7 @@ public final class FileTreeModelBuilder {
 
 		}
 		model.compactModel(model.getRoot());
-		return model.getFilteredModel(filter);
+		return model;
 		//return model;
 
 	}
