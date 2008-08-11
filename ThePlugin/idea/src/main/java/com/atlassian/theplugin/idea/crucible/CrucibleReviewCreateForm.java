@@ -87,11 +87,13 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 	private String patchText;
 	private DefaultListModel model;
 
+	private com.intellij.openapi.project.Project project;
 	private CrucibleServerFacade crucibleServerFacade;
 	private ChangeList[] changes;
 
-	protected CrucibleReviewCreateForm(CrucibleServerFacade crucibleServerFacade, ChangeList[] changes) {
-		this(crucibleServerFacade, "");
+	public CrucibleReviewCreateForm(com.intellij.openapi.project.Project project, CrucibleServerFacade crucibleServerFacade,
+			ChangeList[] changes) {
+		this(project, crucibleServerFacade, "");
 		this.mode = ReviewCreationMode.REVISION;
 		this.changes = changes;
 		if (changes.length == 1) {
@@ -103,21 +105,20 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 		setTitle("Create Review");
 	}
 
-	protected CrucibleReviewCreateForm(CrucibleServerFacade crucibleServerFacade, String commitMessage, String patch) {
-		this(crucibleServerFacade, commitMessage);
+	public CrucibleReviewCreateForm(com.intellij.openapi.project.Project project, CrucibleServerFacade crucibleServerFacade,
+			String commitMessage,
+			String patch) {
+		this(project, crucibleServerFacade, commitMessage);
 		this.mode = ReviewCreationMode.PATCH;
 		setPatchPreview(patch);
 		showPatchPanel(true);
 		setTitle("Create Patch Review");
 	}
 
-	private void showPatchPanel(boolean visible) {
-		this.patchPanel.setVisible(visible);
-		this.patchLabel.setVisible(visible);
-	}
-
-	private CrucibleReviewCreateForm(CrucibleServerFacade crucibleServerFacade, String commitMessage) {
+	private CrucibleReviewCreateForm(com.intellij.openapi.project.Project project, CrucibleServerFacade crucibleServerFacade,
+			String commitMessage) {
 		super(false);
+		this.project = project;
 		this.crucibleServerFacade = crucibleServerFacade;
 		$$$setupUI$$$();
 		init();
@@ -150,6 +151,11 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 
 
 		fillInCrucibleServers();
+	}
+
+	private void showPatchPanel(boolean visible) {
+		this.patchPanel.setVisible(visible);
+		this.patchLabel.setVisible(visible);
 	}
 
 	private void setCheckboxState(int index) {
@@ -453,6 +459,11 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 			}
 			getOKAction().setEnabled(true);
 		}
+		// if only one repository
+		if (this.mode == ReviewCreationMode.REVISION
+				&& repositories.size() == 1) {
+			repoComboBox.setSelectedIndex(repoComboBox.getItemCount() - 1);
+		}
 		authorComboBox.addItem("");
 		moderatorComboBox.addItem("");
 		if (!users.isEmpty()) {
@@ -616,6 +627,13 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 										server, review, patchText);
 						break;
 					case REVISION:
+						if (mode == ReviewCreationMode.REVISION
+								&& review.getRepoName() == null) {
+							Messages.showErrorDialog(project,
+									"Repository not selected. Unable to create review.\n"
+									, "Repository required");
+							return;
+						}
 						List<String> revisions = new ArrayList<String>();
 						for (ChangeList change : changes) {
 							for (Change change1 : change.getChanges()) {
@@ -642,12 +660,38 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 						users.add(item.getUser().getUserName());
 					}
 				}
+
 				if (!users.isEmpty()) {
 					crucibleServerFacade.addReviewers(server, draftReview.getPermId(), users);
 				}
 
 				if (!leaveAsDraftCheckBox.isSelected()) {
-					crucibleServerFacade.approveReview(server, draftReview.getPermId());
+					try {
+						Review newReview = crucibleServerFacade.getReview(server, draftReview.getPermId());
+						if (newReview.getModerator().getUserName().equals(server.getUserName())) {
+							if (newReview.getActions().contains(Action.APPROVE)) {
+								crucibleServerFacade.approveReview(server, draftReview.getPermId());
+							} else {
+								Messages.showErrorDialog(project,
+										newReview.getAuthor().getDisplayName() + " is authorized to approve review.\n" +
+												"Leaving review in draft state."
+										, "Permission denied");
+							}
+						} else {
+							if (newReview.getActions().contains(Action.SUBMIT)) {
+								crucibleServerFacade.submitReview(server, draftReview.getPermId());
+							} else {
+								Messages.showErrorDialog(project,
+										newReview.getAuthor().getDisplayName() + " is authorized submit review.\n" +
+												"Leaving review in draft state."
+										, "Permission denied");
+							}
+						}
+					} catch (ValueNotYetInitialized valueNotYetInitialized) {
+						Messages.showErrorDialog(project,
+								"Unable to change review state. Leaving review in draft state."
+								, "Permission denied");
+					}
 				}
 				if (openBrowserToCompleteCheckBox.isSelected()) {
 					BrowserUtil.launchBrowser(server.getUrlString()

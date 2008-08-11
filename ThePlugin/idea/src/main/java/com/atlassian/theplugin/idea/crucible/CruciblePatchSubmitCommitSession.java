@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -52,32 +52,32 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 		return changes.size() > 0;
 	}
 
-	public void execute(Collection<Change> changes, String commitMessage) {		
-        PatchProducer patchProducer = new PatchProducer(project, changes);
-        String patch = patchProducer.generateUnifiedDiff();
+	public void execute(Collection<Change> changes, String commitMessage) {
+		PatchProducer patchProducer = new PatchProducer(project, changes);
+		String patch = patchProducer.generateUnifiedDiff();
 
-        /*
-        Collection<FilePatch> patches = null;
-        try {
-            patches = PatchBuilder
-                        .buildPatch( changes, IdeaHelper.getCurrentProject().getBaseDir().getPath(), true, false );
-        } catch (VcsException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        Writer writer = new StringWriter( 2048 );
-        try {
-            UnifiedDiffWriter.write( patches, writer, "Ala ma kota" );
-        } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        System.out.print( writer.toString() );
-        */
+		/*
+				Collection<FilePatch> patches = null;
+				try {
+					patches = PatchBuilder
+								.buildPatch( changes, IdeaHelper.getCurrentProject().getBaseDir().getPath(), true, false );
+				} catch (VcsException e) {
+					e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+				}
+				Writer writer = new StringWriter( 2048 );
+				try {
+					UnifiedDiffWriter.write( patches, writer, "Ala ma kota" );
+				} catch (IOException e) {
+					e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+				}
+				System.out.print( writer.toString() );
+				*/
 
-        ApplicationManager.getApplication().invokeAndWait(
-				new CruciblePatchUploader(crucibleServerFacade, commitMessage, patch),
+		ApplicationManager.getApplication().invokeAndWait(
+				new CruciblePatchUploader(project, crucibleServerFacade, commitMessage, patch),
 				ModalityState.defaultModalityState());
 
-    }
+	}
 
 	public void executionCanceled() {
 	}

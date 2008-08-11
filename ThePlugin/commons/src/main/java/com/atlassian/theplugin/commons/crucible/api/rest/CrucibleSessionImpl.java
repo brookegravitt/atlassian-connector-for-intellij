@@ -68,6 +68,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 	private static final String REPLIES = "/replies";
 
 	private static final String APPROVE_ACTION = "action:approveReview";
+	private static final String SUBMIT_ACTION = "action:submitReview";
 	private static final String SUMMARIZE_ACTION = "action:summarizeReview";
 	private static final String ABANDON_ACTION = "action:abandonReview";
 	private static final String CLOSE_ACTION = "action:closeReview";
@@ -968,7 +969,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			if (elements != null && !elements.isEmpty()) {
 				for (Element element : elements) {
 					GeneralCommentBean reply = CrucibleRestXmlHelper.parseGeneralCommentNode(element);
-				    reply.setReply(true);
+					reply.setReply(true);
 					return reply;
 				}
 			}
@@ -1266,6 +1267,10 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 
 	public Review approveReview(PermId permId) throws RemoteApiException {
 		return changeReviewState(permId, APPROVE_ACTION);
+	}
+
+	public Review submitReview(PermId permId) throws RemoteApiException {
+		return changeReviewState(permId, SUBMIT_ACTION);
 	}
 
 	public Review abandonReview(PermId permId) throws RemoteApiException {
