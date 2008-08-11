@@ -27,14 +27,13 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.config.ContentPanel;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
+import com.atlassian.theplugin.idea.crucible.CrucibleFilteredModelProvider;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.atlassian.theplugin.idea.crucible.events.*;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
-import com.atlassian.theplugin.idea.ui.tree.Filter;
-import com.atlassian.theplugin.idea.ui.tree.CrucibleFilterProvider;
 import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
@@ -71,7 +70,7 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
 	private static final int LEFT_WIDTH = 150;
 	private static final int LEFT_HEIGHT = 250;
 	private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
-	private CrucibleFilterProvider filterProvider;
+	private CrucibleFilteredModelProvider.FILTER filter = CrucibleFilteredModelProvider.FILTER.FILES_ALL;
 
 
 	protected String getInitialMessage() {
@@ -127,13 +126,13 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
 
 		this.project = project;
 		setBackground(UIUtil.getTreeTextBackground());
-		reviewItemTreePanel = new ReviewItemTreePanel(project);
+		reviewItemTreePanel = new ReviewItemTreePanel(project, filter);
 		Splitter splitter = new Splitter(false, SPLIT_RATIO);
 		splitter.setShowDividerControls(true);
 		reviewItemTreePanel.getProgressAnimation().configure(reviewItemTreePanel, reviewItemTreePanel, BorderLayout.CENTER);
 		splitter.setFirstComponent(reviewItemTreePanel);
 		splitter.setHonorComponentsMinimumSize(true);
-		reviewComentsPanel = new CommentTreePanel(project);
+		reviewComentsPanel = new CommentTreePanel(project, filter);
 		splitter.setSecondComponent(reviewComentsPanel);
 		add(splitter, BorderLayout.CENTER);
 
@@ -143,8 +142,6 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
 
 
 		progressAnimation.configure(this, reviewItemTreePanel, BorderLayout.CENTER);
-		filterProvider = new CrucibleFilterProvider();
-
 	}
 
 
@@ -213,7 +210,7 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
 	}
 
 	public void switchFilter() {
-		Filter filter = filterProvider.switchFilter();
+		filter = filter.getNextState();
 		getReviewComentsPanel().filterTreeNodes(filter);
 		getReviewItemTreePanel().filterTreeNodes(filter);
 	}
@@ -423,4 +420,5 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
 			}
 		}
 	}
+
 }

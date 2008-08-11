@@ -59,7 +59,7 @@ public class AtlassianTreeWithToolbar extends ComponentWithToolbar {
 	@NotNull
 	public void setModelProvider(final ModelProvider modelProvider) {
 		this.modelProvider = modelProvider;
-		setState(state);
+		triggerModelUpdated();
 	}
 
 	public ModelProvider getModelProvider() {
@@ -71,8 +71,12 @@ public class AtlassianTreeWithToolbar extends ComponentWithToolbar {
 	}
 
 	public void setState(final STATE state) {
-		setModel(modelProvider.getModel(state));
 		this.state = state;
+		triggerModelUpdated();
+	}
+
+	public void triggerModelUpdated() {
+		setModel(modelProvider.getModel(state));
 	}
 
 	public void changeState() {
