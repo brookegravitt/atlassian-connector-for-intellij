@@ -21,6 +21,7 @@ import com.atlassian.theplugin.idea.GenericHyperlinkListener;
 import com.atlassian.theplugin.idea.PluginToolWindow;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusIcon;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.WindowManager;
 import thirdparty.javaworld.ClasspathHTMLEditorKit;
 
@@ -129,8 +130,11 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 						}
 					});
 					content.setCaretPosition(0); // do this to make sure scroll pane is always at the top / header
-					WindowManager.getInstance().getStatusBar(project).fireNotificationPopup(
-							new JScrollPane(content), BACKGROUND_COLOR);
+					final StatusBar statusBar = WindowManager.getInstance().getStatusBar(project);
+					if (statusBar != null) {
+						statusBar.fireNotificationPopup(
+								new JScrollPane(content), BACKGROUND_COLOR);
+					}
 				}
 			}
 		}
