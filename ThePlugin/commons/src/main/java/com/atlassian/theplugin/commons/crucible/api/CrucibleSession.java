@@ -47,6 +47,8 @@ public interface CrucibleSession {
 
 	void addReviewers(PermId permId, Set<String> userNames) throws RemoteApiException;
 
+	void removeReviewer(PermId permId, String userNames) throws RemoteApiException;
+
 	Review approveReview(PermId permId) throws RemoteApiException;
 
 	Review submitReview(PermId permId) throws RemoteApiException;
