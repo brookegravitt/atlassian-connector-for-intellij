@@ -39,6 +39,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 
 	private Set<ReviewData> reviews = new HashSet<ReviewData>();
 	private List<CrucibleNotification> notifications = new ArrayList<CrucibleNotification>();
+	private HashMap<PredefinedFilter, NewExceptionNotification> exceptionNotifications = new HashMap<PredefinedFilter, NewExceptionNotification>();
 
 	private boolean firstRun = true;
 	private Project project;
@@ -237,11 +238,21 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 							processedReviews.add(reviewDataInfo);
 						}
 					}
+					
+					exceptionNotifications.remove(predefinedFilter);
 				} else {
 					// do not analyze events when exception was raised.
 					// maybe next time wil be better
-					notifications.add(new NewExceptionNotification(incomingReviews.get(predefinedFilter).getException()));
-					exceptionFound = true;
+					NewExceptionNotification prevNotificationException = exceptionNotifications.get(predefinedFilter);
+					NewExceptionNotification newException = new NewExceptionNotification(incomingReviews.get(predefinedFilter).getException());
+
+					if ((prevNotificationException != null && !prevNotificationException.equals(newException))
+							|| exceptionNotifications.size() <=0 || prevNotificationException == null) {
+
+						exceptionNotifications.put(predefinedFilter, newException);
+						notifications.add(newException);
+						exceptionFound = true;
+					}
 				}
 
 			}
@@ -261,6 +272,8 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 
 	public void resetState() {
 		reviews.clear();
+		exceptionNotifications.clear();
+		
 		for (CrucibleNotificationListener listener : listenerList) {
 			listener.resetState();
 		}
