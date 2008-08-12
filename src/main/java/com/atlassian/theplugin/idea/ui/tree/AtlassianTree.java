@@ -109,6 +109,9 @@ public class AtlassianTree extends JTree {
 		if (node == null) {
 			return;
 		}
+		if (node.equals(getLastSelectedPathComponent())) {
+			return;
+		}
 		for (int i = 0; i < getRowCount(); i++) {
 			if (((AtlassianTreeNode) getPathForRow(i).getLastPathComponent()).equals(node)) {
 				this.setSelectionRow(i);
