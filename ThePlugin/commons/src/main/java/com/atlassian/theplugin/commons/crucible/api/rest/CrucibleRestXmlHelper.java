@@ -143,13 +143,7 @@ public final class CrucibleRestXmlHelper {
 		if (!"".equals(stateString)) {
 			review.setState(State.fromValue(stateString));
 		}
-
-		String a = getChildText(reviewNode, "allowReviewerToJoin");
-		if (a != null && !"".equalsIgnoreCase(a)) {
-			review.setAllowReviewerToJoin(Boolean.parseBoolean(a));
-		} else {
-			review.setAllowReviewerToJoin(Boolean.parseBoolean(getChildText(reviewNode, "allowReviewersToJoin")));
-		}
+		review.setAllowReviewerToJoin(Boolean.parseBoolean(getChildText(reviewNode, "allowReviewersToJoin")));
 
 		if (reviewNode.getChild("permaId") != null) {
 			PermIdBean permId = new PermIdBean();
@@ -381,8 +375,6 @@ public final class CrucibleRestXmlHelper {
 		if (review.getState() != null) {
 			addTag(reviewData, "state", review.getState().value());
 		}
-		// @todo update when CR M5 will be released
-		addTag(reviewData, "allowReviewerToJoin", Boolean.toString(review.isAllowReviewerToJoin()));
 		addTag(reviewData, "allowReviewersToJoin", Boolean.toString(review.isAllowReviewerToJoin()));
 		if (review.getPermId() != null) {
 			Element permIdElement = new Element("permaId");

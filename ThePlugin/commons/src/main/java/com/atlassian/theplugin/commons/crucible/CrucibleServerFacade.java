@@ -50,7 +50,13 @@ public interface CrucibleServerFacade extends ProductServerFacade {
 	CrucibleFileInfo addItemToReview(Server server, Review review, NewReviewItem newItem)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
+	List<Reviewer> getReviewers(Server server, PermId permId)
+			throws RemoteApiException, ServerPasswordNotProvidedException;
+
 	void addReviewers(Server server, PermId permId, Set<String> userName)
+			throws RemoteApiException, ServerPasswordNotProvidedException;
+
+	void removeReviewer(Server server, PermId permId, String userName)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
 	Review approveReview(Server server, PermId permId)

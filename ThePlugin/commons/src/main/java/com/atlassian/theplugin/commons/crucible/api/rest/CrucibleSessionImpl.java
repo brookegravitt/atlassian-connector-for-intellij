@@ -1217,6 +1217,21 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
 	}
 
+	public void removeReviewer(PermId permId, String username) throws RemoteApiException {
+		if (!isLoggedIn()) {
+			throw new IllegalStateException("Calling method without calling login() first");
+		}
+
+		String requestUrl = baseUrl + REVIEW_SERVICE + "/" + permId.getId() + REVIEWERS + "/" + username;
+		try {
+			retrieveDeleteResponse(requestUrl, false);
+		} catch (IOException e) {
+			throw new RemoteApiException(e.getMessage(), e);
+		} catch (JDOMException e) {
+			throw new RemoteApiException("Server returned malformed response", e);
+		}
+	}
+
 	private Review changeReviewState(PermId permId, String action) throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");

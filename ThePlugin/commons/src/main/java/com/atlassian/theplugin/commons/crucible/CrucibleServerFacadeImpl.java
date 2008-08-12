@@ -156,6 +156,14 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 		session.addReviewers(permId, userNames);
 	}
 
+	public void removeReviewer(
+			Server server,
+			PermId permId,
+			String userName) throws RemoteApiException, ServerPasswordNotProvidedException {
+		CrucibleSession session = getSession(server);
+		session.removeReviewer(permId, userName);
+	}
+
 	public Review approveReview(
 			Server server,
 			PermId permId) throws RemoteApiException, ServerPasswordNotProvidedException {
@@ -384,6 +392,12 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	public Review getReview(Server server, PermId permId) throws RemoteApiException, ServerPasswordNotProvidedException {
 		CrucibleSession session = getSession(server);
 		return session.getReview(permId, true);
+	}
+
+	public List<Reviewer> getReviewers(Server server, PermId permId)
+			throws RemoteApiException, ServerPasswordNotProvidedException {
+		CrucibleSession session = getSession(server);
+		return session.getReviewers(permId);
 	}
 
 	public List<Review> getAllReviewsForFile(Server server, String repoName, String path)
