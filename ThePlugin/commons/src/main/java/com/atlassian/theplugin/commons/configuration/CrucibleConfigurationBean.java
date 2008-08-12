@@ -35,7 +35,10 @@ public class CrucibleConfigurationBean extends AbstractServerConfigurationBean {
 	}
 
 	public void setPollTime(int pollTime) {
-		this.pollTime = pollTime;
+		this.pollTime =
+				pollTime > AbstractServerConfigurationBean.MIN_SCHEDULE_TIME_MINUTES?
+						pollTime:
+						AbstractServerConfigurationBean.MIN_SCHEDULE_TIME_MINUTES;
 	}
 
 	public CrucibleTooltipOption getCrucibleTooltipOption() {

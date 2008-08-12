@@ -34,6 +34,7 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 	private final CrucibleStatusIcon display;
 	private static final Color BACKGROUND_COLOR = new Color(255, 255, 200);
 	private Project project;
+	private boolean exceptionRaised = false;
 
 	public CrucibleNotificationTooltip(CrucibleStatusIcon display, Project project) {
 		this.display = display;
@@ -41,7 +42,9 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 	}
 
 
+	//private List<CrucibleNotification>
 	public void updateNotifications(java.util.List<CrucibleNotification> notifications) {
+		exceptionRaised = false;
 		if (!notifications.isEmpty()) {
 			StringBuilder sb = new StringBuilder("<table width=\"100%\">");
 
@@ -54,6 +57,7 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 							.append(notification.getItemUrl()).append("\">")
 							.append("").append("</a></td><td>").append(notification.getPresentationMessage())
 							.append("</td></tr>");
+					exceptionRaised = true;
 				}
 			}
 
@@ -113,7 +117,7 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 			sb.append("</table>");
 			if (project != null) {
 				if (notifications.size() > 0) {
-					display.triggerNewReviewAction(notifications.size());
+					display.triggerNewReviewAction(notifications.size(), exceptionRaised);
 
 					JEditorPane content = new JEditorPane();
 					content.setEditable(false);
