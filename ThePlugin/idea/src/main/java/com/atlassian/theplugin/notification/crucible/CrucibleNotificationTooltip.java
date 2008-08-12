@@ -130,10 +130,12 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 						}
 					});
 					content.setCaretPosition(0); // do this to make sure scroll pane is always at the top / header
-					final StatusBar statusBar = WindowManager.getInstance().getStatusBar(project);
-					if (statusBar != null) {
-						statusBar.fireNotificationPopup(
-								new JScrollPane(content), BACKGROUND_COLOR);
+					final WindowManager windowManager = WindowManager.getInstance();
+					if (windowManager != null) {
+						final StatusBar statusBar = windowManager.getStatusBar(project);
+						if (statusBar != null) {
+							statusBar.fireNotificationPopup(new JScrollPane(content), BACKGROUND_COLOR);
+						}
 					}
 				}
 			}
