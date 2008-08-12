@@ -78,6 +78,13 @@ public class AtlassianTree extends JTree {
 		}
 	}
 
+	public void expandFromNode(AtlassianTreeNode node) {
+		for (int i = 0; i < node.getChildCount(); i++) {
+			expandFromNode(node.getChildAt(i));
+		}
+		expandRow(getRowForPath(new TreePath(node.getPath())));
+	}
+
 	public void collapseAll() {
 		for (int i = 0; i < getRowCount(); i++) {
 			collapseRow(i);
