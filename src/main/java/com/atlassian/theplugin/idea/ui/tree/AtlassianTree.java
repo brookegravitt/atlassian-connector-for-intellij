@@ -20,6 +20,8 @@ import com.atlassian.theplugin.idea.ui.tree.file.FolderNode;
 import com.intellij.openapi.diagnostic.Logger;
 
 import javax.swing.*;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
@@ -70,6 +72,18 @@ public class AtlassianTree extends JTree {
 				//To change body of implemented methods use File | Settings | File Templates.
 			}
 		});
+		addTreeSelectionListener(new TreeSelectionListener() {
+			public void valueChanged(final TreeSelectionEvent e) {
+				AtlassianTreeNode node = (AtlassianTreeNode)
+						getLastSelectedPathComponent();
+				if (node != null) {
+					AtlassianClickAction action = node.getAtlassianClickAction();
+					if (action != null) {
+						action.execute(node, 1);
+					}
+				}
+			}
+		});
 	}
 
 	public void expandAll() {
@@ -107,7 +121,7 @@ public class AtlassianTree extends JTree {
 	public Rectangle getPathBounds(TreePath path) {
 		Rectangle rect = super.getPathBounds(path);
 		Container parent = getParent();
-        Rectangle newRect;
+		Rectangle newRect;
 		if (parent != null && !(parent instanceof CellRendererPane)) {
 			// redefined to show as many childen as possible
 			rect = new Rectangle(rect.getBounds().x,
@@ -119,7 +133,7 @@ public class AtlassianTree extends JTree {
 	protected static class AtlassianTreeCellRenderer extends DefaultTreeCellRenderer {
 
 		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded,
-													  boolean leaf, int row, boolean hasFocus) {
+				boolean leaf, int row, boolean hasFocus) {
 			try {
 				AtlassianTreeNode node = (AtlassianTreeNode) value;
 				return node.getTreeCellRenderer()
