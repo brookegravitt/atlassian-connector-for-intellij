@@ -20,8 +20,6 @@ import com.atlassian.theplugin.idea.ui.tree.file.FolderNode;
 import com.intellij.openapi.diagnostic.Logger;
 
 import javax.swing.*;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
@@ -70,18 +68,19 @@ public class AtlassianTree extends JTree {
 			public void mouseExited(MouseEvent event) {
 			}
 		});
-		addTreeSelectionListener(new TreeSelectionListener() {
-			public void valueChanged(final TreeSelectionEvent e) {
-				AtlassianTreeNode node = (AtlassianTreeNode)
-						getLastSelectedPathComponent();
-				if (node != null) {
-					AtlassianClickAction action = node.getAtlassianClickAction();
-					if (action != null) {
-						action.execute(node, 1);
-					}
-				}
-			}
-		});
+// commented out due to event looping which is not easy to remove
+//		addTreeSelectionListener(new TreeSelectionListener() {
+//			public void valueChanged(final TreeSelectionEvent e) {
+//				AtlassianTreeNode node = (AtlassianTreeNode)
+//						getLastSelectedPathComponent();
+//				if (node != null) {
+//					AtlassianClickAction action = node.getAtlassianClickAction();
+//					if (action != null) {
+//						action.execute(node, 1);
+//					}
+//				}
+//			}
+//		});
 		addKeyListener(new KeyListener() {
 			public void keyTyped(final KeyEvent e) {
 			}
