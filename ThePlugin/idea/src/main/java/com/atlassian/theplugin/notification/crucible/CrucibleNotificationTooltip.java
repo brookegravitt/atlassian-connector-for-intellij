@@ -137,7 +137,6 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 	}
 
 	public void resetState() {
-		System.out.println("RESET STATE");
 		display.resetIcon();
 	}
 }
