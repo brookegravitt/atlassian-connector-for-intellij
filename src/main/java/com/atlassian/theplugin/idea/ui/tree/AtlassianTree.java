@@ -20,6 +20,8 @@ import com.atlassian.theplugin.idea.ui.tree.file.FolderNode;
 import com.intellij.openapi.diagnostic.Logger;
 
 import javax.swing.*;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
@@ -31,6 +33,7 @@ import java.awt.event.MouseListener;
 
 public class AtlassianTree extends JTree {
 	protected static final AtlassianTreeCellRenderer DISPATCHING_RENDERER = new AtlassianTreeCellRenderer();
+	private boolean disableNotification = false;
 
 	public AtlassianTree() {
 		this(new AtlassianTreeModel(new FolderNode("/")));
@@ -68,19 +71,22 @@ public class AtlassianTree extends JTree {
 			public void mouseExited(MouseEvent event) {
 			}
 		});
-// commented out due to event looping which is not easy to remove
-//		addTreeSelectionListener(new TreeSelectionListener() {
-//			public void valueChanged(final TreeSelectionEvent e) {
-//				AtlassianTreeNode node = (AtlassianTreeNode)
-//						getLastSelectedPathComponent();
-//				if (node != null) {
-//					AtlassianClickAction action = node.getAtlassianClickAction();
-//					if (action != null) {
-//						action.execute(node, 1);
-//					}
-//				}
-//			}
-//		});
+		addTreeSelectionListener(new TreeSelectionListener() {
+			public void valueChanged(final TreeSelectionEvent e) {
+				if (disableNotification == true) {
+					disableNotification = false;
+					return;
+				}
+				AtlassianTreeNode node = (AtlassianTreeNode)
+						getLastSelectedPathComponent();
+				if (node != null) {
+					AtlassianClickAction action = node.getAtlassianClickAction();
+					if (action != null) {
+						action.execute(node, 1);
+					}
+				}
+			}
+		});
 		addKeyListener(new KeyListener() {
 			public void keyTyped(final KeyEvent e) {
 			}
@@ -131,6 +137,7 @@ public class AtlassianTree extends JTree {
 		}
 		for (int i = 0; i < getRowCount(); i++) {
 			if (((AtlassianTreeNode) getPathForRow(i).getLastPathComponent()).equals(node)) {
+				disableNotification = true; // this works because everything is being done in Swing thread
 				this.setSelectionRow(i);
 				this.scrollRowToVisible(i);
 			}
