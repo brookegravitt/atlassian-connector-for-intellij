@@ -16,9 +16,9 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.idea.StatusBarPluginIcon;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.idea.PluginToolWindow;
+import com.atlassian.theplugin.idea.StatusBarPluginIcon;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
 
@@ -38,8 +38,10 @@ public class CrucibleStatusIcon extends StatusBarPluginIcon {
 
 	private static final Icon ICON_NEW = IconLoader.getIcon("/icons/ico_crucible_green.png");
 	private static final Icon ICON_STANDARD = IconLoader.getIcon("/icons/ico_crucible_grey.png");
+	private static final Icon ICON_ERROR = IconLoader.getIcon("/icons/ico_crucible_red.png");
 	private static final String NO_NEW_REVIEWS = "No new reviews and review changes.";
 	private static final String NEW_REVIEWS = "New Crucible events are available. Click for details.";
+	private static final String ERROR_REVIEWS = "Some errors occured. Check connections to Crucible servers.";
 
 	public CrucibleStatusIcon(final Project project) {
 		super(project);
@@ -57,9 +59,15 @@ public class CrucibleStatusIcon extends StatusBarPluginIcon {
 	 * Sets the icon to NEW REVEWS state (blue icon, number of revious in text label, tooltip text)
 	 * @param numOfNewReviews number of new reviews
 	 */
-	public void triggerNewReviewAction(int numOfNewReviews) {
-		this.setIcon(ICON_NEW);
-		this.setToolTipText(NEW_REVIEWS);
+	public void triggerNewReviewAction(int numOfNewReviews, boolean exceptionRaised) {
+		if (!exceptionRaised) {
+			this.setIcon(ICON_NEW);
+			this.setToolTipText(NEW_REVIEWS);
+		} else {
+			this.setIcon(ICON_ERROR);
+			this.setToolTipText(ERROR_REVIEWS);
+		}
+
 		this.setText(Integer.toString(numOfNewReviews));
 	}
 

@@ -22,6 +22,8 @@ import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 public class NewExceptionNotification implements CrucibleNotification {
 	private Exception exception;
 
+
+
 	public NewExceptionNotification(final Exception exception) {
 		this.exception = exception;
 	}
@@ -40,5 +42,26 @@ public class NewExceptionNotification implements CrucibleNotification {
 
 	public String getPresentationMessage() {
 		return "Crucible communication exception: " + exception.getMessage();
+	}
+
+	public boolean equals(final Object o) {
+	if (this == o) {
+		return true;
+	}
+	if (o == null || getClass() != o.getClass()) {
+		return false;
+	}
+
+	final NewExceptionNotification that = (NewExceptionNotification) o;
+
+	if (!exception.getMessage().equals(that.exception.getMessage())) {
+		return false;
+	}
+
+	return true;
+}
+
+	public int hashCode() {
+		return exception.hashCode();
 	}
 }

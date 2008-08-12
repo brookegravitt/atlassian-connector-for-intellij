@@ -18,11 +18,12 @@ package com.atlassian.theplugin.commons.configuration;
 
 import com.atlassian.theplugin.commons.Server;
 
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class AbstractServerConfigurationBean implements ProductServerConfiguration {
-    protected Collection<ServerBean> servers = new ArrayList<ServerBean>();
+	public static final int MIN_SCHEDULE_TIME_MINUTES = 1;
+	protected Collection<ServerBean> servers = new ArrayList<ServerBean>();
 
     public AbstractServerConfigurationBean() {
     }
