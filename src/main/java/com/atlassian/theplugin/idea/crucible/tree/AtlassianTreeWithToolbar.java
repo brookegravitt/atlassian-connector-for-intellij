@@ -100,7 +100,7 @@ public class AtlassianTreeWithToolbar extends ComponentWithToolbar {
 	}
 
 	public VIEW_STATE getViewState() {
-		return viewState;
+		return tree.isExpanded(0) ? VIEW_STATE.EXPANDED : VIEW_STATE.COLLAPSED;
 	}
 
 	public void setViewState(final VIEW_STATE viewState) {

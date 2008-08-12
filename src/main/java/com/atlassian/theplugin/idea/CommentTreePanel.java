@@ -231,12 +231,7 @@ public class CommentTreePanel extends JPanel {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					AtlassianTreeModel model = (AtlassianTreeModel) commentTree.getModel();
-					AtlassianTreeNode node = model.locateNode(new NodeSearchAlgorithm() {
-						@Override
-						public boolean check(AtlassianTreeNode node1) {
-							return node1 instanceof GeneralSectionNode;
-						}
-					});
+					AtlassianTreeNode node = model.locateNode(new SearchGeneralSectionAlgorithm());
 					commentTree.focusOnNode(node);
 				}
 			});
@@ -249,20 +244,26 @@ public class CommentTreePanel extends JPanel {
 					AtlassianTreeNode newCommentNode
 							= new GeneralCommentTreeNode(review, comment, new GeneralCommentClickAction());
 
-					if (!replaceNode(new SearchGeneralCommentAlgorithm(review, comment), newCommentNode)) {
-						addNewNode(new NodeSearchAlgorithm() {
-							@Override
-							public boolean check(AtlassianTreeNode node) {
-								return node instanceof GeneralSectionNode;
-							}
-						}, newCommentNode);
+					SearchGeneralCommentAlgorithm replacementLocator = new SearchGeneralCommentAlgorithm(review, comment);
+					AtlassianTreeNode changedNode = replaceNode(replacementLocator,
+							newCommentNode);
+					if (changedNode ==  null) {
+						SearchGeneralSectionAlgorithm parentLocator = new SearchGeneralSectionAlgorithm();
+						changedNode = addNewNode(parentLocator, newCommentNode);
 					}
 					addReplyNodes(review, newCommentNode, comment);
-					((AtlassianTreeModel) commentTree.getModel()).nodeChanged(newCommentNode.getParent());
-
+					refreshNode(changedNode);
 				}
 			}
 			);
+		}
+
+		private void refreshNode(final AtlassianTreeNode node) {
+			if (node == null) {
+				return;
+			}
+			commentTree.expandFromNode(node);
+			((AtlassianTreeModel) commentTree.getModel()).nodeChanged(node.getParent());
 		}
 
 		@Override
@@ -272,12 +273,13 @@ public class CommentTreePanel extends JPanel {
 				public void run() {
 					GeneralCommentTreeNode newCommentNode = new GeneralCommentTreeNode(review, comment,
 							AtlassianClickAction.EMPTY_ACTION);
-					if (!replaceNode(new SearchGeneralCommentAlgorithm(review, comment), newCommentNode)) {
-						addNewNode(new SearchGeneralCommentAlgorithm(review, parentComment), newCommentNode);
+					AtlassianTreeNode changedNode = replaceNode(new SearchGeneralCommentAlgorithm(review, comment),
+							newCommentNode);
+					if (changedNode == null) {
+						changedNode = addNewNode(new SearchGeneralCommentAlgorithm(review, parentComment), newCommentNode);
 					}
 					addReplyNodes(review, newCommentNode, comment);
-					((AtlassianTreeModel) commentTree.getModel()).nodeChanged(newCommentNode.getParent());
-
+					refreshNode(changedNode);
 				}
 			}
 			);
@@ -292,8 +294,10 @@ public class CommentTreePanel extends JPanel {
 					AtlassianTreeNode newCommentNode
 							= new VersionedCommentTreeNode(review, file, comment, new VersionedCommentClickAction());
 
-					if (!replaceNode(new SearchVersionedCommentAlgorithm(review, file, comment), newCommentNode)) {
-						addNewNode(new NodeSearchAlgorithm() {
+					AtlassianTreeNode changedNode = replaceNode(new SearchVersionedCommentAlgorithm(review, file, comment),
+							newCommentNode);
+					if (changedNode == null) {
+						changedNode = addNewNode(new NodeSearchAlgorithm() {
 							@Override
 							public boolean check(AtlassianTreeNode node) {
 								if (node instanceof FileNameNode) {
@@ -308,7 +312,7 @@ public class CommentTreePanel extends JPanel {
 						}, newCommentNode);
 					}
 					addReplyNodes(review, file, newCommentNode, comment);
-					((AtlassianTreeModel) commentTree.getModel()).nodeChanged(newCommentNode.getParent());
+					refreshNode(changedNode);
 
 					Editor editor = CrucibleHelper.getEditorForCrucibleFile(review, file);
 					if (editor != null) {
@@ -326,11 +330,13 @@ public class CommentTreePanel extends JPanel {
 				public void run() {
 					VersionedCommentTreeNode newCommentNode = new VersionedCommentTreeNode(review, file, comment,
 							AtlassianClickAction.EMPTY_ACTION);
-					if (!replaceNode(new SearchVersionedCommentAlgorithm(review, file, comment), newCommentNode)) {
-						addNewNode(new SearchVersionedCommentAlgorithm(review, file, parentComment), newCommentNode);
+					AtlassianTreeNode changedNode = replaceNode(new SearchVersionedCommentAlgorithm(review, file, comment),
+							newCommentNode);
+					if (changedNode == null) {
+						changedNode = addNewNode(new SearchVersionedCommentAlgorithm(review, file, parentComment), newCommentNode);
 					}
 					addReplyNodes(review, file, newCommentNode, comment);
-					((AtlassianTreeModel) commentTree.getModel()).nodeChanged(newCommentNode.getParent());
+					refreshNode(changedNode);
 				}
 			});
 		}
@@ -342,10 +348,9 @@ public class CommentTreePanel extends JPanel {
 				public void run() {
 					VersionedCommentTreeNode newCommentNode = new VersionedCommentTreeNode(review, file, comment,
 							AtlassianClickAction.EMPTY_ACTION);
-					if (replaceNode(new SearchVersionedCommentAlgorithm(review, file, comment),
-							newCommentNode)) {
-						((AtlassianTreeModel) commentTree.getModel()).nodeChanged(newCommentNode.getParent());
-					}
+					AtlassianTreeNode changedNode = replaceNode(new SearchVersionedCommentAlgorithm(review, file, comment),
+							newCommentNode);
+					refreshNode(changedNode);
 				}
 			});
 		}
@@ -356,10 +361,9 @@ public class CommentTreePanel extends JPanel {
 				public void run() {
 					GeneralCommentTreeNode newCommentNode = new GeneralCommentTreeNode(review, comment,
 							AtlassianClickAction.EMPTY_ACTION);
-					if(replaceNode(new SearchGeneralCommentAlgorithm(review, comment),
-							newCommentNode)) {
-						((AtlassianTreeModel) commentTree.getModel()).nodeChanged(newCommentNode.getParent());
-					}
+					AtlassianTreeNode changedNode = replaceNode(new SearchGeneralCommentAlgorithm(review, comment),
+							newCommentNode);
+					refreshNode(changedNode);
 				}
 			});
 		}
@@ -399,10 +403,9 @@ public class CommentTreePanel extends JPanel {
 				public void run() {
 					GeneralCommentTreeNode newCommentNode = new GeneralCommentTreeNode(review, comment,
 							AtlassianClickAction.EMPTY_ACTION);
-					if(replaceNode(new SearchGeneralCommentAlgorithm(review, comment),
-							newCommentNode)) {
-						((AtlassianTreeModel) commentTree.getModel()).nodeChanged(newCommentNode.getParent());
-					}
+					AtlassianTreeNode changedNode = replaceNode(new SearchGeneralCommentAlgorithm(review, comment),
+							newCommentNode);
+					refreshNode(changedNode);
 				}
 			}
 			);
@@ -415,10 +418,9 @@ public class CommentTreePanel extends JPanel {
 				public void run() {
 					VersionedCommentTreeNode newCommentNode = new VersionedCommentTreeNode(review, file, comment,
 							AtlassianClickAction.EMPTY_ACTION);
-					if(replaceNode(new SearchVersionedCommentAlgorithm(review, file, comment),
-							newCommentNode)) {
-						((AtlassianTreeModel) commentTree.getModel()).nodeChanged(newCommentNode.getParent());
-					}
+					AtlassianTreeNode changedNode = replaceNode(new SearchVersionedCommentAlgorithm(review, file, comment),
+							newCommentNode);
+					refreshNode(changedNode);
 				}
 
 			}
@@ -462,18 +464,17 @@ public class CommentTreePanel extends JPanel {
 			}
 		}
 
-		private boolean replaceNode(final NodeSearchAlgorithm nodeLocator,
+		private AtlassianTreeNode replaceNode(final NodeSearchAlgorithm nodeLocator,
 				final AtlassianTreeNode newNode) {
-			boolean replaced = false;
 			AtlassianTreeModel model = (AtlassianTreeModel) commentTree.getModel();
 			AtlassianTreeNode node = model.locateNode(nodeLocator);
 			if (node != null) {
 				AtlassianTreeNode parent = (AtlassianTreeNode) node.getParent();
 				parent.remove(node);
 				parent.addNode(newNode);
-				replaced = true;
+				return newNode;
 			}
-			return replaced;
+			return null;
 		}
 
 		private void addReplyNodes(final ReviewData review, final AtlassianTreeNode parentNode, final GeneralComment comment) {
@@ -495,12 +496,12 @@ public class CommentTreePanel extends JPanel {
 
 		}
 
-		private void addNewNode(NodeSearchAlgorithm parentLocator, AtlassianTreeNode newCommentNode) {
+		private AtlassianTreeNode addNewNode(NodeSearchAlgorithm parentLocator, AtlassianTreeNode newCommentNode) {
 			AtlassianTreeModel model = (AtlassianTreeModel) commentTree.getModel();
-			addNewNode(model.locateNode(parentLocator), newCommentNode);
+			return addNewNode(model.locateNode(parentLocator), newCommentNode);
 		}
 
-		private void addNewNode(AtlassianTreeNode parentNode, AtlassianTreeNode newCommentNode) {
+		private AtlassianTreeNode addNewNode(AtlassianTreeNode parentNode, AtlassianTreeNode newCommentNode) {
 			if (parentNode != null) {
 				AtlassianTreeModel model = (AtlassianTreeModel) commentTree.getModel();
 				model.insertNodeInto(newCommentNode, parentNode, parentNode.getChildCount());
@@ -508,7 +509,9 @@ public class CommentTreePanel extends JPanel {
 				commentTree.expandPath(new TreePath(newCommentNode.getPath()));
 				commentTree.expandPath(new TreePath(parentNode.getPath()));
 				commentTree.focusOnNode(newCommentNode);
+				return parentNode;
 			}
+			return null;
 		}
 
 		private class SearchVersionedCommentAlgorithm extends NodeSearchAlgorithm {
@@ -556,6 +559,13 @@ public class CommentTreePanel extends JPanel {
 					}
 				}
 				return false;
+			}
+		}
+
+		private class SearchGeneralSectionAlgorithm extends NodeSearchAlgorithm {
+			@Override
+			public boolean check(AtlassianTreeNode node) {
+				return node instanceof GeneralSectionNode;
 			}
 		}
 	}
