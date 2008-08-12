@@ -26,6 +26,8 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -43,7 +45,6 @@ public class AtlassianTree extends JTree {
 		setRootVisible(true);
 		addMouseListener(new MouseListener() {
 			public void mouseClicked(MouseEvent event) {
-				//To change body of implemented methods use File | Settings | File Templates.
 			}
 
 			public void mousePressed(MouseEvent e) {
@@ -61,15 +62,12 @@ public class AtlassianTree extends JTree {
 			}
 
 			public void mouseReleased(MouseEvent event) {
-				//To change body of implemented methods use File | Settings | File Templates.
 			}
 
 			public void mouseEntered(MouseEvent event) {
-				//To change body of implemented methods use File | Settings | File Templates.
 			}
 
 			public void mouseExited(MouseEvent event) {
-				//To change body of implemented methods use File | Settings | File Templates.
 			}
 		});
 		addTreeSelectionListener(new TreeSelectionListener() {
@@ -82,6 +80,26 @@ public class AtlassianTree extends JTree {
 						action.execute(node, 1);
 					}
 				}
+			}
+		});
+		addKeyListener(new KeyListener() {
+			public void keyTyped(final KeyEvent e) {
+			}
+
+			public void keyPressed(final KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					AtlassianTreeNode node = (AtlassianTreeNode)
+							getLastSelectedPathComponent();
+					if (node != null) {
+						AtlassianClickAction action = node.getAtlassianClickAction();
+						if (action != null) {
+							action.execute(node, 2);
+						}
+					}
+				}
+			}
+
+			public void keyReleased(final KeyEvent e) {
 			}
 		});
 	}
