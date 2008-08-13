@@ -584,7 +584,15 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
     }
 
     private void checkTableSort() {
-        String columnName = table.getTableViewModel().getColumnName(table.getTableViewModel().getSortedColumnIndex());
+		final int sortedColumnIndex = table.getTableViewModel().getSortedColumnIndex();
+
+		if (sortedColumnIndex < 0) {
+			return;
+		}
+
+
+		String columnName  = table.getTableViewModel().getColumnName(sortedColumnIndex);
+		
         if (IssueTypeColumn.COLUMN_NAME.equals(columnName)) {
             sortColumn = "issuetype";
         } else {
