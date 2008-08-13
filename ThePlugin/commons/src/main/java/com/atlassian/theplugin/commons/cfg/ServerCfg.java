@@ -174,7 +174,7 @@ public abstract class ServerCfg {
 	public abstract ServerCfg getClone();
 
 	public boolean isComplete() {
-		return getPassword() != null && !getPassword().isEmpty(); 
+		return getPassword() != null && getPassword().length() != 0; 
 	}
 
 	@Override
