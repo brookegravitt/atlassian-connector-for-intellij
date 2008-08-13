@@ -4,19 +4,19 @@
     <parent>
         <groupId>com.atlassian.theplugin</groupId>
         <artifactId>atlassian-plugin-pom</artifactId>
-        <version>1.9.0-releasetest1</version>
+        <version>1.9.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <name>Atlassian Intellij IDEA Plugin</name>
     <description>An Intellij IDEA plugin for Atlassian's tools.</description>
     <groupId>com.atlassian.theplugin</groupId>
     <artifactId>atlassian-idea-plugin</artifactId>
-    <version>1.9.0-releasetest1</version>
+    <version>1.9.0-SNAPSHOT</version>
     <dependencies>
         <dependency>
             <groupId>com.atlassian.theplugin</groupId>
             <artifactId>atlassian-plugin-commons</artifactId>
-            <version>1.9.0-releasetest1</version>
+            <version>1.9.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.ddsteps</groupId>
