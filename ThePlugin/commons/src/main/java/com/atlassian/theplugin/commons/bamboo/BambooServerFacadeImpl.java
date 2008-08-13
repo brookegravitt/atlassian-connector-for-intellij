@@ -172,7 +172,7 @@ public final class BambooServerFacadeImpl implements BambooServerFacade {
             connectionErrorMessage = "";
         } catch (RemoteApiLoginFailedException e) {
 			// TODO wseliga used to be bambooServer.getIsConfigInitialized() here
-			if (!bambooServer.getPassword().isEmpty()) {
+			if (bambooServer.getPassword().length() > 0) {
                 loger.error("Bamboo login exception: " + e.getMessage());
                 connectionErrorMessage = e.getMessage();
             } else {
