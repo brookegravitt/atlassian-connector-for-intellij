@@ -117,7 +117,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 				notifications.add(new NewReplyCommentNotification(review, newComment, reply));
 				GeneralCommentReplyAdded event = new GeneralCommentReplyAdded(CrucibleReviewActionListener.ANONYMOUS,
 						review, newComment, reply);
-				IdeaHelper.getReviewActionEventBroker().trigger(event);
+				IdeaHelper.getReviewActionEventBroker(project).trigger(event);
 			}
 		}
 	}
@@ -136,7 +136,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 				notifications.add(new NewReplyCommentNotification(review, newComment, reply));
 				VersionedCommentReplyAdded event = new VersionedCommentReplyAdded(CrucibleReviewActionListener.ANONYMOUS,
 						review, file, newComment, reply);
-				IdeaHelper.getReviewActionEventBroker().trigger(event);
+				IdeaHelper.getReviewActionEventBroker(project).trigger(event);
 			}
 		}
 	}
@@ -154,7 +154,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 			if (existing == null) {
 				notifications.add(new NewGeneralCommentNotification(newReview, comment));
 				GeneralCommentAdded event = new GeneralCommentAdded(CrucibleReviewActionListener.ANONYMOUS, newReview, comment);
-				IdeaHelper.getReviewActionEventBroker().trigger(event);
+				IdeaHelper.getReviewActionEventBroker(project).trigger(event);
 			} else {
 				checkGeneralReplies(newReview, existing, comment);
 			}
@@ -174,7 +174,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 					if (project != null) {
 						VersionedCommentAdded event = new VersionedCommentAdded(CrucibleReviewActionListener.ANONYMOUS,
 								newReview, file, comment);
-						IdeaHelper.getReviewActionEventBroker().trigger(event);
+						IdeaHelper.getReviewActionEventBroker(project).trigger(event);
 					}
 				} else {
 					checkVersionedReplies(newReview, file, existing, comment);

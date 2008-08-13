@@ -16,11 +16,14 @@
 
 package com.atlassian.theplugin.idea.crucible.comments;
 
-import com.atlassian.theplugin.idea.crucible.events.CrucibleEvent;
 import com.atlassian.theplugin.commons.util.Logger;
+import com.atlassian.theplugin.idea.crucible.events.CrucibleEvent;
 import com.atlassian.theplugin.util.PluginUtil;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -31,19 +34,18 @@ import java.util.concurrent.LinkedBlockingQueue;
  * To change this template use File | Settings | File Templates.
  */
 public final class ReviewActionEventBroker {
-	private static ReviewActionEventBroker broker;
 	private Set<CrucibleReviewActionListener> listeners =
 			new HashSet<CrucibleReviewActionListener>();
 	private Queue<CrucibleEvent> events = new LinkedBlockingQueue<CrucibleEvent>();
 	public static final Logger LOGGER = PluginUtil.getLogger();
 
-	private ReviewActionEventBroker() {
+	public ReviewActionEventBroker() {
         new Thread(new Runnable() {
 			public void run() {
 				try {
 					while (true) {
 						CrucibleEvent event = ((LinkedBlockingQueue<CrucibleEvent>) events).take();
-						event.run();
+						event.run(ReviewActionEventBroker.this);
 					}
 				} catch (InterruptedException e) {
 					//swallowed
@@ -51,14 +53,6 @@ public final class ReviewActionEventBroker {
 			}
 		}, "atlassian-idea-plugin Crucible events processor"
 		).start();
-	}
-
-	public static synchronized ReviewActionEventBroker getInstance() {
-		if (broker == null) {
-			broker = new ReviewActionEventBroker();
-
-		}
-		return broker;
 	}
 
 	public void registerListener(CrucibleReviewActionListener listener) {

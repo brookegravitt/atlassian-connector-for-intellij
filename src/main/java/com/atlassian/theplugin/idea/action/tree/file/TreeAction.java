@@ -22,6 +22,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.actionSystem.DataProvider;
+import com.intellij.openapi.project.Project;
 
 import java.awt.*;
 
@@ -48,8 +49,9 @@ public abstract class TreeAction extends AnAction {
 
 	public void actionPerformed(final AnActionEvent e) {
 		AtlassianTreeWithToolbar tree = identifyTreeWithAllPossibleMeans(e);
+		Project project = DataKeys.PROJECT_CONTEXT.getData(e.getDataContext());
 		if (tree != null) {
-			executeTreeAction(tree);
+			executeTreeAction(project, tree);
 		}
 	}
 
@@ -105,7 +107,7 @@ public abstract class TreeAction extends AnAction {
 		return (AtlassianTreeWithToolbar) parent;
 	}
 
-	protected abstract void executeTreeAction(AtlassianTreeWithToolbar tree);
+	protected abstract void executeTreeAction(final Project project, AtlassianTreeWithToolbar tree);
 
 	protected abstract void updateTreeAction(final AnActionEvent e, final AtlassianTreeWithToolbar tree);
 

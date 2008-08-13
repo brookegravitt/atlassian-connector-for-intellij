@@ -137,7 +137,7 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
 		add(splitter, BorderLayout.CENTER);
 
 
-		eventBroker = IdeaHelper.getReviewActionEventBroker();
+		eventBroker = IdeaHelper.getReviewActionEventBroker(project);
 		eventBroker.registerListener(new MyAgent(project));
 
 
@@ -217,12 +217,13 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
 
 	private final class MyAgent extends CrucibleReviewActionListener {
 		private final CrucibleServerFacade facade = CrucibleServerFacadeImpl.getInstance();
-		private final ReviewActionEventBroker eventBroker = IdeaHelper.getReviewActionEventBroker();
+		private final ReviewActionEventBroker eventBroker;
 		private Project project;
 
 		public MyAgent(final Project project) {
 			super();
 			this.project = project;
+			eventBroker = IdeaHelper.getReviewActionEventBroker(this.project);
 		}
 
 		@Override
