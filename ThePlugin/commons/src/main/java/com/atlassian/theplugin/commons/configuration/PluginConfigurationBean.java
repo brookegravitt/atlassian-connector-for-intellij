@@ -16,14 +16,13 @@
 
 package com.atlassian.theplugin.commons.configuration;
 
-import com.atlassian.theplugin.commons.Server;
-import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.util.HttpConfigurableAdapter;
 
 
 public class PluginConfigurationBean implements PluginConfiguration {
     private BambooConfigurationBean bambooConfiguration = new BambooConfigurationBean();
-    private CrucibleConfigurationBean crucibleConfiguration = new CrucibleConfigurationBean();
+
+	private CrucibleConfigurationBean crucibleConfiguration = new CrucibleConfigurationBean();
 
 	private JiraConfigurationBean jiraConfiguration = new JiraConfigurationBean();
 
@@ -59,13 +58,9 @@ public class PluginConfigurationBean implements PluginConfiguration {
 	public void setConfiguration(PluginConfiguration cfg) {
 
 		this.setGeneralConfigurationData(new GeneralConfigurationBean(cfg.getGeneralConfigurationData()));
-
-		this.setBambooConfigurationData(
-                new BambooConfigurationBean((BambooConfigurationBean) cfg.getProductServers(ServerType.BAMBOO_SERVER)));
-        this.setCrucibleConfigurationData(
-                new CrucibleConfigurationBean((CrucibleConfigurationBean) cfg.getProductServers(ServerType.CRUCIBLE_SERVER)));
-        this.setJIRAConfigurationData(
-                new JiraConfigurationBean((JiraConfigurationBean) cfg.getProductServers(ServerType.JIRA_SERVER)));
+		this.setBambooConfigurationData(new BambooConfigurationBean(cfg.getBambooConfigurationData()));
+		this.setCrucibleConfigurationData(new CrucibleConfigurationBean(cfg.getCrucibleConfigurationData()));
+		this.setJIRAConfigurationData(new JiraConfigurationBean(cfg.getJIRAConfigurationData()));
 		this.transientSetHttpConfigurable(cfg.transientGetHttpConfigurable());
 	}
 
@@ -146,45 +141,40 @@ public class PluginConfigurationBean implements PluginConfiguration {
      * <p/>
      * Do not mistake for #getBambooConfigurationData()
      */
-    public ProductServerConfiguration getProductServers(ServerType serverType) {
-        switch (serverType) {
-            case BAMBOO_SERVER:
-                return bambooConfiguration;
-            case CRUCIBLE_SERVER:
-                return crucibleConfiguration;
-            case JIRA_SERVER:
-                return jiraConfiguration;
-            default:
-                return null;
-        }
-    }
+//    public ProductServerConfiguration getProductServers(ServerType serverType) {
+//        switch (serverType) {
+//            case BAMBOO_SERVER:
+//                return bambooConfiguration;
+//            case CRUCIBLE_SERVER:
+//                return crucibleConfiguration;
+//            case JIRA_SERVER:
+//                return jiraConfiguration;
+//            default:
+//                return null;
+//        }
+//    }
 
 
-	public boolean isAnyServerEnabled() {
-		return bambooConfiguration.isAnyServerEnabled() || crucibleConfiguration.isAnyServerEnabled()
-				|| jiraConfiguration.isAnyServerEnabled();
-	}
-
-	public boolean isAnyServerDefined() {
-		for (ServerType serverType : ServerType.values()) {
-			if (!getProductServers(serverType).transientGetServers().isEmpty()) {
-				return true;
-			}
-		}
-		return false;
-//		return bambooConfiguration.isAnyServer() || crucibleConfiguration.isAnyServer() ||
-//			jiraConfiguration.isAnyServer();
-	}
+//	public boolean isAnyServerDefined() {
+//		for (ServerType serverType : ServerType.values()) {
+//			if (!getProductServers(serverType).transientGetServers().isEmpty()) {
+//				return true;
+//			}
+//		}
+//		return false;
+////		return bambooConfiguration.isAnyServer() || crucibleConfiguration.isAnyServer() ||
+////			jiraConfiguration.isAnyServer();
+//	}
 
 
-	public boolean isServerPresent(Server server) {
-		for (ServerType serverType : ServerType.values()) {
-			if (getProductServers(serverType).transientGetServer(server) != null) {
-				return true;
-			}
-		}
-		return false;
-	}
+//	public boolean isServerPresent(Server server) {
+//		for (ServerType serverType : ServerType.values()) {
+//			if (getProductServers(serverType).transientGetServer(server) != null) {
+//				return true;
+//			}
+//		}
+//		return false;
+//	}
 
 
 	public boolean equals(Object o) {

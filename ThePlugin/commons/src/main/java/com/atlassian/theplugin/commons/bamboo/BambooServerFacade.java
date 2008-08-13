@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.commons.bamboo;
 
-import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -24,27 +24,27 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import java.util.Collection;
 
 public interface BambooServerFacade extends ProductServerFacade {
-    Collection<BambooProject> getProjectList(Server bambooServer)
+    Collection<BambooProject> getProjectList(BambooServerCfg bambooServer)
             throws ServerPasswordNotProvidedException, RemoteApiException;
 
-    Collection<BambooPlan> getPlanList(Server bambooServer)
+    Collection<BambooPlan> getPlanList(BambooServerCfg bambooServer)
             throws ServerPasswordNotProvidedException, RemoteApiException;
 
-    Collection<BambooBuild> getSubscribedPlansResults(Server bambooServer)
+    Collection<BambooBuild> getSubscribedPlansResults(BambooServerCfg bambooServer)
             throws ServerPasswordNotProvidedException;
 
-    BuildDetails getBuildDetails(Server bambooServer, String buildKey, String buildNumber)
+    BuildDetails getBuildDetails(BambooServerCfg bambooServer, String buildKey, String buildNumber)
             throws ServerPasswordNotProvidedException, RemoteApiException;
 
-    void addLabelToBuild(Server bambooServer, String buildKey, String buildNumber, String buildComment)
+    void addLabelToBuild(BambooServerCfg bambooServer, String buildKey, String buildNumber, String buildComment)
             throws ServerPasswordNotProvidedException, RemoteApiException;
 
-    void addCommentToBuild(Server bambooServer, String buildKey, String buildNumber, String buildComment)
+    void addCommentToBuild(BambooServerCfg bambooServer, String buildKey, String buildNumber, String buildComment)
             throws ServerPasswordNotProvidedException, RemoteApiException;
 
-    void executeBuild(Server bambooServer, String buildKey)
+    void executeBuild(BambooServerCfg bambooServer, String buildKey)
             throws ServerPasswordNotProvidedException, RemoteApiException;
 
-    byte[] getBuildLogs(Server server, String buildKey, String buildNumber)
+    byte[] getBuildLogs(BambooServerCfg server, String buildKey, String buildNumber)
             throws ServerPasswordNotProvidedException, RemoteApiException;
 }

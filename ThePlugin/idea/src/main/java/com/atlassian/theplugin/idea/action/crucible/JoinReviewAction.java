@@ -32,7 +32,7 @@ public class JoinReviewAction extends AnAction {
 				rd = IdeaHelper.getCrucibleToolWindowPanel(event).getSelectedReview();
 				if (rd.isAllowReviewerToJoin()) {
 					try {
-						String userName = rd.getServer().getUserName();
+						String userName = rd.getServer().getUsername();
 						if (rd.getAuthor().getUserName().equals(userName)) {
 							event.getPresentation().setVisible(false);
 							event.getPresentation().setEnabled(false);

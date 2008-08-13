@@ -17,7 +17,7 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.LoginDataProvided;
-import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.exception.ThePluginException;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -27,7 +27,11 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class PasswordDialog extends JDialog implements LoginDataProvided {
 
@@ -37,9 +41,9 @@ public class PasswordDialog extends JDialog implements LoginDataProvided {
 	private JButton testConnectionButton;
 	private JLabel lblCommand;
 	private JTextField userName;
-	private transient Server server;
+	private transient ServerCfg server;
 
-	public PasswordDialog(final Server server, final ProductServerFacade serverFacade) {
+	public PasswordDialog(final ServerCfg server, final ProductServerFacade serverFacade) {
 		this.server = server;
 		setContentPane(passwordPanel);
 		setModal(true);
@@ -51,8 +55,9 @@ public class PasswordDialog extends JDialog implements LoginDataProvided {
 				onCancel();
 			}
 		});
-		lblCommand.setText("<html><p>Please provide password to connect \"" + this.server.getName() + "\" server:</p> <p><i>" + this.server.getUrlString() + "</i></p></html>");
-        userName.setText(server.getUserName());
+		lblCommand.setText("<html><p>Please provide password to connect \"" + this.server.getName() + "\" server:</p> <p><i>" 
+				+ this.server.getUrl() + "</i></p></html>");
+        userName.setText(server.getUsername());
 // call onCancel() on ESCAPE
 		passwordPanel.registerKeyboardAction(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -103,7 +108,7 @@ public class PasswordDialog extends JDialog implements LoginDataProvided {
 	}
 
 	public String getServerUrl() {
-		return server.getUrlString();
+		return server.getUrl();
 	}
 
 	public String getPassword() {

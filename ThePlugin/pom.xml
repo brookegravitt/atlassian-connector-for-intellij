@@ -142,7 +142,7 @@
                     <ideaPlugin>false</ideaPlugin>
                     <jdkName>IDEA 7590</jdkName>
                     <jdkLevel>${jdkLevel}</jdkLevel>
-                    <exclude>eclipse,build-tools,vs</exclude>
+                    <exclude>vs</exclude>
                     <downloadSources>true</downloadSources>
                     <libraries>
                         <library>

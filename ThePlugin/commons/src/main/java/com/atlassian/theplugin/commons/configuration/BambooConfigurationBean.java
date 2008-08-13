@@ -16,46 +16,23 @@
 
 package com.atlassian.theplugin.commons.configuration;
 
-import com.atlassian.theplugin.commons.Server;
-import com.atlassian.theplugin.commons.SubscribedPlan;
-
-import java.util.ArrayList;
-
 /**
  * Bean storing information about Bamboo servers etc.<p>
  * The class serves both as a configuration provider for plugin logic and Bean for persistence.
  */
-public class BambooConfigurationBean extends AbstractServerConfigurationBean {
+public class BambooConfigurationBean {
 
 	private BambooTooltipOption bambooTooltipOption;
 	private int pollTime = 1;
-	
+	private static final int HASHCODE_MAGIC = 31;
+
 	public BambooConfigurationBean() {
-        super();
     }
 
 	public BambooConfigurationBean(BambooConfigurationBean cfg) {
-        super(cfg);
-        this.bambooTooltipOption = ((BambooConfigurationBean) cfg).getBambooTooltipOption();
-        this.pollTime = ((BambooConfigurationBean) cfg).getPollTime();
+        this.bambooTooltipOption = cfg.getBambooTooltipOption();
+        this.pollTime = cfg.getPollTime();
     }
-
-	@Override
-	//@Transient
-	public void storeServer(Server server) {
-		Server foundServer = transientGetServer(server);
-		if (foundServer == null) {
-			servers.add((ServerBean) server);
-		} else {
-			foundServer.setName(server.getName());
-			foundServer.transientSetPasswordString(server.transientGetPasswordString(), server.getShouldPasswordBeStored());
-			foundServer.setUrlString(server.getUrlString());
-			foundServer.setUserName(server.getUserName());
-			foundServer.setEnabled(server.getEnabled());
-			foundServer.setUseFavourite(server.getUseFavourite());			
-			foundServer.transientSetSubscribedPlans(new ArrayList<SubscribedPlan>(server.transientGetSubscribedPlans()));
-		}
-	}
 
 	public int getPollTime() {
 		return pollTime;
@@ -73,4 +50,32 @@ public class BambooConfigurationBean extends AbstractServerConfigurationBean {
 		this.bambooTooltipOption = bambooTooltipOption;
 	}
 
+	@Override
+	public boolean equals(final Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (!(o instanceof BambooConfigurationBean)) {
+			return false;
+		}
+
+		final BambooConfigurationBean that = (BambooConfigurationBean) o;
+
+		if (pollTime != that.pollTime) {
+			return false;
+		}
+		if (bambooTooltipOption != that.bambooTooltipOption) {
+			return false;
+		}
+
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		int result;
+		result = (bambooTooltipOption != null ? bambooTooltipOption.hashCode() : 0);
+		result = HASHCODE_MAGIC * result + pollTime;
+		return result;
+	}
 }

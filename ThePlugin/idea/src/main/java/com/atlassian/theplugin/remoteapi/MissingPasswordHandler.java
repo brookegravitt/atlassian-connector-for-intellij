@@ -16,14 +16,16 @@
 
 package com.atlassian.theplugin.remoteapi;
 
-import com.atlassian.theplugin.commons.Server;
-import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PasswordDialog;
 import com.atlassian.theplugin.idea.ThePluginApplicationComponent;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.atlassian.theplugin.cfg.CfgUtil;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.project.Project;
 
 import javax.swing.*;
 import static javax.swing.JOptionPane.OK_CANCEL_OPTION;
@@ -37,9 +39,13 @@ public class MissingPasswordHandler implements Runnable {
 	private static boolean isDialogShown = false;
 
 	private final ProductServerFacade serverFacade;
+	private final CfgManager cfgManager;
+	private final Project project;
 
-	public MissingPasswordHandler(ProductServerFacade serverFacade) {
+	public MissingPasswordHandler(ProductServerFacade serverFacade, final CfgManager cfgManager, final Project project) {
 		this.serverFacade = serverFacade;
+		this.cfgManager = cfgManager;
+		this.project = project;
 	}
 
 	public void run() {
@@ -49,9 +55,9 @@ public class MissingPasswordHandler implements Runnable {
 			isDialogShown = true;
 			boolean wasCanceled = false;
 
-			for (Server server : ConfigurationFactory.
-					getConfiguration().getProductServers(serverFacade.getServerType()).transientGetServers()) {
-				if (server.getIsConfigInitialized()) {
+			for (ServerCfg server : cfgManager.getAllEnabledServers(
+					CfgUtil.getProjectId(project), serverFacade.getServerType())) {
+				if (server.isComplete()) {
 					continue;
 				}
 				PasswordDialog dialog = new PasswordDialog(server, serverFacade);
@@ -64,14 +70,15 @@ public class MissingPasswordHandler implements Runnable {
 				if (answer == JOptionPane.OK_OPTION) {
 					String password = dialog.getPasswordString();
 					Boolean shouldPasswordBeStored = dialog.getShouldPasswordBeStored();
-					server.transientSetPasswordString(password, shouldPasswordBeStored);
-					server.setUserName(dialog.getUserName());
+					server.setPassword(password);
+					server.setPasswordStored(shouldPasswordBeStored);
+					server.setUsername(dialog.getUserName());
 				} else {
 					wasCanceled = true;
 				}
 				// so or so we assume that user provided password
 
-				server.transientSetIsConfigInitialized(true);
+				// server.transientSetIsConfigInitialized(true);
 			}
 			ThePluginApplicationComponent appComponent = IdeaHelper.getAppComponent();
 			appComponent.rescheduleStatusCheckers(true);

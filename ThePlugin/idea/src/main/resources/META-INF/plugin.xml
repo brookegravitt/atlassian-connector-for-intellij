@@ -86,18 +86,21 @@
 		<errorHandler implementation="com.atlassian.theplugin.idea.BlameAtlassian"/>
 	</extensions>
 
-	<application-components>
+    <application-components>
+        <component>
+            <implementation-class>com.atlassian.theplugin.idea.ThePluginApplicationComponent</implementation-class>
+        </component>
+        <component>
+            <implementation-class>com.atlassian.theplugin.idea.jira.editor.ThePluginJIRAEditorComponent
+            </implementation-class>
+        </component>
+    </application-components>
+    <project-components>
+        <component>
+            <implementation-class>com.atlassian.theplugin.idea.ThePluginProjectComponent</implementation-class>
+        </component>
 		<component>
-			<implementation-class>com.atlassian.theplugin.idea.ThePluginApplicationComponent</implementation-class>
-		</component>
-		<component>
-			<implementation-class>com.atlassian.theplugin.idea.jira.editor.ThePluginJIRAEditorComponent
-			</implementation-class>
-		</component>
-	</application-components>
-	<project-components>
-		<component>
-			<implementation-class>com.atlassian.theplugin.idea.ThePluginProjectComponent</implementation-class>
+			<implementation-class>com.atlassian.theplugin.idea.ProjectConfigurationComponent</implementation-class>
 		</component>
 	</project-components>
 
@@ -108,25 +111,31 @@
 			<keyboard-shortcut first-keystroke="shift control p" keymap="$default"/>
 		</action>
 
-		<action id="ThePlugin.AddServerAction"
-				class="com.atlassian.theplugin.idea.config.serverconfig.action.AddServerAction" text="Add (Insert)"
-				description="Add a new server" icon="/general/add.png"/>
-		<action id="ThePlugin.RemoveServerAction"
-				class="com.atlassian.theplugin.idea.config.serverconfig.action.RemoveServerAction"
-				text="Remove (Delete)" description="Remove an existing server" icon="/general/remove.png"/>
+        <action id="ThePlugin.AddServerAction"
+                class="com.atlassian.theplugin.idea.config.serverconfig.action.AddServerAction" text="Add New Server"
+                description="Add a new server" icon="/general/add.png"/>
+        <action id="ThePlugin.RemoveServerAction"
+                class="com.atlassian.theplugin.idea.config.serverconfig.action.RemoveServerAction"
+                text="Remove Server" description="Remove an existing server" icon="/general/remove.png"/>
 
-		<action id="ThePlugin.AddBambooServerAction"
-				class="com.atlassian.theplugin.idea.config.serverconfig.action.AddBambooServerAction"
-				text="Bamboo Server" description="Add a new Bamboo server" icon="/icons/blue-16.png"/>
-		<action id="ThePlugin.AddCrucibleServerAction"
-				class="com.atlassian.theplugin.idea.config.serverconfig.action.AddCrucibleServerAction"
-				text="Crucible Server" description="Add a new Crucible server" icon="/icons/crucible-16.png"/>
-		<action id="ThePlugin.AddJIRAServerAction"
-				class="com.atlassian.theplugin.idea.config.serverconfig.action.AddJIRAServerAction" text="JIRA Server"
-				description="Add a new JIRA server" icon="/icons/jira-blue-16.png"/>
+        <action id="ThePlugin.AddBambooServerAction"
+                class="com.atlassian.theplugin.idea.config.serverconfig.action.AddBambooServerAction"
+                text="Add Bamboo Server" description="Add a new Bamboo server" icon="/icons/blue-16.png"/>
+        <action id="ThePlugin.AddCrucibleServerAction"
+                class="com.atlassian.theplugin.idea.config.serverconfig.action.AddCrucibleServerAction"
+                text="Add Crucible Server" description="Add a new Crucible server" icon="/icons/crucible-16.png"/>
+        <action id="ThePlugin.AddJIRAServerAction"
+                class="com.atlassian.theplugin.idea.config.serverconfig.action.AddJIRAServerAction" text="Add JIRA Server"
+                description="Add a new JIRA server" icon="/icons/jira-blue-16.png"/>
 
-		<group id="ThePlugin.ServerConfigToolBar" popup="false" text="">
-			<reference id="ThePlugin.AddServerAction"/>
+        <group id="ThePlugin.ServerConfigToolBar" popup="false" text="">
+            <reference id="ThePlugin.AddServerAction"/>
+            <reference id="ThePlugin.RemoveServerAction"/>
+        </group>
+		<group id="ThePlugin.AddRemoveServerPopup">
+			<reference id="ThePlugin.AddBambooServerAction"/>
+			<reference id="ThePlugin.AddCrucibleServerAction"/>
+			<reference id="ThePlugin.AddJIRAServerAction"/>
 			<reference id="ThePlugin.RemoveServerAction"/>
 		</group>
 

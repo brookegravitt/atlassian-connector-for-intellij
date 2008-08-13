@@ -16,19 +16,24 @@
 
 package com.atlassian.theplugin.idea.config;
 
-import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.ProjectId;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
-import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.config.serverconfig.BambooGeneralForm;
 import com.atlassian.theplugin.idea.config.serverconfig.CrucibleGeneralForm;
 import com.atlassian.theplugin.idea.config.serverconfig.JiraGeneralForm;
 import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
-import com.intellij.openapi.ui.Messages;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.Messages;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Collection;
 
 public final class ConfigPanel extends JPanel {
 	private static ConfigPanel instance;
@@ -43,11 +48,23 @@ public final class ConfigPanel extends JPanel {
 	private final JiraGeneralForm jiraConfigPanel;
 	private final GeneralConfigPanel generalConfigPanel;
 
-	private final transient PluginConfigurationBean globalConfigurationBean;
+	private final transient PluginConfiguration globalConfigurationBean;
+    private final ProjectId projectId;
+    private final CfgManager cfgManager;
 
-	private ConfigPanel(PluginConfigurationBean globalConfigurationBean) {
-		this.serverConfigPanel = ServerConfigPanel.getInstance();
-		this.bambooConfigPanel = BambooGeneralForm.getInstance(globalConfigurationBean);
+	private ProjectConfiguration projectConfiguration;
+
+	public ProjectConfiguration getProjectConfiguration() {
+		return projectConfiguration;
+	}
+
+	public ConfigPanel(PluginConfiguration globalConfigurationBean, ProjectId projectId, CfgManager cfgManager) {
+        this.projectId = projectId;
+        this.cfgManager = cfgManager;
+		projectConfiguration = cfgManager.getProjectConfiguration(projectId).getClone();
+		final Collection<ServerCfg> allServers = projectConfiguration.getServers();
+		this.serverConfigPanel = new ServerConfigPanel(allServers);
+		this.bambooConfigPanel = new BambooGeneralForm(cfgManager.getGlobalBambooCfg());
 		this.crucibleConfigPanel = CrucibleGeneralForm.getInstance(globalConfigurationBean);
 		this.jiraConfigPanel = JiraGeneralForm.getInstance(globalConfigurationBean);
 		this.generalConfigPanel = GeneralConfigPanel.getInstance(globalConfigurationBean);
@@ -55,19 +72,6 @@ public final class ConfigPanel extends JPanel {
 		initLayout();
 	}
 
-	/**
-	 * This one is still here because IDEA complains about AnAction objects having non-parameterless constructor.
-	 * @return single instance of ConfigPanel.
-	 */
-	public static ConfigPanel getInstance(PluginConfigurationBean globalConfigurationBean) {
-
-		/* Yes, I mean this. Assigning to a static field from within a constructor. Blame *Action. */
-		if (instance == null) {
-			instance = new ConfigPanel(globalConfigurationBean);
-
-		}
-		return instance;
-	}
 
 	private void initLayout() {
 		setLayout(new BorderLayout());
@@ -108,6 +112,7 @@ public final class ConfigPanel extends JPanel {
 			generalConfigPanel.setIsAnonymousFeedbackEnabled(answer == DialogWrapper.OK_EXIT_CODE);
 		}
 		return !this.localPluginConfigurationCopy.equals(globalConfigurationBean)
+				|| projectConfiguration.equals(cfgManager.getProjectConfiguration(projectId)) == false
 				|| serverConfigPanel.isModified()
 				|| bambooConfigPanel.isModified()
 				|| crucibleConfigPanel.isModified()
@@ -115,35 +120,24 @@ public final class ConfigPanel extends JPanel {
 				|| generalConfigPanel.isModified();
 	}
 
-	public void getData() {
+	public void saveData() {
+		serverConfigPanel.saveData();
 		if (isModified()) {
-			serverConfigPanel.getData();
-			generalConfigPanel.getData();
-			bambooConfigPanel.getData();
-			jiraConfigPanel.getData();
-			crucibleConfigPanel.getData();
+			cfgManager.updateProjectConfiguration(projectId, projectConfiguration);
+			generalConfigPanel.saveData();
+			bambooConfigPanel.saveData();
+			jiraConfigPanel.saveData();
+			crucibleConfigPanel.saveData();
 		}
 	}
 
 	public void setData() {
 		this.localPluginConfigurationCopy = new PluginConfigurationBean(globalConfigurationBean);
-		serverConfigPanel.setData(localPluginConfigurationCopy);
+		projectConfiguration = cfgManager.getProjectConfiguration(projectId).getClone();
+		serverConfigPanel.setData(projectConfiguration.getServers());
 		generalConfigPanel.setData(localPluginConfigurationCopy);
-		bambooConfigPanel.setData(localPluginConfigurationCopy);
+		bambooConfigPanel.setData(cfgManager.getGlobalBambooCfg());
 		jiraConfigPanel.setData(localPluginConfigurationCopy);
 		crucibleConfigPanel.setData(localPluginConfigurationCopy);
-	}
-
-	public void addServer(ServerType serverType) {
-		serverConfigPanel.addServer(serverType);
-	}
-
-	public void removeServer() {
-		serverConfigPanel.removeServer();
-	}
-
-
-	public void copyServer() {
-		serverConfigPanel.copyServer();
 	}
 }

@@ -17,11 +17,10 @@
 package com.atlassian.theplugin.commons.bamboo;
 
 import com.atlassian.theplugin.commons.ConfigurationListener;
-import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
+import com.atlassian.theplugin.commons.cfg.BambooCfgManager;
+import com.atlassian.theplugin.commons.cfg.ProjectId;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.configuration.BambooTooltipOption;
-import com.atlassian.theplugin.commons.configuration.BambooConfigurationBean;
-import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -34,28 +33,25 @@ public class BambooStatusTooltipListener implements BambooStatusListener, Config
 
 	private Map<String, BambooBuild> prevBuildStatuses = new HashMap<String, BambooBuild>(0);
 	private final BambooStatusDisplay display;
-	private PluginConfiguration pluginConfiguration;
+	private BambooCfgManager bambooCfgManager;
 	private BambooPopupInfo popupInfo = new BambooPopupInfo();
 
 
 	/**
 	 *
 	 * @param display reference to display component
-	 * @param pluginConfiguration global plugin configuration
+	 * @param bambooCfgManager global plugin configuration
 	 */
-	public BambooStatusTooltipListener(BambooStatusDisplay display, PluginConfiguration pluginConfiguration) {
+	public BambooStatusTooltipListener(BambooStatusDisplay display, BambooCfgManager bambooCfgManager) {
 		this.display = display;
-		this.pluginConfiguration = pluginConfiguration;
+		this.bambooCfgManager = bambooCfgManager;
 	}
 
 	public void updateBuildStatuses(Collection<BambooBuild> newBuildStatuses) {
 		
 		popupInfo.clear();
 
-		// get config option for tooltip
-		BambooTooltipOption tooltipConfigOption =
-				((BambooConfigurationBean) pluginConfiguration.getProductServers(ServerType.BAMBOO_SERVER)).
-						getBambooTooltipOption();
+		BambooTooltipOption tooltipConfigOption = bambooCfgManager.getGlobalBambooCfg().getBambooTooltipOption();
 
 		if (tooltipConfigOption == BambooTooltipOption.NEVER) {
 			return;
@@ -135,7 +131,8 @@ public class BambooStatusTooltipListener implements BambooStatusListener, Config
 		popupInfo.clear();
 	}
 
-	public void updateConfiguration(PluginConfigurationBean configuration) {
-		this.pluginConfiguration = configuration;
+	public void updateConfiguration(final ProjectId project, final CfgManager cfgManager) {
+		this.bambooCfgManager = cfgManager;
 	}
+
 }

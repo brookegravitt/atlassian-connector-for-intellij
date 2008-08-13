@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.autoupdate;
 
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.exception.ThePluginException;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.idea.StatusBarPluginIcon;
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -40,11 +41,12 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 	private static final int ICON_BLINK_TIME = 1000;
 	private transient UpdateActionHandler handler = null;
 
-	public PluginUpdateIcon(final Project project, final PluginConfiguration pluginConfiguration) {
-		super(project);
+	public PluginUpdateIcon(final Project project, final PluginConfiguration pluginConfiguration, final CfgManager cfgManager) {
+		super(project, cfgManager);
 		handler = new NewVersionConfirmHandler(pluginConfiguration.getGeneralConfigurationData());
 
 		addMouseListener(new MouseAdapter() {
+			@Override
 			public void mouseClicked(MouseEvent e) {
 				stopBlinking();
 				try {

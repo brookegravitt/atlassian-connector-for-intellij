@@ -20,20 +20,19 @@ package com.atlassian.theplugin.commons.configuration;
  * Bean storing information about Bamboo servers etc.<p>
  * The class serves both as a configuration provider for plugin logic and Bean for persistence.
  */
-public class JiraConfigurationBean extends AbstractServerConfigurationBean {
+public class JiraConfigurationBean {
 
 	private int pollTime = 1;
 
 	private boolean displayIconDescription = false;
+	private static final int HASHCODE_MAGIC = 31;
 
 	public JiraConfigurationBean() {
-        super();
     }
 
     public JiraConfigurationBean(JiraConfigurationBean cfg) {
-		super(cfg);
-        this.pollTime = ((JiraConfigurationBean) cfg).getPollTime();
-        this.displayIconDescription = ((JiraConfigurationBean) cfg).isDisplayIconDescription();
+        this.pollTime = cfg.getPollTime();
+        this.displayIconDescription = cfg.isDisplayIconDescription();
     }
 
 	public int getPollTime() {
@@ -50,5 +49,32 @@ public class JiraConfigurationBean extends AbstractServerConfigurationBean {
 
 	public void setDisplayIconDescription(boolean displayIconDescription) {
 		this.displayIconDescription = displayIconDescription;
+	}
+
+	public boolean equals(final Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (!(o instanceof JiraConfigurationBean)) {
+			return false;
+		}
+
+		final JiraConfigurationBean that = (JiraConfigurationBean) o;
+
+		if (displayIconDescription != that.displayIconDescription) {
+			return false;
+		}
+		if (pollTime != that.pollTime) {
+			return false;
+		}
+
+		return true;
+	}
+
+	public int hashCode() {
+		int result;
+		result = pollTime;
+		result = HASHCODE_MAGIC * result + (displayIconDescription ? 1 : 0);
+		return result;
 	}
 }

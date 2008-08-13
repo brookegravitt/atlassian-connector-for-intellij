@@ -1,0 +1,19 @@
+<test>
+  <project-configuration>
+    <servers>
+      <bamboo>
+        <server-id>141d662c-e744-4690-a5f8-6e127c0bc84f</server-id>
+        <enabled>true</enabled>
+        <name>mybamboo1</name>
+        <url>http://mygreaturl</url>
+        <password-stored>true</password-stored>
+        <use-favourites>false</use-favourites>
+        <bamboo2>false</bamboo2>
+        <plans>
+          <plan key="MYID" />
+          <plan key="PLANID2" />
+        </plans>
+      </bamboo>
+    </servers>
+  </project-configuration>
+</test>

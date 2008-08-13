@@ -16,10 +16,9 @@
 
 package com.atlassian.theplugin.commons.bamboo;
 
-import com.atlassian.theplugin.commons.Server;
-import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.configuration.ProductServerConfiguration;
-import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.commons.cfg.ProjectId;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -33,6 +32,8 @@ import java.util.regex.Pattern;
 	public class HtmlBambooStatusListenerNotUsed implements BambooStatusListener {
 
 	private final BambooStatusDisplay display;
+	private final CfgManager cfgManager;
+	private final ProjectId projectId;
 
 	private static final int TIME_OFFSET = -12;
 
@@ -40,11 +41,11 @@ import java.util.regex.Pattern;
 			"<body style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">";
 	private static final DateFormat TIME_DF = new SimpleDateFormat("hh:mm a");
 	private static final DateFormat DATE_DF = new SimpleDateFormat("MMM d");
-	private PluginConfiguration configuration;
 
-	public HtmlBambooStatusListenerNotUsed(BambooStatusDisplay aDisplay, PluginConfiguration configuration) {
+	public HtmlBambooStatusListenerNotUsed(BambooStatusDisplay aDisplay, CfgManager cfgManager, ProjectId projectId) {
 		display = aDisplay;
-		this.configuration = configuration;
+		this.cfgManager = cfgManager;
+		this.projectId = projectId;
 	}
 
 	private String formatLatestPollAndBuildTime(BambooBuild buildInfo) {
@@ -182,7 +183,7 @@ import java.util.regex.Pattern;
 
 			for (BambooBuild buildInfo : buildStatuses) {
 				if (!buildInfo.getServerUrl().equals(lastServer)) {
-					Server server = getServerFromUrl(buildInfo.getServerUrl());
+					ServerCfg server = getServerFromUrl(buildInfo.getServerUrl());
 					if (server == null) { // PL-122 lguminski immuning to a situation when getServerFromUrl returns null
 						continue;
 					}
@@ -197,7 +198,7 @@ import java.util.regex.Pattern;
 // 							+ server.getUrlString()
 // 							+ "'><img src=/icons/bamboo-blue-32.png height=32 width=32 border=0></a></td>"
 									+ "<td width=100%><b><a href='"
-									+ server.getUrlString()
+									+ server.getUrl()
 									+ "'>"
 									+ server.getName()
 									+ "</a></b><br>"
@@ -242,13 +243,10 @@ import java.util.regex.Pattern;
 //		display.updateBambooStatus(status, sb.toString());
 	}
 
-	protected Server getServerFromUrl(String serverUrl) {
-		ProductServerConfiguration productServers =
-				configuration.getProductServers(ServerType.BAMBOO_SERVER);
-		for (Iterator<Server> iterator = productServers.transientgetEnabledServers().iterator(); iterator.hasNext();) {
-			Server server = iterator.next();
-			if (serverUrl.equals(server.getUrlString())) {
-				return server;
+	protected ServerCfg getServerFromUrl(String serverUrl) {
+		for (ServerCfg serverCfg : cfgManager.getAllEnabledBambooServers(projectId)) {
+			if (serverUrl.equals(serverCfg.getUrl())) {
+				return serverCfg;
 			}
 		}
 

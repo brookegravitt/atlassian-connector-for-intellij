@@ -16,17 +16,24 @@
 
 package com.atlassian.theplugin.commons.bamboo;
 
-import com.atlassian.theplugin.commons.*;
+import com.atlassian.theplugin.commons.ConfigurationListener;
+import com.atlassian.theplugin.commons.SchedulableChecker;
+import com.atlassian.theplugin.commons.UIActionScheduler;
+import com.atlassian.theplugin.commons.cfg.ProjectId;
+import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
+import com.atlassian.theplugin.commons.cfg.BambooCfgManager;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
-import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
-import com.atlassian.theplugin.commons.configuration.BambooConfigurationBean;
-import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.util.DateUtil;
 import com.atlassian.theplugin.commons.util.Logger;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 
-import java.util.*;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.TimerTask;
 
 
 
@@ -48,49 +55,28 @@ public final class BambooStatusChecker implements SchedulableChecker, Configurat
 	private static StringBuffer sb = new StringBuffer();
 	private static final String NAME = "Atlassian Bamboo checker";
 
+	private BambooCfgManager cfgManager;
+	private final BambooServerFacade bambooServerFacade;
+	private Runnable missingPasswordHandler;
+	private static BambooStatusChecker instance;
+	private final ProjectId projectId;
+
 	public void setActionScheduler(UIActionScheduler actionScheduler) {
 		this.actionScheduler = actionScheduler;
 	}
 
-	public void setConfiguration(PluginConfiguration configuration) {
-		this.configuration = configuration;
-	}
-
-	private PluginConfiguration configuration;
-	private final BambooServerFacade bambooServerFacade;
-	private Runnable missingPasswordHandler;
-	private static BambooStatusChecker instance;
 
 
-	private BambooStatusChecker(UIActionScheduler actionScheduler,
-							   PluginConfiguration configuration,
-							   Runnable missingPasswordHandler,
-							   Logger logger) {
+	public BambooStatusChecker(final ProjectId projectId, UIActionScheduler actionScheduler,
+			BambooCfgManager cfgManager,
+			Runnable missingPasswordHandler,
+			Logger logger) {
+		this.projectId = projectId;
 		this.actionScheduler = actionScheduler;
-		this.configuration = configuration;
+		this.cfgManager = cfgManager;
 		this.missingPasswordHandler = missingPasswordHandler;
 
 		this.bambooServerFacade = BambooServerFacadeImpl.getInstance(logger);
-	}
-
-	public static BambooStatusChecker getInstance(UIActionScheduler actionScheduler,
-							   PluginConfiguration configuration,
-							   Runnable missingPasswordHandler,
-							   Logger logger) {
-		if (instance == null) {
-			instance = new BambooStatusChecker(actionScheduler, configuration, missingPasswordHandler, logger);
-		}
-		return instance;
-	}
-
-	/**
-	 * Call this method to get reference to existing BambooStatusChecker.
-	 * If BambooStatusChecker has not been created before then null will be returned.
-	 * In such case call {@link #getInstance(UIActionScheduler, PluginConfiguration, Runnable, Logger)}
-	 * @return reference to existing BambooStatusChecker or null if object does not exist
-	 */
-	public static BambooStatusChecker getInstance() {
-		return instance;
 	}
 
 	public void registerListener(BambooStatusListener listener) {
@@ -113,7 +99,7 @@ public final class BambooStatusChecker implements SchedulableChecker, Configurat
 
 			// collect build info from each server
             final Collection<BambooBuild> newServerBuildsStatus = new ArrayList<BambooBuild>();
-            for (Server server : retrieveEnabledBambooServers()) {
+            for (BambooServerCfg server : retrieveEnabledBambooServers()) {
                         try {
 
 							Date newRun = new Date();
@@ -125,8 +111,7 @@ public final class BambooStatusChecker implements SchedulableChecker, Configurat
                                     .append(dateFormat.format((newRun.getTime() - lastActionRun.getTime())));
 							LoggerImpl.getInstance().debug(sb.toString());
 
-							newServerBuildsStatus.addAll(
-                                    bambooServerFacade.getSubscribedPlansResults(server));
+							newServerBuildsStatus.addAll(bambooServerFacade.getSubscribedPlansResults(server));
 							lastActionRun = newRun;
 
 						} catch (ServerPasswordNotProvidedException exception) {
@@ -145,12 +130,12 @@ public final class BambooStatusChecker implements SchedulableChecker, Configurat
                 }
             });
         } catch (Throwable t) {
-            t.printStackTrace();
+			LoggerImpl.getInstance().info(t);
         }
     }
 
-	private Collection<Server> retrieveEnabledBambooServers() {
-		return configuration.getProductServers(ServerType.BAMBOO_SERVER).transientgetEnabledServers();
+	private Collection<BambooServerCfg> retrieveEnabledBambooServers() {
+		return cfgManager.getAllEnabledBambooServers(projectId);
 	}
 
 	/**
@@ -160,6 +145,7 @@ public final class BambooStatusChecker implements SchedulableChecker, Configurat
 	 */
 	public TimerTask newTimerTask() {
 		return new TimerTask() {
+			@Override
 			public void run() {
 				doRun();
 			}
@@ -171,9 +157,7 @@ public final class BambooStatusChecker implements SchedulableChecker, Configurat
 	}
 
 	public long getInterval() {
-		return (long) ((BambooConfigurationBean) configuration
-				.getProductServers(ServerType.BAMBOO_SERVER))
-				.getPollTime() * DateUtil.SECONDS_IN_MINUTE * DateUtil.MILISECONDS_IN_SECOND;
+		return cfgManager.getGlobalBambooCfg().getPollTime() * DateUtil.SECONDS_IN_MINUTE * DateUtil.MILISECONDS_IN_SECOND;
 	}
 
 	/**
@@ -190,8 +174,13 @@ public final class BambooStatusChecker implements SchedulableChecker, Configurat
 		return NAME;
 	}
 
-	public void updateConfiguration(PluginConfigurationBean configurationBean) {
-		this.configuration = configurationBean;
+	public void updateConfiguration(final ProjectId project, final CfgManager aCfgManager) {
+		this.cfgManager = aCfgManager;
+	}
+
+
+	public void updateConfiguration(BambooCfgManager theCfgManager) {
+		cfgManager = theCfgManager;
 	}
 
 }

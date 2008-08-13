@@ -40,14 +40,14 @@ public class CrucibleGeneralForm extends JComponent implements ContentPanel {
 	private JRadioButton never;
 	private SpinnerModel model;
 
-	private transient PluginConfigurationBean globalPluginConfiguration;
+	private transient PluginConfiguration globalPluginConfiguration;
 
 	private transient CrucibleConfigurationBean crucibleConfiguration;
 
 	private transient PluginConfiguration localPluginConfigurationCopy;
 	private static CrucibleGeneralForm instance;
 
-	private CrucibleGeneralForm(PluginConfigurationBean globalPluginConfiguration) {
+	private CrucibleGeneralForm(PluginConfiguration globalPluginConfiguration) {
 
 		this.globalPluginConfiguration = globalPluginConfiguration;
 
@@ -60,7 +60,7 @@ public class CrucibleGeneralForm extends JComponent implements ContentPanel {
 		add(rootComponent, BorderLayout.WEST);
 	}
 
-	public static CrucibleGeneralForm getInstance(PluginConfigurationBean globalPluginConfiguration) {
+	public static CrucibleGeneralForm getInstance(PluginConfiguration globalPluginConfiguration) {
 		if (instance == null) {
 			instance = new CrucibleGeneralForm(globalPluginConfiguration);
 		}
@@ -68,8 +68,9 @@ public class CrucibleGeneralForm extends JComponent implements ContentPanel {
 	}
 
 
-	public boolean isEnabled() {
-		return true;  //To change body of implemented methods use File | Settings | File Templates.
+	@Override
+    public boolean isEnabled() {
+		return true;
 	}
 
 	public boolean isModified() {
@@ -97,30 +98,18 @@ public class CrucibleGeneralForm extends JComponent implements ContentPanel {
 		}
 	}
 
-	public void getData() {
-		((CrucibleConfigurationBean) getLocalPluginConfigurationCopy()
-				.getProductServers(ServerType.CRUCIBLE_SERVER))
-				.setCrucibleTooltipOption(getCrucibleTooltipOption());
-
-		((CrucibleConfigurationBean) globalPluginConfiguration
-				.getProductServers(ServerType.CRUCIBLE_SERVER))
-				.setCrucibleTooltipOption(getCrucibleTooltipOption());
-
-		((CrucibleConfigurationBean) getLocalPluginConfigurationCopy()
-				.getProductServers(ServerType.CRUCIBLE_SERVER))
-				.setPollTime((Integer) model.getValue());
-
-		((CrucibleConfigurationBean) globalPluginConfiguration
-				.getProductServers(ServerType.CRUCIBLE_SERVER))
-				.setPollTime((Integer) model.getValue());
+	public void saveData() {
+		getLocalPluginConfigurationCopy().getCrucibleConfigurationData().setCrucibleTooltipOption(getCrucibleTooltipOption());
+		globalPluginConfiguration.getCrucibleConfigurationData().setCrucibleTooltipOption(getCrucibleTooltipOption());
+		getLocalPluginConfigurationCopy().getCrucibleConfigurationData().setPollTime((Integer) model.getValue());
+		globalPluginConfiguration.getCrucibleConfigurationData().setPollTime((Integer) model.getValue());
 	}
 
 	public void setData(PluginConfiguration config) {
 
 		localPluginConfigurationCopy = config;
 
-		crucibleConfiguration =
-				(CrucibleConfigurationBean) localPluginConfigurationCopy.getProductServers(ServerType.CRUCIBLE_SERVER);
+		crucibleConfiguration = localPluginConfigurationCopy.getCrucibleConfigurationData();
 		CrucibleTooltipOption configOption = this.crucibleConfiguration.getCrucibleTooltipOption();
 
 		if (configOption != null) {

@@ -21,6 +21,7 @@ import com.atlassian.theplugin.idea.HelpUrl;
 import com.atlassian.theplugin.idea.BugReporting;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.ui.HyperlinkLabel;
+import com.intellij.openapi.application.ApplicationInfo;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
@@ -47,7 +48,7 @@ public class FooterPanel extends JPanel {
 		final HyperlinkLabel openJiraHyperlinkBugLabel = new HyperlinkLabel("Report Bug");
 		openJiraHyperlinkBugLabel.addHyperlinkListener(new HyperlinkListener() {
 			public void hyperlinkUpdate(HyperlinkEvent e) {
-				BrowserUtil.launchBrowser(BugReporting.getBugUrl());
+				BrowserUtil.launchBrowser(BugReporting.getBugUrl(ApplicationInfo.getInstance().getBuildNumber()));
 			}
 		});
 

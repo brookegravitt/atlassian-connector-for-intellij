@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.jira;
 
-import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.HelpUrl;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -424,7 +424,7 @@ public class WorkLogCreate extends DialogWrapper {
             Messages.showErrorDialog(project, "There is no selected JIRA Server", "Error");
             return;
         }
-        final Server server = jiraServer.getServer();
+        final JiraServerCfg server = jiraServer.getServer();
 
         new Thread(new Runnable() {
 			public void run() {

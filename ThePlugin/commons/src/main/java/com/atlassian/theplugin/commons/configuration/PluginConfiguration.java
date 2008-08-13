@@ -16,19 +16,10 @@
 
 package com.atlassian.theplugin.commons.configuration;
 
-import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.util.HttpConfigurableAdapter;
 
 
 public interface PluginConfiguration {
-	ProductServerConfiguration getProductServers(ServerType serverType);
-
-	boolean isAnyServerEnabled();
-
-	boolean isAnyServerDefined();
-
-	boolean isServerPresent(Server server);
 
 	void setConfiguration(PluginConfiguration cfg);
 
@@ -40,4 +31,9 @@ public interface PluginConfiguration {
 	void transientSetHttpConfigurable(HttpConfigurableAdapter httpConfigurableAdapter);
 	HttpConfigurableAdapter transientGetHttpConfigurable();
 
+	BambooConfigurationBean getBambooConfigurationData();
+
+	CrucibleConfigurationBean getCrucibleConfigurationData();
+
+	JiraConfigurationBean getJIRAConfigurationData();
 }

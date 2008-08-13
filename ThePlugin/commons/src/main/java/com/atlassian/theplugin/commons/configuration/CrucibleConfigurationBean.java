@@ -16,18 +16,18 @@
 
 package com.atlassian.theplugin.commons.configuration;
 
-public class CrucibleConfigurationBean extends AbstractServerConfigurationBean {
+public class CrucibleConfigurationBean {
+	public static final int MIN_SCHEDULE_TIME_MINUTES = 1;
 	private CrucibleTooltipOption crucibleTooltipOption;
     private int pollTime = 1;
+	private static final int HASHCODE_MAGIC = 31;
 
 	public CrucibleConfigurationBean() {
-		super();
     }
 
 	public CrucibleConfigurationBean(CrucibleConfigurationBean cfg) {
-        super(cfg);
-        crucibleTooltipOption = ((CrucibleConfigurationBean) cfg).getCrucibleTooltipOption();
-		pollTime = ((CrucibleConfigurationBean) cfg).getPollTime();
+        crucibleTooltipOption = (cfg).getCrucibleTooltipOption();
+		pollTime = cfg.getPollTime();
     }
 
 	public int getPollTime() {
@@ -35,10 +35,7 @@ public class CrucibleConfigurationBean extends AbstractServerConfigurationBean {
 	}
 
 	public void setPollTime(int pollTime) {
-		this.pollTime =
-				pollTime > AbstractServerConfigurationBean.MIN_SCHEDULE_TIME_MINUTES?
-						pollTime:
-						AbstractServerConfigurationBean.MIN_SCHEDULE_TIME_MINUTES;
+		this.pollTime = pollTime > MIN_SCHEDULE_TIME_MINUTES ? pollTime : MIN_SCHEDULE_TIME_MINUTES;
 	}
 
 	public CrucibleTooltipOption getCrucibleTooltipOption() {
@@ -47,5 +44,34 @@ public class CrucibleConfigurationBean extends AbstractServerConfigurationBean {
 
 	public void setCrucibleTooltipOption(CrucibleTooltipOption crucibleTooltipOption) {
 		this.crucibleTooltipOption = crucibleTooltipOption;
+	}
+
+	@Override
+	public boolean equals(final Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (!(o instanceof CrucibleConfigurationBean)) {
+			return false;
+		}
+
+		final CrucibleConfigurationBean that = (CrucibleConfigurationBean) o;
+
+		if (pollTime != that.pollTime) {
+			return false;
+		}
+		if (crucibleTooltipOption != that.crucibleTooltipOption) {
+			return false;
+		}
+
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		int result;
+		result = (crucibleTooltipOption != null ? crucibleTooltipOption.hashCode() : 0);
+		result = HASHCODE_MAGIC * result + pollTime;
+		return result;
 	}
 }

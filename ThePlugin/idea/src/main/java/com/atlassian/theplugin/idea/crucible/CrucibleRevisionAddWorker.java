@@ -19,26 +19,19 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.intellij.openapi.vcs.changes.ChangeList;
+import com.intellij.openapi.project.Project;
 
 
 public class CrucibleRevisionAddWorker implements Runnable {
-	private final CrucibleServerFacade crucibleServerFacade;
-    private PermId permId;
-    private ChangeList[] changes;
-    private String revision;
     private final CrucibleHelperForm helperForm;
 
-    public CrucibleRevisionAddWorker(CrucibleServerFacade crucibleServerFacade, PermId permId, ChangeList[] changes) {
-		this.crucibleServerFacade = crucibleServerFacade;
-        this.permId = permId;
-        this.changes = changes;
-        helperForm = new CrucibleHelperForm(crucibleServerFacade, permId, changes);
+    public CrucibleRevisionAddWorker(Project project, CrucibleServerFacade crucibleServerFacade,
+			PermId permId, ChangeList[] changes) {
+        helperForm = new CrucibleHelperForm(project, crucibleServerFacade, permId, changes);
     }
 
-    public CrucibleRevisionAddWorker(CrucibleServerFacade crucibleServerFacade, String revision) {
-		this.crucibleServerFacade = crucibleServerFacade;
-        this.revision = revision;
-        helperForm = new CrucibleHelperForm(crucibleServerFacade, revision);
+    public CrucibleRevisionAddWorker(Project project, CrucibleServerFacade crucibleServerFacade, String revision) {
+        helperForm = new CrucibleHelperForm(project, crucibleServerFacade, revision);
     }
 
     public void run() {

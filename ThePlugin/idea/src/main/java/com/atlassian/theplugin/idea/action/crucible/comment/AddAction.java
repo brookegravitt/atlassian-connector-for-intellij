@@ -133,7 +133,7 @@ public class AddAction extends AbstractCommentAction {
 		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
 			newComment.setCreateDate(new Date());
 			newComment.setReviewItemId(review.getPermId());
-			newComment.setAuthor(new UserBean(review.getServer().getUserName()));
+			newComment.setAuthor(new UserBean(review.getServer().getUsername()));
 			// @todo
 			IdeaHelper.getReviewActionEventBroker(project).trigger(
 					new VersionedCommentAboutToAdd(CrucibleReviewActionListener.ANONYMOUS,
@@ -161,7 +161,7 @@ public class AddAction extends AbstractCommentAction {
 			newComment.setToEndLine(parentComment.getToEndLine());
 			newComment.setCreateDate(new Date());
 			newComment.setReviewItemId(review.getPermId());
-			newComment.setAuthor(new UserBean(review.getServer().getUserName()));
+			newComment.setAuthor(new UserBean(review.getServer().getUsername()));
 			IdeaHelper.getReviewActionEventBroker(project).trigger(
 					new VersionedCommentReplyAboutToAdd(CrucibleReviewActionListener.ANONYMOUS,
 							review, file, parentComment, newComment));
@@ -177,7 +177,7 @@ public class AddAction extends AbstractCommentAction {
 		dialog.show();
 		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
 			newComment.setCreateDate(new Date());
-			newComment.setAuthor(new UserBean(review.getServer().getUserName()));
+			newComment.setAuthor(new UserBean(review.getServer().getUsername()));
 			IdeaHelper.getReviewActionEventBroker(project).trigger(
 					new GeneralCommentAboutToAdd(CrucibleReviewActionListener.ANONYMOUS,
 							review, newComment));
@@ -195,7 +195,7 @@ public class AddAction extends AbstractCommentAction {
 		dialog.show();
 		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
 			newComment.setCreateDate(new Date());
-			newComment.setAuthor(new UserBean(review.getServer().getUserName()));
+			newComment.setAuthor(new UserBean(review.getServer().getUsername()));
 			IdeaHelper.getReviewActionEventBroker(project).trigger(
 					new GeneralCommentReplyAboutToAdd(CrucibleReviewActionListener.ANONYMOUS,
 							review, parentComment, newComment));

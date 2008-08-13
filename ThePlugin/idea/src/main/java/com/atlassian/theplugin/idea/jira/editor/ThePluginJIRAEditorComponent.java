@@ -348,7 +348,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			gbc.gridy = 0;
 			gbc.anchor = GridBagConstraints.WEST;
 			gbc.insets = new Insets(0, Constants.DIALOG_MARGIN, 0, 0);
-			UserLabel ul = new UserLabel(server.getServer().getUrlString(), comment.getAuthor());
+			UserLabel ul = new UserLabel(server.getServer().getUrl(), comment.getAuthor());
 			add(ul, gbc);
 
 			final JLabel hyphen = new WhiteLabel();

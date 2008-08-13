@@ -16,13 +16,13 @@
 
 package com.atlassian.theplugin.commons.bamboo;
 
-import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.RequestDataInfo;
+import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 
 import java.util.Date;
 
 public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
-	private Server server;
+	private BambooServerCfg server;
 	private String serverUrl;
 	private String projectName;
 	private String projectKey;
@@ -48,11 +48,11 @@ public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
 	public BambooBuildInfo() {
 	}
 
-	public Server getServer() {
+	public BambooServerCfg getServer() {
 		return server;
 	}
 
-	public void setServer(Server server) {
+	public void setServer(BambooServerCfg server) {
 		this.server = server;
 	}
 		

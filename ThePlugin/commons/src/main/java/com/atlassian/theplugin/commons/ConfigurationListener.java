@@ -16,8 +16,9 @@
 
 package com.atlassian.theplugin.commons;
 
-import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.commons.cfg.ProjectId;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
 
 public interface ConfigurationListener {
-	void updateConfiguration(PluginConfigurationBean configuration);
+	void updateConfiguration(ProjectId project, CfgManager cfgManager);
 }

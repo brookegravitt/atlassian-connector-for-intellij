@@ -19,13 +19,17 @@ package com.atlassian.theplugin.bamboo;
 import com.atlassian.theplugin.commons.UIActionScheduler;
 import com.atlassian.theplugin.commons.bamboo.*;
 import com.atlassian.theplugin.commons.SubscribedPlan;
+import com.atlassian.theplugin.commons.util.Logger;
+import com.atlassian.theplugin.commons.cfg.ProjectId;
+import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.configuration.*;
-import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.bamboo.api.bamboomock.*;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import org.ddsteps.mock.httpserver.JettyMockServer;
+import org.easymock.EasyMock;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,31 +42,26 @@ public class BambooStatusCheckerTest extends TestCase {
 	private static final String USER_NAME = "someUser";
 	private static final String PASSWORD = "somePassword";
 	private static final String PLAN_ID = "TP-DEF"; // always the same - mock does the logic
-	private final BambooServerFacade bambooServerFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
+	private Logger logger;
 
 	public BambooStatusCheckerTest(String name) {
 		super(name);
 	}
 
-	public void setUp() throws Exception {
-		super.setUp();
-
-	}
-
-	public void tearDown() throws Exception {
-		super.tearDown();
+	@Override
+	protected void setUp() throws Exception {
+		logger = EasyMock.createMock(Logger.class);
+		ConfigurationFactory.setConfiguration(new PluginConfigurationBean());
 	}
 
 	public void testGetInterval() throws Exception {
-		PluginConfigurationBean config = createBambooTestConfiguration();
-		ConfigurationFactory.setConfiguration(config);
-
-		BambooStatusChecker checker = BambooStatusChecker.getInstance(null, config, null, null);
+		BambooStatusChecker checker = new BambooStatusChecker(
+				new ProjectId(), null, MockBambooCfgManager.createBambooTestConfiguration(), null, logger);
 		assertEquals(60000, checker.getInterval());
 	}
 
 	public void testNewTimerTask() {
-		BambooStatusChecker checker = BambooStatusChecker.getInstance(null, null, null, null);
+		BambooStatusChecker checker = new BambooStatusChecker(new ProjectId(), null, null, null, logger);
 		TimerTask t1 = checker.newTimerTask();
 		TimerTask t2 = checker.newTimerTask();
 
@@ -73,14 +72,13 @@ public class BambooStatusCheckerTest extends TestCase {
 	public void testLogic() throws Exception {
 		// perform no-operation
 
-		PluginConfigurationBean config = createBambooTestConfiguration();
-		ConfigurationFactory.setConfiguration(config);
+		MockBambooCfgManager config = MockBambooCfgManager.createEmptyBambooTestConfiguration();
 
 		EasyInvoker invoker = new EasyInvoker();
-		BambooStatusChecker checker = BambooStatusChecker.getInstance();
+		BambooStatusChecker checker = new BambooStatusChecker(new ProjectId(), null, null, null, logger);
 
 		checker.setActionScheduler(invoker);
-		checker.setConfiguration(config);
+		checker.updateConfiguration(config);
 
 		TimerTask task = checker.newTimerTask();
 		task.run();
@@ -142,39 +140,19 @@ public class BambooStatusCheckerTest extends TestCase {
 	}
 
 
-	private static PluginConfigurationBean createBambooTestConfiguration() {
-		BambooConfigurationBean configuration = new BambooConfigurationBean();
+	private static void addServer(MockBambooCfgManager config, String url) {
+		BambooServerCfg server = new BambooServerCfg("TestServer", new ServerId());
+		server.setUrl(url);
+		server.setUsername(USER_NAME);
 
-		Collection<ServerBean> servers = new ArrayList<ServerBean>();
-		configuration.setServersData(servers);
-		PluginConfigurationBean pluginConfig = new PluginConfigurationBean();
-		pluginConfig.setBambooConfigurationData(configuration);
-
-		return pluginConfig;
-	}
-
-	private static void addServer(PluginConfigurationBean config, String url) {
-		Collection<ServerBean> servers = new ArrayList<ServerBean>();
-		ServerBean server = new ServerBean();
-
-		server.setName("TestServer");
-		server.setUrlString(url);
-		server.setUserName(USER_NAME);
-
-		server.transientSetPasswordString(PASSWORD, false);
-		server.transientSetIsConfigInitialized(true);
-		servers.add(server);
+		server.setPassword(PASSWORD);
 
 		ArrayList<SubscribedPlan> plans = new ArrayList<SubscribedPlan>();
-
-		SubscribedPlan plan = new SubscribedPlanBean();
-		plan.setPlanId(PLAN_ID);
+		SubscribedPlan plan = new SubscribedPlan(PLAN_ID);
 		plans.add(plan);
 
-		server.transientSetSubscribedPlans(plans);
-
-		config.getBambooConfigurationData().setServersData(servers);
-
+		server.setPlans(plans);
+		config.addServer(server);
 	}
 
 	public static Test suite() {
@@ -218,4 +196,5 @@ public class BambooStatusCheckerTest extends TestCase {
 			return ret;
 		}
 	}
+
 }

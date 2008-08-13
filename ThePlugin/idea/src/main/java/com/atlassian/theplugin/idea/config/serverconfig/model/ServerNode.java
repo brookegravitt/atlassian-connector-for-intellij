@@ -17,34 +17,33 @@
 package com.atlassian.theplugin.idea.config.serverconfig.model;
 
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-/**
- * Represents any Server in servers JTree
- * User: mwent
- * Date: 2008-01-29
- * Time: 09:49:47
- */
-public abstract class ServerNode extends DefaultMutableTreeNode {
-	private Server server;
+public class ServerNode extends DefaultMutableTreeNode {
+	private final ServerCfg server;
 
-	public ServerNode(Server aServer) {
+	public ServerNode(ServerCfg aServer) {
 		this.server = aServer;
 	}
 
-    public abstract ServerType getServerType();
+    public ServerType getServerType() {
+        return server.getServerType(); 
+    }
 
-    public Server getServer() {
+    public ServerCfg getServer() {
 		return server;
 	}
 
-	public void setServer(Server server) {
-		this.server = server;
-	}
-
-	public String toString() {
+    /**
+     * Used ultimately by {@link javax.swing.tree.DefaultTreeCellRenderer}. so it must be like this
+     * Sorry :(
+     *
+     * @return server name
+     */
+    @Override
+    public String toString() {
 		return server.getName();
 	}
 

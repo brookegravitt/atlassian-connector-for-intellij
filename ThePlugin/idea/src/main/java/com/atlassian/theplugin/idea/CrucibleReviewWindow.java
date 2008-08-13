@@ -16,8 +16,7 @@
 
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListenerNotUsed;
-import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
+//import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListenerNotUsed;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
@@ -25,7 +24,6 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.idea.config.ContentPanel;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
 import com.atlassian.theplugin.idea.crucible.CrucibleFilteredModelProvider;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
@@ -55,7 +53,7 @@ import java.awt.*;
 import java.util.Date;
 import java.util.List;
 
-public final class CrucibleReviewWindow extends JPanel implements ContentPanel, DataProvider {
+public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 	public static final String TOOL_WINDOW_TITLE = "Crucible Review";
 	private static final Key<CrucibleReviewWindow> WINDOW_PROJECT_KEY
 			= Key.create(CrucibleReviewWindow.class.getName());
@@ -153,47 +151,12 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
 		return scrollPane;
 	}
 
-	protected String wrapBody(String s) {
-		return "<html>" + HtmlBambooStatusListenerNotUsed.BODY_WITH_STYLE + s + "</body></html>";
-
-	}
-
-	protected void setStatusMessage(String msg) {
-		setStatusMessage(msg, false);
-	}
-
-	protected void setStatusMessage(String msg, boolean isError) {
-		//editorPane.setBackground(isError ? Color.RED : Color.WHITE);
-		//editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">" + msg + "</td></tr></table>"));
-	}
-
-
 	public ProgressAnimationProvider getProgressAnimation() {
 		return progressAnimation;
 	}
 
 	public CrucibleVersion getCrucibleVersion() {
 		return crucibleVersion;
-	}
-
-
-	public void resetState() {
-	}
-
-	public boolean isModified() {
-		return false;  //To change body of implemented methods use File | Settings | File Templates.
-	}
-
-	public String getTitle() {
-		return null;  //To change body of implemented methods use File | Settings | File Templates.
-	}
-
-	public void getData() {
-		//To change body of implemented methods use File | Settings | File Templates.
-	}
-
-	public void setData(final PluginConfiguration config) {
-		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
 
@@ -275,7 +238,7 @@ public final class CrucibleReviewWindow extends JPanel implements ContentPanel, 
 					dialog.show();
 					if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
 						newComment.setCreateDate(new Date());
-						newComment.setAuthor(new UserBean(review.getServer().getUserName()));
+						newComment.setAuthor(new UserBean(review.getServer().getUsername()));
 						newComment.setToStartLine(start);
 						newComment.setToEndLine(end);
 						eventBroker.trigger(new VersionedCommentAboutToAdd(CrucibleReviewActionListener.ANONYMOUS, review,

@@ -20,7 +20,7 @@ import java.util.Arrays;
 
 
 public class CustomFilterBean implements CustomFilter {
-	private long serverUid = 0;    
+	private String serverUid;
     private String title;
     private String[] state;
     private String author;
@@ -66,17 +66,17 @@ public class CustomFilterBean implements CustomFilter {
 		result = HASHCODE_CONSTANT * result + (allReviewersComplete ? 1 : 0);
 		result = HASHCODE_CONSTANT * result + (projectKey != null ? projectKey.hashCode() : 0);
 		result = HASHCODE_CONSTANT * result + (int) (uid ^ (uid >>> SHIFT_32));
-		result = HASHCODE_CONSTANT * result + (int) (serverUid ^ (serverUid >>> SHIFT_32));
+		result = HASHCODE_CONSTANT * result + (serverUid != null ? serverUid.hashCode() : 0);
 		return result;
 	}
 
 	private transient long uid = System.currentTimeMillis() + (long) (Math.random() * ID_DISCRIMINATOR);
 
-	public long getServerUid() {
+	public String getServerUid() {
 		return serverUid;
 	}
 
-	public void setServerUid(long serverUid) {
+	public void setServerUid(String serverUid) {
 		this.serverUid = serverUid;
 	}
 

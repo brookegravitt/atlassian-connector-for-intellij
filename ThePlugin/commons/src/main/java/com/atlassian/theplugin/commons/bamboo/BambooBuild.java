@@ -16,8 +16,8 @@
 
 package com.atlassian.theplugin.commons.bamboo;
 
-import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.RequestData;
+import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 
 import java.util.Date;
 
@@ -25,7 +25,7 @@ import java.util.Date;
  * Build information retrieved from Bamboo server.
  */
 public interface BambooBuild extends RequestData {
-	Server getServer();
+	BambooServerCfg getServer();
 
 	String getServerUrl();
 

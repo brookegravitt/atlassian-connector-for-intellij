@@ -16,24 +16,17 @@
 
 package com.atlassian.theplugin.idea.config;
 
-import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
-
 public interface ContentPanel {
-	boolean isEnabled();
 
 	boolean isModified();
-
-	String getTitle();
-
 
 	/**
 	 * Copies configuration to global config object serialized by IDEA
 	 */
-	void getData();
+	void saveData();
 
 	/**
 	 * Assigns config parameter to local configuration
 	 * @param config
 	 */
-	void setData(PluginConfiguration config);
 }

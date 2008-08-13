@@ -17,13 +17,10 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.util.PluginUtil;
-import com.atlassian.theplugin.commons.util.LoggerImpl;
-import com.intellij.openapi.application.ApplicationInfo;
+import com.atlassian.theplugin.commons.util.UrlUtil;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.net.URLEncoder;
-import java.io.UnsupportedEncodingException;
 
 public final class BugReporting {
 
@@ -62,11 +59,11 @@ public final class BugReporting {
 	private static final String PROJECT_ID = "10024";
 	private static final String TICKET_TYPE_BUG = "1";
 	private static final String TICKET_TYPE_STORY = "5";
-	private static String bugUrl;
 	private static String storyUrl;
 	private static String versionName;
+    private static String versionCodeForJira;
 
-	static {
+    static {
 		versionName = PluginUtil.getInstance().getVersion();
 		// versions seen here are formatted:
 		// "x.y.z-SNAPSHOT, SVN:ijk" or "x.y.z, SVN:ijk"
@@ -87,31 +84,11 @@ public final class BugReporting {
 			versionForJira = "0";
 		}
 
-		String versionCodeForJira = versionMap.get(versionForJira);
+        versionCodeForJira = versionMap.get(versionForJira);
 		if (versionCodeForJira == null) {
 			// this is broken, but whatever. The user can always reselect the version manually. I hope :)
 			versionCodeForJira = versionMap.get("0");
 		}
-
-		String environment = "";
-		try {
-			final String rawEnvironment =
-				"Java version=" + System.getProperty("java.version")
-				+ ", Java vendor=" + System.getProperty("java.vendor")
-				+ ", OS name=" + System.getProperty("os.name")
-				+ ", OS architecture=" + System.getProperty("os.arch")
-				+ ", IDEA build number=" + ApplicationInfo.getInstance().getBuildNumber();
-			environment = URLEncoder.encode(rawEnvironment, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			LoggerImpl.getInstance().info(e);
-		}
-
-		bugUrl = BASE
-				+ "?pid=" + PROJECT_ID
-				+ "&versions=" + versionCodeForJira
-				+ "&issuetype=" + TICKET_TYPE_BUG
-				+ "&environment=" + environment;
-
 
 		storyUrl = BASE
 				+ "?pid=" + PROJECT_ID
@@ -119,8 +96,22 @@ public final class BugReporting {
 				+ "&issuetype=" + TICKET_TYPE_STORY;
 	}
 
-	public static String getBugUrl() {
-		return bugUrl;
+	public static String getBugUrl(String ideaBuildNumber) {
+        final String rawEnvironment =
+                "Java version=" + System.getProperty("java.version")
+                        + ", Java vendor=" + System.getProperty("java.vendor")
+                        + ", OS name=" + System.getProperty("os.name")
+                        + ", OS architecture=" + System.getProperty("os.arch")
+                        + ", IDEA build number=" + (ideaBuildNumber != null ? ideaBuildNumber : "unknown");
+        final String environment = UrlUtil.encodeUrl(rawEnvironment);
+
+        final String bugUrl = BASE
+                + "?pid=" + PROJECT_ID
+                + "&versions=" + versionCodeForJira
+                + "&issuetype=" + TICKET_TYPE_BUG
+                + "&environment=" + environment;
+
+        return bugUrl;
 	}
 
 	public static String getStoryUrl() {
@@ -131,12 +122,8 @@ public final class BugReporting {
 		return versionName;
 	}
 
-	public static String getBugWithDescriptionUrl(String description) {
-		try {
-			return bugUrl + "&description=" + URLEncoder.encode(description, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			return bugUrl;
-		}
+	public static String getBugWithDescriptionUrl(String ideaBuildNumber, String description) {
+		return getBugUrl(ideaBuildNumber) + "&description=" + UrlUtil.encodeUrl(description);
 	}
 
 	private BugReporting() {

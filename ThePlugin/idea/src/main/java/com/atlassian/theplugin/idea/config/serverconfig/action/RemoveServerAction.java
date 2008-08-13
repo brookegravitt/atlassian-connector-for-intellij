@@ -16,23 +16,23 @@
 
 package com.atlassian.theplugin.idea.config.serverconfig.action;
 
-import com.atlassian.theplugin.idea.config.ConfigPanel;
-import com.atlassian.theplugin.idea.IdeaHelper;
-import com.intellij.openapi.actionSystem.AnAction;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
-/**
- * Created by IntelliJ IDEA.
- * User: mwent
- * Date: 2008-01-28
- * Time: 10:55:12
- * To change this template use File | Settings | File Templates.
- */
-public class RemoveServerAction extends AnAction {
-    public void actionPerformed(AnActionEvent event) {
-		ConfigPanel panel = ConfigPanel.getInstance(IdeaHelper.getPluginConfiguration());
+public class RemoveServerAction extends AbstractServerAction {
+    @Override
+	public void actionPerformed(AnActionEvent event) {
+		final ServerConfigPanel panel = getServerConfigPanel(event);
 		if (panel != null) {
 			panel.removeServer(); //safe		
 		}
     }
+
+	@Override
+	public void update(final AnActionEvent event) {
+		ServerCfg serverCfg = event.getData(Constants.SERVER_KEY);
+		event.getPresentation().setEnabled(serverCfg != null);
+	}
 }
