@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea.action.crucible;
 
 
+import com.atlassian.theplugin.idea.CrucibleReviewWindow;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
@@ -24,13 +25,16 @@ import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.events.ShowReviewEvent;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.project.Project;
 
 import javax.swing.*;
 
-public class GetCommentsAction extends TableSelectedAction {	
+public class GetCommentsAction extends TableSelectedAction {
 
 	public void actionPerformed(final AnActionEvent e) {
+		CrucibleReviewWindow.getInstance(DataKeys.PROJECT.getData(e.getDataContext()));
+
 		 if (e != null && e.getPlace() != null && IdeaHelper.getCurrentProject(e) != null
                 && e.getPlace().equals(CrucibleTableToolWindowPanel.PLACE_PREFIX + IdeaHelper.getCurrentProject(e).getName())) {
             if (!VcsIdeaHelper.isUnderVcsControl(e)) {
