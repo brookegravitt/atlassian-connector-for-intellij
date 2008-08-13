@@ -16,7 +16,11 @@
 
 package com.atlassian.theplugin.idea.config.serverconfig.action;
 
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionPopupMenu;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 
 import javax.swing.*;
 import java.awt.event.MouseEvent;
@@ -29,8 +33,10 @@ import java.awt.event.MouseEvent;
  * To change this template use File | Settings | File Templates.
  */
 public class AddServerAction extends AnAction {
-    public void actionPerformed(AnActionEvent event) {
-        ActionGroup actionGroup = (ActionGroup) ActionManager.getInstance().getAction("ThePlugin.ServerTypePopup");
+
+	@Override
+	public void actionPerformed(AnActionEvent event) {
+		ActionGroup actionGroup = (ActionGroup) ActionManager.getInstance().getAction("ThePlugin.ServerTypePopup");
         ActionPopupMenu popup = ActionManager.getInstance().createActionPopupMenu("Server type", actionGroup);
 
         MouseEvent me = (MouseEvent) event.getInputEvent();

@@ -16,62 +16,72 @@
 
 package com.atlassian.theplugin.jira;
 
-import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
-import com.atlassian.theplugin.jira.api.*;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.jira.api.JIRAAction;
+import com.atlassian.theplugin.jira.api.JIRAActionField;
+import com.atlassian.theplugin.jira.api.JIRAComment;
+import com.atlassian.theplugin.jira.api.JIRAComponentBean;
+import com.atlassian.theplugin.jira.api.JIRAConstant;
+import com.atlassian.theplugin.jira.api.JIRAException;
+import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.atlassian.theplugin.jira.api.JIRAProject;
+import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
+import com.atlassian.theplugin.jira.api.JIRAResolutionBean;
+import com.atlassian.theplugin.jira.api.JIRAVersionBean;
 
 import java.util.Calendar;
 import java.util.List;
 
 public interface JIRAServerFacade extends ProductServerFacade {
-    List<JIRAIssue> getIssues(Server server, List<JIRAQueryFragment> query,
+    List<JIRAIssue> getIssues(JiraServerCfg server, List<JIRAQueryFragment> query,
 				   String sort,
 				   String sortOrder,
 				   int start,
 				   int size) throws JIRAException;
 
-	List<JIRAIssue> getSavedFilterIssues(Server server,
+	List<JIRAIssue> getSavedFilterIssues(JiraServerCfg server,
 							  List<JIRAQueryFragment> query,
 							  String sort,
 							  String sortOrder,
 							  int start,
 							  int size) throws JIRAException;
 
-	List<JIRAProject> getProjects(Server server) throws JIRAException;
+	List<JIRAProject> getProjects(JiraServerCfg server) throws JIRAException;
 
-    List<JIRAConstant> getIssueTypes(Server server) throws JIRAException;
+    List<JIRAConstant> getIssueTypes(JiraServerCfg server) throws JIRAException;
     
-    List<JIRAConstant> getStatuses(Server server) throws JIRAException;
+    List<JIRAConstant> getStatuses(JiraServerCfg server) throws JIRAException;
 
-	List<JIRAConstant> getIssueTypesForProject(Server server, String project) throws JIRAException;
+	List<JIRAConstant> getIssueTypesForProject(JiraServerCfg server, String project) throws JIRAException;
 
-	List<JIRAQueryFragment> getSavedFilters(Server server) throws JIRAException;	
+	List<JIRAQueryFragment> getSavedFilters(JiraServerCfg server) throws JIRAException;
 
-	List<JIRAComponentBean> getComponents(Server server, String projectKey) throws JIRAException;
+	List<JIRAComponentBean> getComponents(JiraServerCfg server, String projectKey) throws JIRAException;
 
-	List<JIRAVersionBean> getVersions(Server server, String projectKey) throws JIRAException;
+	List<JIRAVersionBean> getVersions(JiraServerCfg server, String projectKey) throws JIRAException;
 
-	List<JIRAConstant> getPriorities(Server server) throws JIRAException;
+	List<JIRAConstant> getPriorities(JiraServerCfg server) throws JIRAException;
 
-	List<JIRAResolutionBean> getResolutions(Server server) throws JIRAException;
+	List<JIRAResolutionBean> getResolutions(JiraServerCfg server) throws JIRAException;
 
-    List<JIRAAction> getAvailableActions(Server server, JIRAIssue issue) throws JIRAException;
+    List<JIRAAction> getAvailableActions(JiraServerCfg server, JIRAIssue issue) throws JIRAException;
 
-	List<JIRAActionField> getFieldsForAction(Server server, JIRAIssue issue, JIRAAction action) throws JIRAException;
+	List<JIRAActionField> getFieldsForAction(JiraServerCfg server, JIRAIssue issue, JIRAAction action) throws JIRAException;
 
-	void progressWorkflowAction(Server server, JIRAIssue issue, JIRAAction action) throws JIRAException;
+	void progressWorkflowAction(JiraServerCfg server, JIRAIssue issue, JIRAAction action) throws JIRAException;
 
-	void addComment(Server server, JIRAIssue issue, String comment) throws JIRAException;
+	void addComment(JiraServerCfg server, JIRAIssue issue, String comment) throws JIRAException;
 
-    JIRAIssue createIssue(Server server, JIRAIssue issue) throws JIRAException;
+    JIRAIssue createIssue(JiraServerCfg server, JIRAIssue issue) throws JIRAException;
 
-	JIRAIssue getIssueDetails(Server server, JIRAIssue issue) throws JIRAException;
+	JIRAIssue getIssueDetails(JiraServerCfg server, JIRAIssue issue) throws JIRAException;
 
-	void logWork(Server server, JIRAIssue issue, String timeSpent, Calendar startDate,
+	void logWork(JiraServerCfg server, JIRAIssue issue, String timeSpent, Calendar startDate,
 				 String comment, boolean updateEstimate, String newEstimate)
 			throws JIRAException;
 
-	void setAssignee(Server server, JIRAIssue issue, String assignee) throws JIRAException;
+	void setAssignee(JiraServerCfg server, JIRAIssue issue, String assignee) throws JIRAException;
 
-	List<JIRAComment> getComments(Server server, JIRAIssue issue) throws JIRAException;
+	List<JIRAComment> getComments(JiraServerCfg server, JIRAIssue issue) throws JIRAException;
 }

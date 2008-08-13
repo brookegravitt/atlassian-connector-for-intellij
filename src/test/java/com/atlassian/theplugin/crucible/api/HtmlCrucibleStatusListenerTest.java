@@ -16,16 +16,7 @@
 
 package com.atlassian.theplugin.crucible.api;
 
-import com.atlassian.theplugin.commons.Server;
-import com.atlassian.theplugin.commons.configuration.ServerBean;
 import com.atlassian.theplugin.commons.crucible.CrucibleStatusDisplay;
-import com.atlassian.theplugin.commons.crucible.api.model.PermIdBean;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewBean;
-import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
-import com.atlassian.theplugin.commons.crucible.api.model.State;
-import com.atlassian.theplugin.commons.crucible.api.model.User;
-import com.atlassian.theplugin.commons.crucible.api.model.UserBean;
 import com.gargoylesoftware.htmlunit.StringWebResponse;
 import com.gargoylesoftware.htmlunit.TopLevelWindow;
 import com.gargoylesoftware.htmlunit.WebClient;
@@ -33,15 +24,9 @@ import com.gargoylesoftware.htmlunit.html.HTMLParser;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlTable;
 import junit.framework.Assert;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.StringTokenizer;
 
 class StatusListenerResultCatcher implements CrucibleStatusDisplay {
 	public String htmlPage;

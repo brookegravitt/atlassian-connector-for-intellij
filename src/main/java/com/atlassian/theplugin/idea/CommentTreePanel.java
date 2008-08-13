@@ -171,18 +171,19 @@ public class CommentTreePanel extends JPanel {
 		return commentTree;
 	}
 
-	public void filterTreeNodes(CrucibleFilteredModelProvider.FILTER filter) {
-		this.filter = filter;
-		commentTree.setModel(fullModel.getFilteredModel(getFilter(filter)));
+	public void filterTreeNodes(CrucibleFilteredModelProvider.FILTER aFilter) {
+		this.filter = aFilter;
+		commentTree.setModel(fullModel.getFilteredModel(getFilter(aFilter)));
 		refreshTree();
 	}
 
-	private Filter getFilter(final CrucibleFilteredModelProvider.FILTER filter) {
-		switch (filter) {
+	private Filter getFilter(final CrucibleFilteredModelProvider.FILTER aFilter) {
+		switch (aFilter) {
 			case FILES_ALL:
 				return Filter.ALL;
 			case FILES_WITH_COMMENTS_ONLY:
 				return new Filter() {
+					@Override
 					public boolean isValid(final AtlassianTreeNode node) {
 						if (node instanceof FileNameNode) {
 							FileNameNode anode = (FileNameNode) node;
@@ -196,7 +197,7 @@ public class CommentTreePanel extends JPanel {
 					}
 				};
 			default:
-				throw new IllegalStateException("Unknow filtering requested (" + filter.toString() + ")");
+				throw new IllegalStateException("Unknow filtering requested (" + aFilter.toString() + ")");
 		}
 	}
 
@@ -333,7 +334,8 @@ public class CommentTreePanel extends JPanel {
 					AtlassianTreeNode changedNode = replaceNode(new SearchVersionedCommentAlgorithm(review, file, comment),
 							newCommentNode);
 					if (changedNode == null) {
-						changedNode = addNewNode(new SearchVersionedCommentAlgorithm(review, file, parentComment), newCommentNode);
+						changedNode = addNewNode(new SearchVersionedCommentAlgorithm(review, file, parentComment),
+								newCommentNode);
 					}
 					addReplyNodes(review, file, newCommentNode, comment);
 					refreshNode(changedNode);

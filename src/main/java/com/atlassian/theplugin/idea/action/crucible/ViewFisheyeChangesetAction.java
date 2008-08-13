@@ -24,13 +24,15 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.vcs.changes.ChangeList;
 import com.intellij.openapi.vcs.changes.Change;
+import com.intellij.openapi.project.Project;
 
 
 public class ViewFisheyeChangesetAction extends Crucible16RepositoryAction {
     public void actionPerformed(AnActionEvent event) {
         final ChangeList[] changes = DataKeys.CHANGE_LISTS.getData(event.getDataContext());
+		final Project project = event.getData(DataKeys.PROJECT);
 
-        if (changes.length == 1) {
+		if (changes.length == 1) {
             String rev = "";
             for (Change change : changes[0].getChanges()) {
                 rev = change.getAfterRevision().getRevisionNumber().asString();
@@ -40,7 +42,7 @@ public class ViewFisheyeChangesetAction extends Crucible16RepositoryAction {
             new Thread(new Runnable() {
                 public void run() {
                     ApplicationManager.getApplication().invokeAndWait(
-                            new CrucibleRevisionAddWorker(CrucibleServerFacadeImpl.getInstance(), finalRev),
+                            new CrucibleRevisionAddWorker(project, CrucibleServerFacadeImpl.getInstance(), finalRev),
                             ModalityState.defaultModalityState());
                 }
             }).start();

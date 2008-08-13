@@ -17,9 +17,10 @@
 package com.atlassian.theplugin.crucible;
 
 import com.atlassian.theplugin.commons.VirtualFileSystem;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
-import com.atlassian.theplugin.commons.configuration.ServerBean;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
@@ -162,7 +163,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 
         replay(crucibleSessionMock);
 
-        ServerBean server = prepareServerBean();
+        CrucibleServerCfg server = prepareServerBean();
         List<Review> ret = facade.getAllReviews(server);
         assertEquals(2, ret.size());
         assertEquals(permId.getId(), ret.get(0).getPermId().getId());
@@ -176,8 +177,8 @@ public class CrucibleServerFacadeTest extends TestCase {
         assertSame(State.DRAFT, ret.get(0).getState());
         assertNull(ret.get(0).getParentReview());
 
-        server.setUserName(validLogin2.getUserName());
-        server.transientSetPasswordString(validPassword2, false);
+        server.setUsername(validLogin2.getUserName());
+        server.setPassword(validPassword2);
         ret = facade.getAllReviews(server);
         assertEquals(1, ret.size());
         assertEquals(permId.getId(), ret.get(0).getPermId().getId());
@@ -210,7 +211,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 
         replay(crucibleSessionMock);
 
-        ServerBean server = prepareServerBean();
+        CrucibleServerCfg server = prepareServerBean();
         Review review = prepareReviewData("name", State.DRAFT);
 
         // test call
@@ -237,7 +238,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 
         replay(crucibleSessionMock);
 
-        ServerBean server = prepareServerBean();
+        CrucibleServerCfg server = prepareServerBean();
         Review review = prepareReviewData("name", State.DRAFT);
 
         try {
@@ -267,7 +268,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 
         replay(crucibleSessionMock);
 
-        ServerBean server = prepareServerBean();
+        CrucibleServerCfg server = prepareServerBean();
         Review review = prepareReviewData("name", State.DRAFT);
 
         String patch = "some patch";
@@ -293,7 +294,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 
         replay(crucibleSessionMock);
 
-        ServerBean server = prepareServerBean();
+        CrucibleServerCfg server = prepareServerBean();
         Review review = prepareReviewData("name", State.DRAFT);
 
         String patch = "some patch";
@@ -330,7 +331,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 
         replay(crucibleSessionMock);
 
-        ServerBean server = prepareServerBean();
+        CrucibleServerCfg server = prepareServerBean();
         // test call
         List<Review> ret = facade.getAllReviews(server);
         assertEquals(2, ret.size());
@@ -360,7 +361,7 @@ public class CrucibleServerFacadeTest extends TestCase {
         EasyMock.expectLastCall().andReturn(Arrays.asList(prepareProjectData(0), prepareProjectData(1)));
         replay(crucibleSessionMock);
 
-        ServerBean server = prepareServerBean();
+        CrucibleServerCfg server = prepareServerBean();
         // test call
         List<Project> ret = facade.getProjects(server);
         assertEquals(2, ret.size());
@@ -385,7 +386,7 @@ public class CrucibleServerFacadeTest extends TestCase {
         EasyMock.expectLastCall().andReturn(Arrays.asList(prepareRepositoryData(0), prepareRepositoryData(1)));
         replay(crucibleSessionMock);
 
-        ServerBean server = prepareServerBean();
+        CrucibleServerCfg server = prepareServerBean();
         // test call
         List<Repository> ret = facade.getRepositories(server);
         assertEquals(2, ret.size());
@@ -562,10 +563,6 @@ public class CrucibleServerFacadeTest extends TestCase {
                 return null;
             }
 
-            public com.atlassian.theplugin.commons.Server getServer() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
             public List<GeneralComment> getGeneralComments() {
                 return null;
             }
@@ -592,11 +589,12 @@ public class CrucibleServerFacadeTest extends TestCase {
         };
     }
 
-    private ServerBean prepareServerBean() {
-        ServerBean server = new ServerBean();
-        server.setUrlString(VALID_URL);
-        server.setUserName(VALID_LOGIN.getUserName());
-        server.transientSetPasswordString(VALID_PASSWORD, false);
+    private CrucibleServerCfg prepareServerBean() {
+        CrucibleServerCfg server = new CrucibleServerCfg("myname", new ServerId());
+        server.setUrl(VALID_URL);
+        server.setUsername(VALID_LOGIN.getUserName());
+        server.setPassword(VALID_PASSWORD);
+		server.setPasswordStored(false);
         return server;
     }
 
@@ -636,12 +634,9 @@ public class CrucibleServerFacadeTest extends TestCase {
 
         //facade.setCrucibleSession(null);
 
-        ServerBean server = new ServerBean();
-        server.setUrlString("http://lech.atlassian.pl:8060");
-        server.setUserName("test");
-        server.transientSetPasswordString("test", false);
+		CrucibleServerCfg server = prepareCrucibleServerCfg();
 
-        Review review = prepareReviewData("test", State.DRAFT);
+		Review review = prepareReviewData("test", State.DRAFT);
 
         Review ret;
 
@@ -656,13 +651,18 @@ public class CrucibleServerFacadeTest extends TestCase {
         }
     }
 
-    public void _testGetAllReviewsHardcoded() throws ServerPasswordNotProvidedException {
-        //facade.setCrucibleSession(null);
+	private CrucibleServerCfg prepareCrucibleServerCfg() {
+		CrucibleServerCfg server = new CrucibleServerCfg("mycrucible", new ServerId());
+		server.setUrl("http://lech.atlassian.pl:8060");
+		server.setUsername("test");
+		server.setPassword("test");
+		server.setPasswordStored(false);
+		return server;
+	}
 
-        ServerBean server = new ServerBean();
-        server.setUrlString("http://lech.atlassian.pl:8060");
-        server.setUserName("test");
-        server.transientSetPasswordString("test", false);
+	public void _testGetAllReviewsHardcoded() throws ServerPasswordNotProvidedException {
+        //facade.setCrucibleSession(null);
+		final CrucibleServerCfg server = prepareCrucibleServerCfg();
 
         try {
             List<Review> list = facade.getAllReviews(server);

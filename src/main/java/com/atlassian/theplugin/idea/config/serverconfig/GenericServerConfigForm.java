@@ -17,11 +17,11 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.LoginDataProvided;
-import com.atlassian.theplugin.commons.Server;
-import com.atlassian.theplugin.commons.configuration.ServerBean;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.idea.TestConnectionListener;
 import com.atlassian.theplugin.util.Connector;
 import com.atlassian.theplugin.commons.util.UrlUtil;
+import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 
@@ -33,7 +33,7 @@ import java.awt.event.FocusEvent;
 /**
  * Plugin configuration form.
  */
-public class GenericServerConfigForm extends JComponent implements ServerPanel, LoginDataProvided {
+public class GenericServerConfigForm implements LoginDataProvided {
 	private JPanel rootComponent;
 	private JTextField serverName;
 	private JTextField serverUrl;
@@ -43,14 +43,19 @@ public class GenericServerConfigForm extends JComponent implements ServerPanel, 
 	private JCheckBox chkPasswordRemember;
 	private JCheckBox cbEnabled;
 
-	private transient Server originalServer;
+	private transient ServerCfg serverCfg;
 
-	public GenericServerConfigForm(final Connector tester) {
+    public ServerCfg getServerCfg() {
+        return serverCfg;
+    }
+
+    public GenericServerConfigForm(final Connector tester) {
 
 		$$$setupUI$$$();
 		testConnection.addActionListener(new TestConnectionListener(tester, this));
 		serverUrl.addFocusListener(new FocusAdapter() {
-			public void focusLost(FocusEvent e) {
+			@Override
+            public void focusLost(FocusEvent e) {
 				adjustUrl();
 			}
 		});
@@ -63,53 +68,52 @@ public class GenericServerConfigForm extends JComponent implements ServerPanel, 
 		serverUrl.setText(url);
 	}
 
-	public void setData(Server server) {
-		this.originalServer = new ServerBean(server);
+	public void setData(ServerCfg server) {
+        serverCfg = server;
 
-		serverName.setText(server.getName());
-		serverUrl.setText(server.getUrlString());
-		username.setText(server.getUserName());
-		chkPasswordRemember.setSelected(server.getShouldPasswordBeStored());
-		password.setText(server.transientGetPasswordString());
-		cbEnabled.setSelected(server.getEnabled());
+        serverName.setText(server.getName());
+		serverUrl.setText(server.getUrl());
+		username.setText(server.getUsername());
+		chkPasswordRemember.setSelected(server.isPasswordStored());
+		password.setText(server.getPassword());
+		cbEnabled.setSelected(server.isEnabled());
 	}
 
-	public Server getData() {
+	public void saveData() {
 		adjustUrl();
-
-		Server server = new ServerBean(originalServer);
-		server.setName(serverName.getText());
-		server.setUrlString(serverUrl.getText());
-		server.setUserName(username.getText());
-		server.transientSetPasswordString(String.valueOf(password.getPassword()), chkPasswordRemember.isSelected());
-		server.setEnabled(cbEnabled.isSelected());
-		return server;
+        if (serverCfg == null) {
+            return;
+        }
+        serverCfg.setName(serverName.getText());
+		serverCfg.setUrl(serverUrl.getText());
+		serverCfg.setUsername(username.getText());
+		serverCfg.setPassword(String.valueOf(password.getPassword()));
+        serverCfg.setPasswordStored(chkPasswordRemember.isSelected());
+		serverCfg.setEnabled(cbEnabled.isSelected());
 	}
 
 	public boolean isModified() {
 		boolean isModified = false;
 
-		if (originalServer != null) {
-			if (chkPasswordRemember.isSelected() != originalServer.getShouldPasswordBeStored()) {
+		if (serverCfg != null) {
+			if (chkPasswordRemember.isSelected() != serverCfg.isPasswordStored()) {
 				return true;
 			}
-			if (serverName.getText() != null
-					? !serverName.getText().equals(originalServer.getName()) : originalServer.getName() != null) {
+            if (MiscUtil.isModified(serverName.getText(), serverCfg.getName())) {
+                return true;
+            }
+
+			if (cbEnabled.isSelected() != serverCfg.isEnabled()) {
 				return true;
 			}
-			if (cbEnabled.isSelected() != originalServer.getEnabled()) {
-				return true;
-			}
-			if (serverUrl.getText() != null
-					? !serverUrl.getText().equals(originalServer.getUrlString()) : originalServer.getUrlString() != null) {
-				return true;
-			}
-			if (username.getText() != null
-					? !username.getText().equals(originalServer.getUserName()) : originalServer.getUserName() != null) {
-				return true;
-			}
+            if (MiscUtil.isModified(serverUrl.getText(), serverCfg.getUrl())) {
+                return true;
+            }
+            if (MiscUtil.isModified(username.getText(), serverCfg.getUsername())) {
+                return true;
+            }
 			String pass = String.valueOf(password.getPassword());
-			if (!pass.equals(originalServer.transientGetPasswordString())) {
+			if (!pass.equals(serverCfg.getPassword())) {
 				return true;
 			}
 
@@ -118,13 +122,10 @@ public class GenericServerConfigForm extends JComponent implements ServerPanel, 
 	}
 
 
-	public JComponent getRootComponent() {
+    public JComponent getRootComponent() {
 		return rootComponent;
 	}
 
-	public void setVisible(boolean visible) {
-		rootComponent.setVisible(visible);
-	}
 
 	private void createUIComponents() {
 	}

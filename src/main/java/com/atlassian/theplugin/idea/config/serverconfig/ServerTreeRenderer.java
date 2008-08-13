@@ -16,10 +16,8 @@
 
 package com.atlassian.theplugin.idea.config.serverconfig;
 
-import com.atlassian.theplugin.idea.config.serverconfig.model.BambooServerNode;
-import com.atlassian.theplugin.idea.config.serverconfig.model.CrucibleServerNode;
+import com.atlassian.theplugin.idea.config.serverconfig.model.ServerNode;
 import com.atlassian.theplugin.idea.config.serverconfig.model.ServerTypeNode;
-import com.atlassian.theplugin.idea.config.serverconfig.model.JIRAServerNode;
 import com.intellij.openapi.util.IconLoader;
 
 import javax.swing.*;
@@ -49,12 +47,15 @@ public class ServerTreeRenderer extends DefaultTreeCellRenderer {
 		jiraServerDisabledIcon = IconLoader.getIcon("/icons/jira-grey-16.png");
 	}
 
-	public Component getTreeCellRendererComponent(
+	@Override
+    public Component getTreeCellRendererComponent(
             JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
 		JLabel label = (JLabel) super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
 
-		if (value instanceof ServerTypeNode) {
-			switch (((ServerTypeNode) value).getServerType()) {
+        if (value instanceof ServerTypeNode) {
+            final ServerTypeNode serverTypeNode = (ServerTypeNode) value;
+
+            switch (serverTypeNode.getServerType()) {
 				case BAMBOO_SERVER:
                     label.setIcon(bambooServersIcon);
 					break;
@@ -67,32 +68,40 @@ public class ServerTreeRenderer extends DefaultTreeCellRenderer {
                 default:
                     break;
             }
-		}
+        }
 
-		if (value instanceof BambooServerNode) {
-			if (((BambooServerNode) value).getServer().getEnabled()) {
-				label.setIcon(bambooServerEnabledIcon);
-			} else {
-				label.setIcon(bambooServerDisabledIcon);
+        if (value instanceof ServerNode) {
+            final ServerNode serverNode = (ServerNode) value;
+
+			// CHECKSTYLE:OFF
+            switch (serverNode.getServerType()) {
+                case BAMBOO_SERVER:
+                    if (serverNode.getServer().isEnabled()) {
+                        label.setIcon(bambooServerEnabledIcon);
+                    } else {
+                        label.setIcon(bambooServerDisabledIcon);
+                    }
+                    break;
+                case CRUCIBLE_SERVER:
+                    if (serverNode.getServer().isEnabled()) {
+                        label.setIcon(crucibleServerEnabledIcon);
+                    } else {
+                        label.setIcon(crucibleServerDisabledIcon);
+                    }
+                    break;
+                case JIRA_SERVER:
+                    if (serverNode.getServer().isEnabled()) {
+                        label.setIcon(jiraServerEnabledIcon);
+                    } else {
+                        label.setIcon(jiraServerDisabledIcon);
+                    }
+                    break;
+				default:
+					assert false;
 			}
-		}
-		if (value instanceof JIRAServerNode) {
-			if (((JIRAServerNode) value).getServer().getEnabled()) {
-				label.setIcon(jiraServerEnabledIcon);
-			} else {
-				label.setIcon(jiraServerDisabledIcon);
-			}
-		}
-
-		if (value instanceof CrucibleServerNode) {
-			if (((CrucibleServerNode) value).getServer().getEnabled()) {
-				label.setIcon(crucibleServerEnabledIcon);
-			} else {
-				label.setIcon(crucibleServerDisabledIcon);
-			}
-		}
+        }
 
 
-		return label;
+        return label;
 	}
 }

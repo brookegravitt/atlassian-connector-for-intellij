@@ -23,7 +23,7 @@ import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.api.JIRAAction;
 import com.atlassian.theplugin.jira.api.JIRAActionField;
 import com.atlassian.theplugin.jira.api.JIRAException;
-import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -46,13 +46,13 @@ public class RunJIRAActionAction extends AnAction {
 		this.facade = facade;
 	}
 
+	@Override
 	public void actionPerformed(AnActionEvent event) {
 		runIssueActionOrLaunchBrowser();
 	}
 
 	public void runIssueActionOrLaunchBrowser() {
-		new Thread(new IssueActionOrLaunchBrowserRunnable())
-		.start();
+		new Thread(new IssueActionOrLaunchBrowserRunnable()).start();
 	}
 
 	public void launchBrowser() {
@@ -73,10 +73,8 @@ public class RunJIRAActionAction extends AnAction {
 								+ "\" in issue "
 								+ adapter.getKey()
 								+ "...");
-				Server server = IdeaHelper.getCurrentJIRAServer().getServer();
-				List<JIRAActionField> fields =
-						facade.getFieldsForAction(
-								server, adapter.getIssue(), action);
+				JiraServerCfg server = IdeaHelper.getCurrentJIRAServer().getServer();
+				List<JIRAActionField> fields = facade.getFieldsForAction(server, adapter.getIssue(), action);
 				if (fields.isEmpty()) {
 					window.setStatusMessage(
 							"Running action \""
@@ -84,8 +82,7 @@ public class RunJIRAActionAction extends AnAction {
 									+ "\" on issue "
 									+ adapter.getKey()
 									+ "...");
-					facade.progressWorkflowAction(
-							server, adapter.getIssue(), action);
+					facade.progressWorkflowAction(server, adapter.getIssue(), action);
 					window.refreshIssuesPage();
 				} else {
 					window.setStatusMessage(

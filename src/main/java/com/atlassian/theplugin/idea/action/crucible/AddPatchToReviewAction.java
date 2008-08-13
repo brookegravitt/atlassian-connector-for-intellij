@@ -57,7 +57,7 @@ public class AddPatchToReviewAction extends AnAction {
                         event.getPresentation().setEnabled(false);
                     } else {
                         ReviewData rd = IdeaHelper.getCrucibleToolWindowPanel(event).getSelectedReview();
-                        event.getPresentation().setEnabled(rd.getCreator().getUserName().equals(rd.getServer().getUserName()));
+                        event.getPresentation().setEnabled(rd.getCreator().getUserName().equals(rd.getServer().getUsername()));
                     }
                 }
             } else {

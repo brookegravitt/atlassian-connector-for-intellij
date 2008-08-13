@@ -225,12 +225,12 @@ public class JIRAIssueFilterPanel extends JPanel {
 				reporterComboBox.removeAllItems();
 				reporterComboBox.addItem(new JIRAReporterBean(JIRAServer.ANY_ID, "Any User", null));
 //reporterComboBox.addItem(new JIRAReporterBean((long) -1, "No reporter", "issue_no_reporter"));
-				reporterComboBox.addItem(new JIRAReporterBean((long) -1, "Current User", jiraServer.getServer().getUserName()));
+				reporterComboBox.addItem(new JIRAReporterBean((long) -1, "Current User", jiraServer.getServer().getUsername()));
 
 				assigneeComboBox.removeAllItems();
 				assigneeComboBox.addItem(new JIRAAssigneeBean(JIRAServer.ANY_ID, "Any User", ""));
 				assigneeComboBox.addItem(new JIRAAssigneeBean((long) -1, "Unassigned", "unassigned"));
-				assigneeComboBox.addItem(new JIRAAssigneeBean((long) -1, "Current User", jiraServer.getServer().getUserName()));
+				assigneeComboBox.addItem(new JIRAAssigneeBean((long) -1, "Current User", jiraServer.getServer().getUsername()));
 
 
 				setListValues(projectList, advancedQuery);

@@ -31,7 +31,7 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 import com.atlassian.theplugin.commons.crucible.api.model.User;
@@ -127,7 +127,7 @@ public class CrucibleSetReviewersForm extends DialogWrapper {
 		reviewersList.setSelectedIndices(newIdx);
 	}
 
-	private void fillServerRelatedCombos(final Server server) {
+	private void fillServerRelatedCombos(final CrucibleServerCfg server) {
 		model.removeAllElements();
 		getOKAction().setEnabled(false);
 
@@ -156,13 +156,13 @@ public class CrucibleSetReviewersForm extends DialogWrapper {
 	}
 
 	private void updateServerRelatedData(
-			Server server,
+			CrucibleServerCfg server,
 			List<User> users,
 			List<Reviewer> reviewers) {
 		actualReviewers = reviewers;
 		if (!users.isEmpty()) {
 			for (User user : users) {
-				if (!user.getUserName().equals(server.getUserName())
+				if (!user.getUserName().equals(server.getUsername())
 						&& !user.getUserName().equals(reviewData.getAuthor().getUserName())
 						&& !user.getUserName().equals(reviewData.getModerator().getUserName())) {
 					boolean rev = false;
@@ -234,10 +234,10 @@ public class CrucibleSetReviewersForm extends DialogWrapper {
 			}
 		} catch (RemoteApiException e) {
 			Messages.showErrorDialog(project, e.getMessage() +
-					"Error creating review: " + reviewData.getServer().getUrlString(), "");
+					"Error creating review: " + reviewData.getServer().getUrl(), "");
 		} catch (ServerPasswordNotProvidedException e) {
 			Messages.showErrorDialog(project, e.getMessage() +
-					"Error creating review: " + reviewData.getServer().getUrlString(), "");
+					"Error creating review: " + reviewData.getServer().getUrl(), "");
 		}
 
 

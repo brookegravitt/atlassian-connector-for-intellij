@@ -23,8 +23,11 @@ import java.util.Map;
 
 public class JiraProjectConfiguration {
 	private ProjectToolWindowTableConfiguration tableConfiguration = new ProjectToolWindowTableConfiguration();
-	private long selectedServerId = 0;
-	private Map<Long, JiraFiltersBean> query = new HashMap<Long, JiraFiltersBean>();
+	private String selectedServerId = null;
+	/**
+	 * ServerId UUID to filter mapping
+	 */
+	private Map<String, JiraFiltersBean> query = new HashMap<String, JiraFiltersBean>();
 
 	public JiraProjectConfiguration() {
 	}
@@ -40,37 +43,29 @@ public class JiraProjectConfiguration {
 	public void copyConfiguration(JiraProjectConfiguration jiraConfiguration) {
 		tableConfiguration.copyConfiguration(jiraConfiguration.getTableConfiguration());
 		setSelectedServerId(jiraConfiguration.getSelectedServerId());
-		setQuery(jiraConfiguration.getQuery());
+		this.query = jiraConfiguration.query;
 	}
 
-	public long getSelectedServerId() {
+	public String getSelectedServerId() {
 		return selectedServerId;
 	}
 
-	public void setSelectedServerId(long selectedServerId) {
+	public void setSelectedServerId(String selectedServerId) {
 		this.selectedServerId = selectedServerId;
 	}
 
-	public Map<Long, JiraFiltersBean> getQuery() {
+	public Map<String, JiraFiltersBean> getQuery() {
 		return query;
 	}
 
-	public void setQuery(Map<Long, JiraFiltersBean> query) {
-		this.query = query;
+
+	@Transient
+	public JiraFiltersBean getJiraFilters(String id) {
+		return query.get(id);
 	}
 
 	@Transient
-	public JiraFiltersBean getJiraFilters(long serverId) {
-		Long id = Long.valueOf(serverId);
-		if (query.containsKey(id)) {
-			return query.get(id);
-		} else {
-			return null;
-		}
-	}
-
-	@Transient
-	public void setFiltersBean(long serverId, JiraFiltersBean filters) {
-		query.put(Long.valueOf(serverId), filters);		
+	public void setFiltersBean(String serverId, JiraFiltersBean filters) {
+		query.put(serverId, filters);
 	}
 }

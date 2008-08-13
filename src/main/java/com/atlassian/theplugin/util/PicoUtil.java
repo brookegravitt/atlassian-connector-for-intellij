@@ -20,7 +20,6 @@ import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaActionScheduler;
 import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
-import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import org.picocontainer.MutablePicoContainer;
@@ -35,7 +34,8 @@ public final class PicoUtil {
 			IdeaActionScheduler.class,
 			PluginConfigurationBean.class,
 //			BambooStatusChecker.class,
-			CrucibleStatusChecker.class,
+//			CrucibleStatusChecker.class,
+//			CfgManagerImpl.class,
 //			NewVersionChecker.class,
 //			ConfigPanel.class,
 //			ServerConfigPanel.class,

@@ -16,29 +16,36 @@
 
 package com.atlassian.theplugin.idea.action.jira;
 
-import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.Server;
-import com.atlassian.theplugin.commons.configuration.ProductServerConfiguration;
+import com.atlassian.theplugin.commons.cfg.CfgManagerSingleton;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.ThePluginApplicationComponent;
+import com.atlassian.theplugin.cfg.CfgUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction;
+import com.intellij.openapi.project.Project;
+import com.intellij.ide.DataManager;
 
 import javax.swing.*;
+import java.util.Collection;
 
 public class SelectJIRAAction extends ComboBoxAction {
 
+	@Override
 	protected DefaultActionGroup createPopupActionGroup(JComponent jComponent) {
-		ThePluginApplicationComponent appComponent = IdeaHelper.getAppComponent();
+
+		final Project project = (Project) DataKeys.PROJECT.getData(DataManager.getInstance().getDataContext(jComponent));
 
 		final DefaultActionGroup g = new DefaultActionGroup();
 
-		ProductServerConfiguration jConfig = appComponent.getState().getProductServers(ServerType.JIRA_SERVER);
+
+		Collection<JiraServerCfg> servers = CfgManagerSingleton.getCfgManager().getAllEnabledJiraServers(
+				CfgUtil.getProjectId(project));
 
 		final ComboBoxButton button = (ComboBoxButton) jComponent;
-		for (final Server server : jConfig.transientgetEnabledServers()) {
+		for (final JiraServerCfg server : servers) {
 			g.add(new AnAction(server.getName()) {
 				public void actionPerformed(AnActionEvent event) {
 					button.setText(event.getPresentation().getText());
@@ -49,6 +56,7 @@ public class SelectJIRAAction extends ComboBoxAction {
 		return g;
 	}
 
+	@Override
 	public void update(AnActionEvent event) {
 		super.update(event);
 		if (IdeaHelper.getCurrentJIRAServer() != null) {

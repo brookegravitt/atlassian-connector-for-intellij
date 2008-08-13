@@ -16,8 +16,8 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.VirtualFileSystem;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 
@@ -26,10 +26,10 @@ import java.util.List;
 
 public class ReviewDataImpl implements ReviewData {
     private Review review;
-    private Server server;
+    private CrucibleServerCfg server;
     private static final int HASHCODE_MAGIC = 31;
 
-    public ReviewDataImpl(Review review, Server server) {
+    public ReviewDataImpl(Review review, CrucibleServerCfg server) {
         this.review = review;
         this.server = server;
     }
@@ -122,12 +122,12 @@ public class ReviewDataImpl implements ReviewData {
         return review.getVirtualFileSystem();
     }
 
-    public Server getServer() {
+    public CrucibleServerCfg getServer() {
         return server;
     }
 
     public String getReviewUrl() {
-		String baseUrl = server.getUrlString();
+		String baseUrl = server.getUrl();
 		while (baseUrl.length() > 0 && baseUrl.charAt(baseUrl.length() - 1) == '/') {
 			// quite ineffective, I know ...
 			baseUrl = baseUrl.substring(0, baseUrl.length() - 1);

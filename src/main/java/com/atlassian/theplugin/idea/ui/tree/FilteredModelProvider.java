@@ -46,13 +46,15 @@ public abstract class FilteredModelProvider<E extends Enum<E>> extends ModelProv
 		return type;
 	}
 
-	protected abstract Filter getFilter(E type);
+	protected abstract Filter getFilter(E aType);
 
+	@Override
 	public AtlassianTreeModel getModel(final AtlassianTreeWithToolbar.STATE state) {
 		return provider.getModel(state).getFilteredModel(getFilter(type));
 	}
 
 	private static final Filter FILES_WITH_COMMENTS_ONLY = new Filter() {
+		@Override
 		public boolean isValid(final AtlassianTreeNode node) {
 			if (node instanceof CrucibleFileNode) {
 				CrucibleFileNode anode = (CrucibleFileNode) node;

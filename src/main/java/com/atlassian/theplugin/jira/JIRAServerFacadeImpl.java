@@ -16,8 +16,8 @@
 
 package com.atlassian.theplugin.jira;
 
-import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import com.atlassian.theplugin.jira.api.*;
@@ -46,18 +46,18 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 	private Map<String, JIRASession> soapSessions = new WeakHashMap<String, JIRASession>();
 	private static JIRAServerFacadeImpl instance;
 
-	private String getSoapSessionKey(Server server) {
-		return server.getUserName() + server.getUrlString() + server.transientGetPasswordString();
+	private String getSoapSessionKey(JiraServerCfg server) {
+		return server.getUsername() + server.getUrl() + server.getPassword();
 	}
 
-	private synchronized JIRASession getSoapSession(Server server) throws RemoteApiException {
+	private synchronized JIRASession getSoapSession(JiraServerCfg server) throws RemoteApiException {
 		String key = getSoapSessionKey(server);
 
 		JIRASession session = soapSessions.get(key);
 		if (session == null) {
 			try {
-				session = new JIRASessionImpl(server.getUrlString());
-				session.login(server.getUserName(), server.transientGetPasswordString());
+				session = new JIRASessionImpl(server.getUrl());
+				session.login(server.getUsername(), server.getPassword());
 			} catch (MalformedURLException e) {
 				throw new RemoteApiException(e);
 			} catch (ServiceException e) {
@@ -68,12 +68,12 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		return session;
 	}
 
-	private synchronized JIRARssClient getRssSession(Server server) throws RemoteApiException {
+	private synchronized JIRARssClient getRssSession(JiraServerCfg server) throws RemoteApiException {
 		// @todo old server will stay on map - remove them !!!
-		String key = server.getUserName() + server.getUrlString() + server.transientGetPasswordString();
+		String key = server.getUsername() + server.getUrl() + server.getPassword();
 		JIRARssClient session = rssSessions.get(key);
 		if (session == null) {
-			session = new JIRARssClient(server.getUrlString(), server.getUserName(), server.transientGetPasswordString());
+			session = new JIRARssClient(server.getUrl(), server.getUsername(), server.getPassword());
 			rssSessions.put(key, session);
 		}
 		return session;
@@ -95,7 +95,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		return ServerType.JIRA_SERVER;
 	}
 
-	public List<JIRAIssue> getIssues(Server server,
+	public List<JIRAIssue> getIssues(JiraServerCfg server,
 						  List<JIRAQueryFragment> query,
 						  String sort,
 						  String sortOrder,
@@ -110,7 +110,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		return rss.getIssues(query, sort, sortOrder, start, size);
     }
 
-	public List<JIRAIssue> getSavedFilterIssues(Server server,
+	public List<JIRAIssue> getSavedFilterIssues(JiraServerCfg server,
 									 List<JIRAQueryFragment> query,
 									 String sort,
 									 String sortOrder,
@@ -129,7 +129,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public List<JIRAProject> getProjects(Server server) throws JIRAException {
+	public List<JIRAProject> getProjects(JiraServerCfg server) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			return soap.getProjects();
@@ -139,7 +139,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
     }
 
-    public List<JIRAConstant> getIssueTypes(Server server) throws JIRAException {
+    public List<JIRAConstant> getIssueTypes(JiraServerCfg server) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			return soap.getIssueTypes();
@@ -149,7 +149,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
     }
 
-	public List<JIRAConstant> getIssueTypesForProject(Server server, String project) throws JIRAException {
+	public List<JIRAConstant> getIssueTypesForProject(JiraServerCfg server, String project) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			return soap.getIssueTypesForProject(project);
@@ -159,7 +159,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-    public List<JIRAConstant> getStatuses(Server server) throws JIRAException {
+    public List<JIRAConstant> getStatuses(JiraServerCfg server) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			return soap.getStatuses();
@@ -169,7 +169,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
     }
 
-	public void addComment(Server server, JIRAIssue issue, String comment) throws JIRAException {
+	public void addComment(JiraServerCfg server, JIRAIssue issue, String comment) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			soap.addComment(issue, comment);
@@ -179,7 +179,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
     }
 
-    public JIRAIssue createIssue(Server server, JIRAIssue issue) throws JIRAException {
+    public JIRAIssue createIssue(JiraServerCfg server, JIRAIssue issue) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			return soap.createIssue(issue);
@@ -189,7 +189,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
     }
 
-	public void logWork(Server server, JIRAIssue issue, String timeSpent, Calendar startDate,
+	public void logWork(JiraServerCfg server, JIRAIssue issue, String timeSpent, Calendar startDate,
 						String comment, boolean updateEstimate, String newEstimate)
             throws JIRAException {
 		try {
@@ -201,7 +201,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public List<JIRAComponentBean> getComponents(Server server, String projectKey) throws JIRAException {
+	public List<JIRAComponentBean> getComponents(JiraServerCfg server, String projectKey) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			return soap.getComponents(projectKey);
@@ -211,7 +211,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
     }
 
-    public List<JIRAVersionBean> getVersions(Server server, String projectKey) throws JIRAException {
+    public List<JIRAVersionBean> getVersions(JiraServerCfg server, String projectKey) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			return soap.getVersions(projectKey);
@@ -221,7 +221,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public List<JIRAConstant> getPriorities(Server server) throws JIRAException {
+	public List<JIRAConstant> getPriorities(JiraServerCfg server) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			return soap.getPriorities();
@@ -231,7 +231,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public List<JIRAResolutionBean> getResolutions(Server server) throws JIRAException {
+	public List<JIRAResolutionBean> getResolutions(JiraServerCfg server) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			return soap.getResolutions();
@@ -241,7 +241,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public List<JIRAQueryFragment> getSavedFilters(Server server) throws JIRAException {
+	public List<JIRAQueryFragment> getSavedFilters(JiraServerCfg server) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			return soap.getSavedFilters();
@@ -251,7 +251,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-    public List<JIRAAction> getAvailableActions(Server server, JIRAIssue issue) throws JIRAException {
+    public List<JIRAAction> getAvailableActions(JiraServerCfg server, JIRAIssue issue) throws JIRAException {
         try {
             JIRASession soap = getSoapSession(server);
             return soap.getAvailableActions(issue);
@@ -261,7 +261,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
         }
     }
 
-	public List<JIRAActionField> getFieldsForAction(Server server, JIRAIssue issue, JIRAAction action)
+	public List<JIRAActionField> getFieldsForAction(JiraServerCfg server, JIRAIssue issue, JIRAAction action)
 			throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
@@ -272,7 +272,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public void setAssignee(Server server, JIRAIssue issue, String assignee) throws JIRAException {
+	public void setAssignee(JiraServerCfg server, JIRAIssue issue, String assignee) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			soap.setAssignee(issue, assignee);
@@ -282,7 +282,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public List<JIRAComment> getComments(Server server, JIRAIssue issue) throws JIRAException {
+	public List<JIRAComment> getComments(JiraServerCfg server, JIRAIssue issue) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			return soap.getComments(issue);
@@ -292,7 +292,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public void progressWorkflowAction(Server server, JIRAIssue issue, JIRAAction action) throws JIRAException {
+	public void progressWorkflowAction(JiraServerCfg server, JIRAIssue issue, JIRAAction action) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			soap.progressWorkflowAction(issue, action);
@@ -302,7 +302,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public JIRAIssue getIssueDetails(Server server, JIRAIssue issue) throws JIRAException {
+	public JIRAIssue getIssueDetails(JiraServerCfg server, JIRAIssue issue) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			return soap.getIssueDetails(issue);

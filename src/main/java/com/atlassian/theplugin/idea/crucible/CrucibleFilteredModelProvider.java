@@ -22,13 +22,6 @@ import com.intellij.util.Icons;
 
 import javax.swing.*;
 
-/**
- * Created by IntelliJ IDEA.
- * User: lguminski
- * Date: Aug 8, 2008
- * Time: 12:15:25 PM
- * To change this template use File | Settings | File Templates.
- */
 public abstract class CrucibleFilteredModelProvider extends FilteredModelProvider<CrucibleFilteredModelProvider.FILTER> {
 	protected CrucibleFilteredModelProvider(ModelProvider provider, final FILTER initialFiltering) {
 		super(provider, initialFiltering);
@@ -45,8 +38,7 @@ public abstract class CrucibleFilteredModelProvider extends FilteredModelProvide
 			@Override
 			public FILTER getNextState() {
 				return FILES_WITH_COMMENTS_ONLY;
-			}},
-		;
+			}};
 		private Icon icon;
 		private String string;
 

@@ -18,7 +18,6 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
-import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.JiraConfigurationBean;
 import com.atlassian.theplugin.idea.config.ContentPanel;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -41,14 +40,14 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
 	private JSpinner pollTimeSpinner;
 	private JCheckBox cbIconDescription;
 
-	private transient PluginConfigurationBean globalPluginConfiguration;
+	private transient PluginConfiguration globalPluginConfiguration;
 
 	private transient JiraConfigurationBean jiraConfiguration;
 
 	private transient PluginConfiguration localPluginConfigurationCopy;
 	private static JiraGeneralForm instance;
 
-	private JiraGeneralForm(PluginConfigurationBean globalPluginConfiguration) {
+	private JiraGeneralForm(PluginConfiguration globalPluginConfiguration) {
 
 		this.globalPluginConfiguration = globalPluginConfiguration;
 
@@ -61,12 +60,12 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
 	}
 
 
-	public static JiraGeneralForm getInstance(PluginConfigurationBean globalPluginConfiguration) {
+	public static JiraGeneralForm getInstance(PluginConfiguration globalPluginConfiguration) {
 		if (instance == null) {
-			instance = new JiraGeneralForm(globalPluginConfiguration);
-		}
-		return instance;
-	}
+            instance = new JiraGeneralForm(globalPluginConfiguration);
+        }
+        return instance;
+    }
 
 	public boolean isModified() {
 		return (Integer) model.getValue() != jiraConfiguration.getPollTime() || cbIconDescription.isSelected() != jiraConfiguration.isDisplayIconDescription();
@@ -76,33 +75,18 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
 		return "JIRA";
 	}
 
-	public void getData() {
-
-		((JiraConfigurationBean) getLocalPluginConfigurationCopy()
-				.getProductServers(ServerType.JIRA_SERVER))
-				.setPollTime((Integer) model.getValue());
-
-
-		((JiraConfigurationBean) globalPluginConfiguration
-				.getProductServers(ServerType.JIRA_SERVER))
-				.setPollTime((Integer) model.getValue());
-
-		((JiraConfigurationBean) getLocalPluginConfigurationCopy()
-				.getProductServers(ServerType.JIRA_SERVER))
-				.setDisplayIconDescription(cbIconDescription.isSelected());
-
-		((JiraConfigurationBean) globalPluginConfiguration
-				.getProductServers(ServerType.JIRA_SERVER))
-				.setDisplayIconDescription(cbIconDescription.isSelected());
-
+	public void saveData() {
+		getLocalPluginConfigurationCopy().getJIRAConfigurationData().setPollTime((Integer) model.getValue());
+		globalPluginConfiguration.getJIRAConfigurationData().setPollTime((Integer) model.getValue());
+		getLocalPluginConfigurationCopy().getJIRAConfigurationData().setDisplayIconDescription(cbIconDescription.isSelected());
+		globalPluginConfiguration.getJIRAConfigurationData().setDisplayIconDescription(cbIconDescription.isSelected());
 	}
 
 	public void setData(PluginConfiguration config) {
 
 		localPluginConfigurationCopy = config;
 
-		jiraConfiguration =
-				(JiraConfigurationBean) localPluginConfigurationCopy.getProductServers(ServerType.JIRA_SERVER);
+		jiraConfiguration = localPluginConfigurationCopy.getJIRAConfigurationData();
 
 		model.setValue(jiraConfiguration.getPollTime());
 

@@ -31,17 +31,16 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.Server;
-import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.VirtualFileSystem;
-import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
-import com.atlassian.theplugin.commons.configuration.ProductServerConfiguration;
+import com.atlassian.theplugin.commons.cfg.CfgManagerSingleton;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.Action;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.cfg.CfgUtil;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
@@ -128,7 +127,8 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 			public void actionPerformed(ActionEvent e) {
 				if (crucibleServersComboBox.getItemCount() > 0 && crucibleServersComboBox.getSelectedItem() != null &&
 						crucibleServersComboBox.getSelectedItem() instanceof ServerComboBoxItem) {
-					fillServerRelatedCombos(((ServerComboBoxItem) crucibleServersComboBox.getSelectedItem()).getServer());
+					final ServerComboBoxItem boxItem = (ServerComboBoxItem) crucibleServersComboBox.getSelectedItem();
+					fillServerRelatedCombos(boxItem.getServer());
 				}
 			}
 		});
@@ -322,9 +322,9 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 	}
 
 	private static final class ServerComboBoxItem {
-		private final Server server;
+		private final CrucibleServerCfg server;
 
-		private ServerComboBoxItem(Server server) {
+		private ServerComboBoxItem(CrucibleServerCfg server) {
 			this.server = server;
 		}
 
@@ -332,7 +332,7 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 			return server.getName();
 		}
 
-		public Server getServer() {
+		public CrucibleServerCfg getServer() {
 			return server;
 		}
 	}
@@ -387,22 +387,21 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 
 
 	private void fillInCrucibleServers() {
-		ProductServerConfiguration crucibleConfiguration =
-				ConfigurationFactory.getConfiguration().getProductServers(ServerType.CRUCIBLE_SERVER);
+		final Collection<CrucibleServerCfg> enabledServers = CfgManagerSingleton.getCfgManager()
+				.getAllEnabledCrucibleServers(CfgUtil.getProjectId(project));
 
-		Collection<Server> enabledServers = crucibleConfiguration.transientgetEnabledServers();
 		if (enabledServers.isEmpty()) {
 			crucibleServersComboBox.setEnabled(false);
 			crucibleServersComboBox.addItem("Enable a Crucible server first!");
 			getOKAction().setEnabled(false);
 		} else {
-			for (Server server : enabledServers) {
+			for (CrucibleServerCfg server : enabledServers) {
 				crucibleServersComboBox.addItem(new ServerComboBoxItem(server));
 			}
 		}
 	}
 
-	private void fillServerRelatedCombos(final Server server) {
+	private void fillServerRelatedCombos(final CrucibleServerCfg server) {
 		projectsComboBox.removeAllItems();
 		repoComboBox.removeAllItems();
 		authorComboBox.removeAllItems();
@@ -438,7 +437,7 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 	}
 
 	private void updateServerRelatedCombos(
-			Server server,
+			CrucibleServerCfg server,
 			List<Project> projects,
 			List<Repository> repositories,
 			List<User> users) {
@@ -472,7 +471,7 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 			for (User user : users) {
 				authorComboBox.addItem(new UserComboBoxItem(user));
 				moderatorComboBox.addItem(new UserComboBoxItem(user));
-				if (!user.getUserName().equals(server.getUserName())) {
+				if (!user.getUserName().equals(server.getUsername())) {
 					model.addElement(new UserListItem(user, false));
 				} else {
 					indexToSelect = index + 1;
@@ -501,9 +500,9 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 	}
 
 	private class ReviewProvider implements Review {
-		private final Server server;
+		private final CrucibleServerCfg server;
 
-		public ReviewProvider(Server server) {
+		public ReviewProvider(CrucibleServerCfg server) {
 			this.server = server;
 		}
 
@@ -517,7 +516,7 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 
 		public User getCreator() {
 			UserBean user = new UserBean();
-			user.setUserName(server.getUserName());
+			user.setUserName(server.getUsername());
 			return user;
 		}
 
@@ -615,7 +614,7 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 		final ServerComboBoxItem selectedItem = (ServerComboBoxItem) crucibleServersComboBox.getSelectedItem();
 
 		if (selectedItem != null) {
-			final Server server = selectedItem.getServer();
+			final CrucibleServerCfg server = selectedItem.getServer();
 			Review review = new ReviewProvider(server);
 
 			try {
@@ -668,7 +667,7 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 				if (!leaveAsDraftCheckBox.isSelected()) {
 					try {
 						Review newReview = crucibleServerFacade.getReview(server, draftReview.getPermId());
-						if (newReview.getModerator().getUserName().equals(server.getUserName())) {
+						if (newReview.getModerator().getUserName().equals(server.getUsername())) {
 							if (newReview.getActions().contains(Action.APPROVE)) {
 								crucibleServerFacade.approveReview(server, draftReview.getPermId());
 							} else {
@@ -694,7 +693,7 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 					}
 				}
 				if (openBrowserToCompleteCheckBox.isSelected()) {
-					BrowserUtil.launchBrowser(server.getUrlString()
+					BrowserUtil.launchBrowser(server.getUrl()
 							+ "/cru/"
 							+ draftReview.getPermId().getId());
 				}
@@ -702,9 +701,9 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 				super.doOKAction();
 			} catch (RemoteApiException e) {
 				showMessageDialog(e.getMessage(),
-						"Error creating review: " + server.getUrlString(), Messages.getErrorIcon());
+						"Error creating review: " + server.getUrl(), Messages.getErrorIcon());
 			} catch (ServerPasswordNotProvidedException e) {
-				showMessageDialog(e.getMessage(), "Error creating review: " + server.getUrlString(), Messages.getErrorIcon());
+				showMessageDialog(e.getMessage(), "Error creating review: " + server.getUrl(), Messages.getErrorIcon());
 			}
 		}
 	}

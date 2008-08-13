@@ -29,7 +29,7 @@ public class CruciblePatchAddWorker implements Runnable {
             Project project, ChangeList[] changes) {
         PatchProducer patchProducer = new PatchProducer(project, changes[0].getChanges());
         String patch = patchProducer.generateUnifiedDiff();
-        helperForm = new CrucibleHelperForm(crucibleServerFacade, permId, patch);
+        helperForm = new CrucibleHelperForm(project, crucibleServerFacade, permId, patch);
     }
 
     public void run() {

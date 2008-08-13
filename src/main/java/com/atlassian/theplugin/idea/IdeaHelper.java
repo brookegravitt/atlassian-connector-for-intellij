@@ -148,6 +148,8 @@ public final class IdeaHelper {
 		}
 	}
 
+	
+
 	public static CrucibleTableToolWindowPanel getCrucibleToolWindowPanel(AnActionEvent e) {
 		Project p = getCurrentProject(e.getDataContext());
 		if (p == null) {

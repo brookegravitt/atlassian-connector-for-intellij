@@ -16,14 +16,19 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.Server;
-import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
-import com.atlassian.theplugin.commons.configuration.ProductServerConfiguration;
-import com.atlassian.theplugin.commons.configuration.ServerBean;
+import com.atlassian.theplugin.cfg.CfgUtil;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
+import com.atlassian.theplugin.commons.crucible.api.model.Project;
+import com.atlassian.theplugin.commons.crucible.api.model.ProjectBean;
+import com.atlassian.theplugin.commons.crucible.api.model.State;
+import com.atlassian.theplugin.commons.crucible.api.model.User;
+import com.atlassian.theplugin.commons.crucible.api.model.UserBean;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -62,9 +67,13 @@ public class CrucibleCustomFilterPanel extends JPanel {
 
     private ProjectBean anyProject;
     private UserBean anyUser;
+	private final com.intellij.openapi.project.Project project;
+	private final CfgManager cfgManager;
 
-    CrucibleCustomFilterPanel() {
-        $$$setupUI$$$();
+	CrucibleCustomFilterPanel(final com.intellij.openapi.project.Project project, final CfgManager cfgManager) {
+		this.project = project;
+		this.cfgManager = cfgManager;
+		$$$setupUI$$$();
 
         anyProject = new ProjectBean();
         anyProject.setName("Any");
@@ -89,16 +98,14 @@ public class CrucibleCustomFilterPanel extends JPanel {
     }
 
     public void setFilter(CustomFilterBean filter) {
-        ServerBean server = null;
+        ServerCfg server = null;
 
         if (filter == null) {
             this.filter = new CustomFilterBean();
         } else {
             this.filter = filter;
-            server = new ServerBean();
-            server.setUid(filter.getServerUid());
-            server = (ServerBean) ConfigurationFactory.getConfiguration().getProductServers(ServerType.CRUCIBLE_SERVER)
-                    .transientGetServer(server);
+			final ServerId serverId = new ServerId(filter.getServerUid());
+			server = cfgManager.getServer(CfgUtil.getProjectId(project), serverId);
             filterTitle.setText((filter.getTitle()));
         }
 
@@ -110,8 +117,8 @@ public class CrucibleCustomFilterPanel extends JPanel {
         fillServerRelatedCombos(getSelectedServer());
     }
 
-    private Server getSelectedServer() {
-        Server server = null;
+    private CrucibleServerCfg getSelectedServer() {
+        CrucibleServerCfg server = null;
 
         if (serverComboBox.getItemCount() > 0 &&
                 serverComboBox.getSelectedItem() != null &&
@@ -123,8 +130,8 @@ public class CrucibleCustomFilterPanel extends JPanel {
     }
 
     public CustomFilterBean getFilter() {
-        Server s = ((ServerComboBoxItem) this.serverComboBox.getSelectedItem()).getServer();
-        filter.setServerUid(s.getUid());
+        CrucibleServerCfg s = ((ServerComboBoxItem) this.serverComboBox.getSelectedItem()).getServer();
+        filter.setServerUid(s.getServerId().getUuid().toString());
 
         filter.setTitle(filterTitle.getText());
         if (!((ProjectComboBoxItem) projectComboBox.getSelectedItem()).getProject().getName().equals(anyProject.getName())) {
@@ -175,25 +182,19 @@ public class CrucibleCustomFilterPanel extends JPanel {
         return filter;
     }
 
-    private void fillServerRelatedCombos(final Server server) {
-        ServerBean serverBean = (ServerBean) server;
+    private void fillServerRelatedCombos(final CrucibleServerCfg server) {
+        final CrucibleServerCfg crucibleServerCfg = (server != null) ? server : getSelectedServer();
 
-        if (server == null) {
-            serverBean = (ServerBean) getSelectedServer();
-        }
-
-        if (serverBean != null) {
+        if (crucibleServerCfg != null) {
             projectComboBox.setEnabled(false);
-
-            final ServerBean finalServerBean = serverBean;
 
             new Thread(new Runnable() {
                 public void run() {
                     List<Project> projects = new ArrayList<Project>();
                     List<User> users = new ArrayList<User>();
                     try {
-                        projects = crucibleServerFacade.getProjects(finalServerBean);
-                        users = crucibleServerFacade.getUsers(finalServerBean);
+                        projects = crucibleServerFacade.getProjects(crucibleServerCfg);
+                        users = crucibleServerFacade.getUsers(crucibleServerCfg);
                     } catch (RemoteApiException e) {
                         // nothing can be done here
                     } catch (ServerPasswordNotProvidedException e) {
@@ -315,10 +316,8 @@ public class CrucibleCustomFilterPanel extends JPanel {
     }
 
     private void fillInCrucibleServers() {
-        ProductServerConfiguration crucibleConfiguration =
-                ConfigurationFactory.getConfiguration().getProductServers(ServerType.CRUCIBLE_SERVER);
-
-        Collection<Server> enabledServers = crucibleConfiguration.transientgetEnabledServers();
+		final Collection<CrucibleServerCfg> enabledServers = cfgManager.getAllEnabledCrucibleServers(
+				CfgUtil.getProjectId(project));
 
         serverComboBox.removeAllItems();
         if (enabledServers.isEmpty()) {
@@ -326,7 +325,7 @@ public class CrucibleCustomFilterPanel extends JPanel {
             serverComboBox.addItem("Enable a Crucible server first!");
             //@todo disable apply filter button in toolbar
         } else {
-            for (Server server : enabledServers) {
+            for (CrucibleServerCfg server : enabledServers) {
                 serverComboBox.addItem(new ServerComboBoxItem(server));
             }
         }
@@ -439,9 +438,9 @@ public class CrucibleCustomFilterPanel extends JPanel {
 
 
     private static final class ServerComboBoxItem {
-        private final Server server;
+        private final CrucibleServerCfg server;
 
-        private ServerComboBoxItem(Server server) {
+        private ServerComboBoxItem(CrucibleServerCfg server) {
             this.server = server;
         }
 
@@ -449,7 +448,7 @@ public class CrucibleCustomFilterPanel extends JPanel {
             return server.getName();
         }
 
-        public Server getServer() {
+        public CrucibleServerCfg getServer() {
             return server;
         }
     }
