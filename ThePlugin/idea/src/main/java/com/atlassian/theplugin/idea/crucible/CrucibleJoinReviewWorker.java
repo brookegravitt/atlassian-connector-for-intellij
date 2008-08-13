@@ -35,7 +35,7 @@ public class CrucibleJoinReviewWorker implements Runnable {
 	public void run() {
 		CrucibleServerFacade facade = CrucibleServerFacadeImpl.getInstance();
 		Set<String> reviewers = new HashSet<String>();
-		reviewers.add(reviewInfo.getServer().getUserName());
+		reviewers.add(reviewInfo.getServer().getUsername());
 		try {
 			facade.addReviewers(reviewInfo.getServer(), reviewInfo.getPermId(), reviewers);
 		} catch (RemoteApiException e) {

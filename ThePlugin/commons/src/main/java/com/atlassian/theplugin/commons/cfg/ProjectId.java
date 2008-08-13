@@ -1,56 +1,50 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.atlassian.theplugin.commons.cfg;
 
-package com.atlassian.theplugin.commons.configuration;
+public class ProjectId {
 
-import com.atlassian.theplugin.commons.SubscribedPlan;
+	private final String internal;
 
-public class SubscribedPlanBean implements SubscribedPlan {
-	private String planId;
-
-	public SubscribedPlanBean() {
+	public ProjectId(final String string) {
+		if (string == null) {
+			throw new NullPointerException();
+		}
+		internal = string;
 	}
 
-	public SubscribedPlanBean(SubscribedPlan cfg) {
-		this.setPlanId(cfg.getPlanId());
+	public ProjectId() {
+		internal = null;
 	}
 
-    public SubscribedPlanBean(String planId) {
-        this.planId = planId;
-    }
-
-    public String getPlanId() {
-		return planId;
-	}
-
-	public void setPlanId(String planId) {
-		this.planId = planId;
-	}
-
-	public boolean equals(Object o) {
+	public boolean equals(final Object o) {
 		if (this == o) {
 			return true;
 		}
-		if (o == null || getClass() != o.getClass()) {
+		if (!(o instanceof ProjectId)) {
 			return false;
 		}
 
-		SubscribedPlanBean that = (SubscribedPlanBean) o;
+		if (internal == null) {
+			return this == o;
+		}
 
-		if (!planId.equals(that.planId)) {
+		final ProjectId projectId = (ProjectId) o;
+
+		if (!internal.equals(projectId.internal)) {
 			return false;
 		}
 
@@ -58,6 +52,9 @@ public class SubscribedPlanBean implements SubscribedPlan {
 	}
 
 	public int hashCode() {
-		return planId.hashCode();
+		if (internal == null) {
+			return super.hashCode();
+		}
+		return internal.hashCode();
 	}
 }

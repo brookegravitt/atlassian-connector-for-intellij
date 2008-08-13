@@ -16,22 +16,25 @@
 
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.theplugin.cfg.CfgUtil;
+import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.WindowManager;
-import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
-import com.atlassian.theplugin.commons.ServerType;
 
 import javax.swing.*;
 
 public abstract class StatusBarPluginIcon extends JLabel {
 	private StatusBar statusBar = null;
 	private Project project;
+	private final CfgManager cfgManager;
 
 	private boolean isIconShown = false;
 
-	public StatusBarPluginIcon(Project aProject) {
+	public StatusBarPluginIcon(Project aProject, CfgManager cfgManager) {
 		this.project = aProject;
+		this.cfgManager = cfgManager;
 	}
 
 	public void hideIcon() {
@@ -63,7 +66,7 @@ public abstract class StatusBarPluginIcon extends JLabel {
 	 * @param serverType type of Icon to show/hide
 	 */
 	protected void showOrHideIcon(ServerType serverType) {
-		if (ConfigurationFactory.getConfiguration().getProductServers(serverType).transientGetServers().size() > 0) {
+		if (cfgManager.getAllEnabledServers(CfgUtil.getProjectId(project), serverType).isEmpty() == false) {
 			showIcon();
 		} else {
 			hideIcon();

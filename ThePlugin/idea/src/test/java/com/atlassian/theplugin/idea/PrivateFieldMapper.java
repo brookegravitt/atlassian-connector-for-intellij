@@ -20,7 +20,7 @@ import java.lang.reflect.Field;
 
 public abstract class PrivateFieldMapper {
 	protected PrivateFieldMapper(Object original) throws Exception {
-		for (Field f : getClass().getFields()) {
+		for (Field f : getClass().getDeclaredFields()) {
 			String name = f.getName();
 
 			Field originalField;

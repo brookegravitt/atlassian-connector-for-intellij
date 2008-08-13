@@ -17,14 +17,10 @@
 package com.atlassian.theplugin.crucible;
 
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewBean;
-import com.atlassian.theplugin.commons.Server;
-import com.atlassian.theplugin.idea.crucible.ReviewData;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import org.easymock.EasyMock;
 
 /**
  * RemoteReview Tester.
@@ -55,7 +51,6 @@ public class ReviewDataInfoImplTest extends TestCase {
     }
 
 	public void testNotEquals() throws Exception {
-		Server server = EasyMock.createMock(Server.class);
 		ReviewBean r1 = new ReviewBean();
         r1.setPermId(new PermId() {
 

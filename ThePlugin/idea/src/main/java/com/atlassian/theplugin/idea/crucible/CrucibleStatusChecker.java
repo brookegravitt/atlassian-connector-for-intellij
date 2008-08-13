@@ -17,11 +17,10 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.SchedulableChecker;
-import com.atlassian.theplugin.commons.Server;
-import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.StatusListener;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.configuration.CrucibleConfigurationBean;
-import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
@@ -36,8 +35,10 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ThePluginProjectComponent;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.atlassian.theplugin.cfg.CfgUtil;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
+import com.intellij.openapi.project.Project;
 
 import java.awt.*;
 import java.text.SimpleDateFormat;
@@ -56,7 +57,6 @@ import java.util.List;
  */
 public final class CrucibleStatusChecker implements SchedulableChecker {
 	private final List<CrucibleStatusListener> listenerList = new ArrayList<CrucibleStatusListener>();
-	private final PluginConfiguration pluginConfiguration;
 	private final CrucibleServerFacade crucibleServerFacade;
 	private static Date lastActionRun = new Date();
 	private static SimpleDateFormat dateFormat = new SimpleDateFormat("H:mm:ss:SSS");
@@ -64,10 +64,15 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 
 	private CrucibleVersion crucibleVersion = CrucibleVersion.UNKNOWN;
 	private static final String NAME = "Atlassian Crucible checker";
+	private final CfgManager cfgManager;
+	private final Project project;
+	private final CrucibleConfigurationBean crucibleConfigurationBean;
 
 
-	public CrucibleStatusChecker(PluginConfiguration pluginConfiguration) {
-		this.pluginConfiguration = pluginConfiguration;
+	public CrucibleStatusChecker(CfgManager cfgManager, Project project, CrucibleConfigurationBean crucibleConfigurationBean) {
+		this.cfgManager = cfgManager;
+		this.project = project;
+		this.crucibleConfigurationBean = crucibleConfigurationBean;
 		this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 
 	}
@@ -85,7 +90,7 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 	}
 
 	private CrucibleVersion getCrucibleVersion() {
-		for (Server server : retrieveEnabledCrucibleServers()) {
+		for (CrucibleServerCfg server : retrieveEnabledCrucibleServers()) {
 			try {
 				Date newRun = new Date();
 				sb.delete(0, sb.length());
@@ -118,7 +123,7 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 					= IdeaHelper.getCurrentProject().getComponent(ThePluginProjectComponent.class);
 			ProjectConfigurationBean projectConfiguration = pcomp.getProjectConfigurationBean();
 
-			for (Server server : retrieveEnabledCrucibleServers()) {
+			for (CrucibleServerCfg server : retrieveEnabledCrucibleServers()) {
 
 				for (int i = 0;
 					 i < projectConfiguration.
@@ -134,7 +139,7 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 						ReviewNotificationBean bean = reviews.get(filter);
 						try {
 							PluginUtil.getLogger().debug("Crucible: updating status for server: "
-									+ server.getUrlString() + ", filter type: " + filter);
+									+ server.getUrl() + ", filter type: " + filter);
 
 							List<Review> review = crucibleServerFacade.getReviewsForFilter(server, filter);
 							List<ReviewData> reviewData = new ArrayList<ReviewData>(review.size());
@@ -145,7 +150,7 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 							bean.getReviews().addAll(reviewData);
 						} catch (ServerPasswordNotProvidedException exception) {
 							ApplicationManager.getApplication().invokeLater(
-									new MissingPasswordHandler(crucibleServerFacade),
+									new MissingPasswordHandler(crucibleServerFacade, cfgManager, project),
 									ModalityState.defaultModalityState());
 							bean.setException(exception);
 						} catch (RemoteApiException e) {
@@ -171,11 +176,11 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 					ReviewNotificationBean bean = customFilterReviews.get(filter.getTitle());
 
 					if (filter.isEnabled()) {
-						for (Server server : retrieveEnabledCrucibleServers()) {
-							if (server.getUid() == filter.getServerUid()) {
+						for (CrucibleServerCfg server : retrieveEnabledCrucibleServers()) {
+							if (server.getServerId().toString().equals(filter.getServerUid())) {
 								try {
 									PluginUtil.getLogger().debug("Crucible: updating status for server: "
-											+ server.getUrlString() + ", custom filter");
+											+ server.getUrl() + ", custom filter");
 									List<Review> customFilter
 											= crucibleServerFacade.getReviewsForCustomFilter(server, filter);
 
@@ -188,7 +193,7 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 									bean.getReviews().addAll(reviewData);
 								} catch (ServerPasswordNotProvidedException exception) {
 									ApplicationManager.getApplication().invokeLater(
-											new MissingPasswordHandler(crucibleServerFacade),
+											new MissingPasswordHandler(crucibleServerFacade, cfgManager, project),
 											ModalityState.defaultModalityState());
 									bean.setException(exception);
 								} catch (RemoteApiException e) {
@@ -241,9 +246,8 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 		}
 	}
 
-	private Collection<Server> retrieveEnabledCrucibleServers() {
-		return pluginConfiguration.getProductServers(
-				ServerType.CRUCIBLE_SERVER).transientgetEnabledServers();
+	private Collection<CrucibleServerCfg> retrieveEnabledCrucibleServers() {
+		return cfgManager.getAllEnabledCrucibleServers(CfgUtil.getProjectId(project));
 	}
 
 
@@ -266,9 +270,7 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 	}
 
 	public long getInterval() {
-		return (long) ((CrucibleConfigurationBean) pluginConfiguration
-				.getProductServers(ServerType.CRUCIBLE_SERVER))
-				.getPollTime() * DateUtil.SECONDS_IN_MINUTE * DateUtil.MILISECONDS_IN_SECOND;
+		return (long) crucibleConfigurationBean.getPollTime() * DateUtil.SECONDS_IN_MINUTE * DateUtil.MILISECONDS_IN_SECOND;
 	}
 
 	public void resetListenersState() {

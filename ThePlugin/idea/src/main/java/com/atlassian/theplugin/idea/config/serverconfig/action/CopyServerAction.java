@@ -16,20 +16,15 @@
 
 package com.atlassian.theplugin.idea.config.serverconfig.action;
 
-import com.atlassian.theplugin.idea.config.ConfigPanel;
-import com.atlassian.theplugin.idea.IdeaHelper;
-import com.intellij.openapi.actionSystem.AnAction;
+import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
-/**
- * Created by IntelliJ IDEA.
- * User: mwent
- * Date: 2008-01-28
- * Time: 10:55:48
- * To change this template use File | Settings | File Templates.
- */
-public class CopyServerAction extends AnAction {
-    public void actionPerformed(AnActionEvent event) {
-		ConfigPanel.getInstance(IdeaHelper.getPluginConfiguration()).copyServer();		
-    }
+public class CopyServerAction extends AbstractServerAction {
+    @Override
+	public void actionPerformed(AnActionEvent event) {
+		final ServerConfigPanel panel = getServerConfigPanel(event);
+		if (panel != null) {
+			panel.copyServer();
+		}
+	}
 }

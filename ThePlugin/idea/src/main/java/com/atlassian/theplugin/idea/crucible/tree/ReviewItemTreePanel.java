@@ -49,7 +49,6 @@ public final class ReviewItemTreePanel extends JPanel {
 
 	//	ProjectView.
 	private AtlassianTreeWithToolbar reviewFilesTree = null;
-	private CrucibleReviewActionListener listener;
 	private static final int WIDTH = 150;
 	private static final int HEIGHT = 250;
 
@@ -61,7 +60,7 @@ public final class ReviewItemTreePanel extends JPanel {
 
 	public ReviewItemTreePanel(final Project project, final CrucibleFilteredModelProvider.FILTER filter) {
 		initLayout();
-		listener = new MyReviewActionListener(project);
+		final CrucibleReviewActionListener listener = new MyReviewActionListener(project);
 		IdeaHelper.getReviewActionEventBroker(project).registerListener(listener);
 		this.filter = filter;
 	}
@@ -83,6 +82,7 @@ public final class ReviewItemTreePanel extends JPanel {
 		return reviewFilesTree;
 	}
 
+	@Override
 	public void setEnabled(boolean b) {
 		super.setEnabled(b);
 		getReviewItemTree().setEnabled(b);
@@ -93,9 +93,9 @@ public final class ReviewItemTreePanel extends JPanel {
 		return progressAnimation;
 	}
 
-	public void filterTreeNodes(CrucibleFilteredModelProvider.FILTER filter) {
-		this.filter = filter;
-		((CrucibleFilteredModelProvider) reviewFilesTree.getModelProvider()).setType(filter);
+	public void filterTreeNodes(CrucibleFilteredModelProvider.FILTER aFilter) {
+		this.filter = aFilter;
+		((CrucibleFilteredModelProvider) reviewFilesTree.getModelProvider()).setType(aFilter);
 		reviewFilesTree.triggerModelUpdated();
 		reviewFilesTree.revalidate();
 		reviewFilesTree.repaint();
@@ -113,6 +113,7 @@ public final class ReviewItemTreePanel extends JPanel {
 			ApplicationManager.getApplication().invokeLater(new Runnable() {
 				public void run() {
 					AtlassianTreeNode node = reviewFilesTree.getModel().locateNode(new NodeSearchAlgorithm() {
+						@Override
 						public boolean check(final AtlassianTreeNode node) {
 							if (node instanceof CrucibleFileNode) {
 								CrucibleFileNode anode = (CrucibleFileNode) node;
@@ -146,6 +147,7 @@ public final class ReviewItemTreePanel extends JPanel {
 			ApplicationManager.getApplication().invokeLater(new Runnable() {
 				public void run() {
 					AtlassianTreeNode node = reviewFilesTree.getModel().locateNode(new NodeSearchAlgorithm() {
+						@Override
 						public boolean check(final AtlassianTreeNode node) {
 							if (node instanceof CrucibleChangeSetTitleNode) {
 								CrucibleChangeSetTitleNode anode = (CrucibleChangeSetTitleNode) node;
@@ -178,53 +180,7 @@ public final class ReviewItemTreePanel extends JPanel {
 				}
 			}
 			final List<CrucibleFileInfo> files1 = files;
-			EventQueue.invokeLater(new Runnable() {
-				public void run() {
-
-					statusLabel.setText(createGeneralInfoText(reviewItem));
-					ModelProvider modelProvider = new ModelProvider() {
-
-						@Override
-						public AtlassianTreeModel getModel(final AtlassianTreeWithToolbar.STATE state) {
-							switch (state) {
-								case DIRED:
-									return FileTreeModelBuilder.buildTreeModelFromCrucibleChangeSet(project, reviewItem, files1);
-								case FLAT:
-									return FileTreeModelBuilder.buildFlatModelFromCrucibleChangeSet(project, reviewItem, files1);
-								default:
-									throw new IllegalStateException("Unknown model requested");
-							}
-						}
-					};
-					CrucibleFilteredModelProvider provider = new CrucibleFilteredModelProvider(modelProvider, filter) {
-						private final Filter COMMENT_FILTER = new Filter() {
-							public boolean isValid(final AtlassianTreeNode node) {
-								if (node instanceof CrucibleFileNode) {
-									CrucibleFileNode anode = (CrucibleFileNode) node;
-									try {
-										return anode.getFile().getNumberOfComments() > 0;
-									} catch (ValueNotYetInitialized valueNotYetInitialized) {
-										return false;
-									}
-								}
-								return true;
-							}
-						};
-
-						public Filter getFilter(final FILTER type) {
-							switch (type) {
-								case FILES_ALL:
-									return Filter.ALL;
-								case FILES_WITH_COMMENTS_ONLY:
-									return COMMENT_FILTER;
-							}
-							throw new IllegalStateException("Unknows filtering requested: " + type.toString());
-						}
-					};
-					reviewFilesTree.setModelProvider(provider);
-					reviewFilesTree.setRootVisible(true);
-				}
-			});
+			EventQueue.invokeLater(new MyRunnable(reviewItem, files1));
 		}
 
 
@@ -246,7 +202,7 @@ public final class ReviewItemTreePanel extends JPanel {
 			buffer.append(CrucibleConstants.CRUCIBLE_MOD_COLOR);
 			buffer.append(">MOD</font>");
 			int i = 0;
-			List<Reviewer> reviewers = null;
+			List<Reviewer> reviewers;
 			try {
 				reviewers = reviewItem.getReviewers();
 				if (reviewers != null) {
@@ -268,5 +224,70 @@ public final class ReviewItemTreePanel extends JPanel {
 			return buffer.toString();
 		}
 
+		private class MyRunnable implements Runnable {
+			private final ReviewData reviewItem;
+			private final List<CrucibleFileInfo> files1;
+
+			public MyRunnable(final ReviewData reviewItem, final List<CrucibleFileInfo> files1) {
+				this.reviewItem = reviewItem;
+				this.files1 = files1;
+			}
+
+			public void run() {
+
+				statusLabel.setText(createGeneralInfoText(reviewItem));
+				ModelProvider modelProvider = new ModelProvider() {
+
+					@Override
+					public AtlassianTreeModel getModel(final AtlassianTreeWithToolbar.STATE state) {
+						switch (state) {
+							case DIRED:
+								return FileTreeModelBuilder.buildTreeModelFromCrucibleChangeSet(project, reviewItem, files1);
+							case FLAT:
+								return FileTreeModelBuilder.buildFlatModelFromCrucibleChangeSet(project, reviewItem, files1);
+							default:
+								throw new IllegalStateException("Unknown model requested");
+						}
+					}
+				};
+				CrucibleFilteredModelProvider provider = new MyCrucibleFilteredModelProvider(modelProvider, filter);
+				reviewFilesTree.setModelProvider(provider);
+				reviewFilesTree.setRootVisible(true);
+			}
+		}
 	}
+
+	private static class MyCrucibleFilteredModelProvider extends CrucibleFilteredModelProvider {
+		private static final Filter COMMENT_FILTER = new Filter() {
+				@Override
+				public boolean isValid(final AtlassianTreeNode node) {
+					if (node instanceof CrucibleFileNode) {
+						CrucibleFileNode anode = (CrucibleFileNode) node;
+						try {
+							return anode.getFile().getNumberOfComments() > 0;
+						} catch (ValueNotYetInitialized valueNotYetInitialized) {
+							return false;
+						}
+					}
+					return true;
+				}
+			};
+
+		public MyCrucibleFilteredModelProvider(final ModelProvider modelProvider, final FILTER filter) {
+			super(modelProvider, filter);
+		}
+
+		@Override
+		public Filter getFilter(final FILTER type) {
+			switch (type) {
+				case FILES_ALL:
+					return Filter.ALL;
+				case FILES_WITH_COMMENTS_ONLY:
+					return COMMENT_FILTER;
+				default:
+					throw new IllegalStateException("Unknows filtering requested: " + type.toString());
+			}
+		}
+	}
+
 }

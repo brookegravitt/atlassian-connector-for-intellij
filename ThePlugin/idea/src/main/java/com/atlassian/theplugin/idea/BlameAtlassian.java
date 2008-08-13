@@ -20,6 +20,7 @@ import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.diagnostic.ErrorReportSubmitter;
 import com.intellij.openapi.diagnostic.IdeaLoggingEvent;
 import com.intellij.openapi.diagnostic.SubmittedReportInfo;
+import com.intellij.openapi.application.ApplicationInfo;
 
 import java.awt.Component;
 
@@ -37,7 +38,8 @@ public class BlameAtlassian extends ErrorReportSubmitter {
 			description.append(ideaLoggingEvent.getThrowableText());
 			description.append("\n");
 		}
-		BrowserUtil.launchBrowser(BugReporting.getBugWithDescriptionUrl(description.toString()));
+		BrowserUtil.launchBrowser(BugReporting.getBugWithDescriptionUrl(ApplicationInfo.getInstance().getBuildNumber(),
+                description.toString()));
 		return new SubmittedReportInfo(null, "JIRA ticket", SubmittedReportInfo.SubmissionStatus.NEW_ISSUE);
 	}
 }

@@ -51,10 +51,6 @@ public final class GeneralConfigPanel extends JPanel implements ContentPanel {
 		return instance;
 	}
 
-	public boolean isEnabled() {
-		return true;
-	}
-
 	public boolean isModified() {
 		return !localPluginConfigurationCopy.equals(globalPluginConfiguration)
 				|| dialog.getIsAutoUpdateEnabled()
@@ -76,7 +72,7 @@ public final class GeneralConfigPanel extends JPanel implements ContentPanel {
 		return "General";
 	}
 
-	public void getData() {
+	public void saveData() {
 		localPluginConfigurationCopy.getGeneralConfigurationData()
 				.setAutoUpdateEnabled(dialog.getIsAutoUpdateEnabled());
 		localPluginConfigurationCopy.getGeneralConfigurationData()

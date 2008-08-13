@@ -282,6 +282,7 @@ public class ChangeViewer {
 
 		group.add(new ShowDiffAction(this, range));
 
+		@SuppressWarnings("unchecked")
 		final List<AnAction> actionList = (List<AnAction>) editorComponent.getClientProperty(AnAction.ourClientProperty);
 
 		actionList.remove(globalShowPrevAction);

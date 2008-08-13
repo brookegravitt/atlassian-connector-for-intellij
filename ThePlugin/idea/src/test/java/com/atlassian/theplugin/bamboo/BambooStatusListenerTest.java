@@ -16,42 +16,34 @@
 
 package com.atlassian.theplugin.bamboo;
 
-import com.atlassian.theplugin.commons.configuration.BambooConfigurationBean;
-import com.atlassian.theplugin.commons.configuration.ServerBean;
-import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
-import com.atlassian.theplugin.commons.bamboo.*;
+import com.atlassian.theplugin.commons.bamboo.BambooBuild;
+import com.atlassian.theplugin.commons.bamboo.BambooPopupInfo;
+import com.atlassian.theplugin.commons.bamboo.BambooStatusDisplay;
+import com.atlassian.theplugin.commons.bamboo.BambooStatusTooltipListener;
+import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import junit.framework.TestCase;
 import org.easymock.EasyMock;
+import static org.easymock.EasyMock.and;
+import static org.easymock.EasyMock.createStrictMock;
 import org.easymock.IArgumentMatcher;
-import static org.easymock.EasyMock.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 
 public class BambooStatusListenerTest extends TestCase {
 
 	private BambooStatusDisplay displayMock;
 	private BambooStatusTooltipListener tooltipListener;
 
+	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 
 		displayMock = createStrictMock(BambooStatusDisplay.class);
-		tooltipListener = new BambooStatusTooltipListener(displayMock, createBambooTestConfiguration());
+		tooltipListener = new BambooStatusTooltipListener(displayMock, MockBambooCfgManager.createBambooTestConfiguration());
 	}
 
-	private static PluginConfigurationBean createBambooTestConfiguration() {
-		BambooConfigurationBean configuration = new BambooConfigurationBean();
 
-		Collection<ServerBean> servers = new ArrayList<ServerBean>();
-		configuration.setServersData(servers);
-		PluginConfigurationBean pluginConfig = new PluginConfigurationBean();
-		pluginConfig.setBambooConfigurationData(configuration);
-
-		return pluginConfig;
-	}
-
+	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
 

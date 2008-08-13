@@ -32,7 +32,7 @@ public class AtlassianTreeModel extends DefaultTreeModel {
 	}
 
 	public AtlassianTreeNode locateNode(NodeSearchAlgorithm alg) {
-		return AtlassianTreeModel.locateNode((AtlassianTreeNode) getRoot(), alg);
+		return AtlassianTreeModel.locateNode(getRoot(), alg);
 	}
 
 	public AtlassianTreeModel getFilteredModel(Filter filter) {
@@ -55,7 +55,7 @@ public class AtlassianTreeModel extends DefaultTreeModel {
 			return startingNode;
 		}
 		for (int i = 0; i < startingNode.getChildCount(); i++) {
-			AtlassianTreeNode result = locateNode((AtlassianTreeNode) startingNode.getChildAt(i), alg);
+			AtlassianTreeNode result = locateNode(startingNode.getChildAt(i), alg);
 			if (result != null) {
 				return result;
 			}

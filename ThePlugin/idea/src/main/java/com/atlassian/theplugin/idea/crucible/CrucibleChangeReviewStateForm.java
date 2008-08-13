@@ -201,9 +201,9 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 			IdeaHelper.getAppComponent().rescheduleStatusCheckers(true);
 		} catch (RemoteApiException e) {
 			showMessageDialog(e.getMessage(),
-					"Error changing review state: " + review.getServer().getUrlString(), Messages.getErrorIcon());
+					"Error changing review state: " + review.getServer().getUrl(), Messages.getErrorIcon());
 		} catch (ServerPasswordNotProvidedException e) {
-			showMessageDialog(e.getMessage(), "Error changing review state: " + review.getServer().getUrlString(),
+			showMessageDialog(e.getMessage(), "Error changing review state: " + review.getServer().getUrl(),
 					Messages.getErrorIcon());
 		}
 
@@ -408,7 +408,7 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 			gbc1.gridy = 0;
 			gbc2.gridy = 0;
 
-			String userName = review.getServer().getUserName();
+			String userName = review.getServer().getUsername();
 			int generalComments = 0;
 			int versionedComments = 0;
 			int myGeneralComments = 0;

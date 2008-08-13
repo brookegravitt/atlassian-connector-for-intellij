@@ -16,20 +16,16 @@
 
 package com.atlassian.theplugin.crucible;
 
-import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.commons.configuration.*;
-import com.atlassian.theplugin.crucible.api.rest.cruciblemock.LoginCallback;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginFailedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
+import com.atlassian.theplugin.crucible.api.rest.cruciblemock.LoginCallback;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 public class CrucibleServerFacadeConnectionTest extends TestCase {
 	private static final String USER_NAME = "someUser";
@@ -40,6 +36,7 @@ public class CrucibleServerFacadeConnectionTest extends TestCase {
 	private String mockBaseUrl;
 	public static final String INVALID_PROJECT_KEY = "INVALID project key";
 	private CrucibleServerFacade testedCrucibleServerFacade;
+	private CrucibleServerCfg crucibleServerCfg;
 
 	protected void setUp() throws Exception {
 		httpServer = new org.mortbay.jetty.Server(0);
@@ -48,30 +45,20 @@ public class CrucibleServerFacadeConnectionTest extends TestCase {
 		mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort();
 
 		mockServer = new JettyMockServer(httpServer);
-		ConfigurationFactory.setConfiguration(createCrucibleTestConfiguration(mockBaseUrl, true));
-
+		crucibleServerCfg = createCrucibleTestConfiguration(mockBaseUrl, true);
 		testedCrucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 	}
 
-	private static PluginConfiguration createCrucibleTestConfiguration(String serverUrl, boolean isPassInitialized) {
-		CrucibleConfigurationBean configuration = new CrucibleConfigurationBean();
+	private static CrucibleServerCfg createCrucibleTestConfiguration(String serverUrl, boolean isPassInitialized) {
+		final CrucibleServerCfg res = new CrucibleServerCfg("TestServer", new ServerId());
 
-		Collection<ServerBean> servers = new ArrayList<ServerBean>();
-		ServerBean server = new ServerBean();
+		res.setUrl(serverUrl);
+		res.setUsername(USER_NAME);
 
-		server.setName("TestServer");
-		server.setUrlString(serverUrl);
-		server.setUserName(USER_NAME);
-
-		server.transientSetPasswordString(isPassInitialized ? PASSWORD : "", isPassInitialized);
-		server.transientSetIsConfigInitialized(isPassInitialized);
-		servers.add(server);
-
-		configuration.setServersData(servers);
-		PluginConfigurationBean pluginConfig = new PluginConfigurationBean();
-		pluginConfig.setCrucibleConfigurationData(configuration);
-
-		return pluginConfig;
+		res.setPassword(isPassInitialized ? PASSWORD : ""); //, isPassInitialized);
+		// TODO wseliga how to handle it???
+		// server.transientSetIsConfigInitialized(isPassInitialized);
+		return res;
 	}
 
 	protected void tearDown() throws Exception {
@@ -85,9 +72,8 @@ public class CrucibleServerFacadeConnectionTest extends TestCase {
 	public void testFailedLoginGetAllReviews() throws Exception {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
 
-		Server server = ConfigurationFactory.getConfiguration().getProductServers(ServerType.CRUCIBLE_SERVER).transientGetServers().iterator().next();
 		try {
-			testedCrucibleServerFacade.getAllReviews(server);
+			testedCrucibleServerFacade.getAllReviews(crucibleServerCfg);
 			fail();
 		} catch (RemoteApiLoginFailedException e) {
 

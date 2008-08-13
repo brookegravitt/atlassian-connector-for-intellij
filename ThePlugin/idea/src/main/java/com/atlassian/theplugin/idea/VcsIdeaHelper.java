@@ -216,14 +216,17 @@ public final class VcsIdeaHelper {
 	 * @param project	  project
 	 * @param fromRevision start VCS revision of the file
 	 * @param toRevision   to VCS revision of the file
+	 * @param commitType
 	 * @param virtualFile  file to fetch from VCS
 	 * @param line		 line to go to
 	 * @param column	   column to go to
 	 * @param action
 	 */
+	// CHECKSTYLE:OFF
 	private static void fetchAndOpenFileWithDiffs(final Project project, final String fromRevision, final String toRevision,
 			@NotNull final CommitType commitType, @NotNull final VirtualFile virtualFile,
 			final int line, final int column, @Nullable final OpenDiffAction action) {
+	// CHECKSTYLE:ON
 		AbstractVcsVirtualFile referenceVirtualFile = getFileFromCache(virtualFile, fromRevision);
 		AbstractVcsVirtualFile displayVirtualFile = getFileFromCache(virtualFile, toRevision);
 
@@ -253,56 +256,8 @@ public final class VcsIdeaHelper {
 				niceFileMessage = "s" + virtualFile.getName() + " (rev: " + fromRevision + ", " + toRevision + ") from VCS";
 		}
 
-		new Task.Backgroundable(project, "Fetching file" + niceFileMessage, false) {
-			private OpenFileDescriptor displayDescriptor = null;
-			private AbstractVcsVirtualFile referenceVirtualFile = null;
-
-			private VcsException exception;
-
-			@Override
-			public void run(ProgressIndicator indicator) {
-				final AbstractVcsVirtualFile displayVirtualFile;
-				try {
-					switch (commitType) {
-						case Modified:
-						case Moved:
-							referenceVirtualFile = getVcsVirtualFile(project, virtualFile, fromRevision, false);
-							displayVirtualFile = getVcsVirtualFile(project, virtualFile, toRevision, false);
-							displayDescriptor = new OpenFileDescriptor(project, displayVirtualFile, line, column);
-							break;
-						case Added:
-							displayVirtualFile = getVcsVirtualFile(project, virtualFile, toRevision, false);
-							displayDescriptor = new OpenFileDescriptor(project, displayVirtualFile, line, column);
-							break;
-						case Deleted:
-							referenceVirtualFile = getVcsVirtualFile(project, virtualFile, fromRevision, false);
-							displayVirtualFile = getVcsVirtualFile(project, virtualFile, toRevision, false);
-							displayDescriptor = new OpenFileDescriptor(project, displayVirtualFile, line, column);
-						default:
-							break;
-					}
-				} catch (VcsException e) {
-					exception = e;
-					return;
-				}
-			}
-
-			@Override
-			public void onSuccess() {
-				if (exception != null) {
-					Messages.showErrorDialog(project, "The following error has occured while fetching "
-							+ niceFileMessage + ":\n" + exception.getMessage(), "Error fetching file");
-					return;
-				}
-				if (displayDescriptor != null) {
-					if (action != null) {
-						action.run(displayDescriptor, referenceVirtualFile, commitType);
-					}
-					displayDescriptor.navigate(true);
-				}
-
-			}
-		}.queue();
+		new FetchingFileTask(project, niceFileMessage, commitType, virtualFile, fromRevision,
+				toRevision, line, column, action).queue();
 	}
 
 	/**
@@ -343,9 +298,11 @@ public final class VcsIdeaHelper {
 	 * @param col
 	 * @param action
 	 */
+	// CHECKSTYLE:OFF
 	public static void openFileWithDiffs(final Project project, String filePath, @NotNull final String fileRevision,
 			final String toRevision, @NotNull final CommitType commitType,
 			final int line, final int col, @Nullable final OpenDiffAction action) {
+	// CHECKSTYLE:ON
 		VirtualFile baseDir = project.getBaseDir();
 		String baseUrl = getRepositoryUrlForFile(baseDir);
 
@@ -397,14 +354,9 @@ public final class VcsIdeaHelper {
 		}
 	}
 
-	public static void openFile
-			(
-					final Project project,
-					@NotNull final VirtualFile virtualFile,
-					@NotNull final String fileRevision,
-					final int line,
-					final int col,
-					@Nullable final OpenFileDescriptorAction action) {
+	public static void openFile(final Project project, @NotNull final VirtualFile virtualFile, 
+			@NotNull final String fileRevision, final int line, final int col,
+			@Nullable final OpenFileDescriptorAction action) {
 
 		// do we have the same file revision opened in our project?
 		ApplicationManager.getApplication().invokeLater(new Runnable() {
@@ -434,4 +386,80 @@ public final class VcsIdeaHelper {
 		void run(OpenFileDescriptor displayFile, VirtualFile referenceDocument, CommitType commitType);
 	}
 
+	private static class FetchingFileTask extends Task.Backgroundable {
+		private OpenFileDescriptor displayDescriptor;
+		private AbstractVcsVirtualFile referenceVirtualFile;
+
+		private VcsException exception;
+		private final Project project;
+		private final String niceFileMessage;
+		private final CommitType commitType;
+		private final VirtualFile virtualFile;
+		private final String fromRevision;
+		private final String toRevision;
+		private final int line;
+		private final int column;
+		private final OpenDiffAction action;
+
+		public FetchingFileTask(final Project project, final String niceFileMessage, final CommitType commitType,
+				final VirtualFile virtualFile, final String fromRevision, final String toRevision, final int line,
+				final int column,
+				final OpenDiffAction action) {
+			super(project, "Fetching file" + niceFileMessage, false);
+			this.project = project;
+			this.niceFileMessage = niceFileMessage;
+			this.commitType = commitType;
+			this.virtualFile = virtualFile;
+			this.fromRevision = fromRevision;
+			this.toRevision = toRevision;
+			this.line = line;
+			this.column = column;
+			this.action = action;
+			displayDescriptor = null;
+			referenceVirtualFile = null;
+		}
+
+		@Override
+			public void run(ProgressIndicator indicator) {
+			final AbstractVcsVirtualFile displayVirtualFile;
+			try {
+				switch (commitType) {
+					case Modified:
+					case Moved:
+						referenceVirtualFile = getVcsVirtualFile(project, virtualFile, fromRevision, false);
+						displayVirtualFile = getVcsVirtualFile(project, virtualFile, toRevision, false);
+						displayDescriptor = new OpenFileDescriptor(project, displayVirtualFile, line, column);
+						break;
+					case Added:
+						displayVirtualFile = getVcsVirtualFile(project, virtualFile, toRevision, false);
+						displayDescriptor = new OpenFileDescriptor(project, displayVirtualFile, line, column);
+						break;
+					case Deleted:
+						referenceVirtualFile = getVcsVirtualFile(project, virtualFile, fromRevision, false);
+						displayVirtualFile = getVcsVirtualFile(project, virtualFile, toRevision, false);
+						displayDescriptor = new OpenFileDescriptor(project, displayVirtualFile, line, column);
+					default:
+						break;
+				}
+			} catch (VcsException e) {
+				exception = e;
+			}
+		}
+
+		@Override
+			public void onSuccess() {
+			if (exception != null) {
+				Messages.showErrorDialog(project, "The following error has occured while fetching "
+						+ niceFileMessage + ":\n" + exception.getMessage(), "Error fetching file");
+				return;
+			}
+			if (displayDescriptor != null) {
+				if (action != null) {
+					action.run(displayDescriptor, referenceVirtualFile, commitType);
+				}
+				displayDescriptor.navigate(true);
+			}
+
+		}
+	}
 }

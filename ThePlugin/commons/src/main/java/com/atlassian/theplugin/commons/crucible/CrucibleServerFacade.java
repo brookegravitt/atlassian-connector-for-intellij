@@ -16,8 +16,24 @@
 
 package com.atlassian.theplugin.commons.crucible;
 
-import com.atlassian.theplugin.commons.Server;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.crucible.api.model.Action;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleVersionInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.api.model.NewReviewItem;
+import com.atlassian.theplugin.commons.crucible.api.model.PermId;
+import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.Project;
+import com.atlassian.theplugin.commons.crucible.api.model.Repository;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
+import com.atlassian.theplugin.commons.crucible.api.model.SvnRepository;
+import com.atlassian.theplugin.commons.crucible.api.model.User;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -26,142 +42,142 @@ import java.util.List;
 import java.util.Set;
 
 public interface CrucibleServerFacade extends ProductServerFacade {
-	CrucibleVersionInfo getServerVersion(Server server)
+	CrucibleVersionInfo getServerVersion(CrucibleServerCfg server)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	Review createReview(Server server, Review review)
+	Review createReview(CrucibleServerCfg server, Review review)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	Review createReviewFromRevision(Server server, Review review, List<String> revisions)
+	Review createReviewFromRevision(CrucibleServerCfg server, Review review, List<String> revisions)
 			throws RemoteApiException;
 
-	List<Action> getAvailableActions(Server server, PermId permId)
+	List<Action> getAvailableActions(CrucibleServerCfg server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	List<Action> getAvailableTransitions(Server server, PermId permId)
+	List<Action> getAvailableTransitions(CrucibleServerCfg server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	Review addRevisionsToReview(Server server, PermId permId, String repository, List<String> revisions)
+	Review addRevisionsToReview(CrucibleServerCfg server, PermId permId, String repository, List<String> revisions)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	Review addPatchToReview(Server server, PermId permId, String repository, String patch)
+	Review addPatchToReview(CrucibleServerCfg server, PermId permId, String repository, String patch)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	CrucibleFileInfo addItemToReview(Server server, Review review, NewReviewItem newItem)
+	CrucibleFileInfo addItemToReview(CrucibleServerCfg server, Review review, NewReviewItem newItem)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	List<Reviewer> getReviewers(Server server, PermId permId)
+	List<Reviewer> getReviewers(CrucibleServerCfg server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	void addReviewers(Server server, PermId permId, Set<String> userName)
+	void addReviewers(CrucibleServerCfg server, PermId permId, Set<String> userName)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	void removeReviewer(Server server, PermId permId, String userName)
+	void removeReviewer(CrucibleServerCfg server, PermId permId, String userName)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	Review approveReview(Server server, PermId permId)
+	Review approveReview(CrucibleServerCfg server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	Review submitReview(Server server, PermId permId)
+	Review submitReview(CrucibleServerCfg server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	Review summarizeReview(Server server, PermId permId)
+	Review summarizeReview(CrucibleServerCfg server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	Review abandonReview(Server server, PermId permId)
+	Review abandonReview(CrucibleServerCfg server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	Review closeReview(Server server, PermId permId, String summary)
+	Review closeReview(CrucibleServerCfg server, PermId permId, String summary)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	Review recoverReview(Server server, PermId permId)
+	Review recoverReview(CrucibleServerCfg server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	Review reopenReview(Server server, PermId permId)
+	Review reopenReview(CrucibleServerCfg server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	Review rejectReview(Server server, PermId permId)
+	Review rejectReview(CrucibleServerCfg server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	void completeReview(Server server, PermId permId, boolean complete)
+	void completeReview(CrucibleServerCfg server, PermId permId, boolean complete)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	List<Review> getAllReviews(Server server)
+	List<Review> getAllReviews(CrucibleServerCfg server)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	List<Review> getReviewsForFilter(Server server, PredefinedFilter filter)
+	List<Review> getReviewsForFilter(CrucibleServerCfg server, PredefinedFilter filter)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	List<Review> getReviewsForCustomFilter(Server server, CustomFilter filter)
+	List<Review> getReviewsForCustomFilter(CrucibleServerCfg server, CustomFilter filter)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	Review getReview(Server server, PermId permId)
+	Review getReview(CrucibleServerCfg server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	List<Review> getAllReviewsForFile(Server server, String repoName, String path)
+	List<Review> getAllReviewsForFile(CrucibleServerCfg server, String repoName, String path)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	Review createReviewFromPatch(Server server, Review review, String patch)
+	Review createReviewFromPatch(CrucibleServerCfg server, Review review, String patch)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	List<CrucibleFileInfo> getFiles(Server server, PermId permId)
+	List<CrucibleFileInfo> getFiles(CrucibleServerCfg server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	List<Comment> getComments(Server server, PermId permId)
+	List<Comment> getComments(CrucibleServerCfg server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	List<GeneralComment> getGeneralComments(Server server, PermId permId)
+	List<GeneralComment> getGeneralComments(CrucibleServerCfg server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	List<VersionedComment> getVersionedComments(Server server, PermId permId)
+	List<VersionedComment> getVersionedComments(CrucibleServerCfg server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	List<VersionedComment> getVersionedComments(Server server, PermId permId, PermId reviewItemId)
+	List<VersionedComment> getVersionedComments(CrucibleServerCfg server, PermId permId, PermId reviewItemId)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	List<GeneralComment> getReplies(Server server, PermId permId, PermId commentId)
+	List<GeneralComment> getReplies(CrucibleServerCfg server, PermId permId, PermId commentId)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	GeneralComment addGeneralComment(Server server, PermId permId, GeneralComment comment)
+	GeneralComment addGeneralComment(CrucibleServerCfg server, PermId permId, GeneralComment comment)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	VersionedComment addVersionedComment(Server server, PermId permId, PermId riId, VersionedComment comment)
+	VersionedComment addVersionedComment(CrucibleServerCfg server, PermId permId, PermId riId, VersionedComment comment)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	void updateComment(Server server, PermId id, Comment comment)
+	void updateComment(CrucibleServerCfg server, PermId id, Comment comment)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	void publishComment(Server server, PermId reviewId, PermId commentId)
+	void publishComment(CrucibleServerCfg server, PermId reviewId, PermId commentId)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	void publishAllCommentsForReview(Server server, PermId reviewId)
+	void publishAllCommentsForReview(CrucibleServerCfg server, PermId reviewId)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	GeneralComment addGeneralCommentReply(Server server, PermId id, PermId cId, GeneralComment comment)
+	GeneralComment addGeneralCommentReply(CrucibleServerCfg server, PermId id, PermId cId, GeneralComment comment)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	VersionedComment addVersionedCommentReply(Server server, PermId id, PermId cId, VersionedComment comment)
+	VersionedComment addVersionedCommentReply(CrucibleServerCfg server, PermId id, PermId cId, VersionedComment comment)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	void updateReply(Server server, PermId id, PermId cId, PermId rId, GeneralComment comment)
+	void updateReply(CrucibleServerCfg server, PermId id, PermId cId, PermId rId, GeneralComment comment)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	void removeComment(Server server, PermId id, Comment comment)
+	void removeComment(CrucibleServerCfg server, PermId id, Comment comment)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	List<User> getUsers(Server server)
+	List<User> getUsers(CrucibleServerCfg server)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	List<Project> getProjects(Server server)
+	List<Project> getProjects(CrucibleServerCfg server)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	List<Repository> getRepositories(Server server)
+	List<Repository> getRepositories(CrucibleServerCfg server)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	SvnRepository getRepository(Server server, String repoName)
+	SvnRepository getRepository(CrucibleServerCfg server, String repoName)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	List<CustomFieldDef> getMetrics(Server server, int version)
+	List<CustomFieldDef> getMetrics(CrucibleServerCfg server, int version)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
 }

@@ -16,7 +16,6 @@
 
 package com.atlassian.theplugin.crucible.api.rest.cruciblemock;
 
-import com.atlassian.theplugin.commons.configuration.ServerBean;
 import com.atlassian.theplugin.commons.crucible.api.model.PermIdBean;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewBean;
@@ -53,7 +52,6 @@ public class CreateReviewCallback implements JettyMockServer.Callback {
         @SuppressWarnings("unchecked")
         List<Element> elements = xpath.selectNodes(req);
 
-		ServerBean server = new ServerBean();
 		Review reqReview = CrucibleRestXmlHelper.parseReviewNode(elements.get(0));
 
         ReviewBean reviewData = null;

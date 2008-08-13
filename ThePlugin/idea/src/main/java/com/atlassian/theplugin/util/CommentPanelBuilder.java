@@ -53,7 +53,7 @@ public final class CommentPanelBuilder {
 		return new CommentPanel(review, comment) {
 			@Override
 			public Color getHeaderBackground() {
-				if (comment.getAuthor().getUserName().equals(review.getServer().getUserName())) {
+				if (comment.getAuthor().getUserName().equals(review.getServer().getUsername())) {
 					return MINE_GENERAL_COMMENT_HEADER_COLOR;
 				}
 				return NOT_MINE_GENERAL_COMMENT_HEADER_COLOR;
@@ -62,7 +62,7 @@ public final class CommentPanelBuilder {
 
 			@Override
 			public Color getBodyBackground() {
-				if (comment.getAuthor().getUserName().equals(review.getServer().getUserName())) {
+				if (comment.getAuthor().getUserName().equals(review.getServer().getUsername())) {
 					return MINE_GENERAL_COMMENT_BODY_COLOR;
 				}
 				return NOT_MINE_GENERAL_COMMENT_BODY_COLOR;
@@ -81,7 +81,7 @@ public final class CommentPanelBuilder {
 		return new CommentPanel(review, comment) {
 			@Override
 			public Color getHeaderBackground() {
-				if (comment.getAuthor().getUserName().equals(review.getServer().getUserName())) {
+				if (comment.getAuthor().getUserName().equals(review.getServer().getUsername())) {
 					return MINE_FILE_COMMENT_HEADER_COLOR;
 				}
 				return NOT_MINE_FILE_COMMENT_HEADER_COLOR;
@@ -89,7 +89,7 @@ public final class CommentPanelBuilder {
 
 			@Override
 			public Color getBodyBackground() {
-				if (comment.getAuthor().getUserName().equals(review.getServer().getUserName())) {
+				if (comment.getAuthor().getUserName().equals(review.getServer().getUsername())) {
 					return MINE_FILE_COMMENT_BODY_COLOR;
 				}
 				return NOT_MINE_FILE_COMMENT_BODY_COLOR;

@@ -16,8 +16,7 @@
 
 package com.atlassian.theplugin.remoteapi;
 
-import com.atlassian.theplugin.commons.Server;
-import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.idea.PasswordDialog;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
@@ -35,13 +34,13 @@ public class MissingPasswordHandlerJIRA implements Runnable {
 
 	private static boolean isDialogShown = false;
 
-	private final Server server;
+	private final JiraServerCfg server;
 	private final ProductServerFacade serverFacade;
 	private JIRAToolWindowPanel jiraPanel;
 
-	public MissingPasswordHandlerJIRA(ProductServerFacade serverFacade, Server server, JIRAToolWindowPanel jiraPanel) {
+	public MissingPasswordHandlerJIRA(ProductServerFacade serverFacade, JiraServerCfg server, JIRAToolWindowPanel jiraPanel) {
 		this.serverFacade = serverFacade;
-		this.server = server;
+		this.server = server;                                             
 		this.jiraPanel = jiraPanel;
 	}
 
@@ -52,13 +51,10 @@ public class MissingPasswordHandlerJIRA implements Runnable {
 			isDialogShown = true;
 			boolean wasCanceled = false;
 
-			Server jiraServer = ConfigurationFactory.getConfiguration().getProductServers(serverFacade.getServerType()).
-					transientGetServer(this.server);
-
 //			if (server.getIsConfigInitialized()) {
 //				return; //????
 //			}
-			PasswordDialog dialog = new PasswordDialog(jiraServer, serverFacade);
+			PasswordDialog dialog = new PasswordDialog(server, serverFacade);
 			dialog.pack();
 			JPanel panel = dialog.getPasswordPanel();
 
@@ -68,9 +64,10 @@ public class MissingPasswordHandlerJIRA implements Runnable {
 			if (answer == JOptionPane.OK_OPTION) {
 				String password = dialog.getPasswordString();
 				Boolean shouldPasswordBeStored = dialog.getShouldPasswordBeStored();
-				jiraServer.transientSetPasswordString(password, shouldPasswordBeStored);
-				jiraServer.setUserName(dialog.getUserName());
-				jiraPanel.selectServer(jiraServer);
+				server.setPassword(password);
+				server.setPasswordStored(shouldPasswordBeStored);
+				server.setUsername(dialog.getUserName());
+				jiraPanel.selectServer(server);
 			} else {
 				wasCanceled = true;
 			}

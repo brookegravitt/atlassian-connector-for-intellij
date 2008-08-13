@@ -16,17 +16,16 @@
 
 package com.atlassian.theplugin.idea.config.serverconfig;
 
+import com.atlassian.theplugin.commons.SubscribedPlan;
 import com.atlassian.theplugin.commons.bamboo.BambooPlan;
 import com.atlassian.theplugin.commons.bamboo.BambooPlanData;
 import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
-import com.atlassian.theplugin.idea.ProgressAnimationProvider;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.commons.Server;
-import com.atlassian.theplugin.commons.SubscribedPlan;
+import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
-import com.atlassian.theplugin.commons.configuration.ServerBean;
-import com.atlassian.theplugin.commons.configuration.SubscribedPlanBean;
-
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.util.MiscUtil;
+import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 
@@ -34,8 +33,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import static java.lang.System.arraycopy;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 
 public class BambooPlansForm extends JPanel {
@@ -54,19 +55,21 @@ public class BambooPlansForm extends JPanel {
 
 	private boolean isListModified;
 	private Boolean isUseFavourite = null;
-	private transient Server originalServer;
-	private transient Server queryServer;
-	private Map<String, List<BambooPlanItem>> serverPlans = new HashMap<String, List<BambooPlanItem>>();
-	private transient final BambooServerFacade bambooServerFacade;
-	private final ServerPanel serverPanel;
+	private transient BambooServerCfg originalServer;
+	private static final int NUM_SERVERS = 10;
+	private Map<ServerId, List<BambooPlanItem>> serverPlans = MiscUtil.buildConcurrentHashMap(NUM_SERVERS);
+	private final transient BambooServerFacade bambooServerFacade;
+    private final BambooServerConfigForm serverPanel;
 
-	public BambooPlansForm(BambooServerFacade bambooServerFacade, ServerPanel serverPanel) {
+    public BambooPlansForm(BambooServerFacade bambooServerFacade, BambooServerCfg bambooServerCfg,
+            final BambooServerConfigForm bambooServerConfigForm) {
 		this.bambooServerFacade = bambooServerFacade;
-		this.serverPanel = serverPanel;
+		this.originalServer = bambooServerCfg;
+        this.serverPanel = bambooServerConfigForm;
 
-		$$$setupUI$$$();
+        $$$setupUI$$$();
 
-		GridConstraints constraint = new GridConstraints(0, 0, 1, 1,
+		final GridConstraints constraint = new GridConstraints(0, 0, 1, 1,
 				GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false);
@@ -74,14 +77,16 @@ public class BambooPlansForm extends JPanel {
 		progressAnimation.configure(listPanel, scrollList, constraint);
 
 		list.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
+			@Override
+            public void mousePressed(MouseEvent e) {
 				int index = list.locationToIndex(e.getPoint());
 				setCheckboxState(index);
 			}
 		});
 
 		list.addKeyListener(new KeyAdapter() {
-			public void keyPressed(KeyEvent e) {
+			@Override
+            public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
 					int index = list.getSelectedIndex();
 					setCheckboxState(index);
@@ -102,18 +107,20 @@ public class BambooPlansForm extends JPanel {
 		});
 	}
 
-	private String getServerKey(Server server) {
-		return Long.toString(server.getUid());
-	}
-
 	private void refreshServerPlans() {
-		if (originalServer.getUseFavourite() != cbUseFavouriteBuilds.isSelected()) {
-			isUseFavourite = cbUseFavouriteBuilds.isSelected();
-		}
-		Server server = serverPanel.getData();
-		server.transientSetSubscribedPlans(originalServer.transientGetSubscribedPlans());
-		serverPlans.remove(getServerKey(originalServer));
-		retrievePlans(server);
+//		if (originalServer.isUseFavourites() != cbUseFavouriteBuilds.isSelected()) {
+//			isUseFavourite = cbUseFavouriteBuilds.isSelected();
+//		}
+
+//		server.transientSetSubscribedPlans(originalServer.transientGetSubscribedPlans());
+//		serverPlans.remove(getServerKey(originalServer));
+
+        serverPanel.saveData();
+
+//		server.transientSetSubscribedPlans(originalServer.transientGetSubscribedPlans());
+//		serverPlans.remove(getServerKey(originalServer));
+//		retrievePlans(server);
+        retrievePlans(originalServer);
 	}
 
 	private void setCheckboxState(int index) {
@@ -149,7 +156,7 @@ public class BambooPlansForm extends JPanel {
 
 	private void setModifiedState() {
 		isListModified = false;
-		List<BambooPlanItem> local = serverPlans.get(getServerKey(originalServer));
+		List<BambooPlanItem> local = serverPlans.get(originalServer.getServerId());
 		if (local != null) {
 			for (int i = 0; i < model.getSize(); i++) {
 				if (local.get(i) != null) {
@@ -165,24 +172,23 @@ public class BambooPlansForm extends JPanel {
 		}
 	}
 
-	public void setData(final Server server) {
-		originalServer = new ServerBean(server);
+	public void setData(final BambooServerCfg serverCfg) {
+		originalServer = serverCfg;
 		cbUseFavouriteBuilds.setEnabled(false);
-		if (!"".equals(originalServer.getUrlString())) {
+        if (!originalServer.getUrl().isEmpty()) {
 			retrievePlans(originalServer);
 		} else {
 			model.removeAllElements();
 		}
 	}
 
-	private void retrievePlans(final Server server) {
-		queryServer = server;
+	private void retrievePlans(final BambooServerCfg queryServer) {
 		list.setEnabled(false);
 		if (isUseFavourite != null) {
 			cbUseFavouriteBuilds.setSelected(isUseFavourite);
 			isUseFavourite = null;
 		} else {
-			cbUseFavouriteBuilds.setSelected(server.getUseFavourite());
+			cbUseFavouriteBuilds.setSelected(queryServer.isUseFavourites());
 		}
 		model.removeAllElements();
 		statusPane.setText("Waiting for server plans...");
@@ -190,69 +196,71 @@ public class BambooPlansForm extends JPanel {
 		new Thread(new Runnable() {
 			public void run() {
 				progressAnimation.startProgressAnimation();
-				StringBuffer msg = new StringBuffer();
-				String key = getServerKey(server);
-				if (!serverPlans.containsKey(key)) {
-					Collection<BambooPlan> plans = null;
-					try {
-						plans = bambooServerFacade.getPlanList(server);
-					} catch (ServerPasswordNotProvidedException e) {
-						msg.append("Unable to connect: password for server not provided\n");
-					} catch (RemoteApiException e) {
-						msg.append("Unable to connect: ");
-						msg.append(e.getMessage());
-						msg.append("\n");
-					}
-					List<BambooPlanItem> plansForServer = new ArrayList<BambooPlanItem>();
-					if (plans != null) {
-						for (BambooPlan plan : plans) {
-							plansForServer.add(new BambooPlanItem(plan, false));
-						}
-						msg.append("Build plans updated from server\n");
-					}
-					if (!server.transientGetSubscribedPlans().isEmpty()) {
-						for (SubscribedPlan sPlan : server.transientGetSubscribedPlans()) {
-							boolean exists = false;
-							for (BambooPlanItem bambooPlanItem : plansForServer) {
-								if (bambooPlanItem.getPlan().getPlanKey().equals(sPlan.getPlanId())) {
-									exists = true;
-									break;
-								}
-							}
-							if (!exists) {
-								BambooPlanData p = new BambooPlanData(sPlan.getPlanId(), sPlan.getPlanId());
-								p.setEnabled(false);
-								p.setFavourite(false);
-								plansForServer.add(new BambooPlanItem(p, true));
-							}
-						}
-						msg.append("Build plans updated based on stored configuration");
-					}
-					serverPlans.put(key, plansForServer);
-				} else {
-					msg.append("Build plans updated based on cached values");
-				}
-				final String message = msg.toString();
-				EventQueue.invokeLater(new Runnable() {
-					public void run() {
-						updatePlanNames(server, message);
-					}
-				});
+                StringBuilder msg = new StringBuilder();
+                try {
+                    ServerId key = queryServer.getServerId();
+                    if (!serverPlans.containsKey(key)) {
+                        Collection<BambooPlan> plans;
+                        try {
+                            plans = bambooServerFacade.getPlanList(queryServer);
+                        } catch (ServerPasswordNotProvidedException e) {
+                            msg.append("Unable to connect: password for server not provided\n");
+                            return;
+                        } catch (RemoteApiException e) {
+                            msg.append("Unable to connect: ");
+                            msg.append(e.getMessage());
+                            msg.append("\n");
+                            return;
+                        }
+                        List<BambooPlanItem> plansForServer = new ArrayList<BambooPlanItem>();
+                        if (plans != null) {
+                            for (BambooPlan plan : plans) {
+                                plansForServer.add(new BambooPlanItem(plan, false));
+                            }
+                            msg.append("Build plans updated from server\n");
+                        }
+                        for (SubscribedPlan sPlan : queryServer.getSubscribedPlans()) {
+                            boolean exists = false;
+                            for (BambooPlanItem bambooPlanItem : plansForServer) {
+                                if (bambooPlanItem.getPlan().getPlanKey().equals(sPlan.getPlanId())) {
+                                    exists = true;
+                                    break;
+                                }
+                            }
+                            if (!exists) {
+                                BambooPlanData p = new BambooPlanData(sPlan.getPlanId(), sPlan.getPlanId());
+                                p.setEnabled(false);
+                                p.setFavourite(false);
+                                plansForServer.add(new BambooPlanItem(p, true));
+                            }
+                        }
+                        msg.append("Build plans updated based on stored configuration");
+                        serverPlans.put(key, plansForServer);
+                    } else {
+                        msg.append("Build plans updated based on cached values");
+                    }
+            } finally {
+                progressAnimation.stopProgressAnimation();
+                final String message = msg.toString();
+                EventQueue.invokeLater(new Runnable() {
+                    public void run() {
+                        updatePlanNames(queryServer, message);
+                    }
+                });
+            }
 
-				progressAnimation.stopProgressAnimation();
-
-			}
+            }
 		}, "atlassian-idea-plugin bamboo panel retrieve plans").start();
 	}
 
-	private void updatePlanNames(Server server, String message) {
-		if (server.equals(queryServer)) {
-			List<BambooPlanItem> plans = serverPlans.get(getServerKey(server));
+	private synchronized void updatePlanNames(BambooServerCfg server, String message) {
+		if (server.equals(originalServer)) {
+			List<BambooPlanItem> plans = serverPlans.get(server.getServerId());
 			if (plans != null) {
 				model.removeAllElements();
 				for (BambooPlanItem plan : plans) {
 					plan.setSelected(false);
-					for (SubscribedPlan sPlan : server.transientGetSubscribedPlans()) {
+					for (SubscribedPlan sPlan : server.getSubscribedPlans()) {
 						if (sPlan.getPlanId().equals(plan.getPlan().getPlanKey())) {
 							plan.setSelected(true);
 							break;
@@ -270,29 +278,28 @@ public class BambooPlansForm extends JPanel {
 		}
 	}
 
-	public Server getData() {
-		Server server = new ServerBean();
-
-		for (int i = 0; i < model.getSize(); ++i) {
+	public void saveData() {
+        if (originalServer == null) {
+            return;
+        }
+        originalServer.clearSubscribedPlans();
+        for (int i = 0; i < model.getSize(); ++i) {
 			if (model.getElementAt(i) instanceof BambooPlanItem) {
 				BambooPlanItem p = (BambooPlanItem) model.getElementAt(i);
 
 				if (p.isSelected()) {
-					SubscribedPlan spb = new SubscribedPlanBean();
-					spb.setPlanId(p.getPlan().getPlanKey());
-					server.transientGetSubscribedPlans().add(spb);
+					SubscribedPlan spb = new SubscribedPlan(p.getPlan().getPlanKey());
+					originalServer.getSubscribedPlans().add(spb);
 				}
 			}
 		}
-		server.setUseFavourite(cbUseFavouriteBuilds.isSelected());
-
-		return server;
+		originalServer.setUseFavourites(cbUseFavouriteBuilds.isSelected());
 	}
 
 	public boolean isModified() {
 		boolean isFavModified = false;
 		if (originalServer != null) {
-			if (cbUseFavouriteBuilds.isSelected() != originalServer.getUseFavourite()) {
+			if (cbUseFavouriteBuilds.isSelected() != originalServer.isUseFavourites()) {
 				isFavModified = true;
 			}
 		} else {
@@ -302,7 +309,8 @@ public class BambooPlansForm extends JPanel {
 		return isListModified || isFavModified;
 	}
 
-	public void setEnabled(boolean enabled) {
+	@Override
+    public void setEnabled(boolean enabled) {
 		super.setEnabled(enabled);
 		list.setEnabled(enabled);
 	}

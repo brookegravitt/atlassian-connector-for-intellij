@@ -16,9 +16,7 @@
 
 package com.atlassian.theplugin.bamboo;
 
-import com.atlassian.theplugin.commons.configuration.ServerBean;
 import com.atlassian.theplugin.commons.bamboo.*;
-import com.atlassian.theplugin.commons.Server;
 import com.gargoylesoftware.htmlunit.StringWebResponse;
 import com.gargoylesoftware.htmlunit.TopLevelWindow;
 import com.gargoylesoftware.htmlunit.WebClient;
@@ -63,13 +61,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 		super.setUp();
 
 		output = new StatusListenerResultCatcher();
-        final ServerBean server = new ServerBean();
-        server.setName("Test Server");
-        testedListener = new StausIconBambooListener(output, null) {
-            protected Server getServerFromUrl(String serverUrl)   {
-                return server;
-            }
-        };
+        testedListener = new StausIconBambooListener(output);
 	}
 
 	public void testUpdateDisplay() {
@@ -78,11 +70,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 
 		// create mock and tested object
 		BambooStatusDisplay mockDisplay = EasyMock.createMock(BambooStatusDisplay.class);
-		StausIconBambooListener bambooListener = new StausIconBambooListener(mockDisplay, null) {
-			protected Server getServerFromUrl(String serverUrl) {
-				return new ServerBean();
-			}
-		};
+		StausIconBambooListener bambooListener = new StausIconBambooListener(mockDisplay);
 
 		// record mock
 		mockDisplay.updateBambooStatus(EasyMock.eq(BuildStatus.UNKNOWN), EasyMock.isA(BambooPopupInfo.class));
@@ -104,11 +92,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 
 		// create mock display and tested listener
 		BambooStatusDisplay mockDisplay = EasyMock.createMock(BambooStatusDisplay.class);
-		StausIconBambooListener bambooListener = new StausIconBambooListener(mockDisplay, null) {
-			protected Server getServerFromUrl(String serverUrl) {
-				return new ServerBean();
-			}
-		};
+		StausIconBambooListener bambooListener = new StausIconBambooListener(mockDisplay);
 
 		// record mock
 		mockDisplay.updateBambooStatus(EasyMock.eq(BuildStatus.BUILD_SUCCEED), EasyMock.isA(BambooPopupInfo.class));
@@ -129,11 +113,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 
 		// create mock display and tested listener
 		BambooStatusDisplay mockDisplay = EasyMock.createMock(BambooStatusDisplay.class);
-		StausIconBambooListener bambooListener = new StausIconBambooListener(mockDisplay, null) {
-			protected Server getServerFromUrl(String serverUrl) {
-				return new ServerBean();
-			}
-		};
+		StausIconBambooListener bambooListener = new StausIconBambooListener(mockDisplay);
 
 		// record mock
 		mockDisplay.updateBambooStatus(EasyMock.eq(BuildStatus.BUILD_SUCCEED), EasyMock.isA(BambooPopupInfo.class));
@@ -153,11 +133,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 
 		// create mock display and tested listener
 		BambooStatusDisplay mockDisplay = EasyMock.createMock(BambooStatusDisplay.class);
-		StausIconBambooListener bambooListener = new StausIconBambooListener(mockDisplay, null) {
-			protected Server getServerFromUrl(String serverUrl) {
-				return new ServerBean();
-			}
-		};
+		StausIconBambooListener bambooListener = new StausIconBambooListener(mockDisplay);
 
 		// record mock
 		mockDisplay.updateBambooStatus(EasyMock.eq(BuildStatus.UNKNOWN), EasyMock.isA(BambooPopupInfo.class));

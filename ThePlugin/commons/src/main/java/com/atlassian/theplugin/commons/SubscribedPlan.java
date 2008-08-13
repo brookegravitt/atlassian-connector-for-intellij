@@ -17,14 +17,43 @@
 package com.atlassian.theplugin.commons;
 
 /**
- * Created by IntelliJ IDEA.
- * User: sginter
- * Date: Jan 16, 2008
- * Time: 10:39:16 AM
- * To change this template use File | Settings | File Templates.
+ * This class is immutable
  */
-public interface SubscribedPlan {
-	String getPlanId();
+public final class SubscribedPlan {
+	private final String planId;
 
-	void setPlanId(String planId);
+	public SubscribedPlan(final SubscribedPlan cfg) {
+		planId = cfg.getPlanId();
+	}
+
+    public SubscribedPlan(final String planId) {
+        this.planId = planId;
+    }
+
+    public String getPlanId() {
+		return planId;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+
+		SubscribedPlan that = (SubscribedPlan) o;
+
+		if (!planId.equals(that.planId)) {
+			return false;
+		}
+
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		return planId.hashCode();
+	}
 }
