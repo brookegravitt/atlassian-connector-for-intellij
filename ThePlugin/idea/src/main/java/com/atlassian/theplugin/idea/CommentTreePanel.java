@@ -73,7 +73,7 @@ public class CommentTreePanel extends JPanel {
 	public CommentTreePanel(Project project, CrucibleFilteredModelProvider.FILTER filter) {
 		this.project = project;
 		this.filter = filter;
-		IdeaHelper.getReviewActionEventBroker().registerListener(crucibleAgent);
+		IdeaHelper.getReviewActionEventBroker(project).registerListener(crucibleAgent);
 		initialize();
 	}
 
@@ -127,7 +127,7 @@ public class CommentTreePanel extends JPanel {
 					switch (noOfClicks) {
 						case 1:
 							GeneralSectionNode anode = (GeneralSectionNode) node;
-							IdeaHelper.getReviewActionEventBroker().trigger(
+							IdeaHelper.getReviewActionEventBroker(project).trigger(
 									new FocusOnReviewEvent(crucibleAgent, anode.getReview()));
 							break;
 						default:
@@ -146,7 +146,7 @@ public class CommentTreePanel extends JPanel {
 						switch (noOfClicks) {
 							case 1:
 								FileNameNode anode = (FileNameNode) node;
-								IdeaHelper.getReviewActionEventBroker().trigger(
+								IdeaHelper.getReviewActionEventBroker(project).trigger(
 										new FocusOnFileEvent(crucibleAgent, anode.getReview(), anode.getFile()));
 								break;
 							default:
@@ -623,7 +623,7 @@ public class CommentTreePanel extends JPanel {
 								anode.getReview(),
 								anode.getFile(), anode.getComment());
 					}
-					IdeaHelper.getReviewActionEventBroker().trigger(
+					IdeaHelper.getReviewActionEventBroker(project).trigger(
 							event);
 					break;
 				case 2:
@@ -637,7 +637,7 @@ public class CommentTreePanel extends JPanel {
 								anode.getReview(),
 								anode.getFile(), anode.getComment());
 					}
-					IdeaHelper.getReviewActionEventBroker().trigger(
+					IdeaHelper.getReviewActionEventBroker(project).trigger(
 							event);
 					break;
 				default:
@@ -652,7 +652,7 @@ public class CommentTreePanel extends JPanel {
 			switch (noOfClicks) {
 				case 1:
 					GeneralCommentTreeNode anode = (GeneralCommentTreeNode) node;
-					IdeaHelper.getReviewActionEventBroker().trigger(
+					IdeaHelper.getReviewActionEventBroker(project).trigger(
 							new FocusOnReviewEvent(crucibleAgent, anode.getReview()));
 					break;
 				default:

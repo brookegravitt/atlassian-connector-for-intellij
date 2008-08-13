@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.action.tree.file;
 
 import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.project.Project;
 
 /**
  * Created by IntelliJ IDEA.
@@ -28,7 +29,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  */
 public class ToggleViewAction extends TreeAction {
 
-    protected void executeTreeAction(final AtlassianTreeWithToolbar tree) {
+    protected void executeTreeAction(final Project project, final AtlassianTreeWithToolbar tree) {
         tree.changeState();
     }
 

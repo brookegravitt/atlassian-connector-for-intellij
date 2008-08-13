@@ -28,6 +28,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 
 /**
@@ -73,6 +74,7 @@ public class CommentAction extends AnAction {
 		if (ed == null) {
 			return;
 		}
+		Project project = DataKeys.PROJECT_CONTEXT.getData(e.getDataContext());
 
 		int start = ed.getDocument().getLineNumber(ed.getSelectionModel().getSelectionStart()) + 1;
 		int end = ed.getDocument().getLineNumber(ed.getSelectionModel().getSelectionEnd()) + 1;
@@ -82,6 +84,6 @@ public class CommentAction extends AnAction {
 
 		AddLineComment addComment = new AddLineComment(CrucibleReviewActionListener.ANONYMOUS,
 				review, reviewItem, ed, start, end);
-		IdeaHelper.getReviewActionEventBroker().trigger(addComment);
+		IdeaHelper.getReviewActionEventBroker(project).trigger(addComment);
 	}
 }

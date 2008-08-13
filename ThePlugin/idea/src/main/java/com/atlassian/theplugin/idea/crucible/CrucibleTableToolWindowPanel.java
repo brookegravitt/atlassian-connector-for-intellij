@@ -366,7 +366,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 			}
 
 			if (noClicks == 2) {
-				IdeaHelper.getReviewActionEventBroker().trigger(new ShowReviewEvent(
+				IdeaHelper.getReviewActionEventBroker(project).trigger(new ShowReviewEvent(
 						listener, selectedItem));
 			}
 		}

@@ -16,6 +16,8 @@
 
 package com.atlassian.theplugin.idea.action.crucible;
 
+import com.intellij.openapi.project.Project;
+
 //import com.intellij.openapi.actionSystem.AnAction;
 //import com.intellij.openapi.actionSystem.AnActionEvent;
 //import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
@@ -31,7 +33,7 @@ package com.atlassian.theplugin.idea.action.crucible;
  */
 public class GetGeneralCommentRepliesAction extends TableSelectedAction {
 
-	protected void itemSelected(Object row) {
+	protected void itemSelected(final Project project, Object row) {
 //		GeneralComment selectedComment = (GeneralComment) row;
 //			IdeaHelper.getCurrentReviewActionEventBroker().trigger(
 //					new FocusOnGeneralCommentReplyEvent(
