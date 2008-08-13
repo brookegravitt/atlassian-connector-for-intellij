@@ -386,12 +386,25 @@ public final class VcsIdeaHelper {
 				});
 
 			}
+		} else {
+			ApplicationManager.getApplication().invokeLater(new Runnable() {
+				public void run() {
+					Messages.showErrorDialog(project,
+							"Your project does not contain requested file.",
+							"File not found");
+				}
+			});
 		}
 	}
 
-	public static void openFile(final Project project, @NotNull final VirtualFile virtualFile,
-			@NotNull final String fileRevision, final int line, final int col,
-			@Nullable final OpenFileDescriptorAction action) {
+	public static void openFile
+			(
+					final Project project,
+					@NotNull final VirtualFile virtualFile,
+					@NotNull final String fileRevision,
+					final int line,
+					final int col,
+					@Nullable final OpenFileDescriptorAction action) {
 
 		// do we have the same file revision opened in our project?
 		ApplicationManager.getApplication().invokeLater(new Runnable() {
