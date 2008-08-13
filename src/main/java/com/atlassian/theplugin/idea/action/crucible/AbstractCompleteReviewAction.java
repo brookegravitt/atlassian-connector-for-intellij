@@ -56,7 +56,7 @@ public abstract class AbstractCompleteReviewAction extends AnAction {
                 try {
                     if (rd.getActions().contains(getRequestedAction())) {
                         for (Reviewer reviewer : rd.getReviewers()) {
-                            if (reviewer.getUserName().equals(rd.getServer().getUserName())) {
+                            if (reviewer.getUserName().equals(rd.getServer().getUsername())) {
                                 if (reviewer.isCompleted() == !getCompletionStatus()) {
                                     event.getPresentation().setEnabled(true);
                                     event.getPresentation().setVisible(true);

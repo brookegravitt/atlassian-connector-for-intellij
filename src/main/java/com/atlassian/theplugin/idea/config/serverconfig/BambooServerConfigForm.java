@@ -17,13 +17,13 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
+import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.exception.ThePluginException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.util.Connector;
-import com.atlassian.theplugin.commons.Server;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import org.apache.log4j.Category;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,38 +31,40 @@ import java.awt.*;
 /**
  * Plugin configuration form.
  */
-public class BambooServerConfigForm extends JComponent implements ServerPanel {
-
-	private static final Category LOG = Category.getInstance(BambooServerConfigForm.class);
+public class BambooServerConfigForm {
 
 	private JPanel rootComponent;
 
 	private BambooPlansForm planList;
+
 	private transient GenericServerConfigForm genericServerConfigForm;
 	private final transient BambooServerFacade bambooServerFacade;
 
-	public BambooServerConfigForm(BambooServerFacade bambooServerFacadeInstance) {
+    public BambooServerCfg getBambooServerCfg() {
+        return bambooServerCfg;
+    }
+
+    private BambooServerCfg bambooServerCfg;
+
+    public BambooServerConfigForm(BambooServerFacade bambooServerFacadeInstance) {
 		this.bambooServerFacade = bambooServerFacadeInstance;
 
 		$$$setupUI$$$();
 	}
 
-	public void setData(Server aServer) {
-		genericServerConfigForm.setData(aServer);
-		planList.setEnabled(!aServer.getUseFavourite());
-		planList.setData(aServer);
+    public void setData(@NotNull final BambooServerCfg serverCfg) {
+        bambooServerCfg = serverCfg;
+        genericServerConfigForm.setData(serverCfg);
+        planList.setEnabled(!serverCfg.isUseFavourites());
+        planList.setData(serverCfg);
 
-	}
+    }
 
-	public Server getData() {
-		Server server = genericServerConfigForm.getData();
 
-		Server s = planList.getData();
-		server.transientSetSubscribedPlans(s.transientGetSubscribedPlans());
-		server.setUseFavourite(s.getUseFavourite());
-
-		return server;
-	}
+	public void saveData() {
+		genericServerConfigForm.saveData();
+		planList.saveData();
+    }
 
 	public boolean isModified() {
 		return genericServerConfigForm.isModified() || planList.isModified();
@@ -79,7 +81,8 @@ public class BambooServerConfigForm extends JComponent implements ServerPanel {
 
 	private void createUIComponents() {
 		genericServerConfigForm = new GenericServerConfigForm(new Connector() {
-			public void connect() throws ThePluginException {
+			@Override
+            public void connect() throws ThePluginException {
 				try {
 					bambooServerFacade.testServerConnection(getUrl(), getUserName(), getPassword());
 				} catch (IllegalArgumentException e) {
@@ -89,7 +92,7 @@ public class BambooServerConfigForm extends JComponent implements ServerPanel {
 				}
 			}
 		});
-		planList = new BambooPlansForm(bambooServerFacade, genericServerConfigForm);
+		planList = new BambooPlansForm(bambooServerFacade, bambooServerCfg, this);
 	}
 
 	/**
@@ -116,4 +119,10 @@ public class BambooServerConfigForm extends JComponent implements ServerPanel {
 	public JComponent $$$getRootComponent$$$() {
 		return rootComponent;
 	}
+
+	// for use by unit test only
+	public GenericServerConfigForm getGenericServerConfigForm() {
+		return genericServerConfigForm;
+	}
+
 }

@@ -36,7 +36,7 @@ public class QuickSearchAction extends AnAction {
             String query = Messages.showInputDialog(project, "Quick Search:",
                     "Search", IconLoader.getIcon("/actions/find.png"));
             if (query != null) {
-                BrowserUtil.launchBrowser(jiraServer.getServer().getUrlString()
+                BrowserUtil.launchBrowser(jiraServer.getServer().getUrl()
                         + "/secure/QuickSearch.jspa?searchString=" + UrlUtil.encodeUrl(query));
             }
         } else {

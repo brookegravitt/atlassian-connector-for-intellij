@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.jira;
 
-import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraFilterEntryBean;
 import com.atlassian.theplugin.configuration.JiraFiltersBean;
@@ -183,7 +183,8 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
         filters.setManualFilter(serializeQuery());
         filters.setSavedFilterUsed(false);
         projectConfiguration.
-                getJiraConfiguration().setFiltersBean(IdeaHelper.getCurrentJIRAServer().getServer().getUid(), filters);
+                getJiraConfiguration().setFiltersBean(
+				IdeaHelper.getCurrentJIRAServer().getServer().getServerId().toString(), filters);
         hideJIRAIssuesFilter();
         filterToolbarSetVisible(true);
     }
@@ -192,7 +193,8 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
         filters.setManualFilter(serializeQuery());
         filters.setSavedFilterUsed(false);
         projectConfiguration.
-                getJiraConfiguration().setFiltersBean(IdeaHelper.getCurrentJIRAServer().getServer().getUid(), filters);
+                getJiraConfiguration().setFiltersBean(
+				IdeaHelper.getCurrentJIRAServer().getServer().getServerId().toString(), filters);
         hideJIRAIssuesFilter();
         filterToolbarSetVisible(true);
     }
@@ -385,9 +387,9 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
     }
 
 
-    public void selectServer(Server server) {
+    public void selectServer(JiraServerCfg server) {
         if (server != null) {
-            projectConfiguration.getJiraConfiguration().setSelectedServerId(server.getUid());
+            projectConfiguration.getJiraConfiguration().setSelectedServerId(server.getServerId().toString());
             hideJIRAIssuesFilter();
             final JIRAServer jiraServer = new JIRAServer(server, jiraServerFacade);
             IdeaHelper.setCurrentJIRAServer(jiraServer);
@@ -436,7 +438,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
 
             if (jiraServer.equals(IdeaHelper.getCurrentJIRAServer())) {
                 filters = projectConfiguration.getJiraConfiguration()
-                        .getJiraFilters(IdeaHelper.getCurrentJIRAServer().getServer().getUid());
+                        .getJiraFilters(IdeaHelper.getCurrentJIRAServer().getServer().getServerId().toString());
                 if (filters == null) {
                     filters = new JiraFiltersBean();
                 }
@@ -637,7 +639,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
         }
         startIndex = 0;
         projectConfiguration.getJiraConfiguration().
-                setFiltersBean(IdeaHelper.getCurrentJIRAServer().getServer().getUid(), filters);
+                setFiltersBean(IdeaHelper.getCurrentJIRAServer().getServer().getServerId().toString(), filters);
     }
 
     @SuppressWarnings("unchecked")
@@ -660,7 +662,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
         }
         final JIRAIssue issue = adapter.getIssue();
         try {
-            assignIssue(issue, IdeaHelper.getCurrentJIRAServer().getServer().getUserName());
+            assignIssue(issue, IdeaHelper.getCurrentJIRAServer().getServer().getUsername());
         } catch (NullPointerException ex) {
             // whatever, means action was called when no issue was selected. Let's just swallow it
         }
@@ -749,7 +751,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
                     try {
                         Calendar cal = Calendar.getInstance();
                         cal.setTime(workLogCreate.getStartDate());
-						Server server = IdeaHelper.getCurrentJIRAServer().getServer();
+						JiraServerCfg server = IdeaHelper.getCurrentJIRAServer().getServer();
 						String newRemainingEstimate = workLogCreate.getUpdateRemainingManually()
                                 ? workLogCreate.getRemainingEstimateString() : null;
 						jiraServerFacade.logWork(server, issue, workLogCreate.getTimeSpentString(),

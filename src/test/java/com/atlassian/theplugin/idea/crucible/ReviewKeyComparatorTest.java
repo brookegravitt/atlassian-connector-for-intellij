@@ -19,7 +19,6 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.crucible.table.column.ReviewKeyComparator;
-import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.VirtualFileSystem;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import junit.framework.TestCase;
@@ -54,15 +53,7 @@ public class ReviewKeyComparatorTest extends TestCase {
 	private Review getReviewAdapter(final String projectKey, final String key) {
 		return new Review() {
 
-			public String getReviewUrl() {
-				return null;
-			}
-
 			public List<Reviewer> getReviewers() {
-				return null;
-			}
-
-			public Server getServer() {
 				return null;
 			}
 

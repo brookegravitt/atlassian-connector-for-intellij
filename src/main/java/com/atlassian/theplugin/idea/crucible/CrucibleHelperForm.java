@@ -16,14 +16,14 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.Server;
-import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
-import com.atlassian.theplugin.commons.configuration.ProductServerConfiguration;
+import com.atlassian.theplugin.commons.cfg.CfgManagerSingleton;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.Project;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.cfg.CfgUtil;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import static com.intellij.openapi.ui.Messages.showMessageDialog;
@@ -57,30 +57,34 @@ public class CrucibleHelperForm extends DialogWrapper {
 
     private CrucibleServerFacade crucibleServerFacade;
     private ChangeList[] changes;
-    private PermId permId;
+	private final com.intellij.openapi.project.Project project;
+	private PermId permId;
     private String rev;
     private String patch;
     private AddMode mode;
 
-    protected CrucibleHelperForm(CrucibleServerFacade crucibleServerFacade, PermId permId, ChangeList[] changes) {
-        this(crucibleServerFacade);
-        this.permId = permId;
+    protected CrucibleHelperForm(com.intellij.openapi.project.Project project, CrucibleServerFacade crucibleServerFacade,
+			PermId permId, ChangeList[] changes) {
+        this(project, crucibleServerFacade);
+		this.permId = permId;
         this.changes = changes;
         this.mode = AddMode.ADDREVISION;
         setTitle("Add revision");
         getOKAction().putValue(Action.NAME, "Add revision...");
     }
 
-    protected CrucibleHelperForm(CrucibleServerFacade crucibleServerFacade, String rev) {
-        this(crucibleServerFacade);
+    protected CrucibleHelperForm(com.intellij.openapi.project.Project project, CrucibleServerFacade crucibleServerFacade,
+			String rev) {
+        this(project, crucibleServerFacade);
         this.rev = rev;
         this.mode = AddMode.VIEWREVISION;
         setTitle("View revision");
         getOKAction().putValue(Action.NAME, "View revision...");
     }
 
-    protected CrucibleHelperForm(CrucibleServerFacade crucibleServerFacade, PermId permId, String patch) {
-        this(crucibleServerFacade);
+    protected CrucibleHelperForm(com.intellij.openapi.project.Project project, CrucibleServerFacade crucibleServerFacade,
+			PermId permId, String patch) {
+        this(project, crucibleServerFacade);
         this.permId = permId;
         this.patch = patch;
         this.mode = AddMode.ADDPATCH;
@@ -88,17 +92,19 @@ public class CrucibleHelperForm extends DialogWrapper {
         getOKAction().putValue(Action.NAME, "Add patch...");
     }
 
-    private CrucibleHelperForm(CrucibleServerFacade crucibleServerFacade) {
+    private CrucibleHelperForm(com.intellij.openapi.project.Project project, CrucibleServerFacade crucibleServerFacade) {
         super(false);
 
         this.crucibleServerFacade = crucibleServerFacade;
-        $$$setupUI$$$();
+		this.project = project;
+		$$$setupUI$$$();
         init();
 
         crucibleServersComboBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (crucibleServersComboBox.getItemCount() > 0 && crucibleServersComboBox.getSelectedItem() != null && crucibleServersComboBox.getSelectedItem() instanceof ServerComboBoxItem) {
-                    fillServerRelatedCombos(((ServerComboBoxItem) crucibleServersComboBox.getSelectedItem()).getServer());
+					final ServerComboBoxItem boxItem = (ServerComboBoxItem) crucibleServersComboBox.getSelectedItem();
+					fillServerRelatedCombos(boxItem.getServer());
                 }
             }
         });
@@ -147,9 +153,9 @@ public class CrucibleHelperForm extends DialogWrapper {
     }
 
     private static final class ServerComboBoxItem {
-        private final Server server;
+        private final CrucibleServerCfg server;
 
-        private ServerComboBoxItem(Server server) {
+        private ServerComboBoxItem(CrucibleServerCfg server) {
             this.server = server;
         }
 
@@ -157,28 +163,27 @@ public class CrucibleHelperForm extends DialogWrapper {
             return server.getName();
         }
 
-        public Server getServer() {
+        public CrucibleServerCfg getServer() {
             return server;
         }
     }
 
     private void fillInCrucibleServers() {
-        ProductServerConfiguration crucibleConfiguration =
-                ConfigurationFactory.getConfiguration().getProductServers(ServerType.CRUCIBLE_SERVER);
+		final Collection<CrucibleServerCfg> enabledServers = CfgManagerSingleton.getCfgManager()
+				.getAllEnabledCrucibleServers(CfgUtil.getProjectId(project));
 
-        Collection<Server> enabledServers = crucibleConfiguration.transientgetEnabledServers();
         if (enabledServers.isEmpty()) {
             crucibleServersComboBox.setEnabled(false);
             crucibleServersComboBox.addItem("Enable a Crucible server first!");
             getOKAction().setEnabled(false);
         } else {
-            for (Server server : enabledServers) {
+            for (CrucibleServerCfg server : enabledServers) {
                 crucibleServersComboBox.addItem(new ServerComboBoxItem(server));
             }
         }
     }
 
-    private void fillServerRelatedCombos(final Server server) {
+    private void fillServerRelatedCombos(final CrucibleServerCfg server) {
         repoComboBox.removeAllItems();
         getOKAction().setEnabled(false);
 
@@ -208,7 +213,7 @@ public class CrucibleHelperForm extends DialogWrapper {
     }
 
     private void updateServerRelatedCombos(
-            Server server,
+            CrucibleServerCfg server,
             List<Repository> repositories) {
         repoComboBox.addItem("");
         if (!repositories.isEmpty()) {
@@ -247,8 +252,8 @@ public class CrucibleHelperForm extends DialogWrapper {
 
 
     protected void doOKAction() {
-        Server server = ((ServerComboBoxItem) crucibleServersComboBox.getSelectedItem()).getServer();
-        Repository repo = ((RepositoryComboBoxItem) this.repoComboBox.getSelectedItem()).getRepository();
+        CrucibleServerCfg server = ((ServerComboBoxItem) crucibleServersComboBox.getSelectedItem()).getServer();
+		Repository repo = ((RepositoryComboBoxItem) this.repoComboBox.getSelectedItem()).getRepository();
         switch (mode) {
             case ADDREVISION:
                 try {
@@ -264,7 +269,7 @@ public class CrucibleHelperForm extends DialogWrapper {
 
                 } catch (RemoteApiException e) {
                     showMessageDialog(e.getMessage(),
-                            "Error creating review: " + server.getUrlString(), Messages.getErrorIcon());
+                            "Error creating review: " + server.getUrl(), Messages.getErrorIcon());
                 } catch (ServerPasswordNotProvidedException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
@@ -277,14 +282,14 @@ public class CrucibleHelperForm extends DialogWrapper {
 
                 } catch (RemoteApiException e) {
                     showMessageDialog(e.getMessage(),
-                            "Error creating review: " + server.getUrlString(), Messages.getErrorIcon());
+                            "Error creating review: " + server.getUrl(), Messages.getErrorIcon());
                 } catch (ServerPasswordNotProvidedException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
                 break;
 
             case VIEWREVISION:
-                String url = server.getUrlString() + "/changelog/" + repo.getName() + "/?cs=" + rev;
+                String url = server.getUrl() + "/changelog/" + repo.getName() + "/?cs=" + rev;
                 BrowserUtil.launchBrowser(url);
                 super.doOKAction();                
                 break;

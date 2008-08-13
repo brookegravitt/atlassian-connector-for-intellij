@@ -24,6 +24,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.commons.util.Logger;
+import com.atlassian.theplugin.commons.cfg.CfgManagerSingleton;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.CrucibleReviewWindow;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -178,7 +179,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 		progressAnimation.configure(this, tablePane, BorderLayout.CENTER);
 
 		createFilterEditToolBar(getPlaceName(), "ThePlugin.Crucible.FilterEditToolBar");
-		this.crucibleCustomFilterPanel = new CrucibleCustomFilterPanel();
+		this.crucibleCustomFilterPanel = new CrucibleCustomFilterPanel(project, CfgManagerSingleton.getCfgManager());
 		filters = projectCfg.getCrucibleConfiguration().getCrucibleFilters();
 		if (filters.getReadStored() == null) {
 			filters.getPredefinedFilters()[PredefinedFilter.ToReview.ordinal()] = true;

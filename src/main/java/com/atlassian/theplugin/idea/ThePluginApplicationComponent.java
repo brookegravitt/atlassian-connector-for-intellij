@@ -17,24 +17,24 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.SchedulableChecker;
-import com.atlassian.theplugin.commons.UIActionScheduler;
-import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
-import com.atlassian.theplugin.commons.bamboo.BambooStatusChecker;
+import com.atlassian.theplugin.commons.ConfigurationListener;
+import com.atlassian.theplugin.commons.cfg.CfgManagerSingleton;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.ProjectId;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
-import com.atlassian.theplugin.commons.configuration.CrucibleTooltipOption;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.util.HttpClientFactory;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
-import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
-import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
 import com.atlassian.theplugin.util.HttpConfigurableIdeaImpl;
 import com.atlassian.theplugin.util.PicoUtil;
 import com.atlassian.theplugin.util.PluginTrustManager;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.atlassian.theplugin.cfg.CfgUtil;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
@@ -49,6 +49,7 @@ import com.intellij.openapi.util.IconLoader;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 import javax.net.ssl.TrustManager;
 import javax.swing.*;
@@ -57,9 +58,11 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.Timer;
 
-@State(name = "ThePluginSettings", storages = { @Storage(id = "thePlugin", file = "$APP_CONFIG$/thePlugin.xml") })
+@State(name = "atlassian-ide-plugin",
+		storages = { @Storage(id = "atlassian-ide-plugin-id", file = "$APP_CONFIG$/atlassian-ide-plugin.app.xml") })
 public class ThePluginApplicationComponent
-		implements ApplicationComponent, Configurable, PersistentStateComponent<PluginConfigurationBean> {
+		implements ApplicationComponent, Configurable, PersistentStateComponent<PluginConfigurationBean>,
+		ConfigurationListener {
 
 	static {
 		AreaPicoContainer apc = Extensions.getRootArea().getPicoContainer();
@@ -69,29 +72,26 @@ public class ThePluginApplicationComponent
 	private static final Icon PLUGIN_SETTINGS_ICON = IconLoader.getIcon("/icons/ico_plugin.png");
 
 
-	private final ConfigPanel configPanel;
+	private ConfigPanel configPanel;
 	private final PluginConfigurationBean configuration;
 
 	private final Timer timer = new Timer("atlassian-idea-plugin background status checkers");
 	private static final int TIMER_START_DELAY = 20000;
 
 	private final Collection<TimerTask> scheduledComponents = new HashSet<TimerTask>();
+
+	public Collection<SchedulableChecker> getSchedulableCheckers() {
+		return schedulableCheckers;
+	}
+
 	private final Collection<SchedulableChecker> schedulableCheckers = new HashSet<SchedulableChecker>();
 
-    private final BambooStatusChecker bambooStatusChecker;
-	private final CrucibleStatusChecker crucibleStatusChecker;
 
 	private final JIRAServerFacade jiraServerFacade;
 
-	BambooStatusChecker getBambooStatusChecker() {
-		return bambooStatusChecker;
-	}
-
-
-
 	@Nls
 	public String getDisplayName() {
-		return PluginUtil.getInstance().getName();
+		return "Atlassian Plugin Global Settings";
 	}
 
 	@Nullable
@@ -105,6 +105,7 @@ public class ThePluginApplicationComponent
 		return null;
 	}
 
+	@NotNull
 	@NonNls
 	public String getComponentName() {
 		return "ThePluginApplicationComponent";
@@ -121,41 +122,32 @@ public class ThePluginApplicationComponent
 	}
 
 	public JComponent createComponent() {
+		if (configPanel == null) {
+			configPanel = new ConfigPanel(configuration, CfgUtil.GLOBAL_PROJECT, CfgManagerSingleton.getCfgManager());
+		}
 		return configPanel;
 	}
 
 	public boolean isModified() {
-		return configPanel.isModified();
+		return true;
+		//return configPanel.isModified();
 	}
 
 	public JIRAServerFacade getJiraServerFacade() {
 		return jiraServerFacade;
 	}
 
-	public ThePluginApplicationComponent(PluginConfigurationBean configuration,
-										 CrucibleStatusChecker crucibleStatusChecker,
-										 /*ConfigPanel configPanel,*/
-										 SchedulableChecker[] schedulableCheckers,
-										 UIActionScheduler actionScheduler) {
+	public ThePluginApplicationComponent(PluginConfigurationBean configuration) {
 		this.configuration = configuration;
-		this.crucibleStatusChecker = crucibleStatusChecker;
 		this.configuration.transientSetHttpConfigurable(HttpConfigurableIdeaImpl.getInstance());
-		this.bambooStatusChecker = BambooStatusChecker.getInstance(
-				actionScheduler,
-				configuration,
-				new MissingPasswordHandler(BambooServerFacadeImpl.getInstance(PluginUtil.getLogger())),
-				PluginUtil.getLogger());
 
-        for (SchedulableChecker schedulableChecker : schedulableCheckers) {
-            this.schedulableCheckers.add(schedulableChecker);
-        }
-        this.schedulableCheckers.add(bambooStatusChecker);
 		this.schedulableCheckers.add(NewVersionChecker.getInstance(configuration));
 
-		this.configPanel = ConfigPanel.getInstance(configuration);
+		CfgManagerSingleton.getCfgManager().updateProjectConfiguration(CfgUtil.GLOBAL_PROJECT,
+				ProjectConfiguration.emptyConfiguration());
 		this.jiraServerFacade = JIRAServerFacadeImpl.getInstance();
 		ConfigurationFactory.setConfiguration(configuration);
-		TrustManager trustManager = null;
+		TrustManager trustManager;
 		try {
 			trustManager = new PluginTrustManager(configuration);
 			HttpClientFactory.initializeTrustManagers(trustManager);
@@ -203,8 +195,8 @@ public class ThePluginApplicationComponent
 	public void apply() throws ConfigurationException {
 		if (configPanel != null) {
 			// Get data from configPanel to component
-			configPanel.getData();
-			configPanel.setData();
+			configPanel.saveData();
+			//configPanel.setData();
 
 			for (Project project : ProjectManager.getInstance().getOpenProjects()) {
 				ThePluginProjectComponent projectComponent = project.getComponent(ThePluginProjectComponent.class);
@@ -213,13 +205,6 @@ public class ThePluginApplicationComponent
 				projectComponent.getStatusBarCrucibleIcon().showOrHideIcon();
 
 				projectComponent.getToolWindow().showHidePanels();
-
-				if (configuration.getCrucibleConfigurationData().getCrucibleTooltipOption()
-						!= CrucibleTooltipOption.NEVER) {
-					crucibleStatusChecker.registerListener(projectComponent.getCrucibleReviewNotifier());
-				} else {
-					crucibleStatusChecker.unregisterListener(projectComponent.getCrucibleReviewNotifier());
-				}
 			}
 			rescheduleStatusCheckers(true);
 		}
@@ -234,7 +219,7 @@ public class ThePluginApplicationComponent
 	}
 
 	public void disposeUIResources() {
-
+		configPanel = null;
 	}
 
 	public PluginConfigurationBean getState() {
@@ -244,5 +229,9 @@ public class ThePluginApplicationComponent
 	public void loadState(PluginConfigurationBean state) {
 		configuration.setConfiguration(state);
 		configuration.transientSetHttpConfigurable(HttpConfigurableIdeaImpl.getInstance());
+	}
+
+	public void updateConfiguration(final ProjectId project, final CfgManager cfgManager) {
+		rescheduleStatusCheckers(true);
 	}
 }

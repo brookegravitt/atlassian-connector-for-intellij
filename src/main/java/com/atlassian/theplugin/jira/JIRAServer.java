@@ -16,13 +16,28 @@
 
 package com.atlassian.theplugin.jira;
 
-import com.atlassian.theplugin.commons.Server;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.idea.jira.CachedIconLoader;
-import com.atlassian.theplugin.jira.api.*;
+import com.atlassian.theplugin.jira.api.JIRAComponentBean;
+import com.atlassian.theplugin.jira.api.JIRAConstant;
+import com.atlassian.theplugin.jira.api.JIRAException;
+import com.atlassian.theplugin.jira.api.JIRAFixForVersionBean;
+import com.atlassian.theplugin.jira.api.JIRAIssueTypeBean;
+import com.atlassian.theplugin.jira.api.JIRAPriorityBean;
+import com.atlassian.theplugin.jira.api.JIRAProject;
+import com.atlassian.theplugin.jira.api.JIRAProjectBean;
+import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
+import com.atlassian.theplugin.jira.api.JIRAResolutionBean;
+import com.atlassian.theplugin.jira.api.JIRAStatusBean;
+import com.atlassian.theplugin.jira.api.JIRAVersionBean;
 import com.atlassian.theplugin.util.PluginUtil;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class JIRAServer {
     private static final int VERSION_SPECIAL_VALUES_COUNT = 4;
@@ -33,7 +48,7 @@ public class JIRAServer {
     private static final int NO_COMPONENT_ID = -1;
     private static final int UNRESOLVED_ID = -1;
 
-    private Server server;
+    private final JiraServerCfg server;
     private boolean validServer = false;
     private String errorMessage = null;
 
@@ -58,30 +73,30 @@ public class JIRAServer {
 
     private final JIRAServerFacade jiraServerFacade;
 
-    public JIRAServer(JIRAServerFacade jiraServerFacade) {
-        this.jiraServerFacade = jiraServerFacade;
-        this.issueTypesCache = new HashMap<String, List<JIRAConstant>>();
-        this.serverVersionsCache = new HashMap<String, List<JIRAVersionBean>>();
-        this.componentsCache = new HashMap<String, List<JIRAComponentBean>>();
-    }
+//    private JIRAServer(JIRAServerFacade jiraServerFacade) {
+//        this.jiraServerFacade = jiraServerFacade;
+//        this.issueTypesCache = new HashMap<String, List<JIRAConstant>>();
+//        this.serverVersionsCache = new HashMap<String, List<JIRAVersionBean>>();
+//        this.componentsCache = new HashMap<String, List<JIRAComponentBean>>();
+//    }
 
-    public JIRAServer(Server server, JIRAServerFacade jiraServerFacade) {
-        this(jiraServerFacade);
+    public JIRAServer(JiraServerCfg server, JIRAServerFacade jiraServerFacade) {
+//        this(jiraServerFacade);
+		this.jiraServerFacade = jiraServerFacade;
+		this.issueTypesCache = new HashMap<String, List<JIRAConstant>>();
+		this.serverVersionsCache = new HashMap<String, List<JIRAVersionBean>>();
+		this.componentsCache = new HashMap<String, List<JIRAComponentBean>>();
         this.server = server;
     }
 
-    public Server getServer() {
+    public JiraServerCfg getServer() {
         return server;
-    }
-
-    public void setServer(Server server) {
-        this.server = server;
     }
 
     public boolean checkServer() {
         try {
-            jiraServerFacade.testServerConnection(server.getUrlString(), server.getUserName(),
-                    server.transientGetPasswordString());
+            jiraServerFacade.testServerConnection(server.getUrl(), server.getUsername(),
+                    server.getPassword());
             validServer = true;
         } catch (RemoteApiException e) {
             errorMessage = e.getMessage();

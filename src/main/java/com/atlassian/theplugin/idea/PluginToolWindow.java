@@ -16,8 +16,10 @@
 
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.commons.cfg.CfgManagerSingleton;
 import com.atlassian.theplugin.commons.exception.ThePluginException;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.util.Util;
@@ -57,6 +59,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 	private static final int INITIAL_NUMBER_OF_BOTTOM_TABS = 1;
 	private static final String CONFIGURE_TAB_NAME = "Configure";
 	public static final Icon ICON_CRUCIBLE = IconLoader.getIcon("/icons/crucible-16.png");
+	private final CfgManager cfgManager;
 
 
 	public static void showHidePluginWindow(AnActionEvent event) {
@@ -85,7 +88,8 @@ public class PluginToolWindow extends ContentManagerAdapter {
 	 * @param toolWindowManager ToolWindowManager object
 	 * @param project reference to the project
 	 */
-	public PluginToolWindow(ToolWindowManager toolWindowManager, Project project) {
+	public PluginToolWindow(ToolWindowManager toolWindowManager, Project project, CfgManager cfgManager) {
+		this.cfgManager = cfgManager;
 		this.ideaToolWindow = toolWindowManager.registerToolWindow(
 				TOOL_WINDOW_NAME, true, ToolWindowAnchor.RIGHT);
 		this.project = project;
@@ -118,7 +122,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 	public void showHidePanels() {
 		//stopTabChangeListener();
 
-		if (!ConfigurationFactory.getConfiguration().isAnyServerDefined()) {
+		if (cfgManager.getAllServers(CfgUtil.getProjectId(project)).size() == 0) {
 			// no servers defined, show config panel
 			if (ideaToolWindow.getContentManager().findContent(CONFIGURE_TAB_NAME) == null) {
 				Content content = PeerFactory.getInstance().getContentFactory().
@@ -140,7 +144,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 				ServerType serverType = Util.toolWindowPanelsToServerType(entry);
 
 				// servers are defined
-				if (ConfigurationFactory.getConfiguration().getProductServers(serverType).transientGetServers().size() > 0) {
+				if (cfgManager.getAllEnabledServers(CfgUtil.getProjectId(project), serverType).isEmpty() == false) {
 					// tab is not visible
 					if (ideaToolWindow.getContentManager().findContent(entry.toString()) == null) {
 
@@ -281,7 +285,8 @@ public class PluginToolWindow extends ContentManagerAdapter {
 			try {
 				ServerType serverType = Util.toolWindowPanelsToServerType(component);
 				// servers are defined
-				if (ConfigurationFactory.getConfiguration().getProductServers(serverType).transientGetServers().size() > 0) {
+				final CfgManager myCfgManager = CfgManagerSingleton.getCfgManager();
+				if (myCfgManager.getAllEnabledServers(CfgUtil.getProjectId(project), serverType).size() > 0) {
 					// tab is not visible
 					Content content =  tw.getContentManager().findContent(component.toString());
 					if (content == null) {
@@ -346,15 +351,18 @@ public class PluginToolWindow extends ContentManagerAdapter {
 		focusPanelIfExists(IdeaHelper.getCurrentProject(e.getDataContext()), component.toString());
 	}
 
+	@Override
 	public void contentAdded(ContentManagerEvent event) {
 		super.contentAdded(event);	//To change body of overridden methods use File | Settings | File Templates.
 	}
 
+	@Override
 	public void contentRemoved(ContentManagerEvent event) {
 		super.contentRemoved(event);	//To change body of overridden methods use File | Settings | File Templates.
 	}
 
 
+	@Override
 	public void selectionChanged(ContentManagerEvent event) {
 		//this.selectedContent = event.getContent().getDisplayName();
 

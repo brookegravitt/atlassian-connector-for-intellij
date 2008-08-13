@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.idea.PluginToolWindow;
 import com.atlassian.theplugin.idea.StatusBarPluginIcon;
 import com.intellij.openapi.project.Project;
@@ -43,8 +44,8 @@ public class CrucibleStatusIcon extends StatusBarPluginIcon {
 	private static final String NEW_REVIEWS = "New Crucible events are available. Click for details.";
 	private static final String ERROR_REVIEWS = "Some errors occured. Check connections to Crucible servers.";
 
-	public CrucibleStatusIcon(final Project project) {
-		super(project);
+	public CrucibleStatusIcon(final Project project, CfgManager cfgManager) {
+		super(project, cfgManager);
 		resetIcon();
 
 		addMouseListener(new MouseAdapter() {

@@ -16,22 +16,12 @@
 
 package com.atlassian.theplugin.idea.config.serverconfig.model;
 
-import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.Server;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
 
 public final class ServerNodeFactory {
     private ServerNodeFactory() { }
 
-    public static ServerNode getServerNode(ServerType serverType, Server server) {
-        switch (serverType) {
-            case BAMBOO_SERVER:
-                return new BambooServerNode(server);
-            case JIRA_SERVER:
-                return new JIRAServerNode(server);
-            case CRUCIBLE_SERVER:
-                return new CrucibleServerNode(server);
-            default:
-                return null;
-        }
+    public static ServerNode getServerNode(final ServerCfg server) {
+        return new ServerNode(server);
     }
 }

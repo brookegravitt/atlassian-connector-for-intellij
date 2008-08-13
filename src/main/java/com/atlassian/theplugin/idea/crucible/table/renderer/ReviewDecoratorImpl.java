@@ -49,7 +49,7 @@ public class ReviewDecoratorImpl implements ReviewDecorator {
 	 */
 	private void authorModeratorDecorator() {
 
-		String me = review.getServer().getUserName();
+		String me = review.getServer().getUsername();
 
 		if (review.getAuthor().getUserName().equals(me) || review.getModerator().getUserName().equals(me)) {
 			text = "<span style=\"color: #009900; \">"
@@ -64,7 +64,7 @@ public class ReviewDecoratorImpl implements ReviewDecorator {
 	 */
 	private void reviewerFinishedDecorator() {
 
-		String me = review.getServer().getUserName();
+		String me = review.getServer().getUsername();
 
 		try {
 			Reviewer reviewer = findReviewer(review.getReviewers(), me);

@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea.bamboo;
 
 import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.bamboo.BambooStatusDisplay;
 import com.atlassian.theplugin.commons.bamboo.BambooPopupInfo;
@@ -40,9 +41,9 @@ public class BambooStatusIcon extends StatusBarPluginIcon implements BambooStatu
 	/**
 	 * @param project reference to the project that owns this icon.
 	 */
-    public BambooStatusIcon(final Project project) {
+    public BambooStatusIcon(final Project project, CfgManager cfgManager) {
 
-		super(project);
+		super(project, cfgManager);
 
 		// show tooltip on mouse over
 //		tooltip = new PluginStatusBarToolTip(WindowManager.getInstance().getFrame(aProjectComponent.getProject()));
