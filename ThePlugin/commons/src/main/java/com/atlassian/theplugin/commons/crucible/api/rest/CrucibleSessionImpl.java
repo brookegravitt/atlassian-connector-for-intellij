@@ -107,7 +107,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			String loginUrl;
 			try {
 				if (username == null || aPassword == null) {
-					throw new RemoteApiLoginException("Corrupted configuration. Username or aPassword null");
+					throw new RemoteApiLoginException("Corrupted configuration. Username or Password null");
 				}
 				loginUrl = baseUrl + AUTH_SERVICE + LOGIN + "?userName=" + URLEncoder.encode(username, "UTF-8")
 						+ "&password=" + URLEncoder.encode(aPassword, "UTF-8");

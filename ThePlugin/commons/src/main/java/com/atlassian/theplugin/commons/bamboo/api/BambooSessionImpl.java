@@ -93,7 +93,7 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
         String loginUrl;
         try {
             if (name == null || aPassword == null) {
-                throw new RemoteApiLoginException("Corrupted configuration. Username or aPassword null");
+                throw new RemoteApiLoginException("Corrupted configuration. Username or Password null");
             }
             String pass = String.valueOf(aPassword);
             loginUrl = baseUrl + LOGIN_ACTION + "?username=" + URLEncoder.encode(name, "UTF-8") + "&password="
