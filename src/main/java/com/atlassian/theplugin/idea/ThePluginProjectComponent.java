@@ -46,6 +46,7 @@ import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupManager;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.peer.PeerFactory;
@@ -94,8 +95,7 @@ public class ThePluginProjectComponent implements
 	private PluginToolWindow toolWindow;
 
     private String reviewId;
-	private ReviewActionEventBroker crucibleActionBroker; // DON'T YOU DARE TO REMOVE IT!!!
-    // (a strong reference that lives as long as the project itself)
+	public static final Key<ReviewActionEventBroker> BROKER_KEY = Key.create("thePlugin.broker");
 
 	public ThePluginProjectComponent(Project project,
                                      CrucibleStatusChecker crucibleStatusChecker,
@@ -103,7 +103,6 @@ public class ThePluginProjectComponent implements
                                      PluginConfiguration pluginConfiguration,
                                      ProjectConfigurationBean projectConfigurationBean) {
 		this.project = project;
-		this.crucibleActionBroker = ReviewActionEventBroker.getInstance();
 		this.crucibleStatusChecker = crucibleStatusChecker;
 		this.toolWindowManager = toolWindowManager;
 		// todo remove that get instance as it can return null. it is better to get it from app component.
@@ -169,8 +168,9 @@ public class ThePluginProjectComponent implements
         // clean up object model confusion
 
         if (!created) {
+			project.putUserData(BROKER_KEY, new ReviewActionEventBroker());
 
-            // DependencyValidationManager.getHolder(project, "", )
+			// DependencyValidationManager.getHolder(project, "", )
 			this.bambooToolWindowPanel = BambooTableToolWindowPanel.getInstance(project, projectConfigurationBean);
 			this.crucibleToolWindowPanel = CrucibleTableToolWindowPanel.getInstance(project, projectConfigurationBean);
 			this.jiraToolWindowPanel = JIRAToolWindowPanel.getInstance(project, projectConfigurationBean);

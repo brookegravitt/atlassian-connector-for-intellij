@@ -162,8 +162,8 @@ public final class IdeaHelper {
         return (CrucibleTableToolWindowPanel) content.getComponent();
 	}
 
-	public static ReviewActionEventBroker getReviewActionEventBroker() {
-		return ReviewActionEventBroker.getInstance();
+	public static ReviewActionEventBroker getReviewActionEventBroker(Project project) {
+		return project.getUserData(ThePluginProjectComponent.BROKER_KEY);
 	}
 
     public static void handleRemoteApiException(final Project project, final RemoteApiException e) {

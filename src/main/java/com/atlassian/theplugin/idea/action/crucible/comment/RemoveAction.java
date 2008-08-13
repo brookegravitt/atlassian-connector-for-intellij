@@ -86,7 +86,7 @@ public class RemoveAction extends AbstractCommentAction {
 		int result = Messages.showYesNoDialog(project, "Are you sure you want remove your comment?", "Confirmation required",
 				Icons.TASK_ICON);
 		if (result == DialogWrapper.OK_EXIT_CODE) {
-			IdeaHelper.getReviewActionEventBroker().trigger(
+			IdeaHelper.getReviewActionEventBroker(project).trigger(
 					new CommentAboutToRemove(CrucibleReviewActionListener.ANONYMOUS,
 							review, comment));
 		}

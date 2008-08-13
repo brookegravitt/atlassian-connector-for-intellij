@@ -18,7 +18,6 @@ package com.atlassian.theplugin.idea.crucible.events;
 
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
-import com.atlassian.theplugin.idea.IdeaHelper;
 
 /**
  * Created by IntelliJ IDEA.
@@ -27,7 +26,7 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 * Time: 8:39:49 PM
 * To change this template use File | Settings | File Templates.
 */
-public abstract class CrucibleEvent implements Runnable {
+public abstract class CrucibleEvent {
 	protected CrucibleReviewActionListener caller;
 
 	protected CrucibleEvent(CrucibleReviewActionListener caller) {
@@ -36,8 +35,7 @@ public abstract class CrucibleEvent implements Runnable {
 
 	protected abstract void notify(CrucibleReviewActionListener listener);
 
-	public void run() {
-		ReviewActionEventBroker broker = IdeaHelper.getReviewActionEventBroker();
+	public void run(ReviewActionEventBroker broker) {
 		for (CrucibleReviewActionListener listener : broker.getListeners()) {
 			if (listener == caller) {
 				continue;

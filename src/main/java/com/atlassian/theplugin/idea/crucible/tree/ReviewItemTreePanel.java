@@ -62,7 +62,7 @@ public final class ReviewItemTreePanel extends JPanel {
 	public ReviewItemTreePanel(final Project project, final CrucibleFilteredModelProvider.FILTER filter) {
 		initLayout();
 		listener = new MyReviewActionListener(project);
-		IdeaHelper.getReviewActionEventBroker().registerListener(listener);
+		IdeaHelper.getReviewActionEventBroker(project).registerListener(listener);
 		this.filter = filter;
 	}
 
@@ -188,9 +188,9 @@ public final class ReviewItemTreePanel extends JPanel {
 						public AtlassianTreeModel getModel(final AtlassianTreeWithToolbar.STATE state) {
 							switch (state) {
 								case DIRED:
-									return FileTreeModelBuilder.buildTreeModelFromCrucibleChangeSet(reviewItem, files1);
+									return FileTreeModelBuilder.buildTreeModelFromCrucibleChangeSet(project, reviewItem, files1);
 								case FLAT:
-									return FileTreeModelBuilder.buildFlatModelFromCrucibleChangeSet(reviewItem, files1);
+									return FileTreeModelBuilder.buildFlatModelFromCrucibleChangeSet(project, reviewItem, files1);
 								default:
 									throw new IllegalStateException("Unknown model requested");
 							}

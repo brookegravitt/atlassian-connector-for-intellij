@@ -72,14 +72,14 @@ public final class FileTreeModelBuilder {
 	}
 
 
-	public static AtlassianTreeModel buildFlatModelFromCrucibleChangeSet(final ReviewData review,
+	public static AtlassianTreeModel buildFlatModelFromCrucibleChangeSet(final Project project, final ReviewData review,
 			List<CrucibleFileInfo> files) {
 		AtlassianTreeModel model = new FileTreeModel(new CrucibleChangeSetTitleNode(review, new AtlassianClickAction() {
 			public void execute(AtlassianTreeNode node, int noOfClicks) {
 				switch (noOfClicks) {
 					case 1:
 					case 2:
-						ReviewActionEventBroker broker = IdeaHelper.getReviewActionEventBroker();
+						ReviewActionEventBroker broker = IdeaHelper.getReviewActionEventBroker(project);
 						broker.trigger(new FocusOnGeneralComments(CrucibleReviewActionListener.ANONYMOUS, review));
 						break;
 					default:
@@ -90,7 +90,7 @@ public final class FileTreeModelBuilder {
 			//according to filter show only "proper files"
 			CrucibleFileNode childNode = new CrucibleFileNode(review, file, new AtlassianClickAction() {
 				public void execute(AtlassianTreeNode node, int noOfClicks) {
-					ReviewActionEventBroker broker = IdeaHelper.getReviewActionEventBroker();
+					ReviewActionEventBroker broker = IdeaHelper.getReviewActionEventBroker(project);
 					switch (noOfClicks) {
 						case 1:
 							broker.trigger(
@@ -111,14 +111,14 @@ public final class FileTreeModelBuilder {
 		return model;
 	}
 
-	public static AtlassianTreeModel buildTreeModelFromCrucibleChangeSet(final ReviewData review,
+	public static AtlassianTreeModel buildTreeModelFromCrucibleChangeSet(final Project project, final ReviewData review,
 			final List<CrucibleFileInfo> files) {
 		FileNode root = new CrucibleChangeSetTitleNode(review, new AtlassianClickAction() {
 			public void execute(AtlassianTreeNode node, int noOfClicks) {
 				switch (noOfClicks) {
 					case 1:
 					case 2:
-						ReviewActionEventBroker broker = IdeaHelper.getReviewActionEventBroker();
+						ReviewActionEventBroker broker = IdeaHelper.getReviewActionEventBroker(project);
 						broker.trigger(new FocusOnGeneralComments(CrucibleReviewActionListener.ANONYMOUS, review));
 						break;
 					default:
@@ -130,7 +130,7 @@ public final class FileTreeModelBuilder {
 			//according to filter show only "proper files"
 			CrucibleFileNode childNode = new CrucibleFileNode(review, f, new AtlassianClickAction() {
 				public void execute(AtlassianTreeNode node, int noOfClicks) {
-					ReviewActionEventBroker broker = IdeaHelper.getReviewActionEventBroker();
+					ReviewActionEventBroker broker = IdeaHelper.getReviewActionEventBroker(project);
 					switch (noOfClicks) {
 						case 1:
 							broker.trigger(new FocusOnFileComments(CrucibleReviewActionListener.ANONYMOUS, review, f));
@@ -170,27 +170,6 @@ public final class FileTreeModelBuilder {
 			FileNode node = createPlace(root, file);
 			node.addChild(new BambooFileNode(file, AtlassianClickAction.EMPTY_ACTION, psiFile));
 		}
-
-		public void addFile(FileNode root, final CrucibleFileInfo file, final ReviewData review) {
-			FileNode node = createPlace(root, file);
-			// todo lguminski to avoid creation of a new object for each node
-			node.addChild(new CrucibleFileNode(review, file, new AtlassianClickAction() {
-				public void execute(com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode node, int noOfClicks) {
-					ReviewActionEventBroker broker = IdeaHelper.getReviewActionEventBroker();
-					switch (noOfClicks) {
-						case 1:
-							broker.trigger(new FocusOnFileComments(CrucibleReviewActionListener.ANONYMOUS, review, file));
-							break;
-						case 2:
-							broker.trigger(new ShowFileEvent(CrucibleReviewActionListener.ANONYMOUS, review, file));
-							break;
-						default:
-							break;
-					}
-				}
-			}));
-		}
-
 
 		private FileNode createPlace(FileNode root, VersionedFileInfo file) {
 			int idx = 0;
