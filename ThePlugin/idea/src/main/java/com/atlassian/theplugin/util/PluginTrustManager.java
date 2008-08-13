@@ -54,7 +54,7 @@ public final class PluginTrustManager implements X509TrustManager {
 	private PluginConfiguration configuration;
 	private X509TrustManager standardTrustManager;
 
-	private PluginTrustManager(PluginConfiguration configuration) throws NoSuchAlgorithmException, KeyStoreException {
+	public PluginTrustManager(PluginConfiguration configuration) throws NoSuchAlgorithmException, KeyStoreException {
 		this.configuration = configuration;
 		TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
 		factory.init((KeyStore) null);
@@ -178,11 +178,5 @@ public final class PluginTrustManager implements X509TrustManager {
 	public X509Certificate[] getAcceptedIssuers() {
 		return standardTrustManager.getAcceptedIssuers();
 	}
-
-	public static synchronized PluginTrustManager getInstance(PluginConfiguration cofiguration)
-            throws NoSuchAlgorithmException, KeyStoreException {
-		return new PluginTrustManager(cofiguration);
-	}
-
 
 }

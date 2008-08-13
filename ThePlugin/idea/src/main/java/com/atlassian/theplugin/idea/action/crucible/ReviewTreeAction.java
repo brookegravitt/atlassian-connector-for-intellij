@@ -24,12 +24,13 @@ import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.file.CrucibleChangeSetTitleNode;
 import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.project.Project;
 
 import javax.swing.tree.TreeNode;
 
 public abstract class ReviewTreeAction extends TreeAction {
 
-	protected abstract void executeTreeAction(final AtlassianTreeWithToolbar tree);
+	protected abstract void executeTreeAction(final Project project, final AtlassianTreeWithToolbar tree);
 
 	protected void updateTreeAction(final AnActionEvent e, final AtlassianTreeWithToolbar tree) {
 		ReviewActionData actionData = new ReviewActionData(tree);

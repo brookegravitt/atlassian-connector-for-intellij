@@ -52,21 +52,21 @@ public class PublishAction extends AbstractCommentAction {
 		Project currentProject = e.getData(DataKeys.PROJECT);
 		AtlassianTreeNode node = getSelectedNode(e);
 		if (node != null && currentProject != null) {
-			publishComment(node);
+			publishComment(currentProject, node);
 		}
 	}
 
-	private void publishComment(AtlassianTreeNode treeNode) {
+	private void publishComment(final Project project, AtlassianTreeNode treeNode) {
 		if (treeNode instanceof GeneralCommentTreeNode) {
 			GeneralCommentTreeNode node = (GeneralCommentTreeNode) treeNode;
 			GeneralComment comment = node.getComment();
-			IdeaHelper.getReviewActionEventBroker().trigger(
+			IdeaHelper.getReviewActionEventBroker(project).trigger(
 					new GeneralCommentAboutToPublish(CrucibleReviewActionListener.ANONYMOUS,
 							node.getReview(), comment));
 		} else if (treeNode instanceof VersionedCommentTreeNode) {
 			VersionedCommentTreeNode node = (VersionedCommentTreeNode) treeNode;
 			VersionedComment comment = node.getComment();
-			IdeaHelper.getReviewActionEventBroker().trigger(
+			IdeaHelper.getReviewActionEventBroker(project).trigger(
 					new VersionedCommentAboutToPublish(CrucibleReviewActionListener.ANONYMOUS,
 							node.getReview(), node.getFile(), comment));
 		}

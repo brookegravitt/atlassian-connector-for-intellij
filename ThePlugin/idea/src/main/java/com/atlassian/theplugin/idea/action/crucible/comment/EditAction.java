@@ -86,7 +86,7 @@ public class EditAction extends AbstractCommentAction {
 		dialog.setModal(true);
 		dialog.show();
 		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
-			IdeaHelper.getReviewActionEventBroker().trigger(
+			IdeaHelper.getReviewActionEventBroker(project).trigger(
 					new GeneralCommentAboutToUpdate(CrucibleReviewActionListener.ANONYMOUS,
 							review, comment));
 		}
@@ -99,7 +99,7 @@ public class EditAction extends AbstractCommentAction {
 		dialog.setModal(true);
 		dialog.show();
 		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
-			IdeaHelper.getReviewActionEventBroker().trigger(
+			IdeaHelper.getReviewActionEventBroker(project).trigger(
 					new VersionedCommentAboutToUpdate(CrucibleReviewActionListener.ANONYMOUS,
 							review, file, comment));
 		}

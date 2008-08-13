@@ -157,7 +157,7 @@ public class ThePluginApplicationComponent
 		ConfigurationFactory.setConfiguration(configuration);
 		TrustManager trustManager = null;
 		try {
-			trustManager = PluginTrustManager.getInstance(configuration);
+			trustManager = new PluginTrustManager(configuration);
 			HttpClientFactory.initializeTrustManagers(trustManager);
 		} catch (NoSuchAlgorithmException e) {
 			PluginUtil.getLogger().error("Error initializing custom trust manager");
