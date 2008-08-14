@@ -6,7 +6,6 @@
         <enabled>true</enabled>
         <name>mybamboo1</name>
         <url>http://mygreaturl</url>
-        <password-stored>true</password-stored>
         <use-favourites>false</use-favourites>
         <bamboo2>false</bamboo2>
         <plans>

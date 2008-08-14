@@ -41,51 +41,14 @@ public class JDomProjectConfigurationFactory implements ProjectConfigurationFact
 	}
 
 	public ProjectConfiguration load() throws ServerCfgFactoryException {
-		final int childCount = publicElement.getChildren().size();
-		if (childCount != 1) {
-			throw new ServerCfgFactoryException("Cannot travers JDom tree. Exactly one child node expected, but found ["
-					+ childCount + "]");
+		ProjectConfiguration res = load(publicElement, ProjectConfiguration.class);
+		if (privateElement == null) {
+			return res;
 		}
-		final JDomReader reader = new JDomReader((Element) publicElement.getChildren().get(0));
-		final XStream xStream = JDomXStreamUtil.getProjectJDomXStream();
-		try {
-			final ProjectConfiguration res = (ProjectConfiguration) xStream.unmarshal(reader);
-			if (privateElement == null) {
-				return res;
-			}
-			final PrivateProjectConfiguration ppc = load(privateElement, PrivateProjectConfiguration.class);
-			return merge(res, ppc);
-		} catch (Exception e) {
-			throw new ServerCfgFactoryException("Cannot load " + ProjectConfiguration.class.getSimpleName() + ": "
-					+ e.getMessage(), e);
-		}
+		final PrivateProjectConfiguration ppc = load(privateElement, PrivateProjectConfiguration.class);
+		return merge(res, ppc);
 	}
 
-	private ProjectConfiguration merge(final ProjectConfiguration projectConfiguration,
-			final PrivateProjectConfiguration privateProjectConfiguration) {
-		for (PrivateServerCfgInfo psci : privateProjectConfiguration.getPrivateServerCfgInfos()) {
-			final ServerCfg serverCfg = projectConfiguration.getServerCfg(psci.getServerId());
-			if (serverCfg != null) {
-				serverCfg.setUsername(psci.getUsername());
-				final String password = psci.getPassword();
-				if (password != null) {
-					serverCfg.setPassword(password);
-				}
-			}
-		}
-		return projectConfiguration;
-	}
-
-//	PrivateProjectConfiguration loadPrivateProjectConfiguration() throws ServerCfgFactoryException {
-//		final JDomReader reader = new JDomReader(privateElement);
-//		final XStream xStream = JDomXStreamUtil.getProjectJDomXStream();
-//		try {
-//			return (PrivateProjectConfiguration) xStream.unmarshal(reader);
-//		} catch (Exception e) {
-//			throw new ServerCfgFactoryException("Cannot load " + PrivateProjectConfiguration.class.getSimpleName() + ": "
-//					+ e.getMessage(), e);
-//		}
-//	}
 
 	<T> T load(final Element rootElement, Class<T> clazz) throws ServerCfgFactoryException {
 		final int childCount = rootElement.getChildren().size();
@@ -97,6 +60,9 @@ public class JDomProjectConfigurationFactory implements ProjectConfigurationFact
 		final XStream xStream = JDomXStreamUtil.getProjectJDomXStream();
 		try {
 			return clazz.cast(xStream.unmarshal(reader));
+		} catch (ClassCastException e) {
+			throw new ServerCfgFactoryException("Cannot load " + clazz.getSimpleName() + " due to ClassCastException: "
+					+ e.getMessage(), e);
 		} catch (Exception e) {
 			throw new ServerCfgFactoryException("Cannot load " + clazz.getSimpleName() + ": "
 					+ e.getMessage(), e);
@@ -104,14 +70,26 @@ public class JDomProjectConfigurationFactory implements ProjectConfigurationFact
 	}
 
 
-	public void save(final ProjectConfiguration projectConfiguration) {
-		if (projectConfiguration == null) {
-			throw new NullPointerException(ProjectConfiguration.class.getSimpleName() + " cannot be null");
+	private ProjectConfiguration merge(final ProjectConfiguration projectConfiguration,
+			final PrivateProjectConfiguration privateProjectConfiguration) {
+		for (PrivateServerCfgInfo psci : privateProjectConfiguration.getPrivateServerCfgInfos()) {
+			final ServerCfg serverCfg = projectConfiguration.getServerCfg(psci.getServerId());
+			if (serverCfg != null) {
+				serverCfg.setUsername(psci.getUsername());
+				final String password = psci.getPassword();
+				if (password != null) {
+					serverCfg.setPassword(password);
+					serverCfg.setPasswordStored(true);
+				} else {
+					serverCfg.setPasswordStored(false);
+				}
+			}
 		}
-		final JDomWriter writer = new JDomWriter(publicElement);
-		final XStream xStream = JDomXStreamUtil.getProjectJDomXStream();
-		xStream.marshal(projectConfiguration, writer);
+		return projectConfiguration;
+	}
 
+	public void save(final ProjectConfiguration projectConfiguration) {
+		save(projectConfiguration, publicElement);
 		final PrivateProjectConfiguration privateCfg = getPrivateProjectConfiguration(projectConfiguration);
 		save(privateCfg, privateElement);
 	}
@@ -125,17 +103,6 @@ public class JDomProjectConfigurationFactory implements ProjectConfigurationFact
 		xStream.marshal(object, writer);
 
 	}
-
-//	public void save(final PrivateProjectConfiguration privateProjectConfiguration) {
-//		if (privateProjectConfiguration == null) {
-//			throw new NullPointerException(PrivateProjectConfiguration.class.getSimpleName() + " cannot be null");
-//		}
-//		final JDomWriter writer = new JDomWriter(privateElement);
-//		final XStream xStream = JDomXStreamUtil.getProjectJDomXStream();
-//		xStream.marshal(privateProjectConfiguration, writer);
-//
-//	}
-
 
 	PrivateProjectConfiguration getPrivateProjectConfiguration(final ProjectConfiguration projectConfiguration) {
 		final PrivateProjectConfiguration res = new PrivateProjectConfiguration();

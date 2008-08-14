@@ -214,6 +214,39 @@ public class JDomProjectConfigurationFactoryTest extends ProjectConfigurationFac
 	}
 
 
+	public void testFullSaveLoad() throws ServerCfgFactoryException {
+		bamboo1.setUsername("mytestuser");
+		bamboo1.setPassword("mypassword1");
+		bamboo1.getSubscribedPlans().add(new SubscribedPlan("myplan"));
+		bamboo1.setPasswordStored(true);
+		bamboo2.setUsername("mytestuser2");
+		bamboo2.setPassword("mypassword2");
+		bamboo2.setPasswordStored(true);
+		crucible1.setPasswordStored(false);
+		projectCfg = new ProjectConfiguration(MiscUtil.<ServerCfg>buildArrayList(bamboo1, crucible1, bamboo2));
+
+		final JDomProjectConfigurationFactory factory = new JDomProjectConfigurationFactory(element, privateElement);
+		factory.save(projectCfg);
+		final ProjectConfiguration res = factory.load();
+		assertEquals(projectCfg, res);
+		assertNotSame(projectCfg, res);
+
+		element.getChildren().clear();
+		privateElement.getChildren().clear(); // = new Element("private-element");
+		
+//		final JDomProjectConfigurationFactory factory2 = new JDomProjectConfigurationFactory(element, privateElement);
+		// now after reloading bamboo2 password will be lost
+		bamboo2.setPasswordStored(false);
+		factory.save(projectCfg);
+		final ProjectConfiguration withoutPassword = factory.load();
+		final BambooServerCfg bamboo2WithNoPassword = bamboo2.getClone();
+		bamboo2WithNoPassword.setPassword("");
+		TestUtil.assertNotEquals(projectCfg, withoutPassword);
+		TestUtil.assertHasOnlyElements(withoutPassword.getServers(), bamboo1, crucible1, bamboo2WithNoPassword);
+
+	}
+
+
 	public void testInvalidJDomElement() {
 		final JDomProjectConfigurationFactory factory = new JDomProjectConfigurationFactory(new Element("element"), privateElement);
 		TestUtil.assertThrows(ServerCfgFactoryException.class, new IAction() {
@@ -246,7 +279,7 @@ public class JDomProjectConfigurationFactoryTest extends ProjectConfigurationFac
 		add(element, serverId);
 		final JDomProjectConfigurationFactory factory2 = new JDomProjectConfigurationFactory(element, privateElement);
 		TestUtil.assertThrowsAndMsgContainsRe(ServerCfgFactoryException.class, 
-				"Cannot load ProjectConfiguration:.*" + ServerId.class.getName(),
+				"Cannot load ProjectConfiguration.*ClassCastException",
 				new IAction() {
 
 			public void run() throws Throwable {

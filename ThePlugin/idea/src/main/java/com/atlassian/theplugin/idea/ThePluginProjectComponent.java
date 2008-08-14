@@ -292,16 +292,6 @@ public class ThePluginProjectComponent implements
         }
     }
 
-	public static void handleServerCfgFactoryException(Project theProject, final ServerCfgFactoryException e) {
-		Messages.showWarningDialog(theProject, CFG_LOAD_ERROR_MSG + "\n" + e.getMessage()
-				+ "\nEmpty configuration will be used.", CFG_LOAD_ERROR_MSG);
-	}
-
-	public static void handleServerCfgFactoryException(final ServerCfgFactoryException e) {
-		Messages.showWarningDialog(CFG_LOAD_ERROR_MSG + "\n" + e.getMessage()
-				+ "\nEmpty configuration will be used.", CFG_LOAD_ERROR_MSG);
-	}
-
 	public Content createBambooContent() {
         PeerFactory peerFactory = PeerFactory.getInstance();
 

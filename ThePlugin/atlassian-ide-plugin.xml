@@ -6,8 +6,8 @@
         <enabled>true</enabled>
         <name>Hosted</name>
         <url>https://gdansk.bamboo2.atlassian.com</url>
-        <password-stored>true</password-stored>
-        <use-favourites>false</use-favourites>
+        <password-stored>false</password-stored>
+        <use-favourites>true</use-favourites>
         <bamboo2>true</bamboo2>
         <plans />
       </bamboo>
