@@ -36,9 +36,7 @@ public class CfgManagerImpl implements CfgManager {
 
 
 	public ProjectConfiguration getProjectConfiguration(final ProjectId projectId) {
-		if (projectId == null) {
-			throw new NullPointerException(ProjectId.class.getSimpleName() + " cannot be null");
-		}
+		verifyProjectId(projectId);
 		return projectConfigurations.get(projectId);
 	}
 
@@ -52,9 +50,7 @@ public class CfgManagerImpl implements CfgManager {
     }
 
     public Collection<ServerCfg> getProjectSpecificServers(final ProjectId projectId) {
-		if (projectId == null) {
-			throw new NullPointerException(ProjectId.class.getSimpleName() + " cannot be null");
-		}
+		verifyProjectId(projectId);
 		ProjectConfiguration res = projectConfigurations.get(projectId);
         if (res == null) {
             return Collections.emptyList();
@@ -82,9 +78,7 @@ public class CfgManagerImpl implements CfgManager {
 
 
 	public void updateProjectConfiguration(final ProjectId projectId, final ProjectConfiguration projectConfiguration) {
-		if (projectId == null) {
-			throw new NullPointerException(ProjectId.class.getSimpleName() + " cannot be null");
-		}
+		verifyProjectId(projectId);
 		if (projectConfiguration == null) {
 			throw new NullPointerException("Project configuration cannot be null");
 		}
@@ -122,11 +116,9 @@ public class CfgManagerImpl implements CfgManager {
     }
 
     public void addProjectSpecificServer(final ProjectId projectId, final ServerCfg serverCfg) {
-		if (projectId == null) {
-			throw new NullPointerException(ProjectId.class.getSimpleName() + " cannot be null");
-		}
+		verifyProjectId(projectId);
 		if (serverCfg == null) {
-			throw new NullPointerException(ServerCfg.class.getSimpleName() + " cannot be null");
+			throw new IllegalArgumentException(ServerCfg.class.getSimpleName() + " cannot be null");
 		}
 
 		ProjectConfiguration projectCfg = getProjectConfiguration(projectId);
@@ -150,21 +142,20 @@ public class CfgManagerImpl implements CfgManager {
 	}
 
 	public ServerCfg removeGlobalServer(final ServerId serverId) {
-		if (serverId == null) {
-			throw new NullPointerException(ServerId.class.getSimpleName() + " cannot be null");
-		}
-		
+		verifyServerId(serverId);
 		return removeServer(serverId, globalServers);
     }
 
+	private void verifyServerId(final ServerId serverId) {
+		if (serverId == null) {
+			throw new IllegalArgumentException(ServerId.class.getSimpleName() + " cannot be null");
+		}
+	}
+
 
 	public ServerCfg removeProjectSpecificServer(final ProjectId projectId, final ServerId serverId) {
-		if (projectId == null) {
-			throw new NullPointerException(ProjectId.class.getSimpleName() + " cannot be null");
-		}
-		if (serverId == null) {
-			throw new NullPointerException(ServerId.class.getSimpleName() + " cannot be null");
-		}
+		verifyProjectId(projectId);
+		verifyServerId(serverId);
 
 		ProjectConfiguration projectCfg = getProjectConfiguration(projectId);
 		if (projectCfg == null) {
@@ -172,6 +163,12 @@ public class CfgManagerImpl implements CfgManager {
 		}
 
 		return removeServer(serverId, projectCfg.getServers());
+	}
+
+	private void verifyProjectId(final ProjectId projectId) {
+		if (projectId == null) {
+			throw new IllegalArgumentException(ProjectId.class.getSimpleName() + " cannot be null");
+		}
 	}
 
 	private boolean hasProject(ProjectId projectId) {
@@ -255,6 +252,11 @@ public class CfgManagerImpl implements CfgManager {
 
 
 	public void addListener(final ProjectId projectId, final ConfigurationListener configurationListener) {
+		if (configurationListener == null) {
+			throw new IllegalArgumentException(ProjectId.class.getSimpleName() + " cannot be null");
+		}
+		verifyProjectId(projectId);
+
 		Collection<ConfigurationListener> tmp = listeners.get(projectId);
 		if (tmp == null) {
 			tmp = MiscUtil.buildHashSet();
@@ -263,8 +265,12 @@ public class CfgManagerImpl implements CfgManager {
 		tmp.add(configurationListener);
 	}
 
-	public void removeListener(final ProjectId projectId, final ConfigurationListener configurationListener) {
+	public boolean removeListener(final ProjectId projectId, final ConfigurationListener configurationListener) {
+		if (configurationListener == null) {
+			throw new IllegalArgumentException(ProjectId.class.getSimpleName() + " cannot be null");
+		}
+		verifyProjectId(projectId);
 		Collection<ConfigurationListener> tmp = listeners.get(projectId);
-		tmp.remove(configurationListener);
+		return tmp.remove(configurationListener);
 	}
 }
