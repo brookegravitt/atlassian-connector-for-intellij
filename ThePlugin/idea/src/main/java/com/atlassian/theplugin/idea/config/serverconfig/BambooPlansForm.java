@@ -175,7 +175,7 @@ public class BambooPlansForm extends JPanel {
 	public void setData(final BambooServerCfg serverCfg) {
 		originalServer = serverCfg;
 		cbUseFavouriteBuilds.setEnabled(false);
-        if (!originalServer.getUrl().isEmpty()) {
+        if (originalServer.getUrl().length() > 0) {
 			retrievePlans(originalServer);
 		} else {
 			model.removeAllElements();
