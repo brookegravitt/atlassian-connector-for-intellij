@@ -140,9 +140,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			} catch (UnknownHostException e) {
 				throw new RemoteApiLoginException("Unknown host: " + e.getMessage(), e);
 			} catch (IOException e) {
-				throw new RemoteApiLoginException(e.getMessage(), e);
+				throw new RemoteApiLoginException(baseUrl + ":" + e.getMessage(), e);
 			} catch (JDOMException e) {
-				throw new RemoteApiLoginException("Server returned malformed response", e);
+				throw new RemoteApiLoginException("Server:" + baseUrl + " returned malformed response", e);
 			} catch (RemoteApiSessionExpiredException e) {
 				// Crucible does not return this exception
 			} catch (IllegalArgumentException e) {
@@ -178,9 +178,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 				}
 			}
 		} catch (IOException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RemoteApiException("Server returned malformed response", e);
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		}
 		return null;
 	}
@@ -242,9 +242,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			}
 			return reviews;
 		} catch (IOException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RemoteApiException("Server returned malformed response", e);
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		}
 	}
 
@@ -291,9 +291,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			}
 			return reviews;
 		} catch (IOException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RemoteApiException("Server returned malformed response", e);
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		}
 	}
 
@@ -334,9 +334,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			}
 			return reviews;
 		} catch (IOException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RemoteApiException("Server returned malformed response", e);
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		}
 	}
 
@@ -383,9 +383,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			}
 			return reviews;
 		} catch (IOException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RemoteApiException("Server returned malformed response", e);
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		}
 	}
 
@@ -424,9 +424,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			}
 			return null;
 		} catch (IOException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RemoteApiException("Server returned malformed response", e);
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		}
 	}
 
@@ -496,9 +496,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			}
 			return reviewers;
 		} catch (IOException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RemoteApiException("Server returned malformed response", e);
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		}
 	}
 
@@ -523,9 +523,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			}
 			return users;
 		} catch (IOException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RemoteApiException("Server returned malformed response", e);
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		}
 	}
 
@@ -550,9 +550,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			}
 			return projects;
 		} catch (IOException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RemoteApiException("Server returned malformed response", e);
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		}
 	}
 
@@ -577,9 +577,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			}
 			return myRepositories;
 		} catch (IOException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RemoteApiException("Server returned malformed response", e);
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		}
 	}
 
@@ -604,9 +604,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 							}
 						}
 					} catch (IOException e) {
-						throw new RemoteApiException(e.getMessage(), e);
+						throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 					} catch (JDOMException e) {
-						throw new RemoteApiException("Server returned malformed response", e);
+						throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 					}
 				}
 			}
@@ -638,9 +638,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			}
 			return reviewItems;
 		} catch (IOException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RemoteApiException("Server returned malformed response", e);
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		}
 	}
 
@@ -669,9 +669,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			}
 			return null;
 		} catch (IOException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RemoteApiException("Server returned malformed response", e);
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		}
 	}
 
@@ -696,9 +696,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			}
 			return comments;
 		} catch (IOException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RemoteApiException("Server returned malformed response", e);
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		}
 	}
 
@@ -723,9 +723,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			}
 			return comments;
 		} catch (IOException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RemoteApiException("Server returned malformed response", e);
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		}
 	}
 
@@ -750,9 +750,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			}
 			return comments;
 		} catch (IOException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RemoteApiException("Server returned malformed response", e);
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		}
 	}
 
@@ -777,9 +777,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			}
 			return comments;
 		} catch (IOException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RemoteApiException("Server returned malformed response", e);
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		}
 	}
 
@@ -837,9 +837,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 
 			return comments;
 		} catch (IOException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RemoteApiException("Server returned malformed response", e);
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		}
 	}
 
@@ -865,9 +865,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			}
 			return null;
 		} catch (IOException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RemoteApiException("Server returned malformed response", e);
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		}
 	}
 
@@ -879,9 +879,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		try {
 			retrieveDeleteResponse(requestUrl, false);
 		} catch (IOException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RemoteApiException("Server returned malformed response", e);
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		}
 	}
 
@@ -896,9 +896,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		try {
 			retrievePostResponse(requestUrl, request, false);
 		} catch (IOException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RemoteApiException("Server returned malformed response", e);
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		}
 	}
 
@@ -915,11 +915,11 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		try {
 			retrievePostResponse(requestUrl, "", false);
 		} catch (IOException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RemoteApiException("Server returned malformed response", e);
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		} catch (RemoteApiSessionExpiredException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		}
 	}
 
@@ -944,9 +944,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			}
 			return null;
 		} catch (IOException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RemoteApiException("Server returned malformed response", e);
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		}
 	}
 
@@ -975,9 +975,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			}
 			return null;
 		} catch (IOException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RemoteApiException("Server returned malformed response", e);
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		}
 	}
 
@@ -1007,9 +1007,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			}
 			return null;
 		} catch (IOException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RemoteApiException("Server returned malformed response", e);
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		}
 
 	}
@@ -1027,9 +1027,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		try {
 			retrievePostResponse(requestUrl, request, false);
 		} catch (IOException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RemoteApiException("Server returned malformed response", e);
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		}
 	}
 
@@ -1058,9 +1058,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			}
 			return null;
 		} catch (IOException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RemoteApiException("Server returned malformed response", e);
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		}
 	}
 
@@ -1081,9 +1081,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			}
 			return null;
 		} catch (IOException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RemoteApiException("Server returned malformed response", e);
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		}
 	}
 
@@ -1108,9 +1108,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			}
 			return actions;
 		} catch (IOException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RemoteApiException("Server returned malformed response", e);
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		}
 	}
 
@@ -1135,9 +1135,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			}
 			return transitions;
 		} catch (IOException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RemoteApiException("Server returned malformed response", e);
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		}
 	}
 
@@ -1162,9 +1162,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			}
 			return null;
 		} catch (IOException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RemoteApiException("Server returned malformed response", e);
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		}
 	}
 
@@ -1188,9 +1188,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			}
 			return null;
 		} catch (IOException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RemoteApiException("Server returned malformed response", e);
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		}
 	}
 
@@ -1211,9 +1211,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		try {
 			retrievePostResponse(requestUrl, reviewers, false);
 		} catch (IOException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RemoteApiException("Server returned malformed response", e);
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		}
 	}
 
@@ -1226,9 +1226,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		try {
 			retrieveDeleteResponse(requestUrl, false);
 		} catch (IOException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RemoteApiException("Server returned malformed response", e);
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		}
 	}
 
@@ -1253,9 +1253,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			}
 			return review;
 		} catch (IOException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RemoteApiException("Server returned malformed response", e);
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		}
 	}
 
@@ -1274,9 +1274,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		try {
 			retrievePostResponse(requestUrl, "", false);
 		} catch (IOException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RemoteApiException("Server returned malformed response", e);
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		}
 	}
 
@@ -1336,9 +1336,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			}
 			return review;
 		} catch (IOException e) {
-			throw new RemoteApiException(e.getMessage(), e);
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
-			throw new RemoteApiException("Server returned malformed response", e);
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		}
 	}
 
@@ -1365,9 +1365,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 				}
 				metricsDefinitions.put(key, metrics);
 			} catch (IOException e) {
-				throw new RemoteApiException(e.getMessage(), e);
+				throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 			} catch (JDOMException e) {
-				throw new RemoteApiException("Server returned malformed response", e);
+				throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 			}
 		}
 		return metricsDefinitions.get(key);
