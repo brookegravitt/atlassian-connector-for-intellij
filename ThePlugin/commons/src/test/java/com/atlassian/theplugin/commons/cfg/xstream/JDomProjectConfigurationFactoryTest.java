@@ -240,12 +240,13 @@ public class JDomProjectConfigurationFactoryTest extends ProjectConfigurationFac
 	}
 
 	public void testInvalidClass() throws ServerCfgFactoryException {
+		// just let us forge a simple DOM which instead of ProjectConfiguration contains just ServerId
 		final Element serverId = new Element(ServerId.class.getName());
 		serverId.setText(new ServerId().getUuid().toString());
 		add(element, serverId);
 		final JDomProjectConfigurationFactory factory2 = new JDomProjectConfigurationFactory(element, privateElement);
 		TestUtil.assertThrowsAndMsgContainsRe(ServerCfgFactoryException.class, 
-				"Cannot load ProjectConfiguration:.* cannot be cast to .*" + ProjectConfiguration.class.getName(),
+				"Cannot load ProjectConfiguration:.*" + ServerId.class.getName(),
 				new IAction() {
 
 			public void run() throws Throwable {
