@@ -93,6 +93,7 @@ public class CrucibleFileNode extends FileNode {
 					txt.append(node.getFile().getOldFileDescriptor().getRevision());
 					break;
 				case Modified:
+				case Copied:
 				case Moved:
 					txt.append(node.getFile().getOldFileDescriptor().getRevision());
 					txt.append("-");
@@ -151,6 +152,7 @@ public class CrucibleFileNode extends FileNode {
 					break;
 				case Modified:
 				case Moved:
+				case Copied:
 					setForeground(FileStatus.COLOR_MODIFIED);
 					break;
 				case Unknown:
