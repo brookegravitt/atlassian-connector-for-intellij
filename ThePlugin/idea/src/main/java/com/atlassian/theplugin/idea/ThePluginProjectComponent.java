@@ -116,6 +116,8 @@ public class ThePluginProjectComponent implements
 			PluginConfiguration pluginConfiguration, UIActionScheduler actionScheduler,
 			ProjectConfigurationBean projectConfigurationBean) {
 		this.project = project;
+		project.putUserData(BROKER_KEY, new ReviewActionEventBroker());
+
 		this.actionScheduler = actionScheduler;
 		this.toolWindowManager = toolWindowManager;
 		this.pluginConfiguration = pluginConfiguration;
@@ -178,7 +180,6 @@ public class ThePluginProjectComponent implements
         // clean up object model confusion
 
         if (!created) {
-			project.putUserData(BROKER_KEY, new ReviewActionEventBroker());
 
 			// wseliga: I don't know yet what do to with comment below
 			// todo remove that get instance as it can return null. it is better to get it from app component.
