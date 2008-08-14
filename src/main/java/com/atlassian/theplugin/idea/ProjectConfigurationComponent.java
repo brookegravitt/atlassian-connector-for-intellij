@@ -80,6 +80,10 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		final SAXBuilder builder = new SAXBuilder(false);
 		try {
 			final String path = getCfgFilePath();
+			if (new File(path).exists() == false) {
+				setDefaultProjectConfiguration();
+				return;
+			}
 			root = builder.build(path);
 		} catch (Exception e) {
 			handleServerCfgFactoryException(project, e);

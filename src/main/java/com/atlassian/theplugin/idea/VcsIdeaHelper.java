@@ -440,6 +440,7 @@ public final class VcsIdeaHelper {
 						referenceVirtualFile = getVcsVirtualFile(project, virtualFile, fromRevision, false);
 						displayVirtualFile = getVcsVirtualFile(project, virtualFile, toRevision, false);
 						displayDescriptor = new OpenFileDescriptor(project, displayVirtualFile, line, column);
+						break;
 					default:
 						break;
 				}
