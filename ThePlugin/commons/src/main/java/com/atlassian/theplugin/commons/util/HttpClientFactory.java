@@ -16,9 +16,9 @@
 
 package com.atlassian.theplugin.commons.util;
 
-import com.atlassian.theplugin.commons.thirdparty.apache.EasySSLProtocolSocketFactory;
-import com.atlassian.theplugin.commons.exception.HttpProxySettingsException;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.commons.exception.HttpProxySettingsException;
+import com.atlassian.theplugin.commons.thirdparty.apache.EasySSLProtocolSocketFactory;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.protocol.Protocol;
@@ -30,14 +30,14 @@ public final class HttpClientFactory {
 	private static MultiThreadedHttpConnectionManager connectionManager;
 
 	private static final int CONNECTION_MANAGER_TIMEOUT = 80000;
-	private static final int CONNECTION_TIMOUT = 20000;
+	private static final int CONNECTION_TIMEOUT = 30000;
 	private static final int DATA_TIMOUT = 10000;
 
 	private static final int TOTAL_MAX_CONNECTIONS = 50;
 
 	private static final int DEFAULT_MAX_CONNECTIONS_PER_HOST = 3;
 	private static int dataTimeout = DATA_TIMOUT;
-	private static int connectionTimout = CONNECTION_TIMOUT;
+	private static int connectionTimeout = CONNECTION_TIMEOUT;
 	private static int connectionManagerTimeout = CONNECTION_MANAGER_TIMEOUT;
 
 	static {
@@ -63,8 +63,8 @@ public final class HttpClientFactory {
 		HttpClientFactory.dataTimeout = dataTimeout;
 	}
 
-	protected static void setConnectionTimout(int connectionTimout) {
-		HttpClientFactory.connectionTimout = connectionTimout;
+	protected static void setConnectionTimeout(int connectionTimeout) {
+		HttpClientFactory.connectionTimeout = connectionTimeout;
 	}
 
 	protected static void setConnectionManagerTimeout(int connectionManagerTimeout) {
@@ -135,7 +135,7 @@ public final class HttpClientFactory {
 	}
 
 	private static int getConnectionTimeout() {
-		return connectionTimout;
+		return connectionTimeout;
 	}
 
 
