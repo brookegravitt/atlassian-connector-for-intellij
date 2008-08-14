@@ -1,0 +1,38 @@
+<atlassian-ide-plugin>
+	<project-configuration>
+		<servers>
+			<bamboo>
+				<server-id>1c8ee2f7-f0a5-4ce9-a48b-dbeb7f86c86d</server-id>
+				<enabled>true</enabled>
+				<name>Hosted</name>
+				<url>https://gdansk.bamboo2.atlassian.com</url>
+				<password-stored>true</password-stored>
+				<use-favourites>false</use-favourites>
+				<bamboo2>true</bamboo2>
+				<plans>
+					<plan key="TP-CSCOM"/>
+					<plan key="TP-CSIDEA"/>
+					<plan key="TP-CLO"/>
+					<plan key="TP-STYLE"/>
+					<plan key="TP-FAIL"/>
+					<plan key="TP-SITE"/>
+					<plan key="TP-TEST"/>
+				</plans>
+			</bamboo>
+			<jira>
+				<server-id>53c3cbff-e50f-475f-a6e2-703b22168724</server-id>
+				<enabled>true</enabled>
+				<name>studio</name>
+				<url>https://studio.atlassian.com</url>
+				<password-stored>true</password-stored>
+			</jira>
+			<crucible>
+				<server-id>598df7f1-7dcf-40de-847f-e65b8fd7d671</server-id>
+				<enabled>true</enabled>
+				<name>local</name>
+				<url>http://localhost:8050</url>
+				<password-stored>true</password-stored>
+			</crucible>
+		</servers>
+	</project-configuration>
+</atlassian-ide-plugin>

@@ -226,7 +226,7 @@ public final class VcsIdeaHelper {
 	private static void fetchAndOpenFileWithDiffs(final Project project, final String fromRevision, final String toRevision,
 			@NotNull final CommitType commitType, @NotNull final VirtualFile virtualFile,
 			final int line, final int column, @Nullable final OpenDiffAction action) {
-	// CHECKSTYLE:ON
+		// CHECKSTYLE:ON
 		AbstractVcsVirtualFile referenceVirtualFile = getFileFromCache(virtualFile, fromRevision);
 		AbstractVcsVirtualFile displayVirtualFile = getFileFromCache(virtualFile, toRevision);
 
@@ -247,6 +247,7 @@ public final class VcsIdeaHelper {
 				break;
 			case Modified:
 			case Moved:
+			case Copied:
 				niceFileMessage = "s" + virtualFile.getName() + " (rev: " + fromRevision + ", " + toRevision + ") from VCS";
 				break;
 			case Unknown:
@@ -302,7 +303,7 @@ public final class VcsIdeaHelper {
 	public static void openFileWithDiffs(final Project project, String filePath, @NotNull final String fileRevision,
 			final String toRevision, @NotNull final CommitType commitType,
 			final int line, final int col, @Nullable final OpenDiffAction action) {
-	// CHECKSTYLE:ON
+		// CHECKSTYLE:ON
 		VirtualFile baseDir = project.getBaseDir();
 		String baseUrl = getRepositoryUrlForFile(baseDir);
 
@@ -354,7 +355,7 @@ public final class VcsIdeaHelper {
 		}
 	}
 
-	public static void openFile(final Project project, @NotNull final VirtualFile virtualFile, 
+	public static void openFile(final Project project, @NotNull final VirtualFile virtualFile,
 			@NotNull final String fileRevision, final int line, final int col,
 			@Nullable final OpenFileDescriptorAction action) {
 
@@ -420,12 +421,13 @@ public final class VcsIdeaHelper {
 		}
 
 		@Override
-			public void run(ProgressIndicator indicator) {
+		public void run(ProgressIndicator indicator) {
 			final AbstractVcsVirtualFile displayVirtualFile;
 			try {
 				switch (commitType) {
 					case Modified:
 					case Moved:
+					case Copied:
 						referenceVirtualFile = getVcsVirtualFile(project, virtualFile, fromRevision, false);
 						displayVirtualFile = getVcsVirtualFile(project, virtualFile, toRevision, false);
 						displayDescriptor = new OpenFileDescriptor(project, displayVirtualFile, line, column);
@@ -447,7 +449,7 @@ public final class VcsIdeaHelper {
 		}
 
 		@Override
-			public void onSuccess() {
+		public void onSuccess() {
 			if (exception != null) {
 				Messages.showErrorDialog(project, "The following error has occured while fetching "
 						+ niceFileMessage + ":\n" + exception.getMessage(), "Error fetching file");
