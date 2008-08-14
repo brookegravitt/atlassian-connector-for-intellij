@@ -19,9 +19,12 @@ import junit.framework.TestCase;
 import com.spartez.util.junit3.TestUtil;
 import com.spartez.util.junit3.IAction;
 import com.atlassian.theplugin.commons.util.MiscUtil;
+import com.atlassian.theplugin.commons.ConfigurationListener;
 
 import java.util.Collection;
 import java.util.ArrayList;
+
+import org.easymock.EasyMock;
 
 /**
  * CfgManagerImpl Tester.
@@ -87,7 +90,7 @@ public abstract class AbstractCfgManagerTest extends TestCase {
 		TestUtil.assertHasOnlyElements(cfgManager.getProjectSpecificServers(PROJECT_ID_1), jira1, bamboo1);
 		TestUtil.assertHasOnlyElements(cfgManager.getProjectSpecificServers(PROJECT_ID_2), crucible1);
 		TestUtil.assertHasOnlyElements(cfgManager.getProjectSpecificServers(new ProjectId()));
-		TestUtil.assertThrows(NullPointerException.class, new IAction() {
+		TestUtil.assertThrows(IllegalArgumentException.class, new IAction() {
 			public void run() throws Exception {
 				cfgManager.getProjectSpecificServers(null);
 			}
@@ -165,21 +168,21 @@ public abstract class AbstractCfgManagerTest extends TestCase {
 		TestUtil.assertHasOnlyElements(myCfgManager.getProjectSpecificServers(PROJECT_ID_2), crucible2, jira1);
 
 
-		TestUtil.assertThrows(NullPointerException.class, new IAction() {
+		TestUtil.assertThrows(IllegalArgumentException.class, new IAction() {
 			public void run() throws Exception {
 				myCfgManager.addProjectSpecificServer(PROJECT_ID_1, null);
 
 			}
 		});
 
-		TestUtil.assertThrows(NullPointerException.class, new IAction() {
+		TestUtil.assertThrows(IllegalArgumentException.class, new IAction() {
 			public void run() throws Exception {
 				myCfgManager.addProjectSpecificServer(null, crucible1);
 
 			}
 		});
 
-		TestUtil.assertThrows(NullPointerException.class, new IAction() {
+		TestUtil.assertThrows(IllegalArgumentException.class, new IAction() {
 			public void run() throws Exception {
 				myCfgManager.addProjectSpecificServer(null, null);
 
@@ -258,7 +261,7 @@ public abstract class AbstractCfgManagerTest extends TestCase {
 		assertEquals(bamboo3, cfgManager.removeGlobalServer(bamboo3.getServerId()));
 		assertEquals(0, cfgManager.getGlobalServers().size());
 
-		TestUtil.assertThrows(NullPointerException.class, new IAction() {
+		TestUtil.assertThrows(IllegalArgumentException.class, new IAction() {
 			public void run() {
 				cfgManager.removeGlobalServer(null);
 			}
@@ -285,19 +288,19 @@ public abstract class AbstractCfgManagerTest extends TestCase {
 		TestUtil.assertHasOnlyElements(servers, bamboo3, jira2, bamboo1);
 		assertTrue(servers.contains(bamboo1));
 
-		TestUtil.assertThrows(NullPointerException.class, new IAction() {
+		TestUtil.assertThrows(IllegalArgumentException.class, new IAction() {
 			public void run() {
 				cfgManager.removeProjectSpecificServer(null, null);
 			}
 		});
 
-		TestUtil.assertThrows(NullPointerException.class, new IAction() {
+		TestUtil.assertThrows(IllegalArgumentException.class, new IAction() {
 			public void run() {
 				cfgManager.removeProjectSpecificServer(PROJECT_ID_1, null);
 			}
 		});
 
-		TestUtil.assertThrows(NullPointerException.class, new IAction() {
+		TestUtil.assertThrows(IllegalArgumentException.class, new IAction() {
 			public void run() {
 				cfgManager.removeProjectSpecificServer(null, bamboo1.getServerId());
 			}
@@ -344,6 +347,51 @@ public abstract class AbstractCfgManagerTest extends TestCase {
 		});
 	}
 
+	public void testGetAllEnabledCrucibleServers() {
+		TestUtil.assertHasOnlyElements(cfgManager.getAllEnabledCrucibleServers(PROJECT_ID_2), crucible1);
+		TestUtil.assertHasOnlyElements(cfgManager.getAllEnabledCrucibleServers(PROJECT_ID_1));
+		final CrucibleServerCfg crucible2 = new CrucibleServerCfg("anothercrucible", new ServerId());
+		cfgManager.addGlobalServer(crucible2);
+		TestUtil.assertHasOnlyElements(cfgManager.getAllEnabledCrucibleServers(PROJECT_ID_2), crucible2, crucible1);
+		TestUtil.assertHasOnlyElements(cfgManager.getAllEnabledCrucibleServers(PROJECT_ID_1), crucible2);
+		crucible2.setEnabled(false);
+		TestUtil.assertHasOnlyElements(cfgManager.getAllEnabledCrucibleServers(PROJECT_ID_2), crucible1);
+		TestUtil.assertHasOnlyElements(cfgManager.getAllEnabledCrucibleServers(PROJECT_ID_1));
+		TestUtil.assertThrows(NullPointerException.class, new IAction() {
+			public void run() {
+				cfgManager.getAllEnabledCrucibleServers(null);
+			}
+		});
+		TestUtil.assertThrows(IllegalArgumentException.class, new IAction() {
+			public void run() {
+				cfgManager.getAllEnabledCrucibleServers(new ProjectId());
+			}
+		});
+	}
+
+	public void testGetAllEnabledJiraServers() {
+		TestUtil.assertHasOnlyElements(cfgManager.getAllEnabledJiraServers(PROJECT_ID_2), jira2);
+		TestUtil.assertHasOnlyElements(cfgManager.getAllEnabledJiraServers(PROJECT_ID_1), jira1, jira2);
+		jira1.setEnabled(false);
+		TestUtil.assertHasOnlyElements(cfgManager.getAllEnabledJiraServers(PROJECT_ID_2), jira2);
+		TestUtil.assertHasOnlyElements(cfgManager.getAllEnabledJiraServers(PROJECT_ID_1), jira2);
+		cfgManager.removeGlobalServer(jira2.getServerId());
+		TestUtil.assertHasOnlyElements(cfgManager.getAllEnabledJiraServers(PROJECT_ID_2));
+		TestUtil.assertHasOnlyElements(cfgManager.getAllEnabledJiraServers(PROJECT_ID_1));
+
+		TestUtil.assertThrows(NullPointerException.class, new IAction() {
+			public void run() {
+				cfgManager.getAllEnabledJiraServers(null);
+			}
+		});
+		TestUtil.assertThrows(IllegalArgumentException.class, new IAction() {
+			public void run() {
+				cfgManager.getAllEnabledJiraServers(new ProjectId());
+			}
+		});
+	}
+
+
 	public void testRemoveProject() {
 		TestUtil.assertHasOnlyElements(cfgManager.getAllEnabledBambooServers(PROJECT_ID_1), bamboo1, bamboo3);
 		assertNull(cfgManager.removeProject(new ProjectId()));
@@ -356,6 +404,64 @@ public abstract class AbstractCfgManagerTest extends TestCase {
 		});
 		// PROJECT_ID_2 is intact 
 		TestUtil.assertHasOnlyElements(cfgManager.getAllEnabledBambooServers(PROJECT_ID_2), bamboo3);
+	}
+
+
+	public void testNotifications() {
+		ConfigurationListener project1Listener = EasyMock.createStrictMock(ConfigurationListener.class);
+		ConfigurationListener project2Listener = EasyMock.createStrictMock(ConfigurationListener.class);
+		Object[] mocks = {project1Listener, project2Listener};
+
+		project1Listener.updateConfiguration(PROJECT_ID_1, cfgManager);
+		EasyMock.replay(mocks);
+
+		cfgManager.addListener(PROJECT_ID_1, project1Listener);
+		cfgManager.addListener(PROJECT_ID_2, project2Listener);
+		cfgManager.updateGlobalConfiguration(new GlobalConfiguration());
+		cfgManager.updateProjectConfiguration(PROJECT_ID_1, ProjectConfiguration.emptyConfiguration());
+		EasyMock.verify(mocks);
+
+
+		EasyMock.reset(mocks);
+		project2Listener.updateConfiguration(PROJECT_ID_2, cfgManager);
+		EasyMock.replay(mocks);
+
+		cfgManager.updateGlobalConfiguration(new GlobalConfiguration());
+		cfgManager.updateProjectConfiguration(PROJECT_ID_2, ProjectConfiguration.emptyConfiguration());
+		EasyMock.verify(mocks);
+
+
+		EasyMock.reset(mocks);
+		cfgManager.removeListener(PROJECT_ID_1, project1Listener);
+		// now only project2Listener will be notified
+		project2Listener.updateConfiguration(PROJECT_ID_2, cfgManager);
+		EasyMock.replay(mocks);
+
+		cfgManager.updateGlobalConfiguration(new GlobalConfiguration());
+		cfgManager.updateProjectConfiguration(PROJECT_ID_2, ProjectConfiguration.emptyConfiguration());
+		cfgManager.updateProjectConfiguration(PROJECT_ID_1, ProjectConfiguration.emptyConfiguration());
+		EasyMock.verify(mocks);
+	}
+
+
+	public void testAddListener() {
+		TestUtil.assertThrows(IllegalArgumentException.class, new IAction() {
+			public void run() throws Throwable {
+				cfgManager.addListener(PROJECT_ID_1, null);
+			}
+		});
+		TestUtil.assertThrows(IllegalArgumentException.class, new IAction() {
+			public void run() throws Throwable {
+				cfgManager.addListener(null, EasyMock.createNiceMock(ConfigurationListener.class));
+			}
+		});
+
+	}
+
+
+	public void testGerServer() {
+		assertEquals(crucible1, cfgManager.getServer(PROJECT_ID_2, crucible1.getServerId()));
+		assertNull(cfgManager.getServer(PROJECT_ID_2, crucible2.getServerId()));
 	}
 }
 
