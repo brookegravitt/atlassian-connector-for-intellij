@@ -103,6 +103,7 @@ public final class CrucibleHelper {
 				Document referenceDocument = null;
 				switch (commitType) {
 					case Moved:
+					case Copied:
 					case Modified:
 						displayDocument = new FileContent(project, displayFile.getFile())
 								.getDocument();
