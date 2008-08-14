@@ -157,7 +157,7 @@ public class CrucibleSessionTest extends TestCase {
 		assertNotNull("Exception expected", exception);
 		assertNotNull("Exception should have a cause", exception.getCause());
 		assertSame(IOException.class, exception.getCause().getClass());
-		assertTrue(exception.getMessage().startsWith(error.getErrorMessage()));
+		assertTrue(exception.getMessage().contains(error.getErrorMessage()));
 	}
 
 	public void testNonExistingServerBambooLogin() throws Exception {
