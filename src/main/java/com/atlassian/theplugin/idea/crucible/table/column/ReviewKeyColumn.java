@@ -25,7 +25,7 @@ import java.util.Comparator;
 
 
 public class ReviewKeyColumn extends TableColumnInfo {
-	private static final int COL_WIDTH = (int) new JLabel("XX-XX-XXXXX").getPreferredSize().width;
+	private static final int COL_WIDTH = new JLabel("XX-XX-XXXXX").getPreferredSize().width;
 
 	public String getColumnName() {
 		return "Key";
