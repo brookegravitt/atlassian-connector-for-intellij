@@ -45,7 +45,8 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 	private boolean firstRun = true;
 	private Project project;
 
-	public CrucibleReviewNotifier() {
+	public CrucibleReviewNotifier(final Project project) {
+		this.project = project;
 	}
 
 	public Project getProject() {
