@@ -51,9 +51,10 @@ public final class JDomXStreamUtil {
 		xStream.alias(PLAN, SubscribedPlan.class);
 		xStream.omitField(ServerCfg.class, "username");
 		xStream.omitField(ServerCfg.class, "password");
+		xStream.omitField(ServerCfg.class, "isPasswordStored");
 		xStream.aliasField("server-id", ServerCfg.class, "serverId");
 		xStream.aliasField("enabled", ServerCfg.class, "isEnabled");
-		xStream.aliasField("password-stored", ServerCfg.class, "isPasswordStored");
+//		xStream.aliasField("password-stored", ServerCfg.class, "isPasswordStored");
 		xStream.aliasField("use-favourites", ServerCfg.class, "isUseFavourites");
 		xStream.aliasField("bamboo2", ServerCfg.class, "isBamboo2");
 

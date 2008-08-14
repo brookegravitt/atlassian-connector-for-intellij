@@ -91,7 +91,7 @@ public class ThePluginApplicationComponent
 
 	@Nls
 	public String getDisplayName() {
-		return "Atlassian Plugin Global Settings";
+		return "Atlassian Plugin\nGlobal Settings";
 	}
 
 	@Nullable
