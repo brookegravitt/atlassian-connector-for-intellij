@@ -19,14 +19,39 @@ package com.atlassian.theplugin.notification.crucible;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.idea.ThePluginProjectComponent;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
+import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
+import com.intellij.openapi.components.BaseComponent;
+import com.intellij.openapi.components.ComponentConfig;
+import com.intellij.openapi.extensions.ExtensionPointName;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Condition;
+import com.intellij.openapi.util.UserDataHolderBase;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.pom.PomModel;
+import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.util.messages.MessageBus;
 import junit.framework.TestCase;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.picocontainer.PicoContainer;
 
 import java.util.*;
 
 public class CrucibleReviewNotifierTest extends TestCase {
+	CrucibleReviewNotifier notifier;
+
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
+		final Project project = new DummysProject();
+		project.putUserData(ThePluginProjectComponent.BROKER_KEY, new ReviewActionEventBroker());
+		notifier = new CrucibleReviewNotifier(project);
+	}
 
 	private ReviewBean prepareReview() {
 		return new ReviewBean();
@@ -299,7 +324,6 @@ public class CrucibleReviewNotifierTest extends TestCase {
 		bean.setReviews(emptyReviews);
 		map.put(PredefinedFilter.ToReview, bean);
 
-		CrucibleReviewNotifier notifier = new CrucibleReviewNotifier();
 		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
 		assertEquals(0, notifier.getNotifications().size());
 
@@ -321,7 +345,6 @@ public class CrucibleReviewNotifierTest extends TestCase {
 		bean.setReviews(emptyReviews);
 		map.put(PredefinedFilter.ToReview, bean);
 
-		CrucibleReviewNotifier notifier = new CrucibleReviewNotifier();
 		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
 		assertEquals(0, notifier.getNotifications().size());
 
@@ -347,7 +370,6 @@ public class CrucibleReviewNotifierTest extends TestCase {
 		List<ReviewData> reviews = prepareReviewData(State.REVIEW);
 
 		Map<PredefinedFilter, ReviewNotificationBean> map = new HashMap<PredefinedFilter, ReviewNotificationBean>();
-		CrucibleReviewNotifier notifier = new CrucibleReviewNotifier();
 		ReviewNotificationBean bean = new ReviewNotificationBean();
 
 		bean.setReviews(reviews);
@@ -369,7 +391,6 @@ public class CrucibleReviewNotifierTest extends TestCase {
 		ReviewNotificationBean bean = new ReviewNotificationBean();
 
 		Map<PredefinedFilter, ReviewNotificationBean> map = new HashMap<PredefinedFilter, ReviewNotificationBean>();
-		CrucibleReviewNotifier notifier = new CrucibleReviewNotifier();
 
 		bean.setReviews(reviews);
 		map.put(PredefinedFilter.ToReview, bean);
@@ -409,7 +430,6 @@ public class CrucibleReviewNotifierTest extends TestCase {
 		ReviewNotificationBean bean = new ReviewNotificationBean();
 
 		Map<PredefinedFilter, ReviewNotificationBean> map = new HashMap<PredefinedFilter, ReviewNotificationBean>();
-		CrucibleReviewNotifier notifier = new CrucibleReviewNotifier();
 
 		bean.setReviews(reviews);
 		map.put(PredefinedFilter.ToReview, bean);
@@ -482,7 +502,6 @@ public class CrucibleReviewNotifierTest extends TestCase {
 		ReviewNotificationBean bean = new ReviewNotificationBean();
 
 		Map<PredefinedFilter, ReviewNotificationBean> map = new HashMap<PredefinedFilter, ReviewNotificationBean>();
-		CrucibleReviewNotifier notifier = new CrucibleReviewNotifier();
 
 		bean.setReviews(reviews);
 		map.put(PredefinedFilter.ToReview, bean);
@@ -555,7 +574,6 @@ public class CrucibleReviewNotifierTest extends TestCase {
 		ReviewNotificationBean bean = new ReviewNotificationBean();
 
 		Map<PredefinedFilter, ReviewNotificationBean> map = new HashMap<PredefinedFilter, ReviewNotificationBean>();
-		CrucibleReviewNotifier notifier = new CrucibleReviewNotifier();
 
 		bean.setReviews(reviews);
 		map.put(PredefinedFilter.ToReview, bean);
@@ -585,5 +603,145 @@ public class CrucibleReviewNotifierTest extends TestCase {
 		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
 		assertEquals(1, notifier.getNotifications().size());
 		assertTrue(notifier.getNotifications().get(0) instanceof NewVersionedCommentNotification);
+	}
+
+	private class DummysProject extends UserDataHolderBase implements Project {
+		@Nullable
+		public VirtualFile getProjectFile() {
+			return null;  //To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		@Nullable
+		public VirtualFile getWorkspaceFile() {
+			return null;  //To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		@NotNull
+		public String getProjectFilePath() {
+			return null;  //To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		@Nullable
+		public VirtualFile getBaseDir() {
+			return null;  //To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		@NotNull
+		@NonNls
+		public String getName() {
+			return null;  //To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		@Nullable
+		@NonNls
+		public String getPresentableUrl() {
+			return null;  //To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		@NotNull
+		@NonNls
+		public String getLocationHash() {
+			return null;  //To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		@NotNull
+		@NonNls
+		public String getLocation() {
+			return null;  //To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		public void save() {
+			//To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		public BaseComponent getComponent(final String name) {
+			return null;  //To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		public <T> T getComponent(final Class<T> interfaceClass) {
+			return null;  //To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		public <T> T getComponent(final Class<T> interfaceClass, final T defaultImplementationIfAbsent) {
+			return null;  //To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		@NotNull
+		public Class[] getComponentInterfaces() {
+			return new Class[0];  //To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		public boolean hasComponent(@NotNull final Class interfaceClass) {
+			return false;  //To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		@NotNull
+		public <T> T[] getComponents(final Class<T> baseClass) {
+			return null;  //To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		@NotNull
+		public PicoContainer getPicoContainer() {
+			return null;  //To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		public MessageBus getMessageBus() {
+			return null;  //To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		public boolean isDisposed() {
+			return false;  //To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		@NotNull
+		public ComponentConfig[] getComponentConfigurations() {
+			return new ComponentConfig[0];  //To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		@Nullable
+		public Object getComponent(final ComponentConfig componentConfig) {
+			return null;  //To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		public <T> T[] getExtensions(final ExtensionPointName<T> extensionPointName) {
+			return null;  //To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		public ComponentConfig getConfig(final Class componentImplementation) {
+			return null;  //To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		public Condition getDisposed() {
+			return null;  //To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		public boolean isOpen() {
+			return false;  //To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		public boolean isInitialized() {
+			return false;  //To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		public boolean isDefault() {
+			return false;  //To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		@NotNull
+		public PomModel getModel() {
+			return null;  //To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		public GlobalSearchScope getAllScope() {
+			return null;  //To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		public GlobalSearchScope getProjectScope() {
+			return null;  //To change body of implemented methods use File | Settings | File Templates.
+		}
+
+		public void dispose() {
+			//To change body of implemented methods use File | Settings | File Templates.
+		}
 	}
 }

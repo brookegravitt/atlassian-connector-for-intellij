@@ -249,8 +249,7 @@ public class ThePluginProjectComponent implements
             // create crucible status bar icon
             statusBarCrucibleIcon = new CrucibleStatusIcon(project, cfgManager);
 
-            crucibleReviewNotifier = new CrucibleReviewNotifier();
-            crucibleReviewNotifier.setProject(project);
+            crucibleReviewNotifier = new CrucibleReviewNotifier(project);
             crucibleStatusChecker.registerListener(crucibleReviewNotifier);
             if (IdeaHelper.getPluginConfiguration().getCrucibleConfigurationData().getCrucibleTooltipOption()
 					!= CrucibleTooltipOption.NEVER) {
