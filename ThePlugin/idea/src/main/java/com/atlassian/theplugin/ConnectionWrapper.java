@@ -24,6 +24,7 @@ public class ConnectionWrapper extends Thread {
 
 	private String errorMessage = null;
 	private Connector connector;
+	private final LoginDataProvided loginDataProvided;
 
 	public String getErrorMessage() {
 		return errorMessage;
@@ -38,18 +39,20 @@ public class ConnectionWrapper extends Thread {
 
 	private ConnectionState connectionState = ConnectionState.NOT_FINISHED;
 
-	public ConnectionWrapper(Connector connector, String threadName) {
+	public ConnectionWrapper(Connector connector, LoginDataProvided loginDataProvided, String threadName) {
 		super(threadName);
 		this.connector = connector;
+		this.loginDataProvided = loginDataProvided;
 	}
 
 	/**
 	 * Runs test connection method on a ConnectionTester and sets connestionStates accordingly.
 	 * That method should not be used directly but using 'start' method on a thread object. 
 	 */
+	@Override
 	public void run() {
 		try {
-			connector.connect();
+			connector.connect(loginDataProvided);
 			if (connectionState != ConnectionState.INTERUPTED) {
 				connectionState = ConnectionState.SUCCEEDED;
 			}

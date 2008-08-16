@@ -24,6 +24,7 @@ import com.atlassian.theplugin.commons.util.UrlUtil;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.intellij.openapi.project.Project;
 
 import javax.swing.*;
 import java.awt.*;
@@ -45,14 +46,14 @@ public class GenericServerConfigForm implements LoginDataProvided {
 
 	private transient ServerCfg serverCfg;
 
-    public ServerCfg getServerCfg() {
+	public ServerCfg getServerCfg() {
         return serverCfg;
     }
 
-    public GenericServerConfigForm(final Connector tester) {
+    public GenericServerConfigForm(final Project project, final Connector tester) {
 
 		$$$setupUI$$$();
-		testConnection.addActionListener(new TestConnectionListener(tester, this));
+		testConnection.addActionListener(new TestConnectionListener(project, tester, this));
 		serverUrl.addFocusListener(new FocusAdapter() {
 			@Override
             public void focusLost(FocusEvent e) {

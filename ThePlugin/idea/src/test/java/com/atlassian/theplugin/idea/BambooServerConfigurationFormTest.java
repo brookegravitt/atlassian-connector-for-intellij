@@ -39,7 +39,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 	@Override
     protected void setUp() throws Exception {
 		super.setUp();
-		bambooPluginConfigurationForm = new BambooServerConfigForm(BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()));
+		bambooPluginConfigurationForm = new BambooServerConfigForm(null, BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()));
 	}
 
 	public void testBambooSetGetData() throws Exception {

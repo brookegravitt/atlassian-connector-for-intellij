@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.config;
 import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.intellij.openapi.project.Project;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,9 +34,9 @@ public class ProjectConfigurationPanel extends JPanel {
 
 	private final ProjectConfiguration projectConfiguration;
 
-	public ProjectConfigurationPanel(ProjectConfiguration projectConfiguration) {
+	public ProjectConfigurationPanel(Project project, ProjectConfiguration projectConfiguration) {
 		this.projectConfiguration = projectConfiguration;
-		serverConfigPanel = new ServerConfigPanel(projectConfiguration.getServers());
+		serverConfigPanel = new ServerConfigPanel(project, projectConfiguration.getServers());
 		initLayout();
 	}
 
