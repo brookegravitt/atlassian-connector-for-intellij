@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.idea;
+package com.atlassian.theplugin.commons.util;
 
 import com.atlassian.theplugin.commons.util.DateUtil;
 import junit.framework.TestCase;

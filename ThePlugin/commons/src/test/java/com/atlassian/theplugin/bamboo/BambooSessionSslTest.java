@@ -39,6 +39,7 @@ public class BambooSessionSslTest extends TestCase {
 	private JettyMockServer mockServer;
 	private String mockBaseUrl;
 
+	@Override
 	protected void setUp() throws Exception {
 		HttpClientFactory.initializeTrustManagers(new EasyX509TrustManager(null));
 		PluginConfiguration configuration = new PluginConfigurationBean();
@@ -63,6 +64,7 @@ public class BambooSessionSslTest extends TestCase {
 		mockServer = new JettyMockServer(server);
 	}
 
+	@Override
 	protected void tearDown() throws Exception {
 		mockServer = null;
 		mockBaseUrl = null;

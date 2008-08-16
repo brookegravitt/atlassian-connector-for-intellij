@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.bamboo;
 
 import com.atlassian.theplugin.commons.SubscribedPlan;
+import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
@@ -25,7 +26,6 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.bamboo.*;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
-import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.bamboo.api.bamboomock.*;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
@@ -63,7 +63,7 @@ public class BambooServerFacadeTest extends TestCase {
 		mockServer = new JettyMockServer(httpServer);
 		bambooServerCfg = createBambooTestConfiguration(mockBaseUrl, true);
 
-		testedBambooServerFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
+		testedBambooServerFacade = BambooServerFacadeImpl.getInstance(LoggerImpl.getInstance());
 	}
 
 	private static BambooServerCfg createBambooTestConfiguration(String serverUrl, boolean isPassInitialized) {
@@ -256,7 +256,7 @@ public class BambooServerFacadeTest extends TestCase {
 		mockServer.expect("/api/rest/getLatestUserBuilds.action", new FavouritePlanListCallback());
 
 		bambooServerCfg.getSubscribedPlans().clear();
-		BambooServerFacade facade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
+		BambooServerFacade facade = BambooServerFacadeImpl.getInstance(LoggerImpl.getInstance());
 		Collection<BambooBuild> plans = facade.getSubscribedPlansResults(bambooServerCfg);
 		assertEquals(0, plans.size());
 

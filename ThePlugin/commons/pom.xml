@@ -33,11 +33,31 @@
             <version>1.4</version>
         </dependency>
 		<dependency>
+			<groupId>jdom</groupId>
+			<artifactId>jdom</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
 			<groupId>com.spartez.util</groupId>
 			<artifactId>spartez-junit3-util</artifactId>
 			<version>1.0.0</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.cssparser</groupId>
+			<artifactId>cssparser</artifactId>
+			<version>0.9.4</version>
+			<scope>test</scope>
+		</dependency>
+<!--
+		<dependency>
+			<groupId>net.sourceforge.htmlunit</groupId>
+			<artifactId>htmlunit</artifactId>
+			<version>2.2</version>
+			<scope>test</scope>
+		</dependency>
+-->
+
 		<dependency>
 			<groupId>com.thoughtworks.xstream</groupId>
 			<artifactId>xstream</artifactId>
