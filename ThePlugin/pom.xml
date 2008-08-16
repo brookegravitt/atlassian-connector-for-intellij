@@ -80,11 +80,6 @@
             <version>3.1</version>
         </dependency>
         <dependency>
-            <groupId>jdom</groupId>
-            <artifactId>jdom</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>3.8.2</version>
@@ -157,6 +152,10 @@
                             <name>jdom</name>
                             <exclude>true</exclude>
                         </library>
+						<library>
+							<name>cssparser</name>
+							<exclude>true</exclude>
+						</library>
                     </libraries>
                 </configuration>
             </plugin>
