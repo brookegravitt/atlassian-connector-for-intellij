@@ -94,7 +94,10 @@
             <implementation-class>com.atlassian.theplugin.idea.jira.editor.ThePluginJIRAEditorComponent
             </implementation-class>
         </component>
-    </application-components>
+		<component>
+			<interface-class>com.atlassian.theplugin.commons.cfg.CfgManager</interface-class>
+			<implementation-class>com.atlassian.theplugin.commons.cfg.CfgManagerImpl</implementation-class></component>
+	</application-components>
     <project-components>
         <component>
             <implementation-class>com.atlassian.theplugin.idea.ThePluginProjectComponent</implementation-class>

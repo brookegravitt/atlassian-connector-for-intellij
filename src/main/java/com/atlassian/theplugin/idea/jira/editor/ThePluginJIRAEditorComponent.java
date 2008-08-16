@@ -63,6 +63,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+// TODO all this whole class should be rather project component I think (wseliga)
 public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileEditorProvider {
 
 	@NonNls
@@ -93,7 +94,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 		String issueFromFileName = virtualFile.getNameWithoutExtension();
 		JIRAIssue issue = IdeaHelper.getJIRAToolWindowPanel(project).getCurrentIssue();
 		if (issueFromFileName.equals(issue.getKey())) {
-			return new JIRAFileEditor(issue);
+			return new JIRAFileEditor(project, issue);
 		}
 		return new JIRAFileEditor();
 
@@ -129,7 +130,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 		}
 	}
 
-	private class ScrollablePanel extends JPanel implements Scrollable {
+	private static class ScrollablePanel extends JPanel implements Scrollable {
 		private static final int A_LOT = 100000;
 
 		// cheating obviously but this seems to do the right thing, so whatever :)
@@ -154,7 +155,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 		}
 	}
 
-	private class CommentsPanel extends JPanel {
+	private static class CommentsPanel extends JPanel {
 
 		private ScrollablePanel comments = new ScrollablePanel();
         private JScrollPane scroll = new JScrollPane();
@@ -203,8 +204,8 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			setBorder(border);
         }
 
-        public void addComment(JIRAIssue issue, JIRAComment c, JIRAServer server) {
-            CommentPanel p = new CommentPanel(issue, c, server);
+        public void addComment(final Project project, JIRAIssue issue, JIRAComment c, JIRAServer server) {
+            CommentPanel p = new CommentPanel(project, issue, c, server);
             comments.add(p);
             commentList.add(p);
 		}
@@ -229,7 +230,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
         }
     }
 
-     private abstract class AbstractShowHideButton extends JLabel {
+     private abstract static class AbstractShowHideButton extends JLabel {
 
         private Icon right = IconLoader.findIcon("/icons/navigate_right_10.gif");
         private Icon down = IconLoader.findIcon("/icons/navigate_down_10.gif");
@@ -240,7 +241,8 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
             setIcon(down);
             setToolTipText(getTooltip());
             addMouseListener(new MouseAdapter() {
-                public void mouseClicked(MouseEvent e) {
+                @Override
+				public void mouseClicked(MouseEvent e) {
                     click();
                 }
             });
@@ -260,7 +262,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
         protected abstract String getTooltip();
     }
 
-    private class ShowHideButton extends AbstractShowHideButton {
+    private static class ShowHideButton extends AbstractShowHideButton {
         private JComponent body;
         private JComponent container;
 
@@ -269,18 +271,20 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
             this.container = container;
         }
 
-        protected void setComponentVisible(boolean visible) {
+        @Override
+		protected void setComponentVisible(boolean visible) {
             body.setVisible(visible);
             container.validate();
             container.getParent().validate();
         }
 
-        protected String getTooltip() {
+        @Override
+		protected String getTooltip() {
             return "Collapse/Expand";
         }
     }
 
-    private class UserLabel extends HyperlinkLabel {
+    private static class UserLabel extends HyperlinkLabel {
 		UserLabel(final String serverUrl, final String userNameId) {
 			super(userNameId, UIUtil.getTableSelectionForeground(),
 					UIUtil.getTableSelectionBackground(), UIUtil.getTableSelectionForeground());
@@ -304,7 +308,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 		}
 	}
 
-	private class BoldLabel extends JLabel {
+	private static class BoldLabel extends JLabel {
 		public BoldLabel(String text) {
 			super(text);
 			setFont(getFont().deriveFont(Font.BOLD));
@@ -315,19 +319,20 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 		}
 	}
 
-	private class WhiteLabel extends BoldLabel {
+	private static class WhiteLabel extends BoldLabel {
 		public WhiteLabel() {
-			super();
 			setForeground(UIUtil.getTableSelectionForeground());
 		}
 	}
 	
-	private class CommentPanel extends JPanel {
+	private static class CommentPanel extends JPanel {
 
 		private ShowHideButton btnShowHide;
         private static final int GRID_WIDTH = 6;
+		private final Project project;
 
-        public CommentPanel(final JIRAIssue issue, final JIRAComment comment, final JIRAServer server) {
+		public CommentPanel(final Project project, final JIRAIssue issue, final JIRAComment comment, final JIRAServer server) {
+			this.project = project;
 			setOpaque(true);
 			setBackground(UIUtil.getTableSelectionBackground());
 			
@@ -375,7 +380,8 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 					UIUtil.getTableSelectionBackground(), UIUtil.getTableSelectionForeground());
 				analyze.addHyperlinkListener(new HyperlinkListener() {
 					public void hyperlinkUpdate(HyperlinkEvent e) {
-						StackTraceConsole.getInstance().print(issue,
+						StackTraceConsole stackTraceConsole = IdeaHelper.getProjectComponent(project, StackTraceConsole.class);
+						stackTraceConsole.print(issue,
 								"comment: " + comment.getAuthor() + " - " + creationDate.getText(), comment.getBody());
 					}
 				});
@@ -409,7 +415,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
         }
     }
 
-    private class DescriptionPanel extends JPanel {
+    private static class DescriptionPanel extends JPanel {
 		public DescriptionPanel(final JIRAIssue issue) {
 			setLayout(new GridBagLayout());
 			GridBagConstraints gbc = new GridBagConstraints();
@@ -453,7 +459,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 		}
 	}
 
-	private class DetailsPanel extends JPanel {
+	private static class DetailsPanel extends JPanel {
 
 		private JLabel affectsVersions = new JLabel("Fetching...");
 		private JLabel fixVersions = new JLabel("Fetching...");
@@ -557,7 +563,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 		}
 	}
 
-	private class SummaryPanel extends JPanel {
+	private static class SummaryPanel extends JPanel {
 
 		private DetailsPanel details;
         private static final int THICKNESS = 6;
@@ -655,27 +661,30 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 		}
 	}
 
-    public class JIRAFileEditor implements FileEditor {
+    public static class JIRAFileEditor implements FileEditor {
 
 		private final JIRAServerFacade facade;
 		private final JIRAServer server;
 
 		private JPanel mainPanel;
+		private final Project project;
 		private JIRAIssue issue;
         private CommentsPanel commentsPanel;
 		private SummaryPanel summaryPanel;
 		private boolean hasStackTrace;
 
-		public JIRAFileEditor() {
+		private JIRAFileEditor() {
 			mainPanel = new JPanel();
 			mainPanel.setBackground(Color.RED);
 			// todo: fix this
 			mainPanel.add(new JLabel("Can't view issue, something is wrong"));
 			facade = null;
 			server = null;
+			project = null;
 		}
 
-		public JIRAFileEditor(JIRAIssue issue) {
+		public JIRAFileEditor(Project project, JIRAIssue issue) {
+			this.project = project;
 			this.issue = issue;
 			facade = JIRAServerFacadeImpl.getInstance();
 			server = IdeaHelper.getCurrentJIRAServer();
@@ -797,7 +806,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
                                 if (size > 0) {
                                     commentsPanel.setTitle("Comments (" + comments.size() + ")");
                                     for (JIRAComment c : comments) {
-                                        commentsPanel.addComment(issue, c, server);
+                                        commentsPanel.addComment(project, issue, c, server);
 									}
                                     commentsPanel.validate();
                                     commentsPanel.scrollToFirst();
@@ -823,7 +832,8 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 		}
 
 		public void analyzeDescriptionStackTrace() {
-			StackTraceConsole.getInstance().print(issue, "description",	Html2text.translate(issue.getDescription()));
+			StackTraceConsole stackTraceConsole = IdeaHelper.getProjectComponent(project, StackTraceConsole.class);
+			stackTraceConsole.print(issue, "description", Html2text.translate(issue.getDescription()));
 		}
 
 		public void setCommentsExpanded(boolean expanded) {

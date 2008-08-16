@@ -65,8 +65,8 @@ public final class VcsIdeaHelper {
 
 
 	@Nullable
-	public static String getRepositoryUrlForFile(VirtualFile vFile) {
-		ProjectLevelVcsManager plm = ProjectLevelVcsManager.getInstance(IdeaHelper.getCurrentProject());
+	public static String getRepositoryUrlForFile(Project project, VirtualFile vFile) {
+		ProjectLevelVcsManager plm = ProjectLevelVcsManager.getInstance(project);
 		if (plm == null) {
 			return null;
 		}
@@ -86,8 +86,8 @@ public final class VcsIdeaHelper {
 		return repositoryLocation.toPresentableString();
 	}
 
-	public static List<VcsFileRevision> getFileHistory(VirtualFile vFile) throws VcsException {
-		ProjectLevelVcsManager vcsPLM = ProjectLevelVcsManager.getInstance(IdeaHelper.getCurrentProject());
+	public static List<VcsFileRevision> getFileHistory(Project project, VirtualFile vFile) throws VcsException {
+		ProjectLevelVcsManager vcsPLM = ProjectLevelVcsManager.getInstance(project);
 
 		if (vcsPLM != null) {
 			return vcsPLM.getVcsFor(vFile).getVcsHistoryProvider().createSessionFor(
@@ -220,7 +220,7 @@ public final class VcsIdeaHelper {
 	 * @param virtualFile  file to fetch from VCS
 	 * @param line		 line to go to
 	 * @param column	   column to go to
-	 * @param action
+	 * @param action action to execute upon sucsessful completion of the fetching 
 	 */
 	// CHECKSTYLE:OFF
 	private static void fetchAndOpenFileWithDiffs(final Project project, final String fromRevision, final String toRevision,
@@ -275,7 +275,7 @@ public final class VcsIdeaHelper {
 			final int line, final int col, @Nullable final OpenFileDescriptorAction action) {
 
 		VirtualFile baseDir = project.getBaseDir();
-		String baseUrl = getRepositoryUrlForFile(baseDir);
+		String baseUrl = getRepositoryUrlForFile(project, baseDir);
 
 		if (baseUrl != null && filePath.startsWith(baseUrl)) {
 			String relUrl = filePath.substring(baseUrl.length());
@@ -305,7 +305,7 @@ public final class VcsIdeaHelper {
 			final int line, final int col, @Nullable final OpenDiffAction action) {
 		// CHECKSTYLE:ON
 		VirtualFile baseDir = project.getBaseDir();
-		String baseUrl = getRepositoryUrlForFile(baseDir);
+		String baseUrl = getRepositoryUrlForFile(project, baseDir);
 
 		if (baseUrl != null && filePath.startsWith(baseUrl)) {
 			String relUrl = filePath.substring(baseUrl.length());

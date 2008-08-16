@@ -16,25 +16,22 @@
 
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.commons.SchedulableChecker;
+import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.ConfigurationListener;
-import com.atlassian.theplugin.commons.cfg.CfgManagerSingleton;
+import com.atlassian.theplugin.commons.SchedulableChecker;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ProjectId;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.util.HttpClientFactory;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
-import com.atlassian.theplugin.jira.JIRAServerFacade;
-import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.util.HttpConfigurableIdeaImpl;
 import com.atlassian.theplugin.util.PicoUtil;
 import com.atlassian.theplugin.util.PluginTrustManager;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
@@ -48,15 +45,18 @@ import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.util.IconLoader;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.net.ssl.TrustManager;
 import javax.swing.*;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Timer;
+import java.util.TimerTask;
 
 @State(name = "atlassian-ide-plugin",
 		storages = { @Storage(id = "atlassian-ide-plugin-id", file = "$APP_CONFIG$/atlassian-ide-plugin.app.xml") })
@@ -74,6 +74,7 @@ public class ThePluginApplicationComponent
 
 	private ConfigPanel configPanel;
 	private final PluginConfigurationBean configuration;
+	private final CfgManager cfgManager;
 
 	private final Timer timer = new Timer("atlassian-idea-plugin background status checkers");
 	private static final int TIMER_START_DELAY = 20000;
@@ -87,7 +88,26 @@ public class ThePluginApplicationComponent
 	private final Collection<SchedulableChecker> schedulableCheckers = new HashSet<SchedulableChecker>();
 
 
-	private final JIRAServerFacade jiraServerFacade;
+	public ThePluginApplicationComponent(PluginConfigurationBean configuration, CfgManager cfgManager) {
+		this.configuration = configuration;
+		this.cfgManager = cfgManager;
+		this.configuration.transientSetHttpConfigurable(HttpConfigurableIdeaImpl.getInstance());
+
+		this.schedulableCheckers.add(NewVersionChecker.getInstance(configuration));
+
+		cfgManager.updateProjectConfiguration(CfgUtil.GLOBAL_PROJECT,
+				ProjectConfiguration.emptyConfiguration());
+		ConfigurationFactory.setConfiguration(configuration);
+		TrustManager trustManager;
+		try {
+			trustManager = new PluginTrustManager(configuration);
+			HttpClientFactory.initializeTrustManagers(trustManager);
+		} catch (NoSuchAlgorithmException e) {
+			PluginUtil.getLogger().error("Error initializing custom trust manager");
+		} catch (KeyStoreException e) {
+			PluginUtil.getLogger().error("Error initializing custom trust manager");
+		}
+	}
 
 	@Nls
 	public String getDisplayName() {
@@ -105,12 +125,12 @@ public class ThePluginApplicationComponent
 		return null;
 	}
 
+
 	@NotNull
 	@NonNls
 	public String getComponentName() {
 		return "ThePluginApplicationComponent";
 	}
-
 
 	public void initComponent() {
 		new IdeaLoggerImpl(com.intellij.openapi.diagnostic.Logger.getInstance(LoggerImpl.LOGGER_CATEGORY));
@@ -123,7 +143,7 @@ public class ThePluginApplicationComponent
 
 	public JComponent createComponent() {
 		if (configPanel == null) {
-			configPanel = new ConfigPanel(configuration, CfgUtil.GLOBAL_PROJECT, CfgManagerSingleton.getCfgManager());
+			configPanel = new ConfigPanel(configuration, CfgUtil.GLOBAL_PROJECT, cfgManager);
 		}
 		return configPanel;
 	}
@@ -131,31 +151,6 @@ public class ThePluginApplicationComponent
 	public boolean isModified() {
 		return true;
 		//return configPanel.isModified();
-	}
-
-	public JIRAServerFacade getJiraServerFacade() {
-		return jiraServerFacade;
-	}
-
-	public ThePluginApplicationComponent(PluginConfigurationBean configuration) {
-		this.configuration = configuration;
-		this.configuration.transientSetHttpConfigurable(HttpConfigurableIdeaImpl.getInstance());
-
-		this.schedulableCheckers.add(NewVersionChecker.getInstance(configuration));
-
-		CfgManagerSingleton.getCfgManager().updateProjectConfiguration(CfgUtil.GLOBAL_PROJECT,
-				ProjectConfiguration.emptyConfiguration());
-		this.jiraServerFacade = JIRAServerFacadeImpl.getInstance();
-		ConfigurationFactory.setConfiguration(configuration);
-		TrustManager trustManager;
-		try {
-			trustManager = new PluginTrustManager(configuration);
-			HttpClientFactory.initializeTrustManagers(trustManager);
-		} catch (NoSuchAlgorithmException e) {
-			PluginUtil.getLogger().error("Error initializing custom trust manager");
-		} catch (KeyStoreException e) {
-			PluginUtil.getLogger().error("Error initializing custom trust manager");
-		}
 	}
 
 	private void disableTimers() {
@@ -231,7 +226,7 @@ public class ThePluginApplicationComponent
 		configuration.transientSetHttpConfigurable(HttpConfigurableIdeaImpl.getInstance());
 	}
 
-	public void updateConfiguration(final ProjectId project, final CfgManager cfgManager) {
+	public void updateConfiguration(final ProjectId project, final CfgManager aCfgManager) {
 		rescheduleStatusCheckers(true);
 	}
 }

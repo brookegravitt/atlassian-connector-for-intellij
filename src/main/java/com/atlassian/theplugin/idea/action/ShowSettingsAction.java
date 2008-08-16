@@ -25,6 +25,7 @@ import com.intellij.openapi.options.ShowSettingsUtil;
  * Simple action to show the settings for the plugin.
  */
 public class ShowSettingsAction extends AnAction {
+	@Override
 	public void actionPerformed(AnActionEvent event) {
 		ShowSettingsUtil.getInstance().editConfigurable(
 				IdeaHelper.getCurrentProject(event.getDataContext()),				

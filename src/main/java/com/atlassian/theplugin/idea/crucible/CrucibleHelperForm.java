@@ -16,7 +16,6 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.cfg.CfgManagerSingleton;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
@@ -24,6 +23,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.Project;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.cfg.CfgUtil;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import static com.intellij.openapi.ui.Messages.showMessageDialog;
@@ -112,7 +112,8 @@ public class CrucibleHelperForm extends DialogWrapper {
         fillInCrucibleServers();
     }
 
-    public JComponent getPreferredFocusedComponent() {
+    @Override
+	public JComponent getPreferredFocusedComponent() {
         return this.crucibleServersComboBox;
     }
 
@@ -159,7 +160,8 @@ public class CrucibleHelperForm extends DialogWrapper {
             this.server = server;
         }
 
-        public String toString() {
+        @Override
+		public String toString() {
             return server.getName();
         }
 
@@ -169,7 +171,7 @@ public class CrucibleHelperForm extends DialogWrapper {
     }
 
     private void fillInCrucibleServers() {
-		final Collection<CrucibleServerCfg> enabledServers = CfgManagerSingleton.getCfgManager()
+		final Collection<CrucibleServerCfg> enabledServers = IdeaHelper.getCfgManager()
 				.getAllEnabledCrucibleServers(CfgUtil.getProjectId(project));
 
         if (enabledServers.isEmpty()) {
@@ -231,7 +233,8 @@ public class CrucibleHelperForm extends DialogWrapper {
             this.repo = repo;
         }
 
-        public String toString() {
+        @Override
+		public String toString() {
             return repo.getName();
         }
 
@@ -245,7 +248,8 @@ public class CrucibleHelperForm extends DialogWrapper {
         return rootComponent;
     }
 
-    @Nullable
+    @Override
+	@Nullable
     protected JComponent createCenterPanel() {
         return getRootComponent();
     }

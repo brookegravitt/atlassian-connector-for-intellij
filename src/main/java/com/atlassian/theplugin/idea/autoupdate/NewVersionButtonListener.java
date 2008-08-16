@@ -73,7 +73,7 @@ public class NewVersionButtonListener implements ActionListener {
 
     private class UpdateModalTask extends Task.Modal {
         public UpdateModalTask() {
-            super(IdeaHelper.getCurrentProject(), "Checking available updates", true);
+            super(null, "Checking available updates", true);
         }
 
         public void run(ProgressIndicator indicator) {
@@ -117,7 +117,7 @@ public class NewVersionButtonListener implements ActionListener {
                         EventQueue.invokeLater(new Runnable() {
                             public void run() {
                                 try {
-                                    new NewVersionConfirmHandler(updateConfig).doAction(newVersion, false);
+                                    new NewVersionConfirmHandler(null, updateConfig).doAction(newVersion, false);
                                 } catch (ThePluginException e) {
                                     showMessageDialog(e.getMessage(),
                                             "Error retrieving new version", Messages.getErrorIcon());

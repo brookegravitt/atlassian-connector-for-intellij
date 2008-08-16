@@ -16,16 +16,22 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.cfg.CfgManagerSingleton;
 import com.atlassian.theplugin.commons.cfg.xstream.JDomProjectConfigurationFactory;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ProjectConfigurationFactory;
 import com.atlassian.theplugin.commons.cfg.ServerCfgFactoryException;
+import com.atlassian.theplugin.commons.cfg.ProjectId;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.commons.ConfigurationListener;
+import com.atlassian.theplugin.idea.config.ProjectConfigurationPanel;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.components.SettingsSavingComponent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.options.Configurable;
+import com.intellij.openapi.options.ConfigurationException;
+import com.intellij.openapi.util.IconLoader;
 import org.jdom.Element;
 import org.jdom.Document;
 import org.jdom.output.XMLOutputter;
@@ -33,18 +39,26 @@ import org.jdom.output.Format;
 import org.jdom.input.SAXBuilder;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nls;
+import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.FileWriter;
 
-public class ProjectConfigurationComponent implements ProjectComponent, SettingsSavingComponent {
+public class ProjectConfigurationComponent implements ProjectComponent, SettingsSavingComponent, Configurable,
+		ConfigurationListener {
 
 	private final Project project;
+	private final CfgManager cfgManager;
 	private static final String CFG_LOAD_ERROR_MSG = "Error while loading Atlassian Plugin configuration.";
+	private static final Icon PLUGIN_SETTINGS_ICON = IconLoader.getIcon("/icons/ico_plugin.png");
+	private ProjectConfigurationPanel projectConfigurationPanel;
 
-	public ProjectConfigurationComponent(final Project project) {
+	public ProjectConfigurationComponent(final Project project, CfgManager cfgManager) {
 		this.project = project;
+		this.cfgManager = cfgManager;
 	}
 
 
@@ -55,11 +69,13 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 	public void projectOpened() {
 		load();
+		cfgManager.addListener(getProjectId(), this);
 	}
 
 
 	public void projectClosed() {
-		CfgManagerSingleton.getCfgManager().removeProject(CfgUtil.GLOBAL_PROJECT);
+		cfgManager.removeListener(getProjectId(), this);
+		cfgManager.removeProject(getProjectId());
 	}
 
 	@NonNls
@@ -111,12 +127,12 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 			setDefaultProjectConfiguration();
 			return;
 		}
-		CfgManagerSingleton.getCfgManager().updateProjectConfiguration(CfgUtil.GLOBAL_PROJECT, projectConfiguration);
+		cfgManager.updateProjectConfiguration(CfgUtil.getProjectId(project), projectConfiguration);
 
 	}
 
 	private void setDefaultProjectConfiguration() {
-		CfgManagerSingleton.getCfgManager().updateProjectConfiguration(CfgUtil.GLOBAL_PROJECT,
+		cfgManager.updateProjectConfiguration(CfgUtil.getProjectId(project),
 				ProjectConfiguration.emptyConfiguration());
 	}
 
@@ -137,12 +153,15 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	}
 
 
+	private ProjectId getProjectId() {
+		return CfgUtil.getProjectId(project);
+	}
+
 	public void save() {
 		final Element element = new Element("atlassian-ide-plugin");
 		final Element privateElement = new Element("atlassian-ide-plugin-private");
 		JDomProjectConfigurationFactory cfgFactory = new JDomProjectConfigurationFactory(element, privateElement);
-		final ProjectConfiguration configuration = CfgManagerSingleton.getCfgManager()
-				.getProjectConfiguration(CfgUtil.GLOBAL_PROJECT);
+		final ProjectConfiguration configuration = cfgManager.getProjectConfiguration(getProjectId());
 		if (configuration != null) {
 			cfgFactory.save(configuration);
 		}
@@ -165,5 +184,49 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 			Messages.showWarningDialog(project, "Cannot save project configuration settings to [" + filepath + ":\n"
 					+ e.getMessage(), "Error");
 		}
+	}
+
+	@Nls
+	public String getDisplayName() {
+		return "Atlassian Plugin\nProject Settings";
+	}
+
+	@Nullable
+	public Icon getIcon() {
+		return PLUGIN_SETTINGS_ICON;
+	}
+
+	@Nullable
+	@NonNls
+	public String getHelpTopic() {
+		return null;
+	}
+
+	public JComponent createComponent() {
+		projectConfigurationPanel = new ProjectConfigurationPanel(
+				cfgManager.getProjectConfiguration(getProjectId()).getClone());
+		return projectConfigurationPanel;
+	}
+
+	public boolean isModified() {
+		return true;
+	}
+
+	public void apply() throws ConfigurationException {
+		if (projectConfigurationPanel == null) {
+			return;
+		}
+		cfgManager.updateProjectConfiguration(getProjectId(), projectConfigurationPanel.getProjectConfiguration());
+	}
+
+	public void reset() {
+	}
+
+	public void disposeUIResources() {
+		projectConfigurationPanel = null;
+	}
+
+	public void updateConfiguration(final ProjectId aProject, final CfgManager aCfgManager) {
+		save();
 	}
 }

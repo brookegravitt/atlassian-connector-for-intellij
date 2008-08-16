@@ -17,7 +17,6 @@
 package com.atlassian.theplugin.idea.ui.tree.file;
 
 import com.atlassian.theplugin.commons.BambooFileInfo;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.intellij.openapi.fileTypes.FileType;
@@ -69,9 +68,10 @@ public class BambooFileNode extends FileNode {
 
     @Override
     public TreeCellRenderer getTreeCellRenderer() {
-        return MY_RENDERER;
+		return MY_RENDERER;
     }
 
+	@Override
 	public AtlassianTreeNode getClone() {
 		return new BambooFileNode(this);
 	}
@@ -91,7 +91,7 @@ public class BambooFileNode extends FileNode {
             append(txt.toString(), SimpleTextAttributes.GRAY_ITALIC_ATTRIBUTES);
             if (node.getPsiFile() != null) {
                 try {
-                    AbstractVcs vcs = VcsUtil.getVcsFor(IdeaHelper.getCurrentProject(), node.getPsiFile().getVirtualFile());
+                    AbstractVcs vcs = VcsUtil.getVcsFor(node.getPsiFile().getProject(), node.getPsiFile().getVirtualFile());
                     if (vcs == null) {
                         throw new NullPointerException("no VCS info");
                     }

@@ -24,12 +24,10 @@ import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.commons.util.Logger;
-import com.atlassian.theplugin.commons.cfg.CfgManagerSingleton;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.CrucibleReviewWindow;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
-import com.atlassian.theplugin.idea.ThePluginProjectComponent;
 import com.atlassian.theplugin.idea.bamboo.ToolWindowBambooContent;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.events.ShowReviewEvent;
@@ -51,8 +49,11 @@ import thirdparty.javaworld.ClasspathHTMLEditorKit;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStatusListener, TableItemSelectedListener {
 	public static final String PLACE_PREFIX = CrucibleTableToolWindowPanel.class.getSimpleName();
@@ -60,12 +61,12 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 			= Key.create(CrucibleTableToolWindowPanel.class.getName());
 	private Project project;
 	private transient ActionToolbar filterEditToolbar;
-	private static CrucibleTableToolWindowPanel instance;
 	private TableColumnProvider columnProvider;
 
 	private CrucibleCustomFilterPanel crucibleCustomFilterPanel;
 
 	private ProjectConfigurationBean projectCfg;
+	private final CrucibleStatusChecker crucibleStatusChecker;
 	private JPanel toolBarPanel;
 	private JPanel dataPanelsHolder;
 	private ToolWindowBambooContent editorPane;
@@ -116,14 +117,8 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 			CustomFilterBean filter = crucibleCustomFilterPanel.getFilter();
 
 			filters.getManualFilter().put(filter.getTitle(), filter);
-			projectCfg.
-					getCrucibleConfiguration().getCrucibleFilters().getManualFilter().put(filter.getTitle(), filter);
-			CrucibleStatusChecker checker = null;
-			ThePluginProjectComponent projectComponent = IdeaHelper.getCurrentProjectComponent();
-			if (projectComponent != null) {
-				checker = projectComponent.getCrucibleStatusChecker();
-			}
-			refreshReviews(checker);
+			projectCfg.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().put(filter.getTitle(), filter);
+			refreshReviews(crucibleStatusChecker);
 		}
 		hideCrucibleCustomFilter();
 	}
@@ -136,23 +131,25 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 	public void clearAdvancedFilter() {
 	}
 
-	public static CrucibleTableToolWindowPanel getInstance(com.intellij.openapi.project.Project project,
-			ProjectConfigurationBean projectConfigurationBean) {
+//	public static CrucibleTableToolWindowPanel getInstance(com.intellij.openapi.project.Project project,
+//			ProjectConfigurationBean projectConfigurationBean) {
+//
+//		CrucibleTableToolWindowPanel window = project.getUserData(WINDOW_PROJECT_KEY);
+//
+//		if (window == null) {
+//			window = new CrucibleTableToolWindowPanel(project, projectConfigurationBean);
+//			project.putUserData(WINDOW_PROJECT_KEY, window);
+//			CrucibleReviewWindow.getInstance(project);
+//		}
+//		return window;
+//	}
 
-		CrucibleTableToolWindowPanel window = project.getUserData(WINDOW_PROJECT_KEY);
-
-		if (window == null) {
-			window = new CrucibleTableToolWindowPanel(project, projectConfigurationBean);
-			project.putUserData(WINDOW_PROJECT_KEY, window);
-			CrucibleReviewWindow.getInstance(project);
-		}
-		return window;
-	}
-
-	public CrucibleTableToolWindowPanel(Project project, ProjectConfigurationBean projectConfigurationBean) {
+	public CrucibleTableToolWindowPanel(Project project, ProjectConfigurationBean projectConfigurationBean,
+			CrucibleStatusChecker crucibleStatusChecker) {
 		super(new BorderLayout());
 		this.project = project;
 		this.projectCfg = projectConfigurationBean;
+		this.crucibleStatusChecker = crucibleStatusChecker;
 
 		setBackground(UIUtil.getTreeTextBackground());
 
@@ -179,7 +176,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 		progressAnimation.configure(this, tablePane, BorderLayout.CENTER);
 
 		createFilterEditToolBar(getPlaceName(), "ThePlugin.Crucible.FilterEditToolBar");
-		this.crucibleCustomFilterPanel = new CrucibleCustomFilterPanel(project, CfgManagerSingleton.getCfgManager());
+		this.crucibleCustomFilterPanel = new CrucibleCustomFilterPanel(project, IdeaHelper.getCfgManager());
 		filters = projectCfg.getCrucibleConfiguration().getCrucibleFilters();
 		if (filters.getReadStored() == null) {
 			filters.getPredefinedFilters()[PredefinedFilter.ToReview.ordinal()] = true;
@@ -237,6 +234,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 	 *
 	 * @param filter  predefined filter type
 	 * @param visible panel added when true, removed when false
+	 * @param checker
 	 */
 	public void showPredefinedFilter(PredefinedFilter filter, boolean visible, CrucibleStatusChecker checker) {
 		if (visible) {
