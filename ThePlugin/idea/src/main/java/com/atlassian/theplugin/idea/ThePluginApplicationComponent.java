@@ -95,8 +95,6 @@ public class ThePluginApplicationComponent
 
 		this.schedulableCheckers.add(NewVersionChecker.getInstance(configuration));
 
-		cfgManager.updateProjectConfiguration(CfgUtil.GLOBAL_PROJECT,
-				ProjectConfiguration.emptyConfiguration());
 		ConfigurationFactory.setConfiguration(configuration);
 		TrustManager trustManager;
 		try {
@@ -143,7 +141,7 @@ public class ThePluginApplicationComponent
 
 	public JComponent createComponent() {
 		if (configPanel == null) {
-			configPanel = new ConfigPanel(configuration, CfgUtil.GLOBAL_PROJECT, cfgManager);
+			configPanel = new ConfigPanel(configuration, cfgManager);
 		}
 		return configPanel;
 	}
