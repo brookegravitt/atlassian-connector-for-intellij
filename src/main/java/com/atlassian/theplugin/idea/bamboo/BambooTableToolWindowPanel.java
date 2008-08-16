@@ -36,7 +36,6 @@ import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Key;
 import com.intellij.util.ui.UIUtil;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -48,8 +47,6 @@ import java.util.Date;
 import java.util.List;
 
 public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel implements BambooStatusListener {
-    private static final Key<BambooTableToolWindowPanel> WINDOW_PROJECT_KEY
-            = Key.create(BambooTableToolWindowPanel.class.getName());
     private final transient BambooServerFacade bambooFacade;
     private static final DateTimeFormatter TIME_DF = DateTimeFormat.forPattern("hh:mm a");
     private TableColumnProvider columnProvider;

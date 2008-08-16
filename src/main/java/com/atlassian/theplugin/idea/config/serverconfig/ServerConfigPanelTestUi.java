@@ -32,9 +32,6 @@ import java.awt.event.WindowEvent;
 import java.util.Collection;
 
 public final class ServerConfigPanelTestUi {
-    private static final String USER_NAME = "myuser";
-    private static final String PASSWORD = "mypassword";
-    private static final String PLAN_ID = "myplan";
 
 	private ServerConfigPanelTestUi() {
 	}
@@ -58,7 +55,7 @@ public final class ServerConfigPanelTestUi {
                 new JiraServerCfg("2-Second Jira", new ServerId())
         );
 
-        ServerConfigPanel configPanel = new ServerConfigPanel(serverCfgs) {
+        ServerConfigPanel configPanel = new ServerConfigPanel(null, serverCfgs) {
             @Override
             protected JComponent createToolbar() {
                 JToolBar toolbar = new JToolBar("My Fake Toolbar", JToolBar.HORIZONTAL);

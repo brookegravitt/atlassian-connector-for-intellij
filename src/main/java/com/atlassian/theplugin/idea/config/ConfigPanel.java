@@ -61,8 +61,8 @@ public final class ConfigPanel extends JPanel {
         this.projectId = projectId;
         this.cfgManager = cfgManager;
 		projectConfiguration = cfgManager.getProjectConfiguration(projectId).getClone();
-		final Collection<ServerCfg> allServers = projectConfiguration.getServers();
-		this.serverConfigPanel = new ServerConfigPanel(allServers);
+		final Collection<ServerCfg> allServers = projectConfiguration. getServers();
+		this.serverConfigPanel = new ServerConfigPanel(null, allServers);
 		this.bambooConfigPanel = new BambooGeneralForm(cfgManager.getGlobalBambooCfg());
 		this.crucibleConfigPanel = CrucibleGeneralForm.getInstance(globalConfigurationBean);
 		this.jiraConfigPanel = JiraGeneralForm.getInstance(globalConfigurationBean);

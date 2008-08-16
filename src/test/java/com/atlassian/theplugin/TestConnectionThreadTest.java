@@ -27,28 +27,46 @@ public class TestConnectionThreadTest extends TestCase {
 	private Connector failedConnectionTester;
 	private static final String ERROR_MESSAGE = "Error message";
 
+	@Override
 	public void setUp() throws Exception {
 
 		emptyConnectionTester = new Connector() {
-			public void connect() throws ThePluginException {
+			@Override
+			public void connect(LoginDataProvided loginDataProvided) throws ThePluginException {
 			}
 		};
-		
+
 		failedConnectionTester = new Connector() {
-			public void connect() throws ThePluginException {
+			@Override
+			public void connect(LoginDataProvided loginDataProvided) throws ThePluginException {
 				throw new ThePluginException(ERROR_MESSAGE);
 			}
 		};
 	}
 
 
+	@Override
 	public void tearDown() throws Exception {
         super.tearDown();
     }
 
-	public void testRunInterupted() {
+	private static class MyLoginDataProvider implements LoginDataProvided {
+		public String getServerUrl() {
+			return null;
+		}
 
-		ConnectionWrapper testConnectionThread = new ConnectionWrapper(emptyConnectionTester, "test thread");
+		public String getUserName() {
+			return null;
+		}
+
+		public String getPassword() {
+			return null;
+		}
+	}
+
+	public void testRunInterupted() {
+		ConnectionWrapper testConnectionThread = new ConnectionWrapper(emptyConnectionTester, new MyLoginDataProvider(),
+				"test thread");
 
 		assertEquals(ConnectionWrapper.ConnectionState.NOT_FINISHED, testConnectionThread.getConnectionState());
 		testConnectionThread.start();
@@ -70,7 +88,8 @@ public class TestConnectionThreadTest extends TestCase {
 
 	public void testRunSucceeded() {
 
-		ConnectionWrapper testConnectionThread = new ConnectionWrapper(emptyConnectionTester, "test thread");
+		ConnectionWrapper testConnectionThread = new ConnectionWrapper(emptyConnectionTester, new MyLoginDataProvider(),
+				"test thread");
 
 		assertEquals(ConnectionWrapper.ConnectionState.NOT_FINISHED, testConnectionThread.getConnectionState());
 		testConnectionThread.start();
@@ -90,7 +109,8 @@ public class TestConnectionThreadTest extends TestCase {
 
 	public void testRunFailed() {
 
-		ConnectionWrapper testConnectionThread = new ConnectionWrapper(failedConnectionTester, "test thread");
+		ConnectionWrapper testConnectionThread = new ConnectionWrapper(failedConnectionTester, new MyLoginDataProvider(),
+				"test thread");
 
 		assertEquals(ConnectionWrapper.ConnectionState.NOT_FINISHED, testConnectionThread.getConnectionState());
 		testConnectionThread.start();

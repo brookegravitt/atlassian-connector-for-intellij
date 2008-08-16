@@ -23,19 +23,16 @@ import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.commons.exception.ThePluginException;
-import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
-import com.atlassian.theplugin.util.Connector;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.openapi.project.Project;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
@@ -61,13 +58,15 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 	private final transient CrucibleServerFacade crucibleServerFacade;
 	private final transient BambooServerFacade bambooServerFacade;
 	private final transient JIRAServerFacade jiraServerFacade;
-    private Collection<ServerCfg> serverCfgs;
+	private final Project project;
+	private Collection<ServerCfg> serverCfgs;
     private BambooServerConfigForm bambooServerConfigForm;
     private GenericServerConfigForm jiraServerConfigForm;
     private GenericServerConfigForm crucibleServerConfigForm;
 
-    public ServerConfigPanel(Collection<ServerCfg> serverCfgs) {
-        this.serverCfgs = serverCfgs;
+    public ServerConfigPanel(Project project, Collection<ServerCfg> serverCfgs) {
+		this.project = project;
+		this.serverCfgs = serverCfgs;
         this.serverTreePanel = new ServerTreePanel();
 		this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		this.bambooServerFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
@@ -165,14 +164,14 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 
     private synchronized GenericServerConfigForm getJiraServerForm() {
         if (jiraServerConfigForm == null) {
-            jiraServerConfigForm = new GenericServerConfigForm(new ProductConnector(jiraServerFacade));
+            jiraServerConfigForm = new GenericServerConfigForm(project, new ProductConnector(jiraServerFacade));
         }
         return jiraServerConfigForm;
     }
 
     public GenericServerConfigForm getCrucibleServerForm() {
         if (crucibleServerConfigForm == null) {
-            crucibleServerConfigForm = new GenericServerConfigForm(new ProductConnector(crucibleServerFacade));            
+            crucibleServerConfigForm = new GenericServerConfigForm(project, new ProductConnector(crucibleServerFacade));
         }
         return crucibleServerConfigForm;
     }
@@ -251,7 +250,7 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 
     private synchronized BambooServerConfigForm getBambooServerForm() {
         if (bambooServerConfigForm == null) {
-            bambooServerConfigForm = new BambooServerConfigForm(bambooServerFacade);
+            bambooServerConfigForm = new BambooServerConfigForm(project, bambooServerFacade);
         }
         return bambooServerConfigForm;
     }
@@ -344,24 +343,6 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
         }
 
 
-    }
-
-    private static class ProductConnector extends Connector {
-        private ProductServerFacade facade;
-
-        public ProductConnector(final ProductServerFacade facade) {
-            this.facade = facade;
-        }
-
-        @Override
-            public void connect() throws ThePluginException {
-            validate();
-            try {
-                facade.testServerConnection(getUrl(), getUserName(), getPassword());
-            } catch (RemoteApiException e) {
-                throw new ThePluginException(e.getMessage(), e);
-            }
-        }
     }
 
 	@Nullable

@@ -41,40 +41,40 @@ import java.awt.event.ActionListener;
  */
 public class TestConnectionListener implements ActionListener {
 
+	private final Project project;
 	private Connector connectionTester = null;
 	private LoginDataProvided loginDataProvided = null;
 
 	/**
+	 * @param project IDEA project
 	 * @param tester			object which provide testConnection method specific to the product (Bamboo/Crucible, etc.)
 	 * @param loginDataProvided object with methods which provide userName, password and url for connection
 	 */
-	public TestConnectionListener(Connector tester, LoginDataProvided loginDataProvided) {
+	public TestConnectionListener(Project project, Connector tester, LoginDataProvided loginDataProvided) {
+		this.project = project;
 		connectionTester = tester;
 		this.loginDataProvided = loginDataProvided;
 	}
 
 	public void actionPerformed(ActionEvent e) {
 
-		Task.Modal testConnectionTask = new TestConnectionTask(
-				IdeaHelper.getCurrentProject(), "Testing Connection", true, connectionTester);
+		Task.Modal testConnectionTask = new TestConnectionTask(project, "Testing Connection", true, connectionTester,
+				loginDataProvided);
 		testConnectionTask.setCancelText("Stop");
 
 		ProgressManager.getInstance().run(testConnectionTask);
 	}
 
-	private class TestConnectionTask extends Task.Modal {
+	private static class TestConnectionTask extends Task.Modal {
 
 		private ConnectionWrapper testConnector = null;
 		private static final int CHECK_CANCEL_INTERVAL = 500;	// miliseconds
 		private final Category log = Category.getInstance(TestConnectionTask.class);
 
 		public TestConnectionTask(Project currentProject, String title, boolean canBeCanceled,
-								  Connector tester) {
+								  Connector tester, LoginDataProvided loginDataProvided) {
 			super(currentProject, title, canBeCanceled);
-			tester.setUrl(loginDataProvided.getServerUrl());
-			tester.setUserName(loginDataProvided.getUserName());
-			tester.setPassword(loginDataProvided.getPassword());
-			testConnector = new ConnectionWrapper(tester, "test thread");
+			testConnector = new ConnectionWrapper(tester, loginDataProvided, "test thread");
 		}
 
 		@Override
@@ -110,7 +110,7 @@ public class TestConnectionListener implements ActionListener {
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
 							if (showDialog(
-									IdeaHelper.getCurrentProject(),
+									getProject(),
 									testConnector.getErrorMessage(),
 									"Connection Error",
 									new String[]{ "OK", "Help" },
@@ -127,10 +127,7 @@ public class TestConnectionListener implements ActionListener {
 				case SUCCEEDED:
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
-							showMessageDialog(
-									IdeaHelper.getCurrentProject(),
-									"Connected successfully",
-									"Connection OK",
+							showMessageDialog(getProject(), "Connected successfully", "Connection OK",
 									Messages.getInformationIcon());
 						}
 					});
