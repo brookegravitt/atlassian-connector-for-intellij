@@ -20,7 +20,7 @@ import com.intellij.openapi.project.Project;
 
 public final class CfgUtil {
 
-	public static final ProjectId GLOBAL_PROJECT = new ProjectId();
+	private static final ProjectId GLOBAL_PROJECT = new ProjectId();
 
 	private CfgUtil() {
 		// this is utility class
