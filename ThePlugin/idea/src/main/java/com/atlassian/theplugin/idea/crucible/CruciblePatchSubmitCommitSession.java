@@ -27,10 +27,9 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.util.Collection;
 
+@SuppressWarnings("deprecation")
 public class CruciblePatchSubmitCommitSession implements CommitSession {
-	@SuppressWarnings("unused")
 	private final Project project;
-	private static final int LINES_OF_CONTEXT = 3;
 	protected final CrucibleServerFacade crucibleServerFacade;
 
 	public CruciblePatchSubmitCommitSession(Project project, CrucibleServerFacade crucibleServerFacade) {
@@ -55,24 +54,6 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 	public void execute(Collection<Change> changes, String commitMessage) {
 		PatchProducer patchProducer = new PatchProducer(project, changes);
 		String patch = patchProducer.generateUnifiedDiff();
-
-		/*
-				Collection<FilePatch> patches = null;
-				try {
-					patches = PatchBuilder
-								.buildPatch( changes, IdeaHelper.getCurrentProject().getBaseDir().getPath(), true, false );
-				} catch (VcsException e) {
-					e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-				}
-				Writer writer = new StringWriter( 2048 );
-				try {
-					UnifiedDiffWriter.write( patches, writer, "Ala ma kota" );
-				} catch (IOException e) {
-					e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-				}
-				System.out.print( writer.toString() );
-				*/
-
 		ApplicationManager.getApplication().invokeAndWait(
 				new CruciblePatchUploader(project, crucibleServerFacade, commitMessage, patch),
 				ModalityState.defaultModalityState());

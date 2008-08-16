@@ -16,12 +16,19 @@
 
 package com.atlassian.theplugin.idea.bamboo;
 
-import com.atlassian.theplugin.commons.bamboo.*;
+import com.atlassian.theplugin.commons.bamboo.BambooBuild;
+import com.atlassian.theplugin.commons.bamboo.BambooBuildAdapter;
+import com.atlassian.theplugin.commons.bamboo.BambooChangeSet;
+import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
+import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
+import com.atlassian.theplugin.commons.bamboo.BambooStatusListener;
+import com.atlassian.theplugin.commons.bamboo.BuildDetails;
+import com.atlassian.theplugin.commons.bamboo.BuildStatus;
+import com.atlassian.theplugin.commons.bamboo.TestDetails;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.configuration.ProjectToolWindowTableConfiguration;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ui.AbstractTableToolWindowPanel;
 import com.atlassian.theplugin.idea.ui.TableColumnProvider;
 import com.atlassian.theplugin.idea.util.memoryvfs.PlainTextMemoryVirtualFile;
@@ -47,8 +54,10 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
     private static final DateTimeFormatter TIME_DF = DateTimeFormat.forPattern("hh:mm a");
     private TableColumnProvider columnProvider;
     private Project project;
+	private final TestResultsToolWindow testResultsToolWindow;
+	private final BuildChangesToolWindow buildChangesToolWindow;
 
-    @Override
+	@Override
     protected String getInitialMessage() {
         return "Waiting for Bamboo statuses.";
     }
@@ -88,11 +97,18 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
     public void clearAdvancedFilter() {
     }
 
-    public BambooTableToolWindowPanel(Project project, ProjectConfigurationBean projectConfigurationBean) {
+    public BambooTableToolWindowPanel(Project project, ProjectConfigurationBean projectConfigurationBean,
+			final TestResultsToolWindow testResultsToolWindow, final BuildChangesToolWindow buildChangesToolWindow) {
         super(projectConfigurationBean);
         this.project = project;
-        bambooFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
-    }
+		this.testResultsToolWindow = testResultsToolWindow;
+		this.buildChangesToolWindow = buildChangesToolWindow;
+		bambooFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
+//		testResultsToolWindow = project.getComponent(TestResultsToolWindow.class);
+		assert this.testResultsToolWindow != null;
+//		buildChangesToolWindow = project.getComponent(BuildChangesToolWindow.class);
+		assert this.buildChangesToolWindow != null;
+	}
 
 
     @Override
@@ -108,16 +124,16 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
     }
 
 
-    public static BambooTableToolWindowPanel getInstance(Project project, ProjectConfigurationBean projectConfigurationBean) {
-
-        BambooTableToolWindowPanel window = project.getUserData(WINDOW_PROJECT_KEY);
-
-        if (window == null) {
-            window = new BambooTableToolWindowPanel(project, projectConfigurationBean);
-            project.putUserData(WINDOW_PROJECT_KEY, window);
-        }
-        return window;
-    }
+//    public static BambooTableToolWindowPanel getInstance(Project project, ProjectConfigurationBean projectConfigurationBean) {
+//
+//        BambooTableToolWindowPanel window = project.getUserData(WINDOW_PROJECT_KEY);
+//
+//        if (window == null) {
+//            window = new BambooTableToolWindowPanel(project, projectConfigurationBean);
+//            project.putUserData(WINDOW_PROJECT_KEY, window);
+//        }
+//        return window;
+//    }
 
 
     private void openLabelDialog(BambooBuildAdapterIdea build) {
@@ -309,7 +325,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
                     final List<TestDetails> succeededTests = details.getSuccessfulTestDetails();
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                            TestResultsToolWindow.getInstance().showTestResults(
+                            testResultsToolWindow.showTestResults(
                                     build.getBuildKey(), build.getBuildNumber(), failedTests, succeededTests);
                         }
                     });
@@ -344,7 +360,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
                     final List<BambooChangeSet> commits = details.getCommitInfo();
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                            BuildChangesToolWindow.getInstance().showBuildChanges(
+                            buildChangesToolWindow.showBuildChanges(
                                     build.getBuildKey(), build.getBuildNumber(), commits);
                         }
                     });
@@ -374,7 +390,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
                             PlainTextMemoryVirtualFile vf = new PlainTextMemoryVirtualFile(title, new String(log));
-                            FileEditorManager.getInstance(IdeaHelper.getCurrentProject()).openFile(vf, true);
+                            FileEditorManager.getInstance(project).openFile(vf, true);
                         }
                     });
                     setStatusMessage("Changes for build " + build.getBuildKey() + " received");

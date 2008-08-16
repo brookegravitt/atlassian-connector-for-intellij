@@ -18,7 +18,6 @@ package com.atlassian.theplugin.idea.bamboo;
 
 import com.atlassian.theplugin.commons.bamboo.BambooChangeSet;
 import com.atlassian.theplugin.idea.Constants;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
 import com.atlassian.theplugin.idea.crucible.tree.ModelProvider;
@@ -55,6 +54,8 @@ import java.util.HashMap;
 import java.util.List;
 
 public final class BuildChangesToolWindow {
+	private final Project project;
+//	private final ToolWindow commitDetailsToolWindow;
 
 	public interface ChangesTree {
 		boolean GROUP_BY_DIRECTORY_DEFAULT = true;
@@ -68,28 +69,24 @@ public final class BuildChangesToolWindow {
 
 	private static final String TOOL_WINDOW_TITLE = "Bamboo Build Changes";
 
-	private static BuildChangesToolWindow instance = new BuildChangesToolWindow();
+	private HashMap<String, CommitDetailsPanel> panelMap = new HashMap<String, CommitDetailsPanel>();
 
-	private static HashMap<String, CommitDetailsPanel> panelMap = new HashMap<String, CommitDetailsPanel>();
-
-	private BuildChangesToolWindow() {
+	public BuildChangesToolWindow(Project project) {
+		this.project = project;
+//		ToolWindowManager twm = ToolWindowManager.getInstance(project);
+//		commitDetailsToolWindow = twm.registerToolWindow(TOOL_WINDOW_TITLE, true, ToolWindowAnchor.BOTTOM);
+//		commitDetailsToolWindow.setIcon(Constants.BAMBOO_COMMITS_ICON);
 	}
 
-	public static BuildChangesToolWindow getInstance() {
-		return instance;
-	}
-
-	public static ChangesTree getChangesTree(String name) {
+	public ChangesTree getChangesTree(String name) {
 		return panelMap.get(name);
 	}
 
 	public void showBuildChanges(String buildKey, String buildNumber, List<BambooChangeSet> commits) {
-		CommitDetailsPanel detailsPanel;
 		String contentKey = buildKey + "-" + buildNumber;
 
 
-		Project currentProject = IdeaHelper.getCurrentProject();
-		ToolWindowManager twm = ToolWindowManager.getInstance(currentProject);
+		ToolWindowManager twm = ToolWindowManager.getInstance(project);
 		ToolWindow commitDetailsToolWindow = twm.getToolWindow(TOOL_WINDOW_TITLE);
 		if (commitDetailsToolWindow == null) {
 			commitDetailsToolWindow = twm.registerToolWindow(TOOL_WINDOW_TITLE, true, ToolWindowAnchor.BOTTOM);
@@ -99,7 +96,7 @@ public final class BuildChangesToolWindow {
 		Content content = commitDetailsToolWindow.getContentManager().findContent(contentKey);
 
 		if (content == null) {
-			detailsPanel = new CommitDetailsPanel(currentProject, contentKey, commits);
+			CommitDetailsPanel detailsPanel = new CommitDetailsPanel(project, contentKey, commits);
 			panelMap.remove(contentKey);
 			panelMap.put(contentKey, detailsPanel);
 
@@ -291,6 +288,7 @@ public final class BuildChangesToolWindow {
 						private AtlassianTreeModel flatModel =
 								FileTreeModelBuilder.buildFlatTreeModelFromBambooChangeSet(project, c);
 
+						@Override
 						public AtlassianTreeModel getModel(final AtlassianTreeWithToolbar.STATE state) {
 							switch (state) {
 								case DIRED:

@@ -19,6 +19,7 @@ package com.atlassian.theplugin.idea;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
@@ -35,6 +36,8 @@ import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.Content;
 import org.jetbrains.annotations.Nullable;
+
+import javax.swing.*;
 
 /**
  * Simple helper methods for the IDEA plugin
@@ -68,15 +71,6 @@ public final class IdeaHelper {
 		return p.getComponent(ThePluginProjectComponent.class).getCurrentJiraServer();
 	}
 
-	@Nullable
-    public static ThePluginProjectComponent getCurrentProjectComponent() {
-		Project p = getCurrentProject(DataManager.getInstance().getDataContext());
-        if (p == null) {
-            return null;
-        }
-        return p.getComponent(ThePluginProjectComponent.class);
-	}
-
 	public static void setCurrentJIRAServer(JIRAServer jiraServer) {
 		Project p = getCurrentProject(DataManager.getInstance().getDataContext());
 		if (p == null) {
@@ -91,6 +85,10 @@ public final class IdeaHelper {
 
     public static ThePluginApplicationComponent getAppComponent() {
 		return ApplicationManager.getApplication().getComponent(ThePluginApplicationComponent.class);
+	}
+
+	public static CfgManager getCfgManager() {
+		return ApplicationManager.getApplication().getComponent(CfgManager.class);
 	}
 
 	public static PluginConfigurationBean getPluginConfiguration() {
@@ -187,4 +185,29 @@ public final class IdeaHelper {
     public static boolean handleMissingPassword(ServerPasswordNotProvidedException e) {
         return false;
     }
+
+	/**
+	 * Returns current project for given jComponent (the only known way to find out current project
+	 * project in ComboBoxAction)
+	 * @param jComponent component as passed to
+	 *      {@link com.intellij.openapi.actionSystem.ex.ComboBoxAction#createPopupActionGroup(javax.swing.JComponent)}
+	 *
+	 * @return current project or null
+	 */
+	@Nullable
+	public static Project getCurrentProject(JComponent jComponent) {
+		return DataKeys.PROJECT.getData(DataManager.getInstance().getDataContext(jComponent));
+	}
+
+	public static <T> T getProjectComponent(final AnActionEvent event, final Class<T> clazz) {
+		final Project project = getCurrentProject(event);
+		if (project == null) {
+			return null;
+		}
+		return getProjectComponent(project, clazz);
+	}
+
+	public static <T> T getProjectComponent(final Project project, final Class<T> clazz) {
+		return clazz.cast(project.getPicoContainer().getComponentInstanceOfType(clazz));
+	}
 }

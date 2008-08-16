@@ -16,10 +16,10 @@
 
 package com.atlassian.theplugin.idea.action.bamboo.changes;
 
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.atlassian.theplugin.idea.ui.tree.file.BambooFileNode;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 
@@ -32,19 +32,19 @@ public class OpenRepoVersionAction extends AbstractBambooFileActions {
     }
 
     public void actionPerformed(AnActionEvent e) {
-        final Project project = e.getData(DataKeys.PROJECT);
-        final BambooFileNode bfn = getBambooFileNode(e);
-        if (bfn != null && project != null && bfn.getPsiFile() != null) {
-            final VirtualFile virtualFile = bfn.getPsiFile().getVirtualFile();
-            final String url = VcsIdeaHelper.getRepositoryUrlForFile(virtualFile);
-            if (url == null || virtualFile == null) {
-                return;
-            }
+		final Project project = IdeaHelper.getCurrentProject(e);
+		final BambooFileNode bfn = getBambooFileNode(e);
+		if (bfn != null && project != null && bfn.getPsiFile() != null) {
+			final VirtualFile virtualFile = bfn.getPsiFile().getVirtualFile();
+			final String url = VcsIdeaHelper.getRepositoryUrlForFile(project, virtualFile);
+			if (url == null || virtualFile == null) {
+				return;
+			}
 
-            VcsIdeaHelper.openFile(project, virtualFile, bfn.getRevision(), 0, 1, null);
-        }
+			VcsIdeaHelper.openFile(project, virtualFile, bfn.getRevision(), 0, 1, null);
+		}
 
-    }
+	}
 
 
 }

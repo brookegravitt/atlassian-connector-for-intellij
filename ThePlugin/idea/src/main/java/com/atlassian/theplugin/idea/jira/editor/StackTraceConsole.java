@@ -17,7 +17,6 @@
 package com.atlassian.theplugin.idea.jira.editor;
 
 import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.execution.filters.TextConsoleBuilderFactory;
 import com.intellij.execution.filters.TextConsoleBuilder;
 import com.intellij.execution.ui.ConsoleViewContentType;
@@ -26,6 +25,7 @@ import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.openapi.project.Project;
 import com.intellij.ui.content.Content;
 import com.intellij.peer.PeerFactory;
 
@@ -35,15 +35,11 @@ public final class StackTraceConsole {
 
 	private static final String TOOL_WINDOW_TITLE = "JIRA Stack Traces";
 
-	private static StackTraceConsole instance = new StackTraceConsole();
-
 	private HashMap<String, ConsoleView> consoleMap = new HashMap<String, ConsoleView>();
+	private final Project project;
 
-	private StackTraceConsole() {
-	}
-
-	public static StackTraceConsole getInstance() {
-		return instance;
+	public StackTraceConsole(Project project) {
+		this.project = project;
 	}
 
 	public void print(JIRAIssue issue, String key, String txt) {
@@ -58,7 +54,7 @@ public final class StackTraceConsole {
 		ConsoleView console;
 		String contentKey = issueKey + " " + origin;
 
-		ToolWindowManager twm = ToolWindowManager.getInstance(IdeaHelper.getCurrentProject());
+		ToolWindowManager twm = ToolWindowManager.getInstance(project);
 		ToolWindow consoleToolWindow = twm.getToolWindow(TOOL_WINDOW_TITLE);
 		if (consoleToolWindow == null) {
 			consoleToolWindow = twm.registerToolWindow(TOOL_WINDOW_TITLE, true, ToolWindowAnchor.BOTTOM);
@@ -71,7 +67,7 @@ public final class StackTraceConsole {
 			console = consoleMap.get(contentKey);
 		} else {
 			TextConsoleBuilderFactory factory = TextConsoleBuilderFactory.getInstance();
-			TextConsoleBuilder builder = factory.createBuilder(IdeaHelper.getCurrentProject());
+			TextConsoleBuilder builder = factory.createBuilder(project);
 			console = builder.getConsole();
 			consoleMap.remove(contentKey);
 			consoleMap.put(contentKey, console);

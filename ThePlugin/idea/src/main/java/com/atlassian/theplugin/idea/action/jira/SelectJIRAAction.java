@@ -16,37 +16,38 @@
 
 package com.atlassian.theplugin.idea.action.jira;
 
-import com.atlassian.theplugin.commons.cfg.CfgManagerSingleton;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
-import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction;
 import com.intellij.openapi.project.Project;
-import com.intellij.ide.DataManager;
 
 import javax.swing.*;
 import java.util.Collection;
 
+import org.jetbrains.annotations.NotNull;
+
 public class SelectJIRAAction extends ComboBoxAction {
 
+	@NotNull
 	@Override
 	protected DefaultActionGroup createPopupActionGroup(JComponent jComponent) {
 
-		final Project project = (Project) DataKeys.PROJECT.getData(DataManager.getInstance().getDataContext(jComponent));
+		final Project project = IdeaHelper.getCurrentProject(jComponent);
 
 		final DefaultActionGroup g = new DefaultActionGroup();
 
 
-		Collection<JiraServerCfg> servers = CfgManagerSingleton.getCfgManager().getAllEnabledJiraServers(
+		Collection<JiraServerCfg> servers = IdeaHelper.getCfgManager().getAllEnabledJiraServers(
 				CfgUtil.getProjectId(project));
 
 		final ComboBoxButton button = (ComboBoxButton) jComponent;
 		for (final JiraServerCfg server : servers) {
 			g.add(new AnAction(server.getName()) {
+				@Override
 				public void actionPerformed(AnActionEvent event) {
 					button.setText(event.getPresentation().getText());
 					IdeaHelper.getJIRAToolWindowPanel(event).selectServer(server);
