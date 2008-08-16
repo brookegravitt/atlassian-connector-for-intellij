@@ -19,9 +19,12 @@ package com.atlassian.theplugin.idea.action.bamboo;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.atlassian.theplugin.idea.bamboo.TestResultsToolWindow;
+import com.atlassian.theplugin.idea.IdeaHelper;
 
 public class CollapseTestsAction extends AnAction {
+	@Override
 	public void actionPerformed(AnActionEvent event) {
-		TestResultsToolWindow.getTestTree(event.getPlace()).collapse();
+		TestResultsToolWindow window = IdeaHelper.getProjectComponent(event, TestResultsToolWindow.class);
+		window.getTestTree(event.getPlace()).collapse();
 	}
 }

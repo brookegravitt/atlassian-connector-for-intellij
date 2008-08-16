@@ -77,6 +77,7 @@ public class TestConnectionListener implements ActionListener {
 			testConnector = new ConnectionWrapper(tester, "test thread");
 		}
 
+		@Override
 		public void run(ProgressIndicator indicator) {
 
 			if (indicator == null) {

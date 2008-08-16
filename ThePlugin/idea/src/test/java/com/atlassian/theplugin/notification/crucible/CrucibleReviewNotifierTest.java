@@ -523,43 +523,43 @@ public class CrucibleReviewNotifierTest extends TestCase {
 			}
 
 			public String getMessage() {
-				return null;  //To change body of implemented methods use File | Settings | File Templates.
+				return null;
 			}
 
 			public boolean isDraft() {
-				return false;  //To change body of implemented methods use File | Settings | File Templates.
+				return false;
 			}
 
 			public boolean isDeleted() {
-				return false;  //To change body of implemented methods use File | Settings | File Templates.
+				return false;
 			}
 
 			public boolean isDefectRaised() {
-				return false;  //To change body of implemented methods use File | Settings | File Templates.
+				return false;
 			}
 
 			public boolean isDefectApproved() {
-				return false;  //To change body of implemented methods use File | Settings | File Templates.
+				return false;
 			}
 
 			public boolean isReply() {
-				return false;  //To change body of implemented methods use File | Settings | File Templates.
+				return false;
 			}
 
 			public User getAuthor() {
-				return null;  //To change body of implemented methods use File | Settings | File Templates.
+				return null;
 			}
 
 			public Date getCreateDate() {
-				return null;  //To change body of implemented methods use File | Settings | File Templates.
+				return null;
 			}
 
 			public List<GeneralComment> getReplies() {
-				return null;  //To change body of implemented methods use File | Settings | File Templates.
+				return null;
 			}
 
 			public Map<String, CustomField> getCustomFields() {
-				return null;  //To change body of implemented methods use File | Settings | File Templates.
+				return null;  
 			}
 		});
 		bean.setReviews(reviews);
@@ -605,143 +605,144 @@ public class CrucibleReviewNotifierTest extends TestCase {
 		assertTrue(notifier.getNotifications().get(0) instanceof NewVersionedCommentNotification);
 	}
 
+	@SuppressWarnings("deprecation")
 	private class DummysProject extends UserDataHolderBase implements Project {
 		@Nullable
 		public VirtualFile getProjectFile() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Nullable
 		public VirtualFile getWorkspaceFile() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@NotNull
 		public String getProjectFilePath() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Nullable
 		public VirtualFile getBaseDir() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@NotNull
 		@NonNls
 		public String getName() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@Nullable
 		@NonNls
 		public String getPresentableUrl() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@NotNull
 		@NonNls
 		public String getLocationHash() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@NotNull
 		@NonNls
 		public String getLocation() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		public void save() {
-			//To change body of implemented methods use File | Settings | File Templates.
+
 		}
 
 		public BaseComponent getComponent(final String name) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		public <T> T getComponent(final Class<T> interfaceClass) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		public <T> T getComponent(final Class<T> interfaceClass, final T defaultImplementationIfAbsent) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@NotNull
 		public Class[] getComponentInterfaces() {
-			return new Class[0];  //To change body of implemented methods use File | Settings | File Templates.
+			return new Class[0];
 		}
 
 		public boolean hasComponent(@NotNull final Class interfaceClass) {
-			return false;  //To change body of implemented methods use File | Settings | File Templates.
+			return false;
 		}
 
 		@NotNull
 		public <T> T[] getComponents(final Class<T> baseClass) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		@NotNull
 		public PicoContainer getPicoContainer() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		public MessageBus getMessageBus() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		public boolean isDisposed() {
-			return false;  //To change body of implemented methods use File | Settings | File Templates.
+			return false;
 		}
 
 		@NotNull
 		public ComponentConfig[] getComponentConfigurations() {
-			return new ComponentConfig[0];  //To change body of implemented methods use File | Settings | File Templates.
+			return new ComponentConfig[0];
 		}
 
 		@Nullable
 		public Object getComponent(final ComponentConfig componentConfig) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		public <T> T[] getExtensions(final ExtensionPointName<T> extensionPointName) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		public ComponentConfig getConfig(final Class componentImplementation) {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		public Condition getDisposed() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		public boolean isOpen() {
-			return false;  //To change body of implemented methods use File | Settings | File Templates.
+			return false;
 		}
 
 		public boolean isInitialized() {
-			return false;  //To change body of implemented methods use File | Settings | File Templates.
+			return false;
 		}
 
 		public boolean isDefault() {
-			return false;  //To change body of implemented methods use File | Settings | File Templates.
+			return false;
 		}
 
 		@NotNull
 		public PomModel getModel() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		public GlobalSearchScope getAllScope() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		public GlobalSearchScope getProjectScope() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
 		}
 
 		public void dispose() {
-			//To change body of implemented methods use File | Settings | File Templates.
+
 		}
 	}
 }

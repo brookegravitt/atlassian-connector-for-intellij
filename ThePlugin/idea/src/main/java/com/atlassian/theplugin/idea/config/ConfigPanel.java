@@ -36,7 +36,6 @@ import java.awt.*;
 import java.util.Collection;
 
 public final class ConfigPanel extends JPanel {
-	private static ConfigPanel instance;
 
 	private transient PluginConfigurationBean localPluginConfigurationCopy = null;
 

@@ -16,6 +16,7 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
+import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.SchedulableChecker;
 import com.atlassian.theplugin.commons.StatusListener;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
@@ -30,20 +31,22 @@ import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.DateUtil;
-import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
-import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.ThePluginProjectComponent;
+import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
 
 import java.awt.*;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TimerTask;
 
 
 /**
@@ -67,12 +70,15 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 	private final CfgManager cfgManager;
 	private final Project project;
 	private final CrucibleConfigurationBean crucibleConfigurationBean;
+	private final CrucibleProjectConfiguration crucibleProjectConfiguration;
 
 
-	public CrucibleStatusChecker(CfgManager cfgManager, Project project, CrucibleConfigurationBean crucibleConfigurationBean) {
+	public CrucibleStatusChecker(CfgManager cfgManager, Project project, CrucibleConfigurationBean crucibleConfigurationBean,
+			CrucibleProjectConfiguration crucibleProjectConfiguration) {
 		this.cfgManager = cfgManager;
 		this.project = project;
 		this.crucibleConfigurationBean = crucibleConfigurationBean;
+		this.crucibleProjectConfiguration = crucibleProjectConfiguration;
 		this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 
 	}
@@ -119,16 +125,11 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 			final Map<String, ReviewNotificationBean> customFilterReviews
 					= new HashMap<String, ReviewNotificationBean>();
 
-			ThePluginProjectComponent pcomp
-					= IdeaHelper.getCurrentProject().getComponent(ThePluginProjectComponent.class);
-			ProjectConfigurationBean projectConfiguration = pcomp.getProjectConfigurationBean();
-
 			for (CrucibleServerCfg server : retrieveEnabledCrucibleServers()) {
 
 				for (int i = 0;
-					 i < projectConfiguration.
-							 getCrucibleConfiguration().getCrucibleFilters().getPredefinedFilters().length; i++) {
-					if (projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getPredefinedFilters()[i]) {
+					i < crucibleProjectConfiguration.getCrucibleFilters().getPredefinedFilters().length; i++) {
+					if (crucibleProjectConfiguration.getCrucibleFilters().getPredefinedFilters()[i]) {
 						PredefinedFilter filter = PredefinedFilter.values()[i];
 						if (!reviews.containsKey(filter)) {
 							ReviewNotificationBean bean = new ReviewNotificationBean();
@@ -162,11 +163,9 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 				}
 			}
 
-			if (!projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().isEmpty()) {
-				for (String s : projectConfiguration
-						.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().keySet()) {
-					CustomFilterBean filter = projectConfiguration
-							.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().get(s);
+			if (!crucibleProjectConfiguration.getCrucibleFilters().getManualFilter().isEmpty()) {
+				for (String s : crucibleProjectConfiguration.getCrucibleFilters().getManualFilter().keySet()) {
+					CustomFilterBean filter = crucibleProjectConfiguration.getCrucibleFilters().getManualFilter().get(s);
 					if (!customFilterReviews.containsKey(filter.getTitle())) {
 						List<ReviewData> list = new ArrayList<ReviewData>();
 						ReviewNotificationBean bean = new ReviewNotificationBean();
@@ -218,7 +217,7 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 				}
 			});
 		} catch (Throwable t) {
-			t.printStackTrace();
+			PluginUtil.getLogger().error(t);
 		}
 	}
 
@@ -242,7 +241,7 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 							+ String.valueOf(crucibleVersion) + ")");
 			}
 		} catch (Throwable t) {
-			t.printStackTrace();
+			PluginUtil.getLogger().error(t);
 		}
 	}
 
@@ -258,6 +257,7 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 	 */
 	public TimerTask newTimerTask() {
 		return new TimerTask() {
+			@Override
 			public void run() {
 				doRun();
 			}

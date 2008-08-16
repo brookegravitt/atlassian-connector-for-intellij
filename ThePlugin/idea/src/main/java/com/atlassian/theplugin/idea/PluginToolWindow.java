@@ -19,7 +19,6 @@ package com.atlassian.theplugin.idea;
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
-import com.atlassian.theplugin.commons.cfg.CfgManagerSingleton;
 import com.atlassian.theplugin.commons.exception.ThePluginException;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.util.Util;
@@ -87,6 +86,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 	 *
 	 * @param toolWindowManager ToolWindowManager object
 	 * @param project reference to the project
+	 * @param cfgManager
 	 */
 	public PluginToolWindow(ToolWindowManager toolWindowManager, Project project, CfgManager cfgManager) {
 		this.cfgManager = cfgManager;
@@ -285,7 +285,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 			try {
 				ServerType serverType = Util.toolWindowPanelsToServerType(component);
 				// servers are defined
-				final CfgManager myCfgManager = CfgManagerSingleton.getCfgManager();
+				final CfgManager myCfgManager = IdeaHelper.getCfgManager();
 				if (myCfgManager.getAllEnabledServers(CfgUtil.getProjectId(project), serverType).size() > 0) {
 					// tab is not visible
 					Content content =  tw.getContentManager().findContent(component.toString());
@@ -385,7 +385,8 @@ public class PluginToolWindow extends ContentManagerAdapter {
             this.title = title;
         }
 
-        public String toString() {
+        @Override
+		public String toString() {
             return title;
         }
     }

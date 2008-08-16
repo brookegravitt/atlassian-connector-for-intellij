@@ -26,7 +26,6 @@ import com.atlassian.theplugin.commons.bamboo.BambooStatusTooltipListener;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.bamboo.StausIconBambooListener;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
-import com.atlassian.theplugin.commons.cfg.CfgManagerSingleton;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
@@ -81,6 +80,7 @@ public class ThePluginProjectComponent implements
     private final ProjectConfigurationBean projectConfigurationBean;
 
     private final Project project;
+	private final CfgManager cfgManager;
 	private final UIActionScheduler actionScheduler;
 	private BambooStatusIcon statusBarBambooIcon;
 
@@ -90,7 +90,7 @@ public class ThePluginProjectComponent implements
 	private CrucibleStatusChecker crucibleStatusChecker;
 
 	private BambooStatusTooltipListener tooltipBambooStatusListener;
-	private BambooTableToolWindowPanel bambooToolWindowPanel;
+	private final BambooTableToolWindowPanel bambooToolWindowPanel;
     private CrucibleTableToolWindowPanel crucibleToolWindowPanel;
 
     private final CrucibleServerFacade crucibleServerFacade;
@@ -108,12 +108,13 @@ public class ThePluginProjectComponent implements
 
     private String reviewId;
 	public static final Key<ReviewActionEventBroker> BROKER_KEY = Key.create("thePlugin.broker");
-	private static final String CFG_LOAD_ERROR_MSG = "Error while loading Atlassian Plugin configuration.";
 
 	public ThePluginProjectComponent(Project project, ToolWindowManager toolWindowManager,
 			PluginConfiguration pluginConfiguration, UIActionScheduler actionScheduler,
-			ProjectConfigurationBean projectConfigurationBean) {
+			ProjectConfigurationBean projectConfigurationBean, CfgManager cfgManager,
+			BambooTableToolWindowPanel bambooTableToolWindowPanel) {
 		this.project = project;
+		this.cfgManager = cfgManager;
 		project.putUserData(BROKER_KEY, new ReviewActionEventBroker());
 
 		this.actionScheduler = actionScheduler;
@@ -121,6 +122,7 @@ public class ThePluginProjectComponent implements
 		this.pluginConfiguration = pluginConfiguration;
 		this.projectConfigurationBean = projectConfigurationBean;
 		this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
+		this.bambooToolWindowPanel = bambooTableToolWindowPanel;
 		/*
 
 
@@ -181,18 +183,18 @@ public class ThePluginProjectComponent implements
 
 			// wseliga: I don't know yet what do to with comment below
 			// todo remove that get instance as it can return null. it is better to get it from app component.
-			final CfgManager cfgManager = CfgManagerSingleton.getCfgManager();
-			this.bambooStatusChecker = new BambooStatusChecker(CfgUtil.GLOBAL_PROJECT, actionScheduler,
+			this.bambooStatusChecker = new BambooStatusChecker(CfgUtil.getProjectId(project), actionScheduler,
 					cfgManager,
 					new MissingPasswordHandler(BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()), cfgManager, project),
 					PluginUtil.getLogger());
 
 			this.crucibleStatusChecker = new CrucibleStatusChecker(cfgManager, project,
-					pluginConfiguration.getCrucibleConfigurationData());
+					pluginConfiguration.getCrucibleConfigurationData(), projectConfigurationBean.getCrucibleConfiguration());
 
 			// DependencyValidationManager.getHolder(project, "", )
-			this.bambooToolWindowPanel = BambooTableToolWindowPanel.getInstance(project, projectConfigurationBean);
-			this.crucibleToolWindowPanel = CrucibleTableToolWindowPanel.getInstance(project, projectConfigurationBean);
+			//this.bambooToolWindowPanel = BambooTableToolWindowPanel.getInstance(project, projectConfigurationBean);
+			this.crucibleToolWindowPanel = new CrucibleTableToolWindowPanel(project,
+					projectConfigurationBean, crucibleStatusChecker);
 			this.jiraToolWindowPanel = JIRAToolWindowPanel.getInstance(project, projectConfigurationBean);
 
 			// create tool window on the right
@@ -235,8 +237,7 @@ public class ThePluginProjectComponent implements
             // add simple bamboo listener to bamboo checker thread
             // this listener shows idea tooltip when buld failed
             BambooStatusDisplay buildFailedToolTip = new BuildStatusChangedToolTip(project);
-            tooltipBambooStatusListener = new BambooStatusTooltipListener(buildFailedToolTip,
-					CfgManagerSingleton.getCfgManager());
+            tooltipBambooStatusListener = new BambooStatusTooltipListener(buildFailedToolTip, cfgManager);
             bambooStatusChecker.registerListener(tooltipBambooStatusListener);
 
             // add bamboo icon to status bar
