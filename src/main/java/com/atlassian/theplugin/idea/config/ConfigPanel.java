@@ -41,28 +41,28 @@ public final class ConfigPanel extends JPanel {
 
 	private final FooterPanel footerPanel = new FooterPanel();
 	private final JTabbedPane contentPanel = new JTabbedPane();
-	private final ServerConfigPanel serverConfigPanel;
+	//private final ServerConfigPanel serverConfigPanel;
 	private final BambooGeneralForm bambooConfigPanel;
 	private final CrucibleGeneralForm crucibleConfigPanel;
 	private final JiraGeneralForm jiraConfigPanel;
 	private final GeneralConfigPanel generalConfigPanel;
 
 	private final transient PluginConfiguration globalConfigurationBean;
-    private final ProjectId projectId;
+//    private final ProjectId projectId;
     private final CfgManager cfgManager;
 
-	private ProjectConfiguration projectConfiguration;
+//	private ProjectConfiguration projectConfiguration;
 
-	public ProjectConfiguration getProjectConfiguration() {
-		return projectConfiguration;
-	}
+//	public ProjectConfiguration getProjectConfiguration() {
+//		return projectConfiguration;
+//	}
 
-	public ConfigPanel(PluginConfiguration globalConfigurationBean, ProjectId projectId, CfgManager cfgManager) {
-        this.projectId = projectId;
+	public ConfigPanel(PluginConfiguration globalConfigurationBean, /*ProjectId projectId, */CfgManager cfgManager) {
+//        this.projectId = projectId;
         this.cfgManager = cfgManager;
-		projectConfiguration = cfgManager.getProjectConfiguration(projectId).getClone();
-		final Collection<ServerCfg> allServers = projectConfiguration. getServers();
-		this.serverConfigPanel = new ServerConfigPanel(null, allServers);
+//		projectConfiguration = cfgManager.getProjectConfiguration(projectId).getClone();
+//		final Collection<ServerCfg> allServers = projectConfiguration.getServers();
+		//this.serverConfigPanel = new ServerConfigPanel(null, allServers);
 		this.bambooConfigPanel = new BambooGeneralForm(cfgManager.getGlobalBambooCfg());
 		this.crucibleConfigPanel = CrucibleGeneralForm.getInstance(globalConfigurationBean);
 		this.jiraConfigPanel = JiraGeneralForm.getInstance(globalConfigurationBean);
@@ -79,7 +79,7 @@ public final class ConfigPanel extends JPanel {
 		contentPanel.setBackground(new Color(Constants.BG_COLOR_R, Constants.BG_COLOR_G, Constants.BG_COLOR_B));
 
 		// add servers tab
-		contentPanel.add(serverConfigPanel.getTitle(), serverConfigPanel);
+		//contentPanel.add(serverConfigPanel.getTitle(), serverConfigPanel);
 
 		// add Bamboo option tab
 		contentPanel.add(bambooConfigPanel.getTitle(), bambooConfigPanel);
@@ -111,8 +111,8 @@ public final class ConfigPanel extends JPanel {
 			generalConfigPanel.setIsAnonymousFeedbackEnabled(answer == DialogWrapper.OK_EXIT_CODE);
 		}
 		return !this.localPluginConfigurationCopy.equals(globalConfigurationBean)
-				|| projectConfiguration.equals(cfgManager.getProjectConfiguration(projectId)) == false
-				|| serverConfigPanel.isModified()
+				/*|| projectConfiguration.equals(cfgManager.getProjectConfiguration(projectId)) == false*/
+				/*|| serverConfigPanel.isModified()*/
 				|| bambooConfigPanel.isModified()
 				|| crucibleConfigPanel.isModified()
 				|| jiraConfigPanel.isModified()
@@ -120,9 +120,9 @@ public final class ConfigPanel extends JPanel {
 	}
 
 	public void saveData() {
-		serverConfigPanel.saveData();
+		/*serverConfigPanel.saveData();*/
 		if (isModified()) {
-			cfgManager.updateProjectConfiguration(projectId, projectConfiguration);
+			/*cfgManager.updateProjectConfiguration(projectId, projectConfiguration);*/
 			generalConfigPanel.saveData();
 			bambooConfigPanel.saveData();
 			jiraConfigPanel.saveData();
@@ -132,8 +132,8 @@ public final class ConfigPanel extends JPanel {
 
 	public void setData() {
 		this.localPluginConfigurationCopy = new PluginConfigurationBean(globalConfigurationBean);
-		projectConfiguration = cfgManager.getProjectConfiguration(projectId).getClone();
-		serverConfigPanel.setData(projectConfiguration.getServers());
+		/*projectConfiguration = cfgManager.getProjectConfiguration(projectId).getClone();*/
+		/*serverConfigPanel.setData(projectConfiguration.getServers());*/
 		generalConfigPanel.setData(localPluginConfigurationCopy);
 		bambooConfigPanel.setData(cfgManager.getGlobalBambooCfg());
 		jiraConfigPanel.setData(localPluginConfigurationCopy);
