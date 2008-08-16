@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,7 +32,7 @@ import com.intellij.openapi.util.Key;
 import java.awt.*;
 
 public final class CommentHighlighter {
-	private static final Color VERSIONED_COMMENT_BACKGROUND_COLOR = Color.LIGHT_GRAY;
+	private static final Color VERSIONED_COMMENT_BACKGROUND_COLOR = Color.ORANGE;
 	private static final Color VERSIONED_COMMENT_STRIP_MARK_COLOR = Color.ORANGE;
 
 	public static final String REVIEW_DATA_KEY_NAME = "REVIEW_DATA_KEY";
