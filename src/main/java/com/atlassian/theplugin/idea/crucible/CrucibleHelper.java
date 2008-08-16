@@ -108,7 +108,9 @@ public final class CrucibleHelper {
 						displayDocument = new FileContent(project, displayFile.getFile())
 								.getDocument();
 						referenceDocument = new FileContent(project, referenceFile).getDocument();
-						new ChangeViewer(project, editor, referenceDocument, displayDocument).highlightChangesInEditor();
+						ChangeViewer.highlightChangesInEditor(project, editor, referenceDocument, displayDocument
+								, reviewItem.getOldFileDescriptor().getRevision()
+								, reviewItem.getFileDescriptor().getRevision());
 						break;
 					case Added:
 						break;
@@ -149,13 +151,15 @@ public final class CrucibleHelper {
 
 					public String[] getContentTitles() {
 						return (new String[]{
-								VcsBundle.message("diff.content.title.up.to.date", new Object[0]),
-								VcsBundle.message("diff.content.title.current.range", new Object[0])
+								VcsBundle.message("diff.content.title.repository.version",
+										new Object[]{reviewItem.getOldFileDescriptor().getRevision()}),
+								VcsBundle.message("diff.content.title.repository.version",
+										new Object[]{reviewItem.getFileDescriptor().getRevision()})
 						});
 					}
 
 					public String getWindowTitle() {
-						return VcsBundle.message("dialog.title.diff.for.range", new Object[0]);
+						return reviewItem.getFileDescriptor().getAbsoluteUrl();
 					}
 				};
 				DiffManager.getInstance().getDiffTool().show(request);
