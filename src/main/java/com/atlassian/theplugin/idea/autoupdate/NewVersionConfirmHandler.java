@@ -19,28 +19,25 @@ package com.atlassian.theplugin.idea.autoupdate;
 import com.atlassian.theplugin.commons.configuration.GeneralConfigurationBean;
 import com.atlassian.theplugin.commons.exception.ThePluginException;
 import com.atlassian.theplugin.commons.util.Version;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
+import org.jetbrains.annotations.Nullable;
 
-/**
- * Created by IntelliJ IDEA.
- * User: lguminski
- * Date: Mar 13, 2008
- * Time: 1:27:49 PM
- * To change this template use File | Settings | File Templates.
- */
 public class NewVersionConfirmHandler implements UpdateActionHandler {
 	private static final String DOWNLOAD_TITLE = "Downloading new " + PluginUtil.getInstance().getName() + " plugin version ";
 
+	@Nullable
+	private final Project project;
 	private GeneralConfigurationBean updateConfiguration;
 
-	public NewVersionConfirmHandler(GeneralConfigurationBean updateConfiguration) {
+	public NewVersionConfirmHandler(@Nullable Project project, GeneralConfigurationBean updateConfiguration) {
+		this.project = project;
 		this.updateConfiguration = updateConfiguration;
 	}
 
@@ -57,7 +54,8 @@ public class NewVersionConfirmHandler implements UpdateActionHandler {
 		//		message, title, JOptionPane.YES_NO_OPTION);
 		//if (answer == JOptionPane.OK_OPTION) {
 		if (answer == DialogWrapper.OK_EXIT_CODE) {
-			Task.Backgroundable downloader = new Task.Backgroundable(IdeaHelper.getCurrentProject(), DOWNLOAD_TITLE, false) {
+			Task.Backgroundable downloader = new Task.Backgroundable(project, DOWNLOAD_TITLE, false) {
+				@Override
 				public void run(ProgressIndicator indicator) {
 					new PluginDownloader(versionInfo, updateConfiguration).run();
 				}

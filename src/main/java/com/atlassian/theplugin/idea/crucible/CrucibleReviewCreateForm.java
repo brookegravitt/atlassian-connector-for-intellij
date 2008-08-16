@@ -32,7 +32,6 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.VirtualFileSystem;
-import com.atlassian.theplugin.commons.cfg.CfgManagerSingleton;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
@@ -41,6 +40,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.cfg.CfgUtil;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
@@ -134,6 +134,7 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 		});
 
 		reviewersList.addMouseListener(new MouseAdapter() {
+			@Override
 			public void mousePressed(MouseEvent e) {
 				int index = reviewersList.locationToIndex(e.getPoint());
 				setCheckboxState(index);
@@ -141,6 +142,7 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 		});
 
 		reviewersList.addKeyListener(new KeyAdapter() {
+			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
 					int index = reviewersList.getSelectedIndex();
@@ -187,6 +189,7 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 		reviewersList.setSelectedIndices(newIdx);
 	}
 
+	@Override
 	public JComponent getPreferredFocusedComponent() {
 		return titleText;
 	}
@@ -328,6 +331,7 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 			this.server = server;
 		}
 
+		@Override
 		public String toString() {
 			return server.getName();
 		}
@@ -344,6 +348,7 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 			this.project = project;
 		}
 
+		@Override
 		public String toString() {
 			return project.getKey();
 		}
@@ -360,6 +365,7 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 			this.repo = repo;
 		}
 
+		@Override
 		public String toString() {
 			return repo.getName();
 		}
@@ -376,6 +382,7 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 			this.user = user;
 		}
 
+		@Override
 		public String toString() {
 			return user.getDisplayName();
 		}
@@ -387,7 +394,7 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 
 
 	private void fillInCrucibleServers() {
-		final Collection<CrucibleServerCfg> enabledServers = CfgManagerSingleton.getCfgManager()
+		final Collection<CrucibleServerCfg> enabledServers = IdeaHelper.getCfgManager()
 				.getAllEnabledCrucibleServers(CfgUtil.getProjectId(project));
 
 		if (enabledServers.isEmpty()) {
@@ -494,6 +501,7 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 		patchPreview.setText(preview);
 	}
 
+	@Override
 	@Nullable
 	protected JComponent createCenterPanel() {
 		return getRootComponent();
@@ -610,6 +618,7 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 
 	}
 
+	@Override
 	protected void doOKAction() {
 		final ServerComboBoxItem selectedItem = (ServerComboBoxItem) crucibleServersComboBox.getSelectedItem();
 

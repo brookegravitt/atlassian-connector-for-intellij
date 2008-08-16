@@ -43,7 +43,7 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 
 	public PluginUpdateIcon(final Project project, final PluginConfiguration pluginConfiguration, final CfgManager cfgManager) {
 		super(project, cfgManager);
-		handler = new NewVersionConfirmHandler(pluginConfiguration.getGeneralConfigurationData());
+		handler = new NewVersionConfirmHandler(project, pluginConfiguration.getGeneralConfigurationData());
 
 		addMouseListener(new MouseAdapter() {
 			@Override

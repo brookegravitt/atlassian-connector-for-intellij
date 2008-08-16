@@ -20,8 +20,11 @@ import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaActionScheduler;
 import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
+import com.atlassian.theplugin.idea.bamboo.TestResultsToolWindow;
+import com.atlassian.theplugin.idea.bamboo.BuildChangesToolWindow;
 import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
+import com.atlassian.theplugin.idea.jira.editor.StackTraceConsole;
 import org.picocontainer.MutablePicoContainer;
 
 public final class PicoUtil {
@@ -30,7 +33,7 @@ public final class PicoUtil {
 	}
 	///CLOVER:ON
 
-	private static final Class[] GLOBAL_COMPONENTS = {
+	private static final Class<?>[] GLOBAL_COMPONENTS = {
 			IdeaActionScheduler.class,
 			PluginConfigurationBean.class,
 //			BambooStatusChecker.class,
@@ -49,11 +52,14 @@ public final class PicoUtil {
 //			JIRAServerFacadeImpl.class,
 	};
 
-	private static final Class[] PROJECT_COMPONENTS = {
+	private static final Class<?>[] PROJECT_COMPONENTS = {
 			BambooTableToolWindowPanel.class,
+			TestResultsToolWindow.class,
+			BuildChangesToolWindow.class,
 			CrucibleTableToolWindowPanel.class,
 			JIRAToolWindowPanel.class,
-			ProjectConfigurationBean.class
+			ProjectConfigurationBean.class,
+			StackTraceConsole.class
 	};
 
 
@@ -65,8 +71,8 @@ public final class PicoUtil {
 		populate(pico, PROJECT_COMPONENTS);
 	}
 
-	private static void populate(MutablePicoContainer pico, Class[] projectComponents) {
-		for (Class clazz : projectComponents) {
+	private static void populate(MutablePicoContainer pico, Class<?>[] projectComponents) {
+		for (Class<?> clazz : projectComponents) {
 			pico.registerComponentImplementation(clazz);
 		}
 	}

@@ -41,10 +41,10 @@ public class AtlassianTreeModel extends DefaultTreeModel {
 		if (newRoot == null) {
 			newRoot = AtlassianTreeNode.EMPTY_NODE;
 		}
-		AtlassianTreeModel result = new AtlassianTreeModel(newRoot);
-		return result;
+		return new AtlassianTreeModel(newRoot);
 	}
 
+	@Override
 	public AtlassianTreeNode getRoot() {
 		return (AtlassianTreeNode) super.getRoot();
 	}

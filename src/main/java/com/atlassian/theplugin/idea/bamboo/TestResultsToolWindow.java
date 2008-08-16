@@ -16,42 +16,48 @@
 
 package com.atlassian.theplugin.idea.bamboo;
 
-import com.intellij.execution.filters.TextConsoleBuilderFactory;
+import com.atlassian.theplugin.commons.bamboo.TestDetails;
+import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.util.ColorToHtml;
 import com.intellij.execution.filters.TextConsoleBuilder;
+import com.intellij.execution.filters.TextConsoleBuilderFactory;
 import com.intellij.execution.ui.ConsoleView;
 import com.intellij.execution.ui.ConsoleViewContentType;
-import com.intellij.openapi.wm.ToolWindowManager;
-import com.intellij.openapi.wm.ToolWindow;
-import com.intellij.openapi.wm.ToolWindowAnchor;
-import com.intellij.openapi.util.IconLoader;
-import com.intellij.openapi.ui.Splitter;
-import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.project.Project;
-import com.intellij.ui.content.Content;
+import com.intellij.openapi.ui.Splitter;
+import com.intellij.openapi.util.IconLoader;
+import com.intellij.openapi.wm.ToolWindow;
+import com.intellij.openapi.wm.ToolWindowAnchor;
+import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.peer.PeerFactory;
-import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.ui.content.Content;
 import com.intellij.util.ui.UIUtil;
-import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.Constants;
-import com.atlassian.theplugin.commons.bamboo.TestDetails;
-import com.atlassian.theplugin.util.ColorToHtml;
 
 import javax.swing.*;
-import javax.swing.tree.*;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
-import java.util.*;
-import java.util.List;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public final class TestResultsToolWindow {
+	private final Project project;
 
 	public interface TestTree extends Expandable {
 		boolean PASSED_TESTS_VISIBLE_DEFAULT = false;
@@ -64,18 +70,14 @@ public final class TestResultsToolWindow {
 	private static final Icon TEST_PASSED_ICON = IconLoader.getIcon("/runConfigurations/testPassed.png");
 	private static final Icon TEST_FAILED_ICON = IconLoader.getIcon("/runConfigurations/testFailed.png");
 
-	private static TestResultsToolWindow instance = new TestResultsToolWindow();
+	private HashMap<String, TestDetailsPanel> panelMap = new HashMap<String, TestDetailsPanel>();
 
-	private static HashMap<String, TestDetailsPanel> panelMap = new HashMap<String, TestDetailsPanel>();
-
-	private TestResultsToolWindow() {
+	public TestResultsToolWindow(Project project) {
+		this.project = project;
 	}
 
-	public static TestResultsToolWindow getInstance() {
-		return instance;
-	}
 
-	public static TestTree getTestTree(String name) {
+	public TestTree getTestTree(String name) {
 		return panelMap.get(name);
 	}
 
@@ -84,7 +86,7 @@ public final class TestResultsToolWindow {
 		TestDetailsPanel detailsPanel;
 		String contentKey = buildKey + "-" + buildNumber;
 
-		ToolWindowManager twm = ToolWindowManager.getInstance(IdeaHelper.getCurrentProject());
+		ToolWindowManager twm = ToolWindowManager.getInstance(project);
 		ToolWindow testDetailsToolWindow = twm.getToolWindow(TOOL_WINDOW_TITLE);
 		if (testDetailsToolWindow == null) {
 			testDetailsToolWindow = twm.registerToolWindow(TOOL_WINDOW_TITLE, true, ToolWindowAnchor.BOTTOM);
@@ -145,14 +147,17 @@ public final class TestResultsToolWindow {
 				this.failedTests = failedTests;
             }
 
+			@Override
 			public void selected() {
 				print("");
 			}
 
-            public boolean isFailed() {
+            @Override
+			public boolean isFailed() {
                 return failedTests > 0;
             }
 
+			@Override
 			public String getTestStats() {
 				return " (" + failedTests + " out of " + totalTests + " failed)";
 			}
@@ -179,6 +184,7 @@ public final class TestResultsToolWindow {
 				super(s, totalTests, failedTests);
 			}
 
+			@Override
 			public void navigate() {
 				// no-op for packages
 			}
@@ -193,10 +199,10 @@ public final class TestResultsToolWindow {
 				className = fqcn;
 			}
 
+			@Override
 			public void navigate() {
-				Project proj = IdeaHelper.getCurrentProject();
-				PsiClass cls = PsiManager.getInstance(proj).findClass(className,
-						GlobalSearchScope.allScope(proj));
+				PsiClass cls = PsiManager.getInstance(project).findClass(className,
+						GlobalSearchScope.allScope(project));
 				if (cls != null) {
 					cls.navigate(true);
 				}
@@ -211,10 +217,10 @@ public final class TestResultsToolWindow {
 				this.details = details;
 			}
 
+			@Override
 			public void navigate() {
-				Project proj = IdeaHelper.getCurrentProject();
-				PsiClass cls = PsiManager.getInstance(proj).findClass(details.getTestClassName(),
-						GlobalSearchScope.allScope(proj));
+				PsiClass cls = PsiManager.getInstance(project).findClass(details.getTestClassName(),
+						GlobalSearchScope.allScope(project));
 				if (cls == null) {
 					return;
 				}
@@ -230,11 +236,13 @@ public final class TestResultsToolWindow {
 				super(details);
 			}
 
+			@Override
 			public void selected() {
 				print(details.getErrors());
 			}
 
-            public boolean isFailed() {
+            @Override
+			public boolean isFailed() {
                 return true;
             }
 		}
@@ -244,11 +252,13 @@ public final class TestResultsToolWindow {
                 super(details);
             }
 
-            public void selected() {
+            @Override
+			public void selected() {
                 print("Test successful");
             }
 
-            public boolean isFailed() {
+            @Override
+			public boolean isFailed() {
                 return false;
             }
 		}
@@ -342,6 +352,7 @@ public final class TestResultsToolWindow {
 			});
 			testTree.addMouseListener(new MouseAdapter() {
 
+				@Override
 				public void mouseClicked(MouseEvent e) {
 					if (e.getClickCount() >= 2) {
 						TreePath path = tree.getPathForLocation(e.getX(), e.getY());
@@ -359,7 +370,6 @@ public final class TestResultsToolWindow {
 
 		public TestDetailsPanel(String name, final List<TestDetails> failedTests,
                                 final List<TestDetails> succeededTests) {
-			super();
             this.failedTests = failedTests;
             this.succeededTests = succeededTests;
 
@@ -424,7 +434,7 @@ public final class TestResultsToolWindow {
 				consolePanel.add(label, gbc1);
 
 				TextConsoleBuilderFactory factory = TextConsoleBuilderFactory.getInstance();
-				TextConsoleBuilder builder = factory.createBuilder(IdeaHelper.getCurrentProject());
+				TextConsoleBuilder builder = factory.createBuilder(project);
 				console = builder.getConsole();
 
 				gbc1.gridy = 1;
