@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea.autoupdate;
 
 import com.atlassian.theplugin.ConnectionWrapper;
+import com.atlassian.theplugin.LoginDataProvided;
 import com.atlassian.theplugin.commons.configuration.GeneralConfigurationBean;
 import com.atlassian.theplugin.commons.exception.ThePluginException;
 import com.atlassian.theplugin.idea.GeneralConfigForm;
@@ -62,7 +63,11 @@ public class NewVersionButtonListener implements ActionListener {
     }
 
     private class UpdateServerConnection extends Connector {
-        public void connect() throws ThePluginException {
+		protected UpdateServerConnection() {
+		}
+
+		@Override
+		public void connect(LoginDataProvided loginDataProvided) throws ThePluginException {
             NewVersionChecker.getInstance(IdeaHelper.getPluginConfiguration()).doRun(new UpdateActionHandler() {
                 public void doAction(InfoServer.VersionInfo versionInfo, boolean showConfigPath) throws ThePluginException {
                     newVersion = versionInfo;
@@ -76,13 +81,14 @@ public class NewVersionButtonListener implements ActionListener {
             super(null, "Checking available updates", true);
         }
 
-        public void run(ProgressIndicator indicator) {
+        @Override
+		public void run(ProgressIndicator indicator) {
             newVersion = null;
             setCancelText("Stop");
             indicator.setText("Connecting...");
             indicator.setFraction(0);
             indicator.setIndeterminate(true);
-            checkerThread = new ConnectionWrapper(new UpdateServerConnection(), "atlassian-idea-plugin New version checker");
+            checkerThread = new ConnectionWrapper(new UpdateServerConnection(), null, "atlassian-idea-plugin New version checker");
             checkerThread.start();
             while (checkerThread.getConnectionState() == ConnectionWrapper.ConnectionState.NOT_FINISHED) {
                 try {

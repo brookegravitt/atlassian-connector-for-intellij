@@ -23,36 +23,12 @@ import org.easymock.EasyMock;
 
 public class CodeNavigationUtilIdeaTest extends LightIdeaTestCase {
 
-    public static final String PROJECT_BASE_DIR = "/home/wseliga/lab/pazu-test";
-
     private final String changedFile = "/PL/trunk/ThePlugin/commons/src/main/java/com/atlassian/theplugin/commons/Action.java";
     private final String TEST_FILE_2 = "/PL/trunk/ThePlugin/commons/src/main/java/com/atlassian/theplugin/commons/Action2.java";
     private final String TEST_FILE = "/PL/trunk/ThePlugin/commons/src/test/java/com/atlassian/theplugin/commons/Action.java";
     private final String PARENT_FILE = "/PL/trunk/ThePlugin/commons/src/main/java/com/atlassian/theplugin/commons";
 
-    public void testSanity() {
-        MockVirtualFile mvf1 = new MockVirtualFile(changedFile);
-        MockVirtualFile mvf2 = new MockVirtualFile(new String(changedFile));
-        MockVirtualFile mvf3 = new MockVirtualFile(TEST_FILE);
-        MockVirtualFile mvf4 = new MockVirtualFile(TEST_FILE_2);
-
-        MockVirtualFile mvfParent = new MockVirtualFile(PARENT_FILE, true);
-
-        assertEquals(mvf1, mvf1);
-        assertEquals(mvf1, mvf2);
-        assertFalse(mvf1.equals(mvf3));
-        assertFalse(mvf3.equals(mvf1));
-        assertEquals(mvfParent, mvf1.getParent());
-        assertEquals(mvfParent, mvf2.getParent());
-        assertEquals(mvf2.getParent(), mvfParent);
-        assertFalse(mvfParent.equals(mvf3.getParent()));
-        assertEquals(mvf1.getFileSystem(), mvf3.getFileSystem());
-        assertFalse(mvf4.equals(mvf1));
-        assertEquals(mvf1.getParent(), mvf4.getParent());
-
-    }
-
-    public void testGuessMatchingFile() {
+	public void testGuessMatchingFile() {
         String vf1s = "/home/wseliga/lab/pazu-test/idea/src/main/java/com/atlassian/theplugin/idea/crucible/table/CommentNode.java";
         String vf2s = "/home/wseliga/lab/pazu-test/idea/src/main/java/com/atlassian/theplugin/common/crucible/table/CommentNode.java";
         String vf3s = "/home/wseliga/lab/pazu-test/idea/src/main/java/com/atlassian/theplugin/common/crucible/CommentNode.java";
@@ -91,6 +67,28 @@ public class CodeNavigationUtilIdeaTest extends LightIdeaTestCase {
 
         assertSame(mock3, guessMatchingFile(myExistingFileInProject, new PsiFile[]{mock2, mock4, mock1, mock3}, baseDir));
     }
+
+	public void testSanity() {
+		MockVirtualFile mvf1 = new MockVirtualFile(changedFile);
+		MockVirtualFile mvf2 = new MockVirtualFile(new String(changedFile));
+		MockVirtualFile mvf3 = new MockVirtualFile(TEST_FILE);
+		MockVirtualFile mvf4 = new MockVirtualFile(TEST_FILE_2);
+
+		MockVirtualFile mvfParent = new MockVirtualFile(PARENT_FILE, true);
+
+		assertEquals(mvf1, mvf1);
+		assertEquals(mvf1, mvf2);
+		assertFalse(mvf1.equals(mvf3));
+		assertFalse(mvf3.equals(mvf1));
+		assertEquals(mvfParent, mvf1.getParent());
+		assertEquals(mvfParent, mvf2.getParent());
+		assertEquals(mvf2.getParent(), mvfParent);
+		assertFalse(mvfParent.equals(mvf3.getParent()));
+		assertEquals(mvf1.getFileSystem(), mvf3.getFileSystem());
+		assertFalse(mvf4.equals(mvf1));
+		assertEquals(mvf1.getParent(), mvf4.getParent());
+
+	}
 
 
 }
