@@ -48,11 +48,6 @@ public final class IdeaHelper {
 	}
 
 	@Nullable
-	public static Project getCurrentProject() {
-		return getCurrentProject(DataManager.getInstance().getDataContext());
-	}
-
-	@Nullable
 	public static Project getCurrentProject(DataContext dataContext) {
 		return DataKeys.PROJECT.getData(dataContext);
 	}

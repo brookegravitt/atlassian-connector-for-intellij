@@ -34,7 +34,7 @@ public class GenericServerConfigurationFormTest extends TestCase {
 	@Override
     protected void setUp() throws Exception {
 		super.setUp();
-		genericServerConfigurationForm = new GenericServerConfigForm(null);
+		genericServerConfigurationForm = new GenericServerConfigForm(null, null);
 	}
 
 	public void testGenericSetGetData() throws Exception {

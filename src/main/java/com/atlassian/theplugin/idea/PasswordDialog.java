@@ -18,10 +18,8 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.LoginDataProvided;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.commons.exception.ThePluginException;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.util.Connector;
+import com.atlassian.theplugin.idea.config.serverconfig.ProductConnector;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 
@@ -65,20 +63,7 @@ public class PasswordDialog extends JDialog implements LoginDataProvided {
 			}
 		}, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-		testConnectionButton.addActionListener(new TestConnectionListener(new Connector() {
-
-			@Override
-            public void connect() throws ThePluginException {
-				this.validate();
-				try {
-					serverFacade.testServerConnection(
-							super.getUrl(), super.getUserName(), super.getPassword());
-				} catch (RemoteApiException e) {
-					throw new ThePluginException("Error connecting server.", e);
-				}
-			}
-
-		}, this));
+		testConnectionButton.addActionListener(new TestConnectionListener(null, new ProductConnector(serverFacade), this));
 	}
 
 	private void onCancel() {

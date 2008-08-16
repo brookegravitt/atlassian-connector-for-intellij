@@ -21,14 +21,15 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.atlassian.theplugin.idea.IdeaHelper;
 
 public class BuildStackTraceAction extends AnAction {
+	@Override
 	public void actionPerformed(AnActionEvent event) {
 		IdeaHelper.getBambooToolWindowPanel(event).showBuildStackTrace();
     }
 
+	@Override
 	public void update(AnActionEvent event) {
 		if (IdeaHelper.getBambooToolWindowPanel(event) != null) {
 			event.getPresentation().setEnabled(IdeaHelper.getBambooToolWindowPanel(event).canShowFailedTests());
 		}
-		super.update(event);
 	}
 }

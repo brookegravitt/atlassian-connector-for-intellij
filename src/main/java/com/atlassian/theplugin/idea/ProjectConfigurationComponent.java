@@ -203,7 +203,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	}
 
 	public JComponent createComponent() {
-		projectConfigurationPanel = new ProjectConfigurationPanel(
+		projectConfigurationPanel = new ProjectConfigurationPanel(project, 
 				cfgManager.getProjectConfiguration(getProjectId()).getClone());
 		return projectConfigurationPanel;
 	}
