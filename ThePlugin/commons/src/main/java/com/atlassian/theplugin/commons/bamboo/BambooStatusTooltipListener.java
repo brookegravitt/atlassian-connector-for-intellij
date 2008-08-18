@@ -18,8 +18,8 @@ package com.atlassian.theplugin.commons.bamboo;
 
 import com.atlassian.theplugin.commons.ConfigurationListener;
 import com.atlassian.theplugin.commons.cfg.BambooCfgManager;
-import com.atlassian.theplugin.commons.cfg.ProjectId;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.commons.cfg.ProjectId;
 import com.atlassian.theplugin.commons.configuration.BambooTooltipOption;
 
 import java.util.Collection;
@@ -135,4 +135,6 @@ public class BambooStatusTooltipListener implements BambooStatusListener, Config
 		this.bambooCfgManager = cfgManager;
 	}
 
+	public void projectUnregistered() {
+	}
 }

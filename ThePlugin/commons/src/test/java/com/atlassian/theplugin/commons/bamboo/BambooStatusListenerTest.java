@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.bamboo;
+package com.atlassian.theplugin.commons.bamboo;
 
-import com.atlassian.theplugin.commons.bamboo.BambooBuild;
-import com.atlassian.theplugin.commons.bamboo.BambooPopupInfo;
-import com.atlassian.theplugin.commons.bamboo.BambooStatusDisplay;
-import com.atlassian.theplugin.commons.bamboo.BambooStatusTooltipListener;
-import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import junit.framework.TestCase;
 import org.easymock.EasyMock;
 import static org.easymock.EasyMock.and;

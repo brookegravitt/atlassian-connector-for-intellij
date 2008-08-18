@@ -225,4 +225,7 @@ public class ThePluginApplicationComponent
 	public void updateConfiguration(final ProjectId project, final CfgManager aCfgManager) {
 		rescheduleStatusCheckers(true);
 	}
+
+	public void projectUnregistered() {
+	}
 }

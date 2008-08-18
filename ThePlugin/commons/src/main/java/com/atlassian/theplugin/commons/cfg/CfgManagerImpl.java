@@ -15,12 +15,16 @@
  */
 package com.atlassian.theplugin.commons.cfg;
 
-import com.atlassian.theplugin.commons.util.MiscUtil;
-import static com.atlassian.theplugin.commons.util.MiscUtil.buildConcurrentHashMap;
 import com.atlassian.theplugin.commons.ConfigurationListener;
 import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.util.MiscUtil;
+import static com.atlassian.theplugin.commons.util.MiscUtil.buildConcurrentHashMap;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Map;
 
 public class CfgManagerImpl implements CfgManager {
 	private final Map<ProjectId, ProjectConfiguration> projectConfigurations = buildConcurrentHashMap(INITIAL_CAPACITY);
@@ -28,6 +32,14 @@ public class CfgManagerImpl implements CfgManager {
 	private final Map<ProjectId, Collection<ConfigurationListener>> listeners = buildConcurrentHashMap(100);
 	private BambooCfg bambooCfg;
 	private static final int INITIAL_CAPACITY = 4;
+
+	private static final ListenerAction PROJECT_UNREGISTERED_LISTENER_ACTION = new ListenerAction() {
+		public void run(final ConfigurationListener projectListener, final ProjectId projectId, final CfgManagerImpl cfgManager) {
+			projectListener.projectUnregistered();
+		}
+	};
+	
+	private final ListenerAction UPDATED_CONFIGURATION_LISTENER_ACTION = new UpdateConfigurationListenerAction();
 
 	public CfgManagerImpl() {
 		// TODO wseliga remove it later on and handle properly null values
@@ -85,17 +97,20 @@ public class CfgManagerImpl implements CfgManager {
 
 		// internalize the list to be private and put it to array
 		projectConfigurations.put(projectId, projectConfiguration);
-		notifyListeners(projectId);
+		notifyListeners(projectId, UPDATED_CONFIGURATION_LISTENER_ACTION);
 	}
 
-	private void notifyListeners(final ProjectId projectId) {
+
+	private void notifyListeners(final ProjectId projectId, ListenerAction listenerAction) {
 		Collection<ConfigurationListener> projectListeners = listeners.get(projectId);
 		if (projectListeners != null) {
 			for (ConfigurationListener projectListener : projectListeners) {
-				projectListener.updateConfiguration(projectId, this);
+				listenerAction.run(projectListener, projectId, this);
+				//projectListener.updateConfiguration(projectId, this);
 			}
 		}
 	}
+
 
 	public void updateGlobalConfiguration(final GlobalConfiguration globalConfiguration) {
 		if (globalConfiguration == null) {
@@ -138,7 +153,11 @@ public class CfgManagerImpl implements CfgManager {
     }
 
 	public ProjectConfiguration removeProject(final ProjectId projectId) {
-		return projectConfigurations.remove(projectId);
+		final ProjectConfiguration res = projectConfigurations.remove(projectId);
+		if (res != null) {
+			notifyListeners(projectId, PROJECT_UNREGISTERED_LISTENER_ACTION);
+		}
+		return res;
 	}
 
 	public ServerCfg removeGlobalServer(final ServerId serverId) {
@@ -272,5 +291,16 @@ public class CfgManagerImpl implements CfgManager {
 		verifyProjectId(projectId);
 		Collection<ConfigurationListener> tmp = listeners.get(projectId);
 		return tmp.remove(configurationListener);
+	}
+
+	private interface ListenerAction {
+		public void run(final ConfigurationListener projectListener, final ProjectId projectId,
+				final CfgManagerImpl cfgManager);
+	}
+
+	private class UpdateConfigurationListenerAction implements ListenerAction {
+		public void run(final ConfigurationListener projectListener, final ProjectId projectId, final CfgManagerImpl cfgManager) {
+			projectListener.updateConfiguration(projectId, CfgManagerImpl.this);
+		}
 	}
 }

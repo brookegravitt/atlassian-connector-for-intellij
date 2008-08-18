@@ -1,34 +1,33 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.atlassian.theplugin.commons.bamboo;
 
-package com.atlassian.theplugin.bamboo;
-
-import com.atlassian.theplugin.commons.bamboo.*;
-import com.gargoylesoftware.htmlunit.StringWebResponse;
-import com.gargoylesoftware.htmlunit.TopLevelWindow;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.*;
-import junit.framework.Assert;
+import com.gargoylesoftware.htmlunit.html.HtmlTableCell;
+import com.gargoylesoftware.htmlunit.html.HtmlTableRow;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import org.easymock.EasyMock;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * StausIconBambooListener Tester.
@@ -300,7 +299,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 		assertEquals(DEFAULT_PROJECT_NAME + " " + DEFAULT_BUILD_NAME + " > Disabled", cells.get(1).asText());
 
 		String buildTime = cells.get(2).asText().trim();
-		assertTrue(buildTime.length() == 0);		
+		assertTrue(buildTime.length() == 0);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -437,30 +436,4 @@ class StatusListenerResultCatcher implements BambooStatusDisplay {
     public String getHtmlPage() {
         return htmlPage;
     }
-}
-
-class ResponseWrapper {
-	private HtmlPage thePage;
-	private HtmlTable theTable;
-
-	ResponseWrapper(String htmlPage) throws IOException {
-		StringWebResponse swr = new StringWebResponse(htmlPage);
-		WebClient wc = new WebClient();
-		thePage = HTMLParser.parse(swr, new TopLevelWindow("", wc));
-	}
-
-	public HtmlPage getPage() {
-		return thePage;
-	}
-
-
-	public HtmlTable getTheTable() throws Exception {
-		if (theTable == null) {
-			List tables = thePage.getByXPath("html/body/table");
-			Assert.assertEquals(1, tables.size());
-			theTable = (HtmlTable) tables.get(0);
-		}
-		return theTable;
-	}
-
 }

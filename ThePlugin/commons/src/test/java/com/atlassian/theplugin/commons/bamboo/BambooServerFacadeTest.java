@@ -14,19 +14,31 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.bamboo;
+package com.atlassian.theplugin.commons.bamboo;
 
+import com.atlassian.theplugin.bamboo.api.bamboomock.AddCommentToBuildCallback;
+import com.atlassian.theplugin.bamboo.api.bamboomock.AddLabelToBuildCallback;
+import com.atlassian.theplugin.bamboo.api.bamboomock.BamboBuildNumberCalback;
+import com.atlassian.theplugin.bamboo.api.bamboomock.BuildDetailsResultCallback;
+import com.atlassian.theplugin.bamboo.api.bamboomock.ErrorResponse;
+import com.atlassian.theplugin.bamboo.api.bamboomock.ExecuteBuildCallback;
+import com.atlassian.theplugin.bamboo.api.bamboomock.FavouritePlanListCallback;
+import com.atlassian.theplugin.bamboo.api.bamboomock.LatestBuildResultCallback;
+import com.atlassian.theplugin.bamboo.api.bamboomock.LoginCallback;
+import com.atlassian.theplugin.bamboo.api.bamboomock.LogoutCallback;
+import com.atlassian.theplugin.bamboo.api.bamboomock.PlanListCallback;
+import com.atlassian.theplugin.bamboo.api.bamboomock.ProjectListCallback;
+import com.atlassian.theplugin.bamboo.api.bamboomock.Util;
 import com.atlassian.theplugin.commons.SubscribedPlan;
-import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
-import com.atlassian.theplugin.commons.configuration.*;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.commons.bamboo.*;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
-import com.atlassian.theplugin.bamboo.api.bamboomock.*;
+import com.atlassian.theplugin.commons.util.LoggerImpl;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 

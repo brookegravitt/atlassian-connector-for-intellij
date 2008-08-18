@@ -41,13 +41,13 @@
         </commit>
 	</commits>
     <failedTests>
-        <testResult testClass="com.atlassian.theplugin.bamboo.HtmlBambooStatusListenerTest" testMethod="testSingleSuccessResultForDisabledBuild" duration="0.012">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListenerTest" testMethod="testSingleSuccessResultForDisabledBuild" duration="0.012">
             <errors>
                 <error>error 1
 </error>
             </errors>
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.HtmlBambooStatusListenerTest" testMethod="testSingleFailedResultForDisabledBuild" duration="0.011">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListenerTest" testMethod="testSingleFailedResultForDisabledBuild" duration="0.011">
             <errors>
                 <error>error 2
 </error>
@@ -55,7 +55,7 @@
         </testResult>
     </failedTests>
     <successfulTests>
-        <testResult testClass="com.atlassian.theplugin.bamboo.BambooServerFacadeTest" testMethod="testProjectList" duration="0.046">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.BambooServerFacadeTest" testMethod="testProjectList" duration="0.046">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.configuration.ConfigurationTest" testMethod="testProjectSettings" duration="0.001">
         </testResult>
@@ -65,21 +65,21 @@
         </testResult>
         <testResult testClass="com.atlassian.theplugin.idea.GenericServerConfigurationFormTest" testMethod="testGenericSetGetData" duration="0.008">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.BambooSessionTest" testMethod="testBuildForPlanFailure" duration="0.015">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.BambooSessionTest" testMethod="testBuildForPlanFailure" duration="0.015">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.ReviewDataInfoImplTest" testMethod="testSetGetReviewers" duration="0.001">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.BambooSessionSslTest" testMethod="testSuccessBambooLoginOnSSL" duration="0.336">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.BambooSessionSslTest" testMethod="testSuccessBambooLoginOnSSL" duration="0.336">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.idea.crucible.CruciblePatchSubmitCommitSessionTest" testMethod="testDiffAtFileStart" duration="0.001">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.BambooStatusListenerTest" testMethod="testSingleBuildSucceed" duration="0.001">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.BambooStatusListenerTest" testMethod="testSingleBuildSucceed" duration="0.001">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.api.rest.CrucibleSessionTest" testMethod="testCreateReviewFromNullPatch" duration="0.012">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.BambooSessionTest" testMethod="testSuccessBambooLogin" duration="0.061">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.BambooSessionTest" testMethod="testSuccessBambooLogin" duration="0.061">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.BambooSessionTest" testMethod="testFavouritePlanList" duration="0.015">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.BambooSessionTest" testMethod="testFavouritePlanList" duration="0.015">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.api.rest.CrucibleSessionTest" testMethod="testGetReviewsInStatesMalformedResponse" duration="0.21">
         </testResult>
@@ -93,23 +93,23 @@
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.api.rest.CrucibleSessionTest" testMethod="testGetReviewsInStates" duration="0.011">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.BambooSessionTest" testMethod="testNonExistingServerBambooLogin" duration="0.004">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.BambooSessionTest" testMethod="testNonExistingServerBambooLogin" duration="0.004">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.ReviewDataInfoImplTest" testMethod="testEqualsAndHashcode" duration="0.002">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.BambooSessionTest" testMethod="testWrongParamsBambooLogin" duration="0.001">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.BambooSessionTest" testMethod="testWrongParamsBambooLogin" duration="0.001">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.BambooServerFacadeTest" testMethod="testFailedProjectList" duration="0.01">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.BambooServerFacadeTest" testMethod="testFailedProjectList" duration="0.01">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.BambooServerFacadeTest" testMethod="testPlanList" duration="0.027">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.BambooServerFacadeTest" testMethod="testPlanList" duration="0.027">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.api.rest.CrucibleSessionTest" testMethod="testCreateReview" duration="0.019">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.jira.api.JIRAIssueBeanTest" testMethod="testFromXml" duration="0.002">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.BambooStatusListenerTest" testMethod="testSingleBuildFailed" duration="0.029">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.BambooStatusListenerTest" testMethod="testSingleBuildFailed" duration="0.029">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.BambooServerFacadeTest" testMethod="testBambooConnectionWithEmptyPlan" duration="0.012">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.BambooServerFacadeTest" testMethod="testBambooConnectionWithEmptyPlan" duration="0.012">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.configuration.ConfigurationTest" testMethod="testConfiguration" duration="0.001">
         </testResult>
@@ -125,11 +125,11 @@
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.api.rest.CrucibleSessionTest" testMethod="testWrongUserCrucibleLogin" duration="0.006">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.BambooStatusListenerTest" testMethod="testSingleBuildFailed2OK" duration="0.001">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.BambooStatusListenerTest" testMethod="testSingleBuildFailed2OK" duration="0.001">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.api.rest.CrucibleSessionTest" testMethod="testGetEmptyRequestReviewsInStates" duration="0.01">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.BambooStatusListenerTest" testMethod="testMultipleOK2Failed" duration="0.002">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.BambooStatusListenerTest" testMethod="testMultipleOK2Failed" duration="0.002">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.ReviewDataInfoImplTest" testMethod="testGetServer" duration="0">
         </testResult>
@@ -137,7 +137,7 @@
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.api.rest.CrucibleSessionTest" testMethod="testCreateReviewMalformedResponse" duration="0.01">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.BambooServerFacadeTest" testMethod="testConnectionTest" duration="0.02">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.BambooServerFacadeTest" testMethod="testConnectionTest" duration="0.02">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.api.rest.CrucibleSessionTest" testMethod="testGetEmptyReviewers" duration="0.111">
         </testResult>
@@ -159,19 +159,19 @@
         </testResult>
         <testResult testClass="com.atlassian.theplugin.configuration.ConfigurationBeanTest" testMethod="testBean" duration="0">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.HtmlBambooStatusListenerTest" testMethod="testNullStatusCollection" duration="0.012">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListenerTest" testMethod="testNullStatusCollection" duration="0.012">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.HtmlBambooStatusListenerTest" testMethod="testSingleErrorResult" duration="0.012">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListenerTest" testMethod="testSingleErrorResult" duration="0.012">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.api.rest.CrucibleSessionTest" testMethod="testFailedCrucibleLogin" duration="0.006">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.BambooSessionTest" testMethod="testProjectList" duration="0.017">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.BambooSessionTest" testMethod="testProjectList" duration="0.017">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.api.rest.CrucibleSessionTest" testMethod="testGetAllReviewsMalformedResponse" duration="0.008">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.configuration.ConfigurationTest" testMethod="testServerBeanClone" duration="0">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.BambooServerFacadeTest" testMethod="testFailedLoginSubscribedBuildStatus" duration="0.015">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.BambooServerFacadeTest" testMethod="testFailedLoginSubscribedBuildStatus" duration="0.015">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.CrucibleServerFacadeTest" testMethod="testCreateReview" duration="0.008">
         </testResult>
@@ -179,7 +179,7 @@
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.CrucibleServerFacadeTest" testMethod="testConnectionTestFailed" duration="0.001">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.BambooSessionTest" testMethod="testPlanList" duration="0.017">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.BambooSessionTest" testMethod="testPlanList" duration="0.017">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.api.rest.CrucibleSessionTest" testMethod="testWrongUrlBambooLogin" duration="0.003">
         </testResult>
@@ -187,11 +187,11 @@
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.api.rest.CrucibleSessionTest" testMethod="testLoginMalformedResponse" duration="0.007">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.BambooStatusListenerTest" testMethod="testMultipleFailed2OK" duration="0.001">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.BambooStatusListenerTest" testMethod="testMultipleFailed2OK" duration="0.001">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.BambooSessionTest" testMethod="testBuildForPlanSuccess" duration="0.017">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.BambooSessionTest" testMethod="testBuildForPlanSuccess" duration="0.017">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.BambooStatusListenerTest" testMethod="testMultiple" duration="0.005">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.BambooStatusListenerTest" testMethod="testMultiple" duration="0.005">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.ReviewDataInfoImplTest" testMethod="testSetGetReviewData" duration="0">
         </testResult>
@@ -199,37 +199,37 @@
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.api.rest.CrucibleSessionTest" testMethod="testGetReviewers" duration="0.111">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.BambooStatusCheckerTest" testMethod="testLogic" duration="0.024">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.BambooStatusCheckerTest" testMethod="testLogic" duration="0.024">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.HtmlBambooStatusListenerTest" testMethod="testEmptyStatusCollection" duration="0.005">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListenerTest" testMethod="testEmptyStatusCollection" duration="0.005">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.idea.PluginDownloaderTest" testMethod="testDownloadPluginFromServer" duration="0.271">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.api.rest.CrucibleSessionTest" testMethod="testMethodCallWithoutLogin" duration="0.002">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.HtmlBambooStatusListenerTest" testMethod="testSingleFailedResult" duration="0.018">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListenerTest" testMethod="testSingleFailedResult" duration="0.018">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.idea.crucible.CruciblePatchSubmitCommitSessionTest" testMethod="testDiffMixed2" duration="0.003">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.BambooSessionTest" testMethod="testWrongUserBambooLogin" duration="0.007">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.BambooSessionTest" testMethod="testWrongUserBambooLogin" duration="0.007">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.api.rest.CrucibleSessionTest" testMethod="testGetEmptyReviewsForType" duration="0.015">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.api.rest.CrucibleSessionTest" testMethod="testSuccessBambooLoginURLWithSlash" duration="0.005">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.HtmlBambooStatusListenerTest" testMethod="testSingleSuccessResult" duration="0.021">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListenerTest" testMethod="testSingleSuccessResult" duration="0.021">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.BambooServerFacadeTest" testMethod="testUninitializedPassword" duration="0.023">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.BambooServerFacadeTest" testMethod="testUninitializedPassword" duration="0.023">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.CrucibleServerFacadeTest" testMethod="testGetActiveReviewsForUser" duration="0.002">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.BambooSessionTest" testMethod="testSuccessBambooLoginURLWithSlash" duration="0.025">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.BambooSessionTest" testMethod="testSuccessBambooLoginURLWithSlash" duration="0.025">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.CrucibleServerFacadeConnectionTest" testMethod="testFailedLoginGetAllReviews" duration="0.006">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.CrucibleServerFacadeConnectionTest" testMethod="testConnectionTestFailedNullUser" duration="0.001">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.BambooSessionTest" testMethod="testMalformedUrlBambooLogin" duration="0.009">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.BambooSessionTest" testMethod="testMalformedUrlBambooLogin" duration="0.009">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.idea.BambooServerConfigurationFormTest" testMethod="testBambooFormIsModified" duration="0.114">
         </testResult>
@@ -237,27 +237,27 @@
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.api.rest.CrucibleSessionTest" testMethod="testGetReviewersMalformedResponse" duration="0.009">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.BambooServerFacadeTest" testMethod="testSubscribedBuildStatus" duration="0.059">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.BambooServerFacadeTest" testMethod="testSubscribedBuildStatus" duration="0.059">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.BambooStatusCheckerTest" testMethod="testGetInterval" duration="0.002">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.BambooStatusCheckerTest" testMethod="testGetInterval" duration="0.002">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.api.rest.CrucibleSessionTest" testMethod="testSuccessCrucibleDoubleLogin" duration="0.008">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.BambooServerFacadeTest" testMethod="testFailedPlanList" duration="0.008">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.BambooServerFacadeTest" testMethod="testFailedPlanList" duration="0.008">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.BambooStatusCheckerTest" testMethod="testNewTimerTask" duration="0">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.BambooStatusCheckerTest" testMethod="testNewTimerTask" duration="0">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.BambooStatusListenerTest" testMethod="testSingleBuildUnknown" duration="0">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.BambooStatusListenerTest" testMethod="testSingleBuildUnknown" duration="0">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.BambooSessionTest" testMethod="testNullParamsLogin" duration="0.002">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.BambooSessionTest" testMethod="testNullParamsLogin" duration="0.002">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.CrucibleServerFacadeConnectionTest" testMethod="testConnectionTestSucceed" duration="0.007">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.BambooSessionTest" testMethod="testBuildForNonExistingPlan" duration="0.015">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.BambooSessionTest" testMethod="testBuildForNonExistingPlan" duration="0.015">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.BambooSessionTest" testMethod="testWrongUrlBambooLogin" duration="0.004">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.BambooSessionTest" testMethod="testWrongUrlBambooLogin" duration="0.004">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.BambooStatusListenerTest" testMethod="testSingleBuildSequence" duration="0.001">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.BambooStatusListenerTest" testMethod="testSingleBuildSequence" duration="0.001">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.api.HtmlCrucibleStatusListenerTest" testMethod="testSingleSuccessResult" duration="0.036">
         </testResult>
@@ -285,7 +285,7 @@
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.api.rest.CrucibleSessionTest" testMethod="testNullParamsLogin" duration="0.002">
         </testResult>
-        <testResult testClass="com.atlassian.theplugin.bamboo.BambooStatusListenerTest" testMethod="testSingleBuildOK2Failed" duration="0.011">
+        <testResult testClass="com.atlassian.theplugin.commons.bamboo.BambooStatusListenerTest" testMethod="testSingleBuildOK2Failed" duration="0.011">
         </testResult>
         <testResult testClass="com.atlassian.theplugin.crucible.CrucibleServerFacadeConnectionTest" testMethod="testConnectionTestFailedNullPassword" duration="0.001">
         </testResult>

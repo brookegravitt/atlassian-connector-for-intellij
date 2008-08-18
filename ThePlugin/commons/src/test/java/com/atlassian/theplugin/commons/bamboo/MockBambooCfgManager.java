@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.atlassian.theplugin.bamboo;
+package com.atlassian.theplugin.commons.bamboo;
 
 import com.atlassian.theplugin.commons.cfg.BambooCfg;
 import com.atlassian.theplugin.commons.cfg.BambooCfgManager;
