@@ -127,8 +127,8 @@ public class CrucibleDiffGutterRenderer implements ActiveGutterRenderer {
 	}
 
 
-	public Range getNextRange(Range range) {
-		int j = ranges.indexOf(range);
+	public Range getNextRange(Range aRange) {
+		int j = ranges.indexOf(aRange);
 		if (j == ranges.size() - 1) {
 			return null;
 		} else {
@@ -136,8 +136,8 @@ public class CrucibleDiffGutterRenderer implements ActiveGutterRenderer {
 		}
 	}
 
-	public Range getPrevRange(Range range) {
-		int j = ranges.indexOf(range);
+	public Range getPrevRange(Range aRange) {
+		int j = ranges.indexOf(aRange);
 		if (j == 0) {
 			return null;
 		} else {
@@ -146,10 +146,10 @@ public class CrucibleDiffGutterRenderer implements ActiveGutterRenderer {
 	}
 
 	public Range getNextRange(int j) {
-		for (Iterator iterator = ranges.iterator(); iterator.hasNext();) {
-			Range range = (Range) iterator.next();
-			if (range.getOffset2() >= j) {
-				return range;
+		for (Iterator<Range> iterator = ranges.iterator(); iterator.hasNext();) {
+			Range myRange = iterator.next();
+			if (myRange.getOffset2() >= j) {
+				return myRange;
 			}
 		}
 
@@ -157,10 +157,10 @@ public class CrucibleDiffGutterRenderer implements ActiveGutterRenderer {
 	}
 
 	public Range getPrevRange(int j) {
-		for (ListIterator listiterator = ranges.listIterator(ranges.size()); listiterator.hasPrevious();) {
-			Range range = (Range) listiterator.previous();
-			if (range.getOffset1() <= j) {
-				return range;
+		for (ListIterator<Range> listiterator = ranges.listIterator(ranges.size()); listiterator.hasPrevious();) {
+			Range myRange = listiterator.previous();
+			if (myRange.getOffset1() <= j) {
+				return myRange;
 			}
 		}
 
@@ -176,13 +176,13 @@ public class CrucibleDiffGutterRenderer implements ActiveGutterRenderer {
 	}
 
 
-	private TextRange getDisplayTextRange(Range range) {
-		return getTextRange(range.getType(), range.getOffset1(), range.getOffset2(), (byte) DISPLAY_TEXT_RANGE,
+	private TextRange getDisplayTextRange(Range aRange) {
+		return getTextRange(aRange.getType(), aRange.getOffset1(), aRange.getOffset2(), (byte) DISPLAY_TEXT_RANGE,
 				displayDocument);
 	}
 
-	private TextRange getReferenceTextRange(Range range) {
-		return getTextRange(range.getType(), range.getUOffset1(), range.getUOffset2(), (byte) REFERENCE_TEXT_RANGE,
+	private TextRange getReferenceTextRange(Range aRange) {
+		return getTextRange(aRange.getType(), aRange.getUOffset1(), aRange.getUOffset2(), (byte) REFERENCE_TEXT_RANGE,
 				referenceDocument);
 	}
 
@@ -195,7 +195,7 @@ public class CrucibleDiffGutterRenderer implements ActiveGutterRenderer {
 		}
 	}
 
-	private TextRange getTextRange(byte byte0, int j, int k, byte byte1, Document document) {
+	private static TextRange getTextRange(byte byte0, int j, int k, byte byte1, Document document) {
 		if (byte0 == byte1) {
 			int l;
 			if (j == 0) {
@@ -215,9 +215,9 @@ public class CrucibleDiffGutterRenderer implements ActiveGutterRenderer {
 	}
 
 
-	public void moveToRange(final Range range, final Editor anEditor, final Document displayDocument) {
-		final int firstOffset = displayDocument
-				.getLineStartOffset(Math.min(range.getOffset1(), displayDocument.getLineCount() - 1));
+	public void moveToRange(final Range aRange, final Editor anEditor, final Document aDisplayDocument) {
+		final int firstOffset = aDisplayDocument
+				.getLineStartOffset(Math.min(aRange.getOffset1(), aDisplayDocument.getLineCount() - 1));
 		anEditor.getCaretModel().moveToOffset(firstOffset);
 		anEditor.getScrollingModel().scrollToCaret(ScrollType.CENTER);
 		anEditor.getScrollingModel().runActionOnScrollingFinished(new Runnable() {
@@ -227,7 +227,7 @@ public class CrucibleDiffGutterRenderer implements ActiveGutterRenderer {
 				JComponent jcomponent = anEditor.getContentComponent();
 				javax.swing.JLayeredPane jlayeredpane = jcomponent.getRootPane().getLayeredPane();
 				point = SwingUtilities.convertPoint(jcomponent, 0, point.y, jlayeredpane);
-				showActiveHint(range, anEditor, point);
+				showActiveHint(aRange, anEditor, point);
 			}
 		});
 	}
@@ -348,16 +348,16 @@ public class CrucibleDiffGutterRenderer implements ActiveGutterRenderer {
 	}
 
 
-	public void showActiveHint(Range range, final Editor anEditor, Point point) {
+	public void showActiveHint(Range aRange, final Editor anEditor, Point point) {
 
 		DefaultActionGroup group = new DefaultActionGroup();
 
 		final AnAction globalShowNextAction = ActionManager.getInstance().getAction("VcsShowNextChangeMarker");
 		final AnAction globalShowPrevAction = ActionManager.getInstance().getAction("VcsShowPrevChangeMarker");
 
-		final ShowPrevChangeMarkerAction localShowPrevAction = new ShowPrevChangeMarkerAction(getPrevRange(range),
+		final ShowPrevChangeMarkerAction localShowPrevAction = new ShowPrevChangeMarkerAction(getPrevRange(aRange),
 				anEditor, displayDocument);
-		final ShowNextChangeMarkerAction localShowNextAction = new ShowNextChangeMarkerAction(getNextRange(range),
+		final ShowNextChangeMarkerAction localShowNextAction = new ShowNextChangeMarkerAction(getNextRange(aRange),
 				anEditor, displayDocument);
 
 		JComponent editorComponent = anEditor.getComponent();
@@ -371,7 +371,7 @@ public class CrucibleDiffGutterRenderer implements ActiveGutterRenderer {
 		localShowNextAction.copyFrom(globalShowNextAction);
 		localShowPrevAction.copyFrom(globalShowPrevAction);
 
-		group.add(new ShowDiffAction(project, referenceDocument, displayDocument, range));
+		group.add(new ShowDiffAction(project, referenceDocument, displayDocument, aRange));
 
 		@SuppressWarnings("unchecked")
 		final java.util.List<AnAction> actionList = (java.util.List<AnAction>) editorComponent
@@ -388,7 +388,7 @@ public class CrucibleDiffGutterRenderer implements ActiveGutterRenderer {
 		toolbar.setBackground(background);
 
 		toolbar.setBorder(
-				new SideBorder2(foreground, foreground, range.getType() != Range.INSERTED ? null : foreground, foreground, 1));
+				new SideBorder2(foreground, foreground, aRange.getType() != Range.INSERTED ? null : foreground, foreground, 1));
 
 		JPanel component = new JPanel(new BorderLayout());
 		component.setOpaque(false);
@@ -398,7 +398,7 @@ public class CrucibleDiffGutterRenderer implements ActiveGutterRenderer {
 		toolbarPanel.add(toolbar, BorderLayout.WEST);
 		component.add(toolbarPanel, BorderLayout.NORTH);
 
-		if (range.getType() != Range.INSERTED) {
+		if (aRange.getType() != Range.INSERTED) {
 			DocumentEx doc = (DocumentEx) referenceDocument;
 			EditorImpl uEditor = new EditorImpl(doc, true, project);
 			EditorHighlighter highlighter = HighlighterFactory
@@ -407,7 +407,7 @@ public class CrucibleDiffGutterRenderer implements ActiveGutterRenderer {
 
 			EditorFragmentComponent editorFragmentComponent =
 					EditorFragmentComponent
-							.createEditorFragmentComponent(uEditor, range.getUOffset1(), range.getUOffset2(), false, false);
+							.createEditorFragmentComponent(uEditor, aRange.getUOffset1(), aRange.getUOffset2(), false, false);
 
 			component.add(editorFragmentComponent, BorderLayout.CENTER);
 		}
