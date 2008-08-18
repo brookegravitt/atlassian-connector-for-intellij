@@ -16,48 +16,61 @@
 
 package com.atlassian.theplugin.remoteapi;
 
+import com.atlassian.theplugin.cfg.CfgUtil;
+import com.atlassian.theplugin.commons.ConfigurationListener;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.commons.cfg.ProjectId;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
+import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PasswordDialog;
 import com.atlassian.theplugin.idea.ThePluginApplicationComponent;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.atlassian.theplugin.cfg.CfgUtil;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 
 import javax.swing.*;
 import static javax.swing.JOptionPane.OK_CANCEL_OPTION;
 import static javax.swing.JOptionPane.PLAIN_MESSAGE;
+import java.util.Set;
 
 /**
  * Shows a dialog for each Bamboo server that has not the password set.
  */
-public class MissingPasswordHandler implements Runnable {
+public class MissingPasswordHandler implements Runnable, ConfigurationListener {
 
 	private static boolean isDialogShown = false;
 
 	private final ProductServerFacade serverFacade;
 	private final CfgManager cfgManager;
 	private final Project project;
+	private final Set<ServerId> serversWithoutPassword = MiscUtil.buildHashSet();
+	private boolean shouldStop;
+
 
 	public MissingPasswordHandler(ProductServerFacade serverFacade, final CfgManager cfgManager, final Project project) {
 		this.serverFacade = serverFacade;
 		this.cfgManager = cfgManager;
 		this.project = project;
+		cfgManager.addListener(CfgUtil.getProjectId(project), this);
+	}
+
+	private synchronized boolean shouldStop() {
+		return shouldStop;
 	}
 
 	public void run() {
 
-		if (!isDialogShown) {
+		if (!isDialogShown && !shouldStop()) {
 
 			isDialogShown = true;
 			boolean wasCanceled = false;
 
 			for (ServerCfg server : cfgManager.getAllEnabledServers(
 					CfgUtil.getProjectId(project), serverFacade.getServerType())) {
-				if (server.isComplete()) {
+				if (server.isComplete() || serversWithoutPassword.contains(server.getServerId())) {
 					continue;
 				}
 				PasswordDialog dialog = new PasswordDialog(server, serverFacade);
@@ -75,10 +88,8 @@ public class MissingPasswordHandler implements Runnable {
 					server.setUsername(dialog.getUserName());
 				} else {
 					wasCanceled = true;
+					serversWithoutPassword.add(server.getServerId());
 				}
-				// so or so we assume that user provided password
-
-				// server.transientSetIsConfigInitialized(true);
 			}
 			ThePluginApplicationComponent appComponent = IdeaHelper.getAppComponent();
 			appComponent.rescheduleStatusCheckers(true);
@@ -91,5 +102,12 @@ public class MissingPasswordHandler implements Runnable {
 			isDialogShown = false;
 		}
 
+	}
+
+	public void updateConfiguration(final ProjectId project, final CfgManager cfgManager) {
+	}
+
+	public synchronized void projectUnregistered() {
+		shouldStop = true;
 	}
 }
