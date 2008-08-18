@@ -230,6 +230,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 	public void updateConfiguration(final ProjectId aProject, final CfgManager aCfgManager) {
 		save();
+		IdeaHelper.getAppComponent().rescheduleStatusCheckers(true);
 	}
 
 	public void projectUnregistered() {

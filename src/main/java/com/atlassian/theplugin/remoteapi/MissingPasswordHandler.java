@@ -104,7 +104,7 @@ public class MissingPasswordHandler implements Runnable, ConfigurationListener {
 
 	}
 
-	public void updateConfiguration(final ProjectId project, final CfgManager cfgManager) {
+	public void updateConfiguration(final ProjectId aProject, final CfgManager aCfgManager) {
 	}
 
 	public synchronized void projectUnregistered() {
