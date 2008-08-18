@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.bamboo;
+package com.atlassian.theplugin.commons.bamboo;
 
 import junit.framework.TestCase;
 

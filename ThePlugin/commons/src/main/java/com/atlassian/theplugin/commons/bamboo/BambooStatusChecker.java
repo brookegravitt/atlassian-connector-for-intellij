@@ -19,10 +19,10 @@ package com.atlassian.theplugin.commons.bamboo;
 import com.atlassian.theplugin.commons.ConfigurationListener;
 import com.atlassian.theplugin.commons.SchedulableChecker;
 import com.atlassian.theplugin.commons.UIActionScheduler;
-import com.atlassian.theplugin.commons.cfg.ProjectId;
-import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.cfg.BambooCfgManager;
+import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.commons.cfg.ProjectId;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.util.DateUtil;
 import com.atlassian.theplugin.commons.util.Logger;
@@ -34,7 +34,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.TimerTask;
-
 
 
 /**
@@ -64,8 +63,6 @@ public final class BambooStatusChecker implements SchedulableChecker, Configurat
 	public void setActionScheduler(UIActionScheduler actionScheduler) {
 		this.actionScheduler = actionScheduler;
 	}
-
-
 
 	public BambooStatusChecker(final ProjectId projectId, UIActionScheduler actionScheduler,
 			BambooCfgManager cfgManager,
@@ -179,7 +176,10 @@ public final class BambooStatusChecker implements SchedulableChecker, Configurat
 	}
 
 
-	public void updateConfiguration(BambooCfgManager theCfgManager) {
+	public void projectUnregistered() {
+	}
+	// only for unit tests
+	void updateConfiguration(BambooCfgManager theCfgManager) {
 		cfgManager = theCfgManager;
 	}
 

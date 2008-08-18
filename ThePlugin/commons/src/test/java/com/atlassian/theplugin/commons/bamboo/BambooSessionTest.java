@@ -14,17 +14,28 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.bamboo;
+package com.atlassian.theplugin.commons.bamboo;
 
+import com.atlassian.theplugin.bamboo.api.bamboomock.AddCommentToBuildCallback;
+import com.atlassian.theplugin.bamboo.api.bamboomock.AddLabelToBuildCallback;
+import com.atlassian.theplugin.bamboo.api.bamboomock.BuildDetailsResultCallback;
+import com.atlassian.theplugin.bamboo.api.bamboomock.ErrorMessageCallback;
+import com.atlassian.theplugin.bamboo.api.bamboomock.ErrorResponse;
+import com.atlassian.theplugin.bamboo.api.bamboomock.ExecuteBuildCallback;
+import com.atlassian.theplugin.bamboo.api.bamboomock.FavouritePlanListCallback;
+import com.atlassian.theplugin.bamboo.api.bamboomock.LatestBuildResultCallback;
+import com.atlassian.theplugin.bamboo.api.bamboomock.LoginCallback;
+import com.atlassian.theplugin.bamboo.api.bamboomock.LogoutCallback;
+import com.atlassian.theplugin.bamboo.api.bamboomock.PlanListCallback;
+import com.atlassian.theplugin.bamboo.api.bamboomock.ProjectListCallback;
+import com.atlassian.theplugin.bamboo.api.bamboomock.Util;
+import com.atlassian.theplugin.commons.bamboo.api.AutoRenewBambooSession;
 import com.atlassian.theplugin.commons.bamboo.api.BambooSession;
 import com.atlassian.theplugin.commons.bamboo.api.BambooSessionImpl;
-import com.atlassian.theplugin.commons.bamboo.api.AutoRenewBambooSession;
-import com.atlassian.theplugin.commons.bamboo.*;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
-import com.atlassian.theplugin.bamboo.api.bamboomock.*;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 import org.mortbay.jetty.Server;
@@ -323,7 +334,7 @@ public class BambooSessionTest extends TestCase {
 
 		// failed tests
 		assertEquals(2, build.getFailedTestDetails().size());
-		assertEquals("com.atlassian.theplugin.bamboo.HtmlBambooStatusListenerTest",
+		assertEquals("com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListenerTest",
 				build.getFailedTestDetails().iterator().next().getTestClassName());
 		assertEquals("testSingleSuccessResultForDisabledBuild",
 				build.getFailedTestDetails().iterator().next().getTestMethodName());
@@ -335,7 +346,7 @@ public class BambooSessionTest extends TestCase {
 
 		// successful tests
 		assertEquals(117, build.getSuccessfulTestDetails().size());
-		assertEquals("com.atlassian.theplugin.bamboo.BambooServerFacadeTest",
+		assertEquals("com.atlassian.theplugin.commons.bamboo.BambooServerFacadeTest",
 				build.getSuccessfulTestDetails().iterator().next().getTestClassName());
 		assertEquals("testProjectList",
 				build.getSuccessfulTestDetails().iterator().next().getTestMethodName());
@@ -373,7 +384,7 @@ public class BambooSessionTest extends TestCase {
 
 		// failed tests
 		assertEquals(2, build.getFailedTestDetails().size());
-		assertEquals("com.atlassian.theplugin.bamboo.HtmlBambooStatusListenerTest",
+		assertEquals("com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListenerTest",
 				build.getFailedTestDetails().iterator().next().getTestClassName());
 		assertEquals("testSingleSuccessResultForDisabledBuild",
 				build.getFailedTestDetails().iterator().next().getTestMethodName());
@@ -417,7 +428,7 @@ public class BambooSessionTest extends TestCase {
 
 		// successful tests
 		assertEquals(117, build.getSuccessfulTestDetails().size());
-		assertEquals("com.atlassian.theplugin.bamboo.BambooServerFacadeTest",
+		assertEquals("com.atlassian.theplugin.commons.bamboo.BambooServerFacadeTest",
 				build.getSuccessfulTestDetails().iterator().next().getTestClassName());
 		assertEquals("testProjectList",
 				build.getSuccessfulTestDetails().iterator().next().getTestMethodName());
@@ -457,7 +468,7 @@ public class BambooSessionTest extends TestCase {
 
 		// failed tests
 		assertEquals(2, build.getFailedTestDetails().size());
-		assertEquals("com.atlassian.theplugin.bamboo.HtmlBambooStatusListenerTest",
+		assertEquals("com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListenerTest",
 				build.getFailedTestDetails().iterator().next().getTestClassName());
 		assertEquals("testSingleSuccessResultForDisabledBuild",
 				build.getFailedTestDetails().iterator().next().getTestMethodName());
@@ -472,7 +483,7 @@ public class BambooSessionTest extends TestCase {
 
 		// successful tests
 		assertEquals(117, build.getSuccessfulTestDetails().size());
-		assertEquals("com.atlassian.theplugin.bamboo.BambooServerFacadeTest",
+		assertEquals("com.atlassian.theplugin.commons.bamboo.BambooServerFacadeTest",
 				build.getSuccessfulTestDetails().iterator().next().getTestClassName());
 		assertEquals("testProjectList",
 				build.getSuccessfulTestDetails().iterator().next().getTestMethodName());
@@ -512,7 +523,7 @@ public class BambooSessionTest extends TestCase {
 
 		// failed tests
 		assertEquals(2, build.getFailedTestDetails().size());
-		assertEquals("com.atlassian.theplugin.bamboo.HtmlBambooStatusListenerTest",
+		assertEquals("com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListenerTest",
 				build.getFailedTestDetails().iterator().next().getTestClassName());
 		assertEquals("testSingleSuccessResultForDisabledBuild",
 				build.getFailedTestDetails().iterator().next().getTestMethodName());
@@ -524,7 +535,7 @@ public class BambooSessionTest extends TestCase {
 
 		// successful tests
 		assertEquals(117, build.getSuccessfulTestDetails().size());
-		assertEquals("com.atlassian.theplugin.bamboo.BambooServerFacadeTest",
+		assertEquals("com.atlassian.theplugin.commons.bamboo.BambooServerFacadeTest",
 				build.getSuccessfulTestDetails().iterator().next().getTestClassName());
 		assertEquals("testProjectList",
 				build.getSuccessfulTestDetails().iterator().next().getTestMethodName());
