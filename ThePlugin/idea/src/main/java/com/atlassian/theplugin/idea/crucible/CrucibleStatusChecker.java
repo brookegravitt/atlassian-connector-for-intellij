@@ -30,6 +30,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginFailedException;
 import com.atlassian.theplugin.commons.util.DateUtil;
 import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
@@ -66,14 +67,16 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 	private final Project project;
 	private final CrucibleConfigurationBean crucibleConfigurationBean;
 	private final CrucibleProjectConfiguration crucibleProjectConfiguration;
+	private final MissingPasswordHandler missingPasswordHandler;
 
 
 	public CrucibleStatusChecker(CfgManager cfgManager, Project project, CrucibleConfigurationBean crucibleConfigurationBean,
-			CrucibleProjectConfiguration crucibleProjectConfiguration) {
+			CrucibleProjectConfiguration crucibleProjectConfiguration, final MissingPasswordHandler missingPasswordHandler) {
 		this.cfgManager = cfgManager;
 		this.project = project;
 		this.crucibleConfigurationBean = crucibleConfigurationBean;
 		this.crucibleProjectConfiguration = crucibleProjectConfiguration;
+		this.missingPasswordHandler = missingPasswordHandler;
 		this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 
 	}
@@ -149,8 +152,11 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 
 							bean.getReviews().addAll(reviewData);
 						} catch (ServerPasswordNotProvidedException exception) {
-							ApplicationManager.getApplication().invokeLater(
-									new MissingPasswordHandler(crucibleServerFacade, cfgManager, project),
+							ApplicationManager.getApplication().invokeLater(missingPasswordHandler,
+									ModalityState.defaultModalityState());
+							bean.setException(exception);
+						} catch (RemoteApiLoginFailedException exception) {
+							ApplicationManager.getApplication().invokeLater(missingPasswordHandler,
 									ModalityState.defaultModalityState());
 							bean.setException(exception);
 						} catch (RemoteApiException e) {
