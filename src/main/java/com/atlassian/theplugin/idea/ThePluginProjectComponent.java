@@ -18,13 +18,7 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UIActionScheduler;
-import com.atlassian.theplugin.commons.bamboo.BambooPopupInfo;
-import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
-import com.atlassian.theplugin.commons.bamboo.BambooStatusChecker;
-import com.atlassian.theplugin.commons.bamboo.BambooStatusDisplay;
-import com.atlassian.theplugin.commons.bamboo.BambooStatusTooltipListener;
-import com.atlassian.theplugin.commons.bamboo.BuildStatus;
-import com.atlassian.theplugin.commons.bamboo.StausIconBambooListener;
+import com.atlassian.theplugin.commons.bamboo.*;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
@@ -249,21 +243,7 @@ public class ThePluginProjectComponent implements
             // create crucible status bar icon
             statusBarCrucibleIcon = new CrucibleStatusIcon(project, cfgManager);
 
-            crucibleReviewNotifier = new CrucibleReviewNotifier(project);
-            crucibleStatusChecker.registerListener(crucibleReviewNotifier);
-            if (IdeaHelper.getPluginConfiguration().getCrucibleConfigurationData().getCrucibleTooltipOption()
-					!= CrucibleTooltipOption.NEVER) {
-				final CrucibleNotificationTooltip crucibleNotificationTooltip = new CrucibleNotificationTooltip(
-						statusBarCrucibleIcon, project);
-                crucibleReviewNotifier.registerListener(crucibleNotificationTooltip);
-            }
-
-			if (pluginConfiguration.getCrucibleConfigurationData().getCrucibleTooltipOption()
-					!= CrucibleTooltipOption.NEVER) {
-				crucibleStatusChecker.registerListener(crucibleReviewNotifier);
-			} else {
-				crucibleStatusChecker.unregisterListener(crucibleReviewNotifier);
-			}
+			registerCrucibleNotifier();
 
 			// add crucible icon to status bar
             //statusBar.addCustomIndicationComponent(statusBarCrucibleIcon);
@@ -290,6 +270,27 @@ public class ThePluginProjectComponent implements
             created = true;
         }
     }
+
+	public void registerCrucibleNotifier() {
+		if (crucibleReviewNotifier == null) {
+			crucibleReviewNotifier = new CrucibleReviewNotifier(project);
+		}
+
+		if (pluginConfiguration.getCrucibleConfigurationData().getCrucibleTooltipOption()
+				!= CrucibleTooltipOption.NEVER) {
+
+			if (!crucibleStatusChecker.getListenerList().contains(crucibleReviewNotifier)) {
+				final CrucibleNotificationTooltip crucibleNotificationTooltip = new CrucibleNotificationTooltip(
+					statusBarCrucibleIcon, project);
+
+				crucibleReviewNotifier.registerListener(crucibleNotificationTooltip);
+				crucibleStatusChecker.registerListener(crucibleReviewNotifier);
+			}
+
+		} else {
+			crucibleStatusChecker.unregisterListener(crucibleReviewNotifier);
+		}
+	}
 
 	public Content createBambooContent() {
         PeerFactory peerFactory = PeerFactory.getInstance();
