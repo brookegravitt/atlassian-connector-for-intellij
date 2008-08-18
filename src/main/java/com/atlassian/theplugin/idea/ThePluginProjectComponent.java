@@ -183,7 +183,8 @@ public class ThePluginProjectComponent implements
 					PluginUtil.getLogger());
 
 			this.crucibleStatusChecker = new CrucibleStatusChecker(cfgManager, project,
-					pluginConfiguration.getCrucibleConfigurationData(), projectConfigurationBean.getCrucibleConfiguration());
+					pluginConfiguration.getCrucibleConfigurationData(), projectConfigurationBean.getCrucibleConfiguration(),
+					new MissingPasswordHandler(crucibleServerFacade, cfgManager, project));
 
 			// DependencyValidationManager.getHolder(project, "", )
 			//this.bambooToolWindowPanel = BambooTableToolWindowPanel.getInstance(project, projectConfigurationBean);
