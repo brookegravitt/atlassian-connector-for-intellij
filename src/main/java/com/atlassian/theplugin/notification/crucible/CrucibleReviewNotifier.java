@@ -253,7 +253,13 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 							|| exceptionNotifications.size() <= 0 || prevNotificationException == null) {
 
 						exceptionNotifications.put(predefinedFilter, newException);
-						notifications.add(newException);
+						//add exception only if differs in text
+						// exceptions texts are defined as string server_url + exception message
+						//so no excepion will be missed
+						if (!notifications.contains(newException)) {
+							notifications.add(newException);
+						}
+					
 						exceptionFound = true;
 					}
 				}

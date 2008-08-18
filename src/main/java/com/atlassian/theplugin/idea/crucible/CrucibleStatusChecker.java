@@ -40,13 +40,8 @@ import com.intellij.openapi.project.Project;
 
 import java.awt.*;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.TimerTask;
 
 
 /**
@@ -81,6 +76,10 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 		this.crucibleProjectConfiguration = crucibleProjectConfiguration;
 		this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 
+	}
+
+	public List<CrucibleStatusListener> getListenerList() {
+		return listenerList;
 	}
 
 	public void registerListener(CrucibleStatusListener listener) {
