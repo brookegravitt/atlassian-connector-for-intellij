@@ -16,26 +16,18 @@
 
 package com.atlassian.theplugin.idea;
 
-import com.intellij.openapi.options.ShowSettingsUtil;
-import com.intellij.openapi.options.Configurable;
-import com.intellij.openapi.util.IconLoader;
-import com.intellij.openapi.actionSystem.DataKeys;
-import com.intellij.openapi.project.Project;
-import com.intellij.ui.HyperlinkLabel;
 import com.intellij.ide.DataManager;
+import com.intellij.openapi.options.Configurable;
+import com.intellij.openapi.options.ShowSettingsUtil;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.IconLoader;
+import com.intellij.ui.HyperlinkLabel;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import java.awt.*;
 
-/**
- * Created by IntelliJ IDEA.
- * User: Jacek
- * Date: 2008-04-11
- * Time: 16:39:01
- * To change this template use File | Settings | File Templates.
- */
 public class ToolWindowConfigPanel extends JPanel {
 
 	public ToolWindowConfigPanel(final Project project) {

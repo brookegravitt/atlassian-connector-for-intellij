@@ -28,11 +28,7 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 
 /**
- * Created by IntelliJ IDEA.
- * User: lguminski
- * Date: Jul 30, 2008
- * Time: 10:35:24 PM
- * To change this template use File | Settings | File Templates.
+ * @author Lukasz Guminski
  */
 public class AtlassianTreeWithToolbar extends ComponentWithToolbar {
 	private AtlassianTree tree;
@@ -51,7 +47,8 @@ public class AtlassianTreeWithToolbar extends ComponentWithToolbar {
 		super(toolbarName);
 	}
 
-	protected Component getTreeComponent() {
+	@Override
+	public Component getTreeComponent() {
 		if (tree == null) {
 			tree = new AtlassianTree();
 		}
@@ -72,7 +69,6 @@ public class AtlassianTreeWithToolbar extends ComponentWithToolbar {
 		tree.expandAll();
 	}
 
-	@NotNull
 	public void setModelProvider(final ModelProvider modelProvider) {
 		this.modelProvider = modelProvider;
 		triggerModelUpdated();

@@ -19,13 +19,14 @@ package com.atlassian.theplugin.idea.ui;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class ItemSelectedMouseAdapter extends MouseAdapter {
-	private AtlassianTableView tableView;
+public class ItemSelectedMouseAdapter<T> extends MouseAdapter {
+	private AtlassianTableView<T> tableView;
 
-	public ItemSelectedMouseAdapter(AtlassianTableView tableView) {
+	public ItemSelectedMouseAdapter(AtlassianTableView<T> tableView) {
 		this.tableView = tableView;
 	}
 
+	@Override
 	public void mouseClicked(MouseEvent e) {
 		for (TableItemSelectedListener tableItemSelectedListener : tableView.getListenerList()) {
 			tableItemSelectedListener.itemSelected(tableView, e.getClickCount());

@@ -282,27 +282,31 @@ public final class BuildChangesToolWindow {
 			atv.addItemSelectedListener(new TableItemSelectedListener() {
 				public void itemSelected(AtlassianTableView table, int noClicks) {
 					final BambooChangeSet c = (BambooChangeSet) table.getSelectedObject();
-					fileTree.setModelProvider(new ModelProvider() {
-						private AtlassianTreeModel diredModel =
-								FileTreeModelBuilder.buildTreeModelFromBambooChangeSet(project, c);
-						private AtlassianTreeModel flatModel =
-								FileTreeModelBuilder.buildFlatTreeModelFromBambooChangeSet(project, c);
+					if (c == null) {
+						fileTree.setModelProvider(ModelProvider.EMPTY_MODEL_PROVIDER);
+					} else {
+						fileTree.setModelProvider(new ModelProvider() {
+							private AtlassianTreeModel diredModel =
+									FileTreeModelBuilder.buildTreeModelFromBambooChangeSet(project, c);
+							private AtlassianTreeModel flatModel =
+									FileTreeModelBuilder.buildFlatTreeModelFromBambooChangeSet(project, c);
 
-						@Override
-						public AtlassianTreeModel getModel(final AtlassianTreeWithToolbar.STATE state) {
-							switch (state) {
-								case DIRED:
-									return diredModel;
-								case FLAT:
-									return flatModel;
-								default:
-									throw new IllegalStateException("Unknown model requested");
+							@Override
+							public AtlassianTreeModel getModel(final AtlassianTreeWithToolbar.STATE state) {
+								switch (state) {
+									case DIRED:
+										return diredModel;
+									case FLAT:
+										return flatModel;
+									default:
+										throw new IllegalStateException("Unknown model requested");
+								}
 							}
-						}
-					});
+						});
+					}
 					fileTree.setRootVisible(false);
 					fileTree.expandAll();
-					fileTree.addMouseListener(new NavigateToCodeHandler(name));
+					fileTree.getTreeComponent().addMouseListener(new NavigateToCodeHandler(name));
 				}
 			});
 			return atv;
