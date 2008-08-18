@@ -16,10 +16,10 @@
 
 package com.atlassian.theplugin.idea.ui;
 
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionPopupMenu;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
 
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
@@ -32,21 +32,23 @@ import java.awt.event.MouseEvent;
 * Time: 5:10:12 PM
 * To change this template use File | Settings | File Templates.
 */
-public class ShowPopupMouseAdapter extends MouseAdapter {
+public class ShowPopupMouseAdapter<T> extends MouseAdapter {
 	private final String popupMenuName;
-	private AtlassianTableView tableView;
+	private AtlassianTableView<T> tableView;
     private final String place;
 
-    public ShowPopupMouseAdapter(AtlassianTableView tableView, String popupMenuName, String place) {
+    public ShowPopupMouseAdapter(AtlassianTableView<T> tableView, String popupMenuName, String place) {
 		this.tableView = tableView;
 		this.popupMenuName = popupMenuName;
         this.place = place;
     }
 
+	@Override
 	public void mousePressed(MouseEvent e) {
 		maybeShowPopup(e);
 	}
 
+	@Override
 	public void mouseReleased(MouseEvent e) {
 		maybeShowPopup(e);
 	}
