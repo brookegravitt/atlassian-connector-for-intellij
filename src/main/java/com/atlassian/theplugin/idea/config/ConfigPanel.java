@@ -17,23 +17,18 @@
 package com.atlassian.theplugin.idea.config;
 
 import com.atlassian.theplugin.commons.cfg.CfgManager;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.ProjectId;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.config.serverconfig.BambooGeneralForm;
 import com.atlassian.theplugin.idea.config.serverconfig.CrucibleGeneralForm;
 import com.atlassian.theplugin.idea.config.serverconfig.JiraGeneralForm;
-import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Collection;
 
 public final class ConfigPanel extends JPanel {
 

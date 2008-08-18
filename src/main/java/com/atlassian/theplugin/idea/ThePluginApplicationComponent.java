@@ -16,11 +16,9 @@
 
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.ConfigurationListener;
 import com.atlassian.theplugin.commons.SchedulableChecker;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ProjectId;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
