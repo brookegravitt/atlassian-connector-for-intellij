@@ -55,7 +55,7 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 			try {
 				session = new CrucibleSessionImpl(server.getUrl());
 				sessions.put(key, session);
-			} catch (RemoteApiException e){
+			} catch (RemoteApiException e) {
 				if (server.getPassword().length() > 0) {
                 	throw e;
             	} else {
