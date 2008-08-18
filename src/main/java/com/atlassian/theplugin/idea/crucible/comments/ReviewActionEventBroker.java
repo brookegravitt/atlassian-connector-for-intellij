@@ -19,6 +19,7 @@ package com.atlassian.theplugin.idea.crucible.comments;
 import com.atlassian.theplugin.commons.util.Logger;
 import com.atlassian.theplugin.idea.crucible.events.CrucibleEvent;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.intellij.openapi.project.Project;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -38,9 +39,11 @@ public final class ReviewActionEventBroker {
 			new HashSet<CrucibleReviewActionListener>();
 	private Queue<CrucibleEvent> events = new LinkedBlockingQueue<CrucibleEvent>();
 	public static final Logger LOGGER = PluginUtil.getLogger();
+	private Project project;
 
-	public ReviewActionEventBroker() {
-        new Thread(new Runnable() {
+	public ReviewActionEventBroker(final Project project) {
+		this.project = project;
+		new Thread(new Runnable() {
 			public void run() {
 				try {
 					while (true) {

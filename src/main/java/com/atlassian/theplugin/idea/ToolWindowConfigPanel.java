@@ -17,7 +17,10 @@
 package com.atlassian.theplugin.idea;
 
 import com.intellij.openapi.options.ShowSettingsUtil;
+import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.openapi.actionSystem.DataKeys;
+import com.intellij.openapi.project.Project;
 import com.intellij.ui.HyperlinkLabel;
 import com.intellij.ide.DataManager;
 
@@ -34,17 +37,19 @@ import java.awt.*;
  * To change this template use File | Settings | File Templates.
  */
 public class ToolWindowConfigPanel extends JPanel {
-	public ToolWindowConfigPanel() {
 
+	public ToolWindowConfigPanel(final Project project) {
 		super(new GridBagLayout());
 
 		HyperlinkLabel link = new HyperlinkLabel("Configure Plugin");
 		link.addHyperlinkListener(new HyperlinkListener() {
 			public void hyperlinkUpdate(HyperlinkEvent e) {
 
+				Configurable component = project.getComponent(ProjectConfigurationComponent.class);
 				ShowSettingsUtil.getInstance().editConfigurable(
                         IdeaHelper.getCurrentProject(DataManager.getInstance().getDataContext(ToolWindowConfigPanel.this)),
-                        IdeaHelper.getAppComponent());
+						component
+						);
 			}
 		});
 
