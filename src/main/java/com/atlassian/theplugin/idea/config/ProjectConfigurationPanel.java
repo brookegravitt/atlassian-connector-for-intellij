@@ -15,9 +15,9 @@
  */
 package com.atlassian.theplugin.idea.config;
 
-import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
-import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
 import com.intellij.openapi.project.Project;
 
 import javax.swing.*;
@@ -53,4 +53,7 @@ public class ProjectConfigurationPanel extends JPanel {
 		add(footerPanel, BorderLayout.SOUTH);
 	}
 
+	public void saveData() {
+		serverConfigPanel.saveData();
+	}
 }
