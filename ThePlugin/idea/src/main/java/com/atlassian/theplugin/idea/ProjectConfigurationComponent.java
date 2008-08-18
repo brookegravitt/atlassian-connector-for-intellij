@@ -209,13 +209,15 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	}
 
 	public boolean isModified() {
-		return true;
+		projectConfigurationPanel.saveData();
+		return !cfgManager.getProjectConfiguration(getProjectId()).equals(projectConfigurationPanel.getProjectConfiguration());
 	}
 
 	public void apply() throws ConfigurationException {
 		if (projectConfigurationPanel == null) {
 			return;
 		}
+		projectConfigurationPanel.saveData();
 		cfgManager.updateProjectConfiguration(getProjectId(), projectConfigurationPanel.getProjectConfiguration());
 	}
 

@@ -33,13 +33,14 @@ public class CfgManagerImpl implements CfgManager {
 	private BambooCfg bambooCfg;
 	private static final int INITIAL_CAPACITY = 4;
 
-	private static final ListenerAction PROJECT_UNREGISTERED_LISTENER_ACTION = new ListenerAction() {
-		public void run(final ConfigurationListener projectListener, final ProjectId projectId, final CfgManagerImpl cfgManager) {
+	private static final ProjectListenerAction PROJECT_UNREGISTERED_LISTENER_ACTION = new ProjectListenerAction() {
+		public void run(final ConfigurationListener projectListener, final ProjectId projectId,
+				final CfgManagerImpl cfgManager) {
 			projectListener.projectUnregistered();
 		}
 	};
 	
-	private final ListenerAction UPDATED_CONFIGURATION_LISTENER_ACTION = new UpdateConfigurationListenerAction();
+	private final ProjectListenerAction updatedConfigurationListenerAction = new UpdateConfigurationListenerAction();
 
 	public CfgManagerImpl() {
 		// TODO wseliga remove it later on and handle properly null values
@@ -97,11 +98,11 @@ public class CfgManagerImpl implements CfgManager {
 
 		// internalize the list to be private and put it to array
 		projectConfigurations.put(projectId, projectConfiguration);
-		notifyListeners(projectId, UPDATED_CONFIGURATION_LISTENER_ACTION);
+		notifyListeners(projectId, updatedConfigurationListenerAction);
 	}
 
 
-	private void notifyListeners(final ProjectId projectId, ListenerAction listenerAction) {
+	private void notifyListeners(final ProjectId projectId, ProjectListenerAction listenerAction) {
 		Collection<ConfigurationListener> projectListeners = listeners.get(projectId);
 		if (projectListeners != null) {
 			for (ConfigurationListener projectListener : projectListeners) {
@@ -293,13 +294,13 @@ public class CfgManagerImpl implements CfgManager {
 		return tmp.remove(configurationListener);
 	}
 
-	private interface ListenerAction {
-		public void run(final ConfigurationListener projectListener, final ProjectId projectId,
-				final CfgManagerImpl cfgManager);
+	private interface ProjectListenerAction {
+		void run(final ConfigurationListener projectListener, final ProjectId projectId, final CfgManagerImpl cfgManager);
 	}
 
-	private class UpdateConfigurationListenerAction implements ListenerAction {
-		public void run(final ConfigurationListener projectListener, final ProjectId projectId, final CfgManagerImpl cfgManager) {
+	private class UpdateConfigurationListenerAction implements ProjectListenerAction {
+		public void run(final ConfigurationListener projectListener, final ProjectId projectId,
+				final CfgManagerImpl cfgManager) {
 			projectListener.updateConfiguration(projectId, CfgManagerImpl.this);
 		}
 	}
