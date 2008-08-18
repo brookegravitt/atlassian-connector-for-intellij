@@ -16,10 +16,10 @@
 
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
@@ -172,7 +172,7 @@ public final class IdeaHelper {
 
     /**
      * Placeholder for handling missing password. Dummy at the moment
-     * s 
+     * 
      * @param e exception to handle
      * @return true if called should retry the action which caused this excepction, false if it does not make sense
      *              for example, the user has not provided a new password
