@@ -109,7 +109,7 @@ public class ThePluginProjectComponent implements
 			BambooTableToolWindowPanel bambooTableToolWindowPanel) {
 		this.project = project;
 		this.cfgManager = cfgManager;
-		project.putUserData(BROKER_KEY, new ReviewActionEventBroker());
+		project.putUserData(BROKER_KEY, new ReviewActionEventBroker(project));
 
 		this.actionScheduler = actionScheduler;
 		this.toolWindowManager = toolWindowManager;

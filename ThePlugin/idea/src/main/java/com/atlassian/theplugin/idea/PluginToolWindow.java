@@ -126,7 +126,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 			// no servers defined, show config panel
 			if (ideaToolWindow.getContentManager().findContent(CONFIGURE_TAB_NAME) == null) {
 				Content content = PeerFactory.getInstance().getContentFactory().
-						createContent(new ToolWindowConfigPanel(), CONFIGURE_TAB_NAME, false);
+						createContent(new ToolWindowConfigPanel(project), CONFIGURE_TAB_NAME, false);
 				content.setCloseable(false);
 				ideaToolWindow.getContentManager().addContent(content);
 			}
