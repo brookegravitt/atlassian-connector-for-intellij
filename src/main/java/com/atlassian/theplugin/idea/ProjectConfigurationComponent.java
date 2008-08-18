@@ -16,36 +16,36 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.cfg.xstream.JDomProjectConfigurationFactory;
+import com.atlassian.theplugin.commons.ConfigurationListener;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ProjectConfigurationFactory;
-import com.atlassian.theplugin.commons.cfg.ServerCfgFactoryException;
 import com.atlassian.theplugin.commons.cfg.ProjectId;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
-import com.atlassian.theplugin.commons.ConfigurationListener;
+import com.atlassian.theplugin.commons.cfg.ServerCfgFactoryException;
+import com.atlassian.theplugin.commons.cfg.xstream.JDomProjectConfigurationFactory;
 import com.atlassian.theplugin.idea.config.ProjectConfigurationPanel;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.components.SettingsSavingComponent;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.IconLoader;
-import org.jdom.Element;
+import com.intellij.openapi.vfs.VirtualFile;
 import org.jdom.Document;
-import org.jdom.output.XMLOutputter;
-import org.jdom.output.Format;
+import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
+import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.io.File;
-import java.io.IOException;
 import java.io.FileWriter;
+import java.io.IOException;
 
 public class ProjectConfigurationComponent implements ProjectComponent, SettingsSavingComponent, Configurable,
 		ConfigurationListener {
@@ -228,5 +228,8 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 	public void updateConfiguration(final ProjectId aProject, final CfgManager aCfgManager) {
 		save();
+	}
+
+	public void projectUnregistered() {
 	}
 }
