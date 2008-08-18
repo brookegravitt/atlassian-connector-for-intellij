@@ -26,7 +26,10 @@ import com.intellij.openapi.vcs.ex.RangesBuilder;
 import java.util.List;
 
 
-public class ChangeViewer {
+public final class ChangeViewer {
+	private ChangeViewer() {
+	}
+
 	public static void highlightChangesInEditor(Project project, Editor editor, Document referenceDoc, Document displayDoc,
 			final String fromRevision,
 			final String toRevision) {
