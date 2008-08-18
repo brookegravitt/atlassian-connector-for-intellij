@@ -47,12 +47,21 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 		return ServerType.CRUCIBLE_SERVER;
 	}
 
-	private synchronized CrucibleSession getSession(CrucibleServerCfg server) throws RemoteApiException {
+	private synchronized CrucibleSession getSession(CrucibleServerCfg server)
+			throws RemoteApiException, ServerPasswordNotProvidedException {
 		String key = server.getUrl() + server.getUsername() + server.getPassword();
 		CrucibleSession session = sessions.get(key);
 		if (session == null) {
-			session = new CrucibleSessionImpl(server.getUrl());
-			sessions.put(key, session);
+			try {
+				session = new CrucibleSessionImpl(server.getUrl());
+				sessions.put(key, session);
+			} catch (RemoteApiException e){
+				if (server.getPassword().length() > 0) {
+                	throw e;
+            	} else {
+                	throw new ServerPasswordNotProvidedException();
+            	}
+			}
 		}
 		if (!session.isLoggedIn()) {
 			session.login(server.getUsername(), server.getPassword());
@@ -90,7 +99,8 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	 * @throws com.atlassian.theplugin.commons.crucible.api.CrucibleException
 	 *          in case of createReview error or CrucibleLoginException in case of login error
 	 */
-	public Review createReview(CrucibleServerCfg server, Review review) throws RemoteApiException {
+	public Review createReview(CrucibleServerCfg server, Review review)
+			throws RemoteApiException, ServerPasswordNotProvidedException {
 		CrucibleSession session = getSession(server);
 		return session.createReview(review);
 	}
@@ -98,7 +108,7 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	public Review createReviewFromRevision(
 			CrucibleServerCfg server,
 			Review review,
-			List<String> revisions) throws RemoteApiException {
+			List<String> revisions) throws RemoteApiException, ServerPasswordNotProvidedException {
 		CrucibleSession session = getSession(server);
 		Review newReview = null;
 		if (!revisions.isEmpty()) {
@@ -232,7 +242,7 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	 *          in case of createReview error or CrucibleLoginException in case of login error
 	 */
 	public Review createReviewFromPatch(CrucibleServerCfg server, Review review, String patch)
-			throws RemoteApiException {
+			throws RemoteApiException, ServerPasswordNotProvidedException {
 		CrucibleSession session = getSession(server);
 		return session.createReviewFromPatch(review, patch);
 	}
@@ -378,7 +388,7 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	 * @param server server object with Url, Login and Password to connect to
 	 * @return List of reviews (empty list in case there is no review)
 	 */
-	public List<Review> getAllReviews(CrucibleServerCfg server) throws RemoteApiException {
+	public List<Review> getAllReviews(CrucibleServerCfg server) throws RemoteApiException, ServerPasswordNotProvidedException {
 		CrucibleSession session = getSession(server);
 		return session.getAllReviews(true);
 	}
