@@ -49,7 +49,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		final Project project = new DummysProject();
-		project.putUserData(ThePluginProjectComponent.BROKER_KEY, new ReviewActionEventBroker());
+		project.putUserData(ThePluginProjectComponent.BROKER_KEY, new ReviewActionEventBroker(project));
 		notifier = new CrucibleReviewNotifier(project);
 	}
 
