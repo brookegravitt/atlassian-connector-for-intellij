@@ -88,7 +88,8 @@ public class NewVersionButtonListener implements ActionListener {
             indicator.setText("Connecting...");
             indicator.setFraction(0);
             indicator.setIndeterminate(true);
-            checkerThread = new ConnectionWrapper(new UpdateServerConnection(), null, "atlassian-idea-plugin New version checker");
+            checkerThread = new ConnectionWrapper(new UpdateServerConnection(), null,
+					"atlassian-idea-plugin New version checker");
             checkerThread.start();
             while (checkerThread.getConnectionState() == ConnectionWrapper.ConnectionState.NOT_FINISHED) {
                 try {
