@@ -31,19 +31,19 @@ import java.awt.*;
  * Time: 6:11:26 PM
  * To change this template use File | Settings | File Templates.
  */
-public class AtlassianTableViewWithToolbar extends JPanel {
-    private AtlassianTableView table;
+public class AtlassianTableViewWithToolbar<T> extends JPanel {
+    private AtlassianTableView<T> table;
     private JComponent toolBarPanel;
     private JLabel statusLabel;
     private JLabel headerLabel;
 
 
-    public AtlassianTableViewWithToolbar(TableColumnProvider tableColumnProvider, ListTableModel listTableModel,
+    public AtlassianTableViewWithToolbar(TableColumnProvider tableColumnProvider, ListTableModel<T> listTableModel,
                                          Storage storage,
                                          String toolbarPlace, String toolbarName,
                                          String popupMenuPlace, String popupMenuName) {
         super(new GridBagLayout());
-        table = new AtlassianTableView(tableColumnProvider, listTableModel, storage, popupMenuPlace, popupMenuName);
+        table = new AtlassianTableView<T>(tableColumnProvider, listTableModel, storage, popupMenuPlace, popupMenuName);
         statusLabel = new JLabel();
         headerLabel = new JLabel();
 
@@ -91,7 +91,7 @@ public class AtlassianTableViewWithToolbar extends JPanel {
         table.prepareColumns(tableColumnProvider);
     }
 
-    public ListTableModel getListTableModel() {
+    public ListTableModel<T> getListTableModel() {
         return table.getListTableModel();
     }
 

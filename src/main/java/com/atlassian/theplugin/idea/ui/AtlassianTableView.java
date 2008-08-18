@@ -21,16 +21,20 @@ import com.intellij.ui.table.TableView;
 import com.intellij.util.config.Storage;
 import com.intellij.util.ui.ListTableModel;
 
+import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
-import javax.swing.*;
-import java.awt.event.*;
 import java.awt.*;
-import java.util.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-public class AtlassianTableView extends TableView {
+public class AtlassianTableView<T> extends TableView<T> {
 	private static final int DEFAULT_ROW_HEIGHT = 20;
 	private boolean autoAdjustHeight = true;
 	private static final int MAX_DISPLAYED_ROW_COUNT = 15;
@@ -38,7 +42,7 @@ public class AtlassianTableView extends TableView {
 	private UserTableContext state = new UserTableContext();
 
 
-	public AtlassianTableView(TableColumnProvider columnProvider, ListTableModel listTableModel, final Storage storage) {
+	public AtlassianTableView(TableColumnProvider columnProvider, ListTableModel<T> listTableModel, final Storage storage) {
 		super(listTableModel);
 		setBorder(BorderFactory.createEmptyBorder());
 		getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -48,6 +52,7 @@ public class AtlassianTableView extends TableView {
 		setAutoResizeMode(TableView.AUTO_RESIZE_OFF);
 		prepareColumns(columnProvider);
 		getTableHeader().addMouseListener(new MouseAdapter() {
+			@Override
 			public void mouseReleased(MouseEvent e) {
 				// stores table configuration in Storage object
 				if (storage != null) {
@@ -55,9 +60,10 @@ public class AtlassianTableView extends TableView {
 				}
 			}
 		});
-		ItemSelectedMouseAdapter l = new ItemSelectedMouseAdapter(this);
+		ItemSelectedMouseAdapter<T> l = new ItemSelectedMouseAdapter<T>(this);
 		addMouseListener(l);
 		addKeyListener(new KeyAdapter() {
+			@Override
 			public void keyReleased(KeyEvent e) {
 				int key = e.getKeyCode();
 				if (key == KeyEvent.VK_DOWN || key == KeyEvent.VK_UP) {
@@ -69,16 +75,18 @@ public class AtlassianTableView extends TableView {
 		});
 	}
 
-	public AtlassianTableView(TableColumnProvider columnProvider, ListTableModel listTableModel, final Storage storage,
+	public AtlassianTableView(TableColumnProvider columnProvider, ListTableModel<T> listTableModel, final Storage storage,
 							  final String popupMenuPlace, final String popupMenuName) {
 		this(columnProvider, listTableModel, storage);
 		if (popupMenuPlace != null && popupMenuName != null && popupMenuName.length() > 0) {
-			addMouseListener(new ShowPopupMouseAdapter(this, popupMenuName, popupMenuPlace));
+			addMouseListener(new ShowPopupMouseAdapter<T>(this, popupMenuName, popupMenuPlace));
 		}
-		addMouseListener(new ItemSelectedMouseAdapter(this));
+		addMouseListener(new ItemSelectedMouseAdapter<T>(this));
 	}
 
-	public ListTableModel getListTableModel() {
+	@SuppressWarnings("unchecked")
+	@Override
+	public ListTableModel<T> getListTableModel() {
 		return super.getListTableModel();
 	}
 
@@ -119,8 +127,8 @@ public class AtlassianTableView extends TableView {
 
 
 	public Dimension getTableDimension() {
-		int tableHeight = 0, tableWidth = 0;
-		tableHeight = Math.min(getModel().getRowCount(), MAX_DISPLAYED_ROW_COUNT) * getRowHeight();
+		int tableWidth = 0;
+		int tableHeight = Math.min(getModel().getRowCount(), MAX_DISPLAYED_ROW_COUNT) * getRowHeight();
 		// Resize width
 		for (int col = 0; col < getColumnModel().getColumnCount(); col++) {
 			tableWidth += (getColumnModel().getColumn(col).getPreferredWidth());
@@ -135,6 +143,7 @@ public class AtlassianTableView extends TableView {
 	}
 
 
+	@Override
 	public void tableChanged(TableModelEvent e) {
 
 		Dimension prefered = getTableDimension();
