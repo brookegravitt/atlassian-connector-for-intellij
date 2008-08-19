@@ -24,39 +24,19 @@ import com.atlassian.theplugin.configuration.JiraFiltersBean;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.configuration.ProjectToolWindowTableConfiguration;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.action.jira.FilterTypeAction;
-import com.atlassian.theplugin.idea.action.jira.JIRANextPageAction;
-import com.atlassian.theplugin.idea.action.jira.JIRAPreviousPageAcion;
-import com.atlassian.theplugin.idea.action.jira.JIRAShowIssuesFilterAction;
-import com.atlassian.theplugin.idea.action.jira.RunJIRAActionAction;
-import com.atlassian.theplugin.idea.action.jira.SavedFilterComboAction;
+import com.atlassian.theplugin.idea.action.jira.*;
 import com.atlassian.theplugin.idea.jira.table.JIRATableColumnProviderImpl;
-import com.atlassian.theplugin.idea.jira.table.columns.IssueKeyColumn;
-import com.atlassian.theplugin.idea.jira.table.columns.IssuePriorityColumn;
-import com.atlassian.theplugin.idea.jira.table.columns.IssueStatusColumn;
-import com.atlassian.theplugin.idea.jira.table.columns.IssueSummaryColumn;
-import com.atlassian.theplugin.idea.jira.table.columns.IssueTypeColumn;
+import com.atlassian.theplugin.idea.jira.table.columns.*;
 import com.atlassian.theplugin.idea.ui.AbstractTableToolWindowPanel;
 import com.atlassian.theplugin.idea.ui.TableColumnProvider;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
-import com.atlassian.theplugin.jira.api.JIRAAction;
-import com.atlassian.theplugin.jira.api.JIRAException;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
-import com.atlassian.theplugin.jira.api.JIRASavedFilterBean;
+import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.ide.DataManager;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionPlaces;
-import com.intellij.openapi.actionSystem.ActionPopupMenu;
-import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.ui.popup.PopupChooserBuilder;
@@ -74,8 +54,8 @@ import java.util.Map;
 
 public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueAdapter> {
     private static final int PAGE_SIZE = 50;
+	public static final String JIRA_ATLASSIAN_TOOLWINDOW_SERVER_TOOL_BAR = "atlassian.jira.toolwindow";
 	private static final Key<JIRAToolWindowPanel> WINDOW_PROJECT_KEY =  Key.create(JIRAToolWindowPanel.class.getName());
-	private Project project;
 	
 	private transient ActionToolbar filterToolbar;
     private transient ActionToolbar filterEditToolbar;
@@ -155,7 +135,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 
     public JIRAToolWindowPanel(Project project, PluginConfigurationBean pluginConfiguration,
                                ProjectConfigurationBean projectConfigurationBean) {
-        super(projectConfigurationBean);
+        super(project, projectConfigurationBean);
 		this.project = project;
 		this.pluginConfiguration = pluginConfiguration;
         this.jiraServerFacade = JIRAServerFacadeImpl.getInstance();
@@ -232,7 +212,11 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
         setScrollPaneViewport(jiraIssueFilterPanel.$$$getRootComponent$$$());
     }
 
-    public final void hideJIRAIssuesFilter() {
+	public String getActionPlace() {
+		return JIRA_ATLASSIAN_TOOLWINDOW_SERVER_TOOL_BAR + project.getName();
+	}
+
+	public final void hideJIRAIssuesFilter() {
         setScrollPaneViewport(table);
         filterEditToolbarSetVisible(false);
     }

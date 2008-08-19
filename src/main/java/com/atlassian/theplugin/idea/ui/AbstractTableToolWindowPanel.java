@@ -21,11 +21,8 @@ import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.configuration.ProjectToolWindowTableConfiguration;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.bamboo.ToolWindowBambooContent;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionPopupMenu;
-import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.project.Project;
 import com.intellij.util.ui.ListTableModel;
 import com.intellij.util.ui.UIUtil;
 import thirdparty.javaworld.ClasspathHTMLEditorKit;
@@ -45,15 +42,17 @@ public abstract class AbstractTableToolWindowPanel<T> extends JPanel {
 	protected static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
 	protected ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
     protected ProjectConfigurationBean projectConfiguration;
+	protected Project project;
 
-    public ProgressAnimationProvider getProgressAnimation() {
+	public ProgressAnimationProvider getProgressAnimation() {
 		return progressAnimation;
 	}
 
-	public AbstractTableToolWindowPanel(ProjectConfigurationBean projectConfigurationBean) {
+	public AbstractTableToolWindowPanel(Project project, ProjectConfigurationBean projectConfigurationBean) {
 		super(new BorderLayout());
+		this.project = project;
 
-        this.projectConfiguration = projectConfigurationBean;
+		this.projectConfiguration = projectConfigurationBean;
 
         setBackground(UIUtil.getTreeTextBackground());
 
@@ -61,7 +60,7 @@ public abstract class AbstractTableToolWindowPanel<T> extends JPanel {
         ActionManager actionManager = ActionManager.getInstance();
         ActionGroup toolbar = (ActionGroup) actionManager.getAction(getToolbarActionGroup());
         ActionToolbar actionToolbar = actionManager.createActionToolbar(
-                "atlassian.toolwindow.serverToolBar", toolbar, true);
+				getActionPlace(), toolbar, true);
         toolBarPanel.add(actionToolbar.getComponent(), BorderLayout.NORTH);
         add(toolBarPanel, BorderLayout.NORTH);
 
@@ -137,18 +136,19 @@ public abstract class AbstractTableToolWindowPanel<T> extends JPanel {
 		this.filterEditToolbar = newFilterEditToolbar;
 	}
 
-	protected   void createFilterEditToolBar(String place, String toolbarName) {
+	/*protected   void createFilterEditToolBar(String place, String toolbarName) {
         ActionManager actionManager = ActionManager.getInstance();
         ActionGroup filterEditToolBar = (ActionGroup) actionManager.getAction(toolbarName);
         filterEditToolbar = actionManager.createActionToolbar(place,
                 filterEditToolBar, true);
         toolBarPanel.add(filterEditToolbar.getComponent(), BorderLayout.SOUTH);
         filterEditToolbarSetVisible(false);
-    }
+    }*/
 
 	public abstract void applyAdvancedFilter();
 	public abstract void cancelAdvancedFilter();
 	public abstract void clearAdvancedFilter();
+	public abstract String getActionPlace();
 
 	private class PopuMenuMouseAdapter extends MouseAdapter {
 		@Override
