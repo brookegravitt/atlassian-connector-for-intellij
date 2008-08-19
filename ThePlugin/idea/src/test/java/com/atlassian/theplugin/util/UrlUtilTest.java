@@ -16,11 +16,10 @@
 
 package com.atlassian.theplugin.util;
 
+import com.atlassian.theplugin.commons.util.UrlUtil;
 import junit.framework.TestCase;
 
 import java.net.MalformedURLException;
-
-import com.atlassian.theplugin.commons.util.UrlUtil;
 
 
 public class UrlUtilTest extends TestCase {
@@ -74,10 +73,10 @@ public class UrlUtilTest extends TestCase {
 		url = "some url////";
 		assertEquals(url, UrlUtil.removeUrlTrailingSlashes(url));
 
-		url = "http://xlaski.pl";
+		url = "http://apache.org";
 		assertEquals(url, UrlUtil.removeUrlTrailingSlashes(url));
 
-		url = "http://xlaski.pl";
+		url = "http://apache.org";
 		assertEquals(url, UrlUtil.removeUrlTrailingSlashes(url + "/"));
 		assertEquals(url, UrlUtil.removeUrlTrailingSlashes(url + "///////"));
 
@@ -109,7 +108,7 @@ public class UrlUtilTest extends TestCase {
 			// ok
 		}
 
-		url = "xlaski.pl";
+		url = "apache.org";
 		try {
 			UrlUtil.validateUrl(url);
 			fail("malformed url validation failed");
@@ -117,7 +116,7 @@ public class UrlUtilTest extends TestCase {
 			// ok
 		}
 
-		url = "www.xlaski.pl";
+		url = "www.apache.org";
 		try {
 			UrlUtil.validateUrl(url);
 			fail("malformed url validation failed");
@@ -125,7 +124,7 @@ public class UrlUtilTest extends TestCase {
 			// ok
 		}
 
-		url = "http://xlaski.pl";
+		url = "http://apache.org";
 		try {
 			UrlUtil.validateUrl(url);
 			// ok
@@ -133,7 +132,7 @@ public class UrlUtilTest extends TestCase {
 			fail("correct url validation failed");
 		}
 
-		url = "http://www.xlaski.pl";
+		url = "http://www.apache.org";
 		try {
 			UrlUtil.validateUrl(url);
 			// ok
@@ -141,7 +140,7 @@ public class UrlUtilTest extends TestCase {
 			fail("correct url validation failed");
 		}
 
-		url = "http://www.xlaski.pl:8080";
+		url = "http://www.apache.org:8080";
 		try {
 			UrlUtil.validateUrl(url);
 			// ok
@@ -149,7 +148,7 @@ public class UrlUtilTest extends TestCase {
 			fail("correct url validation failed");
 		}
 
-		url = "https://www.xlaski.pl:8080";
+		url = "https://www.apache.org:8080";
 		try {
 			UrlUtil.validateUrl(url);
 			// ok
