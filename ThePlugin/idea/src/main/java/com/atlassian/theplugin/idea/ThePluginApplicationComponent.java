@@ -189,14 +189,14 @@ public class ThePluginApplicationComponent
 			configPanel.saveData();
 			//configPanel.setData();
 
-			for (Project project : ProjectManager.getInstance().getOpenProjects()) {
-				ThePluginProjectComponent projectComponent = project.getComponent(ThePluginProjectComponent.class);
-				// show icons if necessary
-				projectComponent.getStatusBarBambooIcon().showOrHideIcon();
-				projectComponent.getStatusBarCrucibleIcon().showOrHideIcon();
-
-				projectComponent.getToolWindow().showHidePanels();
-			}
+//			for (Project project : ProjectManager.getInstance().getOpenProjects()) {
+//				ThePluginProjectComponent projectComponent = project.getComponent(ThePluginProjectComponent.class);
+//				// show icons if necessary
+//				projectComponent.getStatusBarBambooIcon().showOrHideIcon();
+//				projectComponent.getStatusBarCrucibleIcon().showOrHideIcon();
+//
+//				projectComponent.getToolWindow().showHidePanels();
+//			}
 			rescheduleStatusCheckers(true);
 		}
 
