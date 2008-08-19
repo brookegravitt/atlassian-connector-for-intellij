@@ -83,7 +83,8 @@ public final class IdeaHelper {
 	}
 
 	public static CfgManager getCfgManager() {
-		return (CfgManager)ApplicationManager.getApplication().getPicoContainer().getComponentInstanceOfType(CfgManager.class);
+		return (CfgManager) ApplicationManager.getApplication().getPicoContainer()
+				.getComponentInstanceOfType(CfgManager.class);
 	}
 
 	public static PluginConfigurationBean getPluginConfiguration() {

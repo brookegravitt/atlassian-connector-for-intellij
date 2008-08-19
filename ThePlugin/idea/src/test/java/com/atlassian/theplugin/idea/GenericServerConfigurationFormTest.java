@@ -43,6 +43,7 @@ public class GenericServerConfigurationFormTest extends TestCase {
 		ServerCfg inServerBean = createServerBean();
 
 		genericServerConfigurationForm.setData(inServerBean);
+		genericServerConfigurationForm.finalizeData();
 		genericServerConfigurationForm.saveData();
 
 		ServerCfg outServerBean = genericServerConfigurationForm.getServerCfg();
