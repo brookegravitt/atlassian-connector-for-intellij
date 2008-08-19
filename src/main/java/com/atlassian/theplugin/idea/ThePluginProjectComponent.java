@@ -168,11 +168,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
         return "ThePluginProjectComponent";
     }
 
-    public PluginToolWindow getToolWindow() {
-        return toolWindow;
-    }
-
-    private void initializePlugin() {
+	private void initializePlugin() {
         // unregister changelistmanager?
         // only open tool windows for each application that's registered
         // show something nice if there are non
@@ -281,7 +277,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 					statusBarBambooIcon.showOrHideIcon();
 					statusBarCrucibleIcon.showOrHideIcon();
 					// show-hide panels if necessary
-					getToolWindow().showHidePanels();
+					toolWindow.showHidePanels();
 				}
 
 				public void projectUnregistered() {
