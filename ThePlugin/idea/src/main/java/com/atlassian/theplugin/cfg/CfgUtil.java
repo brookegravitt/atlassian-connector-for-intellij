@@ -20,14 +20,23 @@ import com.intellij.openapi.project.Project;
 
 public final class CfgUtil {
 
-	private static final ProjectId GLOBAL_PROJECT = new ProjectId();
+	private static final ProjectId DEFAULT_PROJECT = new ProjectId();
 
 	private CfgUtil() {
 		// this is utility class
 	}
 
 	public static ProjectId getProjectId(Project project) {
-		return GLOBAL_PROJECT;
-		//return new ProjectId(project.getPresentableUrl());
+		final String res1 = project.getPresentableUrl();
+		if (res1 != null) {
+			return new ProjectId(res1);
+		}
+
+		final String res2 = project.getName();
+		if (res2 != null) {
+			return new ProjectId(res2);
+		}
+				
+		return DEFAULT_PROJECT;
 	}
 }
