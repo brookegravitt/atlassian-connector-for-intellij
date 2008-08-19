@@ -30,9 +30,11 @@ import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DataProvider;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.util.IconLoader;
-import com.intellij.openapi.project.Project;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
@@ -41,9 +43,6 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import java.awt.*;
 import java.util.Collection;
-
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.NonNls;
 
 public class ServerConfigPanel extends JPanel implements DataProvider {
     private final ServerTreePanel serverTreePanel;
@@ -55,25 +54,25 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 
 	private static final float SPLIT_RATIO = 0.3f;
 
-	private final transient CrucibleServerFacade crucibleServerFacade;
-	private final transient BambooServerFacade bambooServerFacade;
-	private final transient JIRAServerFacade jiraServerFacade;
 	private final Project project;
 	private Collection<ServerCfg> serverCfgs;
     private BambooServerConfigForm bambooServerConfigForm;
     private GenericServerConfigForm jiraServerConfigForm;
     private GenericServerConfigForm crucibleServerConfigForm;
 
-    public ServerConfigPanel(Project project, Collection<ServerCfg> serverCfgs) {
+	public ServerConfigPanel(Project project, Collection<ServerCfg> serverCfgs) {
 		this.project = project;
 		this.serverCfgs = serverCfgs;
         this.serverTreePanel = new ServerTreePanel();
-		this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
-		this.bambooServerFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
-		this.jiraServerFacade = JIRAServerFacadeImpl.getInstance();
+		final CrucibleServerFacade crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
+		final BambooServerFacade bambooServerFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
+		final JIRAServerFacade jiraServerFacade = JIRAServerFacadeImpl.getInstance();
 		/* required due to circular dependency unhandled by pico */
 		this.serverTreePanel.setServerConfigPanel(this);
-        initLayout();
+		jiraServerConfigForm = new GenericServerConfigForm(project, new ProductConnector(jiraServerFacade));
+		crucibleServerConfigForm = new GenericServerConfigForm(project, new ProductConnector(crucibleServerFacade));
+		bambooServerConfigForm = new BambooServerConfigForm(project, bambooServerFacade);
+		initLayout();
 
         serverTreePanel.setData(serverCfgs);
         
@@ -116,29 +115,6 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 		selectPane.add(toolBarPanel, BorderLayout.NORTH);
 		selectPane.add(serverTreePanel, BorderLayout.CENTER);
 		return selectPane;
-
-
-//		JPanel selectPane = new JPanel();
-//		GridBagLayout gbl = new GridBagLayout();
-//		selectPane.setLayout(gbl);
-//		GridBagConstraints c = new GridBagConstraints();
-//		c.gridx = 0;
-//		c.gridy = 0;
-//		c.anchor = GridBagConstraints.FIRST_LINE_START;
-//		c.fill = GridBagConstraints.NONE;
-//		c.ipady = 2;
-//		selectPane.add(createToolbar(), c);
-//		c.gridx = 0;
-//		c.gridy = 1;
-//		c.weightx = 1;
-//		c.weighty = 1;
-//		c.fill = GridBagConstraints.BOTH;
-//		c.ipady = 0;
-//		// magic - don't ask why 3 is good - looks like crap otherwise
-//		// moreover - 3 is a magic number according to Checkstyle and 2 is not :)
-//		c.insets = new Insets(2 + 1, 2, 2, 2);
-//		selectPane.add(serverTreePanel, c);
-//		return selectPane;
     }
 
 	protected JComponent createToolbar() {
@@ -151,31 +127,13 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
         editPane = new JPanel();
         editPaneCardLayout = new CardLayout();
         editPane.setLayout(editPaneCardLayout);
-        editPane.add(getBambooServerForm().getRootComponent(), "Bamboo Servers");
-        editPane.add(getJiraServerForm().getRootComponent(), "JIRA Servers");
-        editPane.add(getCrucibleServerForm().getRootComponent(), "Crucible Servers");
+        editPane.add(bambooServerConfigForm.getRootComponent(), "Bamboo Servers");
+        editPane.add(jiraServerConfigForm.getRootComponent(), "JIRA Servers");
+        editPane.add(crucibleServerConfigForm.getRootComponent(), "Crucible Servers");
 		editPane.add(getBlankPanel(), BLANK_CARD);
 
         return editPane;
     }
-
-
-
-
-    private synchronized GenericServerConfigForm getJiraServerForm() {
-        if (jiraServerConfigForm == null) {
-            jiraServerConfigForm = new GenericServerConfigForm(project, new ProductConnector(jiraServerFacade));
-        }
-        return jiraServerConfigForm;
-    }
-
-    public GenericServerConfigForm getCrucibleServerForm() {
-        if (crucibleServerConfigForm == null) {
-            crucibleServerConfigForm = new GenericServerConfigForm(project, new ProductConnector(crucibleServerFacade));
-        }
-        return crucibleServerConfigForm;
-    }
-
 
     private JComponent getBlankPanel() {
         if (blankPanel == null) {
@@ -190,32 +148,9 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
         return true;
     }
 
-	public boolean isModified() {
-		return false;
-    }
-
 	public String getTitle() {
         return "Servers";
     }
-
-//	public void saveData() {
-//        if (isModified()) {
-//            for (ServerType type : serverPanels.keySet()) {
-//				final ProductServerConfiguration conf = getLocalPluginConfigurationCopy().getProductServers(type);
-//				if (serverPanels.get(type).isModified()) {
-//                    if (conf.transientGetServer(serverPanels.get(type).saveData()) != null) {
-//                        conf.storeServer(serverPanels.get(type).saveData());
-//                    }
-//                }
-//                Collection<Server> s = conf.transientGetServers();
-//                ConfigurationFactory.getConfiguration().getProductServers(type).setServers(s);
-//			}
-//
-//			this.serverTreePanel.setData(getLocalPluginConfigurationCopy());
-//       }
-//    }
-
-
 
 	public void addServer(ServerType serverType) {
         serverTreePanel.addServer(serverType);
@@ -229,48 +164,21 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
         serverTreePanel.copyServer();
     }
 
-//	public void storeServer(ServerNode serverNode) {
-//        Server server = serverNode.getServer();
-//        Server tempValue = serverPanels.get(serverNode.getServerType()).saveData();
-//        switch (serverNode.getServerType()) {
-//            case BAMBOO_SERVER:
-//                server.transientSetSubscribedPlans(tempValue.transientGetSubscribedPlans());
-//				server.setUseFavourite(tempValue.getUseFavourite());
-//				break;
-//            default:
-//                break;
-//        }
-//        server.setName(tempValue.getName());
-//        server.setUserName(tempValue.getUserName());
-//        server.transientSetPasswordString(tempValue.transientGetPasswordString(), tempValue.getShouldPasswordBeStored());
-//		server.setEnabled(tempValue.getEnabled());
-//        server.setUrlString(tempValue.getUrlString());
-//    }
-
-
-    private synchronized BambooServerConfigForm getBambooServerForm() {
-        if (bambooServerConfigForm == null) {
-            bambooServerConfigForm = new BambooServerConfigForm(project, bambooServerFacade);
-        }
-        return bambooServerConfigForm;
-    }
-
-
 
     public void saveData(ServerType serverType) {
-		// CHECKSTYLE:OFF
         switch (serverType) {
-		// CHECKSTYLE:ON
             case BAMBOO_SERVER:
-                getBambooServerForm().saveData();
+                bambooServerConfigForm.saveData();
                 break;
             case CRUCIBLE_SERVER:
-                getCrucibleServerForm().saveData();
+                crucibleServerConfigForm.saveData();
                 break;
             case JIRA_SERVER:
-                getJiraServerForm().saveData();
+                jiraServerConfigForm.saveData();
                 break;
-        }
+			default:
+				throw new AssertionError("switch not implemented for [" + serverType + "]");
+		}
     }
 
 	public void saveData() {
@@ -283,28 +191,34 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 	public void editServer(ServerCfg serverCfg) {
         ServerType serverType = serverCfg.getServerType();
         editPaneCardLayout.show(editPane, serverType.toString());
-		/// CHECKSTYLE:OFF
 		switch (serverType) {
-		/// CHECKSTYLE:ON
             case BAMBOO_SERVER:
                 BambooServerCfg bambooServerCfg = (BambooServerCfg) serverCfg;
-                getBambooServerForm().saveData();
-                getBambooServerForm().setData(bambooServerCfg);
+                bambooServerConfigForm.saveData();
+                bambooServerConfigForm.setData(bambooServerCfg);
                 break;
             case CRUCIBLE_SERVER:
-                getCrucibleServerForm().saveData();
-                getCrucibleServerForm().setData(serverCfg);
+                crucibleServerConfigForm.saveData();
+                crucibleServerConfigForm.setData(serverCfg);
                 break;
             case JIRA_SERVER:
-                getJiraServerForm().saveData();
-                getJiraServerForm().setData(serverCfg);
+                jiraServerConfigForm.saveData();
+                jiraServerConfigForm.setData(serverCfg);
                 break;
+			default:
+				throw new AssertionError("switch not implemented for [" + serverType + "]");
         }
     }
 
 	public void showEmptyPanel() {
         editPaneCardLayout.show(editPane, BLANK_CARD);
     }
+
+	public void finalizeData() {
+		bambooServerConfigForm.finalizeData();
+		crucibleServerConfigForm.finalizeData();
+		jiraServerConfigForm.finalizeData();
+	}
 
 
 	static class BlankPanel extends JPanel {

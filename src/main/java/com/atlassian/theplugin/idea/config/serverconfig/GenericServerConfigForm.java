@@ -18,13 +18,12 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.LoginDataProvided;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.util.UrlUtil;
 import com.atlassian.theplugin.idea.TestConnectionListener;
 import com.atlassian.theplugin.util.Connector;
-import com.atlassian.theplugin.commons.util.UrlUtil;
-import com.atlassian.theplugin.commons.util.MiscUtil;
+import com.intellij.openapi.project.Project;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.openapi.project.Project;
 
 import javax.swing.*;
 import java.awt.*;
@@ -62,11 +61,20 @@ public class GenericServerConfigForm implements LoginDataProvided {
 		});
 	}
 
+	public void finalizeData() {
+		adjustUrl();
+	}
+
 	private void adjustUrl() {
 		String url = serverUrl.getText();
+		url = adjustUrl(url);
+		serverUrl.setText(url);
+	}
+
+	public static String adjustUrl(String url) {
 		url = UrlUtil.addHttpPrefix(url);
 		url = UrlUtil.removeUrlTrailingSlashes(url);
-		serverUrl.setText(url);
+		return url;
 	}
 
 	public void setData(ServerCfg server) {
@@ -80,8 +88,10 @@ public class GenericServerConfigForm implements LoginDataProvided {
 		cbEnabled.setSelected(server.isEnabled());
 	}
 
+	/**
+	 * Copies data from visual controls to underlying model. Ugly but it's how it was initially implemented.
+	 */
 	public void saveData() {
-		adjustUrl();
         if (serverCfg == null) {
             return;
         }
@@ -93,43 +103,10 @@ public class GenericServerConfigForm implements LoginDataProvided {
 		serverCfg.setEnabled(cbEnabled.isSelected());
 	}
 
-	public boolean isModified() {
-		boolean isModified = false;
-
-		if (serverCfg != null) {
-			if (chkPasswordRemember.isSelected() != serverCfg.isPasswordStored()) {
-				return true;
-			}
-            if (MiscUtil.isModified(serverName.getText(), serverCfg.getName())) {
-                return true;
-            }
-
-			if (cbEnabled.isSelected() != serverCfg.isEnabled()) {
-				return true;
-			}
-            if (MiscUtil.isModified(serverUrl.getText(), serverCfg.getUrl())) {
-                return true;
-            }
-            if (MiscUtil.isModified(username.getText(), serverCfg.getUsername())) {
-                return true;
-            }
-			String pass = String.valueOf(password.getPassword());
-			if (!pass.equals(serverCfg.getPassword())) {
-				return true;
-			}
-
-		}
-		return isModified;
-	}
-
-
     public JComponent getRootComponent() {
 		return rootComponent;
 	}
 
-
-	private void createUIComponents() {
-	}
 
 	public String getServerUrl() {
 		return serverUrl.getText();

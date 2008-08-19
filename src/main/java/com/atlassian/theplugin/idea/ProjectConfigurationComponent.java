@@ -209,7 +209,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	}
 
 	public boolean isModified() {
-		projectConfigurationPanel.saveData();
+		projectConfigurationPanel.saveData(false);
 		return !cfgManager.getProjectConfiguration(getProjectId()).equals(projectConfigurationPanel.getProjectConfiguration());
 	}
 
@@ -217,7 +217,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		if (projectConfigurationPanel == null) {
 			return;
 		}
-		projectConfigurationPanel.saveData();
+		projectConfigurationPanel.saveData(true);
 		cfgManager.updateProjectConfiguration(getProjectId(), projectConfigurationPanel.getProjectConfiguration());
 	}
 
