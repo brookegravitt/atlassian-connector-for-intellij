@@ -15,16 +15,14 @@
  */
 package com.atlassian.theplugin.commons.cfg;
 
-import junit.framework.TestCase;
-import com.spartez.util.junit3.TestUtil;
-import com.spartez.util.junit3.IAction;
 import com.atlassian.theplugin.commons.util.MiscUtil;
-import com.atlassian.theplugin.commons.ConfigurationListener;
-
-import java.util.Collection;
-import java.util.ArrayList;
-
+import com.spartez.util.junit3.IAction;
+import com.spartez.util.junit3.TestUtil;
+import junit.framework.TestCase;
 import org.easymock.EasyMock;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * CfgManagerImpl Tester.
@@ -408,22 +406,23 @@ public abstract class AbstractCfgManagerTest extends TestCase {
 
 
 	public void testNotifications() {
+		final ProjectConfiguration emptyCfg = ProjectConfiguration.emptyConfiguration();
 		ConfigurationListener project1Listener = EasyMock.createStrictMock(ConfigurationListener.class);
 		ConfigurationListener project2Listener = EasyMock.createStrictMock(ConfigurationListener.class);
 		Object[] mocks = {project1Listener, project2Listener};
 
-		project1Listener.updateConfiguration(PROJECT_ID_1, cfgManager);
+		project1Listener.configurationUpdated(emptyCfg);
 		EasyMock.replay(mocks);
 
 		cfgManager.addListener(PROJECT_ID_1, project1Listener);
 		cfgManager.addListener(PROJECT_ID_2, project2Listener);
 		cfgManager.updateGlobalConfiguration(new GlobalConfiguration());
-		cfgManager.updateProjectConfiguration(PROJECT_ID_1, ProjectConfiguration.emptyConfiguration());
+		cfgManager.updateProjectConfiguration(PROJECT_ID_1, emptyCfg);
 		EasyMock.verify(mocks);
 
 
 		EasyMock.reset(mocks);
-		project2Listener.updateConfiguration(PROJECT_ID_2, cfgManager);
+		project2Listener.configurationUpdated(emptyCfg);
 		EasyMock.replay(mocks);
 
 		cfgManager.updateGlobalConfiguration(new GlobalConfiguration());
@@ -434,12 +433,13 @@ public abstract class AbstractCfgManagerTest extends TestCase {
 		EasyMock.reset(mocks);
 		cfgManager.removeListener(PROJECT_ID_1, project1Listener);
 		// now only project2Listener will be notified
-		project2Listener.updateConfiguration(PROJECT_ID_2, cfgManager);
+		final ProjectConfiguration nonEmptyCfg = new ProjectConfiguration(MiscUtil.<ServerCfg>buildArrayList(bamboo1));
+		project2Listener.configurationUpdated(nonEmptyCfg);
 		EasyMock.replay(mocks);
 
 		cfgManager.updateGlobalConfiguration(new GlobalConfiguration());
-		cfgManager.updateProjectConfiguration(PROJECT_ID_2, ProjectConfiguration.emptyConfiguration());
-		cfgManager.updateProjectConfiguration(PROJECT_ID_1, ProjectConfiguration.emptyConfiguration());
+		cfgManager.updateProjectConfiguration(PROJECT_ID_2, nonEmptyCfg);
+		cfgManager.updateProjectConfiguration(PROJECT_ID_1, nonEmptyCfg);
 		EasyMock.verify(mocks);
 	}
 

@@ -15,7 +15,6 @@
  */
 package com.atlassian.theplugin.commons.cfg;
 
-import com.atlassian.theplugin.commons.ConfigurationListener;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import static com.atlassian.theplugin.commons.util.MiscUtil.buildConcurrentHashMap;
@@ -40,8 +39,6 @@ public class CfgManagerImpl implements CfgManager {
 		}
 	};
 	
-	private final ProjectListenerAction updatedConfigurationListenerAction = new UpdateConfigurationListenerAction();
-
 	public CfgManagerImpl() {
 		// TODO wseliga remove it later on and handle properly null values
 		update(new GlobalConfiguration());
@@ -98,7 +95,7 @@ public class CfgManagerImpl implements CfgManager {
 
 		// internalize the list to be private and put it to array
 		projectConfigurations.put(projectId, projectConfiguration);
-		notifyListeners(projectId, updatedConfigurationListenerAction);
+		notifyListeners(projectId, new UpdateConfigurationListenerAction(projectConfiguration));
 	}
 
 
@@ -298,10 +295,17 @@ public class CfgManagerImpl implements CfgManager {
 		void run(final ConfigurationListener projectListener, final ProjectId projectId, final CfgManagerImpl cfgManager);
 	}
 
-	private class UpdateConfigurationListenerAction implements ProjectListenerAction {
+	private static class UpdateConfigurationListenerAction implements ProjectListenerAction {
+
+		private final ProjectConfiguration projectConfiguration;
+
+		public UpdateConfigurationListenerAction(final ProjectConfiguration projectConfiguration) {
+			this.projectConfiguration = projectConfiguration;
+		}
+
 		public void run(final ConfigurationListener projectListener, final ProjectId projectId,
 				final CfgManagerImpl cfgManager) {
-			projectListener.updateConfiguration(projectId, CfgManagerImpl.this);
+			projectListener.configurationUpdated(projectConfiguration);
 		}
 	}
 }
