@@ -18,9 +18,9 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
+import com.intellij.openapi.project.Project;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -60,16 +60,14 @@ public class BambooServerConfigForm {
 
     }
 
+	public void finalizeData() {
+		genericServerConfigForm.finalizeData();
+	}
 
 	public void saveData() {
 		genericServerConfigForm.saveData();
 		planList.saveData();
     }
-
-	public boolean isModified() {
-		return genericServerConfigForm.isModified() || planList.isModified();
-	}
-
 
 	public JComponent getRootComponent() {
 		return rootComponent;

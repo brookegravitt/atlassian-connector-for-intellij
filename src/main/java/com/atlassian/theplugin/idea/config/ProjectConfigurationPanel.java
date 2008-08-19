@@ -29,6 +29,7 @@ public class ProjectConfigurationPanel extends JPanel {
 	private final ServerConfigPanel serverConfigPanel;
 
 	public ProjectConfiguration getProjectConfiguration() {
+		serverConfigPanel.saveData();
 		return projectConfiguration;
 	}
 
@@ -53,7 +54,10 @@ public class ProjectConfigurationPanel extends JPanel {
 		add(footerPanel, BorderLayout.SOUTH);
 	}
 
-	public void saveData() {
+	public void saveData(boolean finalizeData) {
+		if (finalizeData) {
+			serverConfigPanel.finalizeData();
+		}
 		serverConfigPanel.saveData();
 	}
 }
