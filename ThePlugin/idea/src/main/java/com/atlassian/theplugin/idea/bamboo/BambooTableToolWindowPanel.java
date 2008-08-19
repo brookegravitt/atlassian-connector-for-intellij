@@ -16,15 +16,7 @@
 
 package com.atlassian.theplugin.idea.bamboo;
 
-import com.atlassian.theplugin.commons.bamboo.BambooBuild;
-import com.atlassian.theplugin.commons.bamboo.BambooBuildAdapter;
-import com.atlassian.theplugin.commons.bamboo.BambooChangeSet;
-import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
-import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
-import com.atlassian.theplugin.commons.bamboo.BambooStatusListener;
-import com.atlassian.theplugin.commons.bamboo.BuildDetails;
-import com.atlassian.theplugin.commons.bamboo.BuildStatus;
-import com.atlassian.theplugin.commons.bamboo.TestDetails;
+import com.atlassian.theplugin.commons.bamboo.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
@@ -50,10 +42,10 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel<Bam
 		implements BambooStatusListener {
     private final transient BambooServerFacade bambooFacade;
     private static final DateTimeFormatter TIME_DF = DateTimeFormat.forPattern("hh:mm a");
-    private TableColumnProvider columnProvider;
-    private Project project;
+    private TableColumnProvider columnProvider;    
 	private final TestResultsToolWindow testResultsToolWindow;
 	private final BuildChangesToolWindow buildChangesToolWindow;
+	public static final String BAMBOO_ATLASSIAN_TOOLWINDOW_SERVER_TOOL_BAR = "atlassian.bamboo.toolwindow";
 
 	@Override
     protected String getInitialMessage() {
@@ -95,10 +87,14 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel<Bam
     public void clearAdvancedFilter() {
     }
 
-    public BambooTableToolWindowPanel(Project project, ProjectConfigurationBean projectConfigurationBean,
+	@Override
+	public String getActionPlace() {
+		return BAMBOO_ATLASSIAN_TOOLWINDOW_SERVER_TOOL_BAR + project.getName();
+	}
+
+	public BambooTableToolWindowPanel(Project project, ProjectConfigurationBean projectConfigurationBean,
 			final TestResultsToolWindow testResultsToolWindow, final BuildChangesToolWindow buildChangesToolWindow) {
-        super(projectConfigurationBean);
-        this.project = project;
+        super(project, projectConfigurationBean);        
 		this.testResultsToolWindow = testResultsToolWindow;
 		this.buildChangesToolWindow = buildChangesToolWindow;
 		bambooFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
