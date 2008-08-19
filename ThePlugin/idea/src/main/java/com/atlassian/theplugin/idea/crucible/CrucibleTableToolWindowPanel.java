@@ -54,7 +54,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStatusListener, TableItemSelectedListener<ReviewData> {
+public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStatusListener,
+		TableItemSelectedListener<ReviewData> {
 	public static final String PLACE_PREFIX = CrucibleTableToolWindowPanel.class.getSimpleName();
 	private static final Key<CrucibleTableToolWindowPanel> WINDOW_PROJECT_KEY
 			= Key.create(CrucibleTableToolWindowPanel.class.getName());
