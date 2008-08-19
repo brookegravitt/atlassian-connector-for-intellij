@@ -31,7 +31,12 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import static java.lang.System.arraycopy;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -55,7 +60,7 @@ public class BambooPlansForm extends JPanel {
 
 	private boolean isListModified;
 	private Boolean isUseFavourite = null;
-	private transient BambooServerCfg originalServer;
+	private transient BambooServerCfg bambooServerCfg;
 	private static final int NUM_SERVERS = 10;
 	private Map<ServerId, List<BambooPlanItem>> serverPlans = MiscUtil.buildConcurrentHashMap(NUM_SERVERS);
 	private final transient BambooServerFacade bambooServerFacade;
@@ -64,7 +69,7 @@ public class BambooPlansForm extends JPanel {
     public BambooPlansForm(BambooServerFacade bambooServerFacade, BambooServerCfg bambooServerCfg,
             final BambooServerConfigForm bambooServerConfigForm) {
 		this.bambooServerFacade = bambooServerFacade;
-		this.originalServer = bambooServerCfg;
+		this.bambooServerCfg = bambooServerCfg;
         this.serverPanel = bambooServerConfigForm;
 
         $$$setupUI$$$();
@@ -108,19 +113,9 @@ public class BambooPlansForm extends JPanel {
 	}
 
 	private void refreshServerPlans() {
-//		if (originalServer.isUseFavourites() != cbUseFavouriteBuilds.isSelected()) {
-//			isUseFavourite = cbUseFavouriteBuilds.isSelected();
-//		}
-
-//		server.transientSetSubscribedPlans(originalServer.transientGetSubscribedPlans());
-//		serverPlans.remove(getServerKey(originalServer));
-
-        serverPanel.saveData();
-
-//		server.transientSetSubscribedPlans(originalServer.transientGetSubscribedPlans());
-//		serverPlans.remove(getServerKey(originalServer));
-//		retrievePlans(server);
-        retrievePlans(originalServer);
+		serverPlans.remove(bambooServerCfg.getServerId());
+		serverPanel.saveData();
+        retrievePlans(bambooServerCfg);
 	}
 
 	private void setCheckboxState(int index) {
@@ -156,7 +151,7 @@ public class BambooPlansForm extends JPanel {
 
 	private void setModifiedState() {
 		isListModified = false;
-		List<BambooPlanItem> local = serverPlans.get(originalServer.getServerId());
+		List<BambooPlanItem> local = serverPlans.get(bambooServerCfg.getServerId());
 		if (local != null) {
 			for (int i = 0; i < model.getSize(); i++) {
 				if (local.get(i) != null) {
@@ -173,10 +168,10 @@ public class BambooPlansForm extends JPanel {
 	}
 
 	public void setData(final BambooServerCfg serverCfg) {
-		originalServer = serverCfg;
+		bambooServerCfg = serverCfg;
 		cbUseFavouriteBuilds.setEnabled(false);
-        if (originalServer.getUrl().length() > 0) {
-			retrievePlans(originalServer);
+        if (bambooServerCfg.getUrl().length() > 0) {
+			retrievePlans(bambooServerCfg);
 		} else {
 			model.removeAllElements();
 		}
@@ -254,7 +249,7 @@ public class BambooPlansForm extends JPanel {
 	}
 
 	private synchronized void updatePlanNames(BambooServerCfg server, String message) {
-		if (server.equals(originalServer)) {
+		if (server.equals(bambooServerCfg)) {
 			List<BambooPlanItem> plans = serverPlans.get(server.getServerId());
 			if (plans != null) {
 				model.removeAllElements();
@@ -279,27 +274,30 @@ public class BambooPlansForm extends JPanel {
 	}
 
 	public void saveData() {
-        if (originalServer == null) {
+        if (bambooServerCfg == null) {
             return;
         }
-        originalServer.clearSubscribedPlans();
-        for (int i = 0; i < model.getSize(); ++i) {
-			if (model.getElementAt(i) instanceof BambooPlanItem) {
-				BambooPlanItem p = (BambooPlanItem) model.getElementAt(i);
+		// move data only when we have fetched the data - otherwise we could overwrite user data due to e.g. network problems
+		if (serverPlans.containsKey(bambooServerCfg.getServerId()) == true) {
+			bambooServerCfg.clearSubscribedPlans();
+			for (int i = 0; i < model.getSize(); ++i) {
+				if (model.getElementAt(i) instanceof BambooPlanItem) {
+					BambooPlanItem p = (BambooPlanItem) model.getElementAt(i);
 
-				if (p.isSelected()) {
-					SubscribedPlan spb = new SubscribedPlan(p.getPlan().getPlanKey());
-					originalServer.getSubscribedPlans().add(spb);
+					if (p.isSelected()) {
+						SubscribedPlan spb = new SubscribedPlan(p.getPlan().getPlanKey());
+						bambooServerCfg.getSubscribedPlans().add(spb);
+					}
 				}
 			}
 		}
-		originalServer.setUseFavourites(cbUseFavouriteBuilds.isSelected());
+		bambooServerCfg.setUseFavourites(cbUseFavouriteBuilds.isSelected());
 	}
 
 	public boolean isModified() {
 		boolean isFavModified = false;
-		if (originalServer != null) {
-			if (cbUseFavouriteBuilds.isSelected() != originalServer.isUseFavourites()) {
+		if (bambooServerCfg != null) {
+			if (cbUseFavouriteBuilds.isSelected() != bambooServerCfg.isUseFavourites()) {
 				isFavModified = true;
 			}
 		} else {
