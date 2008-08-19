@@ -21,6 +21,7 @@ import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.api.soap.axis.*;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
+import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.util.HttpConfigurableAdapter;
 import com.intellij.openapi.diagnostic.Logger;
@@ -100,6 +101,7 @@ public class JIRASessionImpl implements JIRASession {
 	public JIRASessionImpl(String serverUrl) throws ServiceException, MalformedURLException {
 		portAddress = new URL(serverUrl + "/rpc/soap/jirasoapservice-v2");
 		JiraSoapServiceServiceLocator loc = new JiraSoapServiceServiceLocator();
+		AbstractHttpSession.setUrl(portAddress); // dirty hack
 		service = loc.getJirasoapserviceV2(portAddress);
 		setProxy();
 

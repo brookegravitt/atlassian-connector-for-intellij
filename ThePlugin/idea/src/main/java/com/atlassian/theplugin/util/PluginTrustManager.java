@@ -49,10 +49,14 @@ public final class PluginTrustManager implements X509TrustManager {
 	private static Collection<String> temporarilyAcceptedCerts =
 			Collections.synchronizedCollection(new HashSet<String>());
 
-	private Collection<String> aceptedCerts;
-
 	private PluginConfiguration configuration;
 	private X509TrustManager standardTrustManager;
+
+	private static ThreadLocal<String> url = new ThreadLocal<String>();
+
+	public static String getUrl() {
+		return url.get();
+	}
 
 	public PluginTrustManager(PluginConfiguration configuration) throws NoSuchAlgorithmException, KeyStoreException {
 		this.configuration = configuration;
@@ -114,8 +118,7 @@ public final class PluginTrustManager implements X509TrustManager {
 			} catch (CertificateNotYetValidException e1) {
 				message = "Certificate not yet valid";
 			}
-			final String server =
-					AbstractHttpSession.getServerNameFromUrl(AbstractHttpSession.getUrl());
+			final String server = AbstractHttpSession.getUrl().getHost();
 
 			// check if it should be accepted
 			final int[] accepted = new int[]{0}; // 0 rejected 1 accepted temporarily 2 - accepted perm.
@@ -150,10 +153,7 @@ public final class PluginTrustManager implements X509TrustManager {
 				case 2:
 					synchronized (configuration) {
 						// taken once again because something could change in the state
-						aceptedCerts = configuration.getGeneralConfigurationData().getCerts();
-						aceptedCerts.add(strCert);
-						configuration.
-								getGeneralConfigurationData().setCerts(aceptedCerts);
+						configuration.getGeneralConfigurationData().addCert(strCert);
 					}
 					break;
 				default:

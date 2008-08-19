@@ -22,14 +22,10 @@ import com.atlassian.theplugin.commons.cfg.ConfigurationListener;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
-import com.atlassian.theplugin.commons.util.HttpClientFactory;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
-import com.atlassian.theplugin.util.HttpConfigurableIdeaImpl;
-import com.atlassian.theplugin.util.PicoUtil;
-import com.atlassian.theplugin.util.PluginTrustManager;
-import com.atlassian.theplugin.util.PluginUtil;
+import com.atlassian.theplugin.util.*;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
@@ -44,10 +40,7 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.net.ssl.TrustManager;
 import javax.swing.*;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -92,15 +85,7 @@ public class ThePluginApplicationComponent
 		this.schedulableCheckers.add(NewVersionChecker.getInstance(configuration));
 
 		ConfigurationFactory.setConfiguration(configuration);
-		TrustManager trustManager;
-		try {
-			trustManager = new PluginTrustManager(configuration);
-			HttpClientFactory.initializeTrustManagers(trustManager);
-		} catch (NoSuchAlgorithmException e) {
-			PluginUtil.getLogger().error("Error initializing custom trust manager");
-		} catch (KeyStoreException e) {
-			PluginUtil.getLogger().error("Error initializing custom trust manager");
-		}
+		PluginSSLProtocolSocketFactory.initializeSocketFactory();
 	}
 
 	@Nls

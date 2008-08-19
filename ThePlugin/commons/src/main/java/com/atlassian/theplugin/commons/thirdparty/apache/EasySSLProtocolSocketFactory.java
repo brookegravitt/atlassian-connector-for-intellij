@@ -38,8 +38,11 @@ import org.apache.commons.httpclient.protocol.SecureProtocolSocketFactory;
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.net.*;
+import java.security.NoSuchAlgorithmException;
+import java.security.KeyStoreException;
 
 /**
  * <p>
@@ -89,16 +92,14 @@ import java.net.*;
 public class EasySSLProtocolSocketFactory implements SecureProtocolSocketFactory {
 	public final static int SSL_PORT = 443;
     private SSLContext sslcontext = null;
-	private TrustManager trustManager;
 	//private Logger logger;
 
 	/**
      * Constructor for EasySSLProtocolSocketFactory.
      */
-    public EasySSLProtocolSocketFactory(TrustManager trustManager) {
+    public EasySSLProtocolSocketFactory() {
         super();
 		//this.logger = logger;
-		this.trustManager = trustManager;
 	}
 
     private SSLContext createEasySSLContext() {
@@ -106,7 +107,7 @@ public class EasySSLProtocolSocketFactory implements SecureProtocolSocketFactory
             SSLContext context = SSLContext.getInstance("SSL");
             context.init(
               null,
-              new TrustManager[] {trustManager},
+              new TrustManager[] {getTrustManager()},
               null);
             return context;
         } catch (Exception e) {
@@ -115,7 +116,11 @@ public class EasySSLProtocolSocketFactory implements SecureProtocolSocketFactory
         }
     }
 
-    private SSLContext getSSLContext() {
+	protected X509TrustManager getTrustManager() throws NoSuchAlgorithmException, KeyStoreException {
+		return new EasyX509TrustManager(null);
+	}
+
+	private SSLContext getSSLContext() {
         if (this.sslcontext == null) {
             this.sslcontext = createEasySSLContext();
         }
