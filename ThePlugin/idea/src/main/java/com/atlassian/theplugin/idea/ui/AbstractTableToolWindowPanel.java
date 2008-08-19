@@ -16,12 +16,16 @@
 
 package com.atlassian.theplugin.idea.ui;
 
-import com.atlassian.theplugin.commons.bamboo.*;
+import com.atlassian.theplugin.commons.bamboo.StausIconBambooListener;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.configuration.ProjectToolWindowTableConfiguration;
-import com.atlassian.theplugin.idea.bamboo.*;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
-import com.intellij.openapi.actionSystem.*;
+import com.atlassian.theplugin.idea.bamboo.ToolWindowBambooContent;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionPopupMenu;
+import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.util.ui.ListTableModel;
 import com.intellij.util.ui.UIUtil;
 import thirdparty.javaworld.ClasspathHTMLEditorKit;
@@ -31,13 +35,13 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public abstract class AbstractTableToolWindowPanel extends JPanel {
+public abstract class AbstractTableToolWindowPanel<T> extends JPanel {
 	private transient ActionToolbar filterEditToolbar;
 	protected JPanel toolBarPanel;
     protected JEditorPane editorPane;
     protected JScrollPane tablePane;
-    protected ListTableModel listTableModel;
-	protected AtlassianTableView table;
+    protected ListTableModel<T> listTableModel;
+	protected AtlassianTableView<T> table;
 	protected static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
 	protected ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
     protected ProjectConfigurationBean projectConfiguration;
@@ -67,9 +71,9 @@ public abstract class AbstractTableToolWindowPanel extends JPanel {
 		editorPane.setMinimumSize(ED_PANE_MINE_SIZE);
 		add(pane, BorderLayout.SOUTH);
 
-		listTableModel = new ListTableModel(getTableColumnProvider().makeColumnInfo());
+		listTableModel = new ListTableModel<T>(getTableColumnProvider().makeColumnInfo());
 		listTableModel.setSortable(true);
-		table = new AtlassianTableView(getTableColumnProvider(), listTableModel, getTableConfiguration());
+		table = new AtlassianTableView<T>(getTableColumnProvider(), listTableModel, getTableConfiguration());
 
 		table.addMouseListener(new PopuMenuMouseAdapter());
 
@@ -118,7 +122,7 @@ public abstract class AbstractTableToolWindowPanel extends JPanel {
 		editorPane.setText(wrapBody("<table width=\"100%\"><tr><td colspan=\"2\">" + msg + "</td></tr></table>"));
 	}
 
-	public AtlassianTableView getTable() {
+	public AtlassianTableView<T> getTable() {
 		return table;
 	}
 
@@ -147,16 +151,19 @@ public abstract class AbstractTableToolWindowPanel extends JPanel {
 	public abstract void clearAdvancedFilter();
 
 	private class PopuMenuMouseAdapter extends MouseAdapter {
+		@Override
 		public void mouseClicked(MouseEvent e) {
 			if (e.getClickCount() == 2) {
 				handleDoubleClick(table.getSelectedObject());
 			}
 		}
 
+		@Override
 		public void mousePressed(MouseEvent e) {
 			maybeShowPopup(e);
 		}
 
+		@Override
 		public void mouseReleased(MouseEvent e) {
 			maybeShowPopup(e);
 		}

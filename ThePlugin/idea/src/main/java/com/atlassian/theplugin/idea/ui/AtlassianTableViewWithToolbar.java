@@ -25,11 +25,7 @@ import javax.swing.table.TableColumnModel;
 import java.awt.*;
 
 /**
- * Created by IntelliJ IDEA.
- * User: lguminski
- * Date: Jun 18, 2008
- * Time: 6:11:26 PM
- * To change this template use File | Settings | File Templates.
+ * @author lguminski
  */
 public class AtlassianTableViewWithToolbar<T> extends JPanel {
     private AtlassianTableView<T> table;
@@ -115,19 +111,20 @@ public class AtlassianTableViewWithToolbar<T> extends JPanel {
         table.clearSelection();
     }
 
-    public void addItemSelectedListener(TableItemSelectedListener listener) {
+    public void addItemSelectedListener(TableItemSelectedListener<T> listener) {
         table.addItemSelectedListener(listener);
     }
 
-    public void removeItemSelectedListener(TableItemSelectedListener listener) {
+    public void removeItemSelectedListener(TableItemSelectedListener<T> listener) {
         table.removeItemSelectedListener(listener);
     }
 
-    public AtlassianTableView getTable() {
+    public AtlassianTableView<T> getTable() {
         return table;
     }
 
-    public TableViewModel getTableViewModel() {
+	@SuppressWarnings("unchecked")
+	public TableViewModel<T> getTableViewModel() {
         return table.getTableViewModel();
     }
 
@@ -143,7 +140,8 @@ public class AtlassianTableViewWithToolbar<T> extends JPanel {
         table.setMinRowHeight(i);
     }
 
-    public void removeAll() {
+    @Override
+	public void removeAll() {
         table.removeAll();
     }
 

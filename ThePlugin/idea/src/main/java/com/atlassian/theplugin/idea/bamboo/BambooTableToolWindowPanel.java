@@ -46,7 +46,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel implements BambooStatusListener {
+public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel<BambooBuildAdapterIdea>
+		implements BambooStatusListener {
     private final transient BambooServerFacade bambooFacade;
     private static final DateTimeFormatter TIME_DF = DateTimeFormat.forPattern("hh:mm a");
     private TableColumnProvider columnProvider;
@@ -159,7 +160,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
     }
 
     public void addLabelToBuild() {
-        BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) table.getSelectedObject();
+        BambooBuildAdapterIdea build = table.getSelectedObject();
         openLabelDialog(build);
     }
 
@@ -190,7 +191,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
     }
 
     public void addCommentToBuild() {
-        BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) table.getSelectedObject();
+        BambooBuildAdapterIdea build = table.getSelectedObject();
         openCommentDialog(build);
     }
 
@@ -212,7 +213,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
     }
 
     public void runBuild() {
-        BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) table.getSelectedObject();
+        BambooBuildAdapterIdea build = table.getSelectedObject();
         executeBuild(build);
     }
 
@@ -273,12 +274,12 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
     }
 
     public boolean getExecuteBuildEnabled() {
-        BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) table.getSelectedObject();
+        BambooBuildAdapterIdea build = table.getSelectedObject();
         return build != null && build.getEnabled();
     }
 
     private boolean getBamboo2ActionsEnabled() {
-        BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) table.getSelectedObject();
+        BambooBuildAdapterIdea build = table.getSelectedObject();
         if (build != null) {
             return build.isBamboo2() && build.getEnabled();
         } else {
@@ -295,14 +296,14 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
     }
 
     public void viewBuild() {
-        BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) table.getSelectedObject();
+        BambooBuildAdapterIdea build = table.getSelectedObject();
         if (build != null) {
             BrowserUtil.launchBrowser(build.getBuildResultUrl());
         }
     }
 
     public boolean canShowFailedTests() {
-        BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) table.getSelectedObject();
+        BambooBuildAdapterIdea build = table.getSelectedObject();
         if (build == null) {
             return false;
         }
@@ -310,7 +311,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
     }
 
     public void showBuildStackTrace() {
-        final BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) table.getSelectedObject();
+        final BambooBuildAdapterIdea build = table.getSelectedObject();
 
         new Thread(new Runnable() {
             public void run() {
@@ -338,7 +339,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
     }
 
     public boolean canShowChanges() {
-        BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) table.getSelectedObject();
+        BambooBuildAdapterIdea build = table.getSelectedObject();
         if (build == null) {
             return false;
         }
@@ -346,7 +347,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
     }
 
     public void showChanges() {
-        final BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) table.getSelectedObject();
+        final BambooBuildAdapterIdea build = table.getSelectedObject();
 
         new Thread(new Runnable() {
             public void run() {
@@ -374,7 +375,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
 
 	
 	public void showBuildLog() {
-        final BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) table.getSelectedObject();
+        final BambooBuildAdapterIdea build = table.getSelectedObject();
 
         new Thread(new Runnable() {
             public void run() {

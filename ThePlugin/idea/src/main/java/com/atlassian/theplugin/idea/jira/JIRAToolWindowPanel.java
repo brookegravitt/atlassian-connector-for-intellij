@@ -18,24 +18,45 @@ package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.JiraFilterEntryBean;
 import com.atlassian.theplugin.configuration.JiraFiltersBean;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.configuration.ProjectToolWindowTableConfiguration;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.action.jira.*;
+import com.atlassian.theplugin.idea.action.jira.FilterTypeAction;
+import com.atlassian.theplugin.idea.action.jira.JIRANextPageAction;
+import com.atlassian.theplugin.idea.action.jira.JIRAPreviousPageAcion;
+import com.atlassian.theplugin.idea.action.jira.JIRAShowIssuesFilterAction;
+import com.atlassian.theplugin.idea.action.jira.RunJIRAActionAction;
+import com.atlassian.theplugin.idea.action.jira.SavedFilterComboAction;
 import com.atlassian.theplugin.idea.jira.table.JIRATableColumnProviderImpl;
-import com.atlassian.theplugin.idea.jira.table.columns.*;
+import com.atlassian.theplugin.idea.jira.table.columns.IssueKeyColumn;
+import com.atlassian.theplugin.idea.jira.table.columns.IssuePriorityColumn;
+import com.atlassian.theplugin.idea.jira.table.columns.IssueStatusColumn;
+import com.atlassian.theplugin.idea.jira.table.columns.IssueSummaryColumn;
+import com.atlassian.theplugin.idea.jira.table.columns.IssueTypeColumn;
 import com.atlassian.theplugin.idea.ui.AbstractTableToolWindowPanel;
 import com.atlassian.theplugin.idea.ui.TableColumnProvider;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
-import com.atlassian.theplugin.jira.api.*;
+import com.atlassian.theplugin.jira.api.JIRAAction;
+import com.atlassian.theplugin.jira.api.JIRAException;
+import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
+import com.atlassian.theplugin.jira.api.JIRASavedFilterBean;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.ide.DataManager;
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionPlaces;
+import com.intellij.openapi.actionSystem.ActionPopupMenu;
+import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.ui.popup.PopupChooserBuilder;
@@ -46,13 +67,12 @@ import com.intellij.util.ui.UIUtil;
 
 import javax.swing.*;
 import java.awt.*;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
-public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
+public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueAdapter> {
     private static final int PAGE_SIZE = 50;
 	private static final Key<JIRAToolWindowPanel> WINDOW_PROJECT_KEY =  Key.create(JIRAToolWindowPanel.class.getName());
 	private Project project;
@@ -81,7 +101,8 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
 
     private transient JIRAIssue selectedIssue = null;
 
-    protected void handlePopupClick(Object selectedObject) {
+    @Override
+	protected void handlePopupClick(Object selectedObject) {
         selectedIssue = ((JiraIssueAdapter) selectedObject).getIssue();
     }
 
@@ -96,6 +117,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
         return window;
     }
 
+	@Override
 	protected void handleDoubleClick(Object selectedObject) {
 		AnAction action = ActionManager.getInstance().getAction("ThePlugin.JIRA.OpenIssue");
 		action.actionPerformed(new AnActionEvent(null, DataManager.getInstance().getDataContext(this),
@@ -103,26 +125,31 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
 				ActionManager.getInstance(), 0));
     }
 
-    protected String getInitialMessage() {
+    @Override
+	protected String getInitialMessage() {
         return "Select a JIRA server to retrieve your issues.";
     }
 
-    protected String getToolbarActionGroup() {
+    @Override
+	protected String getToolbarActionGroup() {
         return "ThePlugin.JIRA.ServerToolBar";
     }
 
-    protected String getPopupActionGroup() {
+    @Override
+	protected String getPopupActionGroup() {
         return "ThePlugin.JIRA.IssuePopupMenu";
     }
 
-    protected TableColumnProvider getTableColumnProvider() {
+    @Override
+	protected TableColumnProvider getTableColumnProvider() {
         if (columnProvider == null) {
             columnProvider = new JIRATableColumnProviderImpl();
         }
         return columnProvider;
     }
 
-    protected ProjectToolWindowTableConfiguration getTableConfiguration() {
+    @Override
+	protected ProjectToolWindowTableConfiguration getTableConfiguration() {
         return projectConfiguration.getJiraConfiguration().getTableConfiguration();
     }
 
@@ -156,16 +183,8 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
             try {
                 Class<?> c = Class.forName(className);
                 advancedQuery.add((JIRAQueryFragment) c.getConstructor(Map.class).newInstance(filter));
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InstantiationException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+				LoggerImpl.getInstance().error(e);
             }
         }
         if (savedFilter != null) {
@@ -175,7 +194,8 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
         }
     }
 
-    public void applyAdvancedFilter() {
+    @Override
+	public void applyAdvancedFilter() {
         advancedQuery.clear();
         advancedQuery.addAll(jiraIssueFilterPanel.getFilter());
         startIndex = 0;
@@ -189,7 +209,8 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
         filterToolbarSetVisible(true);
     }
 
-    public void cancelAdvancedFilter() {
+    @Override
+	public void cancelAdvancedFilter() {
         filters.setManualFilter(serializeQuery());
         filters.setSavedFilterUsed(false);
         projectConfiguration.
@@ -199,7 +220,8 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
         filterToolbarSetVisible(true);
     }
 
-    public void clearAdvancedFilter() {
+    @Override
+	public void clearAdvancedFilter() {
         advancedQuery.clear();
         JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer();
         if (jiraServer != null) {
@@ -227,24 +249,36 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
 
 
     public void viewIssue() {
-        JIRAIssue issue = ((JiraIssueAdapter) table.getSelectedObject()).getIssue();
+		final JiraIssueAdapter issueAdapter = table.getSelectedObject();
+		if (issueAdapter == null) {
+			return;
+		}
+		JIRAIssue issue = issueAdapter.getIssue();
         BrowserUtil.launchBrowser(issue.getIssueUrl());
     }
 
     public void editIssue() {
-        JIRAIssue issue = ((JiraIssueAdapter) table.getSelectedObject()).getIssue();
+		final JiraIssueAdapter issueAdapter = table.getSelectedObject();
+		if (issueAdapter == null) {
+			return;
+		}
+		JIRAIssue issue = issueAdapter.getIssue();
         BrowserUtil.launchBrowser(issue.getServerUrl() + "/secure/EditIssue!default.jspa?key=" + issue.getKey());
     }
 
     public void showIssueActions() {
-		final JiraIssueAdapter adapter = ((JiraIssueAdapter) table.getSelectedObject());
+		final JiraIssueAdapter adapter = table.getSelectedObject();
+		if (adapter == null) {
+			return;
+		}
 		final JIRAIssue issue = adapter.getIssue();
 		List<JIRAAction> actions = adapter.getCachedActions();
 		if (actions != null) {
 			showActionsPopup(adapter, actions);
 		} else {
 			Thread thread = new Thread("atlassian-idea-plugin show issue actions") {
-                public void run() {
+                @Override
+				public void run() {
                     setStatusMessage("Getting available issue actions for issue " + issue.getKey() + "...");
                     try {
                         List<JIRAAction> actions =
@@ -297,8 +331,10 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
 			.showInCenterOf(this);
 	}
 
+	@Override
 	protected void addCustomSubmenus(DefaultActionGroup actionGroup, final ActionPopupMenu popup) {
 		final DefaultActionGroup submenu = new DefaultActionGroup("Querying For Actions... ", true) {
+			@Override
 			public void update(AnActionEvent event) {
 				super.update(event);
 
@@ -309,7 +345,10 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
 		};
 		actionGroup.add(submenu);
 
-		final JiraIssueAdapter adapter = ((JiraIssueAdapter) table.getSelectedObject());
+		final JiraIssueAdapter adapter = table.getSelectedObject();
+		if (adapter == null) {
+			return;
+		}
 		final JIRAIssue issue = adapter.getIssue();
 		List<JIRAAction> actions = adapter.getCachedActions();
 		if (actions != null) {
@@ -318,6 +357,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
 			}
 		} else {
 			new Thread() {
+				@Override
 				public void run() {
 					try {
 						final List<JIRAAction> actions =
@@ -486,7 +526,8 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
         filterToolbar.getComponent().setVisible(visible);
     }
 
-    protected void filterEditToolbarSetVisible(boolean visible) {
+    @Override
+	protected void filterEditToolbarSetVisible(boolean visible) {
         filterEditToolbar.getComponent().setVisible(visible);
     }
 
@@ -513,7 +554,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
         }
     }
 
-    private void checkNextPageAvailable(List result) {
+    private void checkNextPageAvailable(List<?> result) {
         if (result.size() < PAGE_SIZE) {
             nextPageAvailable = false;
         } else {
@@ -656,7 +697,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
     }
 
     public void assignIssueToMyself() {
-        JiraIssueAdapter adapter = (JiraIssueAdapter) table.getSelectedObject();
+        JiraIssueAdapter adapter = table.getSelectedObject();
         if (adapter == null) {
             return;
         }
@@ -669,7 +710,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
     }
 
     public void assignIssueToSomebody() {
-        final JIRAIssue issue = ((JiraIssueAdapter) table.getSelectedObject()).getIssue();
+        final JIRAIssue issue = table.getSelectedObject().getIssue();
 
         final GetUserNameDialog getUserNameDialog = new GetUserNameDialog(issue.getKey());
         getUserNameDialog.show();
@@ -683,7 +724,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
     }
 
     public void createChangeListAction(Project projectArg) {
-        JiraIssueAdapter adapter = (JiraIssueAdapter) table.getSelectedObject();
+        JiraIssueAdapter adapter = table.getSelectedObject();
         if (adapter == null) {
             return;
         }
@@ -711,7 +752,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
     }
 
     public void addCommentToIssue() {
-        JiraIssueAdapter adapter = (JiraIssueAdapter) table.getSelectedObject();
+        JiraIssueAdapter adapter = table.getSelectedObject();
         if (adapter == null) {
             return;
         }
@@ -720,7 +761,8 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
         issueComment.show();
         if (issueComment.isOK()) {
             Thread thread = new Thread("atlassian-idea-plugin comment issue") {
-                public void run() {
+                @Override
+				public void run() {
                     setStatusMessage("Commenting issue " + issue.getKey() + "...");
                     try {
                         jiraServerFacade.addComment(IdeaHelper.getCurrentJIRAServer().getServer(),
@@ -737,7 +779,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
     }
 
     public void logWorkForIssue() {
-		JiraIssueAdapter adapter = (JiraIssueAdapter) table.getSelectedObject();
+		JiraIssueAdapter adapter = table.getSelectedObject();
         if (adapter == null) {
             return;
         }
@@ -746,7 +788,8 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
         workLogCreate.show();
         if (workLogCreate.isOK()) {
             Thread thread = new Thread("atlassian-idea-plugin work log") {
-                public void run() {
+                @Override
+				public void run() {
                     setStatusMessage("Logging work for issue " + issue.getKey() + "...");
                     try {
                         Calendar cal = Calendar.getInstance();
@@ -777,7 +820,8 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
 
     private void assignIssue(final JIRAIssue issue, final String assignee) {
         Thread thread = new Thread("atlassian-idea-plugin assign issue issue") {
-            public void run() {
+            @Override
+			public void run() {
                 setStatusMessage("Assigning issue " + issue.getKey() + " to " + assignee + "...");
                 try {
                     jiraServerFacade.setAssignee(IdeaHelper.getCurrentJIRAServer().getServer(), issue, assignee);
@@ -801,7 +845,8 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel {
             if (issueCreate.isOK()) {
                 Thread thread = new Thread("atlassian-idea-plugin create issue") {
 
-                    public void run() {
+                    @Override
+					public void run() {
                         setStatusMessage("Creating new issue...");
                         JIRAIssue newIssue;
                         String message;
