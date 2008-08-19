@@ -16,19 +16,18 @@
 
 package com.atlassian.theplugin.idea.action.jira;
 
+import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction;
 import com.intellij.openapi.project.Project;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.util.Collection;
-
-import org.jetbrains.annotations.NotNull;
 
 public class SelectJIRAAction extends ComboBoxAction {
 
@@ -39,7 +38,6 @@ public class SelectJIRAAction extends ComboBoxAction {
 		final Project project = IdeaHelper.getCurrentProject(jComponent);
 
 		final DefaultActionGroup g = new DefaultActionGroup();
-
 
 		Collection<JiraServerCfg> servers = IdeaHelper.getCfgManager().getAllEnabledJiraServers(
 				CfgUtil.getProjectId(project));
