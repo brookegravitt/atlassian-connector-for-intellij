@@ -44,6 +44,7 @@ public class NewExceptionNotification implements CrucibleNotification {
 		return "Crucible communication exception: " + exception.getMessage();
 	}
 
+	@Override
 	public boolean equals(final Object o) {
 	if (this == o) {
 		return true;
@@ -53,6 +54,9 @@ public class NewExceptionNotification implements CrucibleNotification {
 	}
 
 	final NewExceptionNotification that = (NewExceptionNotification) o;
+	if (exception.getMessage() == null) {
+		return that.exception.getMessage() == null;
+	}
 
 	if (!exception.getMessage().equals(that.exception.getMessage())) {
 		return false;
@@ -61,7 +65,9 @@ public class NewExceptionNotification implements CrucibleNotification {
 	return true;
 }
 
+	@Override
 	public int hashCode() {
 		return exception.hashCode();
 	}
 }
+
