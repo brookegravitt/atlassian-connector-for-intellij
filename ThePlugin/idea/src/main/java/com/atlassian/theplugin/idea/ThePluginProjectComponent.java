@@ -17,10 +17,18 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
+import com.atlassian.theplugin.commons.ConfigurationListener;
 import com.atlassian.theplugin.commons.UIActionScheduler;
-import com.atlassian.theplugin.commons.bamboo.*;
+import com.atlassian.theplugin.commons.bamboo.BambooPopupInfo;
+import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
+import com.atlassian.theplugin.commons.bamboo.BambooStatusChecker;
+import com.atlassian.theplugin.commons.bamboo.BambooStatusDisplay;
+import com.atlassian.theplugin.commons.bamboo.BambooStatusTooltipListener;
+import com.atlassian.theplugin.commons.bamboo.BuildStatus;
+import com.atlassian.theplugin.commons.bamboo.StausIconBambooListener;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.cfg.ProjectId;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.configuration.CrucibleTooltipOption;
@@ -67,8 +75,7 @@ import javax.swing.*;
  */
 @State(name = "atlassian-ide-plugin-workspace",
 		storages = {@Storage(id = "atlassian-ide-plugin-workspace-id", file = "$WORKSPACE_FILE$") })
-public class ThePluginProjectComponent implements
-        ProjectComponent, PersistentStateComponent<ProjectConfigurationBean> {
+public class ThePluginProjectComponent implements ProjectComponent, PersistentStateComponent<ProjectConfigurationBean> {
     private static final String THE_PLUGIN_TOOL_WINDOW_ICON = "/icons/ico_plugin_16.png";
 
     private final ProjectConfigurationBean projectConfigurationBean;
@@ -268,7 +275,20 @@ public class ThePluginProjectComponent implements
 				}
 			}
 
-            created = true;
+			cfgManager.addListener(CfgUtil.getProjectId(project), new ConfigurationListener() {
+				public void updateConfiguration(final ProjectId project, final CfgManager cfgManager) {
+					// show-hide icons if necessary
+					statusBarBambooIcon.showOrHideIcon();
+					statusBarCrucibleIcon.showOrHideIcon();
+					// show-hide panels if necessary
+					getToolWindow().showHidePanels();
+				}
+
+				public void projectUnregistered() {
+				}
+			});
+
+			created = true;
         }
     }
 
@@ -362,14 +382,6 @@ public class ThePluginProjectComponent implements
 		}
 	}
 
-    public BambooStatusIcon getStatusBarBambooIcon() {
-        return statusBarBambooIcon;
-    }
-
-    public CrucibleStatusIcon getStatusBarCrucibleIcon() {
-        return statusBarCrucibleIcon;
-    }
-
     public ProjectConfigurationBean getState() {
         return projectConfigurationBean;
     }
@@ -401,11 +413,4 @@ public class ThePluginProjectComponent implements
         return bambooStatusChecker;
     }
 
-    public String getReviewId() {
-        return reviewId;
-    }
-
-    public void setReviewId(String reviewId) {
-        this.reviewId = reviewId;
-    }
 }

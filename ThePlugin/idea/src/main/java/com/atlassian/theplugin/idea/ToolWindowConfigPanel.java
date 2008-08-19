@@ -29,11 +29,12 @@ import javax.swing.event.HyperlinkListener;
 import java.awt.*;
 
 public class ToolWindowConfigPanel extends JPanel {
+	private static final int ROW_COUNT = 3;
 
 	public ToolWindowConfigPanel(final Project project) {
 		super(new GridBagLayout());
 
-		JPanel panel = new JPanel(new GridLayout(3,1));
+		JPanel panel = new JPanel(new GridLayout(ROW_COUNT, 1));
 		GridBagConstraints c = new GridBagConstraints();
 		c.anchor = GridBagConstraints.CENTER;
 		this.add(panel, c);

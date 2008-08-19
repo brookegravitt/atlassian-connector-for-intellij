@@ -219,14 +219,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		}
 		projectConfigurationPanel.saveData(true);
 		cfgManager.updateProjectConfiguration(getProjectId(), projectConfigurationPanel.getProjectConfiguration());
-
-
-		ThePluginProjectComponent projectComponent = project.getComponent(ThePluginProjectComponent.class);
-		// show-hide icons if necessary
-		projectComponent.getStatusBarBambooIcon().showOrHideIcon();
-		projectComponent.getStatusBarCrucibleIcon().showOrHideIcon();
-		// show-hide panels if necessary
-		projectComponent.getToolWindow().showHidePanels();
+		projectConfigurationPanel.setData(cfgManager.getProjectConfiguration(getProjectId()).getClone());
 	}
 
 	public void reset() {
