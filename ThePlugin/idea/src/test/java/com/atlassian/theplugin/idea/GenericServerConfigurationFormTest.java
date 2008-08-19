@@ -52,46 +52,7 @@ public class GenericServerConfigurationFormTest extends TestCase {
 		checkServerBean(outServerBean);
 	}
 
-	@SuppressWarnings({ "RedundantStringConstructorCall" })
-	public void testBambooFormIsModified() throws Exception {
-		ServerCfg inServerBean = createServerBean();
-
-		genericServerConfigurationForm.setData(inServerBean);
-
-		ServerCfg outServerBean = createServerBean();
-
-		assertFalse(genericServerConfigurationForm.isModified());
-
-		/* equals vs == */
-
-		outServerBean.setName(new String("name"));
-		outServerBean.setPassword(new String("password"));
-		outServerBean.setUrl(new String("url"));
-		outServerBean.setUsername(new String("userName"));
-        assertFalse(genericServerConfigurationForm.isModified());
-
-
-		GenericServerConfigFormFieldMapper formHelper = new GenericServerConfigFormFieldMapper(genericServerConfigurationForm);
-
-		formHelper.getServerName().setText(outServerBean.getName() + "-chg");
-		assertTrue(genericServerConfigurationForm.isModified());
-		formHelper.getServerName().setText(outServerBean.getName());
-
-		formHelper.getServerUrl().setText(outServerBean.getUrl() + "-chg");
-		assertTrue(genericServerConfigurationForm.isModified());
-		formHelper.getServerUrl().setText(outServerBean.getUrl());
-
-		formHelper.getUsername().setText(outServerBean.getUsername() + "-chg");
-		assertTrue(genericServerConfigurationForm.isModified());
-		formHelper.getUsername().setText(outServerBean.getUsername());
-
-
-		formHelper.getPassword().setText(outServerBean.getName() + "-chg");
-		assertTrue(genericServerConfigurationForm.isModified());
-		formHelper.getPassword().setText(outServerBean.getPassword());
-	}
-
-	private static ServerCfg createServerBean() {
+private static ServerCfg createServerBean() {
         ServerCfg tmp = new ServerCfg(true, "name", new ServerId()) {
             @Override
             public ServerType getServerType() {
