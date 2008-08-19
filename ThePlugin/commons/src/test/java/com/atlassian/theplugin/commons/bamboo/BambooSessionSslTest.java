@@ -24,11 +24,14 @@ import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.thirdparty.apache.EasyX509TrustManager;
+import com.atlassian.theplugin.commons.thirdparty.apache.EasySSLProtocolSocketFactory;
 import com.atlassian.theplugin.commons.util.HttpClientFactory;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.security.SslSocketConnector;
+import org.apache.commons.httpclient.protocol.Protocol;
+import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 
 public class BambooSessionSslTest extends TestCase {
 	private static final String USER_NAME = "someSslUser";
@@ -41,7 +44,9 @@ public class BambooSessionSslTest extends TestCase {
 
 	@Override
 	protected void setUp() throws Exception {
-		HttpClientFactory.initializeTrustManagers(new EasyX509TrustManager(null));
+		Protocol.registerProtocol("https", new Protocol(
+				"https", (ProtocolSocketFactory) new EasySSLProtocolSocketFactory(),
+				EasySSLProtocolSocketFactory.SSL_PORT));
 		PluginConfiguration configuration = new PluginConfigurationBean();
 		ConfigurationFactory.setConfiguration(configuration);
 

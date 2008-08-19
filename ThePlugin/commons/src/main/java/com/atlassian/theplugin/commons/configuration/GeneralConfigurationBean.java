@@ -111,11 +111,11 @@ public class GeneralConfigurationBean {
 		return useIdeaProxySettings;
 	}
 
-	public Collection<String> getCerts() {
+	public synchronized Collection<String> getCerts() {
 		return certs;
 	}
 
-	public void setCerts(Collection<String> certs) {
+	public synchronized void setCerts(Collection<String> certs) {
 		this.certs = certs;
 	}
 
@@ -170,4 +170,7 @@ public class GeneralConfigurationBean {
 		return result;
 	}
 
+	public synchronized void addCert(final String strCert) {
+		certs.add(strCert);
+	}
 }

@@ -37,6 +37,7 @@ import org.jdom.output.XMLOutputter;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * Communication stub for lightweight XML based APIs.
@@ -49,13 +50,22 @@ public abstract class AbstractHttpSession {
 
     private final Object clientLock = new Object();
 
-    private static ThreadLocal<String> url = new ThreadLocal<String>();
+    private static ThreadLocal<URL> url = new ThreadLocal<URL>();
 
-    public static String getUrl() {
+    public static URL getUrl() {
         return url.get();
     }
 
-    /**
+	public static void setUrl(final URL urlString) {
+		url.set(urlString);
+	}
+
+	public static void setUrl(final String urlString) throws MalformedURLException {
+		setUrl(new URL(urlString));
+	}
+
+
+	/**
      * Public constructor for AbstractHttpSession
      *
      * @param baseUrl base URL for server instance
@@ -81,8 +91,8 @@ public abstract class AbstractHttpSession {
     protected Document retrieveGetResponse(String urlString, boolean expectResponse)
             throws IOException, JDOMException, RemoteApiSessionExpiredException {
         UrlUtil.validateUrl(urlString);
-        url.set(urlString);
-        Document doc = null;
+		setUrl(urlString);
+		Document doc = null;
         synchronized (clientLock) {
             if (client == null) {
                 try {
@@ -125,8 +135,8 @@ public abstract class AbstractHttpSession {
     protected byte[] retrieveGetResponseAsBytes(String urlString)
             throws IOException, JDOMException, RemoteApiSessionExpiredException {
         UrlUtil.validateUrl(urlString);
-        url.set(urlString);
-        synchronized (clientLock) {
+		setUrl(urlString);
+		synchronized (clientLock) {
             if (client == null) {
                 try {
                     client = HttpClientFactory.getClient();
@@ -174,8 +184,8 @@ public abstract class AbstractHttpSession {
     protected Document retrievePostResponse(String urlString, String request, boolean expectResponse)
             throws IOException, JDOMException, RemoteApiSessionExpiredException {
         UrlUtil.validateUrl(urlString);
-        url.set(urlString);
-        Document doc = null;
+		setUrl(urlString);
+		Document doc = null;
         synchronized (clientLock) {
             if (client == null) {
                 try {
@@ -217,7 +227,8 @@ public abstract class AbstractHttpSession {
         return doc;
     }
 
-    protected Document retrieveDeleteResponse(String urlString, boolean expectResponse)
+
+	protected Document retrieveDeleteResponse(String urlString, boolean expectResponse)
             throws IOException, JDOMException, RemoteApiSessionExpiredException {
         UrlUtil.validateUrl(urlString);
 

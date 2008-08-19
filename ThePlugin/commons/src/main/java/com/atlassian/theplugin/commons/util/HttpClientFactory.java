@@ -18,13 +18,8 @@ package com.atlassian.theplugin.commons.util;
 
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.exception.HttpProxySettingsException;
-import com.atlassian.theplugin.commons.thirdparty.apache.EasySSLProtocolSocketFactory;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.protocol.Protocol;
-import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
-
-import javax.net.ssl.TrustManager;
 
 public final class HttpClientFactory {
 	private static MultiThreadedHttpConnectionManager connectionManager;
@@ -45,12 +40,6 @@ public final class HttpClientFactory {
 		connectionManager.getParams().setConnectionTimeout(getConnectionTimeout());
 		connectionManager.getParams().setMaxTotalConnections(TOTAL_MAX_CONNECTIONS);
 		connectionManager.getParams().setDefaultMaxConnectionsPerHost(DEFAULT_MAX_CONNECTIONS_PER_HOST);
-	}
-
-	public static void initializeTrustManagers(TrustManager manager) {
-		Protocol.registerProtocol("https", new Protocol(
-				"https", (ProtocolSocketFactory) new EasySSLProtocolSocketFactory(manager),
-				EasySSLProtocolSocketFactory.SSL_PORT));
 	}
 
 	///CLOVER:OFF
