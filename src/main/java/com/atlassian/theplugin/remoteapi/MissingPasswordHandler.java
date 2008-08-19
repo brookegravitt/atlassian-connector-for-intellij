@@ -17,9 +17,9 @@
 package com.atlassian.theplugin.remoteapi;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.ConfigurationListener;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
-import com.atlassian.theplugin.commons.cfg.ProjectId;
+import com.atlassian.theplugin.commons.cfg.ConfigurationListener;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
@@ -104,7 +104,7 @@ public class MissingPasswordHandler implements Runnable, ConfigurationListener {
 
 	}
 
-	public void updateConfiguration(final ProjectId aProject, final CfgManager aCfgManager) {
+	public void configurationUpdated(final ProjectConfiguration aProjectConfiguration) {
 	}
 
 	public synchronized void projectUnregistered() {

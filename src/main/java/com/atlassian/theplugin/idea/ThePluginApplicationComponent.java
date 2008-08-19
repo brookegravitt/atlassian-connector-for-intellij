@@ -16,10 +16,10 @@
 
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.commons.ConfigurationListener;
 import com.atlassian.theplugin.commons.SchedulableChecker;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
-import com.atlassian.theplugin.commons.cfg.ProjectId;
+import com.atlassian.theplugin.commons.cfg.ConfigurationListener;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.util.HttpClientFactory;
@@ -220,7 +220,7 @@ public class ThePluginApplicationComponent
 		configuration.transientSetHttpConfigurable(HttpConfigurableIdeaImpl.getInstance());
 	}
 
-	public void updateConfiguration(final ProjectId project, final CfgManager aCfgManager) {
+	public void configurationUpdated(final ProjectConfiguration aProjectConfiguration) {
 		rescheduleStatusCheckers(true);
 	}
 
