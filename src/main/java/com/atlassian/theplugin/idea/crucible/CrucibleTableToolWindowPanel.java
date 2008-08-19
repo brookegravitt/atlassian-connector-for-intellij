@@ -43,7 +43,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.util.Key;
 import com.intellij.ui.table.TableView;
-import com.intellij.util.ui.ListTableModel;
 import com.intellij.util.ui.UIUtil;
 import thirdparty.javaworld.ClasspathHTMLEditorKit;
 
@@ -55,7 +54,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStatusListener, TableItemSelectedListener {
+public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStatusListener, TableItemSelectedListener<ReviewData> {
 	public static final String PLACE_PREFIX = CrucibleTableToolWindowPanel.class.getSimpleName();
 	private static final Key<CrucibleTableToolWindowPanel> WINDOW_PROJECT_KEY
 			= Key.create(CrucibleTableToolWindowPanel.class.getName());
@@ -79,7 +78,6 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 	private transient CrucibleFiltersBean filters;
 
 	protected JScrollPane tablePane;
-	protected ListTableModel listTableModel;
 	protected static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
 	protected ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
 
@@ -349,9 +347,9 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 		uniqueReviews.clear();
 	}
 
-	public void itemSelected(AtlassianTableView table, int noClicks) {
-		if (table.getSelectedObject() != null && table.getSelectedObject() instanceof ReviewData) {
-			selectedItem = (ReviewData) table.getSelectedObject();
+	public void itemSelected(AtlassianTableView<ReviewData> table, int noClicks) {
+		if (table.getSelectedObject() != null) {
+			selectedItem = table.getSelectedObject();
 
 			for (CollapsibleTable collapsibleTable : tables.values()) {
 				if (!collapsibleTable.getTable().equals(table)) {

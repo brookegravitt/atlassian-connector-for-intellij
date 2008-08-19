@@ -19,10 +19,10 @@ package com.atlassian.theplugin.idea.ui;
 import com.atlassian.theplugin.configuration.ProjectToolWindowTableConfiguration;
 import com.intellij.util.ui.ListTableModel;
 
-public class CollapsibleTable extends CollapsiblePanel {
+public class CollapsibleTable<T> extends CollapsiblePanel {
 
-    private ListTableModel listTableModel;
-	private AtlassianTableViewWithToolbar table;
+    private ListTableModel<T> listTableModel;
+	private AtlassianTableViewWithToolbar<T> table;
 
 	public CollapsibleTable(TableColumnProvider tableColumnProvider,
                             ProjectToolWindowTableConfiguration projectToolWindowConfiguration,
@@ -31,19 +31,19 @@ public class CollapsibleTable extends CollapsiblePanel {
 
         super(true, true, title);
 
-        listTableModel = new ListTableModel(tableColumnProvider.makeColumnInfo());
+        listTableModel = new ListTableModel<T>(tableColumnProvider.makeColumnInfo());
         listTableModel.setSortable(true);
-        table = new AtlassianTableViewWithToolbar(tableColumnProvider, listTableModel, projectToolWindowConfiguration,
+        table = new AtlassianTableViewWithToolbar<T>(tableColumnProvider, listTableModel, projectToolWindowConfiguration,
 				toolbarPlace, toolbarName, popupMenuPlace, popupMenuName);
 		setContent(table);
 		table.setPreferredScrollableViewportSize(table.getTableDimension());
 	}
 
-    public AtlassianTableView getTable() {
+    public AtlassianTableView<T> getTable() {
         return table.getTable();
     }
 
-    public ListTableModel getListTableModel() {
+    public ListTableModel<T> getListTableModel() {
         this.setName("Setting data");
         return listTableModel;
     }
@@ -56,11 +56,11 @@ public class CollapsibleTable extends CollapsiblePanel {
         table.clearSelection();
     }
 
-    public void addItemSelectedListener(TableItemSelectedListener listener) {
+    public void addItemSelectedListener(TableItemSelectedListener<T> listener) {
         table.addItemSelectedListener(listener);
     }
 
-    public void removeItemSelectedListener(TableItemSelectedListener listener) {
+    public void removeItemSelectedListener(TableItemSelectedListener<T> listener) {
         table.removeItemSelectedListener(listener);
     }
 }

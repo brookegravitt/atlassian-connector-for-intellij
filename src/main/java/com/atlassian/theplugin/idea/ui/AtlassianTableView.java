@@ -38,7 +38,7 @@ public class AtlassianTableView<T> extends TableView<T> {
 	private static final int DEFAULT_ROW_HEIGHT = 20;
 	private boolean autoAdjustHeight = true;
 	private static final int MAX_DISPLAYED_ROW_COUNT = 15;
-	private final java.util.List<TableItemSelectedListener> listenerList = new ArrayList<TableItemSelectedListener>();
+	private final java.util.List<TableItemSelectedListener<T>> listenerList = new ArrayList<TableItemSelectedListener<T>>();
 	private UserTableContext state = new UserTableContext();
 
 
@@ -67,7 +67,7 @@ public class AtlassianTableView<T> extends TableView<T> {
 			public void keyReleased(KeyEvent e) {
 				int key = e.getKeyCode();
 				if (key == KeyEvent.VK_DOWN || key == KeyEvent.VK_UP) {
-					for (TableItemSelectedListener tableItemSelectedListener : getListenerList()) {
+					for (TableItemSelectedListener<T> tableItemSelectedListener : getListenerList()) {
 						tableItemSelectedListener.itemSelected(AtlassianTableView.this, 1);
 					}
 				}
@@ -151,15 +151,15 @@ public class AtlassianTableView<T> extends TableView<T> {
 		super.tableChanged(e);
 	}
 
-	public void addItemSelectedListener(TableItemSelectedListener listener) {
+	public void addItemSelectedListener(TableItemSelectedListener<T> listener) {
 		listenerList.add(listener);
 	}
 
-	public void removeItemSelectedListener(TableItemSelectedListener listener) {
+	public void removeItemSelectedListener(TableItemSelectedListener<T> listener) {
 		listenerList.remove(listener);
 	}
 
-	public List<TableItemSelectedListener> getListenerList() {
+	public List<TableItemSelectedListener<T>> getListenerList() {
 		return Collections.unmodifiableList(listenerList);
 	}
 
