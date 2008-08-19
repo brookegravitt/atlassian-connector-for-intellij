@@ -372,7 +372,8 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel imp
         }, "atlassian-idea-plugin get changes").start();
     }
 
-    public void showBuildLog() {
+	
+	public void showBuildLog() {
         final BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) table.getSelectedObject();
 
         new Thread(new Runnable() {
