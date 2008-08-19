@@ -33,8 +33,13 @@ public class ToolWindowConfigPanel extends JPanel {
 	public ToolWindowConfigPanel(final Project project) {
 		super(new GridBagLayout());
 
-		HyperlinkLabel link = new HyperlinkLabel("Configure Plugin");
-		link.addHyperlinkListener(new HyperlinkListener() {
+		JPanel panel = new JPanel(new GridLayout(3,1));
+		GridBagConstraints c = new GridBagConstraints();
+		c.anchor = GridBagConstraints.CENTER;
+		this.add(panel, c);
+
+		HyperlinkLabel projectSettingsLink = new HyperlinkLabel("Configure Plugin Project Settings");
+		projectSettingsLink.addHyperlinkListener(new HyperlinkListener() {
 			public void hyperlinkUpdate(HyperlinkEvent e) {
 
 				Configurable component = project.getComponent(ProjectConfigurationComponent.class);
@@ -45,10 +50,26 @@ public class ToolWindowConfigPanel extends JPanel {
 			}
 		});
 
-		link.setIcon(IconLoader.getIcon("/general/ideOptions.png"));
+		projectSettingsLink.setIcon(IconLoader.getIcon("/general/ideOptions.png"));
 
-		GridBagConstraints c = new GridBagConstraints();
-		c.anchor = GridBagConstraints.CENTER;
-		this.add(link, c);
+		panel.add(projectSettingsLink);
+
+		HyperlinkLabel globalSettingsLink = new HyperlinkLabel("Configure Plugin Global Settings");
+		globalSettingsLink.addHyperlinkListener(new HyperlinkListener() {
+			public void hyperlinkUpdate(final HyperlinkEvent e) {
+
+				Configurable component = project.getComponent(ThePluginApplicationComponent.class);
+				ShowSettingsUtil.getInstance().editConfigurable(
+						IdeaHelper.getCurrentProject(DataManager.getInstance().getDataContext(ToolWindowConfigPanel.this)),
+						IdeaHelper.getAppComponent());
+			}
+		});
+
+		globalSettingsLink.setIcon(IconLoader.getIcon("/general/ideOptions.png"));
+
+		panel.add(new JLabel(" "));
+		panel.add(globalSettingsLink);
+
+
 	}
 }
