@@ -28,12 +28,12 @@ public class ProjectConfigurationPanel extends JPanel {
 	private final JTabbedPane contentPanel = new JTabbedPane();
 	private final ServerConfigPanel serverConfigPanel;
 
+	private ProjectConfiguration projectConfiguration;
+
 	public ProjectConfiguration getProjectConfiguration() {
 		serverConfigPanel.saveData();
 		return projectConfiguration;
 	}
-
-	private final ProjectConfiguration projectConfiguration;
 
 	public ProjectConfigurationPanel(Project project, ProjectConfiguration projectConfiguration) {
 		this.projectConfiguration = projectConfiguration;
@@ -59,5 +59,11 @@ public class ProjectConfigurationPanel extends JPanel {
 			serverConfigPanel.finalizeData();
 		}
 		serverConfigPanel.saveData();
+	}
+
+
+	public void setData(ProjectConfiguration aProjectConfiguration) {
+		projectConfiguration = aProjectConfiguration;
+		serverConfigPanel.setData(projectConfiguration.getServers());
 	}
 }
