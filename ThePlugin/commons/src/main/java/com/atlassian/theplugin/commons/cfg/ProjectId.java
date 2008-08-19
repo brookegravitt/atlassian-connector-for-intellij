@@ -30,6 +30,7 @@ public class ProjectId {
 		internal = null;
 	}
 
+	@Override
 	public boolean equals(final Object o) {
 		if (this == o) {
 			return true;
@@ -51,6 +52,7 @@ public class ProjectId {
 		return true;
 	}
 
+	@Override
 	public int hashCode() {
 		if (internal == null) {
 			return super.hashCode();

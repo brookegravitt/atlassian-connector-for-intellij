@@ -18,10 +18,8 @@ package com.atlassian.theplugin.idea;
 
 import com.intellij.util.ui.ColumnInfo;
 
-import java.util.Comparator;
 
-
-public abstract class TableColumnInfo extends ColumnInfo {
+public abstract class TableColumnInfo<Aspect, Item> extends ColumnInfo<Aspect, Item> {
 	private TableColumnInfo(String s) {
 		super(s);
 	}
@@ -32,12 +30,6 @@ public abstract class TableColumnInfo extends ColumnInfo {
 	}
 
 	public abstract String getColumnName();
-
-	public abstract Object valueOf(Object o);
-
-	public abstract Class getColumnClass();
-
-	public abstract Comparator getComparator();
 
 	public abstract int getPrefferedWidth();
 }

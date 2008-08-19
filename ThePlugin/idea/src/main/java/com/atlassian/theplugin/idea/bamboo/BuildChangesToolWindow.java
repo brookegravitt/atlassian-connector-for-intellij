@@ -116,7 +116,6 @@ public final class BuildChangesToolWindow {
 		private AtlassianTreeWithToolbar fileTree = new AtlassianTreeWithToolbar(TOOLBAR_NAME);
 		private final Project project;
 
-		private AtlassianTableView commitsTable;
 		private String name;
 		private static final String TOOLBAR_NAME = "ThePlugin.Bamboo.CommitListToolBar";
 
@@ -137,7 +136,7 @@ public final class BuildChangesToolWindow {
 
 			JPanel tablePanel = new JPanel();
 			tablePanel.setLayout(new BorderLayout());
-			commitsTable = createCommitsTable(commits);
+			final AtlassianTableView<BambooChangeSet> commitsTable = createCommitsTable(commits);
 			tablePanel.add(new JScrollPane(commitsTable), BorderLayout.CENTER);
 
 			split.setFirstComponent(tablePanel);
@@ -168,7 +167,7 @@ public final class BuildChangesToolWindow {
 		}
 
 
-		private class AuthorColumn extends TableColumnInfo {
+		private static class AuthorColumn extends TableColumnInfo<BambooChangeSet, String> {
 			private static final int PREFERRED_WIDTH = 100;
 
 			@Override
@@ -187,21 +186,22 @@ public final class BuildChangesToolWindow {
 			}
 
 			@Override
-			public Object valueOf(Object o) {
-				return ((BambooChangeSet) o).getAuthor();
+			public String valueOf(final BambooChangeSet obj) {
+				return obj.getAuthor();
 			}
 
 			@Override
-			public Comparator getComparator() {
-				return new Comparator() {
-					public int compare(Object o, Object o1) {
-						return ((BambooChangeSet) o).getAuthor().compareTo(((BambooChangeSet) o1).getAuthor());
+			public Comparator<BambooChangeSet> getComparator() {
+				return new Comparator<BambooChangeSet>() {
+					public int compare(BambooChangeSet o, BambooChangeSet o1) {
+						return o.getAuthor().compareTo(o1.getAuthor());
 					}
 				};
 			}
+
 		}
 
-		private class DateColumn extends TableColumnInfo {
+		private static class DateColumn extends TableColumnInfo<BambooChangeSet, Date> {
 			private static final int PREFERRED_WIDTH = 100;
 
 			@Override
@@ -220,21 +220,21 @@ public final class BuildChangesToolWindow {
 			}
 
 			@Override
-			public Object valueOf(Object o) {
-				return ((BambooChangeSet) o).getCommitDate();
+			public Date valueOf(BambooChangeSet o) {
+				return o.getCommitDate();
 			}
 
 			@Override
-			public Comparator getComparator() {
-				return new Comparator() {
-					public int compare(Object o, Object o1) {
-						return ((BambooChangeSet) o).getCommitDate().compareTo(((BambooChangeSet) o1).getCommitDate());
+			public Comparator<BambooChangeSet> getComparator() {
+				return new Comparator<BambooChangeSet>() {
+					public int compare(BambooChangeSet o, BambooChangeSet o1) {
+						return o1.getCommitDate().compareTo(o.getCommitDate());
 					}
 				};
 			}
 		}
 
-		private class CommentColumn extends TableColumnInfo {
+		private static class CommentColumn extends TableColumnInfo<BambooChangeSet, String> {
 			private static final int PREFERRED_WIDTH = 600;
 
 			@Override
@@ -253,21 +253,21 @@ public final class BuildChangesToolWindow {
 			}
 
 			@Override
-			public Object valueOf(Object o) {
-				return ((BambooChangeSet) o).getComment();
+			public String valueOf(BambooChangeSet o) {
+				return o.getComment();
 			}
 
 			@Override
-			public Comparator getComparator() {
-				return new Comparator() {
-					public int compare(Object o, Object o1) {
-						return ((BambooChangeSet) o).getComment().compareTo(((BambooChangeSet) o1).getComment());
+			public Comparator<BambooChangeSet> getComparator() {
+				return new Comparator<BambooChangeSet>() {
+					public int compare(BambooChangeSet o, BambooChangeSet o1) {
+						return o.getComment().compareTo(o1.getComment());
 					}
 				};
 			}
 		}
 
-		private AtlassianTableView createCommitsTable(final List<BambooChangeSet> commits) {
+		private AtlassianTableView<BambooChangeSet> createCommitsTable(final List<BambooChangeSet> commits) {
 			TableColumnProvider prov = new TableColumnProvider() {
 				public TableColumnInfo[] makeColumnInfo() {
 					return new TableColumnInfo[]{new AuthorColumn(), new DateColumn(), new CommentColumn()};
@@ -277,11 +277,11 @@ public final class BuildChangesToolWindow {
 					return new TableCellRenderer[]{null, null, null};
 				}
 			};
-			final AtlassianTableView atv = new AtlassianTableView(prov,
+			final AtlassianTableView<BambooChangeSet> atv = new AtlassianTableView<BambooChangeSet>(prov,
 					new ListTableModel<BambooChangeSet>(prov.makeColumnInfo(), commits, 0), null);
-			atv.addItemSelectedListener(new TableItemSelectedListener() {
-				public void itemSelected(AtlassianTableView table, int noClicks) {
-					final BambooChangeSet c = (BambooChangeSet) table.getSelectedObject();
+			atv.addItemSelectedListener(new TableItemSelectedListener<BambooChangeSet>() {
+				public void itemSelected(AtlassianTableView<BambooChangeSet> table, int noClicks) {
+					final BambooChangeSet c = table.getSelectedObject();
 					if (c == null) {
 						fileTree.setModelProvider(ModelProvider.EMPTY_MODEL_PROVIDER);
 					} else {
