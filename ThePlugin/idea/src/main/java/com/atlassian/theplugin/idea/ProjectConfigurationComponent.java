@@ -16,8 +16,8 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.ConfigurationListener;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.commons.cfg.ConfigurationListener;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ProjectConfigurationFactory;
 import com.atlassian.theplugin.commons.cfg.ProjectId;
@@ -229,7 +229,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		projectConfigurationPanel = null;
 	}
 
-	public void updateConfiguration(final ProjectId aProject, final CfgManager aCfgManager) {
+	public void configurationUpdated(final ProjectConfiguration aProjectConfiguration) {
 		save();
 		IdeaHelper.getAppComponent().rescheduleStatusCheckers(true);
 	}

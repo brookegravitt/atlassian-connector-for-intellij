@@ -16,10 +16,7 @@
 
 package com.atlassian.theplugin.commons.bamboo;
 
-import com.atlassian.theplugin.commons.ConfigurationListener;
 import com.atlassian.theplugin.commons.cfg.BambooCfgManager;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
-import com.atlassian.theplugin.commons.cfg.ProjectId;
 import com.atlassian.theplugin.commons.configuration.BambooTooltipOption;
 
 import java.util.Collection;
@@ -29,7 +26,7 @@ import java.util.Map;
 /**
  * This listener fires crucible tooltip if bamboo build has changes status between SUCCEED and FAILED
  */
-public class BambooStatusTooltipListener implements BambooStatusListener, ConfigurationListener {
+public class BambooStatusTooltipListener implements BambooStatusListener {
 
 	private Map<String, BambooBuild> prevBuildStatuses = new HashMap<String, BambooBuild>(0);
 	private final BambooStatusDisplay display;
@@ -131,10 +128,4 @@ public class BambooStatusTooltipListener implements BambooStatusListener, Config
 		popupInfo.clear();
 	}
 
-	public void updateConfiguration(final ProjectId project, final CfgManager cfgManager) {
-		this.bambooCfgManager = cfgManager;
-	}
-
-	public void projectUnregistered() {
-	}
 }

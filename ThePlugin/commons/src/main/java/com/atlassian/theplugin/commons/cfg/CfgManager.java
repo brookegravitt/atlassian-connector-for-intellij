@@ -16,7 +16,6 @@
 
 package com.atlassian.theplugin.commons.cfg;
 
-import com.atlassian.theplugin.commons.ConfigurationListener;
 import com.atlassian.theplugin.commons.ServerType;
 
 import java.util.Collection;

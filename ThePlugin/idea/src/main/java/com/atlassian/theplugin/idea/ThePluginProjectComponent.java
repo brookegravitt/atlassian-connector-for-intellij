@@ -17,7 +17,6 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.ConfigurationListener;
 import com.atlassian.theplugin.commons.UIActionScheduler;
 import com.atlassian.theplugin.commons.bamboo.BambooPopupInfo;
 import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
@@ -27,8 +26,9 @@ import com.atlassian.theplugin.commons.bamboo.BambooStatusTooltipListener;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.bamboo.StausIconBambooListener;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.commons.cfg.ConfigurationListener;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.commons.cfg.ProjectId;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.configuration.CrucibleTooltipOption;
@@ -107,7 +107,6 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 
 	private PluginToolWindow toolWindow;
 
-    private String reviewId;
 	public static final Key<ReviewActionEventBroker> BROKER_KEY = Key.create("thePlugin.broker");
 
 	public ThePluginProjectComponent(Project project, ToolWindowManager toolWindowManager,
@@ -272,7 +271,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 			}
 
 			cfgManager.addListener(CfgUtil.getProjectId(project), new ConfigurationListener() {
-				public void updateConfiguration(final ProjectId project, final CfgManager cfgManager) {
+				public void configurationUpdated(final ProjectConfiguration aProjectConfiguration) {
 					// show-hide icons if necessary
 					statusBarBambooIcon.showOrHideIcon();
 					statusBarCrucibleIcon.showOrHideIcon();
