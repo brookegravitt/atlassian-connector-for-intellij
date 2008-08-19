@@ -39,6 +39,7 @@ public class ServerId {
 		return uuid;
 	}
 
+	@Override
 	public boolean equals(final Object o) {
 		if (this == o) {
 			return true;
@@ -56,6 +57,7 @@ public class ServerId {
 		return true;
 	}
 
+	@Override
 	public int hashCode() {
 		return uuid.hashCode();
 	}

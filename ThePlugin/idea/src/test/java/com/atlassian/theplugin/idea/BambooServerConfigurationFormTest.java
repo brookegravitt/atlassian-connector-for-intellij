@@ -48,8 +48,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 		BambooServerCfg inServerBean = createServerBean();
 
 		bambooPluginConfigurationForm.setData(inServerBean);
-		bambooPluginConfigurationForm.saveData();
-
+		saveData();
 
 		BambooServerCfg outServerBean = inServerBean;
 
@@ -104,6 +103,11 @@ public class BambooServerConfigurationFormTest extends TestCase {
 
 	}
 
+	private void saveData() {
+		bambooPluginConfigurationForm.finalizeData();
+		bambooPluginConfigurationForm.saveData();
+	}
+
 
 	private static BambooServerCfg createServerBean() {
 
@@ -134,7 +138,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 		// TODO this call should be removed when HttpClientFactory is not singleton anymore
 		ConfigurationFactory.setConfiguration(new PluginConfigurationBean());
 
-		bambooPluginConfigurationForm.setData(new BambooServerCfg(false, "", null));
+		bambooPluginConfigurationForm.setData(new BambooServerCfg(false, "", new ServerId()));
 
         BambooServerCfg outServer = bambooPluginConfigurationForm.getBambooServerCfg();
         assertEquals("", outServer.getName());
@@ -149,8 +153,8 @@ public class BambooServerConfigurationFormTest extends TestCase {
         helper.getPassword().setText("password");
         helper.getServerUrl().setText("url");
         helper.getUsername().setText("userName");
-		bambooPluginConfigurationForm.saveData();
-
+		saveData();
+		
 		outServer = bambooPluginConfigurationForm.getBambooServerCfg();
         checkServerBean(outServer);
     }
