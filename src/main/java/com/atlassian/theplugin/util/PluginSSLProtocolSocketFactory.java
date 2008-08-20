@@ -77,7 +77,7 @@ public class PluginSSLProtocolSocketFactory extends EasySSLProtocolSocketFactory
 	public Socket create(final String host, final int port, final StringBuffer otherHeaders, final BooleanHolder useFullURL)
 			throws Exception {
 		int sslPort = port;
-		if (port == port) {
+		if (port == -1) {
 			sslPort = EasySSLProtocolSocketFactory.SSL_PORT;
 		}
 		return createSocket(host, sslPort);
