@@ -128,8 +128,7 @@ public class ThePluginApplicationComponent
 	}
 
 	public boolean isModified() {
-		return true;
-		//return configPanel.isModified();
+		return configPanel.isModified();
 	}
 
 	private void disableTimers() {
