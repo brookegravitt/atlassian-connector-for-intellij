@@ -17,6 +17,9 @@
 package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.JiraFilterEntryBean;
@@ -34,6 +37,7 @@ import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
+import com.atlassian.theplugin.cfg.CfgUtil;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.*;
@@ -80,18 +84,20 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 
 
     private transient JIRAIssue selectedIssue = null;
+	private CfgManager cfgManager;
 
-    @Override
+	@Override
 	protected void handlePopupClick(Object selectedObject) {
         selectedIssue = ((JiraIssueAdapter) selectedObject).getIssue();
     }
 
-	public static JIRAToolWindowPanel getInstance(Project project, ProjectConfigurationBean projectConfigurationBean) {
+	public static JIRAToolWindowPanel getInstance(Project project, ProjectConfigurationBean projectConfigurationBean,
+			final CfgManager cfgManager) {
 
         JIRAToolWindowPanel window = project.getUserData(WINDOW_PROJECT_KEY);
 
         if (window == null) {
-            window = new JIRAToolWindowPanel(project, IdeaHelper.getPluginConfiguration(), projectConfigurationBean);
+            window = new JIRAToolWindowPanel(project, IdeaHelper.getPluginConfiguration(), projectConfigurationBean, cfgManager);
             project.putUserData(WINDOW_PROJECT_KEY, window);
         }
         return window;
@@ -134,8 +140,9 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
     }
 
     public JIRAToolWindowPanel(Project project, PluginConfigurationBean pluginConfiguration,
-                               ProjectConfigurationBean projectConfigurationBean) {
+			ProjectConfigurationBean projectConfigurationBean, final CfgManager cfgManager) {
         super(project, projectConfigurationBean);
+		this.cfgManager = cfgManager;
 		this.project = project;
 		this.pluginConfiguration = pluginConfiguration;
         this.jiraServerFacade = JIRAServerFacadeImpl.getInstance();
@@ -291,6 +298,19 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
             thread.start();
 		}
     }
+
+	public void selectLastActiveServer() {
+
+		String uuidString = projectConfiguration.getJiraConfiguration().getSelectedServerId();
+
+		if (uuidString != null) {
+				final ServerId serverId = new ServerId(uuidString);
+				ServerCfg serverCfg = cfgManager.getServer(CfgUtil.getProjectId(project), serverId);
+				if (serverCfg != null && serverCfg instanceof JiraServerCfg && serverCfg.isEnabled()) {
+					selectServer((JiraServerCfg) serverCfg);
+				}
+			}
+	}
 
 	final class ActionsPopupListener implements Runnable {
 		private JiraIssueAdapter adapter;
