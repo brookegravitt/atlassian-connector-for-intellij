@@ -40,16 +40,16 @@ public class BambooGeneralForm extends JComponent {
 	private JSpinner pollTimeSpinner;
 	private SpinnerModel model;
 
-	private transient BambooCfg bambooConfiguration;
-	//private transient PluginConfiguration localPluginConfigurationCopy;
+//	private transient BambooCfg bambooConfiguration;
+	private transient BambooConfigurationBean localBambooConfigurationCopy;
 
-//	private final transient PluginConfiguration globalPluginConfiguration;
+	private final transient PluginConfiguration globalPluginConfiguration;
 
 	private static BambooGeneralForm instance;
 
-	public BambooGeneralForm(BambooCfg bambooCfg) {
-		bambooConfiguration = bambooCfg;
-//		this.globalPluginConfiguration = globalPluginConfiguration;
+	private BambooGeneralForm(PluginConfiguration globalConfigurationBean /*BambooCfg bambooCfg*/) {
+//		bambooConfiguration = bambooCfg;
+		this.globalPluginConfiguration = globalConfigurationBean;
 		$$$setupUI$$$();
 		setLayout(new CardLayout());
 		model = new SpinnerNumberModel(1, 1, 1000, 1);
@@ -58,18 +58,20 @@ public class BambooGeneralForm extends JComponent {
 	}
 
 
-//	public static BambooGeneralForm getInstance(PluginConfiguration globalPluginConfiguration) {
-//		if (instance == null) {
-//			instance = new BambooGeneralForm(globalPluginConfiguration);
-//		}
-//		return instance;
-//	}
+	public static BambooGeneralForm getInstance(PluginConfiguration globalPluginConfiguration) {
+		if (instance == null) {
+			instance = new BambooGeneralForm(globalPluginConfiguration);
+		}
+		return instance;
+	}
 
 
-	public void setData(@NotNull BambooCfg newBambooCfg) {
-		bambooConfiguration = newBambooCfg;
+	public void setData(PluginConfiguration config /*@NotNull BambooCfg newBambooCfg*/) {
+		//bambooConfiguration = newBambooCfg;
 
-		BambooTooltipOption configOption = this.bambooConfiguration.getBambooTooltipOption();
+		localBambooConfigurationCopy = config.getBambooConfigurationData();
+
+		BambooTooltipOption configOption = localBambooConfigurationCopy.getBambooTooltipOption();
 
 		if (configOption != null) {
 			switch (configOption) {
@@ -89,12 +91,15 @@ public class BambooGeneralForm extends JComponent {
 		} else {
 			setDefaultTooltipOption();
 		}
-		model.setValue(bambooConfiguration.getPollTime());
+		model.setValue(localBambooConfigurationCopy.getPollTime());
 	}
 
 	public void saveData() {
-		bambooConfiguration.setBambooTooltipOption(getBambooTooltipOption());
-		bambooConfiguration.setPollTime((Integer) model.getValue());
+		localBambooConfigurationCopy.setBambooTooltipOption(getBambooTooltipOption());
+		localBambooConfigurationCopy.setPollTime((Integer) model.getValue());
+		
+		globalPluginConfiguration.getBambooConfigurationData().setBambooTooltipOption(getBambooTooltipOption());
+		globalPluginConfiguration.getBambooConfigurationData().setPollTime((Integer) model.getValue());
 	}
 
 	private BambooTooltipOption getBambooTooltipOption() {
@@ -110,14 +115,14 @@ public class BambooGeneralForm extends JComponent {
 	}
 
 	public boolean isModified() {
-		if (bambooConfiguration.getBambooTooltipOption() != null) {
-			if (bambooConfiguration.getBambooTooltipOption() != getBambooTooltipOption()) {
+		if (localBambooConfigurationCopy.getBambooTooltipOption() != null) {
+			if (localBambooConfigurationCopy.getBambooTooltipOption() != getBambooTooltipOption()) {
 				return true;
 			}
 		} else if (getBambooTooltipOption() != BambooTooltipOption.ALL_FAULIRES_AND_FIRST_SUCCESS) {
 			return true;
 		}
-		return (Integer) model.getValue() != bambooConfiguration.getPollTime();
+		return (Integer) model.getValue() != localBambooConfigurationCopy.getPollTime();
 
 	}
 

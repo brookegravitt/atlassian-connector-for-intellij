@@ -18,29 +18,19 @@ package com.atlassian.theplugin.commons.configuration;
 
 import com.atlassian.theplugin.commons.util.HttpConfigurableAdapter;
 
-
 public class PluginConfigurationBean implements PluginConfiguration {
     private BambooConfigurationBean bambooConfiguration = new BambooConfigurationBean();
 
 	private CrucibleConfigurationBean crucibleConfiguration = new CrucibleConfigurationBean();
-
 	private JiraConfigurationBean jiraConfiguration = new JiraConfigurationBean();
-
 	private GeneralConfigurationBean generalConfigurationBean = new GeneralConfigurationBean();
-
-
-
 	private HttpConfigurableAdapter httpConfigurableAdapter;
-
-
-
 
 	/**
 	 * Default constructor.
 	 */
 	public PluginConfigurationBean() {
     }
-
 
 	/**
 	 * Copying constructor.<p>
@@ -80,7 +70,6 @@ public class PluginConfigurationBean implements PluginConfiguration {
      */
     public void setBambooConfigurationData(BambooConfigurationBean newConfiguration) {
         bambooConfiguration = newConfiguration;
-
     }
 
 	/**
@@ -99,7 +88,6 @@ public class PluginConfigurationBean implements PluginConfiguration {
      */
     public void setCrucibleConfigurationData(CrucibleConfigurationBean newConfiguration) {
         crucibleConfiguration = newConfiguration;
-
     }
 
 	/**
@@ -204,7 +192,6 @@ public class PluginConfigurationBean implements PluginConfiguration {
     }
 
     private static final int ONE_EFF = 31;
-	private static final int SHIFT_VAL = 32;
     public int hashCode() {
         int result = 0;
         result = ONE_EFF * result + (bambooConfiguration != null ? bambooConfiguration.hashCode() : 0);
