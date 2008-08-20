@@ -193,7 +193,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 			//this.bambooToolWindowPanel = BambooTableToolWindowPanel.getInstance(project, projectConfigurationBean);
 			this.crucibleToolWindowPanel = new CrucibleTableToolWindowPanel(project,
 					projectConfigurationBean, crucibleStatusChecker);
-			this.jiraToolWindowPanel = JIRAToolWindowPanel.getInstance(project, projectConfigurationBean);
+			this.jiraToolWindowPanel = JIRAToolWindowPanel.getInstance(project, projectConfigurationBean, cfgManager);
 
 			// create tool window on the right
             toolWindow = new PluginToolWindow(toolWindowManager, project, cfgManager);
@@ -262,14 +262,14 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
             PluginToolWindow.focusPanelIfExists(project, projectConfigurationBean.getActiveToolWindowTab());
 
             IdeaHelper.getAppComponent().rescheduleStatusCheckers(false);
-			String uuidString = projectConfigurationBean.getJiraConfiguration().getSelectedServerId();
-			if (uuidString != null) {
-				final ServerId serverId = new ServerId(uuidString);
-				ServerCfg serverCfg = cfgManager.getServer(CfgUtil.getProjectId(project), serverId);
-				if (serverCfg != null && serverCfg instanceof JiraServerCfg) {
-					jiraToolWindowPanel.selectServer((JiraServerCfg) serverCfg);
-				}
-			}
+
+
+
+			jiraToolWindowPanel.selectLastActiveServer();
+
+			//toolWindow.
+			
+
 
 			configurationListener = new ConfigurationListenerImpl();
 			cfgManager.addProjectConfigurationListener(CfgUtil.getProjectId(project), configurationListener);
