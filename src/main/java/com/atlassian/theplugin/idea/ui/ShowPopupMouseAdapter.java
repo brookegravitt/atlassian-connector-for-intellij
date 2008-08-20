@@ -56,7 +56,7 @@ public class ShowPopupMouseAdapter<T> extends MouseAdapter {
 	private void maybeShowPopup(MouseEvent e) {
 		if (e.isPopupTrigger() && tableView.isEnabled()) {
 
-			for (TableItemSelectedListener tableItemSelectedListener : tableView.getListenerList()) {
+			for (TableItemSelectedListener<T> tableItemSelectedListener : tableView.getListenerList()) {
 				tableItemSelectedListener.itemSelected(tableView, 1);
 			}
 
