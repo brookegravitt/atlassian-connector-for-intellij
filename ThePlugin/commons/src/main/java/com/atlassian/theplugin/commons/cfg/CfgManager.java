@@ -40,8 +40,8 @@ public interface CfgManager extends BambooCfgManager {
 	ServerCfg getServer(ProjectId projectId, ServerId serverId);
 
 
-	void addListener(ProjectId projectId, ConfigurationListener configurationListener);
-	boolean removeListener(ProjectId projectId, ConfigurationListener configurationListener);
+	void addProjectConfigurationListener(ProjectId projectId, ConfigurationListener configurationListener);
+	boolean removeProjectConfigurationListener(ProjectId projectId, ConfigurationListener configurationListener);
 
 	Collection<CrucibleServerCfg> getAllEnabledCrucibleServers(final ProjectId projectId);
 

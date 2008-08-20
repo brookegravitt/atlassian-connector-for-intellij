@@ -108,6 +108,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 	private PluginToolWindow toolWindow;
 
 	public static final Key<ReviewActionEventBroker> BROKER_KEY = Key.create("thePlugin.broker");
+	private ConfigurationListenerImpl configurationListener;
 
 	public ThePluginProjectComponent(Project project, ToolWindowManager toolWindowManager,
 			PluginConfiguration pluginConfiguration, UIActionScheduler actionScheduler,
@@ -270,18 +271,8 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 				}
 			}
 
-			cfgManager.addListener(CfgUtil.getProjectId(project), new ConfigurationListener() {
-				public void configurationUpdated(final ProjectConfiguration aProjectConfiguration) {
-					// show-hide icons if necessary
-					statusBarBambooIcon.showOrHideIcon();
-					statusBarCrucibleIcon.showOrHideIcon();
-					// show-hide panels if necessary
-					toolWindow.showHidePanels();
-				}
-
-				public void projectUnregistered() {
-				}
-			});
+			configurationListener = new ConfigurationListenerImpl();
+			cfgManager.addProjectConfigurationListener(CfgUtil.getProjectId(project), configurationListener);
 
 			created = true;
         }
@@ -369,6 +360,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 			bambooStatusChecker.unregisterListener(tooltipBambooStatusListener);
 			crucibleStatusChecker.unregisterListener(crucibleToolWindowPanel);
 			crucibleStatusChecker.unregisterListener(crucibleReviewNotifier);
+			cfgManager.removeProjectConfigurationListener(CfgUtil.getProjectId(project), configurationListener);
 
 			// remove tool window
 			toolWindowManager.unregisterToolWindow(PluginToolWindow.TOOL_WINDOW_NAME);
@@ -408,4 +400,16 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
         return bambooStatusChecker;
     }
 
+	private class ConfigurationListenerImpl implements ConfigurationListener {
+		public void configurationUpdated(final ProjectConfiguration aProjectConfiguration) {
+			// show-hide icons if necessary
+			statusBarBambooIcon.showOrHideIcon();
+			statusBarCrucibleIcon.showOrHideIcon();
+			// show-hide panels if necessary
+			toolWindow.showHidePanels();
+		}
+
+		public void projectUnregistered() {
+		}
+	}
 }
