@@ -93,7 +93,7 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 			}
 
 
-			int changesCount = notifications.size() - newReviewCount;
+			int changesCount = notifications.size() - newReviewCount - newExceptionCount;
 			if (changesCount > 0) {
 				sb.append("<tr><td width=20><img src=\"/icons/crucible-blue-16.png\" height=16 width=16 border=0></td>")
 						.append("<td colspan=2><b>")
