@@ -258,7 +258,7 @@ public class CfgManagerImpl implements CfgManager {
 	}
 
 
-	public void addListener(final ProjectId projectId, final ConfigurationListener configurationListener) {
+	public void addProjectConfigurationListener(final ProjectId projectId, final ConfigurationListener configurationListener) {
 		if (configurationListener == null) {
 			throw new IllegalArgumentException(ProjectId.class.getSimpleName() + " cannot be null");
 		}
@@ -272,7 +272,7 @@ public class CfgManagerImpl implements CfgManager {
 		tmp.add(configurationListener);
 	}
 
-	public boolean removeListener(final ProjectId projectId, final ConfigurationListener configurationListener) {
+	public boolean removeProjectConfigurationListener(final ProjectId projectId, final ConfigurationListener configurationListener) {
 		if (configurationListener == null) {
 			throw new IllegalArgumentException(ProjectId.class.getSimpleName() + " cannot be null");
 		}

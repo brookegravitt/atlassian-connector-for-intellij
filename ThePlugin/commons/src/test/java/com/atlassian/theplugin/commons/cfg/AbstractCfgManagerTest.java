@@ -414,8 +414,8 @@ public abstract class AbstractCfgManagerTest extends TestCase {
 		project1Listener.configurationUpdated(emptyCfg);
 		EasyMock.replay(mocks);
 
-		cfgManager.addListener(PROJECT_ID_1, project1Listener);
-		cfgManager.addListener(PROJECT_ID_2, project2Listener);
+		cfgManager.addProjectConfigurationListener(PROJECT_ID_1, project1Listener);
+		cfgManager.addProjectConfigurationListener(PROJECT_ID_2, project2Listener);
 		cfgManager.updateGlobalConfiguration(new GlobalConfiguration());
 		cfgManager.updateProjectConfiguration(PROJECT_ID_1, emptyCfg);
 		EasyMock.verify(mocks);
@@ -431,7 +431,7 @@ public abstract class AbstractCfgManagerTest extends TestCase {
 
 
 		EasyMock.reset(mocks);
-		cfgManager.removeListener(PROJECT_ID_1, project1Listener);
+		cfgManager.removeProjectConfigurationListener(PROJECT_ID_1, project1Listener);
 		// now only project2Listener will be notified
 		final ProjectConfiguration nonEmptyCfg = new ProjectConfiguration(MiscUtil.<ServerCfg>buildArrayList(bamboo1));
 		project2Listener.configurationUpdated(nonEmptyCfg);
@@ -447,12 +447,12 @@ public abstract class AbstractCfgManagerTest extends TestCase {
 	public void testAddListener() {
 		TestUtil.assertThrows(IllegalArgumentException.class, new IAction() {
 			public void run() throws Throwable {
-				cfgManager.addListener(PROJECT_ID_1, null);
+				cfgManager.addProjectConfigurationListener(PROJECT_ID_1, null);
 			}
 		});
 		TestUtil.assertThrows(IllegalArgumentException.class, new IAction() {
 			public void run() throws Throwable {
-				cfgManager.addListener(null, EasyMock.createNiceMock(ConfigurationListener.class));
+				cfgManager.addProjectConfigurationListener(null, EasyMock.createNiceMock(ConfigurationListener.class));
 			}
 		});
 

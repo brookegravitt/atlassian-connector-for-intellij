@@ -69,12 +69,12 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 	public void projectOpened() {
 		load();
-		cfgManager.addListener(getProjectId(), this);
+		cfgManager.addProjectConfigurationListener(getProjectId(), this);
 	}
 
 
 	public void projectClosed() {
-		cfgManager.removeListener(getProjectId(), this);
+		cfgManager.removeProjectConfigurationListener(getProjectId(), this);
 		cfgManager.removeProject(getProjectId());
 	}
 
@@ -91,7 +91,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	}
 
 
-	public void load() {
+	private void load() {
 		final Document root;
 		final SAXBuilder builder = new SAXBuilder(false);
 		try {
@@ -131,9 +131,11 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 	}
 
-	private void setDefaultProjectConfiguration() {
+	private ProjectConfiguration setDefaultProjectConfiguration() {
+		final ProjectConfiguration configuration = ProjectConfiguration.emptyConfiguration();
 		cfgManager.updateProjectConfiguration(CfgUtil.getProjectId(project),
-				ProjectConfiguration.emptyConfiguration());
+				configuration);
+		return configuration;
 	}
 
 	private String getCfgFilePath() {
@@ -203,8 +205,12 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	}
 
 	public JComponent createComponent() {
-		projectConfigurationPanel = new ProjectConfigurationPanel(project, 
-				cfgManager.getProjectConfiguration(getProjectId()).getClone());
+		ProjectConfiguration configuration = cfgManager.getProjectConfiguration(getProjectId());
+		if (configuration == null) {
+			// may happen for Default Template project
+			configuration = setDefaultProjectConfiguration();
+		}
+		projectConfigurationPanel = new ProjectConfigurationPanel(project, configuration.getClone());
 		return projectConfigurationPanel;
 	}
 
