@@ -179,13 +179,18 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
         advancedQuery.clear();
         advancedQuery.addAll(jiraIssueFilterPanel.getFilter());
         startIndex = 0;
-        updateIssues(IdeaHelper.getCurrentJIRAServer());
+        updateIssues(IdeaHelper.getCurrentJIRAServer(project));
         filters.setManualFilter(serializeQuery());
         filters.setSavedFilterUsed(false);
-        projectConfiguration.
+		JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
+
+		if (jiraServer != null) {
+		projectConfiguration.
                 getJiraConfiguration().setFiltersBean(
-				IdeaHelper.getCurrentJIRAServer().getServer().getServerId().toString(), filters);
-        hideJIRAIssuesFilter();
+				jiraServer.getServer().getServerId().toString(), filters);
+		}
+
+		hideJIRAIssuesFilter();
         filterToolbarSetVisible(true);
     }
 
@@ -193,17 +198,20 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 	public void cancelAdvancedFilter() {
         filters.setManualFilter(serializeQuery());
         filters.setSavedFilterUsed(false);
-        projectConfiguration.
-                getJiraConfiguration().setFiltersBean(
-				IdeaHelper.getCurrentJIRAServer().getServer().getServerId().toString(), filters);
-        hideJIRAIssuesFilter();
+		JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
+
+		if (jiraServer != null) {
+			projectConfiguration.getJiraConfiguration().setFiltersBean(jiraServer.getServer().getServerId().toString(), filters);
+		}
+
+		hideJIRAIssuesFilter();
         filterToolbarSetVisible(true);
     }
 
     @Override
 	public void clearAdvancedFilter() {
         advancedQuery.clear();
-        JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer();
+        JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
         if (jiraServer != null) {
             jiraIssueFilterPanel.setJiraServer(jiraServer, advancedQuery);
         }
@@ -222,7 +230,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
     }
 
     public final void showJIRAIssueFilter() {
-        JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer();
+        JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
         if (jiraServer != null) {
             jiraIssueFilterPanel.setJiraServer(jiraServer, advancedQuery);
         }
@@ -265,13 +273,15 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 				public void run() {
                     setStatusMessage("Getting available issue actions for issue " + issue.getKey() + "...");
                     try {
-                        List<JIRAAction> actions =
-                                jiraServerFacade.getAvailableActions(
-                                        IdeaHelper.getCurrentJIRAServer().getServer(), issue);
-                        adapter.setCachedActions(actions);
-                        setStatusMessage("Retrieved actions for issue " + issue.getKey());
-                        showActionsPopup(adapter, actions);
-                    } catch (JIRAException e) {
+						JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
+						if (jiraServer != null) {
+							List<JIRAAction> actions =
+									jiraServerFacade.getAvailableActions(jiraServer.getServer(), issue);
+							adapter.setCachedActions(actions);
+							setStatusMessage("Retrieved actions for issue " + issue.getKey());
+							showActionsPopup(adapter, actions);
+						}
+					} catch (JIRAException e) {
                         setStatusMessage("Unable to retrieve available issue actions: " + e.getMessage(), true);
                     }
                 }
@@ -293,7 +303,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 		public void run() {
 			JIRAAction action = (JIRAAction) list.getSelectedValue();
 			RunJIRAActionAction ja = new RunJIRAActionAction(JIRAToolWindowPanel.this, jiraServerFacade, adapter, action);
-			ja.runIssueActionOrLaunchBrowser();
+			ja.runIssueActionOrLaunchBrowser(project);
 		}
 	}
 
@@ -344,23 +354,27 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 				@Override
 				public void run() {
 					try {
-						final List<JIRAAction> actions =
-							jiraServerFacade.getAvailableActions(IdeaHelper.getCurrentJIRAServer().getServer(), issue);
-						adapter.setCachedActions(actions);
-						SwingUtilities.invokeLater(new Runnable() {
-							public void run() {
-								JPopupMenu pMenu = popup.getComponent();
-								if (pMenu.isVisible()) {
-									for (JIRAAction a : actions) {
-										submenu.add(new RunJIRAActionAction(JIRAToolWindowPanel.this,
-												jiraServerFacade, adapter, a));
+						JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
+
+						if (jiraServer != null) {
+							final List<JIRAAction> actions =
+									jiraServerFacade.getAvailableActions(jiraServer.getServer(), issue);
+							adapter.setCachedActions(actions);
+							SwingUtilities.invokeLater(new Runnable() {
+								public void run() {
+									JPopupMenu pMenu = popup.getComponent();
+									if (pMenu.isVisible()) {
+										for (JIRAAction a : actions) {
+											submenu.add(new RunJIRAActionAction(JIRAToolWindowPanel.this,
+													jiraServerFacade, adapter, a));
+										}
+										// magic that makes the popup update itself. Don't ask - it is some sort of voodoo
+										pMenu.setVisible(false);
+										pMenu.setVisible(true);
 									}
-									// magic that makes the popup update itself. Don't ask - it is some sort of voodoo
-									pMenu.setVisible(false);
-									pMenu.setVisible(true);
 								}
-							}
-						});
+							});
+						}
 					} catch (JIRAException e) {
 						setStatusMessage("Query for issue actions failed: " + e.getMessage(), true);
 					} catch (NullPointerException e) {
@@ -374,8 +388,9 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 
 	
 	public void refreshIssuesPage() {
-        if (IdeaHelper.getCurrentJIRAServer() != null) {
-            updateIssues(IdeaHelper.getCurrentJIRAServer());
+		JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
+		if (jiraServer != null) {
+            updateIssues(jiraServer);
             serializeQuery();
         }
     }
@@ -460,9 +475,9 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
             setStatusMessage("Retrieving priorities...");
             jiraServer.getPriorieties();
 
-            if (jiraServer.equals(IdeaHelper.getCurrentJIRAServer())) {
+            if (jiraServer.equals(IdeaHelper.getCurrentJIRAServer(project))) {
                 filters = projectConfiguration.getJiraConfiguration()
-                        .getJiraFilters(IdeaHelper.getCurrentJIRAServer().getServer().getServerId().toString());
+                        .getJiraFilters(IdeaHelper.getCurrentJIRAServer(project).getServer().getServerId().toString());
                 if (filters == null) {
                     filters = new JiraFiltersBean();
                 }
@@ -484,7 +499,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 		DefaultActionGroup filterToolBar = new DefaultActionGroup("ThePlugin.JIRA.FilterToolBar" + project.getName(), false);
 
 		filterToolBar.add(new FilterTypeAction());
-		filterToolBar.add(new SavedFilterComboAction());
+		filterToolBar.add(new SavedFilterComboAction(project));
 		filterToolBar.add(new JIRAShowIssuesFilterAction());
 		filterToolBar.addSeparator();
 		filterToolBar.add(new JIRAPreviousPageAcion());
@@ -518,14 +533,20 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
     public void prevPage() {
         startIndex -= PAGE_SIZE;
         checkPrevPageAvaialble();
-        updateIssues(IdeaHelper.getCurrentJIRAServer());
-    }
+		JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
+		if (jiraServer != null) {
+			updateIssues(jiraServer);
+		}
+	}
 
     public void nextPage() {
         startIndex += PAGE_SIZE;
         checkPrevPageAvaialble();
-        updateIssues(IdeaHelper.getCurrentJIRAServer());
-    }
+		JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
+		if (jiraServer != null) {
+			updateIssues(jiraServer);
+		}
+	}
 
     private void checkPrevPageAvaialble() {
         if (startIndex < 0) {
@@ -663,9 +684,12 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
             filters.setSavedFilterUsed(false);
         }
         startIndex = 0;
-        projectConfiguration.getJiraConfiguration().
-                setFiltersBean(IdeaHelper.getCurrentJIRAServer().getServer().getServerId().toString(), filters);
-    }
+		JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
+		if (jiraServer != null) {
+			projectConfiguration.getJiraConfiguration().
+					setFiltersBean(jiraServer.getServer().getServerId().toString(), filters);
+		}
+	}
 
     @SuppressWarnings("unchecked")
     public List<JiraIssueAdapter> getIssues() {
@@ -687,8 +711,11 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
         }
         final JIRAIssue issue = adapter.getIssue();
         try {
-            assignIssue(issue, IdeaHelper.getCurrentJIRAServer().getServer().getUsername());
-        } catch (NullPointerException ex) {
+			JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
+			if (jiraServer != null) {
+				assignIssue(issue, jiraServer.getServer().getUsername());
+			}
+		} catch (NullPointerException ex) {
             // whatever, means action was called when no issue was selected. Let's just swallow it
         }
     }
@@ -749,10 +776,13 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 				public void run() {
                     setStatusMessage("Commenting issue " + issue.getKey() + "...");
                     try {
-                        jiraServerFacade.addComment(IdeaHelper.getCurrentJIRAServer().getServer(),
-                                issue, issueComment.getComment());
-                        setStatusMessage("Commented issue " + issue.getKey());
-                    } catch (JIRAException e) {
+						JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
+						if (jiraServer != null) {
+							jiraServerFacade.addComment(jiraServer.getServer(),
+									issue, issueComment.getComment());
+							setStatusMessage("Commented issue " + issue.getKey());
+						}
+					} catch (JIRAException e) {
                         setStatusMessage("Issue not commented: " + e.getMessage(), true);
                     }
                 }
@@ -778,19 +808,23 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
                     try {
                         Calendar cal = Calendar.getInstance();
                         cal.setTime(workLogCreate.getStartDate());
-						JiraServerCfg server = IdeaHelper.getCurrentJIRAServer().getServer();
-						String newRemainingEstimate = workLogCreate.getUpdateRemainingManually()
-                                ? workLogCreate.getRemainingEstimateString() : null;
-						jiraServerFacade.logWork(server, issue, workLogCreate.getTimeSpentString(),
-                                cal, workLogCreate.getComment(),
-								!workLogCreate.getLeaveRemainingUnchanged(), newRemainingEstimate);
-						if (workLogCreate.isStopProgressSelected()) {
-							setStatusMessage("Stopping work for issue " + issue.getKey() + "...");
-							jiraServerFacade.progressWorkflowAction(server, issue, workLogCreate.getInProgressAction());
-							setStatusMessage("Work logged and progress stopped for issue " + issue.getKey());
-							refreshIssuesPage();
-						} else {
-							setStatusMessage("Logged work for issue " + issue.getKey());
+						JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
+						
+						if (jiraServer != null) {
+							JiraServerCfg server = jiraServer.getServer();
+							String newRemainingEstimate = workLogCreate.getUpdateRemainingManually()
+									? workLogCreate.getRemainingEstimateString() : null;
+							jiraServerFacade.logWork(server, issue, workLogCreate.getTimeSpentString(),
+									cal, workLogCreate.getComment(),
+									!workLogCreate.getLeaveRemainingUnchanged(), newRemainingEstimate);
+							if (workLogCreate.isStopProgressSelected()) {
+								setStatusMessage("Stopping work for issue " + issue.getKey() + "...");
+								jiraServerFacade.progressWorkflowAction(server, issue, workLogCreate.getInProgressAction());
+								setStatusMessage("Work logged and progress stopped for issue " + issue.getKey());
+								refreshIssuesPage();
+							} else {
+								setStatusMessage("Logged work for issue " + issue.getKey());
+							}
 						}
 					} catch (JIRAException e) {
                         setStatusMessage("Work not logged: " + e.getMessage(), true);
@@ -808,9 +842,13 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 			public void run() {
                 setStatusMessage("Assigning issue " + issue.getKey() + " to " + assignee + "...");
                 try {
-                    jiraServerFacade.setAssignee(IdeaHelper.getCurrentJIRAServer().getServer(), issue, assignee);
-                    setStatusMessage("Assigned issue " + issue.getKey() + " to " + assignee);
-                } catch (JIRAException e) {
+
+					JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
+					if (jiraServer != null) {
+						jiraServerFacade.setAssignee(jiraServer.getServer(), issue, assignee);
+						setStatusMessage("Assigned issue " + issue.getKey() + " to " + assignee);
+					}
+				} catch (JIRAException e) {
                     setStatusMessage("Failed to assign issue: " + e.getMessage(), true);
                 }
             }
@@ -820,7 +858,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
     }
 
     public void createIssue() {
-        final JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer();
+		final JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
 
         if (jiraServer != null) {
             final IssueCreate issueCreate = new IssueCreate(jiraServer);

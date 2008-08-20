@@ -30,7 +30,7 @@ import com.intellij.openapi.util.IconLoader;
 public class QuickSearchAction extends AnAction {
     public void actionPerformed(AnActionEvent e) {
         Project project = IdeaHelper.getCurrentProject(e.getDataContext());
-        JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer();
+        JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
 
         if (jiraServer != null) {
             String query = Messages.showInputDialog(project, "Quick Search:",
@@ -47,8 +47,9 @@ public class QuickSearchAction extends AnAction {
 
 	public void update(AnActionEvent event) {
 		super.update(event);
-		if (IdeaHelper.getCurrentJIRAServer() != null) {
-			event.getPresentation().setEnabled(IdeaHelper.getCurrentJIRAServer().isValidServer());
+		JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(event.getDataContext());
+		if (jiraServer != null) {
+			event.getPresentation().setEnabled(jiraServer.isValidServer());
 		} else {
 			event.getPresentation().setEnabled(false);
 		}

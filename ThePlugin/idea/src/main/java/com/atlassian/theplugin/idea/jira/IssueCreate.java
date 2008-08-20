@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-/*
- * Created by IntelliJ IDEA.
- * User: amrk
- * Date: 16/03/2004
- * Time: 21:00:20
- */
+
 package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.jira.JIRAServer;
