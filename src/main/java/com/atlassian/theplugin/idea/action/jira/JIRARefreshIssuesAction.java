@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea.action.jira;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.jira.JIRAServer;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
@@ -24,14 +25,17 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  * Simple action to show the settings for the plugin.
  */
 public class JIRARefreshIssuesAction extends AnAction {
+	private JIRAServer jiraServer;
+
 	public void actionPerformed(AnActionEvent event) {
         IdeaHelper.getJIRAToolWindowPanel(event).refreshIssuesPage();
     }
 
 	public void update(AnActionEvent event) {
 		super.update(event);
-		if (IdeaHelper.getCurrentJIRAServer() != null) {
-			event.getPresentation().setEnabled(IdeaHelper.getCurrentJIRAServer().isValidServer());
+		jiraServer = IdeaHelper.getCurrentJIRAServer(event.getDataContext());
+		if (jiraServer != null) {
+			event.getPresentation().setEnabled(jiraServer.isValidServer());
 		} else {
 			event.getPresentation().setEnabled(false);
 		}

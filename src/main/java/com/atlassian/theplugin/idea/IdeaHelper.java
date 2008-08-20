@@ -58,12 +58,24 @@ public final class IdeaHelper {
 	}
 
 	@Nullable
-	public static JIRAServer getCurrentJIRAServer() {
-		Project p = getCurrentProject(DataManager.getInstance().getDataContext());
-		if (p == null) {
+	public static JIRAServer getCurrentJIRAServer(DataContext dataContext) {
+		if (dataContext == null) {
 			return null;
 		}
-		return p.getComponent(ThePluginProjectComponent.class).getCurrentJiraServer();
+		Project project = getCurrentProject(dataContext);
+
+		if (project == null) {
+			return null;
+		}
+		return project.getComponent(ThePluginProjectComponent.class).getCurrentJiraServer();
+	}
+
+	@Nullable
+	public static JIRAServer getCurrentJIRAServer(Project project) {		
+		if (project == null) {
+			return null;
+		}
+		return project.getComponent(ThePluginProjectComponent.class).getCurrentJiraServer();
 	}
 
 	public static void setCurrentJIRAServer(JIRAServer jiraServer) {

@@ -16,17 +16,19 @@
 
 package com.atlassian.theplugin.idea.action.jira;
 
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.JiraIssueAdapter;
+import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.api.JIRAAction;
 import com.atlassian.theplugin.jira.api.JIRAActionField;
 import com.atlassian.theplugin.jira.api.JIRAException;
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.project.Project;
 
 import java.util.List;
 
@@ -48,11 +50,11 @@ public class RunJIRAActionAction extends AnAction {
 
 	@Override
 	public void actionPerformed(AnActionEvent event) {
-		runIssueActionOrLaunchBrowser();
+		runIssueActionOrLaunchBrowser(IdeaHelper.getCurrentProject(event));
 	}
 
-	public void runIssueActionOrLaunchBrowser() {
-		new Thread(new IssueActionOrLaunchBrowserRunnable()).start();
+	public void runIssueActionOrLaunchBrowser(Project project) {
+		new Thread(new IssueActionOrLaunchBrowserRunnable(project)).start();
 	}
 
 	public void launchBrowser() {
@@ -65,6 +67,11 @@ public class RunJIRAActionAction extends AnAction {
 	}
 
 	private class IssueActionOrLaunchBrowserRunnable implements Runnable {
+		Project project;
+
+		IssueActionOrLaunchBrowserRunnable(Project project){
+			this.project = project;
+		}
 		public void run() {
 			try {
 				window.setStatusMessage(
@@ -73,25 +80,28 @@ public class RunJIRAActionAction extends AnAction {
 								+ "\" in issue "
 								+ adapter.getKey()
 								+ "...");
-				JiraServerCfg server = IdeaHelper.getCurrentJIRAServer().getServer();
-				List<JIRAActionField> fields = facade.getFieldsForAction(server, adapter.getIssue(), action);
-				if (fields.isEmpty()) {
-					window.setStatusMessage(
-							"Running action \""
-									+ action.getName()
-									+ "\" on issue "
-									+ adapter.getKey()
-									+ "...");
-					facade.progressWorkflowAction(server, adapter.getIssue(), action);
-					window.refreshIssuesPage();
-				} else {
-					window.setStatusMessage(
-							"Action \""
-									+ action.getName()
-									+ "\" on issue "
-									+ adapter.getKey()
-									+ " is interactive, launching browser");
-					launchBrowser();
+				JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
+				if (jiraServer != null) {
+					JiraServerCfg server = jiraServer.getServer();
+					List<JIRAActionField> fields = facade.getFieldsForAction(server, adapter.getIssue(), action);
+					if (fields.isEmpty()) {
+						window.setStatusMessage(
+								"Running action \""
+										+ action.getName()
+										+ "\" on issue "
+										+ adapter.getKey()
+										+ "...");
+						facade.progressWorkflowAction(server, adapter.getIssue(), action);
+						window.refreshIssuesPage();
+					} else {
+						window.setStatusMessage(
+								"Action \""
+										+ action.getName()
+										+ "\" on issue "
+										+ adapter.getKey()
+										+ " is interactive, launching browser");
+						launchBrowser();
+					}
 				}
 			} catch (JIRAException e) {
 				window.setStatusMessage(

@@ -19,6 +19,7 @@ package com.atlassian.theplugin.idea.action.jira;
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.jira.JIRAServer;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
@@ -58,8 +59,9 @@ public class SelectJIRAAction extends ComboBoxAction {
 	@Override
 	public void update(AnActionEvent event) {
 		super.update(event);
-		if (IdeaHelper.getCurrentJIRAServer() != null) {
-			event.getPresentation().setText(IdeaHelper.getCurrentJIRAServer().getServer().getName());
+		JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(event.getDataContext()); 
+		if (jiraServer != null) {
+			event.getPresentation().setText(jiraServer.getServer().getName());
 		}
 	}
 }
