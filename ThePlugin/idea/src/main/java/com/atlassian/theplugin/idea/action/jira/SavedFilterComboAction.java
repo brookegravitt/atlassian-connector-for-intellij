@@ -35,7 +35,7 @@ public class SavedFilterComboAction extends ComboBoxAction {
 	private ComboBoxButton button = null;
 	private Project project;
 
-	public SavedFilterComboAction(Project project){
+	public SavedFilterComboAction(Project project) {
 		this.project = project;
 	}
 	

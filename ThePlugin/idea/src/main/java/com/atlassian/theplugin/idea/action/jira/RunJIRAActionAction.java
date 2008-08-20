@@ -67,9 +67,9 @@ public class RunJIRAActionAction extends AnAction {
 	}
 
 	private class IssueActionOrLaunchBrowserRunnable implements Runnable {
-		Project project;
+		private Project project;
 
-		IssueActionOrLaunchBrowserRunnable(Project project){
+		IssueActionOrLaunchBrowserRunnable(Project project) {
 			this.project = project;
 		}
 		public void run() {
