@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea.action.jira;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.jira.JIRAServer;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
@@ -27,8 +28,10 @@ public class CreateIssueAction extends AnAction {
 
 	public void update(AnActionEvent event) {
 		super.update(event);
-		if (IdeaHelper.getCurrentJIRAServer() != null) {
-			event.getPresentation().setEnabled(IdeaHelper.getCurrentJIRAServer().isValidServer());
+		JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(event.getDataContext());
+
+		if (jiraServer != null) {
+			event.getPresentation().setEnabled(jiraServer.isValidServer());
 		} else {
 			event.getPresentation().setEnabled(false);
 		}

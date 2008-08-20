@@ -21,13 +21,15 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 public class CommentIssueAction extends AnAction {
-    public void actionPerformed(AnActionEvent e) {
+
+
+	public void actionPerformed(AnActionEvent e) {
 		IdeaHelper.getJIRAToolWindowPanel(e).addCommentToIssue();
     }
 
 	public void update(AnActionEvent event) {
-		super.update(event);
-		if (IdeaHelper.getCurrentJIRAServer() != null) {
+		super.update(event);		
+		if (IdeaHelper.getCurrentJIRAServer(event.getDataContext()) != null) {
 			event.getPresentation().setEnabled(IdeaHelper.getJIRAToolWindowPanel(event).getCurrentIssue() != null);
 		} else {
 			event.getPresentation().setEnabled(false);

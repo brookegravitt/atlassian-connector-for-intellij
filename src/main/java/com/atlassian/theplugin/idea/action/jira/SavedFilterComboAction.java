@@ -23,6 +23,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction;
+import com.intellij.openapi.project.Project;
 
 import javax.swing.*;
 import java.util.Iterator;
@@ -32,8 +33,13 @@ public class SavedFilterComboAction extends ComboBoxAction {
 	public static final String QF_NAME = "SavedFilter";
 	private static final String NO_SAVED_FILTER_TEXT = "Select saved filter";
 	private ComboBoxButton button = null;
+	private Project project;
 
-    protected DefaultActionGroup createPopupActionGroup(JComponent jComponent) {
+	public SavedFilterComboAction(Project project){
+		this.project = project;
+	}
+	
+	protected DefaultActionGroup createPopupActionGroup(JComponent jComponent) {
 		if (!(jComponent instanceof ComboBoxButton)) {
 			throw new UnsupportedOperationException("This action can only be used as a combobox");
 		}
@@ -41,7 +47,7 @@ public class SavedFilterComboAction extends ComboBoxAction {
 		DefaultActionGroup group = new DefaultActionGroup();
 		button = (ComboBoxButton) jComponent;
 
-		JIRAServer server = IdeaHelper.getCurrentJIRAServer();
+		JIRAServer server = IdeaHelper.getCurrentJIRAServer(project);
 		if (server != null) {
 			List filters = server.getSavedFilters();
 			if (filters != null) {
