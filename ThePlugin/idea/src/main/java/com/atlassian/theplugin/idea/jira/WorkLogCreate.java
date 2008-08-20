@@ -419,7 +419,7 @@ public class WorkLogCreate extends DialogWrapper {
 			}
 		});
 
-        final JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer();
+        final JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
         if (jiraServer == null) {
             Messages.showErrorDialog(project, "There is no selected JIRA Server", "Error");
             return;

@@ -687,7 +687,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			this.project = project;
 			this.issue = issue;
 			facade = JIRAServerFacadeImpl.getInstance();
-			server = IdeaHelper.getCurrentJIRAServer();
+			server = IdeaHelper.getCurrentJIRAServer(project);
             editorMap.put(issue.getKey(), this);
 
 			hasStackTrace = StackTraceDetector.containsStackTrace(Html2text.translate(issue.getDescription()));
@@ -734,9 +734,11 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 				Runnable runnable = new Runnable() {
 					public void run() {
                         try {
-                            facade.addComment(server.getServer(), issue, issueComment.getComment());
-                            refreshComments();
-                        } catch (JIRAException e) {
+							if (server != null) {
+								facade.addComment(server.getServer(), issue, issueComment.getComment());
+								refreshComments();
+							}
+						} catch (JIRAException e) {
                             final String msg = e.getMessage();
                             SwingUtilities.invokeLater(new Runnable() {
                                 public void run() {
@@ -763,10 +765,12 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 					public void run() {
 
 						try {
-							final JIRAIssue issueDetails = facade.getIssueDetails(server.getServer(), issue);
-							issue.setAffectsVersions(issueDetails.getAffectsVersions());
-							issue.setFixVersions(issueDetails.getFixVersions());
-							issue.setComponents(issueDetails.getComponents());
+							if (server != null) {
+								final JIRAIssue issueDetails = facade.getIssueDetails(server.getServer(), issue);
+								issue.setAffectsVersions(issueDetails.getAffectsVersions());
+								issue.setFixVersions(issueDetails.getFixVersions());
+								issue.setComponents(issueDetails.getComponents());
+							}
 						} catch (JIRAException e) {
 							errorString = new String[] { "Cannot retrieve: " + e.getMessage() };
 						}
@@ -799,23 +803,25 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
             final Runnable runnable = new Runnable() {
                 public void run() {
                     try {
-                        final List<JIRAComment> comments = facade.getComments(server.getServer(), issue);
-                        SwingUtilities.invokeLater(new Runnable() {
-                            public void run() {
-                                int size = comments.size();
-                                if (size > 0) {
-                                    commentsPanel.setTitle("Comments (" + comments.size() + ")");
-                                    for (JIRAComment c : comments) {
-                                        commentsPanel.addComment(project, issue, c, server);
+						if (server != null) {
+							final List<JIRAComment> comments = facade.getComments(server.getServer(), issue);
+							SwingUtilities.invokeLater(new Runnable() {
+								public void run() {
+									int size = comments.size();
+									if (size > 0) {
+										commentsPanel.setTitle("Comments (" + comments.size() + ")");
+										for (JIRAComment c : comments) {
+											commentsPanel.addComment(project, issue, c, server);
+										}
+										commentsPanel.validate();
+										commentsPanel.scrollToFirst();
+									} else {
+										commentsPanel.setTitle("No comments");
 									}
-                                    commentsPanel.validate();
-                                    commentsPanel.scrollToFirst();
-                                } else {
-                                    commentsPanel.setTitle("No comments");
-                                }
-                            }
-                        });
-                    } catch (JIRAException e) {
+								}
+							});
+						}
+					} catch (JIRAException e) {
                         commentsPanel.setTitle("Cannot fetch comments: " + e.getMessage());
                     }
                 }
