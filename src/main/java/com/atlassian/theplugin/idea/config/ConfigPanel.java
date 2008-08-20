@@ -58,7 +58,8 @@ public final class ConfigPanel extends JPanel {
 //		projectConfiguration = cfgManager.getProjectConfiguration(projectId).getClone();
 //		final Collection<ServerCfg> allServers = projectConfiguration.getServers();
 		//this.serverConfigPanel = new ServerConfigPanel(null, allServers);
-		this.bambooConfigPanel = new BambooGeneralForm(cfgManager.getGlobalBambooCfg());
+		//this.bambooConfigPanel = new BambooGeneralForm(cfgManager.getGlobalBambooCfg());
+		this.bambooConfigPanel = BambooGeneralForm.getInstance(globalConfigurationBean);
 		this.crucibleConfigPanel = CrucibleGeneralForm.getInstance(globalConfigurationBean);
 		this.jiraConfigPanel = JiraGeneralForm.getInstance(globalConfigurationBean);
 		this.generalConfigPanel = GeneralConfigPanel.getInstance(globalConfigurationBean);
@@ -130,7 +131,8 @@ public final class ConfigPanel extends JPanel {
 		/*projectConfiguration = cfgManager.getProjectConfiguration(projectId).getClone();*/
 		/*serverConfigPanel.setData(projectConfiguration.getServers());*/
 		generalConfigPanel.setData(localPluginConfigurationCopy);
-		bambooConfigPanel.setData(cfgManager.getGlobalBambooCfg());
+		//bambooConfigPanel.setData(cfgManager.getGlobalBambooCfg());
+		bambooConfigPanel.setData(localPluginConfigurationCopy);
 		jiraConfigPanel.setData(localPluginConfigurationCopy);
 		crucibleConfigPanel.setData(localPluginConfigurationCopy);
 	}
