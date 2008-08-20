@@ -201,7 +201,8 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 		JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
 
 		if (jiraServer != null) {
-			projectConfiguration.getJiraConfiguration().setFiltersBean(jiraServer.getServer().getServerId().toString(), filters);
+			projectConfiguration.getJiraConfiguration()
+					.setFiltersBean(jiraServer.getServer().getServerId().toString(), filters);
 		}
 
 		hideJIRAIssuesFilter();
