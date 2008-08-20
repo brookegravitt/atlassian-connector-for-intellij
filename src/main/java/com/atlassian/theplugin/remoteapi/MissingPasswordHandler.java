@@ -54,7 +54,7 @@ public class MissingPasswordHandler implements Runnable, ConfigurationListener {
 		this.serverFacade = serverFacade;
 		this.cfgManager = cfgManager;
 		this.project = project;
-		cfgManager.addListener(CfgUtil.getProjectId(project), this);
+		cfgManager.addProjectConfigurationListener(CfgUtil.getProjectId(project), this);
 	}
 
 	private synchronized boolean shouldStop() {

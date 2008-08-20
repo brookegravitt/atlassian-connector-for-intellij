@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.util;
 
-import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
+import com.atlassian.theplugin.commons.configuration.GeneralConfigurationBean;
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
 import com.atlassian.theplugin.idea.ui.CertMessageDialog;
 
@@ -36,20 +36,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 
-/**
- * Created by IntelliJ IDEA.
- * User: lguminski
- * Based on: http://www.devx.com/tips/Tip/30077
- * Date: Jun 26, 2008
- * Time: 7:43:30 PM
- * To change this template use File | Settings | File Templates.
- */
 public final class PluginTrustManager implements X509TrustManager {
-	private static Collection<String> alreadyRejectedCerts = new HashSet<String>();
+	private static final Collection<String> alreadyRejectedCerts = new HashSet<String>();
 	private static Collection<String> temporarilyAcceptedCerts =
 			Collections.synchronizedCollection(new HashSet<String>());
 
-	private PluginConfiguration configuration;
+	private final GeneralConfigurationBean configuration;
 	private X509TrustManager standardTrustManager;
 
 	private static ThreadLocal<String> url = new ThreadLocal<String>();
@@ -58,7 +50,7 @@ public final class PluginTrustManager implements X509TrustManager {
 		return url.get();
 	}
 
-	public PluginTrustManager(PluginConfiguration configuration) throws NoSuchAlgorithmException, KeyStoreException {
+	public PluginTrustManager(GeneralConfigurationBean configuration) throws NoSuchAlgorithmException, KeyStoreException {
 		this.configuration = configuration;
 		TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
 		factory.init((KeyStore) null);
@@ -68,9 +60,9 @@ public final class PluginTrustManager implements X509TrustManager {
 		}
 
 		//looking for a X509TrustManager instance
-		for (int i = 0; i < trustmanagers.length; i++) {
-			if (trustmanagers[i] instanceof X509TrustManager) {
-				standardTrustManager = (X509TrustManager) trustmanagers[i];
+		for (TrustManager trustmanager : trustmanagers) {
+			if (trustmanager instanceof X509TrustManager) {
+				standardTrustManager = (X509TrustManager) trustmanager;
 				return;
 			}
 		}
@@ -100,7 +92,7 @@ public final class PluginTrustManager implements X509TrustManager {
 				throw e;
 			}
 
-			if (checkChain(chain, configuration.getGeneralConfigurationData().getCerts())
+			if (checkChain(chain, configuration.getCerts())
 					||
 					checkChain(chain, temporarilyAcceptedCerts)) {
 				return;
@@ -135,7 +127,6 @@ public final class PluginTrustManager implements X509TrustManager {
 									return;
 								}
 								accepted[0] = 2;
-								return;
 							}
 						}
 					});
@@ -153,7 +144,7 @@ public final class PluginTrustManager implements X509TrustManager {
 				case 2:
 					synchronized (configuration) {
 						// taken once again because something could change in the state
-						configuration.getGeneralConfigurationData().addCert(strCert);
+						configuration.addCert(strCert);
 					}
 					break;
 				default:
