@@ -118,16 +118,6 @@ public class CfgManagerImpl implements CfgManager {
 		globalServers = MiscUtil.buildArrayList(globalConfiguration.getGlobalServers());
 	}
 
-	public void save() {
-        // TODO ${USER} implement it
-
-    }
-
-    public void reload() {
-        // TODO ${USER} implement it
-
-    }
-
     public void addProjectSpecificServer(final ProjectId projectId, final ServerCfg serverCfg) {
 		verifyProjectId(projectId);
 		if (serverCfg == null) {
