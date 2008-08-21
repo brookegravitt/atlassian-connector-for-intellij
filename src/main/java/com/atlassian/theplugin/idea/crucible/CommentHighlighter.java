@@ -55,7 +55,7 @@ public final class CommentHighlighter {
 			applyHighlighters(project, editor, reviewItem);
 			editor.putUserData(REVIEW_DATA_KEY, review);
 			editor.putUserData(REVIEWITEM_DATA_KEY, reviewItem);
-			editor.putUserData(COMMENT_DATA_KEY, Boolean.valueOf(true));
+			editor.putUserData(COMMENT_DATA_KEY, true);
 		}
 	}
 
@@ -70,7 +70,7 @@ public final class CommentHighlighter {
 						applyHighlighters(project, editor, reviewItem);
 						editor.putUserData(REVIEW_DATA_KEY, review);
 						editor.putUserData(REVIEWITEM_DATA_KEY, reviewItem);
-						editor.putUserData(COMMENT_DATA_KEY, Boolean.valueOf(true));
+						editor.putUserData(COMMENT_DATA_KEY, true);
 					}
 				}
 			}
@@ -79,11 +79,7 @@ public final class CommentHighlighter {
 
 	private static void applyHighlighters(final Project project, final Editor editor, final CrucibleFileInfo reviewItem) {
 		final MarkupModel markupModel = editor.getDocument().getMarkupModel(project);
-		for (RangeHighlighter rh : markupModel.getAllHighlighters()) {
-			if (rh.getUserData(COMMENT_DATA_KEY) != null) {
-				markupModel.removeHighlighter(rh);
-			}
-		}
+		removeHighlighters(markupModel);
 
 		TextAttributes textAttributes = new TextAttributes();
 		textAttributes.setBackgroundColor(VERSIONED_COMMENT_BACKGROUND_COLOR);
@@ -96,7 +92,7 @@ public final class CommentHighlighter {
 									i, HighlighterLayer.SELECTION, textAttributes);
 							rh.setErrorStripeTooltip(comment.getAuthor().getDisplayName() + ":" + comment.getMessage());
 							rh.setErrorStripeMarkColor(VERSIONED_COMMENT_STRIP_MARK_COLOR);
-							rh.putUserData(COMMENT_DATA_KEY, Boolean.valueOf(true));
+							rh.putUserData(COMMENT_DATA_KEY, true);
 						}
 					} catch (Exception e) {
 						PluginUtil.getLogger().error(e);
@@ -105,6 +101,14 @@ public final class CommentHighlighter {
 			}
 		} catch (ValueNotYetInitialized valueNotYetInitialized) {
 			PluginUtil.getLogger().error(valueNotYetInitialized);
+		}
+	}
+
+	private static void removeHighlighters(final MarkupModel markupModel) {
+		for (RangeHighlighter rh : markupModel.getAllHighlighters()) {
+			if (rh.getUserData(COMMENT_DATA_KEY) != null) {
+				markupModel.removeHighlighter(rh);
+			}
 		}
 	}
 }
