@@ -122,7 +122,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 	public void showHidePanels() {
 		//stopTabChangeListener();
 
-		if (cfgManager.getAllServers(CfgUtil.getProjectId(project)).size() == 0) {
+		if (cfgManager.getAllEnabledServers(CfgUtil.getProjectId(project)).size() == 0) {
 			// no servers defined, show config panel
 			if (ideaToolWindow.getContentManager().findContent(CONFIGURE_TAB_NAME) == null) {
 				Content content = PeerFactory.getInstance().getContentFactory().
