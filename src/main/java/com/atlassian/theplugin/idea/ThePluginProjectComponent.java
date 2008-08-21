@@ -260,13 +260,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 
             IdeaHelper.getAppComponent().rescheduleStatusCheckers(false);
 
-
-
 			jiraToolWindowPanel.selectLastActiveServer();
-
-			//toolWindow.
-			
-
 
 			configurationListener = new ConfigurationListenerImpl();
 			cfgManager.addProjectConfigurationListener(CfgUtil.getProjectId(project), configurationListener);
