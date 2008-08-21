@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
+import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.application.ApplicationManager;
@@ -25,12 +26,15 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.vcs.*;
+import com.intellij.openapi.vcs.AbstractVcs;
+import com.intellij.openapi.vcs.CommittedChangesProvider;
+import com.intellij.openapi.vcs.ProjectLevelVcsManager;
+import com.intellij.openapi.vcs.RepositoryLocation;
+import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vcs.changes.ContentRevision;
 import com.intellij.openapi.vcs.diff.DiffProvider;
 import com.intellij.openapi.vcs.history.VcsFileRevision;
 import com.intellij.openapi.vcs.history.VcsRevisionNumber;
-import com.intellij.openapi.vcs.vfs.AbstractVcsVirtualFile;
 import com.intellij.openapi.vcs.vfs.VcsVirtualFile;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -38,13 +42,12 @@ import com.intellij.vcsUtil.VcsUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public final class VcsIdeaHelper {
 
-	private static Map<String, AbstractVcsVirtualFile> fetchedFiles = new HashMap<String, AbstractVcsVirtualFile>();
+	private static Map<String, VirtualFile> fetchedFiles = MiscUtil.buildConcurrentHashMap(20);
 
 	private VcsIdeaHelper() {
 	}
@@ -101,7 +104,7 @@ public final class VcsIdeaHelper {
 		return revision + ":" + file.getPath();
 	}
 
-	private static AbstractVcsVirtualFile getFileFromCache(VirtualFile virtualFile, String revision) {
+	private static VirtualFile getFileFromCache(VirtualFile virtualFile, String revision) {
 		String key = getFileCacheKey(virtualFile, revision);
 		if (fetchedFiles.containsKey(key)) {
 			return fetchedFiles.get(key);
@@ -110,15 +113,15 @@ public final class VcsIdeaHelper {
 		}
 	}
 
-	private static void putFileInfoCache(AbstractVcsVirtualFile file, VirtualFile virtualFile, String revision) {
+	private static void putFileInfoCache(VirtualFile file, VirtualFile virtualFile, String revision) {
 		String key = getFileCacheKey(virtualFile, revision);
 		fetchedFiles.put(key, file);
 	}
 
 	@Nullable
-	private static AbstractVcsVirtualFile getVcsVirtualFile(Project project, VirtualFile virtualFile,
-			String revision, boolean loadLazily) throws VcsException {
-		AbstractVcsVirtualFile vcvf = getFileFromCache(virtualFile, revision);
+	private static VirtualFile getVcsVirtualFile(Project project, VirtualFile virtualFile,
+			String revision) throws VcsException {
+		VirtualFile vcvf = getFileFromCache(virtualFile, revision);
 		if (vcvf != null) {
 			return vcvf;
 		} else {
@@ -127,15 +130,15 @@ public final class VcsIdeaHelper {
 				return null;
 			}
 			VcsRevisionNumber vcsRevisionNumber = vcs.parseRevisionNumber(revision);
-			vcvf = getVcsVirtualFileImpl2(virtualFile, vcs, vcsRevisionNumber, loadLazily);
+			vcvf = getVcsVirtualFileImpl2(virtualFile, vcs, vcsRevisionNumber);
 			putFileInfoCache(vcvf, virtualFile, revision);
 			return vcvf;
 		}
 	}
 
 	@Nullable
-	private static VcsVirtualFile getVcsVirtualFileImpl2(VirtualFile virtualFile, AbstractVcs vcs,
-			VcsRevisionNumber vcsRevisionNumber, boolean loadLazily) throws VcsException {
+	private static VirtualFile getVcsVirtualFileImpl2(VirtualFile virtualFile, AbstractVcs vcs,
+			VcsRevisionNumber vcsRevisionNumber) throws VcsException {
 
 		DiffProvider diffProvider = vcs.getDiffProvider();
 		if (diffProvider == null) {
@@ -145,11 +148,23 @@ public final class VcsIdeaHelper {
 		if (contentRevision == null) {
 			return null;
 		}
-		if (loadLazily == false) {
-			// this operation is typically quite costly
-			contentRevision.getContent();
+
+		// this operation is typically quite costly
+		final String content = contentRevision.getContent();
+		if (content == null) {
+			return null;
 		}
-		return new VcsVirtualFile(contentRevision.getFile().getPath(), contentRevision.getContent().getBytes(),
+// we will restore it one day and the the world will be great again :)
+//		try {
+//			byte[] currentContent = virtualFile.contentsToByteArray();
+//			if (Arrays.equals(currentContent, content.getBytes())) {
+//				return virtualFile;
+//			}
+//
+//		} catch (IOException e) {
+//			// just resign and try fetch as normally
+//		}
+		return new VcsVirtualFile(contentRevision.getFile().getPath(), content.getBytes(),
 				vcsRevisionNumber.asString(), virtualFile.getFileSystem());
 	}
 
@@ -165,8 +180,8 @@ public final class VcsIdeaHelper {
 	 */
 	private static void fetchAndOpenFile(final Project project, final String revision, @NotNull final VirtualFile virtualFile,
 			final int line, final int column, @Nullable final OpenFileDescriptorAction action) {
-		AbstractVcsVirtualFile file = getFileFromCache(virtualFile, revision);
-		if (file != null) {
+		VirtualFile file = getFileFromCache(virtualFile, revision);
+		if (file != null && action != null) {
 			OpenFileDescriptor fileDescriptor = new OpenFileDescriptor(project, file, line, column);
 			action.run(fileDescriptor);
 			return;
@@ -180,15 +195,23 @@ public final class VcsIdeaHelper {
 			private VcsException exception;
 
 			@Override
+			public boolean shouldStartInBackground() {
+				return false;
+			}
+
+			@Override
 			public void run(ProgressIndicator indicator) {
-				final AbstractVcsVirtualFile vcvf;
+				indicator.setIndeterminate(true);
+				final VirtualFile myVirtualFile;
 				try {
-					vcvf = getVcsVirtualFile(project, virtualFile, revision, false);
+					myVirtualFile = getVcsVirtualFile(project, virtualFile, revision);
 				} catch (VcsException e) {
 					exception = e;
 					return;
 				}
-				ofd = new OpenFileDescriptor(project, vcvf, line, column);
+				if (myVirtualFile != null) {
+					ofd = new OpenFileDescriptor(project, myVirtualFile, line, column);
+				}
 			}
 
 			@Override
@@ -211,7 +234,6 @@ public final class VcsIdeaHelper {
 
 	/**
 	 * Must be run from UI thread!
-	 * {
 	 *
 	 * @param project	  project
 	 * @param fromRevision start VCS revision of the file
@@ -226,9 +248,9 @@ public final class VcsIdeaHelper {
 	private static void fetchAndOpenFileWithDiffs(final Project project, final String fromRevision, final String toRevision,
 			@NotNull final CommitType commitType, @NotNull final VirtualFile virtualFile,
 			final int line, final int column, @Nullable final OpenDiffAction action) {
-		// CHECKSTYLE:ON
-		AbstractVcsVirtualFile referenceVirtualFile = getFileFromCache(virtualFile, fromRevision);
-		AbstractVcsVirtualFile displayVirtualFile = getFileFromCache(virtualFile, toRevision);
+	// CHECKSTYLE:ON
+		VirtualFile referenceVirtualFile = getFileFromCache(virtualFile, fromRevision);
+		VirtualFile displayVirtualFile = getFileFromCache(virtualFile, toRevision);
 
 		if (referenceVirtualFile != null
 				&& displayVirtualFile != null) {
@@ -295,6 +317,8 @@ public final class VcsIdeaHelper {
 	 * @param project
 	 * @param filePath
 	 * @param fileRevision
+	 * @param toRevision
+	 * @param commitType
 	 * @param line
 	 * @param col
 	 * @param action
@@ -389,7 +413,7 @@ public final class VcsIdeaHelper {
 
 	private static class FetchingFileTask extends Task.Backgroundable {
 		private OpenFileDescriptor displayDescriptor;
-		private AbstractVcsVirtualFile referenceVirtualFile;
+		private VirtualFile referenceVirtualFile;
 
 		private VcsException exception;
 		private final Project project;
@@ -421,28 +445,37 @@ public final class VcsIdeaHelper {
 		}
 
 		@Override
+		public boolean shouldStartInBackground() {
+			return false;
+		}
+
+		@Override
 		public void run(ProgressIndicator indicator) {
-			final AbstractVcsVirtualFile displayVirtualFile;
+			indicator.setIndeterminate(false);
+			VirtualFile displayVirtualFile = null;
 			try {
 				switch (commitType) {
 					case Modified:
 					case Moved:
 					case Copied:
-						referenceVirtualFile = getVcsVirtualFile(project, virtualFile, fromRevision, false);
-						displayVirtualFile = getVcsVirtualFile(project, virtualFile, toRevision, false);
-						displayDescriptor = new OpenFileDescriptor(project, displayVirtualFile, line, column);
+						referenceVirtualFile = getVcsVirtualFile(project, virtualFile, fromRevision);
+						displayVirtualFile = getVcsVirtualFile(project, virtualFile, toRevision);
 						break;
 					case Added:
-						displayVirtualFile = getVcsVirtualFile(project, virtualFile, toRevision, false);
-						displayDescriptor = new OpenFileDescriptor(project, displayVirtualFile, line, column);
+						displayVirtualFile = getVcsVirtualFile(project, virtualFile, toRevision);
 						break;
 					case Deleted:
-						referenceVirtualFile = getVcsVirtualFile(project, virtualFile, fromRevision, false);
-						displayVirtualFile = getVcsVirtualFile(project, virtualFile, toRevision, false);
-						displayDescriptor = new OpenFileDescriptor(project, displayVirtualFile, line, column);
+						referenceVirtualFile = getVcsVirtualFile(project, virtualFile, fromRevision);
+						displayVirtualFile = getVcsVirtualFile(project, virtualFile, toRevision);
 						break;
 					default:
 						break;
+				}
+				if (displayVirtualFile != null) {
+					displayDescriptor = new OpenFileDescriptor(project, displayVirtualFile, line, column);
+				} else {
+					// we cannot open such file (just for clarity as by default displayDescriptor = null)
+					displayDescriptor = null;
 				}
 			} catch (VcsException e) {
 				exception = e;
