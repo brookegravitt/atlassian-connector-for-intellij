@@ -71,9 +71,9 @@ public class JDomProjectConfigurationFactory implements ProjectConfigurationFact
 
 	private ProjectConfiguration merge(final ProjectConfiguration projectConfiguration,
 			final PrivateProjectConfiguration privateProjectConfiguration) {
-		for (PrivateServerCfgInfo psci : privateProjectConfiguration.getPrivateServerCfgInfos()) {
-			final ServerCfg serverCfg = projectConfiguration.getServerCfg(psci.getServerId());
-			if (serverCfg != null) {
+		for (ServerCfg serverCfg : projectConfiguration.getServers()) {
+			PrivateServerCfgInfo psci = privateProjectConfiguration.getPrivateServerCfgInfo(serverCfg.getServerId());
+			if (psci != null) {
 				serverCfg.setUsername(psci.getUsername());
 				serverCfg.setEnabled(psci.isEnabled());
 				final String password = psci.getPassword();
@@ -83,6 +83,9 @@ public class JDomProjectConfigurationFactory implements ProjectConfigurationFact
 				} else {
 					serverCfg.setPasswordStored(false);
 				}
+			} else {
+				serverCfg.setPasswordStored(false);
+				serverCfg.setEnabled(true); // new servers (for which there was no private info yet) are enabled by default
 			}
 		}
 		return projectConfiguration;
