@@ -59,7 +59,7 @@ public class NewVersionButtonListener implements ActionListener {
         updateConfig.setCheckUnstableVersionsEnabled(generalConfigForm.getCheckNewVersionAll().isSelected());
         updateConfig.setUid(IdeaHelper.getAppComponent().getState().getGeneralConfigurationData().getUid());
 
-        ProgressManager.getInstance().run(new UpdateModalTask());
+        ProgressManager.getInstance().run(new UpdateModalTask(generalConfigForm.getRootComponent()));
     }
 
     private class UpdateServerConnection extends Connector {
@@ -77,9 +77,12 @@ public class NewVersionButtonListener implements ActionListener {
     }
 
     private class UpdateModalTask extends Task.Modal {
-        public UpdateModalTask() {
+		private Component parentWindow;
+
+		public UpdateModalTask(Component parentWindow) {
             super(null, "Checking available updates", true);
-        }
+			this.parentWindow = parentWindow;
+		}
 
         @Override
 		public void run(ProgressIndicator indicator) {
@@ -109,7 +112,7 @@ public class NewVersionButtonListener implements ActionListener {
                 case FAILED:
                     EventQueue.invokeLater(new Runnable() {
                         public void run() {
-                            showMessageDialog(checkerThread.getErrorMessage(),
+                            showMessageDialog(parentWindow, checkerThread.getErrorMessage(),
                                     "Error occured when contacting update server", Messages.getErrorIcon());
                         }
                     });
@@ -124,9 +127,9 @@ public class NewVersionButtonListener implements ActionListener {
                         EventQueue.invokeLater(new Runnable() {
                             public void run() {
                                 try {
-                                    new NewVersionConfirmHandler(null, updateConfig).doAction(newVersion, false);
+                                    new NewVersionConfirmHandler(parentWindow, null, updateConfig).doAction(newVersion, false);
                                 } catch (ThePluginException e) {
-                                    showMessageDialog(e.getMessage(),
+                                    showMessageDialog(parentWindow, e.getMessage(),
                                             "Error retrieving new version", Messages.getErrorIcon());
                                 }
                             }
@@ -134,7 +137,7 @@ public class NewVersionButtonListener implements ActionListener {
                     } else {
                         EventQueue.invokeLater(new Runnable() {
                             public void run() {
-                                showMessageDialog("You have the latest version (" + PluginUtil.getInstance().getVersion() + ")",
+                                showMessageDialog(parentWindow, "You have the latest version (" + PluginUtil.getInstance().getVersion() + ")",
                                         "Version checked", Messages.getInformationIcon());
                             }
                         });
