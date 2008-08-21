@@ -25,7 +25,9 @@ import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
-import com.atlassian.theplugin.util.*;
+import com.atlassian.theplugin.util.HttpConfigurableIdeaImpl;
+import com.atlassian.theplugin.util.PicoUtil;
+import com.atlassian.theplugin.util.PluginSSLProtocolSocketFactory;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
@@ -113,7 +115,6 @@ public class ThePluginApplicationComponent
 
 	public void initComponent() {
 		new IdeaLoggerImpl(com.intellij.openapi.diagnostic.Logger.getInstance(LoggerImpl.LOGGER_CATEGORY));
-
 	}
 
 	public void disposeComponent() {

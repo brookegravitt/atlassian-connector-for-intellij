@@ -15,25 +15,25 @@
  */
 package com.atlassian.theplugin.commons.cfg.xstream;
 
+import com.atlassian.theplugin.commons.SubscribedPlan;
+import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.cfg.PrivateProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.PrivateServerCfgInfo;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
-import com.thoughtworks.xstream.io.xml.JDomDriver;
-import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
-import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerId;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.PrivateServerCfgInfo;
-import com.atlassian.theplugin.commons.cfg.PrivateProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.commons.SubscribedPlan;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+import com.thoughtworks.xstream.io.xml.JDomDriver;
 
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Collection;
 
 public final class JDomXStreamUtil {
 	private static final String PLAN = "plan";
@@ -53,8 +53,8 @@ public final class JDomXStreamUtil {
 		xStream.omitField(ServerCfg.class, "password");
 		xStream.omitField(ServerCfg.class, "isPasswordStored");
 		xStream.aliasField("server-id", ServerCfg.class, "serverId");
-		xStream.aliasField("enabled", ServerCfg.class, "isEnabled");
-//		xStream.aliasField("password-stored", ServerCfg.class, "isPasswordStored");
+//		xStream.aliasField("enabled", ServerCfg.class, "isEnabled");
+		xStream.omitField(ServerCfg.class, "isEnabled");
 		xStream.aliasField("use-favourites", ServerCfg.class, "isUseFavourites");
 		xStream.aliasField("bamboo2", ServerCfg.class, "isBamboo2");
 
@@ -63,6 +63,7 @@ public final class JDomXStreamUtil {
 
 		xStream.alias("private-server-cfg", PrivateServerCfgInfo.class);
 		xStream.aliasField("server-id", PrivateServerCfgInfo.class, "serverId");
+		xStream.aliasField("enabled", PrivateServerCfgInfo.class, "isEnabled");
 		xStream.registerLocalConverter(PrivateServerCfgInfo.class, "password", new EncodedStringConverter());
 
 		xStream.alias("private-project-cfg", PrivateProjectConfiguration.class);
