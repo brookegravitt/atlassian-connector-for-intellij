@@ -36,11 +36,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * Created by IntelliJ IDEA.
- * User: lguminski
- * Date: Mar 12, 2008
- * Time: 5:04:58 PM
- * To change this template use File | Settings | File Templates.
+ * @author Lukasz Guminski
  */
 public class NewVersionButtonListener implements ActionListener {
     private ConnectionWrapper checkerThread;
@@ -137,7 +133,8 @@ public class NewVersionButtonListener implements ActionListener {
                     } else {
                         EventQueue.invokeLater(new Runnable() {
                             public void run() {
-                                showMessageDialog(parentWindow, "You have the latest version (" + PluginUtil.getInstance().getVersion() + ")",
+                                showMessageDialog(parentWindow,
+										"You have the latest version (" + PluginUtil.getInstance().getVersion() + ")",
                                         "Version checked", Messages.getInformationIcon());
                             }
                         });

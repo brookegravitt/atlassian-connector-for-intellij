@@ -16,10 +16,11 @@
 
 package com.atlassian.theplugin.idea.jira;
 
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerId;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.JiraFilterEntryBean;
@@ -27,20 +28,39 @@ import com.atlassian.theplugin.configuration.JiraFiltersBean;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.configuration.ProjectToolWindowTableConfiguration;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.action.jira.*;
+import com.atlassian.theplugin.idea.action.jira.FilterTypeAction;
+import com.atlassian.theplugin.idea.action.jira.JIRANextPageAction;
+import com.atlassian.theplugin.idea.action.jira.JIRAPreviousPageAcion;
+import com.atlassian.theplugin.idea.action.jira.JIRAShowIssuesFilterAction;
+import com.atlassian.theplugin.idea.action.jira.RunJIRAActionAction;
+import com.atlassian.theplugin.idea.action.jira.SavedFilterComboAction;
 import com.atlassian.theplugin.idea.jira.table.JIRATableColumnProviderImpl;
-import com.atlassian.theplugin.idea.jira.table.columns.*;
+import com.atlassian.theplugin.idea.jira.table.columns.IssueKeyColumn;
+import com.atlassian.theplugin.idea.jira.table.columns.IssuePriorityColumn;
+import com.atlassian.theplugin.idea.jira.table.columns.IssueStatusColumn;
+import com.atlassian.theplugin.idea.jira.table.columns.IssueSummaryColumn;
+import com.atlassian.theplugin.idea.jira.table.columns.IssueTypeColumn;
 import com.atlassian.theplugin.idea.ui.AbstractTableToolWindowPanel;
 import com.atlassian.theplugin.idea.ui.TableColumnProvider;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
-import com.atlassian.theplugin.jira.api.*;
+import com.atlassian.theplugin.jira.api.JIRAAction;
+import com.atlassian.theplugin.jira.api.JIRAException;
+import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
+import com.atlassian.theplugin.jira.api.JIRASavedFilterBean;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.ide.DataManager;
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionPlaces;
+import com.intellij.openapi.actionSystem.ActionPopupMenu;
+import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.ui.popup.PopupChooserBuilder;
@@ -97,7 +117,8 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
         JIRAToolWindowPanel window = project.getUserData(WINDOW_PROJECT_KEY);
 
         if (window == null) {
-            window = new JIRAToolWindowPanel(project, IdeaHelper.getPluginConfiguration(), projectConfigurationBean, cfgManager);
+            window = new JIRAToolWindowPanel(project, IdeaHelper.getPluginConfiguration(),
+					projectConfigurationBean, cfgManager);
             project.putUserData(WINDOW_PROJECT_KEY, window);
         }
         return window;
