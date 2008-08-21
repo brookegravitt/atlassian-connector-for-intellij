@@ -343,6 +343,7 @@
                 <defaultGoal>idea:idea</defaultGoal>
             </build>
             <modules>
+                <module>build-tools</module>
                 <module>commons</module>
                 <module>idea</module>
             </modules>
