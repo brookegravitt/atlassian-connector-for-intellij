@@ -28,6 +28,7 @@ import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.CrucibleReviewWindow;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
+import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.atlassian.theplugin.idea.bamboo.ToolWindowBambooContent;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.events.ShowReviewEvent;
@@ -41,6 +42,7 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.VerticalFlowLayout;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.Key;
 import com.intellij.ui.table.TableView;
 import com.intellij.util.ui.UIUtil;
@@ -364,9 +366,15 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 			}
 
 			if (noClicks == 2) {
-				CrucibleReviewWindow.getInstance(project);
-				IdeaHelper.getReviewActionEventBroker(project).trigger(new ShowReviewEvent(
-						listener, selectedItem));
+				if (VcsIdeaHelper.isUnderVcsControl(project)) {
+					CrucibleReviewWindow.getInstance(project);
+					IdeaHelper.getReviewActionEventBroker(project).trigger(new ShowReviewEvent(
+							listener, selectedItem));
+				} else {
+
+					Messages.showInfoMessage(project, CrucibleConstants.CRUCIBLE_MESSAGE_NOT_UNDER_VCS,
+							CrucibleConstants.CRUCIBLE_TITLE_NOT_UNDER_VCS);
+				}
 			}
 		}
 	}
