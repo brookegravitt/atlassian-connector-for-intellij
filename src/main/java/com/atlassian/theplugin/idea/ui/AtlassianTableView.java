@@ -60,7 +60,7 @@ public class AtlassianTableView<T> extends TableView<T> {
 				}
 			}
 		});
-		ItemSelectedMouseAdapter<T> l = new ItemSelectedMouseAdapter<T>(this);
+		final ItemSelectedMouseAdapter<T> l = new ItemSelectedMouseAdapter<T>(this);
 		addMouseListener(l);
 		addKeyListener(new KeyAdapter() {
 			@Override
@@ -81,7 +81,6 @@ public class AtlassianTableView<T> extends TableView<T> {
 		if (popupMenuPlace != null && popupMenuName != null && popupMenuName.length() > 0) {
 			addMouseListener(new ShowPopupMouseAdapter<T>(this, popupMenuName, popupMenuPlace));
 		}
-		addMouseListener(new ItemSelectedMouseAdapter<T>(this));
 	}
 
 	@SuppressWarnings("unchecked")
