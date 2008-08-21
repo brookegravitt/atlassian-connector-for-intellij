@@ -29,16 +29,20 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.*;
+
 public class NewVersionConfirmHandler implements UpdateActionHandler {
 	private static final String DOWNLOAD_TITLE = "Downloading new " + PluginUtil.getInstance().getName() + " plugin version ";
 
 	@Nullable
 	private final Project project;
 	private GeneralConfigurationBean updateConfiguration;
+	private Component parent;
 
-	public NewVersionConfirmHandler(@Nullable Project project, GeneralConfigurationBean updateConfiguration) {
+	public NewVersionConfirmHandler(Component parent, @Nullable Project project, GeneralConfigurationBean updateConfiguration) {
 		this.project = project;
 		this.updateConfiguration = updateConfiguration;
+		this.parent = parent;
 	}
 
 	public void doAction(final InfoServer.VersionInfo versionInfo, boolean showConfigPath) throws ThePluginException {
@@ -48,7 +52,7 @@ public class NewVersionConfirmHandler implements UpdateActionHandler {
 				+ ". Do you want to download and install?";
 		String title = "New plugin version download";
 
-		int answer = Messages.showYesNoDialog(message, title, Messages.getQuestionIcon());
+		int answer = Messages.showYesNoDialog(parent, message, title, Messages.getQuestionIcon());
 
 		//int answer = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(),
 		//		message, title, JOptionPane.YES_NO_OPTION);
