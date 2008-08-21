@@ -47,7 +47,8 @@ import java.util.Map;
 
 public final class VcsIdeaHelper {
 
-	private static Map<String, VirtualFile> fetchedFiles = MiscUtil.buildConcurrentHashMap(20);
+	private static final int INITIAL_CAPACITY = 20;
+	private static Map<String, VirtualFile> fetchedFiles = MiscUtil.buildConcurrentHashMap(INITIAL_CAPACITY);
 
 	private VcsIdeaHelper() {
 	}
@@ -188,48 +189,7 @@ public final class VcsIdeaHelper {
 		}
 
 		final String niceFileMessage = virtualFile.getName() + " (rev: " + revision + ") from VCS";
-		new Task.Backgroundable(project, "Fetching file " + niceFileMessage, false) {
-
-			private OpenFileDescriptor ofd;
-
-			private VcsException exception;
-
-			@Override
-			public boolean shouldStartInBackground() {
-				return false;
-			}
-
-			@Override
-			public void run(ProgressIndicator indicator) {
-				indicator.setIndeterminate(true);
-				final VirtualFile myVirtualFile;
-				try {
-					myVirtualFile = getVcsVirtualFile(project, virtualFile, revision);
-				} catch (VcsException e) {
-					exception = e;
-					return;
-				}
-				if (myVirtualFile != null) {
-					ofd = new OpenFileDescriptor(project, myVirtualFile, line, column);
-				}
-			}
-
-			@Override
-			public void onSuccess() {
-				if (exception != null) {
-					Messages.showErrorDialog(project, "The following error has occured while fetching "
-							+ niceFileMessage + ":\n" + exception.getMessage(), "Error fetching file");
-					return;
-				}
-				if (ofd != null) {
-					if (action != null) {
-						action.run(ofd);
-					}
-					ofd.navigate(true);
-				}
-
-			}
-		}.queue();
+		new FetchingFileTask(project, niceFileMessage, virtualFile, revision, line, column, action).queue();
 	}
 
 	/**
@@ -279,7 +239,7 @@ public final class VcsIdeaHelper {
 				niceFileMessage = "s" + virtualFile.getName() + " (rev: " + fromRevision + ", " + toRevision + ") from VCS";
 		}
 
-		new FetchingFileTask(project, niceFileMessage, commitType, virtualFile, fromRevision,
+		new FetchingTwoFilesTask(project, niceFileMessage, commitType, virtualFile, fromRevision,
 				toRevision, line, column, action).queue();
 	}
 
@@ -411,7 +371,7 @@ public final class VcsIdeaHelper {
 		void run(OpenFileDescriptor displayFile, VirtualFile referenceDocument, CommitType commitType);
 	}
 
-	private static class FetchingFileTask extends Task.Backgroundable {
+	private static class FetchingTwoFilesTask extends Task.Backgroundable {
 		private OpenFileDescriptor displayDescriptor;
 		private VirtualFile referenceVirtualFile;
 
@@ -426,7 +386,7 @@ public final class VcsIdeaHelper {
 		private final int column;
 		private final OpenDiffAction action;
 
-		public FetchingFileTask(final Project project, final String niceFileMessage, final CommitType commitType,
+		public FetchingTwoFilesTask(final Project project, final String niceFileMessage, final CommitType commitType,
 				final VirtualFile virtualFile, final String fromRevision, final String toRevision, final int line,
 				final int column,
 				final OpenDiffAction action) {
@@ -494,6 +454,70 @@ public final class VcsIdeaHelper {
 					action.run(displayDescriptor, referenceVirtualFile, commitType);
 				}
 				displayDescriptor.navigate(true);
+			}
+
+		}
+	}
+
+	private static class FetchingFileTask extends Task.Backgroundable {
+
+		private OpenFileDescriptor ofd;
+
+		private VcsException exception;
+		private final Project project;
+		private final String niceFileMessage;
+		private final VirtualFile virtualFile;
+		private final String revision;
+		private final int line;
+		private final int column;
+		private final OpenFileDescriptorAction action;
+
+		public FetchingFileTask(final Project project, final String niceFileMessage, final VirtualFile virtualFile,
+				final String revision,
+				final int line, final int column, final OpenFileDescriptorAction action) {
+			super(project, "Fetching file " + niceFileMessage, false);
+			this.project = project;
+			this.niceFileMessage = niceFileMessage;
+			this.virtualFile = virtualFile;
+			this.revision = revision;
+			this.line = line;
+			this.column = column;
+			this.action = action;
+		}
+
+		@Override
+		public boolean shouldStartInBackground() {
+			return false;
+		}
+
+		@Override
+		public void run(ProgressIndicator indicator) {
+
+			indicator.setIndeterminate(true);
+			final VirtualFile myVirtualFile;
+			try {
+				myVirtualFile = getVcsVirtualFile(project, virtualFile, revision);
+			} catch (VcsException e) {
+				exception = e;
+				return;
+			}
+			if (myVirtualFile != null) {
+				ofd = new OpenFileDescriptor(project, myVirtualFile, line, column);
+			}
+		}
+
+		@Override
+		public void onSuccess() {
+			if (exception != null) {
+				Messages.showErrorDialog(project, "The following error has occured while fetching "
+						+ niceFileMessage + ":\n" + exception.getMessage(), "Error fetching file");
+				return;
+			}
+			if (ofd != null) {
+				if (action != null) {
+					action.run(ofd);
+				}
+				ofd.navigate(true);
 			}
 
 		}
