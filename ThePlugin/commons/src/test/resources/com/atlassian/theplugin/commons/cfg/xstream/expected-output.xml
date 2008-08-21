@@ -3,7 +3,6 @@
     <servers>
       <bamboo>
         <server-id>141d662c-e744-4690-a5f8-6e127c0bc84f</server-id>
-        <enabled>true</enabled>
         <name>mybamboo1</name>
         <url>http://mygreaturl</url>
         <use-favourites>false</use-favourites>

@@ -23,9 +23,6 @@ import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.config.serverconfig.BambooGeneralForm;
 import com.atlassian.theplugin.idea.config.serverconfig.CrucibleGeneralForm;
 import com.atlassian.theplugin.idea.config.serverconfig.JiraGeneralForm;
-import com.atlassian.theplugin.util.PluginUtil;
-import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.ui.Messages;
 
 import javax.swing.*;
 import java.awt.*;
@@ -96,16 +93,6 @@ public final class ConfigPanel extends JPanel {
 
 
 	public boolean isModified() {
-		if (globalConfigurationBean.getGeneralConfigurationData().getAnonymousFeedbackEnabled() == null) {
-			int answer = Messages.showYesNoDialog("We would greatly appreciate if you allow us to collect anonymous "
-					+ "usage statistics to help us provide a better quality product. Is this ok?",
-					PluginUtil.getInstance().getName() + " request", Messages.getQuestionIcon());
-			localPluginConfigurationCopy.getGeneralConfigurationData().
-					setAnonymousFeedbackEnabled(answer == DialogWrapper.OK_EXIT_CODE);
-			globalConfigurationBean.getGeneralConfigurationData().
-					setAnonymousFeedbackEnabled(answer == DialogWrapper.OK_EXIT_CODE);
-			generalConfigPanel.setIsAnonymousFeedbackEnabled(answer == DialogWrapper.OK_EXIT_CODE);
-		}
 		return !this.localPluginConfigurationCopy.equals(globalConfigurationBean)
 				/*|| projectConfiguration.equals(cfgManager.getProjectConfiguration(projectId)) == false*/
 				/*|| serverConfigPanel.isModified()*/

@@ -15,33 +15,33 @@
  */
 package com.atlassian.theplugin.commons.cfg.xstream;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.StringReader;
-import java.util.List;
-
-import org.jdom.Element;
-import org.jdom.Document;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.XMLOutputter;
-import org.jdom.output.Format;
-import com.spartez.util.junit3.TestUtil;
-import com.spartez.util.junit3.IAction;
-import com.atlassian.theplugin.commons.util.MiscUtil;
-import com.atlassian.theplugin.commons.util.StringUtil;
-import com.atlassian.theplugin.commons.cfg.ProjectConfigurationFactoryTest;
+import com.atlassian.theplugin.commons.SubscribedPlan;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerId;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.ProjectConfigurationFactory;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerCfgFactoryException;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.PrivateProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.PrivateServerCfgInfo;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.ProjectConfigurationFactory;
+import com.atlassian.theplugin.commons.cfg.ProjectConfigurationFactoryTest;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerCfgFactoryException;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import static com.atlassian.theplugin.commons.cfg.xstream.JDomProjectConfigurationFactory.createPrivateProjectConfiguration;
-import com.atlassian.theplugin.commons.SubscribedPlan;
+import com.atlassian.theplugin.commons.util.MiscUtil;
+import com.atlassian.theplugin.commons.util.StringUtil;
+import com.spartez.util.junit3.IAction;
+import com.spartez.util.junit3.TestUtil;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.List;
 
 /**
  * JDomProjectConfigurationFactory Tester.
@@ -172,6 +172,7 @@ public class JDomProjectConfigurationFactoryTest extends ProjectConfigurationFac
 		crucible1.setUsername("xyz");
 		crucible1.setPassword("passwordxyz");
 		crucible1.setPasswordStored(true);
+		crucible1.setEnabled(false);
 		projectCfg.getServers().add(bamboo2);
 		projectCfg.getServers().add(crucible1);
 
@@ -182,7 +183,7 @@ public class JDomProjectConfigurationFactoryTest extends ProjectConfigurationFac
 		writeXml(privateElement, writer);
 
 		final String expected = StringUtil.slurp(getClass().getResourceAsStream("expected-private-output.xml"));
-		assertEquals(writer.toString(), expected);
+		assertEquals(expected, writer.toString());
 		//System.out.println(writer.toString());
 
 		StringReader reader = new StringReader(writer.toString());
@@ -202,6 +203,7 @@ public class JDomProjectConfigurationFactoryTest extends ProjectConfigurationFac
 		bamboo2.setUsername("mytestuser2");
 		bamboo2.setPassword("mypassword2");
 		bamboo2.setPasswordStored(false);
+		bamboo2.setEnabled(false);
 		final PrivateServerCfgInfo privateCfg = createPrivateProjectConfiguration(bamboo1);
 		assertEquals(bamboo1.getUsername(), privateCfg.getUsername());
 		assertEquals(bamboo1.getPassword(), privateCfg.getPassword());
@@ -211,6 +213,7 @@ public class JDomProjectConfigurationFactoryTest extends ProjectConfigurationFac
 		assertEquals(bamboo2.getUsername(), privateCfg2.getUsername());
 		assertEquals(null, privateCfg2.getPassword());
 		assertEquals(bamboo2.getServerId(), privateCfg2.getServerId());
+		assertEquals(bamboo2.isEnabled(), privateCfg2.isEnabled());
 	}
 
 

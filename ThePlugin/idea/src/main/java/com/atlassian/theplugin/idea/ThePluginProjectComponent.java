@@ -56,6 +56,8 @@ import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupManager;
+import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
@@ -146,8 +148,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
                 LoggerImpl.getInstance().info("End: Project initialized");
             }
         });
-
-    }
+	}
 
     public void initComponent() {
         LoggerImpl.getInstance().info("Init ThePlugin project component.");
@@ -200,19 +201,14 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
             // create tool window content
 
             toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.BAMBOO);
-            toolWindow.showHidePanels();
             TableView.restore(projectConfigurationBean.getBambooConfiguration().getTableConfiguration(),
                     bambooToolWindowPanel.getTable());
 
 
             toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.CRUCIBLE);
-            toolWindow.showHidePanels();
 
 
             toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.JIRA);
-            toolWindow.showHidePanels();
-
-
 
 			TableView.restore(projectConfigurationBean.getJiraConfiguration().getTableConfiguration(),
                     jiraToolWindowPanel.getTable());
@@ -330,9 +326,20 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 
 	public void projectOpened() {
         // content moved to StartupManager to wait until
-    }
+		// here we have guarantee that IDEA splash screen will not obstruct our window
+		askForUserStatistics();
+	}
 
-    public void projectClosed() {
+	private void askForUserStatistics() {
+		if (pluginConfiguration.getGeneralConfigurationData().getAnonymousFeedbackEnabled() == null) {
+			int answer = Messages.showYesNoDialog("We would greatly appreciate if you allow us to collect anonymous "
+					+ "usage statistics to help us provide a better quality product. Is this ok?",
+					PluginUtil.getInstance().getName() + " request", Messages.getQuestionIcon());
+			pluginConfiguration.getGeneralConfigurationData().setAnonymousFeedbackEnabled(answer == DialogWrapper.OK_EXIT_CODE);
+		}
+	}
+
+	public void projectClosed() {
 		if (created) {
 			// remove icon from status bar
 			statusBarBambooIcon.hideIcon();

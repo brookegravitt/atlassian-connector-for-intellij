@@ -17,12 +17,14 @@ package com.atlassian.theplugin.commons.cfg;
 
 public class PrivateServerCfgInfo {
 	private final ServerId serverId;
+	private final boolean isEnabled;
 	private final String username;
 	private final String password;
 	private static final int HASHCODE_MAGIC = 31;
 
-	public PrivateServerCfgInfo(final ServerId serverId, final String username, final String password) {
+	public PrivateServerCfgInfo(final ServerId serverId, final boolean enabled, final String username, final String password) {
 		this.serverId = serverId;
+		isEnabled = enabled;
 		this.username = username;
 		this.password = password;
 	}
@@ -71,4 +73,9 @@ public class PrivateServerCfgInfo {
 		result = HASHCODE_MAGIC * result + (password != null ? password.hashCode() : 0);
 		return result;
 	}
+
+	public boolean isEnabled() {
+		return isEnabled;
+	}
+
 }

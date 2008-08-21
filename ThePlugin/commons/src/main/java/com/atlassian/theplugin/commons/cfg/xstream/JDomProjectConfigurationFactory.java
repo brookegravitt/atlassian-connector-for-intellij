@@ -15,17 +15,16 @@
  */
 package com.atlassian.theplugin.commons.cfg.xstream;
 
-import org.jdom.Element;
-
-import com.thoughtworks.xstream.io.xml.JDomWriter;
-import com.thoughtworks.xstream.io.xml.JDomReader;
-import com.thoughtworks.xstream.XStream;
-import com.atlassian.theplugin.commons.cfg.ProjectConfigurationFactory;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.ServerCfgFactoryException;
 import com.atlassian.theplugin.commons.cfg.PrivateProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.PrivateServerCfgInfo;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.ProjectConfigurationFactory;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerCfgFactoryException;
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.JDomReader;
+import com.thoughtworks.xstream.io.xml.JDomWriter;
+import org.jdom.Element;
 
 public class JDomProjectConfigurationFactory implements ProjectConfigurationFactory {
 
@@ -76,6 +75,7 @@ public class JDomProjectConfigurationFactory implements ProjectConfigurationFact
 			final ServerCfg serverCfg = projectConfiguration.getServerCfg(psci.getServerId());
 			if (serverCfg != null) {
 				serverCfg.setUsername(psci.getUsername());
+				serverCfg.setEnabled(psci.isEnabled());
 				final String password = psci.getPassword();
 				if (password != null) {
 					serverCfg.setPassword(password);
@@ -113,7 +113,7 @@ public class JDomProjectConfigurationFactory implements ProjectConfigurationFact
 	}
 
 	static PrivateServerCfgInfo createPrivateProjectConfiguration(final ServerCfg serverCfg) {
-		return new PrivateServerCfgInfo(serverCfg.getServerId(), serverCfg.getUsername(),
+		return new PrivateServerCfgInfo(serverCfg.getServerId(), serverCfg.isEnabled(), serverCfg.getUsername(),
 				serverCfg.isPasswordStored() ? serverCfg.getPassword() : null);
 	}
 
