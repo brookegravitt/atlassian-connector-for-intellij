@@ -232,5 +232,9 @@ public class GeneralConfigForm {
 	public JComponent $$$getRootComponent$$$() {
 		return mainPanel;
 	}
+
+	public JComponent getRootComponent() {
+		return $$$getRootComponent$$$();
+	}
 }
 
