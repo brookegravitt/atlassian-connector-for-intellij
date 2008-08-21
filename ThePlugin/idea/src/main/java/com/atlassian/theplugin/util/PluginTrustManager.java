@@ -37,7 +37,7 @@ import java.util.Collections;
 import java.util.HashSet;
 
 public final class PluginTrustManager implements X509TrustManager {
-	private static final Collection<String> alreadyRejectedCerts = new HashSet<String>();
+	private static final Collection<String> ALREADY_REJECTED_CERTS = new HashSet<String>();
 	private static Collection<String> temporarilyAcceptedCerts =
 			Collections.synchronizedCollection(new HashSet<String>());
 
@@ -88,7 +88,7 @@ public final class PluginTrustManager implements X509TrustManager {
 				e) {
 
 			String strCert = chain[0].toString();
-			if (alreadyRejectedCerts.contains(strCert)) {
+			if (ALREADY_REJECTED_CERTS.contains(strCert)) {
 				throw e;
 			}
 
@@ -148,8 +148,8 @@ public final class PluginTrustManager implements X509TrustManager {
 					}
 					break;
 				default:
-					synchronized (alreadyRejectedCerts) {
-						alreadyRejectedCerts.add(strCert);
+					synchronized (ALREADY_REJECTED_CERTS) {
+						ALREADY_REJECTED_CERTS.add(strCert);
 					}
 					throw e;
 			}
