@@ -33,7 +33,7 @@ public class ShowProjectSettingsAction extends AnAction {
 		Project project = IdeaHelper.getCurrentProject(event);
 		if (project != null) {
 			Configurable component = project.getComponent(ProjectConfigurationComponent.class);
-			ShowSettingsUtil.getInstance().editConfigurable(project,component);		
+			ShowSettingsUtil.getInstance().editConfigurable(project, component);		
 		}
 	}
 
