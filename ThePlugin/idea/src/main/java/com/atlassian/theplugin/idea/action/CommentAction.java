@@ -47,8 +47,9 @@ public class CommentAction extends AnAction {
 		if (ed == null) {
 			visible = false;
 		} else {
-			String text = ed.getSelectionModel().getSelectedText();
-			if (StringUtil.isEmptyOrSpaces(text)) {
+			int start = ed.getDocument().getLineNumber(ed.getSelectionModel().getSelectionStart()) + 1;
+			int end = ed.getDocument().getLineNumber(ed.getSelectionModel().getSelectionEnd()) + 1;
+			if (end < start || start <= 0 || end <= 0) {
 				visible = false;
 			} else {
 				ReviewData review = ed.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
