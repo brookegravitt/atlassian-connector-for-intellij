@@ -145,8 +145,8 @@
 			<reference id="ThePlugin.AddJIRAServerAction"/>
 		</group>
 
-		<action id="ThePlugin.ShowSettings" class="com.atlassian.theplugin.idea.action.ShowSettingsAction"
-				text="Configure" description="Show plugin configuration" icon="/general/ideOptions.png">
+		<action id="ThePlugin.ShowSettings" class="com.atlassian.theplugin.idea.action.ShowProjectSettingsAction"
+				text="Configure project settings" description="Show plugin project configuration" icon="/general/ideOptions.png">
 			<keyboard-shortcut first-keystroke="shift control g" keymap="$default"/>
 		</action>
 
