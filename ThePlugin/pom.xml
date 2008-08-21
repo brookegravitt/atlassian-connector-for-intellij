@@ -324,7 +324,6 @@
                 <module>build-tools</module>
                 <module>commons</module>
                 <module>idea</module>
-                <module>eclipse</module>
             </modules>
         </profile>
         <profile>
