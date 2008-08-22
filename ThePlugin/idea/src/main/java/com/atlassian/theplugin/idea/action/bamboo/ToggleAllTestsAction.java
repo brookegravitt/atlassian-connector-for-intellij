@@ -16,15 +16,18 @@
 
 package com.atlassian.theplugin.idea.action.bamboo;
 
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.bamboo.TestResultsToolWindow;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.ToggleAction;
-import com.atlassian.theplugin.idea.bamboo.TestResultsToolWindow;
-import com.atlassian.theplugin.idea.IdeaHelper;
 
 public class ToggleAllTestsAction extends ToggleAction {
 	@Override
 	public boolean isSelected(AnActionEvent event) {
 		TestResultsToolWindow window = IdeaHelper.getProjectComponent(event, TestResultsToolWindow.class);
+		if (window == null) {
+			return false;
+		}
 
 		TestResultsToolWindow.TestTree tree = window.getTestTree(event.getPlace());
 		if (tree == null) {
