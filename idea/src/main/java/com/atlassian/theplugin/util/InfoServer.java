@@ -104,10 +104,9 @@ public final class InfoServer {
 			version = new Version(getValue("/response/version/number", doc));
 			downloadUrl = getValue("/response/version/downloadUrl", doc);
 			//@todo change to proper path that exists in XML file
-			//releaseNotes = getValue("/response/version/releaseNotes", doc);
-			releaseNotes = getValue("/response/version/downloadUrl", doc);
-			//final String urlString = getValue("/response/version/releaseNotesUrl", doc);
-			final String urlString = getValue("/response/version/downloadUrl", doc);
+			releaseNotes = getValue("/response/version/releaseNotes", doc);			
+			final String urlString = getValue("/response/version/releaseNotesUrl", doc);
+
 			
 			try {
 				releaseNotesUrl = new URL(urlString);
