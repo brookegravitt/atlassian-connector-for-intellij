@@ -27,6 +27,7 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.project.Project;
 
 /**
  * Created by IntelliJ IDEA.
@@ -45,37 +46,7 @@ public class NewVersionConfirmHandler implements UpdateActionHandler {
 	}
 
 	public void doAction(final InfoServer.VersionInfo versionInfo, boolean showConfigPath) throws ThePluginException {
-		Version aVersion = versionInfo.getVersion();
-		String message = "New plugin version " + aVersion + " is available. "
-				+ "Your version is " + PluginUtil.getInstance().getVersion()
-				+ ". Do you want to download and install?";
-		String title = "New plugin version download";
-
-		int answer = Messages.showYesNoDialog(message, title, Messages.getQuestionIcon());
-
-		//int answer = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(),
-		//		message, title, JOptionPane.YES_NO_OPTION);
-		//if (answer == JOptionPane.OK_OPTION) {
-		if (answer == DialogWrapper.OK_EXIT_CODE) {
-			// fire downloading and updating plugin in the new thread
-			//Thread downloader = new Thread(new PluginDownloader(versionInfo, pluginConfiguration));
-			//downloader.start();
-			
-			Task.Backgroundable downloader = new Task.Backgroundable(IdeaHelper.getCurrentProject(), DOWNLOAD_TITLE, false) {
-				public void run(ProgressIndicator indicator) {
-					new PluginDownloader(versionInfo, updateConfiguration).run();
-				}
-			};
-
-			ProgressManager.getInstance().run(downloader);
-		} else if (showConfigPath) {
-			Messages.showMessageDialog("You can always install " + aVersion
-					+ " version through " + PluginUtil.getInstance().getName()
-					+ " configuration panel (Preferences | IDE Settings | "
-					+ PluginUtil.getInstance().getName() + " | General | Auto update | Check now)", "Information",
-					Messages.getInformationIcon());
-		}
-		// so or so we mark this version so no more popups will appear
-		updateConfiguration.setRejectedUpgrade(versionInfo.getVersion());
+		NewVersionDialogInfo dialog = new NewVersionDialogInfo(IdeaHelper.getCurrentProject(), updateConfiguration, versionInfo);
+		dialog.show();
 	}
 }

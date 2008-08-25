@@ -31,6 +31,8 @@ import org.jdom.xpath.XPath;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.net.MalformedURLException;
 
 public final class InfoServer {
 
@@ -89,6 +91,8 @@ public final class InfoServer {
 		private Version version;
 
 		private String downloadUrl;
+		private String releaseNotes;
+		private URL releaseNotesUrl;
 
 		/**
 		 * Only for internal use (package scope)
@@ -99,6 +103,17 @@ public final class InfoServer {
 		VersionInfo(Document doc) throws VersionServiceException, IncorrectVersionException {
 			version = new Version(getValue("/response/version/number", doc));
 			downloadUrl = getValue("/response/version/downloadUrl", doc);
+			//@todo change to proper path that exists in XML file
+			//releaseNotes = getValue("/response/version/releaseNotes", doc);
+			releaseNotes = getValue("/response/version/downloadUrl", doc);
+			//final String urlString = getValue("/response/version/releaseNotesUrl", doc);
+			final String urlString = getValue("/response/version/downloadUrl", doc);
+			
+			try {
+				releaseNotesUrl = new URL(urlString);
+			} catch (MalformedURLException e) {
+				PluginUtil.getLogger().error("Invalid release notes URL: " + urlString);
+			}
 		}
 
 		/**
@@ -132,6 +147,14 @@ public final class InfoServer {
 
 		public String getDownloadUrl() {
 			return downloadUrl;
+		}
+
+		public String getReleaseNotes() {
+			return releaseNotes;
+		}
+
+		public URL getReleaseNotesUrl() {
+			return releaseNotesUrl;
 		}
 	}
 }

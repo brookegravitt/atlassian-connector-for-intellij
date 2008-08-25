@@ -56,6 +56,11 @@
 	<change-notes>
 		<![CDATA[
 		<ul>
+			<li>1.6.1: Plugin upgrade window change, added support for ALPHA and BETA versions</li>
+			<li>1.6.0: Bug fix release - better multiframe support, check now button works in presence of proxy, improved JIRA issue view</li>
+			<li>1.5.0: Crucible:Create review upon commit with a single click from different IDE places,
+					   JIRA:An in IDE view of the issue, focussing on stack traces and related code pieces, logging work,
+					   Bugs: Many bugs fixed</li>
 			<li>1.4.1: errata release</li>
 		    <li>1.4.0: Crucible 1.6 integration "dashboard", JIRA action support</li>
             <li>1.3.1: errata release</li>
