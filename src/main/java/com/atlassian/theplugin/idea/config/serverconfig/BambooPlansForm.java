@@ -169,7 +169,7 @@ public class BambooPlansForm extends JPanel {
 
 	public void setData(final BambooServerCfg serverCfg) {
 		bambooServerCfg = serverCfg;
-		cbUseFavouriteBuilds.setEnabled(false);
+		//cbUseFavouriteBuilds.setEnabled(false);
         if (bambooServerCfg.getUrl().length() > 0) {
 			retrievePlans(bambooServerCfg);
 		} else {
@@ -267,7 +267,7 @@ public class BambooPlansForm extends JPanel {
 			statusPane.setText(message);
 			statusPane.setCaretPosition(0);
 			setVisible(true);
-			cbUseFavouriteBuilds.setEnabled(true);
+		//	cbUseFavouriteBuilds.setEnabled(true);
 			list.setEnabled(!cbUseFavouriteBuilds.isSelected());
 			isListModified = false;
 		}
