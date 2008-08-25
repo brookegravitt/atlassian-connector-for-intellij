@@ -125,6 +125,9 @@ public class Version implements Serializable {
 	}
 
 	public boolean greater(Version other) {
+		if (other == null) {
+			return false;
+		}
 		if (other.version.equals(SPECIAL_DEV_VERSION)) {
 			return false;
 		}
@@ -133,7 +136,7 @@ public class Version implements Serializable {
 		}
 
 		boolean versionGreater =  this.getVersionNumber().greater(other.getVersionNumber());
-		if (getBuildNo() > other.getBuildNo() && versionGreater) {
+		if (versionGreater && (getBuildNo() > other.getBuildNo())) {
 			return versionGreater;
 		} else {
 			//incorrect versions and builds between versions
@@ -182,6 +185,10 @@ public class Version implements Serializable {
 		}
 
 		public boolean greater(VersionNumber other) {
+			if (other == null) {
+				return false;
+			}
+			
 			if (major > other.major) {
 				return true;
 			} else {
