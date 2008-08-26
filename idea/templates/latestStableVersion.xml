@@ -2,5 +2,7 @@
 	<version>
 		<number>${project.version}, SVN:${buildNumber}</number>
 		<downloadUrl>http://downloads.atlassian.com/software/atlassian-idea-plugin-${project.version}.zip</downloadUrl>
+        <releaseNotes>${versionReleaseNotes}</releaseNotes>
+        <releaseNotesUrl>${versionReleaseNotesUrl}</releaseNotesUrl>
 	</version>
 </response>
