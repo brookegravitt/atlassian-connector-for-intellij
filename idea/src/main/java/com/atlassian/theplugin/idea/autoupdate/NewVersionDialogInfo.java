@@ -56,13 +56,7 @@ public class NewVersionDialogInfo extends DialogWrapper {
 		setTitle("New plugin version " + aVersion + " is available.");
 
 		versionInfoLabel.setText(versionInfoUpgrade);
-		StringBuilder sb = new StringBuilder();
-		//releaseNotesUrl.setText("<html><a href=\"" + versionInfo.getReleaseNotesUrl() + "\">Release Notes</a><br></html>");
-
-
-		sb.append("Release notes:\n");
-		sb.append(versionInfo.getReleaseNotes());
-		releaseNotesLabel.setText(sb.toString());
+		releaseNotesLabel.setText(versionInfo.getReleaseNotes());
 		init();
 
 	}
