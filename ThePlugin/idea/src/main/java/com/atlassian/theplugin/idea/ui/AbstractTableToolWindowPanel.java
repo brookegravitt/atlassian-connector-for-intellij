@@ -21,7 +21,11 @@ import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.configuration.ProjectToolWindowTableConfiguration;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.bamboo.ToolWindowBambooContent;
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionPopupMenu;
+import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.ui.ListTableModel;
 import com.intellij.util.ui.UIUtil;
@@ -153,7 +157,7 @@ public abstract class AbstractTableToolWindowPanel<T> extends JPanel {
 	private class PopuMenuMouseAdapter extends MouseAdapter {
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			if (e.getClickCount() == 2) {
+			if (e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1) {
 				handleDoubleClick(table.getSelectedObject());
 			}
 		}
