@@ -135,15 +135,7 @@ public class Version implements Serializable {
 			return true;
 		}
 
-		boolean versionGreater =  this.getVersionNumber().greater(other.getVersionNumber());
-		if (versionGreater && (getBuildNo() > other.getBuildNo())) {
-			return versionGreater;
-		} else {
-			//incorrect versions and builds between versions
-			return false;
-		}
-
-
+		return this.getVersionNumber().greater(other.getVersionNumber());
 	}
 
 	private VersionNumber getVersionNumber() {
