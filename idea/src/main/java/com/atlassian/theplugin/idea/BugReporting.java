@@ -37,7 +37,7 @@ public class BugReporting {
 		versionMap.put("1.4.1", "10482");
 		versionMap.put("1.5.0", "10021");
 		versionMap.put("1.6.0", "10022");
-		versionMap.put("1.6.1", "10022");
+		versionMap.put("1.6.1", "19255");
 		versionMap.put("1.7.0", "10496");
 		versionMap.put("1.8.0", "10497");
 		versionMap.put("2.0.0", "10498");
