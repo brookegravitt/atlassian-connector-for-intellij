@@ -6,6 +6,7 @@ import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.BugReporting;
+import com.atlassian.theplugin.idea.GenericHyperlinkListener;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.progress.Task;
@@ -33,7 +34,7 @@ public class NewVersionDialogInfo extends DialogWrapper {
 	private JPanel rootPane;
 	private JLabel versionInfoLabel;
 	private JPanel footerPanel;
-	private JLabel releaseNotesLabel;
+	private JEditorPane releaseNotesLabel;
 
 
 	final private GeneralConfigurationBean updateConfiguration;
@@ -56,7 +57,18 @@ public class NewVersionDialogInfo extends DialogWrapper {
 		setTitle("New plugin version " + aVersion + " is available.");
 
 		versionInfoLabel.setText(versionInfoUpgrade);
-		releaseNotesLabel.setText(versionInfo.getReleaseNotes());
+		StringBuilder sb = new StringBuilder();
+		//releaseNotesUrl.setText("<html><a href=\"" + versionInfo.getReleaseNotesUrl() + "\">Release Notes</a><br></html>");
+
+
+		sb.append(versionInfo.getReleaseNotes());
+
+		releaseNotesLabel.setEditable(false);
+		releaseNotesLabel.setContentType("text/html");
+		releaseNotesLabel.addHyperlinkListener(new GenericHyperlinkListener());
+
+		releaseNotesLabel.setText(sb.toString());
+
 		init();
 
 	}
@@ -140,9 +152,9 @@ public class NewVersionDialogInfo extends DialogWrapper {
 		panel1.add(scrollPane1,
 				new CellConstraints(1, 3, 1, 1, CellConstraints.FILL, CellConstraints.FILL, new Insets(5, 5, 5, 5)));
 		scrollPane1.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), null));
-		releaseNotesLabel = new JLabel();
+		releaseNotesLabel = new JEditorPane();
 		releaseNotesLabel.setText("Release Notes");
-		releaseNotesLabel.setVerticalAlignment(1);
+		//releaseNotesLabel.setVerticalAlignment(1);
 		scrollPane1.setViewportView(releaseNotesLabel);
 		versionInfoLabel = new JLabel();
 		versionInfoLabel.setText("Do you want to upgrade to the newest version?");
