@@ -31,9 +31,9 @@ import org.jetbrains.annotations.Nullable;
 public class NewVersionDialogInfo extends DialogWrapper {
 	private static final String DOWNLOAD_TITLE = "Downloading new " + PluginUtil.getInstance().getName() + " plugin version ";
 	private JPanel rootPane;
-	private JTextPane descriptionTextPane;
 	private JLabel versionInfoLabel;
 	private JPanel footerPanel;
+	private JLabel releaseNotesLabel;
 
 
 	final private GeneralConfigurationBean updateConfiguration;
@@ -62,7 +62,7 @@ public class NewVersionDialogInfo extends DialogWrapper {
 
 		sb.append("Release notes:\n");
 		sb.append(versionInfo.getReleaseNotes());
-		descriptionTextPane.setText(sb.toString());
+		releaseNotesLabel.setText(sb.toString());
 		init();
 
 	}
@@ -104,7 +104,6 @@ public class NewVersionDialogInfo extends DialogWrapper {
 	private void createUIComponents() {
 
 
-
 		HyperlinkLabel label = new HyperlinkLabel("Release Notes");
 		label.addHyperlinkListener(new HyperlinkListener() {
 			public void hyperlinkUpdate(HyperlinkEvent e) {
@@ -119,7 +118,7 @@ public class NewVersionDialogInfo extends DialogWrapper {
 				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		final Spacer spacer1 = new Spacer();
 		footerPanel.add(spacer1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
-				GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));		
+				GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
 	}
 
 	/**
@@ -147,8 +146,10 @@ public class NewVersionDialogInfo extends DialogWrapper {
 		panel1.add(scrollPane1,
 				new CellConstraints(1, 3, 1, 1, CellConstraints.FILL, CellConstraints.FILL, new Insets(5, 5, 5, 5)));
 		scrollPane1.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), null));
-		descriptionTextPane = new JTextPane();
-		scrollPane1.setViewportView(descriptionTextPane);
+		releaseNotesLabel = new JLabel();
+		releaseNotesLabel.setText("Release Notes");
+		releaseNotesLabel.setVerticalAlignment(1);
+		scrollPane1.setViewportView(releaseNotesLabel);
 		versionInfoLabel = new JLabel();
 		versionInfoLabel.setText("Do you want to upgrade to the newest version?");
 		panel1.add(versionInfoLabel, cc.xy(1, 1));

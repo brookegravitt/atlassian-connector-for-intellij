@@ -34,9 +34,12 @@
             </properties>
             <border type="empty"/>
             <children>
-              <component id="e9e51" class="javax.swing.JTextPane" binding="descriptionTextPane">
+              <component id="4c059" class="javax.swing.JLabel" binding="releaseNotesLabel">
                 <constraints/>
-                <properties/>
+                <properties>
+                  <text value="Release Notes"/>
+                  <verticalAlignment value="1"/>
+                </properties>
               </component>
             </children>
           </scrollpane>
