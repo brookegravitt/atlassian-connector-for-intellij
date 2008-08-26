@@ -134,8 +134,11 @@ public class Version implements Serializable {
 		if (version.equals(SPECIAL_DEV_VERSION)) {
 			return true;
 		}
-
+		if (this.getVersionNumber().equals(other.getVersionNumber())) {
+			return getBuildNo() > other.getBuildNo();
+		}
 		return this.getVersionNumber().greater(other.getVersionNumber());
+
 	}
 
 	private VersionNumber getVersionNumber() {
