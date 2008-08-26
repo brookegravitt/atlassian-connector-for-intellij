@@ -34,7 +34,7 @@
             </properties>
             <border type="empty"/>
             <children>
-              <component id="4c059" class="javax.swing.JLabel" binding="releaseNotesLabel">
+              <component id="4c059" class="javax.swing.JEditorPane" binding="releaseNotesLabel">
                 <constraints/>
                 <properties>
                   <text value="Release Notes"/>
