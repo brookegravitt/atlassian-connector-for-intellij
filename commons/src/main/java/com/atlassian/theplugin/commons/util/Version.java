@@ -43,11 +43,11 @@ public class Version implements Serializable {
 	private transient VersionNumber versionNumber;
 	private transient Integer buildNo;
 
-	private String version = null;
+	private final String version;
 
 	public Version(String version) throws IncorrectVersionException {
-		super();
-		setVersion(version);
+		this.version = version;
+		parseVersionString(version);
 	}
 
 	public Version() throws IncorrectVersionException {
@@ -58,10 +58,9 @@ public class Version implements Serializable {
 		return version;
 	}
 
-	public void setVersion(String version) throws IncorrectVersionException {
-		this.version = version.toUpperCase();
+	private void parseVersionString(String version) throws IncorrectVersionException {
 		if (!version.equals(SPECIAL_DEV_VERSION)) {
-			tokenize();
+			tokenize(version.toUpperCase());
 		}
 	}
 
@@ -75,8 +74,8 @@ public class Version implements Serializable {
 	private static final int ALPHANUM_VERSION_GRP = 9;
 	private static final int BUILD_TOKEN_GRP = 10;
 
-	private void tokenize() throws IncorrectVersionException {
-		Scanner s = new Scanner(version);
+	private void tokenize(final String aVersion) throws IncorrectVersionException {
+		Scanner s = new Scanner(aVersion);
 		s.findInLine(PATTERN);
 		try {
 			MatchResult result = s.match();
@@ -89,11 +88,12 @@ public class Version implements Serializable {
 			);
 			buildNo = Integer.valueOf(result.group(BUILD_TOKEN_GRP));
 		} catch (IllegalStateException ex) {
-			throw new IncorrectVersionException("Version (" + version + ") does not match pattern (\"" + PATTERN
+			throw new IncorrectVersionException("Version (" + aVersion + ") does not match pattern (\"" + PATTERN
 					+ "\")", ex);
 		}
 	}
 
+	@Override
 	public boolean equals(Object that) {
 		if (this == that) {
 			return true;
@@ -111,6 +111,7 @@ public class Version implements Serializable {
 		return true;
 	}
 
+	@Override
 	public int hashCode() {
 		return (version != null ? version.hashCode() : 0);
 	}
@@ -207,6 +208,7 @@ public class Version implements Serializable {
 			return false;
 		}
 
+		@Override
 		public boolean equals(Object o) {
 			if (this == o) {
 				return true;
@@ -238,6 +240,7 @@ public class Version implements Serializable {
 			return true;
 		}
 
+		@Override
 		public int hashCode() {
 			int result;
 			result = major;

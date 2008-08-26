@@ -21,11 +21,7 @@ import com.atlassian.theplugin.commons.util.Version;
 import junit.framework.TestCase;
 
 /**
- * Created by IntelliJ IDEA.
- * User: lguminski
- * Date: Mar 3, 2008
- * Time: 2:08:31 PM
- * To change this template use File | Settings | File Templates.
+ * @author lguminski
  */
 public class VersionTest extends TestCase {
 	private Version version1;
@@ -36,10 +32,11 @@ public class VersionTest extends TestCase {
 	private Version version6;
 	private Version version7;
 	private Version versionSpecial;
+	private Version versionAlpha;
 
 	@Override
 	protected void setUp() throws Exception {
-		super.setUp();	//To change body of overridden methods use File | Settings | File Templates.
+		super.setUp();
 		version1 = new Version("0.1.1-SNAPSHOT, SVN:111");
 		version2 = new Version("0.1.1-SNAPSHOT, SVN:111");
 		version3 = new Version("0.17.1, SVN:222");
@@ -47,7 +44,18 @@ public class VersionTest extends TestCase {
 		version5 = new Version("0.17.1-SNAPSHOT, SVN:224");
 		version6 = new Version("0.18.0-SNAPSHOT, SVN:224");
 		version7 = new Version("0.14.0-SNAPSHOT, SVN:999");
-		versionSpecial = new Version(Version.SPECIAL_DEV_VERSION);
+		versionAlpha = new Version("3.15.4-ALPHA, SVN:999");
+	}
+
+	public void testNumberedBetaVersion() throws IncorrectVersionException {
+		final String versionStr = "3.15.4-beta-2, SVN:123";
+		final Version versionBeta2 = new Version(versionStr);
+		assertEquals(Integer.valueOf(123), versionBeta2.getBuildNo());
+		assertEquals(versionStr, versionBeta2.getVersion());
+		assertTrue(versionBeta2.greater(versionAlpha));
+		assertFalse(versionAlpha.greater(versionBeta2));
+		assertFalse(versionBeta2.greater(new Version("3.15.4-beta-3, SVN:11")));
+
 	}
 
 	public void testEquals() {
@@ -73,13 +81,15 @@ public class VersionTest extends TestCase {
 		assertFalse(version5.greater(version3));
 		assertFalse(version3.greater(version6)); // not realistic
 		assertFalse(version7.greater(version6));
+
+		assertTrue(versionSpecial.greater(versionAlpha));
 	}
 
 	public void testExceptions() {
 		String[] invalidArguments = {
 				", SVN:222",
 				"0.1., SVN:222",
-				"0.1.1-ALPHA, SVN:222",
+				"0.1.-ALPHA, SVN:222",
 				"0.1, SVN:222",
 				"0.1-BETA, SVN:222",
 				"0.1, SVN:",
@@ -88,7 +98,7 @@ public class VersionTest extends TestCase {
 		};
 		for (String arg : invalidArguments) {
 			try {
-				Version v = new Version(arg);
+				new Version(arg);
 				fail("Creation succeeded although it should fail (\"" + arg + "\")");
 			} catch (IncorrectVersionException e) {
 				// OK
