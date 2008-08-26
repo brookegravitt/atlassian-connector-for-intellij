@@ -45,6 +45,7 @@ public class VersionTest extends TestCase {
 		version6 = new Version("0.18.0-SNAPSHOT, SVN:224");
 		version7 = new Version("0.14.0-SNAPSHOT, SVN:999");
 		versionAlpha = new Version("3.15.4-ALPHA, SVN:999");
+		versionSpecial = new Version(Version.SPECIAL_DEV_VERSION);
 	}
 
 	public void testNumberedBetaVersion() throws IncorrectVersionException {
