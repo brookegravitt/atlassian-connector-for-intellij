@@ -30,11 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Created by IntelliJ IDEA.
- * User: lguminski
- * Date: Feb 19, 2008
- * Time: 10:06:09 AM
- * To change this template use File | Settings | File Templates.
+ * @author lguminski
  */
 public class NewVersionCheckerTest extends TestCase {
 	private org.mortbay.jetty.Server httpServer;
@@ -171,16 +167,42 @@ public class NewVersionCheckerTest extends TestCase {
 	}
 
 
+	public void testGetWithReleaseNotes() throws IncorrectVersionException {
+		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort();
+		final String notesUrl = "http://myurl";
+		final String myReleaseNotes = "my <%&$*(> string\nfdaljsf";
+		mockServer.expect(GET_LATEST_VERSION_URL, new PingCallback(NewVersionCheckerTest.VERSION_ALPHA1, "<![CDATA[" +
+				myReleaseNotes + "]]>", notesUrl));
+		InfoServer.VersionInfo versionInfo = null;
+		try {
+			versionInfo = InfoServer.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, uid, false);
+		} catch (VersionServiceException e) {
+			fail(e.getMessage());
+		}
+		Version newVersion = new Version(VERSION_ALPHA);
+
+		assertTrue(versionInfo.getVersion().greater(newVersion));
+		assertEquals(notesUrl, versionInfo.getReleaseNotesUrl().toString());
+		assertEquals(myReleaseNotes, versionInfo.getReleaseNotes());
+	}
+
 
 
 	private class PingCallback implements JettyMockServer.Callback {
-		final String version;
+		private final String version;
+		private final String releaseNotes;
+		private final String releaseNotesUrl;
 
 		public PingCallback(String version) {
-			super();	//To change body of overridden methods use File | Settings | File Templates.
-			this.version = version;
+			this(version, null, null);
 		}
-		
+
+		public PingCallback(final String version, final String releaseNotes, final String releaseNotesUrl) {
+			this.version = version;
+			this.releaseNotes = releaseNotes;
+			this.releaseNotesUrl = releaseNotesUrl;
+		}
+
 		public void onExpectedRequest(String target, HttpServletRequest request, HttpServletResponse response)
 				throws Exception {
 			
@@ -200,13 +222,19 @@ public class NewVersionCheckerTest extends TestCase {
 		}
 
 		private void createResponse(ServletOutputStream outputStream) {
-			StringBuffer sb = new StringBuffer();
+			StringBuilder sb = new StringBuilder();
 			sb.append("<response><version><number>");
 			sb.append(version);
 			sb.append("</number>");
 			sb.append("<downloadUrl>");
 			sb.append("http://somedomain.com");
 			sb.append("</downloadUrl>");
+			sb.append("<releaseNotes>");
+			sb.append(releaseNotes != null ? releaseNotes : "N/A");
+			sb.append("</releaseNotes>");
+			sb.append("<releaseNotesUrl>");
+			sb.append(releaseNotesUrl != null ? releaseNotesUrl : "N/A");
+			sb.append("</releaseNotesUrl>");
 			sb.append("</version></response>");
 			try {
 				outputStream.write(sb.toString().getBytes("UTF-8"));
