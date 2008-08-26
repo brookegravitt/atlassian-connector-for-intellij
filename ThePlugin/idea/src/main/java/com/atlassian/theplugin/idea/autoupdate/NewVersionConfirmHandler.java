@@ -39,10 +39,15 @@ public class NewVersionConfirmHandler implements UpdateActionHandler {
 	private GeneralConfigurationBean updateConfiguration;
 	private Component parent;
 
-	public NewVersionConfirmHandler(Component parent, @Nullable Project project, GeneralConfigurationBean updateConfiguration) {
+	public NewVersionConfirmHandler(@Nullable Component parent, @Nullable Project project,
+			GeneralConfigurationBean updateConfiguration) {
 		this.project = project;
 		this.updateConfiguration = updateConfiguration;
 		this.parent = parent;
+
+		if (parent == null && project == null) {
+			throw new IllegalArgumentException("You must specify at least one not null value for parent or project");
+		}
 	}
 
 	public void doAction(final InfoServer.VersionInfo versionInfo, boolean showConfigPath) throws ThePluginException {
@@ -52,7 +57,12 @@ public class NewVersionConfirmHandler implements UpdateActionHandler {
 				+ ". Do you want to download and install?";
 		String title = "New plugin version download";
 
-		int answer = Messages.showYesNoDialog(parent, message, title, Messages.getQuestionIcon());
+		int answer = DialogWrapper.CANCEL_EXIT_CODE;
+		if (parent != null) {
+			Messages.showYesNoDialog(parent, message, title, Messages.getQuestionIcon());
+		} else {
+			Messages.showYesNoDialog(project, message, title, Messages.getQuestionIcon());
+		}
 
 		//int answer = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(),
 		//		message, title, JOptionPane.YES_NO_OPTION);
