@@ -30,7 +30,8 @@ public enum Action {
     COMPLETE("Complete review", "action:completeReview"),
     UNCOMPLETE("Uncomplete review", "action:uncompleteReview"),
     COMMENT("Comment", "action:commentOnReview"),
-    MODIFYFILES("Modify files", "action:modifyReviewFiles");
+    MODIFYFILES("Modify files", "action:modifyReviewFiles"),
+    DELETE("Delete review", "action:deleteReview");
 
     private final String displayName;
     private final String actionName;
