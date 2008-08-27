@@ -66,6 +66,7 @@ import java.util.List;
 // TODO all this whole class should be rather project component I think (wseliga)
 public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileEditorProvider {
 
+	private static Color HEADER_BACKGROUND_COLOR = new Color(153, 153, 153);
 	@NonNls
 	@NotNull
 	public String getComponentName() {
@@ -287,7 +288,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
     private static class UserLabel extends HyperlinkLabel {
 		UserLabel(final String serverUrl, final String userNameId) {
 			super(userNameId, UIUtil.getTableSelectionForeground(),
-					UIUtil.getTableSelectionBackground(), UIUtil.getTableSelectionForeground());
+					HEADER_BACKGROUND_COLOR, UIUtil.getTableSelectionForeground());
 			addListener(serverUrl, userNameId);
 		}
 
@@ -319,7 +320,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 		}
 	}
 
-	private static class WhiteLabel extends BoldLabel {
+	private static class WhiteLabel extends JLabel {
 		public WhiteLabel() {
 			setForeground(UIUtil.getTableSelectionForeground());
 		}
@@ -334,7 +335,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 		public CommentPanel(final Project project, final JIRAIssue issue, final JIRAComment comment, final JIRAServer server) {
 			this.project = project;
 			setOpaque(true);
-			setBackground(UIUtil.getTableSelectionBackground());
+			setBackground(HEADER_BACKGROUND_COLOR);
 			
 			setLayout(new GridBagLayout());
 			GridBagConstraints gbc;
@@ -377,7 +378,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 
 			if (StackTraceDetector.containsStackTrace(comment.getBody())) {
 				HyperlinkLabel analyze = new HyperlinkLabel("Analyse stack trace", UIUtil.getTableSelectionForeground(),
-					UIUtil.getTableSelectionBackground(), UIUtil.getTableSelectionForeground());
+					HEADER_BACKGROUND_COLOR, UIUtil.getTableSelectionForeground());
 				analyze.addHyperlinkListener(new HyperlinkListener() {
 					public void hyperlinkUpdate(HyperlinkEvent e) {
 						StackTraceConsole stackTraceConsole = IdeaHelper.getProjectComponent(project, StackTraceConsole.class);
@@ -590,7 +591,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			gbc.weightx = 1.0;
 			JEditorPane summary = new JEditorPane();
             summary.setContentType("text/html");
-			Color bg = UIUtil.getTableSelectionBackground();
+			Color bg = HEADER_BACKGROUND_COLOR;
 			Color fg = UIUtil.getTableSelectionForeground();
 			String bgColor = ColorToHtml.getHtmlFromColor(bg);
 			String fgColor = ColorToHtml.getHtmlFromColor(fg);
