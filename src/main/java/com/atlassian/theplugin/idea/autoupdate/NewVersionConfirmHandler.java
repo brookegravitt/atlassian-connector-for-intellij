@@ -18,16 +18,9 @@ package com.atlassian.theplugin.idea.autoupdate;
 
 import com.atlassian.theplugin.commons.configuration.GeneralConfigurationBean;
 import com.atlassian.theplugin.commons.exception.ThePluginException;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.atlassian.theplugin.commons.util.Version;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.ProgressManager;
-import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.ui.Messages;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
@@ -59,12 +52,12 @@ public class NewVersionConfirmHandler implements UpdateActionHandler {
 	}
 
 	public void doAction(final InfoServer.VersionInfo versionInfo, boolean showConfigPath) throws ThePluginException {
-		NewVersionDialogInfo dialog = null;
+		NewVersionInfoForm dialog = null;
 
 		if (project != null) {
-			dialog = new NewVersionDialogInfo(project, updateConfiguration, versionInfo);
+			dialog = new NewVersionInfoForm(project, updateConfiguration, versionInfo);
 		} else {
-			dialog = new NewVersionDialogInfo(parent, updateConfiguration, versionInfo);
+			dialog = new NewVersionInfoForm(parent, updateConfiguration, versionInfo);
 		}
 		dialog.show();
 	}
