@@ -18,9 +18,10 @@ package com.atlassian.theplugin.idea.autoupdate;
 
 import com.atlassian.theplugin.commons.configuration.GeneralConfigurationBean;
 import com.atlassian.theplugin.commons.exception.ThePluginException;
-import com.atlassian.theplugin.commons.util.Version;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.atlassian.theplugin.commons.util.Version;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -31,6 +32,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 
+/**
+ * Created by IntelliJ IDEA.
+ * User: lguminski
+ * Date: Mar 13, 2008
+ * Time: 1:27:49 PM
+ * To change this template use File | Settings | File Templates.
+ */
 public class NewVersionConfirmHandler implements UpdateActionHandler {
 	private static final String DOWNLOAD_TITLE = "Downloading new " + PluginUtil.getInstance().getName() + " plugin version ";
 
@@ -51,39 +59,13 @@ public class NewVersionConfirmHandler implements UpdateActionHandler {
 	}
 
 	public void doAction(final InfoServer.VersionInfo versionInfo, boolean showConfigPath) throws ThePluginException {
-		Version aVersion = versionInfo.getVersion();
-		String message = "New plugin version " + aVersion + " is available. "
-				+ "Your version is " + PluginUtil.getInstance().getVersion()
-				+ ". Do you want to download and install?";
-		String title = "New plugin version download";
+		NewVersionDialogInfo dialog = null;
 
-		int answer = DialogWrapper.CANCEL_EXIT_CODE;
-		if (parent != null) {
-			Messages.showYesNoDialog(parent, message, title, Messages.getQuestionIcon());
+		if (project != null) {
+			dialog = new NewVersionDialogInfo(project, updateConfiguration, versionInfo);
 		} else {
-			Messages.showYesNoDialog(project, message, title, Messages.getQuestionIcon());
+			dialog = new NewVersionDialogInfo(parent, updateConfiguration, versionInfo);
 		}
-
-		//int answer = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(),
-		//		message, title, JOptionPane.YES_NO_OPTION);
-		//if (answer == JOptionPane.OK_OPTION) {
-		if (answer == DialogWrapper.OK_EXIT_CODE) {
-			Task.Backgroundable downloader = new Task.Backgroundable(project, DOWNLOAD_TITLE, false) {
-				@Override
-				public void run(ProgressIndicator indicator) {
-					new PluginDownloader(versionInfo, updateConfiguration).run();
-				}
-			};
-
-			ProgressManager.getInstance().run(downloader);
-		} else if (showConfigPath) {
-			Messages.showMessageDialog("You can always install " + aVersion
-					+ " version through " + PluginUtil.getInstance().getName()
-					+ " configuration panel (Preferences | IDE Settings | "
-					+ PluginUtil.getInstance().getName() + " | General | Auto update | Check now)", "Information",
-					Messages.getInformationIcon());
-		}
-		// so or so we mark this version so no more popups will appear
-		updateConfiguration.setRejectedUpgrade(versionInfo.getVersion());
+		dialog.show();
 	}
 }
