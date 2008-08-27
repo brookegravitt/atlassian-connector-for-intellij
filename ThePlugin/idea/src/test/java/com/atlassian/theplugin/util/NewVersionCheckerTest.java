@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.util;
 
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.exception.IncorrectVersionException;
 import com.atlassian.theplugin.exception.VersionServiceException;
 import com.atlassian.theplugin.commons.util.Version;
@@ -29,24 +30,29 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Created by IntelliJ IDEA.
- * User: lguminski
- * Date: Feb 19, 2008
- * Time: 10:06:09 AM
- * To change this template use File | Settings | File Templates.
+ * @author lguminski
  */
 public class NewVersionCheckerTest extends TestCase {
 	private org.mortbay.jetty.Server httpServer;
 	private JettyMockServer mockServer;
 	private PluginConfigurationBean config;
 	private static final String GET_LATEST_VERSION_URL = "/GetLatestVersion";
-	public static final String VERSION = "0.2.0, SVN:11";
+	public static final String VERSION = "0.2.0, SVN:10";
+	public static final String VERSION_ALPHA = "0.2.0-alpHa, SVN:12";
+	public static final String VERSION_ALPHA1 = "0.2.0-alpHa-1, SVN:13";
+	public static final String VERSION_ALPHA123456 = "0.2.0-alpHa-123456, SVN:14";
+	public static final String VERSION_BETA = "0.2.0-BETa, SVN:15";
+	public static final String VERSION_BETA1 = "0.2.0-bEta-1, SVN:16";
+	public static final String VERSION_BETA123456 = "0.2.0-Beta-123456, SVN:17";
+	public static final String VERSION_SNAPSHOT = "0.2.0-SnaPSHot, SVN:11";
+
 	private long uid;
 
 	@Override
 	protected void setUp() throws Exception {
 		config = new PluginConfigurationBean();
 		uid = config.getGeneralConfigurationData().getUid();
+		ConfigurationFactory.setConfiguration(config);
 
 		httpServer = new org.mortbay.jetty.Server(0);
 		httpServer.start();
@@ -56,7 +62,7 @@ public class NewVersionCheckerTest extends TestCase {
 
 	public void testGetLatestVersion() throws VersionServiceException, IncorrectVersionException {
 		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort();
-		mockServer.expect(GET_LATEST_VERSION_URL, new PingCallback());
+		mockServer.expect(GET_LATEST_VERSION_URL, new PingCallback(NewVersionCheckerTest.VERSION));
 		InfoServer.VersionInfo versionInfo = null;
 		try {
 			versionInfo = InfoServer.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, uid, false);
@@ -64,16 +70,139 @@ public class NewVersionCheckerTest extends TestCase {
 			fail(e.getMessage());
 		}
 		assertNotNull(versionInfo);
-		assertEquals(new Version(VERSION), versionInfo.getVersion());
+		Version newVersion = new Version(VERSION);
+
+		assertFalse(newVersion.greater(versionInfo.getVersion()));
+		assertFalse(versionInfo.getVersion().greater(newVersion));
+	}
+
+	public void testGetLatestAlphaVersion() throws VersionServiceException, IncorrectVersionException {
+		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort();
+		mockServer.expect(GET_LATEST_VERSION_URL, new PingCallback(NewVersionCheckerTest.VERSION_ALPHA));
+		InfoServer.VersionInfo versionInfo = null;
+		try {
+			versionInfo = InfoServer.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, uid, false);
+		} catch (VersionServiceException e) {
+			fail(e.getMessage());
+		}
+		Version newVersion = new Version(VERSION);
+
+		assertFalse(versionInfo.getVersion().greater(newVersion));
+
+	}
+
+	public void testGetLatestBetaVersion() throws VersionServiceException, IncorrectVersionException {
+		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort();
+		mockServer.expect(GET_LATEST_VERSION_URL, new PingCallback(NewVersionCheckerTest.VERSION_BETA));
+		InfoServer.VersionInfo versionInfo = null;
+		try {
+			versionInfo = InfoServer.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, uid, false);
+		} catch (VersionServiceException e) {
+			fail(e.getMessage());
+		}
+		Version newVersion = new Version(VERSION);
+
+		assertFalse(versionInfo.getVersion().greater(newVersion));
+
+	}
+
+	public void testGetLatestSnapshotVersion() throws VersionServiceException, IncorrectVersionException {
+		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort();
+		mockServer.expect(GET_LATEST_VERSION_URL, new PingCallback(NewVersionCheckerTest.VERSION_SNAPSHOT));
+		InfoServer.VersionInfo versionInfo = null;
+		try {
+			versionInfo = InfoServer.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, uid, false);
+		} catch (VersionServiceException e) {
+			fail(e.getMessage());
+		}
+		Version newVersion = new Version(VERSION);
+
+		assertFalse(versionInfo.getVersion().greater(newVersion));
+
+	}
+
+	public void testGetLatestBetaCompareToAlfaVersion() throws VersionServiceException, IncorrectVersionException {
+		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort();
+		mockServer.expect(GET_LATEST_VERSION_URL, new PingCallback(NewVersionCheckerTest.VERSION_BETA));
+		InfoServer.VersionInfo versionInfo = null;
+		try {
+			versionInfo = InfoServer.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, uid, false);
+		} catch (VersionServiceException e) {
+			fail(e.getMessage());
+		}
+		Version newVersion = new Version(VERSION_ALPHA);
+
+		assertTrue(versionInfo.getVersion().greater(newVersion));
+
+	}
+
+	public void testGetLatestBetaCompareToSnapshotVersion() throws VersionServiceException, IncorrectVersionException {
+		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort();
+		mockServer.expect(GET_LATEST_VERSION_URL, new PingCallback(NewVersionCheckerTest.VERSION_BETA));
+		InfoServer.VersionInfo versionInfo = null;
+		try {
+			versionInfo = InfoServer.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, uid, false);
+		} catch (VersionServiceException e) {
+			fail(e.getMessage());
+		}
+		Version newVersion = new Version(VERSION_SNAPSHOT);
+
+		assertTrue(versionInfo.getVersion().greater(newVersion));
+
+	}
+
+	public void testGetLatestAlphaToAlphaVersion() throws VersionServiceException, IncorrectVersionException {
+		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort();
+		mockServer.expect(GET_LATEST_VERSION_URL, new PingCallback(NewVersionCheckerTest.VERSION_ALPHA1));
+		InfoServer.VersionInfo versionInfo = null;
+		try {
+			versionInfo = InfoServer.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, uid, false);
+		} catch (VersionServiceException e) {
+			fail(e.getMessage());
+		}
+		Version newVersion = new Version(VERSION_ALPHA);
+
+		assertTrue(versionInfo.getVersion().greater(newVersion));
+
 	}
 
 
-	private class PingCallback implements JettyMockServer.Callback {
-
-		public PingCallback() {
-			super();	//To change body of overridden methods use File | Settings | File Templates.
+	public void testGetWithReleaseNotes() throws IncorrectVersionException {
+		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort();
+		final String notesUrl = "http://myurl";
+		final String myReleaseNotes = "my <%&$*(> string\nfdaljsf";
+		mockServer.expect(GET_LATEST_VERSION_URL, new PingCallback(NewVersionCheckerTest.VERSION_ALPHA1, "<![CDATA[" +
+				myReleaseNotes + "]]>", notesUrl));
+		InfoServer.VersionInfo versionInfo = null;
+		try {
+			versionInfo = InfoServer.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, uid, false);
+		} catch (VersionServiceException e) {
+			fail(e.getMessage());
 		}
-		
+		Version newVersion = new Version(VERSION_ALPHA);
+
+		assertTrue(versionInfo.getVersion().greater(newVersion));
+		assertEquals(notesUrl, versionInfo.getReleaseNotesUrl().toString());
+		assertEquals(myReleaseNotes, versionInfo.getReleaseNotes());
+	}
+
+
+
+	private class PingCallback implements JettyMockServer.Callback {
+		private final String version;
+		private final String releaseNotes;
+		private final String releaseNotesUrl;
+
+		public PingCallback(String version) {
+			this(version, null, null);
+		}
+
+		public PingCallback(final String version, final String releaseNotes, final String releaseNotesUrl) {
+			this.version = version;
+			this.releaseNotes = releaseNotes;
+			this.releaseNotesUrl = releaseNotesUrl;
+		}
+
 		public void onExpectedRequest(String target, HttpServletRequest request, HttpServletResponse response)
 				throws Exception {
 			
@@ -93,13 +222,19 @@ public class NewVersionCheckerTest extends TestCase {
 		}
 
 		private void createResponse(ServletOutputStream outputStream) {
-			StringBuffer sb = new StringBuffer();
+			StringBuilder sb = new StringBuilder();
 			sb.append("<response><version><number>");
-			sb.append(NewVersionCheckerTest.VERSION);
+			sb.append(version);
 			sb.append("</number>");
 			sb.append("<downloadUrl>");
 			sb.append("http://somedomain.com");
 			sb.append("</downloadUrl>");
+			sb.append("<releaseNotes>");
+			sb.append(releaseNotes != null ? releaseNotes : "N/A");
+			sb.append("</releaseNotes>");
+			sb.append("<releaseNotesUrl>");
+			sb.append(releaseNotesUrl != null ? releaseNotesUrl : "N/A");
+			sb.append("</releaseNotesUrl>");
 			sb.append("</version></response>");
 			try {
 				outputStream.write(sb.toString().getBytes("UTF-8"));
@@ -107,5 +242,6 @@ public class NewVersionCheckerTest extends TestCase {
 				throw new RuntimeException(e);
 			}
 		}
+
 	}
 }
