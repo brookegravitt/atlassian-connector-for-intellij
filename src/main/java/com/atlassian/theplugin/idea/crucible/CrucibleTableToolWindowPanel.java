@@ -248,6 +248,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 					getPlaceName(),
 					getPopupActionGroup());
 			table.addItemSelectedListener(this);
+			table.expand();
 			TableView.restore(projectCfg.getCrucibleConfiguration().getTableConfiguration(),
 					table.getTable());
 
@@ -487,6 +488,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 								null,
 								getPlaceName(),
 								getPopupActionGroup());
+						table.expand();
 						table.addItemSelectedListener(this);
 						TableView.restore(projectCfg.getCrucibleConfiguration().getTableConfiguration(),
 								table.getTable());
