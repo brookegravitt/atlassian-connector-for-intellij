@@ -19,6 +19,7 @@ package com.atlassian.theplugin.idea.ui.tree.comment;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.intellij.ui.SimpleColoredComponent;
 import com.intellij.ui.SimpleTextAttributes;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -38,22 +39,35 @@ import java.awt.*;
 public class GeneralSectionNode extends AtlassianTreeNode {
 	private static final String GENERAL_COMMENTS_SECTION = "General comments";
 
-	private static final TreeCellRenderer MY_RENDERER = new MyRenderer();
+	private TreeCellRenderer myRenderer;
 	private ReviewData review;
+
 
 	public GeneralSectionNode(ReviewData review, AtlassianClickAction action) {
 		super(action);
 		this.review = review;
+		initRenderer();
+
+	}
+
+	void initRenderer(){
+			int noOfGeneralComments = 0;
+		try {
+			noOfGeneralComments = review.getGeneralComments().size();
+		} catch (ValueNotYetInitialized valueNotYetInitialized) {
+		}		
+		this.myRenderer = new MyRenderer(noOfGeneralComments);
 	}
 
 	public GeneralSectionNode(GeneralSectionNode node) {
 		super(node.getAtlassianClickAction());
 		this.review = node.review;
+		initRenderer();
 	}
 
 	@Override
     public TreeCellRenderer getTreeCellRenderer() {
-		return MY_RENDERER;
+		return myRenderer;
 	}
 
 	public ReviewData getReview() {
@@ -64,13 +78,19 @@ public class GeneralSectionNode extends AtlassianTreeNode {
 		return new GeneralSectionNode(this);
 	}
 
-	private static class MyRenderer implements TreeCellRenderer {
+	private class MyRenderer implements TreeCellRenderer {
+		int noOfGeneralComments = 0;
+
+		MyRenderer(final int noOfGeneralComments){
+			this.noOfGeneralComments = noOfGeneralComments;
+		}
+		
 		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean isSelected, boolean expanded,
                 boolean leaf, int row, boolean hasFocus) {
 			GeneralSectionNode node = (GeneralSectionNode) value;
 			JPanel panel = new JPanel(new FormLayout("4dlu, left:pref:grow, 4dlu", "4dlu, pref:grow, 4dlu"));
 			SimpleColoredComponent component = new SimpleColoredComponent();
-			component.append(GENERAL_COMMENTS_SECTION, SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
+			component.append(getGeneralCommentsSection(), SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
 			panel.add(component, new CellConstraints(2, 2));
 
 			panel.setBorder(isSelected ? UIManager.getBorder("List.focusCellHighlightBorder")
@@ -78,5 +98,13 @@ public class GeneralSectionNode extends AtlassianTreeNode {
 
 			return panel;
 		}
+
+		private String getGeneralCommentsSection() {
+			StringBuilder sb = new StringBuilder(GENERAL_COMMENTS_SECTION);
+			sb.append(" (").append(noOfGeneralComments).append(")");
+			return sb.toString();
+		}
 	}
+
+
 }
