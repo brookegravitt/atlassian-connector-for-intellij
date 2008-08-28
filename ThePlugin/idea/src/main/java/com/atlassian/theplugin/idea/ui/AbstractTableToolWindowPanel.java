@@ -44,13 +44,13 @@ public abstract class AbstractTableToolWindowPanel<T> extends JPanel {
     protected ListTableModel<T> listTableModel;
 	protected AtlassianTableView<T> table;
 	protected static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
-	protected ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
+//	protected ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
     protected ProjectConfigurationBean projectConfiguration;
 	protected Project project;
 
-	public ProgressAnimationProvider getProgressAnimation() {
-		return progressAnimation;
-	}
+//	public ProgressAnimationProvider getProgressAnimation() {
+//		return progressAnimation;
+//	}
 
 	public AbstractTableToolWindowPanel(Project project, ProjectConfigurationBean projectConfigurationBean) {
 		super(new BorderLayout());
@@ -85,7 +85,7 @@ public abstract class AbstractTableToolWindowPanel<T> extends JPanel {
 		tablePane.setWheelScrollingEnabled(true);
 		add(tablePane, BorderLayout.CENTER);
 
-		progressAnimation.configure(this, tablePane, BorderLayout.CENTER);
+//		progressAnimation.configure(this, tablePane, BorderLayout.CENTER);
 	}
 
 	protected void addCustomSubmenus(DefaultActionGroup actionGroup, final ActionPopupMenu popup) {

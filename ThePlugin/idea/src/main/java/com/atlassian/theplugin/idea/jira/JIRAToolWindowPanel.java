@@ -67,6 +67,9 @@ import com.intellij.openapi.ui.popup.PopupChooserBuilder;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
+import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.util.ui.UIUtil;
 
 import javax.swing.*;
@@ -172,7 +175,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
         createFilterToolBar();
         createFilterEditToolBar();
 
-        jiraIssueFilterPanel = new JIRAIssueFilterPanel(progressAnimation);
+        jiraIssueFilterPanel = new JIRAIssueFilterPanel(project);
     }
 
     public List<JiraFilterEntryBean> serializeQuery() {
@@ -474,28 +477,29 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
             hideJIRAIssuesFilter();
             final JIRAServer jiraServer = new JIRAServer(server, jiraServerFacade);
             IdeaHelper.setCurrentJIRAServer(jiraServer);
-            new Thread(new SelectServerTask(jiraServer, this), "atlassian-idea-plugin jira tab select server").start();
-        }
+            Task.Backgroundable task = new SelectServerTask(jiraServer, this);
+			ProgressManager.getInstance().run(task);
+		}
     }
 
-    private final class SelectServerTask implements Runnable {
+    private final class SelectServerTask extends Task.Backgroundable {
         private JIRAServer jiraServer;
         private JIRAToolWindowPanel jiraPanel;
 
         public SelectServerTask(JIRAServer jiraServer, JIRAToolWindowPanel jiraToolWindowPanel) {
-            this.jiraServer = jiraServer;
+			super(project, "Retrieving JIRA issues", false);
+			this.jiraServer = jiraServer;
             this.jiraPanel = jiraToolWindowPanel;
         }
 
-        public void run() {
-            progressAnimation.startProgressAnimation();
+        public void run(final ProgressIndicator indicator) {
             filterToolbarSetVisible(false);
             startIndex = 0;
             clearIssues();
 
             if (jiraServer.checkServer() == false) {
                 setStatusMessage("Unable to connect to server. " + jiraServer.getErrorMessage(), true);
-                progressAnimation.stopProgressAnimation();
+//                progressAnimation.stopProgressAnimation();
                 EventQueue.invokeLater(new MissingPasswordHandlerJIRA(jiraServerFacade, jiraServer.getServer(), jiraPanel));
                 return;
             }
@@ -531,8 +535,6 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
                 });
                 filterToolbarSetVisible(true);
             }
-
-            progressAnimation.stopProgressAnimation();
         }
     }
 
@@ -615,22 +617,24 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
     }
 
     private void updateIssues(final JIRAServer jiraServer) {
-        table.setEnabled(false);
-        table.setForeground(UIUtil.getInactiveTextColor());
-        clearIssues();
+        //table.setEnabled(false);
+        //table.setForeground(UIUtil.getInactiveTextColor());
+        //clearIssues();
         disablePagesButton();
-        new Thread(new IssueRefreshTask(jiraServer), "atlassian-idea-plugin jira tab update issues").start();
-    }
 
-    private final class IssueRefreshTask implements Runnable {
+		Task.Backgroundable refresh = new IssueRefreshTask(jiraServer);
+		ProgressManager.getInstance().run(refresh);
+	}
+
+    private final class IssueRefreshTask extends Task.Backgroundable {
         private JIRAServer jiraServer;
 
         private IssueRefreshTask(JIRAServer jiraServer) {
-            this.jiraServer = jiraServer;
+			super(project, "Refreshing JIRA Panel", false);
+			this.jiraServer = jiraServer;
         }
 
-        public void run() {
-            progressAnimation.startProgressAnimation();
+        public void run(final ProgressIndicator indicator) {
             JIRAServerFacade serverFacade = jiraServerFacade;
             try {
                 List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
@@ -668,10 +672,10 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
             } catch (JIRAException e) {
                 setStatusMessage("Error contacting server <b>" + jiraServer.getServer().getName() + "</b>", true);
             } finally {
-                progressAnimation.stopProgressAnimation();
+//                progressAnimation.stopProgressAnimation();
             }
         }
-    }
+	}
 
     private void checkTableSort() {
 		final int sortedColumnIndex = table.getTableViewModel().getSortedColumnIndex();
