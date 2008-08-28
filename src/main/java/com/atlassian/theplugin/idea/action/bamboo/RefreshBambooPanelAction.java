@@ -24,6 +24,9 @@ import com.atlassian.theplugin.idea.ThePluginProjectComponent;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
 
 public class RefreshBambooPanelAction extends AnAction {
 
@@ -38,31 +41,15 @@ public class RefreshBambooPanelAction extends AnAction {
 
 		if (checker.canSchedule()) {
 
-			final ProgressAnimationProvider animator =
-					IdeaHelper.getBambooToolWindowPanel(e).getProgressAnimation();
+			Task.Backgroundable refresh =
+					new Task.Backgroundable(IdeaHelper.getCurrentProject(e), "Refreshing Bamboo Panel", false) {
 
-			final Logger log = PluginUtil.getLogger();
-
-			new Thread(new Runnable() {
-				public void run() {
-
-					Thread t = new Thread(checker.newTimerTask(), "Manual Bamboo panel refresh (checker)");
-
-					animator.startProgressAnimation();
-
-					t.start();
-					try {
-						t.join();
-					} catch (InterruptedException e) {
-						log.warn(e.toString());
-					} finally {
-						animator.stopProgressAnimation();
-					}
-
-
+				public void run(final ProgressIndicator indicator) {
+					checker.newTimerTask().run();
 				}
-			}, "Manual Bamboo panel refresh").start();
+			};
 
+			ProgressManager.getInstance().run(refresh);
 		}
 	}
 }
