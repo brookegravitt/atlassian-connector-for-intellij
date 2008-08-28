@@ -16,10 +16,11 @@
 
 package com.atlassian.theplugin.idea.ui.tree.comment;
 
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
+import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
-import com.atlassian.theplugin.idea.crucible.ReviewData;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ui.SimpleColoredComponent;
 import com.intellij.ui.SimpleTextAttributes;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -50,11 +51,12 @@ public class GeneralSectionNode extends AtlassianTreeNode {
 
 	}
 
-	void initRenderer(){
+	void initRenderer() {
 			int noOfGeneralComments = 0;
 		try {
 			noOfGeneralComments = review.getGeneralComments().size();
 		} catch (ValueNotYetInitialized valueNotYetInitialized) {
+			PluginUtil.getLogger().error("No general comments");
 		}		
 		this.myRenderer = new MyRenderer(noOfGeneralComments);
 	}
@@ -79,9 +81,9 @@ public class GeneralSectionNode extends AtlassianTreeNode {
 	}
 
 	private class MyRenderer implements TreeCellRenderer {
-		int noOfGeneralComments = 0;
+		private int noOfGeneralComments = 0;
 
-		MyRenderer(final int noOfGeneralComments){
+		MyRenderer(final int noOfGeneralComments) {
 			this.noOfGeneralComments = noOfGeneralComments;
 		}
 		
