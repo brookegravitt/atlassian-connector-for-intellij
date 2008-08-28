@@ -70,7 +70,7 @@ public class CrucibleChangeSetTitleNode extends FileNode {
 			StringBuilder sb = new StringBuilder();
 			CrucibleChangeSetTitleNode node = (CrucibleChangeSetTitleNode) value;
 			append(node.getReview().getPermId().getId(), new SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD,
-					Color.red));
+					Color.GRAY));
 			append(" ", SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
 			append(node.getReview().getName(), SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
 			try {
