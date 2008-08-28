@@ -123,7 +123,7 @@ public class NewVersionInfoForm extends DialogWrapper {
 		HyperlinkLabel label = new HyperlinkLabel("Release Notes");
 		label.addHyperlinkListener(new HyperlinkListener() {
 			public void hyperlinkUpdate(HyperlinkEvent e) {
-				BrowserUtil.launchBrowser(versionInfo.getReleaseNotesUrl().toString());
+				BrowserUtil.launchBrowser(versionInfo.getReleaseNotesUrl());
 			}
 		});
 

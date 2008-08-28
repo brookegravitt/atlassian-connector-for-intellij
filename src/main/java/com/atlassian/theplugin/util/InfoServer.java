@@ -144,7 +144,7 @@ public final class InfoServer {
 			return releaseNotes;
 		}
 
-		public URL getReleaseNotesUrl() {
+		public String getReleaseNotesUrl() {
 			return releaseNotesUrl;
 		}
 	}
