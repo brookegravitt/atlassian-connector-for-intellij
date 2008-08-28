@@ -182,7 +182,7 @@ public class NewVersionCheckerTest extends TestCase {
 		Version newVersion = new Version(VERSION_ALPHA);
 
 		assertTrue(versionInfo.getVersion().greater(newVersion));
-		assertEquals(notesUrl, versionInfo.getReleaseNotesUrl().toString());
+		assertEquals(notesUrl, versionInfo.getReleaseNotesUrl());
 		assertEquals(myReleaseNotes, versionInfo.getReleaseNotes());
 	}
 
