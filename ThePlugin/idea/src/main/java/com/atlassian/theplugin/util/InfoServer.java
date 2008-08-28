@@ -92,7 +92,7 @@ public final class InfoServer {
 
 		private String downloadUrl;
 		private String releaseNotes;
-		private URL releaseNotesUrl;
+		private String releaseNotesUrl;
 
 		/**
 		 * Only for internal use (package scope)
@@ -103,15 +103,8 @@ public final class InfoServer {
 		VersionInfo(Document doc) throws VersionServiceException, IncorrectVersionException {
 			version = new Version(getValue("/response/version/number", doc));
 			downloadUrl = getValue("/response/version/downloadUrl", doc);
-			releaseNotes = getValue("/response/version/releaseNotes", doc);			
-			final String urlString = getValue("/response/version/releaseNotesUrl", doc);
-
-			
-			try {
-				releaseNotesUrl = new URL(urlString);
-			} catch (MalformedURLException e) {
-				PluginUtil.getLogger().error("Invalid release notes URL: " + urlString);
-			}
+			releaseNotesUrl = getValue("/response/version/releaseNotes", doc);
+			final String urlString = getValue("/response/version/releaseNotesUrl", doc);			
 		}
 
 		/**
