@@ -103,8 +103,8 @@ public final class InfoServer {
 		VersionInfo(Document doc) throws VersionServiceException, IncorrectVersionException {
 			version = new Version(getValue("/response/version/number", doc));
 			downloadUrl = getValue("/response/version/downloadUrl", doc);
-			releaseNotesUrl = getValue("/response/version/releaseNotes", doc);
-			final String urlString = getValue("/response/version/releaseNotesUrl", doc);			
+			releaseNotes = getValue("/response/version/releaseNotes", doc);
+			releaseNotesUrl = getValue("/response/version/releaseNotesUrl", doc);
 		}
 
 		/**
