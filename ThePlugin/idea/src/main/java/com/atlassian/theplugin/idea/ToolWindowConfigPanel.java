@@ -29,7 +29,7 @@ import javax.swing.event.HyperlinkListener;
 import java.awt.*;
 
 public class ToolWindowConfigPanel extends JPanel {
-	private static final int ROW_COUNT = 3;
+	private static final int ROW_COUNT = 5;
 
 	public ToolWindowConfigPanel(final Project project) {
 		super(new GridBagLayout());
@@ -39,6 +39,9 @@ public class ToolWindowConfigPanel extends JPanel {
 		c.anchor = GridBagConstraints.CENTER;
 		this.add(panel, c);
 
+		panel.add(new Label("No enabled servers found!", Label.CENTER));
+		panel.add(new JLabel(" "));
+		
 		HyperlinkLabel projectSettingsLink = new HyperlinkLabel("Configure Plugin Project Settings");
 		projectSettingsLink.addHyperlinkListener(new HyperlinkListener() {
 			public void hyperlinkUpdate(HyperlinkEvent e) {
@@ -55,7 +58,7 @@ public class ToolWindowConfigPanel extends JPanel {
 
 		panel.add(projectSettingsLink);
 
-		HyperlinkLabel globalSettingsLink = new HyperlinkLabel("Configure Plugin Global Settings");
+		HyperlinkLabel globalSettingsLink = new HyperlinkLabel("Configure Plugin IDE Settings");
 		globalSettingsLink.addHyperlinkListener(new HyperlinkListener() {
 			public void hyperlinkUpdate(final HyperlinkEvent e) {
 
