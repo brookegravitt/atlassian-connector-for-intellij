@@ -44,6 +44,9 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.Key;
+import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.ui.table.TableView;
 import com.intellij.util.ui.UIUtil;
 import thirdparty.javaworld.ClasspathHTMLEditorKit;
@@ -513,23 +516,13 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 	public void refreshReviews(final CrucibleStatusChecker checker) {
 		if (checker != null) {
 			if (checker.canSchedule()) {
-				final ProgressAnimationProvider animator = getProgressAnimation();
-				final Logger log = PluginUtil.getLogger();
-
-				new Thread(new Runnable() {
-					public void run() {
-						Thread t = new Thread(checker.newTimerTask(), "Manual Crucible panel refresh (checker)");
-						animator.startProgressAnimation();
-						t.start();
-						try {
-							t.join();
-						} catch (InterruptedException e) {
-							log.warn(e.toString());
-						} finally {
-							animator.stopProgressAnimation();
-						}
-					}
-				}, "Manual Crucible panel refresh").start();
+				Task.Backgroundable refresh =
+						new Task.Backgroundable(project, "Refreshing Crucible Panel", false) {
+							public void run(final ProgressIndicator indicator) {
+								checker.newTimerTask().run();
+							}
+						};
+				ProgressManager.getInstance().run(refresh);
 			}
 		}
 	}

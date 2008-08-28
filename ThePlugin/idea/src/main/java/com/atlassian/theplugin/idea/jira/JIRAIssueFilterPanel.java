@@ -26,6 +26,10 @@ import com.atlassian.theplugin.jira.api.JIRAProjectBean;
 import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.jira.api.JIRAReporterBean;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.project.Project;
 import com.intellij.uiDesigner.core.Spacer;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -72,15 +76,15 @@ public class JIRAIssueFilterPanel extends JPanel {
 	private JLabel affectsVersionsLabel;
 	private JPanel generalPanel;
 
-	private ProgressAnimationProvider progressAnimation;
 	private boolean initialFilterSet;
 
 	private JIRAServer jiraServer;
+	private Project project;
 
-	public JIRAIssueFilterPanel(ProgressAnimationProvider progressAnimation) {
+	public JIRAIssueFilterPanel(final Project project) {
 		$$$setupUI$$$();
 
-		this.progressAnimation = progressAnimation;
+		this.project = project;
 		this.projectList.setCellRenderer(new JIRAQueryFragmentListRenderer());
 		this.issueTypeList.setCellRenderer(new JIRAConstantListRenderer());
 		this.statusList.setCellRenderer(new JIRAConstantListRenderer());
@@ -115,9 +119,9 @@ public class JIRAIssueFilterPanel extends JPanel {
 		});
 	}
 
-	public void setProgressAnimation(ProgressAnimationProvider progressAnimation) {
-		this.progressAnimation = progressAnimation;
-	}
+//	public void setProgressAnimation(ProgressAnimationProvider progressAnimation) {
+//		this.panel = progressAnimation;
+//	}
 
 	private void enableProjectDependentLists(boolean value) {
 		this.fixForList.setEnabled(value);
@@ -166,15 +170,24 @@ public class JIRAIssueFilterPanel extends JPanel {
 		if (initialFilterSet) {
 			issueTypeList.setListData(jiraServer.getIssueTypes().toArray());
 		} else {
-			new Thread(new Runnable() {
-				public void run() {
-					progressAnimation.startProgressAnimation();
+			Task.Backgroundable refresh = new Task.Backgroundable(project, "Retrieving JIRA Issue Type List", false) {
+				public void run(final ProgressIndicator indicator) {
+//					rootPanel.setEnabled(false);
 					issueTypeList.setListData(jiraServer.getIssueTypes().toArray());
-					progressAnimation.stopProgressAnimation();
+//					rootPanel.setEnabled(true);
 				}
-			}, "JIRA filter project values retrieve").start();
-		}
+			};
 
+			ProgressManager.getInstance().run(refresh);
+
+//			new Thread(new Runnable() {
+//				public void run() {
+//					progressAnimation.startProgressAnimation();
+//					issueTypeList.setListData(jiraServer.getIssueTypes().toArray());
+//					progressAnimation.stopProgressAnimation();
+//				}
+//			}, "JIRA filter project values retrieve").start();
+		}
 	}
 
 	private void refreshProjectDependentLists() {
@@ -185,11 +198,19 @@ public class JIRAIssueFilterPanel extends JPanel {
 				if (initialFilterSet) {
 					setProjectDependendListValues();
 				} else {
-					new Thread(new Runnable() {
-						public void run() {
-							setProjectDependendListValues();
-						}
-					}, "JIRA filter project values retrieve").start();
+					Task.Backgroundable refresh =
+							new Task.Backgroundable(project, "Retrieving JIRA Project Dependent List", false) {
+								public void run(final ProgressIndicator indicator) {
+									setProjectDependendListValues();
+								}
+							};
+//					new Thread(new Runnable() {
+//						public void run() {
+//							setProjectDependendListValues();
+//						}
+//					}, "JIRA filter project values retrieve").start();
+
+					ProgressManager.getInstance().run(refresh);
 				}
 			}
 		} else {
@@ -198,20 +219,21 @@ public class JIRAIssueFilterPanel extends JPanel {
 	}
 
 	private void setProjectDependendListValues() {
-		progressAnimation.startProgressAnimation();
+//		rootPanel.setEnabled(false);
 		issueTypeList.setListData(jiraServer.getIssueTypes().toArray());
 		fixForList.setListData(jiraServer.getFixForVersions().toArray());
 		componentsList.setListData(jiraServer.getComponents().toArray());
 		affectsVersionsList.setListData(jiraServer.getVersions().toArray());
 		enableProjectDependentLists(true);
-		progressAnimation.stopProgressAnimation();
+//		rootPanel.setEnabled(true);
 	}
 
 	public void setJiraServer(final JIRAServer jServer, final List<JIRAQueryFragment> advancedQuery) {
-		new Thread(new Runnable() {
-			public void run() {
+
+		Task.Backgroundable setServer = new Task.Backgroundable(project, "Setting JIRA Server", false) {
+			public void run(final ProgressIndicator indicator) {
 				initialFilterSet = true;
-				progressAnimation.startProgressAnimation();
+//				progressAnimation.startProgressAnimation();
 				jiraServer = jServer;
 				projectList.setListData(jiraServer.getProjects().toArray());
 				issueTypeList.setListData(jiraServer.getIssueTypes().toArray());
@@ -244,10 +266,13 @@ public class JIRAIssueFilterPanel extends JPanel {
 				setComboValue(assigneeComboBox, advancedQuery);
 				setComboValue(reporterComboBox, advancedQuery);
 
-				progressAnimation.stopProgressAnimation();
+//				progressAnimation.stopProgressAnimation();
 				initialFilterSet = false;
 			}
-		}, "JIRA initial filter set").start();
+		};
+
+		ProgressManager.getInstance().run(setServer);
+
 	}
 
 	public void setListValues(JList list, List<JIRAQueryFragment> advancedQuery) {
