@@ -2,7 +2,7 @@
 	<version>
 		<number>${project.version}, SVN:${buildNumber}</number>
         <downloadUrl>http://docs.atlassian.com/atlassian-idea-plugin/Downloads/atlassian-idea-plugin-${project.version}.zip</downloadUrl>
-        <versionReleaseNotes><![CDATA[<html><body>
+        <releaseNotes><![CDATA[<html><body>
                                 <p>With pleasure, Atlassian presents version <b>2.0 Beta</b> of the Atlassian IDE Plugin for IDEA. This is a beta version, because some of the plugin's new features still need a bit of polish. We are keen for you to install and try this new version, which now offers deep integration with Crucible and Bamboo, as well as the already awesome JIRA integration.</p>
 
                                 <p>With the plugin's Crucible support, you can now perform code reviews directly in the source editor and complete the review lifecycle without leaving your IDE. Use the dashboard-like display to view and filter your reviews. Notifications and colour coding indicate the review status and events.</p>
@@ -40,7 +40,7 @@
                                                                                         <li>Complete List of Fixes in this Release</li>
                                                                                 </ul>
                                                                 </body></html>
-        ]]></versionReleaseNotes>
-        <versionReleaseNotesUrl></versionReleaseNotesUrl>
+        ]]></releaseNotes>
+        <releaseNotesUrl></releaseNotesUrl>
 </version>
 </response>
