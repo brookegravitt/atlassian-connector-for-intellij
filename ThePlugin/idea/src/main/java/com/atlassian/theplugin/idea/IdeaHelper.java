@@ -116,7 +116,7 @@ public final class IdeaHelper {
         return (JIRAToolWindowPanel) content.getComponent();
 	}
 	public static JIRAToolWindowPanel getJIRAToolWindowPanel(AnActionEvent event) {
-		Project p = getCurrentProject(event.getDataContext());
+		Project p = getCurrentProject(event);
 		if (p == null) {
 			return null;
 		}
@@ -131,7 +131,7 @@ public final class IdeaHelper {
 
 
 	public static BambooTableToolWindowPanel getBambooToolWindowPanel(AnActionEvent event) {
-		Project p = getCurrentProject(event.getDataContext());
+		Project p = getCurrentProject(event);
 		if (p == null) {
 			return null;
 		}
