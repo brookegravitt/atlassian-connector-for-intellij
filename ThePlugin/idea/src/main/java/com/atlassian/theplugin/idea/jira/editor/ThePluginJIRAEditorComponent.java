@@ -65,8 +65,10 @@ import java.util.List;
 
 // TODO all this whole class should be rather project component I think (wseliga)
 public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileEditorProvider {
+	private static int COLOR_ = 153;
+	private static Color HEADER_BACKGROUND_COLOR = new Color(COLOR_, COLOR_, COLOR_);
 
-	private static Color HEADER_BACKGROUND_COLOR = new Color(153, 153, 153);
+	
 	@NonNls
 	@NotNull
 	public String getComponentName() {
