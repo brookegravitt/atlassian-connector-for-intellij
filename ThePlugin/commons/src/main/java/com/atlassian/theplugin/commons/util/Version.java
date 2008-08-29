@@ -160,7 +160,8 @@ public class Version implements Serializable {
 			SNAPSHOT, ALPHA, BETA, NONE;			
 		}
 
-		public VersionNumber(int major, int minor, int micro, String alphaNum, String alphaNumValue) throws IncorrectVersionException {
+		public VersionNumber(int major, int minor, int micro, String alphaNum, String alphaNumValue)
+				throws IncorrectVersionException {
 			this.major = major;
 			this.minor = minor;
 			this.micro = micro;			
