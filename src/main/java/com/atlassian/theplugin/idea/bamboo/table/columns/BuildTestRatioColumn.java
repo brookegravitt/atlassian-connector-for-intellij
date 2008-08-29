@@ -31,23 +31,22 @@ import java.util.Comparator;
 public class BuildTestRatioColumn extends TableColumnInfo {
 	private static final int COL_TEST_RATIO_WIDTH = 100;
 
+	@Override
 	public String getColumnName() {
-		return "Passed tests";
+		return "Failed Tests";
 	}
 
+	@Override
 	public Object valueOf(Object o) {
 		return ((BambooBuildAdapterIdea) o).getTestsPassedSummary();
-//		if (((BambooBuildAdapterIdea) o).getStatus() == BuildStatus.UNKNOWN) {
-//			return "-/-";
-//		} else {
-//			return ((BambooBuildAdapterIdea) o).getTestsPassed() + "/" + ((BambooBuildAdapterIdea) o).getTestsNumber();
-//		}
 	}
 
+	@Override
 	public Class getColumnClass() {
 		return String.class;
 	}
 
+	@Override
 	public Comparator getComparator() {
 		return new Comparator() {
 			public int compare(Object o, Object o1) {
@@ -67,6 +66,7 @@ public class BuildTestRatioColumn extends TableColumnInfo {
 		return oTests;
 	}
 
+	@Override
 	public int getPrefferedWidth() {
 		return COL_TEST_RATIO_WIDTH;
 	}
