@@ -16,11 +16,11 @@
 
 package com.atlassian.theplugin.util;
 
-import com.atlassian.theplugin.exception.VersionServiceException;
-import com.atlassian.theplugin.commons.exception.IncorrectVersionException;
 import com.atlassian.theplugin.commons.exception.HttpProxySettingsException;
-import com.atlassian.theplugin.commons.util.Version;
+import com.atlassian.theplugin.commons.exception.IncorrectVersionException;
 import com.atlassian.theplugin.commons.util.HttpClientFactory;
+import com.atlassian.theplugin.commons.util.Version;
+import com.atlassian.theplugin.exception.VersionServiceException;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.jdom.Document;
@@ -31,8 +31,6 @@ import org.jdom.xpath.XPath;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
-import java.net.MalformedURLException;
 
 public final class InfoServer {
 
