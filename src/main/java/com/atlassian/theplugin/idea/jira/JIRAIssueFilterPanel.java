@@ -172,10 +172,12 @@ public class JIRAIssueFilterPanel extends JPanel {
 		} else {
 			Task.Backgroundable refresh = new Task.Backgroundable(project, "Retrieving JIRA Issue Type List", false) {
 				public void run(final ProgressIndicator indicator) {
-//					rootPanel.setEnabled(false);
+					enableFields(false);
 					issueTypeList.setListData(jiraServer.getIssueTypes().toArray());
-//					rootPanel.setEnabled(true);
+					enableFields(true);
 				}
+
+
 			};
 
 			ProgressManager.getInstance().run(refresh);
@@ -188,6 +190,19 @@ public class JIRAIssueFilterPanel extends JPanel {
 //				}
 //			}, "JIRA filter project values retrieve").start();
 		}
+	}
+
+	private void enableFields(boolean enable) {
+		projectList.setEnabled(enable);
+		issueTypeList.setEnabled(enable);
+		fixForList.setEnabled(enable);
+		affectsVersionsList.setEnabled(enable);
+		reporterComboBox.setEnabled(enable);
+		assigneeComboBox.setEnabled(enable);
+		componentsList.setEnabled(enable);
+		resolutionsList.setEnabled(enable);
+		statusList.setEnabled(enable);
+		prioritiesList.setEnabled(enable);
 	}
 
 	private void refreshProjectDependentLists() {
@@ -219,13 +234,13 @@ public class JIRAIssueFilterPanel extends JPanel {
 	}
 
 	private void setProjectDependendListValues() {
-//		rootPanel.setEnabled(false);
+		enableFields(false);
 		issueTypeList.setListData(jiraServer.getIssueTypes().toArray());
 		fixForList.setListData(jiraServer.getFixForVersions().toArray());
 		componentsList.setListData(jiraServer.getComponents().toArray());
 		affectsVersionsList.setListData(jiraServer.getVersions().toArray());
 		enableProjectDependentLists(true);
-//		rootPanel.setEnabled(true);
+		enableFields(true);
 	}
 
 	public void setJiraServer(final JIRAServer jServer, final List<JIRAQueryFragment> advancedQuery) {
@@ -233,7 +248,8 @@ public class JIRAIssueFilterPanel extends JPanel {
 		Task.Backgroundable setServer = new Task.Backgroundable(project, "Setting JIRA Server", false) {
 			public void run(final ProgressIndicator indicator) {
 				initialFilterSet = true;
-//				progressAnimation.startProgressAnimation();
+				//progressAnimation.startProgressAnimation();
+				enableFields(false);
 				jiraServer = jServer;
 				projectList.setListData(jiraServer.getProjects().toArray());
 				issueTypeList.setListData(jiraServer.getIssueTypes().toArray());
@@ -267,6 +283,7 @@ public class JIRAIssueFilterPanel extends JPanel {
 				setComboValue(reporterComboBox, advancedQuery);
 
 //				progressAnimation.stopProgressAnimation();
+				enableFields(true);
 				initialFilterSet = false;
 			}
 		};
