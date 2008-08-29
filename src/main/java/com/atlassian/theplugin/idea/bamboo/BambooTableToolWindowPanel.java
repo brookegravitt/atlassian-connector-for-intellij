@@ -28,6 +28,9 @@ import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.util.ui.UIUtil;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -139,9 +142,10 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel<Bam
     }
 
     private void labelBuild(final BambooBuildAdapterIdea build, final String label) {
-        new Thread(new Runnable() {
-            public void run() {
-                setStatusMessage("Applying label on build...");
+
+		Task.Backgroundable labelTask = new Task.Backgroundable(project, "Labeling Build", false) {
+			public void run(final ProgressIndicator indicator) {
+				setStatusMessage("Applying label on build...");
                 try {
                     bambooFacade.addLabelToBuild(build.getServer(),
                             build.getBuildKey(), build.getBuildNumber(), label);
@@ -151,8 +155,25 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel<Bam
                 } catch (RemoteApiException e) {
                     setStatusMessage("Label not applied: " + e.getMessage());
                 }
-            }
-        }, "atlassian-idea-plugin label build").start();
+			}
+		};
+
+		ProgressManager.getInstance().run(labelTask);
+
+//		new Thread(new Runnable() {
+//            public void run() {
+//                setStatusMessage("Applying label on build...");
+//                try {
+//                    bambooFacade.addLabelToBuild(build.getServer(),
+//                            build.getBuildKey(), build.getBuildNumber(), label);
+//                    setStatusMessage("Label applied on build");
+//                } catch (ServerPasswordNotProvidedException e) {
+//                    setStatusMessage("Label not applied: Password on provided for server");
+//                } catch (RemoteApiException e) {
+//                    setStatusMessage("Label not applied: " + e.getMessage());
+//                }
+//            }
+//        }, "atlassian-idea-plugin label build").start();
     }
 
     public void addLabelToBuild() {
@@ -169,21 +190,39 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel<Bam
     }
 
     private void commentBuild(final BambooBuildAdapterIdea build, final String commentText) {
-        new Thread(new Runnable() {
-            public void run() {
-                setStatusMessage("Adding comment label on build...");
-                try {
-                    bambooFacade.addCommentToBuild(build.getServer(),
-                            build.getBuildKey(), build.getBuildNumber(), commentText);
-                    setStatusMessage("Comment added to build");
-                } catch (ServerPasswordNotProvidedException e) {
-                    setStatusMessage("Comment not added: Password not provided for server");
-                } catch (RemoteApiException e) {
-                    setStatusMessage("Comment not added: " + e.getMessage());
-                }
 
-            }
-        }, "atlassian-idea-plugin comment build").start();
+		Task.Backgroundable commentTask = new Task.Backgroundable(project, "Commenting Build", false) {
+			public void run(final ProgressIndicator indicator) {
+				setStatusMessage("Adding comment label on build...");
+				try {
+					bambooFacade.addCommentToBuild(build.getServer(),
+							build.getBuildKey(), build.getBuildNumber(), commentText);
+					setStatusMessage("Comment added to build");
+				} catch (ServerPasswordNotProvidedException e) {
+					setStatusMessage("Comment not added: Password not provided for server");
+				} catch (RemoteApiException e) {
+					setStatusMessage("Comment not added: " + e.getMessage());
+				}
+			}
+		};
+
+		ProgressManager.getInstance().run(commentTask);
+
+//		new Thread(new Runnable() {
+//            public void run() {
+//                setStatusMessage("Adding comment label on build...");
+//                try {
+//                    bambooFacade.addCommentToBuild(build.getServer(),
+//                            build.getBuildKey(), build.getBuildNumber(), commentText);
+//                    setStatusMessage("Comment added to build");
+//                } catch (ServerPasswordNotProvidedException e) {
+//                    setStatusMessage("Comment not added: Password not provided for server");
+//                } catch (RemoteApiException e) {
+//                    setStatusMessage("Comment not added: " + e.getMessage());
+//                }
+//
+//            }
+//        }, "atlassian-idea-plugin comment build").start();
     }
 
     public void addCommentToBuild() {
@@ -192,9 +231,10 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel<Bam
     }
 
     private void executeBuild(final BambooBuildAdapterIdea build) {
-        new Thread(new Runnable() {
-            public void run() {
-                setStatusMessage("Executing build on plan " + build.getBuildKey());
+
+		Task.Backgroundable executeTask = new Task.Backgroundable(project, "Starting Build", false) {
+			public void run(final ProgressIndicator indicator) {
+				setStatusMessage("Executing build on plan " + build.getBuildKey());
                 try {
                     bambooFacade.executeBuild(build.getServer(), build.getBuildKey());
                     setStatusMessage("Build executed on plan: " + build.getBuildKey());
@@ -203,9 +243,25 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel<Bam
                 } catch (RemoteApiException e) {
                     setStatusMessage("Build not executed: " + e.getMessage());
                 }
+			}
+		};
 
-            }
-        }, "atlassian-idea-plugin execute build").start();
+		ProgressManager.getInstance().run(executeTask);
+
+//		new Thread(new Runnable() {
+//            public void run() {
+//                setStatusMessage("Executing build on plan " + build.getBuildKey());
+//                try {
+//                    bambooFacade.executeBuild(build.getServer(), build.getBuildKey());
+//                    setStatusMessage("Build executed on plan: " + build.getBuildKey());
+//                } catch (ServerPasswordNotProvidedException e) {
+//                    setStatusMessage("Build not executed: Password not provided for server");
+//                } catch (RemoteApiException e) {
+//                    setStatusMessage("Build not executed: " + e.getMessage());
+//                }
+//
+//            }
+//        }, "atlassian-idea-plugin execute build").start();
     }
 
     public void runBuild() {
@@ -309,9 +365,9 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel<Bam
     public void showBuildStackTrace() {
         final BambooBuildAdapterIdea build = table.getSelectedObject();
 
-        new Thread(new Runnable() {
-            public void run() {
-                setStatusMessage("Getting test results for build " + build.getBuildKey() + "...");
+		Task.Backgroundable stackTraceTask = new Task.Backgroundable(project, "Retrieving Build Stack Trace", false) {
+			public void run(final ProgressIndicator indicator) {
+				setStatusMessage("Getting test results for build " + build.getBuildKey() + "...");
                 try {
                     BuildDetails details = bambooFacade.getBuildDetails(
                             build.getServer(), build.getBuildKey(), build.getBuildNumber());
@@ -329,9 +385,34 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel<Bam
                 } catch (RemoteApiException e) {
                     setStatusMessage("Failed to get test results: " + e.getMessage());
                 }
+			}
+		};
 
-            }
-        }, "atlassian-idea-plugin get stack traces").start();
+		ProgressManager.getInstance().run(stackTraceTask);
+
+//		new Thread(new Runnable() {
+//            public void run() {
+//                setStatusMessage("Getting test results for build " + build.getBuildKey() + "...");
+//                try {
+//                    BuildDetails details = bambooFacade.getBuildDetails(
+//                            build.getServer(), build.getBuildKey(), build.getBuildNumber());
+//                    final List<TestDetails> failedTests = details.getFailedTestDetails();
+//                    final List<TestDetails> succeededTests = details.getSuccessfulTestDetails();
+//                    SwingUtilities.invokeLater(new Runnable() {
+//                        public void run() {
+//                            testResultsToolWindow.showTestResults(
+//                                    build.getBuildKey(), build.getBuildNumber(), failedTests, succeededTests);
+//                        }
+//                    });
+//                    setStatusMessage("Test results for build " + build.getBuildKey() + " received");
+//                } catch (ServerPasswordNotProvidedException e) {
+//                    setStatusMessage("Failed to get test results: Password not provided for server");
+//                } catch (RemoteApiException e) {
+//                    setStatusMessage("Failed to get test results: " + e.getMessage());
+//                }
+//
+//            }
+//        }, "atlassian-idea-plugin get stack traces").start();
     }
 
     public boolean canShowChanges() {
@@ -345,9 +426,9 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel<Bam
     public void showChanges() {
         final BambooBuildAdapterIdea build = table.getSelectedObject();
 
-        new Thread(new Runnable() {
-            public void run() {
-                setStatusMessage("Getting changes for build " + build.getBuildKey() + "...");
+		Task.Backgroundable changesTask = new Task.Backgroundable(project, "Retrieving Build Changes", false) {
+			public void run(final ProgressIndicator indicator) {
+				setStatusMessage("Getting changes for build " + build.getBuildKey() + "...");
                 try {
                     BuildDetails details = bambooFacade.getBuildDetails(
                             build.getServer(), build.getBuildKey(), build.getBuildNumber());
@@ -364,38 +445,89 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel<Bam
                 } catch (RemoteApiException e) {
                     setStatusMessage("Failed to get changes: " + e.getMessage());
                 }
+			}
+		};
 
-            }
-        }, "atlassian-idea-plugin get changes").start();
+		ProgressManager.getInstance().run(changesTask);
+
+//		new Thread(new Runnable() {
+//            public void run() {
+//                setStatusMessage("Getting changes for build " + build.getBuildKey() + "...");
+//                try {
+//                    BuildDetails details = bambooFacade.getBuildDetails(
+//                            build.getServer(), build.getBuildKey(), build.getBuildNumber());
+//                    final List<BambooChangeSet> commits = details.getCommitInfo();
+//                    SwingUtilities.invokeLater(new Runnable() {
+//                        public void run() {
+//                            buildChangesToolWindow.showBuildChanges(
+//                                    build.getBuildKey(), build.getBuildNumber(), commits);
+//                        }
+//                    });
+//                    setStatusMessage("Changes for build " + build.getBuildKey() + " received");
+//                } catch (ServerPasswordNotProvidedException e) {
+//                    setStatusMessage("Failed to get changes: Password not provided for server");
+//                } catch (RemoteApiException e) {
+//                    setStatusMessage("Failed to get changes: " + e.getMessage());
+//                }
+//
+//            }
+//        }, "atlassian-idea-plugin get changes").start();
     }
 
 	
 	public void showBuildLog() {
         final BambooBuildAdapterIdea build = table.getSelectedObject();
 
-        new Thread(new Runnable() {
-            public void run() {
-                setStatusMessage("Getting build log: " + build.getBuildKey() + "...");
-                try {
-                    final byte[] log = bambooFacade.getBuildLogs(
-                            build.getServer(), build.getBuildKey(), build.getBuildNumber());
-                    final String title = "Bamboo build: "
-                            + build.getServer().getName() + ": "
-                            + build.getBuildKey() + "-" + build.getBuildNumber();
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            PlainTextMemoryVirtualFile vf = new PlainTextMemoryVirtualFile(title, new String(log));
-                            FileEditorManager.getInstance(project).openFile(vf, true);
-                        }
-                    });
-                    setStatusMessage("Changes for build " + build.getBuildKey() + " received");
-                } catch (ServerPasswordNotProvidedException e) {
-                    setStatusMessage("Failed to get changes: Password not provided for server");
-                } catch (RemoteApiException e) {
-                    setStatusMessage("Failed to get changes: " + e.getMessage());
-                }
+		Task.Backgroundable buildLogTask = new Task.Backgroundable(project, "Retrieving Build Log", false) {
+			public void run(final ProgressIndicator indicator) {
+				setStatusMessage("Getting build log: " + build.getBuildKey() + "...");
+				try {
+					final byte[] log = bambooFacade.getBuildLogs(
+							build.getServer(), build.getBuildKey(), build.getBuildNumber());
+					final String title = "Bamboo build: "
+							+ build.getServer().getName() + ": "
+							+ build.getBuildKey() + "-" + build.getBuildNumber();
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							PlainTextMemoryVirtualFile vf = new PlainTextMemoryVirtualFile(title, new String(log));
+							FileEditorManager.getInstance(project).openFile(vf, true);
+						}
+					});
+					setStatusMessage("Changes for build " + build.getBuildKey() + " received");
+				} catch (ServerPasswordNotProvidedException e) {
+					setStatusMessage("Failed to get changes: Password not provided for server");
+				} catch (RemoteApiException e) {
+					setStatusMessage("Failed to get changes: " + e.getMessage());
+				}
 
-            }
-        }, "atlassian-idea-plugin get changes").start();
+			}
+		};
+
+		ProgressManager.getInstance().run(buildLogTask);
+
+//		new Thread(new Runnable() {
+//            public void run() {
+//                setStatusMessage("Getting build log: " + build.getBuildKey() + "...");
+//                try {
+//                    final byte[] log = bambooFacade.getBuildLogs(
+//                            build.getServer(), build.getBuildKey(), build.getBuildNumber());
+//                    final String title = "Bamboo build: "
+//                            + build.getServer().getName() + ": "
+//                            + build.getBuildKey() + "-" + build.getBuildNumber();
+//                    SwingUtilities.invokeLater(new Runnable() {
+//                        public void run() {
+//                            PlainTextMemoryVirtualFile vf = new PlainTextMemoryVirtualFile(title, new String(log));
+//                            FileEditorManager.getInstance(project).openFile(vf, true);
+//                        }
+//                    });
+//                    setStatusMessage("Changes for build " + build.getBuildKey() + " received");
+//                } catch (ServerPasswordNotProvidedException e) {
+//                    setStatusMessage("Failed to get changes: Password not provided for server");
+//                } catch (RemoteApiException e) {
+//                    setStatusMessage("Failed to get changes: " + e.getMessage());
+//                }
+//
+//            }
+//        }, "atlassian-idea-plugin get changes").start();
     }
 }
