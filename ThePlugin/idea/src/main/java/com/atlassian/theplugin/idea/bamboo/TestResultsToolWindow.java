@@ -225,7 +225,7 @@ public final class TestResultsToolWindow {
 					return;
 				}
 				PsiMethod[] methods = cls.findMethodsByName(details.getTestMethodName(), false);
-				if (methods == null || methods.length == 0 && methods[0] == null) {
+				if (methods == null || methods.length == 0 || methods[0] == null) {
 					return;
 				}
 				methods[0].navigate(true);
@@ -453,7 +453,7 @@ public final class TestResultsToolWindow {
 
 		public void print(String txt) {
 			console.clear();
-			console.print(txt, ConsoleViewContentType.NORMAL_OUTPUT);
+			console.print(txt, ConsoleViewContentType.ERROR_OUTPUT);
 		}
 
 		public void expand() {
