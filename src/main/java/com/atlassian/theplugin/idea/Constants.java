@@ -16,10 +16,11 @@
 
 package com.atlassian.theplugin.idea;
 
-import com.intellij.openapi.util.IconLoader;
-import com.intellij.openapi.actionSystem.DataKey;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
+import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
+import com.intellij.openapi.actionSystem.DataKey;
+import com.intellij.openapi.util.IconLoader;
 
 import javax.swing.*;
 import java.util.Collection;
@@ -29,6 +30,7 @@ public final class Constants {
 	public static final String CRUCIBLE_COMMENT_TREE = "theplugin.crucible.comment.tree";
 	public static final String BUILD_CHANGES_WINDOW = "theplugin.build_changes_window";
     public static final String CRUCIBLE_BOTTOM_WINDOW = "theplugin.crucible_bottom_window";
+	public static final String CRUCIBLE_FILE_NODE = "theplugin.crucible_file_node";
 	
 	public static final String SERVER_CONFIG_PANEL = "theplugin.server_config_panel";
 	public static final String SERVER = "theplugin.server";
@@ -38,6 +40,7 @@ public final class Constants {
 	public static final DataKey<Collection<ServerCfg>> SERVERS_KEY = DataKey.create(SERVERS);	
 	public static final DataKey<ServerConfigPanel> SERVER_CONFIG_PANEL_KEY = DataKey.create(SERVER_CONFIG_PANEL);	
 	public static final DataKey<ServerCfg> SERVER_KEY = DataKey.create(SERVER);
+	public static final DataKey<CrucibleFileNode> CRUCIBLE_FILE_NODE_KEY = DataKey.create(CRUCIBLE_FILE_NODE);
 
 	private Constants() { }
 

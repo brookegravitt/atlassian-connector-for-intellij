@@ -221,7 +221,7 @@
 
 		<action id="ThePlugin.Tree.File.GroupByDir"
 				class="com.atlassian.theplugin.idea.action.tree.file.ToggleViewAction"
-				text="Group By Directory" icon="/nodes/folder.png"/>
+				text="Group by Directory" icon="/nodes/folder.png"/>
 		<action id="ThePlugin.Tree.File.ExpandCollapseFiles"
 				class="com.atlassian.theplugin.idea.action.tree.file.ExpandCollapseFilesAction" text="Expand All"
 				icon="/actions/expandall.png"/>
@@ -284,6 +284,11 @@
 			<reference id="ThePlugin.Tree.File.Filter"/>
 		</group>
 
+		<group id="ThePlugin.Crucible.ReviewFileListPopupMenu" popup="true">
+			<reference id="ThePlugin.Crucible.ShowFileAction"/>
+			<reference id="ThePlugin.Crucible.ShowReviewItemDiffAction"/>
+		</group>
+
 		<group id="ThePlugin.TreeOperations" popup="false" text="">
 			<add-to-group anchor="last" group-id="ThePlugin.Bamboo.CommitListToolBar"/>
 			<add-to-group anchor="last" group-id="ThePlugin.Crucible.ReviewFileListToolBar"/>
@@ -303,7 +308,7 @@
 		<action id="ThePlugin.Crucible.ViewReview" class="com.atlassian.theplugin.idea.action.crucible.ViewReviewAction"
 				text="View Review in Browser" icon="/general/web.png"/>
 		<action id="ThePlugin.Crucible.GetComments"
-				class="com.atlassian.theplugin.idea.action.crucible.GetCommentsAction" text="Get Comments"
+				class="com.atlassian.theplugin.idea.action.crucible.GetCommentsAction" text="Open Review"
 				icon="/icons/inspector/sortByCategory.png"/>
 		<action id="ThePlugin.Crucible.GetGeneralCommentReplies"
 				class="com.atlassian.theplugin.idea.action.crucible.GetGeneralCommentRepliesAction" text="View Replies"

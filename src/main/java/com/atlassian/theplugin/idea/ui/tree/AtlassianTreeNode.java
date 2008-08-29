@@ -16,9 +16,9 @@
 
 package com.atlassian.theplugin.idea.ui.tree;
 
+import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
-import javax.swing.*;
 import java.awt.*;
 
 public abstract class AtlassianTreeNode extends DefaultMutableTreeNode {
@@ -32,6 +32,7 @@ public abstract class AtlassianTreeNode extends DefaultMutableTreeNode {
 		super.add(newChild);
 	}
 
+	@Override
 	public AtlassianTreeNode getChildAt(final int i) {
 		return (AtlassianTreeNode) super.getChildAt(i);
 	}

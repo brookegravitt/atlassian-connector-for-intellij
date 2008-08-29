@@ -292,7 +292,7 @@ public final class BuildChangesToolWindow {
 									FileTreeModelBuilder.buildFlatTreeModelFromBambooChangeSet(project, c);
 
 							@Override
-							public AtlassianTreeModel getModel(final AtlassianTreeWithToolbar.STATE state) {
+							public AtlassianTreeModel getModel(final AtlassianTreeWithToolbar.State state) {
 								switch (state) {
 									case DIRED:
 										return diredModel;
