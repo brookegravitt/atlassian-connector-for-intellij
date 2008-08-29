@@ -27,9 +27,9 @@ import java.util.ArrayList;
 
 public class UserListCellRenderer implements ListCellRenderer {
 	protected static final Border NO_FOCUS_BORDER = new EmptyBorder(1, 1, 1, 1);
-	ArrayList<User> disabledUsers = new ArrayList<User>();
+	private ArrayList<User> disabledUsers = new ArrayList<User>();
 
-	public void setDisabledUsers(ArrayList<User> users){
+	public void setDisabledUsers(ArrayList<User> users) {
 		this.disabledUsers = users;
 	}
 
@@ -89,9 +89,9 @@ public class UserListCellRenderer implements ListCellRenderer {
 		return panel;
 	}
 
-	private boolean isUserDisabled(String displayName){
-		for(int i=0; i<disabledUsers.size(); i++) {
-			if (disabledUsers.get(i).getDisplayName().equals(displayName)){
+	private boolean isUserDisabled(String displayName) {
+		for (int i = 0; i < disabledUsers.size(); i++) {
+			if (disabledUsers.get(i).getDisplayName().equals(displayName)) {
 				return true;
 			}
 		}

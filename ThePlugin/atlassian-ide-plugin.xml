@@ -5,15 +5,9 @@
         <server-id>1c8ee2f7-f0a5-4ce9-a48b-dbeb7f86c86d</server-id>
         <name>Hosted</name>
         <url>https://gdansk.bamboo2.atlassian.com</url>
-        <use-favourites>false</use-favourites>
+        <use-favourites>true</use-favourites>
         <bamboo2>true</bamboo2>
-        <plans>
-          <plan key="TP-CSCOM" />
-          <plan key="TP-CSIDEA" />
-          <plan key="TP-CLO" />
-          <plan key="TP-DPL" />
-          <plan key="TP-TEST" />
-        </plans>
+        <plans />
       </bamboo>
       <jira>
         <server-id>53c3cbff-e50f-475f-a6e2-703b22168724</server-id>
@@ -25,11 +19,6 @@
         <name>Crucible.lech</name>
         <url>http://lech.atlassian.pl:8055/crucible-1.6</url>
       </crucible>
-      <jira>
-        <server-id>0a6ed7ac-7933-484a-9ef5-545a319ffe6e</server-id>
-        <name>JAC</name>
-        <url>http://jira.atlassian.com</url>
-      </jira>
     </servers>
   </project-configuration>
 </atlassian-ide-plugin>

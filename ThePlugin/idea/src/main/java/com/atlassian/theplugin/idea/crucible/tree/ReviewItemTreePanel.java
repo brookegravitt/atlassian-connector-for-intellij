@@ -109,7 +109,8 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 					if (menu == null) {
 						return;
 					}
-					aManager.createActionPopupMenu("ThePlugin.Crucible.ReviewFileListToolBar-place", menu).getComponent().show(e.getComponent(), e.getX(), e.getY());
+					aManager.createActionPopupMenu("ThePlugin.Crucible.ReviewFileListToolBar-place", menu).getComponent()
+							.show(e.getComponent(), e.getX(), e.getY());
 
 				}
 			});
@@ -293,7 +294,8 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 	}
 
 	private static class MyCrucibleFilteredModelProvider extends CrucibleFilteredModelProvider {
-		private static final com.atlassian.theplugin.idea.ui.tree.Filter COMMENT_FILTER = new com.atlassian.theplugin.idea.ui.tree.Filter() {
+		private static final com.atlassian.theplugin.idea.ui.tree.Filter COMMENT_FILTER
+				= new com.atlassian.theplugin.idea.ui.tree.Filter() {
 				@Override
 				public boolean isValid(final AtlassianTreeNode node) {
 					if (node instanceof CrucibleFileNode) {
