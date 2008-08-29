@@ -22,7 +22,8 @@ public class UserListItem {
     private User user;
     private boolean selected;
 
-    public UserListItem(User user, boolean selected) {
+
+	public UserListItem(User user, boolean selected) {
         this.user = user;
         this.selected = selected;
     }
@@ -42,4 +43,28 @@ public class UserListItem {
     public void setSelected(boolean selected) {
         this.selected = selected;
     }
+
+	public boolean equals(final Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+
+		final UserListItem that = (UserListItem) o;
+
+		if (user != null ? !user.equals(that.user) : that.user != null) {
+			return false;
+		}
+
+		return true;
+	}
+
+	public int hashCode() {
+		int result;
+		result = (user != null ? user.hashCode() : 0);
+		result = 31 * result + (selected ? 1 : 0);
+		return result;
+	}
 }
