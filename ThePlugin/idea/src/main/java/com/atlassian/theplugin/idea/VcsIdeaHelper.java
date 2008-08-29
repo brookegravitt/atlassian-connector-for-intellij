@@ -113,7 +113,7 @@ public final class VcsIdeaHelper {
 		return revision + ":" + file.getPath();
 	}
 
-	private static VirtualFile getFileFromCache(final Project project, VirtualFile virtualFile, String revision) {
+	private static VirtualFile getFileFromCache(VirtualFile virtualFile, String revision) {
 		String key = getFileCacheKey(virtualFile, revision);
 		if (fetchedFiles.containsKey(key)) {
 			return fetchedFiles.get(key);
@@ -130,7 +130,7 @@ public final class VcsIdeaHelper {
 
 	private static VirtualFile getFromCacheOrFetch(Project project, VirtualFile virtualFile,
 			String revision) throws VcsException {
-		VirtualFile vcvf = getFileFromCache(project, virtualFile, revision);
+		VirtualFile vcvf = getFileFromCache(virtualFile, revision);
 		if (vcvf != null) {
 			return vcvf;
 		}
