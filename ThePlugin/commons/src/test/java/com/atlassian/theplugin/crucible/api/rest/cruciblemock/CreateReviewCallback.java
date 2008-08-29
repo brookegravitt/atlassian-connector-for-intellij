@@ -56,16 +56,15 @@ public class CreateReviewCallback implements JettyMockServer.Callback {
 
         ReviewBean reviewData = null;
         if (elements != null && !elements.isEmpty()) {
-            reviewData = CrucibleRestXmlHelper.parseReviewNode(elements.iterator().next());
-            reviewData.setState(State.DRAFT);
-            PermIdBean permId = new PermIdBean();
-            permId.setId(PERM_ID);
-            reviewData.setPermId(permId);
-            reviewData.setRepoName(REPO_NAME);
-            reviewData.setAuthor(reqReview.getAuthor());
-            reviewData.setCreator(reqReview.getCreator());
-            reviewData.setModerator(reqReview.getModerator());
-        }
+			reviewData = CrucibleRestXmlHelper.parseReviewNode(elements.iterator().next());
+			reviewData.setState(State.DRAFT);
+			PermIdBean permId = new PermIdBean(PERM_ID);
+			reviewData.setPermId(permId);
+			reviewData.setRepoName(REPO_NAME);
+			reviewData.setAuthor(reqReview.getAuthor());
+			reviewData.setCreator(reqReview.getCreator());
+			reviewData.setModerator(reqReview.getModerator());
+		}
 
         Document doc = CrucibleRestXmlHelper.prepareReviewNode(reviewData);
         XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());

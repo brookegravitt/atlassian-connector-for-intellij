@@ -27,7 +27,11 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.intellij.openapi.diff.*;
+import com.intellij.openapi.diff.DiffContent;
+import com.intellij.openapi.diff.DiffManager;
+import com.intellij.openapi.diff.DiffRequest;
+import com.intellij.openapi.diff.DocumentContent;
+import com.intellij.openapi.diff.FileContent;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
@@ -42,7 +46,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class CrucibleHelper {
-	//private static Set<OpenFileDescriptor> openDescriptors = new Set<OpenFileDescriptor>();
 
 	private CrucibleHelper() {
 	}
@@ -99,16 +102,14 @@ public final class CrucibleHelper {
 					return;
 				}
 
-				Document displayDocument = null;
-				Document referenceDocument = null;
 				switch (commitType) {
 					case Moved:
 					case Copied:
 					case Modified:
-						displayDocument = new FileContent(project, displayFile.getFile())
+						final Document displayDocument = new FileContent(project, displayFile.getFile())
 								.getDocument();
-						referenceDocument = new FileContent(project, referenceFile).getDocument();
-						ChangeViewer.highlightChangesInEditor(project, editor, referenceDocument, displayDocument
+						final Document referenceDocument = new FileContent(project, referenceFile).getDocument();
+						ChangeViewer.highlightChangesInEditor(project, /*editor, */referenceDocument, displayDocument
 								, reviewItem.getOldFileDescriptor().getRevision()
 								, reviewItem.getFileDescriptor().getRevision());
 						break;
@@ -142,6 +143,7 @@ public final class CrucibleHelper {
 
 				DiffRequest request = new DiffRequest(project) {
 
+					@Override
 					public DiffContent[] getContents() {
 						return (new DiffContent[]{
 								new DocumentContent(project, referenceDocument),
@@ -149,15 +151,17 @@ public final class CrucibleHelper {
 						});
 					}
 
+					@Override
 					public String[] getContentTitles() {
 						return (new String[]{
 								VcsBundle.message("diff.content.title.repository.version",
-										new Object[]{reviewItem.getOldFileDescriptor().getRevision()}),
+										reviewItem.getOldFileDescriptor().getRevision()),
 								VcsBundle.message("diff.content.title.repository.version",
-										new Object[]{reviewItem.getFileDescriptor().getRevision()})
+										reviewItem.getFileDescriptor().getRevision())
 						});
 					}
 
+					@Override
 					public String getWindowTitle() {
 						return reviewItem.getFileDescriptor().getAbsoluteUrl();
 					}

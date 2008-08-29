@@ -25,7 +25,6 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.tree.TreePath;
-import java.awt.*;
 
 /**
  * @author Lukasz Guminski
@@ -33,10 +32,10 @@ import java.awt.*;
 public class AtlassianTreeWithToolbar extends ComponentWithToolbar {
 	private AtlassianTree tree;
 	private ModelProvider modelProvider = ModelProvider.EMPTY_MODEL_PROVIDER;
-	private STATE state = STATE.DIRED;
+	private State state = State.DIRED;
 
 
-	private VIEW_STATE viewState = VIEW_STATE.EXPANDED;
+	private ViewState viewState = ViewState.EXPANDED;
 
 	public AtlassianTreeWithToolbar(String toolbar, final ModelProvider modelProvider) {
 		this(toolbar);
@@ -48,7 +47,7 @@ public class AtlassianTreeWithToolbar extends ComponentWithToolbar {
 	}
 
 	@Override
-	public Component getTreeComponent() {
+	public AtlassianTree getTreeComponent() {
 		if (tree == null) {
 			tree = new AtlassianTree();
 		}
@@ -78,11 +77,11 @@ public class AtlassianTreeWithToolbar extends ComponentWithToolbar {
 		return modelProvider;
 	}
 
-	public STATE getState() {
+	public State getState() {
 		return state;
 	}
 
-	public void setState(final STATE state) {
+	public void setState(final State state) {
 		this.state = state;
 		triggerModelUpdated();
 	}
@@ -95,11 +94,11 @@ public class AtlassianTreeWithToolbar extends ComponentWithToolbar {
 		setState(getState().getNextState());
 	}
 
-	public VIEW_STATE getViewState() {
-		return tree.isExpanded(0) ? VIEW_STATE.EXPANDED : VIEW_STATE.COLLAPSED;
+	public ViewState getViewState() {
+		return tree.isExpanded(0) ? ViewState.EXPANDED : ViewState.COLLAPSED;
 	}
 
-	public void setViewState(final VIEW_STATE viewState) {
+	public void setViewState(final ViewState viewState) {
 		this.viewState = viewState;
 		switch (viewState) {
 			case COLLAPSED:
@@ -140,26 +139,27 @@ public class AtlassianTreeWithToolbar extends ComponentWithToolbar {
 		return !tree.isRootVisible() && (tree.getModel().getChildCount(tree.getModel().getRoot()) == 0);
 	}
 
-	public enum STATE {
-		FLAT(Icons.DIRECTORY_CLOSED_ICON, "Show flat") {
+	public enum State {
+		FLAT(Icons.DIRECTORY_CLOSED_ICON, "Show Flat") {
 			@Override
-			public STATE getNextState() {
+			public State getNextState() {
 				return DIRED;
 			}},
-		DIRED(Icons.DIRECTORY_OPEN_ICON, "Show dired") {
-			public STATE getNextState() {
+		DIRED(Icons.DIRECTORY_OPEN_ICON, "Show Hierarchy") {
+			@Override
+			public State getNextState() {
 				return FLAT;
 			}};
 
 		private Icon icon;
 		private String string;
 
-		STATE(final Icon icon, final String string) {
+		State(final Icon icon, final String string) {
 			this.icon = icon;
 			this.string = string;
 		}
 
-		public abstract STATE getNextState();
+		public abstract State getNextState();
 
 		public Icon getIcon() {
 			return icon;
@@ -171,16 +171,18 @@ public class AtlassianTreeWithToolbar extends ComponentWithToolbar {
 		}
 	}
 
-	public enum VIEW_STATE {
-		COLLAPSED(IconLoader.getIcon("/actions/collapseall.png"), "Collapse all") {
+	public enum ViewState {
+		COLLAPSED(IconLoader.getIcon("/actions/collapseall.png"), "Collapse All") {
 
-			public VIEW_STATE getNextState() {
+			@Override
+			public ViewState getNextState() {
 				return EXPANDED;
 			}
 		},
-		EXPANDED(IconLoader.getIcon("/actions/expandall.png"), "Expand all") {
+		EXPANDED(IconLoader.getIcon("/actions/expandall.png"), "Expand All") {
 
-			public VIEW_STATE getNextState() {
+			@Override
+			public ViewState getNextState() {
 				return COLLAPSED;
 			}
 		};
@@ -188,12 +190,12 @@ public class AtlassianTreeWithToolbar extends ComponentWithToolbar {
 		private Icon icon;
 		private String string;
 
-		VIEW_STATE(final Icon icon, final String string) {
+		ViewState(final Icon icon, final String string) {
 			this.icon = icon;
 			this.string = string;
 		}
 
-		public abstract VIEW_STATE getNextState();
+		public abstract ViewState getNextState();
 
 		public Icon getIcon() {
 			return icon;

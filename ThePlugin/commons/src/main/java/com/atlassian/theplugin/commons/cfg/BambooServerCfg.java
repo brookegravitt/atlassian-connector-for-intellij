@@ -125,4 +125,14 @@ public class BambooServerCfg extends ServerCfg {
 	public BambooServerCfg getClone() {
 		return new BambooServerCfg(this);
 	}
+
+	// this method is used by XStream - do not remove!!!
+	@Override
+	protected Object readResolve() {
+		super.readResolve();
+		if (plans == null) {
+			plans = MiscUtil.buildArrayList();
+		}
+		return this;
+	}
 }

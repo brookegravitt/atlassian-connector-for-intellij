@@ -20,7 +20,37 @@ import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import static com.atlassian.theplugin.commons.crucible.api.JDomHelper.getContent;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.Action;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
+import com.atlassian.theplugin.commons.crucible.api.model.CommentBean;
+import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfoImpl;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleVersionInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleVersionInfoBean;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomField;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldBean;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDefBean;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldValue;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldValueType;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.FileType;
+import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.api.model.GeneralCommentBean;
+import com.atlassian.theplugin.commons.crucible.api.model.NewReviewItem;
+import com.atlassian.theplugin.commons.crucible.api.model.PermId;
+import com.atlassian.theplugin.commons.crucible.api.model.PermIdBean;
+import com.atlassian.theplugin.commons.crucible.api.model.ProjectBean;
+import com.atlassian.theplugin.commons.crucible.api.model.RepositoryBean;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewBean;
+import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewerBean;
+import com.atlassian.theplugin.commons.crucible.api.model.State;
+import com.atlassian.theplugin.commons.crucible.api.model.SvnRepositoryBean;
+import com.atlassian.theplugin.commons.crucible.api.model.UserBean;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedCommentBean;
 import org.jdom.CDATA;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -146,8 +176,7 @@ public final class CrucibleRestXmlHelper {
 		review.setAllowReviewerToJoin(Boolean.parseBoolean(getChildText(reviewNode, "allowReviewersToJoin")));
 
 		if (reviewNode.getChild("permaId") != null) {
-			PermIdBean permId = new PermIdBean();
-			permId.setId(reviewNode.getChild("permaId").getChild("id").getText());
+			PermIdBean permId = new PermIdBean(reviewNode.getChild("permaId").getChild("id").getText());
 			review.setPermId(permId);
 		}
 		review.setSummary(getChildText(reviewNode, "summary"));
@@ -432,8 +461,7 @@ public final class CrucibleRestXmlHelper {
 			}
 		}
 		if (reviewItemNode.getChild("permId") != null) {
-			PermIdBean permId = new PermIdBean();
-			permId.setId(reviewItemNode.getChild("permId").getChild("id").getText());
+			PermIdBean permId = new PermIdBean(reviewItemNode.getChild("permId").getChild("id").getText());
 			reviewItem.setPermId(permId);
 		}
 
@@ -493,8 +521,7 @@ public final class CrucibleRestXmlHelper {
 		commentBean.setDraft(Boolean.parseBoolean(getChildText(reviewCommentNode, "draft")));
 		commentBean.setDeleted(Boolean.parseBoolean(getChildText(reviewCommentNode, "deleted")));
 		commentBean.setCreateDate(parseDateTime(getChildText(reviewCommentNode, "createDate")));
-		PermIdBean permId = new PermIdBean();
-		permId.setId(getChildText(reviewCommentNode, "permaIdAsString"));
+		PermIdBean permId = new PermIdBean(getChildText(reviewCommentNode, "permaIdAsString"));
 		commentBean.setPermId(permId);
 
 
@@ -600,8 +627,7 @@ public final class CrucibleRestXmlHelper {
 		parseVersionedComment(comment, reviewCommentNode);
 
 		if (reviewCommentNode.getChild("reviewItemId") != null) {
-			PermIdBean reviewItemId = new PermIdBean();
-			reviewItemId.setId(reviewCommentNode.getChild("reviewItemId").getChild("id").getText());
+			PermIdBean reviewItemId = new PermIdBean(reviewCommentNode.getChild("reviewItemId").getChild("id").getText());
 			comment.setReviewItemId(reviewItemId);
 		}
 

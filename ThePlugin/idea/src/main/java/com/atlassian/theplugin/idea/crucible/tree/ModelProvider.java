@@ -29,13 +29,13 @@ import com.atlassian.theplugin.idea.ui.tree.file.FolderNode;
  */
 public abstract class ModelProvider {
 
-	public abstract AtlassianTreeModel getModel(final AtlassianTreeWithToolbar.STATE state);
+	public abstract AtlassianTreeModel getModel(final AtlassianTreeWithToolbar.State state);
 
 	public static final ModelProvider EMPTY_MODEL_PROVIDER = new ModelProvider() {
 
         private AtlassianTreeModel model = new AtlassianTreeModel(new FolderNode("/", AtlassianClickAction.EMPTY_ACTION));
 
-        public AtlassianTreeModel getModel(final AtlassianTreeWithToolbar.STATE state) {
+        public AtlassianTreeModel getModel(final AtlassianTreeWithToolbar.State state) {
             return model;
         }
 
