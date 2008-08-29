@@ -487,7 +487,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
         private JIRAToolWindowPanel jiraPanel;
 
         public SelectServerTask(JIRAServer jiraServer, JIRAToolWindowPanel jiraToolWindowPanel) {
-			super(project, "Retrieving JIRA issues", false);
+			super(project, "Retrieving Data from JIRA", false);
 			this.jiraServer = jiraServer;
             this.jiraPanel = jiraToolWindowPanel;
         }
@@ -630,7 +630,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
         private JIRAServer jiraServer;
 
         private IssueRefreshTask(JIRAServer jiraServer) {
-			super(project, "Refreshing JIRA Panel", false);
+			super(project, "Retrieving JIRA Issues", false);
 			this.jiraServer = jiraServer;
         }
 
