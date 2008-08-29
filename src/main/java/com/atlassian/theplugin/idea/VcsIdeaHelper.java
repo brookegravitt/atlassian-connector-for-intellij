@@ -17,7 +17,6 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
-import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.application.ApplicationManager;
@@ -45,18 +44,21 @@ import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.peer.PeerFactory;
 import com.intellij.vcsUtil.VcsUtil;
+import org.apache.commons.collections.map.ReferenceMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 public final class VcsIdeaHelper {
 
-	private static final int INITIAL_CAPACITY = 20;
-	private static Map<String, VirtualFile> fetchedFiles = MiscUtil.buildConcurrentHashMap(INITIAL_CAPACITY);
+	@SuppressWarnings("unchecked")
+	private static final Map<String, VirtualFile> fetchedFiles
+			= Collections.<String, VirtualFile>synchronizedMap(new ReferenceMap());
 
 	private VcsIdeaHelper() {
 	}
@@ -115,11 +117,7 @@ public final class VcsIdeaHelper {
 
 	private static VirtualFile getFileFromCache(VirtualFile virtualFile, String revision) {
 		String key = getFileCacheKey(virtualFile, revision);
-		if (fetchedFiles.containsKey(key)) {
-			return fetchedFiles.get(key);
-		} else {
-			return null;
-		}
+		return fetchedFiles.get(key);
 	}
 
 	private static void putFileInfoCache(VirtualFile file, VirtualFile virtualFile, String revision) {
@@ -152,7 +150,6 @@ public final class VcsIdeaHelper {
 
 		VirtualFile vcvf = getFromCacheOrFetch(project, virtualFile, revision);
 		if (vcvf != null && !FileDocumentManager.getInstance().isFileModified(virtualFile)) {
-			// we will restore it one day and the the world will be great again :)
 			try {
 				byte[] currentContent = virtualFile.contentsToByteArray();
 				if (Arrays.equals(currentContent, vcvf.contentsToByteArray())) {
