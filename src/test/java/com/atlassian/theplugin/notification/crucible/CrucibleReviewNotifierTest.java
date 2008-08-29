@@ -18,7 +18,21 @@ package com.atlassian.theplugin.notification.crucible;
 
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomField;
+import com.atlassian.theplugin.commons.crucible.api.model.FileType;
+import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.api.model.PermId;
+import com.atlassian.theplugin.commons.crucible.api.model.PermIdBean;
+import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewBean;
+import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewerBean;
+import com.atlassian.theplugin.commons.crucible.api.model.State;
+import com.atlassian.theplugin.commons.crucible.api.model.User;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.idea.ThePluginProjectComponent;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
@@ -40,7 +54,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.picocontainer.PicoContainer;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class CrucibleReviewNotifierTest extends TestCase {
 	CrucibleReviewNotifier notifier;
@@ -253,23 +272,15 @@ public class CrucibleReviewNotifierTest extends TestCase {
 	}
 
 	private List<ReviewData> prepareReviewData(State state) throws ValueNotYetInitialized {
-		PermIdBean reviewId1 = new PermIdBean();
-		reviewId1.setId("CR-1");
-		PermIdBean newItem = new PermIdBean();
-		newItem.setId("CRF:11");
-		PermIdBean newCommentId = new PermIdBean();
-		newCommentId.setId("CMT:11");
-		PermIdBean newVCommentId = new PermIdBean();
-		newVCommentId.setId("CMT:12");
+		PermIdBean reviewId1 = new PermIdBean("CR-1");
+		PermIdBean newItem = new PermIdBean("CRF:11");
+		PermIdBean newCommentId = new PermIdBean("CMT:11");
+		PermIdBean newVCommentId = new PermIdBean("CMT:12");
 
-		PermIdBean reviewId2 = new PermIdBean();
-		reviewId1.setId("CR-2");
-		PermIdBean newItem1 = new PermIdBean();
-		newItem1.setId("CRF:21");
-		PermIdBean newCommentId1 = new PermIdBean();
-		newCommentId1.setId("CMT:21");
-		PermIdBean newVCommentId1 = new PermIdBean();
-		newVCommentId1.setId("CMT:22");
+		PermIdBean reviewId2 = new PermIdBean("CR-2");
+		PermIdBean newItem1 = new PermIdBean("CRF:21");
+		PermIdBean newCommentId1 = new PermIdBean("CMT:21");
+		PermIdBean newVCommentId1 = new PermIdBean("CMT:22");
 
 
 		List<ReviewData> reviews = new ArrayList<ReviewData>();
@@ -595,9 +606,9 @@ public class CrucibleReviewNotifierTest extends TestCase {
 			}
 		};
 
-		PermIdBean newPermlId = new PermIdBean();
-		newPermlId.setId("CMT:100");
-		reviews.get(0).getFiles().get(0).getVersionedComments().add(prepareVersionedComment(newPermlId, reviews.get(0).getFiles().get(0).getPermId(), null));
+		PermIdBean newPermlId = new PermIdBean("CMT:100");
+		reviews.get(0).getFiles().get(0).getVersionedComments()
+				.add(prepareVersionedComment(newPermlId, reviews.get(0).getFiles().get(0).getPermId(), null));
 		bean.setReviews(reviews);
 		map.put(PredefinedFilter.ToReview, bean);
 		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());

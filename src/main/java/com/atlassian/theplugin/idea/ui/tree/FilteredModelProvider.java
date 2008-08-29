@@ -49,7 +49,7 @@ public abstract class FilteredModelProvider<E extends Enum<E>> extends ModelProv
 	protected abstract Filter getFilter(E aType);
 
 	@Override
-	public AtlassianTreeModel getModel(final AtlassianTreeWithToolbar.STATE state) {
+	public AtlassianTreeModel getModel(final AtlassianTreeWithToolbar.State state) {
 		return provider.getModel(state).getFilteredModel(getFilter(type));
 	}
 
