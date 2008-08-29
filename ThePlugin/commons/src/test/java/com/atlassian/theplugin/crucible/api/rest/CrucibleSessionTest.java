@@ -20,11 +20,25 @@ import com.atlassian.theplugin.bamboo.api.bamboomock.ErrorResponse;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.crucible.api.CrucibleSession;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.PermIdBean;
+import com.atlassian.theplugin.commons.crucible.api.model.Project;
+import com.atlassian.theplugin.commons.crucible.api.model.Repository;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewBean;
+import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
+import com.atlassian.theplugin.commons.crucible.api.model.State;
+import com.atlassian.theplugin.commons.crucible.api.model.User;
+import com.atlassian.theplugin.commons.crucible.api.model.UserBean;
 import com.atlassian.theplugin.commons.crucible.api.rest.CrucibleSessionImpl;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
-import com.atlassian.theplugin.crucible.api.rest.cruciblemock.*;
+import com.atlassian.theplugin.crucible.api.rest.cruciblemock.CreateReviewCallback;
+import com.atlassian.theplugin.crucible.api.rest.cruciblemock.GetProjectsCallback;
+import com.atlassian.theplugin.crucible.api.rest.cruciblemock.GetRepositoriesCallback;
+import com.atlassian.theplugin.crucible.api.rest.cruciblemock.GetReviewersCallback;
+import com.atlassian.theplugin.crucible.api.rest.cruciblemock.GetReviewsCallback;
+import com.atlassian.theplugin.crucible.api.rest.cruciblemock.LoginCallback;
+import com.atlassian.theplugin.crucible.api.rest.cruciblemock.MalformedResponseCallback;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 import org.mortbay.jetty.Server;
@@ -48,6 +62,7 @@ public class CrucibleSessionTest extends TestCase {
 	private JettyMockServer mockServer;
 	private String mockBaseUrl;
 
+	@Override
 	protected void setUp() throws Exception {
         ConfigurationFactory.setConfiguration(new PluginConfigurationBean());
 
@@ -59,6 +74,7 @@ public class CrucibleSessionTest extends TestCase {
 		mockServer = new JettyMockServer(server);
 	}
 
+	@Override
 	protected void tearDown() throws Exception {
 		mockServer.verify();
 		mockServer = null;
@@ -444,8 +460,7 @@ public class CrucibleSessionTest extends TestCase {
 		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		PermIdBean permId = new PermIdBean();
-		permId.setId("PR-1");
+		PermIdBean permId = new PermIdBean("PR-1");
 		try {
 			apiHandler.getAllReviews(false);
 			fail();
@@ -461,8 +476,7 @@ public class CrucibleSessionTest extends TestCase {
 		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		PermIdBean permId = new PermIdBean();
-		permId.setId("PR-1");
+		PermIdBean permId = new PermIdBean("PR-1");
 		try {
 			List<State> states = Arrays.asList(State.REVIEW, State.DRAFT);
 			apiHandler.getReviewsInStates(states, false);
@@ -475,33 +489,31 @@ public class CrucibleSessionTest extends TestCase {
 
 	public void testGetEmptyReviewers() throws Exception {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/rest-service/reviews-v1/PR-1/reviewers", new GetReviewersCallback(new User[]{ }));
+		mockServer.expect("/rest-service/reviews-v1/PR-1/reviewers", new GetReviewersCallback(new User[]{}));
 		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		PermIdBean permId = new PermIdBean();
-		permId.setId("PR-1");
+		PermIdBean permId = new PermIdBean("PR-1");
 		List<Reviewer> reviewers = apiHandler.getReviewers(permId);
 		assertEquals(0, reviewers.size());
 		mockServer.verify();
 	}
 
 	public void testGetReviewers() throws Exception {
-        UserBean[] reviewers = new UserBean[3];
-        reviewers[0] = new UserBean();
-        reviewers[0].setUserName("bob");
-        reviewers[1] = new UserBean();
-        reviewers[1].setUserName("alice");
-        reviewers[2] = new UserBean();
-        reviewers[2].setUserName("steve");
+		UserBean[] reviewers = new UserBean[3];
+		reviewers[0] = new UserBean();
+		reviewers[0].setUserName("bob");
+		reviewers[1] = new UserBean();
+		reviewers[1].setUserName("alice");
+		reviewers[2] = new UserBean();
+		reviewers[2].setUserName("steve");
 
-        mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
-        mockServer.expect("/rest-service/reviews-v1/PR-1/reviewers", new GetReviewersCallback(reviewers));
+		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/rest-service/reviews-v1/PR-1/reviewers", new GetReviewersCallback(reviewers));
 		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		PermIdBean permId = new PermIdBean();
-		permId.setId("PR-1");
+		PermIdBean permId = new PermIdBean("PR-1");
 		List<Reviewer> result = apiHandler.getReviewers(permId);
 		assertEquals(3, result.size());
 		assertEquals(result.get(0).getUserName(), "bob");
@@ -516,8 +528,7 @@ public class CrucibleSessionTest extends TestCase {
 		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		PermIdBean permId = new PermIdBean();
-		permId.setId("PR-2");
+		PermIdBean permId = new PermIdBean("PR-2");
 		try {
 			apiHandler.getReviewers(permId);
 			fail();
@@ -534,8 +545,7 @@ public class CrucibleSessionTest extends TestCase {
 		CrucibleSession apiHandler = new CrucibleSessionImpl(mockBaseUrl);
 
 		apiHandler.login(USER_NAME, PASSWORD);
-		PermIdBean permId = new PermIdBean();
-		permId.setId("PR-1");
+		PermIdBean permId = new PermIdBean("PR-1");
 		try {
 			apiHandler.getReviewers(permId);
 			fail();

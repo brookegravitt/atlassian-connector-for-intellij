@@ -3,8 +3,18 @@ package com.atlassian.theplugin.idea.crucible;
 import com.intellij.codeInsight.hint.EditorFragmentComponent;
 import com.intellij.codeInsight.hint.HintManager;
 import com.intellij.ide.highlighter.HighlighterFactory;
-import com.intellij.openapi.actionSystem.*;
-import com.intellij.openapi.diff.*;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionPlaces;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.actionSystem.Presentation;
+import com.intellij.openapi.diff.DiffColors;
+import com.intellij.openapi.diff.DiffContent;
+import com.intellij.openapi.diff.DiffManager;
+import com.intellij.openapi.diff.DiffRequest;
+import com.intellij.openapi.diff.DocumentContent;
+import com.intellij.openapi.diff.FragmentContent;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.ScrollType;
@@ -246,6 +256,7 @@ public class CrucibleDiffGutterRenderer implements ActiveGutterRenderer {
 			this.document = document;
 		}
 
+		@Override
 		protected boolean forceSyncUpdate(AnActionEvent anactionevent) {
 			return true;
 		}
@@ -254,10 +265,12 @@ public class CrucibleDiffGutterRenderer implements ActiveGutterRenderer {
 			return range != null;
 		}
 
+		@Override
 		protected void update(VcsContext vcscontext, Presentation presentation) {
 			presentation.setEnabled(checkPosition(vcscontext));
 		}
 
+		@Override
 		protected void actionPerformed(VcsContext vcscontext) {
 			moveToRange(range, editor, document);
 		}
@@ -269,6 +282,7 @@ public class CrucibleDiffGutterRenderer implements ActiveGutterRenderer {
 			super(range, anEditor, document);
 		}
 
+		@Override
 		protected Range extractRange(ChangeViewer aHighlighter, int i, Editor anEditor) {
 			return getPrevRange(i);
 		}
@@ -280,6 +294,7 @@ public class CrucibleDiffGutterRenderer implements ActiveGutterRenderer {
 			super(range, editor, document);
 		}
 
+		@Override
 		protected Range extractRange(ChangeViewer aHighlighter, int i, Editor anEditor) {
 			return getNextRange(i);
 		}
@@ -292,6 +307,7 @@ public class CrucibleDiffGutterRenderer implements ActiveGutterRenderer {
 		private final Document referenceDocument;
 		private final Document displayDocument;
 
+		@Override
 		public void update(final AnActionEvent e) {
 			e.getPresentation().setEnabled(checkModified() || checkDeleted());
 		}
@@ -304,6 +320,7 @@ public class CrucibleDiffGutterRenderer implements ActiveGutterRenderer {
 			return myRange.getType() == MODIFIED_RANGE;
 		}
 
+		@Override
 		public void actionPerformed(AnActionEvent anactionevent) {
 			DiffManager.getInstance().getDiffTool().show(prepareDiffRequest());
 		}
@@ -311,6 +328,7 @@ public class CrucibleDiffGutterRenderer implements ActiveGutterRenderer {
 		private DiffRequest prepareDiffRequest() {
 			return new DiffRequest(project) {
 
+				@Override
 				public DiffContent[] getContents() {
 					return (new DiffContent[]{
 							getDiffContent(referenceDocument, getReferenceTextRange(myRange),
@@ -320,6 +338,7 @@ public class CrucibleDiffGutterRenderer implements ActiveGutterRenderer {
 					});
 				}
 
+				@Override
 				public String[] getContentTitles() {
 					return (new String[]{
 							VcsBundle.message("diff.content.title.repository.version", new Object[]{fromRevision}),
@@ -327,6 +346,7 @@ public class CrucibleDiffGutterRenderer implements ActiveGutterRenderer {
 					});
 				}
 
+				@Override
 				public String getWindowTitle() {
 					return VcsBundle.message("dialog.title.diff.for.range", new Object[0]);
 				}

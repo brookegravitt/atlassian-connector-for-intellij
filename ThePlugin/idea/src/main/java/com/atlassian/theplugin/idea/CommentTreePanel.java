@@ -25,9 +25,18 @@ import com.atlassian.theplugin.idea.crucible.CrucibleFilteredModelProvider;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
-import com.atlassian.theplugin.idea.crucible.events.*;
+import com.atlassian.theplugin.idea.crucible.events.CrucibleEvent;
+import com.atlassian.theplugin.idea.crucible.events.FocusOnFileEvent;
+import com.atlassian.theplugin.idea.crucible.events.FocusOnLineCommentEvent;
+import com.atlassian.theplugin.idea.crucible.events.FocusOnReviewEvent;
+import com.atlassian.theplugin.idea.crucible.events.FocusOnVersionedCommentEvent;
 import com.atlassian.theplugin.idea.ui.AtlassianToolbar;
-import com.atlassian.theplugin.idea.ui.tree.*;
+import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.Filter;
+import com.atlassian.theplugin.idea.ui.tree.NodeSearchAlgorithm;
 import com.atlassian.theplugin.idea.ui.tree.comment.FileNameNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralSectionNode;
@@ -44,7 +53,6 @@ import com.intellij.util.ui.UIUtil;
 import javax.swing.*;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
@@ -68,9 +76,9 @@ public class CommentTreePanel extends JPanel {
 	private static final String TOOLBAR_ID = "ThePlugin.Crucible.Comment.ToolBar";
 	public static final String MENU_PLACE = "menu comments";
 	private static final String TOOLBAR_PLACE = "toolbar comments";
-	private CrucibleFilteredModelProvider.FILTER filter;
+	private CrucibleFilteredModelProvider.Filter filter;
 
-	public CommentTreePanel(Project project, CrucibleFilteredModelProvider.FILTER filter) {
+	public CommentTreePanel(Project project, CrucibleFilteredModelProvider.Filter filter) {
 		this.project = project;
 		this.filter = filter;
 		IdeaHelper.getReviewActionEventBroker(project).registerListener(crucibleAgent);
@@ -171,16 +179,16 @@ public class CommentTreePanel extends JPanel {
 		return commentTree;
 	}
 
-	public void filterTreeNodes(CrucibleFilteredModelProvider.FILTER aFilter) {
+	public void filterTreeNodes(CrucibleFilteredModelProvider.Filter aFilter) {
 		this.filter = aFilter;
 		commentTree.setModel(fullModel.getFilteredModel(getFilter(aFilter)));
 		refreshTree();
 	}
 
-	private Filter getFilter(final CrucibleFilteredModelProvider.FILTER aFilter) {
+	private Filter getFilter(final CrucibleFilteredModelProvider.Filter aFilter) {
 		switch (aFilter) {
 			case FILES_ALL:
-				return Filter.ALL;
+				return com.atlassian.theplugin.idea.ui.tree.Filter.ALL;
 			case FILES_WITH_COMMENTS_ONLY:
 				return new Filter() {
 					@Override
@@ -429,6 +437,7 @@ public class CommentTreePanel extends JPanel {
 			);
 		}
 
+		@Override
 		public void commentsChanged(final ReviewData review, final CrucibleFileInfo file) {
 			ApplicationManager.getApplication().invokeLater(new Runnable() {
 				public void run() {
@@ -442,6 +451,7 @@ public class CommentTreePanel extends JPanel {
 				public void run() {
 					AtlassianTreeModel model = (AtlassianTreeModel) commentTree.getModel();
 					AtlassianTreeNode node = model.locateNode(new NodeSearchAlgorithm() {
+						@Override
 						public boolean check(AtlassianTreeNode node) {
 							if (node instanceof FileNameNode) {
 								FileNameNode vnode = (FileNameNode) node;
@@ -572,19 +582,10 @@ public class CommentTreePanel extends JPanel {
 		}
 	}
 
-	private class PopupMouseAdapter extends MouseAdapter {
+	private class PopupMouseAdapter extends PopupAwareMouseAdapter {
 
 		@Override
-		public void mousePressed(MouseEvent e) {
-			processPopup(e);
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e) {
-			processPopup(e);
-		}
-
-		public void processPopup(MouseEvent e) {
+		public void onPopup(MouseEvent e) {
 			if (!e.isPopupTrigger()) {
 				return;
 			}

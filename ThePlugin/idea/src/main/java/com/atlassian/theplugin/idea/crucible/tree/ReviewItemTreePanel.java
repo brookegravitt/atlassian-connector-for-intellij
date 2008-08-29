@@ -23,29 +23,38 @@ import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.Logger;
+import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
 import com.atlassian.theplugin.idea.crucible.CrucibleFilteredModelProvider;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
+import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.Filter;
 import com.atlassian.theplugin.idea.ui.tree.NodeSearchAlgorithm;
 import com.atlassian.theplugin.idea.ui.tree.file.CrucibleChangeSetTitleNode;
 import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
 import com.atlassian.theplugin.idea.ui.tree.file.FileTreeModelBuilder;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.ui.UIUtil;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import javax.swing.tree.TreePath;
 import java.awt.*;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
-public final class ReviewItemTreePanel extends JPanel {
+public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 
 	//	ProjectView.
 	private AtlassianTreeWithToolbar reviewFilesTree = null;
@@ -56,9 +65,9 @@ public final class ReviewItemTreePanel extends JPanel {
 
 	private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
 	private JLabel statusLabel;
-	private CrucibleFilteredModelProvider.FILTER filter;
+	private CrucibleFilteredModelProvider.Filter filter;
 
-	public ReviewItemTreePanel(final Project project, final CrucibleFilteredModelProvider.FILTER filter) {
+	public ReviewItemTreePanel(final Project project, final CrucibleFilteredModelProvider.Filter filter) {
 		initLayout();
 		final CrucibleReviewActionListener listener = new MyReviewActionListener(project);
 		IdeaHelper.getReviewActionEventBroker(project).registerListener(listener);
@@ -78,6 +87,32 @@ public final class ReviewItemTreePanel extends JPanel {
 		if (reviewFilesTree == null) {
 			reviewFilesTree = new AtlassianTreeWithToolbar("ThePlugin.Crucible.ReviewFileListToolBar");
 			reviewFilesTree.setRootVisible(false);
+			reviewFilesTree.getTreeComponent().addMouseListener(new PopupAwareMouseAdapter() {
+
+				@Override
+				protected void onPopup(final MouseEvent e) {
+					if (e.getComponent() instanceof AtlassianTree == false) {
+						return;
+					}
+					AtlassianTree tree = (AtlassianTree) e.getComponent();
+					TreePath path = tree.getPathForLocation(e.getX(), e.getY());
+					if (path == null) {
+						return;
+					}
+					tree.setSelectionPath(path);
+					Object o = path.getLastPathComponent();
+					if (!(o instanceof CrucibleFileNode)) {
+						return;
+					}
+					ActionManager aManager = ActionManager.getInstance();
+					ActionGroup menu = (ActionGroup) aManager.getAction("ThePlugin.Crucible.ReviewFileListPopupMenu");
+					if (menu == null) {
+						return;
+					}
+					aManager.createActionPopupMenu("ThePlugin.Crucible.ReviewFileListToolBar-place", menu).getComponent().show(e.getComponent(), e.getX(), e.getY());
+
+				}
+			});
 		}
 		return reviewFilesTree;
 	}
@@ -93,7 +128,7 @@ public final class ReviewItemTreePanel extends JPanel {
 		return progressAnimation;
 	}
 
-	public void filterTreeNodes(CrucibleFilteredModelProvider.FILTER aFilter) {
+	public void filterTreeNodes(CrucibleFilteredModelProvider.Filter aFilter) {
 		this.filter = aFilter;
 		((CrucibleFilteredModelProvider) reviewFilesTree.getModelProvider()).setType(aFilter);
 		reviewFilesTree.triggerModelUpdated();
@@ -239,7 +274,7 @@ public final class ReviewItemTreePanel extends JPanel {
 				ModelProvider modelProvider = new ModelProvider() {
 
 					@Override
-					public AtlassianTreeModel getModel(final AtlassianTreeWithToolbar.STATE state) {
+					public AtlassianTreeModel getModel(final AtlassianTreeWithToolbar.State state) {
 						switch (state) {
 							case DIRED:
 								return FileTreeModelBuilder.buildTreeModelFromCrucibleChangeSet(project, reviewItem, files1);
@@ -258,7 +293,7 @@ public final class ReviewItemTreePanel extends JPanel {
 	}
 
 	private static class MyCrucibleFilteredModelProvider extends CrucibleFilteredModelProvider {
-		private static final Filter COMMENT_FILTER = new Filter() {
+		private static final com.atlassian.theplugin.idea.ui.tree.Filter COMMENT_FILTER = new com.atlassian.theplugin.idea.ui.tree.Filter() {
 				@Override
 				public boolean isValid(final AtlassianTreeNode node) {
 					if (node instanceof CrucibleFileNode) {
@@ -273,15 +308,15 @@ public final class ReviewItemTreePanel extends JPanel {
 				}
 			};
 
-		public MyCrucibleFilteredModelProvider(final ModelProvider modelProvider, final FILTER filter) {
+		public MyCrucibleFilteredModelProvider(final ModelProvider modelProvider, final Filter filter) {
 			super(modelProvider, filter);
 		}
 
 		@Override
-		public Filter getFilter(final FILTER type) {
+		public com.atlassian.theplugin.idea.ui.tree.Filter getFilter(final Filter type) {
 			switch (type) {
 				case FILES_ALL:
-					return Filter.ALL;
+					return com.atlassian.theplugin.idea.ui.tree.Filter.ALL;
 				case FILES_WITH_COMMENTS_ONLY:
 					return COMMENT_FILTER;
 				default:
@@ -290,4 +325,51 @@ public final class ReviewItemTreePanel extends JPanel {
 		}
 	}
 
+//	public void valueChanged(TreeSelectionEvent e) {
+//		TreePath oldPath = e.getOldLeadSelectionPath();
+//		if (oldPath != null) {
+//			DefaultMutableTreeNode oldNode = (DefaultMutableTreeNode) oldPath.getLastPathComponent();
+//			if (oldNode != null && oldNode instanceof ServerNode) {
+//				serverConfigPanel.saveData(((ServerNode) oldNode).getServerType());
+//			}
+//			model.nodeChanged(oldNode);
+//
+//		}
+//
+//		TreePath path = e.getNewLeadSelectionPath();
+//
+//		if (path != null) {
+//			selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
+//			if (selectedNode instanceof ServerNode) {
+//				ServerCfg server = ((ServerNode) selectedNode).getServer();
+//				serverConfigPanel.editServer(server);
+////                else {
+////					// PL-235 show blank panel if server from tree node does not exist in configuration
+////					// it happens if you add server, click cancel and open config window again
+////					serverConfigPanel.showEmptyPanel();
+////				}
+//			} else if (selectedNode instanceof ServerTypeNode) {
+//				serverConfigPanel.showEmptyPanel();
+//			}
+//		} else {
+//			serverConfigPanel.showEmptyPanel();
+//		}
+//	}
+
+
+	@Nullable
+	public Object getData(@NonNls final String dataId) {
+		if (dataId.equals(Constants.CRUCIBLE_FILE_NODE)) {
+			final TreePath selectionPath = reviewFilesTree.getTreeComponent().getSelectionPath();
+			if (selectionPath == null) {
+				return null;
+			}
+			Object selection = selectionPath.getLastPathComponent();
+			if (selection instanceof CrucibleFileNode) {
+				CrucibleFileNode crucibleFileNode = (CrucibleFileNode) selection;
+				return crucibleFileNode;
+			}
+		}
+		return null;
+	}
 }

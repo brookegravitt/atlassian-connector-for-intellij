@@ -17,11 +17,19 @@
 package com.atlassian.theplugin.idea;
 
 //import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListenerNotUsed;
+
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfoImpl;
+import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.api.model.GeneralCommentBean;
+import com.atlassian.theplugin.commons.crucible.api.model.UserBean;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedCommentBean;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
@@ -30,7 +38,16 @@ import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
-import com.atlassian.theplugin.idea.crucible.events.*;
+import com.atlassian.theplugin.idea.crucible.events.CommentRemoved;
+import com.atlassian.theplugin.idea.crucible.events.GeneralCommentAdded;
+import com.atlassian.theplugin.idea.crucible.events.GeneralCommentPublished;
+import com.atlassian.theplugin.idea.crucible.events.GeneralCommentReplyAdded;
+import com.atlassian.theplugin.idea.crucible.events.GeneralCommentUpdated;
+import com.atlassian.theplugin.idea.crucible.events.VersionedCommentAboutToAdd;
+import com.atlassian.theplugin.idea.crucible.events.VersionedCommentAdded;
+import com.atlassian.theplugin.idea.crucible.events.VersionedCommentPublished;
+import com.atlassian.theplugin.idea.crucible.events.VersionedCommentReplyAdded;
+import com.atlassian.theplugin.idea.crucible.events.VersionedCommentUpdated;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.application.ApplicationManager;
@@ -44,6 +61,7 @@ import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.peer.PeerFactory;
 import com.intellij.ui.content.Content;
+import com.intellij.ui.content.ContentManager;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.Nullable;
@@ -68,7 +86,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 	private static final int LEFT_WIDTH = 150;
 	private static final int LEFT_HEIGHT = 250;
 	private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
-	private CrucibleFilteredModelProvider.FILTER filter = CrucibleFilteredModelProvider.FILTER.FILES_ALL;
+	private CrucibleFilteredModelProvider.Filter filter = CrucibleFilteredModelProvider.Filter.FILES_ALL;
 
 
 	protected String getInitialMessage() {
@@ -95,7 +113,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		return reviewComentsPanel;
 	}
 
-	public void showCrucibleReviewWindow() {
+	public void showCrucibleReviewWindow(final String crucibleReviewId) {
 
 		ToolWindowManager twm = ToolWindowManager.getInstance(this.project);
 		ToolWindow toolWindow = twm.getToolWindow(TOOL_WINDOW_TITLE);
@@ -104,16 +122,18 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 			toolWindow.setIcon(PluginToolWindow.ICON_CRUCIBLE);
 		}
 
-		Content content = toolWindow.getContentManager().findContent(WINDOW_PROJECT_KEY.toString());
+		final ContentManager contentManager = toolWindow.getContentManager();
+		Content content = (contentManager.getContents().length > 0) ? contentManager.getContents()[0] : null;
 
 		if (content == null) {
 
 			PeerFactory peerFactory = PeerFactory.getInstance();
-			content = peerFactory.getContentFactory().createContent(this, WINDOW_PROJECT_KEY.toString(), false);
+			content = peerFactory.getContentFactory().createContent(this, crucibleReviewId, false);
 			content.setIcon(PluginToolWindow.ICON_CRUCIBLE);
 			content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
 			toolWindow.getContentManager().addContent(content);
 		}
+		content.setDisplayName(crucibleReviewId);
 
 		toolWindow.getContentManager().setSelectedContent(content);
 		toolWindow.show(null);
@@ -184,7 +204,6 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		private Project project;
 
 		public MyAgent(final Project project) {
-			super();
 			this.project = project;
 			eventBroker = IdeaHelper.getReviewActionEventBroker(this.project);
 		}
@@ -193,7 +212,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		public void showReview(final ReviewData reviewData) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
-					showCrucibleReviewWindow();
+					showCrucibleReviewWindow(reviewData.getPermId().getId());
 				}
 			});
 		}

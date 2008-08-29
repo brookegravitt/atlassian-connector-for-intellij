@@ -46,7 +46,7 @@ public abstract class ServerCfg {
 	}
 
 	// this method is used by XStream - do not remove!!!
-	private Object readResolve() {
+	protected Object readResolve() {
 		if (username == null) {
 			username = "";
 		}
