@@ -497,7 +497,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
             startIndex = 0;
             clearIssues();
 
-            if (jiraServer.checkServer() == false) {
+            if (!jiraServer.checkServer()) {
                 setStatusMessage("Unable to connect to server. " + jiraServer.getErrorMessage(), true);
 //                progressAnimation.stopProgressAnimation();
                 EventQueue.invokeLater(new MissingPasswordHandlerJIRA(jiraServerFacade, jiraServer.getServer(), jiraPanel));
@@ -671,9 +671,10 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
                 }
             } catch (JIRAException e) {
                 setStatusMessage("Error contacting server <b>" + jiraServer.getServer().getName() + "</b>", true);
-            } finally {
-//                progressAnimation.stopProgressAnimation();
             }
+//			finally {
+////                progressAnimation.stopProgressAnimation();
+//            }
         }
 	}
 
@@ -817,10 +818,9 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
         final IssueComment issueComment = new IssueComment(issue.getKey());
         issueComment.show();
         if (issueComment.isOK()) {
-            Thread thread = new Thread("atlassian-idea-plugin comment issue") {
-                @Override
-				public void run() {
-                    setStatusMessage("Commenting issue " + issue.getKey() + "...");
+			Task.Backgroundable comment = new Task.Backgroundable(project, "Commenting Issue", false) {
+				public void run(final ProgressIndicator indicator) {
+					setStatusMessage("Commenting issue " + issue.getKey() + "...");
                     try {
 						JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
 						if (jiraServer != null) {
@@ -831,11 +831,31 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 					} catch (JIRAException e) {
                         setStatusMessage("Issue not commented: " + e.getMessage(), true);
                     }
-                }
+				}
+			};
 
-            };
-            thread.start();
-        }
+			ProgressManager.getInstance().run(comment);
+		}
+
+//			Thread thread = new Thread("atlassian-idea-plugin comment issue") {
+//                @Override
+//				public void run() {
+//                    setStatusMessage("Commenting issue " + issue.getKey() + "...");
+//                    try {
+//						JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
+//						if (jiraServer != null) {
+//							jiraServerFacade.addComment(jiraServer.getServer(),
+//									issue, issueComment.getComment());
+//							setStatusMessage("Commented issue " + issue.getKey());
+//						}
+//					} catch (JIRAException e) {
+//                        setStatusMessage("Issue not commented: " + e.getMessage(), true);
+//                    }
+//                }
+//
+//            };
+//            thread.start();
+//        }
     }
 
     public void logWorkForIssue() {
@@ -847,15 +867,15 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
         final WorkLogCreate workLogCreate = new WorkLogCreate(jiraServerFacade, adapter, project);
         workLogCreate.show();
         if (workLogCreate.isOK()) {
-            Thread thread = new Thread("atlassian-idea-plugin work log") {
-                @Override
-				public void run() {
-                    setStatusMessage("Logging work for issue " + issue.getKey() + "...");
+
+			Task.Backgroundable logWork = new Task.Backgroundable(project, "Logging Work", false) {
+				public void run(final ProgressIndicator indicator) {
+					setStatusMessage("Logging work for issue " + issue.getKey() + "...");
                     try {
                         Calendar cal = Calendar.getInstance();
                         cal.setTime(workLogCreate.getStartDate());
 						JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
-						
+
 						if (jiraServer != null) {
 							JiraServerCfg server = jiraServer.getServer();
 							String newRemainingEstimate = workLogCreate.getUpdateRemainingManually()
@@ -875,18 +895,52 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 					} catch (JIRAException e) {
                         setStatusMessage("Work not logged: " + e.getMessage(), true);
                     }
-                }
+				}
+			};
 
-            };
-            thread.start();
+			ProgressManager.getInstance().run(logWork);
+
+//			Thread thread = new Thread("atlassian-idea-plugin work log") {
+//                @Override
+//				public void run() {
+//                    setStatusMessage("Logging work for issue " + issue.getKey() + "...");
+//                    try {
+//                        Calendar cal = Calendar.getInstance();
+//                        cal.setTime(workLogCreate.getStartDate());
+//						JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
+//
+//						if (jiraServer != null) {
+//							JiraServerCfg server = jiraServer.getServer();
+//							String newRemainingEstimate = workLogCreate.getUpdateRemainingManually()
+//									? workLogCreate.getRemainingEstimateString() : null;
+//							jiraServerFacade.logWork(server, issue, workLogCreate.getTimeSpentString(),
+//									cal, workLogCreate.getComment(),
+//									!workLogCreate.getLeaveRemainingUnchanged(), newRemainingEstimate);
+//							if (workLogCreate.isStopProgressSelected()) {
+//								setStatusMessage("Stopping work for issue " + issue.getKey() + "...");
+//								jiraServerFacade.progressWorkflowAction(server, issue, workLogCreate.getInProgressAction());
+//								setStatusMessage("Work logged and progress stopped for issue " + issue.getKey());
+//								refreshIssuesPage();
+//							} else {
+//								setStatusMessage("Logged work for issue " + issue.getKey());
+//							}
+//						}
+//					} catch (JIRAException e) {
+//                        setStatusMessage("Work not logged: " + e.getMessage(), true);
+//                    }
+//                }
+//
+//            };
+//            thread.start();
         }
     }
 
     private void assignIssue(final JIRAIssue issue, final String assignee) {
-        Thread thread = new Thread("atlassian-idea-plugin assign issue issue") {
-            @Override
-			public void run() {
-                setStatusMessage("Assigning issue " + issue.getKey() + " to " + assignee + "...");
+
+		Task.Backgroundable assign = new Task.Backgroundable(project, "Assigning Issue", false) {
+
+			public void run(final ProgressIndicator indicator) {
+				setStatusMessage("Assigning issue " + issue.getKey() + " to " + assignee + "...");
                 try {
 
 					JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
@@ -897,10 +951,29 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 				} catch (JIRAException e) {
                     setStatusMessage("Failed to assign issue: " + e.getMessage(), true);
                 }
-            }
+			}
+		};
 
-        };
-        thread.start();
+		ProgressManager.getInstance().run(assign);
+
+//		Thread thread = new Thread("atlassian-idea-plugin assign issue issue") {
+//            @Override
+//			public void run() {
+//                setStatusMessage("Assigning issue " + issue.getKey() + " to " + assignee + "...");
+//                try {
+//
+//					JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
+//					if (jiraServer != null) {
+//						jiraServerFacade.setAssignee(jiraServer.getServer(), issue, assignee);
+//						setStatusMessage("Assigned issue " + issue.getKey() + " to " + assignee);
+//					}
+//				} catch (JIRAException e) {
+//                    setStatusMessage("Failed to assign issue: " + e.getMessage(), true);
+//                }
+//            }
+//
+//        };
+//        thread.start();
     }
 
     public void createIssue() {
@@ -911,11 +984,10 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
             issueCreate.initData();
             issueCreate.show();
             if (issueCreate.isOK()) {
-                Thread thread = new Thread("atlassian-idea-plugin create issue") {
 
-                    @Override
-					public void run() {
-                        setStatusMessage("Creating new issue...");
+				Task.Backgroundable createTask = new Task.Backgroundable(project, "Creating Issue", false) {
+					public void run(final ProgressIndicator indicator) {
+						setStatusMessage("Creating new issue...");
                         JIRAIssue newIssue;
                         String message;
                         boolean isError = false;
@@ -933,9 +1005,36 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
                         }
 
                         setStatusMessage(message, isError);
-                    }
-                };
-                thread.start();
+					}
+				};
+
+				ProgressManager.getInstance().run(createTask);
+
+//				Thread thread = new Thread("atlassian-idea-plugin create issue") {
+//
+//                    @Override
+//					public void run() {
+//                        setStatusMessage("Creating new issue...");
+//                        JIRAIssue newIssue;
+//                        String message;
+//                        boolean isError = false;
+//                        try {
+//                            newIssue = jiraServerFacade.createIssue(jiraServer.getServer(), issueCreate.getJIRAIssue());
+//                            message =
+//                                    "New issue created: <a href="
+//                                            + newIssue.getIssueUrl()
+//                                            + ">"
+//                                            + newIssue.getKey()
+//                                            + "</a>";
+//                        } catch (JIRAException e) {
+//                            message = "Failed to create new issue: " + e.getMessage();
+//                            isError = true;
+//                        }
+//
+//                        setStatusMessage(message, isError);
+//                    }
+//                };
+//                thread.start();
             }
         }
     }
