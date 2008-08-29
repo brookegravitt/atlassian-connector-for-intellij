@@ -57,7 +57,7 @@ import java.util.Map;
 public final class VcsIdeaHelper {
 
 	@SuppressWarnings("unchecked")
-	private static final Map<String, VirtualFile> fetchedFiles
+	private static final Map<String, VirtualFile> FETCHED_FILES_CACHE
 			= Collections.<String, VirtualFile>synchronizedMap(new ReferenceMap());
 
 	private VcsIdeaHelper() {
@@ -117,12 +117,12 @@ public final class VcsIdeaHelper {
 
 	private static VirtualFile getFileFromCache(VirtualFile virtualFile, String revision) {
 		String key = getFileCacheKey(virtualFile, revision);
-		return fetchedFiles.get(key);
+		return FETCHED_FILES_CACHE.get(key);
 	}
 
 	private static void putFileInfoCache(VirtualFile file, VirtualFile virtualFile, String revision) {
 		String key = getFileCacheKey(virtualFile, revision);
-		fetchedFiles.put(key, file);
+		FETCHED_FILES_CACHE.put(key, file);
 	}
 
 
