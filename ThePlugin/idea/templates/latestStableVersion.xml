@@ -4,6 +4,6 @@
         <downloadUrl>http://docs.atlassian.com/atlassian-idea-plugin/Downloads/atlassian-idea-plugin-${project.version}.zip</downloadUrl>
         <releaseNotes><![CDATA[
         ]]></releaseNotes>
-        <releaseNotesUrl></releaseNotesUrl>
+<releaseNotesUrl>http://confluence.atlassian.com/display/IDEPLUGIN/IDE+Plugin+Documentation</releaseNotesUrl>
 </version>
 </response>
