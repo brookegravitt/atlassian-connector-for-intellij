@@ -34,6 +34,7 @@ import com.intellij.ui.HyperlinkLabel;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -73,6 +74,7 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 			case CLOSE:
 				setTitle("Close review");
 				getOKAction().putValue(javax.swing.Action.NAME, "Close review...");
+				summaryPanel.setBackground(UIUtil.getWindowColor());
 				break;
 			case APPROVE:
 				setTitle("Approve review");
@@ -120,17 +122,18 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 				Review reviewInfo = null;
 				try {
 					reviewInfo = crucibleServerFacade.getReview(review.getServer(), review.getPermId());
+					final ReviewData finalReviewInfo = new ReviewDataImpl(reviewInfo, review.getServer());
+					EventQueue.invokeLater(new Runnable() {
+						public void run() {
+							updateReviewInfo(finalReviewInfo);
+						}
+					});
+
 				} catch (RemoteApiException e) {
-					// nothing can be done here
+					Messages.showErrorDialog(e.getMessage(), "Cannot load data from crucible");
 				} catch (ServerPasswordNotProvidedException e) {
-					// nothing can be done here
+					Messages.showErrorDialog(e.getMessage(), "Cannot load data from crucible");
 				}
-				final ReviewData finalReviewInfo = new ReviewDataImpl(reviewInfo, review.getServer());
-				EventQueue.invokeLater(new Runnable() {
-					public void run() {
-						updateReviewInfo(finalReviewInfo);
-					}
-				});
 			}
 		}, "atlassian-idea-plugin crucible patch upload combos refresh").start();
 	}
@@ -228,12 +231,14 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 		detailsPanel.setLayout(new BorderLayout(0, 0));
 		rootComponent.add(detailsPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER,
 				GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(0, 169), null,
+				0, false));
 		commentsPanel = new JPanel();
 		commentsPanel.setLayout(new BorderLayout(0, 0));
 		rootComponent.add(commentsPanel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER,
 				GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(0, 67), null,
+				0, false));
 		publishPanel = new JPanel();
 		publishPanel.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
 		rootComponent.add(publishPanel, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER,
@@ -252,7 +257,8 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 		summaryPanel.setLayout(new BorderLayout(0, 0));
 		rootComponent.add(summaryPanel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER,
 				GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(0, 100), null,
+				0, false));
 	}
 
 	/**
