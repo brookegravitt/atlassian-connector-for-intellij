@@ -121,7 +121,7 @@ public class BambooBuildAdapter {
 		if (getStatus() == BuildStatus.UNKNOWN) {
 			return "-/-";
 		} else {
-			return getTestsPassed() + "/" + getTestsNumber();
+			return getTestsFailed() + "/" + getTestsNumber();
 		}
 	}
 
