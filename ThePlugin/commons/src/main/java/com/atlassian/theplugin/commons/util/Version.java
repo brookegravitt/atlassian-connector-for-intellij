@@ -58,9 +58,9 @@ public class Version implements Serializable {
 		return version;
 	}
 
-	private void parseVersionString(String version) throws IncorrectVersionException {
-		if (!version.equals(SPECIAL_DEV_VERSION)) {
-			tokenize(version.toUpperCase());
+	private void parseVersionString(String aVersion) throws IncorrectVersionException {
+		if (!aVersion.equals(SPECIAL_DEV_VERSION)) {
+			tokenize(aVersion.toUpperCase());
 		}
 	}
 
