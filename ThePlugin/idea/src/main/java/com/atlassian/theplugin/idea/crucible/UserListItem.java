@@ -21,6 +21,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.User;
 public class UserListItem {
     private User user;
     private boolean selected;
+	private static final int HASH_NUMBER = 31;
 
 
 	public UserListItem(User user, boolean selected) {
@@ -64,7 +65,7 @@ public class UserListItem {
 	public int hashCode() {
 		int result;
 		result = (user != null ? user.hashCode() : 0);
-		result = 31 * result + (selected ? 1 : 0);
+		result = HASH_NUMBER * result + (selected ? 1 : 0);
 		return result;
 	}
 }
