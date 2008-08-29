@@ -3,7 +3,7 @@
 		<number>${project.version}, SVN:${buildNumber}</number>
         <downloadUrl>http://docs.atlassian.com/atlassian-idea-plugin/Downloads/atlassian-idea-plugin-${project.version}.zip</downloadUrl>
         <releaseNotes><![CDATA[<html><body>
-                                <p>With pleasure, Atlassian presents version <b>2.0 Beta</b> of the Atlassian IDE Plugin for IDEA. This is a beta version, because some of the plugin's new features still need a bit of polish. We are keen for you to install and try this new version, which now offers deep integration with Crucible and Bamboo, as well as the already awesome JIRA integration.</p>
+                                <p>With pleasure, Atlassian presents version <b>2.0.0 Beta</b> of the Atlassian IDE Plugin for IDEA. This is a beta version, because some of the plugin's new features still need a bit of polish. We are keen for you to install and try this new version, which now offers deep integration with Crucible and Bamboo, as well as the already awesome JIRA integration.</p>
 
                                 <p>With the plugin's Crucible support, you can now perform code reviews directly in the source editor and complete the review lifecycle without leaving your IDE. Use the dashboard-like display to view and filter your reviews. Notifications and colour coding indicate the review status and events.</p>
 
@@ -17,7 +17,7 @@
                                 <p>Take a look at the full list of fixes below.</p>
                                 <p><font color="#003366"><b>Highlights of this Release:</b></font></p>
                                 <ul>
-                                            <li>Crucible Highlights in the Atlassian IDE Plugin 2.0.*-SNAPSHOT</li>
+                                            <li>Crucible Highlights in the Atlassian IDE Plugin 2.0.0 Beta</li>
 
                                             <ul>
                                                         <li>Code Reviews Directly in the Source Editor</li>
@@ -25,14 +25,14 @@
                                                                 <li>Review Dashboard and Filters</li>
                                                                     <li>Review Status Notifications</li>
                                                             </ul>
-                                                                <li>Bamboo Highlights in the Atlassian IDE Plugin 2.0 Beta</li>
+                                                                <li>Bamboo Highlights in the Atlassian IDE Plugin 2.0.0 Beta</li>
 
                                                                 <ul>
                                                                             <li>Failed Tests in a Bamboo Build</li>
                                                                                 <li>Changed Files in a Bamboo Build</li>
                                                                                     <li>Bamboo Build Logs</li>
                                                                             </ul>
-                                                                                <li>Other Highlights in the Atlassian IDE Plugin 2.0 Beta</li>
+                                                                                <li>Other Highlights in the Atlassian IDE Plugin 2.0.0 Beta</li>
                                                                                 <ul>
                                                                                             <li>Shared Project Configuration</li>
 
