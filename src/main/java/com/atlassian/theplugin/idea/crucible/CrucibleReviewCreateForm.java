@@ -31,6 +31,7 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
+import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.VirtualFileSystem;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
@@ -39,7 +40,6 @@ import com.atlassian.theplugin.commons.crucible.api.model.Action;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -85,6 +85,7 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 	private JLabel patchLabel;
 	private String patchText;
 	private DefaultListModel model;
+	private UserListCellRenderer cellRenderer = new UserListCellRenderer();
 
 	private com.intellij.openapi.project.Project project;
 	private CrucibleServerFacade crucibleServerFacade;
@@ -138,6 +139,7 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 			public void mousePressed(MouseEvent e) {
 				int index = reviewersList.locationToIndex(e.getPoint());
 				setCheckboxState(index);
+				refreshUserModel();
 			}
 		});
 
@@ -147,12 +149,55 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
 					int index = reviewersList.getSelectedIndex();
 					setCheckboxState(index);
+					refreshUserModel();
 				}
 			}
 		});
 
+		moderatorComboBox.addActionListener(new ActionListener() {
+
+			public void actionPerformed(final ActionEvent event) {
+
+				if (moderatorComboBox.getSelectedItem() instanceof UserComboBoxItem) {
+					refreshUserModel();
+
+				}
+
+			}
+		});
+
+		ActionListener enableOkActionListener = new ActionListener() {
+
+			public void actionPerformed(final ActionEvent event) {
+				getOKAction().setEnabled(isValidForm());
+			}
+		};
+
+		authorComboBox.addActionListener(enableOkActionListener);
+		repoComboBox.addActionListener(enableOkActionListener);
+		projectsComboBox.addActionListener(enableOkActionListener);
+		crucibleServersComboBox.addActionListener(enableOkActionListener);
+		titleText.addActionListener(enableOkActionListener);
+
 
 		fillInCrucibleServers();
+	}
+
+	private void refreshUserModel() {
+		User moderatorUser = ((UserComboBoxItem) (moderatorComboBox.getSelectedItem())).getUser();
+		ArrayList<User> disabledUsers = new ArrayList<User>();
+		disabledUsers.add(moderatorUser);
+		cellRenderer.setDisabledUsers(disabledUsers);
+		for (int i = 0; i < model.size(); i++) {
+			UserListItem reviewer = (UserListItem) model.get(i);
+			if (reviewer.getUser().equals(moderatorUser)) {
+				reviewer.setSelected(false);
+			}
+		}
+		reviewersList.setModel(model);
+		reviewersList.revalidate();
+		reviewersList.repaint();
+		getOKAction().setEnabled(isValidForm());
 	}
 
 	private void showPatchPanel(boolean visible) {
@@ -443,11 +488,9 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 		}, "atlassian-idea-plugin crucible patch upload combos refresh").start();
 	}
 
-	private void updateServerRelatedCombos(
-			CrucibleServerCfg server,
-			List<Project> projects,
-			List<Repository> repositories,
+	private void updateServerRelatedCombos(CrucibleServerCfg server, List<Project> projects, List<Repository> repositories,
 			List<User> users) {
+
 		if (projects.isEmpty()) {
 			projectsComboBox.setEnabled(false);
 			projectsComboBox.addItem("No projects");
@@ -456,7 +499,7 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 			for (Project project : projects) {
 				projectsComboBox.addItem(new ProjectComboBoxItem(project));
 			}
-			getOKAction().setEnabled(true);
+
 		}
 		repoComboBox.addItem("");
 		if (!repositories.isEmpty()) {
@@ -478,11 +521,11 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 			for (User user : users) {
 				authorComboBox.addItem(new UserComboBoxItem(user));
 				moderatorComboBox.addItem(new UserComboBoxItem(user));
-				if (!user.getUserName().equals(server.getUsername())) {
-					model.addElement(new UserListItem(user, false));
-				} else {
+				if (user.getUserName().equals(server.getUsername())) {
 					indexToSelect = index + 1;
 				}
+
+				model.addElement(new UserListItem(user, false));
 				index++;
 			}
 			if (indexToSelect != -1) {
@@ -490,6 +533,9 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 				moderatorComboBox.setSelectedIndex(indexToSelect);
 			}
 		}
+
+		getOKAction().setEnabled(isValidForm());
+
 	}
 
 	public JComponent getRootComponent() {
@@ -620,6 +666,7 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 
 	@Override
 	protected void doOKAction() {
+
 		final ServerComboBoxItem selectedItem = (ServerComboBoxItem) crucibleServersComboBox.getSelectedItem();
 
 		if (selectedItem != null) {
@@ -717,11 +764,38 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 		}
 	}
 
+	private boolean isValidForm() {
+
+		if (crucibleServersComboBox.getSelectedItem() instanceof ServerComboBoxItem
+				&& titleText.getText().length() > 0
+				&& repoComboBox.getSelectedItem() instanceof RepositoryComboBoxItem
+				&& projectsComboBox.getSelectedItem() instanceof ProjectComboBoxItem
+				&& authorComboBox.getSelectedItem() instanceof UserComboBoxItem
+				&& moderatorComboBox.getSelectedItem() instanceof UserComboBoxItem) {
+
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+
 	private void createUIComponents() {
 		model = new DefaultListModel();
 		reviewersList = new JList(model);
-		reviewersList.setCellRenderer(new UserListCellRenderer());
+		reviewersList.setCellRenderer(cellRenderer);
 		reviewersList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+	}
+
+	private boolean isReviewerSelected() {
+		for (int i = 0; i < model.size(); i++) {
+			if (((UserListItem) model.get(i)).isSelected()) {
+				return true;
+			}
+		}
+
+		return false;
+
 	}
 }
   
