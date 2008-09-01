@@ -31,7 +31,7 @@ public abstract class AbstractReviewAction extends AnAction {
 
 	public void actionPerformed(final AnActionEvent event) {
 
-		new CrucibleChangeStateWorker(IdeaHelper.getCurrentProject(event), rd,getRequestedAction()).run();
+		new CrucibleChangeStateWorker(IdeaHelper.getCurrentProject(event), rd, getRequestedAction()).run();
 
 //		new Thread(new Runnable() {
 //			public void run() {
