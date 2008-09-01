@@ -17,18 +17,37 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.crucible.api.model.Action;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
 
-public class CrucibleChangeStateWorker implements Runnable {
-    private ReviewData reviewInfo;
-    private Action action;
+import java.awt.*;
 
-    public CrucibleChangeStateWorker(ReviewData reviewInfo, Action action) {
-        this.reviewInfo = reviewInfo;
-        this.action = action;
-    }
+public class CrucibleChangeStateWorker {
+	private ReviewData review;
+	private Action action;
+	private Project project;
 
-    public void run() {
-        final CrucibleChangeReviewStateForm changeReviewStateForm = new CrucibleChangeReviewStateForm(reviewInfo, action);
-        changeReviewStateForm.show();
-    }
+	public CrucibleChangeStateWorker(Project project, ReviewData reviewInfo, Action action) {
+		this.review = reviewInfo;
+		this.action = action;
+		this.project = project;
+
+	}
+
+	public void run() {
+
+		final CrucibleChangeReviewStateForm changeReviewStateForm =
+				new CrucibleChangeReviewStateForm(project, review, action);
+
+		changeReviewStateForm.showDialog();
+	}
+
+
+
 }
