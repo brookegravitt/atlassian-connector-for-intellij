@@ -25,17 +25,22 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import static com.intellij.openapi.ui.Messages.showMessageDialog;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.ui.HyperlinkLabel;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.Nullable;
+import com.intellij.openapi.project.Project;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -58,12 +63,14 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 	private CrucibleServerFacade crucibleServerFacade;
 	private Action action;
 	private DescriptionPanel descriptionPanel;
+	private Project project;
 
-	protected CrucibleChangeReviewStateForm(ReviewData review, Action action) {
+	protected CrucibleChangeReviewStateForm(Project project, ReviewData review, Action action) {
 		super(false);
 		this.review = review;
 		this.action = action;
 		this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
+		this.project = project;
 
 		$$$setupUI$$$();
 		init();
@@ -111,15 +118,16 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 				break;
 		}
 
-		fillReviewInfo(review);
 	}
 
-	private void fillReviewInfo(final ReviewData review) {
+	public void showDialog() {
 		getOKAction().setEnabled(false);
 
-		new Thread(new Runnable() {
-			public void run() {
-				Review reviewInfo = null;
+		Task.Backgroundable fillTask = new Task.Backgroundable(project, "Retrieving Review Data", false) {
+
+			Review reviewInfo = null;
+
+			public void run(final ProgressIndicator indicator) {
 				try {
 					reviewInfo = crucibleServerFacade.getReview(review.getServer(), review.getPermId());
 					final ReviewData finalReviewInfo = new ReviewDataImpl(reviewInfo, review.getServer());
@@ -130,15 +138,23 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 					});
 
 				} catch (RemoteApiException e) {
-					Messages.showErrorDialog(e.getMessage(), "Cannot load data from crucible");
+					PluginUtil.getLogger().warn(e);
 				} catch (ServerPasswordNotProvidedException e) {
-					Messages.showErrorDialog(e.getMessage(), "Cannot load data from crucible");
+					PluginUtil.getLogger().warn(e);
 				}
 			}
-		}, "atlassian-idea-plugin crucible patch upload combos refresh").start();
+
+			public void onSuccess() {
+				final ReviewData finalReviewInfo = new ReviewDataImpl(reviewInfo, review.getServer());
+				updateReviewInfo(finalReviewInfo);
+				show();
+			}
+		};
+
+		ProgressManager.getInstance().run(fillTask);
 	}
 
-	private void updateReviewInfo(ReviewData reviewInfo) {
+	public void updateReviewInfo(ReviewData reviewInfo) {
 		detailsPanel.add(new DetailsPanel(reviewInfo), BorderLayout.CENTER);
 		if (Action.CLOSE.equals(action) || !"".equals(reviewInfo.getSummary())) {
 			descriptionPanel = new DescriptionPanel(review);
@@ -168,6 +184,8 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 	}
 
 	protected void doOKAction() {
+
+
 		try {
 			switch (action) {
 				case APPROVE:
@@ -211,6 +229,67 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 		}
 
 		super.doOKAction();
+
+//
+//				Task.Backgroundable okAction = new Task.Backgroundable(project, "Changing Review State", false) {
+//
+//			Exception ex = null;
+//
+//			public void run(final ProgressIndicator indicator) {
+//				try {
+//					switch (action) {
+//						case APPROVE:
+//							crucibleServerFacade.approveReview(review.getServer(), review.getPermId());
+//							break;
+//						case SUBMIT:
+//							crucibleServerFacade.submitReview(review.getServer(), review.getPermId());
+//							break;
+//						case ABANDON:
+//							crucibleServerFacade.abandonReview(review.getServer(), review.getPermId());
+//							break;
+//						case SUMMARIZE:
+//							crucibleServerFacade.summarizeReview(review.getServer(), review.getPermId());
+//							break;
+//						case CLOSE:
+//							crucibleServerFacade
+//									.closeReview(review.getServer(), review.getPermId(), descriptionPanel.getText());
+//							break;
+//						case REOPEN:
+//							crucibleServerFacade.reopenReview(review.getServer(), review.getPermId());
+//							break;
+//						case RECOVER:
+//							crucibleServerFacade.recoverReview(review.getServer(), review.getPermId());
+//							break;
+//						case COMPLETE:
+//							if (publishDraftsCheckBox.isSelected()) {
+//								crucibleServerFacade.publishAllCommentsForReview(review.getServer(), review.getPermId());
+//							}
+//							crucibleServerFacade.completeReview(review.getServer(), review.getPermId(), true);
+//							break;
+//						case UNCOMPLETE:
+//							crucibleServerFacade.completeReview(review.getServer(), review.getPermId(), false);
+//							break;
+//					}
+//					IdeaHelper.getAppComponent().rescheduleStatusCheckers(true);
+//				} catch (RemoteApiException e) {
+//					ex = e;
+//					indicator.cancel();
+//				} catch (ServerPasswordNotProvidedException e) {
+//					ex = e;
+//					indicator.cancel();
+//				}
+//
+//				CrucibleChangeReviewStateForm.super.doOKAction();
+//			}
+//
+//			public void onCancel() {
+//					showMessageDialog(ex.getMessage(),
+//							"Error changing review state: " + review.getServer().getUrl(), Messages.getErrorIcon());
+//			}
+//		};
+//
+//		ProgressManager.getInstance().run(okAction);
+
 	}
 
 	private void createUIComponents() {

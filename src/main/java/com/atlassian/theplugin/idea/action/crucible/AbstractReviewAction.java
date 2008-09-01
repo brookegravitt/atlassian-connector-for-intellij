@@ -16,30 +16,31 @@
 
 package com.atlassian.theplugin.idea.action.crucible;
 
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.Action;
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CrucibleChangeStateWorker;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.ModalityState;
 
 public abstract class AbstractReviewAction extends AnAction {
 	protected abstract Action getRequestedAction();
 
 	protected ReviewData rd;
 
-	public void actionPerformed(AnActionEvent event) {
+	public void actionPerformed(final AnActionEvent event) {
 
-		new Thread(new Runnable() {
-			public void run() {
-				ApplicationManager.getApplication().invokeAndWait(
-						new CrucibleChangeStateWorker(rd, getRequestedAction()),
-						ModalityState.defaultModalityState());
-			}
-		}).start();
+		new CrucibleChangeStateWorker(IdeaHelper.getCurrentProject(event), rd,getRequestedAction()).run();
+
+//		new Thread(new Runnable() {
+//			public void run() {
+//				ApplicationManager.getApplication().invokeAndWait(
+//						new CrucibleChangeStateWorker(IdeaHelper.getCurrentProject(event), rd,
+//								getRequestedAction()),
+//						ModalityState.defaultModalityState());
+//			}
+//		}).start();
 	}
 
 	public void update(AnActionEvent event) {
