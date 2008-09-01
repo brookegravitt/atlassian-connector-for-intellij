@@ -39,7 +39,7 @@ import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.fileEditor.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.ui.Splitter;
+import com.intellij.openapi.ui.ThreeComponentsSplitter;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.util.Key;
@@ -333,10 +333,8 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 
 		private ShowHideButton btnShowHide;
         private static final int GRID_WIDTH = 6;
-		private final Project project;
 
 		public CommentPanel(final Project project, final JIRAIssue issue, final JIRAComment comment, final JIRAServer server) {
-			this.project = project;
 			setOpaque(true);
 			setBackground(HEADER_BACKGROUND_COLOR);
 			
@@ -380,7 +378,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			add(creationDate, gbc);
 
 			if (StackTraceDetector.containsStackTrace(comment.getBody())) {
-				HyperlinkLabel analyze = new HyperlinkLabel("Analyse stack trace", UIUtil.getTableSelectionForeground(),
+				HyperlinkLabel analyze = new HyperlinkLabel("Analyse Stack Trace", UIUtil.getTableSelectionForeground(),
 					HEADER_BACKGROUND_COLOR, UIUtil.getTableSelectionForeground());
 				analyze.addHyperlinkListener(new HyperlinkListener() {
 					public void hyperlinkUpdate(HyperlinkEvent e) {
@@ -567,14 +565,42 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 		public JLabel getComponentsLabel() {
 			return components;
 		}
+
+		public void setAffectsVersions(String[] versions) {
+			setLabelText(getAffectVersionsLabel(), versions);
+		}
+
+		public void setFixVersions(String[] versions) {
+			setLabelText(getFixVersionsLabel(), versions);
+		}
+
+		public void setComponents(String[] components) {
+			setLabelText(getComponentsLabel(), components);
+		}
+
+		private void setLabelText(JLabel label, String[] texts) {
+			if (texts.length == 0) {
+				label.setText("None");
+			} else {
+
+				StringBuffer txt = new StringBuffer();
+				for (int i = 0; i < texts.length; ++i) {
+					if (i > 0) {
+						txt.append(", ");
+					}
+					txt.append(texts[i]);
+				}
+				label.setText(txt.toString());
+			}
+		}
+
 	}
 
 	private static class SummaryPanel extends JPanel {
 
-		private DetailsPanel details;
-        private static final int THICKNESS = 6;
+		private static final int THICKNESS = 6;
 
-        public SummaryPanel(final JIRAIssue issue) {
+        public SummaryPanel(final Project project, final JIRAIssue issue) {
 			setLayout(new GridBagLayout());
 			GridBagConstraints gbc = new GridBagConstraints();
 
@@ -618,6 +644,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
             summary.setBackground(bg);
             summary.setOpaque(true);
 			JPanel p = new JPanel();
+			p.setBackground(bg); 
 			p.setLayout(new GridBagLayout());
 			p.setBorder(BorderFactory.createLineBorder(bg, THICKNESS));
 			GridBagConstraints gbcp = new GridBagConstraints();
@@ -627,53 +654,28 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			gbcp.gridx = 0;
 			gbcp.gridy = 0;
 			p.add(summary, gbcp);
-			add(p, gbc);
 
-			gbc.gridx = 0;
-            gbc.gridy = 2;
-            gbc.gridwidth = 2;
-            gbc.fill = GridBagConstraints.BOTH;
-			gbc.weightx = 1.0;
-			gbc.weighty = 1.0;
-			Splitter split = new Splitter(true);
-			split.setFirstComponent(new DescriptionPanel(issue));
-			details = new DetailsPanel(issue);
-			split.setSecondComponent(details);
-			split.setShowDividerControls(true);
-			split.setHonorComponentsMinimumSize(true);
-			add(split, gbc);
-			if (issue.getDescription().length() == 0) {
-				split.setProportion(0);
-			}
-        }
+			if (StackTraceDetector.containsStackTrace(Html2text.translate(issue.getDescription()))) {
+				HyperlinkLabel analyze = new HyperlinkLabel("Analyse Stack Trace", UIUtil.getTableSelectionForeground(),
+					HEADER_BACKGROUND_COLOR, UIUtil.getTableSelectionForeground());
+				gbcp.weightx = 0.0;
+				gbcp.weighty = 0.0;
+				gbcp.gridx = 1;
 
-		public void setAffectsVersions(String[] versions) {
-			setLabelText(details.getAffectVersionsLabel(), versions);
-		}
-
-		public void setFixVersions(String[] versions) {
-			setLabelText(details.getFixVersionsLabel(), versions);
-		}
-
-		public void setComponents(String[] components) {
-			setLabelText(details.getComponentsLabel(), components);
-		}
-
-		private void setLabelText(JLabel label, String[] texts) {
-			if (texts.length == 0) {
-				label.setText("None");
-			} else {
-
-				StringBuffer txt = new StringBuffer();
-				for (int i = 0; i < texts.length; ++i) {
-					if (i > 0) {
-						txt.append(", ");
+				analyze.addHyperlinkListener(new HyperlinkListener() {
+					public void hyperlinkUpdate(HyperlinkEvent e) {
+						StackTraceConsole stackTraceConsole = IdeaHelper.getProjectComponent(project, StackTraceConsole.class);
+						stackTraceConsole.print(issue, "description", Html2text.translate(issue.getDescription()));
 					}
-					txt.append(texts[i]);
-				}
-				label.setText(txt.toString());
+				});
+				gbcp.anchor = GridBagConstraints.EAST;
+				analyze.setBackground(bg);
+				p.add(analyze, gbcp);
 			}
-		}
+			
+
+			add(p, gbc);
+        }
 	}
 
     public static class JIRAFileEditor implements FileEditor {
@@ -686,6 +688,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 		private JIRAIssue issue;
         private CommentsPanel commentsPanel;
 		private SummaryPanel summaryPanel;
+		private DetailsPanel detailsPanel;
 		private boolean hasStackTrace;
 
 		private JIRAFileEditor() {
@@ -719,17 +722,50 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			gbc.gridy = 0;
 
 			gbc.insets = new Insets(0, 0, 0, 0);
+			gbc.fill = GridBagConstraints.HORIZONTAL;
+			gbc.weightx = 1.0;
+			gbc.weighty = 0.0;
+
+			summaryPanel = new SummaryPanel(project, issue);
+			mainPanel.add(summaryPanel, gbc);
+
+			gbc.gridy++;
 			gbc.fill = GridBagConstraints.BOTH;
 			gbc.weightx = 1.0;
 			gbc.weighty = 1.0;
-			Splitter split = new Splitter(true);
+
+			final ThreeComponentsSplitter split = new ThreeComponentsSplitter(true);
 			split.setShowDividerControls(true);
 			split.setHonorComponentsMinimumSize(true);
-			summaryPanel = new SummaryPanel(issue);
-			split.setFirstComponent(summaryPanel);
+
+			final DescriptionPanel descriptionPanel = new DescriptionPanel(issue);
+			split.setFirstComponent(descriptionPanel);
+			
+			detailsPanel = new DetailsPanel(issue);
+			split.setInnerComponent(detailsPanel);
+
             commentsPanel = new CommentsPanel(issue);
-			split.setSecondComponent(commentsPanel);
+			split.setLastComponent(commentsPanel);
+
+
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					int first;
+					if (issue.getDescription().length() == 0) {
+						first = descriptionPanel.getMinimumSize().height;
+					} else {
+						first = Math.min(descriptionPanel.getPreferredSize().height, 200);
+					}
+					int second = Math.min(detailsPanel.getPreferredSize().height, 400);
+					split.setFirstSize(first);
+					// fixme: does not work properly anyways
+					// components seem to have screwed up preferred sizes :( 
+					split.setLastSize(mainPanel.getHeight() - summaryPanel.getHeight() - first - second);
+				}
+			});
+
 			mainPanel.add(split, gbc);
+
 			getMoreIssueDetails();
 			refreshComments();
 		}
@@ -792,13 +828,13 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 						SwingUtilities.invokeLater(new Runnable() {
 							public void run() {
 								if (errorString == null) {
-									summaryPanel.setAffectsVersions(getStringArray(issue.getAffectsVersions()));
-									summaryPanel.setFixVersions(getStringArray(issue.getFixVersions()));
-									summaryPanel.setComponents(getStringArray(issue.getComponents()));
+									detailsPanel.setAffectsVersions(getStringArray(issue.getAffectsVersions()));
+									detailsPanel.setFixVersions(getStringArray(issue.getFixVersions()));
+									detailsPanel.setComponents(getStringArray(issue.getComponents()));
 								} else {
-									summaryPanel.setAffectsVersions(errorString);
-									summaryPanel.setFixVersions(errorString);
-									summaryPanel.setComponents(errorString);
+									detailsPanel.setAffectsVersions(errorString);
+									detailsPanel.setFixVersions(errorString);
+									detailsPanel.setComponents(errorString);
 								}
 							}
 						});
@@ -806,9 +842,9 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 				};
 				new Thread(runnable, "atlassian-idea-plugin get issue details").start();
 			} else {
-				summaryPanel.setAffectsVersions(getStringArray(issue.getAffectsVersions()));
-				summaryPanel.setFixVersions(getStringArray(issue.getFixVersions()));
-				summaryPanel.setComponents(getStringArray(issue.getComponents()));
+				detailsPanel.setAffectsVersions(getStringArray(issue.getAffectsVersions()));
+				detailsPanel.setFixVersions(getStringArray(issue.getFixVersions()));
+				detailsPanel.setComponents(getStringArray(issue.getComponents()));
 			}
 		}
 
