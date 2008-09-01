@@ -27,7 +27,7 @@ public class JIRAShowIssuesFilterAction extends AnAction {
 
 	public JIRAShowIssuesFilterAction() {
 		getTemplatePresentation().setIcon(IconLoader.getIcon(DEFAULT_ICON));
-		getTemplatePresentation().setText("Show JIRA filter dialog");
+		getTemplatePresentation().setText("Show JIRA Filter Dialog");
 	}
 
 	public void actionPerformed(AnActionEvent e) {

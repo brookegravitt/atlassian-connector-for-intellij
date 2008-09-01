@@ -26,7 +26,7 @@ public class JIRAPreviousPageAcion extends AnAction {
 
 	public JIRAPreviousPageAcion() {
 		getTemplatePresentation().setIcon(IconLoader.getIcon(DEFAULT_ICON));
-		getTemplatePresentation().setText("Previous results page");
+		getTemplatePresentation().setText("Previous Results Page");
 	}
 	public void actionPerformed(AnActionEvent event) {
 		IdeaHelper.getJIRAToolWindowPanel(event).prevPage();
