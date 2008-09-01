@@ -31,15 +31,18 @@ public abstract class AbstractTransitionReviewAction extends AnAction {
 
     private ReviewData rd;
 
-    public void actionPerformed(AnActionEvent event) {
+    public void actionPerformed(final AnActionEvent event) {
 
-        new Thread(new Runnable() {
-            public void run() {
-                ApplicationManager.getApplication().invokeAndWait(
-                        new CrucibleChangeStateWorker(rd, getRequestedTransition()),
-                        ModalityState.defaultModalityState());
-            }
-        }).start();
+		new CrucibleChangeStateWorker(IdeaHelper.getCurrentProject(event), rd, getRequestedTransition()).run();
+
+//		new Thread(new Runnable() {
+//            public void run() {
+//                ApplicationManager.getApplication().invokeAndWait(
+//                        new CrucibleChangeStateWorker(IdeaHelper.getCurrentProject(event), rd,
+//								getRequestedTransition()),
+//                        ModalityState.defaultModalityState());
+//            }
+//        }).start();
     }
 
     public void update(AnActionEvent event) {
