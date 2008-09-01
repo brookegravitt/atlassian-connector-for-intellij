@@ -229,67 +229,6 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 		}
 
 		super.doOKAction();
-
-//
-//				Task.Backgroundable okAction = new Task.Backgroundable(project, "Changing Review State", false) {
-//
-//			Exception ex = null;
-//
-//			public void run(final ProgressIndicator indicator) {
-//				try {
-//					switch (action) {
-//						case APPROVE:
-//							crucibleServerFacade.approveReview(review.getServer(), review.getPermId());
-//							break;
-//						case SUBMIT:
-//							crucibleServerFacade.submitReview(review.getServer(), review.getPermId());
-//							break;
-//						case ABANDON:
-//							crucibleServerFacade.abandonReview(review.getServer(), review.getPermId());
-//							break;
-//						case SUMMARIZE:
-//							crucibleServerFacade.summarizeReview(review.getServer(), review.getPermId());
-//							break;
-//						case CLOSE:
-//							crucibleServerFacade
-//									.closeReview(review.getServer(), review.getPermId(), descriptionPanel.getText());
-//							break;
-//						case REOPEN:
-//							crucibleServerFacade.reopenReview(review.getServer(), review.getPermId());
-//							break;
-//						case RECOVER:
-//							crucibleServerFacade.recoverReview(review.getServer(), review.getPermId());
-//							break;
-//						case COMPLETE:
-//							if (publishDraftsCheckBox.isSelected()) {
-//								crucibleServerFacade.publishAllCommentsForReview(review.getServer(), review.getPermId());
-//							}
-//							crucibleServerFacade.completeReview(review.getServer(), review.getPermId(), true);
-//							break;
-//						case UNCOMPLETE:
-//							crucibleServerFacade.completeReview(review.getServer(), review.getPermId(), false);
-//							break;
-//					}
-//					IdeaHelper.getAppComponent().rescheduleStatusCheckers(true);
-//				} catch (RemoteApiException e) {
-//					ex = e;
-//					indicator.cancel();
-//				} catch (ServerPasswordNotProvidedException e) {
-//					ex = e;
-//					indicator.cancel();
-//				}
-//
-//				CrucibleChangeReviewStateForm.super.doOKAction();
-//			}
-//
-//			public void onCancel() {
-//					showMessageDialog(ex.getMessage(),
-//							"Error changing review state: " + review.getServer().getUrl(), Messages.getErrorIcon());
-//			}
-//		};
-//
-//		ProgressManager.getInstance().run(okAction);
-
 	}
 
 	private void createUIComponents() {
