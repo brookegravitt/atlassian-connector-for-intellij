@@ -33,7 +33,7 @@ public class JIRANextPageAction extends AnAction {
 
 	public JIRANextPageAction() {
 		getTemplatePresentation().setIcon(IconLoader.getIcon(DEFAULT_ICON));
-		getTemplatePresentation().setText("Next results page");
+		getTemplatePresentation().setText("Next Results Page");
 	}
 	
 	public void actionPerformed(AnActionEvent event) {
