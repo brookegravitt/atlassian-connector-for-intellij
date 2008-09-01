@@ -402,6 +402,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			commentBody.setBackground(UIUtil.getPanelBackground());
 			commentBody.setMargin(new Insets(0, Constants.DIALOG_MARGIN, 0, 0));
 			commentBody.setContentType("text/html");
+			commentBody.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
 			commentBody.setText("<html><head></head><body>" + comment.getBody() + "</body></html>");
 			gbc = new GridBagConstraints();
 			gbc.gridx = 0;
@@ -450,7 +451,8 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			body.setOpaque(false);
             body.setBorder(BorderFactory.createEmptyBorder());
             body.setContentType("text/html");
-            body.setText("<html><head></head><body>" + issue.getDescription() + "</body></html>");
+			body.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
+			body.setText("<html><head></head><body>" + issue.getDescription() + "</body></html>");
 			sp.getViewport().setOpaque(false);
 			body.setCaretPosition(0);
 			add(sp, gbc);
@@ -594,6 +596,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			gbc.weightx = 1.0;
 			JEditorPane summary = new JEditorPane();
             summary.setContentType("text/html");
+			summary.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
 			Color bg = HEADER_BACKGROUND_COLOR;
 			Color fg = UIUtil.getTableSelectionForeground();
 			String bgColor = ColorToHtml.getHtmlFromColor(bg);

@@ -462,7 +462,7 @@
 
 		<group id="ThePlugin.EmptyToolBar" popup="false" text=""/>
 
-		<group id="ThePlugin.CrucibleFilterCombo" popup="true" text="" icon="/ant/filter.png">
+		<group id="ThePlugin.CrucibleFilterCombo" popup="true" text="Select Filter" icon="/ant/filter.png">
 			<reference id="ThePlugin.Crucible.ToReviewComboAction"/>
 			<reference id="ThePlugin.Crucible.RequireApprovalAction"/>
 			<reference id="ThePlugin.Crucible.ToSummarizeAction"/>
