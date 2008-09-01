@@ -34,15 +34,10 @@ public abstract class AbstractCompleteReviewAction extends AnAction {
 
     protected abstract boolean getCompletionStatus();
 
-    public void actionPerformed(AnActionEvent event) {
-        new Thread(new Runnable() {
-            public void run() {
-                ApplicationManager.getApplication().invokeAndWait(
-                        new CrucibleCompleteWorker(rd, getCompletionStatus()),
-                        ModalityState.defaultModalityState());
-            }
-        }).start();
+    public void actionPerformed(final AnActionEvent event) {
 
+		new CrucibleCompleteWorker(IdeaHelper.getCurrentProject(event), rd, getCompletionStatus()).
+				run();
     }
 
     public void update(AnActionEvent event) {

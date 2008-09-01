@@ -17,19 +17,22 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.crucible.api.model.Action;
+import com.intellij.openapi.project.Project;
 
-public class CrucibleCompleteWorker implements Runnable {
+public class CrucibleCompleteWorker {
     private ReviewData reviewInfo;
     private boolean complete;
+	private Project project;
 
-    public CrucibleCompleteWorker(ReviewData reviewInfo, boolean complete) {
+	public CrucibleCompleteWorker(final Project project, ReviewData reviewInfo, boolean complete) {
         this.reviewInfo = reviewInfo;
         this.complete = complete;
-    }
+		this.project = project;
+	}
 
     public void run() {
         final CrucibleChangeReviewStateForm reviewCompleteForm =
-                new CrucibleChangeReviewStateForm(reviewInfo, complete ? Action.COMPLETE : Action.UNCOMPLETE);
-        reviewCompleteForm.show();
+                new CrucibleChangeReviewStateForm(project, reviewInfo, complete ? Action.COMPLETE : Action.UNCOMPLETE);
+        reviewCompleteForm.showDialog();
     }
 }
