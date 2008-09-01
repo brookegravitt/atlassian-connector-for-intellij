@@ -787,10 +787,18 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 
 		if (crucibleServersComboBox.getSelectedItem() instanceof ServerComboBoxItem
 				&& titleText.getText().length() > 0
+
 				&& projectsComboBox.getSelectedItem() instanceof ProjectComboBoxItem
 				&& authorComboBox.getSelectedItem() instanceof UserComboBoxItem
 				&& moderatorComboBox.getSelectedItem() instanceof UserComboBoxItem) {
-
+            if (mode != ReviewCreationMode.PATCH) {
+                if (repoComboBox.getSelectedItem() instanceof RepositoryComboBoxItem) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
 			return true;
 		} else {
 			return false;
