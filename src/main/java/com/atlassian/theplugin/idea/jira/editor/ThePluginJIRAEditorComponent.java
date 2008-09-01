@@ -603,7 +603,15 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 					+ issue.getKey() + "</a> " + issue.getSummary() + "</font></body></html>";
 			summary.setText(txt);
             summary.setEditable(false);
-            summary.setFont(summary.getFont().deriveFont(Font.BOLD));
+			summary.addHyperlinkListener(new HyperlinkListener() {
+				public void hyperlinkUpdate(HyperlinkEvent e) {
+					if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+						BrowserUtil.launchBrowser(e.getURL().toString());
+					}
+				}
+			});
+
+			summary.setFont(summary.getFont().deriveFont(Font.BOLD));
             summary.setBackground(bg);
             summary.setOpaque(true);
 			JPanel p = new JPanel();
