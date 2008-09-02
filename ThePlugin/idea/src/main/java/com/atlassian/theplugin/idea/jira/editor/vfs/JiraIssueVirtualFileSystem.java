@@ -41,7 +41,7 @@ import java.util.StringTokenizer;
  *
  * @author Steve Chaloner
  */
-public final class MemoryVirtualFileSystem extends DeprecatedVirtualFileSystem {
+public final class JiraIssueVirtualFileSystem extends DeprecatedVirtualFileSystem {
 	/**
 	 * The name of the component.
 	 */
@@ -50,19 +50,19 @@ public final class MemoryVirtualFileSystem extends DeprecatedVirtualFileSystem {
 	/**
 	 * The files.
 	 */
-	private final Map<String, MemoryVirtualFile> files = new HashMap<String, MemoryVirtualFile>();
+	private final Map<String, JiraIssueVirtualFile> files = new HashMap<String, JiraIssueVirtualFile>();
 
 	/**
 	 * Listeners for file system events.
 	 */
 	private final List<VirtualFileListener> listeners = new ArrayList<VirtualFileListener>();
 
-	private static MemoryVirtualFileSystem instance = new MemoryVirtualFileSystem();
+	private static JiraIssueVirtualFileSystem instance = new JiraIssueVirtualFileSystem();
 
-	private MemoryVirtualFileSystem() {
+	private JiraIssueVirtualFileSystem() {
 	}
 
-	public static MemoryVirtualFileSystem getInstance() {
+	public static JiraIssueVirtualFileSystem getInstance() {
 		return instance;
 	}
 
@@ -89,7 +89,7 @@ public final class MemoryVirtualFileSystem extends DeprecatedVirtualFileSystem {
 	 *
 	 * @param file the file to add
 	 */
-	public void addFile(@NotNull MemoryVirtualFile file) {
+	public void addFile(@NotNull JiraIssueVirtualFile file) {
 		files.put(file.getName(),
 				file);
 		fireFileCreated(file);
@@ -100,7 +100,7 @@ public final class MemoryVirtualFileSystem extends DeprecatedVirtualFileSystem {
 	 *
 	 * @param file the new file
 	 */
-	private void fireFileCreated(MemoryVirtualFile file) {
+	private void fireFileCreated(JiraIssueVirtualFile file) {
 		VirtualFileEvent e = new VirtualFileEvent(this,
 				file,
 				file.getName(),
@@ -171,9 +171,9 @@ public final class MemoryVirtualFileSystem extends DeprecatedVirtualFileSystem {
 						   VirtualFile virtualFile) throws IOException {
 		files.remove(virtualFile.getName());
 
-		MemoryVirtualFile parent = (MemoryVirtualFile) virtualFile.getParent();
+		JiraIssueVirtualFile parent = (JiraIssueVirtualFile) virtualFile.getParent();
 		if (parent != null) {
-			parent.deleteChild((MemoryVirtualFile) virtualFile);
+			parent.deleteChild((JiraIssueVirtualFile) virtualFile);
 		}
 	}
 
@@ -185,7 +185,7 @@ public final class MemoryVirtualFileSystem extends DeprecatedVirtualFileSystem {
 						 VirtualFile virtualFile1) throws IOException {
 		files.remove(virtualFile.getName());
 		files.put(virtualFile1.getName(),
-				(MemoryVirtualFile) virtualFile1);
+				(JiraIssueVirtualFile) virtualFile1);
 	}
 
 	/**
@@ -196,16 +196,16 @@ public final class MemoryVirtualFileSystem extends DeprecatedVirtualFileSystem {
 						   String string) throws IOException {
 		files.remove(virtualFile.getName());
 		files.put(string,
-				(MemoryVirtualFile) virtualFile);
+				(JiraIssueVirtualFile) virtualFile);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public MemoryVirtualFile createChildFile(Object object,
+	public JiraIssueVirtualFile createChildFile(Object object,
 											 VirtualFile parent,
 											 String name) throws IOException {
-		MemoryVirtualFile file = new MemoryVirtualFile(name,
+		JiraIssueVirtualFile file = new JiraIssueVirtualFile(name,
 				null);
 		file.setParent(parent);
 		addFile(file);
@@ -215,11 +215,11 @@ public final class MemoryVirtualFileSystem extends DeprecatedVirtualFileSystem {
 	/**
 	 * {@inheritDoc}
 	 */
-	public MemoryVirtualFile createChildDirectory(Object object,
+	public JiraIssueVirtualFile createChildDirectory(Object object,
 												  VirtualFile parent,
 												  String name) throws IOException {
-		MemoryVirtualFile file = new MemoryVirtualFile(name);
-		((MemoryVirtualFile) parent).addChild(file);
+		JiraIssueVirtualFile file = new JiraIssueVirtualFile(name);
+		((JiraIssueVirtualFile) parent).addChild(file);
 		addFile(file);
 		return file;
 	}
@@ -238,7 +238,7 @@ public final class MemoryVirtualFileSystem extends DeprecatedVirtualFileSystem {
 	 * {@inheritDoc}
 	 */
 	public void initComponent() {
-		MemoryVirtualFile root = new MemoryVirtualFile(Constants.JIRAISSUE_ROOT);
+		JiraIssueVirtualFile root = new JiraIssueVirtualFile(Constants.JIRAISSUE_ROOT);
 		addFile(root);
 	}
 
@@ -257,7 +257,7 @@ public final class MemoryVirtualFileSystem extends DeprecatedVirtualFileSystem {
 	 * @param packageName the name of the package
 	 * @return the file corresponding to the final location of the package
 	 */
-	public MemoryVirtualFile getFileForPackage(@NotNull String packageName) {
+	public JiraIssueVirtualFile getFileForPackage(@NotNull String packageName) {
 		StringTokenizer st = new StringTokenizer(packageName, ".");
 		List<String> names = new ArrayList<String>();
 		while (st.hasMoreTokens()) {
@@ -274,9 +274,9 @@ public final class MemoryVirtualFileSystem extends DeprecatedVirtualFileSystem {
 	 * @param parent the parent file
 	 * @return a file corresponding to the last entry in the name list
 	 */
-	private MemoryVirtualFile getFileForPackage(@NotNull List<String> names,
-												@NotNull MemoryVirtualFile parent) {
-		MemoryVirtualFile child = null;
+	private JiraIssueVirtualFile getFileForPackage(@NotNull List<String> names,
+												@NotNull JiraIssueVirtualFile parent) {
+		JiraIssueVirtualFile child = null;
 		if (!names.isEmpty()) {
 			String name = names.remove(0);
 			child = parent.getChild(name);
