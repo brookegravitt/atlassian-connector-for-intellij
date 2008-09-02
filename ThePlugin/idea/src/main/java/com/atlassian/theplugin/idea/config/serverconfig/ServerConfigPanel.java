@@ -20,6 +20,7 @@ import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
 import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
@@ -36,13 +37,13 @@ import com.intellij.openapi.util.IconLoader;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.*;
+import java.util.Collection;
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
-import java.awt.*;
-import java.util.Collection;
 
 public class ServerConfigPanel extends JPanel implements DataProvider {
     private final ServerTreePanel serverTreePanel;
@@ -58,7 +59,7 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 	private Collection<ServerCfg> serverCfgs;
     private BambooServerConfigForm bambooServerConfigForm;
     private GenericServerConfigForm jiraServerConfigForm;
-    private GenericServerConfigForm crucibleServerConfigForm;
+    private CrucibleServerConfigForm crucibleServerConfigForm;
 
 	public ServerConfigPanel(Project project, Collection<ServerCfg> serverCfgs) {
 		this.project = project;
@@ -70,7 +71,7 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 		/* required due to circular dependency unhandled by pico */
 		this.serverTreePanel.setServerConfigPanel(this);
 		jiraServerConfigForm = new GenericServerConfigForm(project, new ProductConnector(jiraServerFacade));
-		crucibleServerConfigForm = new GenericServerConfigForm(project, new ProductConnector(crucibleServerFacade));
+		crucibleServerConfigForm = new CrucibleServerConfigForm(project, crucibleServerFacade);
 		bambooServerConfigForm = new BambooServerConfigForm(project, bambooServerFacade);
 		initLayout();
 
@@ -198,8 +199,9 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
                 bambooServerConfigForm.setData(bambooServerCfg);
                 break;
             case CRUCIBLE_SERVER:
+                CrucibleServerCfg crucibleServerCfg = (CrucibleServerCfg) serverCfg;
                 crucibleServerConfigForm.saveData();
-                crucibleServerConfigForm.setData(serverCfg);
+                crucibleServerConfigForm.setData(crucibleServerCfg);
                 break;
             case JIRA_SERVER:
                 jiraServerConfigForm.saveData();
