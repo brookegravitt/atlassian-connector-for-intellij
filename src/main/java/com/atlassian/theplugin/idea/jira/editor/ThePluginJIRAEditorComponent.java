@@ -36,7 +36,12 @@ import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.components.ApplicationComponent;
-import com.intellij.openapi.fileEditor.*;
+import com.intellij.openapi.fileEditor.FileEditor;
+import com.intellij.openapi.fileEditor.FileEditorLocation;
+import com.intellij.openapi.fileEditor.FileEditorPolicy;
+import com.intellij.openapi.fileEditor.FileEditorProvider;
+import com.intellij.openapi.fileEditor.FileEditorState;
+import com.intellij.openapi.fileEditor.FileEditorStateLevel;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.ThreeComponentsSplitter;
@@ -690,6 +695,8 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 		private SummaryPanel summaryPanel;
 		private DetailsPanel detailsPanel;
 		private boolean hasStackTrace;
+		private static final int PREFERRED_HEIGHT_FIRST = 200;
+		private static final int PREFERRED_HEIGHT_SECOND = 400;
 
 		private JIRAFileEditor() {
 			mainPanel = new JPanel();
@@ -754,9 +761,9 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 					if (issue.getDescription().length() == 0) {
 						first = descriptionPanel.getMinimumSize().height;
 					} else {
-						first = Math.min(descriptionPanel.getPreferredSize().height, 200);
+						first = Math.min(descriptionPanel.getPreferredSize().height, PREFERRED_HEIGHT_FIRST);
 					}
-					int second = Math.min(detailsPanel.getPreferredSize().height, 400);
+					int second = Math.min(detailsPanel.getPreferredSize().height, PREFERRED_HEIGHT_SECOND);
 					split.setFirstSize(first);
 					// fixme: does not work properly anyways
 					// components seem to have screwed up preferred sizes :( 
