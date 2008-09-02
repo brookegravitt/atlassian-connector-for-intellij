@@ -16,32 +16,26 @@
 
 package com.atlassian.theplugin.idea.bamboo.table.renderer;
 
-import com.atlassian.theplugin.commons.util.DateUtil;
 import com.atlassian.theplugin.commons.bamboo.BambooBuildAdapter;
+import com.atlassian.theplugin.commons.util.DateUtil;
+import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
+import com.intellij.util.ui.ListTableModel;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
-import java.awt.*;
 import java.util.Date;
 
 
-public class DateTableCellRenderer extends DefaultTableCellRenderer {
+public class DateTableCellRenderer extends BackgroundAwareBambooRenderer {
 
-	public Component getTableCellRendererComponent(JTable jTable,
-												   Object o,
-												   boolean isSelected,
-												   boolean hasFocus,
-												   int i,
-												   int i1) {
-		Component c = super.getTableCellRendererComponent(jTable, o, isSelected, hasFocus, i, i1);
+	@Override
+	protected void onRender(final ListTableModel<BambooBuildAdapterIdea> model, final JLabel label, final Object o) {
 		if (o != null && o instanceof Date) {
-			((JLabel) c).setToolTipText(BambooBuildAdapter.BAMBOO_BUILD_DATE_FORMAT.format((Date) o));
-			((JLabel) c).setText(DateUtil.getRelativePastDate(new Date(), (Date) o));
+			label.setToolTipText(BambooBuildAdapter.BAMBOO_BUILD_DATE_FORMAT.format((Date) o));
+			label.setText(DateUtil.getRelativePastDate(new Date(), (Date) o));
 		} else {
-			((JLabel) c).setToolTipText("Build date not accessible");
-			((JLabel) c).setText("-");
+			label.setToolTipText("Build date not accessible");
+			label.setText("-");
 		}
-		((JLabel) c).setHorizontalAlignment(SwingConstants.RIGHT);
-		return c; 
+		label.setHorizontalAlignment(SwingConstants.RIGHT);
 	}
 }

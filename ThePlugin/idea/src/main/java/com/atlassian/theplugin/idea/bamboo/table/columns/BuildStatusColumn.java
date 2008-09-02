@@ -16,42 +16,41 @@
 
 package com.atlassian.theplugin.idea.bamboo.table.columns;
 
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.TableColumnInfo;
+import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 
 import javax.swing.*;
 import java.util.Comparator;
 
-/**
- * Created by IntelliJ IDEA.
- * User: marek
- * Date: Mar 10, 2008
- * Time: 12:24:37 PM
- * To change this template use File | Settings | File Templates.
- */
-public class BuildStatusColumn extends TableColumnInfo {
+public class BuildStatusColumn extends TableColumnInfo<BambooBuildAdapterIdea, Icon> {
 	private static final int COL_ICON_WIDTH = 20;
+	private static final Comparator<BambooBuildAdapterIdea> COMPARATOR = new Comparator<BambooBuildAdapterIdea>() {
+		public int compare(BambooBuildAdapterIdea o, BambooBuildAdapterIdea o1) {
+			return o.getStatus().compareTo(o1.getStatus());
+		}
+	};
 
+	@Override
 	public String getColumnName() {
 		return "";
 	}
 
-	public Object valueOf(Object o) {
-		return ((BambooBuildAdapterIdea) o).getBuildIcon();
+	@Override
+	public Icon valueOf(BambooBuildAdapterIdea o) {
+		return o.getBuildIcon();
 	}
 
-	public Class getColumnClass() {
+	@Override
+	public Class<Icon> getColumnClass() {
 		return Icon.class;
 	}
 
-	public Comparator getComparator() {
-		return new Comparator() {
-			public int compare(Object o, Object o1) {
-				return ((BambooBuildAdapterIdea) o).getStatus().compareTo(((BambooBuildAdapterIdea) o1).getStatus());
-			}
-		};
+	@Override
+	public Comparator<BambooBuildAdapterIdea> getComparator() {
+		return COMPARATOR;
 	}
 
+	@Override
 	public int getPrefferedWidth() {
 		return COL_ICON_WIDTH;
 	}
