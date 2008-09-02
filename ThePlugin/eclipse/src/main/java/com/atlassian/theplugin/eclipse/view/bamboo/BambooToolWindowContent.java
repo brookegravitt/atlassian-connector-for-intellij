@@ -24,6 +24,10 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -45,17 +49,10 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 
 import com.atlassian.theplugin.commons.bamboo.BambooBuild;
-import com.atlassian.theplugin.commons.bamboo.BambooChangeSet;
-import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
 import com.atlassian.theplugin.commons.bamboo.BambooStatusListener;
-import com.atlassian.theplugin.commons.bamboo.BuildDetails;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
-import com.atlassian.theplugin.commons.bamboo.TestDetails;
-import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.eclipse.preferences.Activator;
 import com.atlassian.theplugin.eclipse.util.PluginIcons;
-import com.atlassian.theplugin.eclipse.util.PluginUtil;
 
 public class BambooToolWindowContent implements BambooStatusListener {
 
@@ -69,8 +66,91 @@ public class BambooToolWindowContent implements BambooStatusListener {
 		
 		this.viewPart = viewPart;
 		
+		createTable(parent);	
+		
+	}
+
+	private void createTable(Composite parent) {
+		
+		createTableViewer(parent);
+		createTableColumns();
+		createContextMenu();
+		
+		tableViewer.setInput(buildStatuses);
+		
+		table.setLinesVisible(true);
+		table.setHeaderVisible(true);
+	}
+
+	private void createContextMenu() {
+		
+		final MenuManager menuManager = new MenuManager();
+		
+		menuManager.addMenuListener(new IMenuListener() {
+
+			public void menuAboutToShow(IMenuManager manager) {
+				
+				menuManager.add(viewPart.getRunBuildAction());
+				menuManager.add(viewPart.getLabelBuildAction());
+				menuManager.add(viewPart.getCommentBuildAction());
+				menuManager.add(new Separator());
+				menuManager.add(viewPart.getShowBuilLogAction());
+				menuManager.add(new Separator());
+				menuManager.add(viewPart.getRefreshBuildListAction());
+				
+				menuManager.setRemoveAllWhenShown(true);
+			}
+			
+		});
+		
+		
+		table.setMenu(menuManager.createContextMenu(table));
+	}
+
+	private void createTableColumns() {
+		// create columns
+		TableColumn tableColumn; 
+		
+		ControlListener columnListener = new BambooTableColumnListener();
+		
+		List<Integer> configColumnsWidth = 
+			Activator.getDefault().getPluginConfiguration().getBambooTabConfiguration().getColumnsWidth();
+		
+		for (int i = 0; i < Column.values().length; ++i) {
+			Column column = Column.values()[i];
+			tableColumn = new TableColumn(table, SWT.LEFT);
+			tableColumn.setText(column.columnName());
+			
+			tableColumn.setWidth(column.columnWidth());
+
+			tableColumn.setMoveable(true);
+			tableColumn.setResizable(true);
+		}
+		
+		// set columns width according to the config values
+		if (configColumnsWidth.size() == Column.values().length) {
+			for (int i = 0; i < configColumnsWidth.size(); ++i) {
+				table.getColumn(i).setWidth(configColumnsWidth.get(i));
+			}
+		}
+
+		// set columns order
+		int[] order = 
+			Activator.getDefault().getPluginConfiguration().getBambooTabConfiguration().getColumnsOrder();
+		
+		if (order.length == Column.values().length) {
+			table.setColumnOrder(order);
+		}
+		
+		// add width and order listener
+		for (TableColumn column : table.getColumns()) {
+			column.addControlListener(columnListener);
+		}
+	}
+
+	private void createTableViewer(Composite parent) {
 		int style = SWT.SINGLE | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL 
-		| SWT.FULL_SELECTION | SWT.HIDE_SELECTION;
+					| SWT.FULL_SELECTION | SWT.HIDE_SELECTION;
 		
 		tableViewer = new TableViewer(parent, style);
 		tableViewer.setContentProvider(new BambooContentProvider());
@@ -114,51 +194,6 @@ public class BambooToolWindowContent implements BambooStatusListener {
 		});
 		
 		table = tableViewer.getTable();
-		
-		// create columns
-		TableColumn tableColumn; 
-		
-		ControlListener columnListener = new BambooTableColumnListener();
-		
-		List<Integer> configColumnsWidth = 
-			Activator.getDefault().getPluginConfiguration().getBambooTabConfiguration().getColumnsWidth();
-		
-		for (int i = 0; i < Column.values().length; ++i) {
-			Column column = Column.values()[i];
-			tableColumn = new TableColumn(table, SWT.LEFT);
-			tableColumn.setText(column.columnName());
-			
-			tableColumn.setWidth(column.columnWidth());
-
-			tableColumn.setMoveable(true);
-			tableColumn.setResizable(true);
-		}
-		
-		// set columns width according to the config values
-		if (configColumnsWidth.size() == Column.values().length) {
-			for (int i = 0; i < configColumnsWidth.size(); ++i) {
-				table.getColumn(i).setWidth(configColumnsWidth.get(i));
-			}
-		}
-
-		// set columns order
-		int[] order = 
-			Activator.getDefault().getPluginConfiguration().getBambooTabConfiguration().getColumnsOrder();
-		
-		if (order.length == Column.values().length) {
-			table.setColumnOrder(order);
-		}
-		
-		// add width and order listener
-		for (TableColumn column : table.getColumns()) {
-			column.addControlListener(columnListener);
-		}
-		
-		tableViewer.setInput(buildStatuses);
-		
-		table.setLinesVisible(true);
-		table.setHeaderVisible(true);	
-		
 	}
 	
 	public void updateBuildStatuses(Collection<BambooBuild> aBuildStatuses) {

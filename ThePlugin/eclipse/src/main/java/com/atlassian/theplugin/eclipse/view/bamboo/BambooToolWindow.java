@@ -44,6 +44,7 @@ public class BambooToolWindow extends ViewPart {
 	private IAction runBuildAction;
 	private IAction labelBuildAction;
 	private IAction commentBuildAction;
+	private RefreshBuildsListAction refreshBuildListAction;
 	private BambooToolWindowContent bambooToolWindowContent;
 	
 	private BambooStatusTooltipListener popupListener;
@@ -63,6 +64,23 @@ public class BambooToolWindow extends ViewPart {
 	@Override
 	public void createPartControl(Composite parent) {
 		
+		// add toolbar buttons to the view
+		IToolBarManager toolBarManager = getViewSite().getActionBars().getToolBarManager();
+		
+		this.runBuildAction = new RunBuildAction(this); 
+		this.labelBuildAction = new LabelBuildAction(this);
+		this.commentBuildAction = new CommentBuildAction(this);
+		this.showBuilLogAction = new ShowBuildLogAction(this);
+		this.refreshBuildListAction = new RefreshBuildsListAction();
+		
+		toolBarManager.add(runBuildAction);
+		toolBarManager.add(labelBuildAction);
+		toolBarManager.add(commentBuildAction);
+		toolBarManager.add(new Separator());
+		toolBarManager.add(showBuilLogAction);
+		toolBarManager.add(new Separator());
+		toolBarManager.add(refreshBuildListAction);
+		
 		bambooToolWindowContent = new BambooToolWindowContent(parent, this);
 		
 		// register view as a bamboo checker listener
@@ -76,23 +94,7 @@ public class BambooToolWindow extends ViewPart {
 		
 		//getViewSite().registerContextMenu(menuManager, selectionProvider)
 		
-		// add toolbar buttons to the view
-		IToolBarManager toolBarManager = getViewSite().getActionBars().getToolBarManager();
-		
-		this.runBuildAction = new RunBuildAction(this); 
-		this.labelBuildAction = new LabelBuildAction(this);
-		this.commentBuildAction = new CommentBuildAction(this);
-		
-		this.showBuilLogAction = new ShowBuildLogAction(this);
-		
-		toolBarManager.add(runBuildAction);
-		toolBarManager.add(labelBuildAction);
-		toolBarManager.add(commentBuildAction);
-		toolBarManager.add(new Separator());
-		toolBarManager.add(showBuilLogAction);
-		toolBarManager.add(new Separator());
-		toolBarManager.add(new RefreshBuildsListAction());
-		
+		// add status line
 		statusLineManager = (SubStatusLineManager) getViewSite().getActionBars().getStatusLineManager();
 		bambooStatusLine = new BambooStatusBar();
 		statusLineManager.getParent().add(bambooStatusLine);
@@ -160,7 +162,26 @@ public class BambooToolWindow extends ViewPart {
 		
 	}
 
-	
+	public IAction getRunBuildAction() {
+		return runBuildAction;
+	}
+
+	public IAction getLabelBuildAction() {
+		return labelBuildAction;
+	}
+
+	public IAction getCommentBuildAction() {
+		return commentBuildAction;
+	}
+
+	public ShowBuildLogAction getShowBuilLogAction() {
+		return showBuilLogAction;
+	}
+
+	public RefreshBuildsListAction getRefreshBuildListAction() {
+		return refreshBuildListAction;
+	}
+
 	
 }
 
