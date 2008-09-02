@@ -69,7 +69,7 @@ public class CrucibleHelperForm extends DialogWrapper {
 		this.permId = permId;
         this.changes = changes;
         this.mode = AddMode.ADDREVISION;
-        setTitle("Add revision");
+        setTitle("Add revision to review " + permId.getId());
         getOKAction().putValue(Action.NAME, "Add revision...");
     }
 
