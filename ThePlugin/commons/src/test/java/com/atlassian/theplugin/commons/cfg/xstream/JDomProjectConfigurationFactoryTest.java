@@ -314,4 +314,14 @@ public class JDomProjectConfigurationFactoryTest extends ProjectConfigurationFac
 	}
 
 
+	public void testMissingPrivateCfg() throws ServerCfgFactoryException {
+		final JDomProjectConfigurationFactory factory = new JDomProjectConfigurationFactory(element, null);
+		factory.save(projectCfg);
+		final ProjectConfiguration cfg = factory.load();
+		final ServerCfg serverRead = cfg.getServerCfg(bamboo1.getServerId());
+		assertEquals(bamboo1.getName(), serverRead.getName());
+		assertTrue(serverRead.isEnabled());
+
+	}
+
 }

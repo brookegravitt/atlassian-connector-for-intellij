@@ -41,10 +41,9 @@ public class JDomProjectConfigurationFactory implements ProjectConfigurationFact
 
 	public ProjectConfiguration load() throws ServerCfgFactoryException {
 		ProjectConfiguration res = load(publicElement, ProjectConfiguration.class);
-		if (privateElement == null) {
-			return res;
-		}
-		final PrivateProjectConfiguration ppc = load(privateElement, PrivateProjectConfiguration.class);
+		final PrivateProjectConfiguration ppc = (privateElement != null) 
+				? load(privateElement, PrivateProjectConfiguration.class)
+				: new PrivateProjectConfiguration();
 		return merge(res, ppc);
 	}
 
