@@ -16,26 +16,26 @@
 
 package com.atlassian.theplugin.idea.bamboo.table.renderer;
 
+import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
+import com.intellij.util.ui.ListTableModel;
+
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
-import java.awt.*;
 
 
-public class BuildNumberCellRenderer extends DefaultTableCellRenderer {
-	public Component getTableCellRendererComponent(JTable jTable,
-												   Object o, boolean isSelected, boolean hasFocus, int i, int i1) {
-		Component c = super.getTableCellRendererComponent(jTable, o, isSelected, hasFocus, i, i1);
+public class BuildNumberCellRenderer extends BackgroundAwareBambooRenderer {
+
+	protected void onRender(ListTableModel<BambooBuildAdapterIdea> model, JLabel label, Object o) {
 		if (o instanceof Integer) {
 			int value = (Integer) o;
 			if (value == 0) {
-				((JLabel) c).setToolTipText("Build information not accessible");
-				((JLabel) c).setText("-");
+				label.setToolTipText("Build information not accessible");
+				label.setText("-");
 			} else {
-				((JLabel) c).setToolTipText(o.toString());
-				((JLabel) c).setText(o.toString());
+				label.setToolTipText(o.toString());
+				label.setText(o.toString());
 			}
+			label.setHorizontalAlignment(SwingConstants.RIGHT);
 		}
-		((JLabel) c).setHorizontalAlignment(SwingConstants.RIGHT);				
-		return c;
 	}
+
 }
