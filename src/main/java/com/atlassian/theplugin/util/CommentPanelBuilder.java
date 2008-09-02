@@ -35,11 +35,15 @@ public final class CommentPanelBuilder {
 	private static final Color NOT_MINE_GENERAL_COMMENT_BODY_COLOR = new Color(234, 255, 255);
 	private static final Color NOT_MINE_FILE_COMMENT_HEADER_COLOR = new Color(255, 224, 224);
 	private static final Color NOT_MINE_FILE_COMMENT_BODY_COLOR = new Color(234, 255, 255);
+	private static final Color NOT_MINE_LINE_COMMENT_HEADER_COLOR = new Color(0, 224, 224);
+	private static final Color NOT_MINE_LINE_COMMENT_BODY_COLOR = new Color(0x80, 255, 255);
 
 	private static final Color MINE_GENERAL_COMMENT_HEADER_COLOR = new Color(0xE0, 0xFE, 0xFF);
 	private static final Color MINE_GENERAL_COMMENT_BODY_COLOR = new Color(0xEA, 0xFF, 0xFF);
 	private static final Color MINE_FILE_COMMENT_HEADER_COLOR = new Color(0xE0, 0xFE, 0xFF);
 	private static final Color MINE_FILE_COMMENT_BODY_COLOR = new Color(0xEA, 0xFF, 0xFF);
+	private static final Color MINE_LINE_COMMENT_HEADER_COLOR = new Color(0x00, 0xFE, 0xFF);
+	private static final Color MINE_LINE_COMMENT_BODY_COLOR = new Color(0x80, 0xFF, 0xFF);
 
 	private CommentPanelBuilder() {
 		// this is utility class
@@ -81,18 +85,20 @@ public final class CommentPanelBuilder {
 		return new CommentPanel(review, comment) {
 			@Override
 			public Color getHeaderBackground() {
+				boolean isLineComment = comment.isFromLineInfo() || comment.isToLineInfo();
 				if (comment.getAuthor().getUserName().equals(review.getServer().getUsername())) {
-					return MINE_FILE_COMMENT_HEADER_COLOR;
+					return isLineComment ? MINE_LINE_COMMENT_HEADER_COLOR : MINE_FILE_COMMENT_HEADER_COLOR;
 				}
-				return NOT_MINE_FILE_COMMENT_HEADER_COLOR;
+				return isLineComment ? NOT_MINE_LINE_COMMENT_HEADER_COLOR : NOT_MINE_FILE_COMMENT_HEADER_COLOR;
 			}
 
 			@Override
 			public Color getBodyBackground() {
+				boolean isLineComment = comment.isFromLineInfo() || comment.isToLineInfo();
 				if (comment.getAuthor().getUserName().equals(review.getServer().getUsername())) {
-					return MINE_FILE_COMMENT_BODY_COLOR;
+					return isLineComment ? MINE_LINE_COMMENT_BODY_COLOR : MINE_FILE_COMMENT_BODY_COLOR;
 				}
-				return NOT_MINE_FILE_COMMENT_BODY_COLOR;
+				return isLineComment ? NOT_MINE_LINE_COMMENT_BODY_COLOR : NOT_MINE_FILE_COMMENT_BODY_COLOR;
 			}
 		};
 	}
@@ -182,8 +188,19 @@ public final class CommentPanelBuilder {
 		protected Component getLineInfoLabel() {
 			if (comment instanceof VersionedComment) {
 				VersionedComment vc = (VersionedComment) comment;
-				if (vc.getToStartLine() > 0 && vc.getToEndLine() > 0) {
-					JLabel label = new JLabel("Lines: [" + vc.getToStartLine() + " - " + vc.getToEndLine() + "]");
+				if (vc.getToStartLine() > 0 && vc.isToLineInfo()
+						|| vc.getFromStartLine() > 0 && vc.isFromLineInfo()) {
+					int startLine = vc.getToStartLine() > 0 ? vc.getToStartLine() : vc.getFromStartLine();
+					int endLine =  startLine;
+					if (vc.isToLineInfo()) {
+						endLine = vc.getToEndLine() > 0 ? vc.getToEndLine() : startLine;
+					} else if (vc.isFromLineInfo()) {
+						endLine = vc.getFromEndLine() > 0 ? vc.getFromEndLine() : startLine;
+					}
+					String txt = endLine != startLine
+							? "Lines: [" + startLine + " - " + endLine + "]"
+							: "Line: " + endLine;
+					JLabel label = new JLabel(txt);
 					label.setFont(getSmallerFont(label.getFont(), LINE_NUMBER_FONT_DIFFERENCE));
 					label.setForeground(Color.GRAY);
 					return label;
