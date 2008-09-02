@@ -20,9 +20,13 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
+import com.intellij.openapi.editor.event.DocumentEvent;
+import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.editor.markup.HighlighterLayer;
+import com.intellij.openapi.editor.markup.HighlighterTargetArea;
 import com.intellij.openapi.editor.markup.MarkupModel;
 import com.intellij.openapi.editor.markup.RangeHighlighter;
 import com.intellij.openapi.editor.markup.TextAttributes;
@@ -32,23 +36,24 @@ import com.intellij.openapi.util.Key;
 import java.awt.*;
 
 public final class CommentHighlighter {
-	private static final Color VERSIONED_COMMENT_BACKGROUND_COLOR = Color.ORANGE;
-	private static final Color VERSIONED_COMMENT_STRIP_MARK_COLOR = Color.ORANGE;
+	private static final Color VERSIONED_COMMENT_BACKGROUND_COLOR = new Color(255, 219, 90);
+	private static final Color VERSIONED_COMMENT_STRIP_MARK_COLOR = VERSIONED_COMMENT_BACKGROUND_COLOR;
 
-	public static final String REVIEW_DATA_KEY_NAME = "REVIEW_DATA_KEY";
+	private static final String REVIEW_DATA_KEY_NAME = "REVIEW_DATA_KEY";
 	public static final Key<ReviewData> REVIEW_DATA_KEY = Key.create(REVIEW_DATA_KEY_NAME);
 
-	public static final String REVIEWITEM_DATA_KEY_NAME = "REVIEW_ITEM_DATA_KEY";
+	private static final String REVIEWITEM_DATA_KEY_NAME = "REVIEW_ITEM_DATA_KEY";
 	public static final Key<CrucibleFileInfo> REVIEWITEM_DATA_KEY = Key.create(REVIEWITEM_DATA_KEY_NAME);
 
-	public static final String COMMENT_DATA_KEY_NAME = "CRUCIBLE_COMMENT_DATA_KEY";
-	public static final Key<Boolean> COMMENT_DATA_KEY = Key.create(COMMENT_DATA_KEY_NAME);
+	private static final String COMMENT_DATA_KEY_NAME = "CRUCIBLE_COMMENT_DATA_KEY";
+	private static final Key<Boolean> COMMENT_DATA_KEY = Key.create(COMMENT_DATA_KEY_NAME);
+	private static final Key<DocumentListener> LISTENER_KEY = Key.create("CRUCIBLE_COMMENT_DOCUMENT_LISTENER");
 
 
 	private CommentHighlighter() {
 	}
 
-	public static void highlightCommentsInEditor(Project project, Editor editor, ReviewData review,
+	public static void highlightCommentsInEditor(final Project project, final Editor editor, ReviewData review,
 			CrucibleFileInfo reviewItem) {
 		if (editor != null) {
 
@@ -56,6 +61,24 @@ public final class CommentHighlighter {
 			editor.putUserData(REVIEW_DATA_KEY, review);
 			editor.putUserData(REVIEWITEM_DATA_KEY, reviewItem);
 			editor.putUserData(COMMENT_DATA_KEY, true);
+			DocumentListener documentListener = editor.getUserData(LISTENER_KEY);
+			if (documentListener == null) {
+				documentListener = new DocumentListener() {
+					public void beforeDocumentChange(final DocumentEvent event) {
+					}
+
+					public void documentChanged(final DocumentEvent event) {
+						ApplicationManager.getApplication().invokeLater(new Runnable() {
+							public void run() {
+								removeHighlighters(editor.getDocument().getMarkupModel(project));
+							}
+						});
+					}
+				};
+				editor.getDocument().addDocumentListener(documentListener);
+				editor.putUserData(LISTENER_KEY, documentListener);
+			}
+
 		}
 	}
 
@@ -87,13 +110,14 @@ public final class CommentHighlighter {
 			for (VersionedComment comment : reviewItem.getVersionedComments()) {
 				if (comment.getToStartLine() > 0 && comment.getToEndLine() > 0) {
 					try {
-						for (int i = comment.getToStartLine() - 1; i < comment.getToEndLine(); i++) {
-							RangeHighlighter rh = markupModel.addLineHighlighter(
-									i, HighlighterLayer.SELECTION, textAttributes);
-							rh.setErrorStripeTooltip(comment.getAuthor().getDisplayName() + ":" + comment.getMessage());
+						final int startOffset = editor.getDocument().getLineStartOffset(comment.getToStartLine() - 1);
+						final int endOffset = editor.getDocument().getLineEndOffset(comment.getToEndLine() - 1);
+						RangeHighlighter rh = markupModel.addRangeHighlighter(startOffset, endOffset - 1,
+								HighlighterLayer.WARNING - 1, textAttributes, HighlighterTargetArea.LINES_IN_RANGE);
+							rh.setErrorStripeTooltip("<html><b>" + comment.getAuthor().getDisplayName()
+									+ ":</b> " + comment.getMessage());
 							rh.setErrorStripeMarkColor(VERSIONED_COMMENT_STRIP_MARK_COLOR);
 							rh.putUserData(COMMENT_DATA_KEY, true);
-						}
 					} catch (Exception e) {
 						PluginUtil.getLogger().error(e);
 					}
