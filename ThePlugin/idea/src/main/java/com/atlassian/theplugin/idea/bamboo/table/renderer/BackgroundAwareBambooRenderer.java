@@ -26,6 +26,7 @@ import java.awt.*;
 public class BackgroundAwareBambooRenderer extends DefaultTableCellRenderer {
 	private static final Color FAILED_BUILD_COLOR = new Color(255, 201, 201);
 	private static final Color SUCCEED_BUILD_COLOR = new Color(203, 255, 165);
+	private static final Color DISABLED_BUILD_COLOR = new Color(230, 230, 230);
 
 	@Override
 	public final Component getTableCellRendererComponent(JTable jTable,
@@ -36,11 +37,16 @@ public class BackgroundAwareBambooRenderer extends DefaultTableCellRenderer {
 			ListTableModel<BambooBuildAdapterIdea> o1 = (ListTableModel<BambooBuildAdapterIdea>) jTable.getModel();
 			BambooBuildAdapterIdea currentRow = (BambooBuildAdapterIdea) o1.getItem(row);
 			if (isSelected == false) {
-				if (currentRow.getEnabled() && currentRow.getStatus() == BuildStatus.BUILD_FAILED) {
-					c.setBackground(FAILED_BUILD_COLOR);
+				if (currentRow.getEnabled()) {
+					if (currentRow.getStatus() == BuildStatus.BUILD_FAILED) {
+						c.setBackground(FAILED_BUILD_COLOR);
+					} else {
+						c.setBackground(SUCCEED_BUILD_COLOR);
+					}
 				} else {
-					c.setBackground(SUCCEED_BUILD_COLOR);
+					c.setBackground(DISABLED_BUILD_COLOR);
 				}
+
 			}
 
 			onRender(o1, (JLabel) c, o);
