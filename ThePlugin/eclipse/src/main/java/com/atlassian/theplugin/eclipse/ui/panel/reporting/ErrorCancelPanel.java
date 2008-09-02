@@ -39,6 +39,7 @@ import com.atlassian.theplugin.eclipse.ui.utility.UIMonitorUtil;
  * @author Sergiy Logvin
  */
 public class ErrorCancelPanel extends AbstractAdvancedDialogPanel {
+	private static final int A_100 = 100;
 	protected static final int ERROR_PANEL_TYPE = 0;
 	protected static final int CANCEL_PANEL_TYPE = 1;
 
@@ -168,7 +169,7 @@ public class ErrorCancelPanel extends AbstractAdvancedDialogPanel {
 		this.errorTextField = new Text(parent, SWT.MULTI | SWT.H_SCROLL
 				| SWT.V_SCROLL | SWT.BORDER);
 		data = new GridData(GridData.FILL_BOTH);
-		data.heightHint = 100;
+		data.heightHint = A_100;
 		this.errorTextField.setLayoutData(data);
 		this.errorTextField.setEditable(false);
 		this.errorTextField.setText(this.simpleMessage);

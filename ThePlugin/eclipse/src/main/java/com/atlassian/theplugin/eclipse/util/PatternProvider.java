@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
  * @author Gabor Liptak
  */
 public final class PatternProvider {
-	private static int MAX_CACHE_SIZE = 100;
+	private static final int MAX_CACHE_SIZE = 100;
 	
 	private static LinkedHashMap<String, Pattern> patterns = new LinkedHashMap<String, Pattern>() {
 		private static final long serialVersionUID = 2921759287651173337L;
@@ -35,7 +35,7 @@ public final class PatternProvider {
 	}
 
 	public static synchronized Pattern getPattern(String strPattern) {
-		Pattern patternReturn = (Pattern)PatternProvider.patterns.get(strPattern);
+		Pattern patternReturn = (Pattern) PatternProvider.patterns.get(strPattern);
 		
 		//if two threads would need the same new pattern in the same time, only one will compile it
 		if (patternReturn == null) {

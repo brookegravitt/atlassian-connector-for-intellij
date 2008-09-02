@@ -56,6 +56,8 @@ import com.atlassian.theplugin.eclipse.view.bamboo.BambooConfigurationStorage;
  */
 public class Activator extends AbstractUIPlugin {
 
+	private static final int THREAD_SLEEP = 100;
+
 	// The plug-in ID
 	public static final String PLUGIN_ID = "com.atlassian.theplugin.eclipse";
 
@@ -203,7 +205,7 @@ public class Activator extends AbstractUIPlugin {
 	public static Activator getDefault() {
 		while (Activator.plugin == null) {
     		try {
-    			Thread.sleep(100);
+    			Thread.sleep(THREAD_SLEEP);
     		} catch (InterruptedException ex) {
     			break;
     		}

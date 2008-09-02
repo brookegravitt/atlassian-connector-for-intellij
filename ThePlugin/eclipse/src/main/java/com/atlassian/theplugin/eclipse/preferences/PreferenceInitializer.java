@@ -28,6 +28,8 @@ import com.atlassian.theplugin.commons.configuration.BambooTooltipOption;
  */
 public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
+	private static final int BAMBOO_POLLING_TIME = 10;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -36,7 +38,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	public void initializeDefaultPreferences() {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 		
-		store.setDefault(PreferenceConstants.BAMBOO_POLLING_TIME, 10);
+		store.setDefault(PreferenceConstants.BAMBOO_POLLING_TIME, BAMBOO_POLLING_TIME);
 		store.setDefault(PreferenceConstants.BAMBOO_POPUP, BambooTooltipOption.ALL_FAULIRES_AND_FIRST_SUCCESS.name());
 	}
 
