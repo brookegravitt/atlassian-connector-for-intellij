@@ -108,10 +108,11 @@ public final class CommentHighlighter {
 		textAttributes.setBackgroundColor(VERSIONED_COMMENT_BACKGROUND_COLOR);
 		try {
 			for (VersionedComment comment : reviewItem.getVersionedComments()) {
-				if (comment.getToStartLine() > 0 && comment.getToEndLine() > 0) {
+				if (comment.getToStartLine() > 0) {
+					int endLine =  comment.getToEndLine() > 0 ? comment.getToEndLine() : comment.getToStartLine();
 					try {
 						final int startOffset = editor.getDocument().getLineStartOffset(comment.getToStartLine() - 1);
-						final int endOffset = editor.getDocument().getLineEndOffset(comment.getToEndLine() - 1);
+						final int endOffset = editor.getDocument().getLineEndOffset(endLine - 1);
 						RangeHighlighter rh = markupModel.addRangeHighlighter(startOffset, endOffset - 1,
 								HighlighterLayer.WARNING - 1, textAttributes, HighlighterTargetArea.LINES_IN_RANGE);
 							rh.setErrorStripeTooltip("<html><b>" + comment.getAuthor().getDisplayName()
