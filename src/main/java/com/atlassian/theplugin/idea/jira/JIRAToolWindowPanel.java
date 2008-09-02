@@ -622,8 +622,79 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
         //clearIssues();
         disablePagesButton();
 
-		Task.Backgroundable refresh = new IssueRefreshTask(jiraServer);
-		ProgressManager.getInstance().run(refresh);
+		final JIRAServerFacade serverFacade = jiraServerFacade;
+
+		final List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
+
+                checkTableSort();
+                if (filters.getSavedFilterUsed()) {
+                    if (savedQuery != null) {
+                        query.add(savedQuery);
+                        setStatusMessage("Retrieving issues from <b>" + jiraServer.getServer().getName() + "</b>...");
+                        editorPane.setCaretPosition(0);
+
+						Task.Backgroundable getIssues = new Task.Backgroundable(project, "Retrieving JIRA Issues", false) {
+							private boolean failed = false;
+							List<JIRAIssue> result;
+
+							public void run(final ProgressIndicator indicator) {
+								try {
+									result = serverFacade.getSavedFilterIssues(jiraServer.getServer(),
+										query, sortColumn, sortOrder, startIndex, maxIndex);
+								} catch (JIRAException e) {
+									failed = true;
+								}
+							}
+
+							public void onSuccess() {
+								if (failed) {
+									setStatusMessage("Error contacting server <b>"
+											+ jiraServer.getServer().getName() + "</b>", true);
+								} else {
+									setIssues(result);
+								}
+							}
+						};
+
+						ProgressManager.getInstance().run(getIssues);
+					}
+                } else {
+                    for (JIRAQueryFragment jiraQueryFragment : advancedQuery) {
+                        if (jiraQueryFragment.getId() != JIRAServer.ANY_ID) {
+                            query.add(jiraQueryFragment);
+                        }
+                    }
+                    setStatusMessage("Retrieving issues from <b>" + jiraServer.getServer().getName() + "</b>...");
+                    editorPane.setCaretPosition(0);
+
+					Task.Backgroundable getIssues = new Task.Backgroundable(project, "Retrieving JIRA Issues", false) {
+							private boolean failed = false;
+							List<JIRAIssue> result;
+
+							public void run(final ProgressIndicator indicator) {
+								try {
+									result = serverFacade.getIssues(jiraServer.getServer(),
+										query, sortColumn, sortOrder, startIndex, maxIndex);
+								} catch (JIRAException e) {
+									failed = true;
+								}
+							}
+
+							public void onSuccess() {
+								if (failed) {
+									setStatusMessage("Error contacting server <b>"
+											+ jiraServer.getServer().getName() + "</b>", true);
+								} else {
+									setIssues(result);
+								}
+							}
+						};
+
+						ProgressManager.getInstance().run(getIssues);
+                }
+
+//		Task.Backgroundable refresh = new IssueRefreshTask(jiraServer);
+//		ProgressManager.getInstance().run(refresh);
 	}
 
     private final class IssueRefreshTask extends Task.Backgroundable {
@@ -634,48 +705,68 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 			this.jiraServer = jiraServer;
         }
 
-        public void run(final ProgressIndicator indicator) {
-            JIRAServerFacade serverFacade = jiraServerFacade;
-            try {
-                List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
-                final List<JIRAIssue> result;
-                checkTableSort();
-                if (filters.getSavedFilterUsed()) {
-                    if (savedQuery != null) {
-                        query.add(savedQuery);
-                        setStatusMessage("Retrieving issues from <b>" + jiraServer.getServer().getName() + "</b>...");
-                        editorPane.setCaretPosition(0);
-                        result = serverFacade.getSavedFilterIssues(jiraServer.getServer(),
-                                query, sortColumn, sortOrder, startIndex, maxIndex);
-                        EventQueue.invokeLater(new Runnable() {
-                            public void run() {
-                                setIssues(result);
-                            }
-                        });
-                    }
-                } else {
-                    for (JIRAQueryFragment jiraQueryFragment : advancedQuery) {
-                        if (jiraQueryFragment.getId() != JIRAServer.ANY_ID) {
-                            query.add(jiraQueryFragment);
-                        }
-                    }
-                    setStatusMessage("Retrieving issues from <b>" + jiraServer.getServer().getName() + "</b>...");
-                    editorPane.setCaretPosition(0);
-                    result = serverFacade.getIssues(jiraServer.getServer(),
-                            query, sortColumn, sortOrder, startIndex, maxIndex);
-                    EventQueue.invokeLater(new Runnable() {
-                        public void run() {
-                            setIssues(result);
-                        }
-                    });
-                }
-            } catch (JIRAException e) {
-                setStatusMessage("Error contacting server <b>" + jiraServer.getServer().getName() + "</b>", true);
-            }
-//			finally {
-////                progressAnimation.stopProgressAnimation();
+		private boolean failed = false;
+		List<JIRAIssue> result;
+
+		public void run(final ProgressIndicator indicator) {
+			JIRAServerFacade serverFacade = jiraServerFacade;
+			try {
+				List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
+				result = serverFacade.getSavedFilterIssues(jiraServer.getServer(),
+						query, sortColumn, sortOrder, startIndex, maxIndex);
+			} catch (JIRAException e) {
+				failed = true;
+			}
+		}
+
+		public void onSuccess() {
+			if (failed) {
+				setStatusMessage("Error contacting server <b>"
+						+ jiraServer.getServer().getName() + "</b>", true);
+			} else {
+				setIssues(result);
+			}
+		}
+
+//        public void run(final ProgressIndicator indicator) {
+//            JIRAServerFacade serverFacade = jiraServerFacade;
+//            try {
+//                List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
+//                final List<JIRAIssue> result;
+//                checkTableSort();
+//                if (filters.getSavedFilterUsed()) {
+//                    if (savedQuery != null) {
+//                        query.add(savedQuery);
+//                        setStatusMessage("Retrieving issues from <b>" + jiraServer.getServer().getName() + "</b>...");
+//                        editorPane.setCaretPosition(0);
+//                        result = serverFacade.getSavedFilterIssues(jiraServer.getServer(),
+//                                query, sortColumn, sortOrder, startIndex, maxIndex);
+//                        EventQueue.invokeLater(new Runnable() {
+//                            public void run() {
+//                                setIssues(result);
+//                            }
+//                        });
+//                    }
+//                } else {
+//                    for (JIRAQueryFragment jiraQueryFragment : advancedQuery) {
+//                        if (jiraQueryFragment.getId() != JIRAServer.ANY_ID) {
+//                            query.add(jiraQueryFragment);
+//                        }
+//                    }
+//                    setStatusMessage("Retrieving issues from <b>" + jiraServer.getServer().getName() + "</b>...");
+//                    editorPane.setCaretPosition(0);
+//                    result = serverFacade.getIssues(jiraServer.getServer(),
+//                            query, sortColumn, sortOrder, startIndex, maxIndex);
+//                    EventQueue.invokeLater(new Runnable() {
+//                        public void run() {
+//                            setIssues(result);
+//                        }
+//                    });
+//                }
+//            } catch (JIRAException e) {
+//                setStatusMessage("Error contacting server <b>" + jiraServer.getServer().getName() + "</b>", true);
 //            }
-        }
+//        }
 	}
 
     private void checkTableSort() {
