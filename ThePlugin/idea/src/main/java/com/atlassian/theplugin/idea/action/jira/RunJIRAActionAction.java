@@ -54,7 +54,9 @@ public class RunJIRAActionAction extends AnAction {
 	}
 
 	public void runIssueActionOrLaunchBrowser(Project project) {
-		new Thread(new IssueActionOrLaunchBrowserRunnable(project)).start();
+//		new Thread(new IssueActionOrLaunchBrowserRunnable(project)).start();\
+
+		new IssueActionOrLaunchBrowserRunnable(project).run();
 	}
 
 	public void launchBrowser() {
@@ -66,7 +68,7 @@ public class RunJIRAActionAction extends AnAction {
 			+ action.getQueryStringFragment());
 	}
 
-	private class IssueActionOrLaunchBrowserRunnable implements Runnable {
+	private class IssueActionOrLaunchBrowserRunnable {
 		private Project project;
 
 		IssueActionOrLaunchBrowserRunnable(Project project) {
