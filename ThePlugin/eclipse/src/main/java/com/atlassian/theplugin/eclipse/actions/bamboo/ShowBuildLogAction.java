@@ -33,32 +33,23 @@ public class ShowBuildLogAction extends AbstractBambooAction {
 		final BambooBuildAdapterEclipse build = getBuild();
 
 		Job labelBuild = new Job("Retrieving build log") {
-
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
-
 				try {
 					setUIMessage("Retrieving build log");
-					final byte[] log = bambooFacade.getBuildLogs(build
-							.getServer(), build.getBuildKey(), build
-							.getBuildNumber());
+					final byte[] log = bambooFacade.getBuildLogs(build.getServer(), build.getBuildKey(), 
+							build.getBuildNumber());
 
 					EclipseActionScheduler.getInstance().invokeLater(
 							new Runnable() {
 								public void run() {
 									IEditorInput editorInput = new BuildLogEditorInput(
-											new String(log), build
-													.getBuildKey()
-													+ "-"
-													+ build.getBuildNumber());
-									IWorkbenchWindow window = PlatformUI
-											.getWorkbench()
-											.getActiveWorkbenchWindow();
-									IWorkbenchPage page = window
-											.getActivePage();
+											new String(log), 
+											build.getBuildKey() + "-" + build.getBuildNumber());
+									IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+									IWorkbenchPage page = window.getActivePage();
 									try {
-										page
-												.openEditor(editorInput,
+										page.openEditor(editorInput,
 														"com.atlassian.theplugin.eclipse.editors.bamboo.LogEditor");
 									} catch (PartInitException e) {
 										e.printStackTrace();
@@ -88,8 +79,13 @@ public class ShowBuildLogAction extends AbstractBambooAction {
 
 	@Override
 	public String getToolTipText() {
-		// TODO Auto-generated method stub
 		return SHOW_BUILD_LOG;
 	}
 
+	@Override
+	public String getText() {
+		return SHOW_BUILD_LOG;
+	}
+
+	
 }

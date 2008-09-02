@@ -76,5 +76,13 @@ public class RunBuildAction extends AbstractBambooAction {
 	@Override
 	public String getToolTipText() {
 		return RUN_BUILD;
+	}
+
+
+	@Override
+	public String getText() {
+		return RUN_BUILD;
 	}	
+	
+	
 }
