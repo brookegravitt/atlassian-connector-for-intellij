@@ -89,19 +89,19 @@
 		<errorHandler implementation="com.atlassian.theplugin.idea.BlameAtlassian"/>
 	</extensions>
 
-    <application-components>
-        <component>
-            <implementation-class>com.atlassian.theplugin.idea.ThePluginApplicationComponent</implementation-class>
-        </component>
-        <component>
-            <implementation-class>com.atlassian.theplugin.idea.jira.editor.ThePluginJIRAEditorComponent
-            </implementation-class>
-        </component>
+	<application-components>
+		<component>
+			<implementation-class>com.atlassian.theplugin.idea.ThePluginApplicationComponent</implementation-class>
+		</component>
+		<component>
+			<implementation-class>com.atlassian.theplugin.idea.jira.editor.ThePluginJIRAEditorComponent
+			</implementation-class>
+		</component>
 	</application-components>
-    <project-components>
-        <component>
-            <implementation-class>com.atlassian.theplugin.idea.ThePluginProjectComponent</implementation-class>
-        </component>
+	<project-components>
+		<component>
+			<implementation-class>com.atlassian.theplugin.idea.ThePluginProjectComponent</implementation-class>
+		</component>
 		<component>
 			<implementation-class>com.atlassian.theplugin.idea.ProjectConfigurationComponent</implementation-class>
 		</component>
@@ -114,27 +114,27 @@
 			<keyboard-shortcut first-keystroke="shift control p" keymap="$default"/>
 		</action>
 
-        <action id="ThePlugin.AddServerAction"
-                class="com.atlassian.theplugin.idea.config.serverconfig.action.AddServerAction" text="Add New Server"
-                description="Add a new server" icon="/general/add.png"/>
-        <action id="ThePlugin.RemoveServerAction"
-                class="com.atlassian.theplugin.idea.config.serverconfig.action.RemoveServerAction"
-                text="Remove Server" description="Remove an existing server" icon="/general/remove.png"/>
+		<action id="ThePlugin.AddServerAction"
+				class="com.atlassian.theplugin.idea.config.serverconfig.action.AddServerAction" text="Add New Server"
+				description="Add a new server" icon="/general/add.png"/>
+		<action id="ThePlugin.RemoveServerAction"
+				class="com.atlassian.theplugin.idea.config.serverconfig.action.RemoveServerAction"
+				text="Remove Server" description="Remove an existing server" icon="/general/remove.png"/>
 
-        <action id="ThePlugin.AddBambooServerAction"
-                class="com.atlassian.theplugin.idea.config.serverconfig.action.AddBambooServerAction"
-                text="Add Bamboo Server" description="Add a new Bamboo server" icon="/icons/blue-16.png"/>
-        <action id="ThePlugin.AddCrucibleServerAction"
-                class="com.atlassian.theplugin.idea.config.serverconfig.action.AddCrucibleServerAction"
-                text="Add Crucible Server" description="Add a new Crucible server" icon="/icons/crucible-16.png"/>
-        <action id="ThePlugin.AddJIRAServerAction"
-                class="com.atlassian.theplugin.idea.config.serverconfig.action.AddJIRAServerAction" text="Add JIRA Server"
-                description="Add a new JIRA server" icon="/icons/jira-blue-16.png"/>
+		<action id="ThePlugin.AddBambooServerAction"
+				class="com.atlassian.theplugin.idea.config.serverconfig.action.AddBambooServerAction"
+				text="Add Bamboo Server" description="Add a new Bamboo server" icon="/icons/blue-16.png"/>
+		<action id="ThePlugin.AddCrucibleServerAction"
+				class="com.atlassian.theplugin.idea.config.serverconfig.action.AddCrucibleServerAction"
+				text="Add Crucible Server" description="Add a new Crucible server" icon="/icons/crucible-16.png"/>
+		<action id="ThePlugin.AddJIRAServerAction"
+				class="com.atlassian.theplugin.idea.config.serverconfig.action.AddJIRAServerAction" text="Add JIRA Server"
+				description="Add a new JIRA server" icon="/icons/jira-blue-16.png"/>
 
-        <group id="ThePlugin.ServerConfigToolBar" popup="false" text="">
-            <reference id="ThePlugin.AddServerAction"/>
-            <reference id="ThePlugin.RemoveServerAction"/>
-        </group>
+		<group id="ThePlugin.ServerConfigToolBar" popup="false" text="">
+			<reference id="ThePlugin.AddServerAction"/>
+			<reference id="ThePlugin.RemoveServerAction"/>
+		</group>
 		<group id="ThePlugin.AddRemoveServerPopup">
 			<reference id="ThePlugin.AddBambooServerAction"/>
 			<reference id="ThePlugin.AddCrucibleServerAction"/>
@@ -149,7 +149,8 @@
 		</group>
 
 		<action id="ThePlugin.ShowSettings" class="com.atlassian.theplugin.idea.action.ShowProjectSettingsAction"
-				text="Configure Project Settings" description="Show plugin project configuration" icon="/general/ideOptions.png">
+				text="Configure Project Settings" description="Show plugin project configuration"
+				icon="/general/ideOptions.png">
 			<keyboard-shortcut first-keystroke="shift control g" keymap="$default"/>
 		</action>
 
@@ -237,6 +238,22 @@
 			<add-to-group group-id="EditorPopupMenu" anchor="last"/>
 		</action>
 
+		<action id="OpenFisheyeLink" class="com.atlassian.theplugin.idea.action.fisheye.OpenFisheyeLinkInBrowserAction"
+				text="Open Fisheye link in browser"
+				description="Open Fisheye link in browser">
+		</action>
+
+		<action id="CopyFisheyeLink" class="com.atlassian.theplugin.idea.action.fisheye.CopyFisheyeLinkToClipboardAction"
+				text="Copy Fisheye link to clipboard"
+				description="Copy Fisheye link to clipboard">
+		</action>
+
+		<group id="ThePlugin.FisheyeEditorMenu" popup="true" text="Fisheye">
+			<reference id="OpenFisheyeLink" />
+			<reference id="CopyFisheyeLink" />
+			<add-to-group group-id="EditorPopupMenu" anchor="last"/>
+		</group>
+				
 		<group id="ThePlugin.BambooToolWindowToolBar" popup="false" text="">
 			<reference id="ThePlugin.ShowSettings"/>
 			<reference id="ThePlugin.HelpBamboo"/>
@@ -613,6 +630,21 @@
 		<action id="ThePlugin.JIRA.CreateChangeList"
 				class="com.atlassian.theplugin.idea.action.jira.CreateChangeListAction" text="Create Change List"/>
 
+		<action id="ThePlugin.JIRA.CopyIssueKey" class="com.atlassian.theplugin.idea.action.jira.CopyIssueKeyAction"
+				text="Key"/>
+		<action id="ThePlugin.JIRA.CopyIssueUrl" class="com.atlassian.theplugin.idea.action.jira.CopyIssueUrlAction"
+				text="Url"/>
+		<action id="ThePlugin.JIRA.CopyIssueSummary" class="com.atlassian.theplugin.idea.action.jira.CopyIssueSummaryAction"
+				text="Key and summary"/>
+		<action id="ThePlugin.JIRA.CopyIssueKeySummary" class="com.atlassian.theplugin.idea.action.jira.CopyIssueKeySummaryAction"
+				text="Key and summary"/>
+
+		<group id="ThePlugin.JIRA.CopyToClipboardGroup" text="Copy to clipboard" popup="true">
+			<reference id="ThePlugin.JIRA.CopyIssueKey"/>
+			<reference id="ThePlugin.JIRA.CopyIssueUrl"/>
+			<reference id="ThePlugin.JIRA.CopyIssueSummary"/>
+			<reference id="ThePlugin.JIRA.CopyIssueKeySummary"/>
+		</group>
 
 		<group id="ThePlugin.JIRA.IssuePopupMenu" popup="true">
 			<reference id="ThePlugin.JIRA.OpenIssue"/>
@@ -625,6 +657,8 @@
 			<separator/>
 			<reference id="ThePlugin.JIRA.AssignIssueToMyself"/>
 			<reference id="ThePlugin.JIRA.AssignIssueToUser"/>
+			<separator/>
+			<reference id="ThePlugin.JIRA.CopyToClipboardGroup"/>
 			<separator/>
 			<!--uncomment the line below to get the popup-style issue actions-->
 			<!--<reference id="ThePlugin.JIRA.WorkflowActions"/>-->
