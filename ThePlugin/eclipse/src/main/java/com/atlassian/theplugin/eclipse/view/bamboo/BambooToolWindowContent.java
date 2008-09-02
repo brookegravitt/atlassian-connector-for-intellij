@@ -45,10 +45,17 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 
 import com.atlassian.theplugin.commons.bamboo.BambooBuild;
+import com.atlassian.theplugin.commons.bamboo.BambooChangeSet;
+import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
 import com.atlassian.theplugin.commons.bamboo.BambooStatusListener;
+import com.atlassian.theplugin.commons.bamboo.BuildDetails;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
+import com.atlassian.theplugin.commons.bamboo.TestDetails;
+import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.eclipse.preferences.Activator;
 import com.atlassian.theplugin.eclipse.util.PluginIcons;
+import com.atlassian.theplugin.eclipse.util.PluginUtil;
 
 public class BambooToolWindowContent implements BambooStatusListener {
 
@@ -179,6 +186,10 @@ public class BambooToolWindowContent implements BambooStatusListener {
 //					
 //					for (TestDetails test : testDetails) {
 //						System.out.println(test.getTestClassName() + " : " + test.getTestMethodName());
+//					}
+//					
+//					for (BambooChangeSet changeSet : buildDetails.getCommitInfo()) {
+//						System.out.println(changeSet.getAuthor() + " : " + changeSet.getComment());
 //					}
 //					
 //				} catch (ServerPasswordNotProvidedException e) {

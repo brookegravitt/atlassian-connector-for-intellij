@@ -260,7 +260,8 @@ public class ReportingComposite extends Composite {
 
 		Composite buttonsComposite = new Composite(this, SWT.NONE);
 		layout = new GridLayout();
-		layout.marginWidth = layout.marginHeight = 0;
+		layout.marginWidth = 0;
+		layout.marginHeight = 0;
 		layout.verticalSpacing = 0;
 		layout.numColumns = 2;
 		buttonsComposite.setLayout(layout);
