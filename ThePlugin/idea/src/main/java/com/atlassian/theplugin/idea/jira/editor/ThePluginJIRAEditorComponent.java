@@ -20,7 +20,7 @@ import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.CachedIconLoader;
 import com.atlassian.theplugin.idea.jira.IssueComment;
-import com.atlassian.theplugin.idea.jira.editor.vfs.MemoryVirtualFile;
+import com.atlassian.theplugin.idea.jira.editor.vfs.JiraIssueVirtualFile;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
@@ -92,7 +92,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
         // todo: probably not too pretty and there IS a possibility
         // that some other custom editor will intercept our JIRA "file"
         // - as it now has no extension. Is there a better way to do this?
-        if (!(virtualFile instanceof MemoryVirtualFile)) {
+        if (!(virtualFile instanceof JiraIssueVirtualFile)) {
             shouldIAccept = false;
         }
         return shouldIAccept;
@@ -100,13 +100,11 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 
 	@NotNull
 	public FileEditor createEditor(@NotNull Project project, @NotNull VirtualFile virtualFile) {
-		String issueFromFileName = virtualFile.getNameWithoutExtension();
-		JIRAIssue issue = IdeaHelper.getJIRAToolWindowPanel(project).getCurrentIssue();
-		if (issueFromFileName.equals(issue.getKey())) {
-			return new JIRAFileEditor(project, issue);
+		if (virtualFile instanceof JiraIssueVirtualFile) {
+			JiraIssueVirtualFile jivf = (JiraIssueVirtualFile) virtualFile;
+			return new JIRAFileEditor(project, jivf.getIssue());
 		}
-		return new JIRAFileEditor();
-
+		throw new IllegalArgumentException("needs a JiraVirtualFile argument, has " + virtualFile.getClass().toString());
 	}
 
 	public void disposeEditor(@NotNull FileEditor fileEditor) {
