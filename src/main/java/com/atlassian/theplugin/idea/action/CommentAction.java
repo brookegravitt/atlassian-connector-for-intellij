@@ -69,6 +69,7 @@ public class CommentAction extends AnAction {
 		e.getPresentation().setVisible(visible);
 	}
 
+	@Override
 	public void actionPerformed(final AnActionEvent e) {
 		Editor ed = e.getData(DataKeys.EDITOR);
 		if (ed == null) {
