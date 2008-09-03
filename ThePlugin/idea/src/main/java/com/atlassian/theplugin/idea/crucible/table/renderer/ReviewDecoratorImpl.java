@@ -19,18 +19,23 @@ package com.atlassian.theplugin.idea.crucible.table.renderer;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.util.ColorToHtml;
+import com.intellij.util.ui.UIUtil;
 
 import java.util.List;
 
 public class ReviewDecoratorImpl implements ReviewDecorator {
 	private String text;
 	private ReviewData review;
+	private boolean isSelected;
 
-	public ReviewDecoratorImpl(String value, ReviewData review) {
+	public ReviewDecoratorImpl(String value, ReviewData review, boolean isSelected) {
 		this.text = value;
 		this.review = review;
+		this.isSelected = isSelected;
 
 		// first decorator is most important (takes precedence)
+		selectionDecorator();
 		stateDecorator();
 		reviewerFinishedDecorator();
 		authorModeratorDecorator();
@@ -116,6 +121,15 @@ public class ReviewDecoratorImpl implements ReviewDecorator {
 		}
 	}
 
+	private void selectionDecorator() {
+		if (isSelected) {
+			text = "<span style=\"color: "
+					+ ColorToHtml.getHtmlFromColor(UIUtil.getListSelectionForeground())
+					+ "\">"
+					+ text
+					+ "</span>";
+		}
+	}
 
 	/**
 	 * Decorates text with <html><body>...</body></html> tags

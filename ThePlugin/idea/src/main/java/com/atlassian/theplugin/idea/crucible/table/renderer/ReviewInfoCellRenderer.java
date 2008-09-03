@@ -24,7 +24,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 
 
-public class ReviewInfoCellRenderer extends DefaultTableCellRenderer {
+public class ReviewInfoCellRenderer extends ReviewCellRenderer {
 	public static final String BODY_WITH_STYLE =
 			"<body style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">";
 
@@ -83,15 +83,11 @@ public class ReviewInfoCellRenderer extends DefaultTableCellRenderer {
 	}
 
 
-	public Component getTableCellRendererComponent(JTable jTable,
-												   Object o, boolean isSelected, boolean hasFocus, int i, int i1) {
-		Component c = super.getTableCellRendererComponent(jTable, o, isSelected, hasFocus, i, i1);
-		if (o instanceof ReviewData) {
-			ReviewData review = (ReviewData) o;					
-			((JLabel) c).setToolTipText(buildTolltip(review));
-			((JLabel) c).setText(new ReviewDecoratorImpl(review.getName(), review).getString());
-			((JLabel) c).setIcon(null);
-		}
-		return c;
+	protected String getCellText(ReviewData review) {
+		return review.getName();
+	}
+
+	protected String getCellToolTipText(ReviewData review) {
+		return buildTolltip(review);
 	}
 }
