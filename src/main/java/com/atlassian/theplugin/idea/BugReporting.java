@@ -71,7 +71,7 @@ public final class BugReporting {
 		// versions seen here are formatted:
 		// "x.y.z-SNAPSHOT, SVN:ijk" or "x.y.z, SVN:ijk"
 		// let's check for both possibilities
-		int i = versionName.indexOf('-');
+		int i = versionName.indexOf("-SNAPSHOT");
 		if (i == -1) {
 			i = versionName.indexOf(',');
 		}
