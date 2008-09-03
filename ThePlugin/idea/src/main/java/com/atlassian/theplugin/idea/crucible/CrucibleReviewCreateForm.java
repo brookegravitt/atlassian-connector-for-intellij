@@ -518,12 +518,30 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 			for (Project project : projects) {
 				projectsComboBox.addItem(new ProjectComboBoxItem(project));
 			}
+			for (int i = 0; i < projectsComboBox.getItemCount(); ++i) {
+				if (projectsComboBox.getItemAt(i) instanceof ProjectComboBoxItem) {
+					if (((ProjectComboBoxItem) projectsComboBox.getItemAt(i)).getProject().getName()
+							.equals(server.getProjectName())) {
+						projectsComboBox.setSelectedIndex(i);
+						break;
+					}
+				}
+			}
 
 		}
 		repoComboBox.addItem("");
 		if (!repositories.isEmpty()) {
 			for (Repository repo : repositories) {
 				repoComboBox.addItem(new RepositoryComboBoxItem(repo));
+			}
+			for (int i = 0; i < repoComboBox.getItemCount(); ++i) {
+				if (repoComboBox.getItemAt(i) instanceof RepositoryComboBoxItem) {
+					if (((RepositoryComboBoxItem) repoComboBox.getItemAt(i)).getRepository().getName()
+							.equals(server.getRepositoryName())) {
+						repoComboBox.setSelectedIndex(i);
+						break;
+					}
+				}
 			}
 			getOKAction().setEnabled(true);
 		}

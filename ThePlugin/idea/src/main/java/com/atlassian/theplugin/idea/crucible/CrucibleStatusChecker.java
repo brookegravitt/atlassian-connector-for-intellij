@@ -28,6 +28,7 @@ import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleVersionInfo;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginFailedException;
@@ -98,25 +99,31 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 	}
 
 	private CrucibleVersion getCrucibleVersion() {
+		CrucibleVersion crucibleVersion = CrucibleVersion.CRUCIBLE_15;
 		for (CrucibleServerCfg server : retrieveEnabledCrucibleServers()) {
 			try {
-				Date newRun = new Date();
+                Date newRun = new Date();
 				sb.delete(0, sb.length());
 				sb.append(server.getName()).append(":");
 				sb.append("last result time: ").append(dateFormat.format(lastActionRun));
 				sb.append(" current run time : ").append(dateFormat.format(newRun));
 				sb.append(" time difference: ").append(dateFormat.format((newRun.getTime() - lastActionRun.getTime())));
 
-				crucibleServerFacade.getReviewsForFilter(server, PredefinedFilter.Open);
+                // for now ok, as only 1.6 supports this call
+                // later some more sopfisticated method will be required (for 1.6.x or 1.7...)
+                CrucibleVersionInfo version = crucibleServerFacade.getServerVersion(server);
+				crucibleVersion = CrucibleVersion.CRUCIBLE_16;
 
 				lastActionRun = newRun;
 			} catch (RemoteApiException e) {
+				crucibleVersion = CrucibleVersion.CRUCIBLE_15;
 				continue;
 			} catch (ServerPasswordNotProvidedException e) {
-				return CrucibleVersion.CRUCIBLE_16;
+				crucibleVersion = CrucibleVersion.CRUCIBLE_15;
+				continue;
 			}
 		}
-		return CrucibleVersion.CRUCIBLE_16;
+		return crucibleVersion;
 	}
 
 	private void doRunCrucible() {
