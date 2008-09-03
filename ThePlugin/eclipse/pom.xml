@@ -51,8 +51,8 @@
 		<dependency>
             <groupId>org.eclipse</groupId>
             <artifactId>compare</artifactId>
-            <version>3.4.0</version>
-            <classifier>I20080604</classifier>
+            <version>3.3.2</version>
+            <classifier>r33x_20080128</classifier>
         </dependency>
         <dependency>
             <groupId>org.eclipse</groupId>
@@ -69,8 +69,8 @@
 		<dependency>
             <groupId>org.eclipse.ui</groupId>
             <artifactId>ide</artifactId>
-            <version>3.4.0</version>
-            <classifier>I20080606-1300</classifier>
+            <version>3.3.2</version>
+            <classifier>M20080207-0800</classifier>
         </dependency>
         <dependency>
             <groupId>org.eclipse</groupId>
@@ -87,8 +87,8 @@
 		<dependency>
             <groupId>org.eclipse.core</groupId>
             <artifactId>resources</artifactId>
-            <version>3.4.0</version>
-            <classifier>v20080604-1400</classifier>
+            <version>3.3.1</version>
+            <classifier>R33x_v20080205</classifier>
         </dependency>
         <dependency>
             <groupId>org.eclipse.equinox</groupId>
@@ -123,14 +123,14 @@
 		<dependency>
             <groupId>org.eclipse.team</groupId>
             <artifactId>core</artifactId>
-            <version>3.4.0</version>
-            <classifier>I20080605</classifier>
+            <version>3.3.1</version>
+            <classifier>r33x_20080128</classifier>
         </dependency>
 		<dependency>
             <groupId>org.eclipse.team</groupId>
             <artifactId>ui</artifactId>
-            <version>3.4.0</version>
-            <classifier>I20080604</classifier>
+            <version>3.3.2</version>
+            <classifier>r33x_20080128</classifier>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>
@@ -156,8 +156,8 @@
         <dependency>
             <groupId>org.eclipse.ui.workbench</groupId>
             <artifactId>texteditor</artifactId>
-            <version>3.4.0</version>
-            <classifier>v20080603-2000</classifier>
+            <version>3.3.2</version>
+            <classifier>r332_20080109-0800</classifier>
         </dependency>
     </dependencies>
     <profiles>
