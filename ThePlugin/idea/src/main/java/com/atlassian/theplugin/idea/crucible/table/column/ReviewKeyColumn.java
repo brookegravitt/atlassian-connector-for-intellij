@@ -32,9 +32,7 @@ public class ReviewKeyColumn extends TableColumnInfo {
 	}
 
 	public Object valueOf(Object o) {
-		ReviewData review = (ReviewData) o;
-
-		return new ReviewDecoratorImpl(review.getPermId().getId(), review).getString();
+		return o;
 	}
 
 	public Class getColumnClass() {
