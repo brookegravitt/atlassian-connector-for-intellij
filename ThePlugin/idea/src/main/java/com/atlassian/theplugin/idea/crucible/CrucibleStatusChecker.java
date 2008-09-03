@@ -99,7 +99,7 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 	}
 
 	private CrucibleVersion getCrucibleVersion() {
-		CrucibleVersion crucibleVersion = CrucibleVersion.CRUCIBLE_15;
+		CrucibleVersion serverVersion = CrucibleVersion.CRUCIBLE_15;
 		for (CrucibleServerCfg server : retrieveEnabledCrucibleServers()) {
 			try {
                 Date newRun = new Date();
@@ -112,18 +112,18 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
                 // for now ok, as only 1.6 supports this call
                 // later some more sopfisticated method will be required (for 1.6.x or 1.7...)
                 CrucibleVersionInfo version = crucibleServerFacade.getServerVersion(server);
-				crucibleVersion = CrucibleVersion.CRUCIBLE_16;
+				serverVersion = CrucibleVersion.CRUCIBLE_16;
 
 				lastActionRun = newRun;
 			} catch (RemoteApiException e) {
-				crucibleVersion = CrucibleVersion.CRUCIBLE_15;
+				serverVersion = CrucibleVersion.CRUCIBLE_15;
 				continue;
 			} catch (ServerPasswordNotProvidedException e) {
-				crucibleVersion = CrucibleVersion.CRUCIBLE_15;
+				serverVersion = CrucibleVersion.CRUCIBLE_15;
 				continue;
 			}
 		}
-		return crucibleVersion;
+		return serverVersion;
 	}
 
 	private void doRunCrucible() {
