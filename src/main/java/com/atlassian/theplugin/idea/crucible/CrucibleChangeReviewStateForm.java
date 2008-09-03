@@ -160,6 +160,9 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 			descriptionPanel = new DescriptionPanel(review);
 			summaryPanel.add(descriptionPanel, BorderLayout.CENTER);
 		}
+		else {
+			summaryPanel.setVisible(false);
+		}
 		commentsPanel.add(new CommentsPanel(review), BorderLayout.CENTER);
 		if (Action.CLOSE.equals(action)) {
 			descriptionPanel.setEnabled(true);
@@ -170,7 +173,6 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 				descriptionPanel.setEditable(false);
 			}
 		}
-		pack();
 		getOKAction().setEnabled(true);
 	}
 
