@@ -635,7 +635,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 
 						Task.Backgroundable getIssues = new Task.Backgroundable(project, "Retrieving JIRA Issues", false) {
 							private boolean failed = false;
-							List<JIRAIssue> result;
+							private List<JIRAIssue> result;
 
 							public void run(final ProgressIndicator indicator) {
 								try {
@@ -669,7 +669,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 
 					Task.Backgroundable getIssues = new Task.Backgroundable(project, "Retrieving JIRA Issues", false) {
 							private boolean failed = false;
-							List<JIRAIssue> result;
+							private List<JIRAIssue> result;
 
 							public void run(final ProgressIndicator indicator) {
 								try {
@@ -706,7 +706,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
         }
 
 		private boolean failed = false;
-		List<JIRAIssue> result;
+		private List<JIRAIssue> result;
 
 		public void run(final ProgressIndicator indicator) {
 			JIRAServerFacade serverFacade = jiraServerFacade;
