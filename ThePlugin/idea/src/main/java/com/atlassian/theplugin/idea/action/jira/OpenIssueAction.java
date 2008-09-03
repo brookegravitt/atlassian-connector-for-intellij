@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,13 +28,12 @@ import com.intellij.openapi.vfs.VirtualFile;
 public class OpenIssueAction extends AnAction {
 	public void actionPerformed(AnActionEvent event) {
 		JIRAIssue issue = IdeaHelper.getJIRAToolWindowPanel(event).getCurrentIssue();
-        FileEditorManager manager =
-                FileEditorManager.getInstance(DataKeys.PROJECT.getData(event.getDataContext()));
-        VirtualFile[] files = manager.getOpenFiles();
-        VirtualFile vf = null;
-        for (VirtualFile f : files) {
-			if (f instanceof JiraIssueVirtualFile)
-			{
+		FileEditorManager manager =
+				FileEditorManager.getInstance(DataKeys.PROJECT.getData(event.getDataContext()));
+		VirtualFile[] files = manager.getOpenFiles();
+		VirtualFile vf = null;
+		for (VirtualFile f : files) {
+			if (f instanceof JiraIssueVirtualFile) {
 				JiraIssueVirtualFile jivf = (JiraIssueVirtualFile) f;
 				if (jivf.getIssue().getKey().equals(issue.getKey())) {
 					vf = f;
@@ -44,9 +43,9 @@ public class OpenIssueAction extends AnAction {
 		}
 
 		if (vf == null) {
-            vf = new JiraIssueVirtualFile(issue);
-        }
+			vf = new JiraIssueVirtualFile(issue);
+		}
 		// either opens a new editor, or focuses the already open one
 		manager.openFile(vf, true);
-    }
+	}
 }
