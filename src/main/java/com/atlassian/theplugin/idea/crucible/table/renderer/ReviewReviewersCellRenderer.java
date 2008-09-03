@@ -101,7 +101,7 @@ public class ReviewReviewersCellRenderer  extends DefaultTableCellRenderer {
 
 		String text = ReviewInfoUtil.getNumOfCompletedReviewers(review) + "/" + numReviews;
 
-		text = new ReviewDecoratorImpl(text, review).getString();
+		text = new ReviewDecoratorImpl(text, review, false).getString();
 
 		return text;
 
