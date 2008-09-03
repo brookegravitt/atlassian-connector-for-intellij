@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.crucible.api.model.User;
+import com.intellij.util.ui.UIUtil;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -60,12 +61,12 @@ public class UserListCellRenderer implements ListCellRenderer {
 			checkBox.setFocusPainted(false);
 			checkBox.setBorder(isSelected ? UIManager.getBorder("List.focusCellHighlightBorder") : NO_FOCUS_BORDER);
 
-			//for disabled user make font italic
+			//for disabled user make font italic and grayed out
 			if (isEnabled) {
 				checkBox.setFont(checkBox.getFont().deriveFont(Font.PLAIN));
 			} else {
 				checkBox.setFont(checkBox.getFont().deriveFont(Font.ITALIC));
-
+				checkBox.setForeground(UIUtil.getInactiveTextColor());
 			}
 			label.setEnabled(isEnabled);
 			panel.setEnabled(isEnabled && list.isEnabled());
