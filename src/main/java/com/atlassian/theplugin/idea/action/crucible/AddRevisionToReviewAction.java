@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.action.crucible;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CrucibleRevisionAddWorker;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
@@ -30,33 +31,16 @@ import com.intellij.openapi.project.Project;
 
 public class AddRevisionToReviewAction extends Crucible16RepositoryAction {
     public void actionPerformed(AnActionEvent event) {
-        final ChangeList[] changes = DataKeys.CHANGE_LISTS.getData(event.getDataContext());
-        final PermId permId = IdeaHelper.getCrucibleToolWindowPanel(event).getSelectedReviewId();
-		final Project project = event.getData(DataKeys.PROJECT);
+		final CrucibleServerCfg cfg = getCrucibleServerCfg(event);
+		final ChangeList[] changes = DataKeys.CHANGE_LISTS.getData(event.getDataContext());
+    	final Project project = event.getData(DataKeys.PROJECT);
 
         new Thread(new Runnable() {
             public void run() {
                 ApplicationManager.getApplication().invokeAndWait(
-                        new CrucibleRevisionAddWorker(project, CrucibleServerFacadeImpl.getInstance(), permId, changes),
+                        new CrucibleRevisionAddWorker(project, cfg, CrucibleServerFacadeImpl.getInstance(), changes),
                         ModalityState.defaultModalityState());
             }
         }).start();
-    }
-
-    public void update(AnActionEvent event) {
-        super.update(event);
-        if (IdeaHelper.getCrucibleToolWindowPanel(event) != null) {
-            if (event.getPresentation().isEnabled()) {
-                if (IdeaHelper.getCrucibleToolWindowPanel(event).getSelectedReview() == null) {
-                    event.getPresentation().setEnabled(false);
-                } else {
-                    ReviewData rd = IdeaHelper.getCrucibleToolWindowPanel(event).getSelectedReview();
-                    event.getPresentation().setEnabled(
-                            rd.getCreator().getUserName().equals(rd.getServer().getUsername()));                    
-                }
-            }
-        } else {
-            event.getPresentation().setEnabled(false);
-        }
     }
 }

@@ -24,7 +24,7 @@ import com.intellij.openapi.project.Project;
 import com.atlassian.theplugin.idea.crucible.CruciblePatchSubmitCommitSession;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 
-public class PreCommitReview extends AnAction {
+public class PreCommitReview extends Crucible16RepositoryAction {
 
     public void actionPerformed(AnActionEvent event) {
         final ChangeList[] changes = DataKeys.CHANGE_LISTS.getData(event.getDataContext());
@@ -36,16 +36,6 @@ public class PreCommitReview extends AnAction {
                         changes[0].getChanges(), changes[0].getName());
             }
         }).start();
-    }
-
-    public void update(AnActionEvent event) {
-        super.update(event);
-        final ChangeList[] changes = DataKeys.CHANGE_LISTS.getData(event.getDataContext());
-        if (changes != null && changes.length == 1) {
-            event.getPresentation().setEnabled(true);
-        } else {
-            event.getPresentation().setEnabled(false);
-        }
     }
 }
 

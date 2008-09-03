@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.intellij.openapi.vcs.changes.ChangeList;
 import com.intellij.openapi.project.Project;
 
@@ -25,11 +26,11 @@ import com.intellij.openapi.project.Project;
 public class CruciblePatchAddWorker implements Runnable {
     private final CrucibleHelperForm helperForm;
 
-    public CruciblePatchAddWorker(CrucibleServerFacade crucibleServerFacade, PermId permId,
+    public CruciblePatchAddWorker(CrucibleServerCfg cfg, CrucibleServerFacade crucibleServerFacade,
             Project project, ChangeList[] changes) {
         PatchProducer patchProducer = new PatchProducer(project, changes[0].getChanges());
         String patch = patchProducer.generateUnifiedDiff();
-        helperForm = new CrucibleHelperForm(project, crucibleServerFacade, permId, patch);
+        helperForm = new CrucibleHelperForm(project, cfg, crucibleServerFacade, patch);
     }
 
     public void run() {
