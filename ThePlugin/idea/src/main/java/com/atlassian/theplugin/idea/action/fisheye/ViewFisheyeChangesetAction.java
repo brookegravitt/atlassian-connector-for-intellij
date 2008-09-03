@@ -14,20 +14,29 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.idea.action.crucible;
+package com.atlassian.theplugin.idea.action.fisheye;
 
-import com.atlassian.theplugin.idea.action.fisheye.AbstractFisheyeAction;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 
-public class Crucible16RepositoryAction extends AbstractFisheyeAction {
+public class ViewFisheyeChangesetAction extends AbstractFisheyeAction {
+
 	public void actionPerformed(AnActionEvent event) {
+		String rev = getRevision(event);
+		CrucibleServerCfg cfg = getCrucibleServerCfg(event);
+		if (cfg != null) {
+			String url = cfg.getUrl() + "/changelog/" + cfg.getRepositoryName() + "/?cs=" + rev;
+			BrowserUtil.launchBrowser(url);
+		}
 	}
 
-	public void update(AnActionEvent event) {
+	public void update(final AnActionEvent event) {
 		super.update(event);
 		if (event.getPresentation().isVisible()) {
 			event.getPresentation().setEnabled(getRevision(event) != null);
 		}
 	}
 }
+

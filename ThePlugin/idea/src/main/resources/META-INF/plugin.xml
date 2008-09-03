@@ -390,7 +390,7 @@
 				class="com.atlassian.theplugin.idea.action.crucible.AddRevisionToReviewAction"
 				text="Add Revision to Review" icon="/icons/fisheye-16-plus.png"/>
 		<action id="ThePlugin.Crucible.ViewFisheyeChangeset"
-				class="com.atlassian.theplugin.idea.action.crucible.ViewFisheyeChangesetAction" text="View Changeset"
+				class="com.atlassian.theplugin.idea.action.fisheye.ViewFisheyeChangesetAction" text="View Changeset in Fisheye"
 				icon="/icons/fisheye-16.png"/>
 		<action id="ThePlugin.Crucible.PreCommitReview"
 				class="com.atlassian.theplugin.idea.action.crucible.PreCommitReview" text="Pre-commit Review"
