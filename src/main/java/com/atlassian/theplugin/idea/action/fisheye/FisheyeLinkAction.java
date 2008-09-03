@@ -1,14 +1,10 @@
 package com.atlassian.theplugin.idea.action.fisheye;
 
-import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.SvnRepository;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.editor.Editor;
@@ -20,9 +16,7 @@ import com.intellij.openapi.vcs.history.VcsRevisionNumber;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.vcsUtil.VcsUtil;
 
-import java.util.Collection;
-
-public abstract class FisheyeLinkAction extends AnAction {
+public abstract class FisheyeLinkAction extends AbstractFisheyeAction {
 	protected abstract void performUrlAction(final String url);
 
 	public void actionPerformed(final AnActionEvent event) {
@@ -38,31 +32,6 @@ public abstract class FisheyeLinkAction extends AnAction {
 						performUrlAction(url);
 					}
 				}).queue();
-	}
-
-	private CrucibleServerCfg getCrucibleServerCfg(final AnActionEvent event) {
-		Project project = IdeaHelper.getCurrentProject(event);
-		Collection<ServerCfg> servers = IdeaHelper.getCfgManager().getProjectSpecificServers(CfgUtil.getProjectId(project));
-		for (ServerCfg server : servers) {
-			if (server.getServerType().equals(ServerType.CRUCIBLE_SERVER) && server.isEnabled() && server.isComplete()) {
-				return (CrucibleServerCfg) server;
-			}
-		}
-		return null;
-	}
-
-	public void update(final AnActionEvent event) {
-		CrucibleServerCfg crucibleServerCfg = getCrucibleServerCfg(event);
-		if (crucibleServerCfg != null) {
-			if (crucibleServerCfg.isFisheyeInstance()) {
-				if (crucibleServerCfg.getProjectName() != null
-						&& crucibleServerCfg.getRepositoryName() != null) {
-					event.getPresentation().setVisible(true);
-					return;
-				}
-			}
-		}
-		event.getPresentation().setVisible(false);
 	}
 
 	public interface FisheyeAction {

@@ -16,13 +16,12 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
+import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
-import com.atlassian.theplugin.commons.crucible.api.model.Project;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
@@ -32,274 +31,309 @@ import com.intellij.openapi.vcs.changes.ChangeList;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import com.intellij.ide.BrowserUtil;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
 import javax.swing.Action;
+import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 enum AddMode {
-    ADDREVISION,
-    ADDPATCH,
-    VIEWREVISION
+	ADDREVISION,
+	ADDPATCH
 }
 
 public class CrucibleHelperForm extends DialogWrapper {
-    private JPanel rootComponent;
-    private JComboBox crucibleServersComboBox;
-    private JComboBox repoComboBox;
+	private JPanel rootComponent;
+	private JComboBox reviewComboBox;
+	private JTextField idField;
+	private JTextField titleField;
+	private JTextField authorField;
+	private JTextField moderatorField;
+	private JTextArea descriptionArea;
+	private JTextField statusField;
 
-    private CrucibleServerFacade crucibleServerFacade;
-    private ChangeList[] changes;
+	private CrucibleServerFacade crucibleServerFacade;
+	private ChangeList[] changes;
 	private final com.intellij.openapi.project.Project project;
+	private CrucibleServerCfg cfg;
 	private PermId permId;
-    private String rev;
-    private String patch;
-    private AddMode mode;
+	private String patch;
+	private AddMode mode;
+	private SvnRepository repo;
 
-    protected CrucibleHelperForm(com.intellij.openapi.project.Project project, CrucibleServerFacade crucibleServerFacade,
-			PermId permId, ChangeList[] changes) {
-        this(project, crucibleServerFacade);
-		this.permId = permId;
-        this.changes = changes;
-        this.mode = AddMode.ADDREVISION;
-        setTitle("Add revision to review " + permId.getId());
-        getOKAction().putValue(Action.NAME, "Add revision...");
-    }
+	protected CrucibleHelperForm(com.intellij.openapi.project.Project project,
+			CrucibleServerCfg cfg,
+			CrucibleServerFacade crucibleServerFacade,
+			ChangeList[] changes) {
+		this(project, cfg, crucibleServerFacade);
+		this.changes = changes;
+		this.mode = AddMode.ADDREVISION;
+		setTitle("Add revision to review... ");
+		getOKAction().putValue(Action.NAME, "Add revision...");
+	}
 
-    protected CrucibleHelperForm(com.intellij.openapi.project.Project project, CrucibleServerFacade crucibleServerFacade,
-			String rev) {
-        this(project, crucibleServerFacade);
-        this.rev = rev;
-        this.mode = AddMode.VIEWREVISION;
-        setTitle("View revision");
-        getOKAction().putValue(Action.NAME, "View revision...");
-    }
+	protected CrucibleHelperForm(com.intellij.openapi.project.Project project,
+			CrucibleServerCfg cfg,
+			CrucibleServerFacade crucibleServerFacade,
+			String patch) {
+		this(project, cfg, crucibleServerFacade);
+		this.patch = patch;
+		this.mode = AddMode.ADDPATCH;
+		setTitle("Add patch");
+		getOKAction().putValue(Action.NAME, "Add patch...");
+	}
 
-    protected CrucibleHelperForm(com.intellij.openapi.project.Project project, CrucibleServerFacade crucibleServerFacade,
-			PermId permId, String patch) {
-        this(project, crucibleServerFacade);
-        this.permId = permId;
-        this.patch = patch;
-        this.mode = AddMode.ADDPATCH;
-        setTitle("Add patch");
-        getOKAction().putValue(Action.NAME, "Add patch...");
-    }
-
-    private CrucibleHelperForm(com.intellij.openapi.project.Project project, CrucibleServerFacade crucibleServerFacade) {
-        super(false);
-
-        this.crucibleServerFacade = crucibleServerFacade;
+	private CrucibleHelperForm(com.intellij.openapi.project.Project project, CrucibleServerCfg cfg,
+			CrucibleServerFacade crucibleServerFacade) {
+		super(false);
+		this.cfg = cfg;
+		this.crucibleServerFacade = crucibleServerFacade;
 		this.project = project;
 		$$$setupUI$$$();
-        init();
+		init();
 
-        crucibleServersComboBox.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if (crucibleServersComboBox.getItemCount() > 0 && crucibleServersComboBox.getSelectedItem() != null && crucibleServersComboBox.getSelectedItem() instanceof ServerComboBoxItem) {
-					final ServerComboBoxItem boxItem = (ServerComboBoxItem) crucibleServersComboBox.getSelectedItem();
-					fillServerRelatedCombos(boxItem.getServer());
-                }
-            }
-        });
+		reviewComboBox.addActionListener(new ActionListener() {
 
-        fillInCrucibleServers();
-    }
+			public void actionPerformed(final ActionEvent event) {
+				if (reviewComboBox.getSelectedItem() != null) {
+					if (reviewComboBox.getSelectedItem() instanceof ReviewComboBoxItem) {
+						ReviewComboBoxItem item = (ReviewComboBoxItem) reviewComboBox.getSelectedItem();
+						if (item != null) {
+							final Review review = item.getReview();
+							permId = review.getPermId();
+							idField.setText(review.getPermId().getId());
+							statusField.setText(review.getState().value());
+							titleField.setText(review.getName());
+							authorField.setText(review.getAuthor().getDisplayName());
+							moderatorField.setText(review.getModerator().getDisplayName());
+							descriptionArea.setText(review.getDescription());
+							getOKAction().setEnabled(true);
+						}
+					}
+				}
+			}
+		});
 
-    @Override
+		fillReviewCombos();
+	}
+
+	@Override
 	public JComponent getPreferredFocusedComponent() {
-        return this.crucibleServersComboBox;
-    }
+		return this.reviewComboBox;
+	}
 
-    /**
-     * Method generated by IntelliJ IDEA GUI Designer
-     * >>> IMPORTANT!! <<<
-     * DO NOT edit this method OR call it in your code!
-     *
-     * @noinspection ALL
-     */
-    private void $$$setupUI$$$() {
-        rootComponent = new JPanel();
-        rootComponent.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
-        rootComponent.setMinimumSize(new Dimension(450, 200));
-        final JPanel panel1 = new JPanel();
-        panel1.setLayout(new GridLayoutManager(2, 2, new Insets(1, 1, 1, 1), -1, -1));
-        rootComponent.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        crucibleServersComboBox = new JComboBox();
-        panel1.add(crucibleServersComboBox, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label1 = new JLabel();
-        label1.setText("Server:");
-        panel1.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        repoComboBox = new JComboBox();
-        panel1.add(repoComboBox, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label2 = new JLabel();
-        label2.setText("Repository:");
-        panel1.add(label2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final Spacer spacer1 = new Spacer();
-        rootComponent.add(spacer1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        label1.setLabelFor(crucibleServersComboBox);
-    }
+	/**
+	 * Method generated by IntelliJ IDEA GUI Designer
+	 * >>> IMPORTANT!! <<<
+	 * DO NOT edit this method OR call it in your code!
+	 *
+	 * @noinspection ALL
+	 */
+	private void $$$setupUI$$$() {
+		rootComponent = new JPanel();
+		rootComponent.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
+		rootComponent.setBackground(UIManager.getColor("Button.background"));
+		rootComponent.setEnabled(false);
+		rootComponent.setMinimumSize(new Dimension(450, 200));
+		final JPanel panel1 = new JPanel();
+		panel1.setLayout(new GridLayoutManager(1, 2, new Insets(1, 1, 1, 1), -1, -1));
+		rootComponent.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+		reviewComboBox = new JComboBox();
+		panel1.add(reviewComboBox, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+				GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		final JLabel label1 = new JLabel();
+		label1.setText("Review");
+		panel1.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		final Spacer spacer1 = new Spacer();
+		rootComponent.add(spacer1, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL,
+				1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+		final JPanel panel2 = new JPanel();
+		panel2.setLayout(new GridLayoutManager(6, 2, new Insets(0, 0, 0, 0), -1, -1));
+		rootComponent.add(panel2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+		final JLabel label2 = new JLabel();
+		label2.setText("Id");
+		panel2.add(label2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		final JLabel label3 = new JLabel();
+		label3.setText("Title");
+		panel2.add(label3, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		final JLabel label4 = new JLabel();
+		label4.setText("Author");
+		panel2.add(label4, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		final JLabel label5 = new JLabel();
+		label5.setText("Moderator");
+		panel2.add(label5, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		final JLabel label6 = new JLabel();
+		label6.setText("Description");
+		panel2.add(label6, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		idField = new JTextField();
+		idField.setBackground(UIManager.getColor("Button.background"));
+		idField.setEnabled(false);
+		panel2.add(idField, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+				GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0,
+				false));
+		titleField = new JTextField();
+		titleField.setBackground(UIManager.getColor("Button.background"));
+		titleField.setEnabled(false);
+		panel2.add(titleField, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+				GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0,
+				false));
+		authorField = new JTextField();
+		authorField.setBackground(UIManager.getColor("Button.background"));
+		authorField.setEnabled(false);
+		panel2.add(authorField, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+				GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0,
+				false));
+		moderatorField = new JTextField();
+		moderatorField.setBackground(UIManager.getColor("Button.background"));
+		moderatorField.setEnabled(false);
+		panel2.add(moderatorField, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+				GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0,
+				false));
+		descriptionArea = new JTextArea();
+		descriptionArea.setBackground(UIManager.getColor("Button.background"));
+		descriptionArea.setEnabled(false);
+		panel2.add(descriptionArea, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+				GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null,
+				0, false));
+		statusField = new JTextField();
+		statusField.setBackground(UIManager.getColor("Button.background"));
+		statusField.setEnabled(false);
+		panel2.add(statusField, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+				GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0,
+				false));
+		final JLabel label7 = new JLabel();
+		label7.setText("State");
+		panel2.add(label7, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+	}
 
-    /**
-     * @noinspection ALL
-     */
-    public JComponent $$$getRootComponent$$$() {
-        return rootComponent;
-    }
+	/**
+	 * @noinspection ALL
+	 */
+	public JComponent $$$getRootComponent$$$() {
+		return rootComponent;
+	}
 
-    private static final class ServerComboBoxItem {
-        private final CrucibleServerCfg server;
+	private static final class ReviewComboBoxItem {
+		private final Review review;
 
-        private ServerComboBoxItem(CrucibleServerCfg server) {
-            this.server = server;
-        }
+		private ReviewComboBoxItem(Review review) {
+			this.review = review;
+		}
 
-        @Override
+		@Override
 		public String toString() {
-            return server.getName();
-        }
+			return review.getPermId().getId() + " - " + review.getName();
+		}
 
-        public CrucibleServerCfg getServer() {
-            return server;
-        }
-    }
-
-    private void fillInCrucibleServers() {
-		final Collection<CrucibleServerCfg> enabledServers = IdeaHelper.getCfgManager()
-				.getAllEnabledCrucibleServers(CfgUtil.getProjectId(project));
-
-        if (enabledServers.isEmpty()) {
-            crucibleServersComboBox.setEnabled(false);
-            crucibleServersComboBox.addItem("Enable a Crucible server first!");
-            getOKAction().setEnabled(false);
-        } else {
-            for (CrucibleServerCfg server : enabledServers) {
-                crucibleServersComboBox.addItem(new ServerComboBoxItem(server));
-            }
-        }
-    }
-
-    private void fillServerRelatedCombos(final CrucibleServerCfg server) {
-        repoComboBox.removeAllItems();
-        getOKAction().setEnabled(false);
-
-        new Thread(new Runnable() {
-            public void run() {
-                List<Project> projects = new ArrayList<Project>();
-                List<Repository> repositories = new ArrayList<Repository>();
-                List<User> users = new ArrayList<User>();
-
-                try {
-                    projects = crucibleServerFacade.getProjects(server);
-                    repositories = crucibleServerFacade.getRepositories(server);
-                    users = crucibleServerFacade.getUsers(server);
-                } catch (RemoteApiException e) {
-                    // nothing can be done here
-                } catch (ServerPasswordNotProvidedException e) {
-                    // nothing can be done here
-                }
-                final List<Repository> finalRepositories = repositories;
-                EventQueue.invokeLater(new Runnable() {
-                    public void run() {
-                        updateServerRelatedCombos(server, finalRepositories);
-                    }
-                });
-            }
-        }, "atlassian-idea-plugin crucible patch upload combos refresh").start();
-    }
-
-    private void updateServerRelatedCombos(
-            CrucibleServerCfg server,
-            List<Repository> repositories) {
-        repoComboBox.addItem("");
-        if (!repositories.isEmpty()) {
-            for (Repository repo : repositories) {
-                repoComboBox.addItem(new RepositoryComboBoxItem(repo));
-            }
-            getOKAction().setEnabled(true);
-        }
-    }
-
-    private static final class RepositoryComboBoxItem {
-        private final Repository repo;
-
-        private RepositoryComboBoxItem(Repository repo) {
-            this.repo = repo;
-        }
-
-        @Override
-		public String toString() {
-            return repo.getName();
-        }
-
-        public Repository getRepository() {
-            return repo;
-        }
-    }
+		public Review getReview() {
+			return review;
+		}
+	}
 
 
-    public JComponent getRootComponent() {
-        return rootComponent;
-    }
+	private void fillReviewCombos() {
+		reviewComboBox.removeAllItems();
+		getOKAction().setEnabled(false);
 
-    @Override
+		new Thread(new Runnable() {
+			public void run() {
+				List<Review> drafts = new ArrayList<Review>();
+				List<Review> outForReview = new ArrayList<Review>();
+
+				try {
+					drafts = crucibleServerFacade.getReviewsForFilter(cfg, PredefinedFilter.Drafts);
+					outForReview = crucibleServerFacade.getReviewsForFilter(cfg, PredefinedFilter.OutForReview);
+					repo = crucibleServerFacade.getRepository(cfg, cfg.getRepositoryName());
+				} catch (RemoteApiException e) {
+					// nothing can be done here
+				} catch (ServerPasswordNotProvidedException e) {
+					// nothing can be done here
+				}
+				final List<Review> reviews = new ArrayList<Review>();
+				reviews.addAll(drafts);
+				reviews.addAll(outForReview);
+				EventQueue.invokeLater(new Runnable() {
+					public void run() {
+						updateReviewCombo(reviews);
+					}
+				});
+			}
+		}, "atlassian-idea-plugin crucible patch upload combos refresh").start();
+	}
+
+	private void updateReviewCombo(List<Review> reviews) {
+		reviewComboBox.addItem("");
+		if (!reviews.isEmpty()) {
+			for (Review review : reviews) {
+				reviewComboBox.addItem(new ReviewComboBoxItem(review));
+			}
+		}
+	}
+
+	public JComponent getRootComponent() {
+		return rootComponent;
+	}
+
+	@Override
 	@Nullable
-    protected JComponent createCenterPanel() {
-        return getRootComponent();
-    }
+	protected JComponent createCenterPanel() {
+		return getRootComponent();
+	}
 
 
-    protected void doOKAction() {
-        CrucibleServerCfg server = ((ServerComboBoxItem) crucibleServersComboBox.getSelectedItem()).getServer();
-		Repository repo = ((RepositoryComboBoxItem) this.repoComboBox.getSelectedItem()).getRepository();
-        switch (mode) {
-            case ADDREVISION:
-                try {
-                    List<String> revisions = new ArrayList<String>();
-                    for (ChangeList change : changes) {
-                        for (Change change1 : change.getChanges()) {
-                            revisions.add(change1.getAfterRevision().getRevisionNumber().asString());
-                            break;
-                        }
-                    }
-                    Review draftReview = crucibleServerFacade.addRevisionsToReview(server, permId, repo.getName(), revisions);
-                    super.doOKAction();
+	protected void doOKAction() {
+		switch (mode) {
+			case ADDREVISION:
+				try {
+					List<String> revisions = new ArrayList<String>();
+					for (ChangeList change : changes) {
+						for (Change change1 : change.getChanges()) {
+							revisions.add(change1.getAfterRevision().getRevisionNumber().asString());
+							break;
+						}
+					}
+					crucibleServerFacade.addRevisionsToReview(cfg, permId, repo.getName(), revisions);
+					super.doOKAction();
 
-                } catch (RemoteApiException e) {
-                    showMessageDialog(e.getMessage(),
-                            "Error creating review: " + server.getUrl(), Messages.getErrorIcon());
-                } catch (ServerPasswordNotProvidedException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
-                break;
+				} catch (RemoteApiException e) {
+					showMessageDialog(e.getMessage(),
+							"Error creating review: " + cfg.getUrl(), Messages.getErrorIcon());
+				} catch (ServerPasswordNotProvidedException e) {
+					e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+				}
+				break;
 
-            case ADDPATCH:
-                try {
-                    Review draftReview = crucibleServerFacade.addPatchToReview(server, permId, repo.getName(), patch);
-                    super.doOKAction();
+			case ADDPATCH:
+				try {
+					crucibleServerFacade.addPatchToReview(cfg, permId, repo.getName(), patch);
+					super.doOKAction();
 
-                } catch (RemoteApiException e) {
-                    showMessageDialog(e.getMessage(),
-                            "Error creating review: " + server.getUrl(), Messages.getErrorIcon());
-                } catch (ServerPasswordNotProvidedException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
-                break;
+				} catch (RemoteApiException e) {
+					showMessageDialog(e.getMessage(),
+							"Error creating review: " + cfg.getUrl(), Messages.getErrorIcon());
+				} catch (ServerPasswordNotProvidedException e) {
+					e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+				}
+				break;
+		}
+	}
 
-            case VIEWREVISION:
-                String url = server.getUrl() + "/changelog/" + repo.getName() + "/?cs=" + rev;
-                BrowserUtil.launchBrowser(url);
-                super.doOKAction();                
-                break;
-        }
-    }
-
-    private void createUIComponents() {
-    }
+	private void createUIComponents() {
+	}
 }
