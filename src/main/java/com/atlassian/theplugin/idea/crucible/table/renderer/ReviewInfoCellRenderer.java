@@ -16,12 +16,8 @@
 
 package com.atlassian.theplugin.idea.crucible.table.renderer;
 
-import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-
-import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
-import java.awt.*;
+import com.atlassian.theplugin.idea.crucible.ReviewData;
 
 
 public class ReviewInfoCellRenderer extends ReviewCellRenderer {
