@@ -63,7 +63,7 @@ public class BambooTableColumnProviderImpl implements TableColumnProvider {
 
 					@Override
 					public void setValue(Object value) {
-						setIcon((value instanceof Icon) ? (Icon)value : null);
+						setIcon((value instanceof Icon) ? (Icon) value : null);
 					}
 				},
 				new BackgroundAwareBambooRenderer(),

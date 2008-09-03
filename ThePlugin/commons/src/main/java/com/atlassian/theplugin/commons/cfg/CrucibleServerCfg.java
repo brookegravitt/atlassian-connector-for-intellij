@@ -21,6 +21,7 @@ public class CrucibleServerCfg extends ServerCfg {
 	private boolean isFisheyeInstance;
 	private String projectName;
 	private String repositoryName;
+	private static final int HASHCODE_MAGIC = 31;
 
 	public CrucibleServerCfg(final String name, final ServerId serverId) {
         super(true, name, serverId);
@@ -69,9 +70,9 @@ public class CrucibleServerCfg extends ServerCfg {
 	@Override
 	public int hashCode() {
 		int result = super.hashCode();
-		result = 31 * result + (isFisheyeInstance ? 1 : 0);
-		result = 31 * result + (projectName != null ? projectName.hashCode() : 0);
-		result = 31 * result + (repositoryName != null ? repositoryName.hashCode() : 0);
+		result = HASHCODE_MAGIC * result + (isFisheyeInstance ? 1 : 0);
+		result = HASHCODE_MAGIC * result + (projectName != null ? projectName.hashCode() : 0);
+		result = HASHCODE_MAGIC * result + (repositoryName != null ? repositoryName.hashCode() : 0);
 		return result;
 	}
 

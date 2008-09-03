@@ -355,8 +355,9 @@ public final class VcsIdeaHelper {
 										"Project out of date");
 								break;
 							default:
-								Messages.showErrorDialog(project, "Please update your project to revision " + toRevision +
-										" before opening review as the file could have been moved or deleted meanwhile",
+								Messages.showErrorDialog(project, "Please update your project to revision "
+										+ toRevision 
+										+ " before opening review as the file could have been moved or deleted meanwhile",
 										"Your project does not contain requested file");
 								break;
 						}
