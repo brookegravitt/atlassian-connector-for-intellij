@@ -24,7 +24,6 @@ import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.crucible.api.rest.CrucibleSessionImpl;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 
 import java.util.HashMap;
 import java.util.List;
