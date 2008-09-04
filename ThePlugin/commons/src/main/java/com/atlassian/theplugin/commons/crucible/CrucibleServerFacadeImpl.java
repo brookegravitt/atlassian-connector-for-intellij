@@ -86,6 +86,7 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 		try {
 			session.getServerVersion();
 		} catch (RemoteApiException e) {
+
 			if (e.getCause().getMessage().startsWith("HTTP 500")) {
 				throw new CrucibleLoginException(
 						"IDE plugin detected a Crucible version older\n"
