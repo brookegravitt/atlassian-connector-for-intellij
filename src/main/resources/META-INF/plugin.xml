@@ -385,7 +385,7 @@
 
 		<action id="ThePlugin.Crucible.PostCommitReview"
 				class="com.atlassian.theplugin.idea.action.crucible.PostCommitReviewAction" text="Create Review"
-				icon="/icons/crucible-blue-16.png"/>
+				icon="/icons/add_crucible.png"/>
 		<action id="ThePlugin.Crucible.AddRevisionToReview"
 				class="com.atlassian.theplugin.idea.action.crucible.AddRevisionToReviewAction"
 				text="Add Revision to Review" icon="/icons/fisheye-16-plus.png"/>
@@ -394,7 +394,7 @@
 				icon="/icons/fisheye-16.png"/>
 		<action id="ThePlugin.Crucible.PreCommitReview"
 				class="com.atlassian.theplugin.idea.action.crucible.PreCommitReview" text="Pre-commit Review"
-				icon="/icons/crucible-blue-16.png"/>
+				icon="/icons/add_crucible.png"/>
 		<action id="ThePlugin.Crucible.AddPatchToReview"
 				class="com.atlassian.theplugin.idea.action.crucible.AddPatchToReviewAction" text="Add Patch to Review"
 				icon="/icons/fisheye-16-plus.png"/>
