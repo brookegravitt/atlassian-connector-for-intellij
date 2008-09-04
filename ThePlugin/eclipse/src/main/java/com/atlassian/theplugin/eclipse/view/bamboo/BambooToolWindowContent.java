@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.eclipse.jface.action.GroupMarker;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -45,6 +46,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 
@@ -97,13 +99,13 @@ public class BambooToolWindowContent implements BambooStatusListener {
 				menuManager.add(viewPart.getShowBuilLogAction());
 				menuManager.add(new Separator());
 				menuManager.add(viewPart.getRefreshBuildListAction());
-				
-				menuManager.setRemoveAllWhenShown(true);
+				menuManager.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
 			}
 			
 		});
 		
-		
+		menuManager.setRemoveAllWhenShown(true);		
+		viewPart.getViewSite().registerContextMenu(menuManager, tableViewer);
 		table.setMenu(menuManager.createContextMenu(table));
 	}
 
@@ -319,7 +321,7 @@ public class BambooToolWindowContent implements BambooStatusListener {
 					return build.getBuildReason();
 				case MESSAGE:
 					return build.getMessage();
-				case PASSED_TESTS:
+				case FAILED_TESTS:
 					return build.getTestsPassedSummary();
 				case SERVER:
 					return build.getServerName();
@@ -338,7 +340,7 @@ public class BambooToolWindowContent implements BambooStatusListener {
 		BUILD_NUMBER ("Build Number", 100),
 		PROJECT_KEY ("Project", 100),
 		BUILD_DATE ("Build Date", 100),
-		PASSED_TESTS ("Tests", 100),
+		FAILED_TESTS ("Tests", 100),
 		BUILD_REASON ("Reason", 100),
 		SERVER ("Server", 100),
 		MESSAGE ("Message", 300);

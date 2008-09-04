@@ -2,26 +2,25 @@ package com.atlassian.theplugin.eclipse.core.bamboo;
 
 public interface IBambooServer {
 
-	public abstract String getId();
+	String getId();
 
-	public abstract String getLabel();
+	String getLabel();
 
-	public abstract void setLabel(String label);
+	void setLabel(String label);
 
-	public abstract String getUsername();
+	String getUsername();
 
-	public abstract void setUsername(String username);
+	void setUsername(String username);
 
-	public abstract String getPassword();
+	String getPassword();
 
-	public abstract void setPassword(String password);
+	void setPassword(String password);
 
-	public abstract boolean isPasswordSaved();
+	boolean isPasswordSaved();
 
-	public abstract void setPasswordSaved(boolean passwordSaved);
+	void setPasswordSaved(boolean passwordSaved);
 
-	public abstract String getUrl();
+	String getUrl();
 
-	public abstract void setUrl(String url);
-
+	void setUrl(String url);
 }
