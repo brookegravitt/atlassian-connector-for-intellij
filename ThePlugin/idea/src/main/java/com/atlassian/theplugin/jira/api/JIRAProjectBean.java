@@ -50,8 +50,8 @@ public class JIRAProjectBean implements JIRAProject {
 		return name;
 	}
 
-	public Map<String, String> getMap() {
-		Map<String, String> map = new HashMap<String, String>();
+	public HashMap<String, String> getMap() {
+		HashMap<String, String> map = new HashMap<String, String>();
 		map.put("name", getName());
 		map.put("id", Long.toString(id));
 		map.put("key", getKey());

@@ -20,18 +20,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JiraFiltersBean {
-	private List<JiraFilterEntryBean> manualFilter = new ArrayList<JiraFilterEntryBean>();
+	private ArrayList<JiraFilterEntryBean> manualFilter = new ArrayList<JiraFilterEntryBean>();
 	private JiraFilterEntryBean savedFilter = null;
 	private boolean savedFilterUsed = false;
 
 	public JiraFiltersBean() {
 	}
 
-	public List<JiraFilterEntryBean> getManualFilter() {
+	public ArrayList<JiraFilterEntryBean> getManualFilter() {
 		return manualFilter;
 	}
 
-	public void setManualFilter(List<JiraFilterEntryBean> manualFilter) {
+	public void setManualFilter(ArrayList<JiraFilterEntryBean> manualFilter) {
 		this.manualFilter = manualFilter;
 	}
 
