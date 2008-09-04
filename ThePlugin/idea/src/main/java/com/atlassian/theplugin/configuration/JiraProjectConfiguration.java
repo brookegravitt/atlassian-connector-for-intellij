@@ -27,7 +27,7 @@ public class JiraProjectConfiguration {
 	/**
 	 * ServerId UUID to filter mapping
 	 */
-	private Map<String, JiraFiltersBean> query = new HashMap<String, JiraFiltersBean>();
+	private HashMap<String, JiraFiltersBean> query = new HashMap<String, JiraFiltersBean>();
 
 	public JiraProjectConfiguration() {
 	}
@@ -54,10 +54,13 @@ public class JiraProjectConfiguration {
 		this.selectedServerId = selectedServerId;
 	}
 
-	public Map<String, JiraFiltersBean> getQuery() {
+	public HashMap<String, JiraFiltersBean> getQuery() {
 		return query;
 	}
 
+	public void setQuery(HashMap<String, JiraFiltersBean> query) {
+		this.query = query;
+	}
 
 	@Transient
 	public JiraFiltersBean getJiraFilters(String id) {

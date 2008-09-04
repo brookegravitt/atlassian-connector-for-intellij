@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.jira.api;
 
 import java.util.Map;
+import java.util.HashMap;
 
 public abstract class JIRAUserBean extends AbstractJIRAConstantBean {
 	protected String value = "";
@@ -35,8 +36,8 @@ public abstract class JIRAUserBean extends AbstractJIRAConstantBean {
 		value = map.get("value");
     }
 
-	public Map<String, String> getMap() {
-		Map<String, String> map = super.getMap();
+	public HashMap<String, String> getMap() {
+		HashMap<String, String> map = super.getMap();
 		map.put("value", getValue());
 		return map;
 	}
