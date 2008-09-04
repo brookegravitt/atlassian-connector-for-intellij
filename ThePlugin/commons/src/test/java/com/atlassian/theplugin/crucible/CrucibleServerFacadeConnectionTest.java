@@ -24,6 +24,7 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginFailedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
 import com.atlassian.theplugin.crucible.api.rest.cruciblemock.LoginCallback;
+import com.atlassian.theplugin.crucible.api.rest.cruciblemock.VersionInfoCallback;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 
@@ -84,12 +85,14 @@ public class CrucibleServerFacadeConnectionTest extends TestCase {
 
 	public void testConnectionTestSucceed() throws Exception {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect("/rest-service/reviews-v1/versionInfo", new VersionInfoCallback(true));
 		testedCrucibleServerFacade.testServerConnection(mockBaseUrl, USER_NAME, PASSWORD);
 		mockServer.verify();
 	}
 
 	public void testConnectionTestFailed() throws Exception {
 		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
+		mockServer.expect("/rest-service/reviews-v1/versionInfo", new VersionInfoCallback(false));
 
 		try {
 			testedCrucibleServerFacade.testServerConnection(mockBaseUrl, USER_NAME, PASSWORD);
