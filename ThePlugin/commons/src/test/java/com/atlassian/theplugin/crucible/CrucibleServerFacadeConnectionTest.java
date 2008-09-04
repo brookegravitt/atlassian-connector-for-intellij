@@ -91,7 +91,7 @@ public class CrucibleServerFacadeConnectionTest extends TestCase {
 	}
 
 	public void testConnectionTestFailed() throws Exception {
-		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
+		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(USER_NAME, PASSWORD));
 		mockServer.expect("/rest-service/reviews-v1/versionInfo", new VersionInfoCallback(false));
 
 		try {
