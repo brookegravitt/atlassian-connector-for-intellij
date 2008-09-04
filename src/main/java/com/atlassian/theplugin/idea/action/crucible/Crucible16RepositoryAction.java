@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea.action.crucible;
 
 import com.atlassian.theplugin.idea.action.fisheye.AbstractFisheyeAction;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 
@@ -24,8 +25,17 @@ public class Crucible16RepositoryAction extends AbstractFisheyeAction {
 	public void actionPerformed(AnActionEvent event) {
 	}
 
+	@Override
 	public void update(AnActionEvent event) {
-		super.update(event);
+		event.getPresentation().setVisible(false);
+		CrucibleServerCfg crucibleServerCfg = getCrucibleServerCfg(event);
+		if (crucibleServerCfg != null) {
+				if (crucibleServerCfg.getProjectName() != null
+						&& crucibleServerCfg.getRepositoryName() != null) {
+					event.getPresentation().setVisible(true);
+				}
+		}
+		
 		if (event.getPresentation().isVisible()) {
 			event.getPresentation().setEnabled(getRevision(event) != null);
 		}
