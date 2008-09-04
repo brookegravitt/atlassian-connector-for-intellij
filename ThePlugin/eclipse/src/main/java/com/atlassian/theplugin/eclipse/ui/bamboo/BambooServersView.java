@@ -69,15 +69,13 @@ public class BambooServersView extends ViewPart {
 	}
 
 	public static MenuManager newMenuInstance(final ISelectionProvider provider) {
-		MenuManager menuMgr = new MenuManager();
+		MenuManager menuMgr = new MenuManager("text", "aaa");
 		menuMgr.addMenuListener(new IMenuListener() {
 			public void menuAboutToShow(IMenuManager manager) {
 				MenuManager sub = new MenuManager(Activator.getDefault()
 						.getResource("BambooServers.New"), "addMenu");
 				sub.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 				sub.add(new Separator("mainGroup"));
-				sub.add(new Separator("managementGroup"));
-				sub.add(new Separator("repositoryGroup"));
 				Action newRepositoryLocation = new Action(Activator
 						.getDefault().getResource("BambooServers.BambooServer")) {
 					public void run() {
@@ -92,8 +90,6 @@ public class BambooServersView extends ViewPart {
 
 				manager.add(new Separator(
 						IWorkbenchActionConstants.MB_ADDITIONS));
-
-				manager.add(new Separator("checkoutGroup"));
 
 				sub = new MenuManager(Activator.getDefault().getResource(
 						"RepositoriesView.OpenWith"), "openWithMenu");
@@ -129,12 +125,6 @@ public class BambooServersView extends ViewPart {
 				// sub.add(new Separator("mainGroup"));
 				// manager.add(sub);
 
-				manager.add(new Separator("locationGroup"));
-
-				manager.add(new Separator("propertiesGroup"));
-
-				manager.add(new Separator("refreshGroup"));
-
 				manager.add(new Separator("importExportGroup"));
 			}
 
@@ -160,7 +150,7 @@ public class BambooServersView extends ViewPart {
 		MenuManager menuMgr = BambooServersView
 				.newMenuInstance(this.bambooTree);
 		tree.setMenu(menuMgr.createContextMenu(tree));
-		this.getSite().registerContextMenu(menuMgr, this.bambooTree);
+		this.getSite().registerContextMenu("bbb", menuMgr, this.bambooTree);
 
 		// toolbar
 		IActionBars actionBars = getViewSite().getActionBars();

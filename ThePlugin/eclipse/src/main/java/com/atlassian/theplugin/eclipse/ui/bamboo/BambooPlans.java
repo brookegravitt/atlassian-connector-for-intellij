@@ -90,8 +90,9 @@ public class BambooPlans extends BambooFictiveNode implements IBambooTreeNode,
 	}
 
 	protected BambooPlanNode[] wrapChildren(BambooPlan[] plans) {
-		if (plans == null)
+		if (plans == null) {
 			return null;
+		}
 		ArrayList<BambooPlanNode> children = new ArrayList<BambooPlanNode>(
 				plans.length);
 		if (plans != null) {

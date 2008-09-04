@@ -24,6 +24,7 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.SubStatusLineManager;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.part.ViewPart;
 
 import com.atlassian.theplugin.commons.bamboo.BambooStatusTooltipListener;
@@ -44,11 +45,11 @@ public class BambooToolWindow extends ViewPart {
 	private IAction runBuildAction;
 	private IAction labelBuildAction;
 	private IAction commentBuildAction;
-	private RefreshBuildsListAction refreshBuildListAction;
-	private BambooToolWindowContent bambooToolWindowContent;
-	
-	private BambooStatusTooltipListener popupListener;
 	private ShowBuildLogAction showBuilLogAction;
+	private RefreshBuildsListAction refreshBuildListAction;
+	
+	private BambooToolWindowContent bambooToolWindowContent;
+	private BambooStatusTooltipListener popupListener;
 	private SubStatusLineManager statusLineManager;
 	private BambooStatusBar bambooStatusLine;
 
@@ -80,6 +81,7 @@ public class BambooToolWindow extends ViewPart {
 		toolBarManager.add(showBuilLogAction);
 		toolBarManager.add(new Separator());
 		toolBarManager.add(refreshBuildListAction);
+		toolBarManager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 		
 		bambooToolWindowContent = new BambooToolWindowContent(parent, this);
 		

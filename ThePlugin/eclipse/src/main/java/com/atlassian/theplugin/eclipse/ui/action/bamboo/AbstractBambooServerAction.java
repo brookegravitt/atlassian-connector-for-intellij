@@ -19,11 +19,6 @@ import com.atlassian.theplugin.eclipse.ui.action.AbstractAction;
 import com.atlassian.theplugin.eclipse.ui.bamboo.BambooServerNode;
 import com.atlassian.theplugin.eclipse.ui.bamboo.IBambooTreeNode;
 
-/**
- * Abstract UI repository action
- * 
- * @author Alexander Gurov
- */
 public abstract class AbstractBambooServerAction extends AbstractAction {
 	private IStructuredSelection selection;
 	
@@ -38,15 +33,15 @@ public abstract class AbstractBambooServerAction extends AbstractAction {
 		return this.selection;
 	}
 	
-	protected void checkSelection(IStructuredSelection selection) {
-		this.selection = (IStructuredSelection)selection;
+	protected void checkSelection(IStructuredSelection selectedElement) {
+		this.selection = (IStructuredSelection) selectedElement;
 	}
 	
 	protected IBambooServer []getSelectedBambooServers() {
 		Object []locationWrappers = this.getSelectedResources(BambooServerNode.class);
 		IBambooServer []locations = new IBambooServer[locationWrappers.length];
 		for (int i = 0; i < locations.length; i++) {
-			locations[i] = ((BambooServerNode)locationWrappers[i]).getBambooServer();
+			locations[i] = ((BambooServerNode) locationWrappers[i]).getBambooServer();
 		}
 		return locations;
 	}
@@ -54,15 +49,4 @@ public abstract class AbstractBambooServerAction extends AbstractAction {
 	protected IBambooTreeNode []getSelectedBambooTreeNodes() {
 		return (IBambooTreeNode []) this.getSelectedResources(IBambooTreeNode.class);
 	}
-	
-	/*
-	protected IRepositoryResource []getSelectedRepositoryResources() {
-		Object []wrappers = (Object [])this.getSelectedResources(IResourceTreeNode.class);
-		IRepositoryResource []resources = new IRepositoryResource[wrappers.length];
-		for (int i = 0; i < resources.length; i++) {
-			resources[i] = ((IResourceTreeNode)wrappers[i]).getRepositoryResource();
-		}
-		return resources;
-	}*/
-	
 }

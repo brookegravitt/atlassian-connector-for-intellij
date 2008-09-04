@@ -69,14 +69,14 @@
                label="%EditBambooServerPropertiesAction.Label"
                class="com.atlassian.theplugin.eclipse.ui.action.bamboo.EditBambooServerPropertiesAction"
                tooltip="%EditBambooServerPropertiesAction.Tooltip"
-               menubarPath="bambooServerGroup"
+               menubarPath="mainGroup"
                id="com.atlassian.theplugin.eclipse.ui.action.bamboo.EditBambooServerPropertiesAction">
          </action>
          <action
                label="%DeleteBambooServerAction.Label"
                class="com.atlassian.theplugin.eclipse.ui.action.bamboo.DeleteBambooServerAction"
                tooltip="%DeleteBambooServer.Tooltip"
-               menubarPath="bambooServerGroup"
+               menubarPath="dynamicGroup"
                id="com.atlassian.theplugin.eclipse.ui.action.bamboo.DeleteBambooServerAction">
          </action>
 
@@ -92,5 +92,57 @@
             id="com.atlassian.theplugin.eclipse.editors.bamboo.LogEditor"
             name="BuilLogEditor">
       </editor>
+   </extension>
+   <extension
+         point="org.eclipse.core.expressions.definitions">
+      <definition
+            id="BambooPlanNodeSelected">
+         <with
+               variable="activeMenuSelection">
+            <iterate
+                  ifEmpty="false">
+               <instanceof
+                     value="com.atlassian.theplugin.eclipse.ui.bamboo.BambooPlanNode">
+               </instanceof>
+            </iterate>
+         </with>
+      </definition>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:org.eclipse.ui.popup.any">
+         <command
+               commandId="com.atlassian.theplugin.eclipse.ui.bamboo.watchPlan"
+               label="Watch Plan"
+               style="toggle"
+               tooltip="Add Plan to the View &apos;Bamboo Watched Plans&apos;">
+            <visibleWhen
+                  checkEnabled="false">
+               <reference
+                     definitionId="BambooPlanNodeSelected">
+               </reference>
+            </visibleWhen>
+         </command>
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="com.atlassian.theplugin.eclipse.tmp.handler"
+            commandId="com.atlassian.theplugin.eclipse.ui.bamboo.watchPlan">
+      </handler>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <category
+            id="com.atlassian.theplugin.eclipse.ui.bamboo"
+            name="name">
+      </category>
+      <command
+            categoryId="com.atlassian.theplugin.eclipse.ui.bamboo"
+            id="com.atlassian.theplugin.eclipse.ui.bamboo.watchPlan"
+            name="Watch Plan">
+      </command>
    </extension>
 </plugin>
