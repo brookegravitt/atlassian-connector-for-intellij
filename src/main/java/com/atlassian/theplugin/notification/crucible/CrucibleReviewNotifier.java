@@ -184,6 +184,10 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 		}
 	}
 
+	public void showError(String errorString) {
+		// ignore
+	}
+
 	public void updateReviews(Map<PredefinedFilter, ReviewNotificationBean> incomingReviews,
 			Map<String, ReviewNotificationBean> customIncomingReviews) {
 
