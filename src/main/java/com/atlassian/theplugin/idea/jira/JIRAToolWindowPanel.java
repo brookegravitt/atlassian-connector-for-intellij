@@ -178,8 +178,8 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
         jiraIssueFilterPanel = new JIRAIssueFilterPanel(project);
     }
 
-    public List<JiraFilterEntryBean> serializeQuery() {
-        List<JiraFilterEntryBean> query = new ArrayList<JiraFilterEntryBean>();
+    public ArrayList<JiraFilterEntryBean> serializeQuery() {
+        ArrayList<JiraFilterEntryBean> query = new ArrayList<JiraFilterEntryBean>();
         for (JIRAQueryFragment jiraQueryFragment : advancedQuery) {
             query.add(new JiraFilterEntryBean(jiraQueryFragment.getMap()));
         }
