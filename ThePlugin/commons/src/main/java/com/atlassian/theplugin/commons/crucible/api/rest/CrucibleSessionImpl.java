@@ -177,12 +177,13 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 					return CrucibleRestXmlHelper.parseVersionNode(element);
 				}
 			}
+
+			throw new RemoteApiException("No version info found in server response");
 		} catch (IOException e) {
 			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
 		} catch (JDOMException e) {
 			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
 		}
-		return null;
 	}
 
 	private void updateMetricsMetadata(Review review) {

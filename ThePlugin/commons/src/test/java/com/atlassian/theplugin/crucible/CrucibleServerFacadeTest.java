@@ -30,6 +30,7 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import com.atlassian.theplugin.crucible.api.rest.cruciblemock.LoginCallback;
+import com.atlassian.theplugin.crucible.api.rest.cruciblemock.VersionInfoCallback;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 import org.easymock.EasyMock;
@@ -70,7 +71,7 @@ public class CrucibleServerFacadeTest extends TestCase {
         }
     }
 
-    public void testConnectionTestFailed() throws Exception {
+    public void testConnectionTestFailedBadPassword() throws Exception {
 
         Server server = new Server(0);
         server.start();
@@ -87,17 +88,38 @@ public class CrucibleServerFacadeTest extends TestCase {
         }
 
         mockServer.verify();
-        mockServer = null;
         server.stop();
     }
 
-    public void testConnectionTestSucceed() throws Exception {
+	public void testConnectionTestFailedCru15() throws Exception {
+		Server server = new Server(0);
+		server.start();
+
+		String mockBaseUrl = "http://localhost:" + server.getConnectors()[0].getLocalPort();
+		JettyMockServer mockServer = new JettyMockServer(server);
+
+		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(VALID_LOGIN.getUserName(), VALID_PASSWORD, false));
+		mockServer.expect("/rest-service/reviews-v1/versionInfo", new VersionInfoCallback(false));
+
+		try {
+			facade.testServerConnection(mockBaseUrl, VALID_LOGIN.getUserName(), VALID_PASSWORD);
+			fail("testServerConnection failed");
+		} catch (RemoteApiException e) {
+		}
+
+		mockServer.verify();
+		server.stop();
+	}
+
+	public void testConnectionTestSucceed() throws Exception {
         Server server = new Server(0);
         server.start();
 
         String mockBaseUrl = "http://localhost:" + server.getConnectors()[0].getLocalPort();
         JettyMockServer mockServer = new JettyMockServer(server);
-        mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(VALID_LOGIN.getUserName(), VALID_PASSWORD));
+
+		mockServer.expect("/rest-service/auth-v1/login", new LoginCallback(VALID_LOGIN.getUserName(), VALID_PASSWORD, false));
+		mockServer.expect("/rest-service/reviews-v1/versionInfo", new VersionInfoCallback(true));
 
         try {
             facade.testServerConnection(mockBaseUrl, VALID_LOGIN.getUserName(), VALID_PASSWORD);
@@ -106,7 +128,6 @@ public class CrucibleServerFacadeTest extends TestCase {
         }
 
         mockServer.verify();
-        mockServer = null;
         server.stop();
     }
 
