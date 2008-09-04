@@ -47,6 +47,9 @@ public abstract class AbstractFisheyeAction extends AnAction {
 		final ChangeList[] changes = DataKeys.CHANGE_LISTS.getData(event.getDataContext());
 		if (changes != null && changes.length == 1) {
 			for (Change change : changes[0].getChanges()) {
+				if (change.getAfterRevision() == null) {
+					continue;
+				}
 				return change.getAfterRevision().getRevisionNumber().asString();
 			}
 		}
