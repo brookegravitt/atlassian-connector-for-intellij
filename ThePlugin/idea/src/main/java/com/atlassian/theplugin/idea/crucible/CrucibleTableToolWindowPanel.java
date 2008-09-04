@@ -89,8 +89,6 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 	private Map<PredefinedFilter, CollapsibleTable> tables = new HashMap<PredefinedFilter, CollapsibleTable>();
 	private Map<String, CollapsibleTable> customTables = new HashMap<String, CollapsibleTable>();
 
-	private CrucibleVersion crucibleVersion = CrucibleVersion.UNKNOWN;
-
 	protected String getInitialMessage() {
 
 		return "Waiting for Crucible review info.";
@@ -129,19 +127,6 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
 	public void clearAdvancedFilter() {
 	}
-
-//	public static CrucibleTableToolWindowPanel getInstance(com.intellij.openapi.project.Project project,
-//			ProjectConfigurationBean projectConfigurationBean) {
-//
-//		CrucibleTableToolWindowPanel window = project.getUserData(WINDOW_PROJECT_KEY);
-//
-//		if (window == null) {
-//			window = new CrucibleTableToolWindowPanel(project, projectConfigurationBean);
-//			project.putUserData(WINDOW_PROJECT_KEY, window);
-//			CrucibleReviewWindow.getInstance(project);
-//		}
-//		return window;
-//	}
 
 	public CrucibleTableToolWindowPanel(Project project, ProjectConfigurationBean projectConfigurationBean,
 			CrucibleStatusChecker crucibleStatusChecker) {
@@ -291,7 +276,11 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 	}
 
 	public CrucibleVersion getCrucibleVersion() {
-		return crucibleVersion;
+		return CrucibleVersion.CRUCIBLE_16;
+	}
+
+	public void showError(String errorString) {
+		setStatusMessage(errorString, true);
 	}
 
 	public void updateReviews(Map<PredefinedFilter, ReviewNotificationBean> reviews, Map<String,
@@ -299,10 +288,11 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
 		Set<ReviewData> uniqueReviews = new HashSet<ReviewData>();
 
-		this.crucibleVersion = CrucibleVersion.CRUCIBLE_16;
 		if (tables.isEmpty()) {
 			switchToCrucible16Filter();
 		}
+
+		String errorString = null;
 		for (PredefinedFilter predefinedFilter : reviews.keySet()) {
 			if (reviews.get(predefinedFilter).getException() == null) {
 				List<ReviewData> reviewList = reviews.get(predefinedFilter).getReviews();
@@ -318,7 +308,10 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 						table.setTitle(predefinedFilter.getFilterName() + " (" + reviewList.size() + ")");
 					}
 				}
+			} else {
+				errorString = reviews.get(predefinedFilter).getException().getMessage();
 			}
+
 		}
 
 		for (String filterName : customFilterReviews.keySet()) {
@@ -341,10 +334,16 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
 
 		StringBuffer sb = new StringBuffer();
-		sb.append("Loaded <b>");
-		sb.append(uniqueReviews.size());
-		sb.append(" code reviews</b> for defined filters.");
-		setStatusMessage(sb.toString());
+		if (errorString == null) {
+			sb.append("Loaded <b>");
+			sb.append(uniqueReviews.size());
+			sb.append(" code reviews</b> for defined filters.");
+		} else {
+			sb.append(errorString);
+		}
+
+
+		setStatusMessage(sb.toString(), errorString != null);
 
 		uniqueReviews.clear();
 	}

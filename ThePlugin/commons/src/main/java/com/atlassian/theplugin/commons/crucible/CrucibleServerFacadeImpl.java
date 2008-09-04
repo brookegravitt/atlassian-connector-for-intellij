@@ -19,10 +19,12 @@ package com.atlassian.theplugin.commons.crucible;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.api.CrucibleSession;
+import com.atlassian.theplugin.commons.crucible.api.CrucibleLoginException;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.crucible.api.rest.CrucibleSessionImpl;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -81,6 +83,18 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 		CrucibleSession session = null;
 		session = new CrucibleSessionImpl(serverUrl);
 		session.login(userName, password);
+		try {
+			session.getServerVersion();
+		} catch (RemoteApiException e) {
+			if (e.getCause().getMessage().startsWith("HTTP 500")) {
+				throw new CrucibleLoginException(
+						"IDE plugin detected a Crucible version older\n"
+						+ "than 1.6. Unfortunately, the plugin will not\n"
+						+ "work with this version of Crucible");
+			}
+		}
+
+
 		session.logout();
 	}
 
