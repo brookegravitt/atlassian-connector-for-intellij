@@ -37,14 +37,14 @@ public class NewVersionCheckerTest extends TestCase {
 	private JettyMockServer mockServer;
 	private PluginConfigurationBean config;
 	private static final String GET_LATEST_VERSION_URL = "/GetLatestVersion";
-	public static final String VERSION = "0.2.0, SVN:10";
+	public static final String VERSION = "0.2.0, SVN:18";
 	public static final String VERSION_ALPHA = "0.2.0-alpHa, SVN:12";
 	public static final String VERSION_ALPHA1 = "0.2.0-alpHa-1, SVN:13";
 	public static final String VERSION_ALPHA123456 = "0.2.0-alpHa-123456, SVN:14";
 	public static final String VERSION_BETA = "0.2.0-BETa, SVN:15";
 	public static final String VERSION_BETA1 = "0.2.0-bEta-1, SVN:16";
 	public static final String VERSION_BETA123456 = "0.2.0-Beta-123456, SVN:17";
-	public static final String VERSION_SNAPSHOT = "0.2.0-SnaPSHot, SVN:11";
+	public static final String VERSION_SNAPSHOT = "0.2.0-SnaPSHot, SVN:10";
 
 	private long uid;
 

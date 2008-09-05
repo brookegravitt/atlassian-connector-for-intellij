@@ -39,9 +39,9 @@ public class VersionTest extends TestCase {
 		super.setUp();
 		version1 = new Version("0.1.1-SNAPSHOT, SVN:111");
 		version2 = new Version("0.1.1-SNAPSHOT, SVN:111");
-		version3 = new Version("0.17.1, SVN:222");
 		version4 = new Version("0.17.1-SNAPSHOT, SVN:223");
 		version5 = new Version("0.17.1-SNAPSHOT, SVN:224");
+		version3 = new Version("0.17.1, SVN:225");
 		version6 = new Version("0.18.0-SNAPSHOT, SVN:224");
 		version7 = new Version("0.14.0-SNAPSHOT, SVN:999");
 		versionAlpha = new Version("3.15.4-ALPHA, SVN:999");
@@ -49,13 +49,13 @@ public class VersionTest extends TestCase {
 	}
 
 	public void testNumberedBetaVersion() throws IncorrectVersionException {
-		final String versionStr = "3.15.4-beta-2, SVN:123";
+		// we must assume that betas will have higher SVN revision nr than alphas :P
+		final String versionStr = "3.15.4-beta-2, SVN:1000";
 		final Version versionBeta2 = new Version(versionStr);
-		assertEquals(Integer.valueOf(123), versionBeta2.getBuildNo());
 		assertEquals(versionStr, versionBeta2.getVersion());
 		assertTrue(versionBeta2.greater(versionAlpha));
 		assertFalse(versionAlpha.greater(versionBeta2));
-		assertFalse(versionBeta2.greater(new Version("3.15.4-beta-3, SVN:11")));
+		assertFalse(versionBeta2.greater(new Version("3.15.4-beta-3, SVN:1001")));
 
 	}
 
