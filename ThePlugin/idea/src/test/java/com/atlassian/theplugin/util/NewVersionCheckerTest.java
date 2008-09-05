@@ -43,8 +43,9 @@ public class NewVersionCheckerTest extends TestCase {
 	public static final String VERSION_ALPHA123456 = "0.2.0-alpHa-123456, SVN:14";
 	public static final String VERSION_BETA = "0.2.0-BETa, SVN:15";
 	public static final String VERSION_BETA1 = "0.2.0-bEta-1, SVN:16";
-	public static final String VERSION_BETA123456 = "0.2.0-Beta-123456, SVN:17";
-	public static final String VERSION_SNAPSHOT = "0.2.0-SnaPSHot, SVN:10";
+	public static final String VERSION_BETA123456 = "0.2.0-Beta-123456, SVN:18";
+	public static final String VERSION_SNAPSHOT_LT = "0.2.0-SnaPSHot, SVN:10";
+	public static final String VERSION_SNAPSHOT_GT = "0.2.0-SnaPSHot, SVN:17";
 
 	private long uid;
 
@@ -108,7 +109,7 @@ public class NewVersionCheckerTest extends TestCase {
 
 	public void testGetLatestSnapshotVersion() throws VersionServiceException, IncorrectVersionException {
 		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort();
-		mockServer.expect(GET_LATEST_VERSION_URL, new PingCallback(NewVersionCheckerTest.VERSION_SNAPSHOT));
+		mockServer.expect(GET_LATEST_VERSION_URL, new PingCallback(NewVersionCheckerTest.VERSION_SNAPSHOT_LT));
 		InfoServer.VersionInfo versionInfo = null;
 		try {
 			versionInfo = InfoServer.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, uid, false);
@@ -136,7 +137,7 @@ public class NewVersionCheckerTest extends TestCase {
 
 	}
 
-	public void testGetLatestBetaCompareToSnapshotVersion() throws VersionServiceException, IncorrectVersionException {
+	public void testGetLatestBetaCompareToSnapshotLtVersion() throws VersionServiceException, IncorrectVersionException {
 		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort();
 		mockServer.expect(GET_LATEST_VERSION_URL, new PingCallback(NewVersionCheckerTest.VERSION_BETA));
 		InfoServer.VersionInfo versionInfo = null;
@@ -145,9 +146,54 @@ public class NewVersionCheckerTest extends TestCase {
 		} catch (VersionServiceException e) {
 			fail(e.getMessage());
 		}
-		Version newVersion = new Version(VERSION_SNAPSHOT);
+		Version newVersion = new Version(VERSION_SNAPSHOT_LT);
 
 		assertTrue(versionInfo.getVersion().greater(newVersion));
+
+	}
+
+	public void testGetLatestBetaCompareToSnapshotGtVersion() throws VersionServiceException, IncorrectVersionException {
+		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort();
+		mockServer.expect(GET_LATEST_VERSION_URL, new PingCallback(NewVersionCheckerTest.VERSION_BETA));
+		InfoServer.VersionInfo versionInfo = null;
+		try {
+			versionInfo = InfoServer.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, uid, false);
+		} catch (VersionServiceException e) {
+			fail(e.getMessage());
+		}
+		Version newVersion = new Version(VERSION_SNAPSHOT_GT);
+
+		assertFalse(versionInfo.getVersion().greater(newVersion));
+
+	}
+
+	public void testGetLatestAlphaCompareToSnapshotLtVersion() throws VersionServiceException, IncorrectVersionException {
+		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort();
+		mockServer.expect(GET_LATEST_VERSION_URL, new PingCallback(NewVersionCheckerTest.VERSION_ALPHA));
+		InfoServer.VersionInfo versionInfo = null;
+		try {
+			versionInfo = InfoServer.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, uid, false);
+		} catch (VersionServiceException e) {
+			fail(e.getMessage());
+		}
+		Version newVersion = new Version(VERSION_SNAPSHOT_LT);
+
+		assertTrue(versionInfo.getVersion().greater(newVersion));
+
+	}
+
+	public void testGetLatestAlphaCompareToSnapshotGtVersion() throws VersionServiceException, IncorrectVersionException {
+		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort();
+		mockServer.expect(GET_LATEST_VERSION_URL, new PingCallback(NewVersionCheckerTest.VERSION_ALPHA));
+		InfoServer.VersionInfo versionInfo = null;
+		try {
+			versionInfo = InfoServer.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, uid, false);
+		} catch (VersionServiceException e) {
+			fail(e.getMessage());
+		}
+		Version newVersion = new Version(VERSION_SNAPSHOT_GT);
+
+		assertFalse(versionInfo.getVersion().greater(newVersion));
 
 	}
 
