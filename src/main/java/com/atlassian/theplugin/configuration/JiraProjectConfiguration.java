@@ -19,7 +19,6 @@ package com.atlassian.theplugin.configuration;
 import com.intellij.util.xmlb.annotations.Transient;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public class JiraProjectConfiguration {
 	private ProjectToolWindowTableConfiguration tableConfiguration = new ProjectToolWindowTableConfiguration();
