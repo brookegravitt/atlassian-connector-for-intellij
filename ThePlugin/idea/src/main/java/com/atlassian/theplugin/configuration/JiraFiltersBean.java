@@ -17,7 +17,6 @@
 package com.atlassian.theplugin.configuration;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class JiraFiltersBean {
 	private ArrayList<JiraFilterEntryBean> manualFilter = new ArrayList<JiraFilterEntryBean>();
