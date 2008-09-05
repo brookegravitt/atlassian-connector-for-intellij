@@ -41,7 +41,6 @@ public class Version implements Serializable {
 	}
 
 	private transient VersionNumber versionNumber;
-	private transient Integer buildNo;
 
 	private final String version;
 
@@ -84,9 +83,8 @@ public class Version implements Serializable {
 					Integer.valueOf(result.group(MINOR_TOKEN_GRP)),
 					Integer.valueOf(result.group(MICRO_TOKEN_GRP)),
 					result.group(ALPHANUM_TOKEN_GRP),
-					result.group(ALPHANUM_VERSION_GRP)
-			);
-			buildNo = Integer.valueOf(result.group(BUILD_TOKEN_GRP));
+					result.group(ALPHANUM_VERSION_GRP),
+					Integer.valueOf(result.group(BUILD_TOKEN_GRP)));
 		} catch (IllegalStateException ex) {
 			throw new IncorrectVersionException("Version (" + aVersion + ") does not match pattern (\"" + PATTERN
 					+ "\")", ex);
@@ -121,10 +119,6 @@ public class Version implements Serializable {
 		return version;
 	}
 
-	public Integer getBuildNo() {
-		return buildNo;
-	}
-
 	public boolean greater(Version other) {
 		if (other == null) {
 			return false;
@@ -135,11 +129,7 @@ public class Version implements Serializable {
 		if (version.equals(SPECIAL_DEV_VERSION)) {
 			return true;
 		}
-		if (this.getVersionNumber().equals(other.getVersionNumber())) {
-			return getBuildNo() > other.getBuildNo();
-		}
 		return this.getVersionNumber().greater(other.getVersionNumber());
-
 	}
 
 	private VersionNumber getVersionNumber() {
@@ -151,6 +141,7 @@ public class Version implements Serializable {
 		private int major;
 		private int minor;
 		private int micro;
+		private int buildNo;
 		private AlphaNum alphaNum;
 		private int alphaNumValue = 0;
 		private static final int PRIME = 31;
@@ -160,11 +151,12 @@ public class Version implements Serializable {
 			SNAPSHOT, ALPHA, BETA, NONE;			
 		}
 
-		public VersionNumber(int major, int minor, int micro, String alphaNum, String alphaNumValue)
+		public VersionNumber(int major, int minor, int micro, String alphaNum, String alphaNumValue, int buildNo)
 				throws IncorrectVersionException {
 			this.major = major;
 			this.minor = minor;
-			this.micro = micro;			
+			this.micro = micro;
+			this.buildNo = buildNo;
 
 			if (alphaNum == null) {
 				this.alphaNum = AlphaNum.NONE;
@@ -196,12 +188,7 @@ public class Version implements Serializable {
 						return true;
 					} else {
 						if (major == other.major && minor == other.minor && micro == other.micro) {
-							if (alphaNum.ordinal() == other.alphaNum.ordinal()) {
-								
-								return alphaNumValue > other.alphaNumValue;
-							} else {
-								return (alphaNum.ordinal() > other.alphaNum.ordinal());
-							}
+							return buildNo > other.buildNo;
 						}
 					}
 				}
