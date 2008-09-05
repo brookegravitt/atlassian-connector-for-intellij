@@ -16,7 +16,6 @@
 
 package com.atlassian.theplugin.jira.api;
 
-import java.util.Map;
 import java.util.HashMap;
 
 public interface JIRAQueryFragment {
