@@ -33,7 +33,7 @@
 		The plugin providing IDEA IDE integration for the following Atlassian products:
 		<ul>
 			<li>Bamboo</li>
-			<li>Crucible 1.5 and above (1.6 version required for "enhanced" integration)</li>
+			<li>Crucible 1.6 and above</li>
 			<li>JIRA 3.7 and above</li>
 			<li>Confluence - in the future</li>
 			<li>Fisheye - in the future</li>
@@ -56,6 +56,8 @@
 	<change-notes>
 		<![CDATA[
 		<ul>
+			<li>2.0.0-beta-2: Bug fixes</li>
+			<li>2.0.0-beta-1: Crucible review support, numerous enhancements</li>
 			<li>1.7.0: Bamboo build stack traces; bamboo build commit list</li>
 			<li>1.6.1: Plugin upgrade window change, added support for ALPHA and BETA versions</li>
 			<li>1.6.0: Bug fix release - better multiframe support, check now button works in presence of proxy, improved JIRA issue view</li>
