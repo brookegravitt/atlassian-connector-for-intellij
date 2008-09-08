@@ -16,8 +16,8 @@
 
 package com.atlassian.theplugin.util;
 
-import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.commons.util.Logger;
+import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.intellij.util.PathUtil;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -39,12 +39,6 @@ import java.util.zip.ZipFile;
  * Time: 11:50:18 AM
  */
 public final class PluginUtil {
-
-	//private static com.atlassian.theplugin.idea.Logger logger = null;
-
-//	private final static String NAME = "Atlassian";
-//	private final static String VENDOR = "Atlassian";
-//	private final static String VERSION = "1.2.0, SVN:16163";
 
 	private static String baseDir = PathUtil.getJarPathForClass(PluginUtil.class);
 
