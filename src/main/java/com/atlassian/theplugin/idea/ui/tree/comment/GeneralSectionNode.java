@@ -38,7 +38,7 @@ import java.awt.*;
  * To change this template use File | Settings | File Templates.
  */
 public class GeneralSectionNode extends AtlassianTreeNode {
-	private static final String GENERAL_COMMENTS_SECTION = "General comments";
+	private static final String GENERAL_COMMENTS_SECTION = "General Comments";
 
 	private TreeCellRenderer myRenderer;
 	private ReviewData review;
@@ -56,7 +56,7 @@ public class GeneralSectionNode extends AtlassianTreeNode {
 		try {
 			noOfGeneralComments = review.getGeneralComments().size();
 		} catch (ValueNotYetInitialized valueNotYetInitialized) {
-			PluginUtil.getLogger().error("No general comments");
+			PluginUtil.getLogger().error("No General Comments");
 		}		
 		this.myRenderer = new MyRenderer(noOfGeneralComments);
 	}

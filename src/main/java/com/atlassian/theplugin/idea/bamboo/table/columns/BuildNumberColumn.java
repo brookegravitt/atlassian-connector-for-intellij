@@ -32,7 +32,7 @@ public class BuildNumberColumn extends TableColumnInfo {
 	private static final int COL_WIDTH = 100;
 
 	public String getColumnName() {
-		return "Build number";
+		return "Build Number";
 	}
 
 	public Object valueOf(Object o) {

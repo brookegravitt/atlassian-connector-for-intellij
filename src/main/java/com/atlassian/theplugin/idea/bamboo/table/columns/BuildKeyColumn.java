@@ -25,7 +25,7 @@ public class BuildKeyColumn extends TableColumnInfo {
 	private static final int COL_BUILD_KEY_WIDTH = 100;
 
 	public String getColumnName() {
-		return "Build plan";
+		return "Build Plan";
 	}
 
 	public Object valueOf(Object o) {
