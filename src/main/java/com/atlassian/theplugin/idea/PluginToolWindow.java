@@ -53,7 +53,8 @@ public class PluginToolWindow extends ContentManagerAdapter {
 	private ToolWindow ideaToolWindow;
 	private Project project;
 	//private String selectedContent = null;
-	public static final String TOOL_WINDOW_NAME = "Atlassian";	
+	// one space to have better horizontal separation between the header and the tabs
+	public static final String TOOL_WINDOW_NAME = "Atlassian ";
 	private static final int INITIAL_NUMBER_OF_TABS = 3;
 	private static final int INITIAL_NUMBER_OF_BOTTOM_TABS = 1;
 	private static final String CONFIGURE_TAB_NAME = "Configure";
