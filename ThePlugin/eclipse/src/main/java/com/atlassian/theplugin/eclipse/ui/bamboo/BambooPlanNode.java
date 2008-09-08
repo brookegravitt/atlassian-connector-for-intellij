@@ -5,10 +5,14 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import com.atlassian.theplugin.commons.bamboo.BambooPlan;
 
 public class BambooPlanNode extends BambooFictiveNode {
-	private BambooPlan plan;
+	private BambooPlan bambooPlan;
 	
+	public BambooPlan getBambooPlan() {
+		return bambooPlan;
+	}
+
 	public BambooPlanNode(BambooPlan plan) {
-		this.plan = plan;
+		this.bambooPlan = plan;
 	}
 
 	public Object[] getChildren(Object o) {
@@ -22,6 +26,6 @@ public class BambooPlanNode extends BambooFictiveNode {
 	}
 
 	public String getLabel(Object o) {
-		return plan.getPlanName() + " (" + plan.getPlanKey() + ")";
+		return bambooPlan.getPlanName() + " (" + bambooPlan.getPlanKey() + ")";
 	}
 }
