@@ -27,7 +27,7 @@ public class BuildDateColumn extends TableColumnInfo {
 	private static final int COL_WIDTH = 120;
 
 	public String getColumnName() {
-		return "Build date";
+		return "Build Date";
 	}
 
 	public Object valueOf(Object o) {
