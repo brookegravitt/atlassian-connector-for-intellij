@@ -31,7 +31,7 @@ import java.util.List;
 
 public class SavedFilterComboAction extends ComboBoxAction {
 	public static final String QF_NAME = "SavedFilter";
-	private static final String NO_SAVED_FILTER_TEXT = "Select saved filter";
+	private static final String NO_SAVED_FILTER_TEXT = "Select Saved filter";
 	private ComboBoxButton button = null;
 	private Project project;
 

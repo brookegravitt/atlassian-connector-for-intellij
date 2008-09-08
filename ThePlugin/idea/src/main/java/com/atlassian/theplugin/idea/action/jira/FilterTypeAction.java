@@ -34,7 +34,7 @@ public class FilterTypeAction extends ToggleAction implements CustomComponentAct
 	private static final String MY_CHECKBOX_DIRTY_HACK = "my-checkbox-dirty-hack";
 
 	public FilterTypeAction() {
-		getTemplatePresentation().setText("Use server filters");
+		getTemplatePresentation().setText("Use Server Filters");
 	}
 
 	@Override
