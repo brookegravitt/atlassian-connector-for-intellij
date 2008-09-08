@@ -372,13 +372,13 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 
 	@Override
 	protected void addCustomSubmenus(DefaultActionGroup actionGroup, final ActionPopupMenu popup) {
-		final DefaultActionGroup submenu = new DefaultActionGroup("Querying For Actions... ", true) {
+		final DefaultActionGroup submenu = new DefaultActionGroup("Querying for Actions... ", true) {
 			@Override
 			public void update(AnActionEvent event) {
 				super.update(event);
 
 				if (getChildrenCount() > 0) {
-					event.getPresentation().setText("Issue Actions");
+					event.getPresentation().setText("Available Workflow Actions");
 				}
 			}
 		};
