@@ -84,7 +84,11 @@ public class CustomFilterAction extends Crucible16ToggleAction {
                 event.getPresentation().setEnabled(false);
             } else {
                 event.getPresentation().setEnabled(true);
-            }
+				CustomFilterBean filter = getFilter(event);
+				if (filter != null) {
+					event.getPresentation().setText("Custom Filter: " + filter.getTitle(), false);
+				}
+			}
         }
     }
 }
