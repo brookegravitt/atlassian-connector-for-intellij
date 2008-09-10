@@ -18,7 +18,7 @@
 
 <!--jgorycki: putting DOCTYPE here does evil things to the parser - it tries to parse the -->
 <!--downloaded DTD file which happens to be corrupt (JetBrain sucks?)-->
-<!-- <!DOCTYPE idea-plugin PUBLIC "Plugin/DTD" "http://plugins.intellij.net/plugin.dtd"> -->
+ <!DOCTYPE idea-plugin PUBLIC "Plugin/DTD" "http://plugins.intellij.net/plugin.dtd">
 <idea-plugin url="http://www.atlassian.com/software/ideplugin/">
 
 	<name>Atlassian</name>
@@ -51,7 +51,8 @@
 	<!--we will only support IDEAs 7.x for now - the one we are testing on -->
 	<!--jgorycki: I hope 7126 is the first build of 7.0. This is at least what the checkstyle plugin uses-->
 	<!-- jjaroczynski: official build of 7.0 was 7361.  -->
-	<idea-version since-build="7361"/>
+	<!--jgorycki: officil build of 7.0.4 is 7941. -->
+	<idea-version since-build="7361" until-build="7941" />
 
 	<change-notes>
 		<![CDATA[
@@ -351,11 +352,11 @@
 				text="Closed"/>
 		<action id="ThePlugin.Crucible.AbandonedAction"
 				class="com.atlassian.theplugin.idea.action.crucible.AbandonedAction" text="Abandoned"/>
-		<action id="ThePlugin.Crucible.AllOpen" class="com.atlassian.theplugin.idea.action.crucible.AllOpenAction"
-				text="All Open"/>
-		<action id="ThePlugin.Crucible.AllClosed" class="com.atlassian.theplugin.idea.action.crucible.AllClosedAction"
-				text="All Closed"/>
-		<action id="ThePlugin.Crucible.All" class="com.atlassian.theplugin.idea.action.crucible.AllAction" text="All"/>
+		<!--<action id="ThePlugin.Crucible.AllOpen" class="com.atlassian.theplugin.idea.action.crucible.AllOpenAction"-->
+				<!--text="All Open"/>-->
+		<!--<action id="ThePlugin.Crucible.AllClosed" class="com.atlassian.theplugin.idea.action.crucible.AllClosedAction"-->
+				<!--text="All Closed"/>-->
+		<!--<action id="ThePlugin.Crucible.All" class="com.atlassian.theplugin.idea.action.crucible.AllAction" text="All"/>-->
 
 		<action id="ThePlugin.Crucible.CustomFilter"
 				class="com.atlassian.theplugin.idea.action.crucible.CustomFilterAction" text="Custom Filter"/>
@@ -490,10 +491,10 @@
 			<reference id="ThePlugin.Crucible.OpenAction"/>
 			<reference id="ThePlugin.Crucible.ClosedAction"/>
 			<reference id="ThePlugin.Crucible.AbandonedAction"/>
-			<separator/>
-			<reference id="ThePlugin.Crucible.AllOpen"/>
-			<reference id="ThePlugin.Crucible.AllClosed"/>
-			<reference id="ThePlugin.Crucible.All"/>
+			<!--<separator/>-->
+			<!--<reference id="ThePlugin.Crucible.AllOpen"/>-->
+			<!--<reference id="ThePlugin.Crucible.AllClosed"/>-->
+			<!--<reference id="ThePlugin.Crucible.All"/>-->
 			<separator/>
 			<reference id="ThePlugin.Crucible.CustomFilter"/>
 			<add-to-group anchor="last" group-id="ThePlugin.CrucibleToolWindowToolBar"/>
