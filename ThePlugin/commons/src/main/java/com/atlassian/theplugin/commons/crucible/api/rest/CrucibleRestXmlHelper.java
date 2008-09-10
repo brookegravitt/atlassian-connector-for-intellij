@@ -56,6 +56,7 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -208,15 +209,17 @@ public final class CrucibleRestXmlHelper {
 		}
 		review.setReviewers(reviewers);
 
-		List<Element> reviewItemsNode = getChildElements(reviewNode, "reviewItems");
-		for (Element reviewItem : reviewItemsNode) {
-			List<Element> itemNode = getChildElements(reviewItem, "reviewItem");
-			List<CrucibleFileInfo> files = new ArrayList<CrucibleFileInfo>();
-			for (Element element : itemNode) {
-				files.add(parseReviewItemNode(review, element));
-			}
-			review.setFiles(files);
-		}
+//		List<Element> reviewItemsNode = getChildElements(reviewNode, "reviewItems");
+//		for (Element reviewItem : reviewItemsNode) {
+//			List<Element> itemNode = getChildElements(reviewItem, "reviewItem");
+//			List<CrucibleFileInfo> files = new ArrayList<CrucibleFileInfo>();
+//			for (Element element : itemNode) {
+//				files.add(parseReviewItemNode(review, element));
+//			}
+//			review.setFiles(files);
+//		}
+
+		List<CrucibleFileInfo> files = new ArrayList<CrucibleFileInfo>();
 
 		List<Element> generalCommentsNode = getChildElements(reviewNode, "generalComments");
 		for (Element generalComment : generalCommentsNode) {
@@ -233,7 +236,7 @@ public final class CrucibleRestXmlHelper {
 			List<Element> commentNode = getChildElements(versionedComment, "versionedLineCommentData");
 			List<VersionedComment> comments = new ArrayList<VersionedComment>();
 			for (Element element : commentNode) {
-				comments.add(parseVersionedCommentNode(element));
+				comments.add(parseVersionedCommentNode(element, files));
 			}
 			review.setVersionedComments(comments);
 
@@ -251,6 +254,8 @@ public final class CrucibleRestXmlHelper {
 				// ignore, because it cannot happen as setFiles is invoked a few lines higher
 			}
 		}
+
+		review.setFiles(files);
 
 		List<Element> transitionsNode = getChildElements(reviewNode, "transitions");
 		List<Action> transitions = new ArrayList<Action>();
@@ -608,7 +613,7 @@ public final class CrucibleRestXmlHelper {
 			boolean toLineInfo,
 			int fromEndLine,
 			int toEndLine) {
-		VersionedCommentBean result = parseVersionedCommentNode(reviewCommentNode);
+		VersionedCommentBean result = parseVersionedCommentNode(reviewCommentNode, null);
 		if (result.isFromLineInfo() == false && fromLineInfo == true) {
 			result.setFromLineInfo(true);
 			result.setFromStartLine(fromStartLine);
@@ -623,12 +628,29 @@ public final class CrucibleRestXmlHelper {
 	}
 
 	public static VersionedCommentBean parseVersionedCommentNode(Element reviewCommentNode) {
+		return parseVersionedCommentNode(reviewCommentNode, null);
+	}
+
+	public static VersionedCommentBean parseVersionedCommentNode(
+			Element reviewCommentNode, @Nullable List<CrucibleFileInfo> files) {
 		VersionedCommentBean comment = new VersionedCommentBean();
 		parseVersionedComment(comment, reviewCommentNode);
 
 		if (reviewCommentNode.getChild("reviewItemId") != null) {
 			PermIdBean reviewItemId = new PermIdBean(reviewCommentNode.getChild("reviewItemId").getChild("id").getText());
 			comment.setReviewItemId(reviewItemId);
+			if (files != null) {
+				CrucibleFileInfo file = null;
+				for (CrucibleFileInfo f : files) {
+					if (f.getPermId() == reviewItemId) {
+						file = f;
+					}
+				}
+				if (file == null) {
+					file = new CrucibleFileInfoImpl(reviewItemId);
+					files.add(file);
+				}
+			}
 		}
 
 		if (reviewCommentNode.getChild("fromLineRange") != null) {
