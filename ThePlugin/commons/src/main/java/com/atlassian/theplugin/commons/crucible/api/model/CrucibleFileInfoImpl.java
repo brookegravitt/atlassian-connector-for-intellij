@@ -45,6 +45,10 @@ public class CrucibleFileInfoImpl implements CrucibleFileInfo {
 		this.oldFileDescriptor = oldFileDescriptor;
 	}
 
+	public CrucibleFileInfoImpl(PermId permId) {
+		this.permId = permId;
+	}
+
 	public VersionedVirtualFile getOldFileDescriptor() {
 		return oldFileDescriptor;
 	}
