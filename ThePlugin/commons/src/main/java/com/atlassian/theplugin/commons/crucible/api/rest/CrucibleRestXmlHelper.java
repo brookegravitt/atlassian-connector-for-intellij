@@ -56,7 +56,6 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -632,7 +631,7 @@ public final class CrucibleRestXmlHelper {
 	}
 
 	public static VersionedCommentBean parseVersionedCommentNode(
-			Element reviewCommentNode, @Nullable List<CrucibleFileInfo> files) {
+			Element reviewCommentNode, List<CrucibleFileInfo> files) {
 		VersionedCommentBean comment = new VersionedCommentBean();
 		parseVersionedComment(comment, reviewCommentNode);
 
