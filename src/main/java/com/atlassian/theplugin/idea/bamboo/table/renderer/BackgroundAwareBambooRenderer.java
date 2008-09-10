@@ -31,7 +31,7 @@ public class BackgroundAwareBambooRenderer extends DefaultTableCellRenderer {
 	@Override
 	public final Component getTableCellRendererComponent(JTable jTable,
 			Object o, boolean isSelected, boolean hasFocus, int row, int column) {
-		Component c = super.getTableCellRendererComponent(jTable, o, isSelected, hasFocus, row, column);
+		Component c = super.getTableCellRendererComponent(jTable, o, isSelected, false, row, column);
 		if (jTable.getModel() instanceof ListTableModel && c instanceof JLabel) {
 			@SuppressWarnings("unchecked")
 			ListTableModel<BambooBuildAdapterIdea> o1 = (ListTableModel<BambooBuildAdapterIdea>) jTable.getModel();
