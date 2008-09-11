@@ -55,7 +55,8 @@ public final class BugReporting {
 		versionMap.put("1.8.0", "10497");
 		versionMap.put("2.0.0-beta-1", "10498");
         versionMap.put("2.0.0-beta-2", "10592");
-        versionMap.put("2.0.0", "10593");
+        versionMap.put("2.0.0-beta-3", "10593");
+		versionMap.put("2.0.0", "10632");
 	}
 
 	private static final String BASE = "https://studio.atlassian.com/secure/CreateIssueDetails!init.jspa";
