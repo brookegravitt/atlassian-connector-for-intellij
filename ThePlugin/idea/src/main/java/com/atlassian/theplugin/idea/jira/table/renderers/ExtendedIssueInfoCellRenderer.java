@@ -21,11 +21,16 @@ import com.atlassian.theplugin.idea.jira.JiraIssueAdapter;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 
 public class ExtendedIssueInfoCellRenderer extends DefaultTableCellRenderer {
 	public static final String BODY_WITH_STYLE =
 			"<body style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">";
+	private static final int MAX_LINE_LENGTH = 50;
 
 	private String buildTolltip(JiraIssueAdapter jiraIssue) {
 		StringBuilder sb = new StringBuilder(
@@ -38,12 +43,20 @@ public class ExtendedIssueInfoCellRenderer extends DefaultTableCellRenderer {
         sb.append("</font></b>");
 
 		sb.append("<tr><td valign=\"top\"><b>Summary:</b></td><td valign=\"top\">");
-		sb.append(jiraIssue.getSummary());
+		String summary = jiraIssue.getSummary();
+		if (summary.length() > MAX_LINE_LENGTH) {
+			summary = summary.substring(0, MAX_LINE_LENGTH) + "...";
+		}
+		sb.append(summary);
 		sb.append("");
 		sb.append("</td></tr>");
 
 		sb.append("<tr><td valign=\"top\"><b>Description:</b></td><td valign=\"top\">");
-		sb.append(jiraIssue.getDescription());
+		String description = jiraIssue.getDescription();
+		if (description.length() > MAX_LINE_LENGTH) {
+			description = description.substring(0, MAX_LINE_LENGTH) + "...";
+		}
+		sb.append(description);
 		sb.append("");
 		sb.append("</td></tr>");
 
@@ -68,12 +81,22 @@ public class ExtendedIssueInfoCellRenderer extends DefaultTableCellRenderer {
 		sb.append("</td></tr>");
 
 		sb.append("<tr><td valign=\"top\"><b>Created:</b></td><td valign=\"top\">");
-		sb.append(jiraIssue.getCreated());
+		DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
+		DateFormat ds = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+		try {
+			sb.append(ds.format(df.parse(jiraIssue.getCreated())));
+		} catch (ParseException e) {
+			sb.append("Invalid");
+		}
 		sb.append("");
 		sb.append("</td></tr>");
 
 		sb.append("<tr><td valign=\"top\"><b>Updated:</b></td><td valign=\"top\">");
-		sb.append(jiraIssue.getUpdated());
+		try {
+			sb.append(ds.format(df.parse(jiraIssue.getUpdated())));
+		} catch (ParseException e) {
+			sb.append("Invalid");
+		}
 		sb.append("");
 		sb.append("</td></tr>");
 
