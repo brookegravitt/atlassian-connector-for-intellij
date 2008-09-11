@@ -67,6 +67,9 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
 
 // TODO all this whole class should be rather project component I think (wseliga)
 public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileEditorProvider {
@@ -518,11 +521,24 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			gbc1.gridy++;
 			gbc2.gridy++;
 			body.add(new BoldLabel("Created"), gbc1);
-			body.add(new JLabel(issue.getCreated()), gbc2);
+			DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
+			DateFormat ds = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+			String t;
+			try {
+				t = ds.format(df.parse(issue.getCreated()));
+			} catch (ParseException e) {
+				t = "Invalid";
+			}
+			body.add(new JLabel(t), gbc2);
             gbc1.gridy++;
             gbc2.gridy++;
             body.add(new BoldLabel("Updated"), gbc1);
-            body.add(new JLabel(issue.getUpdated()), gbc2);
+			try {
+				t = ds.format(df.parse(issue.getUpdated()));
+			} catch (ParseException e) {
+				t = "Invalid";
+			}
+			body.add(new JLabel(t), gbc2);
 			gbc1.gridy++;
 			gbc2.gridy++;
 			body.add(new BoldLabel("Affects Version/s"), gbc1);
