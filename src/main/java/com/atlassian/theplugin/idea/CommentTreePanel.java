@@ -17,10 +17,7 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.Comment;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.crucible.CrucibleFilteredModelProvider;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
@@ -223,8 +220,7 @@ public class CommentTreePanel extends JPanel {
 
 	private class MyCrucibleReviewActionListener extends CrucibleReviewActionListener {
 
-		@Override
-		public void showReview(final ReviewData review) {
+		public void commentsDownloaded(final ReviewData review) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					commentTree.setVisible(false);

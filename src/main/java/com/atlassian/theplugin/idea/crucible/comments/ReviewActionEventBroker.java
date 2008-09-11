@@ -45,13 +45,14 @@ public final class ReviewActionEventBroker {
 		this.project = project;
 		new Thread(new Runnable() {
 			public void run() {
-				try {
-					while (true) {
+				while (true) {
+					try {
 						CrucibleEvent event = ((LinkedBlockingQueue<CrucibleEvent>) events).take();
 						event.run(ReviewActionEventBroker.this);
+					} catch (InterruptedException ie) {
+					} catch (Throwable t) {
+						LOGGER.error("ReviewActionEventBroker ", t);
 					}
-				} catch (InterruptedException e) {
-					//swallowed
 				}
 			}
 		}, "atlassian-idea-plugin Crucible events processor"

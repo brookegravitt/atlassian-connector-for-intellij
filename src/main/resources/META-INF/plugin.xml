@@ -18,7 +18,7 @@
 
 <!--jgorycki: putting DOCTYPE here does evil things to the parser - it tries to parse the -->
 <!--downloaded DTD file which happens to be corrupt (JetBrain sucks?)-->
- <!DOCTYPE idea-plugin PUBLIC "Plugin/DTD" "http://plugins.intellij.net/plugin.dtd">
+<!--<!DOCTYPE idea-plugin PUBLIC "Plugin/DTD" "http://plugins.intellij.net/plugin.dtd">-->
 <idea-plugin url="http://www.atlassian.com/software/ideplugin/">
 
 	<name>Atlassian</name>
