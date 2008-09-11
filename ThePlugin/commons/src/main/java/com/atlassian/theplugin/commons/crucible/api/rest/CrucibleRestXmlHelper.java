@@ -208,16 +208,6 @@ public final class CrucibleRestXmlHelper {
 		}
 		review.setReviewers(reviewers);
 
-//		List<Element> reviewItemsNode = getChildElements(reviewNode, "reviewItems");
-//		for (Element reviewItem : reviewItemsNode) {
-//			List<Element> itemNode = getChildElements(reviewItem, "reviewItem");
-//			List<CrucibleFileInfo> files = new ArrayList<CrucibleFileInfo>();
-//			for (Element element : itemNode) {
-//				files.add(parseReviewItemNode(review, element));
-//			}
-//			review.setFiles(files);
-//		}
-
 		List<CrucibleFileInfo> files = new ArrayList<CrucibleFileInfo>();
 
 		List<Element> generalCommentsNode = getChildElements(reviewNode, "generalComments");
@@ -231,29 +221,14 @@ public final class CrucibleRestXmlHelper {
 		}
 
 		List<Element> versionedComments = getChildElements(reviewNode, "versionedComments");
+		List<VersionedComment> comments = new ArrayList<VersionedComment>();
 		for (Element versionedComment : versionedComments) {
 			List<Element> commentNode = getChildElements(versionedComment, "versionedLineCommentData");
-			List<VersionedComment> comments = new ArrayList<VersionedComment>();
 			for (Element element : commentNode) {
 				comments.add(parseVersionedCommentNode(element, files));
 			}
 			review.setVersionedComments(comments);
-
-			try {
-				for (CrucibleFileInfo item : review.getFiles()) {
-					List<VersionedComment> commentList = new ArrayList<VersionedComment>();
-					for (VersionedComment comment : comments) {
-						if (item.getPermId().getId().equals(comment.getReviewItemId().getId())) {
-							commentList.add(comment);
-						}
-					}
-					((CrucibleFileInfoImpl) item).setVersionedComments(commentList);
-				}
-			} catch (ValueNotYetInitialized ex) {
-				// ignore, because it cannot happen as setFiles is invoked a few lines higher
-			}
 		}
-
 		review.setFiles(files);
 
 		List<Element> transitionsNode = getChildElements(reviewNode, "transitions");
@@ -324,6 +299,7 @@ public final class CrucibleRestXmlHelper {
 
 		if (!revisions.isEmpty()) {
 			Element changes = new Element("changesets");
+			addTag(changes, "repository", review.getRepoName());
 			getContent(root).add(changes);
 			for (String revision : revisions) {
 				Element rev = new Element("changesetData");
@@ -404,7 +380,7 @@ public final class CrucibleRestXmlHelper {
 		addTag(reviewData, "description", review.getDescription());
 		addTag(reviewData, "name", review.getName());
 		addTag(reviewData, "projectKey", review.getProjectKey());
-		addTag(reviewData, "repoName", review.getRepoName());
+//		addTag(reviewData, "repoName", review.getRepoName());
 		if (review.getState() != null) {
 			addTag(reviewData, "state", review.getState().value());
 		}
@@ -649,6 +625,7 @@ public final class CrucibleRestXmlHelper {
 					file = new CrucibleFileInfoImpl(reviewItemId);
 					files.add(file);
 				}
+				((CrucibleFileInfoImpl) file).addVersionedComment(comment);
 			}
 		}
 

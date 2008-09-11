@@ -21,6 +21,7 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 
 import java.util.Date;
 import java.util.List;
+import java.util.ArrayList;
 
 public class CrucibleFileInfoImpl implements CrucibleFileInfo {
 	private VersionedVirtualFile fileDescriptor;
@@ -43,9 +44,11 @@ public class CrucibleFileInfoImpl implements CrucibleFileInfo {
 	public CrucibleFileInfoImpl(VersionedVirtualFile fileDescriptor, VersionedVirtualFile oldFileDescriptor) {
 		this.fileDescriptor = fileDescriptor;
 		this.oldFileDescriptor = oldFileDescriptor;
+		versionedComments = new ArrayList<VersionedComment>();
 	}
 
 	public CrucibleFileInfoImpl(PermId permId) {
+		this(null, null);
 		this.permId = permId;
 	}
 

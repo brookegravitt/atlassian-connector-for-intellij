@@ -17,9 +17,7 @@ package com.atlassian.theplugin.idea.crucible.tree;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.Logger;
@@ -29,6 +27,7 @@ import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
 import com.atlassian.theplugin.idea.crucible.CrucibleFilteredModelProvider;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.idea.crucible.events.ReviewCommentsDownloadadEvent;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
@@ -203,18 +202,28 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 		public void showReview(final ReviewData reviewItem) {
 			List<CrucibleFileInfo> files;
 			try {
-				files = reviewItem.getFiles();
-			} catch (ValueNotYetInitialized valueNotYetInitialized) {
-				try {
-					files = CrucibleServerFacadeImpl.getInstance().getFiles(reviewItem.getServer(), reviewItem.getPermId());
-				} catch (RemoteApiException e) {
-					IdeaHelper.handleRemoteApiException(project, e);
-					return;
-				} catch (ServerPasswordNotProvidedException e) {
-					IdeaHelper.handleMissingPassword(e);
-					return;
+				List<VersionedComment> comments;
+				comments = CrucibleServerFacadeImpl.getInstance().getVersionedComments(
+						reviewItem.getServer(), reviewItem.getPermId());
+				files = CrucibleServerFacadeImpl.getInstance().getFiles(reviewItem.getServer(), reviewItem.getPermId());
+				((ReviewBean) reviewItem.getInnerReviewObject()).setFiles(files);
+				for (VersionedComment comment : comments) {
+					for (CrucibleFileInfo f : files) {
+						if (f.getPermId().equals(comment.getReviewItemId())) {
+							((CrucibleFileInfoImpl) f).addVersionedComment(comment);
+						}
+					}
 				}
+				IdeaHelper.getReviewActionEventBroker(project).trigger(
+						new ReviewCommentsDownloadadEvent(this, reviewItem));
+			} catch (RemoteApiException e) {
+				IdeaHelper.handleRemoteApiException(project, e);
+				return;
+			} catch (ServerPasswordNotProvidedException e) {
+				IdeaHelper.handleMissingPassword(e);
+				return;
 			}
+			
 			final List<CrucibleFileInfo> files1 = files;
 			EventQueue.invokeLater(new MyRunnable(reviewItem, files1));
 		}

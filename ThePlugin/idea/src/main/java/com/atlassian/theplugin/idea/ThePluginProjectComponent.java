@@ -130,7 +130,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 
 
 		BEFORE ADDING SOME INITIALIZATION CODE TO COSTRUCTOR THINK TWICE
-
+                                         st
 		...MAYBE YOU SHOULD PUT IT INTO THE initializePlugin METHOD
 		(WHICH IS INVOKED WHEN THE ENTIRE PLUGIN ENVIRONMENT IS SET UP)?
 
