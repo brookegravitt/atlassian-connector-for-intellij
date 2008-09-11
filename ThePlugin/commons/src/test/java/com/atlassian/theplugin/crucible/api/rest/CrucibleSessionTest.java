@@ -571,7 +571,6 @@ public class CrucibleSessionTest extends TestCase {
 		assertEquals(review.getModerator(), response.getModerator());
 		assertEquals(review.getName(), response.getName());
 		assertEquals(review.getProjectKey(), response.getProjectKey());
-		assertEquals(CreateReviewCallback.REPO_NAME, response.getRepoName());
 		assertEquals(State.DRAFT, response.getState());
 		assertEquals(CreateReviewCallback.PERM_ID, response.getPermId().getId());
 
@@ -628,7 +627,6 @@ public class CrucibleSessionTest extends TestCase {
 		assertEquals(review.getModerator(), response.getModerator());
 		assertEquals(review.getName(), response.getName());
 		assertEquals(review.getProjectKey(), response.getProjectKey());
-		assertEquals(CreateReviewCallback.REPO_NAME, response.getRepoName());
 		assertEquals(State.DRAFT, response.getState());
 		assertEquals(CreateReviewCallback.PERM_ID, response.getPermId().getId());
 
@@ -649,7 +647,6 @@ public class CrucibleSessionTest extends TestCase {
 		assertEquals(review.getModerator(), response.getModerator());
 		assertEquals(review.getName(), response.getName());
 		assertEquals(review.getProjectKey(), response.getProjectKey());
-		assertEquals(CreateReviewCallback.REPO_NAME, response.getRepoName());
 		assertEquals(State.DRAFT, response.getState());
 		assertEquals(CreateReviewCallback.PERM_ID, response.getPermId().getId());
 
@@ -670,7 +667,6 @@ public class CrucibleSessionTest extends TestCase {
 		assertEquals(review.getModerator(), response.getModerator());
 		assertEquals(review.getName(), response.getName());
 		assertEquals(review.getProjectKey(), response.getProjectKey());
-		assertEquals(CreateReviewCallback.REPO_NAME, response.getRepoName());
 		assertEquals(State.DRAFT, response.getState());
 		assertEquals(CreateReviewCallback.PERM_ID, response.getPermId().getId());
 
