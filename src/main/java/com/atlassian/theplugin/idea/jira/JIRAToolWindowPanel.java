@@ -727,46 +727,6 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 				setIssues(result);
 			}
 		}
-
-//        public void run(final ProgressIndicator indicator) {
-//            JIRAServerFacade serverFacade = jiraServerFacade;
-//            try {
-//                List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
-//                final List<JIRAIssue> result;
-//                checkTableSort();
-//                if (filters.getSavedFilterUsed()) {
-//                    if (savedQuery != null) {
-//                        query.add(savedQuery);
-//                        setStatusMessage("Retrieving issues from <b>" + jiraServer.getServer().getName() + "</b>...");
-//                        editorPane.setCaretPosition(0);
-//                        result = serverFacade.getSavedFilterIssues(jiraServer.getServer(),
-//                                query, sortColumn, sortOrder, startIndex, maxIndex);
-//                        EventQueue.invokeLater(new Runnable() {
-//                            public void run() {
-//                                setIssues(result);
-//                            }
-//                        });
-//                    }
-//                } else {
-//                    for (JIRAQueryFragment jiraQueryFragment : advancedQuery) {
-//                        if (jiraQueryFragment.getId() != JIRAServer.ANY_ID) {
-//                            query.add(jiraQueryFragment);
-//                        }
-//                    }
-//                    setStatusMessage("Retrieving issues from <b>" + jiraServer.getServer().getName() + "</b>...");
-//                    editorPane.setCaretPosition(0);
-//                    result = serverFacade.getIssues(jiraServer.getServer(),
-//                            query, sortColumn, sortOrder, startIndex, maxIndex);
-//                    EventQueue.invokeLater(new Runnable() {
-//                        public void run() {
-//                            setIssues(result);
-//                        }
-//                    });
-//                }
-//            } catch (JIRAException e) {
-//                setStatusMessage("Error contacting server <b>" + jiraServer.getServer().getName() + "</b>", true);
-//            }
-//        }
 	}
 
     private void checkTableSort() {
@@ -927,27 +887,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 
 			ProgressManager.getInstance().run(comment);
 		}
-
-//			Thread thread = new Thread("atlassian-idea-plugin comment issue") {
-//                @Override
-//				public void run() {
-//                    setStatusMessage("Commenting issue " + issue.getKey() + "...");
-//                    try {
-//						JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
-//						if (jiraServer != null) {
-//							jiraServerFacade.addComment(jiraServer.getServer(),
-//									issue, issueComment.getComment());
-//							setStatusMessage("Commented issue " + issue.getKey());
-//						}
-//					} catch (JIRAException e) {
-//                        setStatusMessage("Issue not commented: " + e.getMessage(), true);
-//                    }
-//                }
-//
-//            };
-//            thread.start();
-//        }
-    }
+   }
 
     public void logWorkForIssue() {
 		JiraIssueAdapter adapter = table.getSelectedObject();
@@ -990,39 +930,6 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 			};
 
 			ProgressManager.getInstance().run(logWork);
-
-//			Thread thread = new Thread("atlassian-idea-plugin work log") {
-//                @Override
-//				public void run() {
-//                    setStatusMessage("Logging work for issue " + issue.getKey() + "...");
-//                    try {
-//                        Calendar cal = Calendar.getInstance();
-//                        cal.setTime(workLogCreate.getStartDate());
-//						JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
-//
-//						if (jiraServer != null) {
-//							JiraServerCfg server = jiraServer.getServer();
-//							String newRemainingEstimate = workLogCreate.getUpdateRemainingManually()
-//									? workLogCreate.getRemainingEstimateString() : null;
-//							jiraServerFacade.logWork(server, issue, workLogCreate.getTimeSpentString(),
-//									cal, workLogCreate.getComment(),
-//									!workLogCreate.getLeaveRemainingUnchanged(), newRemainingEstimate);
-//							if (workLogCreate.isStopProgressSelected()) {
-//								setStatusMessage("Stopping work for issue " + issue.getKey() + "...");
-//								jiraServerFacade.progressWorkflowAction(server, issue, workLogCreate.getInProgressAction());
-//								setStatusMessage("Work logged and progress stopped for issue " + issue.getKey());
-//								refreshIssuesPage();
-//							} else {
-//								setStatusMessage("Logged work for issue " + issue.getKey());
-//							}
-//						}
-//					} catch (JIRAException e) {
-//                        setStatusMessage("Work not logged: " + e.getMessage(), true);
-//                    }
-//                }
-//
-//            };
-//            thread.start();
         }
     }
 
@@ -1046,25 +953,6 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 		};
 
 		ProgressManager.getInstance().run(assign);
-
-//		Thread thread = new Thread("atlassian-idea-plugin assign issue issue") {
-//            @Override
-//			public void run() {
-//                setStatusMessage("Assigning issue " + issue.getKey() + " to " + assignee + "...");
-//                try {
-//
-//					JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
-//					if (jiraServer != null) {
-//						jiraServerFacade.setAssignee(jiraServer.getServer(), issue, assignee);
-//						setStatusMessage("Assigned issue " + issue.getKey() + " to " + assignee);
-//					}
-//				} catch (JIRAException e) {
-//                    setStatusMessage("Failed to assign issue: " + e.getMessage(), true);
-//                }
-//            }
-//
-//        };
-//        thread.start();
     }
 
     public void createIssue() {
@@ -1100,32 +988,6 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 				};
 
 				ProgressManager.getInstance().run(createTask);
-
-//				Thread thread = new Thread("atlassian-idea-plugin create issue") {
-//
-//                    @Override
-//					public void run() {
-//                        setStatusMessage("Creating new issue...");
-//                        JIRAIssue newIssue;
-//                        String message;
-//                        boolean isError = false;
-//                        try {
-//                            newIssue = jiraServerFacade.createIssue(jiraServer.getServer(), issueCreate.getJIRAIssue());
-//                            message =
-//                                    "New issue created: <a href="
-//                                            + newIssue.getIssueUrl()
-//                                            + ">"
-//                                            + newIssue.getKey()
-//                                            + "</a>";
-//                        } catch (JIRAException e) {
-//                            message = "Failed to create new issue: " + e.getMessage();
-//                            isError = true;
-//                        }
-//
-//                        setStatusMessage(message, isError);
-//                    }
-//                };
-//                thread.start();
             }
         }
     }
