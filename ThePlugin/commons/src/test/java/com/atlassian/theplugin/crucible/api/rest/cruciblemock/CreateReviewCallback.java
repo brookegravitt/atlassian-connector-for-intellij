@@ -60,7 +60,6 @@ public class CreateReviewCallback implements JettyMockServer.Callback {
 			reviewData.setState(State.DRAFT);
 			PermIdBean permId = new PermIdBean(PERM_ID);
 			reviewData.setPermId(permId);
-			reviewData.setRepoName(REPO_NAME);
 			reviewData.setAuthor(reqReview.getAuthor());
 			reviewData.setCreator(reqReview.getCreator());
 			reviewData.setModerator(reqReview.getModerator());
