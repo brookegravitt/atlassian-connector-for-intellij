@@ -50,6 +50,7 @@ public final class ReviewActionEventBroker {
 						CrucibleEvent event = ((LinkedBlockingQueue<CrucibleEvent>) events).take();
 						event.run(ReviewActionEventBroker.this);
 					} catch (InterruptedException ie) {
+						// ignore and continue
 					} catch (Throwable t) {
 						LOGGER.error("ReviewActionEventBroker ", t);
 					}
