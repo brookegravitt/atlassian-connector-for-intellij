@@ -433,6 +433,11 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 
 	private void fillRepositoryData(CrucibleFileInfo fileInfo) throws RemoteApiException {
 		String repoName = fileInfo.getRepositoryName();
+		if (repoName == null) {
+			// oh well, it can be null - fileInfos are mostly empty now
+			return;
+		}
+
 		String[] repoNameTokens = repoName.split(":");
 
 		if (!repositories.containsKey(repoName)) {

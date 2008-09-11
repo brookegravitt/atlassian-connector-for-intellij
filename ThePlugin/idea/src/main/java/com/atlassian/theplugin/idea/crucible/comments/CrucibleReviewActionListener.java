@@ -16,10 +16,7 @@
 
 package com.atlassian.theplugin.idea.crucible.comments;
 
-import com.atlassian.theplugin.commons.crucible.api.model.Comment;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.intellij.openapi.editor.Editor;
 
@@ -139,5 +136,8 @@ public class CrucibleReviewActionListener {
 	}
 
 	public void commentsChanged(final ReviewData review, final CrucibleFileInfo file) {
+	}
+
+	public void commentsDownloaded(ReviewData review) {
 	}
 }
