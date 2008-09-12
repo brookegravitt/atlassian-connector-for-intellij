@@ -85,4 +85,8 @@ public abstract class FileNode extends AtlassianTreeNode {
 	public Map<String, FileNode> getChildren() {
 		return children;
 	}
+
+	public boolean isCompactable() {
+		return true;
+	}
 }

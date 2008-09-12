@@ -81,10 +81,8 @@ public class VersionedCommentTreeNode extends CommentTreeNode {
 						node.getReview(), node.getFile(), node.getComment());
 			} else {
 				panel = CommentPanelBuilder.createViewPanelOfVersionedComment(
-						node.getReview(), node.getFile(), node.getComment());
+						node.getReview(), node.getFile(), node.getComment(), isSelected);
 			}
-			panel.setBorder(isSelected ? UIManager.getBorder("List.focusCellHighlightBorder")
-                    : BorderFactory.createEmptyBorder(1, 1, 1, 1));
 			return panel;
 		}
 	}

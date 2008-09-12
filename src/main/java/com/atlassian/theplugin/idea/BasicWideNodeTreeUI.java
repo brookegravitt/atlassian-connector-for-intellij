@@ -27,7 +27,7 @@ import java.awt.*;
 	 * Author: Craig Wood
  * Piece of code from http://saloon.javaranch.com/cgi-bin/ubb/ultimatebb.cgi?ubb=get_topic&f=2&t=015891
  */
-class BasicWideNodeTreeUI extends BasicTreeUI {
+public class BasicWideNodeTreeUI extends BasicTreeUI {
 	private int lastWidth;
 	private boolean leftToRight;
 	protected JTree tree;

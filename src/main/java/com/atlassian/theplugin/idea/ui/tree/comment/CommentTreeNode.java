@@ -19,6 +19,7 @@ package com.atlassian.theplugin.idea.ui.tree.comment;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.file.FileNode;
 
 /**
  * Created by IntelliJ IDEA.
@@ -27,12 +28,12 @@ import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
  * Time: 11:19:24 PM
  * To change this template use File | Settings | File Templates.
  */
-public abstract class CommentTreeNode extends AtlassianTreeNode {
+public abstract class CommentTreeNode extends FileNode {
 	private boolean editable = false;
 	protected ReviewData review;
 
 	protected CommentTreeNode(AtlassianClickAction action) {
-		super(action);
+		super("comment", action);
 	}
 
 	public void setEditable(boolean isEditable) {
@@ -45,5 +46,9 @@ public abstract class CommentTreeNode extends AtlassianTreeNode {
 
 	public ReviewData getReview() {
 		return review;
+	}
+
+	public boolean isCompactable() {
+		return false;
 	}
 }
