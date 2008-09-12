@@ -28,48 +28,39 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-//import thirdparty.publicobject.RoundedBorder;
-
 public final class CommentPanelBuilder {
-	private static final Color NOT_MINE_GENERAL_COMMENT_HEADER_COLOR = new Color(239, 224, 255);
-	private static final Color NOT_MINE_GENERAL_COMMENT_BODY_COLOR = new Color(234, 255, 255);
-	private static final Color NOT_MINE_FILE_COMMENT_HEADER_COLOR = new Color(255, 224, 224);
-	private static final Color NOT_MINE_FILE_COMMENT_BODY_COLOR = new Color(234, 255, 255);
-	private static final Color NOT_MINE_LINE_COMMENT_HEADER_COLOR = new Color(0, 224, 224);
-	private static final Color NOT_MINE_LINE_COMMENT_BODY_COLOR = new Color(0x80, 255, 255);
+	private static final Color NOT_MINE_HEADER_COLOR = new Color(224, 224, 224);
+	private static final Color NOT_MINE_BODY_COLOR = new Color(255, 255, 255);
 
-	private static final Color MINE_GENERAL_COMMENT_HEADER_COLOR = new Color(0xE0, 0xFE, 0xFF);
-	private static final Color MINE_GENERAL_COMMENT_BODY_COLOR = new Color(0xEA, 0xFF, 0xFF);
-	private static final Color MINE_FILE_COMMENT_HEADER_COLOR = new Color(0xE0, 0xFE, 0xFF);
-	private static final Color MINE_FILE_COMMENT_BODY_COLOR = new Color(0xEA, 0xFF, 0xFF);
-	private static final Color MINE_LINE_COMMENT_HEADER_COLOR = new Color(0x00, 0xFE, 0xFF);
-	private static final Color MINE_LINE_COMMENT_BODY_COLOR = new Color(0x80, 0xFF, 0xFF);
+	private static final Color MINE_HEADER_COLOR = new Color(192, 255, 192);
+	private static final Color MINE_BODY_COLOR = new Color(255, 255, 255);
 
 	private CommentPanelBuilder() {
 		// this is utility class
 	}
 
 	public static JPanel createEditPanelOfGeneralComment(ReviewData review, GeneralComment comment) {
-		return createViewPanelOfGeneralComment(review, comment); // no editing temporarily
+		return createViewPanelOfGeneralComment(review, comment, false); // no editing temporarily
 	}
 
-	public static JPanel createViewPanelOfGeneralComment(final ReviewData review, final GeneralComment comment) {
+	public static JPanel createViewPanelOfGeneralComment(final ReviewData review, final GeneralComment comment,
+														 final boolean isSelected) {
 		return new CommentPanel(review, comment) {
 			@Override
 			public Color getHeaderBackground() {
 				if (comment.getAuthor().getUserName().equals(review.getServer().getUsername())) {
-					return MINE_GENERAL_COMMENT_HEADER_COLOR;
+					return getDerivedColor(MINE_HEADER_COLOR, isSelected);
 				}
-				return NOT_MINE_GENERAL_COMMENT_HEADER_COLOR;
+				return getDerivedColor(NOT_MINE_HEADER_COLOR, isSelected);
 
 			}
 
 			@Override
 			public Color getBodyBackground() {
 				if (comment.getAuthor().getUserName().equals(review.getServer().getUsername())) {
-					return MINE_GENERAL_COMMENT_BODY_COLOR;
+					return getDerivedColor(MINE_BODY_COLOR, isSelected);
 				}
-				return NOT_MINE_GENERAL_COMMENT_BODY_COLOR;
+				return getDerivedColor(NOT_MINE_BODY_COLOR, isSelected);
 			}
 
 		};
@@ -77,30 +68,32 @@ public final class CommentPanelBuilder {
 
 	public static JPanel createEditPanelOfVersionedComment(ReviewData review, CrucibleFileInfo file,
 			VersionedComment comment) {
-		return createViewPanelOfVersionedComment(review, file, comment);
+		return createViewPanelOfVersionedComment(review, file, comment, false);
 	}
 
 	public static JPanel createViewPanelOfVersionedComment(final ReviewData review, CrucibleFileInfo file,
-			final VersionedComment comment) {
+			final VersionedComment comment, final boolean isSelected) {
 		return new CommentPanel(review, comment) {
 			@Override
 			public Color getHeaderBackground() {
-				boolean isLineComment = comment.isFromLineInfo() || comment.isToLineInfo();
 				if (comment.getAuthor().getUserName().equals(review.getServer().getUsername())) {
-					return isLineComment ? MINE_LINE_COMMENT_HEADER_COLOR : MINE_FILE_COMMENT_HEADER_COLOR;
+					return getDerivedColor(MINE_HEADER_COLOR, isSelected);
 				}
-				return isLineComment ? NOT_MINE_LINE_COMMENT_HEADER_COLOR : NOT_MINE_FILE_COMMENT_HEADER_COLOR;
+				return getDerivedColor(NOT_MINE_HEADER_COLOR, isSelected);
 			}
 
 			@Override
 			public Color getBodyBackground() {
-				boolean isLineComment = comment.isFromLineInfo() || comment.isToLineInfo();
 				if (comment.getAuthor().getUserName().equals(review.getServer().getUsername())) {
-					return isLineComment ? MINE_LINE_COMMENT_BODY_COLOR : MINE_FILE_COMMENT_BODY_COLOR;
+					return getDerivedColor(MINE_BODY_COLOR, isSelected);
 				}
-				return isLineComment ? NOT_MINE_LINE_COMMENT_BODY_COLOR : NOT_MINE_FILE_COMMENT_BODY_COLOR;
+				return getDerivedColor(NOT_MINE_BODY_COLOR, isSelected);
 			}
 		};
+	}
+
+	private static Color getDerivedColor(Color c, boolean isSelected) {
+		return isSelected ? c.darker() : c;
 	}
 
 	private abstract static class CommentPanel extends JPanel {
@@ -145,16 +138,17 @@ public final class CommentPanelBuilder {
 			header.add(getStateLabel("DRAFT", comment.isDraft(), STATE_DRAFT_LABEL_COLOR), DRAF_STATE_POS);
 			header.add(getStateLabel("DEFECT", comment.isDefectRaised(), Color.RED), DEFECT_STATE_POS);
 			header.add(getToolBar(), TOOLBAR_POS);
-			header.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 1));
+//			header.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 1));
 			header.setBackground(getHeaderBackground());
-//			header.setBorder(new RoundedBorder(getHeaderBackground(), Color.black, getForeground(), 8, 1));
-
 
 			JPanel body = new JPanel(new FormLayout("4dlu, pref:grow, 4dlu", "2dlu, pref:grow, 2dlu"));
 			body.add(getMessageBody(), cc.xy(2, 2));
 			body.setBackground(getBodyBackground());
+//			body.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 1));
+
 			add(header, cc.xy(1, 1));
 			add(body, cc.xy(1, 2));
+			setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 1));
 		}
 
 		private Component getDateLabel() {
@@ -165,7 +159,7 @@ public final class CommentPanelBuilder {
 			sb.append(" ]");
 			label = new JLabel(sb.toString());
 			label.setFont(getSmallerFont(label.getFont(), DATE_FONT_DIFFERENCE));
-			label.setForeground(Color.GRAY);
+//			label.setForeground(Color.GRAY);
 			return label;
 		}
 
@@ -202,7 +196,7 @@ public final class CommentPanelBuilder {
 							: "Line: " + endLine;
 					JLabel label = new JLabel(txt);
 					label.setFont(getSmallerFont(label.getFont(), LINE_NUMBER_FONT_DIFFERENCE));
-					label.setForeground(Color.GRAY);
+//					label.setForeground(Color.GRAY);
 					return label;
 				}
 			}
@@ -224,28 +218,25 @@ public final class CommentPanelBuilder {
 
 
 		protected Component getRankingLabel(Color backgroundColor) {
-			JPanel panel = new JPanel(new FlowLayout());
+			JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 			panel.setBackground(backgroundColor);
-
 
 			for (Map.Entry<String, CustomField> elem : comment.getCustomFields().entrySet()) {
 
 
 				JLabel keyLabel = new JLabel(" " + firstLetterUpperCase(elem.getKey()) + ": ");
 				keyLabel.setFont(getSmallerFont(keyLabel.getFont(), RANKING_FONT_DIFFERENCE));
-				keyLabel.setForeground(Color.GRAY);
-				keyLabel.setBackground(backgroundColor);
+//				keyLabel.setForeground(Color.GRAY);
+//				keyLabel.setBackground(backgroundColor);
 								
 				JLabel valueLabel = new JLabel(elem.getValue().getValue());
 				valueLabel.setFont(getSmallerFont(valueLabel.getFont(), RANKING_FONT_DIFFERENCE));
 				valueLabel.setFont(valueLabel.getFont().deriveFont(Font.BOLD));
-				valueLabel.setForeground(Color.GRAY);
-				valueLabel.setBackground(backgroundColor);
+//				valueLabel.setForeground(Color.GRAY);
+//				valueLabel.setBackground(backgroundColor);
 
 				panel.add(keyLabel);
 				panel.add(valueLabel);
-
-
 			}
 
 			return panel;

@@ -61,7 +61,11 @@ public class CrucibleFileInfoImpl implements CrucibleFileInfo {
 	}
 
 	public int getNumberOfComments() throws ValueNotYetInitialized {
-		return getVersionedComments().size();
+		int n = getVersionedComments().size();
+		for (VersionedComment c : getVersionedComments()) {
+			n += c.getReplies().size();
+		}
+		return n;
 	}
 
 	public void setNumberOfComments(int numberOfComments) {

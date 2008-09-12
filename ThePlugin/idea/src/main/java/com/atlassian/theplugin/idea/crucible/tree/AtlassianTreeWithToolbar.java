@@ -19,12 +19,16 @@ package com.atlassian.theplugin.idea.crucible.tree;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
+import com.atlassian.theplugin.idea.BasicWideNodeTreeUI;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.util.Icons;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeCellRenderer;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 /**
  * @author Lukasz Guminski
@@ -50,8 +54,34 @@ public class AtlassianTreeWithToolbar extends ComponentWithToolbar {
 	public AtlassianTree getTreeComponent() {
 		if (tree == null) {
 			tree = new AtlassianTree();
+			tree.setRowHeight(0);
+			initializeUI();
 		}
 		return tree;
+	}
+
+
+	public void initializeUI() {
+		registerUI();
+		addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentResized(ComponentEvent e) {
+				if (tree.isVisible()) {
+					registerUI();
+				}
+			}
+		});
+	}
+
+	private void registerUI() {
+		tree.setUI(new MyTreeUI());
+	}
+
+	private class MyTreeUI extends BasicWideNodeTreeUI {
+		@Override
+		protected TreeCellRenderer createDefaultCellRenderer() {
+			return AtlassianTree.DISPATCHING_RENDERER;
+		}
 	}
 
 

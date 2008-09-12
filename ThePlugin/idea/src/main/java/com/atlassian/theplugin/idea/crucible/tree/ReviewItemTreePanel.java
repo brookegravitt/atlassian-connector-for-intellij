@@ -298,6 +298,8 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 				CrucibleFilteredModelProvider provider = new MyCrucibleFilteredModelProvider(modelProvider, filter);
 				reviewFilesTree.setModelProvider(provider);
 				reviewFilesTree.setRootVisible(true);
+				reviewFilesTree.expandAll();
+				reviewFilesTree.requestFocus();
 			}
 		}
 	}
