@@ -64,12 +64,9 @@ public class GeneralCommentTreeNode extends CommentTreeNode {
 						node.getReview(), node.getComment());
 			} else {
 				panel = CommentPanelBuilder.createViewPanelOfGeneralComment(
-						node.getReview(), node.getComment());
+						node.getReview(), node.getComment(), isSelected);
 			}
-			panel.setBorder(isSelected ? UIManager.getBorder("List.focusCellHighlightBorder")
-					: BorderFactory.createEmptyBorder(1, 1, 1, 1));
 			return panel;
-
 		}
 	}
 }

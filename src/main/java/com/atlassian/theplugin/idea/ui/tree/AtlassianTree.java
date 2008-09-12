@@ -32,7 +32,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 public class AtlassianTree extends JTree {
-	protected static final AtlassianTreeCellRenderer DISPATCHING_RENDERER = new AtlassianTreeCellRenderer();
+	public static final AtlassianTreeCellRenderer DISPATCHING_RENDERER = new AtlassianTreeCellRenderer();
 	private boolean disableNotification = false;
 
 	public AtlassianTree() {

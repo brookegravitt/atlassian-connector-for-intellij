@@ -166,4 +166,8 @@ public class CrucibleFileNode extends FileNode {
 	public AtlassianTreeNode getClone() {
 		return new CrucibleFileNode(this);
 	}
+
+	public boolean isCompactable() {
+		return false;
+	}
 }

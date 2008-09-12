@@ -86,6 +86,9 @@ public final class FileTreeModelBuilder {
 				}
 			}
 		}));
+		model.getRoot().addNode(new CrucibleGeneralCommentsNode(review, null, null));
+		AtlassianTreeNode filesNode = new CrucibleFilesNode(review);
+		model.getRoot().addNode(filesNode);
 		for (final CrucibleFileInfo file : files) {
 			//according to filter show only "proper files"
 			CrucibleFileNode childNode = new CrucibleFileNode(review, file, new AtlassianClickAction() {
@@ -105,8 +108,9 @@ public final class FileTreeModelBuilder {
 				}
 			});
 
-			model.getRoot().addNode(childNode);
-
+			filesNode.addNode(childNode);
+			childNode.addNode(new CrucibleGeneralCommentsNode(review, file, null));
+			childNode.addNode(new CrucibleLineCommentsNode(review, file, null));
 		}
 		return model;
 	}
@@ -125,7 +129,13 @@ public final class FileTreeModelBuilder {
 				}
 			}
 		});
+
 		FileTreeModel model = new FileTreeModel(root);
+
+		model.getRoot().addNode(new CrucibleGeneralCommentsNode(review, null, null));
+		FileNode filesNode = new CrucibleFilesNode(review);
+		model.getRoot().addNode(filesNode);
+ 
 		for (final CrucibleFileInfo f : files) {
 			//according to filter show only "proper files"
 			CrucibleFileNode childNode = new CrucibleFileNode(review, f, new AtlassianClickAction() {
@@ -144,15 +154,16 @@ public final class FileTreeModelBuilder {
 				}
 			});
 
-				FileNode node = model.createPlace(root, f);
-				// todo lguminski to avoid creation of a new object for each node
-				node.addChild(childNode);
+			FileNode node = model.createPlace(filesNode, f);
+
+			node.addChild(childNode);
+
+			childNode.addNode(new CrucibleGeneralCommentsNode(review, f, null));
+			childNode.addNode(new CrucibleLineCommentsNode(review, f, null));
 
 		}
-		model.compactModel(model.getRoot());
+		model.compactModel(filesNode);
 		return model;
-		//return model;
-
 	}
 
 	private static class FileTreeModel extends AtlassianTreeModel {
@@ -195,7 +206,7 @@ public final class FileTreeModelBuilder {
 		}
 
 		private void compactModel(FileNode node) {
-			if (node.isLeaf()) {
+			if (node.isLeaf() || !node.isCompactable()) {
 				return;
 			}
 
@@ -211,7 +222,7 @@ public final class FileTreeModelBuilder {
 				compactModel(n);
 				if (n.getChildCount() == 1) {
 					FileNode cn = (FileNode) n.getFirstChild();
-					if (!cn.isLeaf()) {
+					if (!cn.isLeaf() && cn.isCompactable()) {
 						String newName = n.getName() + "/" + cn.getName();
 						cn.setName(newName);
 						node.addChild(cn);
