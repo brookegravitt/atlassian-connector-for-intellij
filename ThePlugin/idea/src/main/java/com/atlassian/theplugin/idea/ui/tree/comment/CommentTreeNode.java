@@ -18,16 +18,8 @@ package com.atlassian.theplugin.idea.ui.tree.comment;
 
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
-import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.file.FileNode;
 
-/**
- * Created by IntelliJ IDEA.
- * User: lguminski
- * Date: Jul 16, 2008
- * Time: 11:19:24 PM
- * To change this template use File | Settings | File Templates.
- */
 public abstract class CommentTreeNode extends FileNode {
 	private boolean editable = false;
 	protected ReviewData review;

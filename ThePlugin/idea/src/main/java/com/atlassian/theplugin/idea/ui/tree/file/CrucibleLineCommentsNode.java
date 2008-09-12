@@ -20,7 +20,9 @@ public class CrucibleLineCommentsNode extends CrucibleContainerNode {
 		this.file = file;
 
 		if (children != null) {
-
+			for (FileNode n : children.values()) {
+				addNode(n);
+			}
 		} else {
 			List<VersionedComment> comments = getLineVersionedComments();
 			for (VersionedComment c : comments) {
