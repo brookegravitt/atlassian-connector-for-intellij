@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea.jira.table.renderers;
 
 import com.atlassian.theplugin.idea.jira.JiraIssueAdapter;
+import com.atlassian.theplugin.idea.jira.editor.Html2text;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -51,7 +52,7 @@ public class ExtendedIssueInfoCellRenderer extends DefaultTableCellRenderer {
 		sb.append("</td></tr>");
 
 		sb.append("<tr><td valign=\"top\"><b>Description:</b></td><td valign=\"top\">");
-		String description = jiraIssue.getDescription();
+		String description = Html2text.translate(jiraIssue.getDescription());
 		if (description.length() > MAX_LINE_LENGTH) {
 			description = description.substring(0, MAX_LINE_LENGTH) + "...";
 		}
