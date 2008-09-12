@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.ui.tree.file;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
@@ -67,7 +68,6 @@ public class CrucibleChangeSetTitleNode extends FileNode {
 
 		public void customizeCellRenderer(JTree tree, Object value, boolean selected, boolean expanded,
 										  boolean leaf, int row, boolean hasFocus) {
-			StringBuilder sb = new StringBuilder();
 			CrucibleChangeSetTitleNode node = (CrucibleChangeSetTitleNode) value;
 			append(node.getReview().getPermId().getId(), new SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD,
 					Color.GRAY));
@@ -75,31 +75,36 @@ public class CrucibleChangeSetTitleNode extends FileNode {
 			append(node.getReview().getName(), SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
 			try {
 				List<GeneralComment> generalComments = node.getReview().getGeneralComments();
-				if (generalComments.size() > 0) {
-					int noOfDefects = 0;
-					for (GeneralComment comment : generalComments) {
-						if (comment.isDefectRaised()) {
-							noOfDefects++;
-						}
+				List<VersionedComment> versionedComments = node.getReview().getVersionedComments();
+
+				int noOfDefects = 0;
+				int noOfComments = generalComments.size() + versionedComments.size();
+				for (GeneralComment comment : generalComments) {
+					noOfComments += comment.getReplies().size();
+					if (comment.isDefectRaised()) {
+						++noOfDefects;
 					}
-					append(" ",
-							TEXT_ITALIC);
-					append(String.valueOf(generalComments.size()),
-							TEXT_ITALIC);
-					append(" comment", TEXT_ITALIC);
-					if (generalComments.size() != 1) {
-						append("s", TEXT_ITALIC);
+				}
+				for (VersionedComment vComment : versionedComments) {
+					noOfComments += vComment.getReplies().size();
+					if (vComment.isDefectRaised()) {
+						++noOfDefects;
 					}
-					if (noOfDefects > 0) {
-						append(" (", TEXT_ITALIC);
-						append(String.valueOf(noOfDefects),
-								RED_ITALIC);
-						append(" defect", RED_ITALIC);
-						if (noOfDefects != 1) {
-							append("s", RED_ITALIC);
-						}
-						append(")", TEXT_ITALIC);
+				}
+				append(" ",	TEXT_ITALIC);
+				append(String.valueOf(noOfComments), TEXT_ITALIC);
+				append(" comment", TEXT_ITALIC);
+				if (noOfComments != 1) {
+					append("s", TEXT_ITALIC);
+				}
+				if (noOfDefects > 0) {
+					append(" (", TEXT_ITALIC);
+					append(String.valueOf(noOfDefects),	RED_ITALIC);
+					append(" defect", RED_ITALIC);
+					if (noOfDefects != 1) {
+						append("s", RED_ITALIC);
 					}
+					append(")", TEXT_ITALIC);
 				}
 			} catch (ValueNotYetInitialized valueNotYetInitialized) {
 				// ignore
