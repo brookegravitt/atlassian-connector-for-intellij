@@ -29,7 +29,7 @@
     <version>2.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <inceptionYear>2008</inceptionYear>
-    <name>Atlassian Plugin POM</name>
+    <name>Atlassian IntelliJ Connector POM</name>
     <description>Parent POM for plugins integrating Atlassian tools.</description>
     <organization>
         <name>Atlassian Pty Ltd</name>

@@ -7,7 +7,7 @@
     <packaging>jar</packaging>
     <inceptionYear>2008</inceptionYear>
     <name>Library of common classes</name>
-    <description>Common classes used by various Atlassian plugins.</description>
+    <description>Common classes used by various Atlassian IDE Connectors.</description>
     <parent>
         <groupId>com.atlassian.theplugin</groupId>
         <artifactId>atlassian-plugin-pom</artifactId>

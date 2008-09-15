@@ -30,7 +30,7 @@
 	<plugin-id>atlassian-idea-plugin</plugin-id>
 	<description>
 		<![CDATA[
-		The plugin providing IDEA IDE integration for the following Atlassian products:
+		Atlassian IntelliJ Connector provides IDEA IDE integration for the following Atlassian products:
 		<ul>
 			<li>Bamboo</li>
 			<li>Crucible 1.6 and above</li>
