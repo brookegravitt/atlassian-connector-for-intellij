@@ -59,6 +59,7 @@ public final class BugReporting {
 		versionMap.put("2.0.0", "10632");
 	}
 
+    private static final int MAX_URI_LENGTH = 4096;
 	private static final String BASE = "https://studio.atlassian.com/secure/CreateIssueDetails!init.jspa";
 	private static final String PROJECT_ID = "10024";
 	private static final String TICKET_TYPE_BUG = "1";
@@ -126,10 +127,28 @@ public final class BugReporting {
 		return versionName;
 	}
 
-	public static String getBugWithDescriptionUrl(String ideaBuildNumber, String description) {
-		return getBugUrl(ideaBuildNumber) + "&description=" + UrlUtil.encodeUrl(description);
-	}
+    public static String getBugWithDescriptionUrl(String ideaBuildNumber, String description) {
+        final String urlStart = getBugUrl(ideaBuildNumber) + "&description=";
+        final int charsLeft = MAX_URI_LENGTH - urlStart.length();
+        return urlStart + getBoundedEncodedString(description, charsLeft);
+    }
 
-	private BugReporting() {
+
+    static String getBoundedEncodedString(String description, int maxLen) {
+        String encoded = UrlUtil.encodeUrl(description);
+        while (encoded.length() > maxLen) {
+            int lastNewline = description.lastIndexOf('\n');
+            if (lastNewline == -1) {
+                return "";
+            }
+            description = description.substring(0, lastNewline);
+            encoded = UrlUtil.encodeUrl(description);
+        }
+
+        return encoded;
+
+    }
+
+    private BugReporting() {
 	}
 }
