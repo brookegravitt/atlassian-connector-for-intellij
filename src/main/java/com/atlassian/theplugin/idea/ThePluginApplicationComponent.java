@@ -92,7 +92,7 @@ public class ThePluginApplicationComponent
 
 	@Nls
 	public String getDisplayName() {
-		return "Atlassian Plugin\nIDE Settings";
+		return "Atlassian IntelliJ\nConnector";
 	}
 
 	@Nullable
