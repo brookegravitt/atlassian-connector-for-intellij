@@ -88,7 +88,7 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 
 			if (e.getCause().getMessage().startsWith("HTTP 500")) {
 				throw new CrucibleLoginException(
-						"IDE plugin detected a Crucible version older\n"
+						"Atlassian IntelliJ Connector detected a Crucible version older\n"
 						+ "than 1.6. Unfortunately, the plugin will not\n"
 						+ "work with this version of Crucible");
 			}
