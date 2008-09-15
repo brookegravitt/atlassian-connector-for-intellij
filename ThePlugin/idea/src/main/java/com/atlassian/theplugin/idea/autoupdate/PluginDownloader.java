@@ -31,7 +31,11 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.io.StreamUtil;
 import com.intellij.util.io.ZipUtil;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -45,7 +49,7 @@ import java.net.URLEncoder;
  * To change this template use File | Settings | File Templates.
  */
 
-public class PluginDownloader { //implements Runnable {
+public class PluginDownloader {
 
 
 	public static final String PLUGIN_ID_TOKEN = "PLUGIN_ID";
@@ -158,6 +162,7 @@ public class PluginDownloader { //implements Runnable {
 				try {
 					inputStream.close();
 				} catch (IOException ioe) {
+					PluginUtil.getLogger().warn("Exception while closing input stream");
 					// nothing we can do at this point
 				}
 			}
@@ -166,14 +171,17 @@ public class PluginDownloader { //implements Runnable {
 				try {
 					outputStream.close();
 				} catch (IOException ioe) {
+					PluginUtil.getLogger().warn("Exception while closing output stream");
 					// nothing we can do at this point
 				}
 			}
 
 			if (connection instanceof HttpURLConnection) {
 				((HttpURLConnection) connection).disconnect();
+				PluginUtil.getLogger().info("Disconnecting HttpURLConnection");
 			}
 		}
+		PluginUtil.getLogger().info("Downloaded file has [" + pluginArchiveFile.length() + "] bytes");
 		String srcName = connection.getURL().toString();
 		String ext = srcName.substring(srcName.lastIndexOf("."));
 		if (ext.contains("?")) {
@@ -182,14 +190,21 @@ public class PluginDownloader { //implements Runnable {
 		String newName = pluginArchiveFile.getPath().substring(0, pluginArchiveFile.getPath().length()
 				- EXTENTION_LENGHT) + ext;
 		File newFile = new File(newName);
+		PluginUtil.getLogger().info("Renaming downloaded file from [" + pluginArchiveFile.getAbsolutePath()
+				+ "] to [" + newName + "]");
 		if (!pluginArchiveFile.renameTo(new File(newName))) {
 			pluginArchiveFile.delete();
 			throw new IOException("Renaming received file from \"" + srcName + "\" to \"" + newName + "\" failed.");
 		}
+		PluginUtil.getLogger().info("After renaming file has [" + newFile.length() + "] bytes");
 		return newFile;
 	}
 
 	private void addActions(IdeaPluginDescriptor installedPlugin, File localArchiveFile) throws IOException {
+		if (installedPlugin != null) {
+			PluginUtil.getLogger().info("IdeaPluginDescriptor [" + installedPlugin.getPluginId() + "]");
+
+		}
 
 		PluginId id = installedPlugin.getPluginId();
 
@@ -198,6 +213,7 @@ public class PluginDownloader { //implements Runnable {
 			File oldFile = installedPlugin.getPath();
 			StartupActionScriptManager.ActionCommand deleteOld = new StartupActionScriptManager.DeleteCommand(oldFile);
 			StartupActionScriptManager.addActionCommand(deleteOld);
+			PluginUtil.getLogger().info("Queueing deletion of [" + oldFile.getPath() + "], exists [" + oldFile.exists() + "]");
 		}
 
 		//noinspection HardCodedStringLiteral
@@ -211,6 +227,8 @@ public class PluginDownloader { //implements Runnable {
 			StartupActionScriptManager.ActionCommand copyPlugin =
 					new StartupActionScriptManager.CopyCommand(localArchiveFile, newFile);
 			StartupActionScriptManager.addActionCommand(copyPlugin);
+			PluginUtil.getLogger().info("Queueing copying of [" + localArchiveFile.getAbsolutePath() + "] to ["
+					+ newFile.getAbsolutePath() + "]");
 		} else {
 			// add command to unzip file to the IDEA/plugins path
 			String unzipPath;
@@ -225,12 +243,15 @@ public class PluginDownloader { //implements Runnable {
 			StartupActionScriptManager.ActionCommand unzip =
 					new StartupActionScriptManager.UnzipCommand(localArchiveFile, newFile);
 			StartupActionScriptManager.addActionCommand(unzip);
+			PluginUtil.getLogger().info("Queueing unzipping of [" + localArchiveFile.getAbsolutePath() + "] to ["
+					+ newFile.getAbsolutePath() + "]");
 		}
 
 		// add command to remove temp plugin file
 		StartupActionScriptManager.ActionCommand deleteTemp =
 				new StartupActionScriptManager.DeleteCommand(localArchiveFile);
 		StartupActionScriptManager.addActionCommand(deleteTemp);
+		PluginUtil.getLogger().info("Queueing deletion of [" + localArchiveFile.getAbsolutePath() + "]");
 	}
 
 	public int getTimeout() {
