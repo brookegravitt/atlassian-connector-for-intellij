@@ -52,7 +52,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 	private final Project project;
 	private final CfgManager cfgManager;
-	private static final String CFG_LOAD_ERROR_MSG = "Error while loading Atlassian Plugin configuration.";
+	private static final String CFG_LOAD_ERROR_MSG = "Error while loading Atlassian IntelliJ Connector configuration.";
 	private static final Icon PLUGIN_SETTINGS_ICON = IconLoader.getIcon("/icons/ico_plugin.png");
 	private ProjectConfigurationPanel projectConfigurationPanel;
 
