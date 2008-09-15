@@ -105,8 +105,8 @@ public class PluginDownloader { //implements Runnable {
 			public void run() {
 				String title = "IDEA shutdown";
 				String message =
-						"Plugin has been installed successfully. Do you want to restart IDEA to activate the plugin?";
-
+						"Atlassian IntelliJ Connector has been installed successfully. "
+						+ "Do you want to restart IDEA to activate the plugin?"; 
 				int answer = Messages.showYesNoDialog(
 						message, title, Messages.getQuestionIcon());
 
