@@ -20,7 +20,6 @@ import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 
 import java.util.Arrays;
-import java.util.HashMap;
 
 public class CrucibleFiltersBean {
     private Boolean[] predefinedFilters = new Boolean[PredefinedFilter.values().length];
