@@ -113,9 +113,15 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 		if (crucibleCustomFilterPanel.getFilter() != null) {
 			CustomFilterBean filter = crucibleCustomFilterPanel.getFilter();
 
-			filters.getManualFilter().put(filter.getTitle(), filter);
-			projectCfg.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().put(filter.getTitle(), filter);
+			filters.setManualFilter(filter);
+			projectCfg.getCrucibleConfiguration().getCrucibleFilters().setManualFilter(filter);
 			refreshReviews(crucibleStatusChecker);
+
+			CollapsibleTable table = customTables.get(filter.getId());
+			if (table != null) {
+				table.setTitle(filter.getTitle());
+			}
+
 		}
 		hideCrucibleCustomFilter();
 	}
@@ -197,14 +203,10 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 					null);
 		}
 
-		for (String s : projectCfg.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().keySet()) {
-			CustomFilterBean filter = projectCfg.getCrucibleConfiguration()
-					.getCrucibleFilters().getManualFilter().get(s);
+		CustomFilterBean filter = projectCfg.getCrucibleConfiguration().getCrucibleFilters().getManualFilter();
 
-			if (filter.isEnabled()) {
-				this.showCustomFilter(true, null);
-				break;
-			}
+		if (filter != null && filter.isEnabled()) {
+			this.showCustomFilter(filter.getId(), true, null);
 		}
 	}
 
@@ -431,14 +433,11 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 	}
 
 	public void showCrucibleCustomFilter() {
-		if (!projectCfg.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().isEmpty()) {
-			for (String filterName : projectCfg.getCrucibleConfiguration()
-					.getCrucibleFilters().getManualFilter().keySet()) {
 
-				crucibleCustomFilterPanel.setFilter(
-						projectCfg.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().get(filterName));
-				break;
-			}
+		CustomFilterBean customFilter = projectCfg.getCrucibleConfiguration().getCrucibleFilters().getManualFilter();
+
+		if (customFilter != null) {
+			crucibleCustomFilterPanel.setFilter(customFilter);
 			showCrucibleCustomFilterPanel();
 		} else {
 			addCustomFilter();
@@ -446,8 +445,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 	}
 
 	public void addCustomFilter() {
-		String newName = FilterNameUtil.suggestNewName(
-				projectCfg.getCrucibleConfiguration().getCrucibleFilters().getManualFilter());
+		String newName = "filter name";
 		CustomFilterBean newFilter = new CustomFilterBean();
 		newFilter.setTitle(newName);
 		crucibleCustomFilterPanel.setFilter(newFilter);
@@ -470,13 +468,14 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 	}
 
 
-	public void showCustomFilter(boolean visible, CrucibleStatusChecker checker) {
-		if (!projectCfg.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().isEmpty()) {
-			for (String filterName : projectCfg.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().keySet()) {
-				CustomFilterBean filter
-						= projectCfg.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().get(filterName);
-				if (visible) {
-					if (!customTables.containsKey(filter.getTitle())) {
+	public void showCustomFilter(final String id, boolean visible, CrucibleStatusChecker checker) {
+		CustomFilterBean filter
+						= projectCfg.getCrucibleConfiguration().getCrucibleFilters().getManualFilter();
+
+		if (filter != null) {
+
+			if (visible) {
+					if (!customTables.containsKey(filter.getId())) {
 						CollapsibleTable table = new CollapsibleTable(
 								tableColumnProvider,
 								projectCfg.getCrucibleConfiguration().getTableConfiguration(),
@@ -491,21 +490,23 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 								table.getTable());
 
 						dataPanelsHolder.add(table);
-						customTables.put(filter.getTitle(), table);
+						customTables.put(filter.getId(), table);
 
 						refreshReviews(checker);
+
 					}
 				} else {
-					if (customTables.containsKey(filter.getTitle())) {
-						dataPanelsHolder.remove(customTables.get(filter.getTitle()));
-						customTables.remove(filter.getTitle());
+					if (customTables.containsKey(filter.getId())) {
+						dataPanelsHolder.remove(customTables.get(filter.getId()));
+						customTables.remove(filter.getId());
 					}
 				}
 			}
+
 			dataPanelsHolder.validate();
 			tablePane.repaint();
 		}
-	}
+
 
 	public void refreshReviews(final CrucibleStatusChecker checker) {
 		if (checker != null) {

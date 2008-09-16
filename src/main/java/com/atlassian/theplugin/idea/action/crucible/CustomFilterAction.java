@@ -35,15 +35,19 @@ public class CustomFilterAction extends Crucible16ToggleAction {
             ThePluginProjectComponent projectComponent
                     = IdeaHelper.getCurrentProject(event).getComponent(ThePluginProjectComponent.class);
             ProjectConfigurationBean projectConfiguration = projectComponent.getProjectConfigurationBean();
-            if (!projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().isEmpty()) {
-                for (String s : projectConfiguration.getCrucibleConfiguration().
-                        getCrucibleFilters().getManualFilter().keySet()) {
 
-                    CustomFilterBean filter = projectConfiguration.getCrucibleConfiguration()
-                            .getCrucibleFilters().getManualFilter().get(s);
-                    return filter;
-                }
-            }
+			// single filter support
+			return projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter();
+
+//            if (!projectConfiguration.getCrucibleConfiguration().getCrucibleFilters().getManualFilter().isEmpty()) {
+//                for (String s : projectConfiguration.getCrucibleConfiguration().
+//                        getCrucibleFilters().getManualFilter().keySet()) {
+//
+//                    CustomFilterBean filter = projectConfiguration.getCrucibleConfiguration()
+//                            .getCrucibleFilters().getManualFilter().get(s);
+//                    return filter;
+//                }
+//            }
         }
         return null;
     }
@@ -68,7 +72,7 @@ public class CustomFilterAction extends Crucible16ToggleAction {
                 }
             }
 
-            IdeaHelper.getCrucibleToolWindowPanel(event).showCustomFilter(b, checker);
+            IdeaHelper.getCrucibleToolWindowPanel(event).showCustomFilter(filter.getId(), b, checker);
         }
     }
 
@@ -79,8 +83,7 @@ public class CustomFilterAction extends Crucible16ToggleAction {
             if (panel.getProjectCfg()
                     .getCrucibleConfiguration()
                     .getCrucibleFilters()
-                    .getManualFilter()
-                    .isEmpty()) {
+                    .getManualFilter() == null) {
                 event.getPresentation().setEnabled(false);
             } else {
                 event.getPresentation().setEnabled(true);
