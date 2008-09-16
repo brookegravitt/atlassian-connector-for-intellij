@@ -29,7 +29,7 @@ import java.util.Comparator;
  * To change this template use File | Settings | File Templates.
  */
 public class BuildNumberColumn extends TableColumnInfo {
-	private static final int COL_WIDTH = 100;
+	private static final int COL_WIDTH = 70;
 
 	public String getColumnName() {
 		return "Build Number";
