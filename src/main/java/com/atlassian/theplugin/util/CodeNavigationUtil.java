@@ -21,23 +21,30 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
-
 public final class CodeNavigationUtil {
 
     private CodeNavigationUtil() {
         // this is utility class
     }
 
-    @Nullable
-    public static PsiFile guessMatchingFile(String pathname, PsiFile[] psifiles, VirtualFile baseDir) {
-        for (PsiFile psiFile : psifiles) {
-            String relativePath = VfsUtil.getPath(baseDir, psiFile.getVirtualFile(), File.separatorChar);
-            if (pathname.endsWith(relativePath) == true) {
-                return psiFile;
-            }
+	@Nullable
+	public static PsiFile guessMatchingFile(String pathname, PsiFile[] psifiles, VirtualFile baseDir) {
+		String bestMatchPath = null;
+		PsiFile bestMatch = null;
+		for (PsiFile psiFile : psifiles) {
+			// we use hard-coded '/' as separator in order to make string comparison platform independent
+			String relativePath = VfsUtil.getPath(baseDir, psiFile.getVirtualFile(), '/');
+			if (relativePath == null) {
+				continue;
+			}
+			if (pathname.endsWith(relativePath) == true) {
+				if (bestMatch == null || (relativePath.length() > bestMatchPath.length())) {
+					bestMatchPath = relativePath;
+					bestMatch = psiFile;
+				}
 
-        }
-        return null;
-    }
+			}
+		}
+		return bestMatch;
+	}
 }
