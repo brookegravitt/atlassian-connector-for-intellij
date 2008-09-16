@@ -15,7 +15,6 @@
  */
 package com.atlassian.theplugin.idea.bamboo.table.renderer;
 
-import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.intellij.util.ui.ListTableModel;
 
@@ -37,16 +36,20 @@ public class BackgroundAwareBambooRenderer extends DefaultTableCellRenderer {
 			ListTableModel<BambooBuildAdapterIdea> o1 = (ListTableModel<BambooBuildAdapterIdea>) jTable.getModel();
 			BambooBuildAdapterIdea currentRow = (BambooBuildAdapterIdea) o1.getItem(row);
 			if (isSelected == false) {
-				if (currentRow.getEnabled()) {
-					if (currentRow.getStatus() == BuildStatus.BUILD_FAILED) {
-						c.setBackground(FAILED_BUILD_COLOR);
-					} else {
-						c.setBackground(SUCCEED_BUILD_COLOR);
-					}
-				} else {
-					c.setBackground(DISABLED_BUILD_COLOR);
+				Color color;
+				switch (currentRow.getState()) {
+					case FAIL:
+						color = FAILED_BUILD_COLOR;
+						break;
+					case PASS:
+						color = SUCCEED_BUILD_COLOR;
+						break;
+					case UNKNOWN:
+					default:
+						color = DISABLED_BUILD_COLOR;
+						break;
 				}
-
+				c.setBackground(color);
 			}
 
 			onRender(o1, (JLabel) c, o);

@@ -22,14 +22,10 @@ import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import java.util.Comparator;
 
 /**
- * Created by IntelliJ IDEA.
- * User: marek
- * Date: Mar 10, 2008
- * Time: 12:24:37 PM
- * To change this template use File | Settings | File Templates.
+ * @author mwent
  */
 public class BuildTestRatioColumn extends TableColumnInfo {
-	private static final int COL_TEST_RATIO_WIDTH = 100;
+	private static final int COL_TEST_RATIO_WIDTH = 80;
 
 	@Override
 	public String getColumnName() {
