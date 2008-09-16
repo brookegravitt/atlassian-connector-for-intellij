@@ -125,46 +125,89 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 //		return serverVersion;
 //	}
 //
-	private void doRunCrucible() {
-		try {
-			// collect review info from each server and each required filter
-			final Map<PredefinedFilter, ReviewNotificationBean> reviews
-					= new HashMap<PredefinedFilter, ReviewNotificationBean>();
-			final Map<String, ReviewNotificationBean> customFilterReviews
-					= new HashMap<String, ReviewNotificationBean>();
+private void doRunCrucible() {
+	try {
+		// collect review info from each server and each required filter
+		final Map<PredefinedFilter, ReviewNotificationBean> reviews
+				= new HashMap<PredefinedFilter, ReviewNotificationBean>();
+		final Map<String, ReviewNotificationBean> customFilterReviews
+				= new HashMap<String, ReviewNotificationBean>();
 
-			boolean is16 = false;
-			for (CrucibleServerCfg server : retrieveEnabledCrucibleServers()) {
+		boolean is16 = false;
+		for (CrucibleServerCfg server : retrieveEnabledCrucibleServers()) {
 
-				for (int i = 0;
-					i < crucibleProjectConfiguration.getCrucibleFilters().getPredefinedFilters().length; i++) {
-					if (crucibleProjectConfiguration.getCrucibleFilters().getPredefinedFilters()[i]) {
-						PredefinedFilter filter = PredefinedFilter.values()[i];
-						if (!reviews.containsKey(filter)) {
-							ReviewNotificationBean bean = new ReviewNotificationBean();
-							List<ReviewData> list = new ArrayList<ReviewData>();
-							bean.setReviews(list);
-							reviews.put(filter, bean);
+			for (int i = 0;
+				 i < crucibleProjectConfiguration.getCrucibleFilters().getPredefinedFilters().length; i++) {
+				if (crucibleProjectConfiguration.getCrucibleFilters().getPredefinedFilters()[i]) {
+					PredefinedFilter filter = PredefinedFilter.values()[i];
+					if (!reviews.containsKey(filter)) {
+						ReviewNotificationBean bean = new ReviewNotificationBean();
+						List<ReviewData> list = new ArrayList<ReviewData>();
+						bean.setReviews(list);
+						reviews.put(filter, bean);
+					}
+					ReviewNotificationBean bean = reviews.get(filter);
+					try {
+						PluginUtil.getLogger().debug("Crucible: updating status for server: "
+								+ server.getUrl() + ", filter type: " + filter);
+
+						List<Review> review = crucibleServerFacade.getReviewsForFilter(server, filter);
+						List<ReviewData> reviewData = new ArrayList<ReviewData>(review.size());
+						for (Review r : review) {
+							reviewData.add(new ReviewDataImpl(r, server));
 						}
-						ReviewNotificationBean bean = reviews.get(filter);
+
+						is16 = true;
+						bean.getReviews().addAll(reviewData);
+					} catch (ServerPasswordNotProvidedException exception) {
+						ApplicationManager.getApplication().invokeLater(missingPasswordHandler,
+								ModalityState.defaultModalityState());
+						bean.setException(exception);
+					} catch (RemoteApiLoginFailedException exception) {
+						ApplicationManager.getApplication().invokeLater(missingPasswordHandler,
+								ModalityState.defaultModalityState());
+						bean.setException(exception);
+					} catch (RemoteApiException e) {
+						PluginUtil.getLogger().info("Error getting Crucible reviews for " + server.getName()
+								+ " server", e);
+						bean.setException(e);
+					}
+				}
+			}
+		}
+
+
+		CustomFilterBean filter = crucibleProjectConfiguration.getCrucibleFilters().getManualFilter();
+
+		if (filter != null) {
+
+			if (!customFilterReviews.containsKey(filter.getTitle())) {
+				List<ReviewData> list = new ArrayList<ReviewData>();
+				ReviewNotificationBean bean = new ReviewNotificationBean();
+				bean.setReviews(list);
+				customFilterReviews.put(filter.getTitle(), bean);
+			}
+			ReviewNotificationBean bean = customFilterReviews.get(filter.getTitle());
+
+			if (filter.isEnabled()) {
+				for (CrucibleServerCfg server : retrieveEnabledCrucibleServers()) {
+					if (server.getServerId().toString().equals(filter.getServerUid())) {
 						try {
 							PluginUtil.getLogger().debug("Crucible: updating status for server: "
-									+ server.getUrl() + ", filter type: " + filter);
+									+ server.getUrl() + ", custom filter");
+							List<Review> customFilter
+									= crucibleServerFacade.getReviewsForCustomFilter(server, filter);
 
-							List<Review> review = crucibleServerFacade.getReviewsForFilter(server, filter);
-							List<ReviewData> reviewData = new ArrayList<ReviewData>(review.size());
-							for (Review r : review) {
+
+							List<ReviewData> reviewData = new ArrayList<ReviewData>(customFilter.size());
+							for (Review r : customFilter) {
 								reviewData.add(new ReviewDataImpl(r, server));
 							}
 
-							is16 = true;
 							bean.getReviews().addAll(reviewData);
 						} catch (ServerPasswordNotProvidedException exception) {
-							ApplicationManager.getApplication().invokeLater(missingPasswordHandler,
-									ModalityState.defaultModalityState());
-							bean.setException(exception);
-						} catch (RemoteApiLoginFailedException exception) {
-							ApplicationManager.getApplication().invokeLater(missingPasswordHandler,
+							ApplicationManager.getApplication().invokeLater(
+									new MissingPasswordHandler(crucibleServerFacade, cfgManager, project),
 									ModalityState.defaultModalityState());
 							bean.setException(exception);
 						} catch (RemoteApiException e) {
@@ -176,63 +219,22 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 				}
 			}
 
-			if (!crucibleProjectConfiguration.getCrucibleFilters().getManualFilter().isEmpty()) {
-				for (String s : crucibleProjectConfiguration.getCrucibleFilters().getManualFilter().keySet()) {
-					CustomFilterBean filter = crucibleProjectConfiguration.getCrucibleFilters().getManualFilter().get(s);
-					if (!customFilterReviews.containsKey(filter.getTitle())) {
-						List<ReviewData> list = new ArrayList<ReviewData>();
-						ReviewNotificationBean bean = new ReviewNotificationBean();
-						bean.setReviews(list);
-						customFilterReviews.put(filter.getTitle(), bean);
-					}
-					ReviewNotificationBean bean = customFilterReviews.get(filter.getTitle());
+		}
 
-					if (filter.isEnabled()) {
-						for (CrucibleServerCfg server : retrieveEnabledCrucibleServers()) {
-							if (server.getServerId().toString().equals(filter.getServerUid())) {
-								try {
-									PluginUtil.getLogger().debug("Crucible: updating status for server: "
-											+ server.getUrl() + ", custom filter");
-									List<Review> customFilter
-											= crucibleServerFacade.getReviewsForCustomFilter(server, filter);
-
-
-									List<ReviewData> reviewData = new ArrayList<ReviewData>(customFilter.size());
-									for (Review r : customFilter) {
-										reviewData.add(new ReviewDataImpl(r, server));
-									}
-
-									bean.getReviews().addAll(reviewData);
-								} catch (ServerPasswordNotProvidedException exception) {
-									ApplicationManager.getApplication().invokeLater(
-											new MissingPasswordHandler(crucibleServerFacade, cfgManager, project),
-											ModalityState.defaultModalityState());
-									bean.setException(exception);
-								} catch (RemoteApiException e) {
-									PluginUtil.getLogger().info("Error getting Crucible reviews for " + server.getName()
-											+ " server", e);
-									bean.setException(e);
-								}
-							}
-						}
+		// dispatch to the listeners
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				synchronized (listenerList) {
+					for (CrucibleStatusListener listener : listenerList) {
+						listener.updateReviews(reviews, customFilterReviews);
 					}
 				}
 			}
-
-			// dispatch to the listeners
-			EventQueue.invokeLater(new Runnable() {
-				public void run() {
-					synchronized (listenerList) {
-						for (CrucibleStatusListener listener : listenerList) {
-							listener.updateReviews(reviews, customFilterReviews);
-						}
-					}
-				}
-			});
-		} catch (Throwable t) {
-			PluginUtil.getLogger().error(t);
-		}
+		});
+	} catch (Throwable t) {
+		PluginUtil.getLogger().error(t);
 	}
+}
 
 
 	/**
