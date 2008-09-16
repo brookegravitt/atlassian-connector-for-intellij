@@ -27,24 +27,40 @@ public class BambooBuildAdapterIdea extends BambooBuildAdapter {
 	private static final Icon ICON_GREEN = IconLoader.getIcon("/icons/icn_plan_passed.gif");
 	private static final Icon ICON_GREY = IconLoader.getIcon("/icons/icn_plan_disabled.gif");
 
+	public enum BuildState {
+		PASS, FAIL, UNKNOWN 
+	}
+
+	public BuildState getState() {
+		if (build.getEnabled()) {
+			switch (build.getStatus()) {
+				case BUILD_FAILED:
+					return BuildState.FAIL;
+				case BUILD_SUCCEED:
+					return BuildState.PASS;
+				case UNKNOWN:
+				default:
+					return BuildState.UNKNOWN;
+			}
+		} else {
+			return BuildState.UNKNOWN;
+		}
+	}
+
 	public BambooBuildAdapterIdea(BambooBuild build) {
 		super(build);
 	}
 
 	public Icon getBuildIcon() {
-		if (build.getEnabled()) {
-			switch (build.getStatus()) {
-				case BUILD_FAILED:
-					return ICON_RED;
-				case UNKNOWN:
-					return ICON_GREY;
-				case BUILD_SUCCEED:
-					return ICON_GREEN;
-				default:
-					throw new IllegalArgumentException("Illegal state of build.");
-			}
-		} else {
-			return ICON_GREY;
+		final BuildState buildState = getState();
+		switch (buildState) {
+			case FAIL:
+				return ICON_RED;
+			case PASS:
+				return ICON_GREEN;
+			case UNKNOWN:
+			default:
+				return ICON_GREY;
 		}
 	}
 
