@@ -68,7 +68,35 @@ public class CodeNavigationUtilIdeaTest extends LightIdeaTestCase {
         assertSame(mock3, guessMatchingFile(myExistingFileInProject, new PsiFile[]{mock2, mock4, mock1, mock3}, baseDir));
     }
 
-	public void testSanity() {
+	public void testGuessMatchingFileMoreTricky() {
+        final String vf1s = "/home/wseliga/lab/ide-connector/pom.xml";
+        final String vf2s = "/home/wseliga/lab/ide-connector/commons/pom.xml";
+        final String vf3s = "/home/wseliga/lab/ide-connector/idea/pom.xml";
+		final String vf4s = "/home/wseliga/lab/ide-connector/idea/idea/pom.xml";
+
+        final String myExistingFileInProject = "PL/trunk/ThePlugin/commons/pom.xml";
+        MockVirtualFile baseDir = new MockVirtualFile("/home/wseliga/lab/ide-connector", true);
+
+        final PsiFile mock1 = EasyMock.createMock(PsiFile.class);
+        final PsiFile mock2 = EasyMock.createMock(PsiFile.class);
+        final PsiFile mock3 = EasyMock.createMock(PsiFile.class);
+		final PsiFile mock4 = EasyMock.createMock(PsiFile.class);
+        EasyMock.expect(mock1.getVirtualFile()).andReturn(new MockVirtualFile(vf1s)).anyTimes();
+        EasyMock.expect(mock2.getVirtualFile()).andReturn(new MockVirtualFile(vf2s)).anyTimes();
+        EasyMock.expect(mock3.getVirtualFile()).andReturn(new MockVirtualFile(vf3s)).anyTimes();
+		EasyMock.expect(mock4.getVirtualFile()).andReturn(new MockVirtualFile(vf4s)).anyTimes();
+		EasyMock.replay(mock1, mock2, mock3, mock4);
+        final PsiFile[] psiFiles = new PsiFile[]{mock1, mock2, mock3};
+        assertSame(mock2, guessMatchingFile(myExistingFileInProject, psiFiles, baseDir));
+
+		final PsiFile[] psiFiles2 = new PsiFile[]{mock1, mock2, mock3, mock4};
+
+		assertSame(mock3, guessMatchingFile("PL/trunk/ThePlugin/idea/pom.xml", psiFiles2, baseDir));
+		assertSame(mock4, guessMatchingFile("PL/trunk/idea/idea/pom.xml", psiFiles2, baseDir));
+	}
+
+
+    public void testSanity() {
 		MockVirtualFile mvf1 = new MockVirtualFile(changedFile);
 		MockVirtualFile mvf2 = new MockVirtualFile(new String(changedFile));
 		MockVirtualFile mvf3 = new MockVirtualFile(TEST_FILE);
