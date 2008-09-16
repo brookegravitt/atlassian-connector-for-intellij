@@ -24,18 +24,19 @@ import java.util.HashMap;
 
 public class CrucibleFiltersBean {
     private Boolean[] predefinedFilters = new Boolean[PredefinedFilter.values().length];
-    private HashMap<String, CustomFilterBean> manualFilter = new HashMap<String, CustomFilterBean>();
+//    private HashMap<String, CustomFilterBean> manualFilter = new HashMap<String, CustomFilterBean>();
+	private CustomFilterBean manualFilter;
 	private Boolean readStored;
 
 	public CrucibleFiltersBean() {
         Arrays.fill(predefinedFilters, false);
     }
 
-    public HashMap<String, CustomFilterBean> getManualFilter() {
+    public CustomFilterBean getManualFilter() {
         return manualFilter;
     }
 
-    public void setManualFilter(HashMap<String, CustomFilterBean> manualFilter) {
+    public void setManualFilter(CustomFilterBean manualFilter) {
         this.manualFilter = manualFilter;
     }
 

@@ -37,8 +37,9 @@ public class CustomFilterBean implements CustomFilter {
     private static final double ID_DISCRIMINATOR = 1002d;
     private static final int HASHCODE_CONSTANT = 31;
     private static final int SHIFT_32 = 32;
+	public static final String FILTER_ID = "MANUAL_FILTER_ID";
 
-    public boolean equals(Object o) {
+	public boolean equals(Object o) {
 		if (this == o) {
             return true;
         }
@@ -172,4 +173,8 @@ public class CustomFilterBean implements CustomFilter {
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
+
+	public String getId() {
+		return FILTER_ID;
+	}
 }
