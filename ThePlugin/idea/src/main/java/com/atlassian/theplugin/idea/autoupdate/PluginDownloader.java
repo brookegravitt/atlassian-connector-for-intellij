@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea.autoupdate;
 
 import com.atlassian.theplugin.commons.configuration.GeneralConfigurationBean;
+import com.atlassian.theplugin.idea.IdeaActionScheduler;
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
@@ -31,15 +32,11 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.io.StreamUtil;
 import com.intellij.util.io.ZipUtil;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.io.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -99,8 +96,14 @@ public class PluginDownloader {
 			// restart IDEA
 			promptShutdownAndShutdown();
 
-		} catch (IOException e) {
-			PluginUtil.getLogger().info("Error registering action in IDEA", e);
+		} catch (final IOException e) {
+			PluginUtil.getLogger().warn(e.getMessage(), e);
+			IdeaActionScheduler.getInstance().invokeLater(new Runnable() {
+				public void run() {
+					Messages.showErrorDialog(e.getMessage(), "Error downloading and installing plugin");
+				}
+			});
+
 		}
 	}
 
@@ -157,7 +160,16 @@ public class PluginDownloader {
 			inputStream = connection.getInputStream();
 			outputStream = new FileOutputStream(pluginArchiveFile);
 			StreamUtil.copyStreamContent(inputStream, outputStream);
-		} finally {
+		} catch (FileNotFoundException e) {
+			PluginUtil.getLogger().warn("File not found " + pluginArchiveFile.getPath(), e);
+			throw e;
+		}
+		catch (IOException e) {
+			PluginUtil.getLogger().warn(e);
+			throw e;
+		}
+		finally {
+
 			if (inputStream != null) {
 				try {
 					inputStream.close();
