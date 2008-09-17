@@ -21,10 +21,8 @@ package com.atlassian.theplugin.idea;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfoImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralCommentBean;
 import com.atlassian.theplugin.commons.crucible.api.model.UserBean;
@@ -54,7 +52,6 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
@@ -353,7 +350,8 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 			try {
 				VersionedComment newComment = facade.addVersionedCommentReply(review.getServer(), review.getPermId(),
 						parentComment.getPermId(), comment);
-				eventBroker.trigger(new VersionedCommentReplyAdded(this, review, file.getItemInfo(), parentComment, newComment));
+				eventBroker.trigger(
+							new VersionedCommentReplyAdded(this, review, file.getItemInfo(), parentComment, newComment));
 			} catch (RemoteApiException e) {
 				IdeaHelper.handleRemoteApiException(project, e);
 			} catch (ServerPasswordNotProvidedException e) {
