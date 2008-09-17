@@ -49,7 +49,8 @@ public class ShowDiffAction extends AbstractBambooFileActions {
 		}
 		final VcsRevisionNumber currentRevisionNumber = VcsIdeaHelper.getVcsRevisionNumber(project, virtualFile);
 		if (currentRevisionNumber == null) {
-			Messages.showErrorDialog(project, "Cannot determine current version of file [" + psiFile.getName() + "] in the project.", "Problem");
+			Messages.showErrorDialog(project, "Cannot determine current version of file ["
+					+ psiFile.getName() + "] in the project.", "Problem");
 			return;
 		}
 
