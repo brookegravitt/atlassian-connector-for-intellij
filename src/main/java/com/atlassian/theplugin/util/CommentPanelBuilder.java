@@ -77,10 +77,17 @@ public final class CommentPanelBuilder {
 		return new CommentPanel(review, file, comment) {
 			@Override
 			public Color getHeaderBackground() {
+				boolean isLineComment = comment.isFromLineInfo() || comment.isToLineInfo();
+				Color c;
 				if (comment.getAuthor().getUserName().equals(review.getServer().getUsername())) {
-					return getDerivedColor(MINE_HEADER_COLOR, isSelected);
+					c = MINE_HEADER_COLOR;
+				} else {
+					c = NOT_MINE_HEADER_COLOR;
 				}
-				return getDerivedColor(NOT_MINE_HEADER_COLOR, isSelected);
+				if (!isLineComment && !comment.isReply()) {
+					c = c.darker();
+				}
+				return getDerivedColor(c, isSelected);
 			}
 
 			@Override
@@ -112,12 +119,6 @@ public final class CommentPanelBuilder {
 		private static final Color BORDER_COLOR = new Color(0xCC, 0xCC, 0xCC);
 
 		private static final float MINIMUM_FONT_SIZE = 3;
-		private static final float DATE_FONT_DIFFERENCE = -3;
-		private static final float AUTHOR_FONT_DIFFERENCE = -3;
-		private static final float LINE_NUMBER_FONT_DIFFERENCE = -3;
-		private static final float RANKING_FONT_DIFFERENCE = -3;
-		private static final float STATE_FONT_DIFFERENCE = -3;
-		private static final Color STATE_DRAFT_LABEL_COLOR = new Color(0xFF, 0xD4, 0x15);
 
 		private CommentPanel(ReviewData review, CrucibleFileInfo file, Comment comment) {
 			super(new FormLayout("pref:grow",
@@ -140,8 +141,8 @@ public final class CommentPanelBuilder {
 			if (comment.isDefectRaised()) {
 				header.add(getRankingLabel(getHeaderBackground()), RANKING_POS);
 			}
-			header.add(getStateLabel("DRAFT", comment.isDraft(), STATE_DRAFT_LABEL_COLOR), DRAF_STATE_POS);
 			header.add(getStateLabel("DEFECT", comment.isDefectRaised(), Color.RED), DEFECT_STATE_POS);
+			header.add(getStateLabel("DRAFT", comment.isDraft(), Color.DARK_GRAY), DRAF_STATE_POS);
 			header.add(getToolBar(), TOOLBAR_POS);
 			header.setBackground(getHeaderBackground());
 
@@ -161,23 +162,13 @@ public final class CommentPanelBuilder {
 			sb.append(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(comment.getCreateDate()));
 			sb.append(" ]");
 			label = new JLabel(sb.toString());
-			label.setFont(getSmallerFont(label.getFont(), DATE_FONT_DIFFERENCE));
 			return label;
-		}
-
-		private Font getSmallerFont(final Font font, final float dateFontSizeDifference) {
-			if (font != null) {
-				float newFontSize = font.getSize() + dateFontSizeDifference;
-				return font.deriveFont(font.getStyle(), (newFontSize > 0 ? newFontSize : MINIMUM_FONT_SIZE));
-			}
-			return null;
 		}
 
 		protected Component getAuthorLabel() {
 			BoldLabel label =
 					new BoldLabel("".equals(comment.getAuthor().getDisplayName()) ? comment.getAuthor().getUserName() : comment
 							.getAuthor().getDisplayName());
-			label.setFont(getSmallerFont(label.getFont(), AUTHOR_FONT_DIFFERENCE));
 			return label;
 		}
 
@@ -216,10 +207,10 @@ public final class CommentPanelBuilder {
 							: "Line " + endLine;
 				}
 
-				JLabel label = new JLabel(txt);
-				
-				label.setFont(getSmallerFont(label.getFont(), LINE_NUMBER_FONT_DIFFERENCE));
-				return label;
+				if (!comment.isReply() && (txt.length() == 0)) {
+					txt = "General File Comment";
+				}
+				return new JLabel(txt);
 			}
 			return new JLabel("");
 		}
@@ -230,7 +221,6 @@ public final class CommentPanelBuilder {
 
 			if (isInState) {
 				label.setText(text);
-				label.setFont(getSmallerFont(label.getFont(), STATE_FONT_DIFFERENCE));
 				label.setFont(label.getFont().deriveFont(Font.BOLD));
 				label.setForeground(color);
 			}
@@ -246,10 +236,8 @@ public final class CommentPanelBuilder {
 
 
 				JLabel keyLabel = new JLabel(" " + firstLetterUpperCase(elem.getKey()) + ": ");
-				keyLabel.setFont(getSmallerFont(keyLabel.getFont(), RANKING_FONT_DIFFERENCE));
 
 				JLabel valueLabel = new JLabel(elem.getValue().getValue());
-				valueLabel.setFont(getSmallerFont(valueLabel.getFont(), RANKING_FONT_DIFFERENCE));
 				valueLabel.setFont(valueLabel.getFont().deriveFont(Font.BOLD));
 
 				panel.add(keyLabel);
