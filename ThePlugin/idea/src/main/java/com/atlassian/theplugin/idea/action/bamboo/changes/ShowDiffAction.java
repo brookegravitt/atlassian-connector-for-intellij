@@ -16,15 +16,88 @@
 
 package com.atlassian.theplugin.idea.action.bamboo.changes;
 
-import com.intellij.openapi.actionSystem.AnAction;
+import com.atlassian.theplugin.idea.VcsIdeaHelper;
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.ui.tree.file.BambooFileNode;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.diff.DiffContent;
+import com.intellij.openapi.diff.DiffManager;
+import com.intellij.openapi.diff.DiffRequest;
+import com.intellij.openapi.diff.DocumentContent;
+import com.intellij.openapi.diff.FileContent;
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.fileEditor.OpenFileDescriptor;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.vcs.VcsBundle;
+import com.intellij.openapi.vcs.history.VcsRevisionNumber;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiFile;
 
-public class ShowDiffAction extends AnAction {
+public class ShowDiffAction extends AbstractBambooFileActions {
+
+	public void showRevisionDiff(final Project project, final BambooFileNode bambooFileNode) {
+		final PsiFile psiFile = bambooFileNode.getPsiFile();
+		if (psiFile == null) {
+			Messages.showErrorDialog(project, "Cannot find corresponding file in the project.", "Problem");
+			return;
+		}
+		final VirtualFile virtualFile = psiFile.getVirtualFile();
+		if (virtualFile == null) {
+			Messages.showErrorDialog(project, "PsiFile has not corresponding VirtualFile.", "Problem");
+			return;
+		}
+		final VcsRevisionNumber currentRevisionNumber = VcsIdeaHelper.getVcsRevisionNumber(project, virtualFile);
+		if (currentRevisionNumber == null) {
+			Messages.showErrorDialog(project, "Cannot determine current version of file [" + psiFile.getName() + "] in the project.", "Problem");
+			return;
+		}
+
+		VcsIdeaHelper.openFile(project, virtualFile, bambooFileNode.getRevision(), 1, 1,
+				new VcsIdeaHelper.OpenFileDescriptorAction() {
+
+					public boolean shouldNavigate() {
+						return false;
+					}
+
+					public void run(OpenFileDescriptor ofd) {
+
+						final Document displayDocument = new FileContent(project, ofd.getFile()).getDocument();
+						final Document referenceDocument = new FileContent(project, virtualFile).getDocument();
+
+						DiffRequest request = new DiffRequest(project) {
+
+							@Override
+							public DiffContent[] getContents() {
+								return (new DiffContent[]{
+										new DocumentContent(project, displayDocument),
+										new DocumentContent(project, referenceDocument),
+								});
+							}
+
+							@Override
+							public String[] getContentTitles() {
+								return (new String[]{
+										VcsBundle.message("diff.content.title.repository.version",
+												bambooFileNode.getRevision()), "Your version"
+								});
+							}
+
+							@Override
+							public String getWindowTitle() {
+								return "Diff between revisions " + bambooFileNode.getRevision() + " and "
+										+ currentRevisionNumber.asString() + " of file " + psiFile.getName();
+							}
+						};
+						DiffManager.getInstance().getDiffTool().show(request);
+					}
+				});
+	}
+
+
 	public void actionPerformed(AnActionEvent event) {
+		showRevisionDiff(IdeaHelper.getCurrentProject(event), getBambooFileNode(event));
+
 	}
 
-	public void update(AnActionEvent event) {
-		event.getPresentation().setEnabled(false);
-		super.update(event);
-	}
 }

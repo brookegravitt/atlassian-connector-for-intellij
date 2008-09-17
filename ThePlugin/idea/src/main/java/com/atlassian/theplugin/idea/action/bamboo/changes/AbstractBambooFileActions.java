@@ -68,17 +68,19 @@ public abstract class AbstractBambooFileActions extends AnAction {
     }
 
     protected void jumpToSource(final Project project, final BambooFileNode bfn) {
-        String pathname = bfn.getBambooFileInfo().getFileDescriptor().getUrl();
-
-        PsiFile[] psifiles = PsiManager.getInstance(project).getShortNamesCache().getFilesByName(bfn.getName());
-
-        PsiFile matchingFile = CodeNavigationUtil.guessMatchingFile(pathname, psifiles, project.getBaseDir());
+		PsiFile matchingFile = guessPsiFile(project, bfn);
         if (matchingFile != null) {
             matchingFile.navigate(true);
         }
     }
 
-    @Nullable
+	protected PsiFile guessPsiFile(Project project, BambooFileNode bfn) {
+		String pathname = bfn.getBambooFileInfo().getFileDescriptor().getUrl();
+		PsiFile[] psifiles = PsiManager.getInstance(project).getShortNamesCache().getFilesByName(bfn.getName());
+		return CodeNavigationUtil.guessMatchingFile(pathname, psifiles, project.getBaseDir());
+	}
+
+	@Nullable
     private BambooFileNode getBambooFileNode(TreePath path) {
         Object o = path.getLastPathComponent();
         if (o instanceof BambooFileNode) {
@@ -87,4 +89,11 @@ public abstract class AbstractBambooFileActions extends AnAction {
         return null;
 
     }
+
+	@Override
+	public void update(AnActionEvent e) {
+		BambooFileNode bfn = getBambooFileNode(e);
+		e.getPresentation().setEnabled(bfn != null && bfn.getPsiFile() != null);
+	}
+	
 }
