@@ -17,5 +17,5 @@
 package com.atlassian.theplugin.idea.ui;
 
 public interface TableItemSelectedListener<T> {
-    void itemSelected(AtlassianTableView<T> table, int noClicks);
+    void itemSelected(AtlassianTableView<T> table);
 }

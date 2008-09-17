@@ -23,11 +23,6 @@ import com.intellij.openapi.project.Project;
 
 public class GoToSourceAction extends AbstractBambooFileActions {
 
-    @Override
-    public void update(AnActionEvent e) {
-        BambooFileNode bfn = getBambooFileNode(e);
-        e.getPresentation().setEnabled(bfn != null && bfn.getPsiFile() != null);
-    }
 
     @Override
     public void actionPerformed(AnActionEvent e) {

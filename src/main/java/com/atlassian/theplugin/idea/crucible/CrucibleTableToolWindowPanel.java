@@ -44,21 +44,20 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.VerticalFlowLayout;
-import com.intellij.openapi.util.Key;
 import com.intellij.ui.table.TableView;
 import com.intellij.util.ui.UIUtil;
 import thirdparty.javaworld.ClasspathHTMLEditorKit;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.*;
 import java.util.List;
 
 public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStatusListener,
 		TableItemSelectedListener<ReviewData> {
 	public static final String PLACE_PREFIX = CrucibleTableToolWindowPanel.class.getSimpleName();
-	private static final Key<CrucibleTableToolWindowPanel> WINDOW_PROJECT_KEY
-			= Key.create(CrucibleTableToolWindowPanel.class.getName());
 	private Project project;
 	private transient ActionToolbar filterEditToolbar;
 	private TableColumnProvider columnProvider;
@@ -233,6 +232,20 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 					getPlaceName(),
 					getPopupActionGroup());
 			table.addItemSelectedListener(this);
+			table.addMouseListener(new MouseAdapter() {
+				public void mouseClicked(MouseEvent e) {
+					if (e.getClickCount() == 2) {
+						if (VcsIdeaHelper.isUnderVcsControl(project)) {
+							CrucibleReviewWindow.getInstance(project);
+							IdeaHelper.getReviewActionEventBroker(project).trigger(new ShowReviewEvent(
+									listener, selectedItem));
+						} else {
+							Messages.showInfoMessage(project, CrucibleConstants.CRUCIBLE_MESSAGE_NOT_UNDER_VCS,
+									CrucibleConstants.CRUCIBLE_TITLE_NOT_UNDER_VCS);
+						}
+					}
+				}
+			});
 			table.expand();
 			TableView.restore(projectCfg.getCrucibleConfiguration().getTableConfiguration(),
 					table.getTable());
@@ -350,7 +363,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 		uniqueReviews.clear();
 	}
 
-	public void itemSelected(AtlassianTableView<ReviewData> table, int noClicks) {
+	public void itemSelected(AtlassianTableView<ReviewData> table) {
 		if (table.getSelectedObject() != null) {
 			selectedItem = table.getSelectedObject();
 
@@ -362,18 +375,6 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 			for (CollapsibleTable collapsibleTable : customTables.values()) {
 				if (!collapsibleTable.getTable().equals(table)) {
 					collapsibleTable.clearSelection();
-				}
-			}
-
-			if (noClicks == 2) {
-				if (VcsIdeaHelper.isUnderVcsControl(project)) {
-					CrucibleReviewWindow.getInstance(project);
-					IdeaHelper.getReviewActionEventBroker(project).trigger(new ShowReviewEvent(
-							listener, selectedItem));
-				} else {
-
-					Messages.showInfoMessage(project, CrucibleConstants.CRUCIBLE_MESSAGE_NOT_UNDER_VCS,
-							CrucibleConstants.CRUCIBLE_TITLE_NOT_UNDER_VCS);
 				}
 			}
 		}

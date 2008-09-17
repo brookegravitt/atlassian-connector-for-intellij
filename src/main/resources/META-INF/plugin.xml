@@ -171,7 +171,9 @@
 		<action id="ThePlugin.Bamboo.ViewBuild" class="com.atlassian.theplugin.idea.action.bamboo.ViewBuildAction"
 				text="View" description="View Bamboo build" icon="/general/web.png"/>
 		<action id="ThePlugin.Bamboo.RunBuild" class="com.atlassian.theplugin.idea.action.bamboo.RunBuildAction"
-				text="Run Build" description="Run Bamboo build" icon="/actions/execute.png"/>
+				text="Run Build" description="Run Bamboo build" icon="/actions/execute.png">
+			<keyboard-shortcut first-keystroke="control R" keymap="$default"/>
+				</action>
 		<action id="ThePlugin.Bamboo.AddLabelToBuild"
 				class="com.atlassian.theplugin.idea.action.bamboo.LabelBuildAction" text="Add Label to Build"
 				description="Add label to Bamboo build" icon="/icons/icn_label.gif"/>
@@ -185,13 +187,17 @@
 		</action>
 		<action id="ThePlugin.Bamboo.ShowStackTrace"
 				class="com.atlassian.theplugin.idea.action.bamboo.BuildStackTraceAction" text="Show Failed Tests"
-				description="Show Failed Tests" icon="/debugger/stackFrame.png"/>
+				description="Show Failed Tests" icon="/debugger/stackFrame.png">
+			<keyboard-shortcut first-keystroke="shift control T" keymap="$default"/>
+				</action>
 		<action id="ThePlugin.Bamboo.ShowChanges" class="com.atlassian.theplugin.idea.action.bamboo.BuildChangesAction"
 				text="Show Changed Files" description="Show Changed Files" icon="/actions/createPatch.png">
-			<keyboard-shortcut first-keystroke="control D" keymap="$default"/>
+			<keyboard-shortcut first-keystroke="control F" keymap="$default"/>
 		</action>
 		<action id="ThePlugin.Bamboo.ShowLog" class="com.atlassian.theplugin.idea.action.bamboo.ShowLogAction"
-				text="Show Build Logs" description="Show Build Logs" icon="/actions/export.png"/>
+				text="Show Build Logs" description="Show Build Logs" icon="/actions/export.png">
+			<keyboard-shortcut first-keystroke="control L" keymap="$default"/>
+				</action>
 		<action id="ThePlugin.Bamboo.ExpandTests" class="com.atlassian.theplugin.idea.action.bamboo.ExpandTestsAction"
 				text="Expand All" icon="/actions/expandall.png"/>
 		<action id="ThePlugin.Bamboo.CollapseTests"
@@ -207,14 +213,11 @@
 				icon="/actions/export.png">
 			<keyboard-shortcut first-keystroke="F4" keymap="$default"/>
 		</action>
-		<action id="ThePlugin.Bamboo.Changes.ShowDiff"
-				class="com.atlassian.theplugin.idea.action.bamboo.changes.ShowDiffAction" text="Show Diff"
-				icon="/actions/diff.png">
-			<keyboard-shortcut first-keystroke="ctrl D" keymap="$default"/>
-		</action>
 		<action id="ThePlugin.Bamboo.Changes.DiffWithLocal"
-				class="com.atlassian.theplugin.idea.action.bamboo.changes.DiffWithLocalAction"
-				text="Show Diff With Local" icon="/actions/diffWithCurrent.png"/>
+				class="com.atlassian.theplugin.idea.action.bamboo.changes.ShowDiffAction"
+				text="Show Diff with Local" icon="/actions/diffWithCurrent.png">
+			<keyboard-shortcut first-keystroke="control D" keymap="$default"/>
+				</action>
 		<action id="ThePlugin.Bamboo.Changes.OpenRepoVersion"
 				class="com.atlassian.theplugin.idea.action.bamboo.changes.OpenRepoVersionAction"
 				text="Open Repository Version" icon="/objectBrowser/showEditorHighlighting.png"/>
@@ -292,7 +295,6 @@
 
 		<group id="ThePlugin.Bamboo.CommitListToolBar" popup="false">
 			<reference id="ThePlugin.Bamboo.Changes.GoToSource"/>
-			<reference id="ThePlugin.Bamboo.Changes.ShowDiff"/>
 			<reference id="ThePlugin.Bamboo.Changes.DiffWithLocal"/>
 			<reference id="ThePlugin.Bamboo.Changes.OpenRepoVersion"/>
 			<separator/>
