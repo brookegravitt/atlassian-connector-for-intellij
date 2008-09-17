@@ -217,13 +217,6 @@ public final class VcsIdeaHelper {
 	 */
 	private static void fetchAndOpenFile(final Project project, final String revision, @NotNull final VirtualFile virtualFile,
 			final int line, final int column, @Nullable final OpenFileDescriptorAction action) {
-//		VirtualFile file = getFileFromCache(project, virtualFile, revision);
-//		if (file != null && action != null) {
-//			OpenFileDescriptor fileDescriptor = new OpenFileDescriptor(project, file, line, column);
-//			action.run(fileDescriptor);
-//			return;
-//		}
-
 		final String niceFileMessage = virtualFile.getName() + " (rev: " + revision + ") from VCS";
 		new FetchingFileTask(project, niceFileMessage, virtualFile, revision, line, column, action).queue();
 	}
@@ -241,19 +234,10 @@ public final class VcsIdeaHelper {
 	 * @param action action to execute upon sucsessful completion of the fetching 
 	 */
 	// CHECKSTYLE:OFF
-	private static void fetchAndOpenFileWithDiffs(final Project project, final String fromRevision, final String toRevision,
+	public static void fetchAndOpenFileWithDiffs(final Project project, final String fromRevision, final String toRevision,
 			@NotNull final CommitType commitType, @NotNull final VirtualFile virtualFile,
 			final int line, final int column, @Nullable final OpenDiffAction action) {
 	// CHECKSTYLE:ON
-//		VirtualFile referenceVirtualFile = getFileFromCache(project, virtualFile, fromRevision);
-//		VirtualFile displayVirtualFile = getFileFromCache(project, virtualFile, toRevision);
-//
-//		if (referenceVirtualFile != null
-//				&& displayVirtualFile != null) {
-//			OpenFileDescriptor displayDescriptor = new OpenFileDescriptor(project, displayVirtualFile, line, column);
-//			action.run(displayDescriptor, referenceVirtualFile, commitType);
-//			return;
-//		}
 
 		final String niceFileMessage;
 		switch (commitType) {
@@ -395,6 +379,7 @@ public final class VcsIdeaHelper {
 		 * @param ofd description which will be passed to this action
 		 */
 		void run(OpenFileDescriptor ofd);
+		boolean shouldNavigate();
 	}
 
 	public interface OpenDiffAction {
@@ -553,10 +538,28 @@ public final class VcsIdeaHelper {
 			if (ofd != null) {
 				if (action != null) {
 					action.run(ofd);
+					if (action.shouldNavigate()) {
+						ofd.navigate(true);
+					}
+				} else {
+					ofd.navigate(true);
 				}
-				ofd.navigate(true);
 			}
 
 		}
+	}
+
+
+	@Nullable
+	public static VcsRevisionNumber getVcsRevisionNumber(final Project project, final VirtualFile virtualFile) {
+		AbstractVcs vcs = VcsUtil.getVcsFor(project, virtualFile);
+		if (vcs == null) {
+			return null;
+		}
+		DiffProvider diffProvider = vcs.getDiffProvider();
+		if (diffProvider == null) {
+			return null;
+		}
+		return diffProvider.getCurrentRevision(virtualFile);
 	}
 }

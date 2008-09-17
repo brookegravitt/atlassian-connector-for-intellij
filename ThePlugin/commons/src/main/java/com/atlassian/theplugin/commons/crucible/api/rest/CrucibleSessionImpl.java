@@ -129,7 +129,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 					throw new RemoteApiLoginException("Server did not return any authentication token");
 				}
 				if (elements.size() != 1) {
-					throw new RemoteApiLoginException("Server did returned excess authentication tokens ("
+					throw new RemoteApiLoginException("Server returned unexpected number of authentication tokens ("
 							+ elements.size() + ")");
 				}
 				this.authToken = ((Element) elements.get(0)).getText();

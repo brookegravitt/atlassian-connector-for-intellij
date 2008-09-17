@@ -23,11 +23,11 @@ import com.intellij.util.ui.ListTableModel;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -60,16 +60,10 @@ public class AtlassianTableView<T> extends TableView<T> {
 				}
 			}
 		});
-		final ItemSelectedMouseAdapter<T> l = new ItemSelectedMouseAdapter<T>(this);
-		addMouseListener(l);
-		addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent e) {
-				int key = e.getKeyCode();
-				if (key == KeyEvent.VK_DOWN || key == KeyEvent.VK_UP) {
-					for (TableItemSelectedListener<T> tableItemSelectedListener : getListenerList()) {
-						tableItemSelectedListener.itemSelected(AtlassianTableView.this, 1);
-					}
+		getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent e) {
+				for (TableItemSelectedListener<T> tableItemSelectedListener : getListenerList()) {
+					tableItemSelectedListener.itemSelected(AtlassianTableView.this);
 				}
 			}
 		});

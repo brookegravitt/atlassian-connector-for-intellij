@@ -25,12 +25,6 @@ import com.intellij.openapi.vfs.VirtualFile;
 
 public class OpenRepoVersionAction extends AbstractBambooFileActions {
 
-    @Override
-    public void update(AnActionEvent e) {
-        BambooFileNode bfn = getBambooFileNode(e);
-        e.getPresentation().setEnabled(bfn != null && bfn.getPsiFile() != null);
-    }
-
     public void actionPerformed(AnActionEvent e) {
 		final Project project = IdeaHelper.getCurrentProject(e);
 		final BambooFileNode bfn = getBambooFileNode(e);
