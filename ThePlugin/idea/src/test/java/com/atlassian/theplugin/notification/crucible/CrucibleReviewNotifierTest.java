@@ -216,21 +216,21 @@ public class CrucibleReviewNotifierTest extends TestCase {
 				return null;
 			}
 
-			public int getNumberOfComments() throws ValueNotYetInitialized {
-				return 0;
-			}
-
-			public int getNumberOfDefects() throws ValueNotYetInitialized {
-				return 0;
-			}
-
+//			public int getNumberOfComments() throws ValueNotYetInitialized {
+//				return 0;
+//			}
+//
+//			public int getNumberOfDefects() throws ValueNotYetInitialized {
+//				return 0;
+//			}
+//
 			public PermId getPermId() {
 				return newItem;
 			}
 
-			public List<VersionedComment> getVersionedComments() throws ValueNotYetInitialized {
-				return comments;
-			}
+//			public List<VersionedComment> getVersionedComments() throws ValueNotYetInitialized {
+//				return comments;
+//			}
 
 			public String getRepositoryName() {
 				return null;  //To change body of implemented methods use File | Settings | File Templates.
@@ -257,7 +257,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 			}
 
 			public CrucibleReviewItemInfo getItemInfo() {
-				return null;
+				return new CrucibleReviewItemInfo(newItem);
 			}
 		};
 	}
@@ -448,6 +448,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 				return "CRF:2";
 			}
 		};
+		reviews.get(0).getReviewItems().add(new CrucibleReviewItemInfo(newItem));
 		CrucibleFileInfoManager.getInstance().getFiles(reviews.get(0)).add(new CrucibleFileInfo() {
 
 			public VersionedVirtualFile getOldFileDescriptor() {
@@ -495,7 +496,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 			}
 
 			public CrucibleReviewItemInfo getItemInfo() {
-				return null;
+				return new CrucibleReviewItemInfo(newItem);
 			}
 		});
 		bean.setReviews(reviews);
