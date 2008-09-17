@@ -17,7 +17,6 @@
 package com.atlassian.theplugin.commons.crucible.api.rest;
 
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.CrucibleFileInfoManager;
 import com.atlassian.theplugin.commons.crucible.api.CrucibleSession;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
