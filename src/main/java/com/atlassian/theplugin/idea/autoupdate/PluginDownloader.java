@@ -163,12 +163,10 @@ public class PluginDownloader {
 		} catch (FileNotFoundException e) {
 			PluginUtil.getLogger().warn("File not found " + pluginArchiveFile.getPath(), e);
 			throw e;
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			PluginUtil.getLogger().warn(e);
 			throw e;
-		}
-		finally {
+		} finally {
 
 			if (inputStream != null) {
 				try {
