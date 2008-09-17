@@ -43,7 +43,6 @@ import com.atlassian.theplugin.idea.ui.tree.file.FolderNode;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.ui.UIUtil;
@@ -54,13 +53,6 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
-/**
- * Created by IntelliJ IDEA.
- * User: lguminski
- * Date: Jul 15, 2008
- * Time: 1:26:58 PM
- * To change this template use File | Settings | File Templates.
- */
 public class CommentTreePanel extends JPanel {
 	private CrucibleReviewActionListener crucibleAgent = new MyCrucibleReviewActionListener();
 	private JScrollPane commentScroll;
