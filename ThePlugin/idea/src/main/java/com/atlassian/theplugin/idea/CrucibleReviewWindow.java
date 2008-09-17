@@ -76,15 +76,11 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 	private static final Key<CrucibleReviewWindow> WINDOW_PROJECT_KEY
 			= Key.create(CrucibleReviewWindow.class.getName());
 	private Project project;
-	private static final float SPLIT_RATIO = 0.3f;
+//	private static final float SPLIT_RATIO = 0.3f;
 	protected static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
 	protected ProgressAnimationProvider progressAReviewActionEventBrokernimation = new ProgressAnimationProvider();
 	private CrucibleVersion crucibleVersion = CrucibleVersion.UNKNOWN;
 	private ReviewItemTreePanel reviewItemTreePanel;
-	private CommentTreePanel reviewComentsPanel;
-	private ReviewActionEventBroker eventBroker;
-	private static final int LEFT_WIDTH = 150;
-	private static final int LEFT_HEIGHT = 250;
 	private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
 	private CrucibleFilteredModelProvider.Filter filter = CrucibleFilteredModelProvider.Filter.FILES_ALL;
 
@@ -109,9 +105,9 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		return reviewItemTreePanel;
 	}
 
-	public CommentTreePanel getReviewComentsPanel() {
-		return reviewComentsPanel;
-	}
+//	public CommentTreePanel getReviewComentsPanel() {
+//		return reviewComentsPanel;
+//	}
 
 	public void showCrucibleReviewWindow(final String crucibleReviewId) {
 
@@ -145,17 +141,17 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		this.project = project;
 		setBackground(UIUtil.getTreeTextBackground());
 		reviewItemTreePanel = new ReviewItemTreePanel(project, filter);
-		Splitter splitter = new Splitter(false, SPLIT_RATIO);
-		splitter.setShowDividerControls(true);
+//		Splitter splitter = new Splitter(false, SPLIT_RATIO);
+//		splitter.setShowDividerControls(true);
 		reviewItemTreePanel.getProgressAnimation().configure(reviewItemTreePanel, reviewItemTreePanel, BorderLayout.CENTER);
-		splitter.setFirstComponent(reviewItemTreePanel);
-		splitter.setHonorComponentsMinimumSize(true);
-		reviewComentsPanel = new CommentTreePanel(project, filter);
-		splitter.setSecondComponent(reviewComentsPanel);
-		add(splitter, BorderLayout.CENTER);
+//		splitter.setFirstComponent(reviewItemTreePanel);
+//		splitter.setHonorComponentsMinimumSize(true);
+//		reviewComentsPanel = new CommentTreePanel(project, filter);
+//		splitter.setSecondComponent(reviewComentsPanel);
+//		add(splitter, BorderLayout.CENTER);
+		add(reviewItemTreePanel, BorderLayout.CENTER);
 
-
-		eventBroker = IdeaHelper.getReviewActionEventBroker(project);
+		ReviewActionEventBroker eventBroker = IdeaHelper.getReviewActionEventBroker(project);
 		eventBroker.registerListener(new MyAgent(project));
 
 
@@ -186,15 +182,16 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 			return reviewItemTreePanel.getReviewItemTree();
 		} else if (dataId.equals(Constants.CRUCIBLE_BOTTOM_WINDOW)) {
 			return this;
-		} else if (dataId.equals(Constants.CRUCIBLE_COMMENT_TREE)) {
-			return reviewComentsPanel.getCommentTree();
 		}
+//		} else if (dataId.equals(Constants.CRUCIBLE_COMMENT_TREE)) {
+//			return reviewComentsPanel.getCommentTree();
+//		}
 		return null;
 	}
 
 	public void switchFilter() {
 		filter = filter.getNextState();
-		getReviewComentsPanel().filterTreeNodes(filter);
+//		getReviewComentsPanel().filterTreeNodes(filter);
 		getReviewItemTreePanel().filterTreeNodes(filter);
 	}
 
@@ -292,7 +289,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 				if (comment instanceof VersionedCommentBean) {
 					((VersionedCommentBean) comment).setDraft(false);
 				}
-				eventBroker.trigger(new VersionedCommentPublished(this, review, file, comment));
+				eventBroker.trigger(new VersionedCommentPublished(this, review, file.getItemInfo(), comment));
 			} catch (RemoteApiException e) {
 				IdeaHelper.handleRemoteApiException(project, e);
 			} catch (ServerPasswordNotProvidedException e) {
@@ -329,21 +326,19 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		}
 
 		@Override
-		public void aboutToAddVersionedComment(ReviewData review, CrucibleFileInfo file,
-				VersionedComment comment) {
+		public void aboutToAddVersionedComment(ReviewData review, CrucibleFileInfo file, VersionedComment comment) {
 			try {
 				VersionedComment newComment = facade.addVersionedComment(review.getServer(), review.getPermId(),
-						file.getPermId(), comment);
+						file.getItemInfo().getId(), comment);
 				List<VersionedComment> comments;
-				try {
-					comments = file.getVersionedComments();
-				} catch (ValueNotYetInitialized valueNotYetInitialized) {
+				comments = file.getItemInfo().getComments();
+				if (comments == null) {
 					comments = facade.getVersionedComments(review.getServer(), review.getPermId(),
-							file.getPermId());
-					((CrucibleFileInfoImpl) file).setVersionedComments(comments);
+							file.getItemInfo().getId());
+					file.getItemInfo().setComments(comments);
 				}
 				comments.add(newComment);
-				eventBroker.trigger(new VersionedCommentAdded(this, review, file, newComment));
+				eventBroker.trigger(new VersionedCommentAdded(this, review, file.getItemInfo(), newComment));
 			} catch (RemoteApiException e) {
 				IdeaHelper.handleRemoteApiException(project, e);
 			} catch (ServerPasswordNotProvidedException e) {
@@ -358,7 +353,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 			try {
 				VersionedComment newComment = facade.addVersionedCommentReply(review.getServer(), review.getPermId(),
 						parentComment.getPermId(), comment);
-				eventBroker.trigger(new VersionedCommentReplyAdded(this, review, file, parentComment, newComment));
+				eventBroker.trigger(new VersionedCommentReplyAdded(this, review, file.getItemInfo(), parentComment, newComment));
 			} catch (RemoteApiException e) {
 				IdeaHelper.handleRemoteApiException(project, e);
 			} catch (ServerPasswordNotProvidedException e) {
@@ -371,7 +366,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 				final VersionedComment comment) {
 			try {
 				facade.updateComment(review.getServer(), review.getPermId(), comment);
-				eventBroker.trigger(new VersionedCommentUpdated(this, review, file, comment));
+				eventBroker.trigger(new VersionedCommentUpdated(this, review, file.getItemInfo(), comment));
 			} catch (RemoteApiException e) {
 				IdeaHelper.handleRemoteApiException(project, e);
 			} catch (ServerPasswordNotProvidedException e) {

@@ -18,6 +18,7 @@ package com.atlassian.theplugin.commons.crucible.api.rest;
 
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
+import com.atlassian.theplugin.commons.crucible.CrucibleFileInfoManager;
 import com.atlassian.theplugin.commons.crucible.api.CrucibleSession;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.remoteapi.*;
@@ -221,7 +222,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 
 			XPath xpath;
 			if (details) {
-				xpath = XPath.newInstance("/detailedReviews/detailReviewData");
+				xpath = XPath.newInstance("/detailedReviews/detailedReviewData");
 			} else {
 				xpath = XPath.newInstance("/reviews/reviewData");
 			}
@@ -234,7 +235,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 					if (details) {
 						reviews.add(prepareDetailReview(element));
 					} else {
-						reviews.add(CrucibleRestXmlHelper.parseReviewNode(element));
+						reviews.add(CrucibleRestXmlHelper.parseReviewNode(baseUrl, element));
 					}
 				}
 			}
@@ -270,7 +271,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 
 			XPath xpath;
 			if (details) {
-				xpath = XPath.newInstance("/detailedReviews/detailReviewData");
+				xpath = XPath.newInstance("/detailedReviews/detailedReviewData");
 			} else {
 				xpath = XPath.newInstance("/reviews/reviewData");
 			}
@@ -283,7 +284,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 					if (details) {
 						reviews.add(prepareDetailReview(element));
 					} else {
-						reviews.add(CrucibleRestXmlHelper.parseReviewNode(element));
+						reviews.add(CrucibleRestXmlHelper.parseReviewNode(baseUrl, element));
 					}
 				}
 			}
@@ -326,7 +327,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 					if (details) {
 						reviews.add(prepareDetailReview(element));
 					} else {
-						reviews.add(CrucibleRestXmlHelper.parseReviewNode(element));
+						reviews.add(CrucibleRestXmlHelper.parseReviewNode(baseUrl, element));
 					}
 				}
 			}
@@ -375,7 +376,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 					if (details) {
 						reviews.add(prepareDetailReview(element));
 					} else {
-						reviews.add(CrucibleRestXmlHelper.parseReviewNode(element));
+						reviews.add(CrucibleRestXmlHelper.parseReviewNode(baseUrl, element));
 					}
 				}
 			}
@@ -419,7 +420,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 					if (details) {
 						return prepareDetailReview(element);
 					} else {
-						return CrucibleRestXmlHelper.parseReviewNode(element);
+						return CrucibleRestXmlHelper.parseReviewNode(baseUrl, element);
 					}
 				}
 			}
@@ -459,14 +460,10 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 	}
 
 	private Review prepareDetailReview(Element element) throws RemoteApiException {
-		ReviewBean review = CrucibleRestXmlHelper.parseDetailedReviewNode(element);
+		ReviewBean review = CrucibleRestXmlHelper.parseDetailedReviewNode(baseUrl, element);
 
-		try {
-			for (CrucibleFileInfo fileInfo : review.getFiles()) {
-				fillRepositoryData(fileInfo);
-			}
-		} catch (ValueNotYetInitialized valueNotYetInitialized) {
-			// TODO all what to do here?
+		for (CrucibleFileInfo fileInfo : CrucibleFileInfoManager.getInstance().getFiles(review)) {
+			fillRepositoryData(fileInfo);
 		}
 		return review;
 	}
@@ -634,7 +631,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			List<Element> elements = xpath.selectNodes(doc);
 			List<CrucibleFileInfo> reviewItems = new ArrayList<CrucibleFileInfo>();
 
-			Review changeSet = new ReviewBean();
+			Review changeSet = new ReviewBean(baseUrl);
 			if (elements != null && !elements.isEmpty()) {
 				for (Element element : elements) {
 					CrucibleFileInfo fileInfo = CrucibleRestXmlHelper.parseReviewItemNode(changeSet, element);
@@ -666,11 +663,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			if (elements != null && !elements.isEmpty()) {
 				CrucibleFileInfo fileInfo = CrucibleRestXmlHelper.parseReviewItemNode(review, elements.iterator().next());
 				fillRepositoryData(fileInfo);
-				try {
-					review.getFiles().add(fileInfo);
-				} catch (ValueNotYetInitialized valueNotYetInitialized) {
-					// cannot add to non existing list
-				}
+				CrucibleFileInfoManager.getInstance().getFiles(review).add(fileInfo);
 				return fileInfo;
 			}
 			return null;
@@ -1060,7 +1053,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			List<Element> elements = xpath.selectNodes(doc);
 
 			if (elements != null && !elements.isEmpty()) {
-				return CrucibleRestXmlHelper.parseReviewNode(elements.iterator().next());
+				return CrucibleRestXmlHelper.parseReviewNode(baseUrl, elements.iterator().next());
 			}
 			return null;
 		} catch (IOException e) {
@@ -1083,7 +1076,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			List<Element> elements = xpath.selectNodes(doc);
 
 			if (elements != null && !elements.isEmpty()) {
-				return CrucibleRestXmlHelper.parseReviewNode(elements.iterator().next());
+				return CrucibleRestXmlHelper.parseReviewNode(baseUrl, elements.iterator().next());
 			}
 			return null;
 		} catch (IOException e) {
@@ -1164,7 +1157,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			List<Element> elements = xpath.selectNodes(doc);
 
 			if (elements != null && !elements.isEmpty()) {
-				return CrucibleRestXmlHelper.parseReviewNode(elements.iterator().next());
+				return CrucibleRestXmlHelper.parseReviewNode(baseUrl, elements.iterator().next());
 			}
 			return null;
 		} catch (IOException e) {
@@ -1190,7 +1183,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			List<Element> elements = xpath.selectNodes(doc);
 
 			if (elements != null && !elements.isEmpty()) {
-				return CrucibleRestXmlHelper.parseReviewNode(elements.iterator().next());
+				return CrucibleRestXmlHelper.parseReviewNode(baseUrl, elements.iterator().next());
 			}
 			return null;
 		} catch (IOException e) {
@@ -1254,7 +1247,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 
 			if (elements != null && !elements.isEmpty()) {
 				for (Element element : elements) {
-					review = CrucibleRestXmlHelper.parseReviewNode(element);
+					review = CrucibleRestXmlHelper.parseReviewNode(baseUrl, element);
 				}
 			}
 			return review;
@@ -1337,7 +1330,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 
 			if (elements != null && !elements.isEmpty()) {
 				for (Element element : elements) {
-					review = CrucibleRestXmlHelper.parseReviewNode(element);
+					review = CrucibleRestXmlHelper.parseReviewNode(baseUrl, element);
 				}
 			}
 			return review;

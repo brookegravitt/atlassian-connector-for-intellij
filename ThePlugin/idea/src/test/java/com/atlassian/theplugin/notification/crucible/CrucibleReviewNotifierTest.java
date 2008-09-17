@@ -18,21 +18,8 @@ package com.atlassian.theplugin.notification.crucible;
 
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomField;
-import com.atlassian.theplugin.commons.crucible.api.model.FileType;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.commons.crucible.api.model.PermId;
-import com.atlassian.theplugin.commons.crucible.api.model.PermIdBean;
-import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewBean;
-import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewerBean;
-import com.atlassian.theplugin.commons.crucible.api.model.State;
-import com.atlassian.theplugin.commons.crucible.api.model.User;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.CrucibleFileInfoManager;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.ThePluginProjectComponent;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
@@ -73,7 +60,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 	}
 
 	private ReviewBean prepareReview() {
-		return new ReviewBean();
+		return new ReviewBean("http://bogus");
 	}
 
 	private ReviewerBean prepareReviewer(String userName, String displayName, boolean completed) {
@@ -262,16 +249,22 @@ public class CrucibleReviewNotifierTest extends TestCase {
 			}
 
 			public CommitType getCommitType() {
-				return null;  //To change body of implemented methods use File | Settings | File Templates.
+				return null;
 			}
 
 			public VersionedVirtualFile getFileDescriptor() {
+				return null;
+			}
+
+			public CrucibleReviewItemInfo getItemInfo() {
 				return null;
 			}
 		};
 	}
 
 	private List<ReviewData> prepareReviewData(State state) throws ValueNotYetInitialized {
+		CrucibleFileInfoManager mgr = CrucibleFileInfoManager.getInstance();
+
 		PermIdBean reviewId1 = new PermIdBean("CR-1");
 		PermIdBean newItem = new PermIdBean("CRF:11");
 		PermIdBean newCommentId = new PermIdBean("CMT:11");
@@ -300,10 +293,10 @@ public class CrucibleReviewNotifierTest extends TestCase {
 
 		review1.getGeneralComments().add(prepareGeneralComment(newCommentId, null));
 		CrucibleFileInfo file1 = prepareReviewItem(newItem);
-		file1.getVersionedComments().add(prepareVersionedComment(newVCommentId, newItem, null));
+		file1.getItemInfo().getComments().add(prepareVersionedComment(newVCommentId, newItem, null));
 		ArrayList<CrucibleFileInfo> files1 = new ArrayList<CrucibleFileInfo>();
 		files1.add(file1);
-		((ReviewBean) review1).setFiles(files1);
+		mgr.setFiles(review1, files1);
 
 
 		Review review2 = prepareReview();
@@ -315,10 +308,10 @@ public class CrucibleReviewNotifierTest extends TestCase {
 
 		review2.getGeneralComments().add(prepareGeneralComment(newCommentId1, null));
 		CrucibleFileInfo file2 = prepareReviewItem(newItem1);
-		file2.getVersionedComments().add(prepareVersionedComment(newVCommentId1, newItem1, null));
+		file2.getItemInfo().getComments().add(prepareVersionedComment(newVCommentId1, newItem1, null));
 		ArrayList<CrucibleFileInfo> files2 = new ArrayList<CrucibleFileInfo>();
 		files2.add(file2);
-		((ReviewBean) review2).setFiles(files2);
+		mgr.setFiles(review2, files2);
 
 		reviews.add(new ReviewDataImpl(review1, null));
 		reviews.add(new ReviewDataImpl(review2, null));
@@ -455,7 +448,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 				return "CRF:2";
 			}
 		};
-		reviews.get(0).getFiles().add(new CrucibleFileInfo() {
+		CrucibleFileInfoManager.getInstance().getFiles(reviews.get(0)).add(new CrucibleFileInfo() {
 
 			public VersionedVirtualFile getOldFileDescriptor() {
 				return null;
@@ -478,27 +471,31 @@ public class CrucibleReviewNotifierTest extends TestCase {
 			}
 
 			public String getRepositoryName() {
-				return null;  //To change body of implemented methods use File | Settings | File Templates.
+				return null;
 			}
 
 			public FileType getFileType() {
-				return null;  //To change body of implemented methods use File | Settings | File Templates.
+				return null;
 			}
 
 			public String getAuthorName() {
-				return null;  //To change body of implemented methods use File | Settings | File Templates.
+				return null;
 			}
 
 			public Date getCommitDate() {
-				return null;  //To change body of implemented methods use File | Settings | File Templates.
+				return null;
 			}
 
 			public CommitType getCommitType() {
-				return null;  //To change body of implemented methods use File | Settings | File Templates.
+				return null;
 			}
 
 			public VersionedVirtualFile getFileDescriptor() {
-				return null;  //To change body of implemented methods use File | Settings | File Templates.
+				return null;
+			}
+
+			public CrucibleReviewItemInfo getItemInfo() {
+				return null;
 			}
 		});
 		bean.setReviews(reviews);
@@ -606,9 +603,10 @@ public class CrucibleReviewNotifierTest extends TestCase {
 			}
 		};
 
+		CrucibleFileInfoManager mgr = CrucibleFileInfoManager.getInstance();
 		PermIdBean newPermlId = new PermIdBean("CMT:100");
-		reviews.get(0).getFiles().get(0).getVersionedComments()
-				.add(prepareVersionedComment(newPermlId, reviews.get(0).getFiles().get(0).getPermId(), null));
+		mgr.getFiles(reviews.get(0)).get(0).getItemInfo().getComments()
+				.add(prepareVersionedComment(newPermlId, mgr.getFiles(reviews.get(0)).get(0).getItemInfo().getId(), null));
 		bean.setReviews(reviews);
 		map.put(PredefinedFilter.ToReview, bean);
 		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());

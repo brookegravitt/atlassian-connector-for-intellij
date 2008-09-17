@@ -23,12 +23,15 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.events.GeneralCommentAboutToAdd;
 import com.atlassian.theplugin.idea.crucible.events.GeneralCommentReplyAboutToAdd;
 import com.atlassian.theplugin.idea.crucible.events.VersionedCommentAboutToAdd;
 import com.atlassian.theplugin.idea.crucible.events.VersionedCommentReplyAboutToAdd;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.file.CrucibleGeneralCommentsNode;
+import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.*;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
@@ -40,6 +43,8 @@ import java.util.Date;
 public class AddAction extends AbstractCommentAction {
 	private static final String REPLY_TEXT = "Reply";
 	private static final String COMMENT_TEXT = "Add Comment";
+	private static final String FILE_COMMENT_TEXT = "Add Revision Comment";
+	private static final String GENERAL_COMMENT_TEXT = "Add General Comment";
 
 	@Override
 	public void update(AnActionEvent e) {
@@ -47,6 +52,11 @@ public class AddAction extends AbstractCommentAction {
 		String text = COMMENT_TEXT;
 		boolean enabled = node != null && checkIfAuthorized(getReview(node));
 		if (enabled) {
+			if (node instanceof CrucibleFileNode) {
+				text = FILE_COMMENT_TEXT;
+			} else if (node instanceof CrucibleGeneralCommentsNode) {
+				text = GENERAL_COMMENT_TEXT;
+			}
 			if (node instanceof VersionedCommentTreeNode) {
 				final VersionedCommentTreeNode vcNode = (VersionedCommentTreeNode) node;
 				if (vcNode.getComment().isReply()) {
@@ -64,7 +74,7 @@ public class AddAction extends AbstractCommentAction {
 			}
 		}
 		e.getPresentation().setEnabled(enabled);
-		if (e.getPlace().equals(CommentTreePanel.MENU_PLACE)) {
+		if (e.getPlace().equals(CommentTreePanel.MENU_PLACE) || (e.getPlace().equals(ReviewItemTreePanel.MENU_PLACE))) {
 			e.getPresentation().setVisible(enabled);
 		}
 		e.getPresentation().setText(text);
@@ -93,6 +103,10 @@ public class AddAction extends AbstractCommentAction {
 			return ((GeneralSectionNode) node).getReview();
 		} else if (node instanceof FileNameNode) {
 			return ((FileNameNode) node).getReview();
+		} else if (node instanceof CrucibleGeneralCommentsNode) {
+			return ((CrucibleGeneralCommentsNode) node).getReview();
+		} else if (node instanceof CrucibleFileNode) {
+			return ((CrucibleFileNode) node).getReview();
 		}
 		return null;
 	}
@@ -120,6 +134,12 @@ public class AddAction extends AbstractCommentAction {
 		} else if (treeNode instanceof VersionedCommentTreeNode) {
 			VersionedCommentTreeNode node = (VersionedCommentTreeNode) treeNode;
 			addReplyToVersionedComment(project, node.getReview(), node.getFile(), node.getComment());
+		} else if (treeNode instanceof CrucibleGeneralCommentsNode) {
+			CrucibleGeneralCommentsNode node = (CrucibleGeneralCommentsNode) treeNode;
+			addGeneralComment(project, node.getReview());
+		} else if (treeNode instanceof CrucibleFileNode) {
+			CrucibleFileNode node = (CrucibleFileNode) treeNode;
+			addCommentToFile(project, node.getReview(), node.getFile());
 		}
 	}
 

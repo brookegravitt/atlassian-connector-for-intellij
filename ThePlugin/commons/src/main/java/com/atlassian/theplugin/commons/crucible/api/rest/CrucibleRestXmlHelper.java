@@ -19,37 +19,7 @@ package com.atlassian.theplugin.commons.crucible.api.rest;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
 import static com.atlassian.theplugin.commons.crucible.api.JDomHelper.getContent;
-import com.atlassian.theplugin.commons.crucible.api.model.Action;
-import com.atlassian.theplugin.commons.crucible.api.model.Comment;
-import com.atlassian.theplugin.commons.crucible.api.model.CommentBean;
-import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfoImpl;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleVersionInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleVersionInfoBean;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomField;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldBean;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDefBean;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldValue;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldValueType;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
-import com.atlassian.theplugin.commons.crucible.api.model.FileType;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralCommentBean;
-import com.atlassian.theplugin.commons.crucible.api.model.NewReviewItem;
-import com.atlassian.theplugin.commons.crucible.api.model.PermId;
-import com.atlassian.theplugin.commons.crucible.api.model.PermIdBean;
-import com.atlassian.theplugin.commons.crucible.api.model.ProjectBean;
-import com.atlassian.theplugin.commons.crucible.api.model.RepositoryBean;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewBean;
-import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewerBean;
-import com.atlassian.theplugin.commons.crucible.api.model.State;
-import com.atlassian.theplugin.commons.crucible.api.model.SvnRepositoryBean;
-import com.atlassian.theplugin.commons.crucible.api.model.UserBean;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedCommentBean;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import org.jdom.CDATA;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -187,14 +157,14 @@ public final class CrucibleRestXmlHelper {
 		}
 	}
 
-	public static ReviewBean parseReviewNode(Element reviewNode) {
-		ReviewBean review = new ReviewBean();
+	public static ReviewBean parseReviewNode(String serverUrl, Element reviewNode) {
+		ReviewBean review = new ReviewBean(serverUrl);
 		parseReview(reviewNode, review);
 		return review;
 	}
 
-	public static ReviewBean parseDetailedReviewNode(Element reviewNode) {
-		ReviewBean review = new ReviewBean();
+	public static ReviewBean parseDetailedReviewNode(String serverUrl, Element reviewNode) {
+		ReviewBean review = new ReviewBean(serverUrl);
 		parseReview(reviewNode, review);
 
 		List<Element> reviewersNode = getChildElements(reviewNode, "reviewers");
@@ -207,7 +177,7 @@ public final class CrucibleRestXmlHelper {
 		}
 		review.setReviewers(reviewers);
 
-		List<CrucibleFileInfo> files = new ArrayList<CrucibleFileInfo>();
+		List<CrucibleReviewItemInfo> reviewItems = new ArrayList<CrucibleReviewItemInfo>();
 
 		List<Element> generalCommentsNode = getChildElements(reviewNode, "generalComments");
 		for (Element generalComment : generalCommentsNode) {
@@ -224,11 +194,11 @@ public final class CrucibleRestXmlHelper {
 		for (Element versionedComment : versionedComments) {
 			List<Element> commentNode = getChildElements(versionedComment, "versionedLineCommentData");
 			for (Element element : commentNode) {
-				comments.add(parseVersionedCommentNode(element, files));
+				comments.add(parseVersionedCommentNode(element, reviewItems));
 			}
 			review.setVersionedComments(comments);
 		}
-		review.setFiles(files);
+		review.setReviewItems(reviewItems);
 
 		List<Element> transitionsNode = getChildElements(reviewNode, "transitions");
 		List<Action> transitions = new ArrayList<Action>();
@@ -404,7 +374,8 @@ public final class CrucibleRestXmlHelper {
 						getChildText(reviewItemNode, "fromPath"),
 						getChildText(reviewItemNode, "fromRevision"),
 						review.getVirtualFileSystem()
-				)
+				),
+				null
 		);
 
 		String c = getChildText(reviewItemNode, "commitType");
@@ -441,7 +412,7 @@ public final class CrucibleRestXmlHelper {
 		}
 		if (reviewItemNode.getChild("permId") != null) {
 			PermIdBean permId = new PermIdBean(reviewItemNode.getChild("permId").getChild("id").getText());
-			reviewItem.setPermId(permId);
+			reviewItem.setItemInfo(new CrucibleReviewItemInfo(permId));
 		}
 
 		return reviewItem;
@@ -606,25 +577,25 @@ public final class CrucibleRestXmlHelper {
 	}
 
 	public static VersionedCommentBean parseVersionedCommentNode(
-			Element reviewCommentNode, List<CrucibleFileInfo> files) {
+			Element reviewCommentNode, List<CrucibleReviewItemInfo> reviewItems) {
 		VersionedCommentBean comment = new VersionedCommentBean();
 		parseVersionedComment(comment, reviewCommentNode);
 
 		if (reviewCommentNode.getChild("reviewItemId") != null) {
 			PermIdBean reviewItemId = new PermIdBean(reviewCommentNode.getChild("reviewItemId").getChild("id").getText());
 			comment.setReviewItemId(reviewItemId);
-			if (files != null) {
-				CrucibleFileInfo file = null;
-				for (CrucibleFileInfo f : files) {
-					if (f.getPermId() == reviewItemId) {
-						file = f;
+			if (reviewItems != null) {
+				CrucibleReviewItemInfo item = null;
+				for (CrucibleReviewItemInfo i : reviewItems) {
+					if (i.getId().equals(reviewItemId)) {
+						item = i;
 					}
 				}
-				if (file == null) {
-					file = new CrucibleFileInfoImpl(reviewItemId);
-					files.add(file);
+				if (item == null) {
+					item = new CrucibleReviewItemInfo(reviewItemId);
+					reviewItems.add(item);
 				}
-				((CrucibleFileInfoImpl) file).addVersionedComment(comment);
+				item.addComment(comment);
 			}
 		}
 

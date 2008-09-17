@@ -145,6 +145,22 @@ public class ReviewKeyComparatorTest extends TestCase {
             public String getSummary() {
                 return null; 
             }
-        };
+
+			public List<CrucibleReviewItemInfo> getReviewItems() {
+				return null;
+			}
+
+			public CrucibleFileInfo getFileByPermId(PermId id) {
+				return null;
+			}
+
+			public CrucibleFileInfo getFileByReviewInfo(CrucibleReviewItemInfo info) {
+				return null;
+			}
+
+			public String getServerUrl() {
+				return null;
+			}
+		};
 	}
 }

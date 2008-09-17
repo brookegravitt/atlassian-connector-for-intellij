@@ -18,6 +18,7 @@ package com.atlassian.theplugin.commons.crucible.api.model;
 
 import com.atlassian.theplugin.commons.VirtualFileSystem;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
+import com.atlassian.theplugin.commons.crucible.CrucibleFileInfoManager;
 
 import java.util.Date;
 import java.util.List;
@@ -25,7 +26,8 @@ import java.util.List;
 
 public class ReviewBean implements Review {
 	private List<Reviewer> reviewers;
-	private List<CrucibleFileInfo> files;
+	private List<CrucibleReviewItemInfo> reviewItems;
+//	private List<CrucibleFileInfo> files;
 	private List<GeneralComment> generalComments;
 	private List<Action> transitions;
 	private List<Action> actions;
@@ -46,14 +48,15 @@ public class ReviewBean implements Review {
 	private Date closeDate;
 	private List<VersionedComment> versionedComments;
     private String summary;
+	private final String serverUrl;
 
-    public void setReviewers(List<Reviewer> reviewers) {
+	public void setReviewers(List<Reviewer> reviewers) {
 		this.reviewers = reviewers;
 	}
 
-	public void setFiles(List<CrucibleFileInfo> files) {
-		this.files = files;
-	}
+//	public void setFiles(List<CrucibleFileInfo> files) {
+//		this.files = files;
+//	}
 
 	public void setGeneralComments(List<GeneralComment> generalComments) {
 		this.generalComments = generalComments;
@@ -67,9 +70,14 @@ public class ReviewBean implements Review {
         this.actions = actions;
     }
 
-    public ReviewBean() {
+    public ReviewBean(String serverUrl) {
 		super();
+		this.serverUrl = serverUrl;
 		this.virtualFileSystem = new VirtualFileSystem();
+	}
+
+	public String getServerUrl() {
+		return serverUrl;
 	}
 
 	public List<Reviewer> getReviewers() throws ValueNotYetInitialized {
@@ -86,12 +94,12 @@ public class ReviewBean implements Review {
 		return generalComments;
 	}
 
-    public List<CrucibleFileInfo> getFiles() throws ValueNotYetInitialized {
-		if (files == null) {
-			throw new ValueNotYetInitialized("Object trasferred only partially");
-		}
-		return files;
-	}
+//    public List<CrucibleFileInfo> getFiles() throws ValueNotYetInitialized {
+//		if (files == null) {
+//			throw new ValueNotYetInitialized("Object trasferred only partially");
+//		}
+//		return files;
+//	}
 
 	public List<Action> getTransitions() throws ValueNotYetInitialized {
 		if (transitions == null) {
@@ -388,4 +396,26 @@ public class ReviewBean implements Review {
     public void setSummary(String summary) {
         this.summary = summary;
     }
+
+	public List<CrucibleReviewItemInfo> getReviewItems() {
+		return reviewItems;
+	}
+
+	public void setReviewItems(List<CrucibleReviewItemInfo> reviewItems) {
+		this.reviewItems = reviewItems;
+	}
+
+	public CrucibleFileInfo getFileByPermId(PermId id) {
+		List<CrucibleFileInfo> files = CrucibleFileInfoManager.getInstance().getFiles(this);
+		for (CrucibleFileInfo f : files) {
+			if (f.getItemInfo().getId().equals(id)) {
+				return f;
+			}
+		}
+		return null;
+	}
+
+	public CrucibleFileInfo getFileByReviewInfo(CrucibleReviewItemInfo info) {
+		return getFileByPermId(info.getId());
+	}
 }

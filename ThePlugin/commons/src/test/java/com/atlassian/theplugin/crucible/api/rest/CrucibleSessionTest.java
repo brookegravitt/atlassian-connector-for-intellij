@@ -767,7 +767,7 @@ public class CrucibleSessionTest extends TestCase {
 	}
 
 	private ReviewBean createReviewRequest() {
-		ReviewBean review = new ReviewBean();
+		ReviewBean review = new ReviewBean(mockBaseUrl);
 		review.setAuthor(new UserBean("autor",""));
 		review.setCreator(new UserBean("creator",""));
 		review.setDescription("description");

@@ -26,13 +26,15 @@ import java.util.List;
 public interface CrucibleFileInfo extends VersionedFileInfo {
 	VersionedVirtualFile getOldFileDescriptor();
 
-	int getNumberOfComments() throws ValueNotYetInitialized;
+//	int getNumberOfComments() throws ValueNotYetInitialized;
+//
+//	int getNumberOfDefects() throws ValueNotYetInitialized;
 
-	int getNumberOfDefects() throws ValueNotYetInitialized;
+	CrucibleReviewItemInfo getItemInfo();
 
-	PermId getPermId();
-
-	List<VersionedComment> getVersionedComments() throws ValueNotYetInitialized;
+//	PermId getPermId();
+//
+//	List<VersionedComment> getVersionedComments() throws ValueNotYetInitialized;
 
 	String getRepositoryName();
 
