@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
 
-public class CrucibleFileInfoManager {
+public final class CrucibleFileInfoManager {
 
 	private Map<String, Map<PermId, List<CrucibleFileInfo>>> filesMap =
 			new HashMap<String, Map<PermId, List<CrucibleFileInfo>>>();

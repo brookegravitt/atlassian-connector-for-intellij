@@ -18,10 +18,8 @@ package com.atlassian.theplugin.commons.crucible.api.model;
 
 import com.atlassian.theplugin.commons.VersionedFileInfo;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 
 import java.util.Date;
-import java.util.List;
 
 public interface CrucibleFileInfo extends VersionedFileInfo {
 	VersionedVirtualFile getOldFileDescriptor();

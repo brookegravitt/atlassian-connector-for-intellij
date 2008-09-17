@@ -17,11 +17,8 @@
 package com.atlassian.theplugin.commons.crucible.api.model;
 
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 
 import java.util.Date;
-import java.util.List;
-import java.util.ArrayList;
 
 public class CrucibleFileInfoImpl implements CrucibleFileInfo {
 	private VersionedVirtualFile fileDescriptor;
@@ -68,8 +65,8 @@ public class CrucibleFileInfoImpl implements CrucibleFileInfo {
 		return info;
 	}
 
-	public void setItemInfo(CrucibleReviewItemInfo info) {
-		this.info = info;
+	public void setItemInfo(CrucibleReviewItemInfo i) {
+		this.info = i;
 	}
 
 //	public int getNumberOfComments() throws ValueNotYetInitialized {
