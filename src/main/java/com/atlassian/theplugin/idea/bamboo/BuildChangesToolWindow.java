@@ -154,6 +154,10 @@ public final class BuildChangesToolWindow {
 
 			setLayout(new BorderLayout());
 			add(split, BorderLayout.CENTER);
+
+			if (commits.size() == 1) {
+				commitsTable.getSelectionModel().setSelectionInterval(0, 0);
+			}
 		}
 
 		@Nullable
@@ -280,7 +284,7 @@ public final class BuildChangesToolWindow {
 			final AtlassianTableView<BambooChangeSet> atv = new AtlassianTableView<BambooChangeSet>(prov,
 					new ListTableModel<BambooChangeSet>(prov.makeColumnInfo(), commits, 0), null);
 			atv.addItemSelectedListener(new TableItemSelectedListener<BambooChangeSet>() {
-				public void itemSelected(AtlassianTableView<BambooChangeSet> table, int noClicks) {
+				public void itemSelected(AtlassianTableView<BambooChangeSet> table) {
 					final BambooChangeSet c = table.getSelectedObject();
 					if (c == null) {
 						fileTree.setModelProvider(ModelProvider.EMPTY_MODEL_PROVIDER);
@@ -306,6 +310,7 @@ public final class BuildChangesToolWindow {
 					}
 					fileTree.setRootVisible(false);
 					fileTree.expandAll();
+					// !!! XXX
 					fileTree.getTreeComponent().addMouseListener(new NavigateToCodeHandler(name));
 				}
 			});
