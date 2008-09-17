@@ -20,6 +20,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.idea.CommentTreePanel;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.events.CommentAboutToRemove;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
@@ -48,7 +49,7 @@ public class RemoveAction extends AbstractCommentAction {
 		String text = REMOVE_TEXT;
 		boolean enabled = node != null && checkIfAuthor(node);
 		e.getPresentation().setEnabled(enabled);
-		if (e.getPlace().equals(CommentTreePanel.MENU_PLACE)) {
+		if (e.getPlace().equals(CommentTreePanel.MENU_PLACE) || (e.getPlace().equals(ReviewItemTreePanel.MENU_PLACE))) {
 			e.getPresentation().setVisible(enabled);
 		}
 		e.getPresentation().setText(text);

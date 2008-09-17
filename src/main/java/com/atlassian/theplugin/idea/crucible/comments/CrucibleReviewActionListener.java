@@ -58,7 +58,7 @@ public class CrucibleReviewActionListener {
 			VersionedComment parentComment, VersionedComment newComment) {
 	}
 
-	public void createdVersionedCommentReply(ReviewData review, CrucibleFileInfo file,
+	public void createdVersionedCommentReply(ReviewData review, CrucibleReviewItemInfo file,
 			VersionedComment parentComment, VersionedComment comment) {
 	}
 
@@ -82,7 +82,7 @@ public class CrucibleReviewActionListener {
 	}
 
 	public void createdVersionedComment(ReviewData review,
-			CrucibleFileInfo file,
+			CrucibleReviewItemInfo file,
 			VersionedComment comment) {
 	}
 
@@ -94,7 +94,7 @@ public class CrucibleReviewActionListener {
 	}
 
 	public void updatedVersionedComment(final ReviewData review,
-			final CrucibleFileInfo file,
+			final CrucibleReviewItemInfo file,
 			final VersionedComment comment) {
 	}
 
@@ -131,11 +131,8 @@ public class CrucibleReviewActionListener {
 	public void publishedGeneralComment(final ReviewData review, final GeneralComment comment) {
 	}
 
-	public void publishedVersionedComment(final ReviewData review, final CrucibleFileInfo file,
+	public void publishedVersionedComment(final ReviewData review, final CrucibleReviewItemInfo file,
 			final VersionedComment comment) {
-	}
-
-	public void commentsChanged(final ReviewData review, final CrucibleFileInfo file) {
 	}
 
 	public void commentsDownloaded(ReviewData review) {
