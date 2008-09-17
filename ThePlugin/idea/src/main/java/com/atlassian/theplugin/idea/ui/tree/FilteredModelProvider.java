@@ -58,11 +58,7 @@ public abstract class FilteredModelProvider<E extends Enum<E>> extends ModelProv
 		public boolean isValid(final AtlassianTreeNode node) {
 			if (node instanceof CrucibleFileNode) {
 				CrucibleFileNode anode = (CrucibleFileNode) node;
-				try {
-					return anode.getFile().getNumberOfComments() > 0;
-				} catch (ValueNotYetInitialized valueNotYetInitialized) {
-					return false;
-				}
+				return anode.getFile().getItemInfo().getNumberOfComments() > 0;
 			}
 
 			return true;

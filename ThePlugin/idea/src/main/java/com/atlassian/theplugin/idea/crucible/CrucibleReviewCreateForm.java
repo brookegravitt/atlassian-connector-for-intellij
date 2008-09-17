@@ -36,18 +36,7 @@ import com.atlassian.theplugin.commons.VirtualFileSystem;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.Action;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.commons.crucible.api.model.PermId;
-import com.atlassian.theplugin.commons.crucible.api.model.Project;
-import com.atlassian.theplugin.commons.crucible.api.model.Repository;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
-import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
-import com.atlassian.theplugin.commons.crucible.api.model.State;
-import com.atlassian.theplugin.commons.crucible.api.model.User;
-import com.atlassian.theplugin.commons.crucible.api.model.UserBean;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -77,6 +66,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.swing.*;
+import javax.swing.Action;
 
 enum ReviewCreationMode {
 	EMPTY,
@@ -687,11 +677,11 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 			return null;
 		}
 
-		public List<Action> getTransitions() throws ValueNotYetInitialized {
+		public List<com.atlassian.theplugin.commons.crucible.api.model.Action> getTransitions() throws ValueNotYetInitialized {
 			return null;
 		}
 
-		public List<Action> getActions() throws ValueNotYetInitialized {
+		public List<com.atlassian.theplugin.commons.crucible.api.model.Action> getActions() throws ValueNotYetInitialized {
 			return null;
 		}
 
@@ -699,6 +689,21 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 			return null;
 		}
 
+		public List<CrucibleReviewItemInfo> getReviewItems() {
+			return null; 
+		}
+
+		public CrucibleFileInfo getFileByPermId(PermId id) {
+			return null;
+		}
+
+		public CrucibleFileInfo getFileByReviewInfo(CrucibleReviewItemInfo info) {
+			return null;
+		}
+
+		public String getServerUrl() {
+			return null;
+		}
 	}
 
 	@Override
@@ -761,7 +766,7 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 					try {
 						Review newReview = crucibleServerFacade.getReview(server, draftReview.getPermId());
 						if (newReview.getModerator().getUserName().equals(server.getUsername())) {
-							if (newReview.getActions().contains(Action.APPROVE)) {
+							if (newReview.getActions().contains(com.atlassian.theplugin.commons.crucible.api.model.Action.APPROVE)) {
 								crucibleServerFacade.approveReview(server, draftReview.getPermId());
 							} else {
 								Messages.showErrorDialog(project,
@@ -770,7 +775,7 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 										, "Permission denied");
 							}
 						} else {
-							if (newReview.getActions().contains(Action.SUBMIT)) {
+							if (newReview.getActions().contains(com.atlassian.theplugin.commons.crucible.api.model.Action.SUBMIT)) {
 								crucibleServerFacade.submitReview(server, draftReview.getPermId());
 							} else {
 								Messages.showErrorDialog(project,

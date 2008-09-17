@@ -31,6 +31,8 @@ public class CrucibleFileInfoImpl implements CrucibleFileInfo {
 	private String authorName;
 	private Date commitDate;
 	private CommitType commitType;
+
+	private CrucibleReviewItemInfo info;
 	private int numberOfComments = 0;
 
 	/**
@@ -38,19 +40,21 @@ public class CrucibleFileInfoImpl implements CrucibleFileInfo {
 	 */
 	private int numberOfDefects = 0;
 
-	private List<VersionedComment> versionedComments;
-	private PermId permId;
+//	private List<VersionedComment> versionedComments;
+//	private PermId permId;
 
-	public CrucibleFileInfoImpl(VersionedVirtualFile fileDescriptor, VersionedVirtualFile oldFileDescriptor) {
+	public CrucibleFileInfoImpl(VersionedVirtualFile fileDescriptor, VersionedVirtualFile oldFileDescriptor,
+								CrucibleReviewItemInfo info) {
 		this.fileDescriptor = fileDescriptor;
 		this.oldFileDescriptor = oldFileDescriptor;
-		versionedComments = new ArrayList<VersionedComment>();
+		this.info = info;
+//		versionedComments = new ArrayList<VersionedComment>();
 	}
 
-	public CrucibleFileInfoImpl(PermId permId) {
-		this(null, null);
-		this.permId = permId;
-	}
+//	public CrucibleFileInfoImpl(PermId permId) {
+//		this(null, null);
+//		this.permId = permId;
+//	}
 
 	public VersionedVirtualFile getOldFileDescriptor() {
 		return oldFileDescriptor;
@@ -60,31 +64,39 @@ public class CrucibleFileInfoImpl implements CrucibleFileInfo {
 		this.oldFileDescriptor = oldFileDescriptor;
 	}
 
-	public int getNumberOfComments() throws ValueNotYetInitialized {
-		int n = getVersionedComments().size();
-		for (VersionedComment c : getVersionedComments()) {
-			n += c.getReplies().size();
-		}
-		return n;
+	public CrucibleReviewItemInfo getItemInfo() {
+		return info;
 	}
 
-	public void setNumberOfComments(int numberOfComments) {
-		this.numberOfComments = numberOfComments;
+	public void setItemInfo(CrucibleReviewItemInfo info) {
+		this.info = info;
 	}
 
-	public int getNumberOfDefects() throws ValueNotYetInitialized {
-		int counter = 0;
-		for (VersionedComment comment : getVersionedComments()) {
-			if (comment.isDefectApproved()) {
-				counter++;
-			}
-		}
-		return counter;
-	}
+//	public int getNumberOfComments() throws ValueNotYetInitialized {
+//		int n = getVersionedComments().size();
+//		for (VersionedComment c : getVersionedComments()) {
+//			n += c.getReplies().size();
+//		}
+//		return n;
+//	}
+//
+//	public void setNumberOfComments(int numberOfComments) {
+//		this.numberOfComments = numberOfComments;
+//	}
+//
+//	public int getNumberOfDefects() throws ValueNotYetInitialized {
+//		int counter = 0;
+//		for (VersionedComment comment : getVersionedComments()) {
+//			if (comment.isDefectApproved()) {
+//				counter++;
+//			}
+//		}
+//		return counter;
+//	}
 
-	public PermId getPermId() {
-		return permId;
-	}
+//	public PermId getPermId() {
+//		return permId;
+//	}
 
 
 	public void setNumberOfDefects(int numberOfDefects) {
@@ -99,9 +111,9 @@ public class CrucibleFileInfoImpl implements CrucibleFileInfo {
 		return fileDescriptor;
 	}
 
-	public void setPermId(PermId permId) {
-		this.permId = permId;
-	}
+//	public void setPermId(PermId permId) {
+//		this.permId = permId;
+//	}
 
 	@Override
 	public String toString() {
@@ -120,21 +132,21 @@ public class CrucibleFileInfoImpl implements CrucibleFileInfo {
 
 	}
 
-	public void setVersionedComments(List<VersionedComment> commentList) {
-		versionedComments = commentList;
-	}
-
-	public void addVersionedComment(VersionedComment comment) {
-		versionedComments.add(comment);
-	}
-
-
-	public List<VersionedComment> getVersionedComments() throws ValueNotYetInitialized {
-		if (versionedComments == null) {
-			throw new ValueNotYetInitialized("Object trasferred only partially");
-		}
-		return versionedComments;
-	}
+//	public void setVersionedComments(List<VersionedComment> commentList) {
+//		versionedComments = commentList;
+//	}
+//
+//	public void addVersionedComment(VersionedComment comment) {
+//		versionedComments.add(comment);
+//	}
+//
+//
+//	public List<VersionedComment> getVersionedComments() throws ValueNotYetInitialized {
+//		if (versionedComments == null) {
+//			throw new ValueNotYetInitialized("Object trasferred only partially");
+//		}
+//		return versionedComments;
+//	}
 
 	public String getRepositoryName() {
 		return repositoryName;

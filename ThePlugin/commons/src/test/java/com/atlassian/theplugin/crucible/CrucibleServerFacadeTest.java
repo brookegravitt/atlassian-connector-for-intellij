@@ -226,13 +226,13 @@ public class CrucibleServerFacadeTest extends TestCase {
         }
 
         crucibleSessionMock.createReview(EasyMock.isA(Review.class));
-        Review response = new ReviewBean();
+		CrucibleServerCfg server = prepareServerBean();
+        Review response = new ReviewBean(server.getUrl());
 
         EasyMock.expectLastCall().andReturn(response);
 
         replay(crucibleSessionMock);
 
-        CrucibleServerCfg server = prepareServerBean();
         Review review = prepareReviewData("name", State.DRAFT);
 
         // test call
@@ -284,12 +284,12 @@ public class CrucibleServerFacadeTest extends TestCase {
         }
 
         crucibleSessionMock.createReviewFromPatch(EasyMock.isA(Review.class), EasyMock.eq("some patch"));
-        Review response = new ReviewBean();
+		CrucibleServerCfg server = prepareServerBean();
+        Review response = new ReviewBean(server.getUrl());
         EasyMock.expectLastCall().andReturn(response);
 
         replay(crucibleSessionMock);
 
-        CrucibleServerCfg server = prepareServerBean();
         Review review = prepareReviewData("name", State.DRAFT);
 
         String patch = "some patch";
@@ -511,7 +511,23 @@ public class CrucibleServerFacadeTest extends TestCase {
             public VirtualFileSystem getVirtualFileSystem() {
                 return null;
             }
-        };
+
+			public List<CrucibleReviewItemInfo> getReviewItems() {
+				return null;
+			}
+
+			public CrucibleFileInfo getFileByPermId(PermId id) {
+				return null;
+			}
+
+			public CrucibleFileInfo getFileByReviewInfo(CrucibleReviewItemInfo info) {
+				return null;
+			}
+
+			public String getServerUrl() {
+				return null;
+			}
+		};
     }
 
     private Review prepareReviewData(final User user, final String name, final State state, final PermId permId) {
@@ -589,11 +605,11 @@ public class CrucibleServerFacadeTest extends TestCase {
             }
 
             public List<VersionedComment> getVersionedComments() throws ValueNotYetInitialized {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                return null;
             }
 
             public List<CrucibleFileInfo> getFiles() throws ValueNotYetInitialized {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                return null;
             }
 
             public List<Action> getTransitions() {
@@ -605,9 +621,25 @@ public class CrucibleServerFacadeTest extends TestCase {
             }
 
             public VirtualFileSystem getVirtualFileSystem() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                return null;
             }
-        };
+
+			public List<CrucibleReviewItemInfo> getReviewItems() {
+				return null;
+			}
+
+			public CrucibleFileInfo getFileByPermId(PermId id) {
+				return null;
+			}
+
+			public CrucibleFileInfo getFileByReviewInfo(CrucibleReviewItemInfo info) {
+				return null;
+			}
+
+			public String getServerUrl() {
+				return null;
+			}
+		};
     }
 
     private CrucibleServerCfg prepareServerBean() {

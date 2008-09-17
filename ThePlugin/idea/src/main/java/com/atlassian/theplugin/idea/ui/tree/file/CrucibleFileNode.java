@@ -108,36 +108,31 @@ public class CrucibleFileNode extends FileNode {
 			}
 			txt.append(")");
 			append(txt.toString(), SimpleTextAttributes.GRAY_ITALIC_ATTRIBUTES);
-			try {
 
-				int noOfComments = node.getFile().getNumberOfComments();
-				if (noOfComments > 0) {
-					int noOfDefects = node.getFile().getNumberOfDefects();
-					append(" ",
-							TEXT_ITALIC);
-					append(String.valueOf(noOfComments),
-							TEXT_ITALIC);
-					append(" comment", TEXT_ITALIC);
-					if (noOfComments != 1) {
-						append("s", TEXT_ITALIC);
-					}
-
-					if (noOfDefects > 0) {
-						append(" (", TEXT_ITALIC);
-						append(String.valueOf(noOfDefects),
-								RED_ITALIC);
-						append(" defect",
-								RED_ITALIC);
-						if (noOfDefects != 1) {
-							append("s",
-									RED_ITALIC);
-						}
-						append(")", TEXT_ITALIC);
-					}
+			int noOfComments = node.getFile().getItemInfo().getNumberOfComments();
+			if (noOfComments > 0) {
+				int noOfDefects = node.getFile().getItemInfo().getNumberOfDefects();
+				append(" ",
+						TEXT_ITALIC);
+				append(String.valueOf(noOfComments),
+						TEXT_ITALIC);
+				append(" comment", TEXT_ITALIC);
+				if (noOfComments != 1) {
+					append("s", TEXT_ITALIC);
 				}
-			} catch (ValueNotYetInitialized valueNotYetInitialized) {
-				// TODO lguminsk do something reasonable with this
-				valueNotYetInitialized.printStackTrace();
+
+				if (noOfDefects > 0) {
+					append(" (", TEXT_ITALIC);
+					append(String.valueOf(noOfDefects),
+							RED_ITALIC);
+					append(" defect",
+							RED_ITALIC);
+					if (noOfDefects != 1) {
+						append("s",
+								RED_ITALIC);
+					}
+					append(")", TEXT_ITALIC);
+				}
 			}
 
 			FileTypeManager mgr = FileTypeManager.getInstance();

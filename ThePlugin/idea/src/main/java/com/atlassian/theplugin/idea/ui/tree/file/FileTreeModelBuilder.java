@@ -20,16 +20,18 @@ import com.atlassian.theplugin.commons.BambooFileInfo;
 import com.atlassian.theplugin.commons.VersionedFileInfo;
 import com.atlassian.theplugin.commons.bamboo.BambooChangeSet;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
-import com.atlassian.theplugin.idea.crucible.events.FocusOnFileComments;
-import com.atlassian.theplugin.idea.crucible.events.FocusOnGeneralComments;
-import com.atlassian.theplugin.idea.crucible.events.ShowFileEvent;
+import com.atlassian.theplugin.idea.crucible.events.*;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
@@ -86,7 +88,7 @@ public final class FileTreeModelBuilder {
 				}
 			}
 		}));
-		model.getRoot().addNode(new CrucibleGeneralCommentsNode(review, null, null));
+		model.getRoot().addNode(new CrucibleGeneralCommentsNode(review, null));
 		AtlassianTreeNode filesNode = new CrucibleFilesNode(review);
 		model.getRoot().addNode(filesNode);
 		for (final CrucibleFileInfo file : files) {
@@ -108,9 +110,8 @@ public final class FileTreeModelBuilder {
 				}
 			});
 
+			fillFileComments(childNode, review, file, project);
 			filesNode.addNode(childNode);
-			childNode.addNode(new CrucibleGeneralCommentsNode(review, file, null));
-			childNode.addNode(new CrucibleLineCommentsNode(review, file, null));
 		}
 		return model;
 	}
@@ -132,7 +133,7 @@ public final class FileTreeModelBuilder {
 
 		FileTreeModel model = new FileTreeModel(root);
 
-		model.getRoot().addNode(new CrucibleGeneralCommentsNode(review, null, null));
+		model.getRoot().addNode(new CrucibleGeneralCommentsNode(review, null));
 		FileNode filesNode = new CrucibleFilesNode(review);
 		model.getRoot().addNode(filesNode);
  
@@ -156,14 +157,72 @@ public final class FileTreeModelBuilder {
 
 			FileNode node = model.createPlace(filesNode, f);
 
+			fillFileComments(childNode, review, f, project);
 			node.addChild(childNode);
-
-			childNode.addNode(new CrucibleGeneralCommentsNode(review, f, null));
-			childNode.addNode(new CrucibleLineCommentsNode(review, f, null));
-
 		}
 		model.compactModel(filesNode);
 		return model;
+	}
+
+	private static void fillFileComments(CrucibleFileNode node, ReviewData review, CrucibleFileInfo file, Project project) {
+		List<VersionedComment> fileComments = getFileVersionedComments(file);
+		VersionedCommentClickAction action = new VersionedCommentClickAction(project);
+		for (VersionedComment c : fileComments) {
+			if (!c.isDeleted()) {
+				VersionedCommentTreeNode commentNode = new VersionedCommentTreeNode(review, file, c, action);
+				node.addNode(commentNode);
+
+				for (VersionedComment reply : c.getReplies()) {
+					commentNode.addNode(new VersionedCommentTreeNode(review, file, reply, action));
+				}
+			}
+		}
+
+		List<VersionedComment> lineComments = getLineVersionedComments(file);
+		for (VersionedComment c : lineComments) {
+			if (!c.isDeleted()) {
+				VersionedCommentTreeNode commentNode = new VersionedCommentTreeNode(review, file, c, action);
+				node.addNode(commentNode);
+
+				for (VersionedComment reply : c.getReplies()) {
+					commentNode.addNode(new VersionedCommentTreeNode(review, file, reply, action));
+				}
+			}
+		}
+	}
+
+	private static List<VersionedComment> getFileVersionedComments(CrucibleFileInfo file) {
+		List<VersionedComment> list = new ArrayList<VersionedComment>();
+		List<VersionedComment> comments = file.getItemInfo().getComments();
+		if (comments == null) {
+			return null;
+		}
+
+		for (VersionedComment c : comments) {
+			if (c.getFromStartLine() + c.getFromEndLine() + c.getToStartLine() + c.getToEndLine() == 0) {
+				if (!c.isReply()) {
+					list.add(c);
+				}
+			}
+		}
+		return list;
+	}
+
+	private static List<VersionedComment> getLineVersionedComments(CrucibleFileInfo file) {
+		List<VersionedComment> list = new ArrayList<VersionedComment>();
+		List<VersionedComment> thisFileComments = file.getItemInfo().getComments();
+		if (thisFileComments == null) {
+			return null;
+		}
+
+		for (VersionedComment c : thisFileComments) {
+			if (c.getFromStartLine() + c.getFromEndLine() + c.getToStartLine() + c.getToEndLine() != 0) {
+				if (!c.isReply()) {
+					list.add(c);
+				}
+			}
+		}
+		return list;
 	}
 
 	private static class FileTreeModel extends AtlassianTreeModel {
@@ -234,6 +293,21 @@ public final class FileTreeModelBuilder {
 				}
 			}
 		}
+	}
 
+	private static class VersionedCommentClickAction implements AtlassianClickAction {
+
+		private Project project;
+
+		VersionedCommentClickAction(Project project) {
+			this.project = project;
+		}
+
+		public void execute(final AtlassianTreeNode node, final int noOfClicks) {
+			VersionedCommentTreeNode anode = (VersionedCommentTreeNode) node;
+			CrucibleEvent event = new FocusOnLineCommentEvent(CrucibleReviewActionListener.ANONYMOUS,
+						anode.getReview(), anode.getFile(), anode.getComment(), noOfClicks > 1);
+			IdeaHelper.getReviewActionEventBroker(project).trigger(event);
+		}
 	}
 }

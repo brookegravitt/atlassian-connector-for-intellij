@@ -106,11 +106,15 @@ public class ReviewDataImpl implements ReviewData {
         return review.getVersionedComments();
     }
 
-    public List<CrucibleFileInfo> getFiles() throws ValueNotYetInitialized {
-        return review.getFiles();
-    }
+//    public List<CrucibleFileInfo> getFiles() throws ValueNotYetInitialized {
+//        return review.getFiles();
+//    }
 
-    public List<Action> getTransitions() throws ValueNotYetInitialized {
+	public String getServerUrl() {
+		return review.getServerUrl();
+	}
+
+	public List<Action> getTransitions() throws ValueNotYetInitialized {
         return review.getTransitions();
     }
 
@@ -122,7 +126,19 @@ public class ReviewDataImpl implements ReviewData {
         return review.getVirtualFileSystem();
     }
 
-    public CrucibleServerCfg getServer() {
+	public List<CrucibleReviewItemInfo> getReviewItems() {
+		return review.getReviewItems();
+	}
+
+	public CrucibleFileInfo getFileByPermId(PermId id) {
+		return review.getFileByPermId(id);
+	}
+
+	public CrucibleFileInfo getFileByReviewInfo(CrucibleReviewItemInfo info) {
+		return review.getFileByReviewInfo(info);
+	}
+
+	public CrucibleServerCfg getServer() {
         return server;
     }
 

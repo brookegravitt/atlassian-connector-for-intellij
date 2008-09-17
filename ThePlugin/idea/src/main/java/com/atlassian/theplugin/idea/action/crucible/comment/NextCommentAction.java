@@ -20,6 +20,8 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
 import com.atlassian.theplugin.idea.CommentTreePanel;
+import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
+
 import javax.swing.tree.TreePath;
 
 /**
@@ -48,7 +50,7 @@ public class NextCommentAction extends AbstractCommentAction {
 		boolean enabled = node != null && node.getNextNode() != null;
 
 		e.getPresentation().setEnabled(enabled);
-		if (e.getPlace().equals(CommentTreePanel.MENU_PLACE)) {
+		if (e.getPlace().equals(CommentTreePanel.MENU_PLACE) || (e.getPlace().equals(ReviewItemTreePanel.MENU_PLACE))) {
 			e.getPresentation().setVisible(false);
 		}
 

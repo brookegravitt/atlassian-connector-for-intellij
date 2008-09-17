@@ -51,14 +51,14 @@ public class ReviewDataInfoImplTest extends TestCase {
     }
 
 	public void testNotEquals() throws Exception {
-		ReviewBean r1 = new ReviewBean();
+		ReviewBean r1 = new ReviewBean(null);
         r1.setPermId(new PermId() {
 
             public String getId() {
                 return new String("ID");
             }
         });
-		ReviewBean r2 = new ReviewBean();
+		ReviewBean r2 = new ReviewBean(null);
         r2.setPermId(new PermId() {
 
             public String getId() {

@@ -59,9 +59,18 @@ public interface Review {
 
     List<VersionedComment> getVersionedComments() throws ValueNotYetInitialized;
 
-    List<CrucibleFileInfo> getFiles() throws ValueNotYetInitialized;
+	// TODO jgorycki: this is evil and shouldn't be here. I hope to be able to fix this some day :)
+	String getServerUrl();
+	
+//    List<CrucibleFileInfo> getFiles() throws ValueNotYetInitialized;
 
-    List<Action> getTransitions() throws ValueNotYetInitialized;
+	List<CrucibleReviewItemInfo> getReviewItems();
+
+	CrucibleFileInfo getFileByPermId(PermId id);
+	
+	CrucibleFileInfo getFileByReviewInfo(CrucibleReviewItemInfo info);
+	
+	List<Action> getTransitions() throws ValueNotYetInitialized;
 
     List<Action> getActions() throws ValueNotYetInitialized;
 
