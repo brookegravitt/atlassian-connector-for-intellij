@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
+import com.atlassian.theplugin.commons.crucible.CrucibleFileInfoManager;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.crucible.CrucibleFilteredModelProvider;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
@@ -74,6 +75,8 @@ public class CommentTreePanel extends JPanel {
 	public static final String MENU_PLACE = "menu comments";
 	private static final String TOOLBAR_PLACE = "toolbar comments";
 	private CrucibleFilteredModelProvider.Filter filter;
+
+	private ReviewData thisReview;
 
 	public CommentTreePanel(Project project, CrucibleFilteredModelProvider.Filter filter) {
 		this.project = project;
@@ -145,7 +148,7 @@ public class CommentTreePanel extends JPanel {
 			for (GeneralComment comment : generalComments) {
 				addGeneralCommentTree(generalNode, review, comment, 0);
 			}
-			for (CrucibleFileInfo file : review.getFiles()) {
+			for (CrucibleFileInfo file : CrucibleFileInfoManager.getInstance().getFiles(review)) {
 				AtlassianTreeNode fileNode = new FileNameNode(review, file, new AtlassianClickAction() {
 					public void execute(final AtlassianTreeNode node, final int noOfClicks) {
 						switch (noOfClicks) {
@@ -161,7 +164,7 @@ public class CommentTreePanel extends JPanel {
 					}
 				});
 				ROOT.addNode(fileNode);
-				for (VersionedComment comment : file.getVersionedComments()) {
+				for (VersionedComment comment : file.getItemInfo().getComments()) {
 					addVersionedCommentTree(fileNode, review, file, comment, 0);
 				}
 
@@ -192,11 +195,7 @@ public class CommentTreePanel extends JPanel {
 					public boolean isValid(final AtlassianTreeNode node) {
 						if (node instanceof FileNameNode) {
 							FileNameNode anode = (FileNameNode) node;
-							try {
-								return anode.getFile().getNumberOfComments() > 0;
-							} catch (ValueNotYetInitialized valueNotYetInitialized) {
-								return false;
-							}
+							return anode.getFile().getItemInfo().getNumberOfComments() > 0;
 						}
 						return true;
 					}
@@ -221,6 +220,7 @@ public class CommentTreePanel extends JPanel {
 	private class MyCrucibleReviewActionListener extends CrucibleReviewActionListener {
 
 		public void commentsDownloaded(final ReviewData review) {
+			thisReview = review;
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					commentTree.setVisible(false);
@@ -291,15 +291,18 @@ public class CommentTreePanel extends JPanel {
 		}
 
 		@Override
-		public void createdVersionedComment(final ReviewData review, final CrucibleFileInfo file,
+		public void createdVersionedComment(final ReviewData review, final CrucibleReviewItemInfo info,
 				final VersionedComment comment) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 
-					AtlassianTreeNode newCommentNode
-							= new VersionedCommentTreeNode(review, file, comment, new VersionedCommentClickAction());
+					final CrucibleFileInfo file = review.getFileByReviewInfo(info);
 
-					AtlassianTreeNode changedNode = replaceNode(new SearchVersionedCommentAlgorithm(review, file, comment),
+					AtlassianTreeNode newCommentNode = new VersionedCommentTreeNode(
+							review, file, comment, new VersionedCommentClickAction());
+
+					AtlassianTreeNode changedNode = replaceNode(
+							new SearchVersionedCommentAlgorithm(review, file, comment),
 							newCommentNode);
 					if (changedNode == null) {
 						changedNode = addNewNode(new NodeSearchAlgorithm() {
@@ -308,7 +311,7 @@ public class CommentTreePanel extends JPanel {
 								if (node instanceof FileNameNode) {
 									FileNameNode vnode = (FileNameNode) node;
 									if (vnode.getReview().getPermId().equals(review.getPermId())
-											&& vnode.getFile().getPermId().equals(file.getPermId())) {
+											&& vnode.getFile().getItemInfo().getId().equals(file.getItemInfo().getId())) {
 										return true;
 									}
 								}
@@ -328,28 +331,37 @@ public class CommentTreePanel extends JPanel {
 		}
 
 		@Override
-		public void createdVersionedCommentReply(final ReviewData review, final CrucibleFileInfo file,
+		public void createdVersionedCommentReply(final ReviewData review, final CrucibleReviewItemInfo info,
 				final VersionedComment parentComment, final VersionedComment comment) {
+
+			if (!thisReview.getPermId().equals(review.getPermId())) {
+				// now what?
+				return;
+			}
+			final CrucibleFileInfo file = thisReview.getFileByReviewInfo(info);
 
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
-					VersionedCommentTreeNode newCommentNode = new VersionedCommentTreeNode(review, file, comment,
+					VersionedCommentTreeNode newCommentNode = new VersionedCommentTreeNode(thisReview, file, comment,
 							AtlassianClickAction.EMPTY_ACTION);
-					AtlassianTreeNode changedNode = replaceNode(new SearchVersionedCommentAlgorithm(review, file, comment),
+					AtlassianTreeNode changedNode = replaceNode(new SearchVersionedCommentAlgorithm(thisReview, file, comment),
 							newCommentNode);
 					if (changedNode == null) {
-						changedNode = addNewNode(new SearchVersionedCommentAlgorithm(review, file, parentComment),
+						changedNode = addNewNode(new SearchVersionedCommentAlgorithm(thisReview, file, parentComment),
 								newCommentNode);
 					}
-					addReplyNodes(review, file, newCommentNode, comment);
+					addReplyNodes(thisReview, file, newCommentNode, comment);
 					refreshNode(changedNode);
 				}
 			});
 		}
 
 		@Override
-		public void updatedVersionedComment(final ReviewData review, final CrucibleFileInfo file,
+		public void updatedVersionedComment(final ReviewData review, final CrucibleReviewItemInfo info,
 				final VersionedComment comment) {
+
+			final CrucibleFileInfo file = review.getFileByReviewInfo(info);
+
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					VersionedCommentTreeNode newCommentNode = new VersionedCommentTreeNode(review, file, comment,
@@ -418,8 +430,10 @@ public class CommentTreePanel extends JPanel {
 		}
 
 		@Override
-		public void publishedVersionedComment(final ReviewData review, final CrucibleFileInfo file,
+		public void publishedVersionedComment(final ReviewData review, final CrucibleReviewItemInfo info,
 				final VersionedComment comment) {
+			final CrucibleFileInfo file = review.getFileByReviewInfo(info);
+			
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					VersionedCommentTreeNode newCommentNode = new VersionedCommentTreeNode(review, file, comment,
@@ -431,14 +445,6 @@ public class CommentTreePanel extends JPanel {
 
 			}
 			);
-		}
-
-		@Override
-		public void commentsChanged(final ReviewData review, final CrucibleFileInfo file) {
-			ApplicationManager.getApplication().invokeLater(new Runnable() {
-				public void run() {
-				}
-			});
 		}
 
 		@Override
@@ -539,7 +545,7 @@ public class CommentTreePanel extends JPanel {
 				if (node instanceof VersionedCommentTreeNode) {
 					VersionedCommentTreeNode vnode = (VersionedCommentTreeNode) node;
 					if (vnode.getReview().getPermId().equals(review.getPermId())
-							&& vnode.getFile().getPermId().equals(file.getPermId())
+							&& vnode.getFile().getItemInfo().getId().equals(file.getItemInfo().getId())
 							&& vnode.getComment().getPermId().equals(parentComment.getPermId())) {
 						return true;
 					}

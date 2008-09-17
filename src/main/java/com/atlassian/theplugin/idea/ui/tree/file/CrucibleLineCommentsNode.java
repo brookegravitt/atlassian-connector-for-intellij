@@ -61,18 +61,16 @@ public class CrucibleLineCommentsNode extends CrucibleContainerNode {
 
 	private List<VersionedComment> getLineVersionedComments() {
 		List<VersionedComment> list = new ArrayList<VersionedComment>();
-		try {
-			List<VersionedComment> thisFileComments = file.getVersionedComments();
-
-			for (VersionedComment c : thisFileComments) {
-				if (c.getFromStartLine() + c.getFromEndLine() + c.getToStartLine() + c.getToEndLine() != 0) {
-					if (!c.isReply()) {
-						list.add(c);
-					}
+		List<VersionedComment> thisFileComments = file.getItemInfo().getComments();
+		if (thisFileComments == null) {
+			return null;
+		}
+		for (VersionedComment c : thisFileComments) {
+			if (c.getFromStartLine() + c.getFromEndLine() + c.getToStartLine() + c.getToEndLine() != 0) {
+				if (!c.isReply()) {
+					list.add(c);
 				}
 			}
-		} catch (ValueNotYetInitialized e) {
-			return null;
 		}
 		return list;
 	}

@@ -89,7 +89,7 @@ public final class CommentHighlighter {
 				final CrucibleFileInfo file = editor.getUserData(REVIEWITEM_DATA_KEY);
 				if (data != null && file != null) {
 					if (data.getPermId().equals(review.getPermId())
-							&& file.getPermId().equals(reviewItem.getPermId())) {
+							&& file.getItemInfo().getId().equals(reviewItem.getItemInfo().getId())) {
 						applyHighlighters(project, editor, reviewItem);
 						editor.putUserData(REVIEW_DATA_KEY, review);
 						editor.putUserData(REVIEWITEM_DATA_KEY, reviewItem);
@@ -106,26 +106,22 @@ public final class CommentHighlighter {
 
 		TextAttributes textAttributes = new TextAttributes();
 		textAttributes.setBackgroundColor(VERSIONED_COMMENT_BACKGROUND_COLOR);
-		try {
-			for (VersionedComment comment : reviewItem.getVersionedComments()) {
-				if (comment.getToStartLine() > 0) {
-					int endLine =  comment.getToEndLine() > 0 ? comment.getToEndLine() : comment.getToStartLine();
-					try {
-						final int startOffset = editor.getDocument().getLineStartOffset(comment.getToStartLine() - 1);
-						final int endOffset = editor.getDocument().getLineEndOffset(endLine - 1);
-						RangeHighlighter rh = markupModel.addRangeHighlighter(startOffset, endOffset - 1,
-								HighlighterLayer.WARNING - 1, textAttributes, HighlighterTargetArea.LINES_IN_RANGE);
-							rh.setErrorStripeTooltip("<html><b>" + comment.getAuthor().getDisplayName()
-									+ ":</b> " + comment.getMessage());
-							rh.setErrorStripeMarkColor(VERSIONED_COMMENT_STRIP_MARK_COLOR);
-							rh.putUserData(COMMENT_DATA_KEY, true);
-					} catch (Exception e) {
-						PluginUtil.getLogger().error(e);
-					}
+		for (VersionedComment comment : reviewItem.getItemInfo().getComments()) {
+			if (comment.getToStartLine() > 0) {
+				int endLine =  comment.getToEndLine() > 0 ? comment.getToEndLine() : comment.getToStartLine();
+				try {
+					final int startOffset = editor.getDocument().getLineStartOffset(comment.getToStartLine() - 1);
+					final int endOffset = editor.getDocument().getLineEndOffset(endLine - 1);
+					RangeHighlighter rh = markupModel.addRangeHighlighter(startOffset, endOffset - 1,
+							HighlighterLayer.WARNING - 1, textAttributes, HighlighterTargetArea.LINES_IN_RANGE);
+						rh.setErrorStripeTooltip("<html><b>" + comment.getAuthor().getDisplayName()
+								+ ":</b> " + comment.getMessage());
+						rh.setErrorStripeMarkColor(VERSIONED_COMMENT_STRIP_MARK_COLOR);
+						rh.putUserData(COMMENT_DATA_KEY, true);
+				} catch (Exception e) {
+					PluginUtil.getLogger().error(e);
 				}
 			}
-		} catch (ValueNotYetInitialized valueNotYetInitialized) {
-			PluginUtil.getLogger().error(valueNotYetInitialized);
 		}
 	}
 

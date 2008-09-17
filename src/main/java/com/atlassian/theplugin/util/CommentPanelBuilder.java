@@ -27,6 +27,7 @@ import java.awt.*;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.text.DateFormat;
 
 public final class CommentPanelBuilder {
 	private static final Color NOT_MINE_HEADER_COLOR = new Color(224, 224, 224);
@@ -45,7 +46,7 @@ public final class CommentPanelBuilder {
 
 	public static JPanel createViewPanelOfGeneralComment(final ReviewData review, final GeneralComment comment,
 														 final boolean isSelected) {
-		return new CommentPanel(review, comment) {
+		return new CommentPanel(review, null, comment) {
 			@Override
 			public Color getHeaderBackground() {
 				if (comment.getAuthor().getUserName().equals(review.getServer().getUsername())) {
@@ -73,7 +74,7 @@ public final class CommentPanelBuilder {
 
 	public static JPanel createViewPanelOfVersionedComment(final ReviewData review, CrucibleFileInfo file,
 			final VersionedComment comment, final boolean isSelected) {
-		return new CommentPanel(review, comment) {
+		return new CommentPanel(review, file, comment) {
 			@Override
 			public Color getHeaderBackground() {
 				if (comment.getAuthor().getUserName().equals(review.getServer().getUsername())) {
@@ -97,8 +98,10 @@ public final class CommentPanelBuilder {
 	}
 
 	private abstract static class CommentPanel extends JPanel {
-		private ReviewData review;
 		private Comment comment;
+		private ReviewData review;
+		private CrucibleFileInfo file;
+
 		private static final CellConstraints AUTHOR_POS = new CellConstraints(2, 2);
 		private static final CellConstraints DATE_POS = new CellConstraints(4, 2);
 		private static final CellConstraints LINE_POS = new CellConstraints(6, 2);
@@ -116,12 +119,14 @@ public final class CommentPanelBuilder {
 		private static final float STATE_FONT_DIFFERENCE = -3;
 		private static final Color STATE_DRAFT_LABEL_COLOR = new Color(0xFF, 0xD4, 0x15);
 
-		private CommentPanel(ReviewData review, Comment comment) {
+		private CommentPanel(ReviewData review, CrucibleFileInfo file, Comment comment) {
 			super(new FormLayout("pref:grow",
 					"pref, pref:grow"));
 
 			this.review = review;
+			this.file = file;
 			this.comment = comment;
+
 			setBackground(getBodyBackground());
 			CellConstraints cc = new CellConstraints();
 			JPanel header = new JPanel(
@@ -138,13 +143,11 @@ public final class CommentPanelBuilder {
 			header.add(getStateLabel("DRAFT", comment.isDraft(), STATE_DRAFT_LABEL_COLOR), DRAF_STATE_POS);
 			header.add(getStateLabel("DEFECT", comment.isDefectRaised(), Color.RED), DEFECT_STATE_POS);
 			header.add(getToolBar(), TOOLBAR_POS);
-//			header.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 1));
 			header.setBackground(getHeaderBackground());
 
 			JPanel body = new JPanel(new FormLayout("4dlu, pref:grow, 4dlu", "2dlu, pref:grow, 2dlu"));
 			body.add(getMessageBody(), cc.xy(2, 2));
 			body.setBackground(getBodyBackground());
-//			body.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 1));
 
 			add(header, cc.xy(1, 1));
 			add(body, cc.xy(1, 2));
@@ -155,11 +158,10 @@ public final class CommentPanelBuilder {
 			StringBuilder sb = new StringBuilder();
 			JLabel label;
 			sb.append("[ ");
-			sb.append(comment.getCreateDate().toString());
+			sb.append(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(comment.getCreateDate()));
 			sb.append(" ]");
 			label = new JLabel(sb.toString());
 			label.setFont(getSmallerFont(label.getFont(), DATE_FONT_DIFFERENCE));
-//			label.setForeground(Color.GRAY);
 			return label;
 		}
 
@@ -180,25 +182,44 @@ public final class CommentPanelBuilder {
 		}
 
 		protected Component getLineInfoLabel() {
-			if (comment instanceof VersionedComment) {
+			if (file != null) {
 				VersionedComment vc = (VersionedComment) comment;
-				if (vc.getToStartLine() > 0 && vc.isToLineInfo()
-						|| vc.getFromStartLine() > 0 && vc.isFromLineInfo()) {
-					int startLine = vc.getToStartLine() > 0 ? vc.getToStartLine() : vc.getFromStartLine();
-					int endLine =  startLine;
-					if (vc.isToLineInfo()) {
-						endLine = vc.getToEndLine() > 0 ? vc.getToEndLine() : startLine;
-					} else if (vc.isFromLineInfo()) {
-						endLine = vc.getFromEndLine() > 0 ? vc.getFromEndLine() : startLine;
+
+				String txt = "";
+				if (vc.getFromStartLine() > 0 && vc.isFromLineInfo()) {
+					int startLine = vc.getFromStartLine();
+					int endLine = vc.getFromEndLine();
+					if (endLine == 0) {
+						endLine = startLine;
 					}
-					String txt = endLine != startLine
-							? "Lines: [" + startLine + " - " + endLine + "]"
-							: "Line: " + endLine;
-					JLabel label = new JLabel(txt);
-					label.setFont(getSmallerFont(label.getFont(), LINE_NUMBER_FONT_DIFFERENCE));
-//					label.setForeground(Color.GRAY);
-					return label;
+					txt += "Revision " + file.getOldFileDescriptor().getRevision();
+					txt += ": ";
+					txt += endLine != startLine
+							? "Lines [" + startLine + " - " + endLine + "]"
+							: "Line " + endLine;
 				}
+
+				if (txt.length() > 0) {
+					txt += ", ";
+				}
+
+				if (vc.getToStartLine() > 0 && vc.isToLineInfo()) {
+					int startLine = vc.getToStartLine();
+					int endLine = vc.getFromEndLine();
+					if (endLine == 0) {
+						endLine = startLine;
+					}
+					txt += " Revision " + file.getFileDescriptor().getRevision();
+					txt += ": ";
+					txt += endLine != startLine
+							? "Lines [" + startLine + " - " + endLine + "]"
+							: "Line " + endLine;
+				}
+
+				JLabel label = new JLabel(txt);
+				
+				label.setFont(getSmallerFont(label.getFont(), LINE_NUMBER_FONT_DIFFERENCE));
+				return label;
 			}
 			return new JLabel("");
 		}
@@ -226,14 +247,10 @@ public final class CommentPanelBuilder {
 
 				JLabel keyLabel = new JLabel(" " + firstLetterUpperCase(elem.getKey()) + ": ");
 				keyLabel.setFont(getSmallerFont(keyLabel.getFont(), RANKING_FONT_DIFFERENCE));
-//				keyLabel.setForeground(Color.GRAY);
-//				keyLabel.setBackground(backgroundColor);
-								
+
 				JLabel valueLabel = new JLabel(elem.getValue().getValue());
 				valueLabel.setFont(getSmallerFont(valueLabel.getFont(), RANKING_FONT_DIFFERENCE));
 				valueLabel.setFont(valueLabel.getFont().deriveFont(Font.BOLD));
-//				valueLabel.setForeground(Color.GRAY);
-//				valueLabel.setBackground(backgroundColor);
 
 				panel.add(keyLabel);
 				panel.add(valueLabel);

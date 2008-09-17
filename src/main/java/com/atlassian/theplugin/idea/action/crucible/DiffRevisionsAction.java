@@ -17,10 +17,14 @@
 package com.atlassian.theplugin.idea.action.crucible;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.CommentTreePanel;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.events.ShowDiffEvent;
 import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
+import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 
 public class DiffRevisionsAction extends ReviewTreeAction {
 
@@ -30,5 +34,15 @@ public class DiffRevisionsAction extends ReviewTreeAction {
 			IdeaHelper.getReviewActionEventBroker(project)
 					.trigger(new ShowDiffEvent(CrucibleReviewActionListener.ANONYMOUS, actionData.file));
 		}
+	}
+
+	@Override
+	public void update(final AnActionEvent e) {
+		boolean enabled = e.getData(Constants.CRUCIBLE_FILE_NODE_KEY) != null;
+		e.getPresentation().setEnabled(enabled);
+
+		if (e.getPlace().equals(CommentTreePanel.MENU_PLACE) || (e.getPlace().equals(ReviewItemTreePanel.MENU_PLACE))) {
+			e.getPresentation().setVisible(enabled);
+		}	
 	}
 }

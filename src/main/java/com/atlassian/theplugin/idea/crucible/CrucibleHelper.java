@@ -67,22 +67,9 @@ public final class CrucibleHelper {
 		int line = 1;
 
 		java.util.List<VersionedComment> fileComments;
-		try {
-			fileComments = reviewItem.getVersionedComments();
-		} catch (ValueNotYetInitialized valueNotYetInitialized) {
-			try {
-				fileComments = CrucibleServerFacadeImpl.getInstance()
-						.getVersionedComments(review.getServer(), review.getPermId(), reviewItem.getPermId());
-			} catch (RemoteApiException e) {
-				PluginUtil.getLogger().error(e.getMessage());
-				return;
-			} catch (ServerPasswordNotProvidedException e) {
-				PluginUtil.getLogger().error(e.getMessage());
-				return;
-			}
-		}
+		fileComments = reviewItem.getItemInfo().getComments();
 
-		if (!fileComments.isEmpty()) {
+		if (fileComments != null && !fileComments.isEmpty()) {
 			line = fileComments.iterator().next().getFromStartLine();
 		}
 
@@ -190,7 +177,7 @@ public final class CrucibleHelper {
 			final ReviewData mr = editor.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
 			final CrucibleFileInfo mf = editor.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
 			if (mr != null && mf != null) {
-				if (review.getPermId().equals(mr.getPermId()) && file.getPermId().equals(mf.getPermId())) {
+				if (review.getPermId().equals(mr.getPermId()) && file.getItemInfo().getId().equals(mf.getItemInfo().getId())) {
 					return editor;
 				}
 			}

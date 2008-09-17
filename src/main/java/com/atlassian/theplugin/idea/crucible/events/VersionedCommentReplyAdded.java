@@ -20,6 +20,7 @@ import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleReviewItemInfo;
 
 /**
  * Created by IntelliJ IDEA.
@@ -30,20 +31,20 @@ import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
  */
 public class VersionedCommentReplyAdded extends CrucibleEvent {
 	private ReviewData review;
-	private CrucibleFileInfo file;
+	private CrucibleReviewItemInfo info;
 	private VersionedComment parentComment;
 	private VersionedComment comment;
 
-	public VersionedCommentReplyAdded(CrucibleReviewActionListener caller, ReviewData review, CrucibleFileInfo file,
+	public VersionedCommentReplyAdded(CrucibleReviewActionListener caller, ReviewData review, CrucibleReviewItemInfo info,
 								 VersionedComment parentComment, VersionedComment comment) {
 		super(caller);
 		this.review = review;
-		this.file = file;
+		this.info = info;
 		this.parentComment = parentComment;
 		this.comment = comment;
 	}
 
 	protected void notify(CrucibleReviewActionListener listener) {
-		listener.createdVersionedCommentReply(review, file, parentComment, comment);
+		listener.createdVersionedCommentReply(review, info, parentComment, comment);
 	}
 }
