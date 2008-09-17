@@ -22,6 +22,7 @@ import com.atlassian.theplugin.commons.crucible.CrucibleFileInfoManager;
 
 import java.util.Date;
 import java.util.List;
+import java.util.ArrayList;
 
 
 public class ReviewBean implements Review {
@@ -73,6 +74,7 @@ public class ReviewBean implements Review {
     public ReviewBean(String serverUrl) {
 		super();
 		this.serverUrl = serverUrl;
+		reviewItems = new ArrayList<CrucibleReviewItemInfo>();
 		this.virtualFileSystem = new VirtualFileSystem();
 	}
 
