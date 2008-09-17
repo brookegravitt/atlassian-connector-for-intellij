@@ -15,7 +15,6 @@
  */
 package com.atlassian.theplugin.idea.ui.tree.file;
 
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
@@ -31,13 +30,6 @@ import javax.swing.*;
 import javax.swing.tree.TreeCellRenderer;
 import java.awt.*;
 
-/**
- * Created by IntelliJ IDEA.
- * User: lguminski
- * Date: Jul 14, 2008
- * Time: 11:07:42 PM
- * To change this template use File | Settings | File Templates.
- */
 public class CrucibleFileNode extends FileNode {
 
 	private CrucibleFileInfo file;

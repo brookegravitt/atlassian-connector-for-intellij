@@ -20,7 +20,6 @@ import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
-import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
@@ -33,13 +32,6 @@ import javax.swing.*;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 
-/**
- * Created by IntelliJ IDEA.
- * User: lguminski
- * Date: Jul 29, 2008
- * Time: 10:42:11 AM
- * To change this template use File | Settings | File Templates.
- */
 public abstract class AbstractCommentAction extends AnAction {
 
 	@Nullable

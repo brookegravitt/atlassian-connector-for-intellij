@@ -16,19 +16,11 @@
 
 package com.atlassian.theplugin.idea.crucible.events;
 
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleReviewItemInfo;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 
-/**
- * Created by IntelliJ IDEA.
- * User: lguminski
- * Date: Jul 29, 2008
- * Time: 3:03:26 PM
- * To change this template use File | Settings | File Templates.
- */
 public class VersionedCommentUpdated extends CrucibleEvent {
     private ReviewData review;
     private CrucibleReviewItemInfo info;
