@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
 
-import org.jetbrains.annotations.NotNull;
-
 public class CrucibleFileInfoManager {
 
 	private Map<String, Map<PermId, List<CrucibleFileInfo>>> filesMap =
@@ -26,7 +24,6 @@ public class CrucibleFileInfoManager {
 		return instance;
 	}
 
-	@NotNull
 	public synchronized List<CrucibleFileInfo> getFiles(Review review) {
 
 		Map<PermId, List<CrucibleFileInfo>> listMap = filesMap.get(review.getServerUrl());
