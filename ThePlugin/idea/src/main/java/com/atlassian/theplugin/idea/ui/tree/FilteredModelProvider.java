@@ -16,18 +16,10 @@
 
 package com.atlassian.theplugin.idea.ui.tree;
 
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
 import com.atlassian.theplugin.idea.crucible.tree.ModelProvider;
 import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
 
-/**
- * Created by IntelliJ IDEA.
- * User: pmaruszak
- * Date: Aug 7, 2008
- * Time: 1:28:57 PM
- * To change this template use File | Settings | File Templates.
- */
 public abstract class FilteredModelProvider<E extends Enum<E>> extends ModelProvider {
 	private ModelProvider provider;
 
