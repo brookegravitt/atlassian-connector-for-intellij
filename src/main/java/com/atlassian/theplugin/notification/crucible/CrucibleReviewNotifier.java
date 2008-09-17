@@ -71,11 +71,10 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 	}
 
 	private void checkNewReviewItems(ReviewData oldReview, ReviewData newReview) throws ValueNotYetInitialized {
-		CrucibleFileInfoManager cfimgr = CrucibleFileInfoManager.getInstance();
-		for (CrucibleFileInfo item : cfimgr.getFiles(newReview)) {
+		for (CrucibleReviewItemInfo item : newReview.getReviewItems()) {
 			boolean found = false;
-			for (CrucibleFileInfo oldItem : cfimgr.getFiles(oldReview)) {
-				if (item.getItemInfo().getId().equals(oldItem.getItemInfo().getId())) {
+			for (CrucibleReviewItemInfo oldItem : oldReview.getReviewItems()) {
+				if (item.getId().equals(oldItem.getId())) {
 					found = true;
 					break;
 				}
