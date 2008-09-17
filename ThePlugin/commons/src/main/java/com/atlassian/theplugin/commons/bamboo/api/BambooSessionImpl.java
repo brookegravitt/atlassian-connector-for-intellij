@@ -116,7 +116,8 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
                 throw new RemoteApiLoginException("Server did not return any authentication token");
             }
             if (elements.size() != 1) {
-                throw new RemoteApiLoginException("Server returned unexpected number of authentication tokens (" + elements.size() + ")");
+                throw new RemoteApiLoginException("Server returned unexpected number of authentication tokens ("
+						+ elements.size() + ")");
             }
             this.authToken = elements.get(0).getText();
         } catch (MalformedURLException e) {
