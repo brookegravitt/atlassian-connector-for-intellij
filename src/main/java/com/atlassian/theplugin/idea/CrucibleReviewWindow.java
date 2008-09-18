@@ -36,16 +36,8 @@ import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
-import com.atlassian.theplugin.idea.crucible.events.CommentRemoved;
-import com.atlassian.theplugin.idea.crucible.events.GeneralCommentAdded;
-import com.atlassian.theplugin.idea.crucible.events.GeneralCommentPublished;
-import com.atlassian.theplugin.idea.crucible.events.GeneralCommentReplyAdded;
-import com.atlassian.theplugin.idea.crucible.events.GeneralCommentUpdated;
-import com.atlassian.theplugin.idea.crucible.events.VersionedCommentAboutToAdd;
-import com.atlassian.theplugin.idea.crucible.events.VersionedCommentAdded;
-import com.atlassian.theplugin.idea.crucible.events.VersionedCommentPublished;
-import com.atlassian.theplugin.idea.crucible.events.VersionedCommentReplyAdded;
-import com.atlassian.theplugin.idea.crucible.events.VersionedCommentUpdated;
+import com.atlassian.theplugin.idea.crucible.events.GeneralCommentAddedOrEdited;
+import com.atlassian.theplugin.idea.crucible.events.*;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.application.ApplicationManager;
@@ -300,7 +292,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 			try {
 				GeneralComment comment = facade.addGeneralComment(review.getServer(), review.getPermId(),
 						newComment);
-				eventBroker.trigger(new GeneralCommentAdded(this, review, comment));
+				eventBroker.trigger(new GeneralCommentAddedOrEdited(this, review, comment));
 			} catch (RemoteApiException e) {
 				IdeaHelper.handleRemoteApiException(project, e);
 			} catch (ServerPasswordNotProvidedException e) {
@@ -314,7 +306,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 			try {
 				GeneralComment comment = facade.addGeneralCommentReply(review.getServer(), review.getPermId(),
 						parentComment.getPermId(), newComment);
-				eventBroker.trigger(new GeneralCommentReplyAdded(this, review, parentComment, comment));
+				eventBroker.trigger(new GeneralCommentReplyAddedOrEdited(this, review, parentComment, comment));
 			} catch (RemoteApiException e) {
 				IdeaHelper.handleRemoteApiException(project, e);
 			} catch (ServerPasswordNotProvidedException e) {
@@ -335,7 +327,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 					file.getItemInfo().setComments(comments);
 				}
 				comments.add(newComment);
-				eventBroker.trigger(new VersionedCommentAdded(this, review, file.getItemInfo(), newComment));
+				eventBroker.trigger(new VersionedCommentAddedOrEdited(this, review, file.getItemInfo(), newComment));
 			} catch (RemoteApiException e) {
 				IdeaHelper.handleRemoteApiException(project, e);
 			} catch (ServerPasswordNotProvidedException e) {
@@ -351,7 +343,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 				VersionedComment newComment = facade.addVersionedCommentReply(review.getServer(), review.getPermId(),
 						parentComment.getPermId(), comment);
 				eventBroker.trigger(
-							new VersionedCommentReplyAdded(this, review, file.getItemInfo(), parentComment, newComment));
+							new VersionedCommentReplyAddedOrEdited(this, review, file.getItemInfo(), parentComment, newComment));
 			} catch (RemoteApiException e) {
 				IdeaHelper.handleRemoteApiException(project, e);
 			} catch (ServerPasswordNotProvidedException e) {

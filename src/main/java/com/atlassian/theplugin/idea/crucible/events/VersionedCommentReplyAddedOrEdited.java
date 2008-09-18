@@ -16,24 +16,27 @@
 
 package com.atlassian.theplugin.idea.crucible.events;
 
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleReviewItemInfo;
 
-public class GeneralCommentReplyAdded extends CrucibleEvent {
+public class VersionedCommentReplyAddedOrEdited extends CrucibleEvent {
 	private ReviewData review;
-	private GeneralComment parentComment;
-	private GeneralComment comment;
+	private CrucibleReviewItemInfo info;
+	private VersionedComment parentComment;
+	private VersionedComment comment;
 
-	public GeneralCommentReplyAdded(CrucibleReviewActionListener caller, ReviewData review,
-            GeneralComment parentComment, GeneralComment comment) {
+	public VersionedCommentReplyAddedOrEdited(CrucibleReviewActionListener caller, ReviewData review, CrucibleReviewItemInfo info,
+								 VersionedComment parentComment, VersionedComment comment) {
 		super(caller);
 		this.review = review;
+		this.info = info;
 		this.parentComment = parentComment;
 		this.comment = comment;
 	}
 
 	protected void notify(CrucibleReviewActionListener listener) {
-		listener.createdGeneralCommentReply(review, parentComment, comment);
+		listener.createdOrEditedVersionedCommentReply(review, info, parentComment, comment);
 	}
 }

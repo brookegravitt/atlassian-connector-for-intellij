@@ -235,7 +235,7 @@ public class CommentTreePanel extends JPanel {
 		}
 
 		@Override
-		public void createdGeneralComment(final ReviewData review, final GeneralComment comment) {
+		public void createdOrEditedGeneralComment(final ReviewData review, final GeneralComment comment) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					AtlassianTreeNode newCommentNode
@@ -264,7 +264,7 @@ public class CommentTreePanel extends JPanel {
 		}
 
 		@Override
-		public void createdGeneralCommentReply(final ReviewData review, final GeneralComment parentComment,
+		public void createdOrEditedGeneralCommentReply(final ReviewData review, final GeneralComment parentComment,
 				final GeneralComment comment) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
@@ -283,7 +283,7 @@ public class CommentTreePanel extends JPanel {
 		}
 
 		@Override
-		public void createdVersionedComment(final ReviewData review, final CrucibleReviewItemInfo info,
+		public void createdOrEditedVersionedComment(final ReviewData review, final CrucibleReviewItemInfo info,
 				final VersionedComment comment) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
@@ -323,7 +323,7 @@ public class CommentTreePanel extends JPanel {
 		}
 
 		@Override
-		public void createdVersionedCommentReply(final ReviewData review, final CrucibleReviewItemInfo info,
+		public void createdOrEditedVersionedCommentReply(final ReviewData review, final CrucibleReviewItemInfo info,
 				final VersionedComment parentComment, final VersionedComment comment) {
 
 			if (!thisReview.getPermId().equals(review.getPermId())) {
