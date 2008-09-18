@@ -28,10 +28,11 @@ import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
 import com.atlassian.theplugin.idea.crucible.CrucibleFilteredModelProvider;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
-import com.atlassian.theplugin.idea.crucible.events.ReviewCommentsDownloadadEvent;
+import com.atlassian.theplugin.idea.crucible.events.*;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.idea.ui.tree.*;
+import com.atlassian.theplugin.idea.ui.tree.clickaction.CrucibleVersionedCommentClickAction;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.file.*;
@@ -65,10 +66,13 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 	private CrucibleFilteredModelProvider.Filter filter;
 
 	public static final String MENU_PLACE = "menu review files";
+	private final Project project;
+	private CrucibleReviewActionListener listener;
 
 	public ReviewItemTreePanel(final Project project, final CrucibleFilteredModelProvider.Filter filter) {
+		this.project = project;
 		initLayout();
-		final CrucibleReviewActionListener listener = new MyReviewActionListener(project);
+		listener = new MyReviewActionListener(project);
 		IdeaHelper.getReviewActionEventBroker(project).registerListener(listener);
 		this.filter = filter;
 	}
@@ -236,9 +240,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 		private void addReplyNodes(
 				final ReviewData review, final AtlassianTreeNode parentNode, final GeneralComment comment) {
 			for (GeneralComment reply : comment.getReplies()) {
-				// todo
-				GeneralCommentTreeNode childNode = new GeneralCommentTreeNode(
-						review, reply, AtlassianClickAction.EMPTY_ACTION);
+				GeneralCommentTreeNode childNode = new GeneralCommentTreeNode(review, reply, null);
 				addNewNode(parentNode, childNode);
 				addReplyNodes(review, childNode, reply);
 			}
@@ -248,9 +250,8 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 				final ReviewData review, final CrucibleFileInfo file, final AtlassianTreeNode parentNode,
 				final VersionedComment comment) {
 			for (VersionedComment reply : comment.getReplies()) {
-				// todo
 				VersionedCommentTreeNode childNode = new VersionedCommentTreeNode(review, file, reply,
-						AtlassianClickAction.EMPTY_ACTION);
+						new CrucibleVersionedCommentClickAction(project));
 				addNewNode(parentNode, childNode);
 				addReplyNodes(review, file, childNode, reply);
 			}
@@ -286,9 +287,8 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 		public void createdOrEditedGeneralComment(final ReviewData review, final GeneralComment comment) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
-					AtlassianTreeNode newCommentNode
-							// todo
-							= new GeneralCommentTreeNode(review, comment, null /*new GeneralCommentClickAction()*/);
+					AtlassianTreeNode newCommentNode =
+							new GeneralCommentTreeNode(review, comment, null);
 
 					SearchGeneralCommentAlgorithm replacementLocator = new SearchGeneralCommentAlgorithm(review, comment);
 					AtlassianTreeNode changedNode = replaceNode(replacementLocator,
@@ -317,9 +317,8 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 				final GeneralComment comment) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
-					// todo
-					GeneralCommentTreeNode newCommentNode = new GeneralCommentTreeNode(review, comment,
-							AtlassianClickAction.EMPTY_ACTION);
+					GeneralCommentTreeNode newCommentNode =
+							new GeneralCommentTreeNode(review, comment, null);
 					AtlassianTreeNode changedNode = replaceNode(new SearchGeneralCommentAlgorithm(review, comment),
 							newCommentNode);
 					if (changedNode == null) {
@@ -339,12 +338,11 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 
 					final CrucibleFileInfo file = review.getFileByReviewInfo(info);
 
-					AtlassianTreeNode newCommentNode
-							// todo
-							= new VersionedCommentTreeNode(review, file, comment, null /*new VersionedCommentClickAction()*/);
+					AtlassianTreeNode newCommentNode = new VersionedCommentTreeNode(review, file, comment,
+							new CrucibleVersionedCommentClickAction(project));
 
-					AtlassianTreeNode changedNode = replaceNode(new SearchVersionedCommentAlgorithm(review, file, comment),
-							newCommentNode);
+					AtlassianTreeNode changedNode =
+							replaceNode(new SearchVersionedCommentAlgorithm(review, file, comment),	newCommentNode);
 					if (changedNode == null) {
 						changedNode = addNewNode(new NodeSearchAlgorithm() {
 							@Override
@@ -375,10 +373,9 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					VersionedCommentTreeNode newCommentNode = new VersionedCommentTreeNode(review, file, comment,
-							// todo
-							AtlassianClickAction.EMPTY_ACTION);
-					AtlassianTreeNode changedNode = replaceNode(new SearchVersionedCommentAlgorithm(review, file, comment),
-							newCommentNode);
+							new CrucibleVersionedCommentClickAction(project));
+					AtlassianTreeNode changedNode =
+							replaceNode(new SearchVersionedCommentAlgorithm(review, file, comment),	newCommentNode);
 					if (changedNode == null) {
 						changedNode = addNewNode(new SearchVersionedCommentAlgorithm(review, file, parentComment),
 								newCommentNode);
@@ -397,10 +394,9 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					VersionedCommentTreeNode newCommentNode = new VersionedCommentTreeNode(review, file, comment,
-							// todo
-							AtlassianClickAction.EMPTY_ACTION);
-					AtlassianTreeNode changedNode = replaceNode(new SearchVersionedCommentAlgorithm(review, file, comment),
-							newCommentNode);
+							new CrucibleVersionedCommentClickAction(project));
+					AtlassianTreeNode changedNode =
+							replaceNode(new SearchVersionedCommentAlgorithm(review, file, comment),	newCommentNode);
 					refreshNode(changedNode);
 				}
 			});
@@ -410,11 +406,9 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 		public void updatedGeneralComment(final ReviewData review, final GeneralComment comment) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
-					GeneralCommentTreeNode newCommentNode = new GeneralCommentTreeNode(review, comment,
-							// todo
-							AtlassianClickAction.EMPTY_ACTION);
-					AtlassianTreeNode changedNode = replaceNode(new SearchGeneralCommentAlgorithm(review, comment),
-							newCommentNode);
+					GeneralCommentTreeNode newCommentNode = new GeneralCommentTreeNode(review, comment, null);
+					AtlassianTreeNode changedNode =
+							replaceNode(new SearchGeneralCommentAlgorithm(review, comment),	newCommentNode);
 					refreshNode(changedNode);
 				}
 			});
@@ -452,11 +446,9 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 		public void publishedGeneralComment(final ReviewData review, final GeneralComment comment) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
-					GeneralCommentTreeNode newCommentNode = new GeneralCommentTreeNode(review, comment,
-							// todo
-							AtlassianClickAction.EMPTY_ACTION);
-					AtlassianTreeNode changedNode = replaceNode(new SearchGeneralCommentAlgorithm(review, comment),
-							newCommentNode);
+					GeneralCommentTreeNode newCommentNode = new GeneralCommentTreeNode(review, comment, null);
+					AtlassianTreeNode changedNode =
+							replaceNode(new SearchGeneralCommentAlgorithm(review, comment),	newCommentNode);
 					refreshNode(changedNode);
 				}
 			});
@@ -470,10 +462,9 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					VersionedCommentTreeNode newCommentNode = new VersionedCommentTreeNode(review, file, comment,
-							// todo
-							AtlassianClickAction.EMPTY_ACTION);
-					AtlassianTreeNode changedNode = replaceNode(new SearchVersionedCommentAlgorithm(review, file, comment),
-							newCommentNode);
+							new CrucibleVersionedCommentClickAction(project));
+					AtlassianTreeNode changedNode =
+							replaceNode(new SearchVersionedCommentAlgorithm(review, file, comment),	newCommentNode);
 					refreshNode(changedNode);
 				}
 
