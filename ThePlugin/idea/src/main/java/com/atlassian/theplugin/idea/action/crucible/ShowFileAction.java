@@ -16,17 +16,13 @@
 
 package com.atlassian.theplugin.idea.action.crucible;
 
-import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.CommentTreePanel;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.events.ShowFileEvent;
 import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
-import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
-import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 
-public class ShowFileAction extends ReviewTreeAction {
+public class ShowFileAction extends AbstractCrucibleFileAction {
 
 	@Override
 	protected void executeTreeAction(final Project project, final AtlassianTreeWithToolbar tree) {
@@ -37,12 +33,4 @@ public class ShowFileAction extends ReviewTreeAction {
 		}
 	}
 
-	@Override
-	public void update(final AnActionEvent e) {
-		boolean enabled = e.getData(Constants.CRUCIBLE_FILE_NODE_KEY) != null;
-		e.getPresentation().setEnabled(enabled);
-		if (e.getPlace().equals(CommentTreePanel.MENU_PLACE) || (e.getPlace().equals(ReviewItemTreePanel.MENU_PLACE))) {
-			e.getPresentation().setVisible(enabled);
-		}
-	}
 }

@@ -38,6 +38,7 @@ import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.VcsBundle;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.application.ApplicationManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -53,6 +54,7 @@ public final class CrucibleHelper {
 	 * Higlights all versioned comments for given file
 	 * Adds StripeMark on the right side of file window with set tool tip text that corresponde
 	 * to VersionedComment.getMessage content
+	 * Note: must be run from event dispatch thread or inside read-action only!
 	 *
 	 * @param project	project
 	 * @param review	 review data
@@ -106,6 +108,9 @@ public final class CrucibleHelper {
 						break;
 				}
 				CommentHighlighter.highlightCommentsInEditor(project, editor, review, reviewItem);
+				if (displayFile.canNavigateToSource()) {
+					displayFile.navigate(true);
+				}
 			}
 		});
 	}
@@ -185,26 +190,34 @@ public final class CrucibleHelper {
 
 	public static void openFileOnComment(final Project project, final ReviewData review, final CrucibleFileInfo file,
 			final VersionedComment comment) {
-		VcsIdeaHelper.openFileWithDiffs(project
-				, file.getFileDescriptor().getAbsoluteUrl()
-				, file.getOldFileDescriptor().getRevision()
-				, file.getFileDescriptor().getRevision()
-				, file.getCommitType()
-				, comment.getToStartLine() - 1
-				, 0
-				, new VcsIdeaHelper.OpenDiffAction() {
 
-			public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile, CommitType commitType) {
-				FileEditorManager fem = FileEditorManager.getInstance(project);
-				// @todo temporary - should be handled when opening file
-				if (displayFile != null) {
-					Editor editor = fem.openTextEditor(displayFile, false);
-					if (editor == null) {
-						return;
+		ApplicationManager.getApplication().runReadAction(new Runnable() {
+			public void run() {
+				VcsIdeaHelper.openFileWithDiffs(project
+						, file.getFileDescriptor().getAbsoluteUrl()
+						, file.getOldFileDescriptor().getRevision()
+						, file.getFileDescriptor().getRevision()
+						, file.getCommitType()
+						, comment.getToStartLine() - 1
+						, 0
+						, new VcsIdeaHelper.OpenDiffAction() {
+
+					public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile, CommitType commitType) {
+						FileEditorManager fem = FileEditorManager.getInstance(project);
+						// @todo temporary - should be handled when opening file
+						if (displayFile != null) {
+							Editor editor = fem.openTextEditor(displayFile, false);
+							if (editor == null) {
+								return;
+							}
+							CommentHighlighter.highlightCommentsInEditor(project, editor, review, file);
+							// @todo all is it needed here?
+							displayFile.navigate(true);
+						}
 					}
-					CommentHighlighter.highlightCommentsInEditor(project, editor, review, file);
-				}
+				});
 			}
 		});
+
 	}
 }

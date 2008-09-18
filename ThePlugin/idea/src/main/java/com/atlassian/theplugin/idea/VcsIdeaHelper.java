@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
+import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.application.ApplicationManager;
@@ -44,6 +45,7 @@ import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.peer.PeerFactory;
 import com.intellij.vcsUtil.VcsUtil;
+import com.intellij.psi.PsiFile;
 import org.apache.commons.collections.map.ReferenceMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -291,73 +293,49 @@ public final class VcsIdeaHelper {
 
 	}
 
-	/**
-	 * Is file is currently open it does not try to refetch it
-	 *
-	 * @param project
-	 * @param filePath
-	 * @param fileRevision
-	 * @param toRevision
-	 * @param commitType
-	 * @param line
-	 * @param col
-	 * @param action
-	 */
 	// CHECKSTYLE:OFF
-	public static void openFileWithDiffs(final Project project, String filePath, @NotNull final String fileRevision,
-			final String toRevision, @NotNull final CommitType commitType,
-			final int line, final int col, @Nullable final OpenDiffAction action) {
-		// CHECKSTYLE:ON
-		VirtualFile baseDir = project.getBaseDir();
-		String baseUrl = getRepositoryUrlForFile(project, baseDir);
+	public static void openFileWithDiffs(final Project project, final String filePath, @NotNull final String fileRevision,
+										 final String toRevision, @NotNull final CommitType commitType,
+										 final int line, final int col, @Nullable final OpenDiffAction action) {
+	// CHECKSTYLE:ON
 
-		if (baseUrl != null && filePath.startsWith(baseUrl)) {
-			String relUrl = filePath.substring(baseUrl.length());
-			final VirtualFile vfl = VfsUtil.findRelativeFile(relUrl, baseDir);
+		final PsiFile psiFile = CodeNavigationUtil.guessCorrespondingPsiFile(project, filePath);
+		if (psiFile != null) {
+
+			final VirtualFile vfl = psiFile.getVirtualFile();
 			if (vfl != null) {
-
 				ApplicationManager.getApplication().invokeLater(new Runnable() {
 					public void run() {
 						fetchAndOpenFileWithDiffs(project, fileRevision, toRevision, commitType, vfl, line, col, action);
 					}
 				});
-			} else {
-				ApplicationManager.getApplication().invokeLater(new Runnable() {
-					public void run() {
-						switch (commitType) {
-							case Deleted:
-								Messages.showErrorDialog(project,
-										"Your project does not contain requested file. Please update to revision "
-												+ fileRevision + " before review",
-										"File removed form repository");
-
-								break;
-							case Added:
-								Messages.showErrorDialog(project,
-										"Your project does not contain requested file. Please update to revision "
-												+ toRevision + " before review",
-										"Project out of date");
-								break;
-							default:
-								Messages.showErrorDialog(project, "Please update your project to revision "
-										+ toRevision 
-										+ " before opening review as the file could have been moved or deleted meanwhile",
-										"Your project does not contain requested file");
-								break;
-						}
-					}
-				});
-
+				return;
 			}
-		} else {
-			ApplicationManager.getApplication().invokeLater(new Runnable() {
-				public void run() {
-					Messages.showErrorDialog(project,
-							"Your project does not contain requested file.",
-							"File not found");
-				}
-			});
 		}
+
+		ApplicationManager.getApplication().invokeLater(new Runnable() {
+			public void run() {
+				switch (commitType) {
+					case Deleted:
+						Messages.showErrorDialog(project,
+								"Your project does not contain requested file " + filePath + ". Please update to revision "
+										+ fileRevision + " before review", "File removed form repository");
+
+						break;
+					case Added:
+						Messages.showErrorDialog(project,
+								"Your project does not contain requested file. " + filePath + "Please update to revision "
+										+ toRevision + " before review", "Project out of date");
+						break;
+					default:
+						Messages.showErrorDialog(project, "Please update your project to revision "
+								+ toRevision + " before opening review as the file " + filePath
+								+ "could have been moved or deleted meanwhile",
+								"Your project does not contain requested file");
+						break;
+				}
+			}
+		});
 	}
 
 	public static void openFile(final Project project, @NotNull final VirtualFile virtualFile,
@@ -475,7 +453,6 @@ public final class VcsIdeaHelper {
 				if (action != null) {
 					action.run(displayDescriptor, referenceVirtualFile, commitType);
 				}
-				displayDescriptor.navigate(true);
 			}
 
 		}
