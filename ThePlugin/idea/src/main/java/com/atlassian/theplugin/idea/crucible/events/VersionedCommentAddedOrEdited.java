@@ -16,21 +16,25 @@
 
 package com.atlassian.theplugin.idea.crucible.events;
 
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleReviewItemInfo;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 
-public class GeneralCommentAdded extends CrucibleEvent {
+public class VersionedCommentAddedOrEdited extends CrucibleEvent {
 	private ReviewData review;
-	private GeneralComment comment;
+	private CrucibleReviewItemInfo file;
+	private VersionedComment comment;
 
-	public GeneralCommentAdded(CrucibleReviewActionListener caller, ReviewData review, GeneralComment comment) {
+	public VersionedCommentAddedOrEdited(CrucibleReviewActionListener caller, ReviewData review, CrucibleReviewItemInfo file,
+			VersionedComment newComment) {
 		super(caller);
 		this.review = review;
-		this.comment = comment;
+		this.file = file;
+		this.comment = newComment;
 	}
 
 	protected void notify(CrucibleReviewActionListener listener) {
-		listener.createdGeneralComment(review, comment);
+		listener.createdOrEditedVersionedComment(review, file, comment);
 	}
 }

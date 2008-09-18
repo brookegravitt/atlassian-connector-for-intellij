@@ -58,7 +58,7 @@ public class CrucibleReviewActionListener {
 			VersionedComment parentComment, VersionedComment newComment) {
 	}
 
-	public void createdVersionedCommentReply(ReviewData review, CrucibleReviewItemInfo file,
+	public void createdOrEditedVersionedCommentReply(ReviewData review, CrucibleReviewItemInfo file,
 			VersionedComment parentComment, VersionedComment comment) {
 	}
 
@@ -67,13 +67,13 @@ public class CrucibleReviewActionListener {
 			GeneralComment newComment) {
 	}
 
-	public void createdGeneralCommentReply(ReviewData review, GeneralComment parentComment, GeneralComment comment) {
+	public void createdOrEditedGeneralCommentReply(ReviewData review, GeneralComment parentComment, GeneralComment comment) {
 	}
 
 	public void aboutToAddGeneralComment(ReviewData review, GeneralComment newComment) {
 	}
 
-	public void createdGeneralComment(ReviewData review, GeneralComment comment) {
+	public void createdOrEditedGeneralComment(ReviewData review, GeneralComment comment) {
 	}
 
 	public void aboutToAddVersionedComment(ReviewData review,
@@ -81,7 +81,7 @@ public class CrucibleReviewActionListener {
 			VersionedComment comment) {
 	}
 
-	public void createdVersionedComment(ReviewData review,
+	public void createdOrEditedVersionedComment(ReviewData review,
 			CrucibleReviewItemInfo file,
 			VersionedComment comment) {
 	}
