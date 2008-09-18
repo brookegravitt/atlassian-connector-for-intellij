@@ -16,7 +16,7 @@ import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SelectFilters extends DialogWrapper {
+public class SelectFiltersForm extends DialogWrapper {
 	private JPanel contentPane;
 
 	private JCheckBox toReviewCheckBox;
@@ -36,7 +36,7 @@ public class SelectFilters extends DialogWrapper {
 	private Map<PredefinedFilter, JCheckBox> checkboxes =
 			new HashMap<PredefinedFilter, JCheckBox>(PredefinedFilter.values().length, 1);
 
-	public SelectFilters(CrucibleTableToolWindowPanel cruciblePanel) {
+	public SelectFiltersForm(CrucibleTableToolWindowPanel cruciblePanel) {
 		super(cruciblePanel, false);
 		this.cruciblePanel = cruciblePanel;
 		setTitle("Select Filters");

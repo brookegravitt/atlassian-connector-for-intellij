@@ -31,7 +31,7 @@ import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.atlassian.theplugin.idea.bamboo.ToolWindowBambooContent;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.events.ShowReviewEvent;
-import com.atlassian.theplugin.idea.crucible.filters.SelectFilters;
+import com.atlassian.theplugin.idea.crucible.filters.SelectFiltersForm;
 import com.atlassian.theplugin.idea.ui.AtlassianTableView;
 import com.atlassian.theplugin.idea.ui.CollapsibleTable;
 import com.atlassian.theplugin.idea.ui.TableColumnProvider;
@@ -531,7 +531,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 	}
 
 	public void showSelectFilterDialog() {
-		SelectFilters filtersDialog = new SelectFilters(this);
+		SelectFiltersForm filtersDialog = new SelectFiltersForm(this);
 		filtersDialog.show();
 
 		// show/hide filters

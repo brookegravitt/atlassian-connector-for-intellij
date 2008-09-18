@@ -16,15 +16,14 @@
 
 package com.atlassian.theplugin.idea.crucible.filters;
 
-import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.commons.crucible.CrucibleFiltersBean;
+import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ThePluginProjectComponent;
-import com.atlassian.theplugin.idea.action.crucible.Crucible16ToggleAction;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
-import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 
 public class SelectFiltersAction extends AnAction {
