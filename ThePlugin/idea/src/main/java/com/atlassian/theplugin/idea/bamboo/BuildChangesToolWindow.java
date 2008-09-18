@@ -148,6 +148,7 @@ public final class BuildChangesToolWindow {
 			fileTreePanel.add(label, BorderLayout.NORTH);
 
 			fileTree.setRootVisible(false);
+			fileTree.getTreeComponent().addMouseListener(new NavigateToCodeHandler(name));
 			fileTreePanel.add(fileTree, BorderLayout.CENTER);
 
 			split.setSecondComponent(fileTreePanel);
@@ -310,8 +311,6 @@ public final class BuildChangesToolWindow {
 					}
 					fileTree.setRootVisible(false);
 					fileTree.expandAll();
-					// !!! XXX
-					fileTree.getTreeComponent().addMouseListener(new NavigateToCodeHandler(name));
 				}
 			});
 			return atv;

@@ -55,12 +55,6 @@ public class ShowPopupMouseAdapter<T> extends MouseAdapter {
 
 	private void maybeShowPopup(MouseEvent e) {
 		if (e.isPopupTrigger() && tableView.isEnabled()) {
-
-			// XXX @todo is it really necessary???
-			for (TableItemSelectedListener<T> tableItemSelectedListener : tableView.getListenerList()) {
-				tableItemSelectedListener.itemSelected(tableView);
-			}
-
 			final DefaultActionGroup actionGroup = new DefaultActionGroup();
 
 			final ActionGroup configActionGroup = (ActionGroup) ActionManager
