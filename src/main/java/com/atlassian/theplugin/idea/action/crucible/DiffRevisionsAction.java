@@ -26,7 +26,7 @@ import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
-public class DiffRevisionsAction extends ReviewTreeAction {
+public class DiffRevisionsAction extends AbstractCrucibleFileAction {
 
 	protected void executeTreeAction(final Project project, final AtlassianTreeWithToolbar tree) {
 		ReviewActionData actionData = new ReviewActionData(tree);
@@ -36,13 +36,4 @@ public class DiffRevisionsAction extends ReviewTreeAction {
 		}
 	}
 
-	@Override
-	public void update(final AnActionEvent e) {
-		boolean enabled = e.getData(Constants.CRUCIBLE_FILE_NODE_KEY) != null;
-		e.getPresentation().setEnabled(enabled);
-
-		if (e.getPlace().equals(CommentTreePanel.MENU_PLACE) || (e.getPlace().equals(ReviewItemTreePanel.MENU_PLACE))) {
-			e.getPresentation().setVisible(enabled);
-		}	
-	}
 }

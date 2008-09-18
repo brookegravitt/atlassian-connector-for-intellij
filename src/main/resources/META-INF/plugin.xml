@@ -233,10 +233,20 @@
 				class="com.atlassian.theplugin.idea.action.tree.file.ExpandCollapseFilesAction" text="Expand All"
 				icon="/actions/expandall.png"/>
 		<action id="ThePlugin.Crucible.ShowFileAction" class="com.atlassian.theplugin.idea.action.crucible.ShowFileAction"
-				text="Show File" icon="/actions/menu-open.png"/>
+				text="Open File for Review" icon="/actions/menu-open.png">
+			<keyboard-shortcut first-keystroke="control O" keymap="$default"/>
+				</action>
 		<action id="ThePlugin.Crucible.ShowReviewItemDiffAction"
-				class="com.atlassian.theplugin.idea.action.crucible.DiffRevisionsAction" text="Show Diff"
-				icon="/actions/diff.png"/>
+				class="com.atlassian.theplugin.idea.action.crucible.DiffRevisionsAction" text="Open Diff View for Review"
+				icon="/actions/diff.png">
+			<keyboard-shortcut first-keystroke="control D" keymap="$default"/>
+				</action>
+		<action id="ThePlugin.Crucible.GoToLocalSource"
+				class="com.atlassian.theplugin.idea.action.crucible.GoToLocalSourceAction" text="Jump to Source"
+				icon="/actions/export.png">
+			<keyboard-shortcut first-keystroke="F4" keymap="$default"/>
+		</action>
+
 
 		<action id="ArcRunSelection" class="com.atlassian.theplugin.idea.action.CommentAction" text="Add Crucible Comment"
 				description="Review lines of code with Crucible" icon="/icons/crucible-blue-16.png">
@@ -301,14 +311,10 @@
 		</group>
 
 		<group id="ThePlugin.Crucible.ReviewFileListToolBar" popup="false">
+			<reference id="ThePlugin.Crucible.GoToLocalSource"/>
 			<reference id="ThePlugin.Crucible.ShowFileAction"/>
 			<reference id="ThePlugin.Crucible.ShowReviewItemDiffAction"/>
 			<reference id="ThePlugin.Tree.File.Filter"/>
-		</group>
-
-		<group id="ThePlugin.Crucible.ReviewFileListPopupMenu" popup="true">
-			<reference id="ThePlugin.Crucible.ShowFileAction"/>
-			<reference id="ThePlugin.Crucible.ShowReviewItemDiffAction"/>
 		</group>
 
 		<group id="ThePlugin.TreeOperations" popup="false" text="">
@@ -450,6 +456,7 @@
 				text="Previous Comment" icon="/actions/back.png"/>
 
 		<group id="ThePlugin.Crucible.ReviewFileListPopupMenuExt" popup="true">
+			<reference id="ThePlugin.Crucible.GoToLocalSource"/>
 			<reference id="ThePlugin.Crucible.ShowFileAction"/>
 			<reference id="ThePlugin.Crucible.ShowReviewItemDiffAction"/>
 			<reference id="ThePlugin.Crucible.Comment.Reply"/>

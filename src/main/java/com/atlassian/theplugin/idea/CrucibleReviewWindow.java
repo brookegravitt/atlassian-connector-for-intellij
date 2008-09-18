@@ -222,12 +222,20 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 
 		@Override
 		public void showDiff(final CrucibleFileInfo file) {
-			CrucibleHelper.showRevisionDiff(project, file);
+			ApplicationManager.getApplication().runReadAction(new Runnable() {
+				public void run() {
+					CrucibleHelper.showRevisionDiff(project, file);
+				}
+			});
 		}
 
 		@Override
 		public void showFile(final ReviewData review, final CrucibleFileInfo file) {
-			CrucibleHelper.showVirtualFileWithComments(project, review, file);
+			ApplicationManager.getApplication().runReadAction(new Runnable() {
+				public void run() {
+					CrucibleHelper.showVirtualFileWithComments(project, review, file);
+				}
+			});
 		}
 
 		@Override

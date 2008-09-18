@@ -16,8 +16,6 @@
 
 package com.atlassian.theplugin.idea.config.serverconfig;
 
-import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.cfg.BambooCfg;
 import com.atlassian.theplugin.commons.configuration.BambooConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.BambooTooltipOption;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
@@ -40,7 +38,6 @@ public class BambooGeneralForm extends JComponent {
 	private JSpinner pollTimeSpinner;
 	private SpinnerModel model;
 
-//	private transient BambooCfg bambooConfiguration;
 	private transient BambooConfigurationBean localBambooConfigurationCopy;
 
 	private final transient PluginConfiguration globalPluginConfiguration;
@@ -48,7 +45,6 @@ public class BambooGeneralForm extends JComponent {
 	private static BambooGeneralForm instance;
 
 	private BambooGeneralForm(PluginConfiguration globalConfigurationBean /*BambooCfg bambooCfg*/) {
-//		bambooConfiguration = bambooCfg;
 		this.globalPluginConfiguration = globalConfigurationBean;
 		$$$setupUI$$$();
 		setLayout(new CardLayout());
@@ -97,7 +93,6 @@ public class BambooGeneralForm extends JComponent {
 	public void saveData() {
 		localBambooConfigurationCopy.setBambooTooltipOption(getBambooTooltipOption());
 		localBambooConfigurationCopy.setPollTime((Integer) model.getValue());
-		
 		globalPluginConfiguration.getBambooConfigurationData().setBambooTooltipOption(getBambooTooltipOption());
 		globalPluginConfiguration.getBambooConfigurationData().setPollTime((Integer) model.getValue());
 	}
@@ -151,9 +146,7 @@ public class BambooGeneralForm extends JComponent {
 	 */
 	private void $$$setupUI$$$() {
 		rootComponent = new JPanel();
-        rootComponent.setLayout(new FormLayout(
-                "fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:d:grow,left:4dlu:noGrow,fill:d:grow",
-                "center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:d:grow"));
+		rootComponent.setLayout(new FormLayout("fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:d:grow,left:4dlu:noGrow,fill:d:grow", "center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:d:grow"));
 		rootComponent.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12), null));
 		allFailuresFirstSuccess = new JRadioButton();
 		allFailuresFirstSuccess.setSelected(true);
@@ -180,12 +173,9 @@ public class BambooGeneralForm extends JComponent {
 		panel1.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
 		rootComponent.add(panel1, cc.xy(3, 7));
 		pollTimeSpinner = new JSpinner();
-        panel1.add(pollTimeSpinner, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-                GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(50, -1), null, 0,
-                false));
+		panel1.add(pollTimeSpinner, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(50, -1), null, 0, false));
 		final Spacer spacer3 = new Spacer();
-        panel1.add(spacer3, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
-                GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+		panel1.add(spacer3, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
 		ButtonGroup buttonGroup;
 		buttonGroup = new ButtonGroup();
 		buttonGroup.add(allFailuresFirstSuccess);

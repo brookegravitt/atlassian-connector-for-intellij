@@ -18,8 +18,11 @@ package com.atlassian.theplugin.util;
 
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiManager;
 import org.jetbrains.annotations.Nullable;
+import org.apache.commons.io.FilenameUtils;
 
 public final class CodeNavigationUtil {
 
@@ -27,6 +30,9 @@ public final class CodeNavigationUtil {
         // this is utility class
     }
 
+	/**
+	 * Note: must be run from event dispatch thread or inside read-action only!
+	 */
 	@Nullable
 	public static PsiFile guessMatchingFile(String pathname, PsiFile[] psifiles, VirtualFile baseDir) {
 		String bestMatchPath = null;
@@ -47,4 +53,15 @@ public final class CodeNavigationUtil {
 		}
 		return bestMatch;
 	}
+
+	/**
+	 * Note: must be run from event dispatch thread or inside read-action only!
+	 */
+	@Nullable
+	public static PsiFile guessCorrespondingPsiFile(final Project project, final String filepath) {
+		final PsiFile[] psifiles = PsiManager.getInstance(project).getShortNamesCache().getFilesByName(
+				FilenameUtils.getName(filepath));
+		return CodeNavigationUtil.guessMatchingFile(filepath, psifiles, project.getBaseDir());
+	}
+
 }
