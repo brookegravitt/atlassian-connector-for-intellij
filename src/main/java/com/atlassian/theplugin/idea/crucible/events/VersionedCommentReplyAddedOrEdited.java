@@ -27,8 +27,9 @@ public class VersionedCommentReplyAddedOrEdited extends CrucibleEvent {
 	private VersionedComment parentComment;
 	private VersionedComment comment;
 
-	public VersionedCommentReplyAddedOrEdited(CrucibleReviewActionListener caller, ReviewData review, CrucibleReviewItemInfo info,
-								 VersionedComment parentComment, VersionedComment comment) {
+	public VersionedCommentReplyAddedOrEdited(CrucibleReviewActionListener caller, ReviewData review,
+											  CrucibleReviewItemInfo info, VersionedComment parentComment,
+											  VersionedComment comment) {
 		super(caller);
 		this.review = review;
 		this.info = info;

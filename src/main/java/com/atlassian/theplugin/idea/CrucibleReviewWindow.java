@@ -342,8 +342,8 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 			try {
 				VersionedComment newComment = facade.addVersionedCommentReply(review.getServer(), review.getPermId(),
 						parentComment.getPermId(), comment);
-				eventBroker.trigger(
-							new VersionedCommentReplyAddedOrEdited(this, review, file.getItemInfo(), parentComment, newComment));
+				eventBroker.trigger(new VersionedCommentReplyAddedOrEdited(
+						this, review, file.getItemInfo(), parentComment, newComment));
 			} catch (RemoteApiException e) {
 				IdeaHelper.handleRemoteApiException(project, e);
 			} catch (ServerPasswordNotProvidedException e) {

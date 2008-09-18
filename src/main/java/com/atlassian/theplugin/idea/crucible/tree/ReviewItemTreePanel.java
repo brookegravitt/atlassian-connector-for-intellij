@@ -28,14 +28,12 @@ import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
 import com.atlassian.theplugin.idea.crucible.CrucibleFilteredModelProvider;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
-import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.crucible.events.ReviewCommentsDownloadadEvent;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.idea.ui.tree.*;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.comment.GeneralSectionNode;
 import com.atlassian.theplugin.idea.ui.tree.file.*;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
@@ -43,7 +41,6 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.editor.Editor;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.Nullable;
@@ -165,13 +162,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 					reviewFilesAndCommentsTree.focusOnNode(node);
 				}
 			});
-
 		}
-
-
-
-
-
 
 		private class SearchGeneralCommentAlgorithm extends NodeSearchAlgorithm {
 			private final ReviewData review;
@@ -209,11 +200,9 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 			if (node != null) {
 				AtlassianTreeNode parent = (AtlassianTreeNode) node.getParent();
 				int idx = parent.getIndex(node);
-				model. removeNodeFromParent(node);
-//				parent.remove(node);
+				model.removeNodeFromParent(node);
 				model.insertNodeInto(newNode, parent, idx);
 				reviewFilesAndCommentsTree.getTreeComponent().expandFromNode(newNode);
-//				parent.addNode(newNode);
 				return newNode;
 			}
 			return null;
@@ -231,7 +220,6 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 				parentNode.addNode(newCommentNode);
 				reviewFilesAndCommentsTree.getTreeComponent().expandPath(new TreePath(parentNode.getPath()));
 				reviewFilesAndCommentsTree.getTreeComponent().expandPath(new TreePath(newCommentNode.getPath()));
-//				reviewFilesAndCommentsTree.focusOnNode(newCommentNode);
 				return parentNode;
 			}
 			return null;
@@ -245,16 +233,19 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 			}
 		}
 
-		private void addReplyNodes(final ReviewData review, final AtlassianTreeNode parentNode, final GeneralComment comment) {
+		private void addReplyNodes(
+				final ReviewData review, final AtlassianTreeNode parentNode, final GeneralComment comment) {
 			for (GeneralComment reply : comment.getReplies()) {
 				// todo
-				GeneralCommentTreeNode childNode = new GeneralCommentTreeNode(review, reply, AtlassianClickAction.EMPTY_ACTION);
+				GeneralCommentTreeNode childNode = new GeneralCommentTreeNode(
+						review, reply, AtlassianClickAction.EMPTY_ACTION);
 				addNewNode(parentNode, childNode);
 				addReplyNodes(review, childNode, reply);
 			}
 		}
 
-		private void addReplyNodes(final ReviewData review, final CrucibleFileInfo file, final AtlassianTreeNode parentNode,
+		private void addReplyNodes(
+				final ReviewData review, final CrucibleFileInfo file, final AtlassianTreeNode parentNode,
 				final VersionedComment comment) {
 			for (VersionedComment reply : comment.getReplies()) {
 				// todo
@@ -265,11 +256,6 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 			}
 
 		}
-
-
-
-
-
 
 		private class SearchVersionedCommentAlgorithm extends NodeSearchAlgorithm {
 			private final ReviewData review;
@@ -314,8 +300,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 					addReplyNodes(review, newCommentNode, comment);
 					refreshNode(changedNode);
 				}
-			}
-			);
+			});
 		}
 
 		private void refreshNode(final AtlassianTreeNode node) {
@@ -343,8 +328,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 					addReplyNodes(review, newCommentNode, comment);
 					refreshNode(changedNode);
 				}
-			}
-			);
+			});
 		}
 
 		@Override
@@ -378,12 +362,6 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 					}
 					addReplyNodes(review, file, newCommentNode, comment);
 					refreshNode(changedNode);
-
-					// todo: wtf?
-//					Editor editor = CrucibleHelper.getEditorForCrucibleFile(review, file);
-//					if (editor != null) {
-//						CrucibleHelper.openFileOnComment(project, review, file, comment);
-//					}
 				}
 			});
 		}
@@ -466,8 +444,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 						}
 					});
 				}
-			}
-			);
+			});
 
 		}
 
@@ -482,8 +459,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 							newCommentNode);
 					refreshNode(changedNode);
 				}
-			}
-			);
+			});
 		}
 
 		@Override
@@ -501,19 +477,8 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 					refreshNode(changedNode);
 				}
 
-			}
-			);
+			});
 		}
-
-
-
-
-
-
-
-
-
-
 
 		@Override
 		public void focusOnReview(final ReviewData review) {
@@ -671,38 +636,6 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 			}
 		}
 	}
-
-//	public void valueChanged(TreeSelectionEvent e) {
-//		TreePath oldPath = e.getOldLeadSelectionPath();
-//		if (oldPath != null) {
-//			DefaultMutableTreeNode oldNode = (DefaultMutableTreeNode) oldPath.getLastPathComponent();
-//			if (oldNode != null && oldNode instanceof ServerNode) {
-//				serverConfigPanel.saveData(((ServerNode) oldNode).getServerType());
-//			}
-//			model.nodeChanged(oldNode);
-//
-//		}
-//
-//		TreePath path = e.getNewLeadSelectionPath();
-//
-//		if (path != null) {
-//			selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
-//			if (selectedNode instanceof ServerNode) {
-//				ServerCfg server = ((ServerNode) selectedNode).getServer();
-//				serverConfigPanel.editServer(server);
-////                else {
-////					// PL-235 show blank panel if server from tree node does not exist in configuration
-////					// it happens if you add server, click cancel and open config window again
-////					serverConfigPanel.showEmptyPanel();
-////				}
-//			} else if (selectedNode instanceof ServerTypeNode) {
-//				serverConfigPanel.showEmptyPanel();
-//			}
-//		} else {
-//			serverConfigPanel.showEmptyPanel();
-//		}
-//	}
-
 
 	@Nullable
 	public Object getData(@NonNls final String dataId) {
