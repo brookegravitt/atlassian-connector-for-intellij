@@ -132,7 +132,7 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 		$$$setupUI$$$();
 		init();
 		titleText.setText(commitMessage);
-		getOKAction().putValue(javax.swing.Action.NAME, "Create review...");
+		getOKAction().putValue(Action.NAME, "Create review...");
 		crucibleServersComboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (crucibleServersComboBox.getItemCount() > 0 && crucibleServersComboBox.getSelectedItem() != null &&
@@ -690,7 +690,7 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 		}
 
 		public List<CrucibleReviewItemInfo> getReviewItems() {
-			return null; 
+			return null;
 		}
 
 		public CrucibleFileInfo getFileByPermId(PermId id) {
@@ -766,7 +766,8 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 					try {
 						Review newReview = crucibleServerFacade.getReview(server, draftReview.getPermId());
 						if (newReview.getModerator().getUserName().equals(server.getUsername())) {
-							if (newReview.getActions().contains(com.atlassian.theplugin.commons.crucible.api.model.Action.APPROVE)) {
+							if (newReview.getActions()
+									.contains(com.atlassian.theplugin.commons.crucible.api.model.Action.APPROVE)) {
 								crucibleServerFacade.approveReview(server, draftReview.getPermId());
 							} else {
 								Messages.showErrorDialog(project,
@@ -775,7 +776,8 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 										, "Permission denied");
 							}
 						} else {
-							if (newReview.getActions().contains(com.atlassian.theplugin.commons.crucible.api.model.Action.SUBMIT)) {
+							if (newReview.getActions()
+									.contains(com.atlassian.theplugin.commons.crucible.api.model.Action.SUBMIT)) {
 								crucibleServerFacade.submitReview(server, draftReview.getPermId());
 							} else {
 								Messages.showErrorDialog(project,
@@ -814,14 +816,13 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 				&& projectsComboBox.getSelectedItem() instanceof ProjectComboBoxItem
 				&& authorComboBox.getSelectedItem() instanceof UserComboBoxItem
 				&& moderatorComboBox.getSelectedItem() instanceof UserComboBoxItem) {
-            if (mode != ReviewCreationMode.PATCH) {
-                if (repoComboBox.getSelectedItem() instanceof RepositoryComboBoxItem) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            }
+			if (mode != ReviewCreationMode.PATCH) {
+				if (repoComboBox.getSelectedItem() instanceof RepositoryComboBoxItem) {
+					return true;
+				} else {
+					return false;
+				}
+			}
 			return true;
 		} else {
 			return false;
