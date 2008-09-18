@@ -473,6 +473,9 @@
 			<add-to-group anchor="last" group-id="ChangesViewToolbar"/>
 		</group>
 
+		<action id="ThePlugin.Crucible.SelectFilters" text="Select Filters"
+					class="com.atlassian.theplugin.idea.crucible.filters.SelectFiltersAction" icon="/ant/filter.png"/>
+
 		<group id="ThePlugin.CrucibleToolWindowToolBar" popup="false" text="">
 
 			<reference id="ThePlugin.ShowSettings"/>
@@ -490,6 +493,7 @@
 						<reference id="ThePlugin.Crucible.AddCustomFilter" />
 						<reference id="ThePlugin.Crucible.RemoveCustomFilter" />
 						-->
+			<reference id="ThePlugin.Crucible.SelectFilters"/>
 		</group>
 
 		<group id="ThePlugin.EmptyToolBar" popup="false" text=""/>
@@ -512,11 +516,13 @@
 			<add-to-group anchor="last" group-id="ThePlugin.CrucibleToolWindowToolBar"/>
 		</group>
 
+
 		<group id="ThePlugin.CrucibleReviewToolBar" popup="false" text="">
 			<separator/>
 			<reference id="ThePlugin.Crucible.ViewReview"/>
 			<reference id="ThePlugin.Crucible.GetComments"/>
 			<separator/>
+
 			<add-to-group anchor="last" group-id="ThePlugin.CrucibleToolWindowToolBar"/>
 		</group>
 

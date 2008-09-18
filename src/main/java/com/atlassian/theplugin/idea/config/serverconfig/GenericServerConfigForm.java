@@ -46,16 +46,16 @@ public class GenericServerConfigForm implements LoginDataProvided {
 	private transient ServerCfg serverCfg;
 
 	public ServerCfg getServerCfg() {
-        return serverCfg;
-    }
+		return serverCfg;
+	}
 
-    public GenericServerConfigForm(final Project project, final Connector tester) {
+	public GenericServerConfigForm(final Project project, final Connector tester) {
 
 		$$$setupUI$$$();
 		testConnection.addActionListener(new TestConnectionListener(project, tester, this));
 		serverUrl.addFocusListener(new FocusAdapter() {
 			@Override
-            public void focusLost(FocusEvent e) {
+			public void focusLost(FocusEvent e) {
 				adjustUrl();
 			}
 		});
@@ -78,9 +78,9 @@ public class GenericServerConfigForm implements LoginDataProvided {
 	}
 
 	public void setData(ServerCfg server) {
-        serverCfg = server;
+		serverCfg = server;
 
-        serverName.setText(server.getName());
+		serverName.setText(server.getName());
 		serverUrl.setText(server.getUrl());
 		username.setText(server.getUsername());
 		chkPasswordRemember.setSelected(server.isPasswordStored());
@@ -92,18 +92,18 @@ public class GenericServerConfigForm implements LoginDataProvided {
 	 * Copies data from visual controls to underlying model. Ugly but it's how it was initially implemented.
 	 */
 	public void saveData() {
-        if (serverCfg == null) {
-            return;
-        }
-        serverCfg.setName(serverName.getText());
+		if (serverCfg == null) {
+			return;
+		}
+		serverCfg.setName(serverName.getText());
 		serverCfg.setUrl(serverUrl.getText());
 		serverCfg.setUsername(username.getText());
 		serverCfg.setPassword(String.valueOf(password.getPassword()));
-        serverCfg.setPasswordStored(chkPasswordRemember.isSelected());
+		serverCfg.setPasswordStored(chkPasswordRemember.isSelected());
 		serverCfg.setEnabled(cbEnabled.isSelected());
 	}
 
-    public JComponent getRootComponent() {
+	public JComponent getRootComponent() {
 		return rootComponent;
 	}
 
@@ -141,50 +141,71 @@ public class GenericServerConfigForm implements LoginDataProvided {
 		rootComponent.add(panel1, gbc);
 		serverName = new JTextField();
 		serverName.setText("");
-		panel1.add(serverName, new GridConstraints(1, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+		panel1.add(serverName, new GridConstraints(1, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
+				null, new Dimension(150, -1), null, 0, false));
 		final JLabel label1 = new JLabel();
+		label1.setHorizontalAlignment(4);
+		label1.setHorizontalTextPosition(4);
 		label1.setText("Server Name");
 		label1.setDisplayedMnemonic('S');
 		label1.setDisplayedMnemonicIndex(0);
-		panel1.add(label1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		panel1.add(label1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE,
+				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, new Dimension(80, -1),
+				new Dimension(80, -1), null, 0, false));
 		serverUrl = new JTextField();
-		panel1.add(serverUrl, new GridConstraints(2, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+		panel1.add(serverUrl, new GridConstraints(2, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
+				null, new Dimension(150, -1), null, 0, false));
 		username = new JTextField();
-		panel1.add(username, new GridConstraints(3, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+		panel1.add(username, new GridConstraints(3, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
+				null, new Dimension(150, -1), null, 0, false));
 		password = new JPasswordField();
-		panel1.add(password, new GridConstraints(4, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+		panel1.add(password, new GridConstraints(4, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
+				null, new Dimension(150, -1), null, 0, false));
 		final JLabel label2 = new JLabel();
 		label2.setText("Server URL");
 		label2.setDisplayedMnemonic('U');
 		label2.setDisplayedMnemonicIndex(7);
-		panel1.add(label2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		panel1.add(label2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE,
+				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		final JLabel label3 = new JLabel();
 		label3.setText("Username");
 		label3.setDisplayedMnemonic('N');
 		label3.setDisplayedMnemonicIndex(4);
-		panel1.add(label3, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		panel1.add(label3, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE,
+				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		final JLabel label4 = new JLabel();
 		label4.setText("Password");
 		label4.setDisplayedMnemonic('P');
 		label4.setDisplayedMnemonicIndex(0);
-		panel1.add(label4, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		panel1.add(label4, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE,
+				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		testConnection = new JButton();
 		testConnection.setText("Test Connection");
 		testConnection.setMnemonic('T');
 		testConnection.setDisplayedMnemonicIndex(0);
-		panel1.add(testConnection, new GridConstraints(5, 2, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		panel1.add(testConnection, new GridConstraints(5, 2, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
+				null, null, null, 0, false));
 		chkPasswordRemember = new JCheckBox();
 		chkPasswordRemember.setSelected(true);
 		chkPasswordRemember.setText("Remember Password");
 		chkPasswordRemember.setMnemonic('R');
 		chkPasswordRemember.setDisplayedMnemonicIndex(0);
-		panel1.add(chkPasswordRemember, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		panel1.add(chkPasswordRemember, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
+				null, null, null, 0, false));
 		cbEnabled = new JCheckBox();
 		cbEnabled.setHorizontalTextPosition(11);
 		cbEnabled.setText("Server Enabled");
 		cbEnabled.setMnemonic('E');
 		cbEnabled.setDisplayedMnemonicIndex(7);
-		panel1.add(cbEnabled, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(115, 25), null, 0, false));
+		panel1.add(cbEnabled, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
+				null, new Dimension(115, 25), null, 0, false));
 		final JPanel spacer1 = new JPanel();
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;
