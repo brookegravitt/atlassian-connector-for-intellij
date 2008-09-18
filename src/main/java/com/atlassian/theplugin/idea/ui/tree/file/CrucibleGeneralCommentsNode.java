@@ -37,7 +37,7 @@ public class CrucibleGeneralCommentsNode extends CrucibleContainerNode {
 	}
 
 	protected String getText() {
-		return "Revision Comments (" + getNumberOfGeneralComments() + ")";
+		return "General Comments (" + getNumberOfGeneralComments() + ")";
 	}
 
 	public AtlassianTreeNode getClone() {
