@@ -17,14 +17,10 @@
 package com.atlassian.theplugin.idea.action.crucible;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.Constants;
-import com.atlassian.theplugin.idea.CommentTreePanel;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.events.ShowDiffEvent;
 import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
-import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.actionSystem.AnActionEvent;
 
 public class DiffRevisionsAction extends AbstractCrucibleFileAction {
 
