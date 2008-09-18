@@ -38,7 +38,7 @@ public class AtlassianTableView<T> extends TableView<T> {
 	private static final int DEFAULT_ROW_HEIGHT = 20;
 	private boolean autoAdjustHeight = true;
 	private static final int MAX_DISPLAYED_ROW_COUNT = 15;
-	private final java.util.List<TableItemSelectedListener<T>> listenerList = new ArrayList<TableItemSelectedListener<T>>();
+	private final List<TableItemSelectedListener<T>> listenerList = new ArrayList<TableItemSelectedListener<T>>();
 	private UserTableContext state = new UserTableContext();
 
 
