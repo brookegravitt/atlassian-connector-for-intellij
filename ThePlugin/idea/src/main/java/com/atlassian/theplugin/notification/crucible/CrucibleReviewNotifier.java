@@ -23,10 +23,10 @@ import com.atlassian.theplugin.idea.crucible.CrucibleStatusListener;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
-import com.atlassian.theplugin.idea.crucible.events.GeneralCommentAdded;
-import com.atlassian.theplugin.idea.crucible.events.GeneralCommentReplyAdded;
-import com.atlassian.theplugin.idea.crucible.events.VersionedCommentAdded;
-import com.atlassian.theplugin.idea.crucible.events.VersionedCommentReplyAdded;
+import com.atlassian.theplugin.idea.crucible.events.GeneralCommentAddedOrEdited;
+import com.atlassian.theplugin.idea.crucible.events.GeneralCommentReplyAddedOrEdited;
+import com.atlassian.theplugin.idea.crucible.events.VersionedCommentAddedOrEdited;
+import com.atlassian.theplugin.idea.crucible.events.VersionedCommentReplyAddedOrEdited;
 import com.intellij.openapi.project.Project;
 
 import java.util.*;
@@ -114,10 +114,10 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 					break;
 				}
 			}
-			if (existingReply == null) {
+			if ((existingReply == null) || !existingReply.getMessage().equals(reply.getMessage())) {
 				notifications.add(new NewReplyCommentNotification(review, newComment, reply));
-				GeneralCommentReplyAdded event = new GeneralCommentReplyAdded(CrucibleReviewActionListener.ANONYMOUS,
-						review, newComment, reply);
+				GeneralCommentReplyAddedOrEdited event = new GeneralCommentReplyAddedOrEdited(
+						CrucibleReviewActionListener.ANONYMOUS,	review, newComment, reply);
 				IdeaHelper.getReviewActionEventBroker(project).trigger(event);
 			}
 		}
@@ -133,10 +133,10 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 					break;
 				}
 			}
-			if (existingReply == null) {
+			if ((existingReply == null) || !existingReply.getMessage().equals(reply.getMessage())) {
 				notifications.add(new NewReplyCommentNotification(review, newComment, reply));
-				VersionedCommentReplyAdded event = new VersionedCommentReplyAdded(CrucibleReviewActionListener.ANONYMOUS,
-						review, info, newComment, reply);
+				VersionedCommentReplyAddedOrEdited event = new VersionedCommentReplyAddedOrEdited(
+						CrucibleReviewActionListener.ANONYMOUS,	review, info, newComment, reply);
 				IdeaHelper.getReviewActionEventBroker(project).trigger(event);
 			}
 		}
@@ -152,13 +152,14 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 					break;
 				}
 			}
-			if (existing == null) {
+			if ((existing == null) || !existing.getMessage().equals(comment.getMessage())) {
 				notifications.add(new NewGeneralCommentNotification(newReview, comment));
-				GeneralCommentAdded event = new GeneralCommentAdded(CrucibleReviewActionListener.ANONYMOUS, newReview, comment);
+				GeneralCommentAddedOrEdited event = new GeneralCommentAddedOrEdited(
+						CrucibleReviewActionListener.ANONYMOUS, newReview, comment);
 				IdeaHelper.getReviewActionEventBroker(project).trigger(event);
-			} else {
+			} //else {
 				checkGeneralReplies(newReview, existing, comment);
-			}
+//			}
 		}
 
 		for (CrucibleReviewItemInfo info : newReview.getReviewItems()) {
@@ -170,11 +171,11 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 						break;
 					}
 				}
-				if (existing == null) {
+				if ((existing == null) || !existing.getMessage().equals(comment.getMessage())) {
 					notifications.add(new NewVersionedCommentNotification(newReview, comment));
 					if (project != null) {
-						VersionedCommentAdded event = new VersionedCommentAdded(CrucibleReviewActionListener.ANONYMOUS,
-								newReview, info, comment);
+						VersionedCommentAddedOrEdited event = new VersionedCommentAddedOrEdited(
+								CrucibleReviewActionListener.ANONYMOUS,	newReview, info, comment);
 						IdeaHelper.getReviewActionEventBroker(project).trigger(event);
 					}
 				} else {

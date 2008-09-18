@@ -36,10 +36,7 @@ import com.atlassian.theplugin.idea.ui.tree.*;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralSectionNode;
-import com.atlassian.theplugin.idea.ui.tree.file.CrucibleChangeSetTitleNode;
-import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
-import com.atlassian.theplugin.idea.ui.tree.file.FileTreeModelBuilder;
-import com.atlassian.theplugin.idea.ui.tree.file.FileNode;
+import com.atlassian.theplugin.idea.ui.tree.file.*;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -201,7 +198,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 		private class SearchGeneralSectionAlgorithm extends NodeSearchAlgorithm {
 			@Override
 			public boolean check(AtlassianTreeNode node) {
-				return node instanceof GeneralSectionNode;
+				return node instanceof CrucibleGeneralCommentsNode;
 			}
 		}
 
@@ -211,8 +208,12 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 			AtlassianTreeNode node = model.locateNode(nodeLocator);
 			if (node != null) {
 				AtlassianTreeNode parent = (AtlassianTreeNode) node.getParent();
-				parent.remove(node);
-				parent.addNode(newNode);
+				int idx = parent.getIndex(node);
+				model. removeNodeFromParent(node);
+//				parent.remove(node);
+				model.insertNodeInto(newNode, parent, idx);
+				reviewFilesAndCommentsTree.getTreeComponent().expandFromNode(newNode);
+//				parent.addNode(newNode);
 				return newNode;
 			}
 			return null;
@@ -228,9 +229,9 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 				AtlassianTreeModel model = reviewFilesAndCommentsTree.getModel();
 				model.insertNodeInto(newCommentNode, parentNode, parentNode.getChildCount());
 				parentNode.addNode(newCommentNode);
-				reviewFilesAndCommentsTree.getTreeComponent().expandPath(new TreePath(newCommentNode.getPath()));
 				reviewFilesAndCommentsTree.getTreeComponent().expandPath(new TreePath(parentNode.getPath()));
-				reviewFilesAndCommentsTree.focusOnNode(newCommentNode);
+				reviewFilesAndCommentsTree.getTreeComponent().expandPath(new TreePath(newCommentNode.getPath()));
+//				reviewFilesAndCommentsTree.focusOnNode(newCommentNode);
 				return parentNode;
 			}
 			return null;
@@ -296,7 +297,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 			}
 		}
 
-		public void createdGeneralComment(final ReviewData review, final GeneralComment comment) {
+		public void createdOrEditedGeneralComment(final ReviewData review, final GeneralComment comment) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					AtlassianTreeNode newCommentNode
@@ -321,12 +322,13 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 			if (node == null) {
 				return;
 			}
-			reviewFilesAndCommentsTree.getTreeComponent().expandFromNode(node);
+			reviewFilesAndCommentsTree.getModel().nodeChanged(node);
 			reviewFilesAndCommentsTree.getModel().nodeChanged(node.getParent());
+			reviewFilesAndCommentsTree.getTreeComponent().expandFromNode(node);
 		}
 
 		@Override
-		public void createdGeneralCommentReply(final ReviewData review, final GeneralComment parentComment,
+		public void createdOrEditedGeneralCommentReply(final ReviewData review, final GeneralComment parentComment,
 				final GeneralComment comment) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
@@ -346,7 +348,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 		}
 
 		@Override
-		public void createdVersionedComment(final ReviewData review, final CrucibleReviewItemInfo info,
+		public void createdOrEditedVersionedComment(final ReviewData review, final CrucibleReviewItemInfo info,
 				final VersionedComment comment) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
@@ -378,16 +380,16 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 					refreshNode(changedNode);
 
 					// todo: wtf?
-					Editor editor = CrucibleHelper.getEditorForCrucibleFile(review, file);
-					if (editor != null) {
-						CrucibleHelper.openFileOnComment(project, review, file, comment);
-					}
+//					Editor editor = CrucibleHelper.getEditorForCrucibleFile(review, file);
+//					if (editor != null) {
+//						CrucibleHelper.openFileOnComment(project, review, file, comment);
+//					}
 				}
 			});
 		}
 
 		@Override
-		public void createdVersionedCommentReply(final ReviewData review, final CrucibleReviewItemInfo info,
+		public void createdOrEditedVersionedCommentReply(final ReviewData review, final CrucibleReviewItemInfo info,
 				final VersionedComment parentComment, final VersionedComment comment) {
 
 			final CrucibleFileInfo file = review.getFileByReviewInfo(info);
