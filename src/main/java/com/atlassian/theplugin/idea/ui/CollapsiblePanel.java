@@ -232,27 +232,23 @@ public class CollapsiblePanel extends JPanel {
 
 		labelPanel.add(myToggleCollapseButton, BorderLayout.LINE_START);
 		labelPanel.setBackground(UIUtil.getTableSelectionBackground());
-		if (title != null) {
 
-			myTitleLabel = new JLabel(title);
-			myTitleLabel.setFont(UIUtil.getLabelFont().deriveFont(Font.BOLD));
+		myTitleLabel = new JLabel(title != null ? title : "");
+		myTitleLabel.setFont(UIUtil.getLabelFont().deriveFont(Font.BOLD));
 
-			labelPanel.add(myTitleLabel, BorderLayout.CENTER);
-			revalidate();
-			repaint();
+		labelPanel.add(myTitleLabel, BorderLayout.CENTER);
+		revalidate();
+		repaint();
 
-			myTitleLabel.addMouseListener(new MouseAdapter() {
-				public void mouseClicked(MouseEvent e) { // on double click, just open the issue
-					if (myIsCollapsed) {
-						expand();
-					} else {
-						collapse();
-					}
+		myTitleLabel.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) { // on double click, just open the issue
+				if (myIsCollapsed) {
+					expand();
+				} else {
+					collapse();
 				}
-			});
-
-		}
-
+			}
+		});
 
 		add(labelPanel,
 				new GridBagConstraints(0, 0, 1, 1, 1, 0.0,
