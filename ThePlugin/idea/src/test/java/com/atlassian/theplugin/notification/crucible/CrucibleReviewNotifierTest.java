@@ -80,35 +80,35 @@ public class CrucibleReviewNotifierTest extends TestCase {
 			}
 
 			public String getMessage() {
-				return null;  //To change body of implemented methods use File | Settings | File Templates.
+				return "";
 			}
 
 			public boolean isDraft() {
-				return false;  //To change body of implemented methods use File | Settings | File Templates.
+				return false;
 			}
 
 			public boolean isDeleted() {
-				return false;  //To change body of implemented methods use File | Settings | File Templates.
+				return false;
 			}
 
 			public boolean isDefectRaised() {
-				return false;  //To change body of implemented methods use File | Settings | File Templates.
+				return false;
 			}
 
 			public boolean isDefectApproved() {
-				return false;  //To change body of implemented methods use File | Settings | File Templates.
+				return false;
 			}
 
 			public boolean isReply() {
-				return false;  //To change body of implemented methods use File | Settings | File Templates.
+				return false;
 			}
 
 			public User getAuthor() {
-				return null;  //To change body of implemented methods use File | Settings | File Templates.
+				return null;
 			}
 
 			public Date getCreateDate() {
-				return null;  //To change body of implemented methods use File | Settings | File Templates.
+				return null;
 			}
 
 			public List<GeneralComment> getReplies() {
@@ -120,7 +120,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 			}
 
 			public Map<String, CustomField> getCustomFields() {
-				return null;  //To change body of implemented methods use File | Settings | File Templates.
+				return null;
 			}
 
 		};
@@ -532,7 +532,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 			}
 
 			public String getMessage() {
-				return null;
+				return "";
 			}
 
 			public boolean isDraft() {
@@ -564,7 +564,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 			}
 
 			public List<GeneralComment> getReplies() {
-				return null;
+				return new ArrayList<GeneralComment>();
 			}
 
 			public Map<String, CustomField> getCustomFields() {
