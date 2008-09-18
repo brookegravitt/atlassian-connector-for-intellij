@@ -133,9 +133,12 @@ public class CrucibleDetailConfigForm {
 		panel1.add(projectLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE,
 				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		repositoryLabel = new JLabel();
+		repositoryLabel.setHorizontalAlignment(4);
+		repositoryLabel.setHorizontalTextPosition(4);
 		repositoryLabel.setText("Repository");
 		panel1.add(repositoryLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE,
-				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, new Dimension(80, -1),
+				new Dimension(80, -1), null, 0, false));
 		repoComboBox = new JComboBox();
 		panel1.add(repoComboBox, new GridConstraints(1, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,

@@ -31,6 +31,7 @@ import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.atlassian.theplugin.idea.bamboo.ToolWindowBambooContent;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.events.ShowReviewEvent;
+import com.atlassian.theplugin.idea.crucible.filters.SelectFilters;
 import com.atlassian.theplugin.idea.ui.AtlassianTableView;
 import com.atlassian.theplugin.idea.ui.CollapsibleTable;
 import com.atlassian.theplugin.idea.ui.TableColumnProvider;
@@ -223,37 +224,39 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 	 */
 	public void showPredefinedFilter(PredefinedFilter filter, boolean visible, CrucibleStatusChecker checker) {
 		if (visible) {
-			CollapsibleTable table = new CollapsibleTable(
-					tableColumnProvider,
-					projectCfg.getCrucibleConfiguration().getTableConfiguration(),
-					filter.getFilterName(),
-					null,
-					null,
-					getPlaceName(),
-					getPopupActionGroup());
-			table.addItemSelectedListener(this);
-			table.addMouseListener(new MouseAdapter() {
-				public void mouseClicked(MouseEvent e) {
-					if (e.getClickCount() == 2) {
-						if (VcsIdeaHelper.isUnderVcsControl(project)) {
-							CrucibleReviewWindow.getInstance(project);
-							IdeaHelper.getReviewActionEventBroker(project).trigger(new ShowReviewEvent(
-									listener, selectedItem));
-						} else {
-							Messages.showInfoMessage(project, CrucibleConstants.CRUCIBLE_MESSAGE_NOT_UNDER_VCS,
-									CrucibleConstants.CRUCIBLE_TITLE_NOT_UNDER_VCS);
+			if (!tables.containsKey(filter)) {
+				CollapsibleTable table = new CollapsibleTable(
+						tableColumnProvider,
+						projectCfg.getCrucibleConfiguration().getTableConfiguration(),
+						filter.getFilterName(),
+						null,
+						null,
+						getPlaceName(),
+						getPopupActionGroup());
+				table.addItemSelectedListener(this);
+				table.addMouseListener(new MouseAdapter() {
+					public void mouseClicked(MouseEvent e) {
+						if (e.getClickCount() == 2) {
+							if (VcsIdeaHelper.isUnderVcsControl(project)) {
+								CrucibleReviewWindow.getInstance(project);
+								IdeaHelper.getReviewActionEventBroker(project).trigger(new ShowReviewEvent(
+										listener, selectedItem));
+							} else {
+								Messages.showInfoMessage(project, CrucibleConstants.CRUCIBLE_MESSAGE_NOT_UNDER_VCS,
+										CrucibleConstants.CRUCIBLE_TITLE_NOT_UNDER_VCS);
+							}
 						}
 					}
-				}
-			});
-			table.expand();
-			TableView.restore(projectCfg.getCrucibleConfiguration().getTableConfiguration(),
-					table.getTable());
+				});
+				table.expand();
+				TableView.restore(projectCfg.getCrucibleConfiguration().getTableConfiguration(),
+						table.getTable());
 
-			dataPanelsHolder.add(table);
-			tables.put(filter, table);
+				dataPanelsHolder.add(table);
+				tables.put(filter, table);
 
-			refreshReviews(checker);
+				refreshReviews(checker);
+			}
 		} else {
 			if (tables.containsKey(filter)) {
 				dataPanelsHolder.remove(tables.get(filter));
@@ -525,5 +528,51 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
 	public ProjectConfigurationBean getProjectCfg() {
 		return projectCfg;
+	}
+
+	public void showSelectFilterDialog() {
+		SelectFilters filtersDialog = new SelectFilters(this);
+		filtersDialog.show();
+
+		// show/hide filters
+		if (filtersDialog.getExitCode() == 0) {
+			boolean added = false;
+
+			// handle predefined filters
+			for (Map.Entry<PredefinedFilter, Boolean> filter : filtersDialog.getFilters().entrySet()) {
+				showPredefinedFilter(filter.getKey(), filter.getValue(), null);
+
+				if (filter.getValue()) {
+					added = true;
+				}
+
+				// rember the filters selection in plugin configuration
+				projectCfg.getCrucibleConfiguration().getCrucibleFilters().
+						getPredefinedFilters()[filter.getKey().ordinal()] = filter.getValue();
+			}
+
+			// handle manual filter
+			CustomFilterBean manualFilter = projectCfg.getCrucibleConfiguration().getCrucibleFilters().getManualFilter();
+			if (manualFilter != null) {
+				showCustomFilter(manualFilter.getId(), filtersDialog.getCustomFilterState(), null);
+
+				if (filtersDialog.getCustomFilterState()) {
+					added = true;
+				}
+
+				// rember filter selection in plugin configuration
+				projectCfg.getCrucibleConfiguration().getCrucibleFilters().
+						getManualFilter().setEnabled(filtersDialog.getCustomFilterState());
+			}
+
+			// if filter was added then refresh view
+			if (added) {
+				refreshReviews(crucibleStatusChecker);
+			}
+		}
+	}
+
+	public CustomFilterBean getCustomFilter() {
+		return filters.getManualFilter();
 	}
 }
