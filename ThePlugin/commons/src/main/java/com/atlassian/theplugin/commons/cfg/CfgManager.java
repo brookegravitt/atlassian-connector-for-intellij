@@ -20,27 +20,37 @@ import com.atlassian.theplugin.commons.ServerType;
 
 import java.util.Collection;
 
-
 public interface CfgManager extends BambooCfgManager {
-
 	ProjectConfiguration getProjectConfiguration(ProjectId projectId);
 
 	Collection<ServerCfg> getAllServers(ProjectId projectId);
-    Collection<ServerCfg> getProjectSpecificServers(ProjectId projectId);
-    Collection<ServerCfg> getGlobalServers();
-    Collection<ServerCfg> getAllEnabledServers(ProjectId projectId);
+
+	Collection<ServerCfg> getProjectSpecificServers(ProjectId projectId);
+
+	Collection<ServerCfg> getGlobalServers();
+
+	Collection<ServerCfg> getAllEnabledServers(ProjectId projectId);
+
 	Collection<ServerCfg> getAllEnabledServers(ProjectId projectId, ServerType serverType);
+
 	void updateProjectConfiguration(ProjectId projectId, ProjectConfiguration projectConfiguration);
+
 	void updateGlobalConfiguration(GlobalConfiguration globalConfiguration);
-    void addProjectSpecificServer(ProjectId projectId, ServerCfg serverCfg);
-    void addGlobalServer(ServerCfg serverCfg);
+
+	void addProjectSpecificServer(ProjectId projectId, ServerCfg serverCfg);
+
+	void addGlobalServer(ServerCfg serverCfg);
+
 	ProjectConfiguration removeProject(ProjectId projectId);
+
 	ServerCfg removeGlobalServer(ServerId serverId);
+
 	ServerCfg removeProjectSpecificServer(ProjectId projectId, ServerId serverId);
+
 	ServerCfg getServer(ProjectId projectId, ServerId serverId);
 
-
 	void addProjectConfigurationListener(ProjectId projectId, ConfigurationListener configurationListener);
+
 	boolean removeProjectConfigurationListener(ProjectId projectId, ConfigurationListener configurationListener);
 
 	Collection<CrucibleServerCfg> getAllEnabledCrucibleServers(final ProjectId projectId);

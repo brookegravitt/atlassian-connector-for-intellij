@@ -34,7 +34,7 @@ public class BambooStatusListenerTest extends TestCase {
 		super.setUp();
 
 		displayMock = createStrictMock(BambooStatusDisplay.class);
-		tooltipListener = new BambooStatusTooltipListener(displayMock, MockBambooCfgManager.createBambooTestConfiguration());
+		tooltipListener = new BambooStatusTooltipListener(displayMock, null);
 	}
 
 

@@ -22,9 +22,9 @@ import com.intellij.util.config.Storage;
 import com.intellij.util.ui.ListTableModel;
 
 import javax.swing.*;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelEvent;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
@@ -36,7 +36,6 @@ import java.util.List;
 
 public class AtlassianTableView<T> extends TableView<T> {
 	private static final int DEFAULT_ROW_HEIGHT = 20;
-	private boolean autoAdjustHeight = true;
 	private static final int MAX_DISPLAYED_ROW_COUNT = 15;
 	private final List<TableItemSelectedListener<T>> listenerList = new ArrayList<TableItemSelectedListener<T>>();
 	private UserTableContext state = new UserTableContext();
