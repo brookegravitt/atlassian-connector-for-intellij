@@ -228,7 +228,8 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
             // add simple bamboo listener to bamboo checker thread
             // this listener shows idea tooltip when buld failed
             BambooStatusDisplay buildFailedToolTip = new BuildStatusChangedToolTip(project);
-            tooltipBambooStatusListener = new BambooStatusTooltipListener(buildFailedToolTip, cfgManager);
+            tooltipBambooStatusListener = new BambooStatusTooltipListener(buildFailedToolTip,
+					cfgManager.getGlobalBambooCfg().getBambooTooltipOption());
             bambooStatusChecker.registerListener(tooltipBambooStatusListener);
 
             // add bamboo icon to status bar

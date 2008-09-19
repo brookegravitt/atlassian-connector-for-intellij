@@ -53,8 +53,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStatusListener,
 		TableItemSelectedListener<ReviewData> {
@@ -234,7 +237,8 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 						getPlaceName(),
 						getPopupActionGroup());
 				table.addItemSelectedListener(this);
-				table.addMouseListener(new MouseAdapter() {
+				table.getTable().addMouseListener(new MouseAdapter() {
+					@Override
 					public void mouseClicked(MouseEvent e) {
 						if (e.getClickCount() == 2) {
 							if (VcsIdeaHelper.isUnderVcsControl(project)) {
