@@ -21,15 +21,12 @@ import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.project.Project;
 
 /**
- * Created by IntelliJ IDEA.
- * User: marek
- * Date: May 20, 2008
- * Time: 2:42:12 PM
- * To change this template use File | Settings | File Templates.
+ * @author mwent
  */
 
 public class ViewReviewAction extends TableSelectedAction {
 
+	@Override
 	protected void itemSelected(final Project project, Object row) {
 		BrowserUtil.launchBrowser(((ReviewData) row).getReviewUrl());
 	}
