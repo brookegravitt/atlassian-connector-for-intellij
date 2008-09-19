@@ -24,10 +24,10 @@ public enum PredefinedFilter {
     Drafts("drafts", "Drafts"),
     Open("open", "Open"),
     Closed("closed", "Closed"),
-    Abandoned("trash", "Abandoned"),
-    AllOpen("allOpenReviews", "All Open Reviews"),
-    AllClosed("allClosedReviews", "All Closed Reviews"),
-    All("allReviews", "All Reviews");
+    Abandoned("trash", "Abandoned");
+//    AllOpen("allOpenReviews", "All Open Reviews"),
+//    AllClosed("allClosedReviews", "All Closed Reviews"),
+//    All("allReviews", "All Reviews");
 
     private String filterUrl;
     private String filterName;
