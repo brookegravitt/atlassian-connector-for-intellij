@@ -39,7 +39,7 @@ public class ReviewInfoCellRenderer extends ReviewCellRenderer {
 		sb.append("");
 		sb.append("</td></tr>");
 
-		sb.append("<tr><td valign=\"top\"><b>Description:</b></td><td valign=\"top\">");
+		sb.append("<tr><td valign=\"top\"><b>Statement of Objectives:</b></td><td valign=\"top\">");
 		sb.append(review.getDescription());
 		sb.append("");
 		sb.append("</td></tr>");
