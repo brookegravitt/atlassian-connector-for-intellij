@@ -179,7 +179,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 			// wseliga: I don't know yet what do to with comment below
 			// todo remove that get instance as it can return null. it is better to get it from app component.
 			this.bambooStatusChecker = new BambooStatusChecker(CfgUtil.getProjectId(project), actionScheduler,
-					cfgManager,
+					cfgManager, pluginConfiguration,
 					new MissingPasswordHandler(BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()), cfgManager, project),
 					PluginUtil.getLogger());
 
@@ -227,9 +227,8 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 
             // add simple bamboo listener to bamboo checker thread
             // this listener shows idea tooltip when buld failed
-            BambooStatusDisplay buildFailedToolTip = new BuildStatusChangedToolTip(project);
-            tooltipBambooStatusListener = new BambooStatusTooltipListener(buildFailedToolTip,
-					cfgManager.getGlobalBambooCfg().getBambooTooltipOption());
+            final BambooStatusDisplay bambooStatusDisplay = new BuildStatusChangedToolTip(project);
+            tooltipBambooStatusListener = new BambooStatusTooltipListener(bambooStatusDisplay, pluginConfiguration);
             bambooStatusChecker.registerListener(tooltipBambooStatusListener);
 
             // add bamboo icon to status bar

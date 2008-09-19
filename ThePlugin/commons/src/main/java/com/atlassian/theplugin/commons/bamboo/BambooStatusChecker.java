@@ -21,6 +21,7 @@ import com.atlassian.theplugin.commons.UIActionScheduler;
 import com.atlassian.theplugin.commons.cfg.BambooCfgManager;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectId;
+import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.util.DateUtil;
 import com.atlassian.theplugin.commons.util.Logger;
@@ -54,6 +55,7 @@ public final class BambooStatusChecker implements SchedulableChecker {
 
 	private BambooCfgManager cfgManager;
 	private final BambooServerFacade bambooServerFacade;
+	private final PluginConfiguration pluginConfiguration;
 	private Runnable missingPasswordHandler;
 	private final ProjectId projectId;
 
@@ -62,12 +64,12 @@ public final class BambooStatusChecker implements SchedulableChecker {
 	}
 
 	public BambooStatusChecker(final ProjectId projectId, UIActionScheduler actionScheduler,
-			BambooCfgManager cfgManager,
-			Runnable missingPasswordHandler,
-			Logger logger) {
+			BambooCfgManager cfgManager, final PluginConfiguration pluginConfiguration,
+			Runnable missingPasswordHandler, Logger logger) {
 		this.projectId = projectId;
 		this.actionScheduler = actionScheduler;
 		this.cfgManager = cfgManager;
+		this.pluginConfiguration = pluginConfiguration;
 		this.missingPasswordHandler = missingPasswordHandler;
 
 		this.bambooServerFacade = BambooServerFacadeImpl.getInstance(logger);
@@ -151,7 +153,8 @@ public final class BambooStatusChecker implements SchedulableChecker {
 	}
 
 	public long getInterval() {
-		return cfgManager.getGlobalBambooCfg().getPollTime() * DateUtil.SECONDS_IN_MINUTE * DateUtil.MILISECONDS_IN_SECOND;
+		return pluginConfiguration.getBambooConfigurationData().getPollTime()
+				* DateUtil.SECONDS_IN_MINUTE * DateUtil.MILISECONDS_IN_SECOND;
 	}
 
 	/**

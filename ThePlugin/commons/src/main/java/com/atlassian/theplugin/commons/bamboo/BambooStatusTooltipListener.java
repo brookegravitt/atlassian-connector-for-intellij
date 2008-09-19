@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.commons.bamboo;
 
 import com.atlassian.theplugin.commons.configuration.BambooTooltipOption;
+import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -29,8 +30,8 @@ public class BambooStatusTooltipListener implements BambooStatusListener {
 
 	private Map<String, BambooBuild> prevBuildStatuses = new HashMap<String, BambooBuild>(0);
 	private final BambooStatusDisplay display;
+	private final PluginConfiguration pluginConfiguration;
 	private BambooPopupInfo popupInfo = new BambooPopupInfo();
-	private final BambooTooltipOption bambooTooltipOption;
 
 
 	/**
@@ -38,15 +39,17 @@ public class BambooStatusTooltipListener implements BambooStatusListener {
 	 * @param display reference to display component
 	 * @param bambooTooltipOption how incoming status changes should be handled
 	 */
-	public BambooStatusTooltipListener(final BambooStatusDisplay display, final BambooTooltipOption bambooTooltipOption) {
+	public BambooStatusTooltipListener(final BambooStatusDisplay display, final PluginConfiguration pluginConfiguration) {
 		this.display = display;
-		this.bambooTooltipOption = bambooTooltipOption;
+		this.pluginConfiguration = pluginConfiguration;
 	}
 
 	public void updateBuildStatuses(Collection<BambooBuild> newBuildStatuses) {
 		
 		popupInfo.clear();
 
+		final BambooTooltipOption bambooTooltipOption = pluginConfiguration.getBambooConfigurationData()
+				.getBambooTooltipOption();
 		if (bambooTooltipOption == BambooTooltipOption.NEVER) {
 			return;
 		}
@@ -64,24 +67,24 @@ public class BambooStatusTooltipListener implements BambooStatusListener {
 
 						case BUILD_FAILED:
 
-								BambooBuild prevBuild = prevBuildStatuses.get(currentBuild.getBuildKey());
+							BambooBuild prevBuild = prevBuildStatuses.get(currentBuild.getBuildKey());
 
 							if (prevBuildStatuses.containsKey(currentBuild.getBuildKey())) {
 
-						if (prevBuild.getStatus() == BuildStatus.BUILD_SUCCEED
-								|| (prevBuild.getStatus() == BuildStatus.BUILD_FAILED
-										&& !prevBuild.getBuildNumber().equals(currentBuild.getBuildNumber()) 
+								if (prevBuild.getStatus() == BuildStatus.BUILD_SUCCEED
+										|| (prevBuild.getStatus() == BuildStatus.BUILD_FAILED
+										&& !prevBuild.getBuildNumber().equals(currentBuild.getBuildNumber())
 										&& bambooTooltipOption == BambooTooltipOption.ALL_FAULIRES_AND_FIRST_SUCCESS)) {
 
-							// build has changed status from SUCCEED to FAILED
-							// or this is new build and still failed
-							fireTooltip = true;
-							status = BuildStatus.BUILD_FAILED;
+									// build has changed status from SUCCEED to FAILED
+									// or this is new build and still failed
+									fireTooltip = true;
+									status = BuildStatus.BUILD_FAILED;
 
-							// prepare information
-							popupInfo.add(currentBuild);
-						}
-					}
+									// prepare information
+									popupInfo.add(currentBuild);
+								}
+							}
 
 							prevBuildStatuses.put(currentBuild.getBuildKey(), currentBuild);
 							break;
