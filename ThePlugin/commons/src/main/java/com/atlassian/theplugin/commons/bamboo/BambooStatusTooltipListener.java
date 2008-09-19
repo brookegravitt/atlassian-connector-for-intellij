@@ -37,7 +37,7 @@ public class BambooStatusTooltipListener implements BambooStatusListener {
 	/**
 	 *
 	 * @param display reference to display component
-	 * @param bambooTooltipOption how incoming status changes should be handled
+	 * @param pluginConfiguration cfg how incoming status changes should be handled
 	 */
 	public BambooStatusTooltipListener(final BambooStatusDisplay display, final PluginConfiguration pluginConfiguration) {
 		this.display = display;
@@ -48,8 +48,9 @@ public class BambooStatusTooltipListener implements BambooStatusListener {
 		
 		popupInfo.clear();
 
-		final BambooTooltipOption bambooTooltipOption = pluginConfiguration.getBambooConfigurationData()
-				.getBambooTooltipOption();
+		final BambooTooltipOption bambooTooltipOption = pluginConfiguration != null
+				? pluginConfiguration.getBambooConfigurationData().getBambooTooltipOption()
+				: null;
 		if (bambooTooltipOption == BambooTooltipOption.NEVER) {
 			return;
 		}

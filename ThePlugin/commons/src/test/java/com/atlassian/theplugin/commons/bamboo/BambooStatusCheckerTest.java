@@ -60,7 +60,8 @@ public class BambooStatusCheckerTest extends TestCase {
 
 	public void testGetInterval() throws Exception {
 		BambooStatusChecker checker = new BambooStatusChecker(
-				new ProjectId(), null, MockBambooCfgManager.createBambooTestConfiguration(), null, null, logger);
+				new ProjectId(), null, MockBambooCfgManager.createBambooTestConfiguration(),
+				new PluginConfigurationBean(), null, logger);
 		assertEquals(60000, checker.getInterval());
 	}
 
