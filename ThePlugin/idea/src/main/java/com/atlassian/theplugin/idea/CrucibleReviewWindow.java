@@ -65,7 +65,6 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 	private static final Key<CrucibleReviewWindow> WINDOW_PROJECT_KEY
 			= Key.create(CrucibleReviewWindow.class.getName());
 	private Project project;
-//	private static final float SPLIT_RATIO = 0.3f;
 	protected static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
 	protected ProgressAnimationProvider progressAReviewActionEventBrokernimation = new ProgressAnimationProvider();
 	private CrucibleVersion crucibleVersion = CrucibleVersion.UNKNOWN;
@@ -94,10 +93,6 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		return reviewItemTreePanel;
 	}
 
-//	public CommentTreePanel getReviewComentsPanel() {
-//		return reviewComentsPanel;
-//	}
-
 	public void showCrucibleReviewWindow(final String crucibleReviewId) {
 
 		ToolWindowManager twm = ToolWindowManager.getInstance(this.project);
@@ -110,18 +105,21 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		final ContentManager contentManager = toolWindow.getContentManager();
 		Content content = (contentManager.getContents().length > 0) ? contentManager.getContents()[0] : null;
 
-		if (content == null) {
-
-			PeerFactory peerFactory = PeerFactory.getInstance();
-			content = peerFactory.getContentFactory().createContent(this, crucibleReviewId, false);
-			content.setIcon(PluginToolWindow.ICON_CRUCIBLE);
-			content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
-			toolWindow.getContentManager().addContent(content);
+		if (content != null) {
+			contentManager.removeContent(content, true);
 		}
-		content.setDisplayName(crucibleReviewId);
+
+		PeerFactory peerFactory = PeerFactory.getInstance();
+		content = peerFactory.getContentFactory().createContent(this, crucibleReviewId, false);
+		content.setIcon(PluginToolWindow.ICON_CRUCIBLE);
+		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
+		toolWindow.getContentManager().addContent(content);
 
 		toolWindow.getContentManager().setSelectedContent(content);
 		toolWindow.show(null);
+
+		progressAnimation.startProgressAnimation();
+
 	}
 
 	private CrucibleReviewWindow(Project project) {
@@ -130,14 +128,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		this.project = project;
 		setBackground(UIUtil.getTreeTextBackground());
 		reviewItemTreePanel = new ReviewItemTreePanel(project, filter);
-//		Splitter splitter = new Splitter(false, SPLIT_RATIO);
-//		splitter.setShowDividerControls(true);
 		reviewItemTreePanel.getProgressAnimation().configure(reviewItemTreePanel, reviewItemTreePanel, BorderLayout.CENTER);
-//		splitter.setFirstComponent(reviewItemTreePanel);
-//		splitter.setHonorComponentsMinimumSize(true);
-//		reviewComentsPanel = new CommentTreePanel(project, filter);
-//		splitter.setSecondComponent(reviewComentsPanel);
-//		add(splitter, BorderLayout.CENTER);
 		add(reviewItemTreePanel, BorderLayout.CENTER);
 
 		ReviewActionEventBroker eventBroker = IdeaHelper.getReviewActionEventBroker(project);
@@ -172,15 +163,11 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		} else if (dataId.equals(Constants.CRUCIBLE_BOTTOM_WINDOW)) {
 			return this;
 		}
-//		} else if (dataId.equals(Constants.CRUCIBLE_COMMENT_TREE)) {
-//			return reviewComentsPanel.getCommentTree();
-//		}
 		return null;
 	}
 
 	public void switchFilter() {
 		filter = filter.getNextState();
-//		getReviewComentsPanel().filterTreeNodes(filter);
 		getReviewItemTreePanel().filterTreeNodes(filter);
 	}
 
@@ -194,11 +181,10 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 			eventBroker = IdeaHelper.getReviewActionEventBroker(this.project);
 		}
 
-		@Override
-		public void showReview(final ReviewData reviewData) {
+		public void commentsDownloaded(ReviewData review) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
-					showCrucibleReviewWindow(reviewData.getPermId().getId());
+					progressAnimation.stopProgressAnimation();
 				}
 			});
 		}

@@ -51,6 +51,8 @@ public class GetCommentsAction extends TableSelectedAction {
 
 	@Override
 	protected void itemSelected(final Project project, Object row) {
+		CrucibleReviewWindow.getInstance(project).showCrucibleReviewWindow(((ReviewData) row).getPermId().getId());
+
 		IdeaHelper.getReviewActionEventBroker(project).trigger(new ShowReviewEvent(
 				CrucibleReviewActionListener.ANONYMOUS, (ReviewData) row));
 

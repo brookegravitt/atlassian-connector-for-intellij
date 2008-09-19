@@ -16,6 +16,8 @@
 package com.atlassian.theplugin.idea.ui.tree.file;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfoImpl;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleReviewItemInfo;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
@@ -62,6 +64,16 @@ public class CrucibleFileNode extends FileNode {
 
 	public ReviewData getReview() {
 		return review;
+	}
+
+	public void setReview(ReviewData review) {
+		this.review = review;
+		for (CrucibleReviewItemInfo info : review.getReviewItems()) {
+			if (info.getId().equals(file.getItemInfo().getId())) {
+				((CrucibleFileInfoImpl) file).setItemInfo(info);
+				break;
+			}
+		}
 	}
 
 	private static class CrucibleFileNodeRenderer extends ColoredTreeCellRenderer {

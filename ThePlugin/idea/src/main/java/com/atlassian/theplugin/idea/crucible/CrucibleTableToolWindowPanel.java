@@ -242,7 +242,9 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 					public void mouseClicked(MouseEvent e) {
 						if (e.getClickCount() == 2) {
 							if (VcsIdeaHelper.isUnderVcsControl(project)) {
-								CrucibleReviewWindow.getInstance(project);
+								CrucibleReviewWindow.getInstance(project).showCrucibleReviewWindow(
+										selectedItem.getPermId().getId());
+
 								IdeaHelper.getReviewActionEventBroker(project).trigger(new ShowReviewEvent(
 										listener, selectedItem));
 							} else {
