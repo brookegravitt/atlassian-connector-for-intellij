@@ -25,9 +25,7 @@ import com.atlassian.theplugin.commons.util.Logger;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
-import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
-import com.atlassian.theplugin.idea.crucible.CrucibleFilteredModelProvider;
-import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.idea.crucible.*;
 import com.atlassian.theplugin.idea.crucible.events.*;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
@@ -42,6 +40,7 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.editor.Editor;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.Nullable;
@@ -313,6 +312,9 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 		}
 
 		private void updateFileNode(ReviewData review, CrucibleFileInfo file) {
+			if (file == null) {
+				return;
+			}
 			CrucibleFileNode fileNode = (CrucibleFileNode) reviewFilesAndCommentsTree.getModel().locateNode(
 					new SearchFileAlgorithm(review, file));
 			fileNode.setReview(review);
@@ -407,6 +409,11 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 					updateRootNode(review);
 
 					refreshNode(changedNode);
+
+					Editor editor = CrucibleHelper.getEditorForCrucibleFile(review, file);
+					if (editor != null) {
+						CommentHighlighter.highlightCommentsInEditor(project, editor, review, file);
+					}
 				}
 			});
 		}
