@@ -84,9 +84,6 @@ public final class CommentPanelBuilder {
 				} else {
 					c = NOT_MINE_HEADER_COLOR;
 				}
-				if (!isLineComment && !comment.isReply()) {
-					c = c.darker();
-				}
 				return getDerivedColor(c, isSelected);
 			}
 
@@ -176,36 +173,39 @@ public final class CommentPanelBuilder {
 			if (file != null) {
 				VersionedComment vc = (VersionedComment) comment;
 
-				String txt = "";
+				String txt1 = "";
 				if (vc.getFromStartLine() > 0 && vc.isFromLineInfo()) {
 					int startLine = vc.getFromStartLine();
 					int endLine = vc.getFromEndLine();
 					if (endLine == 0) {
 						endLine = startLine;
 					}
-					txt += "Revision " + file.getOldFileDescriptor().getRevision();
-					txt += ": ";
-					txt += endLine != startLine
+					txt1 += "Revision " + file.getOldFileDescriptor().getRevision();
+					txt1 += ": ";
+					txt1 += endLine != startLine
 							? "Lines [" + startLine + " - " + endLine + "]"
 							: "Line " + endLine;
 				}
 
-				if (txt.length() > 0) {
-					txt += ", ";
-				}
-
+				String txt2 = "";
 				if (vc.getToStartLine() > 0 && vc.isToLineInfo()) {
 					int startLine = vc.getToStartLine();
-					int endLine = vc.getFromEndLine();
+					int endLine = vc.getToEndLine();
 					if (endLine == 0) {
 						endLine = startLine;
 					}
-					txt += " Revision " + file.getFileDescriptor().getRevision();
-					txt += ": ";
-					txt += endLine != startLine
+					txt2 += " Revision " + file.getFileDescriptor().getRevision();
+					txt2 += ": ";
+					txt2 += endLine != startLine
 							? "Lines [" + startLine + " - " + endLine + "]"
 							: "Line " + endLine;
 				}
+
+				String txt = txt1;
+				if (txt1.length() > 0 && txt2.length() > 0) {
+					txt += ", ";
+				}
+				txt += txt2;
 
 				if (!comment.isReply() && (txt.length() == 0)) {
 					txt = "General File Comment";
