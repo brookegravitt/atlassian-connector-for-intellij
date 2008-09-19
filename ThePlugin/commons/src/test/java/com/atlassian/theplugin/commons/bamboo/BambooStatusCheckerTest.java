@@ -60,12 +60,12 @@ public class BambooStatusCheckerTest extends TestCase {
 
 	public void testGetInterval() throws Exception {
 		BambooStatusChecker checker = new BambooStatusChecker(
-				new ProjectId(), null, MockBambooCfgManager.createBambooTestConfiguration(), null, logger);
+				new ProjectId(), null, MockBambooCfgManager.createBambooTestConfiguration(), null, null, logger);
 		assertEquals(60000, checker.getInterval());
 	}
 
 	public void testNewTimerTask() {
-		BambooStatusChecker checker = new BambooStatusChecker(new ProjectId(), null, null, null, logger);
+		BambooStatusChecker checker = new BambooStatusChecker(new ProjectId(), null, null, null, null, logger);
 		TimerTask t1 = checker.newTimerTask();
 		TimerTask t2 = checker.newTimerTask();
 
@@ -79,7 +79,7 @@ public class BambooStatusCheckerTest extends TestCase {
 		MockBambooCfgManager config = MockBambooCfgManager.createEmptyBambooTestConfiguration();
 
 		EasyInvoker invoker = new EasyInvoker();
-		BambooStatusChecker checker = new BambooStatusChecker(new ProjectId(), null, null, null, logger);
+		BambooStatusChecker checker = new BambooStatusChecker(new ProjectId(), null, null, null, null, logger);
 
 		checker.setActionScheduler(invoker);
 		checker.updateConfiguration(config);
