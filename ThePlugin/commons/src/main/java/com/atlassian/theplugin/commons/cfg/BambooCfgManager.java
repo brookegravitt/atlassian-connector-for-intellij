@@ -19,6 +19,5 @@ package com.atlassian.theplugin.commons.cfg;
 import java.util.Collection;
 
 public interface BambooCfgManager {
-	BambooCfg getGlobalBambooCfg();
 	Collection<BambooServerCfg> getAllEnabledBambooServers(final ProjectId projectId);
 }
