@@ -198,7 +198,8 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
 	private void switchToCrucible16Filter() {
 		for (int i = 0;
-			 i < projectCfg.getCrucibleConfiguration().getCrucibleFilters().getPredefinedFilters().length; ++i) {
+			 i < projectCfg.getCrucibleConfiguration().getCrucibleFilters().getPredefinedFilters().length &&
+			 i < PredefinedFilter.values().length; ++i) {
 
 			showPredefinedFilter(
 					PredefinedFilter.values()[i],
