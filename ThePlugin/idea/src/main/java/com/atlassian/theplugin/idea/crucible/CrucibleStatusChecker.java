@@ -108,8 +108,8 @@ private void doRunCrucible() {
 		for (CrucibleServerCfg server : retrieveEnabledCrucibleServers()) {
 
 			for (int i = 0;
-				 i < crucibleProjectConfiguration.getCrucibleFilters().getPredefinedFilters().length &&
-					i < PredefinedFilter.values().length; i++) {
+				 i < crucibleProjectConfiguration.getCrucibleFilters().getPredefinedFilters().length
+						 &&	i < PredefinedFilter.values().length; i++) {
 				if (crucibleProjectConfiguration.getCrucibleFilters().getPredefinedFilters()[i]) {
 					PredefinedFilter filter = PredefinedFilter.values()[i];
 					if (!reviews.containsKey(filter)) {
