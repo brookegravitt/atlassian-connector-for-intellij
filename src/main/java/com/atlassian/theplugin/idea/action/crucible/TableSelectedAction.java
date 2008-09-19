@@ -18,7 +18,11 @@ package com.atlassian.theplugin.idea.action.crucible;
 
 import com.atlassian.theplugin.idea.ui.AtlassianTableView;
 import com.atlassian.theplugin.idea.ui.AtlassianTableViewWithToolbar;
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.table.TableView;
 import com.intellij.util.ui.TableViewModel;
@@ -35,8 +39,8 @@ import java.awt.*;
 
 public abstract class TableSelectedAction extends AnAction {
 
+	@Override
 	public void actionPerformed(AnActionEvent event) {
-
 		Object row = getRowValue(event);
 		if (row != null) {
 			itemSelected(DataKeys.PROJECT.getData(event.getDataContext()), row);
