@@ -492,7 +492,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			gbc2.fill = GridBagConstraints.HORIZONTAL;
 			gbc2.weightx = 1.0;
 			gbc1.gridx = 0;
-			gbc2.gridx = 1;
+			gbc2.gridx = gbc1.gridx + 1;
 			gbc1.gridy = 0;
 			gbc2.gridy = 0;
 
@@ -522,7 +522,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			body.add(new BoldLabel("Resolution"), gbc1);
 			body.add(new JLabel(issue.getResolution()), gbc2);
 			gbc1.gridx = 2;
-			gbc2.gridx = 3;
+			gbc2.gridx = gbc1.gridx + 1;
 			gbc1.gridy = 0;
 			gbc2.gridy = 0;
 			body.add(new BoldLabel("Created"), gbc1);
