@@ -58,17 +58,17 @@ public class CrucibleStatementOfObjectivesNode extends AtlassianTreeNode {
 
 
 	private static class MyRenderer implements TreeCellRenderer {
-		private static final StatementOfObjectivesPanel panel = new StatementOfObjectivesPanel();
+		private static final StatementOfObjectivesPanel PANEL = new StatementOfObjectivesPanel();
 		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean isSelected, boolean expanded,
 				boolean leaf, int row, boolean hasFocus) {
 			CrucibleStatementOfObjectivesNode node = (CrucibleStatementOfObjectivesNode) value;
-			panel.setText(node.getText());
-			return panel;
+			PANEL.setText(node.getText());
+			return PANEL;
 		}
 	}
 
 
-	private static class StatementOfObjectivesPanel extends JPanel {
+	private static final class StatementOfObjectivesPanel extends JPanel {
 
 		private static final Color BORDER_COLOR = new Color(0xCC, 0xCC, 0xCC);
 
