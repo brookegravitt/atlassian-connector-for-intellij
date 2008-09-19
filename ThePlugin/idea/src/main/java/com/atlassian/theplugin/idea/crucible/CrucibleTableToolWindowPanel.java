@@ -456,10 +456,6 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 		showCrucibleCustomFilterPanel();
 	}
 
-	public void removeCustomFilter() {
-
-	}
-
 	public void removeItemSelectedListener(TableItemSelectedListener tableListener) {
 		for (CollapsibleTable table : tables.values()) {
 			table.removeItemSelectedListener(tableListener);
