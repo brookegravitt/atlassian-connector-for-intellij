@@ -48,6 +48,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeNode;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.List;
@@ -66,13 +67,10 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 	private CrucibleFilteredModelProvider.Filter filter;
 
 	public static final String MENU_PLACE = "menu review files";
-	private final Project project;
-	private CrucibleReviewActionListener listener;
 
 	public ReviewItemTreePanel(final Project project, final CrucibleFilteredModelProvider.Filter filter) {
-		this.project = project;
 		initLayout();
-		listener = new MyReviewActionListener(project);
+		CrucibleReviewActionListener listener = new MyReviewActionListener(project);
 		IdeaHelper.getReviewActionEventBroker(project).registerListener(listener);
 		this.filter = filter;
 	}
@@ -151,18 +149,8 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 		public void focusOnFile(final ReviewData review, final CrucibleFileInfo file) {
 			ApplicationManager.getApplication().invokeLater(new Runnable() {
 				public void run() {
-					AtlassianTreeNode node = reviewFilesAndCommentsTree.getModel().locateNode(new NodeSearchAlgorithm() {
-						@Override
-						public boolean check(final AtlassianTreeNode node) {
-							if (node instanceof CrucibleFileNode) {
-								CrucibleFileNode anode = (CrucibleFileNode) node;
-								if (anode.getReview().equals(review) && anode.getFile().equals(file)) {
-									return true;
-								}
-							}
-							return false;
-						}
-					});
+					AtlassianTreeNode node = reviewFilesAndCommentsTree.getModel().locateNode(
+							new SearchFileAlgorithm(review, file));
 					reviewFilesAndCommentsTree.focusOnNode(node);
 				}
 			});
@@ -190,6 +178,35 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 			}
 		}
 
+		private class SearchFileAlgorithm extends NodeSearchAlgorithm
+		{
+			private final ReviewData review;
+			private final CrucibleFileInfo file;
+
+			private SearchFileAlgorithm(ReviewData review, CrucibleFileInfo file) {
+				this.review = review;
+				this.file = file;
+			}
+
+			@Override
+			public boolean check(final AtlassianTreeNode node) {
+				if (node instanceof CrucibleFileNode) {
+					CrucibleFileNode anode = (CrucibleFileNode) node;
+					if (anode.getReview().equals(review) && anode.getFile().equals(file)) {
+						return true;
+					}
+				}
+				return false;
+			}
+		}
+
+		private class SearchChangeSetTitleAlgorithm extends NodeSearchAlgorithm {
+			@Override
+			public boolean check(AtlassianTreeNode node) {
+				return node instanceof CrucibleChangeSetTitleNode;
+			}
+		}
+
 		private class SearchGeneralSectionAlgorithm extends NodeSearchAlgorithm {
 			@Override
 			public boolean check(AtlassianTreeNode node) {
@@ -197,8 +214,33 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 			}
 		}
 
-		private AtlassianTreeNode replaceNode(final NodeSearchAlgorithm nodeLocator,
-				final AtlassianTreeNode newNode) {
+		private class SearchVersionedCommentAlgorithm extends NodeSearchAlgorithm {
+			private final ReviewData review;
+			private final CrucibleFileInfo file;
+			private final VersionedComment parentComment;
+
+			public SearchVersionedCommentAlgorithm(final ReviewData review, final CrucibleFileInfo file,
+					final VersionedComment parentComment) {
+				this.review = review;
+				this.file = file;
+				this.parentComment = parentComment;
+			}
+
+			@Override
+			public boolean check(AtlassianTreeNode node) {
+				if (node instanceof VersionedCommentTreeNode) {
+					VersionedCommentTreeNode vnode = (VersionedCommentTreeNode) node;
+					if (vnode.getReview().getPermId().equals(review.getPermId())
+							&& vnode.getFile().getItemInfo().getId().equals(file.getItemInfo().getId())
+							&& vnode.getComment().getPermId().equals(parentComment.getPermId())) {
+						return true;
+					}
+				}
+				return false;
+			}
+		}
+
+		private AtlassianTreeNode replaceNode(final NodeSearchAlgorithm nodeLocator, final AtlassianTreeNode newNode) {
 			AtlassianTreeModel model = reviewFilesAndCommentsTree.getModel();
 			AtlassianTreeNode node = model.locateNode(nodeLocator);
 			if (node != null) {
@@ -258,30 +300,22 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 
 		}
 
-		private class SearchVersionedCommentAlgorithm extends NodeSearchAlgorithm {
-			private final ReviewData review;
-			private final CrucibleFileInfo file;
-			private final VersionedComment parentComment;
+		private void updateRootNode(ReviewData review) {
+			CrucibleChangeSetTitleNode node = (CrucibleChangeSetTitleNode)
+					reviewFilesAndCommentsTree.getModel().locateNode(new SearchChangeSetTitleAlgorithm());
+			node.setReview(review);
+		}
 
-			public SearchVersionedCommentAlgorithm(final ReviewData review, final CrucibleFileInfo file,
-					final VersionedComment parentComment) {
-				this.review = review;
-				this.file = file;
-				this.parentComment = parentComment;
-			}
+		private void updateGeneralCommentsNode(ReviewData review) {
+			CrucibleGeneralCommentsNode gc = (CrucibleGeneralCommentsNode)
+					reviewFilesAndCommentsTree.getModel().locateNode(new SearchGeneralSectionAlgorithm());
+			gc.setReview(review);
+		}
 
-			@Override
-			public boolean check(AtlassianTreeNode node) {
-				if (node instanceof VersionedCommentTreeNode) {
-					VersionedCommentTreeNode vnode = (VersionedCommentTreeNode) node;
-					if (vnode.getReview().getPermId().equals(review.getPermId())
-							&& vnode.getFile().getItemInfo().getId().equals(file.getItemInfo().getId())
-							&& vnode.getComment().getPermId().equals(parentComment.getPermId())) {
-						return true;
-					}
-				}
-				return false;
-			}
+		private void updateFileNode(ReviewData review, CrucibleFileInfo file) {
+			CrucibleFileNode fileNode = (CrucibleFileNode) reviewFilesAndCommentsTree.getModel().locateNode(
+					new SearchFileAlgorithm(review, file));
+			fileNode.setReview(review);
 		}
 
 		public void createdOrEditedGeneralComment(final ReviewData review, final GeneralComment comment) {
@@ -291,13 +325,16 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 							new GeneralCommentTreeNode(review, comment, null);
 
 					SearchGeneralCommentAlgorithm replacementLocator = new SearchGeneralCommentAlgorithm(review, comment);
-					AtlassianTreeNode changedNode = replaceNode(replacementLocator,
-							newCommentNode);
+					AtlassianTreeNode changedNode = replaceNode(replacementLocator,	newCommentNode);
 					if (changedNode ==  null) {
 						SearchGeneralSectionAlgorithm parentLocator = new SearchGeneralSectionAlgorithm();
 						changedNode = addNewNode(parentLocator, newCommentNode);
 					}
 					addReplyNodes(review, newCommentNode, comment);
+
+					updateGeneralCommentsNode(review);
+					updateRootNode(review);
+
 					refreshNode(changedNode);
 				}
 			});
@@ -308,7 +345,9 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 				return;
 			}
 			reviewFilesAndCommentsTree.getModel().nodeChanged(node);
-			reviewFilesAndCommentsTree.getModel().nodeChanged(node.getParent());
+			for (TreeNode n = node.getParent(); n != null; n = n.getParent()) {
+				reviewFilesAndCommentsTree.getModel().nodeChanged(n);
+			}
 			reviewFilesAndCommentsTree.getTreeComponent().expandFromNode(node);
 		}
 
@@ -325,6 +364,10 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 						changedNode = addNewNode(new SearchGeneralCommentAlgorithm(review, parentComment), newCommentNode);
 					}
 					addReplyNodes(review, newCommentNode, comment);
+
+					updateGeneralCommentsNode(review);
+					updateRootNode(review);
+
 					refreshNode(changedNode);
 				}
 			});
@@ -359,6 +402,10 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 						}, newCommentNode);
 					}
 					addReplyNodes(review, file, newCommentNode, comment);
+
+					updateFileNode(review, file);
+					updateRootNode(review);
+
 					refreshNode(changedNode);
 				}
 			});
@@ -381,6 +428,10 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 								newCommentNode);
 					}
 					addReplyNodes(review, file, newCommentNode, comment);
+
+					updateFileNode(review, file);
+					updateRootNode(review);
+
 					refreshNode(changedNode);
 				}
 			});
@@ -397,6 +448,10 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 							new CrucibleVersionedCommentClickAction(project));
 					AtlassianTreeNode changedNode =
 							replaceNode(new SearchVersionedCommentAlgorithm(review, file, comment),	newCommentNode);
+
+					updateFileNode(review, file);
+					updateRootNode(review);
+
 					refreshNode(changedNode);
 				}
 			});
@@ -409,6 +464,10 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 					GeneralCommentTreeNode newCommentNode = new GeneralCommentTreeNode(review, comment, null);
 					AtlassianTreeNode changedNode =
 							replaceNode(new SearchGeneralCommentAlgorithm(review, comment),	newCommentNode);
+
+					updateGeneralCommentsNode(review);
+					updateRootNode(review);
+
 					refreshNode(changedNode);
 				}
 			});
@@ -437,6 +496,16 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 							return false;
 						}
 					});
+
+					if (comment instanceof VersionedComment) {
+						for (CrucibleFileInfo file : CrucibleFileInfoManager.getInstance().getFiles(review)) {
+							updateFileNode(review, file);
+						}
+					}
+
+					updateGeneralCommentsNode(review);
+
+					updateRootNode(review);
 				}
 			});
 
@@ -508,16 +577,16 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 						}
 					}
 				}
-				IdeaHelper.getReviewActionEventBroker(project).trigger(
-						new ReviewCommentsDownloadadEvent(this, reviewItem));
 			} catch (RemoteApiException e) {
 				IdeaHelper.handleRemoteApiException(project, e);
 				return;
 			} catch (ServerPasswordNotProvidedException e) {
 				IdeaHelper.handleMissingPassword(e);
 				return;
+			} finally {
+				IdeaHelper.getReviewActionEventBroker(project).trigger(
+						new ReviewCommentsDownloadadEvent(CrucibleReviewActionListener.ANONYMOUS, reviewItem));
 			}
-			
 			final List<CrucibleFileInfo> files1 = files;
 			EventQueue.invokeLater(new MyRunnable(reviewItem, files1));
 		}
@@ -596,6 +665,10 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 				reviewFilesAndCommentsTree.requestFocus();
 			}
 		}
+	}
+
+	public void setStatus(String txt) {
+		statusLabel.setText(txt);
 	}
 
 	private static class MyCrucibleFilteredModelProvider extends CrucibleFilteredModelProvider {

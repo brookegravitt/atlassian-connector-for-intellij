@@ -97,34 +97,6 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 		}
 	}
 
-//	private CrucibleVersion getCrucibleVersion() {
-//		CrucibleVersion serverVersion = CrucibleVersion.CRUCIBLE_15;
-//		for (CrucibleServerCfg server : retrieveEnabledCrucibleServers()) {
-//			try {
-//                Date newRun = new Date();
-//				sb.delete(0, sb.length());
-//				sb.append(server.getName()).append(":");
-//				sb.append("last result time: ").append(dateFormat.format(lastActionRun));
-//				sb.append(" current run time : ").append(dateFormat.format(newRun));
-//				sb.append(" time difference: ").append(dateFormat.format((newRun.getTime() - lastActionRun.getTime())));
-//
-//                // for now ok, as only 1.6 supports this call
-//                // later some more sopfisticated method will be required (for 1.6.x or 1.7...)
-//                CrucibleVersionInfo version = crucibleServerFacade.getServerVersion(server);
-//				serverVersion = CrucibleVersion.CRUCIBLE_16;
-//
-//				lastActionRun = newRun;
-//			} catch (RemoteApiException e) {
-//				serverVersion = CrucibleVersion.CRUCIBLE_15;
-//				continue;
-//			} catch (ServerPasswordNotProvidedException e) {
-//				serverVersion = CrucibleVersion.CRUCIBLE_15;
-//				continue;
-//			}
-//		}
-//		return serverVersion;
-//	}
-//
 private void doRunCrucible() {
 	try {
 		// collect review info from each server and each required filter
@@ -133,7 +105,6 @@ private void doRunCrucible() {
 		final Map<String, ReviewNotificationBean> customFilterReviews
 				= new HashMap<String, ReviewNotificationBean>();
 
-		boolean is16 = false;
 		for (CrucibleServerCfg server : retrieveEnabledCrucibleServers()) {
 
 			for (int i = 0;
@@ -157,7 +128,6 @@ private void doRunCrucible() {
 							reviewData.add(new ReviewDataImpl(r, server));
 						}
 
-						is16 = true;
 						bean.getReviews().addAll(reviewData);
 					} catch (ServerPasswordNotProvidedException exception) {
 						ApplicationManager.getApplication().invokeLater(missingPasswordHandler,
