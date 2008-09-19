@@ -23,10 +23,7 @@ import com.atlassian.theplugin.idea.crucible.CrucibleStatusListener;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
-import com.atlassian.theplugin.idea.crucible.events.GeneralCommentAddedOrEdited;
-import com.atlassian.theplugin.idea.crucible.events.GeneralCommentReplyAddedOrEdited;
-import com.atlassian.theplugin.idea.crucible.events.VersionedCommentAddedOrEdited;
-import com.atlassian.theplugin.idea.crucible.events.VersionedCommentReplyAddedOrEdited;
+import com.atlassian.theplugin.idea.crucible.events.*;
 import com.intellij.openapi.project.Project;
 
 import java.util.*;
@@ -121,6 +118,17 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 				IdeaHelper.getReviewActionEventBroker(project).trigger(event);
 			}
 		}
+
+		if (oldComment != null) {
+			List<GeneralComment> deletedGen = getDeletedComments(
+					oldComment.getReplies(), newComment.getReplies());
+			for (GeneralComment gc : deletedGen) {
+				// TODO!
+//				notifications.add(new GeneralComment)
+				CommentRemoved event = new CommentRemoved(CrucibleReviewActionListener.ANONYMOUS, review, gc);
+				IdeaHelper.getReviewActionEventBroker(project).trigger(event);
+			}
+		}
 	}
 
 	private void checkVersionedReplies(ReviewData review, final CrucibleReviewItemInfo info, VersionedComment oldComment,
@@ -140,6 +148,17 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 				IdeaHelper.getReviewActionEventBroker(project).trigger(event);
 			}
 		}
+
+		if (oldComment != null) {
+			List<VersionedComment> deletedVcs = getDeletedComments(
+					oldComment.getReplies(), newComment.getReplies());
+			for (VersionedComment vc : deletedVcs) {
+				// TODO!
+//				notifications.add(new GeneralComment)
+				CommentRemoved event = new CommentRemoved(CrucibleReviewActionListener.ANONYMOUS, review, vc);
+				IdeaHelper.getReviewActionEventBroker(project).trigger(event);
+			}
+		}
 	}
 
 
@@ -152,14 +171,24 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 					break;
 				}
 			}
-			if ((existing == null) || !existing.getMessage().equals(comment.getMessage())) {
+			if ((existing == null)
+					|| !existing.getMessage().equals(comment.getMessage())
+					|| existing.isDefectRaised() != comment.isDefectRaised()) {
 				notifications.add(new NewGeneralCommentNotification(newReview, comment));
 				GeneralCommentAddedOrEdited event = new GeneralCommentAddedOrEdited(
 						CrucibleReviewActionListener.ANONYMOUS, newReview, comment);
 				IdeaHelper.getReviewActionEventBroker(project).trigger(event);
-			} //else {
-				checkGeneralReplies(newReview, existing, comment);
-//			}
+			}
+			checkGeneralReplies(newReview, existing, comment);
+		}
+
+		List<GeneralComment> deletedGen = getDeletedComments(
+				oldReview.getGeneralComments(), newReview.getGeneralComments());
+		for (GeneralComment gc : deletedGen) {
+			// TODO!
+//			notifications.add(new GeneralComment)
+			CommentRemoved event = new CommentRemoved(CrucibleReviewActionListener.ANONYMOUS, newReview, gc);
+			IdeaHelper.getReviewActionEventBroker(project).trigger(event);
 		}
 
 		for (CrucibleReviewItemInfo info : newReview.getReviewItems()) {
@@ -171,18 +200,47 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 						break;
 					}
 				}
-				if ((existing == null) || !existing.getMessage().equals(comment.getMessage())) {
+				if ((existing == null)
+						|| !existing.getMessage().equals(comment.getMessage())
+						|| existing.isDefectRaised() != comment.isDefectRaised()) {
 					notifications.add(new NewVersionedCommentNotification(newReview, comment));
 					if (project != null) {
 						VersionedCommentAddedOrEdited event = new VersionedCommentAddedOrEdited(
 								CrucibleReviewActionListener.ANONYMOUS,	newReview, info, comment);
 						IdeaHelper.getReviewActionEventBroker(project).trigger(event);
 					}
-				} else {
-					checkVersionedReplies(newReview, info, existing, comment);
 				}
+				checkVersionedReplies(newReview, info, existing, comment);
 			}
 		}
+
+		List<VersionedComment> deletedVcs = getDeletedComments(
+				oldReview.getVersionedComments(), newReview.getVersionedComments());
+		for (VersionedComment vc : deletedVcs) {
+			// TODO!
+//			notifications.add(new GeneralComment)
+			CommentRemoved event = new CommentRemoved(CrucibleReviewActionListener.ANONYMOUS, newReview, vc);
+			IdeaHelper.getReviewActionEventBroker(project).trigger(event);
+		}
+	}
+
+	private <T extends Comment> List<T> getDeletedComments(List<T> org, List<T> modified) {
+		List<T> deletedList = new ArrayList<T>();
+
+		for (T corg : org) {
+			boolean found = false;
+			for (T cnew : modified) {
+				if (cnew.getPermId().equals(corg.getPermId())) {
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				deletedList.add(corg);
+			}
+		}
+
+		return deletedList;
 	}
 
 	public void showError(String errorString) {

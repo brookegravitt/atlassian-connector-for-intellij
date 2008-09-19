@@ -32,4 +32,8 @@ public abstract class CrucibleContainerNode extends FileNode {
 	public ReviewData getReview() {
 		return review;
 	}
+
+	public void setReview(ReviewData review) {
+		this.review = review;
+	}
 }

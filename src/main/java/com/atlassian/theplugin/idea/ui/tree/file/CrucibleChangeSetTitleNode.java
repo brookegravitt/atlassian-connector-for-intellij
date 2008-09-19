@@ -62,6 +62,10 @@ public class CrucibleChangeSetTitleNode extends FileNode {
 		return review;
 	}
 
+	public void setReview(ReviewData review) {
+		this.review = review;
+	}
+
 	private static class CrucibleChangeSetTitleNodeRenderer extends ColoredTreeCellRenderer {
 		private static final SimpleTextAttributes TEXT_ITALIC = new SimpleTextAttributes(STYLE_ITALIC, null);
 		private static final SimpleTextAttributes RED_ITALIC = new SimpleTextAttributes(STYLE_ITALIC, Color.red);
