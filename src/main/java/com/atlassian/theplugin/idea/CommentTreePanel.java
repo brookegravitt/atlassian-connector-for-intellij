@@ -16,9 +16,13 @@
 
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.CrucibleFileInfoManager;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleReviewItemInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.idea.crucible.CrucibleFilteredModelProvider;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
@@ -35,6 +39,7 @@ import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.Filter;
 import com.atlassian.theplugin.idea.ui.tree.NodeSearchAlgorithm;
+import com.atlassian.theplugin.idea.ui.tree.comment.CrucibleStatementOfObjectivesNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.FileNameNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralSectionNode;
@@ -118,6 +123,10 @@ public class CommentTreePanel extends JPanel {
 	private AtlassianTreeModel createTreeModel(final ReviewData review) {
 		ROOT.removeAllChildren();
 		AtlassianTreeModel model = new AtlassianTreeModel(ROOT);
+
+		if (review.getDescription() != null && review.getDescription().length() != 0) {
+			ROOT.addNode(new CrucibleStatementOfObjectivesNode(review.getDescription(), AtlassianClickAction.EMPTY_ACTION));
+		}
 
 		List<GeneralComment> generalComments;
 		try {
@@ -211,6 +220,7 @@ public class CommentTreePanel extends JPanel {
 
 	private class MyCrucibleReviewActionListener extends CrucibleReviewActionListener {
 
+		@Override
 		public void commentsDownloaded(final ReviewData review) {
 			thisReview = review;
 			EventQueue.invokeLater(new Runnable() {
