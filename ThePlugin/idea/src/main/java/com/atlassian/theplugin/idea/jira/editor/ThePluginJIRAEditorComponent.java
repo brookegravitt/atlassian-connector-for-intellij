@@ -474,6 +474,9 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 		private JLabel affectsVersions = new JLabel("Fetching...");
 		private JLabel fixVersions = new JLabel("Fetching...");
 		private JLabel components = new JLabel("Fetching...");
+		private JLabel affectsVersionsLabel = new BoldLabel("Affects Version/s");
+		private JLabel fixVersionsLabel = new BoldLabel("Fix Version/s");
+		private JLabel componentsLabel = new BoldLabel("Component/s");
 
 		public DetailsPanel(final JIRAIssue issue) {
 			JPanel body = new JPanel();
@@ -518,8 +521,10 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
             gbc2.gridy++;
 			body.add(new BoldLabel("Resolution"), gbc1);
 			body.add(new JLabel(issue.getResolution()), gbc2);
-			gbc1.gridy++;
-			gbc2.gridy++;
+			gbc1.gridx = 2;
+			gbc2.gridx = 3;
+			gbc1.gridy = 0;
+			gbc2.gridy = 0;
 			body.add(new BoldLabel("Created"), gbc1);
 			DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
 			DateFormat ds = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
@@ -541,15 +546,15 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			body.add(new JLabel(t), gbc2);
 			gbc1.gridy++;
 			gbc2.gridy++;
-			body.add(new BoldLabel("Affects Version/s"), gbc1);
+			body.add(affectsVersionsLabel, gbc1);
 			body.add(affectsVersions, gbc2);
 			gbc1.gridy++;
 			gbc2.gridy++;
-			body.add(new BoldLabel("Fix Version/s"), gbc1);
+			body.add(fixVersionsLabel, gbc1);
 			body.add(fixVersions, gbc2);
 			gbc1.gridy++;
 			gbc2.gridy++;
-			body.add(new BoldLabel("Component/s"), gbc1);
+			body.add(componentsLabel, gbc1);
 			body.add(components, gbc2);
 
 			gbc1.gridy++;
@@ -586,14 +591,30 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 		}
 
 		public void setAffectsVersions(String[] versions) {
+			if (versions.length < 2) {
+				affectsVersionsLabel.setText("Affects Version");
+			} else {
+				affectsVersionsLabel.setText("Affects Versions");
+			}
 			setLabelText(getAffectVersionsLabel(), versions);
 		}
 
 		public void setFixVersions(String[] versions) {
+			if (versions.length < 2) {
+				fixVersionsLabel.setText("Fix Version");
+			} else {
+				fixVersionsLabel.setText("Fix Versions");
+			}
 			setLabelText(getFixVersionsLabel(), versions);
 		}
 
 		public void setComponents(String[] components) {
+			if (components.length < 2) {
+				componentsLabel.setText("Component");
+			} else {
+				componentsLabel.setText("Components");
+			}
+
 			setLabelText(getComponentsLabel(), components);
 		}
 
