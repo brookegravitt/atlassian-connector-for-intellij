@@ -16,8 +16,8 @@
 
 package com.atlassian.theplugin.idea.bamboo.table.columns;
 
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.TableColumnInfo;
+import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 
 import java.util.Comparator;
 
@@ -31,18 +31,22 @@ import java.util.Comparator;
 public class BuildNumberColumn extends TableColumnInfo {
 	private static final int COL_WIDTH = 70;
 
+	@Override
 	public String getColumnName() {
-		return "Build Number";
+		return "Build No";
 	}
 
+	@Override
 	public Object valueOf(Object o) {
 		return Integer.valueOf(((BambooBuildAdapterIdea) o).getBuildNumber());
 	}
 
+	@Override
 	public Class getColumnClass() {
 		return Integer.class;
 	}
 
+	@Override
 	public Comparator getComparator() {
 		return new Comparator() {
 			public int compare(Object o, Object o1) {
@@ -52,6 +56,7 @@ public class BuildNumberColumn extends TableColumnInfo {
 		};
 	}
 
+	@Override
 	public int getPrefferedWidth() {
 		return COL_WIDTH;
 	}
