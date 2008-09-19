@@ -341,43 +341,9 @@
 		<action id="ThePlugin.Crucible.GetGeneralCommentReplies"
 				class="com.atlassian.theplugin.idea.action.crucible.GetGeneralCommentRepliesAction" text="View Replies"
 				icon="/icons/inspector/sortByCategory.png"/>
-
-		<action id="ThePlugin.Crucible.ToReviewAction"
-				class="com.atlassian.theplugin.idea.action.crucible.ToReviewAction" text="To Review"/>
-		<action id="ThePlugin.Crucible.ToReviewComboAction"
-				class="com.atlassian.theplugin.idea.action.crucible.ToReviewAction" text="To Review"/>
-		<action id="ThePlugin.Crucible.RequireApprovalAction"
-				class="com.atlassian.theplugin.idea.action.crucible.RequireApprovalAction" text="Require Approval"/>
-		<action id="ThePlugin.Crucible.ToSummarizeAction"
-				class="com.atlassian.theplugin.idea.action.crucible.ToSummarizeAction" text="To Summarize"/>
-		<action id="ThePlugin.Crucible.OutForReviewAction"
-				class="com.atlassian.theplugin.idea.action.crucible.OutForReviewAction" text="Out for Review"/>
-		<action id="ThePlugin.Crucible.DraftsAction" class="com.atlassian.theplugin.idea.action.crucible.DraftsAction"
-				text="Drafts"/>
-		<action id="ThePlugin.Crucible.OpenAction" class="com.atlassian.theplugin.idea.action.crucible.OpenAction"
-				text="Open"/>
-		<action id="ThePlugin.Crucible.ClosedAction" class="com.atlassian.theplugin.idea.action.crucible.ClosedAction"
-				text="Closed"/>
-		<action id="ThePlugin.Crucible.AbandonedAction"
-				class="com.atlassian.theplugin.idea.action.crucible.AbandonedAction" text="Abandoned"/>
-		<!--<action id="ThePlugin.Crucible.AllOpen" class="com.atlassian.theplugin.idea.action.crucible.AllOpenAction"-->
-				<!--text="All Open"/>-->
-		<!--<action id="ThePlugin.Crucible.AllClosed" class="com.atlassian.theplugin.idea.action.crucible.AllClosedAction"-->
-				<!--text="All Closed"/>-->
-		<!--<action id="ThePlugin.Crucible.All" class="com.atlassian.theplugin.idea.action.crucible.AllAction" text="All"/>-->
-
-		<action id="ThePlugin.Crucible.CustomFilter"
-				class="com.atlassian.theplugin.idea.action.crucible.CustomFilterAction" text="Custom Filter"/>
-
 		<action id="ThePlugin.Crucible.ShowFilter"
 				class="com.atlassian.theplugin.idea.action.crucible.CrucibleShowCustomFilterAction"
 				text="Edit Custom Filter" icon="/general/toolWindowFavorites.png"/>
-		<action id="ThePlugin.Crucible.AddCustomFilter"
-				class="com.atlassian.theplugin.idea.action.crucible.CrucibleAddCustomFilterAction"
-				text="Add Crucible Custom Filter" icon="/general/add.png"/>
-		<action id="ThePlugin.Crucible.RemoveCustomFilter"
-				class="com.atlassian.theplugin.idea.action.crucible.CrucibleRemoveCustomFilterAction"
-				text="Remove Crucible Custom Filter" icon="/general/remove.png"/>
 		<action id="ThePlugin.Crucible.ApplyFilter"
 				class="com.atlassian.theplugin.idea.action.crucible.ApplyFilterAction" text="Apply Filter"
 				icon="/actions/er-state.png"/>
@@ -492,37 +458,11 @@
 			<reference id="ThePlugin.Crucible.ExpandAll"/>
 			<reference id="ThePlugin.Crucible.CollapseAll"/>
 			<separator/>
-			<!--
-						<reference id="ThePlugin.Crucible.ToReviewAction" />
-						-->
 			<reference id="ThePlugin.Crucible.ShowFilter"/>
-			<!--
-						<reference id="ThePlugin.Crucible.AddCustomFilter" />
-						<reference id="ThePlugin.Crucible.RemoveCustomFilter" />
-						-->
 			<reference id="ThePlugin.Crucible.SelectFilters"/>
 		</group>
 
 		<group id="ThePlugin.EmptyToolBar" popup="false" text=""/>
-
-		<group id="ThePlugin.CrucibleFilterCombo" popup="true" text="Select Filter" icon="/ant/filter.png">
-			<reference id="ThePlugin.Crucible.ToReviewComboAction"/>
-			<reference id="ThePlugin.Crucible.RequireApprovalAction"/>
-			<reference id="ThePlugin.Crucible.ToSummarizeAction"/>
-			<reference id="ThePlugin.Crucible.OutForReviewAction"/>
-			<reference id="ThePlugin.Crucible.DraftsAction"/>
-			<reference id="ThePlugin.Crucible.OpenAction"/>
-			<reference id="ThePlugin.Crucible.ClosedAction"/>
-			<reference id="ThePlugin.Crucible.AbandonedAction"/>
-			<!--<separator/>-->
-			<!--<reference id="ThePlugin.Crucible.AllOpen"/>-->
-			<!--<reference id="ThePlugin.Crucible.AllClosed"/>-->
-			<!--<reference id="ThePlugin.Crucible.All"/>-->
-			<separator/>
-			<reference id="ThePlugin.Crucible.CustomFilter"/>
-			<add-to-group anchor="last" group-id="ThePlugin.CrucibleToolWindowToolBar"/>
-		</group>
-
 
 		<group id="ThePlugin.CrucibleReviewToolBar" popup="false" text="">
 			<separator/>
