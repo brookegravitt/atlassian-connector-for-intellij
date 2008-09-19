@@ -44,8 +44,8 @@ import com.intellij.openapi.vcs.vfs.VcsVirtualFile;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.peer.PeerFactory;
-import com.intellij.vcsUtil.VcsUtil;
 import com.intellij.psi.PsiFile;
+import com.intellij.vcsUtil.VcsUtil;
 import org.apache.commons.collections.map.ReferenceMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -128,8 +128,8 @@ public final class VcsIdeaHelper {
 	}
 
 
-	private static VirtualFile getFromCacheOrFetch(Project project, VirtualFile virtualFile,
-			String revision) throws VcsException {
+	private static VirtualFile getFromCacheOrFetch(@NotNull Project project, @NotNull VirtualFile virtualFile,
+			@NotNull String revision) throws VcsException {
 		VirtualFile vcvf = getFileFromCache(virtualFile, revision);
 		if (vcvf != null) {
 			return vcvf;
@@ -186,7 +186,7 @@ public final class VcsIdeaHelper {
 
 
 	@Nullable
-	private static VirtualFile getVcsVirtualFileImpl2(VirtualFile virtualFile, AbstractVcs vcs,
+	private static VirtualFile getVcsVirtualFileImpl2(@NotNull VirtualFile virtualFile, AbstractVcs vcs,
 			VcsRevisionNumber vcsRevisionNumber) throws VcsException {
 
 		DiffProvider diffProvider = vcs.getDiffProvider();
@@ -324,13 +324,13 @@ public final class VcsIdeaHelper {
 						break;
 					case Added:
 						Messages.showErrorDialog(project,
-								"Your project does not contain requested file. " + filePath + "Please update to revision "
+								"Your project does not contain requested file " + filePath + ". Please update to revision "
 										+ toRevision + " before review", "Project out of date");
 						break;
 					default:
 						Messages.showErrorDialog(project, "Please update your project to revision "
 								+ toRevision + " before opening review as the file " + filePath
-								+ "could have been moved or deleted meanwhile",
+								+ " could have been moved or deleted meanwhile",
 								"Your project does not contain requested file");
 						break;
 				}
