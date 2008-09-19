@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea.action.jira;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -25,7 +26,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  * Simple action to show the settings for the plugin.
  */
 public class JIRARefreshIssuesAction extends AnAction {
-	private JIRAServer jiraServer;
 
 	public void actionPerformed(AnActionEvent event) {
         IdeaHelper.getJIRAToolWindowPanel(event).refreshIssuesPage();
@@ -33,9 +33,25 @@ public class JIRARefreshIssuesAction extends AnAction {
 
 	public void update(AnActionEvent event) {
 		super.update(event);
-		jiraServer = IdeaHelper.getCurrentJIRAServer(event.getDataContext());
-		if (jiraServer != null) {
-			event.getPresentation().setEnabled(jiraServer.isValidServer());
+//		jiraServer = IdeaHelper.getCurrentJIRAServer(event.getDataContext());
+//		if (jiraServer != null) {
+//			event.getPresentation().setEnabled(jiraServer.isValidServer());
+//		} else {
+//			event.getPresentation().setEnabled(false);
+//		}
+
+		JIRAToolWindowPanel panel = IdeaHelper.getJIRAToolWindowPanel(event);
+
+		if (panel != null) {
+
+			boolean serverSelected = IdeaHelper.getJIRAToolWindowPanel(event).isServerSelected();
+
+			if (serverSelected) {
+				JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(event.getDataContext());
+				event.getPresentation().setEnabled(jiraServer.isValidServer());
+			} else {
+				event.getPresentation().setEnabled(false);
+			}
 		} else {
 			event.getPresentation().setEnabled(false);
 		}
