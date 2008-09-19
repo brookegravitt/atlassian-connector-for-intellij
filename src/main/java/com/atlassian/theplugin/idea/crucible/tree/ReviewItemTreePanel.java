@@ -177,8 +177,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 			}
 		}
 
-		private class SearchFileAlgorithm extends NodeSearchAlgorithm
-		{
+		private final class SearchFileAlgorithm extends NodeSearchAlgorithm {
 			private final ReviewData review;
 			private final CrucibleFileInfo file;
 
