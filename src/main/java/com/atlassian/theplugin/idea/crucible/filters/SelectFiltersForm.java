@@ -58,9 +58,13 @@ public class SelectFiltersForm extends DialogWrapper {
 		checkboxes.put(PredefinedFilter.Closed, closedCheckBox);
 		checkboxes.put(PredefinedFilter.Abandoned, abandonedCheckBox);
 
-		// set custom filter name
-		customFilterCheckBox.setText(
+		// set custom filter on/off and name
+		if (cruciblePanel.getCustomFilter() != null) {
+			customFilterCheckBox.setText(
 				customFilterCheckBox.getText() + ": " + cruciblePanel.getCustomFilter().getTitle());
+		} else {
+			customFilterCheckBox.setEnabled(false);
+		}
 
 		addCheckboxListeners();
 		recoverCheckboxStates();
