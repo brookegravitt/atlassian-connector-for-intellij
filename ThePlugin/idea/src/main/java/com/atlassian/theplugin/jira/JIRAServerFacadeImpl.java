@@ -311,4 +311,14 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 			throw new JIRAException(e.getMessage(), e);
 		}
 	}
+
+	public JIRAUserBean getUser(JiraServerCfg server, String loginName) throws JIRAException {
+		try {
+			JIRASession soap = getSoapSession(server);
+			return soap.getUser(loginName);
+		} catch (RemoteApiException e) {
+			soapSessions.remove(getSoapSessionKey(server));
+			throw new JIRAException(e.getMessage(), e);
+		}
+	}
 }

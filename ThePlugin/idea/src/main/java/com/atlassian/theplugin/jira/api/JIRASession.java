@@ -18,6 +18,7 @@ package com.atlassian.theplugin.jira.api;
 
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
+import com.atlassian.theplugin.jira.api.soap.axis.RemoteUser;
 
 import java.util.List;
 import java.util.Calendar;
@@ -62,6 +63,8 @@ public interface JIRASession {
 	void progressWorkflowAction(JIRAIssue issue, JIRAAction action) throws RemoteApiException;
 
 	void setAssignee(JIRAIssue issue, String assignee) throws RemoteApiException;
+
+	JIRAUserBean getUser(String loginName) throws RemoteApiException;
 
 	List<JIRAComment> getComments(JIRAIssue issue) throws RemoteApiException;
 

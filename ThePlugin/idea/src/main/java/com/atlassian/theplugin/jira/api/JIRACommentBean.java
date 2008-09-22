@@ -21,12 +21,14 @@ import java.util.Calendar;
 public class JIRACommentBean implements JIRAComment {
 	private String id;
 	private String author;
+	private String authorFullName;
 	private String body;
 	private Calendar created;
 
 	public JIRACommentBean(String id, String author, String body, Calendar created) {
 		this.id = id;
 		this.author = author;
+		this.authorFullName = author;
 		this.body = body;
 		this.created = created;
 	}
@@ -36,6 +38,14 @@ public class JIRACommentBean implements JIRAComment {
 
 	public String getAuthor() {
 		return author;
+	}
+
+	public void setAuthorFullName(String authorFullName) {
+		this.authorFullName = authorFullName;
+	}
+
+	public String getAuthorFullName() {
+		return authorFullName;
 	}
 
 	public String getBody() {

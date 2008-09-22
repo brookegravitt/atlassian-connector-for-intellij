@@ -21,6 +21,8 @@ import java.util.Calendar;
 public interface JIRAComment {
 	String getId();
 	String getAuthor();
+	String getAuthorFullName();
+	void setAuthorFullName(String author);
 	String getBody();
 	Calendar getCreationDate();
 }
