@@ -24,10 +24,8 @@ import com.atlassian.theplugin.idea.jira.editor.vfs.JiraIssueVirtualFile;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
-import com.atlassian.theplugin.jira.api.JIRAComment;
-import com.atlassian.theplugin.jira.api.JIRAConstant;
-import com.atlassian.theplugin.jira.api.JIRAException;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.atlassian.theplugin.jira.JIRAUserNameCache;
+import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.util.ColorToHtml;
 import com.intellij.codeHighlighting.BackgroundEditorHighlighter;
 import com.intellij.ide.BrowserUtil;
@@ -295,9 +293,8 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
     }
 
     private static class UserLabel extends HyperlinkLabel {
-		UserLabel(final String serverUrl, final String userNameId) {
-			super(userNameId, UIUtil.getTableSelectionForeground(),
-					HEADER_BACKGROUND_COLOR, UIUtil.getTableSelectionForeground());
+		UserLabel(final String serverUrl, final String userName, final String userNameId, Color color) {
+			super(userName, color, HEADER_BACKGROUND_COLOR, color);
 			addListener(serverUrl, userNameId);
 		}
 
@@ -361,7 +358,8 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			gbc.gridy = 0;
 			gbc.anchor = GridBagConstraints.WEST;
 			gbc.insets = new Insets(0, Constants.DIALOG_MARGIN, 0, 0);
-			UserLabel ul = new UserLabel(server.getServer().getUrl(), comment.getAuthor());
+			UserLabel ul = new UserLabel(server.getServer().getUrl(), comment.getAuthorFullName(),
+					comment.getAuthor(), UIUtil.getTableSelectionForeground());
 			add(ul, gbc);
 
 			final JLabel hyphen = new WhiteLabel();
@@ -898,6 +896,12 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
                     try {
 						if (server != null) {
 							final List<JIRAComment> comments = facade.getComments(server.getServer(), issue);
+
+							for (JIRAComment c : comments) {
+								JIRAUserBean u = JIRAUserNameCache.getInstance().getUser(server, c.getAuthor());
+								c.setAuthorFullName(u.getName());
+							}
+
 							SwingUtilities.invokeLater(new Runnable() {
 								public void run() {
 									int size = comments.size();
