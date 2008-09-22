@@ -431,6 +431,20 @@ public class JIRASessionImpl implements JIRASession {
 			throw new RemoteApiException(e.toString(), e);
 		}
 	}
+
+	public JIRAUserBean getUser(String loginName) throws RemoteApiException {
+		try {
+			RemoteUser ru = service.getUser(token, loginName);
+			return new JIRAUserBean(-1, ru.getFullname(), ru.getName()) {
+				public String getQueryStringFragment() {
+					return null;
+				}
+			};
+		} catch (RemoteException e) {
+			throw new RemoteApiException(e.toString(), e);
+		}
+	}
+
 	public boolean isLoggedIn() {
 		return loggedIn;
 	}

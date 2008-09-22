@@ -18,17 +18,7 @@ package com.atlassian.theplugin.jira;
 
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.jira.api.JIRAAction;
-import com.atlassian.theplugin.jira.api.JIRAActionField;
-import com.atlassian.theplugin.jira.api.JIRAComment;
-import com.atlassian.theplugin.jira.api.JIRAComponentBean;
-import com.atlassian.theplugin.jira.api.JIRAConstant;
-import com.atlassian.theplugin.jira.api.JIRAException;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.atlassian.theplugin.jira.api.JIRAProject;
-import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
-import com.atlassian.theplugin.jira.api.JIRAResolutionBean;
-import com.atlassian.theplugin.jira.api.JIRAVersionBean;
+import com.atlassian.theplugin.jira.api.*;
 
 import java.util.Calendar;
 import java.util.List;
@@ -82,6 +72,8 @@ public interface JIRAServerFacade extends ProductServerFacade {
 			throws JIRAException;
 
 	void setAssignee(JiraServerCfg server, JIRAIssue issue, String assignee) throws JIRAException;
+
+	JIRAUserBean getUser(JiraServerCfg server, String loginName) throws JIRAException;
 
 	List<JIRAComment> getComments(JiraServerCfg server, JIRAIssue issue) throws JIRAException;
 }
