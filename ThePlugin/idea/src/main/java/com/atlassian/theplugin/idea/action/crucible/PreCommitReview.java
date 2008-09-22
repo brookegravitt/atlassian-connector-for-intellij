@@ -25,6 +25,7 @@ import com.intellij.openapi.vcs.changes.ChangeList;
 
 public class PreCommitReview extends Crucible16RepositoryAction {
 
+	@Override
 	public void actionPerformed(AnActionEvent event) {
 		final ChangeList[] changes = DataKeys.CHANGE_LISTS.getData(event.getDataContext());
 		final Project project = DataKeys.PROJECT.getData(event.getDataContext());

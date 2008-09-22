@@ -92,7 +92,7 @@ public class ThePluginApplicationComponent
 
 	@Nls
 	public String getDisplayName() {
-		return "Atlassian Connector";
+		return "Atlassian\nConnector";
 	}
 
 	@Nullable
