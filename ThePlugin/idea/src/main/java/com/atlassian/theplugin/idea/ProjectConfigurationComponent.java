@@ -190,7 +190,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 	@Nls
 	public String getDisplayName() {
-		return "Atlassian Connector";
+		return "Atlassian\nConnector";
 	}
 
 	@Nullable
