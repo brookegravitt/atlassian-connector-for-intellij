@@ -57,17 +57,22 @@ public class BambooSessionTest extends TestCase {
 	private JettyMockServer mockServer;
 	private String mockBaseUrl;
 
+	@Override
 	protected void setUp() throws Exception {
         ConfigurationFactory.setConfiguration(new PluginConfigurationBean());
 
         server = new Server(0);
 		server.start();
+		while (server.isStarted() == false) {
+			Thread.sleep(100);
+		}
 
 		mockBaseUrl = "http://localhost:" + server.getConnectors()[0].getLocalPort();
 
 		mockServer = new JettyMockServer(server);
     }
 
+	@Override
 	protected void tearDown() throws Exception {
 		mockServer = null;
 		mockBaseUrl = null;
@@ -572,7 +577,7 @@ public class BambooSessionTest extends TestCase {
 		BambooSession apiHandler = new BambooSessionImpl(mockBaseUrl);
 		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
 		try {
-			BuildDetails build = apiHandler.getBuildResultDetails("TP-DEF", "100");
+			apiHandler.getBuildResultDetails("TP-DEF", "100");
 			fail();
 		} catch (RemoteApiException e) {
 			assertEquals("org.jdom.input.JDOMParseException", e.getCause().getClass().getName());
