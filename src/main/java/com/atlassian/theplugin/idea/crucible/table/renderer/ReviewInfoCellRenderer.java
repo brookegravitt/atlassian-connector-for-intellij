@@ -23,6 +23,7 @@ import com.atlassian.theplugin.idea.crucible.ReviewData;
 public class ReviewInfoCellRenderer extends ReviewCellRenderer {
 	public static final String BODY_WITH_STYLE =
 			"<body style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">";
+	private static final int MAX_LINE_LENGTH = 50;
 
 	private String buildTolltip(ReviewData review) {
 		StringBuilder sb = new StringBuilder(
@@ -35,12 +36,24 @@ public class ReviewInfoCellRenderer extends ReviewCellRenderer {
         sb.append("</font></b>");
 
 		sb.append("<tr><td valign=\"top\"><b>Summary:</b></td><td valign=\"top\">");
-		sb.append(review.getName());
+		
+		String summary = review.getName();
+		if (summary.length() > MAX_LINE_LENGTH) {
+			summary = summary.substring(0, MAX_LINE_LENGTH) + "...";
+		}
+		sb.append(summary);
+
 		sb.append("");
 		sb.append("</td></tr>");
 
 		sb.append("<tr><td valign=\"top\"><b>Statement of Objectives:</b></td><td valign=\"top\">");
-		sb.append(review.getDescription());
+
+		String description = review.getDescription();
+		if (description.length() > MAX_LINE_LENGTH) {
+			description = description.substring(0, MAX_LINE_LENGTH) + "...";
+		}
+		sb.append(description);
+
 		sb.append("");
 		sb.append("</td></tr>");
 
