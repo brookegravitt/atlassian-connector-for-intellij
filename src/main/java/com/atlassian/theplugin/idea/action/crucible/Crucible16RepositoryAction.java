@@ -16,15 +16,12 @@
 
 package com.atlassian.theplugin.idea.action.crucible;
 
-import com.atlassian.theplugin.idea.action.fisheye.AbstractFisheyeAction;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.idea.action.fisheye.AbstractFisheyeAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 
-public class Crucible16RepositoryAction extends AbstractFisheyeAction {
-	public void actionPerformed(AnActionEvent event) {
-	}
-
+public abstract class Crucible16RepositoryAction extends AbstractFisheyeAction {
 	@Override
 	public void update(AnActionEvent event) {
 		event.getPresentation().setVisible(false);

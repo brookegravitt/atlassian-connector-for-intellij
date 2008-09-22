@@ -9,25 +9,28 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.changes.ChangeList;
 import com.intellij.openapi.vcs.changes.Change;
+import com.intellij.openapi.vcs.changes.ChangeList;
 
 import java.util.Collection;
 
 public abstract class AbstractFisheyeAction extends AnAction {
 
+	@Override
 	public void update(final AnActionEvent event) {
-		CrucibleServerCfg crucibleServerCfg = getCrucibleServerCfg(event);
-		if (crucibleServerCfg != null) {
-			if (crucibleServerCfg.isFisheyeInstance()) {
-				if (crucibleServerCfg.getProjectName() != null
-						&& crucibleServerCfg.getRepositoryName() != null) {
-					event.getPresentation().setVisible(true);
-					return;
+		boolean isEnabled = false;
+		final Project project = IdeaHelper.getCurrentProject(event);
+		if (project != null) {
+			Collection<CrucibleServerCfg> servers = IdeaHelper.getCfgManager()
+					.getAllEnabledCrucibleServers(CfgUtil.getProjectId(project));
+			for (CrucibleServerCfg crucibleServerCfg : servers) {
+				if (crucibleServerCfg.isFisheyeInstance()) {
+					isEnabled = true;
+					break;
 				}
 			}
 		}
-		event.getPresentation().setVisible(false);
+		event.getPresentation().setVisible(isEnabled);
 	}
 
 	protected CrucibleServerCfg getCrucibleServerCfg(final AnActionEvent event) {
