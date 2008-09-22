@@ -18,7 +18,6 @@ package com.atlassian.theplugin.jira.api;
 
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
-import com.atlassian.theplugin.jira.api.soap.axis.RemoteUser;
 
 import java.util.List;
 import java.util.Calendar;
