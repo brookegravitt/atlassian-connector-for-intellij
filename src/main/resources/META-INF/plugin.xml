@@ -255,13 +255,13 @@
 		</action>
 
 		<action id="OpenFisheyeLink" class="com.atlassian.theplugin.idea.action.fisheye.OpenFisheyeLinkInBrowserAction"
-				text="Open Fisheye link in browser"
-				description="Open Fisheye link in browser">
+				text="Open Fisheye Link in Browser"
+				description="Open Fisheye Link in Browser">
 		</action>
 
 		<action id="CopyFisheyeLink" class="com.atlassian.theplugin.idea.action.fisheye.CopyFisheyeLinkToClipboardAction"
-				text="Copy Fisheye link to clipboard"
-				description="Copy Fisheye link to clipboard">
+				text="Copy Fisheye Link to Clipboard"
+				description="Copy Fisheye Link to Clipboard">
 		</action>
 
 		<group id="ThePlugin.FisheyeEditorMenu" popup="true" text="Fisheye">
