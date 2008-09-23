@@ -62,7 +62,7 @@ public class BambooStatusCheckerTest extends TestCase {
 		BambooStatusChecker checker = new BambooStatusChecker(
 				new ProjectId(), null, MockBambooCfgManager.createBambooTestConfiguration(),
 				new PluginConfigurationBean(), null, logger);
-		assertEquals(60000, checker.getInterval());
+		assertEquals(1000 * 60 * 10, checker.getInterval());
 	}
 
 	public void testNewTimerTask() {
