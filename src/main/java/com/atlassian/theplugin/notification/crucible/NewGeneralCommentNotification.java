@@ -32,6 +32,6 @@ public class NewGeneralCommentNotification extends AbstractReviewNotification {
     }
 
     public String getPresentationMessage() {
-        return "New general comment for review added by " + comment.getAuthor().getDisplayName();
+        return "New general comment added by " + comment.getAuthor().getDisplayName();
     }
 }
