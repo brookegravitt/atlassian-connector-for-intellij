@@ -20,27 +20,31 @@ import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.Action;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.BrowserUtil;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import static com.intellij.openapi.ui.Messages.showMessageDialog;
 import com.intellij.openapi.util.IconLoader;
-import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.ui.HyperlinkLabel;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.Nullable;
-import com.intellij.openapi.project.Project;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -79,42 +83,42 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 
 		switch (action) {
 			case CLOSE:
-				setTitle("Close review");
-				getOKAction().putValue(javax.swing.Action.NAME, "Close review...");
+				setTitle("Close Review");
+				getOKAction().putValue(javax.swing.Action.NAME, "Close Review...");
 				summaryPanel.setBackground(UIUtil.getWindowColor());
 				break;
 			case APPROVE:
-				setTitle("Approve review");
-				getOKAction().putValue(javax.swing.Action.NAME, "Approve review...");
+				setTitle("Approve Review");
+				getOKAction().putValue(javax.swing.Action.NAME, "Approve Review...");
 				break;
 			case SUBMIT:
-				setTitle("Submit review");
-				getOKAction().putValue(javax.swing.Action.NAME, "Submit review...");
+				setTitle("Submit Review");
+				getOKAction().putValue(javax.swing.Action.NAME, "Submit Review...");
 				break;
 			case ABANDON:
-				setTitle("Abandon review");
-				getOKAction().putValue(javax.swing.Action.NAME, "Abandon review...");
+				setTitle("Abandon Review");
+				getOKAction().putValue(javax.swing.Action.NAME, "Abandon Review...");
 				break;
 			case SUMMARIZE:
-				setTitle("Summarize review");
-				getOKAction().putValue(javax.swing.Action.NAME, "Summarize review...");
+				setTitle("Summarize Review");
+				getOKAction().putValue(javax.swing.Action.NAME, "Summarize Review...");
 				break;
 			case REOPEN:
-				setTitle("Reopen review");
-				getOKAction().putValue(javax.swing.Action.NAME, "Reopen review...");
+				setTitle("Reopen Review");
+				getOKAction().putValue(javax.swing.Action.NAME, "Reopen Review...");
 				break;
 			case RECOVER:
-				setTitle("Recover abandoned review");
-				getOKAction().putValue(javax.swing.Action.NAME, "Recover abandoned review...");
+				setTitle("Recover Abandoned Review");
+				getOKAction().putValue(javax.swing.Action.NAME, "Recover Abandoned Review...");
 				break;
 			case COMPLETE:
-				setTitle("Complete review");
-				getOKAction().putValue(javax.swing.Action.NAME, "Complete review...");
+				setTitle("Complete Review");
+				getOKAction().putValue(javax.swing.Action.NAME, "Complete Review...");
 				publishPanel.setVisible(true);
 				break;
 			case UNCOMPLETE:
-				setTitle("Uncomplete review");
-				getOKAction().putValue(javax.swing.Action.NAME, "Uncomplete review...");
+				setTitle("Uncomplete Review");
+				getOKAction().putValue(javax.swing.Action.NAME, "Uncomplete Review...");
 				break;
 		}
 
@@ -127,16 +131,10 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 
 			Review reviewInfo = null;
 
+			@Override
 			public void run(final ProgressIndicator indicator) {
 				try {
 					reviewInfo = crucibleServerFacade.getReview(review.getServer(), review.getPermId());
-					final ReviewData finalReviewInfo = new ReviewDataImpl(reviewInfo, review.getServer());
-					EventQueue.invokeLater(new Runnable() {
-						public void run() {
-							updateReviewInfo(finalReviewInfo);
-						}
-					});
-
 				} catch (RemoteApiException e) {
 					PluginUtil.getLogger().warn(e);
 				} catch (ServerPasswordNotProvidedException e) {
@@ -144,10 +142,19 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 				}
 			}
 
+			@Override
 			public void onSuccess() {
-				final ReviewData finalReviewInfo = new ReviewDataImpl(reviewInfo, review.getServer());
-				updateReviewInfo(finalReviewInfo);
-				show();
+				if (reviewInfo == null) {
+					Messages.showErrorDialog(project, "Cannot fetch review data from the server", "Error");
+				} else {
+					final ReviewData finalReviewInfo = new ReviewDataImpl(reviewInfo, review.getServer());
+					updateReviewInfo(finalReviewInfo);
+					EventQueue.invokeLater(new Runnable() {
+						public void run() {
+							show();
+						}
+					});
+				}
 			}
 		};
 
@@ -157,37 +164,29 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 	public void updateReviewInfo(ReviewData reviewInfo) {
 		detailsPanel.add(new DetailsPanel(reviewInfo), BorderLayout.CENTER);
 		if (Action.CLOSE.equals(action) || !"".equals(reviewInfo.getSummary())) {
-			descriptionPanel = new DescriptionPanel(review);
+			boolean isEditable = Action.CLOSE.equals(action);
+			descriptionPanel = new DescriptionPanel(review, isEditable);
 			summaryPanel.add(descriptionPanel, BorderLayout.CENTER);
-		}
-		else {
+		} else {
 			summaryPanel.setVisible(false);
 		}
 		commentsPanel.add(new CommentsPanel(review), BorderLayout.CENTER);
-		if (Action.CLOSE.equals(action)) {
-			descriptionPanel.setEnabled(true);
-			descriptionPanel.setEditable(true);
-		} else {
-			if (!"".equals(reviewInfo.getSummary())) {
-				descriptionPanel.setEnabled(false);
-				descriptionPanel.setEditable(false);
-			}
-		}
 		getOKAction().setEnabled(true);
+		pack();
 	}
 
 	public JComponent getRootComponent() {
 		return rootComponent;
 	}
 
+	@Override
 	@Nullable
 	protected JComponent createCenterPanel() {
 		return getRootComponent();
 	}
 
+	@Override
 	protected void doOKAction() {
-
-
 		try {
 			switch (action) {
 				case APPROVE:
@@ -246,19 +245,17 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 	private void $$$setupUI$$$() {
 		rootComponent = new JPanel();
 		rootComponent.setLayout(new GridLayoutManager(4, 1, new Insets(0, 0, 0, 0), -1, -1));
-		rootComponent.setMinimumSize(new Dimension(450, 300));
+		rootComponent.setMinimumSize(new Dimension(-1, -1));
 		detailsPanel = new JPanel();
 		detailsPanel.setLayout(new BorderLayout(0, 0));
 		rootComponent.add(detailsPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER,
 				GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(0, 169), null,
-				0, false));
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
 		commentsPanel = new JPanel();
 		commentsPanel.setLayout(new BorderLayout(0, 0));
 		rootComponent.add(commentsPanel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER,
 				GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(0, 67), null,
-				0, false));
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
 		publishPanel = new JPanel();
 		publishPanel.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
 		rootComponent.add(publishPanel, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER,
@@ -277,8 +274,7 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 		summaryPanel.setLayout(new BorderLayout(0, 0));
 		rootComponent.add(summaryPanel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER,
 				GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(0, 100), null,
-				0, false));
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
 	}
 
 	/**
@@ -353,11 +349,11 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 			body.add(new JLabel(review.getModerator().getDisplayName(), SwingConstants.LEFT), gbc2);
 			gbc1.gridy++;
 			gbc2.gridy++;
-			body.add(new BoldLabel("Project key"), gbc1);
+			body.add(new BoldLabel("Project Key"), gbc1);
 			body.add(new JLabel(review.getProjectKey(), SwingConstants.LEFT), gbc2);
 			gbc1.gridy++;
 			gbc2.gridy++;
-			body.add(new BoldLabel("Repository name"), gbc1);
+			body.add(new BoldLabel("Repository Name"), gbc1);
 			body.add(new JLabel(review.getRepoName(), SwingConstants.LEFT), gbc2);
 			gbc1.gridy++;
 			gbc2.gridy++;
@@ -387,8 +383,7 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 					gbc2.gridy++;
 				}
 			} catch (ValueNotYetInitialized valueNotYetInitialized) {
-				valueNotYetInitialized
-						.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+				LoggerImpl.getInstance().error(valueNotYetInitialized);
 			}
 
 
@@ -447,7 +442,7 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 				generalComments = review.getGeneralComments().size();
 				versionedComments = review.getVersionedComments().size();
 				for (GeneralComment generalComment : review.getGeneralComments()) {
-					if (generalComment.getAuthor().equals(userName)) {
+					if (generalComment.getAuthor().getUserName().equals(userName)) {
 						myGeneralComments++;
 						if (generalComment.isDraft()) {
 							myDrafts++;
@@ -468,7 +463,7 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 
 				}
 				for (VersionedComment comment : review.getVersionedComments()) {
-					if (comment.getAuthor().equals(userName)) {
+					if (comment.getAuthor().getUserName().equals(userName)) {
 						myVersionedComments++;
 						if (comment.isDraft()) {
 							myDrafts++;
@@ -489,33 +484,37 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 
 				}
 			} catch (ValueNotYetInitialized valueNotYetInitialized) {
-				valueNotYetInitialized
-						.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+				LoggerImpl.getInstance().error(valueNotYetInitialized);
 			}
 
 
-			body.add(new BoldLabel("My draft comments"), gbc1);
+			body.add(new BoldLabel("My Draft Comments"), gbc1);
 			body.add(new JLabel(Integer.toString(myDrafts), SwingConstants.LEFT), gbc2);
 			gbc1.gridy++;
 			gbc2.gridy++;
 
-			body.add(new BoldLabel("All my comments"), gbc1);
+			body.add(new BoldLabel("My Defects Comments"), gbc1);
+			body.add(new JLabel(Integer.toString(myDefects), SwingConstants.LEFT), gbc2);
+			gbc1.gridy++;
+			gbc2.gridy++;
+
+			body.add(new BoldLabel("My All Comments"), gbc1);
 			body.add(new JLabel(Integer.toString(myGeneralComments + myVersionedComments), SwingConstants.LEFT), gbc2);
 			gbc1.gridy++;
 			gbc2.gridy++;
 
-			body.add(new BoldLabel("Total comments"), gbc1);
+			body.add(new BoldLabel("Total Comments"), gbc1);
 			body.add(new JLabel(Integer.toString(generalComments + versionedComments), SwingConstants.LEFT), gbc2);
 			gbc1.gridy++;
 			gbc2.gridy++;
 
-			body.add(new BoldLabel("Total defects"), gbc1);
-			body.add(new JLabel(Integer.toString(allDefects), SwingConstants.LEFT), gbc2);
+			body.add(new BoldLabel("Total Draft Comments"), gbc1);
+			body.add(new JLabel(Integer.toString(allDrafts), SwingConstants.LEFT), gbc2);
 			gbc1.gridy++;
 			gbc2.gridy++;
 
-			body.add(new BoldLabel("My defects comments"), gbc1);
-			body.add(new JLabel(Integer.toString(myDefects), SwingConstants.LEFT), gbc2);
+			body.add(new BoldLabel("Total Defects"), gbc1);
+			body.add(new JLabel(Integer.toString(allDefects), SwingConstants.LEFT), gbc2);
 			gbc1.gridy++;
 			gbc2.gridy++;
 
@@ -543,9 +542,9 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 	}
 
 	private class DescriptionPanel extends JPanel {
-		JEditorPane body = new JEditorPane();
+		private final JEditorPane body = new JEditorPane();
 
-		public DescriptionPanel(final ReviewData review) {
+		public DescriptionPanel(final ReviewData review, boolean isEditable) {
 			setLayout(new GridBagLayout());
 			GridBagConstraints gbc = new GridBagConstraints();
 
@@ -560,9 +559,6 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 			JScrollPane sp = new JScrollPane(body,
 					ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 					ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-			sp.setBorder(BorderFactory.createEmptyBorder());
-			sp.setOpaque(false);
-			body.setEditable(false);
 			body.addHyperlinkListener(new HyperlinkListener() {
 				public void hyperlinkUpdate(HyperlinkEvent e) {
 					if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
@@ -571,29 +567,27 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 				}
 			});
 
-			body.setOpaque(false);
-			body.setBorder(BorderFactory.createEmptyBorder());
-			//body.setContentType("text/html");
-			//body.setText("<html><head></head><body>" + review.getSummary() + "</body></html>");
+			body.setEditable(isEditable);
 			body.setText(review.getSummary());
 			sp.getViewport().setOpaque(false);
 			body.setCaretPosition(0);
+			if (isEditable) {
+				body.setBackground(UIUtil.getTextFieldBackground());
+			} else {
+				body.setBackground(getBackground());
+				body.setBorder(BorderFactory.createEmptyBorder());
+				sp.setBorder(BorderFactory.createEmptyBorder());
+				body.setForeground(UIUtil.getTextFieldForeground());
+			}
 			add(sp, gbc);
 
-			Border b = BorderFactory.createTitledBorder("Review summary");
+			Border b = BorderFactory.createTitledBorder("Review Summary");
 			setBorder(b);
 			Insets i = b.getBorderInsets(this);
 			int minHeight = i.top + i.bottom;
-			setMinimumSize(new Dimension(0, minHeight));
+			setMinimumSize(new Dimension(0, minHeight + 100));
 		}
 
-		public void setEditable(boolean editable) {
-			body.setEditable(editable);
-		}
-
-		public void setEnabled(boolean enabled) {
-			body.setEnabled(enabled);
-		}
 
 		public String getText() {
 			return body.getText();
