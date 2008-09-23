@@ -23,7 +23,8 @@ package com.atlassian.theplugin.commons.configuration;
 public class BambooConfigurationBean {
 
 	private BambooTooltipOption bambooTooltipOption;
-	private int pollTime = 1;
+	private static final int DEFAULT_POLLING_INTERVAL_MIN = 10;
+	private int pollTime = DEFAULT_POLLING_INTERVAL_MIN;
 	private static final int HASHCODE_MAGIC = 31;
 
 	public BambooConfigurationBean() {
