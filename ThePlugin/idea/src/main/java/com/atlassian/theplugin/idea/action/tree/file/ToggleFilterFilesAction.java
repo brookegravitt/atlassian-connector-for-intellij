@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.action.tree.file;
 
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.CrucibleReviewWindow;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.Presentation;
@@ -44,7 +45,8 @@ public class ToggleFilterFilesAction extends AnAction {
 	}
 
 	public void actionPerformed(final AnActionEvent e) {
-		CrucibleReviewWindow window = (CrucibleReviewWindow) e.getDataContext().getData(Constants.CRUCIBLE_BOTTOM_WINDOW);
+//		CrucibleReviewWindow window = (CrucibleReviewWindow) e.getDataContext().getData(Constants.CRUCIBLE_BOTTOM_WINDOW);
+		CrucibleReviewWindow window = CrucibleReviewWindow.getInstance(IdeaHelper.getCurrentProject(e));
 		if (window != null) {
 			window.switchFilter();			
 			switchIcons(e.getPresentation());
@@ -61,12 +63,13 @@ public class ToggleFilterFilesAction extends AnAction {
 		}
 	}
 
-	public void update(final AnActionEvent e) {
-		boolean enabled = true;
-		CrucibleReviewWindow window = (CrucibleReviewWindow) e.getDataContext().getData(Constants.CRUCIBLE_BOTTOM_WINDOW);
-		if (window == null) {
-			enabled = false;
-		}
-		e.getPresentation().setEnabled(enabled);
-	}
+//	public void update(final AnActionEvent e) {
+////		boolean enabled = true;
+////		CrucibleReviewWindow window = (CrucibleReviewWindow) e.getDataContext().getData(Constants.CRUCIBLE_BOTTOM_WINDOW);
+////		if (window == null) {
+////			enabled = false;
+////		}
+////		e.getPresentation().setEnabled(enabled);
+//		e.getPresentation().setEnabled(true);
+//	}
 }

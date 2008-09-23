@@ -153,6 +153,10 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 		reviewFilesAndCommentsTree.repaint();
 	}
 
+	public AtlassianTreeWithToolbar getAtlassianTreeWithToolbar() {
+		return reviewFilesAndCommentsTree;
+	}
+
 	private final class MyReviewActionListener extends CrucibleReviewActionListener {
 		private Project project;
 
