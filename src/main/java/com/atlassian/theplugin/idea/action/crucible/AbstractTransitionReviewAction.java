@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.action.crucible;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.Action;
+import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CrucibleChangeStateWorker;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
@@ -29,21 +30,13 @@ public abstract class AbstractTransitionReviewAction extends AnAction {
 
     private ReviewData rd;
 
-    public void actionPerformed(final AnActionEvent event) {
-
+    @Override
+	public void actionPerformed(final AnActionEvent event) {
 		new CrucibleChangeStateWorker(IdeaHelper.getCurrentProject(event), rd, getRequestedTransition()).run();
-
-//		new Thread(new Runnable() {
-//            public void run() {
-//                ApplicationManager.getApplication().invokeAndWait(
-//                        new CrucibleChangeStateWorker(IdeaHelper.getCurrentProject(event), rd,
-//								getRequestedTransition()),
-//                        ModalityState.defaultModalityState());
-//            }
-//        }).start();
     }
 
-    public void update(AnActionEvent event) {
+    @Override
+	public void update(AnActionEvent event) {
         super.update(event);
         if (IdeaHelper.getCrucibleToolWindowPanel(event) != null) {
 
@@ -68,7 +61,7 @@ public abstract class AbstractTransitionReviewAction extends AnAction {
                         }
                     }
                 } catch (ValueNotYetInitialized valueNotYetInitialized) {
-                    valueNotYetInitialized.printStackTrace();
+					LoggerImpl.getInstance().error(valueNotYetInitialized);
                 }
             }
         } else {
