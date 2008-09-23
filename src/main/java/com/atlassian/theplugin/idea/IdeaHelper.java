@@ -115,6 +115,7 @@ public final class IdeaHelper {
         }
         return (JIRAToolWindowPanel) content.getComponent();
 	}
+
 	public static JIRAToolWindowPanel getJIRAToolWindowPanel(AnActionEvent event) {
 		Project p = getCurrentProject(event);
 		if (p == null) {
