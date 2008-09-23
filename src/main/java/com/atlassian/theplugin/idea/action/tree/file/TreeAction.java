@@ -23,6 +23,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.project.Project;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 
@@ -39,20 +40,25 @@ public abstract class TreeAction extends AnAction {
 	public void update(final AnActionEvent e) {
 		AtlassianTreeWithToolbar tree = identifyTreeWithAllPossibleMeans(e);
 		boolean enabled = true;
-		if (tree != null) {
-			updateTreeAction(e, tree);
-		} else {
-			enabled = false;
-		}
+
 		e.getPresentation().setEnabled(enabled);
+
+		updateTreeAction(e, tree);
+
+//		if (tree != null) {
+//			updateTreeAction(e, tree);
+//		} else {
+//			enabled = false;
+//		}
+//		e.getPresentation().setEnabled(enabled);
 	}
 
 	public void actionPerformed(final AnActionEvent e) {
 		AtlassianTreeWithToolbar tree = identifyTreeWithAllPossibleMeans(e);
 		Project project = DataKeys.PROJECT.getData(e.getDataContext());
-		if (tree != null) {
+//		if (tree != null) {
 			executeTreeAction(project, tree);
-		}
+//		}
 	}
 
 	private AtlassianTreeWithToolbar identifyTreeWithAllPossibleMeans(final AnActionEvent e) {
@@ -63,6 +69,9 @@ public abstract class TreeAction extends AnAction {
 		if (tree == null) {
 			tree = findTreeM3(e);
 		}
+//		if (tree == null) {
+//			tree = findTreeM4(e);
+//		}
 		return tree;
 	}
 
@@ -107,8 +116,21 @@ public abstract class TreeAction extends AnAction {
 		return (AtlassianTreeWithToolbar) parent;
 	}
 
-	protected abstract void executeTreeAction(final Project project, AtlassianTreeWithToolbar tree);
+//	private AtlassianTreeWithToolbar findTreeM4(final AnActionEvent e) {
+//		if (IdeaHelper.getCurrentProject(e) != null) {
+//			CrucibleReviewWindow window = CrucibleReviewWindow.getInstance(IdeaHelper.getCurrentProject(e));
+//			if (window != null) {
+//				return window.getAtlassianTreeWithToolbar();
+//			} else {
+//				return null;
+//			}
+//		} else {
+//			return null;
+//		}
+//	}
 
-	protected abstract void updateTreeAction(final AnActionEvent e, final AtlassianTreeWithToolbar tree);
+	protected abstract void executeTreeAction(@Nullable final Project project, AtlassianTreeWithToolbar tree);
+
+	protected abstract void updateTreeAction(@Nullable final AnActionEvent e, final AtlassianTreeWithToolbar tree);
 
 }

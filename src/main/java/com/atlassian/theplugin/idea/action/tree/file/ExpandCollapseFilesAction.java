@@ -17,6 +17,8 @@
 package com.atlassian.theplugin.idea.action.tree.file;
 
 import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
+import com.atlassian.theplugin.idea.CrucibleReviewWindow;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 
@@ -28,13 +30,28 @@ import com.intellij.openapi.project.Project;
  * To change this template use File | Settings | File Templates.
  */
 public class ExpandCollapseFilesAction extends TreeAction {
-	protected void executeTreeAction(final Project project, final AtlassianTreeWithToolbar tree) {
-		tree.setViewState(tree.getViewState().getNextState());
+	protected void executeTreeAction(final Project project, AtlassianTreeWithToolbar tree) {
+		if (tree == null) {
+			tree = CrucibleReviewWindow.getInstance(project).getAtlassianTreeWithToolbar();
+		}
+
+		if (tree != null) {
+			tree.setViewState(tree.getViewState().getNextState());
+		}
 	}
 
-	protected void updateTreeAction(final AnActionEvent e, final AtlassianTreeWithToolbar tree) {
-		e.getPresentation().setIcon(tree.getViewState().getNextState().getIcon());
-		e.getPresentation().setText(tree.getViewState().getNextState().toString());
-		e.getPresentation().setEnabled(!tree.isEmpty());
+	protected void updateTreeAction(final AnActionEvent e, AtlassianTreeWithToolbar tree) {
+		if (tree == null) {
+			Project project = IdeaHelper.getCurrentProject(e);
+			if (project != null) {
+				tree = CrucibleReviewWindow.getInstance(project).getAtlassianTreeWithToolbar();
+			}
+		}
+
+		if (tree != null) {
+			e.getPresentation().setIcon(tree.getViewState().getNextState().getIcon());
+			e.getPresentation().setText(tree.getViewState().getNextState().toString());
+			e.getPresentation().setEnabled(!tree.isEmpty());
+		}
 	}
 }

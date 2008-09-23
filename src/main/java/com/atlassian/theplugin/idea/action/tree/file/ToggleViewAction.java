@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea.action.tree.file;
 
 import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
+import com.atlassian.theplugin.idea.CrucibleReviewWindow;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 
@@ -29,12 +30,19 @@ import com.intellij.openapi.project.Project;
  */
 public class ToggleViewAction extends TreeAction {
 
-    protected void executeTreeAction(final Project project, final AtlassianTreeWithToolbar tree) {
-        tree.changeState();
-    }
+    protected void executeTreeAction(final Project project, AtlassianTreeWithToolbar tree) {
+		if (tree == null) {
+			tree = CrucibleReviewWindow.getInstance(project).getAtlassianTreeWithToolbar();
+		}
+		if (tree != null) {
+			tree.changeState();
+		}
+	}
 
     protected void updateTreeAction(final AnActionEvent e, final AtlassianTreeWithToolbar tree) {
-        e.getPresentation().setIcon(tree.getState().getNextState().getIcon());
-        e.getPresentation().setText(tree.getState().getNextState().toString());
-    }
+		if (tree != null) {
+			e.getPresentation().setIcon(tree.getState().getNextState().getIcon());
+			e.getPresentation().setText(tree.getState().getNextState().toString());
+		}
+	}
 }
