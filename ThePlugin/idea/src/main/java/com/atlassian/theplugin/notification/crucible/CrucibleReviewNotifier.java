@@ -105,17 +105,23 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 	private void checkGeneralReplies(ReviewData review, GeneralComment oldComment, GeneralComment newComment) {
 		for (GeneralComment reply : newComment.getReplies()) {
 			GeneralComment existingReply = null;
-			for (GeneralComment oldReply : oldComment.getReplies()) {
-				if (reply.getPermId().getId().equals(oldReply.getPermId().getId())) {
-					existingReply = oldReply;
-					break;
+			if (oldComment != null) {
+				for (GeneralComment oldReply : oldComment.getReplies()) {
+					if (reply.getPermId().getId().equals(oldReply.getPermId().getId())) {
+						existingReply = oldReply;
+						break;
+					}
 				}
-			}
-			if ((existingReply == null) || !existingReply.getMessage().equals(reply.getMessage())) {
-				notifications.add(new NewReplyCommentNotification(review, newComment, reply));
-				GeneralCommentReplyAddedOrEdited event = new GeneralCommentReplyAddedOrEdited(
-						CrucibleReviewActionListener.ANONYMOUS,	review, newComment, reply);
-				IdeaHelper.getReviewActionEventBroker(project).trigger(event);
+				if ((existingReply == null) || !existingReply.getMessage().equals(reply.getMessage())) {
+					if (existingReply == null) {
+						notifications.add(new NewReplyCommentNotification(review, newComment, reply));
+					} else {
+						notifications.add(new UpdatedReplyCommentNotification(review, newComment, reply));
+					}
+					GeneralCommentReplyAddedOrEdited event = new GeneralCommentReplyAddedOrEdited(
+							CrucibleReviewActionListener.ANONYMOUS,	review, newComment, reply);
+					IdeaHelper.getReviewActionEventBroker(project).trigger(event);
+				}
 			}
 		}
 
@@ -123,8 +129,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 			List<GeneralComment> deletedGen = getDeletedComments(
 					oldComment.getReplies(), newComment.getReplies());
 			for (GeneralComment gc : deletedGen) {
-				// TODO!
-//				notifications.add(new GeneralComment)
+				notifications.add(new RemovedReplyCommentNotification(review, gc));
 				CommentRemoved event = new CommentRemoved(CrucibleReviewActionListener.ANONYMOUS, review, gc);
 				IdeaHelper.getReviewActionEventBroker(project).trigger(event);
 			}
@@ -135,17 +140,23 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 			VersionedComment newComment) {
 		for (VersionedComment reply : newComment.getReplies()) {
 			VersionedComment existingReply = null;
-			for (VersionedComment oldReply : oldComment.getReplies()) {
-				if (reply.getPermId().getId().equals(oldReply.getPermId().getId())) {
-					existingReply = oldReply;
-					break;
+			if (oldComment != null) {
+				for (VersionedComment oldReply : oldComment.getReplies()) {
+					if (reply.getPermId().getId().equals(oldReply.getPermId().getId())) {
+						existingReply = oldReply;
+						break;
+					}
 				}
-			}
-			if ((existingReply == null) || !existingReply.getMessage().equals(reply.getMessage())) {
-				notifications.add(new NewReplyCommentNotification(review, newComment, reply));
-				VersionedCommentReplyAddedOrEdited event = new VersionedCommentReplyAddedOrEdited(
-						CrucibleReviewActionListener.ANONYMOUS,	review, info, newComment, reply);
-				IdeaHelper.getReviewActionEventBroker(project).trigger(event);
+				if ((existingReply == null) || !existingReply.getMessage().equals(reply.getMessage())) {
+					if (existingReply == null) {
+						notifications.add(new NewReplyCommentNotification(review, newComment, reply));
+					} else {
+						notifications.add(new UpdatedReplyCommentNotification(review, newComment, reply));
+					}
+					VersionedCommentReplyAddedOrEdited event = new VersionedCommentReplyAddedOrEdited(
+							CrucibleReviewActionListener.ANONYMOUS,	review, info, newComment, reply);
+					IdeaHelper.getReviewActionEventBroker(project).trigger(event);
+				}
 			}
 		}
 
@@ -153,8 +164,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 			List<VersionedComment> deletedVcs = getDeletedComments(
 					oldComment.getReplies(), newComment.getReplies());
 			for (VersionedComment vc : deletedVcs) {
-				// TODO!
-//				notifications.add(new GeneralComment)
+				notifications.add(new RemovedReplyCommentNotification(review, vc));
 				CommentRemoved event = new CommentRemoved(CrucibleReviewActionListener.ANONYMOUS, review, vc);
 				IdeaHelper.getReviewActionEventBroker(project).trigger(event);
 			}
@@ -174,7 +184,11 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 			if ((existing == null)
 					|| !existing.getMessage().equals(comment.getMessage())
 					|| existing.isDefectRaised() != comment.isDefectRaised()) {
-				notifications.add(new NewGeneralCommentNotification(newReview, comment));
+				if (existing == null) {
+					notifications.add(new NewGeneralCommentNotification(newReview, comment));
+				} else {
+					notifications.add(new UpdatedGeneralCommentNotification(newReview, comment));
+				}
 				GeneralCommentAddedOrEdited event = new GeneralCommentAddedOrEdited(
 						CrucibleReviewActionListener.ANONYMOUS, newReview, comment);
 				IdeaHelper.getReviewActionEventBroker(project).trigger(event);
@@ -185,8 +199,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 		List<GeneralComment> deletedGen = getDeletedComments(
 				oldReview.getGeneralComments(), newReview.getGeneralComments());
 		for (GeneralComment gc : deletedGen) {
-			// TODO!
-//			notifications.add(new GeneralComment)
+			notifications.add(new RemovedGeneralCommentNotification(newReview, gc));
 			CommentRemoved event = new CommentRemoved(CrucibleReviewActionListener.ANONYMOUS, newReview, gc);
 			IdeaHelper.getReviewActionEventBroker(project).trigger(event);
 		}
@@ -203,7 +216,11 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 				if ((existing == null)
 						|| !existing.getMessage().equals(comment.getMessage())
 						|| existing.isDefectRaised() != comment.isDefectRaised()) {
-					notifications.add(new NewVersionedCommentNotification(newReview, comment));
+					if (existing == null) {
+						notifications.add(new NewVersionedCommentNotification(newReview, comment));
+					} else {
+						notifications.add(new UpdatedVersionedCommentNotification(newReview, comment));
+					}
 					if (project != null) {
 						VersionedCommentAddedOrEdited event = new VersionedCommentAddedOrEdited(
 								CrucibleReviewActionListener.ANONYMOUS,	newReview, info, comment);
@@ -217,8 +234,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 		List<VersionedComment> deletedVcs = getDeletedComments(
 				oldReview.getVersionedComments(), newReview.getVersionedComments());
 		for (VersionedComment vc : deletedVcs) {
-			// TODO!
-//			notifications.add(new GeneralComment)
+			notifications.add(new RemovedVersionedCommentNotification(newReview, vc));
 			CommentRemoved event = new CommentRemoved(CrucibleReviewActionListener.ANONYMOUS, newReview, vc);
 			IdeaHelper.getReviewActionEventBroker(project).trigger(event);
 		}
