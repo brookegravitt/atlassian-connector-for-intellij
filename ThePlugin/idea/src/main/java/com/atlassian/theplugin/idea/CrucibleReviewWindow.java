@@ -39,6 +39,7 @@ import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.atlassian.theplugin.idea.crucible.events.GeneralCommentAddedOrEdited;
 import com.atlassian.theplugin.idea.crucible.events.*;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
+import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
 import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
@@ -169,6 +170,10 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 	public void switchFilter() {
 		filter = filter.getNextState();
 		getReviewItemTreePanel().filterTreeNodes(filter);
+	}
+
+	public AtlassianTreeWithToolbar getAtlassianTreeWithToolbar() {
+		return reviewItemTreePanel.getAtlassianTreeWithToolbar();
 	}
 
 	private final class MyAgent extends CrucibleReviewActionListener {
