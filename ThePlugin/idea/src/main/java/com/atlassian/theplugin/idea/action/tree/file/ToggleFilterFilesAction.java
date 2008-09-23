@@ -16,11 +16,10 @@
 
 package com.atlassian.theplugin.idea.action.tree.file;
 
-import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.CrucibleReviewWindow;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.util.IconLoader;
 
