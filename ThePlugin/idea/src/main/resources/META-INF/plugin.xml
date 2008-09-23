@@ -57,6 +57,8 @@
 	<change-notes>
 		<![CDATA[
 		<ul>
+			<li>2.0.0: Numerours new features - see changelog for details</li>
+			<li>2.0.0-beta-3: Bug fixes</li>
 			<li>2.0.0-beta-2: Bug fixes</li>
 			<li>2.0.0-beta-1: Crucible review support, numerous enhancements</li>
 			<li>1.7.0: Bamboo build stack traces; bamboo build commit list</li>
