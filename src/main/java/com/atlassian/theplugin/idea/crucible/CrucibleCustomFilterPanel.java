@@ -66,7 +66,8 @@ public class CrucibleCustomFilterPanel extends JPanel {
     private transient CustomFilterBean filter;
 
     private ProjectBean anyProject;
-    private UserBean anyUser;
+	
+	private UserBean anyUser;
 	private final com.intellij.openapi.project.Project project;
 	private final CfgManager cfgManager;
 
