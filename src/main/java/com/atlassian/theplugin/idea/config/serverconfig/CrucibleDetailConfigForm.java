@@ -18,19 +18,19 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
-import com.atlassian.theplugin.commons.crucible.api.model.Repository;
 import com.atlassian.theplugin.commons.crucible.api.model.Project;
+import com.atlassian.theplugin.commons.crucible.api.model.Repository;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import javax.swing.*;
 
 
 public class CrucibleDetailConfigForm {
@@ -67,20 +67,20 @@ public class CrucibleDetailConfigForm {
 	public void setData(@NotNull final CrucibleServerCfg serverCfg) {
 		crucibleServerCfg = serverCfg;
 		cbFisheye.setSelected(crucibleServerCfg.isFisheyeInstance());
-		if (crucibleServerCfg.getProjectName() != null) {
-			projectsComboBox.addItem(new ProjectComboBoxItem(crucibleServerCfg.getProjectName()));
+        projectsComboBox.removeAllItems();
+        repoComboBox.removeAllItems();
+        if (crucibleServerCfg.getProjectName() != null) {
+            projectsComboBox.addItem(new ProjectComboBoxItem(crucibleServerCfg.getProjectName()));
 			projectsComboBox.setSelectedItem(crucibleServerCfg.getProjectName());
 			projectsComboBox.setEnabled(true);
 		} else {
-			projectsComboBox.removeAllItems();
 			projectsComboBox.setEnabled(false);
 		}
 		if (crucibleServerCfg.getRepositoryName() != null) {
 			repoComboBox.addItem(new RepositoryComboBoxItem(crucibleServerCfg.getRepositoryName()));
 			repoComboBox.setSelectedItem(crucibleServerCfg.getRepositoryName());
 			repoComboBox.setEnabled(true);
-		} else {
-			repoComboBox.removeAllItems();
+		} else {			
 			repoComboBox.setEnabled(false);
 		}
 	}
