@@ -19,7 +19,8 @@ package com.atlassian.theplugin.commons.configuration;
 public class CrucibleConfigurationBean {
 	public static final int MIN_SCHEDULE_TIME_MINUTES = 1;
 	private CrucibleTooltipOption crucibleTooltipOption;
-    private int pollTime = 1;
+	private static final int DEFAULT_POLLING_INTERVAL_MIN = 10;
+    private int pollTime = DEFAULT_POLLING_INTERVAL_MIN;
 	private static final int HASHCODE_MAGIC = 31;
 
 	public CrucibleConfigurationBean() {
