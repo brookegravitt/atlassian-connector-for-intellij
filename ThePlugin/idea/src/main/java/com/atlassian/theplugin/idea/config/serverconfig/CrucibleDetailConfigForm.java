@@ -24,6 +24,7 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.intellij.uiDesigner.core.Spacer;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -67,10 +68,10 @@ public class CrucibleDetailConfigForm {
 	public void setData(@NotNull final CrucibleServerCfg serverCfg) {
 		crucibleServerCfg = serverCfg;
 		cbFisheye.setSelected(crucibleServerCfg.isFisheyeInstance());
-        projectsComboBox.removeAllItems();
-        repoComboBox.removeAllItems();
-        if (crucibleServerCfg.getProjectName() != null) {
-            projectsComboBox.addItem(new ProjectComboBoxItem(crucibleServerCfg.getProjectName()));
+		projectsComboBox.removeAllItems();
+		repoComboBox.removeAllItems();
+		if (crucibleServerCfg.getProjectName() != null) {
+			projectsComboBox.addItem(new ProjectComboBoxItem(crucibleServerCfg.getProjectName()));
 			projectsComboBox.setSelectedItem(crucibleServerCfg.getProjectName());
 			projectsComboBox.setEnabled(true);
 		} else {
@@ -80,7 +81,7 @@ public class CrucibleDetailConfigForm {
 			repoComboBox.addItem(new RepositoryComboBoxItem(crucibleServerCfg.getRepositoryName()));
 			repoComboBox.setSelectedItem(crucibleServerCfg.getRepositoryName());
 			repoComboBox.setEnabled(true);
-		} else {			
+		} else {
 			repoComboBox.setEnabled(false);
 		}
 	}
@@ -119,51 +120,47 @@ public class CrucibleDetailConfigForm {
 	private void $$$setupUI$$$() {
 		rootComponent = new JPanel();
 		rootComponent.setLayout(new GridBagLayout());
+		rootComponent.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Project Configuration"));
 		final JPanel panel1 = new JPanel();
-		panel1.setLayout(new GridLayoutManager(4, 3, new Insets(0, 0, 0, 0), -1, -1));
+		panel1.setLayout(new GridLayoutManager(6, 2, new Insets(0, 0, 0, 0), -1, -1));
 		GridBagConstraints gbc;
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.weightx = 1.0;
 		gbc.fill = GridBagConstraints.BOTH;
+		gbc.insets = new Insets(0, 12, 12, 8);
 		rootComponent.add(panel1, gbc);
+		repoComboBox = new JComboBox();
+		panel1.add(repoComboBox, new GridConstraints(4, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+		projectsComboBox = new JComboBox();
+		panel1.add(projectsComboBox, new GridConstraints(2, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+		cbFisheye = new JCheckBox();
+		cbFisheye.setText("Crucible server contains Fisheye instance");
+		panel1.add(cbFisheye, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		final JPanel panel2 = new JPanel();
+		panel2.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 8, 0), -1, -1));
+		panel1.add(panel2, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+		refreshButton = new JButton();
+		refreshButton.setText("Refresh");
+		panel2.add(refreshButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		final Spacer spacer1 = new Spacer();
+		panel2.add(spacer1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
 		projectLabel = new JLabel();
-		projectLabel.setText("Project");
-		panel1.add(projectLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE,
-				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		projectLabel.setText("Crucible project associated with the current IDEA project");
+		panel1.add(projectLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		repositoryLabel = new JLabel();
 		repositoryLabel.setHorizontalAlignment(4);
 		repositoryLabel.setHorizontalTextPosition(4);
-		repositoryLabel.setText("Repository");
-		panel1.add(repositoryLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE,
-				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, new Dimension(80, -1),
-				new Dimension(80, -1), null, 0, false));
-		repoComboBox = new JComboBox();
-		panel1.add(repoComboBox, new GridConstraints(1, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
-				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
-				null, new Dimension(150, -1), null, 0, false));
-		projectsComboBox = new JComboBox();
-		panel1.add(projectsComboBox, new GridConstraints(0, 1, 1, 2, GridConstraints.ANCHOR_WEST,
-				GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-				GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-		cbFisheye = new JCheckBox();
-		cbFisheye.setText("Fisheye instance");
-		panel1.add(cbFisheye, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
-				null, null, null, 0, false));
-		refreshButton = new JButton();
-		refreshButton.setText("Refresh");
-		panel1.add(refreshButton, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE,
-				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
-				null, null, null, 0, false));
-		final JPanel spacer1 = new JPanel();
+		repositoryLabel.setText("Source repository associated with the current IDEA project");
+		panel1.add(repositoryLabel, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, new Dimension(80, -1), null, null, 0, false));
+		final JPanel spacer2 = new JPanel();
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;
 		gbc.gridy = 1;
 		gbc.weighty = 1.0;
 		gbc.fill = GridBagConstraints.VERTICAL;
-		rootComponent.add(spacer1, gbc);
+		rootComponent.add(spacer2, gbc);
 	}
 
 	/**
