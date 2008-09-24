@@ -16,15 +16,18 @@
 
 package com.atlassian.theplugin.idea.autoupdate;
 
-import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
+import com.atlassian.theplugin.commons.SchedulableChecker;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.configuration.GeneralConfigurationBean;
-import com.atlassian.theplugin.exception.VersionServiceException;
-import com.atlassian.theplugin.commons.exception.ThePluginException;
+import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.exception.IncorrectVersionException;
+import com.atlassian.theplugin.commons.exception.ThePluginException;
+import com.atlassian.theplugin.commons.util.Version;
+import com.atlassian.theplugin.exception.VersionServiceException;
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.atlassian.theplugin.commons.util.Version;
-import com.atlassian.theplugin.commons.SchedulableChecker;
+import com.atlassian.theplugin.util.UsageStatisticsGeneratorImpl;
+import com.intellij.openapi.application.ApplicationManager;
 
 import java.util.TimerTask;
 
@@ -35,20 +38,18 @@ public final class NewVersionChecker implements SchedulableChecker {
 	private static final long PLUGIN_UPDATE_ATTEMPT_DELAY = 60 * 60 * 1000; // every hour
 
 	private transient PluginConfiguration pluginConfiguration;
+	private final CfgManager cfgManager;
 
-	private static NewVersionChecker instance;
 	private static final String NAME = "New Version checker";
 
-	private NewVersionChecker(PluginConfiguration pluginConfiguration) {
+	public NewVersionChecker(final PluginConfiguration pluginConfiguration, final CfgManager cfgManager) {
 		this.pluginConfiguration = pluginConfiguration;
+		this.cfgManager = cfgManager;
 	}
 
-	public static NewVersionChecker getInstance(PluginConfiguration pluginConfiguration) {
-		if (instance == null) {
-			instance = new NewVersionChecker(pluginConfiguration);
-		}
-
-		return instance;
+	public static NewVersionChecker getInstance() {
+		return (NewVersionChecker) ApplicationManager.getApplication()
+				.getPicoContainer().getComponentInstanceOfType(NewVersionChecker.class);
 	}
 
 	/**
@@ -57,6 +58,7 @@ public final class NewVersionChecker implements SchedulableChecker {
 	 */
 	public TimerTask newTimerTask() {
 		return new TimerTask() {
+			@Override
 			public void run() {
 				try {
 					doRun(new ForwardToIconHandler(pluginConfiguration.getGeneralConfigurationData()), true);
@@ -108,10 +110,7 @@ public final class NewVersionChecker implements SchedulableChecker {
 
 	private InfoServer.VersionInfo getLatestVersion(GeneralConfigurationBean configuration)
 			throws VersionServiceException, IncorrectVersionException {
-//		InfoServer server =  new InfoServer(PluginUtil.STABLE_VERSION_INFO_URL,
-//				pluginConfiguration.getUid());
-		return InfoServer.getLatestPluginVersion(
-				configuration.getUid(),
-				configuration.isCheckUnstableVersionsEnabled());
+		return InfoServer.getLatestPluginVersion(new UsageStatisticsGeneratorImpl(configuration.getAnonymousFeedbackEnabled(),
+				configuration.getUid(), cfgManager), configuration.isCheckUnstableVersionsEnabled());
 	}
 }
