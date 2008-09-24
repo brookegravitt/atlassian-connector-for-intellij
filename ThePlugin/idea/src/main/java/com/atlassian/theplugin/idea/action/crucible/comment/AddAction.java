@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.action.crucible.comment;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.idea.CommentTreePanel;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
@@ -143,6 +144,17 @@ public class AddAction extends AbstractCommentAction {
 		}
 	}
 
+	private void setCommentAuthor(ReviewData review, CommentBean comment) {
+		CrucibleServerCfg server = review.getServer();
+		User userName = CrucibleUserCache.getInstance().getUser(server, server.getUsername(), false);
+		if (userName != null) {
+			comment.setAuthor(userName);
+		} else {
+			// well, this is a fail, but we have to recover somehow
+			comment.setAuthor(new UserBean(review.getServer().getUsername()));
+		}
+	}
+
 	private void addCommentToFile(Project project, ReviewData review, CrucibleFileInfo file) {
 		VersionedCommentBean newComment = new VersionedCommentBean();
 		CommentEditForm dialog = new CommentEditForm(project, review, (CommentBean) newComment,
@@ -153,7 +165,7 @@ public class AddAction extends AbstractCommentAction {
 		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
 			newComment.setCreateDate(new Date());
 			newComment.setReviewItemId(review.getPermId());
-			newComment.setAuthor(new UserBean(review.getServer().getUsername()));
+			setCommentAuthor(review, newComment);
 			// @todo
 			IdeaHelper.getReviewActionEventBroker(project).trigger(
 					new VersionedCommentAboutToAdd(CrucibleReviewActionListener.ANONYMOUS,
@@ -181,7 +193,7 @@ public class AddAction extends AbstractCommentAction {
 			newComment.setToEndLine(parentComment.getToEndLine());
 			newComment.setCreateDate(new Date());
 			newComment.setReviewItemId(review.getPermId());
-			newComment.setAuthor(new UserBean(review.getServer().getUsername()));
+			setCommentAuthor(review, newComment);
 			IdeaHelper.getReviewActionEventBroker(project).trigger(
 					new VersionedCommentReplyAboutToAdd(CrucibleReviewActionListener.ANONYMOUS,
 							review, file, parentComment, newComment));
@@ -197,7 +209,7 @@ public class AddAction extends AbstractCommentAction {
 		dialog.show();
 		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
 			newComment.setCreateDate(new Date());
-			newComment.setAuthor(new UserBean(review.getServer().getUsername()));
+			setCommentAuthor(review, newComment);
 			IdeaHelper.getReviewActionEventBroker(project).trigger(
 					new GeneralCommentAboutToAdd(CrucibleReviewActionListener.ANONYMOUS,
 							review, newComment));
@@ -215,7 +227,7 @@ public class AddAction extends AbstractCommentAction {
 		dialog.show();
 		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
 			newComment.setCreateDate(new Date());
-			newComment.setAuthor(new UserBean(review.getServer().getUsername()));
+			setCommentAuthor(review, newComment);
 			IdeaHelper.getReviewActionEventBroker(project).trigger(
 					new GeneralCommentReplyAboutToAdd(CrucibleReviewActionListener.ANONYMOUS,
 							review, parentComment, newComment));

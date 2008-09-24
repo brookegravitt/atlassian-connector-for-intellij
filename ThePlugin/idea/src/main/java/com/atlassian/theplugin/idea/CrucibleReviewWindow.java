@@ -21,15 +21,10 @@ package com.atlassian.theplugin.idea;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
-import com.atlassian.theplugin.commons.crucible.api.model.Comment;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralCommentBean;
-import com.atlassian.theplugin.commons.crucible.api.model.UserBean;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedCommentBean;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
 import com.atlassian.theplugin.idea.crucible.CrucibleFilteredModelProvider;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
@@ -229,6 +224,12 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 			});
 		}
 
+		private void setCommentAuthor(CrucibleServerCfg server, Comment comment) {
+			CommentBean bean = (CommentBean) comment;
+			bean.setAuthor(CrucibleUserCache.getInstance().getUser(server, server.getUsername(), false));
+
+		}
+
 		@Override
 		public void aboutToAddLineComment(final ReviewData review, final CrucibleFileInfo file, final Editor editor,
 				final int start, final int end) {
@@ -242,7 +243,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 					dialog.show();
 					if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
 						newComment.setCreateDate(new Date());
-						newComment.setAuthor(new UserBean(review.getServer().getUsername()));
+						setCommentAuthor(review.getServer(), newComment);
 						newComment.setToStartLine(start);
 						newComment.setToEndLine(end);
 						eventBroker.trigger(new VersionedCommentAboutToAdd(CrucibleReviewActionListener.ANONYMOUS, review,
@@ -289,8 +290,8 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		@Override
 		public void aboutToAddGeneralComment(final ReviewData review, final GeneralComment newComment) {
 			try {
-				GeneralComment comment = facade.addGeneralComment(review.getServer(), review.getPermId(),
-						newComment);
+				GeneralComment comment = facade.addGeneralComment(review.getServer(), review.getPermId(), newComment);
+				setCommentAuthor(review.getServer(), comment);
 				eventBroker.trigger(new GeneralCommentAddedOrEdited(this, review, comment));
 			} catch (RemoteApiException e) {
 				IdeaHelper.handleRemoteApiException(project, e);
@@ -305,6 +306,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 			try {
 				GeneralComment comment = facade.addGeneralCommentReply(review.getServer(), review.getPermId(),
 						parentComment.getPermId(), newComment);
+				setCommentAuthor(review.getServer(), comment);
 				eventBroker.trigger(new GeneralCommentReplyAddedOrEdited(this, review, parentComment, comment));
 			} catch (RemoteApiException e) {
 				IdeaHelper.handleRemoteApiException(project, e);
@@ -318,6 +320,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 			try {
 				VersionedComment newComment = facade.addVersionedComment(review.getServer(), review.getPermId(),
 						file.getItemInfo().getId(), comment);
+				setCommentAuthor(review.getServer(), newComment);
 				List<VersionedComment> comments;
 				comments = file.getItemInfo().getComments();
 				if (comments == null) {
@@ -341,6 +344,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 			try {
 				VersionedComment newComment = facade.addVersionedCommentReply(review.getServer(), review.getPermId(),
 						parentComment.getPermId(), comment);
+				setCommentAuthor(review.getServer(), newComment);
 				eventBroker.trigger(new VersionedCommentReplyAddedOrEdited(
 						this, review, file.getItemInfo(), parentComment, newComment));
 			} catch (RemoteApiException e) {
