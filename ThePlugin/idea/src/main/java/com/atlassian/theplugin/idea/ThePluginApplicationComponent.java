@@ -79,12 +79,13 @@ public class ThePluginApplicationComponent
 	private final Collection<SchedulableChecker> schedulableCheckers = new HashSet<SchedulableChecker>();
 
 
-	public ThePluginApplicationComponent(PluginConfigurationBean configuration, CfgManager cfgManager) {
+	public ThePluginApplicationComponent(final PluginConfigurationBean configuration, final CfgManager cfgManager,
+			final NewVersionChecker newVersionChecker) {
 		this.configuration = configuration;
 		this.cfgManager = cfgManager;
 		this.configuration.transientSetHttpConfigurable(HttpConfigurableIdeaImpl.getInstance());
 
-		this.schedulableCheckers.add(NewVersionChecker.getInstance(configuration));
+		this.schedulableCheckers.add(newVersionChecker);
 
 		ConfigurationFactory.setConfiguration(configuration);
 		PluginSSLProtocolSocketFactory.initializeSocketFactory();

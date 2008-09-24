@@ -22,12 +22,14 @@ import static com.atlassian.theplugin.commons.util.MiscUtil.buildConcurrentHashM
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 public class CfgManagerImpl implements CfgManager {
 	private final Map<ProjectId, ProjectConfiguration> projectConfigurations = buildConcurrentHashMap(INITIAL_CAPACITY);
-    private Collection<ServerCfg> globalServers = MiscUtil.buildArrayList();
+	private Collection<ServerCfg> globalServers = MiscUtil.buildArrayList();
 	private final Map<ProjectId, Collection<ConfigurationListener>> listeners = buildConcurrentHashMap(100);
 	private BambooCfg bambooCfg;
 	private static final int INITIAL_CAPACITY = 4;
@@ -285,6 +287,16 @@ public class CfgManagerImpl implements CfgManager {
 	private interface ProjectListenerAction {
 		void run(final ConfigurationListener projectListener, final ProjectId projectId, final CfgManagerImpl cfgManager);
 	}
+
+
+	public Collection<ServerCfg> getAllUniqueServers() {
+		final Set<ServerCfg> res = new HashSet<ServerCfg>(globalServers);
+		for (ProjectConfiguration projectCfg : projectConfigurations.values()) {
+			res.addAll(projectCfg.getServers());
+		}
+		return res;
+	}
+
 
 	private static class UpdateConfigurationListenerAction implements ProjectListenerAction {
 

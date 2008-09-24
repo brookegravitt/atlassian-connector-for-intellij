@@ -64,7 +64,7 @@ public class NewVersionButtonListener implements ActionListener {
 
 		@Override
 		public void connect(LoginDataProvided loginDataProvided) throws ThePluginException {
-            NewVersionChecker.getInstance(IdeaHelper.getPluginConfiguration()).doRun(new UpdateActionHandler() {
+            NewVersionChecker.getInstance().doRun(new UpdateActionHandler() {
                 public void doAction(InfoServer.VersionInfo versionInfo, boolean showConfigPath) throws ThePluginException {
                     newVersion = versionInfo;
                 }
