@@ -978,7 +978,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 									!workLogCreate.getLeaveRemainingUnchanged(), newRemainingEstimate);
 							if (workLogCreate.isStopProgressSelected()) {
 								setStatusMessage("Stopping work for issue " + issue.getKey() + "...");
-								jiraServerFacade.progressWorkflowAction(server, issue, workLogCreate.getInProgressAction());
+								jiraServerFacade.progressWorkflowAction(server, issue, workLogCreate.getStopProgressAction());
 								setStatusMessage("Work logged and progress stopped for issue " + issue.getKey());
 								refreshIssuesPage();
 							} else {
