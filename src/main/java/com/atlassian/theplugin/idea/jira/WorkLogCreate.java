@@ -63,14 +63,16 @@ public class WorkLogCreate extends DialogWrapper {
 	private JRadioButton btnUpdateManually;
 	private JTextField remainingEstimateField;
 	private JLabel remainingEstimateLabel;
+	private JTextPane anEstimateOfHowTextPane;
 	private boolean haveIssueStopProgressInfo = false;
-	private JIRAAction inProgressAction;
-	JIRAServerFacade facade;
+	private JIRAAction stopProgressAction;
+	private JIRAServerFacade facade;
 	private Date endTime;
 	private final Calendar now = Calendar.getInstance();
 
-	WdhmInputListener timeSpentListener;
-	WdhmInputListener remainingEstimateListener;
+	private WdhmInputListener timeSpentListener;
+	private WdhmInputListener remainingEstimateListener;
+
 	private static final int STOP_PROGRESS_ACTION_ID = 301;
 
 	/**
@@ -114,7 +116,7 @@ public class WorkLogCreate extends DialogWrapper {
 		label1.setText("End time:");
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;
-		gbc.gridy = 1;
+		gbc.gridy = 2;
 		gbc.anchor = GridBagConstraints.WEST;
 		panel1.add(label1, gbc);
 		final JLabel label2 = new JLabel();
@@ -129,7 +131,7 @@ public class WorkLogCreate extends DialogWrapper {
 		stopProgressLabel.setText("Stop progress:");
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;
-		gbc.gridy = 6;
+		gbc.gridy = 7;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.insets = new Insets(0, 0, 12, 12);
 		panel1.add(stopProgressLabel, gbc);
@@ -140,7 +142,7 @@ public class WorkLogCreate extends DialogWrapper {
 		stopProgress.setText("");
 		gbc = new GridBagConstraints();
 		gbc.gridx = 1;
-		gbc.gridy = 6;
+		gbc.gridy = 7;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.insets = new Insets(0, 0, 12, 0);
 		panel1.add(stopProgress, gbc);
@@ -148,14 +150,14 @@ public class WorkLogCreate extends DialogWrapper {
 		label3.setText("Comment:");
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;
-		gbc.gridy = 7;
+		gbc.gridy = 8;
 		gbc.weighty = 1.0;
 		gbc.anchor = GridBagConstraints.NORTHWEST;
 		panel1.add(label3, gbc);
 		final JScrollPane scrollPane1 = new JScrollPane();
 		gbc = new GridBagConstraints();
 		gbc.gridx = 1;
-		gbc.gridy = 7;
+		gbc.gridy = 8;
 		gbc.gridwidth = 8;
 		gbc.weightx = 1.0;
 		gbc.weighty = 1.0;
@@ -163,37 +165,19 @@ public class WorkLogCreate extends DialogWrapper {
 		panel1.add(scrollPane1, gbc);
 		comment = new JTextArea();
 		scrollPane1.setViewportView(comment);
-		final JPanel panel2 = new JPanel();
-		panel2.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
-		gbc = new GridBagConstraints();
-		gbc.gridx = 2;
-		gbc.gridy = 0;
-		gbc.gridwidth = 3;
-		gbc.fill = GridBagConstraints.BOTH;
-		gbc.insets = new Insets(0, 12, 0, 0);
-		panel1.add(panel2, gbc);
 		final JLabel label4 = new JLabel();
-		label4.setFont(new Font(label4.getFont().getName(), label4.getFont().getStyle(), label4.getFont().getSize()));
-		label4.setText("Enter time spent in a format of: ");
-		panel2.add(label4);
-		final JLabel label5 = new JLabel();
-		label5.setFont(new Font(label5.getFont().getName(), label5.getFont().getStyle(), label5.getFont().getSize()));
-		label5.setForeground(Color.blue);
-		label5.setText("*w*d*h*m");
-		panel2.add(label5);
-		final JLabel label6 = new JLabel();
-		label6.setText("Remaining Estimate:");
+		label4.setText("Remaining Estimate:");
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;
-		gbc.gridy = 3;
+		gbc.gridy = 4;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.insets = new Insets(0, 0, 0, 12);
-		panel1.add(label6, gbc);
+		panel1.add(label4, gbc);
 		btnLeaveUnchanged = new JRadioButton();
 		btnLeaveUnchanged.setText("Leave Unchanged");
 		gbc = new GridBagConstraints();
 		gbc.gridx = 1;
-		gbc.gridy = 3;
+		gbc.gridy = 4;
 		gbc.anchor = GridBagConstraints.WEST;
 		panel1.add(btnLeaveUnchanged, gbc);
 		btnUpdateManually = new JRadioButton();
@@ -201,7 +185,7 @@ public class WorkLogCreate extends DialogWrapper {
 		btnUpdateManually.setText("Update Manually");
 		gbc = new GridBagConstraints();
 		gbc.gridx = 1;
-		gbc.gridy = 4;
+		gbc.gridy = 5;
 		gbc.anchor = GridBagConstraints.WEST;
 		panel1.add(btnUpdateManually, gbc);
 		remainingEstimateLabel = new JLabel();
@@ -209,44 +193,56 @@ public class WorkLogCreate extends DialogWrapper {
 		remainingEstimateLabel.setText("New Remaining Estimate:");
 		gbc = new GridBagConstraints();
 		gbc.gridx = 1;
-		gbc.gridy = 5;
+		gbc.gridy = 6;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.insets = new Insets(0, 24, 0, 12);
 		panel1.add(remainingEstimateLabel, gbc);
-		final JPanel panel3 = new JPanel();
-		panel3.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+		final JPanel panel2 = new JPanel();
+		panel2.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
 		gbc = new GridBagConstraints();
 		gbc.gridx = 2;
-		gbc.gridy = 5;
+		gbc.gridy = 6;
 		gbc.fill = GridBagConstraints.BOTH;
-		panel1.add(panel3, gbc);
+		panel1.add(panel2, gbc);
 		remainingEstimateField = new JTextField();
 		remainingEstimateField.setEnabled(false);
 		remainingEstimateField.setMinimumSize(new Dimension(100, 28));
 		remainingEstimateField.setPreferredSize(new Dimension(150, 28));
-		panel3.add(remainingEstimateField, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-		final JPanel panel4 = new JPanel();
-		panel4.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
+		panel2.add(remainingEstimateField, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+		final JPanel panel3 = new JPanel();
+		panel3.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
 		gbc = new GridBagConstraints();
 		gbc.gridx = 1;
-		gbc.gridy = 1;
+		gbc.gridy = 2;
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.insets = new Insets(12, 0, 12, 0);
-		panel1.add(panel4, gbc);
+		panel1.add(panel3, gbc);
 		endDateLabel = new JLabel();
 		endDateLabel.setText("1/01/08 12:00");
-		panel4.add(endDateLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(109, 16), null, 0, false));
+		panel3.add(endDateLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(109, 16), null, 0, false));
 		endDateChange = new JButton();
 		endDateChange.setText("Change");
-		panel4.add(endDateChange, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		panel3.add(endDateChange, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		btnAutoUpdate = new JRadioButton();
 		btnAutoUpdate.setSelected(true);
 		btnAutoUpdate.setText("Auto Update");
 		gbc = new GridBagConstraints();
 		gbc.gridx = 1;
-		gbc.gridy = 2;
+		gbc.gridy = 3;
 		gbc.anchor = GridBagConstraints.WEST;
 		panel1.add(btnAutoUpdate, gbc);
+		anEstimateOfHowTextPane = new JTextPane();
+		anEstimateOfHowTextPane.setEditable(false);
+		anEstimateOfHowTextPane.setEnabled(true);
+		anEstimateOfHowTextPane.setMargin(new Insets(0, 12, 0, 0));
+		anEstimateOfHowTextPane.setOpaque(false);
+		anEstimateOfHowTextPane.setText("An estimate of how much time you have spent working. \nThe format of this is ' *w *d *h *m ' \n(representing weeks, days, hours and minutes - where * can be any number) \nExamples: 4d, 5h 30m, 60m and 3w. ");
+		gbc = new GridBagConstraints();
+		gbc.gridx = 1;
+		gbc.gridy = 1;
+		gbc.gridwidth = 8;
+		gbc.fill = GridBagConstraints.BOTH;
+		panel1.add(anEstimateOfHowTextPane, gbc);
 		gbc = new GridBagConstraints();
 		gbc.gridx = 8;
 		gbc.gridy = 2;
@@ -419,14 +415,14 @@ public class WorkLogCreate extends DialogWrapper {
 			}
 		});
 
-        final JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
-        if (jiraServer == null) {
-            Messages.showErrorDialog(project, "There is no selected JIRA Server", "Error");
-            return;
-        }
-        final JiraServerCfg server = jiraServer.getServer();
+		final JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
+		if (jiraServer == null) {
+			Messages.showErrorDialog(project, "There is no selected JIRA Server", "Error");
+			return;
+		}
+		final JiraServerCfg server = jiraServer.getServer();
 
-        new Thread(new Runnable() {
+		new Thread(new Runnable() {
 			public void run() {
 				try {
 					List<JIRAAction> actions = facade.getAvailableActions(server, adapter.getIssue());
@@ -436,7 +432,7 @@ public class WorkLogCreate extends DialogWrapper {
 							if (fields.isEmpty()) {
 								stopProgress.setEnabled(true);
 								stopProgressLabel.setEnabled(true);
-								inProgressAction = a;
+								stopProgressAction = a;
 							}
 							break;
 						}
@@ -481,8 +477,8 @@ public class WorkLogCreate extends DialogWrapper {
 		return stopProgress.isSelected();
 	}
 
-	public JIRAAction getInProgressAction() {
-		return inProgressAction;
+	public JIRAAction getStopProgressAction() {
+		return stopProgressAction;
 	}
 
 	public boolean getAutoUpdateRemaining() {
@@ -519,14 +515,14 @@ public class WorkLogCreate extends DialogWrapper {
 			calendar = new CalendarPanel(1);
 			calendar.setSelectionMode(DateSelectionModel.SINGLE_SELECTION);
 
-            Calendar nowcal = Calendar.getInstance();
-            nowcal.setTime(now);
-            nowcal.set(Calendar.HOUR_OF_DAY, 0);
-            nowcal.set(Calendar.MINUTE, 0);
-            nowcal.set(Calendar.SECOND, 0);
-            nowcal.set(Calendar.MILLISECOND, 0);
+			Calendar nowcal = Calendar.getInstance();
+			nowcal.setTime(now);
+			nowcal.set(Calendar.HOUR_OF_DAY, 0);
+			nowcal.set(Calendar.MINUTE, 0);
+			nowcal.set(Calendar.SECOND, 0);
+			nowcal.set(Calendar.MILLISECOND, 0);
 
-            Date nowZeroZero = nowcal.getTime();
+			Date nowZeroZero = nowcal.getTime();
 
 			calendar.setDate(nowZeroZero);
 			calendar.setValue(nowZeroZero);
