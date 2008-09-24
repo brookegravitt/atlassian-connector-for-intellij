@@ -336,7 +336,9 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 			}
 			CrucibleFileNode fileNode = (CrucibleFileNode) reviewFilesAndCommentsTree.getModel().locateNode(
 					new SearchFileAlgorithm(review, file));
-			fileNode.setReview(review);
+			if (fileNode != null) {
+				fileNode.setReview(review);
+			}
 		}
 
 		public void createdOrEditedGeneralComment(final ReviewData review, final GeneralComment comment) {
