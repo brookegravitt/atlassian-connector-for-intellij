@@ -56,4 +56,6 @@ public interface CfgManager extends BambooCfgManager {
 	Collection<CrucibleServerCfg> getAllEnabledCrucibleServers(final ProjectId projectId);
 
 	Collection<JiraServerCfg> getAllEnabledJiraServers(final ProjectId projectId);
+
+	Collection<ServerCfg> getAllUniqueServers();
 }

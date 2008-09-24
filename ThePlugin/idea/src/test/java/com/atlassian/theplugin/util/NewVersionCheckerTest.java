@@ -16,11 +16,11 @@
 
 package com.atlassian.theplugin.util;
 
-import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.exception.IncorrectVersionException;
-import com.atlassian.theplugin.exception.VersionServiceException;
 import com.atlassian.theplugin.commons.util.Version;
+import com.atlassian.theplugin.exception.VersionServiceException;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 
@@ -35,7 +35,6 @@ import java.io.IOException;
 public class NewVersionCheckerTest extends TestCase {
 	private org.mortbay.jetty.Server httpServer;
 	private JettyMockServer mockServer;
-	private PluginConfigurationBean config;
 	private static final String GET_LATEST_VERSION_URL = "/GetLatestVersion";
 	public static final String VERSION = "0.2.0, SVN:18";
 	public static final String VERSION_ALPHA = "0.2.0-alpHa, SVN:12";
@@ -48,10 +47,12 @@ public class NewVersionCheckerTest extends TestCase {
 	public static final String VERSION_SNAPSHOT_GT = "0.2.0-SnaPSHot, SVN:17";
 
 	private long uid;
+	private UsageStatisticsGenerator usageStatisticsGenerator;
+
 
 	@Override
 	protected void setUp() throws Exception {
-		config = new PluginConfigurationBean();
+		final PluginConfigurationBean config = new PluginConfigurationBean();
 		uid = config.getGeneralConfigurationData().getUid();
 		ConfigurationFactory.setConfiguration(config);
 
@@ -59,17 +60,20 @@ public class NewVersionCheckerTest extends TestCase {
 		httpServer.start();
 
 		mockServer = new JettyMockServer(httpServer);
+
+		usageStatisticsGenerator = new UsageStatisticsGenerator() {
+			public String getStatisticsUrlSuffix() {
+				return "uid=" + uid;
+			}
+		};
+
 	}
 
 	public void testGetLatestVersion() throws VersionServiceException, IncorrectVersionException {
 		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort();
 		mockServer.expect(GET_LATEST_VERSION_URL, new PingCallback(NewVersionCheckerTest.VERSION));
-		InfoServer.VersionInfo versionInfo = null;
-		try {
-			versionInfo = InfoServer.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, uid, false);
-		} catch (VersionServiceException e) {
-			fail(e.getMessage());
-		}
+		InfoServer.VersionInfo versionInfo = InfoServer
+				.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, usageStatisticsGenerator);
 		assertNotNull(versionInfo);
 		Version newVersion = new Version(VERSION);
 
@@ -80,12 +84,8 @@ public class NewVersionCheckerTest extends TestCase {
 	public void testGetLatestAlphaVersion() throws VersionServiceException, IncorrectVersionException {
 		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort();
 		mockServer.expect(GET_LATEST_VERSION_URL, new PingCallback(NewVersionCheckerTest.VERSION_ALPHA));
-		InfoServer.VersionInfo versionInfo = null;
-		try {
-			versionInfo = InfoServer.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, uid, false);
-		} catch (VersionServiceException e) {
-			fail(e.getMessage());
-		}
+		InfoServer.VersionInfo versionInfo = InfoServer
+				.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, usageStatisticsGenerator);
 		Version newVersion = new Version(VERSION);
 
 		assertFalse(versionInfo.getVersion().greater(newVersion));
@@ -95,12 +95,8 @@ public class NewVersionCheckerTest extends TestCase {
 	public void testGetLatestBetaVersion() throws VersionServiceException, IncorrectVersionException {
 		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort();
 		mockServer.expect(GET_LATEST_VERSION_URL, new PingCallback(NewVersionCheckerTest.VERSION_BETA));
-		InfoServer.VersionInfo versionInfo = null;
-		try {
-			versionInfo = InfoServer.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, uid, false);
-		} catch (VersionServiceException e) {
-			fail(e.getMessage());
-		}
+		InfoServer.VersionInfo versionInfo = InfoServer
+				.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, usageStatisticsGenerator);
 		Version newVersion = new Version(VERSION);
 
 		assertFalse(versionInfo.getVersion().greater(newVersion));
@@ -110,12 +106,8 @@ public class NewVersionCheckerTest extends TestCase {
 	public void testGetLatestSnapshotVersion() throws VersionServiceException, IncorrectVersionException {
 		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort();
 		mockServer.expect(GET_LATEST_VERSION_URL, new PingCallback(NewVersionCheckerTest.VERSION_SNAPSHOT_LT));
-		InfoServer.VersionInfo versionInfo = null;
-		try {
-			versionInfo = InfoServer.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, uid, false);
-		} catch (VersionServiceException e) {
-			fail(e.getMessage());
-		}
+		InfoServer.VersionInfo versionInfo = InfoServer
+				.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, usageStatisticsGenerator);
 		Version newVersion = new Version(VERSION);
 
 		assertFalse(versionInfo.getVersion().greater(newVersion));
@@ -125,27 +117,18 @@ public class NewVersionCheckerTest extends TestCase {
 	public void testGetLatestBetaCompareToAlfaVersion() throws VersionServiceException, IncorrectVersionException {
 		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort();
 		mockServer.expect(GET_LATEST_VERSION_URL, new PingCallback(NewVersionCheckerTest.VERSION_BETA));
-		InfoServer.VersionInfo versionInfo = null;
-		try {
-			versionInfo = InfoServer.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, uid, false);
-		} catch (VersionServiceException e) {
-			fail(e.getMessage());
-		}
+		InfoServer.VersionInfo versionInfo = InfoServer
+				.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, usageStatisticsGenerator);
 		Version newVersion = new Version(VERSION_ALPHA);
 
 		assertTrue(versionInfo.getVersion().greater(newVersion));
-
 	}
 
 	public void testGetLatestBetaCompareToSnapshotLtVersion() throws VersionServiceException, IncorrectVersionException {
 		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort();
 		mockServer.expect(GET_LATEST_VERSION_URL, new PingCallback(NewVersionCheckerTest.VERSION_BETA));
-		InfoServer.VersionInfo versionInfo = null;
-		try {
-			versionInfo = InfoServer.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, uid, false);
-		} catch (VersionServiceException e) {
-			fail(e.getMessage());
-		}
+		InfoServer.VersionInfo versionInfo = InfoServer
+				.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, usageStatisticsGenerator);
 		Version newVersion = new Version(VERSION_SNAPSHOT_LT);
 
 		assertTrue(versionInfo.getVersion().greater(newVersion));
@@ -155,12 +138,8 @@ public class NewVersionCheckerTest extends TestCase {
 	public void testGetLatestBetaCompareToSnapshotGtVersion() throws VersionServiceException, IncorrectVersionException {
 		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort();
 		mockServer.expect(GET_LATEST_VERSION_URL, new PingCallback(NewVersionCheckerTest.VERSION_BETA));
-		InfoServer.VersionInfo versionInfo = null;
-		try {
-			versionInfo = InfoServer.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, uid, false);
-		} catch (VersionServiceException e) {
-			fail(e.getMessage());
-		}
+		InfoServer.VersionInfo versionInfo = InfoServer
+				.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, usageStatisticsGenerator);
 		Version newVersion = new Version(VERSION_SNAPSHOT_GT);
 
 		assertFalse(versionInfo.getVersion().greater(newVersion));
@@ -170,12 +149,8 @@ public class NewVersionCheckerTest extends TestCase {
 	public void testGetLatestAlphaCompareToSnapshotLtVersion() throws VersionServiceException, IncorrectVersionException {
 		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort();
 		mockServer.expect(GET_LATEST_VERSION_URL, new PingCallback(NewVersionCheckerTest.VERSION_ALPHA));
-		InfoServer.VersionInfo versionInfo = null;
-		try {
-			versionInfo = InfoServer.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, uid, false);
-		} catch (VersionServiceException e) {
-			fail(e.getMessage());
-		}
+		InfoServer.VersionInfo versionInfo = InfoServer
+				.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, usageStatisticsGenerator);
 		Version newVersion = new Version(VERSION_SNAPSHOT_LT);
 
 		assertTrue(versionInfo.getVersion().greater(newVersion));
@@ -185,12 +160,8 @@ public class NewVersionCheckerTest extends TestCase {
 	public void testGetLatestAlphaCompareToSnapshotGtVersion() throws VersionServiceException, IncorrectVersionException {
 		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort();
 		mockServer.expect(GET_LATEST_VERSION_URL, new PingCallback(NewVersionCheckerTest.VERSION_ALPHA));
-		InfoServer.VersionInfo versionInfo = null;
-		try {
-			versionInfo = InfoServer.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, uid, false);
-		} catch (VersionServiceException e) {
-			fail(e.getMessage());
-		}
+		InfoServer.VersionInfo versionInfo = InfoServer
+				.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, usageStatisticsGenerator);
 		Version newVersion = new Version(VERSION_SNAPSHOT_GT);
 
 		assertFalse(versionInfo.getVersion().greater(newVersion));
@@ -200,12 +171,8 @@ public class NewVersionCheckerTest extends TestCase {
 	public void testGetLatestAlphaToAlphaVersion() throws VersionServiceException, IncorrectVersionException {
 		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort();
 		mockServer.expect(GET_LATEST_VERSION_URL, new PingCallback(NewVersionCheckerTest.VERSION_ALPHA1));
-		InfoServer.VersionInfo versionInfo = null;
-		try {
-			versionInfo = InfoServer.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, uid, false);
-		} catch (VersionServiceException e) {
-			fail(e.getMessage());
-		}
+		InfoServer.VersionInfo versionInfo = InfoServer
+				.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, usageStatisticsGenerator);
 		Version newVersion = new Version(VERSION_ALPHA);
 
 		assertTrue(versionInfo.getVersion().greater(newVersion));
@@ -213,18 +180,14 @@ public class NewVersionCheckerTest extends TestCase {
 	}
 
 
-	public void testGetWithReleaseNotes() throws IncorrectVersionException {
+	public void testGetWithReleaseNotes() throws IncorrectVersionException, VersionServiceException {
 		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort();
 		final String notesUrl = "http://myurl";
 		final String myReleaseNotes = "my <%&$*(> string\nfdaljsf";
 		mockServer.expect(GET_LATEST_VERSION_URL, new PingCallback(NewVersionCheckerTest.VERSION_ALPHA1, "<![CDATA[" +
 				myReleaseNotes + "]]>", notesUrl));
-		InfoServer.VersionInfo versionInfo = null;
-		try {
-			versionInfo = InfoServer.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, uid, false);
-		} catch (VersionServiceException e) {
-			fail(e.getMessage());
-		}
+		InfoServer.VersionInfo versionInfo = InfoServer
+				.getLatestPluginVersion(mockBaseUrl + GET_LATEST_VERSION_URL, usageStatisticsGenerator);
 		Version newVersion = new Version(VERSION_ALPHA);
 
 		assertTrue(versionInfo.getVersion().greater(newVersion));

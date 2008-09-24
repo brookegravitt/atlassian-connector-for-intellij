@@ -37,28 +37,32 @@ public final class InfoServer {
 	private InfoServer() {
 	}
 
-	public static VersionInfo getLatestPluginVersion(long uid,
-													 boolean checkUnstableVersions)
-			throws VersionServiceException, IncorrectVersionException {
+	public static VersionInfo getLatestPluginVersion(final UsageStatisticsGenerator usageStatisticsGenerator,
+			boolean checkUnstableVersions) throws VersionServiceException, IncorrectVersionException {
 
 		String serviceUrl = PluginUtil.STABLE_VERSION_INFO_URL;
 		if (checkUnstableVersions) {
 			serviceUrl = PluginUtil.LATEST_VERSION_INFO_URL;
 		}
-		return getLatestPluginVersion(serviceUrl, uid, checkUnstableVersions);
+		return getLatestPluginVersion(serviceUrl, usageStatisticsGenerator);
 	}
 
-	protected static VersionInfo getLatestPluginVersion(String serviceUrl, long uid, boolean checkUnstableVersions) 
+	protected static VersionInfo getLatestPluginVersion(final String serviceUrl,
+			final UsageStatisticsGenerator usageStatisticsGenerator)
 			throws VersionServiceException, IncorrectVersionException {
-		try {
 
-			HttpClient client = null;
+		String getMethodUrl = serviceUrl;
+		try {
+			HttpClient client;
 			try {
 				client = HttpClientFactory.getClient();
 			} catch (HttpProxySettingsException e) {
 				throw new VersionServiceException("Connection error while retrieving the latest plugin version.", e);
 			}
-			GetMethod method = new GetMethod(serviceUrl + "?uid=" + uid);
+			if (usageStatisticsGenerator != null) {
+				getMethodUrl += "?" + usageStatisticsGenerator.getStatisticsUrlSuffix();
+			}
+			GetMethod method = new GetMethod(getMethodUrl);
 			try {
 				client.executeMethod(method);
 			} catch (IllegalArgumentException e) {
@@ -73,10 +77,7 @@ public final class InfoServer {
 			throw new VersionServiceException("Connection error while retrieving the latest plugin version.", e);
 		} catch (JDOMException e) {
 			throw new VersionServiceException(
-					"Error while parsing xml response from version service server at "
-					+ serviceUrl
-					+ "?uid="
-					+ uid, e);
+					"Error while parsing xml response from version service server at " + getMethodUrl, e);
 		}
 	}
 
