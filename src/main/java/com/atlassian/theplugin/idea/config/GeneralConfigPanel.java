@@ -35,11 +35,10 @@ public final class GeneralConfigPanel extends JPanel implements ContentPanel {
 	private static GeneralConfigPanel instance;
 
 	private GeneralConfigPanel(PluginConfiguration globalPluginConfiguration) {
-		super();
 		this.globalPluginConfiguration = globalPluginConfiguration;
 		localPluginConfigurationCopy = this.globalPluginConfiguration;
 		setLayout(new CardLayout());
-		dialog = new GeneralConfigForm(NewVersionChecker.getInstance(globalPluginConfiguration));
+		dialog = new GeneralConfigForm(NewVersionChecker.getInstance());
 		add(dialog.getRootPane(), "GeneralConfig");
 	}
 
