@@ -56,7 +56,8 @@ public final class BugReporting {
 		versionMap.put("2.0.0-beta-1", "10498");
         versionMap.put("2.0.0-beta-2", "10592");
         versionMap.put("2.0.0-beta-3", "10593");
-		versionMap.put("2.0.0", "10632");
+		versionMap.put("2.0.0-beta-4", "10632");
+		versionMap.put("2.0.0-beta-5", "10644");
 	}
 
     private static final int MAX_URI_LENGTH = 4096;
