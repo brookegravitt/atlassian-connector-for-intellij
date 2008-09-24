@@ -28,12 +28,7 @@ import com.atlassian.theplugin.configuration.JiraFiltersBean;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.configuration.ProjectToolWindowTableConfiguration;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.action.jira.FilterTypeAction;
-import com.atlassian.theplugin.idea.action.jira.JIRANextPageAction;
-import com.atlassian.theplugin.idea.action.jira.JIRAPreviousPageAcion;
-import com.atlassian.theplugin.idea.action.jira.JIRAShowIssuesFilterAction;
-import com.atlassian.theplugin.idea.action.jira.RunJIRAActionAction;
-import com.atlassian.theplugin.idea.action.jira.SavedFilterComboAction;
+import com.atlassian.theplugin.idea.action.jira.*;
 import com.atlassian.theplugin.idea.jira.table.JIRATableColumnProviderImpl;
 import com.atlassian.theplugin.idea.jira.table.columns.IssueKeyColumn;
 import com.atlassian.theplugin.idea.jira.table.columns.IssuePriorityColumn;
@@ -45,11 +40,7 @@ import com.atlassian.theplugin.idea.ui.TableColumnProvider;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
-import com.atlassian.theplugin.jira.api.JIRAAction;
-import com.atlassian.theplugin.jira.api.JIRAException;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
-import com.atlassian.theplugin.jira.api.JIRASavedFilterBean;
+import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.ide.DataManager;
@@ -341,6 +332,43 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 		return serverSelected;
 	}
 
+	// TODO - very uncool to hardcode the particular action ID.
+	// What if Anton's people decide to change the ID of this action?
+	private static final int START_PROGRESS_JIRA_ACTION_ID = 4;
+
+	public void startWorkingOnIssue() {
+		createChangeListAction(project);
+		final JIRAAction a = new JIRAActionBean(START_PROGRESS_JIRA_ACTION_ID, "Start Progress");
+		final JIRAServer server = IdeaHelper.getCurrentJIRAServer(project);
+
+		Task.Backgroundable startWorkOnIssue = new Task.Backgroundable(project, "Starting Work on Issue", false) {
+
+			public void run(final ProgressIndicator indicator) {
+				JIRAIssue issue = table.getSelectedObject().getIssue();
+				setStatusMessage("Assigning issue " + issue.getKey() + " to myself...");
+				try {
+					jiraServerFacade.setAssignee(server.getServer(),
+							table.getSelectedObject().getIssue(), server.getServer().getUsername());
+					setStatusMessage("Starting progress on " + issue.getKey() + "...");
+					jiraServerFacade.progressWorkflowAction(server.getServer(),	issue, a);
+					setStatusMessage("Started progress on " + issue.getKey());
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							refreshIssuesPage();
+						}
+					});
+				} catch (JIRAException e) {
+					setStatusMessage("Error starting progress on issue: " + e.getMessage(), true);
+				} catch (NullPointerException e) {
+					// eeeem - now what?
+				}
+			}
+		};
+
+		ProgressManager.getInstance().run(startWorkOnIssue);
+
+	}
+
 	final class ActionsPopupListener implements Runnable {
 		private JiraIssueAdapter adapter;
 		private JList list;
@@ -375,6 +403,16 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 			.showInCenterOf(this);
 	}
 
+	private static void addCompositeActionsToPopupMenu(DefaultActionGroup submenu, List<JIRAAction> actions) {
+		for (JIRAAction a : actions) {
+			if (a.getId() == START_PROGRESS_JIRA_ACTION_ID) {
+				submenu.add(new AssignIssueAndStartWorkAction());
+				submenu.addSeparator();
+				break;
+			}
+		}
+	}
+
 	@Override
 	protected void addCustomSubmenus(DefaultActionGroup actionGroup, final ActionPopupMenu popup) {
 		final DefaultActionGroup submenu = new DefaultActionGroup("Querying for Actions... ", true) {
@@ -396,6 +434,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 		final JIRAIssue issue = adapter.getIssue();
 		List<JIRAAction> actions = adapter.getCachedActions();
 		if (actions != null) {
+			addCompositeActionsToPopupMenu(submenu, actions);
 			for (JIRAAction a : actions) {
 				submenu.add(new RunJIRAActionAction(this, jiraServerFacade, adapter, a));
 			}
@@ -409,15 +448,19 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 						if (jiraServer != null) {
 							final List<JIRAAction> actions =
 									jiraServerFacade.getAvailableActions(jiraServer.getServer(), issue);
+
 							adapter.setCachedActions(actions);
 							SwingUtilities.invokeLater(new Runnable() {
 								public void run() {
 									JPopupMenu pMenu = popup.getComponent();
 									if (pMenu.isVisible()) {
+										addCompositeActionsToPopupMenu(submenu, actions);
+
 										for (JIRAAction a : actions) {
 											submenu.add(new RunJIRAActionAction(JIRAToolWindowPanel.this,
 													jiraServerFacade, adapter, a));
 										}
+
 										// magic that makes the popup update itself. Don't ask - it is some sort of voodoo
 										pMenu.setVisible(false);
 										pMenu.setVisible(true);
