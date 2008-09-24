@@ -226,7 +226,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 
 		private void setCommentAuthor(CrucibleServerCfg server, Comment comment) {
 			CommentBean bean = (CommentBean) comment;
-			bean.setAuthor(CrucibleUserCache.getInstance().getUser(server, server.getUsername(), false));
+			bean.setAuthor(CrucibleUserCacheImpl.getInstance().getUser(server, server.getUsername(), false));
 
 		}
 

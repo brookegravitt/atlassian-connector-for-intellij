@@ -39,10 +39,7 @@ import static org.easymock.EasyMock.replay;
 import org.mortbay.jetty.Server;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CrucibleServerFacadeTest extends TestCase {
     private static final User VALID_LOGIN = new UserBean("validLogin");
@@ -60,6 +57,13 @@ public class CrucibleServerFacadeTest extends TestCase {
         crucibleSessionMock = createMock(CrucibleSession.class);
 
         facade = CrucibleServerFacadeImpl.getInstance();
+		((CrucibleServerFacadeImpl) facade).setUserCache(new CrucibleUserCache() {
+			public User getUser(CrucibleServerCfg server, String userId, boolean fetchIfNotExist) {
+				return null;
+			}
+			public void addUser(CrucibleServerCfg server, User user) {
+			}
+		});
 
         try {
             Field f = CrucibleServerFacadeImpl.class.getDeclaredField("sessions");
@@ -375,16 +379,16 @@ public class CrucibleServerFacadeTest extends TestCase {
         EasyMock.expectLastCall().andReturn(false);
         try {
             crucibleSessionMock.login(VALID_LOGIN.getUserName(), VALID_PASSWORD);
-        } catch (RemoteApiLoginException e) {
+		} catch (RemoteApiLoginException e) {
             fail("recording mock failed for login");
         }
-        crucibleSessionMock.getProjects();
+		crucibleSessionMock.getProjects();
         EasyMock.expectLastCall().andReturn(Arrays.asList(prepareProjectData(0), prepareProjectData(1)));
         replay(crucibleSessionMock);
 
         CrucibleServerCfg server = prepareServerBean();
         // test call
-        List<Project> ret = facade.getProjects(server);
+		List<Project> ret = facade.getProjects(server);
         assertEquals(2, ret.size());
         for (int i = 0; i < 2; i++) {
             String id = Integer.toString(i);
