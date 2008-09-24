@@ -146,7 +146,7 @@ public class AddAction extends AbstractCommentAction {
 
 	private void setCommentAuthor(ReviewData review, CommentBean comment) {
 		CrucibleServerCfg server = review.getServer();
-		User userName = CrucibleUserCache.getInstance().getUser(server, server.getUsername(), false);
+		User userName = CrucibleUserCacheImpl.getInstance().getUser(server, server.getUsername(), false);
 		if (userName != null) {
 			comment.setAuthor(userName);
 		} else {
