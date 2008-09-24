@@ -66,6 +66,7 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 		}
 		if (!session.isLoggedIn()) {
 			session.login(server.getUsername(), server.getPassword());
+			CrucibleUserCache.getInstance().getUser(server, server.getUsername(), true);
 		}
 		return session;
 	}
