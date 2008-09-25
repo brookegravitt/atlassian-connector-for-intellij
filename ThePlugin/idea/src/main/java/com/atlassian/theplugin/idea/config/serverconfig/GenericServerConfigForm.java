@@ -95,6 +95,7 @@ public class GenericServerConfigForm implements LoginDataProvided {
 		if (serverCfg == null) {
 			return;
 		}
+
 		serverCfg.setName(serverName.getText());
 		serverCfg.setUrl(serverUrl.getText());
 		serverCfg.setUsername(username.getText());

@@ -27,9 +27,12 @@ import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.Logger;
+import com.atlassian.theplugin.commons.cfg.ConfigurationCredentialsListener;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
+import com.atlassian.theplugin.idea.ThePluginProjectComponent;
 import com.atlassian.theplugin.idea.crucible.CommentHighlighter;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
 import com.atlassian.theplugin.idea.crucible.CrucibleFilteredModelProvider;
@@ -51,6 +54,7 @@ import com.atlassian.theplugin.idea.ui.tree.file.CrucibleGeneralCommentsNode;
 import com.atlassian.theplugin.idea.ui.tree.file.FileNode;
 import com.atlassian.theplugin.idea.ui.tree.file.FileTreeModelBuilder;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.atlassian.theplugin.cfg.CfgUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DataProvider;
@@ -68,7 +72,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
-public final class ReviewItemTreePanel extends JPanel implements DataProvider {
+public final class ReviewItemTreePanel extends JPanel implements DataProvider, ConfigurationCredentialsListener {
 
 	//	ProjectView.
 	private AtlassianTreeWithToolbar reviewFilesAndCommentsTree = null;
@@ -82,6 +86,8 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 	private CrucibleFilteredModelProvider.Filter filter;
 
 	public static final String MENU_PLACE = "menu review files";
+	private ReviewData crucibleReview;
+	private Project project;
 
 	public ReviewItemTreePanel(final Project project, final CrucibleFilteredModelProvider.Filter filter) {
 		initLayout();
@@ -155,6 +161,32 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 
 	public AtlassianTreeWithToolbar getAtlassianTreeWithToolbar() {
 		return reviewFilesAndCommentsTree;
+	}
+
+	public void configurationCredentialsUpdated(final ServerId serverId) {
+		if (crucibleReview.getServer().getServerId().equals(serverId)) {
+			reviewFilesAndCommentsTree.clear();
+//			System.out.println(serverId.toString());
+		}
+	}
+
+	public void startListeningForCredentialChanges(final Project project, final ReviewData crucibleReview) {
+		this.crucibleReview = crucibleReview;
+		this.project = project;
+
+//		IdeaHelper.getCfgManager().addConfigurationCredentialsListener(CfgUtil.getProjectId(project),
+//				reviewItemTreePanel);
+		IdeaHelper.getProjectComponent(project, ThePluginProjectComponent.class).getCfgManager().
+				addConfigurationCredentialsListener(CfgUtil.getProjectId(project), this);
+	}
+
+	private void stopListeningForCredentialChanges() {
+		this.crucibleReview = crucibleReview;
+
+//		IdeaHelper.getCfgManager().addConfigurationCredentialsListener(CfgUtil.getProjectId(project),
+//				reviewItemTreePanel);
+		IdeaHelper.getProjectComponent(project, ThePluginProjectComponent.class).getCfgManager().
+				removeConfigurationCredentialsListener(CfgUtil.getProjectId(project), this);
 	}
 
 	private final class MyReviewActionListener extends CrucibleReviewActionListener {

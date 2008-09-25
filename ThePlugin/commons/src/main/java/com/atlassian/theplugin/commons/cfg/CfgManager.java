@@ -58,4 +58,12 @@ public interface CfgManager extends BambooCfgManager {
 	Collection<JiraServerCfg> getAllEnabledJiraServers(final ProjectId projectId);
 
 	Collection<ServerCfg> getAllUniqueServers();
+
+	void addConfigurationCredentialsListener(ProjectId projectId,
+			ConfigurationCredentialsListener listener);
+
+	void removeAllConfigurationCredentialListeners(final ProjectId projectId);
+
+	boolean removeConfigurationCredentialsListener(ProjectId projectId,
+			ConfigurationCredentialsListener listener);
 }
