@@ -121,10 +121,10 @@ public class CfgManagerImpl implements CfgManager {
 
 	private void notifyCredentialsListeners(final ProjectId projectId, final ServerId serverId) {
 //		System.out.println("change");
-		Collection<ConfigurationCredentialsListener> listeners = credentialListeners.get(projectId);
+		Collection<ConfigurationCredentialsListener> projectListeners = credentialListeners.get(projectId);
 
 		if (listeners != null) {
-			for (ConfigurationCredentialsListener listener : listeners) {
+			for (ConfigurationCredentialsListener listener : projectListeners) {
 				listener.configurationCredentialsUpdated(serverId);
 			}
 		}
@@ -135,8 +135,8 @@ public class CfgManagerImpl implements CfgManager {
 			return false;
 		}
 
-		if (! oldServer.getUsername().equals(newServer.getUsername())
-			|| ! oldServer.getPassword().equals(newServer.getPassword())) {
+		if (!oldServer.getUsername().equals(newServer.getUsername())
+			|| !oldServer.getPassword().equals(newServer.getPassword())) {
 			return true;
 		}
 
