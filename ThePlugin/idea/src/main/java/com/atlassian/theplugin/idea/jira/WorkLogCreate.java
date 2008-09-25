@@ -208,7 +208,9 @@ public class WorkLogCreate extends DialogWrapper {
 		remainingEstimateField.setEnabled(false);
 		remainingEstimateField.setMinimumSize(new Dimension(100, 28));
 		remainingEstimateField.setPreferredSize(new Dimension(150, 28));
-		panel2.add(remainingEstimateField, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+		panel2.add(remainingEstimateField, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST,
+				GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null,
+				new Dimension(150, -1), null, 0, false));
 		final JPanel panel3 = new JPanel();
 		panel3.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
 		gbc = new GridBagConstraints();
@@ -219,10 +221,14 @@ public class WorkLogCreate extends DialogWrapper {
 		panel1.add(panel3, gbc);
 		endDateLabel = new JLabel();
 		endDateLabel.setText("1/01/08 12:00");
-		panel3.add(endDateLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(109, 16), null, 0, false));
+		panel3.add(endDateLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(109, 16), null, 0,
+				false));
 		endDateChange = new JButton();
 		endDateChange.setText("Change");
-		panel3.add(endDateChange, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		panel3.add(endDateChange, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
+				null, null, null, 0, false));
 		btnAutoUpdate = new JRadioButton();
 		btnAutoUpdate.setSelected(true);
 		btnAutoUpdate.setText("Auto Update");
@@ -236,7 +242,8 @@ public class WorkLogCreate extends DialogWrapper {
 		anEstimateOfHowTextPane.setEnabled(true);
 		anEstimateOfHowTextPane.setMargin(new Insets(0, 12, 0, 0));
 		anEstimateOfHowTextPane.setOpaque(false);
-		anEstimateOfHowTextPane.setText("An estimate of how much time you have spent working. \nThe format of this is ' *w *d *h *m ' \n(representing weeks, days, hours and minutes - where * can be any number) \nExamples: 4d, 5h 30m, 60m and 3w. ");
+		anEstimateOfHowTextPane.setText(
+				"An estimate of how much time you have spent working. \nThe format of this is ' *w *d *h *m ' \n(representing weeks, days, hours and minutes - where * can be any number) \nExamples: 4d, 5h 30m, 60m and 3w. ");
 		gbc = new GridBagConstraints();
 		gbc.gridx = 1;
 		gbc.gridy = 1;

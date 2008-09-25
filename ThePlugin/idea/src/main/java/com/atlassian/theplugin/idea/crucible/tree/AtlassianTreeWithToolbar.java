@@ -77,6 +77,10 @@ public class AtlassianTreeWithToolbar extends ComponentWithToolbar {
 		tree.setUI(new MyTreeUI());
 	}
 
+	public void clear() {
+		setModel(new AtlassianTreeModel(null));
+	}
+
 	private class MyTreeUI extends BasicWideNodeTreeUI {
 		@Override
 		protected TreeCellRenderer createDefaultCellRenderer() {

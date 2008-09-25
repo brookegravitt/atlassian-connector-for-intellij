@@ -80,6 +80,11 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
     private final ProjectConfigurationBean projectConfigurationBean;
 
     private final Project project;
+
+	public CfgManager getCfgManager() {
+		return cfgManager;
+	}
+
 	private final CfgManager cfgManager;
 	private final UIActionScheduler actionScheduler;
 	private BambooStatusIcon statusBarBambooIcon;

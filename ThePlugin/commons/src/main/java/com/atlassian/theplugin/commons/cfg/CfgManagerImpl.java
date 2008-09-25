@@ -31,6 +31,8 @@ public class CfgManagerImpl implements CfgManager {
 	private final Map<ProjectId, ProjectConfiguration> projectConfigurations = buildConcurrentHashMap(INITIAL_CAPACITY);
 	private Collection<ServerCfg> globalServers = MiscUtil.buildArrayList();
 	private final Map<ProjectId, Collection<ConfigurationListener>> listeners = buildConcurrentHashMap(100);
+	private final Map<ProjectId, Collection<ConfigurationCredentialsListener>> credentialListeners =
+			buildConcurrentHashMap(100);
 	private BambooCfg bambooCfg;
 	private static final int INITIAL_CAPACITY = 4;
 
@@ -95,10 +97,87 @@ public class CfgManagerImpl implements CfgManager {
 			throw new NullPointerException("Project configuration cannot be null");
 		}
 
+		notifyCredentialsListeners(projectId, projectConfiguration, getProjectConfiguration(projectId));
+
 		// internalize the list to be private and put it to array
 		projectConfigurations.put(projectId, projectConfiguration);
 		notifyListeners(projectId, new UpdateConfigurationListenerAction(projectConfiguration));
+
 	}
+
+	private void notifyCredentialsListeners(final ProjectId projectId,
+			final ProjectConfiguration newConfiguration, final ProjectConfiguration oldConfiguration) {
+
+		if (oldConfiguration == null || newConfiguration == null) {
+			return;
+		}
+
+		for (ServerCfg oldServer : oldConfiguration.getServers()) {
+			if (checkServerCredentialsChange(oldServer, newConfiguration.getServerCfg(oldServer.getServerId()))) {
+				notifyCredentialsListeners(projectId, oldServer.getServerId());
+			}
+		}
+	}
+
+	private void notifyCredentialsListeners(final ProjectId projectId, final ServerId serverId) {
+//		System.out.println("change");
+		Collection<ConfigurationCredentialsListener> listeners = credentialListeners.get(projectId);
+
+		if (listeners != null) {
+			for (ConfigurationCredentialsListener listener : listeners) {
+				listener.configurationCredentialsUpdated(serverId);
+			}
+		}
+	}
+
+	private boolean checkServerCredentialsChange(final ServerCfg oldServer, final ServerCfg newServer) {
+		if (newServer == null) {
+			return false;
+		}
+
+		if (! oldServer.getUsername().equals(newServer.getUsername())
+			|| ! oldServer.getPassword().equals(newServer.getPassword())) {
+			return true;
+		}
+
+		return false;
+	}
+
+	public void addConfigurationCredentialsListener(final ProjectId projectId, 
+			final ConfigurationCredentialsListener listener) {
+
+		if (listener == null) {
+			throw new IllegalArgumentException(ProjectId.class.getSimpleName() + " cannot be null");
+		}
+		verifyProjectId(projectId);
+
+		Collection<ConfigurationCredentialsListener> tmp = credentialListeners.get(projectId);
+		if (tmp == null) {
+			tmp = MiscUtil.buildHashSet();
+			credentialListeners.put(projectId, tmp);
+		}
+		tmp.add(listener);
+	}
+
+	public void removeAllConfigurationCredentialListeners(final ProjectId projectId) {
+		verifyProjectId(projectId);
+
+		credentialListeners.remove(projectId);
+	}
+
+	public boolean removeConfigurationCredentialsListener(final ProjectId projectId,
+			final ConfigurationCredentialsListener listener) {
+		if (listener == null) {
+			throw new IllegalArgumentException(ProjectId.class.getSimpleName() + " cannot be null");
+		}
+		verifyProjectId(projectId);
+		Collection<ConfigurationCredentialsListener> tmp = credentialListeners.get(projectId);
+		if (tmp != null) {
+			return tmp.remove(listener);
+		}
+		return false;
+	}
+
 
 
 	private void notifyListeners(final ProjectId projectId, ProjectListenerAction listenerAction) {

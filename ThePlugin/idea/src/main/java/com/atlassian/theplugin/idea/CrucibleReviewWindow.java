@@ -68,7 +68,6 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 	private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
 	private CrucibleFilteredModelProvider.Filter filter = CrucibleFilteredModelProvider.Filter.FILES_ALL;
 
-
 	protected String getInitialMessage() {
 
 		return "Waiting for Crucible review info.";
@@ -89,7 +88,9 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		return reviewItemTreePanel;
 	}
 
-	public void showCrucibleReviewWindow(final String crucibleReviewId) {
+	public void showCrucibleReviewWindow(final ReviewData crucibleReview) {
+
+		reviewItemTreePanel.startListeningForCredentialChanges(project, crucibleReview);
 
 		ToolWindowManager twm = ToolWindowManager.getInstance(this.project);
 		ToolWindow toolWindow = twm.getToolWindow(TOOL_WINDOW_TITLE);
@@ -106,7 +107,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		}
 
 		PeerFactory peerFactory = PeerFactory.getInstance();
-		content = peerFactory.getContentFactory().createContent(this, crucibleReviewId, false);
+		content = peerFactory.getContentFactory().createContent(this, crucibleReview.getPermId().getId(), false);
 		content.setIcon(PluginToolWindow.ICON_CRUCIBLE);
 		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
 		toolWindow.getContentManager().addContent(content);

@@ -224,6 +224,7 @@
 				class="com.atlassian.theplugin.idea.action.bamboo.changes.OpenRepoVersionAction"
 				text="Open Repository Version" icon="/objectBrowser/showEditorHighlighting.png"/>
 
+
 		<action id="ThePlugin.Tree.File.Filter"
 				class="com.atlassian.theplugin.idea.action.tree.file.ToggleFilterFilesAction"
 				text="Show Files with Comments Only" icon="/actions/unselectall.png"/>
@@ -248,6 +249,20 @@
 				icon="/actions/export.png">
 			<keyboard-shortcut first-keystroke="F4" keymap="$default"/>
 		</action>
+
+
+		<action id="ThePlugin.Crucible.Comment.Reply"
+				class="com.atlassian.theplugin.idea.action.crucible.comment.AddAction"
+				text="Add Comment" icon="/general/add.png"/>
+		<action id="ThePlugin.Crucible.Comment.Edit"
+				class="com.atlassian.theplugin.idea.action.crucible.comment.EditAction"
+				text="Edit Comment" icon="/actions/editSource.png"/>
+		<action id="ThePlugin.Crucible.Comment.Remove"
+				class="com.atlassian.theplugin.idea.action.crucible.comment.RemoveAction"
+				text="Remove Comment" icon="/general/remove.png"/>
+		<action id="ThePlugin.Crucible.Comment.Publish"
+				class="com.atlassian.theplugin.idea.action.crucible.comment.PublishAction"
+				text="Publish Comment" icon="/actions/menu-saveall.png"/>
 
 
 		<action id="ArcRunSelection" class="com.atlassian.theplugin.idea.action.CommentAction" text="Add Crucible Comment"
@@ -316,6 +331,11 @@
 			<reference id="ThePlugin.Crucible.GoToLocalSource"/>
 			<reference id="ThePlugin.Crucible.ShowFileAction"/>
 			<reference id="ThePlugin.Crucible.ShowReviewItemDiffAction"/>
+			<separator/>
+			<reference id="ThePlugin.Crucible.Comment.Reply"/>
+			<reference id="ThePlugin.Crucible.Comment.Edit"/>
+			<reference id="ThePlugin.Crucible.Comment.Remove"/>
+			<separator/>
 			<reference id="ThePlugin.Tree.File.Filter"/>
 		</group>
 
@@ -401,20 +421,6 @@
 				class="com.atlassian.theplugin.idea.action.crucible.JoinReviewAction" text="Join Review"/>
 		<action id="ThePlugin.Crucible.SetReviewers"
 				class="com.atlassian.theplugin.idea.action.crucible.SetReviewersAction" text="Set Reviewers"/>
-
-
-		<action id="ThePlugin.Crucible.Comment.Reply"
-				class="com.atlassian.theplugin.idea.action.crucible.comment.AddAction"
-				text="Add Comment" icon="/general/add.png"/>
-		<action id="ThePlugin.Crucible.Comment.Edit"
-				class="com.atlassian.theplugin.idea.action.crucible.comment.EditAction"
-				text="Edit Comment" icon="/actions/editSource.png"/>
-		<action id="ThePlugin.Crucible.Comment.Remove"
-				class="com.atlassian.theplugin.idea.action.crucible.comment.RemoveAction"
-				text="Remove Comment" icon="/general/remove.png"/>
-		<action id="ThePlugin.Crucible.Comment.Publish"
-				class="com.atlassian.theplugin.idea.action.crucible.comment.PublishAction"
-				text="Publish Comment" icon="/actions/menu-saveall.png"/>
 
 		<action id="ThePlugin.Crucible.Comment.NextComment"
 				class="com.atlassian.theplugin.idea.action.crucible.comment.NextCommentAction"
