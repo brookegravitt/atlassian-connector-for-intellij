@@ -171,8 +171,8 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 		}
 	}
 
-	public void startListeningForCredentialChanges(final Project aProject, final ReviewData crucibleReview) {
-		this.crucibleReview = crucibleReview;
+	public void startListeningForCredentialChanges(final Project aProject, final ReviewData aCrucibleReview) {
+		this.crucibleReview = aCrucibleReview;
 		this.project = aProject;
 
 //		IdeaHelper.getCfgManager().addConfigurationCredentialsListener(CfgUtil.getProjectId(project),
@@ -182,8 +182,6 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 	}
 
 	private void stopListeningForCredentialChanges() {
-		this.crucibleReview = crucibleReview;
-
 //		IdeaHelper.getCfgManager().addConfigurationCredentialsListener(CfgUtil.getProjectId(project),
 //				reviewItemTreePanel);
 		IdeaHelper.getProjectComponent(project, ThePluginProjectComponent.class).getCfgManager().
