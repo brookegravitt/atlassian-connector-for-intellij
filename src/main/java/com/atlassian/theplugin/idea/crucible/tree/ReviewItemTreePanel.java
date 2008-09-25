@@ -166,13 +166,14 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 	public void configurationCredentialsUpdated(final ServerId serverId) {
 		if (crucibleReview.getServer().getServerId().equals(serverId)) {
 			reviewFilesAndCommentsTree.clear();
+			stopListeningForCredentialChanges();
 //			System.out.println(serverId.toString());
 		}
 	}
 
-	public void startListeningForCredentialChanges(final Project project, final ReviewData crucibleReview) {
+	public void startListeningForCredentialChanges(final Project aProject, final ReviewData crucibleReview) {
 		this.crucibleReview = crucibleReview;
-		this.project = project;
+		this.project = aProject;
 
 //		IdeaHelper.getCfgManager().addConfigurationCredentialsListener(CfgUtil.getProjectId(project),
 //				reviewItemTreePanel);
