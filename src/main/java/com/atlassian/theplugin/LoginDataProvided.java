@@ -20,4 +20,5 @@ public interface LoginDataProvided {
 	String getServerUrl();
 	String getUserName();
 	String getPassword();
+	void setConnectionResult(ConnectionWrapper.ConnectionState result);
 }

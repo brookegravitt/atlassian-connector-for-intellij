@@ -70,10 +70,12 @@ public class TestConnectionListener implements ActionListener {
 		private ConnectionWrapper testConnector = null;
 		private static final int CHECK_CANCEL_INTERVAL = 500;	// miliseconds
 		private final Category log = Category.getInstance(TestConnectionTask.class);
+		private LoginDataProvided loginDataProvided;
 
 		public TestConnectionTask(Project currentProject, String title, boolean canBeCanceled,
 								  Connector tester, LoginDataProvided loginDataProvided) {
 			super(currentProject, title, canBeCanceled);
+			this.loginDataProvided = loginDataProvided;
 			testConnector = new ConnectionWrapper(tester, loginDataProvided, "test thread");
 		}
 
@@ -105,6 +107,8 @@ public class TestConnectionListener implements ActionListener {
 				}
 			}
 
+			ConnectionWrapper.ConnectionState state = testConnector.getConnectionState();
+			loginDataProvided.setConnectionResult(state);
 			switch (testConnector.getConnectionState()) {
 				case FAILED:
 					EventQueue.invokeLater(new Runnable() {

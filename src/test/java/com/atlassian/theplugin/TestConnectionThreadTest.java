@@ -62,6 +62,9 @@ public class TestConnectionThreadTest extends TestCase {
 		public String getPassword() {
 			return null;
 		}
+
+		public void setConnectionResult(ConnectionWrapper.ConnectionState result) {
+		}
 	}
 
 	public void testRunInterupted() {
