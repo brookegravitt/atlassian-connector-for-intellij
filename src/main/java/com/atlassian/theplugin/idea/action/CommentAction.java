@@ -77,8 +77,17 @@ public class CommentAction extends AnAction {
 		}
 		Project project = DataKeys.PROJECT.getData(e.getDataContext());
 
-		int start = ed.getDocument().getLineNumber(ed.getSelectionModel().getSelectionStart()) + 1;
-		int end = ed.getDocument().getLineNumber(ed.getSelectionModel().getSelectionEnd()) + 1;
+		int start = ed.getDocument().getLineNumber(ed.getSelectionModel().getSelectionStart());
+		int selEndOffset = ed.getSelectionModel().getSelectionEnd();
+		int end = ed.getDocument().getLineNumber(selEndOffset);
+		int lastLineOffset = ed.getDocument().getLineStartOffset(end);
+
+		++start;
+		// mind the fact that last line should not necessarily be included in the comment, because
+		// the caret may be at the beginning of the line while selecting
+		if (selEndOffset != lastLineOffset) {
+			++end;
+		}
 
 		ReviewData review = ed.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
 		CrucibleFileInfo reviewItem = ed.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
