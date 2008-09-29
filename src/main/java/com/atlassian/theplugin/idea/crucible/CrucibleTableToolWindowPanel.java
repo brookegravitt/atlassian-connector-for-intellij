@@ -598,8 +598,6 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
 		if (windowAffected) {
 			// clear the window (all filters)
-			System.out.println("changed bla bla bla");
-
 			clearTables();
 
 		}
