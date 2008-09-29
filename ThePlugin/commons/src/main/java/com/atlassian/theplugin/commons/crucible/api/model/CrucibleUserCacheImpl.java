@@ -12,15 +12,13 @@ import java.util.List;
 
 public final class CrucibleUserCacheImpl implements CrucibleUserCache {
 	private Map<CrucibleServerCfg, Map<String, User>> serverMap = new HashMap<CrucibleServerCfg, Map<String, User>>();
-	private CrucibleServerFacade facade;
 
-	private CrucibleUserCacheImpl() {
-		facade = CrucibleServerFacadeImpl.getInstance();
-	}
+	private static CrucibleUserCache instance;
 
-	private static CrucibleUserCache instance = new CrucibleUserCacheImpl();
-
-	public static CrucibleUserCache getInstance() {
+	public static synchronized CrucibleUserCache getInstance() {
+		if (instance == null) {
+			instance = new CrucibleUserCacheImpl();
+		}
 		return instance;
 	}
 
@@ -31,7 +29,7 @@ public final class CrucibleUserCacheImpl implements CrucibleUserCache {
 			serverMap.put(server, userMap);
 			List<User> users;
 			try {
-				users = facade.getUsers(server);
+				users = CrucibleServerFacadeImpl.getInstance().getUsers(server);
 			} catch (RemoteApiException e) {
 				return null;
 			} catch (ServerPasswordNotProvidedException e) {
