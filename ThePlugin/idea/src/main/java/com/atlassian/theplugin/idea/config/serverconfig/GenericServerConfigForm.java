@@ -26,6 +26,8 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 
 import javax.swing.*;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.DocumentEvent;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
@@ -59,6 +61,33 @@ public class GenericServerConfigForm implements LoginDataProvided {
 				adjustUrl();
 			}
 		});
+
+		DocumentListener listener = new DocumentListener() {
+
+			private void setServerState() {
+				// password can be empty, do not check for it
+				boolean enabled =
+						username.getText().length() > 0
+						&& serverName.getText().length() > 0
+						&& serverUrl.getText().length() > 0;
+				cbEnabled.setSelected(enabled);
+			}
+
+			public void insertUpdate(DocumentEvent e) {
+				setServerState();
+			}
+
+			public void removeUpdate(DocumentEvent e) {
+				setServerState();
+			}
+
+			public void changedUpdate(DocumentEvent e) {
+				setServerState();
+			}
+		};
+
+		username.getDocument().addDocumentListener(listener);
+		password.getDocument().addDocumentListener(listener);
 	}
 
 	public void finalizeData() {
@@ -88,9 +117,6 @@ public class GenericServerConfigForm implements LoginDataProvided {
 		cbEnabled.setSelected(server.isEnabled());
 	}
 
-	/**
-	 * Copies data from visual controls to underlying model. Ugly but it's how it was initially implemented.
-	 */
 	public void saveData() {
 		if (serverCfg == null) {
 			return;
