@@ -23,11 +23,12 @@ import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
+import com.atlassian.theplugin.commons.cfg.ConfigurationCredentialsListener;
+import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
-import com.atlassian.theplugin.idea.CrucibleReviewWindow;
-import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.ProgressAnimationProvider;
-import com.atlassian.theplugin.idea.VcsIdeaHelper;
+import com.atlassian.theplugin.idea.*;
 import com.atlassian.theplugin.idea.bamboo.ToolWindowBambooContent;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.events.ShowReviewEvent;
@@ -36,6 +37,7 @@ import com.atlassian.theplugin.idea.ui.AtlassianTableView;
 import com.atlassian.theplugin.idea.ui.CollapsibleTable;
 import com.atlassian.theplugin.idea.ui.TableColumnProvider;
 import com.atlassian.theplugin.idea.ui.TableItemSelectedListener;
+import com.atlassian.theplugin.cfg.CfgUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionToolbar;
@@ -53,14 +55,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStatusListener,
-		TableItemSelectedListener<ReviewData> {
+		TableItemSelectedListener<ReviewData>, ConfigurationCredentialsListener {
 	public static final String PLACE_PREFIX = CrucibleTableToolWindowPanel.class.getSimpleName();
 	private Project project;
 	private transient ActionToolbar filterEditToolbar;
@@ -176,6 +175,10 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 			filters.getPredefinedFilters()[PredefinedFilter.OutForReview.ordinal()] = true;
 			filters.setReadStored(true);
 		}
+
+		IdeaHelper.getProjectComponent(project, ThePluginProjectComponent.class).getCfgManager().
+				addConfigurationCredentialsListener(CfgUtil.getProjectId(project), this);
+
 	}
 
 	private void createFilterToolBar() {
@@ -576,5 +579,39 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
 	public CustomFilterBean getCustomFilter() {
 		return filters.getManualFilter();
+	}
+
+	public void configurationCredentialsUpdated(final ServerId serverId) {
+		boolean windowAffected = false;
+
+		// check if changed server credentials are related to one of enabled crucible server and clear the window
+		// assumption here is that we have reviews from several servers displayed in this window
+		CfgManager cfgManager = IdeaHelper.getProjectComponent(project, ThePluginProjectComponent.class).getCfgManager();
+		Collection<CrucibleServerCfg> cfgServers = cfgManager.getAllEnabledCrucibleServers(CfgUtil.getProjectId(project));
+
+		for (CrucibleServerCfg cfgServer : cfgServers) {
+			if (cfgServer.getServerId().equals(serverId)) {
+				windowAffected = true;
+				break;
+			}
+		}
+
+		if (windowAffected) {
+			// clear the window (all filters)
+			System.out.println("changed bla bla bla");
+
+			clearTables();
+
+		}
+	}
+
+	private void clearTables() {
+		for (CollapsibleTable table : tables.values()) {
+			table.clear();
+		}
+
+		for (CollapsibleTable table : customTables.values()) {
+			table.clear();
+		}
 	}
 }
