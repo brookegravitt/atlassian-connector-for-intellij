@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.LoginDataProvided;
+import com.atlassian.theplugin.ConnectionWrapper;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.util.UrlUtil;
 import com.atlassian.theplugin.idea.TestConnectionListener;
@@ -64,15 +65,6 @@ public class GenericServerConfigForm implements LoginDataProvided {
 
 		DocumentListener listener = new DocumentListener() {
 
-			private void setServerState() {
-				// password can be empty, do not check for it
-				boolean enabled =
-						username.getText().length() > 0
-						&& serverName.getText().length() > 0
-						&& serverUrl.getText().length() > 0;
-				cbEnabled.setSelected(enabled);
-			}
-
 			public void insertUpdate(DocumentEvent e) {
 				setServerState();
 			}
@@ -92,6 +84,15 @@ public class GenericServerConfigForm implements LoginDataProvided {
 
 	public void finalizeData() {
 		adjustUrl();
+	}
+
+	private void setServerState() {
+		// password can be empty, do not check for it
+		boolean enabled =
+				username.getText().length() > 0
+				&& serverName.getText().length() > 0
+				&& serverUrl.getText().length() > 0;
+		cbEnabled.setSelected(enabled);
 	}
 
 	private void adjustUrl() {
@@ -145,6 +146,16 @@ public class GenericServerConfigForm implements LoginDataProvided {
 
 	public String getPassword() {
 		return String.valueOf(password.getPassword());
+	}
+
+	public void setConnectionResult(ConnectionWrapper.ConnectionState result) {
+		if (result == ConnectionWrapper.ConnectionState.SUCCEEDED) {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					setServerState();
+				}
+			});
+		}
 	}
 
 	/**
