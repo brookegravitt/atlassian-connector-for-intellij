@@ -123,7 +123,7 @@ public class CfgManagerImpl implements CfgManager {
 //		System.out.println("change");
 		Collection<ConfigurationCredentialsListener> projectListeners = credentialListeners.get(projectId);
 
-		if (listeners != null) {
+		if (projectListeners != null) {
 			for (ConfigurationCredentialsListener listener : projectListeners) {
 				listener.configurationCredentialsUpdated(serverId);
 			}

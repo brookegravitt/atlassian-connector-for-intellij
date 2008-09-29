@@ -1067,7 +1067,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 			throw new IllegalStateException("Calling method without calling login() first");
 		}
 
+
 		Document request = CrucibleRestXmlHelper.prepareCreateReviewNode(review, revisions);
+
 		try {
 			Document doc = retrievePostResponse(baseUrl + REVIEW_SERVICE, request);
 			XPath xpath = XPath.newInstance("/reviewData");
