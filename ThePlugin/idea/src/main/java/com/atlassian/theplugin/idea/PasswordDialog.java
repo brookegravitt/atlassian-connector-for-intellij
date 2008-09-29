@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.LoginDataProvided;
+import com.atlassian.theplugin.ConnectionWrapper;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.idea.config.serverconfig.ProductConnector;
@@ -98,6 +99,10 @@ public class PasswordDialog extends JDialog implements LoginDataProvided {
 
 	public String getPassword() {
 		return getPasswordString();
+	}
+
+	public void setConnectionResult(ConnectionWrapper.ConnectionState result) {
+		// ignore
 	}
 
 	{
