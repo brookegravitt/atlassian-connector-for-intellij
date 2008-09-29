@@ -23,6 +23,7 @@ import com.intellij.util.ui.TableViewModel;
 import javax.swing.*;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
+import java.util.ArrayList;
 
 /**
  * @author lguminski
@@ -148,4 +149,8 @@ public class AtlassianTableViewWithToolbar<T> extends JPanel {
     public void setHeaderText(String msg) {
         headerLabel.setText(msg);
     }
+
+	public void clear() {
+		table.getTableViewModel().setItems(new ArrayList(0));
+	}
 }
