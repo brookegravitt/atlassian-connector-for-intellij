@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.idea;
+package com.atlassian.theplugin.idea.autoupdate;
 
-import com.atlassian.theplugin.util.InfoServer;
-import com.atlassian.theplugin.commons.util.Version;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
-import com.atlassian.theplugin.idea.autoupdate.PluginDownloader;
+import com.atlassian.theplugin.commons.util.Version;
+import com.atlassian.theplugin.util.InfoServer;
+import com.intellij.openapi.util.io.FileUtil;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 
@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.net.SocketTimeoutException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -54,6 +54,7 @@ public class PluginDownloaderTest extends TestCase {
 	private static final String SOME_VERSION = "0.3.0, SVN:2233";
 	private PluginConfiguration pluginConfiguration = new PluginConfigurationBean();
 
+	@Override
 	protected void setUp() throws Exception {
 		httpServer = new org.mortbay.jetty.Server(0);
 		httpServer.start();
@@ -64,48 +65,44 @@ public class PluginDownloaderTest extends TestCase {
 		downloader = new PluginDownloader(newVersion, pluginConfiguration.getGeneralConfigurationData());
 	}
 
-	public void testDownloadPluginFromServer() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, NoSuchFieldException {
+	@Override
+	protected void tearDown() throws Exception {
+		httpServer.stop();
+	}
+
+	public void testDownloadPluginFromServer() throws NoSuchMethodException, IllegalAccessException,
+			InvocationTargetException, NoSuchFieldException, IOException {
 		mockServer.expect(DOWNLOAD_BASE, new ArchiveRepositoryProviderCallback());
 
-		Class[] paramTypes = {String.class};
-		Method method = PluginDownloader.class.getDeclaredMethod("downloadPluginFromServer", paramTypes);
-		method.setAccessible(true);
 		File localFile = null;
 		try {
-			localFile = (File) method.invoke(downloader, new Object[]{SOME_VERSION});
-		}
-		catch (InvocationTargetException ex) {
-			fail("Invocation of the downloadPluginFromServer method failed: " + ex.getMessage());
-		}
-		finally {
+			localFile = downloader.downloadPluginFromServer(SOME_VERSION, new File(FileUtil.getTempDirectory()));
+		} finally {
 			if (localFile != null) {
 				localFile.delete();
 			}
 		}
 	}
 
-	public void testTimeoutedDownloadPluginFromServer() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, NoSuchFieldException {
+	public void testTimeoutedDownloadPluginFromServer() throws NoSuchMethodException, IllegalAccessException,
+			InvocationTargetException, NoSuchFieldException, IOException {
 		mockServer.expect(DOWNLOAD_BASE, new TimeoutProviderCallback());
 
-		Class[] paramTypes = {String.class};
-		Method method = PluginDownloader.class.getDeclaredMethod("downloadPluginFromServer", paramTypes);
-		method.setAccessible(true);
 		File localFile = null;
 		try {
 			downloader.setReadTimeout(10);
 			downloader.setTimeout(10);
-			localFile = (File) method.invoke(downloader, new Object[]{SOME_VERSION});
+			localFile = downloader.downloadPluginFromServer(SOME_VERSION, new File(FileUtil.getTempDirectory()));
 			fail("Invocation of the downloadPluginFromServer method failed: timeout doesn't work");
-		}
-		catch (InvocationTargetException ex) {
+		} catch (SocketTimeoutException ex) {
 			// ok
-		}
-		finally {
+		} finally {
 			if (localFile != null) {
 				localFile.delete();
 			}
 		}
 	}
+
 	private class TimeoutProviderCallback implements JettyMockServer.Callback {
 
 		public void onExpectedRequest(String s, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
