@@ -31,12 +31,18 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.io.StreamUtil;
 import com.intellij.util.io.ZipUtil;
+import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.io.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -77,7 +83,8 @@ public class PluginDownloader {
 
 	public void run() {
 		try {
-			File localArchiveFile = downloadPluginFromServer(this.newVersion.getDownloadUrl());
+			final File tmpDownloadFile = downloadPluginFromServer(
+					this.newVersion.getDownloadUrl(), new File(PathManager.getPluginsPath()));
 
 			// add startup actions
 
@@ -91,7 +98,16 @@ public class PluginDownloader {
 			if (pluginDescr == null) {
 				pluginDescr = PluginManager.getPlugin(PluginId.getId(PluginUtil.getInstance().getName()));
 			}
-			addActions(pluginDescr, localArchiveFile);
+			
+			if (pluginDescr == null) {
+				IdeaActionScheduler.getInstance().invokeLater(new Runnable() {
+					public void run() {
+						Messages.showErrorDialog("Cannot retrieve plugin descriptor", "Error installing plugin");
+					}
+				});
+				return;
+			}
+			addActions(pluginDescr, tmpDownloadFile);
 
 			// restart IDEA
 			promptShutdownAndShutdown();
@@ -132,12 +148,10 @@ public class PluginDownloader {
 	}
 
 	// todo add info about licence and author
-	private File downloadPluginFromServer(String version) throws IOException {
+	File downloadPluginFromServer(String version, @NotNull final File destinationDir) throws IOException {
 		File pluginArchiveFile = FileUtil.createTempFile("temp_" + pluginName + "_", "tmp");
 
-
-		String pluginUrl = null;
-		pluginUrl = newVersion.getDownloadUrl()
+		String pluginUrl = newVersion.getDownloadUrl()
 				.replaceAll(PLUGIN_ID_TOKEN, URLEncoder.encode(pluginName, "UTF-8"))
 				.replaceAll(VERSION_TOKEN, URLEncoder.encode(version, "UTF-8"));
 		if (!pluginUrl.contains("?")) {
@@ -197,24 +211,21 @@ public class PluginDownloader {
 		if (ext.contains("?")) {
 			ext = ext.substring(0, ext.indexOf("?"));
 		}
-		String newName = pluginArchiveFile.getPath().substring(0, pluginArchiveFile.getPath().length()
+		String newName = pluginArchiveFile.getName().substring(0, pluginArchiveFile.getName().length()
 				- EXTENTION_LENGHT) + ext;
-		File newFile = new File(newName);
+		File newFile = new File(destinationDir, newName);
 		PluginUtil.getLogger().info("Renaming downloaded file from [" + pluginArchiveFile.getAbsolutePath()
-				+ "] to [" + newName + "]");
-		if (!pluginArchiveFile.renameTo(new File(newName))) {
+				+ "] to [" + newFile + "]");
+		if (!pluginArchiveFile.renameTo(newFile)) {
 			pluginArchiveFile.delete();
-			throw new IOException("Renaming received file from \"" + srcName + "\" to \"" + newName + "\" failed.");
+			throw new IOException("Renaming received file from \"" + srcName + "\" to \"" + newFile.getAbsolutePath() + "\" failed.");
 		}
 		PluginUtil.getLogger().info("After renaming file has [" + newFile.length() + "] bytes");
 		return newFile;
 	}
 
-	private void addActions(IdeaPluginDescriptor installedPlugin, File localArchiveFile) throws IOException {
-		if (installedPlugin != null) {
-			PluginUtil.getLogger().info("IdeaPluginDescriptor [" + installedPlugin.getPluginId() + "]");
-
-		}
+	private void addActions(@NotNull final IdeaPluginDescriptor installedPlugin, File localArchiveFile) throws IOException {
+		PluginUtil.getLogger().info("IdeaPluginDescriptor [" + installedPlugin.getPluginId() + "]");
 
 		PluginId id = installedPlugin.getPluginId();
 
