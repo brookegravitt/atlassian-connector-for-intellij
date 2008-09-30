@@ -218,7 +218,8 @@ public class PluginDownloader {
 				+ "] to [" + newFile + "]");
 		if (!pluginArchiveFile.renameTo(newFile)) {
 			pluginArchiveFile.delete();
-			throw new IOException("Renaming received file from \"" + srcName + "\" to \"" + newFile.getAbsolutePath() + "\" failed.");
+			throw new IOException("Renaming received file from \"" + srcName + "\" to \""
+					+ newFile.getAbsolutePath() + "\" failed.");
 		}
 		PluginUtil.getLogger().info("After renaming file has [" + newFile.length() + "] bytes");
 		return newFile;
