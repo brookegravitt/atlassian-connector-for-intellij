@@ -77,16 +77,16 @@ public final class FileTreeModelBuilder {
 		AtlassianTreeModel model = new FileTreeModel(new CrucibleChangeSetTitleNode(review,
 				new CrucibleChangeSetClickAction(project, review)));
 		addStatementOfObjectives(review, model);
-		model.getRoot().addNode(new CrucibleGeneralCommentsNode(review, null));
+		model.insertNode(new CrucibleGeneralCommentsNode(review, null), model.getRoot());
 		AtlassianTreeNode filesNode = new CrucibleFilesNode(review);
-		model.getRoot().addNode(filesNode);
+		model.insertNode(filesNode, model.getRoot());
 		for (final CrucibleFileInfo file : files) {
 			//according to filter show only "proper files"
 			CrucibleFileNode childNode = new CrucibleFileNode(review, file,
 					new CrucibleFileClickAction(project, review, file));
 
-			fillFileComments(childNode, review, file, project);
-			filesNode.addNode(childNode);
+			fillFileComments(childNode, model, review, file, project);
+			model.insertNode(childNode, filesNode);
 		}
 		return model;
 	}
@@ -98,10 +98,10 @@ public final class FileTreeModelBuilder {
 		FileTreeModel model = new FileTreeModel(root);
 
 		addStatementOfObjectives(review, model);
-		model.getRoot().addNode(new CrucibleGeneralCommentsNode(review, null));
+		model.insertNode(new CrucibleGeneralCommentsNode(review, null), model.getRoot());
 		FileNode filesNode = new CrucibleFilesNode(review);
-		model.getRoot().addNode(filesNode);
- 
+		model.insertNode(filesNode, model.getRoot());
+
 		for (final CrucibleFileInfo file : files) {
 			//according to filter show only "proper files"
 			CrucibleFileNode childNode = new CrucibleFileNode(review, file,
@@ -109,7 +109,7 @@ public final class FileTreeModelBuilder {
 
 			FileNode node = model.createPlace(filesNode, file);
 
-			fillFileComments(childNode, review, file, project);
+			fillFileComments(childNode, model, review, file, project);
 			node.addChild(childNode);
 		}
 		model.compactModel(filesNode);
@@ -118,21 +118,22 @@ public final class FileTreeModelBuilder {
 
 	private static void addStatementOfObjectives(final ReviewData review, final AtlassianTreeModel model) {
 		if (review.getDescription() != null && review.getDescription().length() != 0) {
-			model.getRoot().addNode(new CrucibleStatementOfObjectivesNode(
-					review.getDescription(), AtlassianClickAction.EMPTY_ACTION));
+			model.insertNode(new CrucibleStatementOfObjectivesNode(
+					review.getDescription(), AtlassianClickAction.EMPTY_ACTION), model.getRoot());
 		}
 	}
 
-	private static void fillFileComments(CrucibleFileNode node, ReviewData review, CrucibleFileInfo file, Project project) {
+	private static void fillFileComments(CrucibleFileNode node, AtlassianTreeModel model,
+										 ReviewData review, CrucibleFileInfo file, Project project) {
 		List<VersionedComment> fileComments = getFileVersionedComments(file);
 		CrucibleVersionedCommentClickAction action = new CrucibleVersionedCommentClickAction(project);
 		for (VersionedComment c : fileComments) {
 			if (!c.isDeleted()) {
 				VersionedCommentTreeNode commentNode = new VersionedCommentTreeNode(review, file, c, action);
-				node.addNode(commentNode);
+				model.insertNode(commentNode, node);
 
 				for (VersionedComment reply : c.getReplies()) {
-					commentNode.addNode(new VersionedCommentTreeNode(review, file, reply, action));
+					model.insertNode(new VersionedCommentTreeNode(review, file, reply, action), commentNode);
 				}
 			}
 		}
@@ -141,10 +142,10 @@ public final class FileTreeModelBuilder {
 		for (VersionedComment c : lineComments) {
 			if (!c.isDeleted()) {
 				VersionedCommentTreeNode commentNode = new VersionedCommentTreeNode(review, file, c, action);
-				node.addNode(commentNode);
+				model.insertNode(commentNode, node);
 
 				for (VersionedComment reply : c.getReplies()) {
-					commentNode.addNode(new VersionedCommentTreeNode(review, file, reply, action));
+					model.insertNode(new VersionedCommentTreeNode(review, file, reply, action), commentNode);
 				}
 			}
 		}
