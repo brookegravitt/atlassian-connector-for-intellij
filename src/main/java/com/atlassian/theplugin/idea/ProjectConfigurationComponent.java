@@ -209,8 +209,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 				} catch (IOException e) {
 					IdeaLoggerImpl.getInstance().error(
 							"Cannot create directory:" + baseHomeAtlassian + File.separator + ATLASSIAN_IDE_CONNECTOR_DIR_NAME
-									+ "\nerror:" +
-									e.getMessage());
+									+ "\nerror:" + e.getMessage());
 					return null;
 				}
 			}
