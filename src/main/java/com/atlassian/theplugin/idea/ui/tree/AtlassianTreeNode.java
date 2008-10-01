@@ -21,7 +21,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
 import java.awt.*;
 
-public abstract class AtlassianTreeNode extends DefaultMutableTreeNode {
+public abstract class AtlassianTreeNode extends DefaultMutableTreeNode implements Comparable {
 	private AtlassianClickAction action;
 
 	protected AtlassianTreeNode(AtlassianClickAction action) {
@@ -72,5 +72,11 @@ public abstract class AtlassianTreeNode extends DefaultMutableTreeNode {
 		public AtlassianTreeNode getClone() {
 			return AtlassianTreeNode.EMPTY_NODE;  
 		}
+
+		public int compareTo(Object o) {
+			// hmm, is it ok?
+			return -1;
+		}
 	};
+
 }

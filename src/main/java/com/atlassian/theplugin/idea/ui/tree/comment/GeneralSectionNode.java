@@ -80,6 +80,15 @@ public class GeneralSectionNode extends AtlassianTreeNode {
 		return new GeneralSectionNode(this);
 	}
 
+	public int compareTo(Object o) {
+		if (o instanceof CrucibleStatementOfObjectivesNode) {
+			return 1;
+		} else if (o instanceof GeneralSectionNode) {
+			return 0;
+		}
+		return -1;
+	}
+
 	private class MyRenderer implements TreeCellRenderer {
 		private int noOfGeneralComments = 0;
 
@@ -107,6 +116,4 @@ public class GeneralSectionNode extends AtlassianTreeNode {
 			return sb.toString();
 		}
 	}
-
-
 }

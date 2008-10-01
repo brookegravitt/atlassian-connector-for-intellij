@@ -360,7 +360,8 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 				final VersionedComment comment) {
 			try {
 				facade.updateComment(review.getServer(), review.getPermId(), comment);
-				eventBroker.trigger(new VersionedCommentUpdated(this, review, file.getItemInfo(), comment));
+				eventBroker.trigger(new VersionedCommentAddedOrEdited(this, review, file.getItemInfo(), comment));
+//				eventBroker.trigger(new VersionedCommentUpdated(this, review, file.getItemInfo(), comment));
 			} catch (RemoteApiException e) {
 				IdeaHelper.handleRemoteApiException(project, e);
 			} catch (ServerPasswordNotProvidedException e) {
@@ -372,7 +373,8 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		public void aboutToUpdateGeneralComment(final ReviewData review, final GeneralComment comment) {
 			try {
 				facade.updateComment(review.getServer(), review.getPermId(), comment);
-				eventBroker.trigger(new GeneralCommentUpdated(this, review, comment));
+				eventBroker.trigger(new GeneralCommentAddedOrEdited(this, review, comment));
+//				eventBroker.trigger(new GeneralCommentUpdated(this, review, comment));
 			} catch (RemoteApiException e) {
 				IdeaHelper.handleRemoteApiException(project, e);
 			} catch (ServerPasswordNotProvidedException e) {

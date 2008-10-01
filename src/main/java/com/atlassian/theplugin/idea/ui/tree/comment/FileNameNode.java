@@ -62,6 +62,14 @@ public class FileNameNode extends AtlassianTreeNode {
 		return new FileNameNode(this);
 	}
 
+	public int compareTo(Object o) {
+		if (o instanceof FileNameNode) {
+			FileNameNode fnn = (FileNameNode) o;
+			return file.getFileDescriptor().getUrl().compareTo(fnn.getFile().getFileDescriptor().getUrl());
+		}
+		return -1;  // fixme
+	}
+
 	private static class MyRenderer implements TreeCellRenderer {
 
 		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean isSelected, boolean expanded,
