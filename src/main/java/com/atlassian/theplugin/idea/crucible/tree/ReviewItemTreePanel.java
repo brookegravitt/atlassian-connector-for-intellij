@@ -15,29 +15,21 @@ package com.atlassian.theplugin.idea.crucible.tree;
  * limitations under the License.
  */
 
+import com.atlassian.theplugin.cfg.CfgUtil;
+import com.atlassian.theplugin.commons.cfg.ConfigurationCredentialsListener;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleFileInfoManager;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.Comment;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleReviewItemInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.Logger;
-import com.atlassian.theplugin.commons.cfg.ConfigurationCredentialsListener;
-import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.ThePluginProjectComponent;
-import com.atlassian.theplugin.idea.crucible.CommentHighlighter;
-import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
-import com.atlassian.theplugin.idea.crucible.CrucibleFilteredModelProvider;
-import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
-import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.idea.crucible.*;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.events.ReviewCommentsDownloadadEvent;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
@@ -48,13 +40,8 @@ import com.atlassian.theplugin.idea.ui.tree.NodeSearchAlgorithm;
 import com.atlassian.theplugin.idea.ui.tree.clickaction.CrucibleVersionedCommentClickAction;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.file.CrucibleChangeSetTitleNode;
-import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
-import com.atlassian.theplugin.idea.ui.tree.file.CrucibleGeneralCommentsNode;
-import com.atlassian.theplugin.idea.ui.tree.file.FileNode;
-import com.atlassian.theplugin.idea.ui.tree.file.FileTreeModelBuilder;
+import com.atlassian.theplugin.idea.ui.tree.file.*;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DataProvider;
@@ -627,6 +614,14 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 				List<VersionedComment> comments;
 				comments = CrucibleServerFacadeImpl.getInstance().getVersionedComments(
 						reviewItem.getServer(), reviewItem.getPermId());
+
+//				ReviewDataImpl extendedReview = new ReviewDataImpl(reviewItem, reviewItem.getServer());
+//
+//				extendedReview.setGeneralComments(
+//						CrucibleServerFacadeImpl.getInstance().getGeneralComments(
+//								reviewItem.getServer(), reviewItem.getPermId()));
+
+
 				files = CrucibleServerFacadeImpl.getInstance().getFiles(reviewItem.getServer(), reviewItem.getPermId());
 				CrucibleFileInfoManager.getInstance().setFiles(reviewItem, files);
 				for (VersionedComment comment : comments) {
