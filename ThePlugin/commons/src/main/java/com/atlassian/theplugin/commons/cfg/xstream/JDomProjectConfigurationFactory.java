@@ -15,12 +15,7 @@
  */
 package com.atlassian.theplugin.commons.cfg.xstream;
 
-import com.atlassian.theplugin.commons.cfg.PrivateProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.PrivateServerCfgInfo;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.ProjectConfigurationFactory;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerCfgFactoryException;
+import com.atlassian.theplugin.commons.cfg.*;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.JDomReader;
 import com.thoughtworks.xstream.io.xml.JDomWriter;
@@ -72,20 +67,7 @@ public class JDomProjectConfigurationFactory implements ProjectConfigurationFact
 			final PrivateProjectConfiguration privateProjectConfiguration) {
 		for (ServerCfg serverCfg : projectConfiguration.getServers()) {
 			PrivateServerCfgInfo psci = privateProjectConfiguration.getPrivateServerCfgInfo(serverCfg.getServerId());
-			if (psci != null) {
-				serverCfg.setUsername(psci.getUsername());
-				serverCfg.setEnabled(psci.isEnabled());
-				final String password = psci.getPassword();
-				if (password != null) {
-					serverCfg.setPassword(password);
-					serverCfg.setPasswordStored(true);
-				} else {
-					serverCfg.setPasswordStored(false);
-				}
-			} else {
-				serverCfg.setPasswordStored(false);
-				serverCfg.setEnabled(true); // new servers (for which there was no private info yet) are enabled by default
-			}
+			serverCfg.mergePrivateConfiguration(psci);
 		}
 		return projectConfiguration;
 	}
@@ -115,8 +97,6 @@ public class JDomProjectConfigurationFactory implements ProjectConfigurationFact
 	}
 
 	static PrivateServerCfgInfo createPrivateProjectConfiguration(final ServerCfg serverCfg) {
-		return new PrivateServerCfgInfo(serverCfg.getServerId(), serverCfg.isEnabled(), serverCfg.getUsername(),
-				serverCfg.isPasswordStored() ? serverCfg.getPassword() : null);
+		return serverCfg.createPrivateProjectConfiguration();
 	}
-
 }

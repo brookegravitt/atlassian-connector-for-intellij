@@ -1,17 +1,19 @@
 <private-root>
   <private-project-cfg>
     <private-server-cfgs>
-      <private-server-cfg>
+      <private-bamboo-server-cfg>
         <server-id>141d662c-e744-4690-a5f8-6e127c0bc84f</server-id>
         <enabled>true</enabled>
         <username>mytestuser</username>
         <password>bXlwYXNzd29yZDE=</password>
-      </private-server-cfg>
-      <private-server-cfg>
+        <timezone-offset>0</timezone-offset>
+      </private-bamboo-server-cfg>
+      <private-bamboo-server-cfg>
         <server-id>241d662c-e744-4690-a5f8-6e127c0bc84f</server-id>
         <enabled>true</enabled>
         <username>mytestuser2</username>
-      </private-server-cfg>
+        <timezone-offset>1</timezone-offset>
+      </private-bamboo-server-cfg>
       <private-server-cfg>
         <server-id>341d662c-e744-4690-a5f8-6e127c0bc84f</server-id>
         <enabled>false</enabled>

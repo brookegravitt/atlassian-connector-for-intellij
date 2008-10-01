@@ -29,6 +29,8 @@ public class BambooServerCfg extends ServerCfg {
 	private boolean isBamboo2;
 	private Collection<SubscribedPlan> plans = MiscUtil.buildArrayList();
 
+	private int timezoneOffset;
+
 	public BambooServerCfg(final String name, final ServerId serverId) {
 		super(true, name, serverId);
 	}
@@ -43,6 +45,7 @@ public class BambooServerCfg extends ServerCfg {
 		isBamboo2 = other.isBamboo2();
 		// shallow copy of SubscribedPlan objects is enough as they are immutable
 		plans = MiscUtil.buildArrayList(other.getPlans());
+		timezoneOffset = other.timezoneOffset;
 	}
 
 	@Override
@@ -66,6 +69,14 @@ public class BambooServerCfg extends ServerCfg {
 		isUseFavourites = useFavourites;
 	}
 
+	public int getTimezoneOffset() {
+		return timezoneOffset;
+	}
+
+	public void setTimezoneOffset(int timezoneOffset) {
+		this.timezoneOffset = timezoneOffset;
+	}
+
 	@Override
 	public boolean equals(final Object o) {
 		if (super.equals(o) == false) {
@@ -86,6 +97,10 @@ public class BambooServerCfg extends ServerCfg {
 		}
 
 		if (plans.equals(that.plans) == false) {
+			return false;
+		}
+
+		if (timezoneOffset != that.timezoneOffset) {
 			return false;
 		}
 
@@ -134,5 +149,20 @@ public class BambooServerCfg extends ServerCfg {
 			plans = MiscUtil.buildArrayList();
 		}
 		return this;
+	}
+
+	public PrivateServerCfgInfo createPrivateProjectConfiguration() {
+		return new PrivateBambooServerCfgInfo(getServerId(), isEnabled(), getUsername(),
+				isPasswordStored() ? getPassword() : null, getTimezoneOffset());
+	}
+
+	public void mergePrivateConfiguration(PrivateServerCfgInfo psci) {
+		super.mergePrivateConfiguration(psci);
+		try {
+			PrivateBambooServerCfgInfo pbsci = (PrivateBambooServerCfgInfo) psci;
+			setTimezoneOffset(pbsci.getTimezoneOffset());
+		} catch (ClassCastException e) {
+			// Whisky Tango Foxtrot?
+		}
 	}
 }

@@ -16,14 +16,7 @@
 package com.atlassian.theplugin.commons.cfg.xstream;
 
 import com.atlassian.theplugin.commons.SubscribedPlan;
-import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.commons.cfg.PrivateProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.PrivateServerCfgInfo;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.*;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
@@ -52,6 +45,7 @@ public final class JDomXStreamUtil {
 		xStream.omitField(ServerCfg.class, "username");
 		xStream.omitField(ServerCfg.class, "password");
 		xStream.omitField(ServerCfg.class, "isPasswordStored");
+		xStream.omitField(BambooServerCfg.class, "timezoneOffset");
 		xStream.aliasField("server-id", ServerCfg.class, "serverId");
 //		xStream.aliasField("enabled", ServerCfg.class, "isEnabled");
 		xStream.omitField(ServerCfg.class, "isEnabled");
@@ -62,8 +56,10 @@ public final class JDomXStreamUtil {
 		xStream.alias("project-configuration", ProjectConfiguration.class);
 
 		xStream.alias("private-server-cfg", PrivateServerCfgInfo.class);
+		xStream.alias("private-bamboo-server-cfg", PrivateBambooServerCfgInfo.class);
 		xStream.aliasField("server-id", PrivateServerCfgInfo.class, "serverId");
 		xStream.aliasField("enabled", PrivateServerCfgInfo.class, "isEnabled");
+		xStream.aliasField("timezone-offset", PrivateBambooServerCfgInfo.class, "timezoneOffset");
 		xStream.registerLocalConverter(PrivateServerCfgInfo.class, "password", new EncodedStringConverter());
 
 		xStream.alias("private-project-cfg", PrivateProjectConfiguration.class);
