@@ -28,11 +28,7 @@ import com.atlassian.theplugin.commons.util.Logger;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.TimerTask;
+import java.util.*;
 
 
 /**
@@ -95,7 +91,7 @@ public final class BambooStatusChecker implements SchedulableChecker {
 
 			// collect build info from each server
             final Collection<BambooBuild> newServerBuildsStatus = new ArrayList<BambooBuild>();
-            for (BambooServerCfg server : retrieveEnabledBambooServers()) {
+            for (BambooServerCfg server : cfgManager.getAllEnabledBambooServers(projectId)) {
                         try {
 
 							Date newRun = new Date();
@@ -130,9 +126,6 @@ public final class BambooStatusChecker implements SchedulableChecker {
         }
     }
 
-	private Collection<BambooServerCfg> retrieveEnabledBambooServers() {
-		return cfgManager.getAllEnabledBambooServers(projectId);
-	}
 
 	/**
 	 * Create a new instance of {@link java.util.TimerTask} for {@link java.util.Timer} re-scheduling purposes.
@@ -149,7 +142,7 @@ public final class BambooStatusChecker implements SchedulableChecker {
 	}
 
 	public boolean canSchedule() {
-		return !retrieveEnabledBambooServers().isEmpty();
+		return !cfgManager.getAllEnabledBambooServers(projectId).isEmpty();
 	}
 
 	public long getInterval() {
