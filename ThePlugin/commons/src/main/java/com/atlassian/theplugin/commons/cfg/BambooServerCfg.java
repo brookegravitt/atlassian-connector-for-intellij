@@ -158,11 +158,12 @@ public class BambooServerCfg extends ServerCfg {
 
 	public void mergePrivateConfiguration(PrivateServerCfgInfo psci) {
 		super.mergePrivateConfiguration(psci);
-		try {
-			PrivateBambooServerCfgInfo pbsci = (PrivateBambooServerCfgInfo) psci;
-			setTimezoneOffset(pbsci.getTimezoneOffset());
-		} catch (ClassCastException e) {
-			// Whisky Tango Foxtrot?
+		if (psci != null) {
+			try {
+				setTimezoneOffset(((PrivateBambooServerCfgInfo) psci).getTimezoneOffset());
+			} catch (ClassCastException e) {
+				// Whisky Tango Foxtrot?
+			}
 		}
 	}
 }
