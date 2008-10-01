@@ -120,4 +120,12 @@ public class CrucibleChangeSetTitleNode extends FileNode {
 	public AtlassianTreeNode getClone() {
 		return new CrucibleChangeSetTitleNode(this);
 	}
+
+	public int compareTo(Object o) {
+		if (o instanceof CrucibleChangeSetTitleNode) {
+			return 0;
+		}
+		// this node should always be the first node
+		return -1;
+	}
 }

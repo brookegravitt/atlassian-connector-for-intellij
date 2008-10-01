@@ -76,7 +76,13 @@ public abstract class FileNode extends AtlassianTreeNode {
 		name = newName;
 	}
 
-
+	public int compareTo(Object o) {
+		if (o instanceof FileNode) {
+			FileNode fn = (FileNode) o;
+			return getName().compareTo(fn.getName());
+		}
+		return -1; // fixme?
+	}
 
 	public String toString() {
 		return getName();

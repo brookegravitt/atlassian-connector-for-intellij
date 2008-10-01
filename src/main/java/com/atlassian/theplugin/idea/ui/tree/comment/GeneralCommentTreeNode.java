@@ -54,6 +54,14 @@ public class GeneralCommentTreeNode extends CommentTreeNode {
 		return new GeneralCommentTreeNode(this);
 	}
 
+	public int compareTo(Object o) {
+		if (o instanceof GeneralCommentTreeNode) {
+			GeneralCommentTreeNode gctn = (GeneralCommentTreeNode) o;
+			return getComment().getCreateDate().compareTo(gctn.getComment().getCreateDate());
+		}
+		return super.compareTo(o);
+	}
+
 	private static class MyRenderer implements TreeCellRenderer {
 		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean isSelected, boolean expanded,
 				boolean leaf, int row, boolean hasFocus) {

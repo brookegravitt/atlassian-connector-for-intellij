@@ -69,9 +69,38 @@ public class VersionedCommentTreeNode extends CommentTreeNode {
 		return new VersionedCommentTreeNode(this);
 	}
 
+	public int compareTo(Object o) {
+		if (o instanceof VersionedCommentTreeNode) {
+			VersionedCommentTreeNode vctn = (VersionedCommentTreeNode) o;
+			boolean thisIsFileComment = !(getComment().isFromLineInfo() || getComment().isToLineInfo());
+			boolean thatIsFileComment = !(vctn.getComment().isFromLineInfo() || vctn.getComment().isToLineInfo());
+			if (thisIsFileComment || thatIsFileComment) {
+				if (thisIsFileComment && thatIsFileComment) {
+					// that node is also a file comment node, let's sort by date
+					return getComment().getCreateDate().compareTo(vctn.getComment().getCreateDate());
+				}
+				if (thisIsFileComment) {
+					return -1;
+				}
+				return 1;
+			}
+			// both comments are line comments
+			if (getComment().isToLineInfo() && vctn.getComment().isToLineInfo()) {
+				return getComment().getToStartLine() - vctn.getComment().getToStartLine();
+			}
+			if (getComment().isToLineInfo() && vctn.getComment().isFromLineInfo()) {
+				return getComment().getToStartLine() - vctn.getComment().getFromStartLine();
+			}
+			if (getComment().isFromLineInfo() && vctn.getComment().isFromLineInfo()) {
+				return getComment().getFromStartLine() - vctn.getComment().getFromStartLine();
+			}
+			return getComment().getFromStartLine() - vctn.getComment().getToStartLine();
+			
+		}
+		return super.compareTo(o);
+	}
+
 	private static class MyTreeRenderer implements TreeCellRenderer {
-
-
 		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean isSelected, boolean expanded,
                 boolean leaf, int row, boolean hasFocus) {
 			VersionedCommentTreeNode node = (VersionedCommentTreeNode) value;

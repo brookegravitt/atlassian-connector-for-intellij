@@ -50,12 +50,17 @@ public class CrucibleStatementOfObjectivesNode extends AtlassianTreeNode {
 	}
 
 
+	public int compareTo(Object o) {
+		if (o instanceof CrucibleStatementOfObjectivesNode) {
+			return 0;
+		}
+		return -1;
+	}
+
 	@Override
 	public TreeCellRenderer getTreeCellRenderer() {
 		return MY_RENDERER;
 	}
-
-
 
 	private static class MyRenderer implements TreeCellRenderer {
 		private static final StatementOfObjectivesPanel PANEL = new StatementOfObjectivesPanel();

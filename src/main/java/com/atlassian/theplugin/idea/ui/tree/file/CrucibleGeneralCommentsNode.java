@@ -2,6 +2,8 @@ package com.atlassian.theplugin.idea.ui.tree.file;
 
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.comment.CrucibleStatementOfObjectivesNode;
+import com.atlassian.theplugin.idea.ui.tree.comment.GeneralSectionNode;
 import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
@@ -42,6 +44,15 @@ public class CrucibleGeneralCommentsNode extends CrucibleContainerNode {
 
 	public AtlassianTreeNode getClone() {
 		return new CrucibleGeneralCommentsNode(getReview(), getChildren());
+	}
+
+	public int compareTo(Object o) {
+		if (o instanceof CrucibleStatementOfObjectivesNode) {
+			return 1;
+		} else if (o instanceof CrucibleGeneralCommentsNode) {
+			return 0;
+		}
+		return -1;
 	}
 
 	private int getNumberOfGeneralComments() {
