@@ -169,6 +169,7 @@ public class JDomProjectConfigurationFactoryTest extends ProjectConfigurationFac
 		bamboo2.setUsername("mytestuser2");
 		bamboo2.setPassword("mypassword2");
 		bamboo2.setPasswordStored(false);
+		bamboo2.setTimezoneOffset(1);
 		crucible1.setUsername("xyz");
 		crucible1.setPassword("passwordxyz");
 		crucible1.setPasswordStored(true);

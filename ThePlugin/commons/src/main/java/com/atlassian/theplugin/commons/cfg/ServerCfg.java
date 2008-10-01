@@ -186,4 +186,26 @@ public abstract class ServerCfg {
 		builder.append(getUrl());
 		return builder.toString();
 	}
+
+	public PrivateServerCfgInfo createPrivateProjectConfiguration() {
+		return new PrivateServerCfgInfo(getServerId(), isEnabled(), getUsername(),
+				isPasswordStored() ? getPassword() : null);
+	}
+
+	public void mergePrivateConfiguration(PrivateServerCfgInfo psci) {
+		if (psci != null) {
+			setUsername(psci.getUsername());
+			setEnabled(psci.isEnabled());
+			final String password = psci.getPassword();
+			if (password != null) {
+				setPassword(password);
+				setPasswordStored(true);
+			} else {
+				setPasswordStored(false);
+			}
+		} else {
+			setPasswordStored(false);
+			setEnabled(true); // new servers (for which there was no private info yet) are enabled by default
+		}
+	}
 }

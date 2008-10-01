@@ -21,6 +21,7 @@ import com.atlassian.theplugin.idea.TableColumnInfo;
 
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Calendar;
 
 
 public class BuildDateColumn extends TableColumnInfo {
@@ -31,7 +32,13 @@ public class BuildDateColumn extends TableColumnInfo {
 	}
 
 	public Object valueOf(Object o) {
-         return ((BambooBuildAdapterIdea) o).getBuildTime();
+		BambooBuildAdapterIdea bbai = (BambooBuildAdapterIdea) o;
+		bbai.getServer();
+		Date d = bbai.getBuildTime();
+		Calendar c = Calendar.getInstance();
+		c.setTime(d);
+		c.add(Calendar.HOUR_OF_DAY, bbai.getServer().getTimezoneOffset());
+		return c.getTime();
 	}
 
 	public Class getColumnClass() {
