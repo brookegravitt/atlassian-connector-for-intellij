@@ -45,6 +45,10 @@ import java.util.Map;
 
 
 public class BambooPlansForm extends JPanel {
+
+	private static final int MIN_TIMEZONE_DIFF = -12;
+	private static final int MAX_TIMEZONE_DIFF = 12;
+
 	private JPanel statusPanel;
 	private JPanel toolbarPanel;
 	private JCheckBox cbUseFavouriteBuilds;
@@ -54,6 +58,10 @@ public class BambooPlansForm extends JPanel {
 	private JEditorPane statusPane;
 	private JScrollPane scrollList;
 	private JPanel listPanel;
+	private JPanel plansPanel;
+	private JSpinner spinnerTimeZoneDifference;
+	private SpinnerModel timezoneOffsetSpinnerModel = new SpinnerNumberModel(0, MIN_TIMEZONE_DIFF, MAX_TIMEZONE_DIFF, 1);
+	private JPanel timezonePanel;
 	private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
 
 	private DefaultListModel model;
@@ -64,15 +72,15 @@ public class BambooPlansForm extends JPanel {
 	private static final int NUM_SERVERS = 10;
 	private Map<ServerId, List<BambooPlanItem>> serverPlans = MiscUtil.buildConcurrentHashMap(NUM_SERVERS);
 	private final transient BambooServerFacade bambooServerFacade;
-    private final BambooServerConfigForm serverPanel;
+	private final BambooServerConfigForm serverPanel;
 
-    public BambooPlansForm(BambooServerFacade bambooServerFacade, BambooServerCfg bambooServerCfg,
-            final BambooServerConfigForm bambooServerConfigForm) {
+	public BambooPlansForm(BambooServerFacade bambooServerFacade, BambooServerCfg bambooServerCfg,
+						   final BambooServerConfigForm bambooServerConfigForm) {
 		this.bambooServerFacade = bambooServerFacade;
 		this.bambooServerCfg = bambooServerCfg;
-        this.serverPanel = bambooServerConfigForm;
+		this.serverPanel = bambooServerConfigForm;
 
-        $$$setupUI$$$();
+		$$$setupUI$$$();
 
 		final GridConstraints constraint = new GridConstraints(0, 0, 1, 1,
 				GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
@@ -83,7 +91,7 @@ public class BambooPlansForm extends JPanel {
 
 		list.addMouseListener(new MouseAdapter() {
 			@Override
-            public void mousePressed(MouseEvent e) {
+			public void mousePressed(MouseEvent e) {
 				int index = list.locationToIndex(e.getPoint());
 				setCheckboxState(index);
 			}
@@ -91,7 +99,7 @@ public class BambooPlansForm extends JPanel {
 
 		list.addKeyListener(new KeyAdapter() {
 			@Override
-            public void keyPressed(KeyEvent e) {
+			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
 					int index = list.getSelectedIndex();
 					setCheckboxState(index);
@@ -110,12 +118,14 @@ public class BambooPlansForm extends JPanel {
 				refreshServerPlans();
 			}
 		});
+
+		spinnerTimeZoneDifference.setModel(timezoneOffsetSpinnerModel);
 	}
 
 	private void refreshServerPlans() {
 		serverPlans.remove(bambooServerCfg.getServerId());
 		serverPanel.saveData();
-        retrievePlans(bambooServerCfg);
+		retrievePlans(bambooServerCfg);
 	}
 
 	private void setCheckboxState(int index) {
@@ -127,6 +137,9 @@ public class BambooPlansForm extends JPanel {
 
 			setModifiedState();
 		}
+	}
+
+	private void setupTimezoneDiffSpinner() {
 	}
 
 	private void setViewState(int index, boolean newState) {
@@ -169,8 +182,15 @@ public class BambooPlansForm extends JPanel {
 
 	public void setData(final BambooServerCfg serverCfg) {
 		bambooServerCfg = serverCfg;
+
+		if (bambooServerCfg != null) {
+			int offs = bambooServerCfg.getTimezoneOffset();
+			offs = Math.min(MAX_TIMEZONE_DIFF, Math.max(MIN_TIMEZONE_DIFF, offs));
+			timezoneOffsetSpinnerModel.setValue(offs);
+		}
+
 		//cbUseFavouriteBuilds.setEnabled(false);
-        if (bambooServerCfg.getUrl().length() > 0) {
+		if (bambooServerCfg.getUrl().length() > 0) {
 			retrievePlans(bambooServerCfg);
 		} else {
 			model.removeAllElements();
@@ -191,60 +211,60 @@ public class BambooPlansForm extends JPanel {
 		new Thread(new Runnable() {
 			public void run() {
 				progressAnimation.startProgressAnimation();
-                StringBuilder msg = new StringBuilder();
-                try {
-                    ServerId key = queryServer.getServerId();
-                    if (!serverPlans.containsKey(key)) {
-                        Collection<BambooPlan> plans;
-                        try {
-                            plans = bambooServerFacade.getPlanList(queryServer);
-                        } catch (ServerPasswordNotProvidedException e) {
-                            msg.append("Unable to connect: password for server not provided\n");
-                            return;
-                        } catch (RemoteApiException e) {
-                            msg.append("Unable to connect: ");
-                            msg.append(e.getMessage());
-                            msg.append("\n");
-                            return;
-                        }
-                        List<BambooPlanItem> plansForServer = new ArrayList<BambooPlanItem>();
-                        if (plans != null) {
-                            for (BambooPlan plan : plans) {
-                                plansForServer.add(new BambooPlanItem(plan, false));
-                            }
-                            msg.append("Build plans updated from server\n");
-                        }
-                        for (SubscribedPlan sPlan : queryServer.getSubscribedPlans()) {
-                            boolean exists = false;
-                            for (BambooPlanItem bambooPlanItem : plansForServer) {
-                                if (bambooPlanItem.getPlan().getPlanKey().equals(sPlan.getPlanId())) {
-                                    exists = true;
-                                    break;
-                                }
-                            }
-                            if (!exists) {
-                                BambooPlanData p = new BambooPlanData(sPlan.getPlanId(), sPlan.getPlanId());
-                                p.setEnabled(false);
-                                p.setFavourite(false);
-                                plansForServer.add(new BambooPlanItem(p, true));
-                            }
-                        }
-                        msg.append("Build plans updated based on stored configuration");
-                        serverPlans.put(key, plansForServer);
-                    } else {
-                        msg.append("Build plans updated based on cached values");
-                    }
-            } finally {
-                progressAnimation.stopProgressAnimation();
-                final String message = msg.toString();
-                EventQueue.invokeLater(new Runnable() {
-                    public void run() {
-                        updatePlanNames(queryServer, message);
-                    }
-                });
-            }
+				StringBuilder msg = new StringBuilder();
+				try {
+					ServerId key = queryServer.getServerId();
+					if (!serverPlans.containsKey(key)) {
+						Collection<BambooPlan> plans;
+						try {
+							plans = bambooServerFacade.getPlanList(queryServer);
+						} catch (ServerPasswordNotProvidedException e) {
+							msg.append("Unable to connect: password for server not provided\n");
+							return;
+						} catch (RemoteApiException e) {
+							msg.append("Unable to connect: ");
+							msg.append(e.getMessage());
+							msg.append("\n");
+							return;
+						}
+						List<BambooPlanItem> plansForServer = new ArrayList<BambooPlanItem>();
+						if (plans != null) {
+							for (BambooPlan plan : plans) {
+								plansForServer.add(new BambooPlanItem(plan, false));
+							}
+							msg.append("Build plans updated from server\n");
+						}
+						for (SubscribedPlan sPlan : queryServer.getSubscribedPlans()) {
+							boolean exists = false;
+							for (BambooPlanItem bambooPlanItem : plansForServer) {
+								if (bambooPlanItem.getPlan().getPlanKey().equals(sPlan.getPlanId())) {
+									exists = true;
+									break;
+								}
+							}
+							if (!exists) {
+								BambooPlanData p = new BambooPlanData(sPlan.getPlanId(), sPlan.getPlanId());
+								p.setEnabled(false);
+								p.setFavourite(false);
+								plansForServer.add(new BambooPlanItem(p, true));
+							}
+						}
+						msg.append("Build plans updated based on stored configuration");
+						serverPlans.put(key, plansForServer);
+					} else {
+						msg.append("Build plans updated based on cached values");
+					}
+				} finally {
+					progressAnimation.stopProgressAnimation();
+					final String message = msg.toString();
+					EventQueue.invokeLater(new Runnable() {
+						public void run() {
+							updatePlanNames(queryServer, message);
+						}
+					});
+				}
 
-            }
+			}
 		}, "atlassian-idea-plugin bamboo panel retrieve plans").start();
 	}
 
@@ -267,16 +287,16 @@ public class BambooPlansForm extends JPanel {
 			statusPane.setText(message);
 			statusPane.setCaretPosition(0);
 			setVisible(true);
-		//	cbUseFavouriteBuilds.setEnabled(true);
+			//	cbUseFavouriteBuilds.setEnabled(true);
 			list.setEnabled(!cbUseFavouriteBuilds.isSelected());
 			isListModified = false;
 		}
 	}
 
 	public void saveData() {
-        if (bambooServerCfg == null) {
-            return;
-        }
+		if (bambooServerCfg == null) {
+			return;
+		}
 		// move data only when we have fetched the data - otherwise we could overwrite user data due to e.g. network problems
 		if (serverPlans.containsKey(bambooServerCfg.getServerId()) == true) {
 			bambooServerCfg.clearSubscribedPlans();
@@ -292,6 +312,8 @@ public class BambooPlansForm extends JPanel {
 			}
 		}
 		bambooServerCfg.setUseFavourites(cbUseFavouriteBuilds.isSelected());
+		bambooServerCfg.setTimezoneOffset(
+				((SpinnerNumberModel) spinnerTimeZoneDifference.getModel()).getNumber().intValue());
 	}
 
 	public boolean isModified() {
@@ -308,7 +330,7 @@ public class BambooPlansForm extends JPanel {
 	}
 
 	@Override
-    public void setEnabled(boolean enabled) {
+	public void setEnabled(boolean enabled) {
 		super.setEnabled(enabled);
 		list.setEnabled(enabled);
 	}
@@ -331,17 +353,41 @@ public class BambooPlansForm extends JPanel {
 		createUIComponents();
 		rootComponent = new JPanel();
 		rootComponent.setLayout(new GridBagLayout());
-		rootComponent.setBorder(BorderFactory.createTitledBorder("Build Plans"));
-		toolbarPanel = new JPanel();
-		toolbarPanel.setLayout(new GridBagLayout());
+		plansPanel = new JPanel();
+		plansPanel.setLayout(new GridBagLayout());
 		GridBagConstraints gbc;
+		gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 1;
+		gbc.weightx = 1.0;
+		gbc.weighty = 1.0;
+		gbc.fill = GridBagConstraints.BOTH;
+		rootComponent.add(plansPanel, gbc);
+		plansPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Build Plans"));
+		listPanel = new JPanel();
+		listPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+		listPanel.setBackground(new Color(-1));
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.weightx = 1.0;
+		gbc.weighty = 1.0;
+		gbc.fill = GridBagConstraints.BOTH;
+		gbc.insets = new Insets(0, 12, 0, 12);
+		plansPanel.add(listPanel, gbc);
+		scrollList = new JScrollPane();
+		scrollList.setBackground(new Color(-1));
+		listPanel.add(scrollList, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+		scrollList.setViewportView(list);
+		toolbarPanel = new JPanel();
+		toolbarPanel.setLayout(new GridBagLayout());
+		gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 1;
+		gbc.weightx = 1.0;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.insets = new Insets(0, 10, 12, 8);
-		rootComponent.add(toolbarPanel, gbc);
+		plansPanel.add(toolbarPanel, gbc);
 		cbUseFavouriteBuilds = new JCheckBox();
 		cbUseFavouriteBuilds.setText("Use Favourite Builds For Server");
 		cbUseFavouriteBuilds.setMnemonic('F');
@@ -368,7 +414,7 @@ public class BambooPlansForm extends JPanel {
 		gbc.gridy = 2;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.insets = new Insets(0, 12, 12, 12);
-		rootComponent.add(statusPanel, gbc);
+		plansPanel.add(statusPanel, gbc);
 		final JScrollPane scrollPane1 = new JScrollPane();
 		scrollPane1.setEnabled(true);
 		scrollPane1.setHorizontalScrollBarPolicy(31);
@@ -377,21 +423,39 @@ public class BambooPlansForm extends JPanel {
 		statusPane = new JEditorPane();
 		statusPane.setEditable(false);
 		scrollPane1.setViewportView(statusPane);
-		listPanel = new JPanel();
-		listPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-		listPanel.setBackground(new Color(-1));
+		timezonePanel = new JPanel();
+		timezonePanel.setLayout(new GridBagLayout());
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;
-		gbc.gridy = 1;
+		gbc.gridy = 0;
 		gbc.weightx = 1.0;
-		gbc.weighty = 1.0;
 		gbc.fill = GridBagConstraints.BOTH;
+		rootComponent.add(timezonePanel, gbc);
+		spinnerTimeZoneDifference = new JSpinner();
+		spinnerTimeZoneDifference.setMinimumSize(new Dimension(60, 28));
+		spinnerTimeZoneDifference.setPreferredSize(new Dimension(60, 28));
+		gbc = new GridBagConstraints();
+		gbc.gridx = 1;
+		gbc.gridy = 0;
+		gbc.anchor = GridBagConstraints.WEST;
+		timezonePanel.add(spinnerTimeZoneDifference, gbc);
+		final JLabel label1 = new JLabel();
+		label1.setText("Time Zone Difference");
+		gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.anchor = GridBagConstraints.WEST;
 		gbc.insets = new Insets(0, 12, 0, 12);
-		rootComponent.add(listPanel, gbc);
-		scrollList = new JScrollPane();
-		scrollList.setBackground(new Color(-1));
-		listPanel.add(scrollList, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-		scrollList.setViewportView(list);
+		timezonePanel.add(label1, gbc);
+		final JLabel label2 = new JLabel();
+		label2.setText("Hours");
+		gbc = new GridBagConstraints();
+		gbc.gridx = 2;
+		gbc.gridy = 0;
+		gbc.weightx = 1.0;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.insets = new Insets(0, 12, 0, 0);
+		timezonePanel.add(label2, gbc);
 	}
 
 	/**
