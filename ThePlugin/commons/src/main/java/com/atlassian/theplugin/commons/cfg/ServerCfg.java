@@ -196,9 +196,9 @@ public abstract class ServerCfg {
 		if (psci != null) {
 			setUsername(psci.getUsername());
 			setEnabled(psci.isEnabled());
-			final String password = psci.getPassword();
-			if (password != null) {
-				setPassword(password);
+			final String pwd = psci.getPassword();
+			if (pwd != null) {
+				setPassword(pwd);
 				setPasswordStored(true);
 			} else {
 				setPasswordStored(false);
