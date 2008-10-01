@@ -37,6 +37,6 @@ public class ConfigurationTest extends TestCase {
 
 
 	public void testProjectSettings() {
-        assertEquals("Atlassian", PluginUtil.getInstance().getName());
+        assertEquals("Atlassian IntelliJ Connector", PluginUtil.getInstance().getName());
     }
 }

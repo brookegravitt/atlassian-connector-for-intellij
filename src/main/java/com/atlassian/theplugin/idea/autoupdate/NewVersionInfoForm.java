@@ -64,7 +64,7 @@ public class NewVersionInfoForm extends DialogWrapper {
 		String versionInfoUpgrade = "<html>Do you want to upgrade from <b>" + PluginUtil.getInstance().getVersion()
 				+ " to <i>" + aVersion + "</i></b>?<br></html>";
 
-		setTitle("New plugin version " + aVersion + " is available.");
+		setTitle("New Atlassian Connector version " + aVersion + " is available.");
 
 		versionInfoLabel.setText(versionInfoUpgrade);
 		StringBuilder sb = new StringBuilder();
