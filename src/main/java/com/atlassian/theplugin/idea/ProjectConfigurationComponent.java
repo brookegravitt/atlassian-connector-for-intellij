@@ -53,7 +53,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	private ProjectConfigurationPanel projectConfigurationPanel;
 	private static final String ATLASSIAN_DIR_NAME = ".atlassian";
 	private static final String ATLASSIAN_IDE_CONNECTOR_DIR_NAME = "ide-connector";
-	private String ATLASSIAN_IDE_PLUGIN_PRIVATE_OLD_XML = "atlassian-ide-plugin.private.xml";
+	private static final String ATLASSIAN_IDE_PLUGIN_PRIVATE_OLD_XML = "atlassian-ide-plugin.private.xml";
 
 
 	public ProjectConfigurationComponent(final Project project, CfgManager cfgManager) {
@@ -148,7 +148,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		return baseDir.getPath() + File.separator + "atlassian-ide-plugin.xml";
 	}
 
-	private String getPrivateCfgFileName(){
+	private String getPrivateCfgFileName() {
 
 		return  "atlassian-ide-plugin." + project.getName() + ".xml";
 	}
@@ -162,8 +162,8 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 				.findFileByPath(project.getBaseDir().getPath() + File.separator + ATLASSIAN_IDE_PLUGIN_PRIVATE_OLD_XML);
 
 		final VirtualFile baseHomeDir = LocalFileSystem.getInstance()
-				.findFileByPath(System.getProperty("user.home") + File.separator + ATLASSIAN_DIR_NAME + File.separator +
-						File.separator + ATLASSIAN_IDE_CONNECTOR_DIR_NAME + File.separator + getPrivateCfgFileName());
+				.findFileByPath(System.getProperty("user.home") + File.separator + ATLASSIAN_DIR_NAME + File.separator
+						+ File.separator + ATLASSIAN_IDE_CONNECTOR_DIR_NAME + File.separator + getPrivateCfgFileName());
 
 		final VirtualFile baseNewProjectDir =  LocalFileSystem.getInstance()
 				.findFileByPath(project.getBaseDir().getPath() + File.separator + getPrivateCfgFileName());
@@ -173,7 +173,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 			return baseHomeDir.getPath();
 		} else if (baseProjectDir != null) {
 			return baseProjectDir.getPath();
-		} else if (baseNewProjectDir != null){
+		} else if (baseNewProjectDir != null) {
 			return baseNewProjectDir.getPath();
 		}
 
@@ -195,8 +195,8 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 				} catch (IOException e) {
 					IdeaLoggerImpl.getInstance().error(
-							"Cannot create directory:" + baseHomeAtlassian + File.separator + ATLASSIAN_DIR_NAME + "\nerror:" +
-									e.getMessage());
+							"Cannot create directory:" + baseHomeAtlassian + File.separator + ATLASSIAN_DIR_NAME + "\nerror:"
+									+ e.getMessage());
 					return null;
 				}
 			}
@@ -208,13 +208,14 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 					baseHomeAtlassian.createChildDirectory(this, ATLASSIAN_IDE_CONNECTOR_DIR_NAME);
 				} catch (IOException e) {
 					IdeaLoggerImpl.getInstance().error(
-							"Cannot create directory:" + baseHomeAtlassian + File.separator + ATLASSIAN_IDE_CONNECTOR_DIR_NAME + "\nerror:" +
+							"Cannot create directory:" + baseHomeAtlassian + File.separator + ATLASSIAN_IDE_CONNECTOR_DIR_NAME
+									+ "\nerror:" +
 									e.getMessage());
 					return null;
 				}
 			}
-			return baseHomeDir.getPath() + File.separator + ATLASSIAN_DIR_NAME + File.separator +
-					ATLASSIAN_IDE_CONNECTOR_DIR_NAME + File.separator + getPrivateCfgFileName();
+			return baseHomeDir.getPath() + File.separator + ATLASSIAN_DIR_NAME + File.separator
+					+ ATLASSIAN_IDE_CONNECTOR_DIR_NAME + File.separator + getPrivateCfgFileName();
 
 		} else if (baseProjectDir != null) {
 			return baseProjectDir.getPath() + File.separator + getPrivateCfgFileName();
