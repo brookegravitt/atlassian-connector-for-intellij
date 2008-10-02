@@ -26,7 +26,6 @@ import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.IconLoader;
-import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -51,15 +50,10 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	private static final String CFG_LOAD_ERROR_MSG = "Error while loading Atlassian IntelliJ Connector configuration.";
 	private static final Icon PLUGIN_SETTINGS_ICON = IconLoader.getIcon("/icons/ico_plugin.png");
 	private ProjectConfigurationPanel projectConfigurationPanel;
-	private static final String ATLASSIAN_DIR_NAME = ".atlassian";
-	private static final String ATLASSIAN_IDE_CONNECTOR_DIR_NAME = "ide-connector";
-	private static final String ATLASSIAN_IDE_PLUGIN_PRIVATE_OLD_XML = "atlassian-ide-plugin.private.xml";
-
 
 	public ProjectConfigurationComponent(final Project project, CfgManager cfgManager) {
 		this.project = project;
 		this.cfgManager = cfgManager;
-
 	}
 
 
@@ -111,7 +105,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 		Document privateRoot = null; // null means that there is no private cfg available
 		try {
-			final String privateCfgFile = getPrivateCfgFileLoadPath();
+			final String privateCfgFile = getPrivateCfgFilePath();
 			if (new File(privateCfgFile).exists()) {
 				privateRoot = builder.build(privateCfgFile);
 			}
@@ -148,81 +142,13 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		return baseDir.getPath() + File.separator + "atlassian-ide-plugin.xml";
 	}
 
-	private String getPrivateCfgFileName() {
-
-		return  "atlassian-ide-plugin." + project.getName() + ".xml";
-	}
-	/*Tries to load file from
-			$HOME/.atlassian/ide-connector/atlassian-ide-plugin.PROJECT_NAME.xml
-	  next from
-	  		project.BaseDir + atlassian-ide-connector.private.xml*/
-	private String getPrivateCfgFileLoadPath() {
-
-		final VirtualFile baseProjectDir =  LocalFileSystem.getInstance()
-				.findFileByPath(project.getBaseDir().getPath() + File.separator + ATLASSIAN_IDE_PLUGIN_PRIVATE_OLD_XML);
-
-		final VirtualFile baseHomeDir = LocalFileSystem.getInstance()
-				.findFileByPath(System.getProperty("user.home") + File.separator + ATLASSIAN_DIR_NAME + File.separator
-						+ File.separator + ATLASSIAN_IDE_CONNECTOR_DIR_NAME + File.separator + getPrivateCfgFileName());
-
-		final VirtualFile baseNewProjectDir =  LocalFileSystem.getInstance()
-				.findFileByPath(project.getBaseDir().getPath() + File.separator + getPrivateCfgFileName());
-
-
-		if (baseHomeDir != null) {
-			return baseHomeDir.getPath();
-		} else if (baseProjectDir != null) {
-			return baseProjectDir.getPath();
-		} else if (baseNewProjectDir != null) {
-			return baseNewProjectDir.getPath();
-		}
-
+	private String getPrivateCfgFilePath() {
+		final VirtualFile baseDir = project.getBaseDir();
+		if (baseDir == null) {
 		return null;
 	}
-
-	/*Target filr in  $HOME/.atlassian/ide-connector/atlassina-ide-connector*/
-	private String getPrivateCfgFileSavePath() {
-		final VirtualFile baseProjectDir = project.getBaseDir();
-		final VirtualFile baseHomeDir = LocalFileSystem.getInstance()
-				.findFileByPath(System.getProperty("user.home"));
-
-		if (baseHomeDir != null) {
-			VirtualFile baseHomeAtlassian = LocalFileSystem.getInstance()
-					.findFileByPath(System.getProperty("user.home") + File.separator + ATLASSIAN_DIR_NAME);
-			if (baseHomeAtlassian == null) {
-				try {
-					baseHomeDir.createChildDirectory(this, ATLASSIAN_DIR_NAME);
-					baseHomeAtlassian = LocalFileSystem.getInstance().findFileByPath(System.getProperty("user.home") + File.separator + ATLASSIAN_DIR_NAME);
-
-				} catch (IOException e) {
-					IdeaLoggerImpl.getInstance().error(
-							"Cannot create directory:" + baseHomeAtlassian + File.separator + ATLASSIAN_DIR_NAME + "\nerror:"
-									+ e.getMessage());
-					return null;
+		return baseDir.getPath() + File.separator + "atlassian-ide-plugin.private.xml";
 				}
-			}
-			final VirtualFile baseHomeAtlassianIdePlugin = LocalFileSystem.getInstance()
-					.findFileByPath(System.getProperty("user.home") + File.separator + ATLASSIAN_DIR_NAME + File
-							.separator + ATLASSIAN_IDE_CONNECTOR_DIR_NAME);
-			if (baseHomeAtlassianIdePlugin == null) {
-				try {
-					baseHomeAtlassian.createChildDirectory(this, ATLASSIAN_IDE_CONNECTOR_DIR_NAME);
-				} catch (IOException e) {
-					IdeaLoggerImpl.getInstance().error(
-							"Cannot create directory:" + baseHomeAtlassian + File.separator + ATLASSIAN_IDE_CONNECTOR_DIR_NAME
-									+ "\nerror:" + e.getMessage());
-					return null;
-				}
-			}
-			return baseHomeDir.getPath() + File.separator + ATLASSIAN_DIR_NAME + File.separator
-					+ ATLASSIAN_IDE_CONNECTOR_DIR_NAME + File.separator + getPrivateCfgFileName();
-
-		} else if (baseProjectDir != null) {
-			return baseProjectDir.getPath() + File.separator + getPrivateCfgFileName();
-		}
-
-		return null;
-	}
 
 
 	private ProjectId getProjectId() {
@@ -238,7 +164,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 			cfgFactory.save(configuration);
 		}
 		final String publicCfgFile = getCfgFilePath();
-		final String privateCfgFile = getPrivateCfgFileSavePath();
+		final String privateCfgFile = getPrivateCfgFilePath();
 		writeXmlFile(element, publicCfgFile);
 		writeXmlFile(privateElement, privateCfgFile);
 	}
