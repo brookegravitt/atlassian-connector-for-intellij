@@ -63,7 +63,7 @@ public abstract class AbstractHttpSession {
      * This class holds an HTTP response body, together with its last
      * modification time and Etag.
      */
-    private class CacheRecord {
+    private final class CacheRecord {
         private final byte[] document;
         private final String lastModified;
         private final String etag;
@@ -178,10 +178,10 @@ public abstract class AbstractHttpSession {
                 } else {
                     System.out.println("Received GET response document.");
                     final byte[] result = method.getResponseBody();
-                    final String lastModified = method.getResponseHeader("Last-Modified") == null ? null :
-                        method.getResponseHeader("Last-Modified").getValue();
-                    final String eTag = method.getResponseHeader("Etag") == null ? null :
-                        method.getResponseHeader("Etag").getValue();
+                    final String lastModified = method.getResponseHeader("Last-Modified") == null ? null
+							: method.getResponseHeader("Last-Modified").getValue();
+                    final String eTag = method.getResponseHeader("Etag") == null ? null 
+							: method.getResponseHeader("Etag").getValue();
 
                     if (lastModified != null && eTag != null) {
                         cacheRecord = new CacheRecord(result, lastModified, eTag);
