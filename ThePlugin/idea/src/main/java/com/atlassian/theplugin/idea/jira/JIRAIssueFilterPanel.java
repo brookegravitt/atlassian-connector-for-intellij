@@ -315,7 +315,7 @@ public class JIRAIssueFilterPanel extends JPanel {
 	public void setComboValue
 			(JComboBox
 					combo,
-			 List<JIRAQueryFragment> advancedQuery) {
+					List<JIRAQueryFragment> advancedQuery) {
 		for (int i = 0, size = combo.getModel().getSize(); i < size; ++i) {
 			for (JIRAQueryFragment jiraQueryFragment : advancedQuery) {
 				JIRAQueryFragment fragment = (JIRAQueryFragment) combo.getModel().getElementAt(i);
@@ -382,10 +382,12 @@ public class JIRAIssueFilterPanel extends JPanel {
 	private void $$$setupUI$$$() {
 		createUIComponents();
 		rootPanel = new JPanel();
-		rootPanel.setLayout(new FormLayout("fill:max(d;4px):noGrow", "center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:d:grow"));
+		rootPanel.setLayout(new FormLayout("fill:max(d;4px):noGrow",
+				"center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:d:grow"));
 		rootPanel.setFocusCycleRoot(false);
 		rootPanel.setMaximumSize(new Dimension(-1, -1));
-		componentsVersionsPanel.setLayout(new FormLayout("fill:72px:noGrow,left:4dlu:noGrow,fill:d:grow", "center:d:grow,top:3dlu:noGrow,center:d:grow,top:3dlu:noGrow,center:d:grow"));
+		componentsVersionsPanel.setLayout(new FormLayout("fill:72px:noGrow,left:4dlu:noGrow,fill:d:grow",
+				"center:d:grow,top:3dlu:noGrow,center:d:grow,top:3dlu:noGrow,center:d:grow"));
 		componentsVersionsPanel.setEnabled(false);
 		componentsVersionsPanel.setMinimumSize(new Dimension(335, -1));
 		componentsVersionsPanel.setPreferredSize(new Dimension(335, 250));
@@ -421,17 +423,20 @@ public class JIRAIssueFilterPanel extends JPanel {
 		componentsLabel.setText("Components:");
 		componentsVersionsPanel.add(componentsLabel, cc.xy(1, 3, CellConstraints.RIGHT, CellConstraints.TOP));
 		affectsVersionsLabel = new JLabel();
-		affectsVersionsLabel.setFont(new Font(affectsVersionsLabel.getFont().getName(), affectsVersionsLabel.getFont().getStyle(), 11));
+		affectsVersionsLabel
+				.setFont(new Font(affectsVersionsLabel.getFont().getName(), affectsVersionsLabel.getFont().getStyle(), 11));
 		affectsVersionsLabel.setText("<html>Affects<br>  Versions:</html>");
 		componentsVersionsPanel.add(affectsVersionsLabel, cc.xy(1, 5, CellConstraints.RIGHT, CellConstraints.TOP));
 		issueAttributesCollapsiblePanel.setBackground(new Color(-6711040));
 		issueAttributesCollapsiblePanel.putClientProperty("html.disable", Boolean.TRUE);
 		rootPanel.add(issueAttributesCollapsiblePanel, cc.xy(1, 7));
-		issueAttributesPanel.setLayout(new FormLayout("fill:72px:noGrow,left:4dlu:noGrow,fill:d:grow", "center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:d:grow,top:3dlu:noGrow,center:d:grow,top:3dlu:noGrow,center:d:grow"));
+		issueAttributesPanel.setLayout(new FormLayout("fill:72px:noGrow,left:4dlu:noGrow,fill:d:grow",
+				"center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:d:grow,top:3dlu:noGrow,center:d:grow,top:3dlu:noGrow,center:d:grow"));
 		issueAttributesPanel.setEnabled(false);
 		issueAttributesPanel.setMinimumSize(new Dimension(335, -1));
 		issueAttributesPanel.setPreferredSize(new Dimension(335, 314));
-		rootPanel.add(issueAttributesPanel, new CellConstraints(1, 9, 1, 1, CellConstraints.DEFAULT, CellConstraints.TOP, new Insets(0, 0, 5, 0)));
+		rootPanel.add(issueAttributesPanel,
+				new CellConstraints(1, 9, 1, 1, CellConstraints.DEFAULT, CellConstraints.TOP, new Insets(0, 0, 5, 0)));
 		reporterComboBox = new JComboBox();
 		reporterComboBox.setLightWeightPopupEnabled(false);
 		reporterComboBox.setMaximumRowCount(5);
@@ -487,14 +492,18 @@ public class JIRAIssueFilterPanel extends JPanel {
 		prioritiesLabel.setVerticalTextPosition(0);
 		issueAttributesPanel.add(prioritiesLabel, cc.xy(1, 9, CellConstraints.RIGHT, CellConstraints.TOP));
 		componentsVersionsCollapsiblePanel.setBackground(new Color(-3368704));
-		componentsVersionsCollapsiblePanel.setFont(new Font(componentsVersionsCollapsiblePanel.getFont().getName(), componentsVersionsCollapsiblePanel.getFont().getStyle(), componentsVersionsCollapsiblePanel.getFont().getSize()));
+		componentsVersionsCollapsiblePanel.setFont(new Font(componentsVersionsCollapsiblePanel.getFont().getName(),
+				componentsVersionsCollapsiblePanel.getFont().getStyle(),
+				componentsVersionsCollapsiblePanel.getFont().getSize()));
 		rootPanel.add(componentsVersionsCollapsiblePanel, cc.xy(1, 3, CellConstraints.FILL, CellConstraints.DEFAULT));
 		generalPanel = new JPanel();
-		generalPanel.setLayout(new FormLayout("fill:72px:noGrow,left:4dlu:noGrow,fill:d:grow", "fill:d:grow,top:3dlu:noGrow,fill:max(d;4px):noGrow"));
+		generalPanel.setLayout(new FormLayout("fill:72px:noGrow,left:4dlu:noGrow,fill:d:grow",
+				"fill:d:grow,top:3dlu:noGrow,fill:max(d;4px):noGrow"));
 		generalPanel.setDoubleBuffered(true);
 		generalPanel.setEnabled(false);
 		generalPanel.setMinimumSize(new Dimension(335, -1));
-		rootPanel.add(generalPanel, new CellConstraints(1, 1, 1, 1, CellConstraints.DEFAULT, CellConstraints.DEFAULT, new Insets(5, 0, 0, 0)));
+		rootPanel.add(generalPanel,
+				new CellConstraints(1, 1, 1, 1, CellConstraints.DEFAULT, CellConstraints.DEFAULT, new Insets(5, 0, 0, 0)));
 		final JLabel label1 = new JLabel();
 		label1.setFont(new Font(label1.getFont().getName(), label1.getFont().getStyle(), 11));
 		label1.setText("Project:");
