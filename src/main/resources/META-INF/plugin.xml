@@ -204,6 +204,12 @@
 		<action id="ThePlugin.Bamboo.CollapseTests"
 				class="com.atlassian.theplugin.idea.action.bamboo.CollapseTestsAction" text="Collapse All"
 				icon="/actions/collapseall.png"/>
+		<action id="ThePlugin.Bamboo.RunFailedTests"
+				class="com.atlassian.theplugin.idea.action.bamboo.RunFailedTestsAction" text="Run Failed Tests"
+				icon="/actions/execute.png"/>
+		<action id="ThePlugin.Bamboo.DebugFailedTests"
+				class="com.atlassian.theplugin.idea.action.bamboo.DebugFailedTestsAction" text="Debug Failed Tests"
+				icon="/actions/startDebugger.png"/>
 		<action id="ThePlugin.Bamboo.ToggleAllTests"
 				class="com.atlassian.theplugin.idea.action.bamboo.ToggleAllTestsAction" text="Hide Passed"
 				icon="/runConfigurations/hidePassed.png"/>
@@ -317,6 +323,8 @@
 			<separator/>
 			<reference id="ThePlugin.Bamboo.ExpandTests"/>
 			<reference id="ThePlugin.Bamboo.CollapseTests"/>
+			<reference id="ThePlugin.Bamboo.RunFailedTests"/>
+			<reference id="ThePlugin.Bamboo.DebugFailedTests"/>
 		</group>
 
 		<group id="ThePlugin.Bamboo.CommitListToolBar" popup="false">
