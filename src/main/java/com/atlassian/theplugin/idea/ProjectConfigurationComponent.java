@@ -187,11 +187,12 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 				.findFileByPath(System.getProperty("user.home"));
 
 		if (baseHomeDir != null) {
-			final VirtualFile baseHomeAtlassian = LocalFileSystem.getInstance()
+			VirtualFile baseHomeAtlassian = LocalFileSystem.getInstance()
 					.findFileByPath(System.getProperty("user.home") + File.separator + ATLASSIAN_DIR_NAME);
 			if (baseHomeAtlassian == null) {
 				try {
 					baseHomeDir.createChildDirectory(this, ATLASSIAN_DIR_NAME);
+					baseHomeAtlassian = LocalFileSystem.getInstance().findFileByPath(System.getProperty("user.home") + File.separator + ATLASSIAN_DIR_NAME);
 
 				} catch (IOException e) {
 					IdeaLoggerImpl.getInstance().error(
