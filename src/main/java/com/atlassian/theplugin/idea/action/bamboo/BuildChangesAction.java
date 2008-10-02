@@ -16,13 +16,17 @@
 
 package com.atlassian.theplugin.idea.action.bamboo;
 
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.atlassian.theplugin.idea.IdeaHelper;
 
 public class BuildChangesAction extends AnAction {
 	public void actionPerformed(AnActionEvent event) {
-		IdeaHelper.getBambooToolWindowPanel(event).showChanges();
+		BambooTableToolWindowPanel bambooTableToolWindowPanel = IdeaHelper.getBambooToolWindowPanel(event);
+		if (bambooTableToolWindowPanel != null) {
+			bambooTableToolWindowPanel.showChanges();
+		}
     }
 
 	public void update(AnActionEvent event) {
