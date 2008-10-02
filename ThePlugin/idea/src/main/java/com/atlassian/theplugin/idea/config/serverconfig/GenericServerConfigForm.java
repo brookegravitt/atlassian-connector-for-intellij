@@ -45,6 +45,7 @@ public class GenericServerConfigForm implements LoginDataProvided {
 	private JButton testConnection;
 	private JCheckBox chkPasswordRemember;
 	private JCheckBox cbEnabled;
+    private DocumentListener listener;
 
 	private transient ServerCfg serverCfg;
 
@@ -63,7 +64,7 @@ public class GenericServerConfigForm implements LoginDataProvided {
 			}
 		});
 
-		DocumentListener listener = new DocumentListener() {
+		listener = new DocumentListener() {
 
 			public void insertUpdate(DocumentEvent e) {
 				setServerState();
@@ -77,9 +78,6 @@ public class GenericServerConfigForm implements LoginDataProvided {
 				setServerState();
 			}
 		};
-
-		username.getDocument().addDocumentListener(listener);
-		password.getDocument().addDocumentListener(listener);
 	}
 
 	public void finalizeData() {
@@ -108,6 +106,10 @@ public class GenericServerConfigForm implements LoginDataProvided {
 	}
 
 	public void setData(ServerCfg server) {
+
+		username.getDocument().removeDocumentListener(listener);
+		password.getDocument().removeDocumentListener(listener);
+
 		serverCfg = server;
 
 		serverName.setText(server.getName());
@@ -116,6 +118,10 @@ public class GenericServerConfigForm implements LoginDataProvided {
 		chkPasswordRemember.setSelected(server.isPasswordStored());
 		password.setText(server.getPassword());
 		cbEnabled.setSelected(server.isEnabled());
+
+
+		username.getDocument().addDocumentListener(listener);
+		password.getDocument().addDocumentListener(listener);
 	}
 
 	public void saveData() {
