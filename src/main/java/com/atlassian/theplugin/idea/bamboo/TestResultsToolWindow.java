@@ -111,7 +111,30 @@ public final class TestResultsToolWindow {
 		testDetailsToolWindow.show(null);
 	}
 
-    private abstract class AbstractTreeNode extends DefaultMutableTreeNode {
+	public void runFailedTests(boolean debug) {
+//		JUnitConfigurationType configurationType = JUnitConfigurationType.getInstance();
+//		ConfigurationFactory configurationFactory = configurationType.getConfigurationFactories()[0];
+//+ JUnitConfiguration configuration = new JUnitConfiguration("TA Tests", project, configurationFactory);+
+//+ RunStrategyImpl runStrategy = new RunStrategyImpl();+
+//+ DataContext dataContext = SimpleDataContext.getProjectContext(project);+
+//+ JavaProgramRunner javaRunner = ExecutionRegistryImpl.getInstance().getDefaultRunner();+
+//+ PsiClass testClass = RunTestingAction.getClassElementFromPsiJavaFile(testFile);+
+//+ configuration.beClassConfiguration(testClass); +
+//+ configuration.setMainClass(testClass);+
+//+ ConfigurationPerRunnerSettings confPerRunSettings = new ConfigurationPerRunnerSettings(javaRunner.getInfo(), configuration);+
+//+ RunnerSettings runSettings = new RunnerSettings(configuration, configuration);+
+//+ try {+
+//+ runStrategy.execute(configuration, dataContext, javaRunner, runSettings, confPerRunSettings);+
+//+ } catch (ExecutionException e1) {+
+//+ // ingore+
+//+ }+
+	}
+
+	public boolean canRunFailedTests() {
+		return false;
+	}
+
+	private abstract class AbstractTreeNode extends DefaultMutableTreeNode {
         public AbstractTreeNode(String s) {
             super(s);
         }
