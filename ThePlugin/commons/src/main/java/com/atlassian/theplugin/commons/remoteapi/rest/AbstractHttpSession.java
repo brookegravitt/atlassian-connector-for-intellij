@@ -21,6 +21,7 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
 import com.atlassian.theplugin.commons.util.HttpClientFactory;
 import com.atlassian.theplugin.commons.util.UrlUtil;
+import com.atlassian.theplugin.commons.util.XmlUtil;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
@@ -31,6 +32,8 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.jdom.Document;
 import org.jdom.JDOMException;
+import org.jdom.Element;
+import org.jdom.xpath.XPath;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
@@ -41,6 +44,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Communication stub for lightweight XML based APIs.
@@ -123,20 +127,15 @@ public abstract class AbstractHttpSession {
 
     protected Document retrieveGetResponse(String urlString)
             throws IOException, JDOMException, RemoteApiSessionExpiredException {
-        return retrieveGetResponse(urlString, true);
-    }
-
-    protected Document retrieveGetResponse(String urlString, boolean expectResponse)
-            throws IOException, JDOMException, RemoteApiSessionExpiredException {
 
         byte[] result = doConditionalGet(urlString);
-        Document doc = null;
-        if (expectResponse) {
-            SAXBuilder builder = new SAXBuilder();
-            doc = builder.build(new ByteArrayInputStream(result));
-            preprocessResult(doc);
-        }
-        return doc;
+        Document doc;
+
+		SAXBuilder builder = new SAXBuilder();
+		doc = builder.build(new ByteArrayInputStream(result));
+		preprocessResult(doc);
+
+		return doc;
     }
 
     protected byte[] doConditionalGet(String urlString) throws IOException, JDOMException, RemoteApiSessionExpiredException {
@@ -156,8 +155,8 @@ public abstract class AbstractHttpSession {
 
             CacheRecord cacheRecord = cache.get(urlString);
             if (cacheRecord != null) {
-                System.out.println(String.format("%s in cache, adding If-Modified-Since: %s and If-None-Match: %s headers.",
-                    urlString, cacheRecord.getLastModified(), cacheRecord.getEtag()));
+//                System.out.println(String.format("%s in cache, adding If-Modified-Since: %s and If-None-Match: %s headers.",
+//                    urlString, cacheRecord.getLastModified(), cacheRecord.getEtag()));
                 method.addRequestHeader("If-Modified-Since", cacheRecord.getLastModified());
                 method.addRequestHeader("If-None-Match", cacheRecord.getEtag());
             }
@@ -169,14 +168,15 @@ public abstract class AbstractHttpSession {
                 client.executeMethod(method);
 
                 if (method.getStatusCode() == HttpStatus.SC_NOT_MODIFIED && cacheRecord != null) {
-                    System.out.println("Cache record valid, using cached value: " + new String(cacheRecord.getDocument()));
+//					System.out.println("Cache record valid, using cached value: " + new String(cacheRecord.getDocument()));
                     return cacheRecord.getDocument().clone();
                 } else if (method.getStatusCode() != HttpStatus.SC_OK) {
-                    throw new IOException(
+
+					throw new IOException(
                             "HTTP " + method.getStatusCode() + " (" + HttpStatus.getStatusText(method.getStatusCode())
                                     + ")\n" + method.getStatusText());
                 } else {
-                    System.out.println("Received GET response document.");
+//					System.out.println("Received GET response document.");
                     final byte[] result = method.getResponseBody();
                     final String lastModified = method.getResponseHeader("Last-Modified") == null ? null
 							: method.getResponseHeader("Last-Modified").getValue();
@@ -186,7 +186,7 @@ public abstract class AbstractHttpSession {
                     if (lastModified != null && eTag != null) {
                         cacheRecord = new CacheRecord(result, lastModified, eTag);
                         cache.put(urlString, cacheRecord);
-                        System.out.println("Latest GET response document placed in cache: " + new String(result));
+//						System.out.println("Latest GET response document placed in cache: " + new String(result));
                     }
                     return result.clone();
                 }
@@ -196,7 +196,9 @@ public abstract class AbstractHttpSession {
                 method.releaseConnection();
             }
         }
-    }
+
+
+	}
 
     protected byte[] retrieveGetResponseAsBytes(String urlString)
             throws IOException, JDOMException, RemoteApiSessionExpiredException {
@@ -275,8 +277,16 @@ public abstract class AbstractHttpSession {
 
                 client.executeMethod(method);
 
-                if (method.getStatusCode() != HttpStatus.SC_OK) {
-                    throw new IOException("HTTP status code " + method.getStatusCode() + ": " + method.getStatusText());
+				if (method.getStatusCode() == HttpStatus.SC_NO_CONTENT) {
+					return doc;
+				} else if (method.getStatusCode() != HttpStatus.SC_OK) {
+
+					Document document;
+					SAXBuilder builder = new SAXBuilder();
+					document = builder.build(method.getResponseBodyAsStream());
+
+					throw buildException(method.getStatusCode(), document);
+//					throw new IOException("HTTP status code " + method.getStatusCode() + ": " + method.getStatusText());
                 }
 
                 if (expectResponse) {
@@ -292,6 +302,25 @@ public abstract class AbstractHttpSession {
         }
         return doc;
     }
+
+	private IOException buildException(final int statusCode, final Document document) throws JDOMException {
+		String text = "Server returned HTTP " + statusCode + " (" + HttpStatus.getStatusText(statusCode) + ")\n";
+
+		XPath xpath = XPath.newInstance("code");
+		List<Element> nodes = xpath.selectNodes(document);
+		if (nodes != null && !nodes.isEmpty()) {
+			System.out.println(nodes.get(0).getValue());
+		}
+
+		xpath = XPath.newInstance("stacktrace");
+		nodes = xpath.selectNodes(document);
+		if (nodes != null && !nodes.isEmpty()) {
+			System.out.println(nodes.get(0).getValue());
+		}
+
+
+		return new IOException(text);
+	}
 
 
 	protected Document retrieveDeleteResponse(String urlString, boolean expectResponse)
