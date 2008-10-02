@@ -467,16 +467,6 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		return review;
 	}
 
-
-	private void printXml(Document request) {
-		XMLOutputter o = new XMLOutputter(Format.getPrettyFormat());
-		try {
-			o.output(request, System.out);
-		} catch (IOException e) {
-			// nothing to do - debug code
-		}
-	}
-
 	public List<Reviewer> getReviewers(PermId permId) throws RemoteApiException {
 		if (!isLoggedIn()) {
 			throw new IllegalStateException("Calling method without calling login() first");
