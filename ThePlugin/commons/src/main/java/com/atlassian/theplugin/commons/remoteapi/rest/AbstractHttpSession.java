@@ -21,7 +21,6 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
 import com.atlassian.theplugin.commons.util.HttpClientFactory;
 import com.atlassian.theplugin.commons.util.UrlUtil;
-import com.atlassian.theplugin.commons.util.XmlUtil;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
@@ -31,20 +30,20 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.jdom.Document;
-import org.jdom.JDOMException;
 import org.jdom.Element;
-import org.jdom.xpath.XPath;
+import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.jdom.xpath.XPath;
 
-import java.io.IOException;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Communication stub for lightweight XML based APIs.
@@ -317,7 +316,6 @@ public abstract class AbstractHttpSession {
 		if (nodes != null && !nodes.isEmpty()) {
 			System.out.println(nodes.get(0).getValue());
 		}
-
 
 		return new IOException(text);
 	}
