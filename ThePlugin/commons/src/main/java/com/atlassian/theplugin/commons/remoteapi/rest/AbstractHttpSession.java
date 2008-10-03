@@ -306,7 +306,8 @@ public abstract class AbstractHttpSession {
 				+ "Reason: ";
 
 		XPath xpath = XPath.newInstance("error/code");
-		List<Element> nodes = xpath.selectNodes(document);
+		@SuppressWarnings("unchecked")
+		final List<Element> nodes = xpath.selectNodes(document);
 		if (nodes != null && !nodes.isEmpty()) {
 //			System.out.println(nodes.get(0).getValue());
 			text += nodes.get(0).getValue() + " ";
