@@ -121,7 +121,8 @@ public final class TestResultsToolWindow {
 //+ PsiClass testClass = RunTestingAction.getClassElementFromPsiJavaFile(testFile);+
 //+ configuration.beClassConfiguration(testClass); +
 //+ configuration.setMainClass(testClass);+
-//+ ConfigurationPerRunnerSettings confPerRunSettings = new ConfigurationPerRunnerSettings(javaRunner.getInfo(), configuration);+
+//+ ConfigurationPerRunnerSettings confPerRunSettings = new ConfigurationPerRunnerSettings(javaRunner.getInfo(),
+// configuration);+
 //+ RunnerSettings runSettings = new RunnerSettings(configuration, configuration);+
 //+ try {+
 //+ runStrategy.execute(configuration, dataContext, javaRunner, runSettings, confPerRunSettings);+
