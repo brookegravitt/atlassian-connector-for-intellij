@@ -71,24 +71,29 @@ public class ProjectConfiguration {
 
 		final ProjectConfiguration that = (ProjectConfiguration) o;
 
-		if (defaultCrucibleProject != null ? !defaultCrucibleProject.equals(that.defaultCrucibleProject) :
-				that.defaultCrucibleProject != null) {
+		if (defaultCrucibleProject != null
+				? !defaultCrucibleProject.equals(that.defaultCrucibleProject)
+				: that.defaultCrucibleProject != null) {
 			return false;
 		}
-		if (defaultCrucibleServer != null ? !defaultCrucibleServer.equals(that.defaultCrucibleServer) :
-				that.defaultCrucibleServer != null) {
+		if (defaultCrucibleServer != null
+				? !defaultCrucibleServer.equals(that.defaultCrucibleServer)
+				: that.defaultCrucibleServer != null) {
 			return false;
 		}
-		if (defaultCrucibleRepo != null ? !defaultCrucibleRepo.equals(that.defaultCrucibleRepo) :
-				that.defaultCrucibleRepo != null) {
+		if (defaultCrucibleRepo != null
+				? !defaultCrucibleRepo.equals(that.defaultCrucibleRepo)
+				: that.defaultCrucibleRepo != null) {
 			return false;
 		}
-		if (defaultFishEyeServer != null ? !defaultFishEyeServer.equals(that.defaultFishEyeServer) :
-				that.defaultFishEyeServer != null) {
+		if (defaultFishEyeServer != null
+				? !defaultFishEyeServer.equals(that.defaultFishEyeServer)
+				: that.defaultFishEyeServer != null) {
 			return false;
 		}
-		if (fishEyeProjectPath != null ? !fishEyeProjectPath.equals(that.fishEyeProjectPath) :
-				that.fishEyeProjectPath != null) {
+		if (fishEyeProjectPath != null
+				? !fishEyeProjectPath.equals(that.fishEyeProjectPath)
+				: that.fishEyeProjectPath != null) {
 			return false;
 		}
 		if (!servers.equals(that.servers)) {
