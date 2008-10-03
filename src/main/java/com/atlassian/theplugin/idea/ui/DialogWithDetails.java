@@ -15,118 +15,122 @@
  */
 package com.atlassian.theplugin.idea.ui;
 
-import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.DialogWrapper;
+import static com.intellij.openapi.ui.Messages.getQuestionIcon;
 import com.intellij.util.ui.UIUtil;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import static com.intellij.openapi.ui.Messages.getQuestionIcon;
-
-import javax.swing.*;
-
 import org.jetbrains.annotations.Nullable;
 
-import java.io.StringWriter;
-import java.io.PrintWriter;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 public class DialogWithDetails extends DialogWrapper {
- 	    private final String description;
- 	    private final String question;
- 	    private final String exceptionStr;
- 	    private final String exceptionTitle;
- 	    private JComponent exceptionPane;
- 	    private final JPanel thePanel = new JPanel();
- 	    private CellConstraints exceptionCC;
+	private final String description;
+	private final String question;
+	private final String exceptionStr;
+	private final String exceptionTitle;
+	private JComponent exceptionPane;
+	private final JPanel thePanel = new JPanel();
+	private CellConstraints exceptionCC;
 
- 	    protected DialogWithDetails(Project project, String description, String question, Throwable exception, String title) {
- 	        super(project, false);
- 	        this.description = description;
- 	        this.question = question;
- 	        this.exceptionStr = getExceptionString(exception);
- 	        this.exceptionTitle = exception.getLocalizedMessage();
+	protected DialogWithDetails(Project project, String description, String question, Throwable exception, String title) {
+		super(project, false);
+		this.description = description;
+		this.question = question;
+		this.exceptionStr = getExceptionString(exception);
+		this.exceptionTitle = exception.getLocalizedMessage();
 
- 	        setTitle(title);
+		setTitle(title);
 
- 	        init();
- 	    }
+		init();
+	}
 
- 	    public static int showYesNoDialog(Project project, String description, String question, Throwable exception, String title) {
- 	        DialogWithDetails dialog = new DialogWithDetails(project, description, question, exception, title);
- 	        dialog.show();
- 	        return dialog.getExitCode();
- 	    }
+	public static int showYesNoDialog(Project project, String description,
+			String question, Throwable exception, String title) {
+		DialogWithDetails dialog = new DialogWithDetails(project, description, question, exception, title);
+		dialog.show();
+		return dialog.getExitCode();
+	}
 
- 	    @Nullable
- 	    protected JComponent createCenterPanel() {
+	@Override
+	@Nullable
+	protected JComponent createCenterPanel() {
 
- 	        FormLayout formLayout = new FormLayout("3dlu, pref, 3dlu, 15dlu, 300dlu, 3dlu",
- 	                                               "3dlu, pref, 3dlu, pref, 3dlu, pref, 9dlu, pref, 9dlu");
- 	        CellConstraints iconCC = new CellConstraints(2, 2, 1, 5);
- 	        CellConstraints descrCC = new CellConstraints(4, 2, 2, 1);
- 	        CellConstraints exceptionTitleCC = new CellConstraints(5, 4, 1, 1);
- 	        exceptionCC = new CellConstraints(5, 6, 1, 1);
- 	        CellConstraints questionCC = new CellConstraints(4, 8, 2, 1);
+		FormLayout formLayout = new FormLayout("3dlu, pref, 3dlu, 15dlu, 300dlu, 3dlu",
+				"3dlu, pref, 3dlu, pref, 3dlu, pref, 9dlu, pref, 9dlu");
 
- 	        thePanel.setLayout(formLayout);
+		//CHECKSTYLE:MAGIC:OFF
+		CellConstraints iconCC = new CellConstraints(2, 2, 1, 5);
+		CellConstraints descrCC = new CellConstraints(4, 2, 2, 1);
+		CellConstraints exceptionTitleCC = new CellConstraints(5, 4, 1, 1);
+		exceptionCC = new CellConstraints(5, 6, 1, 1);
+		CellConstraints questionCC = new CellConstraints(4, 8, 2, 1);
 
- 	        JLabel iconLabel = new JLabel(getQuestionIcon());
- 	        iconLabel.setVerticalAlignment(JLabel.TOP);
- 	        thePanel.add(iconLabel, iconCC);
+		thePanel.setLayout(formLayout);
 
- 	        JTextArea descrArea = new JTextArea(description);
- 	        descrArea.setEditable(false);
- 	        descrArea.setBackground(UIUtil.getOptionPaneBackground());
- 	        thePanel.add(descrArea, descrCC);
+		JLabel iconLabel = new JLabel(getQuestionIcon());
+		iconLabel.setVerticalAlignment(JLabel.TOP);
+		thePanel.add(iconLabel, iconCC);
 
- 	        final JLabel exTitleLabel = new JLabel(exceptionTitle);
- 	        exTitleLabel.setFont(exTitleLabel.getFont().deriveFont(Font.ITALIC));
- 	        thePanel.add(exTitleLabel, exceptionTitleCC);
+		JTextArea descrArea = new JTextArea(description);
+		descrArea.setEditable(false);
+		descrArea.setBackground(UIUtil.getOptionPaneBackground());
+		thePanel.add(descrArea, descrCC);
 
- 	        JTextArea exceptionArea = new JTextArea(10, 60);
- 	        exceptionArea.setText(exceptionStr);
- 	        exceptionArea.setEditable(false);
- 	        exceptionArea.setCaretPosition(0);
- 	        exceptionArea.setTabSize(2);
- 	        exceptionPane = new JScrollPane(exceptionArea);
+		final JLabel exTitleLabel = new JLabel(exceptionTitle);
+		exTitleLabel.setFont(exTitleLabel.getFont().deriveFont(Font.ITALIC));
+		thePanel.add(exTitleLabel, exceptionTitleCC);
 
- 	        JTextArea questionArea = new JTextArea(question);
- 	        questionArea.setEditable(false);
- 	        questionArea.setBackground(UIUtil.getOptionPaneBackground());
- 	        thePanel.add(questionArea, questionCC);
+		JTextArea exceptionArea = new JTextArea(10, 60);
+		exceptionArea.setText(exceptionStr);
+		exceptionArea.setEditable(false);
+		exceptionArea.setCaretPosition(0);
+		exceptionArea.setTabSize(2);
+		//CHECKSTYLE:MAGIC:ON
+		exceptionPane = new JScrollPane(exceptionArea);
 
- 	        return thePanel;
- 	    }
+		JTextArea questionArea = new JTextArea(question);
+		questionArea.setEditable(false);
+		questionArea.setBackground(UIUtil.getOptionPaneBackground());
+		thePanel.add(questionArea, questionCC);
 
- 	    protected Action[] createActions() {
- 	        return new Action[]{new DetailsAction(), getOKAction(), getCancelAction()};
- 	    }
+		return thePanel;
+	}
 
- 	    private static String getExceptionString(Throwable t) {
- 	        StringWriter sw = new StringWriter();
- 	        t.printStackTrace(new PrintWriter(sw));
- 	        return sw.getBuffer().toString();
- 	    }
+	@Override
+	protected Action[] createActions() {
+		return new Action[]{new DetailsAction(), getOKAction(), getCancelAction()};
+	}
 
- 	    private class DetailsAction extends AbstractAction {
- 	        private static final String SHOW_TXT = "Show Exception Details";
- 	        private static final String HIDE_TXT = "Hide Exception Details";
+	private static String getExceptionString(Throwable t) {
+		StringWriter sw = new StringWriter();
+		t.printStackTrace(new PrintWriter(sw));
+		return sw.getBuffer().toString();
+	}
 
- 	        public DetailsAction() {
- 	            putValue(Action.NAME, SHOW_TXT);
- 	        }
+	private class DetailsAction extends AbstractAction {
+		private static final String SHOW_TXT = "Show Exception Details";
+		private static final String HIDE_TXT = "Hide Exception Details";
 
- 	        public void actionPerformed(ActionEvent e) {
- 	            if (exceptionPane.getParent() != null) {
- 	                thePanel.remove(exceptionPane);
- 	                putValue(Action.NAME, SHOW_TXT);
- 	            } else {
- 	                thePanel.add(exceptionPane, exceptionCC);
- 	                putValue(Action.NAME, HIDE_TXT);
- 	            }
- 	            pack();
- 	        }
- 	    }
+		public DetailsAction() {
+			putValue(Action.NAME, SHOW_TXT);
+		}
 
- 	}
+		public void actionPerformed(ActionEvent e) {
+			if (exceptionPane.getParent() != null) {
+				thePanel.remove(exceptionPane);
+				putValue(Action.NAME, SHOW_TXT);
+			} else {
+				thePanel.add(exceptionPane, exceptionCC);
+				putValue(Action.NAME, HIDE_TXT);
+			}
+			pack();
+		}
+	}
+
+}

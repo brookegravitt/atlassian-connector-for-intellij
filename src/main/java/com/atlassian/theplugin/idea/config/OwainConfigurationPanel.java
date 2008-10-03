@@ -62,8 +62,8 @@ public class OwainConfigurationPanel extends JPanel {
 	};
 	private static final CrucibleRepoWrapper REPO_FETCHING = new CrucibleRepoWrapper(null);
 
-	final CrucibleProjectComboBoxModel crucProjectModel = new CrucibleProjectComboBoxModel();
-	private OwainConfigurationPanel.CrucibleRepoComboBoxModel crucRepoModel;
+	private final CrucibleProjectComboBoxModel crucProjectModel = new CrucibleProjectComboBoxModel();
+	private final CrucibleRepoComboBoxModel crucRepoModel = new CrucibleRepoComboBoxModel();
 
 	private class CrucibleServerComboBoxModel extends AbstractListModel implements ComboBoxModel {
 		private final boolean forFishEye;
@@ -157,12 +157,12 @@ public class OwainConfigurationPanel extends JPanel {
 				"3dlu, right:pref, 3dlu, min(150dlu;default):grow, 3dlu", // columns
 				"p, 3dlu, p, 3dlu, p, 3dlu, p, 9dlu, p, 3dlu, p, 3dlu, fill:p");	  // rows
 
+		//CHECKSTYLE:MAGIC:OFF
 		layout.setRowGroups(new int[][]{{11, 13}});
 
 		PanelBuilder builder = new PanelBuilder(layout, this);
 		builder.setDefaultDialogBorder();
 
-// Obtain a reusable constraints object to place components in the grid.
 		final CellConstraints cc = new CellConstraints();
 
 		builder.addSeparator("Crucible", cc.xyw(1, 1, ALL_COLUMNS));
@@ -178,6 +178,7 @@ public class OwainConfigurationPanel extends JPanel {
 		builder.add(defaultFishEyeServerCombo, cc.xy(4, 11));
 		builder.addLabel("Path to project", cc.xy(2, 13));
 		builder.add(pathToProjectEdit, cc.xy(4, 13));
+		//CHECKSTYLE:MAGIC:ON
 
 		initializeCombos();
 
@@ -202,13 +203,13 @@ public class OwainConfigurationPanel extends JPanel {
 		defaultCrucibleServerCombo.setModel(new CrucibleServerComboBoxModel(false));
 		defaultFishEyeServerCombo.setModel(new CrucibleServerComboBoxModel(true));
 		defaultCrucibleProjectCombo.setModel(crucProjectModel);
-		crucRepoModel = new CrucibleRepoComboBoxModel();
+
 		defaultFishEyeRepositoryCombo.setModel(crucRepoModel);
 	}
 
 
-	public void setData(final ProjectConfiguration projectConfiguration) {
-		this.projectConfiguration = projectConfiguration;
+	public void setData(final ProjectConfiguration aProjectConfiguration) {
+		this.projectConfiguration = aProjectConfiguration;
 		initializeCombos();
 	}
 
@@ -306,10 +307,11 @@ public class OwainConfigurationPanel extends JPanel {
 
 	private class CrucibleProjectComboBoxModel extends AbstractListModel implements ComboBoxModel {
 		private Map<ServerId, Collection<CrucibleProjectWrapper>> data;
+		private static final int INITIAL_CAPACITY = 10;
 
 		private Collection<CrucibleProjectWrapper> getProjects(final CrucibleServerCfg crucibleServerCfg) {
 			if (data == null) {
-				data = MiscUtil.buildConcurrentHashMap(10);
+				data = MiscUtil.buildConcurrentHashMap(INITIAL_CAPACITY);
 			}
 
 			Collection<CrucibleProjectWrapper> projectsWrappers = data.get(crucibleServerCfg.getServerId());
@@ -432,10 +434,11 @@ public class OwainConfigurationPanel extends JPanel {
 
 	private class CrucibleRepoComboBoxModel extends AbstractListModel implements ComboBoxModel {
 		private Map<ServerId, Collection<CrucibleRepoWrapper>> data;
+		private static final int INITIAL_CAPACITY = 10;
 
 		private Collection<CrucibleRepoWrapper> getRepositories(final CrucibleServerCfg crucibleServerCfg) {
 			if (data == null) {
-				data = MiscUtil.buildConcurrentHashMap(10);
+				data = MiscUtil.buildConcurrentHashMap(INITIAL_CAPACITY);
 			}
 
 			Collection<CrucibleRepoWrapper> repoWrappers = data.get(crucibleServerCfg.getServerId());
