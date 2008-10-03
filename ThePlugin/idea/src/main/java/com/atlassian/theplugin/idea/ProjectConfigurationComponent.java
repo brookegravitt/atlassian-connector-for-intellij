@@ -16,8 +16,15 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.UiTaskExecutor;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.commons.cfg.ConfigurationListener;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.ProjectConfigurationFactory;
+import com.atlassian.theplugin.commons.cfg.ProjectId;
+import com.atlassian.theplugin.commons.cfg.ServerCfgFactoryException;
 import com.atlassian.theplugin.commons.cfg.xstream.JDomProjectConfigurationFactory;
+import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.idea.config.ProjectConfigurationPanel;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.components.SettingsSavingComponent;
@@ -47,13 +54,16 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 	private final Project project;
 	private final CfgManager cfgManager;
+	private final UiTaskExecutor uiTaskExecutor;
 	private static final String CFG_LOAD_ERROR_MSG = "Error while loading Atlassian IntelliJ Connector configuration.";
 	private static final Icon PLUGIN_SETTINGS_ICON = IconLoader.getIcon("/icons/ico_plugin.png");
 	private ProjectConfigurationPanel projectConfigurationPanel;
 
-	public ProjectConfigurationComponent(final Project project, CfgManager cfgManager) {
+	public ProjectConfigurationComponent(final Project project, final CfgManager cfgManager,
+			final UiTaskExecutor uiTaskExecutor) {
 		this.project = project;
 		this.cfgManager = cfgManager;
+		this.uiTaskExecutor = uiTaskExecutor;
 	}
 
 
@@ -142,13 +152,14 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		return baseDir.getPath() + File.separator + "atlassian-ide-plugin.xml";
 	}
 
+	@Nullable
 	private String getPrivateCfgFilePath() {
 		final VirtualFile baseDir = project.getBaseDir();
 		if (baseDir == null) {
-		return null;
-	}
+			return null;
+		}
 		return baseDir.getPath() + File.separator + "atlassian-ide-plugin.private.xml";
-				}
+	}
 
 
 	private ProjectId getProjectId() {
@@ -206,7 +217,8 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 			// may happen for Default Template project
 			configuration = setDefaultProjectConfiguration();
 		}
-		projectConfigurationPanel = new ProjectConfigurationPanel(project, configuration.getClone());
+		projectConfigurationPanel = new ProjectConfigurationPanel(project, configuration.getClone(),
+				CrucibleServerFacadeImpl.getInstance(), uiTaskExecutor);
 		return projectConfigurationPanel;
 	}
 

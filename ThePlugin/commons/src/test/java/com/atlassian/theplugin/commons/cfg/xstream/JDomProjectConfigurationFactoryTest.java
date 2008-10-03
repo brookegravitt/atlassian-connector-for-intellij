@@ -52,6 +52,7 @@ public class JDomProjectConfigurationFactoryTest extends ProjectConfigurationFac
 	private final BambooServerCfg bamboo1 = new BambooServerCfg("mybamboo1", new ServerId("141d662c-e744-4690-a5f8-6e127c0bc84f"));
 	private final BambooServerCfg bamboo2 = new BambooServerCfg("mybamboo2", new ServerId("241d662c-e744-4690-a5f8-6e127c0bc84f"));
 	private final CrucibleServerCfg crucible1 = new CrucibleServerCfg("mycrucible1", new ServerId("341d662c-e744-4690-a5f8-6e127c0bc84f"));
+	private final CrucibleServerCfg crucible2 = new CrucibleServerCfg("mycrucible2", new ServerId("341d662c-e744-4690-a5f8-6e127c0bc84e"));
 	private ProjectConfiguration projectCfg;
 
 	private static final String FAKE_CLASS_NAME = "whateverfakeclasshere";
@@ -111,6 +112,12 @@ public class JDomProjectConfigurationFactoryTest extends ProjectConfigurationFac
 		bamboo1.getSubscribedPlans().add(new SubscribedPlan("PLANID2"));
 		bamboo1.setUrl("http://mygreaturl");
 		bamboo1.setUsername("mytestuser");
+
+		projectCfg.setDefaultCrucibleProject("CRUC");
+		projectCfg.setDefaultCrucibleServer(crucible2.getServerId());
+		projectCfg.setDefaultFishEyeServer(crucible1.getServerId());
+		projectCfg.setDefaultCrucibleRepo("Repo1");
+		projectCfg.setFishEyeProjectPath("FishEye/Path/To");
 
 		final JDomProjectConfigurationFactory factory = new JDomProjectConfigurationFactory(element, privateElement);
 		factory.save(projectCfg);
@@ -228,6 +235,11 @@ public class JDomProjectConfigurationFactoryTest extends ProjectConfigurationFac
 		bamboo2.setPasswordStored(true);
 		crucible1.setPasswordStored(false);
 		projectCfg = new ProjectConfiguration(MiscUtil.<ServerCfg>buildArrayList(bamboo1, crucible1, bamboo2));
+
+		projectCfg.setDefaultCrucibleProject("CRUC");
+		projectCfg.setDefaultCrucibleServer(crucible2.getServerId());
+		projectCfg.setDefaultFishEyeServer(null);
+		projectCfg.setDefaultCrucibleRepo("Repo2");
 
 		final JDomProjectConfigurationFactory factory = new JDomProjectConfigurationFactory(element, privateElement);
 		factory.save(projectCfg);
