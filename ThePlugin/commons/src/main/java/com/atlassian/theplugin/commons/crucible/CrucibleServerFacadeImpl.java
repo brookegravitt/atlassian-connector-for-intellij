@@ -18,8 +18,8 @@ package com.atlassian.theplugin.commons.crucible;
 
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.crucible.api.CrucibleSession;
 import com.atlassian.theplugin.commons.crucible.api.CrucibleLoginException;
+import com.atlassian.theplugin.commons.crucible.api.CrucibleSession;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.crucible.api.rest.CrucibleSessionImpl;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
