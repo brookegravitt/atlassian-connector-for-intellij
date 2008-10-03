@@ -27,6 +27,7 @@ import com.atlassian.theplugin.idea.bamboo.TestResultsToolWindow;
 import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.editor.StackTraceConsole;
+import com.atlassian.theplugin.idea.util.IdeaUiTaskExecutor;
 import org.picocontainer.MutablePicoContainer;
 
 public final class PicoUtil {
@@ -40,6 +41,7 @@ public final class PicoUtil {
 			PluginConfigurationBean.class,
 			CfgManagerImpl.class,
 			NewVersionChecker.class,
+			IdeaUiTaskExecutor.class,
 //			BambooStatusChecker.class,
 //			CrucibleStatusChecker.class,
 //			NewVersionChecker.class,

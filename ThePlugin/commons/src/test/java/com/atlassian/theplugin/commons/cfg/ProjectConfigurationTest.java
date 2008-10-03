@@ -15,10 +15,9 @@
  */
 package com.atlassian.theplugin.commons.cfg;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import junit.framework.TestCase;
 import com.atlassian.theplugin.commons.util.MiscUtil;
+import com.spartez.util.junit3.TestUtil;
+import junit.framework.TestCase;
 
 import java.util.Iterator;
 
@@ -36,6 +35,12 @@ public class ProjectConfigurationTest extends TestCase {
 
     public void testCopyConstructor() {
 		assertEquals(projectCfg, anotherCfg);
+		projectCfg.setDefaultCrucibleRepo("repo");
+		projectCfg.setDefaultCrucibleServer(CRUCIBLE_1.getServerId());
+		projectCfg.setDefaultCrucibleProject("crucproj");
+		projectCfg.setDefaultFishEyeServer(CRUCIBLE_1.getServerId());
+		projectCfg.setFishEyeProjectPath("mypath");
+		assertEquals(projectCfg, projectCfg.getClone());
 	}
 
     public void testHashCode() {
@@ -56,6 +61,18 @@ public class ProjectConfigurationTest extends TestCase {
 			assertNotSame(oServer, cServer);
 			assertEquals(oServer, cServer);
 		}
+	}
+
+	public void testEquals() {
+		assertEquals(projectCfg, anotherCfg);
+		anotherCfg.setDefaultCrucibleProject("CRUC");
+		TestUtil.assertNotEquals(projectCfg, anotherCfg);
+		projectCfg.setDefaultCrucibleProject(anotherCfg.getDefaultCrucibleProject());
+
+		assertEquals(projectCfg, anotherCfg);
+		anotherCfg.setDefaultCrucibleServer(CRUCIBLE_1.getServerId());
+		TestUtil.assertNotEquals(projectCfg, anotherCfg);
+		projectCfg.setDefaultCrucibleServer(CRUCIBLE_1.getServerId());
 	}
 
 }

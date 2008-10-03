@@ -17,14 +17,27 @@ package com.atlassian.theplugin.commons.cfg;
 
 import com.atlassian.theplugin.commons.util.MiscUtil;
 
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class ProjectConfiguration {
 	private Collection<ServerCfg> servers;
 
+	private ServerId defaultCrucibleServer;
+	private ServerId defaultFishEyeServer;
+	private String defaultCrucibleProject;
+	private String defaultCrucibleRepo;
+	private String fishEyeProjectPath;
+	private static final int HASHCODE_MAGIC = 31;
+
+
 	public ProjectConfiguration(final ProjectConfiguration other) {
 		servers = cloneArrayList(other.getServers());
+		defaultCrucibleServer = other.defaultCrucibleServer;
+		defaultFishEyeServer = other.defaultFishEyeServer;
+		defaultCrucibleProject = other.defaultCrucibleProject;
+		defaultCrucibleRepo = other.defaultCrucibleRepo;
+		fishEyeProjectPath = other.fishEyeProjectPath;
 	}
 
 	public static Collection<ServerCfg> cloneArrayList(final Collection<ServerCfg> collection) {
@@ -47,6 +60,7 @@ public class ProjectConfiguration {
 		this.servers = MiscUtil.buildArrayList();
 	}
 
+	@Override
 	public boolean equals(final Object o) {
 		if (this == o) {
 			return true;
@@ -57,6 +71,26 @@ public class ProjectConfiguration {
 
 		final ProjectConfiguration that = (ProjectConfiguration) o;
 
+		if (defaultCrucibleProject != null ? !defaultCrucibleProject.equals(that.defaultCrucibleProject) :
+				that.defaultCrucibleProject != null) {
+			return false;
+		}
+		if (defaultCrucibleServer != null ? !defaultCrucibleServer.equals(that.defaultCrucibleServer) :
+				that.defaultCrucibleServer != null) {
+			return false;
+		}
+		if (defaultCrucibleRepo != null ? !defaultCrucibleRepo.equals(that.defaultCrucibleRepo) :
+				that.defaultCrucibleRepo != null) {
+			return false;
+		}
+		if (defaultFishEyeServer != null ? !defaultFishEyeServer.equals(that.defaultFishEyeServer) :
+				that.defaultFishEyeServer != null) {
+			return false;
+		}
+		if (fishEyeProjectPath != null ? !fishEyeProjectPath.equals(that.fishEyeProjectPath) :
+				that.fishEyeProjectPath != null) {
+			return false;
+		}
 		if (!servers.equals(that.servers)) {
 			return false;
 		}
@@ -64,8 +98,16 @@ public class ProjectConfiguration {
 		return true;
 	}
 
+	@Override
 	public int hashCode() {
-		return servers.hashCode();
+		int result;
+		result = servers.hashCode();
+		result = HASHCODE_MAGIC * result + (defaultCrucibleServer != null ? defaultCrucibleServer.hashCode() : 0);
+		result = HASHCODE_MAGIC * result + (defaultFishEyeServer != null ? defaultFishEyeServer.hashCode() : 0);
+		result = HASHCODE_MAGIC * result + (defaultCrucibleProject != null ? defaultCrucibleProject.hashCode() : 0);
+		result = HASHCODE_MAGIC * result + (defaultCrucibleRepo != null ? defaultCrucibleRepo.hashCode() : 0);
+		result = HASHCODE_MAGIC * result + (fishEyeProjectPath != null ? fishEyeProjectPath.hashCode() : 0);
+		return result;
 	}
 
 	public Collection<ServerCfg> getServers() {
@@ -87,5 +129,45 @@ public class ProjectConfiguration {
 
 	public ProjectConfiguration getClone() {
 		return new ProjectConfiguration(this);
+	}
+
+	public ServerId getDefaultCrucibleServer() {
+		return defaultCrucibleServer;
+	}
+
+	public void setDefaultCrucibleServer(final ServerId defaultCrucibleServerId) {
+		this.defaultCrucibleServer = defaultCrucibleServerId;
+	}
+
+	public ServerId getDefaultFishEyeServer() {
+		return defaultFishEyeServer;
+	}
+
+	public void setDefaultFishEyeServer(final ServerId defaultFishEyeServerId) {
+		this.defaultFishEyeServer = defaultFishEyeServerId;
+	}
+
+	public String getDefaultCrucibleProject() {
+		return defaultCrucibleProject;
+	}
+
+	public void setDefaultCrucibleProject(final String defaultCrucibleProject) {
+		this.defaultCrucibleProject = defaultCrucibleProject;
+	}
+
+	public String getDefaultCrucibleRepo() {
+		return defaultCrucibleRepo;
+	}
+
+	public void setDefaultCrucibleRepo(final String defaultFishEyeRepo) {
+		this.defaultCrucibleRepo = defaultFishEyeRepo;
+	}
+
+	public String getFishEyeProjectPath() {
+		return fishEyeProjectPath;
+	}
+
+	public void setFishEyeProjectPath(final String fishEyeProjectPath) {
+		this.fishEyeProjectPath = fishEyeProjectPath;
 	}
 }
