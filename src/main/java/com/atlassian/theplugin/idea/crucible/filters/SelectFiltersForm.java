@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.crucible.filters;
 
-import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
+import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -61,7 +61,7 @@ public class SelectFiltersForm extends DialogWrapper {
 		// set custom filter on/off and name
 		if (cruciblePanel.getCustomFilter() != null) {
 			customFilterCheckBox.setText(
-				customFilterCheckBox.getText() + ": " + cruciblePanel.getCustomFilter().getTitle());
+					customFilterCheckBox.getText() + ": " + cruciblePanel.getCustomFilter().getTitle());
 		} else {
 			customFilterCheckBox.setEnabled(false);
 		}
@@ -106,6 +106,11 @@ public class SelectFiltersForm extends DialogWrapper {
 
 		customFilterCheckBox.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent e) {
+				CustomFilterBean customFilter =
+						cruciblePanel.getProjectCfg().getCrucibleConfiguration().getCrucibleFilters().getManualFilter();
+				if (customFilter != null) {
+					customFilter.setEnabled(customFilterCheckBox.isSelected());
+				}
 
 			}
 		});
