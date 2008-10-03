@@ -1057,6 +1057,8 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 
 		Document request = CrucibleRestXmlHelper.prepareCreateReviewNode(review, revisions);
 
+//		XmlUtil.printXml(request);
+
 		try {
 			Document doc = retrievePostResponse(baseUrl + REVIEW_SERVICE, request);
 			XPath xpath = XPath.newInstance("/reviewData");

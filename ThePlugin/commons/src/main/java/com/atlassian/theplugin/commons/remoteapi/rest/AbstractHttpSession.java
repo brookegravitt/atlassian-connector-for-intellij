@@ -284,8 +284,7 @@ public abstract class AbstractHttpSession {
 					SAXBuilder builder = new SAXBuilder();
 					document = builder.build(method.getResponseBodyAsStream());
 
-					throw buildException(method.getStatusCode(), document);
-//					throw new IOException("HTTP status code " + method.getStatusCode() + ": " + method.getStatusText());
+					throw new IOException(buildExceptionText(method.getStatusCode(), document));
                 }
 
                 if (expectResponse) {
@@ -302,22 +301,24 @@ public abstract class AbstractHttpSession {
         return doc;
     }
 
-	private IOException buildException(final int statusCode, final Document document) throws JDOMException {
-		String text = "Server returned HTTP " + statusCode + " (" + HttpStatus.getStatusText(statusCode) + ")\n";
+	private String buildExceptionText(final int statusCode, final Document document) throws JDOMException {
+		String text = "Server returned HTTP " + statusCode + " (" + HttpStatus.getStatusText(statusCode) + ")\n"
+				+ "Reason: ";
 
-		XPath xpath = XPath.newInstance("code");
+		XPath xpath = XPath.newInstance("error/code");
 		List<Element> nodes = xpath.selectNodes(document);
 		if (nodes != null && !nodes.isEmpty()) {
-			System.out.println(nodes.get(0).getValue());
+//			System.out.println(nodes.get(0).getValue());
+			text += nodes.get(0).getValue() + " ";
 		}
 
-		xpath = XPath.newInstance("stacktrace");
-		nodes = xpath.selectNodes(document);
-		if (nodes != null && !nodes.isEmpty()) {
-			System.out.println(nodes.get(0).getValue());
-		}
+//		xpath = XPath.newInstance("error/stacktrace");
+//		nodes = xpath.selectNodes(document);
+//		if (nodes != null && !nodes.isEmpty()) {
+////			System.out.println(nodes.get(0).getValue());
+//		}
 
-		return new IOException(text);
+		return text;
 	}
 
 
