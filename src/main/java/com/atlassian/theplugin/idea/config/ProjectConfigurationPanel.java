@@ -15,10 +15,13 @@
  */
 package com.atlassian.theplugin.idea.config;
 
+import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
 import com.intellij.openapi.project.Project;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,6 +30,7 @@ public class ProjectConfigurationPanel extends JPanel {
 	private final FooterPanel footerPanel = new FooterPanel();
 	private final JTabbedPane contentPanel = new JTabbedPane();
 	private final ServerConfigPanel serverConfigPanel;
+	private final OwainConfigurationPanel defaultsConfigurationPanel;
 
 	private ProjectConfiguration projectConfiguration;
 
@@ -35,9 +39,11 @@ public class ProjectConfigurationPanel extends JPanel {
 		return projectConfiguration;
 	}
 
-	public ProjectConfigurationPanel(Project project, ProjectConfiguration projectConfiguration) {
+	public ProjectConfigurationPanel(@NotNull final Project project, @NotNull final ProjectConfiguration projectConfiguration,
+			@NotNull final CrucibleServerFacade crucibleServerFacade, @NotNull final UiTaskExecutor uiTaskExecutor) {
 		this.projectConfiguration = projectConfiguration;
 		serverConfigPanel = new ServerConfigPanel(project, projectConfiguration.getServers());
+		defaultsConfigurationPanel = new OwainConfigurationPanel(projectConfiguration, crucibleServerFacade, uiTaskExecutor);
 		initLayout();
 	}
 
@@ -49,6 +55,7 @@ public class ProjectConfigurationPanel extends JPanel {
 
 		// add servers tab
 		contentPanel.add(serverConfigPanel.getTitle(), serverConfigPanel);
+		contentPanel.add("Defaults", defaultsConfigurationPanel);
 
 		add(contentPanel, BorderLayout.CENTER);
 		add(footerPanel, BorderLayout.SOUTH);
@@ -65,5 +72,6 @@ public class ProjectConfigurationPanel extends JPanel {
 	public void setData(ProjectConfiguration aProjectConfiguration) {
 		projectConfiguration = aProjectConfiguration;
 		serverConfigPanel.setData(projectConfiguration.getServers());
+		defaultsConfigurationPanel.setData(projectConfiguration);
 	}
 }
