@@ -23,12 +23,7 @@ import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
-import com.atlassian.theplugin.commons.crucible.api.model.Project;
-import com.atlassian.theplugin.commons.crucible.api.model.ProjectBean;
-import com.atlassian.theplugin.commons.crucible.api.model.State;
-import com.atlassian.theplugin.commons.crucible.api.model.User;
-import com.atlassian.theplugin.commons.crucible.api.model.UserBean;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -131,27 +126,37 @@ public class CrucibleCustomFilterPanel extends JPanel {
     }
 
     public CustomFilterBean getFilter() {
-        CrucibleServerCfg s = ((ServerComboBoxItem) this.serverComboBox.getSelectedItem()).getServer();
+		CrucibleServerCfg s = ((ServerComboBoxItem) this.serverComboBox.getSelectedItem()).getServer();
         filter.setServerUid(s.getServerId().getUuid().toString());
 
         filter.setTitle(filterTitle.getText());
         if (!((ProjectComboBoxItem) projectComboBox.getSelectedItem()).getProject().getName().equals(anyProject.getName())) {
             filter.setProjectKey(((ProjectComboBoxItem) projectComboBox.getSelectedItem()).getProject().getKey());
-        }
+        } else {
+			filter.setProjectKey("");
+		}
         if (!((UserComboBoxItem) authorComboBox.getSelectedItem()).getUserData().getUserName().equals(anyUser.getUserName())) {
             filter.setAuthor(((UserComboBoxItem) authorComboBox.getSelectedItem()).getUserData().getUserName());
-        }
+        } else {
+			filter.setAuthor("");
+		}
         if (!((UserComboBoxItem) creatorComboBox.getSelectedItem()).getUserData().getUserName().equals(anyUser.getUserName())) {
             filter.setCreator(((UserComboBoxItem) creatorComboBox.getSelectedItem()).getUserData().getUserName());
-        }
+        } else {
+			filter.setCreator("");
+		}
         if (!((UserComboBoxItem) moderatorComboBox.getSelectedItem()).getUserData().getUserName()
                 .equals(anyUser.getUserName())) {
             filter.setModerator(((UserComboBoxItem) moderatorComboBox.getSelectedItem()).getUserData().getUserName());
-        }
+        } else {
+			filter.setModerator("");
+		}
         if (!((UserComboBoxItem) reviewerComboBox.getSelectedItem()).getUserData().getUserName()
                 .equals(anyUser.getUserName())) {
             filter.setReviewer(((UserComboBoxItem) reviewerComboBox.getSelectedItem()).getUserData().getUserName());
-        }
+        } else {
+			filter.setReviewer("");
+		}
 
         List<String> states = new ArrayList<String>();
         if (draftCheckBox.isSelected()) {
