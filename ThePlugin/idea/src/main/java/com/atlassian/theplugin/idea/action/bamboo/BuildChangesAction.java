@@ -22,6 +22,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 public class BuildChangesAction extends AnAction {
+	@Override
 	public void actionPerformed(AnActionEvent event) {
 		BambooTableToolWindowPanel bambooTableToolWindowPanel = IdeaHelper.getBambooToolWindowPanel(event);
 		if (bambooTableToolWindowPanel != null) {
@@ -29,6 +30,7 @@ public class BuildChangesAction extends AnAction {
 		}
     }
 
+	@Override
 	public void update(AnActionEvent event) {
 		if (IdeaHelper.getBambooToolWindowPanel(event) != null) {
 			event.getPresentation().setEnabled(IdeaHelper.getBambooToolWindowPanel(event).canShowChanges());
