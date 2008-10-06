@@ -19,22 +19,15 @@ package com.atlassian.theplugin.idea.autoupdate;
 import com.atlassian.theplugin.commons.configuration.GeneralConfigurationBean;
 import com.atlassian.theplugin.commons.exception.ThePluginException;
 import com.atlassian.theplugin.util.InfoServer;
-import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 
 /**
- * Created by IntelliJ IDEA.
- * User: lguminski
- * Date: Mar 13, 2008
- * Time: 1:27:49 PM
- * To change this template use File | Settings | File Templates.
+ * @author lguminski
  */
 public class NewVersionConfirmHandler implements UpdateActionHandler {
-	private static final String DOWNLOAD_TITLE = "Downloading new " + PluginUtil.getInstance().getName() + " plugin version ";
-
 	@Nullable
 	private final Project project;
 	private GeneralConfigurationBean updateConfiguration;
@@ -52,7 +45,7 @@ public class NewVersionConfirmHandler implements UpdateActionHandler {
 	}
 
 	public void doAction(final InfoServer.VersionInfo versionInfo, boolean showConfigPath) throws ThePluginException {
-		NewVersionInfoForm dialog = null;
+		NewVersionInfoForm dialog;
 
 		if (project != null) {
 			dialog = new NewVersionInfoForm(project, updateConfiguration, versionInfo);
