@@ -33,6 +33,8 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -43,11 +45,12 @@ import java.util.Map;
 public class OwainConfigurationPanel extends JPanel {
 
 	private static final int ALL_COLUMNS = 5;
-	private static JComboBox defaultCrucibleServerCombo = new JComboBox();
-	private static JComboBox defaultCrucibleProjectCombo = new JComboBox();
-	private static JComboBox defaultFishEyeServerCombo = new JComboBox();
-	private static JComboBox defaultFishEyeRepositoryCombo = new JComboBox();
-	private static JTextField pathToProjectEdit = new JTextField();
+	private JComboBox defaultCrucibleServerCombo = new JComboBox();
+	private JComboBox defaultCrucibleProjectCombo = new JComboBox();
+	private JComboBox defaultFishEyeServerCombo = new JComboBox();
+	private JComboBox defaultCrucibleRepositoryCombo = new JComboBox();
+	private JTextField pathToProjectEdit = new JTextField();
+	private JTextField defaultFishEyeRepoEdit = new JTextField();
 	private ProjectConfiguration projectConfiguration;
 	private final CrucibleServerFacade crucibleServerFacade;
 	private final UiTaskExecutor uiTaskExecutor;
@@ -66,13 +69,7 @@ public class OwainConfigurationPanel extends JPanel {
 	private final CrucibleRepoComboBoxModel crucRepoModel = new CrucibleRepoComboBoxModel();
 
 	private class CrucibleServerComboBoxModel extends AbstractListModel implements ComboBoxModel {
-		private final boolean forFishEye;
-
 		private Collection<CrucibleServerCfgWrapper> data;
-
-		CrucibleServerComboBoxModel(final boolean forFishEye) {
-			this.forFishEye = forFishEye;
-		}
 
 		private Collection<CrucibleServerCfgWrapper> getServers() {
 			if (data == null) {
@@ -80,7 +77,7 @@ public class OwainConfigurationPanel extends JPanel {
 				for (ServerCfg serverCfg : projectConfiguration.getServers()) {
 					if (serverCfg.getServerType() == ServerType.CRUCIBLE_SERVER && serverCfg.isEnabled()) {
 						CrucibleServerCfg crucibleServerCfg = (CrucibleServerCfg) serverCfg;
-						if (!forFishEye || crucibleServerCfg.isFisheyeInstance()) {
+						if (crucibleServerCfg.isFisheyeInstance()) {
 							data.add(new CrucibleServerCfgWrapper(crucibleServerCfg));
 						}
 					}
@@ -155,10 +152,10 @@ public class OwainConfigurationPanel extends JPanel {
 
 		final FormLayout layout = new FormLayout(
 				"3dlu, right:pref, 3dlu, min(150dlu;default):grow, 3dlu", // columns
-				"p, 3dlu, p, 3dlu, p, 3dlu, p, 9dlu, p, 3dlu, p, 3dlu, fill:p");	  // rows
+				"p, 3dlu, p, 3dlu, p, 3dlu, p, 9dlu, p, 3dlu, p, 3dlu, fill:p, 3dlu, fill:p");	  // rows
 
 		//CHECKSTYLE:MAGIC:OFF
-		layout.setRowGroups(new int[][]{{11, 13}});
+		layout.setRowGroups(new int[][]{{11, 13, 15}});
 
 		PanelBuilder builder = new PanelBuilder(layout, this);
 		builder.setDefaultDialogBorder();
@@ -171,16 +168,18 @@ public class OwainConfigurationPanel extends JPanel {
 		builder.addLabel("Default Project", cc.xy(2, 5));
 		builder.add(defaultCrucibleProjectCombo, cc.xy(4, 5));
 		builder.addLabel("Default Repository", cc.xy(2, 7));
-		builder.add(defaultFishEyeRepositoryCombo, cc.xy(4, 7));
+		builder.add(defaultCrucibleRepositoryCombo, cc.xy(4, 7));
 
 		builder.addSeparator("FishEye", cc.xyw(1, 9, ALL_COLUMNS));
 		builder.addLabel("Default Server", cc.xy(2, 11));
 		builder.add(defaultFishEyeServerCombo, cc.xy(4, 11));
-		builder.addLabel("Path to project", cc.xy(2, 13));
-		builder.add(pathToProjectEdit, cc.xy(4, 13));
+		builder.addLabel("Default Repository", cc.xy(2, 13));
+		builder.add(defaultFishEyeRepoEdit, cc.xy(4, 13));
+		builder.addLabel("Path to project", cc.xy(2, 15));
+		builder.add(pathToProjectEdit, cc.xy(4, 15));
 		//CHECKSTYLE:MAGIC:ON
 
-		initializeCombos();
+		initializeControls();
 
 		defaultCrucibleServerCombo.addItemListener(new ItemListener() {
 			public void itemStateChanged(final ItemEvent e) {
@@ -196,21 +195,50 @@ public class OwainConfigurationPanel extends JPanel {
 			}
 		});
 
+		defaultFishEyeRepoEdit.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(final DocumentEvent e) {
+				projectConfiguration.setDefaultFishEyeRepo(defaultFishEyeRepoEdit.getText());
+			}
+
+			public void insertUpdate(final DocumentEvent e) {
+				projectConfiguration.setDefaultFishEyeRepo(defaultFishEyeRepoEdit.getText());
+			}
+
+			public void removeUpdate(final DocumentEvent e) {
+				projectConfiguration.setDefaultFishEyeRepo(defaultFishEyeRepoEdit.getText());
+			}
+		});
+
+		pathToProjectEdit.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(final DocumentEvent e) {
+				projectConfiguration.setFishEyeProjectPath(pathToProjectEdit.getText());
+			}
+
+			public void insertUpdate(final DocumentEvent e) {
+				projectConfiguration.setFishEyeProjectPath(pathToProjectEdit.getText());
+			}
+
+			public void removeUpdate(final DocumentEvent e) {
+				projectConfiguration.setFishEyeProjectPath(pathToProjectEdit.getText());
+			}
+		});
 
 	}
 
-	private void initializeCombos() {
-		defaultCrucibleServerCombo.setModel(new CrucibleServerComboBoxModel(false));
-		defaultFishEyeServerCombo.setModel(new CrucibleServerComboBoxModel(true));
+	private void initializeControls() {
+		defaultCrucibleServerCombo.setModel(new CrucibleServerComboBoxModel());
+		defaultFishEyeServerCombo.setModel(new FishEyeServerComboBoxModel());
 		defaultCrucibleProjectCombo.setModel(crucProjectModel);
 
-		defaultFishEyeRepositoryCombo.setModel(crucRepoModel);
+		defaultCrucibleRepositoryCombo.setModel(crucRepoModel);
+		defaultFishEyeRepoEdit.setText(projectConfiguration.getDefaultFishEyeRepo());
+		pathToProjectEdit.setText(projectConfiguration.getFishEyeProjectPath());
 	}
 
 
 	public void setData(final ProjectConfiguration aProjectConfiguration) {
 		this.projectConfiguration = aProjectConfiguration;
-		initializeCombos();
+		initializeControls();
 	}
 
 
@@ -556,5 +584,76 @@ public class OwainConfigurationPanel extends JPanel {
 
 	}
 
+
+	private class FishEyeServerComboBoxModel extends AbstractListModel implements ComboBoxModel {
+		private Collection<CrucibleServerCfgWrapper> data;
+
+		FishEyeServerComboBoxModel() {
+		}
+
+		private Collection<CrucibleServerCfgWrapper> getServers() {
+			if (data == null) {
+				data = MiscUtil.buildArrayList();
+				for (ServerCfg serverCfg : projectConfiguration.getServers()) {
+					if (serverCfg.getServerType() == ServerType.CRUCIBLE_SERVER && serverCfg.isEnabled()) {
+						CrucibleServerCfg crucibleServerCfg = (CrucibleServerCfg) serverCfg;
+						if (crucibleServerCfg.isFisheyeInstance()) {
+							data.add(new CrucibleServerCfgWrapper(crucibleServerCfg));
+						}
+					}
+				}
+			}
+			return data;
+		}
+
+		public Object getSelectedItem() {
+			for (CrucibleServerCfgWrapper server : getServers()) {
+				if (server.getWrapped().getServerId().equals(projectConfiguration.getDefaultFishEyeServerId())) {
+					return server;
+				}
+			}
+			return NONE;
+		}
+
+		public void setSelectedItem(final Object anItem) {
+			final Object selectedItem = getSelectedItem();
+			if (selectedItem != null && !selectedItem.equals(anItem) || selectedItem == null && anItem != null) {
+				if (anItem != null) {
+					CrucibleServerCfgWrapper item = (CrucibleServerCfgWrapper) anItem;
+					final CrucibleServerCfg wrapped = item.getWrapped();
+					if (wrapped != null) {
+						projectConfiguration.setDefaultFishEyeServerId(wrapped.getServerId());
+						projectConfiguration.setDefaultFishEyeRepo(null);
+					} else {
+						projectConfiguration.setDefaultFishEyeServerId(null);
+						projectConfiguration.setDefaultFishEyeRepo(null);
+					}
+				} else {
+					projectConfiguration.setDefaultFishEyeServerId(null);
+					projectConfiguration.setDefaultFishEyeRepo(null);
+				}
+				fireContentsChanged(this, -1, -1);
+			}
+		}
+
+		public Object getElementAt(final int index) {
+			if (index == 0) {
+				return NONE;
+			}
+			int i = 1;
+			for (CrucibleServerCfgWrapper server : getServers()) {
+				if (i == index) {
+					return server;
+				}
+				i++;
+			}
+			return null;
+		}
+
+		public int getSize() {
+			return getServers().size() + 1;
+		}
+
+	}
 
 }

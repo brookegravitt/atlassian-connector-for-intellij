@@ -34,7 +34,7 @@ public class IdeaUiTaskExecutor implements UiTaskExecutor {
 					ApplicationManager.getApplication().invokeLater(new Runnable() {
 						public void run() {
 							uiTask.onError();
-							Messages.showErrorDialog(uiTask.getComponent(), "Error while " + uiTask.getLastAction(),
+							Messages.showErrorDialog("Error while " + uiTask.getLastAction(),
 									"Error");
 						}
 					});
@@ -46,7 +46,7 @@ public class IdeaUiTaskExecutor implements UiTaskExecutor {
 							uiTask.onSuccess();
 						} catch (Exception e) {
 							LoggerImpl.getInstance().warn(e);
-							Messages.showErrorDialog(uiTask.getComponent(), "Error while " + uiTask.getLastAction(),
+							Messages.showErrorDialog("Error while " + uiTask.getLastAction(),
 									"Error");
 						}
 					}

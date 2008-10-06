@@ -18,5 +18,6 @@
     <default-crucible-project>CRUC</default-crucible-project>
     <default-crucible-repo>Repo1</default-crucible-repo>
     <fisheye-project-path>FishEye/Path/To</fisheye-project-path>
+    <default-fisheye-repo>FishRepo</default-fisheye-repo>
   </project-configuration>
 </test>
