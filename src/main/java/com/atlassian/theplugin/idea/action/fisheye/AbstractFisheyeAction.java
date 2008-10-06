@@ -20,6 +20,7 @@ public abstract class AbstractFisheyeAction extends AnAction {
 	public void update(final AnActionEvent event) {
 		boolean isEnabled = false;
 		final Project project = IdeaHelper.getCurrentProject(event);
+
 		if (project != null) {
 			Collection<CrucibleServerCfg> servers = IdeaHelper.getCfgManager()
 					.getAllEnabledCrucibleServers(CfgUtil.getProjectId(project));
