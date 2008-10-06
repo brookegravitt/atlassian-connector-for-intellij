@@ -173,6 +173,9 @@ public class ProjectConfiguration {
 
 	public void setDefaultFishEyeServerId(final ServerId defaultFishEyeServerId) {
 		this.defaultFishEyeServerId = defaultFishEyeServerId;
+		if (defaultFishEyeServerId == null) {
+			defaultFishEyeRepo = null;
+		}
 	}
 
 	public String getDefaultCrucibleProject() {
@@ -187,8 +190,8 @@ public class ProjectConfiguration {
 		return defaultCrucibleRepo;
 	}
 
-	public void setDefaultCrucibleRepo(final String defaultFishEyeRepo) {
-		this.defaultCrucibleRepo = defaultFishEyeRepo;
+	public void setDefaultCrucibleRepo(final String defaultCrucibleRepo) {
+		this.defaultCrucibleRepo = defaultCrucibleRepo;
 	}
 
 	public String getFishEyeProjectPath() {
@@ -205,5 +208,25 @@ public class ProjectConfiguration {
 
 	public void setDefaultFishEyeRepo(final String defaultFishEyeRepo) {
 		this.defaultFishEyeRepo = defaultFishEyeRepo;
+	}
+
+	public boolean isDefaultFishEyeServerValid() {
+		if (defaultFishEyeServerId == null) {
+			return true;
+		}
+
+		ServerCfg serverCfg = getServerCfg(defaultFishEyeServerId);
+		if (serverCfg == null) {
+			return false;
+		}
+		if (!(serverCfg instanceof CrucibleServerCfg)) {
+			return false;
+		}
+
+		final CrucibleServerCfg crucible = (CrucibleServerCfg) serverCfg;
+		if (crucible.isEnabled() == false || !crucible.isFisheyeInstance()) {
+			return false;
+		}
+		return true;
 	}
 }
