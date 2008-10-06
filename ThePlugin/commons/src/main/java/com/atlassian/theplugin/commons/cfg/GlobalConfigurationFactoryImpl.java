@@ -19,7 +19,6 @@ import com.thoughtworks.xstream.XStream;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -30,17 +29,17 @@ import java.util.Collection;
 
 public class GlobalConfigurationFactoryImpl implements GlobalConfigurationFactory {
 
-	private final String globalSettingsDir;
-	private final String projectSettingsDir;
+	private final String globalSettingsFileName;
+	private final String projectSettingsFileName;
 	private static final String PROJECT_SPECIFIC_SERVERS_DATA = "project specific servers data";
 	private static final String GLOBAL_SERVERS_DATA = "global servers data";
 
-	public GlobalConfigurationFactoryImpl(final String globalSettingsDir, final String projectSettingsDir) {
-		if (globalSettingsDir == null || projectSettingsDir == null) {
+	public GlobalConfigurationFactoryImpl(final String globalSettingsFileName, final String projectSettingsFileName) {
+		if (globalSettingsFileName == null || projectSettingsFileName == null) {
 			throw new NullPointerException();
 		}
-		this.globalSettingsDir = globalSettingsDir;
-		this.projectSettingsDir = projectSettingsDir;
+		this.globalSettingsFileName = globalSettingsFileName;
+		this.projectSettingsFileName = projectSettingsFileName;
 	}
 
 	private OutputStream getProjectSettingsOutputStream() throws FileNotFoundException {
@@ -58,11 +57,11 @@ public class GlobalConfigurationFactoryImpl implements GlobalConfigurationFactor
 	}
 
 	private String getGlobalSettingsFileName() {
-		return globalSettingsDir + File.separator + "pazu-settings.xml";
+		return globalSettingsFileName;
 	}
 
 	private String getProjectSettingsFileName() {
-		return projectSettingsDir + File.separator + "pazu-project-settings.xml";
+		return projectSettingsFileName;
 	}
 
 
@@ -72,8 +71,7 @@ public class GlobalConfigurationFactoryImpl implements GlobalConfigurationFactor
 
 
 	public ProjectConfiguration loadProjectConfiguration() throws ServerCfgFactoryException {
-		ProjectConfiguration projectCfg = new ProjectConfiguration(loadProjectSpecificServers());
-		return projectCfg;
+		return new ProjectConfiguration(loadProjectSpecificServers());
 	}
 
 
@@ -101,7 +99,7 @@ public class GlobalConfigurationFactoryImpl implements GlobalConfigurationFactor
 		XStream xStream = prepareXStream();
 		try {
 			@SuppressWarnings("unchecked")
-			Collection<ServerCfg> servers = (Collection<ServerCfg>) xStream.fromXML(inputStreamProvider.provide());
+			final Collection<ServerCfg> servers = (Collection<ServerCfg>) xStream.fromXML(inputStreamProvider.provide());
 			return servers;
 		} catch (IOException e) {
 			throw new ServerCfgFactoryException("Cannot load global servers data", e);
@@ -157,6 +155,7 @@ public class GlobalConfigurationFactoryImpl implements GlobalConfigurationFactor
 				try {
 					out.close();
 				} catch (IOException e) {
+					//noinspection ThrowFromFinallyBlock
 					throw new ServerCfgFactoryException("Error closing " + streamProvider.getDescription() + " stream", e);
 				}
 			}
