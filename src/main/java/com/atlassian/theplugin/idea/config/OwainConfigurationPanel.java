@@ -148,6 +148,8 @@ public class OwainConfigurationPanel extends JPanel {
 		this.projectConfiguration = projectConfiguration;
 		this.crucibleServerFacade = crucibleServerFacade;
 		this.uiTaskExecutor = uiTaskExecutor;
+
+		pathToProjectEdit.setToolTipText("Path to root directory in your repo. E.g. trunk/myproject.");
 //		panel.setPreferredSize(new Dimension(300, 200));
 
 		final FormLayout layout = new FormLayout(
