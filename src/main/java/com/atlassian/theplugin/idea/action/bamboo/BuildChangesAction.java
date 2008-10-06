@@ -24,7 +24,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 public class BuildChangesAction extends AnAction {
 	@Override
 	public void actionPerformed(AnActionEvent event) {
-		BambooTableToolWindowPanel bambooTableToolWindowPanel = IdeaHelper.getBambooToolWindowPanel(event);
+		final BambooTableToolWindowPanel bambooTableToolWindowPanel = IdeaHelper.getBambooToolWindowPanel(event);
 		if (bambooTableToolWindowPanel != null) {
 			bambooTableToolWindowPanel.showChanges();
 		}
