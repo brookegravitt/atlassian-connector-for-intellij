@@ -16,10 +16,11 @@
 package com.atlassian.theplugin.commons.cfg;
 
 import com.atlassian.theplugin.commons.util.MiscUtil;
-import com.spartez.util.junit3.TestUtil;
 import com.spartez.util.junit3.IAction;
+import com.spartez.util.junit3.TestUtil;
 import junit.framework.TestCase;
 
+import java.io.File;
 import java.util.Collection;
 
 /**
@@ -36,10 +37,12 @@ public class GlobalConfigurationFactoryImplTest extends TestCase {
 
 	private GlobalConfigurationFactoryImpl cfgFactory;
 	private static final String TMP_DIR = System.getProperty("java.io.tmpdir");
+	private File globalFile;
+	private File projectFile;
 
 
 	protected GlobalConfigurationFactoryImpl createServerCfgFactory() {
-		return new GlobalConfigurationFactoryImpl(TMP_DIR, TMP_DIR);
+		return new GlobalConfigurationFactoryImpl(globalFile.getAbsolutePath(), projectFile.getAbsolutePath());
 	}
 
 	public GlobalConfigurationFactoryImplTest(String name) {
@@ -51,7 +54,16 @@ public class GlobalConfigurationFactoryImplTest extends TestCase {
         super.setUp();
 		BAMBOO_1.setEnabled(false);
 		BAMBOO_1.setUsername("wseliga");
+		globalFile = File.createTempFile("intellij-connector-global", "tmp");
+		projectFile = File.createTempFile("intellij-connector-project", "tmp");
 		cfgFactory = createServerCfgFactory();
+	}
+
+	@Override
+	protected void tearDown() throws Exception {
+		globalFile.delete();
+		projectFile.delete();
+		super.tearDown();
 	}
 
 	public void testInvalidSetup() {
