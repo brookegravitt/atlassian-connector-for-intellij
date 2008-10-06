@@ -346,7 +346,10 @@ public abstract class AbstractHttpSession {
 
                 client.executeMethod(method);
 
-                if (method.getStatusCode() != HttpStatus.SC_OK) {
+				if (method.getStatusCode() == HttpStatus.SC_NO_CONTENT) {
+					return null;
+				}
+				if (method.getStatusCode() != HttpStatus.SC_OK) {
                     throw new IOException("HTTP status code " + method.getStatusCode() + ": " + method.getStatusText());
                 }
 
