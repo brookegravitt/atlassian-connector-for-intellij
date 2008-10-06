@@ -277,8 +277,8 @@
 		</action>
 
 		<action id="OpenFisheyeLink" class="com.atlassian.theplugin.idea.action.fisheye.OpenFisheyeLinkInBrowserAction"
-				text="Open Fisheye Link in Browser"
-				description="Open Fisheye Link in Browser">
+				text="Open FishEye Link in Browser"
+				description="Open FishEye Link in Browser">
 		</action>
 
 		<action id="CopyFisheyeLink" class="com.atlassian.theplugin.idea.action.fisheye.CopyFisheyeLinkToClipboardAction"

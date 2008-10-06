@@ -38,8 +38,9 @@ public class ProjectConfigurationTest extends TestCase {
 		projectCfg.setDefaultCrucibleRepo("repo");
 		projectCfg.setDefaultCrucibleServer(CRUCIBLE_1.getServerId());
 		projectCfg.setDefaultCrucibleProject("crucproj");
-		projectCfg.setDefaultFishEyeServer(CRUCIBLE_1.getServerId());
+		projectCfg.setDefaultFishEyeServerId(CRUCIBLE_1.getServerId());
 		projectCfg.setFishEyeProjectPath("mypath");
+		projectCfg.setDefaultFishEyeRepo("fisheyerepo");
 		assertEquals(projectCfg, projectCfg.getClone());
 	}
 
@@ -68,11 +69,22 @@ public class ProjectConfigurationTest extends TestCase {
 		anotherCfg.setDefaultCrucibleProject("CRUC");
 		TestUtil.assertNotEquals(projectCfg, anotherCfg);
 		projectCfg.setDefaultCrucibleProject(anotherCfg.getDefaultCrucibleProject());
-
 		assertEquals(projectCfg, anotherCfg);
+
 		anotherCfg.setDefaultCrucibleServer(CRUCIBLE_1.getServerId());
 		TestUtil.assertNotEquals(projectCfg, anotherCfg);
 		projectCfg.setDefaultCrucibleServer(CRUCIBLE_1.getServerId());
+		assertEquals(projectCfg, anotherCfg);
+
+		anotherCfg.setFishEyeProjectPath("path1");
+		TestUtil.assertNotEquals(projectCfg, anotherCfg);
+		projectCfg.setFishEyeProjectPath(anotherCfg.getFishEyeProjectPath());
+		assertEquals(projectCfg, anotherCfg);
+
+		anotherCfg.setDefaultFishEyeRepo("repo1");
+		TestUtil.assertNotEquals(projectCfg, anotherCfg);
+		projectCfg.setDefaultFishEyeRepo(anotherCfg.getDefaultFishEyeRepo());
+		assertEquals(projectCfg, anotherCfg);
 	}
 
 }

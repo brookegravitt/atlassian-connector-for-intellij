@@ -24,19 +24,21 @@ public class ProjectConfiguration {
 	private Collection<ServerCfg> servers;
 
 	private ServerId defaultCrucibleServer;
-	private ServerId defaultFishEyeServer;
+	private ServerId defaultFishEyeServerId;
 	private String defaultCrucibleProject;
 	private String defaultCrucibleRepo;
 	private String fishEyeProjectPath;
+	private String defaultFishEyeRepo;
 	private static final int HASHCODE_MAGIC = 31;
 
 
 	public ProjectConfiguration(final ProjectConfiguration other) {
 		servers = cloneArrayList(other.getServers());
 		defaultCrucibleServer = other.defaultCrucibleServer;
-		defaultFishEyeServer = other.defaultFishEyeServer;
+		defaultFishEyeServerId = other.defaultFishEyeServerId;
 		defaultCrucibleProject = other.defaultCrucibleProject;
 		defaultCrucibleRepo = other.defaultCrucibleRepo;
+		defaultFishEyeRepo = other.defaultFishEyeRepo;
 		fishEyeProjectPath = other.fishEyeProjectPath;
 	}
 
@@ -86,9 +88,14 @@ public class ProjectConfiguration {
 				: that.defaultCrucibleRepo != null) {
 			return false;
 		}
-		if (defaultFishEyeServer != null
-				? !defaultFishEyeServer.equals(that.defaultFishEyeServer)
-				: that.defaultFishEyeServer != null) {
+		if (defaultFishEyeServerId != null
+				? !defaultFishEyeServerId.equals(that.defaultFishEyeServerId)
+				: that.defaultFishEyeServerId != null) {
+			return false;
+		}
+		if (defaultFishEyeRepo != null
+				? !defaultFishEyeRepo.equals(that.defaultFishEyeRepo)
+				: that.defaultFishEyeRepo != null) {
 			return false;
 		}
 		if (fishEyeProjectPath != null
@@ -108,7 +115,7 @@ public class ProjectConfiguration {
 		int result;
 		result = servers.hashCode();
 		result = HASHCODE_MAGIC * result + (defaultCrucibleServer != null ? defaultCrucibleServer.hashCode() : 0);
-		result = HASHCODE_MAGIC * result + (defaultFishEyeServer != null ? defaultFishEyeServer.hashCode() : 0);
+		result = HASHCODE_MAGIC * result + (defaultFishEyeServerId != null ? defaultFishEyeServerId.hashCode() : 0);
 		result = HASHCODE_MAGIC * result + (defaultCrucibleProject != null ? defaultCrucibleProject.hashCode() : 0);
 		result = HASHCODE_MAGIC * result + (defaultCrucibleRepo != null ? defaultCrucibleRepo.hashCode() : 0);
 		result = HASHCODE_MAGIC * result + (fishEyeProjectPath != null ? fishEyeProjectPath.hashCode() : 0);
@@ -144,12 +151,28 @@ public class ProjectConfiguration {
 		this.defaultCrucibleServer = defaultCrucibleServerId;
 	}
 
-	public ServerId getDefaultFishEyeServer() {
-		return defaultFishEyeServer;
+	public ServerId getDefaultFishEyeServerId() {
+		return defaultFishEyeServerId;
 	}
 
-	public void setDefaultFishEyeServer(final ServerId defaultFishEyeServerId) {
-		this.defaultFishEyeServer = defaultFishEyeServerId;
+	public CrucibleServerCfg getDefaultFishEyeServer() {
+		if (defaultFishEyeServerId == null) {
+			return null;
+		}
+
+		ServerCfg serverCfg = getServerCfg(defaultFishEyeServerId);
+
+		// no additional check - let IDE handle such error in a standard way (error dialog)
+		// in unlikely event of some fuck-up
+		final CrucibleServerCfg crucible = (CrucibleServerCfg) serverCfg;
+		if (crucible.isEnabled() == false || !crucible.isFisheyeInstance()) {
+			return null;
+		}
+		return crucible;
+	}
+
+	public void setDefaultFishEyeServerId(final ServerId defaultFishEyeServerId) {
+		this.defaultFishEyeServerId = defaultFishEyeServerId;
 	}
 
 	public String getDefaultCrucibleProject() {
@@ -174,5 +197,13 @@ public class ProjectConfiguration {
 
 	public void setFishEyeProjectPath(final String fishEyeProjectPath) {
 		this.fishEyeProjectPath = fishEyeProjectPath;
+	}
+
+	public String getDefaultFishEyeRepo() {
+		return defaultFishEyeRepo;
+	}
+
+	public void setDefaultFishEyeRepo(final String defaultFishEyeRepo) {
+		this.defaultFishEyeRepo = defaultFishEyeRepo;
 	}
 }

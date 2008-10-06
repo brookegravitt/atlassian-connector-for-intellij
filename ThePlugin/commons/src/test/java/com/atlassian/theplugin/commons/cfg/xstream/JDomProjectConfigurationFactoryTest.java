@@ -115,9 +115,10 @@ public class JDomProjectConfigurationFactoryTest extends ProjectConfigurationFac
 
 		projectCfg.setDefaultCrucibleProject("CRUC");
 		projectCfg.setDefaultCrucibleServer(crucible2.getServerId());
-		projectCfg.setDefaultFishEyeServer(crucible1.getServerId());
+		projectCfg.setDefaultFishEyeServerId(crucible1.getServerId());
 		projectCfg.setDefaultCrucibleRepo("Repo1");
 		projectCfg.setFishEyeProjectPath("FishEye/Path/To");
+		projectCfg.setDefaultFishEyeRepo("FishRepo");
 
 		final JDomProjectConfigurationFactory factory = new JDomProjectConfigurationFactory(element, privateElement);
 		factory.save(projectCfg);
@@ -238,7 +239,7 @@ public class JDomProjectConfigurationFactoryTest extends ProjectConfigurationFac
 
 		projectCfg.setDefaultCrucibleProject("CRUC");
 		projectCfg.setDefaultCrucibleServer(crucible2.getServerId());
-		projectCfg.setDefaultFishEyeServer(null);
+		projectCfg.setDefaultFishEyeServerId(null);
 		projectCfg.setDefaultCrucibleRepo("Repo2");
 
 		final JDomProjectConfigurationFactory factory = new JDomProjectConfigurationFactory(element, privateElement);

@@ -98,6 +98,8 @@ public class OwainConfigurationPanelTestUi {
 				System.out.println("Crucible server: " + projectConfiguration.getDefaultCrucibleServer());
 				System.out.println("Crucible project: " + projectConfiguration.getDefaultCrucibleProject());
 				System.out.println("Crucible repo: " + projectConfiguration.getDefaultCrucibleRepo());
+				System.out.println("FishEye server: " + projectConfiguration.getDefaultFishEyeServerId());
+				System.out.println("FishEye repo: " + projectConfiguration.getDefaultFishEyeRepo());
 				System.exit(0);
 			}
 		});
