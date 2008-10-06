@@ -21,9 +21,12 @@ import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 
 public class ProjectConfigurationPanel extends JPanel {
@@ -52,6 +55,13 @@ public class ProjectConfigurationPanel extends JPanel {
 
 		contentPanel.setOpaque(true);
 		contentPanel.setBackground(new Color(Constants.BG_COLOR_R, Constants.BG_COLOR_G, Constants.BG_COLOR_B));
+		contentPanel.getModel().addChangeListener(new ChangeListener() {
+			public void stateChanged(final ChangeEvent e) {
+				if (contentPanel.getSelectedComponent() == defaultsConfigurationPanel) {
+					defaultsConfigurationPanel.setData(projectConfiguration);
+				}
+			}
+		});
 
 		// add servers tab
 		contentPanel.add(serverConfigPanel.getTitle(), serverConfigPanel);
@@ -66,6 +76,10 @@ public class ProjectConfigurationPanel extends JPanel {
 			serverConfigPanel.finalizeData();
 		}
 		serverConfigPanel.saveData();
+		if (!projectConfiguration.isDefaultFishEyeServerValid()) {
+			Messages.showInfoMessage(this, "Default FishEye server settings have been cleared.", "Information");
+			projectConfiguration.setDefaultFishEyeServerId(null);
+		}
 	}
 
 
