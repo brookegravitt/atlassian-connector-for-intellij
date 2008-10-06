@@ -17,6 +17,35 @@ import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class FisheyeLinkAction extends AbstractFisheyeAction {
+	@Override
+	public void update(final AnActionEvent event) {
+			event.getPresentation().setVisible(isFishEyeConfigured(event));
+	}
+
+	private boolean isFishEyeConfigured(final AnActionEvent event) {
+		final Project project = IdeaHelper.getCurrentProject(event);
+		if (project == null) {
+			return false;
+		}
+
+		final ProjectId projectId = CfgUtil.getProjectId(project);
+		final ProjectConfiguration projectCfg = IdeaHelper.getCfgManager().getProjectConfiguration(projectId);
+		if (projectCfg == null) {
+			return false;
+		}
+
+		if (projectCfg.getDefaultFishEyeServer() == null || projectCfg.getDefaultFishEyeRepo() == null) {
+			return false;
+		}
+
+		if (projectCfg.getFishEyeProjectPath() == null) {
+			return false;
+		}
+
+		return true;
+
+	}
+
 	protected abstract void performUrlAction(final String url);
 
 	private String buildRemoteUrl(final VcsRevisionNumber rev, @NotNull final CrucibleServerCfg fishEyeServer,
