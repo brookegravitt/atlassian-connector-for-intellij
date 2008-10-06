@@ -2,32 +2,31 @@ package com.atlassian.theplugin.idea.autoupdate;
 
 import com.atlassian.theplugin.commons.configuration.GeneralConfigurationBean;
 import com.atlassian.theplugin.commons.util.Version;
+import com.atlassian.theplugin.idea.GenericHyperlinkListener;
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.atlassian.theplugin.idea.GenericHyperlinkListener;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.progress.Task;
+import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
-import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.GridConstraints;
-import com.intellij.uiDesigner.core.Spacer;
-import com.intellij.ide.BrowserUtil;
+import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.ui.HyperlinkLabel;
-import com.jgoodies.forms.layout.FormLayout;
+import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.intellij.uiDesigner.core.Spacer;
 import com.jgoodies.forms.layout.CellConstraints;
-
-import javax.swing.*;
-import javax.swing.event.HyperlinkListener;
-import javax.swing.event.HyperlinkEvent;
-import java.awt.*;
-
+import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
+import java.awt.*;
+
 public class NewVersionInfoForm extends DialogWrapper {
-	private static final String DOWNLOAD_TITLE = "Downloading new " + PluginUtil.getInstance().getName() + " plugin version ";
+	private static final String DOWNLOAD_TITLE = "Downloading new version of " + PluginUtil.getInstance().getName() + " plugin";
 	private JPanel rootPane;
 	private JLabel versionInfoLabel;
 	private JPanel footerPanel;
@@ -83,8 +82,10 @@ public class NewVersionInfoForm extends DialogWrapper {
 
 	}
 
+	@Override
 	protected void doOKAction() {
 		Task.Backgroundable downloader = new Task.Backgroundable(project, DOWNLOAD_TITLE, false) {
+			@Override
 			public void run(ProgressIndicator indicator) {
 				new PluginDownloader(versionInfo, updateConfiguration).run();
 			}
@@ -94,6 +95,7 @@ public class NewVersionInfoForm extends DialogWrapper {
 		super.doOKAction();
 	}
 
+	@Override
 	public void doCancelAction() {
 		Messages.showMessageDialog("You can always install " + versionInfo.getVersion()
 				+ " version through " + PluginUtil.getInstance().getName()
@@ -106,11 +108,13 @@ public class NewVersionInfoForm extends DialogWrapper {
 		super.doCancelAction();
 	}
 
+	@Override
 	@Nullable
 	protected JComponent createCenterPanel() {
 		return $$$getRootComponent$$$();
 	}
 
+	@Override
 	public void dispose() {
 		// so or so we mark this version so no more popups will appear
 		updateConfiguration.setRejectedUpgrade(versionInfo.getVersion());
@@ -128,7 +132,6 @@ public class NewVersionInfoForm extends DialogWrapper {
 		});
 
 
-		CellConstraints cc = new CellConstraints();
 		footerPanel.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
 		footerPanel.add(label, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE,
 				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
