@@ -610,6 +610,8 @@
 				text="Assign to Myself"/>
 		<action id="ThePlugin.JIRA.AssignIssueToUser"
 				class="com.atlassian.theplugin.idea.action.jira.AssignIssueToUserAction" text="Assign to User"/>
+		<action id="ThePlugin.JIRA.AssignIssueAndStartWorkAction"
+				class="com.atlassian.theplugin.idea.action.jira.AssignIssueAndStartWorkAction" text="Assign to Myself and Start Working" />
 		<action id="ThePlugin.JIRA.CreateChangeList"
 				class="com.atlassian.theplugin.idea.action.jira.CreateChangeListAction" text="Create Change List"/>
 
@@ -640,6 +642,7 @@
 			<separator/>
 			<reference id="ThePlugin.JIRA.AssignIssueToMyself"/>
 			<reference id="ThePlugin.JIRA.AssignIssueToUser"/>
+			<reference id="ThePlugin.JIRA.AssignIssueAndStartWorkAction"/>
 			<separator/>
 			<reference id="ThePlugin.JIRA.CopyToClipboardGroup"/>
 			<separator/>
