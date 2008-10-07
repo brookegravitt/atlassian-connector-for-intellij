@@ -35,10 +35,13 @@ public class BuildDateColumn extends TableColumnInfo {
 		BambooBuildAdapterIdea bbai = (BambooBuildAdapterIdea) o;
 		bbai.getServer();
 		Date d = bbai.getBuildTime();
-		Calendar c = Calendar.getInstance();
-		c.setTime(d);
-		c.add(Calendar.HOUR_OF_DAY, bbai.getServer().getTimezoneOffset());
-		return c.getTime();
+		if (d != null) {
+			Calendar c = Calendar.getInstance();
+			c.setTime(d);
+			c.add(Calendar.HOUR_OF_DAY, bbai.getServer().getTimezoneOffset());
+			return c.getTime();
+		}
+		return "Unknown";
 	}
 
 	public Class getColumnClass() {
