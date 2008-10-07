@@ -338,7 +338,6 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 
 	public void startWorkingOnIssue() {
 		createChangeListAction(project);
-		final JIRAAction a = new JIRAActionBean(START_PROGRESS_JIRA_ACTION_ID, "Start Progress");
 		final JIRAServer server = IdeaHelper.getCurrentJIRAServer(project);
 
 		Task.Backgroundable startWorkOnIssue = new Task.Backgroundable(project, "Starting Work on Issue", false) {
@@ -349,14 +348,28 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 				try {
 					jiraServerFacade.setAssignee(server.getServer(),
 							table.getSelectedObject().getIssue(), server.getServer().getUsername());
-					setStatusMessage("Starting progress on " + issue.getKey() + "...");
-					jiraServerFacade.progressWorkflowAction(server.getServer(),	issue, a);
-					setStatusMessage("Started progress on " + issue.getKey());
-					SwingUtilities.invokeLater(new Runnable() {
-						public void run() {
-							refreshIssuesPage();
+					List<JIRAAction> actions =
+							jiraServerFacade.getAvailableActions(server.getServer(), issue);
+					boolean found = false;
+					for (JIRAAction a : actions) {
+						if (a.getId() == START_PROGRESS_JIRA_ACTION_ID) {
+							setStatusMessage("Starting progress on " + issue.getKey() + "...");
+							jiraServerFacade.progressWorkflowAction(server.getServer(),	issue, a);
+							setStatusMessage("Started progress on " + issue.getKey());
+							found = true;
+							SwingUtilities.invokeLater(new Runnable() {
+								public void run() {
+									refreshIssuesPage();
+								}
+							});
+							break;
 						}
-					});
+					}
+					if (!found) {
+						setStatusMessage("Progress on "
+								+ issue.getKey()
+								+ "  not started - no such workflow action available");
+					}
 				} catch (JIRAException e) {
 					setStatusMessage("Error starting progress on issue: " + e.getMessage(), true);
 				} catch (NullPointerException e) {
@@ -366,7 +379,6 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 		};
 
 		ProgressManager.getInstance().run(startWorkOnIssue);
-
 	}
 
 	final class ActionsPopupListener implements Runnable {
@@ -403,15 +415,15 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 			.showInCenterOf(this);
 	}
 
-	private static void addCompositeActionsToPopupMenu(DefaultActionGroup submenu, List<JIRAAction> actions) {
-		for (JIRAAction a : actions) {
-			if (a.getId() == START_PROGRESS_JIRA_ACTION_ID) {
-				submenu.add(new AssignIssueAndStartWorkAction());
-				submenu.addSeparator();
-				break;
-			}
-		}
-	}
+//	private static void addCompositeActionsToPopupMenu(DefaultActionGroup submenu, List<JIRAAction> actions) {
+//		for (JIRAAction a : actions) {
+//			if (a.getId() == START_PROGRESS_JIRA_ACTION_ID) {
+//				submenu.add(new AssignIssueAndStartWorkAction());
+//				submenu.addSeparator();
+//				break;
+//			}
+//		}
+//	}
 
 	@Override
 	protected void addCustomSubmenus(DefaultActionGroup actionGroup, final ActionPopupMenu popup) {
@@ -434,7 +446,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 		final JIRAIssue issue = adapter.getIssue();
 		List<JIRAAction> actions = adapter.getCachedActions();
 		if (actions != null) {
-			addCompositeActionsToPopupMenu(submenu, actions);
+//			addCompositeActionsToPopupMenu(submenu, actions);
 			for (JIRAAction a : actions) {
 				submenu.add(new RunJIRAActionAction(this, jiraServerFacade, adapter, a));
 			}
@@ -454,7 +466,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 								public void run() {
 									JPopupMenu pMenu = popup.getComponent();
 									if (pMenu.isVisible()) {
-										addCompositeActionsToPopupMenu(submenu, actions);
+//										addCompositeActionsToPopupMenu(submenu, actions);
 
 										for (JIRAAction a : actions) {
 											submenu.add(new RunJIRAActionAction(JIRAToolWindowPanel.this,
@@ -980,7 +992,11 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 								setStatusMessage("Stopping work for issue " + issue.getKey() + "...");
 								jiraServerFacade.progressWorkflowAction(server, issue, workLogCreate.getStopProgressAction());
 								setStatusMessage("Work logged and progress stopped for issue " + issue.getKey());
-								refreshIssuesPage();
+								SwingUtilities.invokeLater(new Runnable() {
+									public void run() {
+										refreshIssuesPage();
+									}
+								});
 							} else {
 								setStatusMessage("Logged work for issue " + issue.getKey());
 							}
