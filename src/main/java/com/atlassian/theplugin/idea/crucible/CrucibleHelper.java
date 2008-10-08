@@ -17,10 +17,7 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -61,7 +58,7 @@ public final class CrucibleHelper {
 	 * @param reviewItem review item
 	 */
 	public static void showVirtualFileWithComments(final Project project,
-			final ReviewData review,
+			final Review review,
 			final CrucibleFileInfo reviewItem) {
 
 		int line = 1;
@@ -161,7 +158,7 @@ public final class CrucibleHelper {
 		});
 	}
 
-	public static List<CustomFieldDef> getMetricsForReview(@NotNull final Project project, @NotNull final ReviewData review) {
+	public static List<CustomFieldDef> getMetricsForReview(@NotNull final Project project, @NotNull final Review review) {
 		java.util.List<CustomFieldDef> metrics = new ArrayList<CustomFieldDef>();
 		try {
 			metrics = CrucibleServerFacadeImpl.getInstance()
@@ -174,10 +171,10 @@ public final class CrucibleHelper {
 		return metrics;
 	}
 
-	public static Editor getEditorForCrucibleFile(ReviewData review, CrucibleFileInfo file) {
+	public static Editor getEditorForCrucibleFile(Review review, CrucibleFileInfo file) {
 		Editor[] editors = EditorFactory.getInstance().getAllEditors();
 		for (Editor editor : editors) {
-			final ReviewData mr = editor.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
+			final Review mr = editor.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
 			final CrucibleFileInfo mf = editor.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
 			if (mr != null && mf != null) {
 				if (review.getPermId().equals(mr.getPermId()) && file.getItemInfo().getId().equals(mf.getItemInfo().getId())) {
@@ -188,7 +185,7 @@ public final class CrucibleHelper {
 		return null;
 	}
 
-	public static void openFileOnComment(final Project project, final ReviewData review, final CrucibleFileInfo file,
+	public static void openFileOnComment(final Project project, final Review review, final CrucibleFileInfo file,
 			final VersionedComment comment) {
 
 		ApplicationManager.getApplication().runReadAction(new Runnable() {

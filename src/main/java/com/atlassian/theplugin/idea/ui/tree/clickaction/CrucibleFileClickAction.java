@@ -1,22 +1,22 @@
 package com.atlassian.theplugin.idea.ui.tree.clickaction;
 
-import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
-import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
-import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
+import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.atlassian.theplugin.idea.crucible.events.FocusOnFileComments;
 import com.atlassian.theplugin.idea.crucible.events.ShowFileEvent;
-import com.atlassian.theplugin.idea.crucible.ReviewData;
-import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.intellij.openapi.project.Project;
 
 public class CrucibleFileClickAction implements AtlassianClickAction {
 	private Project project;
-	private ReviewData review;
+	private Review review;
 	private CrucibleFileInfo file;
 
-	public CrucibleFileClickAction(Project project, ReviewData review, CrucibleFileInfo file) {
+	public CrucibleFileClickAction(Project project, Review review, CrucibleFileInfo file) {
 		this.project = project;
 		this.review = review;
 		this.file = file;

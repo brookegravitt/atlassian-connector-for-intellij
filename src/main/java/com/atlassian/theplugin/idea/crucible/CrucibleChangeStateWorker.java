@@ -17,14 +17,15 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.crucible.api.model.Action;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.intellij.openapi.project.Project;
 
 public class CrucibleChangeStateWorker {
-	private ReviewData review;
+	private Review review;
 	private Action action;
 	private Project project;
 
-	public CrucibleChangeStateWorker(Project project, ReviewData reviewInfo, Action action) {
+	public CrucibleChangeStateWorker(Project project, Review reviewInfo, Action action) {
 		this.review = reviewInfo;
 		this.action = action;
 		this.project = project;

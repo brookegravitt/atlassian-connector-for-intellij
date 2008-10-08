@@ -17,10 +17,10 @@
 package com.atlassian.theplugin.notification.crucible;
 
 import com.atlassian.theplugin.commons.crucible.api.model.State;
-import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
 
 public class ReviewStateChangedNotification extends AbstractReviewNotification {
-    public ReviewStateChangedNotification(ReviewData review, State oldState) {
+    public ReviewStateChangedNotification(Review review, State oldState) {
         super(review);
     }
 
