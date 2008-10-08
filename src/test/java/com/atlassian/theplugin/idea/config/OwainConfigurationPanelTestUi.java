@@ -52,7 +52,7 @@ public class OwainConfigurationPanelTestUi {
 				new BambooServerCfg("Bamboo Server 1", new ServerId()),
 				crucibleServerCfg,
 				crucibleServerCfg3));
-		projectConfiguration.setDefaultCrucibleServer(crucibleServerCfg2.getServerId());
+		projectConfiguration.setDefaultCrucibleServerId(crucibleServerCfg2.getServerId());
 		projectConfiguration.setDefaultCrucibleProject("PR-5");
 		projectConfiguration.setDefaultCrucibleRepo("Connector");
 
@@ -95,7 +95,7 @@ public class OwainConfigurationPanelTestUi {
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				System.out.println("Crucible server: " + projectConfiguration.getDefaultCrucibleServer());
+				System.out.println("Crucible server: " + projectConfiguration.getDefaultCrucibleServerId());
 				System.out.println("Crucible project: " + projectConfiguration.getDefaultCrucibleProject());
 				System.out.println("Crucible repo: " + projectConfiguration.getDefaultCrucibleRepo());
 				System.out.println("FishEye server: " + projectConfiguration.getDefaultFishEyeServerId());

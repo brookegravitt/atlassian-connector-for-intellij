@@ -88,7 +88,7 @@ public class OwainConfigurationPanel extends JPanel {
 
 		public Object getSelectedItem() {
 			for (CrucibleServerCfgWrapper server : getServers()) {
-				if (server.getWrapped().getServerId().equals(projectConfiguration.getDefaultCrucibleServer())) {
+				if (server.getWrapped().getServerId().equals(projectConfiguration.getDefaultCrucibleServerId())) {
 					return server;
 				}
 			}
@@ -103,7 +103,7 @@ public class OwainConfigurationPanel extends JPanel {
 					CrucibleServerCfgWrapper item = (CrucibleServerCfgWrapper) anItem;
 					final CrucibleServerCfg wrapped = item.getWrapped();
 					if (wrapped != null) {
-						projectConfiguration.setDefaultCrucibleServer(wrapped.getServerId());
+						projectConfiguration.setDefaultCrucibleServerId(wrapped.getServerId());
 						projectConfiguration.setDefaultCrucibleRepo(null);
 						projectConfiguration.setDefaultCrucibleProject(null);
 					} else {
@@ -117,7 +117,7 @@ public class OwainConfigurationPanel extends JPanel {
 		}
 
 		private void clearDefaultCrucibleServer() {
-			projectConfiguration.setDefaultCrucibleServer(null);
+			projectConfiguration.setDefaultCrucibleServerId(null);
 			projectConfiguration.setDefaultCrucibleProject(null);
 			projectConfiguration.setDefaultCrucibleRepo(null);
 		}
@@ -371,7 +371,7 @@ public class OwainConfigurationPanel extends JPanel {
 					}
 
 					public void onError() {
-						projectConfiguration.setDefaultCrucibleServer(null);
+						projectConfiguration.setDefaultCrucibleServerId(null);
 						data.remove(crucibleServerCfg.getServerId());
 						refresh();
 					}
@@ -406,10 +406,10 @@ public class OwainConfigurationPanel extends JPanel {
 		}
 
 		private CrucibleServerCfg getCurrentCrucibleServerCfg() {
-			if (projectConfiguration.getDefaultCrucibleServer() == null) {
+			if (projectConfiguration.getDefaultCrucibleServerId() == null) {
 				return null;
 			}
-			return (CrucibleServerCfg) projectConfiguration.getServerCfg(projectConfiguration.getDefaultCrucibleServer());
+			return (CrucibleServerCfg) projectConfiguration.getServerCfg(projectConfiguration.getDefaultCrucibleServerId());
 		}
 
 		public void setSelectedItem(final Object anItem) {
@@ -498,7 +498,7 @@ public class OwainConfigurationPanel extends JPanel {
 
 					public void onError() {
 						data.remove(crucibleServerCfg.getServerId());
-						projectConfiguration.setDefaultCrucibleServer(null);
+						projectConfiguration.setDefaultCrucibleServerId(null);
 						refresh();
 					}
 
@@ -532,10 +532,10 @@ public class OwainConfigurationPanel extends JPanel {
 		}
 
 		private CrucibleServerCfg getCurrentCrucibleServerCfg() {
-			if (projectConfiguration.getDefaultCrucibleServer() == null) {
+			if (projectConfiguration.getDefaultCrucibleServerId() == null) {
 				return null;
 			}
-			return (CrucibleServerCfg) projectConfiguration.getServerCfg(projectConfiguration.getDefaultCrucibleServer());
+			return (CrucibleServerCfg) projectConfiguration.getServerCfg(projectConfiguration.getDefaultCrucibleServerId());
 		}
 
 		public void setSelectedItem(final Object anItem) {
