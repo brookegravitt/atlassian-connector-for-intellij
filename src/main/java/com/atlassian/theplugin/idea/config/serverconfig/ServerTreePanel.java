@@ -19,6 +19,7 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.FishEyeServerCfg;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
@@ -50,9 +51,9 @@ import java.util.Collection;
 
 public final class ServerTreePanel extends JPanel implements TreeSelectionListener, DataProvider {
 
-	private JTree serverTree = null;
+	private JTree serverTree;
 	private ServerTreeModel model;
-	private DefaultMutableTreeNode selectedNode = null;
+	private DefaultMutableTreeNode selectedNode;
 	private boolean forceExpand = true;
 
 	private static final int WIDTH = 150;
@@ -82,7 +83,7 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 
 	private void expandAllPaths() {
 		for (int i = 0; i < serverTree.getRowCount(); ++i) {
-                 serverTree.expandRow(i);
+			serverTree.expandRow(i);
         }
     }
 
@@ -174,13 +175,15 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 			// CHECKSTYLE:OFF
 		switch (serverType) {
 			// CHECKSTYLE:ON
-            case BAMBOO_SERVER:
-                return new BambooServerCfg(true, name, id);
-            case CRUCIBLE_SERVER:
-                return new CrucibleServerCfg(name, id);
-            case JIRA_SERVER:
-                return new JiraServerCfg(name, id);
-        }
+			case BAMBOO_SERVER:
+				return new BambooServerCfg(true, name, id);
+			case CRUCIBLE_SERVER:
+				return new CrucibleServerCfg(name, id);
+			case JIRA_SERVER:
+				return new JiraServerCfg(name, id);
+			case FISHEYE_SERVER:
+				return new FishEyeServerCfg(name, id);
+		}
         throw new RuntimeException("Unhandled server type [" + serverType + "]");
     }
 
@@ -278,29 +281,9 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 			serverTree.scrollPathToVisible(path);
 			serverTree.setSelectionPath(path);
 			serverTree.expandPath(path);
-			return;
 		} else {
 			serverConfigPanel.showEmptyPanel();
 		}
-//		if (tmpNode != null) {
-//            TreePath path = new TreePath(tmpNode.getPath());
-//            if (doesExistInModel(model, path)) {
-//                selectedNode = tmpNode;
-//                serverTree.scrollPathToVisible(path);
-//                serverTree.setSelectionPath(path);
-//                return;
-//            }
-//        }
-
-//
-//        selectedNode = null;
-//        serverConfigPanel.showEmptyPanel();
-//        if (firstServerNode != null) {
-//            TreePath path = new TreePath(firstServerNode.getPath());
-//            serverTree.scrollPathToVisible(path);
-//            serverTree.setSelectionPath(path);
-//            serverTree.expandPath(path);
-//        }
     }
 
     public void valueChanged(TreeSelectionEvent e) {
