@@ -39,7 +39,8 @@ public class BambooStatusTooltipListener implements BambooStatusListener {
 	 * @param display reference to display component
 	 * @param pluginConfiguration cfg how incoming status changes should be handled
 	 */
-	public BambooStatusTooltipListener(final BambooStatusDisplay display, final PluginConfiguration pluginConfiguration) {
+	public BambooStatusTooltipListener(final BambooStatusDisplay display,
+									   final PluginConfiguration pluginConfiguration) {
 		this.display = display;
 		this.pluginConfiguration = pluginConfiguration;
 	}
@@ -68,9 +69,9 @@ public class BambooStatusTooltipListener implements BambooStatusListener {
 
 						case BUILD_FAILED:
 
-							BambooBuild prevBuild = prevBuildStatuses.get(currentBuild.getBuildKey());
+							BambooBuild prevBuild = prevBuildStatuses.get(getBuildMapKey(currentBuild));
 
-							if (prevBuildStatuses.containsKey(currentBuild.getBuildKey())) {
+							if (prevBuildStatuses.containsKey(getBuildMapKey(currentBuild))) {
 
 								if (prevBuild.getStatus() == BuildStatus.BUILD_SUCCEED
 										|| (prevBuild.getStatus() == BuildStatus.BUILD_FAILED
@@ -87,7 +88,7 @@ public class BambooStatusTooltipListener implements BambooStatusListener {
 								}
 							}
 
-							prevBuildStatuses.put(currentBuild.getBuildKey(), currentBuild);
+							prevBuildStatuses.put(getBuildMapKey(currentBuild), currentBuild);
 							break;
 						case UNKNOWN:
 							// no action here
@@ -95,7 +96,8 @@ public class BambooStatusTooltipListener implements BambooStatusListener {
 						case BUILD_SUCCEED:
 
 							if (prevBuildStatuses.containsKey(currentBuild.getBuildKey())) {
-								if (prevBuildStatuses.get(currentBuild.getBuildKey()).getStatus() == BuildStatus.BUILD_FAILED) {
+								if (prevBuildStatuses.get(currentBuild.getBuildKey()).getStatus()
+										== BuildStatus.BUILD_FAILED) {
 									// build has changed status from FAILED to SUCCEED
 									fireTooltip = true;
 									if (status == null) {
@@ -116,10 +118,12 @@ public class BambooStatusTooltipListener implements BambooStatusListener {
 		
 		if (fireTooltip && status != null) {
 			display.updateBambooStatus(status, popupInfo);
-			//display.updateBambooStatus(status, popupInfo.toString());
 		}
 	}
 
+	private static String getBuildMapKey(BambooBuild build) {
+		return build.getServer().getServerId().toString() + build.getBuildKey();
+	}
 
 	public void resetState() {
 		popupInfo.clear();
