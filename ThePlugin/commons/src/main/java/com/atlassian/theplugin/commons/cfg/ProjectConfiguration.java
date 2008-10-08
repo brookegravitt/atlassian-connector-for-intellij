@@ -23,7 +23,7 @@ import java.util.Collection;
 public class ProjectConfiguration {
 	private Collection<ServerCfg> servers;
 
-	private ServerId defaultCrucibleServer;
+	private ServerId defaultCrucibleServerId;
 	private ServerId defaultFishEyeServerId;
 	private String defaultCrucibleProject;
 	private String defaultCrucibleRepo;
@@ -34,7 +34,7 @@ public class ProjectConfiguration {
 
 	public ProjectConfiguration(final ProjectConfiguration other) {
 		servers = cloneArrayList(other.getServers());
-		defaultCrucibleServer = other.defaultCrucibleServer;
+		defaultCrucibleServerId = other.defaultCrucibleServerId;
 		defaultFishEyeServerId = other.defaultFishEyeServerId;
 		defaultCrucibleProject = other.defaultCrucibleProject;
 		defaultCrucibleRepo = other.defaultCrucibleRepo;
@@ -78,9 +78,9 @@ public class ProjectConfiguration {
 				: that.defaultCrucibleProject != null) {
 			return false;
 		}
-		if (defaultCrucibleServer != null
-				? !defaultCrucibleServer.equals(that.defaultCrucibleServer)
-				: that.defaultCrucibleServer != null) {
+		if (defaultCrucibleServerId != null
+				? !defaultCrucibleServerId.equals(that.defaultCrucibleServerId)
+				: that.defaultCrucibleServerId != null) {
 			return false;
 		}
 		if (defaultCrucibleRepo != null
@@ -114,7 +114,7 @@ public class ProjectConfiguration {
 	public int hashCode() {
 		int result;
 		result = servers.hashCode();
-		result = HASHCODE_MAGIC * result + (defaultCrucibleServer != null ? defaultCrucibleServer.hashCode() : 0);
+		result = HASHCODE_MAGIC * result + (defaultCrucibleServerId != null ? defaultCrucibleServerId.hashCode() : 0);
 		result = HASHCODE_MAGIC * result + (defaultFishEyeServerId != null ? defaultFishEyeServerId.hashCode() : 0);
 		result = HASHCODE_MAGIC * result + (defaultCrucibleProject != null ? defaultCrucibleProject.hashCode() : 0);
 		result = HASHCODE_MAGIC * result + (defaultCrucibleRepo != null ? defaultCrucibleRepo.hashCode() : 0);
@@ -143,12 +143,29 @@ public class ProjectConfiguration {
 		return new ProjectConfiguration(this);
 	}
 
-	public ServerId getDefaultCrucibleServer() {
-		return defaultCrucibleServer;
+	public ServerId getDefaultCrucibleServerId() {
+		return defaultCrucibleServerId;
 	}
 
-	public void setDefaultCrucibleServer(final ServerId defaultCrucibleServerId) {
-		this.defaultCrucibleServer = defaultCrucibleServerId;
+	public CrucibleServerCfg getDefaultCrucibleServer() {
+		if (defaultCrucibleServerId == null) {
+			return null;
+		}
+
+		ServerCfg serverCfg = getServerCfg(defaultCrucibleServerId);
+
+		// no additional check - let IDE handle such error in a standard way (error dialog)
+		// in unlikely event of some fuck-up
+		final CrucibleServerCfg crucible = (CrucibleServerCfg) serverCfg;
+		if (!crucible.isEnabled()) {
+			return null;
+		}
+		return crucible;
+	}
+
+
+	public void setDefaultCrucibleServerId(final ServerId defaultCrucibleServerId) {
+		this.defaultCrucibleServerId = defaultCrucibleServerId;
 	}
 
 	public ServerId getDefaultFishEyeServerId() {

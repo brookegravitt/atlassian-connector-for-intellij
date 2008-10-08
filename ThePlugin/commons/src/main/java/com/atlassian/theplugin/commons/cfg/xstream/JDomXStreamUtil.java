@@ -63,7 +63,7 @@ public final class JDomXStreamUtil {
 
 		
 		xStream.alias("project-configuration", ProjectConfiguration.class);
-		xStream.aliasField("default-crucible-server", ProjectConfiguration.class, "defaultCrucibleServer");
+		xStream.aliasField("default-crucible-server", ProjectConfiguration.class, "defaultCrucibleServerId");
 		xStream.aliasField("default-fisheye-server", ProjectConfiguration.class, "defaultFishEyeServerId");
 		xStream.aliasField("default-fisheye-repo", ProjectConfiguration.class, "defaultFishEyeRepo");
 		xStream.aliasField("default-crucible-project", ProjectConfiguration.class, "defaultCrucibleProject");

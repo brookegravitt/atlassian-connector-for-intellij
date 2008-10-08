@@ -23,19 +23,21 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 
 public class ViewFisheyeChangesetAction extends AbstractFisheyeAction {
 
+	@Override
 	public void actionPerformed(AnActionEvent event) {
-		String rev = getRevision(event);
-		CrucibleServerCfg cfg = getCrucibleServerCfg(event);
+		String rev = ChangeListUtil.getRevision(event);
+		CrucibleServerCfg cfg = getFishEyeServerCfg(event);
 		if (cfg != null) {
 			String url = cfg.getUrl() + "/changelog/" + cfg.getRepositoryName() + "/?cs=" + rev;
 			BrowserUtil.launchBrowser(url);
 		}
 	}
 
+	@Override
 	public void update(final AnActionEvent event) {
 		super.update(event);
 		if (event.getPresentation().isVisible()) {
-			event.getPresentation().setEnabled(getRevision(event) != null);
+			event.getPresentation().setEnabled(ChangeListUtil.getRevision(event) != null);
 		}
 	}
 }
