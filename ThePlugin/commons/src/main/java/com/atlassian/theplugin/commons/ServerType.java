@@ -22,9 +22,10 @@ package com.atlassian.theplugin.commons;
 public enum ServerType {
     BAMBOO_SERVER("Bamboo Servers"),
 	CRUCIBLE_SERVER("Crucible Servers"),
-    JIRA_SERVER("JIRA Servers");
+    JIRA_SERVER("JIRA Servers"),
+	FISHEYE_SERVER("FishEye Servers");
 
-    private final String name;
+	private final String name;
 
     ServerType(final String name) {
         this.name = name;

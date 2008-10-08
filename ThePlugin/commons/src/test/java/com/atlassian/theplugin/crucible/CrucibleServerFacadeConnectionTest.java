@@ -18,13 +18,14 @@ package com.atlassian.theplugin.crucible;
 
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.CrucibleLoginException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginFailedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.crucible.api.rest.cruciblemock.LoginCallback;
 import com.atlassian.theplugin.crucible.api.rest.cruciblemock.VersionInfoCallback;
 import junit.framework.TestCase;
@@ -41,6 +42,7 @@ public class CrucibleServerFacadeConnectionTest extends TestCase {
 	private CrucibleServerFacade testedCrucibleServerFacade;
 	private CrucibleServerCfg crucibleServerCfg;
 
+	@Override
 	protected void setUp() throws Exception {
 		httpServer = new org.mortbay.jetty.Server(0);
 		httpServer.start();
@@ -50,6 +52,7 @@ public class CrucibleServerFacadeConnectionTest extends TestCase {
 		mockServer = new JettyMockServer(httpServer);
 		crucibleServerCfg = createCrucibleTestConfiguration(mockBaseUrl, true);
 		testedCrucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
+		ConfigurationFactory.setConfiguration(new PluginConfigurationBean());
 	}
 
 	private static CrucibleServerCfg createCrucibleTestConfiguration(String serverUrl, boolean isPassInitialized) {
@@ -64,6 +67,7 @@ public class CrucibleServerFacadeConnectionTest extends TestCase {
 		return res;
 	}
 
+	@Override
 	protected void tearDown() throws Exception {
 		mockServer = null;
 		mockBaseUrl = null;

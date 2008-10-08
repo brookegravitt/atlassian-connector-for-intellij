@@ -18,6 +18,7 @@ package com.atlassian.theplugin.commons.cfg.xstream;
 import com.atlassian.theplugin.commons.SubscribedPlan;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.FishEyeServerCfg;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.PrivateBambooServerCfgInfo;
 import com.atlassian.theplugin.commons.cfg.PrivateProjectConfiguration;
@@ -49,6 +50,7 @@ public final class JDomXStreamUtil {
 		xStream.alias("bamboo", BambooServerCfg.class);
 		xStream.alias("crucible", CrucibleServerCfg.class);
 		xStream.alias("jira", JiraServerCfg.class);
+		xStream.alias("fisheye", FishEyeServerCfg.class);
 
 		xStream.alias(PLAN, SubscribedPlan.class);
 		xStream.omitField(ServerCfg.class, "username");
@@ -124,6 +126,7 @@ public final class JDomXStreamUtil {
 				return new SubscribedPlan(reader.getAttribute(PLAN_KEY));
 			}
 
+			@SuppressWarnings({"RawUseOfParameterizedType"})
 			public boolean canConvert(final Class aClass) {
 				return SubscribedPlan.class.isAssignableFrom(aClass);
 			}
@@ -139,6 +142,7 @@ public final class JDomXStreamUtil {
 				return new ServerId(reader.getValue());
 			}
 
+			@SuppressWarnings({"RawUseOfParameterizedType"})
 			public boolean canConvert(final Class type) {
 				return type.equals(ServerId.class);
 			}

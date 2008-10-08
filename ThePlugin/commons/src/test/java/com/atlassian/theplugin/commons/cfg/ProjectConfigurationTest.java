@@ -30,7 +30,8 @@ public class ProjectConfigurationTest extends TestCase {
 
 	private static final BambooServerCfg BAMBOO_1 = new BambooServerCfg("mybamboo", new ServerId());
 	private static final CrucibleServerCfg CRUCIBLE_1 = new CrucibleServerCfg("mycrucible", new ServerId());
-	ProjectConfiguration projectCfg = new ProjectConfiguration(MiscUtil.buildArrayList(BAMBOO_1, CRUCIBLE_1));
+	private static final FishEyeServerCfg FISHEYE_1 = new FishEyeServerCfg("myfisheye", new ServerId());
+	ProjectConfiguration projectCfg = new ProjectConfiguration(MiscUtil.buildArrayList(BAMBOO_1, CRUCIBLE_1, FISHEYE_1));
 	ProjectConfiguration anotherCfg = new ProjectConfiguration(projectCfg);
 
     public void testCopyConstructor() {

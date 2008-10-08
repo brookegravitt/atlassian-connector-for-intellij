@@ -37,17 +37,17 @@ import com.intellij.openapi.util.IconLoader;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.*;
-import java.util.Collection;
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
+import java.awt.*;
+import java.util.Collection;
 
 public class ServerConfigPanel extends JPanel implements DataProvider {
     private final ServerTreePanel serverTreePanel;
-    private BlankPanel blankPanel = null;
+    private BlankPanel blankPanel;
 
 	private CardLayout editPaneCardLayout;
     private JPanel editPane;
@@ -55,14 +55,13 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 
 	private static final float SPLIT_RATIO = 0.3f;
 
-	private final Project project;
 	private Collection<ServerCfg> serverCfgs;
-    private BambooServerConfigForm bambooServerConfigForm;
-    private GenericServerConfigForm jiraServerConfigForm;
-    private CrucibleServerConfigForm crucibleServerConfigForm;
+    private final BambooServerConfigForm bambooServerConfigForm;
+    private final GenericServerConfigForm jiraServerConfigForm;
+    private final CrucibleServerConfigForm crucibleServerConfigForm;
+	private final GenericServerConfigForm fisheyeServerConfigFrom;
 
-	public ServerConfigPanel(Project project, Collection<ServerCfg> serverCfgs) {
-		this.project = project;
+	public ServerConfigPanel(Project project, Collection<ServerCfg> serverCfgs) {		
 		this.serverCfgs = serverCfgs;
         this.serverTreePanel = new ServerTreePanel();
 		final CrucibleServerFacade crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
@@ -73,6 +72,7 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 		jiraServerConfigForm = new GenericServerConfigForm(project, new ProductConnector(jiraServerFacade));
 		crucibleServerConfigForm = new CrucibleServerConfigForm(project, crucibleServerFacade);
 		bambooServerConfigForm = new BambooServerConfigForm(project, bambooServerFacade);
+		fisheyeServerConfigFrom = new GenericServerConfigForm(project, new ProductConnector(crucibleServerFacade));
 		initLayout();
 
         serverTreePanel.setData(serverCfgs);
@@ -131,6 +131,7 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
         editPane.add(bambooServerConfigForm.getRootComponent(), "Bamboo Servers");
         editPane.add(jiraServerConfigForm.getRootComponent(), "JIRA Servers");
         editPane.add(crucibleServerConfigForm.getRootComponent(), "Crucible Servers");
+        editPane.add(fisheyeServerConfigFrom.getRootComponent(), "FishEye Servers");
 		editPane.add(getBlankPanel(), BLANK_CARD);
 
         return editPane;
@@ -167,16 +168,19 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 
 
     public void saveData(ServerType serverType) {
-        switch (serverType) {
-            case BAMBOO_SERVER:
-                bambooServerConfigForm.saveData();
-                break;
-            case CRUCIBLE_SERVER:
-                crucibleServerConfigForm.saveData();
-                break;
-            case JIRA_SERVER:
-                jiraServerConfigForm.saveData();
-                break;
+		switch (serverType) {
+			case BAMBOO_SERVER:
+				bambooServerConfigForm.saveData();
+				break;
+			case CRUCIBLE_SERVER:
+				crucibleServerConfigForm.saveData();
+				break;
+			case JIRA_SERVER:
+				jiraServerConfigForm.saveData();
+				break;
+			case FISHEYE_SERVER:
+				fisheyeServerConfigFrom.saveData();
+				break;
 			default:
 				throw new AssertionError("switch not implemented for [" + serverType + "]");
 		}
@@ -193,23 +197,27 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
         ServerType serverType = serverCfg.getServerType();
         editPaneCardLayout.show(editPane, serverType.toString());
 		switch (serverType) {
-            case BAMBOO_SERVER:
-                BambooServerCfg bambooServerCfg = (BambooServerCfg) serverCfg;
-                bambooServerConfigForm.saveData();
-                bambooServerConfigForm.setData(bambooServerCfg);
-                break;
-            case CRUCIBLE_SERVER:
-                CrucibleServerCfg crucibleServerCfg = (CrucibleServerCfg) serverCfg;
-                crucibleServerConfigForm.saveData();
-                crucibleServerConfigForm.setData(crucibleServerCfg);
-                break;
-            case JIRA_SERVER:
-                jiraServerConfigForm.saveData();
-                jiraServerConfigForm.setData(serverCfg);
-                break;
+			case BAMBOO_SERVER:
+				BambooServerCfg bambooServerCfg = (BambooServerCfg) serverCfg;
+				bambooServerConfigForm.saveData();
+				bambooServerConfigForm.setData(bambooServerCfg);
+				break;
+			case CRUCIBLE_SERVER:
+				CrucibleServerCfg crucibleServerCfg = (CrucibleServerCfg) serverCfg;
+				crucibleServerConfigForm.saveData();
+				crucibleServerConfigForm.setData(crucibleServerCfg);
+				break;
+			case JIRA_SERVER:
+				jiraServerConfigForm.saveData();
+				jiraServerConfigForm.setData(serverCfg);
+				break;
+			case FISHEYE_SERVER:
+				fisheyeServerConfigFrom.saveData();
+				fisheyeServerConfigFrom.setData(serverCfg);
+				break;
 			default:
 				throw new AssertionError("switch not implemented for [" + serverType + "]");
-        }
+		}
     }
 
 	public void showEmptyPanel() {
@@ -220,6 +228,7 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 		bambooServerConfigForm.finalizeData();
 		crucibleServerConfigForm.finalizeData();
 		jiraServerConfigForm.finalizeData();
+		fisheyeServerConfigFrom.finalizeData();
 	}
 
 

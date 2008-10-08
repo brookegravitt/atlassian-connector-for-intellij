@@ -18,6 +18,7 @@ package com.atlassian.theplugin.commons.cfg.xstream;
 import com.atlassian.theplugin.commons.SubscribedPlan;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.FishEyeServerCfg;
 import com.atlassian.theplugin.commons.cfg.PrivateProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.PrivateServerCfgInfo;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
@@ -53,6 +54,7 @@ public class JDomProjectConfigurationFactoryTest extends ProjectConfigurationFac
 	private final BambooServerCfg bamboo2 = new BambooServerCfg("mybamboo2", new ServerId("241d662c-e744-4690-a5f8-6e127c0bc84f"));
 	private final CrucibleServerCfg crucible1 = new CrucibleServerCfg("mycrucible1", new ServerId("341d662c-e744-4690-a5f8-6e127c0bc84f"));
 	private final CrucibleServerCfg crucible2 = new CrucibleServerCfg("mycrucible2", new ServerId("341d662c-e744-4690-a5f8-6e127c0bc84e"));
+	private final FishEyeServerCfg fisheye1 = new FishEyeServerCfg("myfisheye1", new ServerId("341d662c-e744-4690-a5f8-6e127c0bc84d"));
 	private ProjectConfiguration projectCfg;
 
 	private static final String FAKE_CLASS_NAME = "whateverfakeclasshere";
@@ -71,9 +73,13 @@ public class JDomProjectConfigurationFactoryTest extends ProjectConfigurationFac
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		projectCfg = new ProjectConfiguration(MiscUtil.<ServerCfg>buildArrayList(bamboo1));
+		projectCfg = new ProjectConfiguration(MiscUtil.buildArrayList(bamboo1, fisheye1));
 		bamboo1.setPassword("mycleartextpassword");
 		bamboo1.setPasswordStored(true);
+		fisheye1.setUrl("https://lech.atlassian.pl/fisheye");
+		fisheye1.setUsername("user1");
+		fisheye1.setPassword("password23");
+		fisheye1.setPasswordStored(true);
 	}
 
 	public void testJDomSaveLoadGlobalConfiguration() throws IOException, ServerCfgFactoryException {
@@ -156,12 +162,18 @@ public class JDomProjectConfigurationFactoryTest extends ProjectConfigurationFac
 		// load public info only
 		final JDomProjectConfigurationFactory loadFactory = new JDomProjectConfigurationFactory(doc.getRootElement(), null);
 		final ProjectConfiguration readCfg = loadFactory.load();
-		assertEquals(1, readCfg.getServers().size());
+		assertEquals(2, readCfg.getServers().size());
 		final ServerCfg readServer = readCfg.getServerCfg(bamboo1.getServerId());
 		assertEquals("", readServer.getPassword());
 		assertEquals("", readServer.getUsername());
 		assertEquals(bamboo1.getUrl(), readServer.getUrl());
 		assertEquals(bamboo1.getName(), readServer.getName());
+
+		final ServerCfg fishServer = readCfg.getServerCfg(fisheye1.getServerId());
+		assertEquals("", fishServer.getPassword());
+		assertEquals("", fishServer.getUsername());
+		assertEquals(fisheye1.getUrl(), fishServer.getUrl());
+		assertEquals(fisheye1.getName(), fishServer.getName());
 	}
 
 	private void writeXml(final Element rootElement, final StringWriter writer) throws IOException {
@@ -202,7 +214,8 @@ public class JDomProjectConfigurationFactoryTest extends ProjectConfigurationFac
 		final JDomProjectConfigurationFactory loadFactory = new JDomProjectConfigurationFactory(element, doc.getRootElement());
 		final PrivateProjectConfiguration readCfg = loadFactory.load(doc.getRootElement(), PrivateProjectConfiguration.class);
 		TestUtil.assertHasOnlyElements(readCfg.getPrivateServerCfgInfos(), createPrivateProjectConfiguration(bamboo1),
-				createPrivateProjectConfiguration(bamboo2), createPrivateProjectConfiguration(crucible1));
+				createPrivateProjectConfiguration(bamboo2), createPrivateProjectConfiguration(crucible1),
+				createPrivateProjectConfiguration(fisheye1));
 	}
 
 	public void testCreatePrivateProjectConfiguration() {

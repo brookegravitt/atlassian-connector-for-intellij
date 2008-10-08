@@ -20,6 +20,7 @@ import com.atlassian.theplugin.commons.ServerType;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 public class AddBambooServerAction extends AbstractServerAction {
+	@Override
 	public void actionPerformed(AnActionEvent event) {
 		addServer(event, ServerType.BAMBOO_SERVER);
 	}
