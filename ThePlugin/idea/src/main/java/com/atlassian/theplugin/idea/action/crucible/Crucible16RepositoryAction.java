@@ -17,11 +17,12 @@
 package com.atlassian.theplugin.idea.action.crucible;
 
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.idea.action.fisheye.AbstractFisheyeAction;
+import com.atlassian.theplugin.idea.action.fisheye.AbstractCrucibleAction;
+import com.atlassian.theplugin.idea.action.fisheye.ChangeListUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 
-public abstract class Crucible16RepositoryAction extends AbstractFisheyeAction {
+public abstract class Crucible16RepositoryAction extends AbstractCrucibleAction {
 	@Override
 	public void update(AnActionEvent event) {
 		event.getPresentation().setVisible(false);
@@ -34,7 +35,7 @@ public abstract class Crucible16RepositoryAction extends AbstractFisheyeAction {
 		}
 		
 		if (event.getPresentation().isVisible()) {
-			event.getPresentation().setEnabled(getRevision(event) != null);
+			event.getPresentation().setEnabled(ChangeListUtil.getRevision(event) != null);
 		}
 	}
 }

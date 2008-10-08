@@ -17,34 +17,6 @@ import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class FisheyeLinkAction extends AbstractFisheyeAction {
-	@Override
-	public void update(final AnActionEvent event) {
-			event.getPresentation().setVisible(isFishEyeConfigured(event));
-	}
-
-	private boolean isFishEyeConfigured(final AnActionEvent event) {
-		final Project project = IdeaHelper.getCurrentProject(event);
-		if (project == null) {
-			return false;
-		}
-
-		final ProjectId projectId = CfgUtil.getProjectId(project);
-		final ProjectConfiguration projectCfg = IdeaHelper.getCfgManager().getProjectConfiguration(projectId);
-		if (projectCfg == null) {
-			return false;
-		}
-
-		if (projectCfg.getDefaultFishEyeServer() == null || projectCfg.getDefaultFishEyeRepo() == null) {
-			return false;
-		}
-
-		if (projectCfg.getFishEyeProjectPath() == null) {
-			return false;
-		}
-
-		return true;
-
-	}
 
 	protected abstract void performUrlAction(final String url);
 
@@ -75,13 +47,16 @@ public abstract class FisheyeLinkAction extends AbstractFisheyeAction {
 
 	@Override
 	public void actionPerformed(final AnActionEvent event) {
-		final Project project = IdeaHelper.getCurrentProject(event);
 		final VirtualFile virtualFile = event.getData(DataKeys.VIRTUAL_FILE);
 		final Editor editor = event.getData(DataKeys.EDITOR);
-		if (editor == null || project == null || virtualFile == null) {
+		if (editor == null || virtualFile == null) {
 			return;
 		}
 
+		final Project project = IdeaHelper.getCurrentProject(event);
+		if (project == null) {
+			return;
+		}
 		final ProjectId projectId = CfgUtil.getProjectId(project);
 		final ProjectConfiguration projectCfg = IdeaHelper.getCfgManager().getProjectConfiguration(projectId);
 		if (projectCfg == null) {

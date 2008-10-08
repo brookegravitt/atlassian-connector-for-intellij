@@ -36,7 +36,7 @@ public class ProjectConfigurationTest extends TestCase {
     public void testCopyConstructor() {
 		assertEquals(projectCfg, anotherCfg);
 		projectCfg.setDefaultCrucibleRepo("repo");
-		projectCfg.setDefaultCrucibleServer(CRUCIBLE_1.getServerId());
+		projectCfg.setDefaultCrucibleServerId(CRUCIBLE_1.getServerId());
 		projectCfg.setDefaultCrucibleProject("crucproj");
 		projectCfg.setDefaultFishEyeServerId(CRUCIBLE_1.getServerId());
 		projectCfg.setFishEyeProjectPath("mypath");
@@ -71,9 +71,9 @@ public class ProjectConfigurationTest extends TestCase {
 		projectCfg.setDefaultCrucibleProject(anotherCfg.getDefaultCrucibleProject());
 		assertEquals(projectCfg, anotherCfg);
 
-		anotherCfg.setDefaultCrucibleServer(CRUCIBLE_1.getServerId());
+		anotherCfg.setDefaultCrucibleServerId(CRUCIBLE_1.getServerId());
 		TestUtil.assertNotEquals(projectCfg, anotherCfg);
-		projectCfg.setDefaultCrucibleServer(CRUCIBLE_1.getServerId());
+		projectCfg.setDefaultCrucibleServerId(CRUCIBLE_1.getServerId());
 		assertEquals(projectCfg, anotherCfg);
 
 		anotherCfg.setFishEyeProjectPath("path1");

@@ -158,7 +158,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
     public void initComponent() {
         LoggerImpl.getInstance().info("Init ThePlugin project component.");
         ChangeListManager.getInstance(project).registerCommitExecutor(
-                new CruciblePatchSubmitExecutor(project, crucibleServerFacade));
+                new CruciblePatchSubmitExecutor(project, crucibleServerFacade, cfgManager));
 
     }
 

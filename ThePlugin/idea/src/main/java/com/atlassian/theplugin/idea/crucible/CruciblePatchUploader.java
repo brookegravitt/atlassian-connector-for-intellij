@@ -16,26 +16,29 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
+import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.intellij.openapi.project.Project;
 
 public class CruciblePatchUploader implements Runnable {
 	private final String patch;
+	private final CfgManager cfgManager;
 	private final String commitMessage;
 	private final CrucibleServerFacade crucibleServerFacade;
 	private Project project;
 
 	public CruciblePatchUploader(Project project, CrucibleServerFacade crucibleServerFacade, String commitMessage,
-			String patch) {
+			String patch, final CfgManager cfgManager) {
 		this.project = project;
 		this.crucibleServerFacade = crucibleServerFacade;
 		this.commitMessage = commitMessage;
 		this.patch = patch;
+		this.cfgManager = cfgManager;
 	}
 
 	public void run() {
 		final CrucibleReviewCreateForm reviewCreateForm
-				= new CrucibleReviewCreateForm(project, crucibleServerFacade, commitMessage, patch);
+				= new CrucibleReviewCreateForm(project, crucibleServerFacade, commitMessage, patch, cfgManager);
 		reviewCreateForm.show();
 	}
 }

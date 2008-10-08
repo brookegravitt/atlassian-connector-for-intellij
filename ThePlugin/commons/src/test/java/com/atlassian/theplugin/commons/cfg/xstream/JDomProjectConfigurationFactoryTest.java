@@ -114,7 +114,7 @@ public class JDomProjectConfigurationFactoryTest extends ProjectConfigurationFac
 		bamboo1.setUsername("mytestuser");
 
 		projectCfg.setDefaultCrucibleProject("CRUC");
-		projectCfg.setDefaultCrucibleServer(crucible2.getServerId());
+		projectCfg.setDefaultCrucibleServerId(crucible2.getServerId());
 		projectCfg.setDefaultFishEyeServerId(crucible1.getServerId());
 		projectCfg.setDefaultCrucibleRepo("Repo1");
 		projectCfg.setFishEyeProjectPath("FishEye/Path/To");
@@ -238,7 +238,7 @@ public class JDomProjectConfigurationFactoryTest extends ProjectConfigurationFac
 		projectCfg = new ProjectConfiguration(MiscUtil.<ServerCfg>buildArrayList(bamboo1, crucible1, bamboo2));
 
 		projectCfg.setDefaultCrucibleProject("CRUC");
-		projectCfg.setDefaultCrucibleServer(crucible2.getServerId());
+		projectCfg.setDefaultCrucibleServerId(crucible2.getServerId());
 		projectCfg.setDefaultFishEyeServerId(null);
 		projectCfg.setDefaultCrucibleRepo("Repo2");
 
