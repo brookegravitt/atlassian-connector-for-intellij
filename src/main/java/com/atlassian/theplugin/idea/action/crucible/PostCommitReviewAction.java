@@ -17,26 +17,21 @@
 package com.atlassian.theplugin.idea.action.crucible;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.idea.crucible.CrucibleRevisionReviewCreator;
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.crucible.CrucibleReviewCreateForm;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.changes.ChangeList;
 
 public class PostCommitReviewAction extends Crucible16RepositoryAction {
 	@Override
 	public void actionPerformed(AnActionEvent event) {
-		final Project project = DataKeys.PROJECT.getData(event.getDataContext());
-		final ChangeList[] changes = DataKeys.CHANGE_LISTS.getData(event.getDataContext());
+		final Project project = event.getData(DataKeys.PROJECT);
+		final ChangeList[] changes = event.getData(DataKeys.CHANGE_LISTS);
 
-		new Thread(new Runnable() {
-			public void run() {
-				ApplicationManager.getApplication().invokeAndWait(
-						new CrucibleRevisionReviewCreator(project, CrucibleServerFacadeImpl.getInstance(), changes),
-						ModalityState.defaultModalityState());
-			}
-		}).start();
+		final CrucibleReviewCreateForm reviewCreateForm = new CrucibleReviewCreateForm(project,
+				CrucibleServerFacadeImpl.getInstance(), changes, IdeaHelper.getCfgManager());
+		reviewCreateForm.show();
 	}
 }

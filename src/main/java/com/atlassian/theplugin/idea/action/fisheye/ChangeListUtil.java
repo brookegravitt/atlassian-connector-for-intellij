@@ -13,30 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.atlassian.theplugin.idea.action.fisheye;
 
-package com.atlassian.theplugin.idea.action.crucible;
-
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.crucible.CruciblePatchSubmitCommitSession;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
-import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vcs.changes.ChangeList;
+import com.intellij.openapi.vcs.changes.ContentRevision;
 
-public class PreCommitReview extends Crucible16RepositoryAction {
-
-	@Override
-	public void actionPerformed(AnActionEvent event) {
-		final ChangeList[] changes = DataKeys.CHANGE_LISTS.getData(event.getDataContext());
-		final Project project = DataKeys.PROJECT.getData(event.getDataContext());
-
-		new Thread(new Runnable() {
-			public void run() {
-				new CruciblePatchSubmitCommitSession(project, CrucibleServerFacadeImpl.getInstance(), 
-						IdeaHelper.getCfgManager()).execute(changes[0].getChanges(), changes[0].getName());
-			}
-		}).start();
+public final class ChangeListUtil {
+	private ChangeListUtil() {
 	}
-}
 
+	public static String getRevision(AnActionEvent event) {
+		final ChangeList[] changes = DataKeys.CHANGE_LISTS.getData(event.getDataContext());
+		if (changes != null && changes.length == 1) {
+			for (Change change : changes[0].getChanges()) {
+				if (change.getAfterRevision() == null) {
+					continue;
+				}
+				final ContentRevision contentRevision = change.getAfterRevision();
+				if (contentRevision == null) {
+					return null;
+				}
+				return contentRevision.getRevisionNumber().asString();
+			}
+		}
+		return null;
+	}
+
+}
