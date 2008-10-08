@@ -28,7 +28,8 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.IconLoader;
 
 public class QuickSearchAction extends AnAction {
-    public void actionPerformed(AnActionEvent e) {
+    @Override
+	public void actionPerformed(AnActionEvent e) {
         Project project = IdeaHelper.getCurrentProject(e.getDataContext());
         JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
 
@@ -45,6 +46,7 @@ public class QuickSearchAction extends AnAction {
         }
     }
 
+	@Override
 	public void update(AnActionEvent event) {
 		super.update(event);
 		JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(event.getDataContext());

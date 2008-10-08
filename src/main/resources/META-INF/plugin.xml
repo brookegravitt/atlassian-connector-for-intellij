@@ -135,6 +135,10 @@
 				class="com.atlassian.theplugin.idea.config.serverconfig.action.AddJIRAServerAction" text="Add JIRA Server"
 				description="Add a new JIRA server" icon="/icons/jira-blue-16.png"/>
 
+		<action id="ThePlugin.AddFishEyeServerAction"
+				class="com.atlassian.theplugin.idea.config.serverconfig.action.AddFishEyeServerAction"
+				text="Add FishEye Server" description="Add a new FishEye server" icon="/icons/fisheye-16.png"/>
+
 		<group id="ThePlugin.ServerConfigToolBar" popup="false" text="">
 			<reference id="ThePlugin.AddServerAction"/>
 			<reference id="ThePlugin.RemoveServerAction"/>
@@ -143,6 +147,7 @@
 			<reference id="ThePlugin.AddBambooServerAction"/>
 			<reference id="ThePlugin.AddCrucibleServerAction"/>
 			<reference id="ThePlugin.AddJIRAServerAction"/>
+			<reference id="ThePlugin.AddFishEyeServerAction"/>
 			<reference id="ThePlugin.RemoveServerAction"/>
 		</group>
 
@@ -150,6 +155,7 @@
 			<reference id="ThePlugin.AddBambooServerAction"/>
 			<reference id="ThePlugin.AddCrucibleServerAction"/>
 			<reference id="ThePlugin.AddJIRAServerAction"/>
+			<reference id="ThePlugin.AddFishEyeServerAction"/>
 		</group>
 
 		<action id="ThePlugin.ShowSettings" class="com.atlassian.theplugin.idea.action.ShowProjectSettingsAction"
