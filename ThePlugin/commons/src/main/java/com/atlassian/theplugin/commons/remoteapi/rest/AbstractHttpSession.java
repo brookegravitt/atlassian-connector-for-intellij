@@ -58,7 +58,7 @@ public abstract class AbstractHttpSession {
 
     private static ThreadLocal<URL> url = new ThreadLocal<URL>();
 
-    // TODO: replace this with a proper cache to ensure automatic purging.
+    // TODO: replace this with a proper cache to ensure automatic purging. Responses can get quite large.
     private final Map<String, CacheRecord> cache =
         new HashMap<String, CacheRecord>();
 
@@ -201,39 +201,7 @@ public abstract class AbstractHttpSession {
 
     protected byte[] retrieveGetResponseAsBytes(String urlString)
             throws IOException, JDOMException, RemoteApiSessionExpiredException {
-        UrlUtil.validateUrl(urlString);
-		setUrl(urlString);
-		synchronized (clientLock) {
-            if (client == null) {
-                try {
-                    client = HttpClientFactory.getClient();
-                } catch (HttpProxySettingsException e) {
-                    throw (IOException) new IOException("Connection error. Please set up HTTP Proxy settings").initCause(e);
-                }
-            }
-
-            GetMethod method = new GetMethod(urlString);
-
-            try {
-                method.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
-                method.getParams().setSoTimeout(client.getParams().getSoTimeout());
-                adjustHttpHeader(method);
-
-                client.executeMethod(method);
-
-                if (method.getStatusCode() != HttpStatus.SC_OK) {
-                    throw new IOException(
-                            "HTTP " + method.getStatusCode() + " (" + HttpStatus.getStatusText(method.getStatusCode())
-                                    + ")\n" + method.getStatusText());
-                }
-
-                return method.getResponseBody();
-            } catch (NullPointerException e) {
-                throw (IOException) new IOException("Connection error").initCause(e);
-            } finally {
-                method.releaseConnection();
-            }
-        }
+        return doConditionalGet(urlString);
     }
 
     protected Document retrievePostResponse(String urlString, Document request)
