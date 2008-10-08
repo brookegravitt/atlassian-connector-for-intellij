@@ -12,6 +12,11 @@
           <plan key="PLANID2" />
         </plans>
       </bamboo>
+      <fisheye>
+        <server-id>341d662c-e744-4690-a5f8-6e127c0bc84d</server-id>
+        <name>myfisheye1</name>
+        <url>https://lech.atlassian.pl/fisheye</url>
+      </fisheye>
     </servers>
     <default-crucible-server>341d662c-e744-4690-a5f8-6e127c0bc84e</default-crucible-server>
     <default-fisheye-server>341d662c-e744-4690-a5f8-6e127c0bc84f</default-fisheye-server>
