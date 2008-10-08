@@ -17,15 +17,13 @@
 package com.atlassian.theplugin.bamboo.api.bamboomock;
 
 import com.atlassian.theplugin.commons.bamboo.BambooBuild;
-import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.bamboo.BambooPlan;
 import com.atlassian.theplugin.commons.bamboo.BambooProject;
+import com.atlassian.theplugin.commons.bamboo.BuildStatus;
+import com.atlassian.theplugin.commons.util.ResourceUtil;
 import junit.framework.Assert;
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.fail;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Iterator;
@@ -40,16 +38,8 @@ public abstract class Util {
 	private Util() {
 	}
 
-	static void copyResource(OutputStream outputStream, String resource) {
-		BufferedInputStream is = new BufferedInputStream(Util.class.getResourceAsStream(RESOURCE_BASE + resource));
-		int c;
-		try {
-			while ((c = is.read()) != -1) {
-				outputStream.write(c);
-			}
-		} catch (IOException e) {
-			fail(e.getMessage());
-		}
+	public static void copyResource(OutputStream outputStream, String resource) {
+		ResourceUtil.copyResource(outputStream, RESOURCE_BASE + resource);
 	}
 
 	public static void verifySuccessfulBuildResult(BambooBuild build, String baseUrl) {
