@@ -95,8 +95,8 @@ public class BambooStatusTooltipListener implements BambooStatusListener {
 							break;
 						case BUILD_SUCCEED:
 
-							if (prevBuildStatuses.containsKey(currentBuild.getBuildKey())) {
-								if (prevBuildStatuses.get(currentBuild.getBuildKey()).getStatus()
+							if (prevBuildStatuses.containsKey(getBuildMapKey(currentBuild))) {
+								if (prevBuildStatuses.get(getBuildMapKey(currentBuild)).getStatus()
 										== BuildStatus.BUILD_FAILED) {
 									// build has changed status from FAILED to SUCCEED
 									fireTooltip = true;
@@ -108,7 +108,7 @@ public class BambooStatusTooltipListener implements BambooStatusListener {
 								}
 							}
 
-							prevBuildStatuses.put(currentBuild.getBuildKey(), currentBuild);
+							prevBuildStatuses.put(getBuildMapKey(currentBuild), currentBuild);
 							break;
 						default:
 							throw new IllegalStateException("Unexpected build status encountered");
@@ -122,7 +122,11 @@ public class BambooStatusTooltipListener implements BambooStatusListener {
 	}
 
 	private static String getBuildMapKey(BambooBuild build) {
-		return build.getServer().getServerId().toString() + build.getBuildKey();
+		String serverId = "none";
+		if (build.getServer() != null) {
+			serverId = build.getServer().getServerId().toString();
+		}
+		return serverId + build.getBuildKey();
 	}
 
 	public void resetState() {
