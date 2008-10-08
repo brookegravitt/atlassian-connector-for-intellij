@@ -1,20 +1,20 @@
 package com.atlassian.theplugin.idea.ui.tree.file;
 
-import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class CrucibleLineCommentsNode extends CrucibleContainerNode {
 
 	private CrucibleFileInfo file;
 
-	public CrucibleLineCommentsNode(ReviewData review, CrucibleFileInfo file, Map<String, FileNode> children) {
+	public CrucibleLineCommentsNode(Review review, CrucibleFileInfo file, Map<String, FileNode> children) {
 		super(review);
 		this.file = file;
 

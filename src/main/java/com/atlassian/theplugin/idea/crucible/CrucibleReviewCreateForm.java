@@ -795,6 +795,18 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 			return null;
 		}
 
+		public CrucibleServerCfg getServer() {
+			return null;
+		}
+
+		public String getReviewUrl() {
+			return null;
+		}
+
+		public Review getInnerReviewObject() {
+			return null;
+		}
+
 		public List<CrucibleReviewItemInfo> getReviewItems() {
 			return null;
 		}

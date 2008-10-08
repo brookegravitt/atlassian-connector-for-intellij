@@ -16,8 +16,8 @@
 
 package com.atlassian.theplugin.idea.crucible.events;
 
-import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
 
 /**
  * Created by IntelliJ IDEA.
@@ -27,9 +27,9 @@ import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListen
  * To change this template use File | Settings | File Templates.
  */
 public class FocusOnGeneralComments extends CrucibleEvent {
-	private ReviewData review;
+	private Review review;
 
-	public FocusOnGeneralComments(CrucibleReviewActionListener caller, ReviewData review) {
+	public FocusOnGeneralComments(CrucibleReviewActionListener caller, Review review) {
 		super(caller);
 		this.review = review;
 	}

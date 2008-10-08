@@ -1,12 +1,12 @@
 package com.atlassian.theplugin.idea.crucible.events;
 
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
-import com.atlassian.theplugin.idea.crucible.ReviewData;
 
 public class ReviewCommentsDownloadadEvent extends CrucibleEvent {
-	private ReviewData review;
+	private Review review;
 
-	public ReviewCommentsDownloadadEvent(CrucibleReviewActionListener caller, ReviewData review) {
+	public ReviewCommentsDownloadadEvent(CrucibleReviewActionListener caller, Review review) {
 		super(caller);
 		this.review = review;
 	}

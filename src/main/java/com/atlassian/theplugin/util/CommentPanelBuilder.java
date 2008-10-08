@@ -17,7 +17,6 @@
 package com.atlassian.theplugin.util;
 
 import com.atlassian.theplugin.commons.crucible.api.model.*;
-import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.intellij.ui.components.labels.BoldLabel;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -40,11 +39,11 @@ public final class CommentPanelBuilder {
 		// this is utility class
 	}
 
-	public static JPanel createEditPanelOfGeneralComment(ReviewData review, GeneralComment comment) {
+	public static JPanel createEditPanelOfGeneralComment(Review review, GeneralComment comment) {
 		return createViewPanelOfGeneralComment(review, comment, false); // no editing temporarily
 	}
 
-	public static JPanel createViewPanelOfGeneralComment(final ReviewData review, final GeneralComment comment,
+	public static JPanel createViewPanelOfGeneralComment(final Review review, final GeneralComment comment,
 														 final boolean isSelected) {
 		return new CommentPanel(review, null, comment) {
 			@Override
@@ -67,12 +66,12 @@ public final class CommentPanelBuilder {
 		};
 	}
 
-	public static JPanel createEditPanelOfVersionedComment(ReviewData review, CrucibleFileInfo file,
+	public static JPanel createEditPanelOfVersionedComment(Review review, CrucibleFileInfo file,
 			VersionedComment comment) {
 		return createViewPanelOfVersionedComment(review, file, comment, false);
 	}
 
-	public static JPanel createViewPanelOfVersionedComment(final ReviewData review, CrucibleFileInfo file,
+	public static JPanel createViewPanelOfVersionedComment(final Review review, CrucibleFileInfo file,
 			final VersionedComment comment, final boolean isSelected) {
 		return new CommentPanel(review, file, comment) {
 			@Override
@@ -103,7 +102,7 @@ public final class CommentPanelBuilder {
 
 	private abstract static class CommentPanel extends JPanel {
 		private Comment comment;
-		private ReviewData review;
+		private Review review;
 		private CrucibleFileInfo file;
 
 		private static final CellConstraints AUTHOR_POS = new CellConstraints(2, 2);
@@ -117,7 +116,7 @@ public final class CommentPanelBuilder {
 
 		private static final float MINIMUM_FONT_SIZE = 3;
 
-		private CommentPanel(ReviewData review, CrucibleFileInfo file, Comment comment) {
+		private CommentPanel(Review review, CrucibleFileInfo file, Comment comment) {
 			super(new FormLayout("pref:grow",
 					"pref, pref:grow"));
 

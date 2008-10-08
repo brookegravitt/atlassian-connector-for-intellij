@@ -35,6 +35,7 @@ import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 import com.atlassian.theplugin.commons.crucible.api.model.User;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.intellij.openapi.project.Project;
@@ -64,12 +65,12 @@ public class CrucibleSetReviewersForm extends DialogWrapper {
 
 	private Project project;
 	private CrucibleServerFacade crucibleServerFacade;
-	private ReviewData reviewData;
+	private Review reviewData;
 	private List<Reviewer> actualReviewers;
 
 
 	public CrucibleSetReviewersForm(Project project, CrucibleServerFacade crucibleServerFacade,
-			ReviewData reviewData) {
+			Review reviewData) {
 		super(false);
 		this.project = project;
 		this.crucibleServerFacade = crucibleServerFacade;

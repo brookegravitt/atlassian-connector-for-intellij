@@ -17,16 +17,18 @@
 package com.atlassian.theplugin.idea.crucible;
 
 
+import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.bamboo.StausIconBambooListener;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.commons.cfg.ConfigurationCredentialsListener;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleFiltersBean;
 import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
-import com.atlassian.theplugin.commons.cfg.ConfigurationCredentialsListener;
-import com.atlassian.theplugin.commons.cfg.ServerId;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.*;
 import com.atlassian.theplugin.idea.bamboo.ToolWindowBambooContent;
@@ -37,7 +39,6 @@ import com.atlassian.theplugin.idea.ui.AtlassianTableView;
 import com.atlassian.theplugin.idea.ui.CollapsibleTable;
 import com.atlassian.theplugin.idea.ui.TableColumnProvider;
 import com.atlassian.theplugin.idea.ui.TableItemSelectedListener;
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionToolbar;
@@ -59,7 +60,7 @@ import java.util.*;
 import java.util.List;
 
 public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStatusListener,
-		TableItemSelectedListener<ReviewData>, ConfigurationCredentialsListener {
+		TableItemSelectedListener<Review>, ConfigurationCredentialsListener {
 	public static final String PLACE_PREFIX = CrucibleTableToolWindowPanel.class.getSimpleName();
 	private Project project;
 	private transient ActionToolbar filterEditToolbar;
@@ -86,7 +87,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
 	protected TableColumnProvider tableColumnProvider = new CrucibleTableColumnProviderImpl();
 
-	private ReviewData selectedItem;
+	private Review selectedItem;
 
 	private Map<PredefinedFilter, CollapsibleTable> tables = new HashMap<PredefinedFilter, CollapsibleTable>();
 	private Map<String, CollapsibleTable> customTables = new HashMap<String, CollapsibleTable>();
@@ -313,7 +314,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 	public void updateReviews(Map<PredefinedFilter, ReviewNotificationBean> reviews, Map<String,
 			ReviewNotificationBean> customFilterReviews) {
 
-		Set<ReviewData> uniqueReviews = new HashSet<ReviewData>();
+		Set<Review> uniqueReviews = new HashSet<Review>();
 
 		if (tables.isEmpty()) {
 			switchToCrucible16Filter();
@@ -322,7 +323,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 		String errorString = null;
 		for (PredefinedFilter predefinedFilter : reviews.keySet()) {
 			if (reviews.get(predefinedFilter).getException() == null) {
-				List<ReviewData> reviewList = reviews.get(predefinedFilter).getReviews();
+				List<Review> reviewList = reviews.get(predefinedFilter).getReviews();
 				uniqueReviews.addAll(reviewList);
 				if (reviewList != null) {
 					CollapsibleTable table = tables.get(predefinedFilter);
@@ -343,7 +344,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
 		for (String filterName : customFilterReviews.keySet()) {
 			if (customFilterReviews.get(filterName).getException() == null) {
-				List<ReviewData> reviewList = customFilterReviews.get(filterName).getReviews();
+				List<Review> reviewList = customFilterReviews.get(filterName).getReviews();
 				uniqueReviews.addAll(reviewList);
 				if (reviewList != null) {
 					CollapsibleTable table = customTables.get(filterName);
@@ -375,7 +376,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 		uniqueReviews.clear();
 	}
 
-	public void itemSelected(AtlassianTableView<ReviewData> table) {
+	public void itemSelected(AtlassianTableView<Review> table) {
 		if (table.getSelectedObject() != null) {
 			selectedItem = table.getSelectedObject();
 
@@ -426,7 +427,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 		tablePane.setViewportView(component);
 	}
 
-	public ReviewData getSelectedReview() {
+	public Review getSelectedReview() {
 		if (selectedItem != null) {
 			return this.selectedItem;
 		}
