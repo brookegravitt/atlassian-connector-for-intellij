@@ -863,7 +863,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 								issue.setComponents(issueDetails.getComponents());
 							}
 						} catch (JIRAException e) {
-							errorString = new String[] { "Cannot retrieve: " + e.getMessage() };
+							errorString = new String[] { "Unable to retrieve" };
 						}
 						SwingUtilities.invokeLater(new Runnable() {
 							public void run() {
@@ -872,6 +872,9 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 									detailsPanel.setFixVersions(getStringArray(issue.getFixVersions()));
 									detailsPanel.setComponents(getStringArray(issue.getComponents()));
 								} else {
+									detailsPanel.getAffectVersionsLabel().setForeground(Color.RED);
+									detailsPanel.getFixVersionsLabel().setForeground(Color.RED);
+									detailsPanel.getComponentsLabel().setForeground(Color.RED);
 									detailsPanel.setAffectsVersions(errorString);
 									detailsPanel.setFixVersions(errorString);
 									detailsPanel.setComponents(errorString);
