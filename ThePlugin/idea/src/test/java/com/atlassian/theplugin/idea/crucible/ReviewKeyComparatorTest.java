@@ -20,6 +20,7 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.crucible.table.column.ReviewKeyComparator;
 import com.atlassian.theplugin.commons.VirtualFileSystem;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import junit.framework.TestCase;
 
@@ -79,6 +80,18 @@ public class ReviewKeyComparatorTest extends TestCase {
 
             public VirtualFileSystem getVirtualFileSystem() {
 				return null;  
+			}
+
+			public CrucibleServerCfg getServer() {
+				return null;
+			}
+
+			public String getReviewUrl() {
+				return null;
+			}
+
+			public Review getInnerReviewObject() {
+				return null;
 			}
 
 			public User getAuthor() {

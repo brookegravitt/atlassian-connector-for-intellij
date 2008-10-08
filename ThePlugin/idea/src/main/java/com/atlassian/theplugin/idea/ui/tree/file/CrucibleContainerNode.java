@@ -1,17 +1,17 @@
 package com.atlassian.theplugin.idea.ui.tree.file;
 
-import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.util.Icons;
 
-import javax.swing.tree.TreeCellRenderer;
 import javax.swing.*;
+import javax.swing.tree.TreeCellRenderer;
 
 public abstract class CrucibleContainerNode extends FileNode {
-	private ReviewData review;
+	private Review review;
 
-	public CrucibleContainerNode(ReviewData review) {
+	public CrucibleContainerNode(Review review) {
 		super("container", null);
 		this.review = review;
 	}
@@ -29,11 +29,11 @@ public abstract class CrucibleContainerNode extends FileNode {
 
 	protected abstract String getText();
 
-	public ReviewData getReview() {
+	public Review getReview() {
 		return review;
 	}
 
-	public void setReview(ReviewData review) {
+	public void setReview(Review review) {
 		this.review = review;
 	}
 }

@@ -16,14 +16,16 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
+
 import javax.swing.tree.DefaultMutableTreeNode;
 
 public class CrucibleTreeRootNode extends DefaultMutableTreeNode {
     static final long serialVersionUID = 0L;
 
-    private ReviewData reviewData;
+    private Review reviewData;
 
-    CrucibleTreeRootNode(ReviewData infoAdapater) {
+    CrucibleTreeRootNode(Review infoAdapater) {
         reviewData = infoAdapater;
     }
 
@@ -39,7 +41,7 @@ public class CrucibleTreeRootNode extends DefaultMutableTreeNode {
     }
 
 
-    public ReviewData getCrucibleChangeSet() {
+    public Review getCrucibleChangeSet() {
         return reviewData;
     }
 
