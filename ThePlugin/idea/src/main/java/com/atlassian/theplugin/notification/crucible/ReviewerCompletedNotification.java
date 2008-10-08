@@ -17,12 +17,12 @@
 package com.atlassian.theplugin.notification.crucible;
 
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
-import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
 
 public class ReviewerCompletedNotification extends AbstractReviewNotification {
     private Reviewer reviewer;
 
-    public ReviewerCompletedNotification(ReviewData review, Reviewer reviewer) {
+    public ReviewerCompletedNotification(Review review, Reviewer reviewer) {
         super(review);
         this.reviewer = reviewer;
     }

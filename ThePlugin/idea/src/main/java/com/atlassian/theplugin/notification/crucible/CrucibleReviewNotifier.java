@@ -20,7 +20,6 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusListener;
-import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.events.*;
@@ -34,7 +33,7 @@ import java.util.*;
 public class CrucibleReviewNotifier implements CrucibleStatusListener {
 	private final List<CrucibleNotificationListener> listenerList = new ArrayList<CrucibleNotificationListener>();
 
-	private Set<ReviewData> reviews = new HashSet<ReviewData>();
+	private Set<Review> reviews = new HashSet<Review>();
 	private List<CrucibleNotification> notifications = new ArrayList<CrucibleNotification>();
 	private HashMap<PredefinedFilter, NewExceptionNotification> exceptionNotifications =
 			new HashMap<PredefinedFilter, NewExceptionNotification>();
@@ -66,7 +65,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 		}
 	}
 
-	private void checkNewReviewItems(ReviewData oldReview, ReviewData newReview) throws ValueNotYetInitialized {
+	private void checkNewReviewItems(Review oldReview, Review newReview) throws ValueNotYetInitialized {
 		for (CrucibleReviewItemInfo item : newReview.getReviewItems()) {
 			boolean found = false;
 			for (CrucibleReviewItemInfo oldItem : oldReview.getReviewItems()) {
@@ -81,7 +80,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 		}
 	}
 
-	private void checkReviewersStatus(ReviewData oldReview, ReviewData newReview) throws ValueNotYetInitialized {
+	private void checkReviewersStatus(Review oldReview, Review newReview) throws ValueNotYetInitialized {
 		boolean allCompleted = true;
 		boolean atLeastOneChanged = false;
 		for (Reviewer reviewer : newReview.getReviewers()) {
@@ -102,7 +101,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 		}
 	}
 
-	private void checkGeneralReplies(ReviewData review, GeneralComment oldComment, GeneralComment newComment) {
+	private void checkGeneralReplies(Review review, GeneralComment oldComment, GeneralComment newComment) {
 		for (GeneralComment reply : newComment.getReplies()) {
 			GeneralComment existingReply = null;
 			if (oldComment != null) {
@@ -136,7 +135,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 		}
 	}
 
-	private void checkVersionedReplies(ReviewData review, final CrucibleReviewItemInfo info, VersionedComment oldComment,
+	private void checkVersionedReplies(Review review, final CrucibleReviewItemInfo info, VersionedComment oldComment,
 			VersionedComment newComment) {
 		for (VersionedComment reply : newComment.getReplies()) {
 			VersionedComment existingReply = null;
@@ -172,7 +171,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 	}
 
 
-	private void checkComments(ReviewData oldReview, ReviewData newReview) throws ValueNotYetInitialized {
+	private void checkComments(Review oldReview, Review newReview) throws ValueNotYetInitialized {
 		for (GeneralComment comment : newReview.getGeneralComments()) {
 			GeneralComment existing = null;
 			for (GeneralComment oldComment : oldReview.getGeneralComments()) {
@@ -269,19 +268,19 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 		notifications.clear();
 		boolean exceptionFound = false;
 
-		Set<ReviewData> processedReviews = new HashSet<ReviewData>();
+		Set<Review> processedReviews = new HashSet<Review>();
 		if (!incomingReviews.isEmpty()) {
 			for (PredefinedFilter predefinedFilter : incomingReviews.keySet()) {
 				if (incomingReviews.get(predefinedFilter).getException() == null) {
-					List<ReviewData> incomingCategory = incomingReviews.get(predefinedFilter).getReviews();
+					List<Review> incomingCategory = incomingReviews.get(predefinedFilter).getReviews();
 
-					for (ReviewData reviewDataInfo : incomingCategory) {
+					for (Review reviewDataInfo : incomingCategory) {
 						if (processedReviews.contains(reviewDataInfo)) {
 							continue;
 						}
 						if (reviews.contains(reviewDataInfo)) {
-							ReviewData existing = null;
-							for (ReviewData review : reviews) {
+							Review existing = null;
+							for (Review review : reviews) {
 								if (review.equals(reviewDataInfo)) {
 									existing = review;
 								}

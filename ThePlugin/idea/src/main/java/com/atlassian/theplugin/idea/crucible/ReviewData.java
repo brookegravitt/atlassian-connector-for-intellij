@@ -20,9 +20,5 @@ import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
 
 public interface ReviewData extends Review {
-    CrucibleServerCfg getServer();
 
-    String getReviewUrl();
-
-	Review getInnerReviewObject();
 }

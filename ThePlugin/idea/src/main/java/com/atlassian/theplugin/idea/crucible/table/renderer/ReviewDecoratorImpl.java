@@ -18,7 +18,7 @@ package com.atlassian.theplugin.idea.crucible.table.renderer;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
-import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.util.ColorToHtml;
 import com.intellij.util.ui.UIUtil;
 
@@ -26,10 +26,10 @@ import java.util.List;
 
 public class ReviewDecoratorImpl implements ReviewDecorator {
 	private String text;
-	private ReviewData review;
+	private Review review;
 	private boolean isSelected;
 
-	public ReviewDecoratorImpl(String value, ReviewData review, boolean isSelected) {
+	public ReviewDecoratorImpl(String value, Review review, boolean isSelected) {
 		this.text = value;
 		this.review = review;
 		this.isSelected = isSelected;

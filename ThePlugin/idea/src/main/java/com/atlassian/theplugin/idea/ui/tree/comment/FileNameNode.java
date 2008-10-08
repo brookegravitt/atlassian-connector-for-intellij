@@ -17,7 +17,7 @@
 package com.atlassian.theplugin.idea.ui.tree.comment;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.intellij.ui.SimpleColoredComponent;
@@ -30,11 +30,11 @@ import javax.swing.tree.TreeCellRenderer;
 import java.awt.*;
 
 public class FileNameNode extends AtlassianTreeNode {
-	private ReviewData review;
+	private Review review;
 	private CrucibleFileInfo file;
 	private static final TreeCellRenderer MY_RENDERER = new MyRenderer();
 
-	public FileNameNode(ReviewData review, CrucibleFileInfo file, AtlassianClickAction action) {
+	public FileNameNode(Review review, CrucibleFileInfo file, AtlassianClickAction action) {
 		super(action);
 		this.review = review;
 		this.file = file;
@@ -50,7 +50,7 @@ public class FileNameNode extends AtlassianTreeNode {
 		return file;
 	}
 
-	public ReviewData getReview() {
+	public Review getReview() {
 		return review;
 	}
 

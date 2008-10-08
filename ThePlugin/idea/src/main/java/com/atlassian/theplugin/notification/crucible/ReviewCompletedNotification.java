@@ -16,11 +16,11 @@
 
 package com.atlassian.theplugin.notification.crucible;
 
-import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
 
 public class ReviewCompletedNotification extends AbstractReviewNotification {
 
-    public ReviewCompletedNotification(ReviewData review) {
+    public ReviewCompletedNotification(Review review) {
         super(review);
     }
 

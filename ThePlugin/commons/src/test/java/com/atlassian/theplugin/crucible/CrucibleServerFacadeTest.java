@@ -516,6 +516,18 @@ public class CrucibleServerFacadeTest extends TestCase {
                 return null;
             }
 
+			public CrucibleServerCfg getServer() {
+				return null;
+			}
+
+			public String getReviewUrl() {
+				return null;
+			}
+
+			public Review getInnerReviewObject() {
+				return this;
+			}
+
 			public List<CrucibleReviewItemInfo> getReviewItems() {
 				return null;
 			}
@@ -600,7 +612,11 @@ public class CrucibleServerFacadeTest extends TestCase {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
-            public List<Reviewer> getReviewers() {
+			public Review getInnerReviewObject() {
+				return null;
+			}
+
+			public List<Reviewer> getReviewers() {
                 return null;
             }
 
@@ -627,6 +643,10 @@ public class CrucibleServerFacadeTest extends TestCase {
             public VirtualFileSystem getVirtualFileSystem() {
                 return null;
             }
+
+			public CrucibleServerCfg getServer() {
+				return null;
+			}
 
 			public List<CrucibleReviewItemInfo> getReviewItems() {
 				return null;

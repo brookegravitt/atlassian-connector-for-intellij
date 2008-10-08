@@ -17,12 +17,16 @@
 package com.atlassian.theplugin.commons.crucible.api.model;
 
 import com.atlassian.theplugin.commons.VirtualFileSystem;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 
 import java.util.Date;
 import java.util.List;
 
 public interface Review {
+
+	// todo add server configuration (Server object)
+
 	User getAuthor();
 
 	User getCreator();
@@ -75,4 +79,10 @@ public interface Review {
     List<Action> getActions() throws ValueNotYetInitialized;
 
     VirtualFileSystem getVirtualFileSystem();
+
+	CrucibleServerCfg getServer();
+
+	String getReviewUrl();
+
+	Review getInnerReviewObject();
 }

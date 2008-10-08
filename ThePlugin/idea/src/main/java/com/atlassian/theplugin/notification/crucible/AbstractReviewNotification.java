@@ -17,12 +17,12 @@
 package com.atlassian.theplugin.notification.crucible;
 
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
-import com.atlassian.theplugin.idea.crucible.ReviewData;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
 
 public abstract class AbstractReviewNotification implements CrucibleNotification {
-    protected ReviewData review;
+    protected Review review;
 
-    public AbstractReviewNotification(ReviewData review) {
+    public AbstractReviewNotification(Review review) {
         this.review = review;
     }
 

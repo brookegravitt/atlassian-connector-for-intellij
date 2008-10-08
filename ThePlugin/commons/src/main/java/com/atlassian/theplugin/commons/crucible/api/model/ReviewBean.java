@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.commons.crucible.api.model;
 
 import com.atlassian.theplugin.commons.VirtualFileSystem;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.CrucibleFileInfoManager;
 
@@ -119,6 +120,21 @@ public class ReviewBean implements Review {
 
     public VirtualFileSystem getVirtualFileSystem() {
 		return virtualFileSystem;
+	}
+
+	// todo implement that as it is inside ReviewDataImpl
+	public CrucibleServerCfg getServer() {
+		return null;
+	}
+
+	// todo implement that as it is inside ReviewDataImpl
+	public String getReviewUrl() {
+		return null;
+	}
+
+	// todo remove that method (it is artefact of merging ReviewData and Review)
+	public Review getInnerReviewObject() {
+		return this;
 	}
 
 	public void setVirtualFileSystem(VirtualFileSystem virtualFileSystem) {

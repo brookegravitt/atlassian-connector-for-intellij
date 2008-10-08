@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -26,9 +27,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class CrucibleJoinReviewWorker implements Runnable {
-	private ReviewData reviewInfo;
+	private Review reviewInfo;
 
-	public CrucibleJoinReviewWorker(ReviewData reviewInfo) {
+	public CrucibleJoinReviewWorker(Review reviewInfo) {
 		this.reviewInfo = reviewInfo;
 	}
 

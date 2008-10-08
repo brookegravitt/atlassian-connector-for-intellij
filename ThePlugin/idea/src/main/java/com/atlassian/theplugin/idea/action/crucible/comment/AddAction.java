@@ -16,24 +16,23 @@
 
 package com.atlassian.theplugin.idea.action.crucible.comment;
 
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.idea.CommentTreePanel;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
-import com.atlassian.theplugin.idea.crucible.ReviewData;
-import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.events.GeneralCommentAboutToAdd;
 import com.atlassian.theplugin.idea.crucible.events.GeneralCommentReplyAboutToAdd;
 import com.atlassian.theplugin.idea.crucible.events.VersionedCommentAboutToAdd;
 import com.atlassian.theplugin.idea.crucible.events.VersionedCommentReplyAboutToAdd;
+import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.file.CrucibleGeneralCommentsNode;
-import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.*;
+import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
+import com.atlassian.theplugin.idea.ui.tree.file.CrucibleGeneralCommentsNode;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.project.Project;
@@ -81,7 +80,7 @@ public class AddAction extends AbstractCommentAction {
 		e.getPresentation().setText(text);
 	}
 
-	private boolean checkIfAuthorized(final ReviewData review) {
+	private boolean checkIfAuthorized(final Review review) {
 		if (review == null) {
 			return false;
 		}
@@ -96,7 +95,7 @@ public class AddAction extends AbstractCommentAction {
 
 	}
 
-	private ReviewData getReview(final AtlassianTreeNode node) {
+	private Review getReview(final AtlassianTreeNode node) {
 		if (node instanceof CommentTreeNode) {
 			final CommentTreeNode cNode = (CommentTreeNode) node;
 			return cNode.getReview();
@@ -144,7 +143,7 @@ public class AddAction extends AbstractCommentAction {
 		}
 	}
 
-	private void setCommentAuthor(ReviewData review, CommentBean comment) {
+	private void setCommentAuthor(Review review, CommentBean comment) {
 		CrucibleServerCfg server = review.getServer();
 		User userName = CrucibleUserCacheImpl.getInstance().getUser(server, server.getUsername(), false);
 		if (userName != null) {
@@ -155,7 +154,7 @@ public class AddAction extends AbstractCommentAction {
 		}
 	}
 
-	private void addCommentToFile(Project project, ReviewData review, CrucibleFileInfo file) {
+	private void addCommentToFile(Project project, Review review, CrucibleFileInfo file) {
 		VersionedCommentBean newComment = new VersionedCommentBean();
 		CommentEditForm dialog = new CommentEditForm(project, review, (CommentBean) newComment,
 				CrucibleHelper.getMetricsForReview(project, review));
@@ -174,7 +173,7 @@ public class AddAction extends AbstractCommentAction {
 
 	}
 
-	private void addReplyToVersionedComment(Project project, ReviewData review,
+	private void addReplyToVersionedComment(Project project, Review review,
 			CrucibleFileInfo file, VersionedComment comment) {
 		VersionedCommentBean newComment = new VersionedCommentBean();
 		newComment.setReply(true);
@@ -200,7 +199,7 @@ public class AddAction extends AbstractCommentAction {
 		}
 	}
 
-	private void addGeneralComment(Project project, ReviewData review) {
+	private void addGeneralComment(Project project, Review review) {
 		GeneralCommentBean newComment = new GeneralCommentBean();
 		CommentEditForm dialog = new CommentEditForm(project, review, newComment,
 				CrucibleHelper.getMetricsForReview(project, review));
@@ -216,7 +215,7 @@ public class AddAction extends AbstractCommentAction {
 		}
 	}
 
-	private void addReplyToGeneralComment(Project project, ReviewData review, GeneralComment comment) {
+	private void addReplyToGeneralComment(Project project, Review review, GeneralComment comment) {
 		GeneralComment parentComment = comment;
 		GeneralCommentBean newComment = new GeneralCommentBean();
 		newComment.setReply(true);

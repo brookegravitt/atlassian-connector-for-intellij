@@ -18,17 +18,17 @@ package com.atlassian.theplugin.idea.action.crucible;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.Action;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CrucibleChangeStateWorker;
-import com.atlassian.theplugin.idea.crucible.ReviewData;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 public abstract class AbstractTransitionReviewAction extends AnAction {
     protected abstract Action getRequestedTransition();
 
-    private ReviewData rd;
+    private Review rd;
 
     @Override
 	public void actionPerformed(final AnActionEvent event) {

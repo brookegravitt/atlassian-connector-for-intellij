@@ -16,19 +16,15 @@
 
 package com.atlassian.theplugin.idea.action.crucible.comment;
 
-import com.atlassian.theplugin.commons.crucible.api.model.CommentBean;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.CommentTreePanel;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
-import com.atlassian.theplugin.idea.crucible.ReviewData;
-import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.events.GeneralCommentAboutToUpdate;
 import com.atlassian.theplugin.idea.crucible.events.VersionedCommentAboutToUpdate;
+import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
@@ -80,7 +76,7 @@ public class EditAction extends AbstractCommentAction {
 		}
 	}
 
-	private void editGeneralComment(final Project project, final ReviewData review, final GeneralComment comment) {
+	private void editGeneralComment(final Project project, final Review review, final GeneralComment comment) {
 		CommentEditForm dialog = new CommentEditForm(project, review, (CommentBean) comment,
 				CrucibleHelper.getMetricsForReview(project, review));
 		dialog.pack();
@@ -93,7 +89,7 @@ public class EditAction extends AbstractCommentAction {
 		}
 	}
 
-	private void editVersionedComment(Project project, ReviewData review, CrucibleFileInfo file, VersionedComment comment) {
+	private void editVersionedComment(Project project, Review review, CrucibleFileInfo file, VersionedComment comment) {
 		CommentEditForm dialog = new CommentEditForm(project, review, (CommentBean) comment,
 				CrucibleHelper.getMetricsForReview(project, review));
 		dialog.pack();
