@@ -316,7 +316,7 @@ public class BambooStatusListenerTest extends TestCase {
 //	}
 
 	public void testEmpty() {
-		fail("test fail"); 
+		fail("test fail");
 	}
 
 }
