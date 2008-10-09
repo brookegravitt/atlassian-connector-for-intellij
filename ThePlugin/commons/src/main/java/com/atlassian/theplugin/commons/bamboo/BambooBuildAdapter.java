@@ -148,4 +148,8 @@ public class BambooBuildAdapter {
 	public String getBuildReason() {
 		return build.getBuildReason() == null ? "" : build.getBuildReason();
 	}
+
+	public BambooBuild getBuild() {
+		return build;
+	}
 }
