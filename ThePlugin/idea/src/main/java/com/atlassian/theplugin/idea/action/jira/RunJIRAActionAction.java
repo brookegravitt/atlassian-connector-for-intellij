@@ -33,7 +33,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 
 import java.util.List;
-import java.util.Date;
 
 public class RunJIRAActionAction extends AnAction {
 

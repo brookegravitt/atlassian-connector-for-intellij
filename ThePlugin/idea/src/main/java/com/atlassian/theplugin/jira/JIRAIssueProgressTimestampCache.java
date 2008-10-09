@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Date;
 
-public class JIRAIssueProgressTimestampCache {
+public final class JIRAIssueProgressTimestampCache {
 
 	private Map<JIRAServer, Map<JIRAIssue, Date>> serverMap = new HashMap<JIRAServer, Map<JIRAIssue, Date>>();
 
