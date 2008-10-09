@@ -18,10 +18,12 @@ package com.atlassian.theplugin.idea.action.jira;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.JiraIssueAdapter;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
+import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
 import com.atlassian.theplugin.jira.api.JIRAAction;
 import com.atlassian.theplugin.jira.api.JIRAActionField;
 import com.atlassian.theplugin.jira.api.JIRAException;
@@ -31,6 +33,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 
 import java.util.List;
+import java.util.Date;
 
 public class RunJIRAActionAction extends AnAction {
 
@@ -94,6 +97,11 @@ public class RunJIRAActionAction extends AnAction {
 										+ adapter.getKey()
 										+ "...");
 						facade.progressWorkflowAction(server, adapter.getIssue(), action);
+						if (action.getId() == Constants.JiraActionId.START_PROGRESS.getId()) {
+							JIRAIssueProgressTimestampCache.getInstance().setTimestamp(jiraServer, adapter.getIssue());
+						} else if (action.getId() == Constants.JiraActionId.STOP_PROGRESS.getId()) {
+							JIRAIssueProgressTimestampCache.getInstance().removeTimestamp(jiraServer, adapter.getIssue());
+						}
 						window.refreshIssuesPage();
 					} else {
 						window.setStatusMessage(

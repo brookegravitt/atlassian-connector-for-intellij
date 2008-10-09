@@ -26,6 +26,24 @@ import javax.swing.*;
 import java.util.Collection;
 
 public final class Constants {
+
+	// TODO - very uncool to hardcode the particular action ID.
+	// What if Anton's people decide to change the ID of this action?
+	public enum JiraActionId {
+		START_PROGRESS(4),
+		STOP_PROGRESS(301);
+
+		JiraActionId(long id) {
+			this.id = id;
+		}
+
+		public long getId() {
+			return id;
+		}
+
+		private long id;
+	}
+
     public static final String FILE_TREE = "theplugin.tree";
 	public static final String CRUCIBLE_COMMENT_TREE = "theplugin.crucible.comment.tree";
 	public static final String BUILD_CHANGES_WINDOW = "theplugin.build_changes_window";
