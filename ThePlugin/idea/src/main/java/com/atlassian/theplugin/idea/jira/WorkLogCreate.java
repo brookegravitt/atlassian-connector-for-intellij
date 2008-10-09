@@ -396,7 +396,7 @@ public class WorkLogCreate extends DialogWrapper {
 	private static final long MAX_ALLOWED_HOURS = 5;
 
 	@NotNull
-	private static String getFormatedDurationString(Date startTime) {
+	public static String getFormatedDurationString(Date startTime) {
 		String result = "";
 
 		Date currentTime = new Date();
