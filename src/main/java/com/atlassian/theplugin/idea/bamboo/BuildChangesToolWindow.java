@@ -83,7 +83,7 @@ public final class BuildChangesToolWindow {
 	}
 
 	public void showBuildChanges(String buildKey, String buildNumber, List<BambooChangeSet> commits) {
-		String contentKey = buildKey + "-" + buildNumber;
+		final String contentKey = buildKey + "-" + buildNumber;
 
 
 		ToolWindowManager twm = ToolWindowManager.getInstance(project);
