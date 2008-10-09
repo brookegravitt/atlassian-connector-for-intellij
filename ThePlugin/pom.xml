@@ -251,6 +251,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
+				<!--<version>2.2</version>-->
                 <configuration>
                     <configLocation>atlassian-plugin/checkstyle-config.xml</configLocation>
                     <excludes>
@@ -269,7 +270,9 @@
 			**/WorkLogCreate.java
                     </excludes>
                     <includeTestSourceDirectory>false</includeTestSourceDirectory>
-                </configuration>
+					<!--<failsOnError>true</failsOnError>-->
+					<consoleOutput>true</consoleOutput>
+				</configuration>
             </plugin>
         </plugins>
     </reporting>
