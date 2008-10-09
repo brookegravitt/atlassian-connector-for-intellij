@@ -23,16 +23,16 @@ import java.util.regex.Pattern;
  * Code partially borrowed from http://forums.sun.com/thread.jspa?messageID=2462435
  */
 public final class ClassMatcher {
-	static final String ID_START = "[A-Za-z_$]";
-	static final String ID_PART = "[A-Za-z0-9_$]";
+	private static final String ID_START = "[A-Za-z_$]";
+	private static final String ID_PART = "[A-Za-z0-9_$]";
 
 	// Note the aggressive closures (*+, ++) on the next two: we never
 	// want the matcher to back off and try to match a shorter string
 	// once it's identified a class name.
-	static final String ID = ID_START + ID_PART + "*+";
-	static final String FQCN = ID + "(?:\\." + ID + ")++";
+	private static final String ID = ID_START + ID_PART + "*+";
+	private static final String FQCN = ID + "(?:\\." + ID + ")++";
 
-	static final String FQCN_PART = "[A-Za-z0-9_$.]";
+	private static final String FQCN_PART = "[A-Za-z0-9_$.]";
 
 	private ClassMatcher() {
 	}
@@ -49,16 +49,13 @@ public final class ClassMatcher {
 		// lookahead that follows.  The class name is captured to \1.
 		sb.append("(?=(" + FQCN + "))");
 
-		// Negative lookahead filters out names containing the target string.
-//    sb.append("(?!" + FQCN_PART + "*?" + exclude + ")");
-
 		// Now we "consume" the class name to move the matcher to the end.
 		sb.append("\\1");
 
 		return sb.toString();
 	}
 
-	private static final Pattern p = Pattern.compile(makeRegex());
+	private static final Pattern PATTERN = Pattern.compile(makeRegex());
 
 	public static class MatchInfo {
 		private final String match;
@@ -79,7 +76,7 @@ public final class ClassMatcher {
 	}
 
 	public static Iterable<MatchInfo> find(String input) {
-		final Matcher m = p.matcher(input);
+		final Matcher m = PATTERN.matcher(input);
 		return new Iterable<MatchInfo>() {
 			public Iterator<MatchInfo> iterator() {
 				return new Iterator<MatchInfo>() {
@@ -107,24 +104,16 @@ public final class ClassMatcher {
 
 
 	public static void main(String[] args) {
-		String test = "blah blah blah " +
-				"com.mycompany.projectname.thislayer.MyTestClass " +
-				"com.mycompany.projectname.test.MyClass " +
-				"com.mycompany.projectname.thislayer.MyClass " +
-				"arrayVar.length " +
-				"method.call() " +
-				"that will be $37.50, please.";
+		String test = "blah blah blah "
+				+ "com.mycompany.projectname.thislayer.MyTestClass "
+				+ "com.mycompany.projectname.test.MyClass "
+				+ "com.mycompany.projectname.thislayer.MyClass "
+				+ "arrayVar.length "
+				+ "method.call() "
+				+ "that will be $37.50, please.";
 
 		for (MatchInfo s : find(test)) {
 			System.out.println(s.getIndex() + ": " + s.getMatch());
 		}
-
-//		String regex = makeRegex("[Tt]est");
-//		Pattern p = Pattern.compile(regex);
-//		Matcher m = p.matcher(test);
-//
-//		while (m.find()) {
-//			System.out.println(m.group());
-//		}
 	}
 }

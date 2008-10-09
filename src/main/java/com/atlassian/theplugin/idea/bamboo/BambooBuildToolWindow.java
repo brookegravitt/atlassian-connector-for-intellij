@@ -36,6 +36,7 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
@@ -47,7 +48,6 @@ import com.intellij.psi.PsiManager;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -73,7 +73,7 @@ public class BambooBuildToolWindow {
 			@NotNull final ConsoleView consoleView) {
 
 		consoleView.clear();
-		consoleView.print("Fetching Bamboo Build Log from the server", ConsoleViewContentType.NORMAL_OUTPUT);
+		consoleView.print("Fetching Bamboo Build Log from the server...", ConsoleViewContentType.NORMAL_OUTPUT);
 
 		Task.Backgroundable buildLogTask = new Task.Backgroundable(project, "Retrieving Build Log", false) {
 			@Override
@@ -143,6 +143,7 @@ public class BambooBuildToolWindow {
 			TextConsoleBuilder builder = factory.createBuilder(project);
 			builder.addFilter(new UnitTestFilter(project));
 			builder.addFilter(new JavaFileFilter(project));
+//			builder.addFilter(new RegexpFilter(project, "$FILE_PATH$"));
 			builder.addFilter(new LoggerFilter());
 			console = builder.getConsole();
 			consoleMap.put(contentKey, console);
@@ -167,44 +168,62 @@ class JavaFileFilter implements Filter {
 			.getAttributes(CodeInsightColors.HYPERLINK_ATTRIBUTES);
 
 	private final Project project;
+	private static final int ROW_GROUP = 4;
+	private static final int COLUMN_GROUP = 5;
 
 	public JavaFileFilter(final Project project) {
 		this.project = project;
 	}
 
-	private static final Pattern pattern
-			= Pattern.compile("([/\\\\]?[\\S ]*?" + "([^/\\\\]+\\.java))(:\\[(\\d+)\\,(\\d+)\\])?");
+	// match pattern like:
+	// /path/to/file/MyClass.java:[10,20]
+	// /path/to/file/MyClass.java
+	// /path/to/file/MyClass.java:20:30
+	private static final Pattern JAVA_FILE_PATTERN
+			= Pattern.compile("([/\\\\]?[\\S ]*?" + "([^/\\\\]+\\.java))(:\\[?(\\d+)[\\,:](\\d+)\\]?)?");
 
 	@Nullable
 	public Result applyFilter(final String line, final int textEndOffset) {
 		if (!line.contains(".java")) {
 			return null; // to make it faster
 		}
-		final Matcher m = pattern.matcher(line);
+		final Matcher m = JAVA_FILE_PATTERN.matcher(line);
 		while (m.find()) {
 			final String matchedString = m.group();
 			final String filename = m.group(2);
 
 //			final String filename = FilenameUtils.getName(matchedString);
 			if (filename != null && filename.length() > 0) {
-				int index = matchedString.lastIndexOf(filename);
 //
-				final int highlightStartOffset = textEndOffset - line.length() + m.start() + index;
-				final int highlightEndOffset = highlightStartOffset + filename.length();
 				final PsiFile psiFile = CodeNavigationUtil.guessCorrespondingPsiFile(project, m.group(1));
 				if (psiFile != null) {
 					VirtualFile virtualFile = psiFile.getVirtualFile();
 					if (virtualFile != null) {
+
+
 						int focusLine = 0;
 						int focusColumn = 0;
+						final String rowGroup = m.group(ROW_GROUP);
+						final String columnGroup = m.group(COLUMN_GROUP);
 						try {
-							focusLine = Integer.parseInt(m.group(4)) - 1;
-							focusColumn = Integer.parseInt(m.group(5)) - 1;
+							if (rowGroup != null) {
+								focusLine = Integer.parseInt(rowGroup) - 1;
+							}
+							if (columnGroup != null) {
+								focusColumn = Integer.parseInt(columnGroup) - 1;
+							}
 						} catch (NumberFormatException e) {
 							// just iterate to the next thing
 						}
 						final OpenFileHyperlinkInfo info = new OpenFileHyperlinkInfo(project, virtualFile,
 								focusLine, focusColumn);
+//						int startMatchingFileIndex = matchedString.lastIndexOf(filename);
+						final String relativePath = VfsUtil.getPath(project.getBaseDir(), virtualFile, '/');
+						final int startMatchingFileIndex = relativePath != null
+								? matchedString.replace('\\', '/').indexOf(relativePath)
+								: matchedString.lastIndexOf(filename);
+						final int highlightStartOffset = textEndOffset - line.length() + m.start() + startMatchingFileIndex;
+						final int highlightEndOffset = textEndOffset - line.length() + m.end();
 						return new Result(highlightStartOffset, highlightEndOffset, info, HYPERLINK_ATTRIBUTES);
 					}
 				}
@@ -262,7 +281,6 @@ class UnitTestFilter implements Filter {
 
 
 class LoggerFilter implements Filter {
-	@NonNls
 	private static final Color DARK_GREEN = new Color(0, 128, 0);
 	private static final TextAttributes ERROR_TEXT_ATTRIBUTES = new TextAttributes();
 	private static final TextAttributes INFO_TEXT_ATTRIBUTES = new TextAttributes();
@@ -271,7 +289,9 @@ class LoggerFilter implements Filter {
 	static {
 		ERROR_TEXT_ATTRIBUTES.setForegroundColor(Color.RED);
 		INFO_TEXT_ATTRIBUTES.setForegroundColor(DARK_GREEN);
+		//CHECKSTYLE:MAGIC:OFF
 		WARNING_TEXT_ATTRIBUTES.setForegroundColor(new Color(185, 150, 0));
+		//CHECKSTYLE:MAGIC:ON
 	}
 
 	public LoggerFilter() {
