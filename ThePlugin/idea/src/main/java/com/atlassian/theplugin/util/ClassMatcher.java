@@ -75,12 +75,12 @@ public final class ClassMatcher {
 		}
 	}
 
-	public static Iterable<MatchInfo> find(String input) {
+	public static Iterable<MatchInfo> find(final String input) {
 		final Matcher m = PATTERN.matcher(input);
 		return new Iterable<MatchInfo>() {
 			public Iterator<MatchInfo> iterator() {
 				return new Iterator<MatchInfo>() {
-					boolean isNext = m.find();
+					private boolean isNext = m.find();
 					public boolean hasNext() {
 						return isNext;
 					}
