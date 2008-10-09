@@ -264,6 +264,15 @@ class UnitTestFilter implements Filter {
 class LoggerFilter implements Filter {
 	@NonNls
 	private static final Color DARK_GREEN = new Color(0, 128, 0);
+	private static final TextAttributes ERROR_TEXT_ATTRIBUTES = new TextAttributes();
+	private static final TextAttributes INFO_TEXT_ATTRIBUTES = new TextAttributes();
+	private static final TextAttributes WARNING_TEXT_ATTRIBUTES = new TextAttributes();
+
+	static {
+		ERROR_TEXT_ATTRIBUTES.setForegroundColor(Color.RED);
+		INFO_TEXT_ATTRIBUTES.setForegroundColor(DARK_GREEN);
+		WARNING_TEXT_ATTRIBUTES.setForegroundColor(new Color(185, 150, 0));
+	}
 
 	public LoggerFilter() {
 	}
@@ -278,14 +287,13 @@ class LoggerFilter implements Filter {
 //		  attributes.setEffectColor(Color.PINK);
 //		  return new Result(highlightStartOffset, textEndOffset, info, attributes);
 			final int highlightStartOffset = textEndOffset - line.length();
-			TextAttributes textAttributes = new TextAttributes();
-			textAttributes.setForegroundColor(DARK_GREEN);
-			return new Result(highlightStartOffset, textEndOffset, null, textAttributes);
+			return new Result(highlightStartOffset, textEndOffset, null, INFO_TEXT_ATTRIBUTES);
 		} else if (line.indexOf("\t[ERROR]") != -1 || line.indexOf("\tERROR") != -1) {
 			final int highlightStartOffset = textEndOffset - line.length();
-			TextAttributes textAttributes = new TextAttributes();
-			textAttributes.setForegroundColor(Color.RED);
-			return new Result(highlightStartOffset, textEndOffset, null, textAttributes);
+			return new Result(highlightStartOffset, textEndOffset, null, ERROR_TEXT_ATTRIBUTES);
+		} else if (line.indexOf("\t[WARNING]") != -1 || line.indexOf("\tWARNING") != -1) {
+			final int highlightStartOffset = textEndOffset - line.length();
+			return new Result(highlightStartOffset, textEndOffset, null, WARNING_TEXT_ATTRIBUTES);
 		}
 		return null;
 	}
