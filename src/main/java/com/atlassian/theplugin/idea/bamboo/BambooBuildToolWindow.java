@@ -31,6 +31,7 @@ import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.openapi.editor.colors.CodeInsightColors;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.markup.TextAttributes;
+import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
@@ -45,6 +46,7 @@ import com.intellij.peer.PeerFactory;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
+import com.intellij.psi.PsiMethod;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
@@ -253,29 +255,63 @@ class UnitTestFilter implements Filter {
 //	  }
 
 		for (ClassMatcher.MatchInfo match : ClassMatcher.find(line)) {
-			final PsiManager manager = PsiManager.getInstance(project);
-			PsiClass aClass = manager.findClass(match.getMatch(), GlobalSearchScope.allScope(project));
-			if (aClass == null) {
-				return null;
+			final Result res = handleMatch(line, textEndOffset, match);
+			if (res != null) {
+				return res;
 			}
-			final PsiFile file = (PsiFile) aClass.getContainingFile().getNavigationElement();
-			if (file == null) {
-				return null;
-			}
-
-
-			final int highlightStartOffset = textEndOffset - line.length() + match.getIndex();
-			final int highlightEndOffset = highlightStartOffset + match.getMatch().length();
-
-			VirtualFile virtualFile = file.getVirtualFile();
-			if (virtualFile == null) {
-				return null;
-			}
-			final OpenFileHyperlinkInfo info = new OpenFileHyperlinkInfo(project, virtualFile, 0);
-			return new Result(highlightStartOffset, highlightEndOffset, info, HYPERLINK_ATTRIBUTES);
-
 		}
 		return null;
+	}
+
+	private Result handleMatch(final String line, final int textEndOffset, final ClassMatcher.MatchInfo match) {
+		final PsiManager manager = PsiManager.getInstance(project);
+		PsiClass aClass = manager.findClass(match.getMatch(), GlobalSearchScope.allScope(project));
+		if (aClass == null) {
+			return null;
+		}
+		final PsiFile file = (PsiFile) aClass.getContainingFile().getNavigationElement();
+		if (file == null) {
+			return null;
+		}
+
+
+		int highlightStartOffset = textEndOffset - line.length() + match.getIndex();
+		final int highlightEndOffset = highlightStartOffset + match.getMatch().length();
+
+		VirtualFile virtualFile = file.getVirtualFile();
+		if (virtualFile == null) {
+			return null;
+		}
+
+		int targetLine = 0;
+		// special handling of sure-fire report from Maven for JUnit 3 tests: method_name(FQCN)
+		if (match.getIndex() > 0 && line.charAt(match.getIndex() - 1) == '('
+				&& (match.getIndex() + match.getMatch().length() < line.length()
+				&& line.charAt(match.getIndex() + match.getMatch().length()) == ')')) {
+			// trying to extract method name which should be just before the '('
+			int i = match.getIndex() - 2;
+			for (; i >= 0; i--) {
+				char currentChar = line.charAt(i);
+				if (Character.isWhitespace(currentChar)) {
+					break;
+				}
+			}
+			if (i != match.getIndex() - 2) {
+				final String methodName = line.substring(i + 1, match.getIndex() - 1);
+
+				// means we found some potential method
+				PsiMethod[] methods = aClass.findMethodsByName(methodName, true);
+				if (methods != null && methods.length != 0 && methods[0] != null) {
+					highlightStartOffset = textEndOffset - line.length() + i + 1;
+					final OpenFileDescriptor openFileDescriptor = new OpenFileDescriptor(project, virtualFile, methods[0].getTextOffset());
+					final OpenFileHyperlinkInfo info = new OpenFileHyperlinkInfo(openFileDescriptor);
+					return new Result(highlightStartOffset, highlightEndOffset, info, HYPERLINK_ATTRIBUTES);
+				}
+			}
+		}
+
+		final OpenFileHyperlinkInfo info = new OpenFileHyperlinkInfo(project, virtualFile, targetLine);
+		return new Result(highlightStartOffset, highlightEndOffset, info, HYPERLINK_ATTRIBUTES);
 	}
 }
 
