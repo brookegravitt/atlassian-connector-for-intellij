@@ -315,8 +315,8 @@ public class BambooStatusListenerTest extends TestCase {
 //		EasyMock.verify(displayMock);
 //	}
 
-	public void testEmpty() {
-		fail("test fail"); 
-	}
+//	public void testEmpty() {
+//		fail("test fail");
+//	}
 
 }
