@@ -24,6 +24,8 @@ import org.easymock.IArgumentMatcher;
 
 import java.util.Arrays;
 
+import com.atlassian.theplugin.commons.configuration.*;
+
 public class BambooStatusListenerTest extends TestCase {
 
 	private BambooStatusDisplay displayMock;
@@ -245,6 +247,76 @@ public class BambooStatusListenerTest extends TestCase {
 		tooltipListener.updateBuildStatuses(Arrays.asList(buildFirstFailed, buildSecondOK));
 		EasyMock.verify(displayMock);
 
+	}
+
+//	public void testSingleBuildFailedToOkNever() {
+//
+//		// *************  only my TRUE  *******************
+//
+//		PluginConfigurationBean conf = new PluginConfigurationBean();
+//		BambooConfigurationBean bean = new BambooConfigurationBean();
+//		bean.setOnlyMyBuilds(true);
+//		bean.setBambooTooltipOption(BambooTooltipOption.NEVER);
+//		conf.setBambooConfigurationData(bean);
+//
+//		BambooStatusListener bambooListener = new BambooStatusTooltipListener(displayMock, conf);
+//
+//		BambooBuild buildOK = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.BUILD_SUCCEED);
+//		BambooBuild buildFail = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.BUILD_FAILED);
+//
+////		displayMock.updateBambooStatus(EasyMock.eq(BuildStatus.BUILD_SUCCEED), findPopupInfo(".*green.*succeed.*"));
+//
+//		EasyMock.replay(displayMock);
+//
+//		bambooListener.updateBuildStatuses(Arrays.asList(buildFail));
+//		bambooListener.updateBuildStatuses(Arrays.asList(buildOK));
+//
+//		// *************  only my FALSE  *******************
+//
+//		bean.setOnlyMyBuilds(false);
+//		bambooListener = new BambooStatusTooltipListener(displayMock, conf);
+//
+//		bambooListener.updateBuildStatuses(Arrays.asList(buildFail));
+//		bambooListener.updateBuildStatuses(Arrays.asList(buildOK));
+//
+//		EasyMock.verify(displayMock);
+//	}
+//
+//	public void testSingleBuildFailedToOkFirst() {
+//
+//		// *************  only my TRUE  *******************
+//
+//		PluginConfigurationBean conf = new PluginConfigurationBean();
+//		BambooConfigurationBean bean = new BambooConfigurationBean();
+//		bean.setOnlyMyBuilds(true);
+//		bean.setBambooTooltipOption(BambooTooltipOption.FIRST_FAILURE_AND_FIRST_SUCCESS);
+//		conf.setBambooConfigurationData(bean);
+//
+//		BambooStatusListener bambooListener = new BambooStatusTooltipListener(displayMock, conf);
+//
+//		BambooBuild buildOK = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.BUILD_SUCCEED);
+//		BambooBuild buildFail = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.BUILD_FAILED);
+//
+//		displayMock.updateBambooStatus(EasyMock.eq(BuildStatus.BUILD_SUCCEED), findPopupInfo(".*green.*succeed.*"));
+//
+//		EasyMock.replay(displayMock);
+//
+//		bambooListener.updateBuildStatuses(Arrays.asList(buildFail));
+//		bambooListener.updateBuildStatuses(Arrays.asList(buildOK));
+//
+//		// *************  only my FALSE  *******************
+//
+//		bean.setOnlyMyBuilds(false);
+//		bambooListener = new BambooStatusTooltipListener(displayMock, conf);
+//
+//		bambooListener.updateBuildStatuses(Arrays.asList(buildFail));
+//		bambooListener.updateBuildStatuses(Arrays.asList(buildOK));
+//
+//		EasyMock.verify(displayMock);
+//	}
+
+	public void testEmpty() {
+		fail("test fail");
 	}
 
 }
