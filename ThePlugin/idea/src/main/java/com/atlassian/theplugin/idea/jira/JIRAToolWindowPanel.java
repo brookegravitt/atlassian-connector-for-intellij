@@ -28,96 +28,84 @@ import com.atlassian.theplugin.configuration.JiraFiltersBean;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.configuration.ProjectToolWindowTableConfiguration;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.action.jira.*;
 import com.atlassian.theplugin.idea.jira.table.JIRATableColumnProviderImpl;
-import com.atlassian.theplugin.idea.jira.table.columns.IssueKeyColumn;
-import com.atlassian.theplugin.idea.jira.table.columns.IssuePriorityColumn;
-import com.atlassian.theplugin.idea.jira.table.columns.IssueStatusColumn;
-import com.atlassian.theplugin.idea.jira.table.columns.IssueSummaryColumn;
-import com.atlassian.theplugin.idea.jira.table.columns.IssueTypeColumn;
+import com.atlassian.theplugin.idea.jira.table.columns.*;
 import com.atlassian.theplugin.idea.ui.AbstractTableToolWindowPanel;
 import com.atlassian.theplugin.idea.ui.TableColumnProvider;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
+import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.ide.DataManager;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionPlaces;
-import com.intellij.openapi.actionSystem.ActionPopupMenu;
-import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.ui.popup.PopupChooserBuilder;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
-import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.util.ui.UIUtil;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueAdapter> {
-    private static final int PAGE_SIZE = 50;
+	private static final int PAGE_SIZE = 50;
 	public static final String JIRA_ATLASSIAN_TOOLWINDOW_SERVER_TOOL_BAR = "atlassian.jira.toolwindow";
-	private static final Key<JIRAToolWindowPanel> WINDOW_PROJECT_KEY =  Key.create(JIRAToolWindowPanel.class.getName());
-	
+	private static final Key<JIRAToolWindowPanel> WINDOW_PROJECT_KEY = Key.create(JIRAToolWindowPanel.class.getName());
+
 	private transient ActionToolbar filterToolbar;
-    private transient ActionToolbar filterEditToolbar;
-    private JIRAIssueFilterPanel jiraIssueFilterPanel;
+	private transient ActionToolbar filterEditToolbar;
+	private JIRAIssueFilterPanel jiraIssueFilterPanel;
 
-    private TableColumnProvider columnProvider;
+	private TableColumnProvider columnProvider;
 
-    private transient JiraFiltersBean filters;
-    private transient JIRAQueryFragment savedQuery;
-    private final List<JIRAQueryFragment> advancedQuery;
+	private transient JiraFiltersBean filters;
+	private transient JIRAQueryFragment savedQuery;
+	private final List<JIRAQueryFragment> advancedQuery;
 
-    private final transient JIRAServerFacade jiraServerFacade;
-    private final transient PluginConfigurationBean pluginConfiguration;
+	private final transient JIRAServerFacade jiraServerFacade;
+	private final transient PluginConfigurationBean pluginConfiguration;
 
-    private int maxIndex = PAGE_SIZE;
-    private int startIndex = 0;
-    private boolean nextPageAvailable = false;
-    private boolean prevPageAvailable = false;
-    private String sortColumn = "issuekey";
-    private String sortOrder = "ASC";
+	private int maxIndex = PAGE_SIZE;
+	private int startIndex = 0;
+	private boolean nextPageAvailable = false;
+	private boolean prevPageAvailable = false;
+	private String sortColumn = "issuekey";
+	private String sortOrder = "ASC";
 
 
-
-    private transient JIRAIssue selectedIssue = null;
+	private transient JIRAIssue selectedIssue = null;
 	private CfgManager cfgManager;
 	private boolean serverSelected = false;
 
 	@Override
 	protected void handlePopupClick(Object selectedObject) {
-        selectedIssue = ((JiraIssueAdapter) selectedObject).getIssue();
-    }
+		selectedIssue = ((JiraIssueAdapter) selectedObject).getIssue();
+	}
 
 	public static JIRAToolWindowPanel getInstance(Project project, ProjectConfigurationBean projectConfigurationBean,
-			final CfgManager cfgManager) {
+	                                              final CfgManager cfgManager) {
 
-        JIRAToolWindowPanel window = project.getUserData(WINDOW_PROJECT_KEY);
+		JIRAToolWindowPanel window = project.getUserData(WINDOW_PROJECT_KEY);
 
-        if (window == null) {
-            window = new JIRAToolWindowPanel(project, IdeaHelper.getPluginConfiguration(),
+		if (window == null) {
+			window = new JIRAToolWindowPanel(project, IdeaHelper.getPluginConfiguration(),
 					projectConfigurationBean, cfgManager);
-            project.putUserData(WINDOW_PROJECT_KEY, window);
-        }
-        return window;
-    }
+			project.putUserData(WINDOW_PROJECT_KEY, window);
+		}
+		return window;
+	}
 
 	@Override
 	protected void handleDoubleClick(Object selectedObject) {
@@ -125,102 +113,102 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 		action.actionPerformed(new AnActionEvent(null, DataManager.getInstance().getDataContext(this),
 				ActionPlaces.UNKNOWN, action.getTemplatePresentation(),
 				ActionManager.getInstance(), 0));
-    }
+	}
 
-    @Override
+	@Override
 	protected String getInitialMessage() {
-        return "Select a JIRA server to retrieve your issues.";
-    }
+		return "Select a JIRA server to retrieve your issues.";
+	}
 
-    @Override
+	@Override
 	protected String getToolbarActionGroup() {
-        return "ThePlugin.JIRA.ServerToolBar";
-    }
+		return "ThePlugin.JIRA.ServerToolBar";
+	}
 
-    @Override
+	@Override
 	protected String getPopupActionGroup() {
-        return "ThePlugin.JIRA.IssuePopupMenu";
-    }
+		return "ThePlugin.JIRA.IssuePopupMenu";
+	}
 
-    @Override
+	@Override
 	protected TableColumnProvider getTableColumnProvider() {
-        if (columnProvider == null) {
-            columnProvider = new JIRATableColumnProviderImpl();
-        }
-        return columnProvider;
-    }
+		if (columnProvider == null) {
+			columnProvider = new JIRATableColumnProviderImpl();
+		}
+		return columnProvider;
+	}
 
-    @Override
+	@Override
 	protected ProjectToolWindowTableConfiguration getTableConfiguration() {
-        return projectConfiguration.getJiraConfiguration().getTableConfiguration();
-    }
+		return projectConfiguration.getJiraConfiguration().getTableConfiguration();
+	}
 
-    public JIRAToolWindowPanel(Project project, PluginConfigurationBean pluginConfiguration,
-			ProjectConfigurationBean projectConfigurationBean, final CfgManager cfgManager) {
-        super(project, projectConfigurationBean);
+	public JIRAToolWindowPanel(Project project, PluginConfigurationBean pluginConfiguration,
+	                           ProjectConfigurationBean projectConfigurationBean, final CfgManager cfgManager) {
+		super(project, projectConfigurationBean);
 		this.cfgManager = cfgManager;
 		this.project = project;
 		this.pluginConfiguration = pluginConfiguration;
-        this.jiraServerFacade = JIRAServerFacadeImpl.getInstance();
-        this.advancedQuery = new ArrayList<JIRAQueryFragment>();
+		this.jiraServerFacade = JIRAServerFacadeImpl.getInstance();
+		this.advancedQuery = new ArrayList<JIRAQueryFragment>();
 
-        createFilterToolBar();
-        createFilterEditToolBar();
+		createFilterToolBar();
+		createFilterEditToolBar();
 
-        jiraIssueFilterPanel = new JIRAIssueFilterPanel(project);
-    }
+		jiraIssueFilterPanel = new JIRAIssueFilterPanel(project);
+	}
 
-    public ArrayList<JiraFilterEntryBean> serializeQuery() {
-        ArrayList<JiraFilterEntryBean> query = new ArrayList<JiraFilterEntryBean>();
-        for (JIRAQueryFragment jiraQueryFragment : advancedQuery) {
-            query.add(new JiraFilterEntryBean(jiraQueryFragment.getMap()));
-        }
-        return query;
-    }
+	public ArrayList<JiraFilterEntryBean> serializeQuery() {
+		ArrayList<JiraFilterEntryBean> query = new ArrayList<JiraFilterEntryBean>();
+		for (JIRAQueryFragment jiraQueryFragment : advancedQuery) {
+			query.add(new JiraFilterEntryBean(jiraQueryFragment.getMap()));
+		}
+		return query;
+	}
 
-    public void restoreQuery(List<JiraFilterEntryBean> query, JiraFilterEntryBean savedFilter) {
-        advancedQuery.clear();
-        for (JiraFilterEntryBean filterMapBean : query) {
-            Map<String, String> filter = filterMapBean.getFilterEntry();
-            String className = filter.get("filterTypeClass");
-            try {
-                Class<?> c = Class.forName(className);
-                advancedQuery.add((JIRAQueryFragment) c.getConstructor(Map.class).newInstance(filter));
-            } catch (Exception e) {
+	public void restoreQuery(List<JiraFilterEntryBean> query, JiraFilterEntryBean savedFilter) {
+		advancedQuery.clear();
+		for (JiraFilterEntryBean filterMapBean : query) {
+			Map<String, String> filter = filterMapBean.getFilterEntry();
+			String className = filter.get("filterTypeClass");
+			try {
+				Class<?> c = Class.forName(className);
+				advancedQuery.add((JIRAQueryFragment) c.getConstructor(Map.class).newInstance(filter));
+			} catch (Exception e) {
 				LoggerImpl.getInstance().error(e);
-            }
-        }
-        if (savedFilter != null) {
-            savedQuery = new JIRASavedFilterBean(savedFilter.getFilterEntry());
-        } else {
-            savedQuery = null;
-        }
-    }
+			}
+		}
+		if (savedFilter != null) {
+			savedQuery = new JIRASavedFilterBean(savedFilter.getFilterEntry());
+		} else {
+			savedQuery = null;
+		}
+	}
 
-    @Override
+	@Override
 	public void applyAdvancedFilter() {
-        advancedQuery.clear();
-        advancedQuery.addAll(jiraIssueFilterPanel.getFilter());
-        startIndex = 0;
-        updateIssues(IdeaHelper.getCurrentJIRAServer(project));
-        filters.setManualFilter(serializeQuery());
-        filters.setSavedFilterUsed(false);
+		advancedQuery.clear();
+		advancedQuery.addAll(jiraIssueFilterPanel.getFilter());
+		startIndex = 0;
+		updateIssues(IdeaHelper.getCurrentJIRAServer(project));
+		filters.setManualFilter(serializeQuery());
+		filters.setSavedFilterUsed(false);
 		JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
 
 		if (jiraServer != null) {
-		projectConfiguration.
-                getJiraConfiguration().setFiltersBean(
-				jiraServer.getServer().getServerId().toString(), filters);
+			projectConfiguration.
+					getJiraConfiguration().setFiltersBean(
+					jiraServer.getServer().getServerId().toString(), filters);
 		}
 
 		hideJIRAIssuesFilter();
-        filterToolbarSetVisible(true);
-    }
+		filterToolbarSetVisible(true);
+	}
 
-    @Override
+	@Override
 	public void cancelAdvancedFilter() {
-        filters.setManualFilter(serializeQuery());
-        filters.setSavedFilterUsed(false);
+		filters.setManualFilter(serializeQuery());
+		filters.setSavedFilterUsed(false);
 		JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
 
 		if (jiraServer != null) {
@@ -229,60 +217,60 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 		}
 
 		hideJIRAIssuesFilter();
-        filterToolbarSetVisible(true);
-    }
+		filterToolbarSetVisible(true);
+	}
 
-    @Override
+	@Override
 	public void clearAdvancedFilter() {
-        advancedQuery.clear();
-        JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
-        if (jiraServer != null) {
-            jiraIssueFilterPanel.setJiraServer(jiraServer, advancedQuery);
-        }
-        filterToolbarSetVisible(false);
-        filterEditToolbarSetVisible(true);
-        setScrollPaneViewport(jiraIssueFilterPanel.$$$getRootComponent$$$());
-    }
+		advancedQuery.clear();
+		JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
+		if (jiraServer != null) {
+			jiraIssueFilterPanel.setJiraServer(jiraServer, advancedQuery);
+		}
+		filterToolbarSetVisible(false);
+		filterEditToolbarSetVisible(true);
+		setScrollPaneViewport(jiraIssueFilterPanel.$$$getRootComponent$$$());
+	}
 
 	public String getActionPlace() {
 		return JIRA_ATLASSIAN_TOOLWINDOW_SERVER_TOOL_BAR + project.getName();
 	}
 
 	public final void hideJIRAIssuesFilter() {
-        setScrollPaneViewport(table);
-        filterEditToolbarSetVisible(false);
-    }
+		setScrollPaneViewport(table);
+		filterEditToolbarSetVisible(false);
+	}
 
-    public final void showJIRAIssueFilter() {
-        JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
-        if (jiraServer != null) {
-            jiraIssueFilterPanel.setJiraServer(jiraServer, advancedQuery);
-        }
-        filterToolbarSetVisible(false);
-        filterEditToolbarSetVisible(true);
-        setScrollPaneViewport(jiraIssueFilterPanel.$$$getRootComponent$$$());
-    }
+	public final void showJIRAIssueFilter() {
+		JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
+		if (jiraServer != null) {
+			jiraIssueFilterPanel.setJiraServer(jiraServer, advancedQuery);
+		}
+		filterToolbarSetVisible(false);
+		filterEditToolbarSetVisible(true);
+		setScrollPaneViewport(jiraIssueFilterPanel.$$$getRootComponent$$$());
+	}
 
 
-    public void viewIssue() {
+	public void viewIssue() {
 		final JiraIssueAdapter issueAdapter = table.getSelectedObject();
 		if (issueAdapter == null) {
 			return;
 		}
 		JIRAIssue issue = issueAdapter.getIssue();
-        BrowserUtil.launchBrowser(issue.getIssueUrl());
-    }
+		BrowserUtil.launchBrowser(issue.getIssueUrl());
+	}
 
-    public void editIssue() {
+	public void editIssue() {
 		final JiraIssueAdapter issueAdapter = table.getSelectedObject();
 		if (issueAdapter == null) {
 			return;
 		}
 		JIRAIssue issue = issueAdapter.getIssue();
-        BrowserUtil.launchBrowser(issue.getServerUrl() + "/secure/EditIssue!default.jspa?key=" + issue.getKey());
-    }
+		BrowserUtil.launchBrowser(issue.getServerUrl() + "/secure/EditIssue!default.jspa?key=" + issue.getKey());
+	}
 
-    public void showIssueActions() {
+	public void showIssueActions() {
 		final JiraIssueAdapter adapter = table.getSelectedObject();
 		if (adapter == null) {
 			return;
@@ -293,10 +281,10 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 			showActionsPopup(adapter, actions);
 		} else {
 			Thread thread = new Thread("atlassian-idea-plugin show issue actions") {
-                @Override
+				@Override
 				public void run() {
-                    setStatusMessage("Getting available issue actions for issue " + issue.getKey() + "...");
-                    try {
+					setStatusMessage("Getting available issue actions for issue " + issue.getKey() + "...");
+					try {
 						JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
 						if (jiraServer != null) {
 							List<JIRAAction> actions =
@@ -306,35 +294,31 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 							showActionsPopup(adapter, actions);
 						}
 					} catch (JIRAException e) {
-                        setStatusMessage("Unable to retrieve available issue actions: " + e.getMessage(), true);
-                    }
-                }
+						setStatusMessage("Unable to retrieve available issue actions: " + e.getMessage(), true);
+					}
+				}
 
-            };
-            thread.start();
+			};
+			thread.start();
 		}
-    }
+	}
 
 	public void selectLastActiveServer() {
 
 		String uuidString = projectConfiguration.getJiraConfiguration().getSelectedServerId();
 
 		if (uuidString != null) {
-				final ServerId serverId = new ServerId(uuidString);
-				ServerCfg serverCfg = cfgManager.getServer(CfgUtil.getProjectId(project), serverId);
-				if (serverCfg != null && serverCfg instanceof JiraServerCfg && serverCfg.isEnabled()) {
-					selectServer((JiraServerCfg) serverCfg);
-				}
+			final ServerId serverId = new ServerId(uuidString);
+			ServerCfg serverCfg = cfgManager.getServer(CfgUtil.getProjectId(project), serverId);
+			if (serverCfg != null && serverCfg instanceof JiraServerCfg && serverCfg.isEnabled()) {
+				selectServer((JiraServerCfg) serverCfg);
 			}
+		}
 	}
 
 	public boolean isServerSelected() {
 		return serverSelected;
 	}
-
-	// TODO - very uncool to hardcode the particular action ID.
-	// What if Anton's people decide to change the ID of this action?
-	private static final int START_PROGRESS_JIRA_ACTION_ID = 4;
 
 	public void startWorkingOnIssue() {
 		createChangeListAction(project);
@@ -343,7 +327,8 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 		Task.Backgroundable startWorkOnIssue = new Task.Backgroundable(project, "Starting Work on Issue", false) {
 
 			public void run(final ProgressIndicator indicator) {
-				JIRAIssue issue = table.getSelectedObject().getIssue();
+				JiraIssueAdapter adapter = table.getSelectedObject();
+				JIRAIssue issue = adapter.getIssue();
 				setStatusMessage("Assigning issue " + issue.getKey() + " to myself...");
 				try {
 					jiraServerFacade.setAssignee(server.getServer(),
@@ -352,9 +337,10 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 							jiraServerFacade.getAvailableActions(server.getServer(), issue);
 					boolean found = false;
 					for (JIRAAction a : actions) {
-						if (a.getId() == START_PROGRESS_JIRA_ACTION_ID) {
+						if (a.getId() == Constants.JiraActionId.START_PROGRESS.getId()) {
 							setStatusMessage("Starting progress on " + issue.getKey() + "...");
-							jiraServerFacade.progressWorkflowAction(server.getServer(),	issue, a);
+							jiraServerFacade.progressWorkflowAction(server.getServer(), issue, a);
+							JIRAIssueProgressTimestampCache.getInstance().setTimestamp(server, issue);
 							setStatusMessage("Started progress on " + issue.getKey());
 							found = true;
 							SwingUtilities.invokeLater(new Runnable() {
@@ -406,13 +392,13 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 		}
 		list.setModel(lm);
 		PopupChooserBuilder builder = JBPopupFactory.getInstance().createListPopupBuilder(list);
-	    builder.setTitle("Actions available for " + adapter.getKey())
-			.setRequestFocus(true)
-			.setResizable(false)
-			.setMovable(true)
-			.setItemChoosenCallback(new ActionsPopupListener(adapter, list))
-			.createPopup()
-			.showInCenterOf(this);
+		builder.setTitle("Actions available for " + adapter.getKey())
+				.setRequestFocus(true)
+				.setResizable(false)
+				.setMovable(true)
+				.setItemChoosenCallback(new ActionsPopupListener(adapter, list))
+				.createPopup()
+				.showInCenterOf(this);
 	}
 
 //	private static void addCompositeActionsToPopupMenu(DefaultActionGroup submenu, List<JIRAAction> actions) {
@@ -487,121 +473,121 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 					}
 				}
 			}
-			.start();
+					.start();
 		}
 	}
 
-	
+
 	public void refreshIssuesPage() {
 		JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
 		if (jiraServer != null) {
-            updateIssues(jiraServer);
-            serializeQuery();
-        }
-    }
+			updateIssues(jiraServer);
+			serializeQuery();
+		}
+	}
 
-    public void refreshIssues() {
-        startIndex = 0;
-        refreshIssuesPage();
-    }
+	public void refreshIssues() {
+		startIndex = 0;
+		refreshIssuesPage();
+	}
 
-    public void clearIssues() {
-        listTableModel.setItems(new ArrayList<JiraIssueAdapter>());
-        listTableModel.fireTableDataChanged();
-        table.setEnabled(false);
-        editorPane.setText(wrapBody("No issues for selected criteria."));
-    }
+	public void clearIssues() {
+		listTableModel.setItems(new ArrayList<JiraIssueAdapter>());
+		listTableModel.fireTableDataChanged();
+		table.setEnabled(false);
+		editorPane.setText(wrapBody("No issues for selected criteria."));
+	}
 
-    public void setIssues(List<JIRAIssue> issues) {
-        List<JiraIssueAdapter> adapters = new ArrayList<JiraIssueAdapter>();
-        for (JIRAIssue issue : issues) {
-            adapters.add(new JiraIssueAdapter(
-                    issue,
-                    pluginConfiguration.getJIRAConfigurationData().isDisplayIconDescription()));
-        }
-        listTableModel.setItems(adapters);
-        listTableModel.fireTableDataChanged();
-        table.setEnabled(true);
-        table.setForeground(UIUtil.getActiveTextColor());
+	public void setIssues(List<JIRAIssue> issues) {
+		List<JiraIssueAdapter> adapters = new ArrayList<JiraIssueAdapter>();
+		for (JIRAIssue issue : issues) {
+			adapters.add(new JiraIssueAdapter(
+					issue,
+					pluginConfiguration.getJIRAConfigurationData().isDisplayIconDescription()));
+		}
+		listTableModel.setItems(adapters);
+		listTableModel.fireTableDataChanged();
+		table.setEnabled(true);
+		table.setForeground(UIUtil.getActiveTextColor());
 
-        checkPrevPageAvaialble();
-        checkNextPageAvailable(issues);
+		checkPrevPageAvaialble();
+		checkNextPageAvailable(issues);
 
-        editorPane.setText(wrapBody("Loaded <b>" + issues.size() + "</b> issues starting at <b>" + (startIndex + 1) + "</b>."));
-    }
+		editorPane.setText(wrapBody("Loaded <b>" + issues.size() + "</b> issues starting at <b>" + (startIndex + 1) + "</b>."));
+	}
 
 
-    public void selectServer(JiraServerCfg server) {
-        if (server != null) {
+	public void selectServer(JiraServerCfg server) {
+		if (server != null) {
 //			serverSelected = false;
 			projectConfiguration.getJiraConfiguration().setSelectedServerId(server.getServerId().toString());
-            hideJIRAIssuesFilter();
-            final JIRAServer jiraServer = new JIRAServer(server, jiraServerFacade);
-            IdeaHelper.setCurrentJIRAServer(jiraServer);
-            Task.Backgroundable task = new SelectServerTask(jiraServer, this);
+			hideJIRAIssuesFilter();
+			final JIRAServer jiraServer = new JIRAServer(server, jiraServerFacade);
+			IdeaHelper.setCurrentJIRAServer(jiraServer);
+			Task.Backgroundable task = new SelectServerTask(jiraServer, this);
 			ProgressManager.getInstance().run(task);
 		}
-    }
+	}
 
-    private final class SelectServerTask extends Task.Backgroundable {
-        private JIRAServer jiraServer;
-        private JIRAToolWindowPanel jiraPanel;
+	private final class SelectServerTask extends Task.Backgroundable {
+		private JIRAServer jiraServer;
+		private JIRAToolWindowPanel jiraPanel;
 
-        public SelectServerTask(JIRAServer jiraServer, JIRAToolWindowPanel jiraToolWindowPanel) {
+		public SelectServerTask(JIRAServer jiraServer, JIRAToolWindowPanel jiraToolWindowPanel) {
 			super(project, "Retrieving Data from JIRA", false);
 			this.jiraServer = jiraServer;
-            this.jiraPanel = jiraToolWindowPanel;
-        }
+			this.jiraPanel = jiraToolWindowPanel;
+		}
 
-        public void run(final ProgressIndicator indicator) {
-            filterToolbarSetVisible(false);
-            startIndex = 0;
-            clearIssues();
+		public void run(final ProgressIndicator indicator) {
+			filterToolbarSetVisible(false);
+			startIndex = 0;
+			clearIssues();
 
-            if (!jiraServer.checkServer()) {
-                setStatusMessage("Unable to connect to server. " + jiraServer.getErrorMessage(), true);
+			if (!jiraServer.checkServer()) {
+				setStatusMessage("Unable to connect to server. " + jiraServer.getErrorMessage(), true);
 //                progressAnimation.stopProgressAnimation();
-                EventQueue.invokeLater(new MissingPasswordHandlerJIRA(jiraServerFacade, jiraServer.getServer(), jiraPanel));
-                return;
-            }
-            setStatusMessage("Retrieving saved filters...");
-            jiraServer.getSavedFilters();
+				EventQueue.invokeLater(new MissingPasswordHandlerJIRA(jiraServerFacade, jiraServer.getServer(), jiraPanel));
+				return;
+			}
+			setStatusMessage("Retrieving saved filters...");
+			jiraServer.getSavedFilters();
 
-            setStatusMessage("Retrieving projects...");
-            jiraServer.getProjects();
+			setStatusMessage("Retrieving projects...");
+			jiraServer.getProjects();
 
-            setStatusMessage("Retrieving issue types...");
-            jiraServer.getIssueTypes();
+			setStatusMessage("Retrieving issue types...");
+			jiraServer.getIssueTypes();
 
-            setStatusMessage("Retrieving statuses...");
-            jiraServer.getStatuses();
+			setStatusMessage("Retrieving statuses...");
+			jiraServer.getStatuses();
 
-            setStatusMessage("Retrieving resolutions...");
-            jiraServer.getResolutions();
+			setStatusMessage("Retrieving resolutions...");
+			jiraServer.getResolutions();
 
-            setStatusMessage("Retrieving priorities...");
-            jiraServer.getPriorieties();
+			setStatusMessage("Retrieving priorities...");
+			jiraServer.getPriorieties();
 
-            if (jiraServer.equals(IdeaHelper.getCurrentJIRAServer(project))) {
-                filters = projectConfiguration.getJiraConfiguration()
-                        .getJiraFilters(IdeaHelper.getCurrentJIRAServer(project).getServer().getServerId().toString());
-                if (filters == null) {
-                    filters = new JiraFiltersBean();
-                }
-                restoreQuery(filters.getManualFilter(), filters.getSavedFilter());
-                EventQueue.invokeLater(new Runnable() {
-                    public void run() {
-                        updateIssues(jiraServer);
-                    }
-                });
-                filterToolbarSetVisible(true);
-            }
+			if (jiraServer.equals(IdeaHelper.getCurrentJIRAServer(project))) {
+				filters = projectConfiguration.getJiraConfiguration()
+						.getJiraFilters(IdeaHelper.getCurrentJIRAServer(project).getServer().getServerId().toString());
+				if (filters == null) {
+					filters = new JiraFiltersBean();
+				}
+				restoreQuery(filters.getManualFilter(), filters.getSavedFilter());
+				EventQueue.invokeLater(new Runnable() {
+					public void run() {
+						updateIssues(jiraServer);
+					}
+				});
+				filterToolbarSetVisible(true);
+			}
 			serverSelected = true;
 		}
-    }
+	}
 
-    private void createFilterToolBar() {
-        ActionManager actionManager = ActionManager.getInstance();
+	private void createFilterToolBar() {
+		ActionManager actionManager = ActionManager.getInstance();
 		DefaultActionGroup filterToolBar = new DefaultActionGroup("ThePlugin.JIRA.FilterToolBar" + project.getName(), false);
 
 		filterToolBar.add(new FilterTypeAction());
@@ -612,73 +598,73 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 		filterToolBar.add(new JIRANextPageAction());
 
 		filterToolbar = actionManager.createActionToolbar("atlassian.toolwindow.filterToolBar" + project.getName(),
-                filterToolBar, true);
+				filterToolBar, true);
 
 		toolBarPanel.add(filterToolbar.getComponent(), BorderLayout.CENTER);
-        filterToolbarSetVisible(false);
-    }
+		filterToolbarSetVisible(false);
+	}
 
-    private void createFilterEditToolBar() {
-        ActionManager actionManager = ActionManager.getInstance();
-        ActionGroup filterEditToolBar = (ActionGroup) actionManager.getAction("ThePlugin.JIRA.FilterEditToolBar");
-        filterEditToolbar = actionManager.createActionToolbar("atlassian.toolwindow.filterEditToolBar",
-                filterEditToolBar, true);
-        toolBarPanel.add(filterEditToolbar.getComponent(), BorderLayout.SOUTH);
-        filterEditToolbarSetVisible(false);
-    }
+	private void createFilterEditToolBar() {
+		ActionManager actionManager = ActionManager.getInstance();
+		ActionGroup filterEditToolBar = (ActionGroup) actionManager.getAction("ThePlugin.JIRA.FilterEditToolBar");
+		filterEditToolbar = actionManager.createActionToolbar("atlassian.toolwindow.filterEditToolBar",
+				filterEditToolBar, true);
+		toolBarPanel.add(filterEditToolbar.getComponent(), BorderLayout.SOUTH);
+		filterEditToolbarSetVisible(false);
+	}
 
-    private void filterToolbarSetVisible(boolean visible) {
-        filterToolbar.getComponent().setVisible(visible);
-    }
+	private void filterToolbarSetVisible(boolean visible) {
+		filterToolbar.getComponent().setVisible(visible);
+	}
 
-    @Override
+	@Override
 	protected void filterEditToolbarSetVisible(boolean visible) {
-        filterEditToolbar.getComponent().setVisible(visible);
-    }
+		filterEditToolbar.getComponent().setVisible(visible);
+	}
 
-    public void prevPage() {
-        startIndex -= PAGE_SIZE;
-        checkPrevPageAvaialble();
+	public void prevPage() {
+		startIndex -= PAGE_SIZE;
+		checkPrevPageAvaialble();
 		JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
 		if (jiraServer != null) {
 			updateIssues(jiraServer);
 		}
 	}
 
-    public void nextPage() {
-        startIndex += PAGE_SIZE;
-        checkPrevPageAvaialble();
+	public void nextPage() {
+		startIndex += PAGE_SIZE;
+		checkPrevPageAvaialble();
 		JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
 		if (jiraServer != null) {
 			updateIssues(jiraServer);
 		}
 	}
 
-    private void checkPrevPageAvaialble() {
-        if (startIndex < 0) {
-            startIndex = 0;
-        }
-        if (startIndex == 0) {
-            prevPageAvailable = false;
-        } else {
-            prevPageAvailable = true;
-        }
-    }
+	private void checkPrevPageAvaialble() {
+		if (startIndex < 0) {
+			startIndex = 0;
+		}
+		if (startIndex == 0) {
+			prevPageAvailable = false;
+		} else {
+			prevPageAvailable = true;
+		}
+	}
 
-    private void checkNextPageAvailable(List<?> result) {
-        if (result.size() < PAGE_SIZE) {
-            nextPageAvailable = false;
-        } else {
-            nextPageAvailable = true;
-        }
-    }
+	private void checkNextPageAvailable(List<?> result) {
+		if (result.size() < PAGE_SIZE) {
+			nextPageAvailable = false;
+		} else {
+			nextPageAvailable = true;
+		}
+	}
 
-    private void disablePagesButton() {
-        prevPageAvailable = false;
-        nextPageAvailable = false;
-    }
+	private void disablePagesButton() {
+		prevPageAvailable = false;
+		nextPageAvailable = false;
+	}
 
-    private void updateIssues(final JIRAServer jiraServer) {
+	private void updateIssues(final JIRAServer jiraServer) {
 		//table.setEnabled(false);
 		//table.setForeground(UIUtil.getInactiveTextColor());
 		//clearIssues();
@@ -771,13 +757,13 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 //		ProgressManager.getInstance().run(refresh);
 	}
 
-    private final class IssueRefreshTask extends Task.Backgroundable {
-        private JIRAServer jiraServer;
+	private final class IssueRefreshTask extends Task.Backgroundable {
+		private JIRAServer jiraServer;
 
-        private IssueRefreshTask(JIRAServer jiraServer) {
+		private IssueRefreshTask(JIRAServer jiraServer) {
 			super(project, "Retrieving JIRA Issues", false);
 			this.jiraServer = jiraServer;
-        }
+		}
 
 		private boolean failed = false;
 		private List<JIRAIssue> result;
@@ -803,7 +789,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 		}
 	}
 
-    private void checkTableSort() {
+	private void checkTableSort() {
 		final int sortedColumnIndex = table.getTableViewModel().getSortedColumnIndex();
 
 		if (sortedColumnIndex < 0) {
@@ -811,51 +797,51 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 		}
 
 
-		String columnName  = table.getTableViewModel().getColumnName(sortedColumnIndex);
-		
-        if (IssueTypeColumn.COLUMN_NAME.equals(columnName)) {
-            sortColumn = "issuetype";
-        } else {
-            if (IssueStatusColumn.COLUMN_NAME.equals(columnName)) {
-                sortColumn = "status";
-            } else {
-                if (IssuePriorityColumn.COLUMN_NAME.equals(columnName)) {
-                    sortColumn = "priority";
-                } else {
-                    if (IssueKeyColumn.COLUMN_NAME.equals(columnName)) {
-                        sortColumn = "issuekey";
-                    } else {
-                        if (IssueSummaryColumn.COLUMN_NAME.equals(columnName)) {
-                            sortColumn = "description";
-                        }
-                    }
-                }
-            }
-        }
-        if (table.getTableViewModel().getSortingType() == 1) {
-            if (IssuePriorityColumn.COLUMN_NAME.equals(columnName)) {
-                sortOrder = "DESC";
-            } else {
-                sortOrder = "ASC";
-            }
-        } else {
-            if (IssuePriorityColumn.COLUMN_NAME.equals(columnName)) {
-                sortOrder = "ASC";
-            } else {
-                sortOrder = "DESC";
-            }
-        }
-    }
+		String columnName = table.getTableViewModel().getColumnName(sortedColumnIndex);
 
-    public void addQueryFragment(JIRAQueryFragment fragment) {
-        savedQuery = fragment;
-        if (fragment != null) {
-            filters.setSavedFilter(new JiraFilterEntryBean(fragment.getMap()));
-            filters.setSavedFilterUsed(true);
-        } else {
-            filters.setSavedFilterUsed(false);
-        }
-        startIndex = 0;
+		if (IssueTypeColumn.COLUMN_NAME.equals(columnName)) {
+			sortColumn = "issuetype";
+		} else {
+			if (IssueStatusColumn.COLUMN_NAME.equals(columnName)) {
+				sortColumn = "status";
+			} else {
+				if (IssuePriorityColumn.COLUMN_NAME.equals(columnName)) {
+					sortColumn = "priority";
+				} else {
+					if (IssueKeyColumn.COLUMN_NAME.equals(columnName)) {
+						sortColumn = "issuekey";
+					} else {
+						if (IssueSummaryColumn.COLUMN_NAME.equals(columnName)) {
+							sortColumn = "description";
+						}
+					}
+				}
+			}
+		}
+		if (table.getTableViewModel().getSortingType() == 1) {
+			if (IssuePriorityColumn.COLUMN_NAME.equals(columnName)) {
+				sortOrder = "DESC";
+			} else {
+				sortOrder = "ASC";
+			}
+		} else {
+			if (IssuePriorityColumn.COLUMN_NAME.equals(columnName)) {
+				sortOrder = "ASC";
+			} else {
+				sortOrder = "DESC";
+			}
+		}
+	}
+
+	public void addQueryFragment(JIRAQueryFragment fragment) {
+		savedQuery = fragment;
+		if (fragment != null) {
+			filters.setSavedFilter(new JiraFilterEntryBean(fragment.getMap()));
+			filters.setSavedFilterUsed(true);
+		} else {
+			filters.setSavedFilterUsed(false);
+		}
+		startIndex = 0;
 		JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
 		if (jiraServer != null) {
 			projectConfiguration.getJiraConfiguration().
@@ -863,90 +849,90 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 		}
 	}
 
-    @SuppressWarnings("unchecked")
-    public List<JiraIssueAdapter> getIssues() {
-        return listTableModel.getItems();
-    }
+	@SuppressWarnings("unchecked")
+	public List<JiraIssueAdapter> getIssues() {
+		return listTableModel.getItems();
+	}
 
-    public JIRAIssue getCurrentIssue() {
-        Object selectedObject = table.getSelectedObject();
-        if (selectedObject != null) {
-            return ((JiraIssueAdapter) selectedObject).getIssue();
-        }
-        return null;
-    }
+	public JIRAIssue getCurrentIssue() {
+		Object selectedObject = table.getSelectedObject();
+		if (selectedObject != null) {
+			return ((JiraIssueAdapter) selectedObject).getIssue();
+		}
+		return null;
+	}
 
-    public void assignIssueToMyself() {
-        JiraIssueAdapter adapter = table.getSelectedObject();
-        if (adapter == null) {
-            return;
-        }
-        final JIRAIssue issue = adapter.getIssue();
-        try {
+	public void assignIssueToMyself() {
+		JiraIssueAdapter adapter = table.getSelectedObject();
+		if (adapter == null) {
+			return;
+		}
+		final JIRAIssue issue = adapter.getIssue();
+		try {
 			JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
 			if (jiraServer != null) {
 				assignIssue(issue, jiraServer.getServer().getUsername());
 			}
 		} catch (NullPointerException ex) {
-            // whatever, means action was called when no issue was selected. Let's just swallow it
-        }
-    }
+			// whatever, means action was called when no issue was selected. Let's just swallow it
+		}
+	}
 
-    public void assignIssueToSomebody() {
-        final JIRAIssue issue = table.getSelectedObject().getIssue();
+	public void assignIssueToSomebody() {
+		final JIRAIssue issue = table.getSelectedObject().getIssue();
 
-        final GetUserNameDialog getUserNameDialog = new GetUserNameDialog(issue.getKey());
-        getUserNameDialog.show();
-        if (getUserNameDialog.isOK()) {
-            try {
-                assignIssue(issue, getUserNameDialog.getName());
-            } catch (NullPointerException ex) {
-                // whatever, means action was called when no issue was selected. Let's just swallow it
-            }
-        }
-    }
+		final GetUserNameDialog getUserNameDialog = new GetUserNameDialog(issue.getKey());
+		getUserNameDialog.show();
+		if (getUserNameDialog.isOK()) {
+			try {
+				assignIssue(issue, getUserNameDialog.getName());
+			} catch (NullPointerException ex) {
+				// whatever, means action was called when no issue was selected. Let's just swallow it
+			}
+		}
+	}
 
-    public void createChangeListAction(Project projectArg) {
-        JiraIssueAdapter adapter = table.getSelectedObject();
-        if (adapter == null) {
-            return;
-        }
-        final JIRAIssue issue = adapter.getIssue();
-        String changeListName = issue.getKey() + " - " + issue.getSummary();
-        final ChangeListManager changeListManager = ChangeListManager.getInstance(projectArg);
+	public void createChangeListAction(Project projectArg) {
+		JiraIssueAdapter adapter = table.getSelectedObject();
+		if (adapter == null) {
+			return;
+		}
+		final JIRAIssue issue = adapter.getIssue();
+		String changeListName = issue.getKey() + " - " + issue.getSummary();
+		final ChangeListManager changeListManager = ChangeListManager.getInstance(projectArg);
 
-        LocalChangeList changeList = changeListManager.findChangeList(changeListName);
-        if (changeList == null) {
-            ChangesetCreate c = new ChangesetCreate(issue.getKey());
-            c.setChangesetName(changeListName);
-            c.setChangestComment(changeListName + "\n");
-            c.setActive(true);
-            c.show();
-            if (c.isOK()) {
-                changeListName = c.getChangesetName();
-                changeList = changeListManager.addChangeList(changeListName, c.getChangesetComment());
-                if (c.isActive()) {
-                    changeListManager.setDefaultChangeList(changeList);
-                }
-            }
-        } else {
-            changeListManager.setDefaultChangeList(changeList);
-        }
-    }
+		LocalChangeList changeList = changeListManager.findChangeList(changeListName);
+		if (changeList == null) {
+			ChangesetCreate c = new ChangesetCreate(issue.getKey());
+			c.setChangesetName(changeListName);
+			c.setChangestComment(changeListName + "\n");
+			c.setActive(true);
+			c.show();
+			if (c.isOK()) {
+				changeListName = c.getChangesetName();
+				changeList = changeListManager.addChangeList(changeListName, c.getChangesetComment());
+				if (c.isActive()) {
+					changeListManager.setDefaultChangeList(changeList);
+				}
+			}
+		} else {
+			changeListManager.setDefaultChangeList(changeList);
+		}
+	}
 
-    public void addCommentToIssue() {
-        JiraIssueAdapter adapter = table.getSelectedObject();
-        if (adapter == null) {
-            return;
-        }
-        final JIRAIssue issue = adapter.getIssue();
-        final IssueComment issueComment = new IssueComment(issue.getKey());
-        issueComment.show();
-        if (issueComment.isOK()) {
+	public void addCommentToIssue() {
+		JiraIssueAdapter adapter = table.getSelectedObject();
+		if (adapter == null) {
+			return;
+		}
+		final JIRAIssue issue = adapter.getIssue();
+		final IssueComment issueComment = new IssueComment(issue.getKey());
+		issueComment.show();
+		if (issueComment.isOK()) {
 			Task.Backgroundable comment = new Task.Backgroundable(project, "Commenting Issue", false) {
 				public void run(final ProgressIndicator indicator) {
 					setStatusMessage("Commenting issue " + issue.getKey() + "...");
-                    try {
+					try {
 						JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
 						if (jiraServer != null) {
 							jiraServerFacade.addComment(jiraServer.getServer(),
@@ -954,31 +940,31 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 							setStatusMessage("Commented issue " + issue.getKey());
 						}
 					} catch (JIRAException e) {
-                        setStatusMessage("Issue not commented: " + e.getMessage(), true);
-                    }
+						setStatusMessage("Issue not commented: " + e.getMessage(), true);
+					}
 				}
 			};
 
 			ProgressManager.getInstance().run(comment);
 		}
-   }
+	}
 
-    public void logWorkForIssue() {
+	public void logWorkForIssue() {
 		JiraIssueAdapter adapter = table.getSelectedObject();
-        if (adapter == null) {
-            return;
-        }
-        final JIRAIssue issue = adapter.getIssue();
-        final WorkLogCreate workLogCreate = new WorkLogCreate(jiraServerFacade, adapter, project);
-        workLogCreate.show();
-        if (workLogCreate.isOK()) {
+		if (adapter == null) {
+			return;
+		}
+		final JIRAIssue issue = adapter.getIssue();
+		final WorkLogCreate workLogCreate = new WorkLogCreate(jiraServerFacade, adapter, project);
+		workLogCreate.show();
+		if (workLogCreate.isOK()) {
 
 			Task.Backgroundable logWork = new Task.Backgroundable(project, "Logging Work", false) {
 				public void run(final ProgressIndicator indicator) {
 					setStatusMessage("Logging work for issue " + issue.getKey() + "...");
-                    try {
-                        Calendar cal = Calendar.getInstance();
-                        cal.setTime(workLogCreate.getStartDate());
+					try {
+						Calendar cal = Calendar.getInstance();
+						cal.setTime(workLogCreate.getStartDate());
 						JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
 
 						if (jiraServer != null) {
@@ -988,6 +974,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 							jiraServerFacade.logWork(server, issue, workLogCreate.getTimeSpentString(),
 									cal, workLogCreate.getComment(),
 									!workLogCreate.getLeaveRemainingUnchanged(), newRemainingEstimate);
+							JIRAIssueProgressTimestampCache.getInstance().setTimestamp(jiraServer, issue);
 							if (workLogCreate.isStopProgressSelected()) {
 								setStatusMessage("Stopping work for issue " + issue.getKey() + "...");
 								jiraServerFacade.progressWorkflowAction(server, issue, workLogCreate.getStopProgressAction());
@@ -1002,22 +989,22 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 							}
 						}
 					} catch (JIRAException e) {
-                        setStatusMessage("Work not logged: " + e.getMessage(), true);
-                    }
+						setStatusMessage("Work not logged: " + e.getMessage(), true);
+					}
 				}
 			};
 
 			ProgressManager.getInstance().run(logWork);
-        }
-    }
+		}
+	}
 
-    private void assignIssue(final JIRAIssue issue, final String assignee) {
+	private void assignIssue(final JIRAIssue issue, final String assignee) {
 
 		Task.Backgroundable assign = new Task.Backgroundable(project, "Assigning Issue", false) {
 
 			public void run(final ProgressIndicator indicator) {
 				setStatusMessage("Assigning issue " + issue.getKey() + " to " + assignee + "...");
-                try {
+				try {
 
 					JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
 					if (jiraServer != null) {
@@ -1025,64 +1012,64 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 						setStatusMessage("Assigned issue " + issue.getKey() + " to " + assignee);
 					}
 				} catch (JIRAException e) {
-                    setStatusMessage("Failed to assign issue: " + e.getMessage(), true);
-                }
+					setStatusMessage("Failed to assign issue: " + e.getMessage(), true);
+				}
 			}
 		};
 
 		ProgressManager.getInstance().run(assign);
-    }
+	}
 
-    public void createIssue() {
+	public void createIssue() {
 		final JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
 
-        if (jiraServer != null) {
-            final IssueCreate issueCreate = new IssueCreate(jiraServer);
-            issueCreate.initData();
-            issueCreate.show();
-            if (issueCreate.isOK()) {
+		if (jiraServer != null) {
+			final IssueCreate issueCreate = new IssueCreate(jiraServer);
+			issueCreate.initData();
+			issueCreate.show();
+			if (issueCreate.isOK()) {
 
 				Task.Backgroundable createTask = new Task.Backgroundable(project, "Creating Issue", false) {
 					public void run(final ProgressIndicator indicator) {
 						setStatusMessage("Creating new issue...");
-                        JIRAIssue newIssue;
-                        String message;
-                        boolean isError = false;
-                        try {
-                            newIssue = jiraServerFacade.createIssue(jiraServer.getServer(), issueCreate.getJIRAIssue());
-                            message =
-                                    "New issue created: <a href="
-                                            + newIssue.getIssueUrl()
-                                            + ">"
-                                            + newIssue.getKey()
-                                            + "</a>";
-                        } catch (JIRAException e) {
-                            message = "Failed to create new issue: " + e.getMessage();
-                            isError = true;
-                        }
+						JIRAIssue newIssue;
+						String message;
+						boolean isError = false;
+						try {
+							newIssue = jiraServerFacade.createIssue(jiraServer.getServer(), issueCreate.getJIRAIssue());
+							message =
+									"New issue created: <a href="
+											+ newIssue.getIssueUrl()
+											+ ">"
+											+ newIssue.getKey()
+											+ "</a>";
+						} catch (JIRAException e) {
+							message = "Failed to create new issue: " + e.getMessage();
+							isError = true;
+						}
 
-                        setStatusMessage(message, isError);
+						setStatusMessage(message, isError);
 					}
 				};
 
 				ProgressManager.getInstance().run(createTask);
-            }
-        }
-    }
+			}
+		}
+	}
 
-    public JiraFiltersBean getFilters() {
-        return filters;
-    }
+	public JiraFiltersBean getFilters() {
+		return filters;
+	}
 
-    public boolean isNextPageAvailable() {
-        return nextPageAvailable;
-    }
+	public boolean isNextPageAvailable() {
+		return nextPageAvailable;
+	}
 
-    public boolean isPrevPageAvailable() {
-        return prevPageAvailable;
-    }
+	public boolean isPrevPageAvailable() {
+		return prevPageAvailable;
+	}
 
-    public JIRAIssue getSelectedIssue() {
-        return selectedIssue;
-    }
+	public JIRAIssue getSelectedIssue() {
+		return selectedIssue;
+	}
 }
