@@ -176,7 +176,7 @@
 				class="com.atlassian.theplugin.idea.action.bamboo.RefreshBambooPanelAction" text="Refresh"
 				description="Refresh" icon="/actions/sync.png"/>
 		<action id="ThePlugin.Bamboo.ViewBuild" class="com.atlassian.theplugin.idea.action.bamboo.ViewBuildAction"
-				text="View" description="View Bamboo build" icon="/general/web.png"/>
+				text="View in Browser" description="View in Browser" icon="/general/web.png"/>
 		<action id="ThePlugin.Bamboo.RunBuild" class="com.atlassian.theplugin.idea.action.bamboo.RunBuildAction"
 				text="Run Build" description="Run Bamboo build" icon="/actions/execute.png">
 			<keyboard-shortcut first-keystroke="control R" keymap="$default"/>
@@ -200,6 +200,10 @@
 		<action id="ThePlugin.Bamboo.ShowChanges" class="com.atlassian.theplugin.idea.action.bamboo.BuildChangesAction"
 				text="Show Changed Files" description="Show Changed Files" icon="/actions/createPatch.png">
 			<keyboard-shortcut first-keystroke="control F" keymap="$default"/>
+		</action>
+		<action id="ThePlugin.Bamboo.OpenBuild" class="com.atlassian.theplugin.idea.action.bamboo.OpenBuildAction"
+				text="Open Build Details" description="Open Build Details" icon="/icons/bamboo-blue-16.png">
+			<keyboard-shortcut first-keystroke="control B" keymap="$default"/>
 		</action>
 		<action id="ThePlugin.Bamboo.ShowLog" class="com.atlassian.theplugin.idea.action.bamboo.ShowLogAction"
 				text="Show Build Logs" description="Show Build Logs" icon="/actions/export.png">
@@ -315,6 +319,7 @@
 			<reference id="ThePlugin.ShowSettings"/>
 			<reference id="ThePlugin.HelpBamboo"/>
 			<reference id="ThePlugin.Bamboo.RefreshStatus"/>
+			<reference id="ThePlugin.Bamboo.OpenBuild"/>
 			<separator/>
 			<reference id="ThePlugin.Bamboo.ShowStackTrace"/>
 			<reference id="ThePlugin.Bamboo.ShowChanges"/>
@@ -326,6 +331,7 @@
 		</group>
 
 		<group id="ThePlugin.Bamboo.BuildPopupMenu" popup="true">
+			<reference id="ThePlugin.Bamboo.OpenBuild"/>
 			<reference id="ThePlugin.Bamboo.ViewBuild"/>
 			<reference id="ThePlugin.Bamboo.ShowStackTrace"/>
 			<reference id="ThePlugin.Bamboo.ShowChanges"/>

@@ -16,22 +16,34 @@
 
 package com.atlassian.theplugin.idea.bamboo;
 
-import com.atlassian.theplugin.commons.bamboo.*;
+import com.atlassian.theplugin.commons.bamboo.BambooBuild;
+import com.atlassian.theplugin.commons.bamboo.BambooBuildAdapter;
+import com.atlassian.theplugin.commons.bamboo.BambooChangeSet;
+import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
+import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
+import com.atlassian.theplugin.commons.bamboo.BambooStatusListener;
+import com.atlassian.theplugin.commons.bamboo.BuildDetails;
+import com.atlassian.theplugin.commons.bamboo.BuildStatus;
+import com.atlassian.theplugin.commons.bamboo.TestDetails;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.configuration.ProjectToolWindowTableConfiguration;
+import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.ui.AbstractTableToolWindowPanel;
 import com.atlassian.theplugin.idea.ui.TableColumnProvider;
 import com.atlassian.theplugin.idea.util.memoryvfs.PlainTextMemoryVirtualFile;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.BrowserUtil;
+import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.fileEditor.FileEditorManager;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.project.Project;
 import com.intellij.util.ui.UIUtil;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.Nullable;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -42,7 +54,7 @@ import java.util.Date;
 import java.util.List;
 
 public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel<BambooBuildAdapterIdea>
-		implements BambooStatusListener {
+		implements BambooStatusListener, DataProvider {
     private final transient BambooServerFacade bambooFacade;
     private static final DateTimeFormatter TIME_DF = DateTimeFormat.forPattern("hh:mm a");
     private TableColumnProvider columnProvider;    
@@ -144,6 +156,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel<Bam
     private void labelBuild(final BambooBuildAdapterIdea build, final String label) {
 
 		Task.Backgroundable labelTask = new Task.Backgroundable(project, "Labeling Build", false) {
+			@Override
 			public void run(final ProgressIndicator indicator) {
 				setStatusMessage("Applying label on build...");
                 try {
@@ -192,6 +205,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel<Bam
     private void commentBuild(final BambooBuildAdapterIdea build, final String commentText) {
 
 		Task.Backgroundable commentTask = new Task.Backgroundable(project, "Commenting Build", false) {
+			@Override
 			public void run(final ProgressIndicator indicator) {
 				setStatusMessage("Adding comment label on build...");
 				try {
@@ -233,6 +247,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel<Bam
     private void executeBuild(final BambooBuildAdapterIdea build) {
 
 		Task.Backgroundable executeTask = new Task.Backgroundable(project, "Starting Build", false) {
+			@Override
 			public void run(final ProgressIndicator indicator) {
 				setStatusMessage("Executing build on plan " + build.getBuildKey());
                 try {
@@ -366,6 +381,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel<Bam
         final BambooBuildAdapterIdea build = table.getSelectedObject();
 
 		Task.Backgroundable stackTraceTask = new Task.Backgroundable(project, "Retrieving Build Stack Trace", false) {
+			@Override
 			public void run(final ProgressIndicator indicator) {
 				setStatusMessage("Getting test results for build " + build.getBuildKey() + "...");
                 try {
@@ -427,6 +443,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel<Bam
         final BambooBuildAdapterIdea build = table.getSelectedObject();
 
 		Task.Backgroundable changesTask = new Task.Backgroundable(project, "Retrieving Build Changes", false) {
+			@Override
 			public void run(final ProgressIndicator indicator) {
 				setStatusMessage("Getting changes for build " + build.getBuildKey() + "...");
                 try {
@@ -479,6 +496,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel<Bam
         final BambooBuildAdapterIdea build = table.getSelectedObject();
 
 		Task.Backgroundable buildLogTask = new Task.Backgroundable(project, "Retrieving Build Log", false) {
+			@Override
 			public void run(final ProgressIndicator indicator) {
 				setStatusMessage("Getting build log: " + build.getBuildKey() + "...");
 				try {
@@ -530,4 +548,17 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel<Bam
 //            }
 //        }, "atlassian-idea-plugin get changes").start();
     }
+
+	@Nullable
+	public Object getData(@NonNls final String dataId) {
+		if (Constants.BAMBOO_BUILD_KEY.getName().equals(dataId)) {
+			final BambooBuildAdapterIdea buildAdapterIdea = table.getSelectedObject();
+			if (buildAdapterIdea != null) {
+				return buildAdapterIdea.getBuild();
+			} else {
+				return null;
+			}
+		}
+		return null;
+	}
 }

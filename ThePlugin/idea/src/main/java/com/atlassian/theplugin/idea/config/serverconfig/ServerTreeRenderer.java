@@ -50,7 +50,7 @@ public class ServerTreeRenderer extends DefaultTreeCellRenderer {
 		jiraServerDisabledIcon = IconLoader.getIcon("/icons/jira-grey-16.png");
 		fisheyeServersIcon = IconLoader.getIcon("/icons/fisheye-16.png");
 		fisheyeServerEnabledIcon = IconLoader.getIcon("/icons/fisheye-16.png");
-		fisheyeServerDisabledIcon = IconLoader.getIcon("/icons/fisheye-16.png");
+		fisheyeServerDisabledIcon = IconLoader.getIcon("/icons/fisheye-16-disabled.png");
 	}
 
 	@Override
