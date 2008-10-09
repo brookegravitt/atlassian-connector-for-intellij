@@ -27,7 +27,8 @@ public class OpenFisheyeLinkInEditorAction extends AnAction {
 					if (psiFile != null) {
 						final VirtualFile virtualFile = psiFile.getVirtualFile();
 						if (virtualFile == null) {
-							Messages.showErrorDialog(project, "No corresponding file found for PSI element", "Unable to open file");
+							Messages.showErrorDialog(project,
+									"No corresponding file found for PSI element", "Unable to open file");
 							return;
 						}
 						if (parser.getRevision() != null) {
