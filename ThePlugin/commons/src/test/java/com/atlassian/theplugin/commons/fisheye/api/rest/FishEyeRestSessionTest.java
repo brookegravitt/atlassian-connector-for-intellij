@@ -69,5 +69,7 @@ public class FishEyeRestSessionTest extends TestCase {
         fail("unimplemented");
     }
 
+    public void testPlaceholder() {
+    }
 
 }
