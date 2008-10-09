@@ -292,13 +292,26 @@
 				description="Copy Fisheye Link to Clipboard">
 		</action>
 
-		<group id="ThePlugin.FisheyeEditorMenu" popup="true" text="Fisheye">
+        <action id="OpenFisheyeLinkInEditor" class="com.atlassian.theplugin.idea.action.fisheye.OpenFisheyeLinkInEditorAction"
+				text="Open FishEye URL"
+				description="Open FishEye URL in Editor"
+				icon="/icons/fisheye-16.png">
+		</action>
+
+        <group id="ThePlugin.FisheyeEditorMenu" popup="true" text="Fisheye">
 			<reference id="OpenFisheyeLink" />
 			<reference id="CopyFisheyeLink" />
 			<add-to-group group-id="EditorPopupMenu" anchor="last"/>
 		</group>
-				
-		<group id="ThePlugin.BambooToolWindowToolBar" popup="false" text="">
+
+        <group id="ThePlugin.GoToMenu">
+			<separator/>
+			<reference id="OpenFisheyeLinkInEditor" />
+            <add-to-group group-id="GoToMenu" anchor="last" />
+			<add-to-group group-id="MainToolBar" anchor="last" />
+		</group>
+
+        <group id="ThePlugin.BambooToolWindowToolBar" popup="false" text="">
 			<reference id="ThePlugin.ShowSettings"/>
 			<reference id="ThePlugin.HelpBamboo"/>
 			<reference id="ThePlugin.Bamboo.RefreshStatus"/>
