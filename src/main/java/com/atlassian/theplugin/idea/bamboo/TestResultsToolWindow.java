@@ -18,27 +18,15 @@ package com.atlassian.theplugin.idea.bamboo;
 
 import com.atlassian.theplugin.commons.bamboo.TestDetails;
 import com.atlassian.theplugin.idea.Constants;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.util.ColorToHtml;
 import com.intellij.execution.filters.TextConsoleBuilder;
 import com.intellij.execution.filters.TextConsoleBuilderFactory;
 import com.intellij.execution.ui.ConsoleView;
 import com.intellij.execution.ui.ConsoleViewContentType;
-import com.intellij.execution.configurations.ConfigurationFactory;
-import com.intellij.execution.impl.RunManagerImpl;
-import com.intellij.execution.impl.RunnerAndConfigurationSettingsImpl;
-import com.intellij.execution.RunManager;
-import com.intellij.execution.RunnerAndConfigurationSettings;
-import com.intellij.execution.ExecutionException;
-import com.intellij.execution.ExecutionRegistry;
-import com.intellij.execution.junit.JUnitConfiguration;
-import com.intellij.execution.runners.RunStrategy;
-import com.intellij.execution.runners.JavaProgramRunner;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.impl.SimpleDataContext;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.util.IconLoader;
@@ -52,16 +40,11 @@ import com.intellij.psi.PsiMethod;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.ui.content.Content;
 import com.intellij.util.ui.UIUtil;
-import com.intellij.ide.DataManager;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
+import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -127,29 +110,29 @@ public final class TestResultsToolWindow {
 
 	public void runFailedTests(AnActionEvent ev, boolean debug) {
 
-		RunManagerImpl runManager = (RunManagerImpl) RunManager.getInstance(project);
-		ConfigurationFactory factory = runManager.getFactory("JUnit", null);
-		RunnerAndConfigurationSettings settings = runManager.createRunConfiguration("test from bamboo", factory);
-		JUnitConfiguration conf = (JUnitConfiguration) settings.getConfiguration();
-
-		PsiManager mgr = PsiManager.getInstance(project);
-		PsiClass cls = mgr.findClass("com.atlassian.theplugin.commons.bamboo.BambooServerFacadeTest",
-				GlobalSearchScope.allScope(project));
-		conf.beClassConfiguration(cls);
-
-		JavaProgramRunner runner;
-		if (debug) {
-			runner = ExecutionRegistry.getInstance().getDebuggerRunner();
-		} else {
-			runner = ExecutionRegistry.getInstance().getDefaultRunner();
-		}
-
-		RunStrategy strategy = RunStrategy.getInstance();
-		try {
-			strategy.execute(settings, runner, ev.getDataContext());
-		} catch (ExecutionException e) {
-			e.printStackTrace();
-		}
+//		RunManagerImpl runManager = (RunManagerImpl) RunManager.getInstance(project);
+//		ConfigurationFactory factory = runManager.getFactory("JUnit", null);
+//		RunnerAndConfigurationSettings settings = runManager.createRunConfiguration("test from bamboo", factory);
+//		JUnitConfiguration conf = (JUnitConfiguration) settings.getConfiguration();
+//
+//		PsiManager mgr = PsiManager.getInstance(project);
+//		PsiClass cls = mgr.findClass("com.atlassian.theplugin.commons.bamboo.BambooServerFacadeTest",
+//				GlobalSearchScope.allScope(project));
+//		conf.beClassConfiguration(cls);
+//
+//		JavaProgramRunner runner;
+//		if (debug) {
+//			runner = ExecutionRegistry.getInstance().getDebuggerRunner();
+//		} else {
+//			runner = ExecutionRegistry.getInstance().getDefaultRunner();
+//		}
+//
+//		RunStrategy strategy = RunStrategy.getInstance();
+//		try {
+//			strategy.execute(settings, runner, ev.getDataContext());
+//		} catch (ExecutionException e) {
+//			e.printStackTrace();
+//		}
 	}
 
 	public boolean canRunFailedTests() {
