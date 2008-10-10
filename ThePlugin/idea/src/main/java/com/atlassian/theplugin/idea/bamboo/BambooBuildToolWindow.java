@@ -53,12 +53,12 @@ import com.intellij.ui.content.ContentManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.*;
 
 public class BambooBuildToolWindow {
 	private static final String TOOL_WINDOW_TITLE = "Bamboo Build";
@@ -303,7 +303,8 @@ class UnitTestFilter implements Filter {
 				PsiMethod[] methods = aClass.findMethodsByName(methodName, true);
 				if (methods != null && methods.length != 0 && methods[0] != null) {
 					highlightStartOffset = textEndOffset - line.length() + i + 1;
-					final OpenFileDescriptor openFileDescriptor = new OpenFileDescriptor(project, virtualFile, methods[0].getTextOffset());
+					final OpenFileDescriptor openFileDescriptor =
+                            new OpenFileDescriptor(project, virtualFile, methods[0].getTextOffset());
 					final OpenFileHyperlinkInfo info = new OpenFileHyperlinkInfo(openFileDescriptor);
 					return new Result(highlightStartOffset, highlightEndOffset, info, HYPERLINK_ATTRIBUTES);
 				}
