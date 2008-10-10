@@ -15,7 +15,6 @@
  */
 package com.atlassian.theplugin.idea.bamboo.table.renderer;
 
-import javax.swing.table.TableCellRenderer;
 import javax.swing.*;
 
 /**
