@@ -26,6 +26,7 @@ public class BambooConfigurationBean {
 	private static final int DEFAULT_POLLING_INTERVAL_MIN = 10;
 	private int pollTime = DEFAULT_POLLING_INTERVAL_MIN;
 	private static final int HASHCODE_MAGIC = 31;
+	private boolean onlyMyBuilds = false;
 
 	public BambooConfigurationBean() {
     }
@@ -33,7 +34,16 @@ public class BambooConfigurationBean {
 	public BambooConfigurationBean(BambooConfigurationBean cfg) {
         this.bambooTooltipOption = cfg.getBambooTooltipOption();
         this.pollTime = cfg.getPollTime();
-    }
+		this.onlyMyBuilds = cfg.isOnlyMyBuilds();
+	}
+
+	public boolean isOnlyMyBuilds() {
+		return onlyMyBuilds;
+	}
+
+	public void setOnlyMyBuilds(final boolean onlyMyBuilds) {
+		this.onlyMyBuilds = onlyMyBuilds;
+	}
 
 	public int getPollTime() {
 		return pollTime;
@@ -65,7 +75,12 @@ public class BambooConfigurationBean {
 		if (pollTime != that.pollTime) {
 			return false;
 		}
+
 		if (bambooTooltipOption != that.bambooTooltipOption) {
+			return false;
+		}
+
+		if (onlyMyBuilds != that.onlyMyBuilds) {
 			return false;
 		}
 
@@ -77,6 +92,8 @@ public class BambooConfigurationBean {
 		int result;
 		result = (bambooTooltipOption != null ? bambooTooltipOption.hashCode() : 0);
 		result = HASHCODE_MAGIC * result + pollTime;
+		result = HASHCODE_MAGIC * result + (onlyMyBuilds ? 1 : 0);
+
 		return result;
 	}
 }

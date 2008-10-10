@@ -63,7 +63,10 @@ public class BambooStatusTooltipListener implements BambooStatusListener {
 
 			for (BambooBuild currentBuild : newBuildStatuses) {
 
-				// if the build was reported then check it, if not then skip it
+				if (pluginConfiguration == null || !pluginConfiguration.getBambooConfigurationData().isOnlyMyBuilds()
+						|| (pluginConfiguration.getBambooConfigurationData().isOnlyMyBuilds() && currentBuild.isMyBuild())) {
+
+					// if the build was reported then check it, if not then skip it
 
 					switch (currentBuild.getStatus()) {
 
@@ -115,6 +118,7 @@ public class BambooStatusTooltipListener implements BambooStatusListener {
 					}
 				}
 			}
+		}
 		
 		if (fireTooltip && status != null) {
 			display.updateBambooStatus(status, popupInfo);

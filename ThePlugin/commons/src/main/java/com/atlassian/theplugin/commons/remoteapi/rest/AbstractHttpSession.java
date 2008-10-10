@@ -132,6 +132,9 @@ public abstract class AbstractHttpSession {
 
 		SAXBuilder builder = new SAXBuilder();
 		doc = builder.build(new ByteArrayInputStream(result));
+
+//		XmlUtil.printXml(doc);
+
 		preprocessResult(doc);
 
 		return doc;
